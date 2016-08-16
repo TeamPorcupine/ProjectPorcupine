@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Furnitures>
+    <Furniture objectType="furn_SteelWall">
+        <Name>Basic Wall</Name>
+        <MovementCost>0</MovementCost>
+        <Width>1</Width>
+        <Height>1</Height>
+        <LinksToNeighbours>true</LinksToNeighbours>
+        <EnclosesRooms>true</EnclosesRooms>
+
+
+        <BuildingJob jobTime="1">
+            <Inventory objectType="Steel Plate" amount="5" />
+        </BuildingJob>
+
+        <DeconstructJob>
+            <Inventory objectType="Steel Plate" amount="3" />
+        </DeconstructJob>
+
+
+    </Furniture>
+
+    <Furniture objectType="Door">
+        <Name>Door</Name>
+        <MovementCost>1</MovementCost>
+        <Width>1</Width>
+        <Height>1</Height>
+        <LinksToNeighbours>false</LinksToNeighbours>
+        <EnclosesRooms>true</EnclosesRooms>
+
+
+        <Params>
+            <Param name="openness" value="0" />
+            <Param name="is_opening" value="0" />
+        </Params>
+
+        <BuildingJob jobTime="1">
+            <Inventory objectType="Steel Plate" amount="2" />
+        </BuildingJob>
+
+        <DeconstructJob>
+            <Inventory objectType="Steel Plate" amount="1" />
+        </DeconstructJob>
+
+        <OnUpdate FunctionName="OnUpdate_Door" />
+
+        <IsEnterable FunctionName="IsEnterable_Door" />
+
+
+
+    </Furniture>
+
+
+	<Furniture objectType="Stockpile">
+		<Name>Stockpile</Name>
+        <MovementCost>1</MovementCost>
+        <LinksToNeighbours>true</LinksToNeighbours>
+
+        <OnUpdate FunctionName="Stockpile_UpdateAction" />
+	</Furniture>
+
+	<Furniture objectType="Oxygen Generator">
+		<Name>Oxygen Generator</Name>
+        <MovementCost>10</MovementCost>
+        <Width>2</Width>
+        <Height>2</Height>
+
+        <OnUpdate FunctionName="OnUpdate_GasGenerator" />
+
+        <Params>
+            <!-- <Param name="gas_name" value="O2" /> -->
+            <Param name="gas_limit" value="0.2" />
+            <Param name="gas_per_second" value="0.01" />
+        </Params>
+
+	</Furniture>
+
+
+	<Furniture objectType="Mining Drone Station">
+		<Name>Mining Drone Station</Name>
+        <MovementCost>1</MovementCost>
+        <Width>3</Width>
+        <Height>3</Height>
+
+        <JobSpotOffset X="1" Y="0" />
+        <JobSpawnSpotOffset X="0" Y="0" />
+
+        <OnUpdate FunctionName="MiningDroneStation_UpdateAction" />
+	</Furniture>
+
+
+
+</Furnitures>
+
+
+
+
+
+
+

@@ -1,0 +1,55 @@
+FONTLOG for Alfphabet
+-------------------
+This file provides detailed information on the Alfphabet font software.
+This information should be distributed along with the Alfphabet fonts
+and any derivative works.
+
+Basic Font Information
+--------------------------
+Copyright 1992-2014 Hammerfonts and OSP (http://osp.kitchen)
+
+The Alfphabet family is based on the Belgian road signage called 'Alphabet' in French and 'Alfabet' in Flemish. It was introduced in 1945 by 3M system working for the Marshall plan after the end of the war. In 1975, it was replaced by the Swiss SNV fonts, but is still in used randomly by the Belgian railroad and Charleroi's metro. In the early nineties, Pierre Huyghebaert was able to copy the original plates just before the split of the national office of the roads 'Fond des Routes' in three regional entities and the burial of the documents deep into regional archives.
+
+Alfphabet Condensed is a rough merge between Alfphabet II (condensed caps only) and Alfphabet III (semi-condensed lowercase only!). It was redrawn in various occasions by  Karl Bassil and Pierre under Hammerfonts umbrella in Brussels, then completed at Mind the gap studio in Beirut by Karl with the help of Nadim Zablit in the late nineties. The contrast between uppercase and lowercase is still quite non-typographic, and lot's of diacritics need improvement.
+
+Alfphabet IV was redrawn by Pierre Huyghebaert and Ludi at Speculoos studio in 2007.
+
+Alfphabet Condensed currently provides the following Unicode coverage:
+Basic Latin: 95/95 
+Latin-1 Supplement: 95/96 
+Latin extended A: 3/128
+
+Alfphabet IV currently provides the following Unicode coverage:
+Basic Latin: 95/95 
+Latin-1 Supplement: 60/96 
+
+Information for Contributors
+------------------------------
+Copyright 1992-2014 Hammerfonts and OSP (Karl Bassil, Nadim Zablit, Pierre Huyghebaert, Ludivine Loiseau).
+
+This Font Software is licensed under the SIL Open Font License, Version 1.1.
+
+You should have received a copy of the license along with this Font Software (either in stand-alone text files, human-readable headers or in the appropriate machine-readable metadata fields within text or binary files).
+
+See the project website for the current trunk and the various branches:
+http://ospublish.constantvzw.org/foundry/alfphabet
+
+ChangeLog
+----------
+
+Acknowledgements
+-------------------------
+If you make modifications be sure to add your name (N), email (E), web-address
+(W) and description (D). This list is sorted by last name in alphabetical
+order.)
+
+N: Karl Bassil
+
+N: Nadim Zablit
+
+N: Ludivine Loiseau 
+W: http://ospublish.constantvzw.org 
+
+N: Pierre Huyghebaert, 
+E: pierre@speculoos.com
+W: http://ospublish.constantvzw.org
