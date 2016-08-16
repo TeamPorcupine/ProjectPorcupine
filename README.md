@@ -59,6 +59,7 @@ code or various creative assets, feel free to follow the standard Github workflo
 6. Make a "Pull Request" from your branch here on Github.
 
 For a video tutorial, please see:
+* <https://www.youtube.com/user/quill18creates/playlists>
 
 
 ## Contact
