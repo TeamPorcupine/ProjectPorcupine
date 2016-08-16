@@ -21,12 +21,12 @@ Project Porcupine was created to serve two purposes:
 If you want to watch the tutorials that cover the entirety of
 creating this project from scratch, please visit:
 
-    https://www.youtube.com/user/quill18creates/playlists
+    <https://www.youtube.com/user/quill18creates/playlists>
 
 Project Porcupine was created by Martin "quill" Glaude, whose work
 was supported via Patreon:
 
-	https://www.patreon.com/quill18creates
+	<https://www.patreon.com/quill18creates>
 
 ## Copyright & Licensing
 
@@ -41,7 +41,7 @@ All non-code assets (e.g. art, sound) is licensed under CC BY-NC-SA 3.0
 
 The original tutorial project files, which feature no community-contributed code,
 are licensed under the MIT License and can be found here:
-    http://quill18.com/porcupine/project_files/
+    <http://quill18.com/porcupine/project_files/>
 
 ## Contributing
 
