@@ -18,12 +18,15 @@ Project Porcupine was created to serve two purposes:
   someone couldn't produce something with a wildly different theme
   or purpose (including not being a base-building game at all.)
 
+**However, our true ultimate goal is to produce a community-developed
+base building game in a similar style to Dwarf Fortress or RimWorld!**
+
 If you want to watch the tutorials that cover the entirety of
 creating this project from scratch, please visit:
 
  * <https://www.youtube.com/user/quill18creates/playlists>
 
-Project Porcupine was created by Martin "quill" Glaude, whose work
+Project Porcupine was created by Martin "quill18" Glaude, whose work
 was supported via Patreon:
 
  * <https://www.patreon.com/quill18creates>
