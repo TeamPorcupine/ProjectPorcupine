@@ -231,6 +231,8 @@ public class Room : IXmlSerializable
 
         // If we get to this point, then we know that we need to create a new room.
 
+        List<Room> listOfOldRooms = new List<Room>();
+
         Room newRoom = new Room();
         Queue<Tile> tilesToCheck = new Queue<Tile>();
         tilesToCheck.Enqueue(tile);
@@ -247,6 +249,12 @@ public class Room : IXmlSerializable
 
             if (t.room != newRoom)
             {
+                if(t.room != null && listOfOldRooms.Contains(t.room) == false)
+                {
+                    listOfOldRooms.Add(t.room);
+                    newRoom.MoveGas(t.room);
+                }
+
                 newRoom.AssignTile(t);
 
                 Tile[] ns = t.GetNeighbours();
@@ -297,27 +305,26 @@ public class Room : IXmlSerializable
         {
             // In this case we are splitting one room into two or more,
             // so we can just copy the old gas ratios.
-            newRoom.CopyGas(oldRoom, sizeOfOldRoom);
-        }
-        else
-        {
-            // In THIS case, we are MERGING one or more rooms together,
-            // so we need to actually figure out the total volume of gas
-            // in the old room vs the new room and correctly adjust
-            // atmospheric quantities.
-
-            // TODO
+            newRoom.CopyGasPreasure(oldRoom, sizeOfOldRoom);
         }
 
         // Tell the world that a new room has been formed.
         World.current.AddRoom(newRoom);
     }
 
-    void CopyGas(Room other, int sizeOfOtherRoom)
+    void CopyGasPreasure(Room other, int sizeOfOtherRoom)
     {
         foreach (string n in other.atmosphericGasses.Keys)
         {
             this.atmosphericGasses[n] = other.atmosphericGasses[n] / sizeOfOtherRoom * this.GetSize();
+        }
+    }
+
+    void MoveGas(Room other)
+    {
+        foreach (string n in other.atmosphericGasses.Keys)
+        {
+            this.ChangeGas(n, other.atmosphericGasses[n]);
         }
     }
 
