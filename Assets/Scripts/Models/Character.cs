@@ -480,6 +480,8 @@ public class Character : IXmlSerializable, ISelectableInterface
     }
 
 
+    #region IXmlSerializable implementation
+
     public XmlSchema GetSchema()
     {
         return null;
@@ -494,6 +496,8 @@ public class Character : IXmlSerializable, ISelectableInterface
     public void ReadXml(XmlReader reader)
     {
     }
+   
+    #endregion
 
     #region ISelectableInterface implementation
 
