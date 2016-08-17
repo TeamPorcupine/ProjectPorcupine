@@ -16,6 +16,8 @@ public class DialogBoxLoadSaveGame : DialogBox
     public GameObject fileListItemPrefab;
     public Transform fileList;
 
+    public static readonly Color secondaryColor = new Color(0.9f, 0.9f,0.9f);
+
     /// <summary>
     /// If directory doesn't exist EnsureDirectoryExists will create one.
     /// </summary>
@@ -49,8 +51,9 @@ public class DialogBoxLoadSaveGame : DialogBox
 
         // Build file list by instantiating fileListItemPrefab
 
-        foreach (FileInfo file in saveGames)
+        for (int i = 0; i < saveGames.Length; i++)
         {
+            FileInfo file = saveGames[i];
             GameObject go = (GameObject)GameObject.Instantiate(fileListItemPrefab);
 
             // Make sure this gameobject is a child of our list box
@@ -66,7 +69,9 @@ public class DialogBoxLoadSaveGame : DialogBox
 
             DialogListItem listItem = go.GetComponent<DialogListItem>();
             listItem.fileName = fileName;
-            listItem.inputField = inputField;            
+            listItem.inputField = inputField;
+
+            go.GetComponent<Image>().color = (i % 2 == 0 ? Color.white : secondaryColor);
         }
     }
 
