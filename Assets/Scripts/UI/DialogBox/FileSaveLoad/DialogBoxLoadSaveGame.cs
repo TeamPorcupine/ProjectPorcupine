@@ -23,10 +23,18 @@ public class DialogBoxLoadSaveGame : DialogBox
         base.ShowDialog();
 
         // Get list of files in save location
+        string saveDirectoryPath = WorldController.Instance.FileSaveBasePath();
 
-        string directoryPath = WorldController.Instance.FileSaveBasePath();
+        // If directory doesn't exist that means that either user never saved game before
+        // or something went horribly wrong and WorldController.Instance.FileSaveBasePath()
+        // returns massively invalid path for some reason.
+        if (Directory.Exists(saveDirectoryPath) == false)
+        {
+            Debug.LogError(saveDirectoryPath + " doesn't exist - display \"No saves available\" overlay?");
+            Directory.CreateDirectory(saveDirectoryPath);
+        }
 
-        DirectoryInfo saveDir = new DirectoryInfo(directoryPath);
+        DirectoryInfo saveDir = new DirectoryInfo(saveDirectoryPath);
 
 
         FileInfo[] saveGames = saveDir.GetFiles().OrderByDescending(f => f.CreationTime).ToArray();
