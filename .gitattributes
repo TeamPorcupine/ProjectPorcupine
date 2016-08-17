@@ -1,5 +1,9 @@
 # https://help.github.com/articles/dealing-with-line-endings/
-# Declare files that will always have LF line endings on checkout.
-*.cs text eol=lf
-*.xml text eol=lf
-*.lua text eol=lf
+
+# Text files should have their native EOL set on checkout (e.g. LF on Mac/Linux, CRLF on Windows)
+* text=auto
+
+# Make sure Git knows that these are text files
+*.cs text
+*.xml text
+*.lua text
