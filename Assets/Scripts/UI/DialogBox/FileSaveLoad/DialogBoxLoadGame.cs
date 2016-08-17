@@ -7,8 +7,6 @@ using System.IO;
 
 public class DialogBoxLoadGame : DialogBoxLoadSaveGame
 {
-
-
     public void OkayWasClicked()
     {
         string fileName = gameObject.GetComponentInChildren<InputField>().text;
@@ -23,7 +21,11 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
 
         // Application.persistentDataPath == C:\Users\<username>\ApplicationData\MyCompanyName\MyGameName\
 
-        string filePath = System.IO.Path.Combine(WorldController.Instance.FileSaveBasePath(), fileName + ".sav");
+        string saveDirectoryPath = WorldController.Instance.FileSaveBasePath();
+
+        EnsureDirectoryExists(saveDirectoryPath);
+
+        string filePath = System.IO.Path.Combine(saveDirectoryPath, fileName + ".sav");
 
         // At this point, filePath should look very much like
         //     C:\Users\Quill18\ApplicationData\MyCompanyName\MyGameName\Saves\SaveGameName123.sav
@@ -52,7 +54,5 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
         Debug.Log("LoadWorld button was clicked.");
 
         WorldController.Instance.LoadWorld(filePath);
-
-
     }
 }
