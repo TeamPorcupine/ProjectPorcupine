@@ -35,6 +35,7 @@ public class Furniture : IXmlSerializable, ISelectableInterface {
 	//public Func<Furniture, ENTERABILITY> IsEnterable;
 	protected string isEnterableAction;
 
+	protected List<string> replaceableFurniture = new List<string>();
 
 	List<Job> jobs;
 
@@ -89,6 +90,12 @@ public class Furniture : IXmlSerializable, ISelectableInterface {
 		}
 		set {
 			_Name = value;
+		}
+	}
+
+	public List<string> ReplaceableFurniture {
+		get {
+			return replaceableFurniture;
 		}
 	}
 
@@ -265,13 +272,26 @@ public class Furniture : IXmlSerializable, ISelectableInterface {
 			for (int y_off = t.Y; y_off < (t.Y + Height); y_off++) {
 				Tile t2 = World.current.GetTileAt(x_off, y_off);
 
+
+				// Check to see if there is furniture which is replaceable
+				bool isReplaceable = false;
+
+				if (t2.furniture != null) {
+					for (int i = 0; i < ReplaceableFurniture.Count; i++) {
+						if(t2.furniture.Name == ReplaceableFurniture[i]) {
+							isReplaceable = true;
+						}
+
+					}
+				}
+
 				// Make sure tile is FLOOR
 				if( t2.Type != TileType.Floor ) {
 					return false;
 				}
 
 				// Make sure tile doesn't already have furniture
-				if( t2.furniture != null ) {
+				if( t2.furniture != null && isReplaceable == false) {
 					return false;
 				}
 
@@ -335,22 +355,27 @@ public class Furniture : IXmlSerializable, ISelectableInterface {
 					reader.Read();
 					roomEnclosure = reader.ReadContentAsBoolean();
 					break;
-				case "BuildingJob":
-					float jobTime = float.Parse( reader.GetAttribute("jobTime") );
+			case "CanReplaceFurniture":
+				replaceableFurniture.Add (reader.GetAttribute ("objectName").ToString ());
+				break;
+			case "BuildingJob":
+				float jobTime = float.Parse (reader.GetAttribute ("jobTime"));
+
+
 
 					List<Inventory> invs = new List<Inventory>();
 
 					XmlReader invs_reader = reader.ReadSubtree();
 
 					while(invs_reader.Read()) {
-						if(invs_reader.Name == "Inventory") {
+						if (invs_reader.Name == "Inventory") {
 							// Found an inventory requirement, so add it to the list!
-							invs.Add(new Inventory( 
-								invs_reader.GetAttribute("objectType"),
-								int.Parse( invs_reader.GetAttribute("amount") ),
+							invs.Add (new Inventory (
+								invs_reader.GetAttribute ("objectType"),
+								int.Parse (invs_reader.GetAttribute ("amount")),
 								0
 							));
-						}
+						} 
 					}
 
 					Job j = new Job( null, 
