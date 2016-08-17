@@ -34,6 +34,6 @@ public class SelectionInfoTextField : MonoBehaviour
 
         ISelectable actualSelection = mc.mySelection.stuffInTile[mc.mySelection.subSelection];
 
-        txt.text = actualSelection.GetName() + "\n" + actualSelection.GetDescription() + "\n" + actualSelection.GetHitPointString();
+        txt.text = actualSelection.GetName() + " " + actualSelection.GetHitPointString() + "\n\n" + actualSelection.GetDescription();
     }
 }

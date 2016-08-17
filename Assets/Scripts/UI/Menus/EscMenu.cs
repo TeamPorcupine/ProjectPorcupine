@@ -3,8 +3,10 @@
 public class EscMenu : MonoBehaviour {
 
     public Canvas canvas;
+    public DialogBoxLoadSaveGame loadGame;
+    public DialogBoxLoadSaveGame saveGame;
 
-	void Start () {
+    void Start () {
         canvas = GetComponent<Canvas>();
     }
 	
@@ -14,8 +16,20 @@ public class EscMenu : MonoBehaviour {
         }
 	}
 
+    public void ShowSaveDialog() {
+        saveGame.ShowDialog();
+    }
+
+    public void ShowLoadDialog() {
+        loadGame.ShowDialog();
+    }
+
     public void ToggleMenu() {
         canvas.enabled = !canvas.enabled;
         WorldController.Instance.IsModal = canvas.enabled;
+        if(!canvas.enabled) {
+            loadGame.CloseDialog();
+            saveGame.CloseDialog();
+        }
     }
 }
