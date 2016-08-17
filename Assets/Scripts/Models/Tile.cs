@@ -66,7 +66,7 @@ public class Tile :IXmlSerializable, ISelectable
 
     // FIXME: This seems like a terrible way to flag if a job is pending
     // on a tile.  This is going to be prone to errors in set/clear.
-    public Job pendingFurnitureJob;
+    public Job pendingBuildJob;
 
     public int X { get; protected set; }
 
@@ -80,9 +80,10 @@ public class Tile :IXmlSerializable, ISelectable
     {
         get
         {
-
-            if (Type == TileType.Empty)
-                return 0;	// 0 is unwalkable
+            // This prevented the character from walking in empty tiles. It has been diasbled to allow the character to construct floor tiles.
+            // TODO: Permanent solution for handeling when a character can walk in empty tiles is required
+            //if (Type == TileType.Empty)
+            //    return 0;	// 0 is unwalkable
 
             if (furniture == null)
                 return baseTileMovementCost;
@@ -214,6 +215,18 @@ public class Tile :IXmlSerializable, ISelectable
 
         return true;
     }
+
+    // Called when the character has completed the job to change tile type
+    public static void ChangeTileTypeJobComplete(Job theJob)
+    {
+        // FIXME: For now this is hardcoded to build floor
+        theJob.tile.Type = theJob.jobTileType;
+
+        // FIXME: I don't like having to manually and explicitly set
+        // flags that preven conflicts. It's too easy to forget to set/clear them!
+        theJob.tile.pendingBuildJob = null;
+    }
+
 
     // Tells us if two tiles are adjacent.
     public bool IsNeighbour(Tile tile, bool diagOkay = false)
