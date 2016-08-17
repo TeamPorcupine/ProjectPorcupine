@@ -133,7 +133,7 @@ public class Tile :IXmlSerializable, ISelectable
             return false;
 
         Furniture f = furniture;
-
+        f.CancelJobs ();
         for (int x_off = X; x_off < (X + f.Width); x_off++)
         {
             for (int y_off = Y; y_off < (Y + f.Height); y_off++)
