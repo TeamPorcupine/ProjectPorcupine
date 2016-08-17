@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Linq;
 using System.Collections;
 using UnityEngine.UI;
 using ProjectPorcupine.Localization;
@@ -7,6 +8,8 @@ public class FurnitureBuildMenu : MonoBehaviour
 {
 
     public GameObject buildFurnitureButtonPrefab;
+
+    string lastLanguage;
 
     // Use this for initialization
     void Start()
@@ -27,8 +30,7 @@ public class FurnitureBuildMenu : MonoBehaviour
             string objectName = World.current.furniturePrototypes[s].Name;
 
             go.name = "Button - Build " + objectId;
-
-            go.transform.GetComponentInChildren<Text>().text = "build";
+            
             go.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(World.current.furniturePrototypes[s].localizationCode) };
 
             Button b = go.GetComponent<Button>();
@@ -40,6 +42,23 @@ public class FurnitureBuildMenu : MonoBehaviour
 
         }
 
+        lastLanguage = LocalizationTable.currentLanguage;
+
+    }
+
+    void Update()
+    {
+        if(lastLanguage != LocalizationTable.currentLanguage)
+        {
+            lastLanguage = LocalizationTable.currentLanguage;
+
+            TextLocalizer[] localizers = GetComponentsInChildren<TextLocalizer>();
+
+            for(int i = 0; i < localizers.Length; i++)
+            {
+                localizers[i].UpdateText(LocalizationTable.GetLocalization(World.current.furniturePrototypes.ElementAt(i).Value.GetName()));
+            }
+        }
     }
 	
 }
