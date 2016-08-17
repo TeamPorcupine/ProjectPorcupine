@@ -591,9 +591,14 @@ public class Furniture : IXmlSerializable, ISelectable
         Debug.Log("Deconstruct");
         int x = tile.X;
         int y = tile.Y;
-        int fwidth = tile.furniture.Width;
-        int fheight = tile.furniture.Height;
-
+        int fwidth = 1; 
+        int fheight = 1; 
+        if (tile.furniture != null)
+        {
+            fwidth = tile.furniture.Width;
+            fheight = tile.furniture.Height;
+            tile.furniture.CancelJobs();
+        }
         tile.UnplaceFurniture();
 
         if (cbOnRemoved != null)
