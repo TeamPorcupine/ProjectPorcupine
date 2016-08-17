@@ -26,6 +26,9 @@ namespace ProjectPorcupine.Localization
         //Used by the LocalizationLoader to ensure that the localization files are only loaded once.
         public static bool initialized = false;
 
+        //List with all languages.
+        static List<string> registeredLanguages = new List<string>();
+
         /**
          * <summary>
          * Load a localization file from the harddrive.
@@ -107,6 +110,8 @@ namespace ProjectPorcupine.Localization
                 //Add the new key+value to the localization table.
                 localizationTable.Add(localizationCode + "_" + currentKey, currentValue);
             }
+
+            registeredLanguages.Add(localizationCode);
         }
 
         /**
@@ -125,6 +130,7 @@ namespace ProjectPorcupine.Localization
         public static string GetLocalization(string key, params string[] additionalValues)
         {
             //Return the localization of the advanced method.
+            return GetLocalization(key, FallbackMode.ReturnEnglish, currentLanguage, additionalValues);
         }
 
         /**
@@ -154,6 +160,11 @@ namespace ProjectPorcupine.Localization
                     default: return ""; //Return an empty string.
                 }
             }
+        }
+
+        public static string[] GetLanguages()
+        {
+            return registeredLanguages.ToArray();
         }
     }
 }
