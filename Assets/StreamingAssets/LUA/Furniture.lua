@@ -21,8 +21,8 @@ function OnUpdate_GasGenerator( furniture, deltaTime )
 		return "Furniture's room was null."
 	end
 
-	if ( furniture.tile.room.GetGasAmount("O2") < 0.20) then
-		furniture.tile.room.ChangeGas("O2", 0.01 * deltaTime)
+	if ( furniture.tile.room.GetGasAmount("O2") < furniture.GetParameter("gas_limit")) then
+		furniture.tile.room.ChangeGas("O2", furniture.GetParameter("gas_per_second") * deltaTime)
 	else
 		-- Do we go into a standby mode to save power?
 	end
