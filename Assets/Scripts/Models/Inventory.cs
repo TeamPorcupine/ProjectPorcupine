@@ -14,73 +14,91 @@ using MoonSharp.Interpreter;
 
 
 [MoonSharpUserData]
-public class Inventory : ISelectable {
-	public string objectType = "Steel Plate";
-	public int maxStackSize = 50;
+public class Inventory : ISelectable
+{
+    public string objectType = "Steel Plate";
+    public int maxStackSize = 50;
 
-	protected int _stackSize = 1;
-	public int stackSize {
-		get { return _stackSize; }
-		set {
-			if( _stackSize != value ) {
-				_stackSize = value;
-				if( cbInventoryChanged != null) {
-					cbInventoryChanged(this);
-				}
-			}
-		}
-	}
+    protected int _stackSize = 1;
 
-	// The function we callback any time our tile's data changes
-	Action<Inventory> cbInventoryChanged;
+    public int stackSize
+    {
+        get { return _stackSize; }
+        set
+        {
+            if (_stackSize != value)
+            {
+                _stackSize = value;
+                if (cbInventoryChanged != null)
+                {
+                    cbInventoryChanged(this);
+                }
+            }
+        }
+    }
 
-	public Tile tile;
-	public Character character;
+    // The function we callback any time our tile's data changes
+    Action<Inventory> cbInventoryChanged;
 
-	public Inventory() {
+    public Tile tile;
+    public Character character;
+
+    public Inventory()
+    {
 		
-	}
+    }
 
-	static public Inventory New(string objectType, int maxStackSize, int stackSize) {
-		return new Inventory(objectType, maxStackSize, stackSize);
-	}
+    static public Inventory New(string objectType, int maxStackSize, int stackSize)
+    {
+        return new Inventory(objectType, maxStackSize, stackSize);
+    }
 
-	public Inventory(string objectType, int maxStackSize, int stackSize) {
-		this.objectType   = objectType;
-		this.maxStackSize = maxStackSize;
-		this.stackSize    = stackSize;
-	}
+    public Inventory(string objectType, int maxStackSize, int stackSize)
+    {
+        this.objectType = objectType;
+        this.maxStackSize = maxStackSize;
+        this.stackSize = stackSize;
+    }
 
-	protected Inventory(Inventory other) {
-		objectType   = other.objectType;
-		maxStackSize = other.maxStackSize;
-		stackSize    = other.stackSize;
-	}
+    protected Inventory(Inventory other)
+    {
+        objectType = other.objectType;
+        maxStackSize = other.maxStackSize;
+        stackSize = other.stackSize;
+    }
 
-	public virtual Inventory Clone() {
-		return new Inventory(this);
-	}
+    public virtual Inventory Clone()
+    {
+        return new Inventory(this);
+    }
 
-	public void RegisterChangedCallback(Action<Inventory> callback) {
-		cbInventoryChanged += callback;
-	}
+    public void RegisterChangedCallback(Action<Inventory> callback)
+    {
+        cbInventoryChanged += callback;
+    }
 
-	public void UnregisterChangedCallback(Action<Inventory> callback) {
-		cbInventoryChanged -= callback;
-	}
+    public void UnregisterChangedCallback(Action<Inventory> callback)
+    {
+        cbInventoryChanged -= callback;
+    }
 
 
-	#region ISelectableInterface implementation
-	public string GetName() {
-		return this.objectType;
-	}
+    #region ISelectableInterface implementation
 
-	public string GetDescription() {
-		return "A stack of inventory.";
-	}
-	public string GetHitPointString()
-	{
-		return "";	// Does inventory have hitpoints? How does it get destroyed? Maybe it's just a percentage chance based on damage.
-	}
-	#endregion
+    public string GetName()
+    {
+        return this.objectType;
+    }
+
+    public string GetDescription()
+    {
+        return "A stack of inventory.";
+    }
+
+    public string GetHitPointString()
+    {
+        return "";	// Does inventory have hitpoints? How does it get destroyed? Maybe it's just a percentage chance based on damage.
+    }
+
+    #endregion
 }
