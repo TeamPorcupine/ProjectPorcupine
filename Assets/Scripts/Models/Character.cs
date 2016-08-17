@@ -133,7 +133,7 @@ public class Character : IXmlSerializable, ISelectable
         {
             myJob = new Job(CurrTile,
                 "Waiting",
-                (j) => Debug.Log("Finished waiting for available Jobs"),
+                null,
                 UnityEngine.Random.Range(0.1f, 0.5f),
                 null,
                 false);
