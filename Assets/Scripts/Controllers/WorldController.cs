@@ -39,6 +39,8 @@ public class WorldController : MonoBehaviour
     public bool IsModal;
     // If true, a modal dialog box is open so normal inputs should be ignored.
 
+    private float timeScale = 1f;
+
     // Use this for initialization
     void OnEnable()
     {
@@ -61,12 +63,38 @@ public class WorldController : MonoBehaviour
 
     void Update()
     {
-        // TODO: Add pause/unpause, speed controls, etc...
-        if (IsPaused == false)
+        // TODO: Move this into centralized keyboard manager where
+        // all of the buttons can be rebinded.
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            world.Update(Time.deltaTime);
+            IsPaused = !IsPaused;
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            SetTimeScale(1f);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            SetTimeScale(2f);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            SetTimeScale(4f);
         }
 
+        if (IsPaused == false)
+        {
+            world.Update(Time.deltaTime * timeScale);
+        }
+    }
+
+    /// <summary>
+    /// Set's game speed (it's a multiplier so 1 == normal game speed).
+    /// </summary>
+    /// <param name="timeScale">Desired time scale</param>
+    public void SetTimeScale(float timeScale)
+    {
+        this.timeScale = timeScale;
     }
 
     /// <summary>
