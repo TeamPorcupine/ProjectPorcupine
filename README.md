@@ -8,7 +8,7 @@ Project Porcupine was created to serve two purposes:
 1. To act as a tutorial to teach people how to make a full,
   complex, and multi-featured game inside of Unity (as opposed
   to the more typical one-off, single-feature tutorials that
-  are more common.)
+  are more common).
 
 2. To provide a basic skeleton for any game that requires a
   tile-based map with self-governing agents (i.e. characters)
@@ -16,7 +16,7 @@ Project Porcupine was created to serve two purposes:
   furniture.)  To this end, we would be making a prorgram themed as
   a starbase-construction game -- though there's no reason that 
   someone couldn't produce something with a wildly different theme
-  or purpose (including not being a base-building game at all.)
+  or purpose (including not being a base-building game at all).
 
 **However, our true ultimate goal is to produce a community-developed
 base building game in a similar style to Dwarf Fortress or RimWorld!**
