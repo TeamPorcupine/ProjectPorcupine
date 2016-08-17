@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public interface ISelectableInterface {
+public interface ISelectable {
 
 	string GetName();
 	string GetDescription();

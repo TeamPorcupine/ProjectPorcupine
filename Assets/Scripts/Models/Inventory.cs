@@ -14,7 +14,7 @@ using MoonSharp.Interpreter;
 
 
 [MoonSharpUserData]
-public class Inventory : ISelectableInterface {
+public class Inventory : ISelectable {
 	public string objectType = "Steel Plate";
 	public int maxStackSize = 50;
 
