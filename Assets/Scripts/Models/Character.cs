@@ -16,7 +16,7 @@ using System.Xml.Serialization;
 /// Later, the Character class will likely be refactored (possibly with
 /// sub-classes or interfaces) to support friendly workers, enemies, etc...
 /// </summary>
-public class Character : IXmlSerializable, ISelectableInterface
+public class Character : IXmlSerializable, ISelectable
 {
 
     /// <summary>
