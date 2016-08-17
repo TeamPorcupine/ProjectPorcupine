@@ -112,9 +112,6 @@ public class Character : IXmlSerializable, ISelectable
     // The item we are carrying (not gear/equipment)
     public Inventory inventory;
 
-    // We don't want to hammer the job queue every frame, so we introduce a cooldown.
-    float jobSearchCooldown = 0;
-
     /// Use only for serialization
     public Character()
     {
@@ -133,7 +130,14 @@ public class Character : IXmlSerializable, ISelectable
         myJob = World.current.jobQueue.Dequeue();
 
         if (myJob == null)
-            return;
+        {
+            myJob = new Job(CurrTile,
+                "Waiting",
+                (j) => Debug.Log("Finished waiting for available Jobs"),
+                UnityEngine.Random.Range(0.1f, 0.5f),
+                null,
+                false);
+        }
 
         // Get our destination from the job
         DestTile = myJob.tile;
@@ -158,16 +162,10 @@ public class Character : IXmlSerializable, ISelectable
     void Update_DoJob(float deltaTime)
     {
         // Do I have a job?
-        jobSearchCooldown -= Time.deltaTime;
         if (myJob == null)
         {
-            if (jobSearchCooldown > 0)
-            {
-                // Don't look for job now.
-                return;
-            }
-
             GetNewJob();
+        }
 
             if (myJob == null)
             {
