@@ -23,15 +23,14 @@ public class Character : IXmlSerializable, ISelectableInterface
     /// Returns a float representing the Character's X position, which can
     /// be part-way between two tiles during movement.
     /// </summary>
-    /// <value>X coordinate</value>
     public float X
     {
         get
         {
-            if (nextTile == null)
+            if (NextTile == null)
                 return CurrTile.X;
 			
-            return Mathf.Lerp(CurrTile.X, nextTile.X, movementPercentage);
+            return Mathf.Lerp(CurrTile.X, NextTile.X, movementPercentage);
         }
     }
 
@@ -39,21 +38,20 @@ public class Character : IXmlSerializable, ISelectableInterface
     /// Returns a float representing the Character's Y position, which can
     /// be part-way between two tiles during movement.
     /// </summary>
-    /// <value>Y coordinate</value>
     public float Y
     {
         get
         {
-            if (nextTile == null)
+            if (NextTile == null)
                 return CurrTile.Y;
 			
-            return Mathf.Lerp(CurrTile.Y, nextTile.Y, movementPercentage);
+            return Mathf.Lerp(CurrTile.Y, NextTile.Y, movementPercentage);
         }
     }
 
-
-    private Tile _currTile;
-
+    /// <summary>
+    /// The tile the Character is considered to still be standing in.
+    /// </summary>
     public Tile CurrTile
     {
         get { return _currTile; }
@@ -69,10 +67,14 @@ public class Character : IXmlSerializable, ISelectableInterface
             _currTile.characters.Add(this);
         }
     }
+    private Tile _currTile;
 
-    // If we aren't moving, then destTile = currTile
-    Tile _destTile;
 
+
+    /// <summary>
+    /// The Character's current goal tile (not necessarily the next one
+    /// he or she will be entering). If we aren't moving, then destTile = currTile
+    /// </summary>
     Tile DestTile
     {
         get { return _destTile; }
@@ -85,43 +87,55 @@ public class Character : IXmlSerializable, ISelectableInterface
             }
         }
     }
+    Tile _destTile;
 
-    Tile nextTile;
-    // The next tile in the pathfinding sequence
-    Path_AStar pathAStar;
+    /// The next tile in the pathfinding sequence (the one we are about to enter).
+    Tile NextTile;
+
+    /// Goes from 0 to 1 as we move from CurrTile to NextTile
     float movementPercentage;
-    // Goes from 0 to 1 as we move from currTile to destTile
 
+    /// Holds the path to reach DestTile.
+    Path_AStar pathAStar;
+
+    /// Tiles per second
     float speed = 5f;
-    // Tiles per second
 
+    /// A callback to trigger when character information changes (notably, the position)
     Action<Character> cbCharacterChanged;
 
+    /// Our job, if any.
     Job myJob;
 
     // The item we are carrying (not gear/equipment)
     public Inventory inventory;
 
+    // We don't want to hammer the job queue every frame, so we introduce a cooldown.
+    float jobSearchCooldown = 0;
+
+    /// Use only for serialization
     public Character()
     {
-        // Use only for serialization
+        
     }
 
     public Character(Tile tile)
     {
-        CurrTile = DestTile = nextTile = tile;
+        CurrTile = DestTile = NextTile = tile;
     }
 
 
     void GetNewJob()
     {
-
-
+        // Get the first job on the queue.
         myJob = World.current.jobQueue.Dequeue();
+
         if (myJob == null)
             return;
 
+        // Get our destination from the job
         DestTile = myJob.tile;
+
         myJob.RegisterJobStoppedCallback(OnJobStopped);
 
         // Immediately check to see if the job tile is reachable.
@@ -138,8 +152,7 @@ public class Character : IXmlSerializable, ISelectableInterface
         }
     }
 
-    float jobSearchCooldown = 0;
-
+    // TODO: This function is ridiculous. Refactor!
     void Update_DoJob(float deltaTime)
     {
         // Do I have a job?
@@ -151,7 +164,6 @@ public class Character : IXmlSerializable, ISelectableInterface
                 // Don't look for job now.
                 return;
             }
-
 
             GetNewJob();
 
@@ -250,7 +262,7 @@ public class Character : IXmlSerializable, ISelectableInterface
                     // Find the first thing in the Job that isn't satisfied.
                     Inventory desired = myJob.GetFirstDesiredInventory();
 
-                    if (CurrTile != nextTile)
+                    if (CurrTile != NextTile)
                     {
                         // We are still moving somewhere, so just bail out.
                         return;
@@ -295,7 +307,7 @@ public class Character : IXmlSerializable, ISelectableInterface
                         pathAStar = newPath;
 
                         // Ignore first tile, because that's what we're already in.
-                        nextTile = newPath.Dequeue();
+                        NextTile = newPath.Dequeue();
                     }
 
                     // One way or the other, we are now on route to an object of the right type.
@@ -327,7 +339,7 @@ public class Character : IXmlSerializable, ISelectableInterface
 
     public void AbandonJob()
     {
-        nextTile = DestTile = CurrTile;
+        NextTile = DestTile = CurrTile;
         World.current.jobQueue.Enqueue(myJob);
         myJob = null;
     }
@@ -344,7 +356,7 @@ public class Character : IXmlSerializable, ISelectableInterface
         // nextTile = The tile I am currently entering
         // destTile = Our final destination -- we never walk here directly, but instead use it for the pathfinding
 
-        if (nextTile == null || nextTile == CurrTile)
+        if (NextTile == null || NextTile == CurrTile)
         {
             // Get the next tile from the pathfinder.
             if (pathAStar == null || pathAStar.Length() == 0)
@@ -359,24 +371,20 @@ public class Character : IXmlSerializable, ISelectableInterface
                 }
 
                 // Let's ignore the first tile, because that's the tile we're currently in.
-                nextTile = pathAStar.Dequeue();
+                NextTile = pathAStar.Dequeue();
 
             }
 
 
             // Grab the next waypoint from the pathing system!
-            nextTile = pathAStar.Dequeue();
+            NextTile = pathAStar.Dequeue();
 
-            if (nextTile == CurrTile)
+            if (NextTile == CurrTile)
             {
                 Debug.LogError("Update_DoMovement - nextTile is currTile?");
             }
         }
 
-/*		if(pathAStar.Length() == 1) {
-			return;
-		}
-*/
         // At this point we should have a valid nextTile to move to.
 
         // What's the total distance from point A to point B?
@@ -384,11 +392,11 @@ public class Character : IXmlSerializable, ISelectableInterface
         // But when we do the pathfinding system, we'll likely
         // switch to something like Manhattan or Chebyshev distance
         float distToTravel = Mathf.Sqrt(
-                           Mathf.Pow(CurrTile.X - nextTile.X, 2) +
-                           Mathf.Pow(CurrTile.Y - nextTile.Y, 2)
+                           Mathf.Pow(CurrTile.X - NextTile.X, 2) +
+                           Mathf.Pow(CurrTile.Y - NextTile.Y, 2)
                        );
 
-        if (nextTile.IsEnterable() == ENTERABILITY.Never)
+        if (NextTile.IsEnterable() == ENTERABILITY.Never)
         {
             // Most likely a wall got built, so we just need to reset our pathfinding information.
             // FIXME: Ideally, when a wall gets spawned, we should invalidate our path immediately,
@@ -396,11 +404,11 @@ public class Character : IXmlSerializable, ISelectableInterface
             //		  To save CPU, maybe we can only check every so often?
             //		  Or maybe we should register a callback to the OnTileChanged event?
             Debug.LogError("FIXME: A character was trying to enter an unwalkable tile.");
-            nextTile = null;	// our next tile is a no-go
+            NextTile = null;	// our next tile is a no-go
             pathAStar = null;	// clearly our pathfinding info is out of date.
             return;
         }
-        else if (nextTile.IsEnterable() == ENTERABILITY.Soon)
+        else if (NextTile.IsEnterable() == ENTERABILITY.Soon)
         {
             // We can't enter the NOW, but we should be able to in the
             // future. This is likely a DOOR.
@@ -410,7 +418,7 @@ public class Character : IXmlSerializable, ISelectableInterface
         }
 
         // How much distance can be travel this Update?
-        float distThisFrame = speed / nextTile.movementCost * deltaTime;
+        float distThisFrame = speed / NextTile.movementCost * deltaTime;
 
         // How much is that in terms of percentage to our destination?
         float percThisFrame = distThisFrame / distToTravel;
@@ -426,7 +434,7 @@ public class Character : IXmlSerializable, ISelectableInterface
             //       If there are no more tiles, then we have TRULY
             //       reached our destination.
 
-            CurrTile = nextTile;
+            CurrTile = NextTile;
             movementPercentage = 0;
             // FIXME?  Do we actually want to retain any overshot movement?
         }
@@ -434,10 +442,9 @@ public class Character : IXmlSerializable, ISelectableInterface
 
     }
 
+    /// Runs every "frame" while the simulation is not paused
     public void Update(float deltaTime)
     {
-        //Debug.Log("Character Update");
-
         Update_DoJob(deltaTime);
 
         Update_DoMovement(deltaTime);
