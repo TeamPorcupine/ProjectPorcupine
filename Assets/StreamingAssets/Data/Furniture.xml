@@ -2,6 +2,7 @@
 <Furnitures>
     <Furniture objectType="furn_SteelWall">
         <Name>Basic Wall</Name>
+		<Description>This is a basic wall.</Description>
         <MovementCost>0</MovementCost>
         <Width>1</Width>
         <Height>1</Height>
@@ -22,6 +23,7 @@
 
     <Furniture objectType="Door">
         <Name>Door</Name>
+		<Description>A door that characters can walk through.</Description>
         <MovementCost>1</MovementCost>
         <Width>1</Width>
         <Height>1</Height>
@@ -54,6 +56,7 @@
 
 	<Furniture objectType="Stockpile">
 		<Name>Stockpile</Name>
+		<Description>Characters will brings inventory here for storage.</Description>
         <MovementCost>1</MovementCost>
         <LinksToNeighbours>true</LinksToNeighbours>
 
@@ -62,6 +65,7 @@
 
 	<Furniture objectType="Oxygen Generator">
 		<Name>Oxygen Generator</Name>
+		<Description>Create O2 in the room in which it is built.</Description>
         <MovementCost>10</MovementCost>
         <Width>2</Width>
         <Height>2</Height>
@@ -79,6 +83,7 @@
 
 	<Furniture objectType="Mining Drone Station">
 		<Name>Mining Drone Station</Name>
+		<Description>Creates Steel Plates when worked by a character.</Description>
         <MovementCost>1</MovementCost>
         <Width>3</Width>
         <Height>3</Height>

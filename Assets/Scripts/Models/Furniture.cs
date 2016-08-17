@@ -107,6 +107,8 @@ public class Furniture : IXmlSerializable, ISelectable
         }
     }
 
+    private string Description = "";
+
     public List<string> ReplaceableFurniture
     {
         get
@@ -162,6 +164,7 @@ public class Furniture : IXmlSerializable, ISelectable
     {
         this.objectType = other.objectType;
         this.Name = other.Name;
+        this.Description = other.Description;
         this.movementCost = other.movementCost;
         this.roomEnclosure = other.roomEnclosure;
         this.Width = other.Width;
@@ -383,6 +386,10 @@ public class Furniture : IXmlSerializable, ISelectable
                 case "Name":
                     reader.Read();
                     Name = reader.ReadContentAsString();
+                    break;
+                case "Description":
+                    reader.Read();
+                    Description = reader.ReadContentAsString();
                     break;
                 case "MovementCost":
                     reader.Read();
@@ -641,7 +648,7 @@ public class Furniture : IXmlSerializable, ISelectable
 
     public string GetDescription()
     {
-        return "This is a piece of furniture."; // TODO: Add "Description" property and matching XML field.
+        return this.Description;
     }
 
     public string GetHitPointString()
