@@ -285,6 +285,10 @@ public class Tile :IXmlSerializable, ISelectable
         // X and Y have already been read/processed
 
         room = World.current.GetRoomFromID(int.Parse(reader.GetAttribute("RoomID")));
+        if (room != null)
+        {
+            room.AssignTile(this);
+        }
 
         Type = (TileType)int.Parse(reader.GetAttribute("Type"));
 
