@@ -1,0 +1,5 @@
+# https://help.github.com/articles/dealing-with-line-endings/
+# Declare files that will always have LF line endings on checkout.
+*.cs text eol=lf
+*.xml text eol=lf
+*.lua text eol=lf
