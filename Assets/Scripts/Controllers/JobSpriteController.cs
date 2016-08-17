@@ -16,9 +16,8 @@ public class JobSpriteController : MonoBehaviour
     {
         jobGameObjectMap = new Dictionary<Job, GameObject>();
         fsc = GameObject.FindObjectOfType<FurnitureSpriteController>();
-
-        // FIXME: No such thing as a job queue yet!
-        WorldController.Instance.world.jobQueue.RegisterJobCreationCallback(OnJobCreated);
+        
+        WorldController.Instance.world.jobQueue.cbJobCreated += OnJobCreated;
     }
 
     void OnJobCreated(Job job)
@@ -86,8 +85,8 @@ public class JobSpriteController : MonoBehaviour
         }
 
 
-        job.RegisterJobCompletedCallback(OnJobEnded);
-        job.RegisterJobStoppedCallback(OnJobEnded);
+        job.cbJobCompleted += OnJobEnded;
+        job.cbJobStopped += OnJobEnded;
     }
 
     void OnJobEnded(Job job)
@@ -98,8 +97,8 @@ public class JobSpriteController : MonoBehaviour
 
         GameObject job_go = jobGameObjectMap[job];
 
-        job.UnregisterJobCompletedCallback(OnJobEnded);
-        job.UnregisterJobStoppedCallback(OnJobEnded);
+        job.cbJobCompleted -= OnJobEnded;
+        job.cbJobStopped -= OnJobEnded;
 
         Destroy(job_go);
 
