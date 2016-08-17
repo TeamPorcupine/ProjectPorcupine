@@ -12,7 +12,8 @@ using MoonSharp.Interpreter;
 public class Room : IXmlSerializable
 {
 
-    Dictionary<string, float> atmosphericGasses;
+    // Dictionary with the amount of gas in room stored in preasure(in atm) multiplyed by number of tiles
+    Dictionary<string, float> atmosphericGasses; 
 
     List<Tile> tiles;
 
@@ -67,6 +68,7 @@ public class Room : IXmlSerializable
         return tiles.Count();
     }
 
+    // Changes gas by an amount in preasure(in atm) multiplyed by number of tiles
     public void ChangeGas(string name, float amount)
     {
         if (IsOutsideRoom())
@@ -86,6 +88,7 @@ public class Room : IXmlSerializable
 
     }
 
+    // Gets absolute gas amount in preasure(in atm) multiplyed by number of tiles
     public float GetGasAmount(string name)
     {
         if (atmosphericGasses.ContainsKey(name))
@@ -96,6 +99,7 @@ public class Room : IXmlSerializable
         return 0;
     }
 
+    // Gets gas amount in preasure(in atm)
     public float GetGasPressure(string name)
     {
         if (atmosphericGasses.ContainsKey(name))
