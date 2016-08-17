@@ -35,8 +35,11 @@ public class MouseController : MonoBehaviour
 
         fsc = GameObject.FindObjectOfType<FurnitureSpriteController>();
 
-
         dragPreviewGameObjects = new List<GameObject>();
+
+        // Make sure to load the cursor circle so we can see the floor drag
+        // however for some reason I dont think the image type is correct as the prefab shows type mismatch
+        circleCursorPrefab.GetComponent<SpriteRenderer>().sprite = SpriteManager.current.GetSprite("UI", "CursorCircle");
     }
 
     /// <summary>
@@ -251,7 +254,35 @@ public class MouseController : MonoBehaviour
             start_y = tmp;
         }
 
-        //if( isDragging ) {
+        if( isDragging )
+        {
+            DisplayPreviewOfBuild(start_x, end_x, start_y, end_y);
+        }
+
+        // End Drag
+        if (isDragging && Input.GetMouseButtonUp(0))
+        {
+            isDragging = false;
+
+            // Loop through all the tiles
+            for (int x = start_x; x <= end_x; x++)
+            {
+                for (int y = start_y; y <= end_y; y++)
+                {
+                    Tile t = WorldController.Instance.world.GetTileAt(x, y);
+
+                    if (t != null)
+                    {
+                        // Call BuildModeController::DoBuild()
+                        bmc.DoBuild(t);
+                    }
+                }
+            }
+        }
+    }
+
+    private void DisplayPreviewOfBuild(int start_x, int end_x, int start_y, int end_y)
+    {
         // Display a preview of the drag area
         for (int x = start_x; x <= end_x; x++)
         {
@@ -274,28 +305,6 @@ public class MouseController : MonoBehaviour
                         dragPreviewGameObjects.Add(go);
                     }
 
-                }
-            }
-        }
-        //}
-
-        // End Drag
-        if (isDragging && Input.GetMouseButtonUp(0))
-        {
-            isDragging = false;
-
-            // Loop through all the tiles
-            for (int x = start_x; x <= end_x; x++)
-            {
-                for (int y = start_y; y <= end_y; y++)
-                {
-                    Tile t = WorldController.Instance.world.GetTileAt(x, y);
-
-                    if (t != null)
-                    {
-                        // Call BuildModeController::DoBuild()
-                        bmc.DoBuild(t);
-                    }
                 }
             }
         }
