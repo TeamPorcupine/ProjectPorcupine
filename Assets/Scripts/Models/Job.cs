@@ -107,6 +107,7 @@ public class Job
     {
         this.tile = other.tile;
         this.jobObjectType = other.jobObjectType;
+        this.jobTileType = other.jobTileType;
         this.cbJobCompleted = other.cbJobCompleted;
         this.jobTime = other.jobTime;
 
