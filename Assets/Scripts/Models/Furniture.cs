@@ -15,7 +15,7 @@ using MoonSharp.Interpreter;
 // InstalledObjects are things like walls, doors, and furniture (e.g. a sofa)
 
 [MoonSharpUserData]
-public class Furniture : IXmlSerializable, ISelectableInterface {
+public class Furniture : IXmlSerializable, ISelectable {
 
 	/// <summary>
 	/// Custom parameter for this particular piece of furniture.  We are
