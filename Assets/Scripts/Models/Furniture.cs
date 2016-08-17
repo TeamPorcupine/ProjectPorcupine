@@ -210,6 +210,11 @@ public class Furniture : IXmlSerializable, ISelectable
 	}
 */
 
+    static public void DeconstructInstance(Furniture furniture, Tile tile)
+    {
+        InformNeighbours(furniture, tile);
+    }
+
     static public Furniture PlaceInstance(Furniture proto, Tile tile)
     {
         if (proto.funcPositionValidation(tile) == false)
@@ -233,6 +238,12 @@ public class Furniture : IXmlSerializable, ISelectable
             return null;
         }
 
+        InformNeighbours(obj, tile);
+        return obj;
+    }
+
+    static void InformNeighbours(Furniture obj, Tile tile)
+    { 
         if (obj.linksToNeighbour)
         {
             // This type of furniture links itself to its neighbours,
@@ -267,8 +278,6 @@ public class Furniture : IXmlSerializable, ISelectable
             }
 
         }
-
-        return obj;
     }
 
     public void RegisterOnChangedCallback(Action<Furniture> callbackFunc)
@@ -605,6 +614,7 @@ public class Furniture : IXmlSerializable, ISelectable
         Debug.Log("Deconstruct");
 
         tile.UnplaceFurniture();
+        Furniture.DeconstructInstance(this, tile);
 
         if (cbOnRemoved != null)
             cbOnRemoved(this);
