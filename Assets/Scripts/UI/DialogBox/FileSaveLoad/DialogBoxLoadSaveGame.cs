@@ -10,13 +10,24 @@ using System.Linq;
 //														DialogBoxLoadGame
 //
 
-
-
 public class DialogBoxLoadSaveGame : DialogBox
 {
 
     public GameObject fileListItemPrefab;
     public Transform fileList;
+
+    /// <summary>
+    /// If directory doesn't exist EnsureDirectoryExists will create one.
+    /// </summary>
+    /// <param name="directoryPath">Full directory path.</param>
+    public void EnsureDirectoryExists(string directoryPath)
+    {
+        if (Directory.Exists(directoryPath) == false)
+        {
+            Debug.LogWarning("Directory: " + directoryPath + " doesn't exist - creating.");
+            Directory.CreateDirectory(directoryPath);
+        }
+    }
 
     public override void ShowDialog()
     {
@@ -25,14 +36,7 @@ public class DialogBoxLoadSaveGame : DialogBox
         // Get list of files in save location
         string saveDirectoryPath = WorldController.Instance.FileSaveBasePath();
 
-        // If directory doesn't exist that means that either user never saved game before
-        // or something went horribly wrong and WorldController.Instance.FileSaveBasePath()
-        // returns massively invalid path for some reason.
-        if (Directory.Exists(saveDirectoryPath) == false)
-        {
-            Debug.LogError(saveDirectoryPath + " doesn't exist - display \"No saves available\" overlay?");
-            Directory.CreateDirectory(saveDirectoryPath);
-        }
+        EnsureDirectoryExists(saveDirectoryPath);
 
         DirectoryInfo saveDir = new DirectoryInfo(saveDirectoryPath);
 
@@ -60,7 +64,6 @@ public class DialogBoxLoadSaveGame : DialogBox
 
             go.GetComponent<DialogListItem>().inputField = inputField;
         }
-
     }
 
     public override void CloseDialog()
@@ -84,5 +87,4 @@ public class DialogBoxLoadSaveGame : DialogBox
 
         base.CloseDialog();
     }
-
 }
