@@ -454,16 +454,6 @@ public class Character : IXmlSerializable, ISelectableInterface
 
     }
 
-    public void SetDestination(Tile tile)
-    {
-        if (CurrTile.IsNeighbour(tile, true) == false)
-        {
-            Debug.Log("Character::SetDestination -- Our destination tile isn't actually our neighbour.");
-        }
-
-        DestTile = tile;
-    }
-
     public void RegisterOnChangedCallback(Action<Character> cb)
     {
         cbCharacterChanged += cb;
