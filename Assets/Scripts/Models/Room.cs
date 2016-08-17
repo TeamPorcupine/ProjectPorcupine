@@ -62,6 +62,11 @@ public class Room : IXmlSerializable
         return this == World.current.GetOutsideRoom();
     }
 
+    public int GetSize()
+    {
+        return tiles.Count();
+    }
+
     public void ChangeGas(string name, float amount)
     {
         if (IsOutsideRoom())
@@ -86,6 +91,16 @@ public class Room : IXmlSerializable
         if (atmosphericGasses.ContainsKey(name))
         {
             return atmosphericGasses[name];
+        }
+
+        return 0;
+    }
+
+    public float GetGasPressure(string name)
+    {
+        if (atmosphericGasses.ContainsKey(name))
+        {
+            return atmosphericGasses[name] / GetSize();
         }
 
         return 0;
