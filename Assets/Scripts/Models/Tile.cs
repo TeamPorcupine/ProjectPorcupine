@@ -124,14 +124,20 @@ public class Tile :IXmlSerializable, ISelectable
         cbTileChanged -= callback;
     }
 
+    private static int[][] offsets = new int[][] { new int[] { 1, 0 }, new int[] { 0, 1 }, new int[] { -1, 0 }, new int[] { 0, -1 } };
+
     public bool UnplaceFurniture()
     {
         // Just uninstalling.  FIXME:  What if we have a multi-tile furniture?
+        List<Tile> affectedTiles = new List<Tile>();
+
 
         if (furniture == null)
             return false;
 
         Furniture f = furniture;
+
+        f.CancelJobs (); // Canceles all jobs by this furniture.
 
         for (int x_off = X; x_off < (X + f.Width); x_off++)
         {
@@ -139,7 +145,27 @@ public class Tile :IXmlSerializable, ISelectable
             {
 
                 Tile t = World.current.GetTileAt(x_off, y_off);
+                if (t.furniture.linksToNeighbour)
+                    affectedTiles.Add (t);
                 t.furniture = null;
+            }
+        }
+
+        if (!f.linksToNeighbour)
+            return true;
+
+        //This will update all neighbour tiles.
+
+        foreach (Tile t in affectedTiles)
+        {
+            foreach (int[] offset in offsets) { // Using hardcoded offsets. Is there better way?
+                Tile tmpTile = World.current.GetTileAt (t.X+offset[0], t.Y+offset[1]);
+                if (!affectedTiles.Contains (tmpTile))
+                {
+                    if (tmpTile.furniture != null && tmpTile.furniture.objectType == f.objectType) {
+                        tmpTile.furniture.cbOnChanged (tmpTile.furniture);
+                    }
+                }
             }
         }
 
