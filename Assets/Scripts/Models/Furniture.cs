@@ -233,40 +233,26 @@ public class Furniture : IXmlSerializable, ISelectable
             return null;
         }
 
-        if (obj.linksToNeighbour)
+        // We should inform our neighbours that they have a new
+        // neighbour regardless of LinksToNeighbours and objectType.  
+        // Just trigger their OnChangedCallback.        
+        Tile t;
+        int x = tile.X;
+        int y = tile.Y;
+
+        for (int xpos = x - 1; xpos < (x + proto.Width + 1); xpos++)
         {
-            // This type of furniture links itself to its neighbours,
-            // so we should inform our neighbours that they have a new
-            // buddy.  Just trigger their OnChangedCallback.
-
-            Tile t;
-            int x = tile.X;
-            int y = tile.Y;
-
-            t = World.current.GetTileAt(x, y + 1);
-            if (t != null && t.furniture != null && t.furniture.cbOnChanged != null && t.furniture.objectType == obj.objectType)
+            for (int ypos = y - 1; ypos < (y + proto.Height + 1); ypos++)
             {
-                // We have a Northern Neighbour with the same object type as us, so
-                // tell it that it has changed by firing is callback.
-                t.furniture.cbOnChanged(t.furniture);
+                t = World.current.GetTileAt(xpos, ypos);
+                if (t != null && t.furniture != null && t.furniture.cbOnChanged != null)
+                {
+                    t.furniture.cbOnChanged(t.furniture);
+                }
             }
-            t = World.current.GetTileAt(x + 1, y);
-            if (t != null && t.furniture != null && t.furniture.cbOnChanged != null && t.furniture.objectType == obj.objectType)
-            {
-                t.furniture.cbOnChanged(t.furniture);
-            }
-            t = World.current.GetTileAt(x, y - 1);
-            if (t != null && t.furniture != null && t.furniture.cbOnChanged != null && t.furniture.objectType == obj.objectType)
-            {
-                t.furniture.cbOnChanged(t.furniture);
-            }
-            t = World.current.GetTileAt(x - 1, y);
-            if (t != null && t.furniture != null && t.furniture.cbOnChanged != null && t.furniture.objectType == obj.objectType)
-            {
-                t.furniture.cbOnChanged(t.furniture);
-            }
-
         }
+
+
 
         return obj;
     }
@@ -426,12 +412,12 @@ public class Furniture : IXmlSerializable, ISelectable
                                     int.Parse(invs_reader.GetAttribute("amount")),
                                     0
                                 ));
-                        } 
+                        }
                     }
 
-                    Job j = new Job(null, 
-                        objectType, 
-                        FurnitureActions.JobComplete_FurnitureBuilding, jobTime, 
+                    Job j = new Job(null,
+                        objectType,
+                        FurnitureActions.JobComplete_FurnitureBuilding, jobTime,
                         invs.ToArray()
                     );
 
@@ -603,6 +589,10 @@ public class Furniture : IXmlSerializable, ISelectable
     public void Deconstruct()
     {
         Debug.Log("Deconstruct");
+        int x = tile.X;
+        int y = tile.Y;
+        int fwidth = tile.furniture.Width;
+        int fheight = tile.furniture.Height;
 
         tile.UnplaceFurniture();
 
@@ -613,6 +603,21 @@ public class Furniture : IXmlSerializable, ISelectable
         if (roomEnclosure)
         {
             Room.DoRoomFloodFill(this.tile);
+        }
+
+        // We should inform our neighbours that they have just lost a
+        // neighbour regardless of LinksToNeighbours and objectType.  
+        // Just trigger their OnChangedCallback.        
+        for (int xpos = x - 1; xpos < (x + fwidth + 1); xpos++)
+        {
+            for (int ypos = y - 1; ypos < (y + fheight + 1); ypos++)
+            {
+                Tile t = World.current.GetTileAt(xpos, ypos);
+                if (t != null && t.furniture != null && t.furniture.cbOnChanged != null)
+                {
+                    t.furniture.cbOnChanged(t.furniture);
+                }
+            }
         }
 
         World.current.InvalidateTileGraph();
