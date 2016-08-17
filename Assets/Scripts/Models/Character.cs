@@ -158,7 +158,7 @@ public class Character : IXmlSerializable, ISelectable
     void Update_DoJob(float deltaTime)
     {
         // Do I have a job?
-        jobSearchCooldown -= Time.deltaTime;
+        jobSearchCooldown -= deltaTime;
         if (myJob == null)
         {
             if (jobSearchCooldown > 0)

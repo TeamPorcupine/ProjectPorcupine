@@ -36,9 +36,10 @@ public class WorldController : MonoBehaviour
         }
     }
 
-    public bool IsModal;
     // If true, a modal dialog box is open so normal inputs should be ignored.
+    public bool IsModal;
 
+    // Multiplier of Time.deltaTime.
     private float timeScale = 1f;
 
     // Use this for initialization
@@ -68,18 +69,22 @@ public class WorldController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             IsPaused = !IsPaused;
+            Debug.Log("Game " + (IsPaused ? "paused" : "resumed"));
         }
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             SetTimeScale(1f);
+            Debug.Log("Game speed set to 1x");
         }
         else if (Input.GetKeyDown(KeyCode.Alpha2))
         {
             SetTimeScale(2f);
+            Debug.Log("Game speed set to 2x");
         }
         else if (Input.GetKeyDown(KeyCode.Alpha3))
         {
             SetTimeScale(4f);
+            Debug.Log("Game speed set to 3x");
         }
 
         if (IsPaused == false)
