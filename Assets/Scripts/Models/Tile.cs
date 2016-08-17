@@ -80,9 +80,10 @@ public class Tile :IXmlSerializable, ISelectable
     {
         get
         {
-
-            if (Type == TileType.Empty)
-                return 0;	// 0 is unwalkable
+            // This prevented the character from walking in empty tiles. It has been diasbled to allow the character to construct floor tiles.
+            // TODO: Permanent solution for handeling when a character can walk in empty tiles is required
+            //if (Type == TileType.Empty)
+            //    return 0;	// 0 is unwalkable
 
             if (furniture == null)
                 return baseTileMovementCost;
