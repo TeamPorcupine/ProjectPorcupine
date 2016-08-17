@@ -146,6 +146,10 @@ public class Room : IXmlSerializable
 
         if (oldRoom != null)
         {
+            // Save the size of old room before we start removing tiles
+            // Needed for gas calculations
+            int sizeOfOldRoom = oldRoom.GetSize();
+
             // The source tile had a room, so this must be a new piece of furniture
             // that is potentially dividing this old room into as many as four new rooms.
 
@@ -154,7 +158,7 @@ public class Room : IXmlSerializable
             {
                 if (t.room != null && (onlyIfOutside == false || t.room.IsOutsideRoom()))
                 {
-                    ActualFloodFill(t, oldRoom);
+                    ActualFloodFill(t, oldRoom, sizeOfOldRoom);
                 }
             }
 
@@ -186,13 +190,13 @@ public class Room : IXmlSerializable
             // though this MAY not be the case any longer (i.e. the wall was 
             // probably deconstructed. So the only thing we have to try is
             // to spawn ONE new room starting from the tile in question.
-            ActualFloodFill(sourceTile, null);
+            ActualFloodFill(sourceTile, null, 0);
         }
 
 
     }
 
-    protected static void ActualFloodFill(Tile tile, Room oldRoom)
+    protected static void ActualFloodFill(Tile tile, Room oldRoom, int sizeOfOldRoom)
     {
         //Debug.Log("ActualFloodFill");
 
@@ -293,7 +297,7 @@ public class Room : IXmlSerializable
         {
             // In this case we are splitting one room into two or more,
             // so we can just copy the old gas ratios.
-            newRoom.CopyGas(oldRoom);
+            newRoom.CopyGas(oldRoom, sizeOfOldRoom);
         }
         else
         {
@@ -309,11 +313,11 @@ public class Room : IXmlSerializable
         World.current.AddRoom(newRoom);
     }
 
-    void CopyGas(Room other)
+    void CopyGas(Room other, int sizeOfOtherRoom)
     {
         foreach (string n in other.atmosphericGasses.Keys)
         {
-            this.atmosphericGasses[n] = other.atmosphericGasses[n];
+            this.atmosphericGasses[n] = other.atmosphericGasses[n] / sizeOfOtherRoom * this.GetSize();
         }
     }
 
