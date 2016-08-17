@@ -126,6 +126,8 @@ public class Tile :IXmlSerializable, ISelectable
     public bool UnplaceFurniture()
     {
         // Just uninstalling.  FIXME:  What if we have a multi-tile furniture?
+        List<Tile> affectedTiles = new List<Tile>();
+
 
         if (furniture == null)
             return false;
@@ -138,7 +140,29 @@ public class Tile :IXmlSerializable, ISelectable
             {
 
                 Tile t = World.current.GetTileAt(x_off, y_off);
+                if (t.furniture.linksToNeighbour)
+                    affectedTiles.Add (t);
                 t.furniture = null;
+            }
+        }
+
+        if (!f.linksToNeighbour)
+            return true;
+
+        foreach (Tile t in affectedTiles)
+        {
+            for (int x_off = t.X - 1; x_off < (t.X + 2); x_off++)
+            {
+                for (int y_off = t.Y - 1; y_off < (t.Y + 2); y_off++)
+                {
+                    Tile tmpTile = World.current.GetTileAt (x_off, y_off);
+                    if (!affectedTiles.Contains (tmpTile))
+                    {
+                        if (tmpTile.furniture != null && tmpTile.furniture.objectType == f.objectType) {
+                            tmpTile.furniture.cbOnChanged (tmpTile.furniture);
+                        }
+                    }
+                }
             }
         }
 
