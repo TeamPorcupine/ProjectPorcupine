@@ -74,6 +74,11 @@ public class Furniture : IXmlSerializable, ISelectable
 
     }
 
+    // This is true if the Furniture produces power
+    public bool isPowerGenerator;
+    // If it is a generator this is the ammount of power it produces otherwise this is the ammount it consumes.
+    public float powerValue;
+
     // This represents the BASE tile of the object -- but in practice, large objects may actually occupy
     // multile tiles.
     public Tile tile
@@ -179,6 +184,14 @@ public class Furniture : IXmlSerializable, ISelectable
             this.updateActions = new List<string>(other.updateActions);
 
         this.isEnterableAction = other.isEnterableAction;
+
+        this.isPowerGenerator = other.isPowerGenerator;
+        this.powerValue = other.powerValue;
+
+        if(isPowerGenerator == true)
+        {
+            World.current.powerSystem.RegisterPowerSupply(this);
+        }
 
         if (other.funcPositionValidation != null)
             this.funcPositionValidation = (Func<Tile, bool>)other.funcPositionValidation.Clone();
@@ -464,6 +477,16 @@ public class Furniture : IXmlSerializable, ISelectable
                     );
 
                     break;
+
+                case "PowerGenerator":
+                    isPowerGenerator = true;
+                    powerValue = float.Parse(reader.GetAttribute("supply"));
+                    break;
+                case "Power":
+                    reader.Read();
+                    powerValue = reader.ReadContentAsFloat();
+                    break;
+
                 case "Params":
                     ReadXmlParams(reader);	// Read in the Param tag
                     break;

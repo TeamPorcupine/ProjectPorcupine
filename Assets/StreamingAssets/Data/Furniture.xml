@@ -65,6 +65,7 @@
         <MovementCost>10</MovementCost>
         <Width>2</Width>
         <Height>2</Height>
+        <Power>1</Power>
 
         <OnUpdate FunctionName="OnUpdate_GasGenerator" />
 
@@ -72,10 +73,6 @@
             <!-- <Param name="gas_name" value="O2" /> -->
             <Param name="gas_limit" value="0.2" />
             <Param name="gas_per_second" value="0.01" />
-<<<<<<< HEAD
-            <Param name="power_consuption" value="1"/>
-=======
->>>>>>> parent of 3fa1944... Furniture XML needed commiting
         </Params>
 
 	</Furniture>
@@ -94,7 +91,6 @@
 	</Furniture>
 
 
-<<<<<<< HEAD
   <Furniture objectType="Power Generator">
     <Name>Power Generator</Name>
     <MovementCost>10</MovementCost>
@@ -104,8 +100,7 @@
     <PowerGenerator supply="5"/>
     
   </Furniture>
-=======
->>>>>>> parent of 3fa1944... Furniture XML needed commiting
+
 
 </Furnitures>
 
