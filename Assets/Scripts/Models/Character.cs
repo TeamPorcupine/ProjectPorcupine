@@ -157,8 +157,7 @@ public class Character : IXmlSerializable, ISelectable
             DestTile = CurrTile;
         }
     }
-
-    // TODO: This function is ridiculous. Refactor!
+    
     void Update_DoJob(float deltaTime)
     {
         // Do I have a job?
@@ -167,7 +166,7 @@ public class Character : IXmlSerializable, ISelectable
             GetNewJob();
         }
 
-        if (CheckForJobMaterials())
+        if (CheckForJobMaterials()) //make sure all materials are in place
         {
             // If we get here, then the job has all the material that it needs.
             // Lets make sure that our destination tile is the job site tile.
@@ -182,31 +181,27 @@ public class Character : IXmlSerializable, ISelectable
                 // call its "Job Complete" callback.
                 myJob.DoWork(deltaTime);
             }
-
-            // Nothing left for us to do here, we mostly just need Update_DoMovement to
-            // get us where we want to go.
         }
-
     }
 
+    /// <summary>
+    /// Checks weather the current job has all the materials in place and if not instructs the working character to get the materials there first.
+    /// Only ever returns true if all materials for the job are at the job location and thus signals to the calling code, that it can proceed with job execution.
+    /// </summary>
+    /// <returns></returns>
     bool CheckForJobMaterials()
-    {
-        // We have a job! (And the job tile is reachable)
-
-        // STEP 1: Does the job have all the materials it needs?
+    {  
         if (myJob.HasAllMaterial())
-            return true;
+            return true; //we can return early
 
-
-        // No, we are missing something!
-
-        // STEP 2: Are we CARRYING anything that the job location wants?
+        // At this point we know, that the job still needs materials.
+        // First we check if we carry any materials the job wants by chance.
         if (inventory != null)
         {
             if (myJob.DesiresInventoryType(inventory) > 0)
             {
                 // If so, deliver the goods.
-                //  Walk to the job tile, then drop off the stack into the job.
+                // Walk to the job tile, then drop off the stack into the job.
                 if (CurrTile == myJob.tile)
                 {
                     // We are at the job's site, so drop the inventory
@@ -215,17 +210,9 @@ public class Character : IXmlSerializable, ISelectable
                                      // we aren't progressing, it might want to do something with the fact
                                      // that the requirements are being met.
 
-                    // Are we still carrying things?
-                    if (inventory.stackSize == 0)
-                    {
-                        inventory = null;
-                    }
-                    else
-                    {
-                        Debug.LogError("Character is still carrying inventory, which shouldn't be. Just setting to NULL for now, but this means we are LEAKING inventory.");
-                        inventory = null;
-                    }
-
+                    //at this point we should dump anything in our inventory
+                    DumpExcessInventory();
+                  
                 }
                 else
                 {
@@ -237,16 +224,8 @@ public class Character : IXmlSerializable, ISelectable
             else
             {
                 // We are carrying something, but the job doesn't want it!
-                // Dump the inventory at our feet
-                // TODO: Actually, walk to the nearest empty tile and dump it there.
-                if (World.current.inventoryManager.PlaceInventory(CurrTile, inventory) == false)
-                {
-                    Debug.LogError("Character tried to dump inventory into an invalid tile (maybe there's already something here.");
-                    // FIXME: For the sake of continuing on, we are still going to dump any
-                    // reference to the current inventory, but this means we are "leaking"
-                    // inventory.  This is permanently lost now.
-                    inventory = null;
-                }
+                // Dump the inventory so we can be ready to carry what the job actually wants.
+                DumpExcessInventory();                
             }
         }
         else
@@ -327,10 +306,28 @@ public class Character : IXmlSerializable, ISelectable
         }
 
         return false; // We can't continue until all materials are satisfied.
+    }
 
+    /// <summary>
+    /// This function instructs the character to null its inventory.
+    /// However in the fuure it should actually look for a place to dump the materials and then do so.
+    /// </summary>
+    private void DumpExcessInventory()
+    {
+        // TODO: Look for Places accepting the inventory in the following order:
+        // - Jobs also needing this item (this could serve us when building Walls, as the character could transport ressources for multiple walls at once)
+        // - Stockpiles (as not to clutter the floor)
+        // - Floor
 
+        //if (World.current.inventoryManager.PlaceInventory(CurrTile, inventory) == false)
+        //{
+        //    Debug.LogError("Character tried to dump inventory into an invalid tile (maybe there's already something here). FIXME: Setting inventory to null and leaking for now");
+        //    // FIXME: For the sake of continuing on, we are still going to dump any
+        //    // reference to the current inventory, but this means we are "leaking"
+        //    // inventory.  This is permanently lost now.
+        //}
 
-
+        inventory = null;
     }
 
     public void AbandonJob()
