@@ -29,6 +29,7 @@ public class FurnitureActions
         myLuaScript.Globals["Inventory"] = typeof(Inventory);
         myLuaScript.Globals["Job"] = typeof(Job);
 
+		myLuaScript.Globals ["ModUtils"] = typeof(ModUtils);
         // Also to access statics/globals
         myLuaScript.Globals["World"] = typeof(World);
 

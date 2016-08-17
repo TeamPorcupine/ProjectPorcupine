@@ -4,17 +4,6 @@ ENTERABILITY_YES  = 0
 ENTERABILITY_NO   = 1
 ENTERABILITY_SOON = 2
 
---------------------------------      UTILITY      --------------------------------
-function Clamp01( value )
-	if (value > 1) then
-		return 1
-	elseif (value < 0) then
-		return 0
-	end
-
-	return value
-end
-
 -------------------------------- Furniture Actions --------------------------------
 function OnUpdate_GasGenerator( furniture, deltaTime )
 	if ( furniture.tile.room == nil ) then
@@ -41,7 +30,7 @@ function OnUpdate_Door( furniture, deltaTime )
 	end
 
 
-	furniture.SetParameter("openness", Clamp01(furniture.GetParameter("openness")) )
+	furniture.SetParameter("openness", ModUtils.Clamp01(furniture.GetParameter("openness")) )
 
 	if (furniture.cbOnChanged != nil) then
 		furniture.cbOnChanged(furniture)
