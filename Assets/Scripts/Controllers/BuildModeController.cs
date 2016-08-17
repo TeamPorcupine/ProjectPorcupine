@@ -153,7 +153,7 @@ public class BuildModeController : MonoBehaviour
                 // Create a job for it to be build
 
                 Job j = new Job(t,
-                    null, 
+                    tileType, 
                     Tile.ChangeTileTypeJobComplete, 
                     0.1f, 
                     null, 
