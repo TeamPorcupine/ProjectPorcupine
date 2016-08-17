@@ -16,7 +16,7 @@ using System.Xml.Serialization;
 /// Later, the Character class will likely be refactored (possibly with
 /// sub-classes or interfaces) to support friendly workers, enemies, etc...
 /// </summary>
-public class Character : IXmlSerializable, ISelectableInterface
+public class Character : IXmlSerializable, ISelectable
 {
 
     /// <summary>
@@ -67,6 +67,7 @@ public class Character : IXmlSerializable, ISelectableInterface
             _currTile.characters.Add(this);
         }
     }
+
     private Tile _currTile;
 
 
@@ -87,6 +88,7 @@ public class Character : IXmlSerializable, ISelectableInterface
             }
         }
     }
+
     Tile _destTile;
 
     /// The next tile in the pathfinding sequence (the one we are about to enter).
@@ -239,8 +241,8 @@ public class Character : IXmlSerializable, ISelectableInterface
                 // Are we standing on a tile with goods that are desired by the job?
                 Debug.Log("Standing on Tile check");
                 if (CurrTile.inventory != null &&
-                (myJob.canTakeFromStockpile || CurrTile.furniture == null || CurrTile.furniture.IsStockpile() == false) &&
-                myJob.DesiresInventoryType(CurrTile.inventory) > 0)
+                    (myJob.canTakeFromStockpile || CurrTile.furniture == null || CurrTile.furniture.IsStockpile() == false) &&
+                    myJob.DesiresInventoryType(CurrTile.inventory) > 0)
                 {
                     // Pick up the stuff!
                     Debug.Log("Pick up the stuff");
@@ -277,11 +279,11 @@ public class Character : IXmlSerializable, ISelectableInterface
                     else
                     {
                         Path_AStar newPath = World.current.inventoryManager.GetPathToClosestInventoryOfType(
-                               desired.objectType, 
-                               CurrTile, 
-                               desired.maxStackSize - desired.stackSize,
-                               myJob.canTakeFromStockpile
-                           );
+                                                 desired.objectType, 
+                                                 CurrTile, 
+                                                 desired.maxStackSize - desired.stackSize,
+                                                 myJob.canTakeFromStockpile
+                                             );
 
                         if (newPath == null)
                         {
@@ -392,9 +394,9 @@ public class Character : IXmlSerializable, ISelectableInterface
         // But when we do the pathfinding system, we'll likely
         // switch to something like Manhattan or Chebyshev distance
         float distToTravel = Mathf.Sqrt(
-                           Mathf.Pow(CurrTile.X - NextTile.X, 2) +
-                           Mathf.Pow(CurrTile.Y - NextTile.Y, 2)
-                       );
+                                 Mathf.Pow(CurrTile.X - NextTile.X, 2) +
+                                 Mathf.Pow(CurrTile.Y - NextTile.Y, 2)
+                             );
 
         if (NextTile.IsEnterable() == ENTERABILITY.Never)
         {
@@ -496,7 +498,7 @@ public class Character : IXmlSerializable, ISelectableInterface
     public void ReadXml(XmlReader reader)
     {
     }
-   
+
     #endregion
 
     #region ISelectableInterface implementation
