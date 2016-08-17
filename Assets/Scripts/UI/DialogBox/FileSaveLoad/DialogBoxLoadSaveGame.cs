@@ -10,23 +10,35 @@ using System.Linq;
 //														DialogBoxLoadGame
 //
 
-
-
 public class DialogBoxLoadSaveGame : DialogBox
 {
 
     public GameObject fileListItemPrefab;
     public Transform fileList;
 
+    /// <summary>
+    /// If directory doesn't exist EnsureDirectoryExists will create one.
+    /// </summary>
+    /// <param name="directoryPath">Full directory path.</param>
+    public void EnsureDirectoryExists(string directoryPath)
+    {
+        if (Directory.Exists(directoryPath) == false)
+        {
+            Debug.LogWarning("Directory: " + directoryPath + " doesn't exist - creating.");
+            Directory.CreateDirectory(directoryPath);
+        }
+    }
+
     public override void ShowDialog()
     {
         base.ShowDialog();
 
         // Get list of files in save location
+        string saveDirectoryPath = WorldController.Instance.FileSaveBasePath();
 
-        string directoryPath = WorldController.Instance.FileSaveBasePath();
+        EnsureDirectoryExists(saveDirectoryPath);
 
-        DirectoryInfo saveDir = new DirectoryInfo(directoryPath);
+        DirectoryInfo saveDir = new DirectoryInfo(saveDirectoryPath);
 
 
         FileInfo[] saveGames = saveDir.GetFiles().OrderByDescending(f => f.CreationTime).ToArray();
@@ -52,7 +64,6 @@ public class DialogBoxLoadSaveGame : DialogBox
 
             go.GetComponent<DialogListItem>().inputField = inputField;
         }
-
     }
 
     public override void CloseDialog()
@@ -76,5 +87,4 @@ public class DialogBoxLoadSaveGame : DialogBox
 
         base.CloseDialog();
     }
-
 }
