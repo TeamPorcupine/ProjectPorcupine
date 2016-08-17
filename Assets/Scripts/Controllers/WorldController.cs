@@ -109,17 +109,20 @@ public class WorldController : MonoBehaviour
             currentTimeScalePosition--;
             SetTimeScale(possibleTimeScales[currentTimeScalePosition]);
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha1))
+        else if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Keypad1))
         {
             SetTimeScale(1f);
+            currentTimeScalePosition = 2;
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha2))
+        else if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Keypad2))
         {
             SetTimeScale(2f);
+            currentTimeScalePosition = 3;
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha3))
+        else if (Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Keypad3))
         {
             SetTimeScale(4f);
+            currentTimeScalePosition = 4;
         }
     }
 
