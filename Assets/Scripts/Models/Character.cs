@@ -23,10 +23,8 @@ public class Character : IXmlSerializable, ISelectableInterface
     /// Returns a float representing the Character's X position, which can
     /// be part-way between two tiles during movement.
     /// </summary>
-    public float X
-    {
-        get
-        {
+    public float X {
+        get {
             if (NextTile == null)
                 return CurrTile.X;
 			
@@ -38,10 +36,8 @@ public class Character : IXmlSerializable, ISelectableInterface
     /// Returns a float representing the Character's Y position, which can
     /// be part-way between two tiles during movement.
     /// </summary>
-    public float Y
-    {
-        get
-        {
+    public float Y {
+        get {
             if (NextTile == null)
                 return CurrTile.Y;
 			
@@ -52,14 +48,11 @@ public class Character : IXmlSerializable, ISelectableInterface
     /// <summary>
     /// The tile the Character is considered to still be standing in.
     /// </summary>
-    public Tile CurrTile
-    {
+    public Tile CurrTile {
         get { return _currTile; }
 
-        protected set
-        {
-            if (_currTile != null)
-            {
+        protected set {
+            if (_currTile != null) {
                 _currTile.characters.Remove(this);
             }
 
@@ -67,6 +60,7 @@ public class Character : IXmlSerializable, ISelectableInterface
             _currTile.characters.Add(this);
         }
     }
+
     private Tile _currTile;
 
 
@@ -75,18 +69,16 @@ public class Character : IXmlSerializable, ISelectableInterface
     /// The Character's current goal tile (not necessarily the next one
     /// he or she will be entering). If we aren't moving, then destTile = currTile
     /// </summary>
-    Tile DestTile
-    {
+    Tile DestTile {
         get { return _destTile; }
-        set
-        {
-            if (_destTile != value)
-            {
+        set {
+            if (_destTile != value) {
                 _destTile = value;
                 pathAStar = null;	// If this is a new destination, then we need to invalidate pathfinding.
             }
         }
     }
+
     Tile _destTile;
 
     /// The next tile in the pathfinding sequence (the one we are about to enter).
@@ -144,8 +136,7 @@ public class Character : IXmlSerializable, ISelectableInterface
         // final location can be reached.
 
         pathAStar = new Path_AStar(World.current, CurrTile, DestTile);	// This will calculate a path from curr to dest.
-        if (pathAStar.Length() == 0)
-        {
+        if (pathAStar.Length() == 0) {
             Debug.LogError("Path_AStar returned no path to target job tile!");
             AbandonJob();
             DestTile = CurrTile;
@@ -157,18 +148,15 @@ public class Character : IXmlSerializable, ISelectableInterface
     {
         // Do I have a job?
         jobSearchCooldown -= Time.deltaTime;
-        if (myJob == null)
-        {
-            if (jobSearchCooldown > 0)
-            {
+        if (myJob == null) {
+            if (jobSearchCooldown > 0) {
                 // Don't look for job now.
                 return;
             }
 
             GetNewJob();
 
-            if (myJob == null)
-            {
+            if (myJob == null) {
                 // There was no job on the queue for us, so just return.
                 jobSearchCooldown = UnityEngine.Random.Range(0.1f, 0.5f);
                 DestTile = CurrTile;
@@ -179,19 +167,15 @@ public class Character : IXmlSerializable, ISelectableInterface
         // We have a job! (And the job tile is reachable)
 
         // STEP 1: Does the job have all the materials it needs?
-        if (myJob.HasAllMaterial() == false)
-        {
+        if (myJob.HasAllMaterial() == false) {
             // No, we are missing something!
 
             // STEP 2: Are we CARRYING anything that the job location wants?
-            if (inventory != null)
-            {
-                if (myJob.DesiresInventoryType(inventory) > 0)
-                {
+            if (inventory != null) {
+                if (myJob.DesiresInventoryType(inventory) > 0) {
                     // If so, deliver the goods.
                     //  Walk to the job tile, then drop off the stack into the job.
-                    if (CurrTile == myJob.tile)
-                    {
+                    if (CurrTile == myJob.tile) {
                         // We are at the job's site, so drop the inventory
                         World.current.inventoryManager.PlaceInventory(myJob, inventory);
                         myJob.DoWork(0); // This will call all cbJobWorked callbacks, because even though
@@ -199,31 +183,23 @@ public class Character : IXmlSerializable, ISelectableInterface
                         // that the requirements are being met.
 
                         // Are we still carrying things?
-                        if (inventory.stackSize == 0)
-                        {
+                        if (inventory.stackSize == 0) {
                             inventory = null;
-                        }
-                        else
-                        {
+                        } else {
                             Debug.LogError("Character is still carrying inventory, which shouldn't be. Just setting to NULL for now, but this means we are LEAKING inventory.");
                             inventory = null;
                         }
 
-                    }
-                    else
-                    {
+                    } else {
                         // We still need to walk to the job site.
                         DestTile = myJob.tile;
                         return;
                     }
-                }
-                else
-                {
+                } else {
                     // We are carrying something, but the job doesn't want it!
                     // Dump the inventory at our feet
                     // TODO: Actually, walk to the nearest empty tile and dump it there.
-                    if (World.current.inventoryManager.PlaceInventory(CurrTile, inventory) == false)
-                    {
+                    if (World.current.inventoryManager.PlaceInventory(CurrTile, inventory) == false) {
                         Debug.LogError("Character tried to dump inventory into an invalid tile (maybe there's already something here.");
                         // FIXME: For the sake of continuing on, we are still going to dump any
                         // reference to the current inventory, but this means we are "leaking"
@@ -231,17 +207,14 @@ public class Character : IXmlSerializable, ISelectableInterface
                         inventory = null;
                     }
                 }
-            }
-            else
-            {
+            } else {
                 // At this point, the job still requires inventory, but we aren't carrying it!
 
                 // Are we standing on a tile with goods that are desired by the job?
                 Debug.Log("Standing on Tile check");
                 if (CurrTile.inventory != null &&
-                (myJob.canTakeFromStockpile || CurrTile.furniture == null || CurrTile.furniture.IsStockpile() == false) &&
-                myJob.DesiresInventoryType(CurrTile.inventory) > 0)
-                {
+                    (myJob.canTakeFromStockpile || CurrTile.furniture == null || CurrTile.furniture.IsStockpile() == false) &&
+                    myJob.DesiresInventoryType(CurrTile.inventory) > 0) {
                     // Pick up the stuff!
                     Debug.Log("Pick up the stuff");
 
@@ -251,9 +224,7 @@ public class Character : IXmlSerializable, ISelectableInterface
                         myJob.DesiresInventoryType(CurrTile.inventory)
                     );
 
-                }
-                else
-                {
+                } else {
                     // Walk towards a tile containing the required goods.
                     Debug.Log("Walk to the stuff");
                     Debug.Log(myJob.canTakeFromStockpile);
@@ -262,29 +233,24 @@ public class Character : IXmlSerializable, ISelectableInterface
                     // Find the first thing in the Job that isn't satisfied.
                     Inventory desired = myJob.GetFirstDesiredInventory();
 
-                    if (CurrTile != NextTile)
-                    {
+                    if (CurrTile != NextTile) {
                         // We are still moving somewhere, so just bail out.
                         return;
                     }
 
                     // Any chance we already have a path that leads to the items we want?
-                    if (pathAStar != null && pathAStar.EndTile() != null && pathAStar.EndTile().inventory != null && pathAStar.EndTile().inventory.objectType == desired.objectType)
-                    {
+                    if (pathAStar != null && pathAStar.EndTile() != null && pathAStar.EndTile().inventory != null && pathAStar.EndTile().inventory.objectType == desired.objectType) {
                         // We are already moving towards a tile that contains what we want!
                         // so....do nothing?
-                    }
-                    else
-                    {
+                    } else {
                         Path_AStar newPath = World.current.inventoryManager.GetPathToClosestInventoryOfType(
-                               desired.objectType, 
-                               CurrTile, 
-                               desired.maxStackSize - desired.stackSize,
-                               myJob.canTakeFromStockpile
-                           );
+                                                 desired.objectType, 
+                                                 CurrTile, 
+                                                 desired.maxStackSize - desired.stackSize,
+                                                 myJob.canTakeFromStockpile
+                                             );
 
-                        if (newPath == null)
-                        {
+                        if (newPath == null) {
                             //Debug.Log("pathAStar is null and we have no path to object of type: " + desired.objectType);
                             // Cancel the job, since we have no way to get any raw materials!
                             AbandonJob();
@@ -294,8 +260,7 @@ public class Character : IXmlSerializable, ISelectableInterface
 
                         Debug.Log("pathAStar returned with length of: " + newPath.Length());
 
-                        if (newPath == null || newPath.Length() == 0)
-                        {
+                        if (newPath == null || newPath.Length() == 0) {
                             Debug.Log("No tile contains objects of type '" + desired.objectType + "' to satisfy job requirements.");
                             AbandonJob();
                             return;
@@ -324,8 +289,7 @@ public class Character : IXmlSerializable, ISelectableInterface
         DestTile = myJob.tile;
 
         // Are we there yet?
-        if (CurrTile == myJob.tile)
-        {
+        if (CurrTile == myJob.tile) {
             // We are at the correct tile for our job, so 
             // execute the job's "DoWork", which is mostly
             // going to countdown jobTime and potentially
@@ -346,8 +310,7 @@ public class Character : IXmlSerializable, ISelectableInterface
 
     void Update_DoMovement(float deltaTime)
     {
-        if (CurrTile == DestTile)
-        {
+        if (CurrTile == DestTile) {
             pathAStar = null;
             return;	// We're already were we want to be.
         }
@@ -356,15 +319,12 @@ public class Character : IXmlSerializable, ISelectableInterface
         // nextTile = The tile I am currently entering
         // destTile = Our final destination -- we never walk here directly, but instead use it for the pathfinding
 
-        if (NextTile == null || NextTile == CurrTile)
-        {
+        if (NextTile == null || NextTile == CurrTile) {
             // Get the next tile from the pathfinder.
-            if (pathAStar == null || pathAStar.Length() == 0)
-            {
+            if (pathAStar == null || pathAStar.Length() == 0) {
                 // Generate a path to our destination
                 pathAStar = new Path_AStar(World.current, CurrTile, DestTile);	// This will calculate a path from curr to dest.
-                if (pathAStar.Length() == 0)
-                {
+                if (pathAStar.Length() == 0) {
                     Debug.LogError("Path_AStar returned no path to destination!");
                     AbandonJob();
                     return;
@@ -379,8 +339,7 @@ public class Character : IXmlSerializable, ISelectableInterface
             // Grab the next waypoint from the pathing system!
             NextTile = pathAStar.Dequeue();
 
-            if (NextTile == CurrTile)
-            {
+            if (NextTile == CurrTile) {
                 Debug.LogError("Update_DoMovement - nextTile is currTile?");
             }
         }
@@ -392,12 +351,11 @@ public class Character : IXmlSerializable, ISelectableInterface
         // But when we do the pathfinding system, we'll likely
         // switch to something like Manhattan or Chebyshev distance
         float distToTravel = Mathf.Sqrt(
-                           Mathf.Pow(CurrTile.X - NextTile.X, 2) +
-                           Mathf.Pow(CurrTile.Y - NextTile.Y, 2)
-                       );
+                                 Mathf.Pow(CurrTile.X - NextTile.X, 2) +
+                                 Mathf.Pow(CurrTile.Y - NextTile.Y, 2)
+                             );
 
-        if (NextTile.IsEnterable() == ENTERABILITY.Never)
-        {
+        if (NextTile.IsEnterable() == ENTERABILITY.Never) {
             // Most likely a wall got built, so we just need to reset our pathfinding information.
             // FIXME: Ideally, when a wall gets spawned, we should invalidate our path immediately,
             //		  so that we don't waste a bunch of time walking towards a dead end.
@@ -407,9 +365,7 @@ public class Character : IXmlSerializable, ISelectableInterface
             NextTile = null;	// our next tile is a no-go
             pathAStar = null;	// clearly our pathfinding info is out of date.
             return;
-        }
-        else if (NextTile.IsEnterable() == ENTERABILITY.Soon)
-        {
+        } else if (NextTile.IsEnterable() == ENTERABILITY.Soon) {
             // We can't enter the NOW, but we should be able to in the
             // future. This is likely a DOOR.
             // So we DON'T bail on our movement/path, but we do return
@@ -426,8 +382,7 @@ public class Character : IXmlSerializable, ISelectableInterface
         // Add that to overall percentage travelled.
         movementPercentage += percThisFrame;
 
-        if (movementPercentage >= 1)
-        {
+        if (movementPercentage >= 1) {
             // We have reached our destination
 
             // TODO: Get the next tile from the pathfinding system.
@@ -470,8 +425,7 @@ public class Character : IXmlSerializable, ISelectableInterface
 
         j.UnregisterJobStoppedCallback(OnJobStopped);
 
-        if (j != myJob)
-        {
+        if (j != myJob) {
             Debug.LogError("Character being told about job that isn't his. You forgot to unregister something.");
             return;
         }
@@ -496,7 +450,7 @@ public class Character : IXmlSerializable, ISelectableInterface
     public void ReadXml(XmlReader reader)
     {
     }
-   
+
     #endregion
 
     #region ISelectableInterface implementation
