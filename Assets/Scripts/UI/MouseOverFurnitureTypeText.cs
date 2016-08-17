@@ -31,26 +31,19 @@ public class MouseOverFurnitureTypeText : MonoBehaviour
             return;
         }
     }
-
+	
     // Update is called once per frame
     void Update()
     {
         Tile t = mouseController.GetMouseOverTile();
 
-        if (t != null)
-        {
-            string s = "NULL";
+        string s = "NULL";
 
-            if (t.furniture != null)
-            {
-                s = t.furniture.Name;
-            }
-
-            myText.text = "Furniture: " + s;
-        }
-        else
+        if (t.furniture != null)
         {
-            myText.text = "No Furniture";
+            s = t.furniture.Name;
         }
+
+        myText.text = "Furniture: " + s;
     }
 }
