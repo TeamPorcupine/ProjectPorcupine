@@ -244,7 +244,7 @@ public class Furniture : IXmlSerializable, ISelectable
         {
             for (int ypos = y - 1; ypos < (y + proto.Height + 1); ypos++)
             {
-                t = World.current.GetTileAt(xpos, ypos + 1);
+                t = World.current.GetTileAt(xpos, ypos);
                 if (t != null && t.furniture != null && t.furniture.cbOnChanged != null)
                 {
                     t.furniture.cbOnChanged(t.furniture);
@@ -612,7 +612,7 @@ public class Furniture : IXmlSerializable, ISelectable
         {
             for (int ypos = y - 1; ypos < (y + fheight + 1); ypos++)
             {
-                Tile t = World.current.GetTileAt(xpos, ypos + 1);
+                Tile t = World.current.GetTileAt(xpos, ypos);
                 if (t != null && t.furniture != null && t.furniture.cbOnChanged != null)
                 {
                     t.furniture.cbOnChanged(t.furniture);
