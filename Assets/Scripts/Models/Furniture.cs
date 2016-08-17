@@ -271,6 +271,45 @@ public class Furniture : IXmlSerializable, ISelectable
         return obj;
     }
 
+    static public void DeconstructInstance(int x, int y, Furniture furniture )
+    {
+        Debug.Log("Deconstruction of instance");
+
+        Debug.Log("Links to neighbours: " + furniture.linksToNeighbour);
+        if (furniture.linksToNeighbour)
+        {
+            // This type of furniture links itself to its neighbours,
+            // so we should inform our neighbours that they have a new
+            // buddy.  Just trigger their OnChangedCallback.
+
+            //TODO: This assumes 1x1 furniture.
+            Tile t;
+
+            t = World.current.GetTileAt(x, y + 1);
+            if (t != null && t.furniture != null && t.furniture.cbOnChanged != null && t.furniture.objectType == furniture.objectType)
+            {
+                // We have a Northern Neighbour with the same object type as us, so
+                // tell it that it has changed by firing is callback.
+                t.furniture.cbOnChanged(t.furniture);
+            }
+            t = World.current.GetTileAt(x + 1, y);
+            if (t != null && t.furniture != null && t.furniture.cbOnChanged != null && t.furniture.objectType == furniture.objectType)
+            {
+                t.furniture.cbOnChanged(t.furniture);
+            }
+            t = World.current.GetTileAt(x, y - 1);
+            if (t != null && t.furniture != null && t.furniture.cbOnChanged != null && t.furniture.objectType == furniture.objectType)
+            {
+                t.furniture.cbOnChanged(t.furniture);
+            }
+            t = World.current.GetTileAt(x - 1, y);
+            if (t != null && t.furniture != null && t.furniture.cbOnChanged != null && t.furniture.objectType == furniture.objectType)
+            {
+                t.furniture.cbOnChanged(t.furniture);
+            }
+        }
+    }
+
     public void RegisterOnChangedCallback(Action<Furniture> callbackFunc)
     {
         cbOnChanged += callbackFunc;
@@ -604,7 +643,11 @@ public class Furniture : IXmlSerializable, ISelectable
     {
         Debug.Log("Deconstruct");
 
+        int x = tile.X;
+        int y = tile.Y;
         tile.UnplaceFurniture();
+
+        Furniture.DeconstructInstance(x,y, this);
 
         if (cbOnRemoved != null)
             cbOnRemoved(this);
