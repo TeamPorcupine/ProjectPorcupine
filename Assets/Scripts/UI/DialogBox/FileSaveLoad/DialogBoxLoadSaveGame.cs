@@ -5,72 +5,86 @@ using System.Xml.Serialization;
 using System.IO;
 using System.Linq;
 
-//   Object -> MonoBehaviour -> DialogBox -> DialogBoxLoadSaveGame -> 
+//   Object -> MonoBehaviour -> DialogBox -> DialogBoxLoadSaveGame ->
 //														DialogBoxSaveGame
 //														DialogBoxLoadGame
 //
 
+public class DialogBoxLoadSaveGame : DialogBox
+{
+
+    public GameObject fileListItemPrefab;
+    public Transform fileList;
+
+    /// <summary>
+    /// If directory doesn't exist EnsureDirectoryExists will create one.
+    /// </summary>
+    /// <param name="directoryPath">Full directory path.</param>
+    public void EnsureDirectoryExists(string directoryPath)
+    {
+        if (Directory.Exists(directoryPath) == false)
+        {
+            Debug.LogWarning("Directory: " + directoryPath + " doesn't exist - creating.");
+            Directory.CreateDirectory(directoryPath);
+        }
+    }
+
+    public override void ShowDialog()
+    {
+        base.ShowDialog();
+
+        // Get list of files in save location
+        string saveDirectoryPath = WorldController.Instance.FileSaveBasePath();
+
+        EnsureDirectoryExists(saveDirectoryPath);
+
+        DirectoryInfo saveDir = new DirectoryInfo(saveDirectoryPath);
 
 
-public class DialogBoxLoadSaveGame : DialogBox {
+        FileInfo[] saveGames = saveDir.GetFiles().OrderByDescending(f => f.CreationTime).ToArray();
 
-	public GameObject fileListItemPrefab;
-	public Transform fileList;
+        // Our save dialog has an input field, which the fileListItems fill out for
+        // us when we click on them
+        InputField inputField = gameObject.GetComponentInChildren<InputField>();
 
-	public override void ShowDialog()
-	{
-		base.ShowDialog();
+        // Build file list by instantiating fileListItemPrefab
 
-		// Get list of files in save location
+        foreach (FileInfo file in saveGames)
+        {
+            GameObject go = (GameObject)GameObject.Instantiate(fileListItemPrefab);
 
-		string directoryPath = WorldController.Instance.FileSaveBasePath();
+            // Make sure this gameobject is a child of our list box
+            go.transform.SetParent(fileList);
 
-		DirectoryInfo saveDir = new DirectoryInfo( directoryPath );
+            // file contains something like "C:\Users\UserName\......\Project Porcupine\Saves\SomeFileName.sav"
+            // Path.GetFileName(file) returns "SomeFileName.sav"
+            // Path.GetFileNameWithoutExtension(file) returns "SomeFileName"
 
+            go.GetComponentInChildren<Text>().text = Path.GetFileNameWithoutExtension(file.FullName);
 
-		FileInfo[] saveGames = saveDir.GetFiles().OrderByDescending( f => f.CreationTime ).ToArray();
+            go.GetComponent<DialogListItem>().inputField = inputField;
+        }
+    }
 
-		// Our save dialog has an input field, which the fileListItems fill out for
-		// us when we click on them
-		InputField inputField = gameObject.GetComponentInChildren<InputField>();
+    public override void CloseDialog()
+    {
+        // Clear out all the children of our file list
 
-		// Build file list by instantiating fileListItemPrefab
+        while (fileList.childCount > 0)
+        {
+            Transform c = fileList.GetChild(0);
+            c.SetParent(null);	// Become Batman
+            Destroy(c.gameObject);
+        }
 
-		foreach(FileInfo file in saveGames) {
-			GameObject go = (GameObject)GameObject.Instantiate(fileListItemPrefab);
+        // We COULD clear out the inputField field here, but I think
+        // it makes sense to leave the old filename in there to make
+        // overwriting easier?
+        // Alternatively, we could either:
+        //   a) Clear out the text box
+        //	 b) Append an incremental number to it so that it automatically does
+        //		something like "SomeFileName 13"
 
-			// Make sure this gameobject is a child of our list box
-			go.transform.SetParent( fileList );
-
-			// file contains something like "C:\Users\UserName\......\Project Porcupine\Saves\SomeFileName.sav"
-			// Path.GetFileName(file) returns "SomeFileName.sav"
-			// Path.GetFileNameWithoutExtension(file) returns "SomeFileName"
-
-			go.GetComponentInChildren<Text>().text = Path.GetFileNameWithoutExtension( file.FullName );
-
-			go.GetComponent<DialogListItem>().inputField = inputField;
-		}
-
-	}
-
-	public override void CloseDialog() {
-		// Clear out all the children of our file list
-
-		while(fileList.childCount > 0) {
-			Transform c = fileList.GetChild(0);
-			c.SetParent(null);	// Become Batman
-			Destroy(c.gameObject);
-		}
-
-		// We COULD clear out the inputField field here, but I think
-		// it makes sense to leave the old filename in there to make
-		// overwriting easier?
-		// Alternatively, we could either:
-		//   a) Clear out the text box
-		//	 b) Append an incremental number to it so that it automatically does
-		//		something like "SomeFileName 13"
-
-		base.CloseDialog();
-	}
-
+        base.CloseDialog();
+    }
 }
