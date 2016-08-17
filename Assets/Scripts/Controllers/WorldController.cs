@@ -28,7 +28,7 @@ public class WorldController : MonoBehaviour
     {
         get
         {
-            return  _isPaused || IsModal;
+            return _isPaused || IsModal;
         }
         set
         {
@@ -41,6 +41,11 @@ public class WorldController : MonoBehaviour
 
     // Multiplier of Time.deltaTime.
     private float timeScale = 1f;
+
+    // An array of possible time multipliers.
+    private float[] possibleTimeScales = new float[6] { 0.1f, 0.5f, 1f, 2f, 4f, 8f };
+    // Current position in that array.
+    int currentTimeScalePosition = 2;
 
     // Use this for initialization
     void OnEnable()
@@ -64,6 +69,16 @@ public class WorldController : MonoBehaviour
 
     void Update()
     {
+        CheckTimeInput();
+
+        if (IsPaused == false)
+        {
+            world.Update(Time.deltaTime * timeScale);
+        }
+    }
+
+    void CheckTimeInput()
+    {
         // TODO: Move this into centralized keyboard manager where
         // all of the buttons can be rebinded.
         if (Input.GetKeyDown(KeyCode.Space))
@@ -71,25 +86,40 @@ public class WorldController : MonoBehaviour
             IsPaused = !IsPaused;
             Debug.Log("Game " + (IsPaused ? "paused" : "resumed"));
         }
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+
+        if (Input.GetKeyDown(KeyCode.Plus) || Input.GetKeyDown(KeyCode.KeypadPlus))
+        {
+            if (currentTimeScalePosition == possibleTimeScales.Length)
+            {
+                // We are on the top of possibleTimeScales so just bail out.
+                return;
+            }
+
+            currentTimeScalePosition++;
+            SetTimeScale(possibleTimeScales[currentTimeScalePosition]);
+        }
+        else if (Input.GetKeyDown(KeyCode.Minus) || Input.GetKeyDown(KeyCode.KeypadMinus))
+        {
+            if (currentTimeScalePosition == 0)
+            {
+                // We are on the bottom of possibleTimeScales so just bail out.
+                return;
+            }
+
+            currentTimeScalePosition--;
+            SetTimeScale(possibleTimeScales[currentTimeScalePosition]);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             SetTimeScale(1f);
-            Debug.Log("Game speed set to 1x");
         }
         else if (Input.GetKeyDown(KeyCode.Alpha2))
         {
             SetTimeScale(2f);
-            Debug.Log("Game speed set to 2x");
         }
         else if (Input.GetKeyDown(KeyCode.Alpha3))
         {
             SetTimeScale(4f);
-            Debug.Log("Game speed set to 4x");
-        }
-
-        if (IsPaused == false)
-        {
-            world.Update(Time.deltaTime * timeScale);
         }
     }
 
@@ -100,6 +130,7 @@ public class WorldController : MonoBehaviour
     public void SetTimeScale(float timeScale)
     {
         this.timeScale = timeScale;
+        Debug.Log("Game speed set to " + timeScale + "x");
     }
 
     /// <summary>
@@ -111,7 +142,7 @@ public class WorldController : MonoBehaviour
     {
         int x = Mathf.FloorToInt(coord.x + 0.5f);
         int y = Mathf.FloorToInt(coord.y + 0.5f);
-		
+
         return world.GetTileAt(x, y);
     }
 
@@ -122,14 +153,10 @@ public class WorldController : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
-
     public string FileSaveBasePath()
     {
-        return 	System.IO.Path.Combine(Application.persistentDataPath, "Saves");
-
+        return System.IO.Path.Combine(Application.persistentDataPath, "Saves");
     }
-
-
 
     public void LoadWorld(string fileName)
     {
@@ -138,7 +165,6 @@ public class WorldController : MonoBehaviour
         // Reload the scene to reset all data (and purge old references)
         loadWorldFromFile = fileName;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-
     }
 
     void CreateEmptyWorld()
@@ -148,7 +174,6 @@ public class WorldController : MonoBehaviour
 
         // Center the Camera
         Camera.main.transform.position = new Vector3(world.Width / 2, world.Height / 2, Camera.main.transform.position.z);
-
     }
 
     void CreateWorldFromSaveFile()
@@ -170,10 +195,7 @@ public class WorldController : MonoBehaviour
         reader.Close();
 
 
-
         // Center the Camera
         Camera.main.transform.position = new Vector3(world.Width / 2, world.Height / 2, Camera.main.transform.position.z);
-
     }
-
 }
