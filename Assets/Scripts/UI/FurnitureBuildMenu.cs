@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using ProjectPorcupine.Localization;
 
 public class FurnitureBuildMenu : MonoBehaviour
 {
@@ -27,7 +28,8 @@ public class FurnitureBuildMenu : MonoBehaviour
 
             go.name = "Button - Build " + objectId;
 
-            go.transform.GetComponentInChildren<Text>().text = "Build " + objectName;
+            go.transform.GetComponentInChildren<Text>().text = "build";
+            go.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(World.current.furniturePrototypes[s].localizationCode) };
 
             Button b = go.GetComponent<Button>();
 
