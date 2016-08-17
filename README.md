@@ -48,7 +48,7 @@ are licensed under the MIT License and can be found here:
 
 ## Contributing
 
-Please check the CONTRIBUTION.md file for contribution instructions and guidelines.
+Please check the CONTRIBUTING.md file for contribution instructions and guidelines.
 
 ## Contact
 
