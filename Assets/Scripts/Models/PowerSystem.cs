@@ -15,6 +15,7 @@ public class PowerSystem {
     public PowerSystem()
     {
         powerGenerators = new List<Furniture>();
+        powerConsumers = new List<Furniture>();
     }
 
     public void RegisterPowerSupply(Furniture furn)
@@ -33,7 +34,15 @@ public class PowerSystem {
 
     public void RegisterPowerConsumer(Furniture furn)
     {
+        if (currentPower < furn.powerValue)
+        {
+            //Debug.LogWarning("Not enough power for " + furn.Name + " to run");
+            return;
+        }
+
+        //Debug.Log("Added " + furn.Name + " to power consumer list");
         powerConsumers.Add(furn);
+        CalculatePower();
 
         furn.RegisterOnRemovedCallback(RemovePowerConsumer);
     }
@@ -47,8 +56,11 @@ public class PowerSystem {
 
     public bool RequestPower(Furniture furn)
     {
-
-
+        if (powerConsumers.Contains(furn))
+        {
+            return true;
+        }
+        
         return false;
     }
 
@@ -59,6 +71,11 @@ public class PowerSystem {
         foreach (Furniture furn in powerGenerators)
         {
             powerValues += furn.powerValue;
+        }
+
+        foreach (Furniture furn in powerConsumers)
+        {
+            powerValues -= furn.powerValue;
         }
 
         currentPower = powerValues;
