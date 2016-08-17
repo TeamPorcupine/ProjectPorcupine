@@ -271,6 +271,7 @@ public class MouseController : MonoBehaviour
                         // show the generic dragging visuals
                         GameObject go = SimplePool.Spawn(circleCursorPrefab, new Vector3(x, y, 0), Quaternion.identity);
                         go.transform.SetParent(this.transform, true);
+						go.GetComponent<SpriteRenderer>().sprite=SpriteManager.current.GetSprite( "UI", "CursorCircle");
                         dragPreviewGameObjects.Add(go);
                     }
 
