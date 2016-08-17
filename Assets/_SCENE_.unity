@@ -4826,7 +4826,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55b3394b4a8b4724f8d1baca789856db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  childHeight: 18.7
+  childHeight: 36
 --- !u!114 &1742146400
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4839,10 +4839,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 0
-    m_Right: 0
-    m_Top: 0
-    m_Bottom: 0
+    m_Left: 5
+    m_Right: 5
+    m_Top: 5
+    m_Bottom: 5
   m_ChildAlignment: 0
   m_Spacing: 0
   m_ChildForceExpandWidth: 1
@@ -5490,7 +5490,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 273, y: 18.7}
+  m_SizeDelta: {x: 273, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &2047095708
 MonoBehaviour:
@@ -5503,7 +5503,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55b3394b4a8b4724f8d1baca789856db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  childHeight: 18.7
+  childHeight: 36
 --- !u!114 &2047095709
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5516,10 +5516,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 0
-    m_Right: 0
-    m_Top: 0
-    m_Bottom: 0
+    m_Left: 5
+    m_Right: 5
+    m_Top: 5
+    m_Bottom: 5
   m_ChildAlignment: 0
   m_Spacing: 0
   m_ChildForceExpandWidth: 1

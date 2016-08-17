@@ -59,8 +59,8 @@ MonoBehaviour:
     m_BestFit: 0
     m_MinSize: 10
     m_MaxSize: 40
-    m_Alignment: 3
-    m_AlignByGeometry: 0
+    m_Alignment: 0
+    m_AlignByGeometry: 1
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
@@ -77,6 +77,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ba508187a496a44eaf946752cde9740, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fileName: 
   inputField: {fileID: 0}
 --- !u!222 &22224066
 CanvasRenderer:
