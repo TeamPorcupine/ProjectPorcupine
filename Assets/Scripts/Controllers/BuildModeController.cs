@@ -152,7 +152,12 @@ public class BuildModeController : MonoBehaviour
 
                 // Create a job for it to be build
 
-                Job j = new Job(t, null, Tile.ChangeTileTypeJobComplete, 0.1f, null, false);
+                Job j = new Job(t,
+                    null, 
+                    Tile.ChangeTileTypeJobComplete, 
+                    0.1f, 
+                    null, 
+                    false);
 
 
                 // FIXME: I don't like having to manually and explicitly set
