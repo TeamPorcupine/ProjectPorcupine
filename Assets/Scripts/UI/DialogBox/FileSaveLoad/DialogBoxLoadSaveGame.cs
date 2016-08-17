@@ -65,7 +65,7 @@ public class DialogBoxLoadSaveGame : DialogBox
 
             string fileName = Path.GetFileNameWithoutExtension(file.FullName);
 
-            go.GetComponentInChildren<Text>().text = string.Format("{0}\n{1}", fileName, file.CreationTime);
+            go.GetComponentInChildren<Text>().text = string.Format("{0}\n<size=11><i>{1}</i></size>", fileName, file.CreationTime);
 
             DialogListItem listItem = go.GetComponent<DialogListItem>();
             listItem.fileName = fileName;
