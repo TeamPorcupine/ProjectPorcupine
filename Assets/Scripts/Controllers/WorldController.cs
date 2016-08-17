@@ -84,7 +84,7 @@ public class WorldController : MonoBehaviour
         else if (Input.GetKeyDown(KeyCode.Alpha3))
         {
             SetTimeScale(4f);
-            Debug.Log("Game speed set to 3x");
+            Debug.Log("Game speed set to 4x");
         }
 
         if (IsPaused == false)
