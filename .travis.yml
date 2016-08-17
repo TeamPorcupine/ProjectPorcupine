@@ -1,13 +1,13 @@
 # Example Travis config. See the entire example: https://github.com/JonathanPorta/ci-build
 
+# Using objective-c since windows build images are not available
+# The chmodding is uneccesary if I would have checed in from linux instead of windows. Can be cleaned up.
 language: objective-c
 osx_image: xcode61
 rvm:
 - 2.1.2
 before_install:
- - chmod 755 ./Scripts/install.sh
  - chmod +x ./Scripts/install.sh
- - chmod 755 ./Scripts/build.sh
  - chmod +x ./Scripts/build.sh
 install:
 - ./Scripts/install.sh
