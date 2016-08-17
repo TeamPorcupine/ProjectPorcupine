@@ -133,7 +133,7 @@ public class Character : IXmlSerializable, ISelectable
         {
             myJob = new Job(CurrTile,
                 "Waiting",
-                (j) => Debug.Log("Finished waiting for available Jobs"),
+                (j) => { /*Debug.Log("Finished waiting for available Jobs")*/ },
                 UnityEngine.Random.Range(0.1f, 0.5f),
                 null,
                 false);
@@ -233,13 +233,13 @@ public class Character : IXmlSerializable, ISelectable
             // At this point, the job still requires inventory, but we aren't carrying it!
 
             // Are we standing on a tile with goods that are desired by the job?
-            Debug.Log("Standing on Tile check");
+            //Debug.Log("Standing on Tile check");
             if (CurrTile.inventory != null &&
                 myJob.DesiresInventoryType(CurrTile.inventory) > 0 &&
                 (myJob.canTakeFromStockpile || CurrTile.furniture == null || CurrTile.furniture.IsStockpile() == false))
             {
                 // Pick up the stuff!
-                Debug.Log("Pick up the stuff");
+                //Debug.Log("Pick up the stuff");
 
                 World.current.inventoryManager.PlaceInventory(
                     this,
@@ -251,8 +251,8 @@ public class Character : IXmlSerializable, ISelectable
             else
             {
                 // Walk towards a tile containing the required goods.
-                Debug.Log("Walk to the stuff");
-                Debug.Log(myJob.canTakeFromStockpile);
+                //Debug.Log("Walk to the stuff");
+                //Debug.Log(myJob.canTakeFromStockpile);
 
 
                 // Find the first thing in the Job that isn't satisfied.
@@ -283,12 +283,12 @@ public class Character : IXmlSerializable, ISelectable
                     {
                         //Debug.Log("pathAStar is null and we have no path to object of type: " + desired.objectType);
                         // Cancel the job, since we have no way to get any raw materials!
-                        Debug.Log("No tile contains objects of type '" + desired.objectType + "' to satisfy job requirements.");
+                        //Debug.Log("No tile contains objects of type '" + desired.objectType + "' to satisfy job requirements.");
                         AbandonJob();
                         return false;
                     }
 
-                    Debug.Log("pathAStar returned with length of: " + newPath.Length());                    
+                    //Debug.Log("pathAStar returned with length of: " + newPath.Length());                    
 
                     DestTile = newPath.EndTile();
 
@@ -374,7 +374,7 @@ public class Character : IXmlSerializable, ISelectable
 
             if (NextTile == CurrTile)
             {
-                Debug.LogError("Update_DoMovement - nextTile is currTile?");
+                //Debug.LogError("Update_DoMovement - nextTile is currTile?");
             }
         }
 

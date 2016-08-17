@@ -16,7 +16,6 @@ public class FurnitureBuildMenu : MonoBehaviour
         // For each furniture prototype in our world, create one instance
         // of the button to be clicked!
 
-
         foreach (string s in World.current.furniturePrototypes.Keys)
         {
             GameObject go = (GameObject)Instantiate(buildFurnitureButtonPrefab);
@@ -27,7 +26,7 @@ public class FurnitureBuildMenu : MonoBehaviour
 
             go.name = "Button - Build " + objectId;
 
-            go.transform.GetComponentInChildren<Text>().text = "Build " + objectName;
+            go.transform.GetComponentInChildren<Text>().text = "Build\n" + objectName;
 
             Button b = go.GetComponent<Button>();
 
@@ -38,6 +37,7 @@ public class FurnitureBuildMenu : MonoBehaviour
 
         }
 
+        gameObject.SetActive(false);
     }
 	
 }
