@@ -654,7 +654,7 @@ public class Furniture : IXmlSerializable, ISelectable
             if t.room.IsOutsideRoom()
             {
                 // If any tile is linked to the outside bail out early and do not deconstruct
-                return
+                debug.log('Trying to deconstruct an outside wall')
             }
         }
 
