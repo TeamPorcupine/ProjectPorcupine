@@ -10,7 +10,10 @@ public class DevConsole : DialogBox {
     static string outPath;
 
 	Script LuaCommands;
-
+    public override void ShowDialog()
+    {
+        gameObject.SetActive(true);
+    }
     void Start() {
 		string filePath = System.IO.Path.Combine( Application.streamingAssetsPath, "LUA" );
 		filePath = System.IO.Path.Combine( filePath, "Command.lua" );
