@@ -120,11 +120,18 @@ public class FurnitureSpriteController : MonoBehaviour
 
             Tile northTile = world.GetTileAt(furn.tile.X, furn.tile.Y + 1);
             Tile southTile = world.GetTileAt(furn.tile.X, furn.tile.Y - 1);
+            Tile eastTile = world.GetTileAt(furn.tile.X+1, furn.tile.Y);
+            Tile westTile = world.GetTileAt(furn.tile.X-1, furn.tile.Y);
 
             if (northTile != null && southTile != null && northTile.furniture != null && southTile.furniture != null &&
             northTile.furniture.objectType.Contains("Wall") && southTile.furniture.objectType.Contains("Wall"))
             {
                 furn_go.transform.rotation = Quaternion.Euler(0, 0, 90);
+            }
+            else if (eastTile != null && westTile != null && eastTile.furniture != null && westTile.furniture != null &&
+            eastTile.furniture.objectType.Contains("Wall") && westTile.furniture.objectType.Contains("Wall"))
+            {
+                furn_go.transform.rotation = Quaternion.Euler(0, 0, 0);
             }
         }
 

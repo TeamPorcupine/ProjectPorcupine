@@ -234,24 +234,26 @@ public class Furniture : IXmlSerializable, ISelectable
         }
 
         // We should inform our neighbours that they have a new
-        // neighbour regardless of LinksToNeighbours and objectType.  
-        // Just trigger their OnChangedCallback.        
-        Tile t;
-        int x = tile.X;
-        int y = tile.Y;
-
-        for (int xpos = x - 1; xpos < (x + proto.Width + 1); xpos++)
+        // neighbour regardless of objectType.  
+        // Just trigger their OnChangedCallback. 
+        if (obj.linksToNeighbour == true)
         {
-            for (int ypos = y - 1; ypos < (y + proto.Height + 1); ypos++)
+            Tile t;
+            int x = tile.X;
+            int y = tile.Y;
+
+            for (int xpos = x - 1; xpos < (x + proto.Width + 1); xpos++)
             {
-                t = World.current.GetTileAt(xpos, ypos);
-                if (t != null && t.furniture != null && t.furniture.cbOnChanged != null)
+                for (int ypos = y - 1; ypos < (y + proto.Height + 1); ypos++)
                 {
-                    t.furniture.cbOnChanged(t.furniture);
+                    t = World.current.GetTileAt(xpos, ypos);
+                    if (t != null && t.furniture != null && t.furniture.cbOnChanged != null)
+                    {
+                        t.furniture.cbOnChanged(t.furniture);
+                    }
                 }
             }
         }
-
 
 
         return obj;
@@ -451,7 +453,7 @@ public class Furniture : IXmlSerializable, ISelectable
 
                     break;
                 case "Params":
-                    ReadXmlParams(reader);	// Read in the Param tag
+                    ReadXmlParams(reader);  // Read in the Param tag
                     break;
             }
         }
@@ -591,13 +593,16 @@ public class Furniture : IXmlSerializable, ISelectable
         Debug.Log("Deconstruct");
         int x = tile.X;
         int y = tile.Y;
-        int fwidth = 1; 
-        int fheight = 1; 
+        int fwidth = 1;
+        int fheight = 1;
+        bool linksToNeighbour = false;
         if (tile.furniture != null)
         {
-            fwidth = tile.furniture.Width;
-            fheight = tile.furniture.Height;
-            tile.furniture.CancelJobs();
+            Furniture f = tile.furniture;
+            fwidth = f.Width;
+            fheight = f.Height;
+            linksToNeighbour = f.linksToNeighbour;
+            f.CancelJobs();
         }
         tile.UnplaceFurniture();
 
@@ -611,16 +616,19 @@ public class Furniture : IXmlSerializable, ISelectable
         }
 
         // We should inform our neighbours that they have just lost a
-        // neighbour regardless of LinksToNeighbours and objectType.  
-        // Just trigger their OnChangedCallback.        
-        for (int xpos = x - 1; xpos < (x + fwidth + 1); xpos++)
+        // neighbour regardless of objectType.  
+        // Just trigger their OnChangedCallback. 
+        if (linksToNeighbour == true)
         {
-            for (int ypos = y - 1; ypos < (y + fheight + 1); ypos++)
+            for (int xpos = x - 1; xpos < (x + fwidth + 1); xpos++)
             {
-                Tile t = World.current.GetTileAt(xpos, ypos);
-                if (t != null && t.furniture != null && t.furniture.cbOnChanged != null)
+                for (int ypos = y - 1; ypos < (y + fheight + 1); ypos++)
                 {
-                    t.furniture.cbOnChanged(t.furniture);
+                    Tile t = World.current.GetTileAt(xpos, ypos);
+                    if (t != null && t.furniture != null && t.furniture.cbOnChanged != null)
+                    {
+                        t.furniture.cbOnChanged(t.furniture);
+                    }
                 }
             }
         }
@@ -656,7 +664,7 @@ public class Furniture : IXmlSerializable, ISelectable
 
     public string GetHitPointString()
     {
-        return "18/18";	// TODO: Add a hitpoint system to...well...everything
+        return "18/18"; // TODO: Add a hitpoint system to...well...everything
     }
 
     #endregion
