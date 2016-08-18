@@ -172,8 +172,13 @@ public class WorldController : MonoBehaviour
 
     void CreateEmptyWorld()
     {
+
+        //get world size from settings
+        int width = int.Parse(Settings.getSetting("worldWidth"));
+        int height = int.Parse(Settings.getSetting("worldHeight"));
+
         // Create a world with Empty tiles
-        world = new World(100, 100);
+        world = new World(width, height);
 
         // Center the Camera
         Camera.main.transform.position = new Vector3(world.Width / 2, world.Height / 2, Camera.main.transform.position.z);
