@@ -23,3 +23,5 @@ furn_oxygen_generator=Happigeneraattori
 furn_oxygen_generator_desc=Luo happea astronauteillesi.
 furn_mining_drone_station=Kaivos Robotti Asema
 furn_mining_drone_station_desc=Kaivaa materiaaleja tyhjyydestä.
+furn_power_generator=Sähkö Generaattori
+furn_power_generator_desc=Tuottaa sähköä tyhjyydestä.
