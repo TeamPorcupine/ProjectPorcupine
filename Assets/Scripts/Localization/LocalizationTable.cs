@@ -156,7 +156,7 @@ namespace ProjectPorcupine.Localization
                 switch (fallbackMode)
                 {
                     case FallbackMode.ReturnKey: 
-                        if(additionalValues.Length != 1)
+                        if(additionalValues.Length >= 1)
                         {
                             return key + " " + additionalValues[0];
                         }
