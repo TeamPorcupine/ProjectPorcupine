@@ -8,6 +8,8 @@ using UnityEditor;
 
 public class DialogBoxLoadGame : DialogBoxLoadSaveGame
 {
+	public GameObject dialog;
+
 	public void OkayWasClicked()
 	{
 		string fileName = gameObject.GetComponentInChildren<InputField>().text;
@@ -52,7 +54,7 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
 		base.CloseDialog();
 	}
 
-	public void DeleteWasClicked()
+	public void DeleteFile()
 	{
 		string fileName = gameObject.GetComponentInChildren<InputField>().text;
 
@@ -70,11 +72,22 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
 			return;
 		}
 
+		CloseSureDialog();
 		FileUtil.DeleteFileOrDirectory(filePath);
 		CloseDialog();
 		ShowDialog();
 	}
 
+	public void CloseSureDialog()
+	{
+		dialog.SetActive(false);
+	}
+
+	public void DeleteWasClicked()
+	{
+		
+		dialog.SetActive(true);
+	}
 
 	public void LoadWorld(string filePath)
 	{
