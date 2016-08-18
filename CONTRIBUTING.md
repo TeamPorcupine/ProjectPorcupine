@@ -39,22 +39,22 @@ As a TL;DR on our coding practises, adhere to the following example:
 //descriptive names for variables/methods
 //fields, properties and methods should always specify their scope, aka private/protected/internal/public
 
-interface IInterfaceable { } //Interfaces starting with a captial I
+interface IInterfaceable { } //Interfaces start with an I and should use PascalCasing
 
-class Class //class names Uppercase
+class Class //class names should use PascalCasing
 { // braces on new line ;)
    private int _memberField; //fields start with an underscore and should be private if possible
 
-   public int MemberField { get { return _memberField; } } //Properties should be captialised
+   public int MemberField { get { return _memberField; } } //Properties should use PascalCasing
 
-  // Methods should be capticalised
+  // Methods should use PascalCasing
   // Method parameters should be camelCased
    public void SomeMethod( int functionParameter ) 
    {
       int myLocalVariable = 0; //local variables should also be camelCased
    } 
 
-   public event SomeEvent; //Events should be capitalised as well 
+   public event SomeEvent; //Events should use PascalCasing as well 
 }
 ```
 
