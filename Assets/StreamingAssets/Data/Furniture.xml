@@ -127,6 +127,27 @@
     <PowerGenerator supply="5"/>
     
   </Furniture>
+  
+    <Furniture objectType="Metal Smelter">
+	<Name>Metal Smelter</Name>
+	<Description>Smelts your raw iron into metal.</Description>
+	<MovementCost>1</MovementCost>
+	<Width>3</Width>
+	<Height>3</Height>
+	
+	<BuildingJob jobTime="0"/>
+	
+	<OnUpdate FunctionName="MetalSmelter_UpdateAction" />
+	
+	<Params>
+		<Param name="smelttime" value="0" />
+		<Param name="smelttime_required" value="6" />
+	</Params>
+	
+	<LocalizationCode>furn_metal_smelter</LocalizationCode>
+	<UnlocalizedDescription>furn_metal_smelter_desc</UnlocalizedDescription>
+	
+  </Furniture>
 
 
 </Furnitures>
