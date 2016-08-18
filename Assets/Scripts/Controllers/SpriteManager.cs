@@ -12,7 +12,25 @@ public class SpriteManager : MonoBehaviour
 
     static public SpriteManager current;
 
+    public static Texture2D noRescourceTexture;
+
     Dictionary<string, Sprite> sprites;
+
+    void Awake()
+    {
+        if (noRescourceTexture == null)
+        {
+            //Generate a 32x32 magenta image
+            noRescourceTexture = new Texture2D(32, 32, TextureFormat.ARGB32, false);
+            Color32[] pixels = noRescourceTexture.GetPixels32();
+            for (int i = 0; i < pixels.Length; i++)
+            {
+                pixels[i] = new Color32(255, 0, 255, 255);
+            }
+            noRescourceTexture.SetPixels32(pixels);
+            noRescourceTexture.Apply();
+        }
+    }
 
     // Use this for initialization
     void OnEnable()
@@ -162,14 +180,15 @@ public class SpriteManager : MonoBehaviour
     public Sprite GetSprite(string categoryName, string spriteName)
     {
         //Debug.Log(spriteName);
-
-
+        
         spriteName = categoryName + "/" + spriteName;
 
         if (sprites.ContainsKey(spriteName) == false)
         {
-            //Debug.LogError("No sprite with name: " + spriteName);
-            return null;	// TODO: What if we return a "dummy" sprite, like a purple square?
+            Debug.LogError("No sprite with name: " + spriteName);
+            
+            //Return a magenta image
+            return Sprite.Create(noRescourceTexture, new Rect(Vector2.zero, new Vector3(32, 32)), new Vector2(0.5f, 0.5f), 32);
         }
 
         return sprites[spriteName];
