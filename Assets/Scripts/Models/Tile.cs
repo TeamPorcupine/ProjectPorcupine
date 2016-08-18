@@ -66,7 +66,7 @@ public class Tile :IXmlSerializable, ISelectable
 
     // FIXME: This seems like a terrible way to flag if a job is pending
     // on a tile.  This is going to be prone to errors in set/clear.
-    public Job pendingFurnitureJob;
+    public Job pendingBuildJob;
 
     public int X { get; protected set; }
 
@@ -80,9 +80,10 @@ public class Tile :IXmlSerializable, ISelectable
     {
         get
         {
-
-            if (Type == TileType.Empty)
-                return 0;	// 0 is unwalkable
+            // This prevented the character from walking in empty tiles. It has been diasbled to allow the character to construct floor tiles.
+            // TODO: Permanent solution for handeling when a character can walk in empty tiles is required
+            //if (Type == TileType.Empty)
+            //    return 0;	// 0 is unwalkable
 
             if (furniture == null)
                 return baseTileMovementCost;
@@ -92,7 +93,7 @@ public class Tile :IXmlSerializable, ISelectable
     }
 
     // The function we callback any time our tile's data changes
-    Action<Tile> cbTileChanged;
+    public event Action<Tile> cbTileChanged;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Tile"/> class.
@@ -105,22 +106,6 @@ public class Tile :IXmlSerializable, ISelectable
         this.X = x;
         this.Y = y;
         characters = new List<Character>();
-    }
-
-    /// <summary>
-    /// Register a function to be called back when our tile type changes.
-    /// </summary>
-    public void RegisterTileTypeChangedCallback(Action<Tile> callback)
-    {
-        cbTileChanged += callback;
-    }
-
-    /// <summary>
-    /// Unregister a callback.
-    /// </summary>
-    public void UnregisterTileTypeChangedCallback(Action<Tile> callback)
-    {
-        cbTileChanged -= callback;
     }
 
     public bool UnplaceFurniture()
@@ -215,6 +200,18 @@ public class Tile :IXmlSerializable, ISelectable
         return true;
     }
 
+    // Called when the character has completed the job to change tile type
+    public static void ChangeTileTypeJobComplete(Job theJob)
+    {
+        // FIXME: For now this is hardcoded to build floor
+        theJob.tile.Type = theJob.jobTileType;
+
+        // FIXME: I don't like having to manually and explicitly set
+        // flags that preven conflicts. It's too easy to forget to set/clear them!
+        theJob.tile.pendingBuildJob = null;
+    }
+
+
     // Tells us if two tiles are adjacent.
     public bool IsNeighbour(Tile tile, bool diagOkay = false)
     {
@@ -288,6 +285,10 @@ public class Tile :IXmlSerializable, ISelectable
         // X and Y have already been read/processed
 
         room = World.current.GetRoomFromID(int.Parse(reader.GetAttribute("RoomID")));
+        if (room != null)
+        {
+            room.AssignTile(this);
+        }
 
         Type = (TileType)int.Parse(reader.GetAttribute("Type"));
 
