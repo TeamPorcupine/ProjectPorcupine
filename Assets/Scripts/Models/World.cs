@@ -58,6 +58,7 @@ public class World : IXmlSerializable
     {
         // Creates an empty world.
         SetupWorld(width, height);
+        WorldGenerator.Generate(this);
 
         // Make one character
         CreateCharacter(GetTileAt(Width / 2, Height / 2));
