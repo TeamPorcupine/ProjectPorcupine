@@ -79,9 +79,6 @@ public class BuildModeController : MonoBehaviour
         {
             // Create the Furniture and assign it to the tile
 
-            // FIXME: This instantly builds the furnite:
-            //WorldController.Instance.World.PlaceFurniture( buildModeObjectType, t );
-
             // Can we build the furniture in the selected tile?
             // Run the ValidPlacement function!
 
@@ -91,6 +88,16 @@ public class BuildModeController : MonoBehaviour
                 WorldController.Instance.world.IsFurniturePlacementValid(furnitureType, t) &&
                 t.pendingBuildJob == null)
             {
+                for (int x_off = t.X; x_off < (t.X + WorldController.Instance.world.furniturePrototypes[furnitureType].Width); x_off++)
+                {
+                    for (int y_off = t.Y; y_off < (t.Y + WorldController.Instance.world.furniturePrototypes[furnitureType].Height); y_off++)
+                    {
+                        if (WorldController.Instance.world.GetTileAt(x_off, y_off).pendingBuildJob != null)
+                        {
+                            return;
+                        }
+                    }
+                }
                 // This tile position is valid for this furniture
 
                 // Check if there is existing furniture in this tile. If so delete it.
@@ -140,8 +147,6 @@ public class BuildModeController : MonoBehaviour
                 WorldController.Instance.world.jobQueue.Enqueue(j);
 
             }
-
-
 
         }
         else if (buildMode == BuildMode.FLOOR)
