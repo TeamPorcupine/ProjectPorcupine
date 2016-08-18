@@ -86,7 +86,7 @@ public class BuildModeController : MonoBehaviour
 
             if ( 
                 WorldController.Instance.world.IsFurniturePlacementValid(furnitureType, t) &&
-                BuildJobWouldOverlapExistingBuildJob(t,furnitureType) == false)
+                DoesBuildJobOverlapExistingBuildJob(t,furnitureType) == false)
             {
                 // This tile position is valid for this furniture
 
@@ -193,7 +193,7 @@ public class BuildModeController : MonoBehaviour
 
     }
 
-    public bool BuildJobWouldOverlapExistingBuildJob(Tile t, string furnitureType)
+    public bool DoesBuildJobOverlapExistingBuildJob(Tile t, string furnitureType)
     {
         for (int x_off = t.X; x_off < (t.X + WorldController.Instance.world.furniturePrototypes[furnitureType].Width); x_off++)
         {
