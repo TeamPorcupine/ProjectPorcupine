@@ -335,6 +335,7 @@ public class Character : IXmlSerializable, ISelectable
     {
         NextTile = DestTile = CurrTile;
         World.current.jobQueue.Enqueue(myJob);
+        myJob.cbJobStopped -= OnJobStopped;
         myJob = null;
     }
 

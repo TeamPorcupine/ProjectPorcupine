@@ -145,23 +145,44 @@ public class InventoryManager
     /// <param name="t">T.</param>
     /// <param name="desiredAmount">Desired amount. If no stack has enough, it instead returns the largest</param>
     public Inventory GetClosestInventoryOfType(string objectType, Tile t, int desiredAmount, bool canTakeFromStockpile)
-    { 
+    {
         Path_AStar path = GetPathToClosestInventoryOfType(objectType, t, desiredAmount, canTakeFromStockpile);
         return path.EndTile().inventory;
     }
 
     public Path_AStar GetPathToClosestInventoryOfType(string objectType, Tile t, int desiredAmount, bool canTakeFromStockpile)
-    { 
-        if (inventories.ContainsKey(objectType) == false 
-            || (!canTakeFromStockpile && inventories[objectType].TrueForAll ( i => i.tile != null && i.tile.furniture != null && i.tile.furniture.IsStockpile()))) //we can also avoid going through the Astar construction if we know that all available inventories are stockpiles and we are not allowed to touch those
+    {
+        // If the inventories doesn't contain the objectType, we know that no
+        // stacks of this type exists and can return.
+        if (inventories.ContainsKey(objectType) == false)
         {
-            //Debug.LogError("GetClosestInventoryOfType -- no items of desired type.");
             return null;
         }
 
+        // We know that there is a list for objectType, we still need to test if
+        // the list contains anything
+        if (inventories[objectType].Count == 0)
+        {
+            return null;
+        }
+
+        // We can also avoid going through the Astar construction if we know
+        // that all available inventories are stockpiles and we are not allowed
+        // to touch those
+        if (!canTakeFromStockpile && inventories[objectType].TrueForAll(i => i.tile != null && i.tile.furniture != null && i.tile.furniture.IsStockpile()))
+        {
+            return null;
+        }
+
+        // Test that there is at least one stack on the floor, otherwise the
+        // search below might cause a full map search for nothing.
+        if (inventories[objectType].Find(i => i.tile != null) == null)
+        {
+            return null;
+        }
+
+        // We know the objects are out there, now find the closest.
         Path_AStar path = new Path_AStar(World.current, t, null, objectType, desiredAmount, canTakeFromStockpile);
-
         return path;
-
     }
 }
