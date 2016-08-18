@@ -3,14 +3,14 @@ using System.Collections;
 
 public class WorldGenerator {
 
-    public static int startAreaSize = 3;
+    public const int startAreaSize = 3;
 
-    public static TileType asteroid_floor_type = TileType.Floor;
-    public static float asteroid_noise_scale = 0.2f;
-    public static float asteroid_noise_threshhold = 0.75f;
-    public static float asteroid_ressource_chance = 0.85f;
-    public static int asteroid_ressource_min = 5;
-    public static int asteroid_ressource_max = 15;
+    public const TileType asteroid_floor_type = TileType.Floor;
+    public const float asteroid_noise_scale = 0.2f;
+    public const float asteroid_noise_threshhold = 0.75f;
+    public const float asteroid_ressource_chance = 0.85f;
+    public const int asteroid_ressource_min = 5;
+    public const int asteroid_ressource_max = 15;
 
     public static void Generate(World world, int seed){
         Random.InitState(seed);
