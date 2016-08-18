@@ -7,6 +7,7 @@ public class DialogListItem : MonoBehaviour, IPointerClickHandler
 {
 
     public InputField inputField;
+    public GameObject OkayButton; 
 
     #region IPointerClickHandler implementation
 
@@ -16,7 +17,15 @@ public class DialogListItem : MonoBehaviour, IPointerClickHandler
         // copy it into a target field.
 
         inputField.text = transform.GetComponentInChildren<Text>().text;
+
+        if (eventData.clickCount > 1)
+        {
+            OkayButton = GameObject.FindGameObjectWithTag("OkayButton");
+            Button ok = OkayButton.GetComponent<Button>();
+            ok.onClick.Invoke();
+        }
     }
+    
 
     #endregion
 }

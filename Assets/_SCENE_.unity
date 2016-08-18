@@ -585,7 +585,7 @@ GameObject:
   - 114: {fileID: 241437493}
   m_Layer: 5
   m_Name: Button - Okay
-  m_TagString: Untagged
+  m_TagString: OkayButton
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1488,7 +1488,7 @@ GameObject:
   - 114: {fileID: 624592620}
   m_Layer: 5
   m_Name: Button - Okay
-  m_TagString: Untagged
+  m_TagString: OkayButton
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
