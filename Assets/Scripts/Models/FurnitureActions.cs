@@ -11,7 +11,7 @@ public class FurnitureActions
 
     static FurnitureActions _Instance;
 
-    //Script myLuaScript;
+
 
     public FurnitureActions(string rawLuaCode)
     {
@@ -21,7 +21,7 @@ public class FurnitureActions
 
         _Instance = this;
 
-        //myLuaScript = new Script();
+
 
         // If we want to be able to instantiate a new object of a class
         //   i.e. by doing    SomeClass.__new()
@@ -80,7 +80,7 @@ public class FurnitureActions
             }
             Script My;
 
-            DynValue result = LuaController.current.Call(func, furn, deltaTime);//_Instance.myLuaScript.Call(func, furn, deltaTime);
+            DynValue result = LuaController.current.Call(func, furn, deltaTime);
 
             if (result.Type == DataType.String)
             {
@@ -94,7 +94,7 @@ public class FurnitureActions
         //Debug.Log("Calling function: " + functionName);
         object func = LuaController.current.getGlobal(functionName);
 
-        return LuaController.current.Call(func, args);//_Instance.myLuaScript.Call(func, args);
+        return LuaController.current.Call(func, args);
     }
 
     public static void JobComplete_FurnitureBuilding(Job theJob)
