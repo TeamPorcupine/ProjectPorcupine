@@ -11,7 +11,7 @@ public class JobQueue
 {
     Queue<Job> jobQueue;
 
-    Action<Job> cbJobCreated;
+    public event Action<Job> cbJobCreated;
 
     public JobQueue()
     {
@@ -44,17 +44,7 @@ public class JobQueue
 
         return jobQueue.Dequeue();
     }
-
-    public void RegisterJobCreationCallback(Action<Job> cb)
-    {
-        cbJobCreated += cb;
-    }
-
-    public void UnregisterJobCreationCallback(Action<Job> cb)
-    {
-        cbJobCreated -= cb;
-    }
-
+    
     public void Remove(Job j)
     {
         // TODO: Check docs to see if there's a less memory/swappy solution
