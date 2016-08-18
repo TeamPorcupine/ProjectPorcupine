@@ -39,7 +39,7 @@ public class MouseOverRoomIndexText : MonoBehaviour
 
         string roomID = "N/A";
 
-        if (t.room != null)
+        if (t != null && t.room != null)
         {
             roomID = t.room.ID.ToString();
         }
