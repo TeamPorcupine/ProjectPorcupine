@@ -89,7 +89,7 @@ public class WorldController : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Plus) || Input.GetKeyDown(KeyCode.KeypadPlus))
         {
-            if (currentTimeScalePosition == possibleTimeScales.Length)
+            if (currentTimeScalePosition == possibleTimeScales.Length - 1)
             {
                 // We are on the top of possibleTimeScales so just bail out.
                 return;
