@@ -54,7 +54,7 @@ public class TileSpriteController : MonoBehaviour
 
         // Register our callback so that our GameObject gets updated whenever
         // the tile's type changes.
-        world.RegisterTileChanged(OnTileChanged);
+        world.cbTileChanged += OnTileChanged;
     }
 
     // THIS IS AN EXAMPLE -- NOT CURRENTLY USED (and probably out of date)
@@ -72,7 +72,7 @@ public class TileSpriteController : MonoBehaviour
             tileGameObjectMap.Remove(tile_data);
 
             // Unregister the callback!
-            tile_data.UnregisterTileTypeChangedCallback(OnTileChanged);
+            tile_data.cbTileChanged -= OnTileChanged;
 
             // Destroy the visual GameObject
             Destroy(tile_go);
