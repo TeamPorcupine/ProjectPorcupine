@@ -310,9 +310,9 @@ public class MouseController : MonoBehaviour
             Vector3 diff = lastFramePosition - currFramePosition;
             Camera.main.transform.Translate(diff);
 
-			if (Input.GetMouseButton (1)) {
-				isDragging = false;
-			}
+            if (Input.GetMouseButton (1)) {
+                isDragging = false;
+            }
         }
 
         Camera.main.orthographicSize -= Camera.main.orthographicSize * Input.GetAxis("Mouse ScrollWheel");
