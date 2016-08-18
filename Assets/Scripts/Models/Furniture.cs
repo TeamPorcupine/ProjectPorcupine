@@ -10,8 +10,6 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
-using MoonSharp;
-using MoonSharp.Interpreter.Interop;
 
 
 // InstalledObjects are things like walls, doors, and furniture (e.g. a sofa)
@@ -362,15 +360,6 @@ public class Furniture : IXmlSerializable, ISelectable
         return true;
     }
 
-    [MoonSharpVisible(true)]
-    private void UpdateOnChanged(Furniture furn)
-    {
-        if (cbOnChanged != null)
-        {
-            cbOnChanged(furn);
-        }
-    }
-    
     public XmlSchema GetSchema()
     {
         return null;
