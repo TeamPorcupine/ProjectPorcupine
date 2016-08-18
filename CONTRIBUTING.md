@@ -28,9 +28,35 @@ If you would like to contribute to this project by modifying/adding to the progr
 
 ## Style Guidelines
 
-We have standardized on Microsoft's [C# Coding Conventions](https://msdn.microsoft.com/en-us/library/ff926074.aspx) and [General Naming Conventions](https://msdn.microsoft.com/en-us/library/ms229045(v=vs.110).aspx), with a few exceptions.
+We have standardized on Microsoft's [C# Coding Conventions](https://msdn.microsoft.com/en-us/library/ff926074.aspx) and [General Naming Conventions](https://msdn.microsoft.com/en-us/library/ms229045(v=vs.110).aspx), with the following exception:
 
 * Avoid using 'var', even when the type would be clear from context. Verbose typing is best typing.
+
+As a TL;DR on our coding practises, adhere to the following example:
+
+```c#
+//camelCasing everywhere
+//descriptive names for variables/methods
+//fields, properties and methods should always specify their scope, aka private/protected/internal/public
+
+interface IInterfaceable { } //Interfaces starting with a captial I
+
+class Class //class names Uppercase
+{ // braces on new line ;)
+   private int _memberField; //fields start with an underscore and should be private if possible
+
+   public int MemberField { get { return _memberField; } } //Properties should be captialised
+
+  // Methods should be capticalised
+  // Method parameters should be camelCased
+   public void SomeMethod( int functionParameter ) 
+   {
+      int myLocalVariable = 0; //local variables should also be camelCased
+   } 
+
+   public event SomeEvent; //Events should be capitalised as well 
+}
+```
 
 Additionally, for the sake of simplicity, we are standardizing on what should be Microsoft Visual Studio's default code formatting rules. If you are using MonoDevelop (as many of us are), please go to your preferences and set the C# source code formatting rules to the MVS setting:  
 
