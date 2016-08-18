@@ -8,12 +8,35 @@ using UnityEditor;
 
 public class DialogBoxLoadGame : DialogBoxLoadSaveGame
 {
+	
 	public GameObject dialog;
+	GameObject go;
+	public bool pressedDelete;
+	Component fileItem;
+
+	void Update()
+	{
+		if (pressedDelete)
+		{
+			SetButtonLocation(fileItem);
+		}
+	}
+
+	public void SetFileItem(Component item)
+	{
+		fileItem = item;
+	}
+
+	public void SetButtonLocation(Component item)
+	{
+		GameObject go = GameObject.FindGameObjectWithTag("DeleteButton");
+		go.transform.position = new Vector3(item.transform.position.x + 110f, item.transform.position.y - 8f);
+	}
 
 	public void OkayWasClicked()
 	{
+		
 		string fileName = gameObject.GetComponentInChildren<InputField>().text;
-
 		// TODO: Is the filename valid?  I.E. we may want to ban path-delimiters (/ \ or :) and 
 		// maybe periods?      ../../some_important_file
 
@@ -51,6 +74,7 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
 	{
 		GameObject go = GameObject.FindGameObjectWithTag("DeleteButton");
 		go.GetComponent<Image>().color = new Color(255, 255, 255, 0);
+		pressedDelete=false;
 		base.CloseDialog();
 	}
 

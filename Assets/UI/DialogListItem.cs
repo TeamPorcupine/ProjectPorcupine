@@ -15,11 +15,16 @@ public class DialogListItem : MonoBehaviour, IPointerClickHandler
 		// Our job is to take our text label and 
 		// copy it into a target field.
 
+
 		inputField.text = fileName;
 		GameObject go = GameObject.FindGameObjectWithTag("DeleteButton");
 		go.GetComponent<Image>().color = new Color(255, 255, 255, 255);
-		go.transform.position = new Vector3(transform.GetComponentInChildren<Text>().transform.position.x + 110f, transform.GetComponentInChildren<Text>().transform.position.y - 8f);
+		Component text = transform.GetComponentInChildren<Text>();
+		GetComponentInParent<DialogBoxLoadGame>().pressedDelete = true;
+		GetComponentInParent<DialogBoxLoadGame>().SetFileItem(text);
 	}
 
 	#endregion
+
+
 }

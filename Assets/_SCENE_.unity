@@ -2071,6 +2071,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 1742146398}
+  - {fileID: 1633679131}
   m_Father: {fileID: 800851526}
   m_RootOrder: 4
   m_AnchorMin: {x: 0, y: 0}
@@ -2884,7 +2885,6 @@ RectTransform:
   - {fileID: 783756917}
   - {fileID: 625694398}
   - {fileID: 993537166}
-  - {fileID: 1633679131}
   m_Father: {fileID: 1011199844}
   m_RootOrder: 0
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -3993,6 +3993,7 @@ MonoBehaviour:
   fileListItemPrefab: {fileID: 117544, guid: 25d6a031fb3cd9840938a16729f65ae6, type: 2}
   fileList: {fileID: 1742146398}
   dialog: {fileID: 1859189552}
+  pressedDelete: 0
 --- !u!114 &1011199846
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6034,11 +6035,11 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
-  m_Father: {fileID: 800851526}
-  m_RootOrder: 6
+  m_Father: {fileID: 625694398}
+  m_RootOrder: 1
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -4, y: 4}
+  m_AnchoredPosition: {x: 17.349976, y: -29.99997}
   m_SizeDelta: {x: 15, y: 15}
   m_Pivot: {x: 1, y: 0}
 --- !u!114 &1633679132
