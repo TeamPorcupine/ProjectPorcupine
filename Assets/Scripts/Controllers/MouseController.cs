@@ -330,7 +330,7 @@ public class MouseController : MonoBehaviour
 
         SpriteRenderer sr = go.AddComponent<SpriteRenderer>();
         sr.sortingLayerName = "Jobs";
-        sr.sprite = fsc.GetSpriteForFurniture(furnitureType + (World.current.furniturePrototypes[furnitureType].linksToNeighbour ? "_" : ""));
+        sr.sprite = fsc.GetSpriteForFurniture(furnitureType);
 
         if (WorldController.Instance.world.IsFurniturePlacementValid(furnitureType, t))
         {
