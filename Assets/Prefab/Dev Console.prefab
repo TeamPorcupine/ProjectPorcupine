@@ -91,6 +91,7 @@ GameObject:
   - 224: {fileID: 224000010034733620}
   - 222: {fileID: 222000014079442484}
   - 114: {fileID: 114000013857520300}
+  - 114: {fileID: 114000012172940542}
   m_Layer: 5
   m_Name: Title
   m_TagString: Untagged
@@ -482,6 +483,21 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: 
+--- !u!114 &114000012172940542
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000010925808658}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f3a8d4feb5d53f4f967aac517615a07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  formatValues: []
+  localizeInStart: 1
+  text: {fileID: 0}
+  defaultText: 
 --- !u!114 &114000012223064900
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -817,7 +833,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Console
+  m_Text: 'console_title
 
 '
 --- !u!114 &114000013892623010

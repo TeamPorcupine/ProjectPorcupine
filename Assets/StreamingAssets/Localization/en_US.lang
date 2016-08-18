@@ -24,3 +24,4 @@ furn_oxygen_generator_desc=Generating oxygen for your astronauts.
 furn_mining_drone_station=Mining Drone
 furn_mining_drone_station_desc=Mining materials out of nothing.
 console_input=Type a command
+console_title:Console
