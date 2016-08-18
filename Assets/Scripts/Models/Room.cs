@@ -95,9 +95,8 @@ public class Room : IXmlSerializable
             return;
         }
 
-        List<string> gasses = this.GetGasNamesAsList();
-        gasses.Union(otherRoom.GetGasNamesAsList());
-
+        List<string> gasses = this.GetGasNames().ToList();
+        gasses = gasses.Union(otherRoom.GetGasNames().ToList()).ToList();;
 
         foreach (string gas in gasses)
         {
@@ -165,11 +164,6 @@ public class Room : IXmlSerializable
     public string[] GetGasNames()
     {
         return atmosphericGasses.Keys.ToArray();
-    }
-
-    public List<string> GetGasNamesAsList()
-    {
-        return atmosphericGasses.Keys;
     }
 
 
