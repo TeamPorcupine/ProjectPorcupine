@@ -22,7 +22,7 @@ public class InventorySpriteController : MonoBehaviour
 
         // Register our callback so that our GameObject gets updated whenever
         // the tile's type changes.
-        world.RegisterInventoryCreated(OnInventoryCreated);
+        world.cbInventoryCreated += OnInventoryCreated;
 
         // Check for pre-existing inventory, which won't do the callback.
         foreach (string objectType in world.inventoryManager.inventories.Keys)
@@ -76,7 +76,7 @@ public class InventorySpriteController : MonoBehaviour
         // Register our callback so that our GameObject gets updated whenever
         // the object's into changes.
         // FIXME: Add on changed callbacks
-        inv.RegisterChangedCallback(OnInventoryChanged);
+        inv.cbInventoryChanged += OnInventoryChanged;
 
     }
 
@@ -107,7 +107,7 @@ public class InventorySpriteController : MonoBehaviour
             // This stack has gone to zero, so remove the sprite!
             Destroy(inv_go);
             inventoryGameObjectMap.Remove(inv);
-            inv.UnregisterChangedCallback(OnInventoryChanged);
+            inv.cbInventoryChanged -= OnInventoryChanged;
         }
 
     }

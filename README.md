@@ -13,7 +13,7 @@ Project Porcupine was created to serve two purposes:
 2. To provide a basic skeleton for any game that requires a
   tile-based map with self-governing agents (i.e. characters)
   as well as highly customizable objects (i.e. XML/Lua defined
-  furniture.)  To this end, we would be making a prorgram themed as
+  furniture.)  To this end, we would be making a program themed as
   a starbase-construction game -- though there's no reason that 
   someone couldn't produce something with a wildly different theme
   or purpose (including not being a base-building game at all).
@@ -48,7 +48,7 @@ are licensed under the MIT License and can be found here:
 
 ## Contributing
 
-Please check the CONTRIBUTION.md file for contribution instructions and guidelines.
+Please check the [CONTRIBUTING.md](CONTRIBUTING.md) file for contribution instructions and guidelines.
 
 ## Contact
 

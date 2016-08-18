@@ -35,6 +35,12 @@ public class Job
         protected set;
     }
 
+    public TileType jobTileType
+    {
+        get;
+        protected set;
+    }
+
     public Furniture furniturePrototype;
 
     public Furniture furniture;
@@ -42,12 +48,12 @@ public class Job
 
     public bool acceptsAnyInventoryItem = false;
 
-    Action<Job> cbJobCompleted;
+    public event Action<Job> cbJobCompleted;
     // We have finished the work cycle and so things should probably get built or whatever.
     List<string> cbJobCompletedLua;
-    Action<Job> cbJobStopped;
+    public event Action<Job> cbJobStopped;
     // The job has been stopped, either because it's non-repeating or was cancelled.
-    Action<Job> cbJobWorked;
+    public event Action<Job> cbJobWorked;
     // Gets called each time some work is performed -- maybe update the UI?
     List<string> cbJobWorkedLua;
 
@@ -59,6 +65,27 @@ public class Job
     {
         this.tile = tile;
         this.jobObjectType = jobObjectType;
+        this.cbJobCompleted += cbJobComplete;
+        this.jobTimeRequired = this.jobTime = jobTime;
+        this.jobRepeats = jobRepeats;
+
+        cbJobWorkedLua = new List<string>();
+        cbJobCompletedLua = new List<string>();
+
+        this.inventoryRequirements = new Dictionary<string, Inventory>();
+        if (inventoryRequirements != null)
+        {
+            foreach (Inventory inv in inventoryRequirements)
+            {
+                this.inventoryRequirements[inv.objectType] = inv.Clone();
+            }
+        }
+    }
+
+    public Job(Tile tile, TileType jobTileType, Action<Job> cbJobComplete, float jobTime, Inventory[] inventoryRequirements, bool jobRepeats = false)
+    {
+        this.tile = tile;
+        this.jobTileType = jobTileType;
         this.cbJobCompleted += cbJobComplete;
         this.jobTimeRequired = this.jobTime = jobTime;
         this.jobRepeats = jobRepeats;
@@ -106,17 +133,7 @@ public class Job
     {
         return new Job(this);
     }
-
-    public void RegisterJobCompletedCallback(Action<Job> cb)
-    {
-        cbJobCompleted += cb;
-    }
-
-    public void UnregisterJobCompletedCallback(Action<Job> cb)
-    {
-        cbJobCompleted -= cb;
-    }
-
+    
     public void RegisterJobCompletedCallback(string cb)
     {
         cbJobCompletedLua.Add(cb);
@@ -126,28 +143,7 @@ public class Job
     {
         cbJobCompletedLua.Remove(cb);
     }
-
-
-    public void RegisterJobStoppedCallback(Action<Job> cb)
-    {
-        cbJobStopped += cb;
-    }
-
-    public void UnregisterJobStoppedCallback(Action<Job> cb)
-    {
-        cbJobStopped -= cb;
-    }
-
-    public void RegisterJobWorkedCallback(Action<Job> cb)
-    {
-        cbJobWorked += cb;
-    }
-
-    public void UnregisterJobWorkedCallback(Action<Job> cb)
-    {
-        cbJobWorked -= cb;
-    }
-
+    
     public void RegisterJobWorkedCallback(string cb)
     {
         cbJobWorkedLua.Add(cb);
