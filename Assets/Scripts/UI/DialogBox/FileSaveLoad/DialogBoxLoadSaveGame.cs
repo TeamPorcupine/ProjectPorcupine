@@ -10,23 +10,37 @@ using System.Linq;
 //														DialogBoxLoadGame
 //
 
-
-
 public class DialogBoxLoadSaveGame : DialogBox
 {
 
     public GameObject fileListItemPrefab;
     public Transform fileList;
 
+    public static readonly Color secondaryColor = new Color(0.9f, 0.9f,0.9f);
+
+    /// <summary>
+    /// If directory doesn't exist EnsureDirectoryExists will create one.
+    /// </summary>
+    /// <param name="directoryPath">Full directory path.</param>
+    public void EnsureDirectoryExists(string directoryPath)
+    {
+        if (Directory.Exists(directoryPath) == false)
+        {
+            Debug.LogWarning("Directory: " + directoryPath + " doesn't exist - creating.");
+            Directory.CreateDirectory(directoryPath);
+        }
+    }
+
     public override void ShowDialog()
     {
         base.ShowDialog();
 
         // Get list of files in save location
+        string saveDirectoryPath = WorldController.Instance.FileSaveBasePath();
 
-        string directoryPath = WorldController.Instance.FileSaveBasePath();
+        EnsureDirectoryExists(saveDirectoryPath);
 
-        DirectoryInfo saveDir = new DirectoryInfo(directoryPath);
+        DirectoryInfo saveDir = new DirectoryInfo(saveDirectoryPath);
 
 
         FileInfo[] saveGames = saveDir.GetFiles().OrderByDescending(f => f.CreationTime).ToArray();
@@ -37,8 +51,9 @@ public class DialogBoxLoadSaveGame : DialogBox
 
         // Build file list by instantiating fileListItemPrefab
 
-        foreach (FileInfo file in saveGames)
+        for (int i = 0; i < saveGames.Length; i++)
         {
+            FileInfo file = saveGames[i];
             GameObject go = (GameObject)GameObject.Instantiate(fileListItemPrefab);
 
             // Make sure this gameobject is a child of our list box
@@ -48,11 +63,16 @@ public class DialogBoxLoadSaveGame : DialogBox
             // Path.GetFileName(file) returns "SomeFileName.sav"
             // Path.GetFileNameWithoutExtension(file) returns "SomeFileName"
 
-            go.GetComponentInChildren<Text>().text = Path.GetFileNameWithoutExtension(file.FullName);
+            string fileName = Path.GetFileNameWithoutExtension(file.FullName);
 
-            go.GetComponent<DialogListItem>().inputField = inputField;
+            go.GetComponentInChildren<Text>().text = string.Format("{0}\n<size=11><i>{1}</i></size>", fileName, file.CreationTime);
+
+            DialogListItem listItem = go.GetComponent<DialogListItem>();
+            listItem.fileName = fileName;
+            listItem.inputField = inputField;
+
+            go.GetComponent<Image>().color = (i % 2 == 0 ? Color.white : secondaryColor);
         }
-
     }
 
     public override void CloseDialog()
@@ -76,5 +96,4 @@ public class DialogBoxLoadSaveGame : DialogBox
 
         base.CloseDialog();
     }
-
 }
