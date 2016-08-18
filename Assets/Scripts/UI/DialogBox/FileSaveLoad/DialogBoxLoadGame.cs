@@ -3,7 +3,6 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Xml.Serialization;
 using System.IO;
-using UnityEditor;
 
 
 public class DialogBoxLoadGame : DialogBoxLoadSaveGame
@@ -43,37 +42,6 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
         CloseDialog();
 
         LoadWorld(filePath);
-    }
-
-    public void DeleteWasClicked()
-    {
-        string fileName = gameObject.GetComponentInChildren<InputField>().text;
-
-        string saveDirectoryPath = WorldController.Instance.FileSaveBasePath();
-
-        EnsureDirectoryExists(saveDirectoryPath);
-
-        string filePath = System.IO.Path.Combine(saveDirectoryPath, fileName + ".sav");
-
-        if (File.Exists(filePath) == false)
-        {
-
-            Debug.LogError("File doesn't exist.  What?");
-            CloseDialog();
-            return;
-        }
-
-        FileUtil.DeleteFileOrDirectory(filePath);
-        CloseDialog();
-        ShowDialog();
-    }
-
-
-    public override void CloseDialog()
-    {
-        GameObject go = GameObject.FindGameObjectWithTag("DeleteButton");
-        go.GetComponent<Image>().color= new Color(255,255,255,0);
-        base.CloseDialog();
     }
 
     public void LoadWorld(string filePath)
