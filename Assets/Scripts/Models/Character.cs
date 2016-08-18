@@ -148,8 +148,9 @@ public class Character : IXmlSerializable, ISelectable
         // NOTE: We might not be pathing to it right away (due to 
         // requiring materials), but we still need to verify that the
         // final location can be reached.
-
+        Profiler.BeginSample("PathGeneration");
         pathAStar = new Path_AStar(World.current, CurrTile, DestTile);	// This will calculate a path from curr to dest.
+        Profiler.EndSample();
         if (pathAStar.Length() == 0)
         {
             Debug.LogError("Path_AStar returned no path to target job tile!");
@@ -334,6 +335,7 @@ public class Character : IXmlSerializable, ISelectable
     {
         NextTile = DestTile = CurrTile;
         World.current.jobQueue.Enqueue(myJob);
+        myJob.cbJobStopped -= OnJobStopped;
         myJob = null;
     }
 
@@ -374,7 +376,7 @@ public class Character : IXmlSerializable, ISelectable
 
             if (NextTile == CurrTile)
             {
-                Debug.LogError("Update_DoMovement - nextTile is currTile?");
+                //Debug.LogError("Update_DoMovement - nextTile is currTile?");
             }
         }
 

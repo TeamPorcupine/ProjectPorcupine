@@ -39,7 +39,7 @@ public class MouseOverFurnitureTypeText : MonoBehaviour
 
         string s = "NULL";
 
-        if (t.furniture != null)
+        if (t != null && t.furniture != null)
         {
             s = t.furniture.Name;
         }

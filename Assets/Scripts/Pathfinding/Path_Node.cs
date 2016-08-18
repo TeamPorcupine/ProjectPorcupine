@@ -14,5 +14,4 @@ public class Path_Node<T>
     public Path_Edge<T>[] edges;
     // Nodes leading OUT from this node.
 
-
 }
