@@ -1,4 +1,4 @@
-﻿//=======================================================================
+//=======================================================================
 // Copyright Martin "quill18" Glaude 2015-2016.
 //		http://quill18.com
 //=======================================================================
@@ -104,7 +104,7 @@ public class Character : IXmlSerializable, ISelectable
     float speed = 5f;
 
     /// A callback to trigger when character information changes (notably, the position)
-    Action<Character> cbCharacterChanged;
+    public event Action<Character> cbCharacterChanged;
 
     /// Our job, if any.
     Job myJob;
@@ -133,7 +133,7 @@ public class Character : IXmlSerializable, ISelectable
         {
             myJob = new Job(CurrTile,
                 "Waiting",
-                (j) => Debug.Log("Finished waiting for available Jobs"),
+                null,
                 UnityEngine.Random.Range(0.1f, 0.5f),
                 null,
                 false);
@@ -142,14 +142,15 @@ public class Character : IXmlSerializable, ISelectable
         // Get our destination from the job
         DestTile = myJob.tile;
 
-        myJob.RegisterJobStoppedCallback(OnJobStopped);
+        myJob.cbJobStopped += OnJobStopped;
 
         // Immediately check to see if the job tile is reachable.
         // NOTE: We might not be pathing to it right away (due to 
         // requiring materials), but we still need to verify that the
         // final location can be reached.
-
+        Profiler.BeginSample("PathGeneration");
         pathAStar = new Path_AStar(World.current, CurrTile, DestTile);	// This will calculate a path from curr to dest.
+        Profiler.EndSample();
         if (pathAStar.Length() == 0)
         {
             Debug.LogError("Path_AStar returned no path to target job tile!");
@@ -265,7 +266,7 @@ public class Character : IXmlSerializable, ISelectable
                 }
 
                 // Any chance we already have a path that leads to the items we want?
-                if (pathAStar != null && pathAStar.EndTile() != null && pathAStar.EndTile().inventory != null && pathAStar.EndTile().inventory.objectType == desired.objectType)
+                if (pathAStar != null && pathAStar.EndTile() != null && pathAStar.EndTile().inventory != null && (pathAStar.EndTile().furniture != null && !(myJob.canTakeFromStockpile == false && pathAStar.EndTile().furniture.IsStockpile() == true)) && pathAStar.EndTile().inventory.objectType == desired.objectType)
                 {
                     // We are already moving towards a tile that contains what we want!
                     // so....do nothing?
@@ -334,6 +335,7 @@ public class Character : IXmlSerializable, ISelectable
     {
         NextTile = DestTile = CurrTile;
         World.current.jobQueue.Enqueue(myJob);
+        myJob.cbJobStopped -= OnJobStopped;
         myJob = null;
     }
 
@@ -374,7 +376,7 @@ public class Character : IXmlSerializable, ISelectable
 
             if (NextTile == CurrTile)
             {
-                Debug.LogError("Update_DoMovement - nextTile is currTile?");
+                //Debug.LogError("Update_DoMovement - nextTile is currTile?");
             }
         }
 
@@ -446,22 +448,12 @@ public class Character : IXmlSerializable, ISelectable
             cbCharacterChanged(this);
 
     }
-
-    public void RegisterOnChangedCallback(Action<Character> cb)
-    {
-        cbCharacterChanged += cb;
-    }
-
-    public void UnregisterOnChangedCallback(Action<Character> cb)
-    {
-        cbCharacterChanged -= cb;
-    }
-
+    
     void OnJobStopped(Job j)
     {
         // Job completed (if non-repeating) or was cancelled.
 
-        j.UnregisterJobStoppedCallback(OnJobStopped);
+        j.cbJobStopped -= OnJobStopped;
 
         if (j != myJob)
         {
