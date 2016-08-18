@@ -1,4 +1,4 @@
-﻿//=======================================================================
+//=======================================================================
 // Copyright Martin "quill18" Glaude 2015-2016.
 //		http://quill18.com
 //=======================================================================
@@ -104,7 +104,7 @@ public class Character : IXmlSerializable, ISelectable
     float speed = 5f;
 
     /// A callback to trigger when character information changes (notably, the position)
-    Action<Character> cbCharacterChanged;
+    public event Action<Character> cbCharacterChanged;
 
     /// Our job, if any.
     Job myJob;
@@ -142,7 +142,7 @@ public class Character : IXmlSerializable, ISelectable
         // Get our destination from the job
         DestTile = myJob.tile;
 
-        myJob.RegisterJobStoppedCallback(OnJobStopped);
+        myJob.cbJobStopped += OnJobStopped;
 
         // Immediately check to see if the job tile is reachable.
         // NOTE: We might not be pathing to it right away (due to 
@@ -265,7 +265,7 @@ public class Character : IXmlSerializable, ISelectable
                 }
 
                 // Any chance we already have a path that leads to the items we want?
-                if (pathAStar != null && pathAStar.EndTile() != null && pathAStar.EndTile().inventory != null && pathAStar.EndTile().inventory.objectType == desired.objectType)
+                if (pathAStar != null && pathAStar.EndTile() != null && pathAStar.EndTile().inventory != null && (pathAStar.EndTile().furniture != null && !(myJob.canTakeFromStockpile == false && pathAStar.EndTile().furniture.IsStockpile() == true)) && pathAStar.EndTile().inventory.objectType == desired.objectType)
                 {
                     // We are already moving towards a tile that contains what we want!
                     // so....do nothing?
@@ -446,22 +446,12 @@ public class Character : IXmlSerializable, ISelectable
             cbCharacterChanged(this);
 
     }
-
-    public void RegisterOnChangedCallback(Action<Character> cb)
-    {
-        cbCharacterChanged += cb;
-    }
-
-    public void UnregisterOnChangedCallback(Action<Character> cb)
-    {
-        cbCharacterChanged -= cb;
-    }
-
+    
     void OnJobStopped(Job j)
     {
         // Job completed (if non-repeating) or was cancelled.
 
-        j.UnregisterJobStoppedCallback(OnJobStopped);
+        j.cbJobStopped -= OnJobStopped;
 
         if (j != myJob)
         {
