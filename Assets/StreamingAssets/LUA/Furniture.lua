@@ -126,10 +126,8 @@ function Stockpile_UpdateAction( furniture, deltaTime )
 	itemsDesired = {}
 
 	if( furniture.tile.inventory == nil ) then
-		--Debug.Log("Creating job for new stack.");
 		itemsDesired = Stockpile_GetItemsFromFilter()
 	else
-		--Debug.Log("Creating job for existing stack.");
 		desInv = furniture.tile.inventory.Clone()
 		desInv.maxStackSize = desInv.maxStackSize - desInv.stackSize
 		desInv.stackSize = 0
@@ -158,7 +156,6 @@ function Stockpile_JobWorked(j)
 	j.CancelJob()
 
 	-- TODO: Change this when we figure out what we're doing for the all/any pickup job.
-	--values = j.GetInventoryRequirementValues();
 	for k, inv in pairs(j.inventoryRequirements) do
 		if(inv.stackSize > 0) then
 			World.current.inventoryManager.PlaceInventory(j.tile, inv)
@@ -170,7 +167,7 @@ end
 
 
 function MiningDroneStation_UpdateAction( furniture, deltaTime )
-	
+
 	spawnSpot = furniture.GetSpawnSpotTile()
 
 	if( furniture.JobCount() > 0 ) then

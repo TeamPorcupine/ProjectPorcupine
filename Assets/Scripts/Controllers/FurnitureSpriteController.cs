@@ -37,7 +37,6 @@ public class FurnitureSpriteController : MonoBehaviour
 
     public void OnFurnitureCreated(Furniture furn)
     {
-        //Debug.Log("OnFurnitureCreated");
         // Create a visual GameObject linked to this data.
 
         // FIXME: Does not consider multi-tile objects nor rotated objects
@@ -98,7 +97,6 @@ public class FurnitureSpriteController : MonoBehaviour
 
     void OnFurnitureChanged(Furniture furn)
     {
-        //Debug.Log("OnFurnitureChanged");
         // Make sure the furniture's graphics are correct.
 
         if (furnitureGameObjectMap.ContainsKey(furn) == false)
@@ -108,8 +106,6 @@ public class FurnitureSpriteController : MonoBehaviour
         }
 
         GameObject furn_go = furnitureGameObjectMap[furn];
-        //Debug.Log(furn_go);
-        //Debug.Log(furn_go.GetComponent<SpriteRenderer>());
 
         furn_go.GetComponent<SpriteRenderer>().sprite = GetSpriteForFurniture(furn);
         furn_go.GetComponent<SpriteRenderer>().color = furn.tint;
@@ -150,16 +146,9 @@ public class FurnitureSpriteController : MonoBehaviour
                     // Door is a fully open
                     spriteName = "Door_openness_3";
                 }
-                //Debug.Log(spriteName);
             }
 
-            /*if(furnitureSprites.ContainsKey(spriteName) == false) {
-				Debug.Log("furnitureSprites has no definition for: " + spriteName);
-				return null;
-			}
-*/
-
-            return SpriteManager.current.GetSprite("Furniture", spriteName); // furnitureSprites[spriteName];
+            return SpriteManager.current.GetSprite("Furniture", spriteName);
         }
 
         // Otherwise, the sprite name is more complicated.
@@ -198,13 +187,7 @@ public class FurnitureSpriteController : MonoBehaviour
         // the same type, then the string will look like:
         //       Wall_NESW
 
-/*		if(furnitureSprites.ContainsKey(spriteName) == false) {
-			Debug.LogError("GetSpriteForInstalledObject -- No sprites with name: " + spriteName);
-			return null;
-		}
-*/
-
-        return SpriteManager.current.GetSprite("Furniture", spriteName); //furnitureSprites[spriteName];
+        return SpriteManager.current.GetSprite("Furniture", spriteName);
 
     }
 

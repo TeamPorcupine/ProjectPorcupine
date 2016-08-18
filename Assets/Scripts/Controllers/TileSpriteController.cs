@@ -57,31 +57,6 @@ public class TileSpriteController : MonoBehaviour
         world.cbTileChanged += OnTileChanged;
     }
 
-    // THIS IS AN EXAMPLE -- NOT CURRENTLY USED (and probably out of date)
-    void DestroyAllTileGameObjects()
-    {
-        // This function might get called when we are changing floors/levels.
-        // We need to destroy all visual **GameObjects** -- but not the actual tile data!
-
-        while (tileGameObjectMap.Count > 0)
-        {
-            Tile tile_data = tileGameObjectMap.Keys.First();
-            GameObject tile_go = tileGameObjectMap[tile_data];
-
-            // Remove the pair from the map
-            tileGameObjectMap.Remove(tile_data);
-
-            // Unregister the callback!
-            tile_data.cbTileChanged -= OnTileChanged;
-
-            // Destroy the visual GameObject
-            Destroy(tile_go);
-        }
-
-        // Presumably, after this function gets called, we'd be calling another
-        // function to build all the GameObjects for the tiles on the new floor/level
-    }
-
     // This function should be called automatically whenever a tile's data gets changed.
     void OnTileChanged(Tile tile_data)
     {

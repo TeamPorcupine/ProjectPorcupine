@@ -55,10 +55,6 @@ public class Path_AStar
 
         List<Path_Node<Tile>> ClosedSet = new List<Path_Node<Tile>>();
 
-/*		List<Path_Node<Tile>> OpenSet = new List<Path_Node<Tile>>();
-		OpenSet.Add( start );
-*/
-
         SimplePriorityQueue<Path_Node<Tile>> OpenSet = new SimplePriorityQueue<Path_Node<Tile>>();
         OpenSet.Enqueue(start, 0);
 

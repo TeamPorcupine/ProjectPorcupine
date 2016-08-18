@@ -16,15 +16,6 @@ public class BuildModeController : MonoBehaviour
     TileType buildModeTile = TileType.Floor;
     public string buildModeObjectType;
 
-
-
-    // Use this for initialization
-    void Start()
-    {
-
-
-    }
-
     public bool IsObjectDraggable()
     {
         if (buildMode == BuildMode.FLOOR || buildMode == BuildMode.DECONSTRUCT)
@@ -139,7 +130,6 @@ public class BuildModeController : MonoBehaviour
         else if (buildMode == BuildMode.FLOOR)
         {
             // We are in tile-changing mode.
-            //t.Type = buildModeTile;
 
             TileType tileType = buildModeTile;
 

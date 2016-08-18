@@ -27,7 +27,6 @@ public class FurnitureBuildMenu : MonoBehaviour
             go.transform.SetParent(this.transform);
 
             string objectId = s;
-            string objectName = World.current.furniturePrototypes[s].Name;
 
             go.name = "Button - Build " + objectId;
             

@@ -151,8 +151,6 @@ public class WorldController : MonoBehaviour
 
     public void NewWorld()
     {
-        Debug.Log("NewWorld button was clicked.");
-
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
@@ -163,8 +161,6 @@ public class WorldController : MonoBehaviour
 
     public void LoadWorld(string fileName)
     {
-        Debug.Log("LoadWorld button was clicked.");
-
         // Reload the scene to reset all data (and purge old references)
         loadWorldFromFile = fileName;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
@@ -181,7 +177,6 @@ public class WorldController : MonoBehaviour
 
     void CreateWorldFromSaveFile()
     {
-        Debug.Log("CreateWorldFromSaveFile");
         // Create a world from our save file data.
 
         XmlSerializer serializer = new XmlSerializer(typeof(World));
@@ -192,8 +187,6 @@ public class WorldController : MonoBehaviour
 
         TextReader reader = new StringReader(saveGameText);
 
-
-        Debug.Log(reader.ToString());
         world = (World)serializer.Deserialize(reader);
         reader.Close();
 
