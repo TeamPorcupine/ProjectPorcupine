@@ -11,7 +11,7 @@ public class FurnitureActions
 
     static FurnitureActions _Instance;
 
-    Script myLuaScript;
+    //Script myLuaScript;
 
     public FurnitureActions(string rawLuaCode)
     {
@@ -21,19 +21,22 @@ public class FurnitureActions
 
         _Instance = this;
 
-        myLuaScript = new Script();
+        //myLuaScript = new Script();
 
         // If we want to be able to instantiate a new object of a class
         //   i.e. by doing    SomeClass.__new()
         // We need to make the base type visible.
-        myLuaScript.Globals["Inventory"] = typeof(Inventory);
-        myLuaScript.Globals["Job"] = typeof(Job);
+
+        LuaController.current.SetGlobal("Inventory" , (typeof(Inventory)));
+        LuaController.current.SetGlobal("Job" , (typeof(Job)));
+
 
         // Also to access statics/globals
-        myLuaScript.Globals["World"] = typeof(World);
+        LuaController.current.SetGlobal("World" , (typeof(World)));
+
 
         //ActivateRemoteDebugger(myLuaScript);
-        myLuaScript.DoString(rawLuaCode);
+        LuaController.current.AddCode(rawLuaCode);
     }
 
     static RemoteDebuggerService remoteDebugger;
@@ -68,15 +71,16 @@ public class FurnitureActions
     {
         foreach (string fn in functionNames)
         {
-            object func = _Instance.myLuaScript.Globals[fn];
+            object func = LuaController.current.getGlobal(fn);
 
             if (func == null)
             {
                 Debug.LogError("'" + fn + "' is not a LUA function.");
                 return;
             }
+            Script My;
 
-            DynValue result = _Instance.myLuaScript.Call(func, furn, deltaTime);
+            DynValue result = LuaController.current.Call(func, furn, deltaTime);//_Instance.myLuaScript.Call(func, furn, deltaTime);
 
             if (result.Type == DataType.String)
             {
@@ -88,9 +92,9 @@ public class FurnitureActions
     static public DynValue CallFunction(string functionName, params object[] args)
     {
         //Debug.Log("Calling function: " + functionName);
-        object func = _Instance.myLuaScript.Globals[functionName];
+        object func = LuaController.current.getGlobal(functionName);
 
-        return _Instance.myLuaScript.Call(func, args);
+        return LuaController.current.Call(func, args);//_Instance.myLuaScript.Call(func, args);
     }
 
     public static void JobComplete_FurnitureBuilding(Job theJob)
