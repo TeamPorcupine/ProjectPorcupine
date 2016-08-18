@@ -644,7 +644,7 @@ public class Furniture : IXmlSerializable, ISelectable
         Debug.Log("Deconstruct");
 
 
-        Tile neighbours[] = Tile.GetNeighbours()
+        Tile neighbours[] = tile.GetNeighbours()
         foreach Tile t in neighbours
         {
             if t == null || t.room == null // Check to see if the tile is valid and has a room i.e is not a wall
