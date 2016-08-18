@@ -35,7 +35,7 @@ We have standardized on Microsoft's [C# Coding Conventions](https://msdn.microso
 As a TL;DR on our coding practises, adhere to the following example:
 
 ```c#
-// Use camelCasing everywhere.
+// Use camelCasing unless stated otherwise.
 // Descriptive names for variables/methods should be used.
 // Fields, properties and methods should always specify their scope, aka private/protected/internal/public.
 
