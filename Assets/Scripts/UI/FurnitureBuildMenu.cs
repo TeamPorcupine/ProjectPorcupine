@@ -56,7 +56,7 @@ public class FurnitureBuildMenu : MonoBehaviour
 
             for(int i = 0; i < localizers.Length; i++)
             {
-                localizers[i].UpdateText(LocalizationTable.GetLocalization(World.current.furniturePrototypes.ElementAt(i).Value.GetName()));
+                localizers[i].UpdateText(LocalizationTable.GetLocalization(World.current.furniturePrototypes.ElementAt(i).Value.localizationCode));
             }
         }
     }

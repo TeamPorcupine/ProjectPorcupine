@@ -23,3 +23,5 @@ furn_oxygen_generator=Sauerstoffgenerator
 furn_oxygen_generator_desc=Generiert Sauerstoff für deine Astronauten.
 furn_mining_drone_station=Abbaudrohne
 furn_mining_drone_station_desc=Baut Materalien aus dem Nichts ab.
+furn_power_generator=Stromgenerator
+furn_power_generator_desc=Produziert Strom.
