@@ -3,20 +3,36 @@ using System.Collections;
 
 public class WorldGenerator {
 
+    public static int startAreaSize = 3;
+
     public static TileType asteroid_floor_type = TileType.Floor;
     public static float asteroid_noise_scale = 0.15f;
     public static float asteroid_noise_break = 0.75f;
 
     public static void Generate(World world){
-        for (int x = 0; x < world.Width; x++)
+        int width = world.Width;
+        int height = world.Height;
+
+        for (int x = 0; x < width; x++)
         {
-            for (int y = 0; y < world.Height; y++)
+            for (int y = 0; y < height; y++)
             {
-                float val = Mathf.PerlinNoise(x / (world.Width * asteroid_noise_scale), y / (world.Height * asteroid_noise_scale));
+                float val = Mathf.PerlinNoise(x / (width * asteroid_noise_scale), y / (height * asteroid_noise_scale));
                 if(val >= asteroid_noise_break)
                 {
                     world.GetTileAt(x, y).Type = asteroid_floor_type;
                 }
+            }
+        }
+            
+        for (int x = -startAreaSize; x <= startAreaSize; x++)
+        {
+            for (int y = -startAreaSize; y <= startAreaSize; y++)
+            {
+                int xPos = width / 2 + x;
+                int yPos = height / 2 + y;
+
+                world.GetTileAt(xPos, yPos).Type = asteroid_floor_type;
             }
         }
     }
