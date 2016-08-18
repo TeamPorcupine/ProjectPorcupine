@@ -56,8 +56,11 @@ public class World : IXmlSerializable
     /// <param name="height">Height in tiles.</param>
     public World(int width, int height)
     {
-        // Creates an empty world.
+       // Creates an empty world.
         SetupWorld(width, height);
+
+        //log size of world
+        Debug.Log("creating new world of size [ " + width + "," + height + " ]");
 
         // Make one character
         CreateCharacter(GetTileAt(Width / 2, Height / 2));
