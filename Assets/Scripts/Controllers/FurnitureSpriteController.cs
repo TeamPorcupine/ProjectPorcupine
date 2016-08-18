@@ -293,13 +293,8 @@ public class FurnitureSpriteController : MonoBehaviour
 
     public Sprite GetSpriteForFurniture(string objectType)
     {
-        Sprite s = SpriteManager.current.GetSprite("Furniture", objectType);
-
-        if (s == null)
-        {
-            s = SpriteManager.current.GetSprite("Furniture", objectType + "_");
-        }
-
+        Sprite s = SpriteManager.current.GetSprite("Furniture", objectType + (World.current.furniturePrototypes[objectType].linksToNeighbour ? "_" : ""));
+        
         return s;
     }
 }
