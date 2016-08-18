@@ -108,15 +108,27 @@ public class MouseController : MonoBehaviour
     public SelectionInfo mySelection;
 
     void CalculatePlacingPosition() {
+        // If we are placing a multitile object we would like to modify the posiotion where the mouse grabs it
         if (currentMode == MouseMode.BUILD &&
             bmc.buildMode == BuildMode.FURNITURE && 
             World.current.furniturePrototypes.ContainsKey(bmc.buildModeObjectType) &&
             (World.current.furniturePrototypes[bmc.buildModeObjectType].Width > 1 || 
                 World.current.furniturePrototypes[bmc.buildModeObjectType].Height > 1 ) )
         {
-            currPlacingPosition = new Vector3(currFramePosition.x - (World.current.furniturePrototypes[bmc.buildModeObjectType].Width - 1f) / 2f ,
-                currFramePosition.y - (World.current.furniturePrototypes[bmc.buildModeObjectType].Height - 1f) / 2f ,
-                0);
+            // If the furniture has af jobSpot set we would like to use that
+            if(World.current.furniturePrototypes[bmc.buildModeObjectType].jobSpotOffset.Equals(Vector2.zero) == false)
+            {
+                currPlacingPosition = new Vector3(currFramePosition.x - (World.current.furniturePrototypes[bmc.buildModeObjectType].jobSpotOffset.x) ,
+                    currFramePosition.y - (World.current.furniturePrototypes[bmc.buildModeObjectType].jobSpotOffset.y) ,
+                    0);
+            }
+            else
+            {   
+                // Otherwise we use the center
+                currPlacingPosition = new Vector3(currFramePosition.x - (World.current.furniturePrototypes[bmc.buildModeObjectType].Width - 1f) / 2f ,
+                    currFramePosition.y - (World.current.furniturePrototypes[bmc.buildModeObjectType].Height - 1f) / 2f ,
+                    0);
+            }
         }
         else
         {
