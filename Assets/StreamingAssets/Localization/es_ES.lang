@@ -23,5 +23,5 @@ furn_oxygen_generator=Generador de Oxígeno
 furn_oxygen_generator_desc=Generando oxígeno para tus astronautas.
 furn_mining_drone_station=Estación de minería robótica
 furn_mining_drone_station_desc=Extrayendo materiales de la nada.
-console_input:Escriba un comando
-console_title:Consola
+console_title=Consola
+console_input=Escriba un comando.

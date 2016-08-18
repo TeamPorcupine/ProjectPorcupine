@@ -23,5 +23,5 @@ furn_oxygen_generator=Sauerstoffgenerator
 furn_oxygen_generator_desc=Generiert Sauerstoff für deine Astronauten.
 furn_mining_drone_station=Bergbaudrohne
 furn_mining_drone_station_desc=Baut Materialien aus dem Nichts ab.
-console_input:einen Befehl
-console_title:Konsole
+console_title=Konsole
+console_input=Geben Sie einen Befehl.
