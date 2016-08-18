@@ -90,13 +90,19 @@ public class Room : IXmlSerializable
 
     public void EqualiseGas(Room otherRoom, float leakFactor)
     {
-        List<string> gasses = new List<string>();
-        gasses.Union(this.GetGasNames());
-        gasses.Union(otherRoom.GetGasNames());
+        if (otherRoom == null)
+        {
+            return;
+        }
+
+        List<string> gasses = this.GetGasNamesAsList();
+        gasses.Union(otherRoom.GetGasNamesAsList());
+
 
         foreach (string gas in gasses)
         {
             float pressureDifference = this.GetGasPressure(gas) - otherRoom.GetGasPressure(gas);
+            Debug.LogAssertion("PResDIF:"+gas+"/"+pressureDifference);
             this.ChangeGas(gas, (-1) * pressureDifference * leakFactor);
             otherRoom.ChangeGas(gas, pressureDifference * leakFactor);
         }
@@ -160,6 +166,12 @@ public class Room : IXmlSerializable
     {
         return atmosphericGasses.Keys.ToArray();
     }
+
+    public List<string> GetGasNamesAsList()
+    {
+        return atmosphericGasses.Keys;
+    }
+
 
     public static void DoRoomFloodFill(Tile sourceTile, bool onlyIfOutside = false)
     {
