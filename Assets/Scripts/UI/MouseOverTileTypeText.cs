@@ -36,6 +36,13 @@ public class MouseOverTileTypeText : MonoBehaviour
     void Update()
     {
         Tile t = mouseController.GetMouseOverTile();
-        myText.text = "Tile Type: " + t.Type.ToString();
+        string tileType = "Unknown";
+
+        if (t != null)
+        {
+            tileType = t.Type.ToString();
+        }
+
+        myText.text = "Tile Type: " + tileType;
     }
 }
