@@ -46,7 +46,7 @@ public class LuaController : MonoBehaviour
     public void SetGlobal(string name, object value) {
         LuaScripts.Globals[name] = value;
     }
-    public object getGlobal(string name) {
+    public object GetGlobal(string name) {
         return LuaScripts.Globals[name];
     }
 }
