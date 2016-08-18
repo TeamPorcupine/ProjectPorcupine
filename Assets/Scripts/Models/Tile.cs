@@ -39,13 +39,15 @@ public class Tile :IXmlSerializable, ISelectable
         get { return _type; }
         set
         {
-            TileType oldType = _type;
-            _type = value;
-            // Call the callback and let things know we've changed.
-
-            if (cbTileChanged != null && oldType != _type)
+            if(_type != value)
             {
-                cbTileChanged(this);
+                _type = value;
+
+                // Call the callback and let things know we've changed.
+                if (cbTileChanged != null)
+                {
+                    cbTileChanged(this);
+                }
             }
         }
     }
@@ -98,7 +100,6 @@ public class Tile :IXmlSerializable, ISelectable
     /// <summary>
     /// Initializes a new instance of the <see cref="Tile"/> class.
     /// </summary>
-    /// <param name="World.current">A World.current instance.</param>
     /// <param name="x">The x coordinate.</param>
     /// <param name="y">The y coordinate.</param>
     public Tile(int x, int y)
