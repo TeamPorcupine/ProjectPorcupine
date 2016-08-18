@@ -12,7 +12,8 @@ using MoonSharp.Interpreter;
 public class Room : IXmlSerializable
 {
 
-    Dictionary<string, float> atmosphericGasses;
+    // Dictionary with the amount of gas in room stored in preasure(in atm) multiplyed by number of tiles
+    Dictionary<string, float> atmosphericGasses; 
 
     List<Tile> tiles;
 
@@ -62,6 +63,12 @@ public class Room : IXmlSerializable
         return this == World.current.GetOutsideRoom();
     }
 
+    public int GetSize()
+    {
+        return tiles.Count();
+    }
+
+    // Changes gas by an amount in preasure(in atm) multiplyed by number of tiles
     public void ChangeGas(string name, float amount)
     {
         if (IsOutsideRoom())
@@ -81,11 +88,23 @@ public class Room : IXmlSerializable
 
     }
 
+    // Gets absolute gas amount in preasure(in atm) multiplyed by number of tiles
     public float GetGasAmount(string name)
     {
         if (atmosphericGasses.ContainsKey(name))
         {
             return atmosphericGasses[name];
+        }
+
+        return 0;
+    }
+
+    // Gets gas amount in preasure(in atm)
+    public float GetGasPressure(string name)
+    {
+        if (atmosphericGasses.ContainsKey(name))
+        {
+            return atmosphericGasses[name] / GetSize();
         }
 
         return 0;
@@ -127,6 +146,10 @@ public class Room : IXmlSerializable
 
         if (oldRoom != null)
         {
+            // Save the size of old room before we start removing tiles
+            // Needed for gas calculations
+            int sizeOfOldRoom = oldRoom.GetSize();
+
             // The source tile had a room, so this must be a new piece of furniture
             // that is potentially dividing this old room into as many as four new rooms.
 
@@ -135,7 +158,7 @@ public class Room : IXmlSerializable
             {
                 if (t.room != null && (onlyIfOutside == false || t.room.IsOutsideRoom()))
                 {
-                    ActualFloodFill(t, oldRoom);
+                    ActualFloodFill(t, oldRoom, sizeOfOldRoom);
                 }
             }
 
@@ -167,13 +190,13 @@ public class Room : IXmlSerializable
             // though this MAY not be the case any longer (i.e. the wall was 
             // probably deconstructed. So the only thing we have to try is
             // to spawn ONE new room starting from the tile in question.
-            ActualFloodFill(sourceTile, null);
+            ActualFloodFill(sourceTile, null, 0);
         }
 
 
     }
 
-    protected static void ActualFloodFill(Tile tile, Room oldRoom)
+    protected static void ActualFloodFill(Tile tile, Room oldRoom, int sizeOfOldRoom)
     {
         //Debug.Log("ActualFloodFill");
 
@@ -208,6 +231,8 @@ public class Room : IXmlSerializable
 
         // If we get to this point, then we know that we need to create a new room.
 
+        List<Room> listOfOldRooms = new List<Room>();
+
         Room newRoom = new Room();
         Queue<Tile> tilesToCheck = new Queue<Tile>();
         tilesToCheck.Enqueue(tile);
@@ -224,6 +249,12 @@ public class Room : IXmlSerializable
 
             if (t.room != newRoom)
             {
+                if(t.room != null && listOfOldRooms.Contains(t.room) == false)
+                {
+                    listOfOldRooms.Add(t.room);
+                    newRoom.MoveGas(t.room);
+                }
+
                 newRoom.AssignTile(t);
 
                 Tile[] ns = t.GetNeighbours();
@@ -274,27 +305,26 @@ public class Room : IXmlSerializable
         {
             // In this case we are splitting one room into two or more,
             // so we can just copy the old gas ratios.
-            newRoom.CopyGas(oldRoom);
-        }
-        else
-        {
-            // In THIS case, we are MERGING one or more rooms together,
-            // so we need to actually figure out the total volume of gas
-            // in the old room vs the new room and correctly adjust
-            // atmospheric quantities.
-
-            // TODO
+            newRoom.CopyGasPreasure(oldRoom, sizeOfOldRoom);
         }
 
         // Tell the world that a new room has been formed.
         World.current.AddRoom(newRoom);
     }
 
-    void CopyGas(Room other)
+    void CopyGasPreasure(Room other, int sizeOfOtherRoom)
     {
         foreach (string n in other.atmosphericGasses.Keys)
         {
-            this.atmosphericGasses[n] = other.atmosphericGasses[n];
+            this.atmosphericGasses[n] = other.atmosphericGasses[n] / sizeOfOtherRoom * this.GetSize();
+        }
+    }
+
+    void MoveGas(Room other)
+    {
+        foreach (string n in other.atmosphericGasses.Keys)
+        {
+            this.ChangeGas(n, other.atmosphericGasses[n]);
         }
     }
 
