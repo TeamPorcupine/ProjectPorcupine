@@ -32,7 +32,18 @@ public class WorldGenerator {
                 int xPos = width / 2 + x;
                 int yPos = height / 2 + y;
 
-                world.GetTileAt(xPos, yPos).Type = asteroid_floor_type;
+                Tile t = world.GetTileAt(xPos, yPos);
+                t.Type = asteroid_floor_type;
+
+                if(x == -startAreaSize || x == startAreaSize || y == -startAreaSize || y == startAreaSize){
+                    if (x == 0 && y == startAreaSize)
+                    {
+                        world.PlaceFurniture("Door", t, true);
+                        continue;
+                    }
+
+                    world.PlaceFurniture("furn_SteelWall", t, true);
+                }
             }
         }
     }
