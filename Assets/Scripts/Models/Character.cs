@@ -104,7 +104,7 @@ public class Character : IXmlSerializable, ISelectable
     float speed = 5f;
 
     /// A callback to trigger when character information changes (notably, the position)
-    Action<Character> cbCharacterChanged;
+    public event Action<Character> cbCharacterChanged;
 
     /// Our job, if any.
     Job myJob;
@@ -133,7 +133,7 @@ public class Character : IXmlSerializable, ISelectable
         {
             myJob = new Job(CurrTile,
                 "Waiting",
-                (j) => Debug.Log("Finished waiting for available Jobs"),
+                null,
                 UnityEngine.Random.Range(0.1f, 0.5f),
                 null,
                 false);
@@ -142,7 +142,7 @@ public class Character : IXmlSerializable, ISelectable
         // Get our destination from the job
         DestTile = myJob.tile;
 
-        myJob.RegisterJobStoppedCallback(OnJobStopped);
+        myJob.cbJobStopped += OnJobStopped;
 
         // Immediately check to see if the job tile is reachable.
         // NOTE: We might not be pathing to it right away (due to 
@@ -446,22 +446,12 @@ public class Character : IXmlSerializable, ISelectable
             cbCharacterChanged(this);
 
     }
-
-    public void RegisterOnChangedCallback(Action<Character> cb)
-    {
-        cbCharacterChanged += cb;
-    }
-
-    public void UnregisterOnChangedCallback(Action<Character> cb)
-    {
-        cbCharacterChanged -= cb;
-    }
-
+    
     void OnJobStopped(Job j)
     {
         // Job completed (if non-repeating) or was cancelled.
 
-        j.UnregisterJobStoppedCallback(OnJobStopped);
+        j.cbJobStopped -= OnJobStopped;
 
         if (j != myJob)
         {

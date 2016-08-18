@@ -107,6 +107,8 @@ public class Furniture : IXmlSerializable, ISelectable
         }
     }
 
+    private string Description = "";
+
     public List<string> ReplaceableFurniture
     {
         get
@@ -137,8 +139,8 @@ public class Furniture : IXmlSerializable, ISelectable
         protected set;
     }
 
-    public Action<Furniture> cbOnChanged;
-    public Action<Furniture> cbOnRemoved;
+    public event Action<Furniture> cbOnChanged;
+    public event Action<Furniture> cbOnRemoved;
 
     Func<Tile, bool> funcPositionValidation;
 
@@ -162,6 +164,7 @@ public class Furniture : IXmlSerializable, ISelectable
     {
         this.objectType = other.objectType;
         this.Name = other.Name;
+        this.Description = other.Description;
         this.movementCost = other.movementCost;
         this.roomEnclosure = other.roomEnclosure;
         this.Width = other.Width;
@@ -270,27 +273,7 @@ public class Furniture : IXmlSerializable, ISelectable
 
         return obj;
     }
-
-    public void RegisterOnChangedCallback(Action<Furniture> callbackFunc)
-    {
-        cbOnChanged += callbackFunc;
-    }
-
-    public void UnregisterOnChangedCallback(Action<Furniture> callbackFunc)
-    {
-        cbOnChanged -= callbackFunc;
-    }
-
-    public void RegisterOnRemovedCallback(Action<Furniture> callbackFunc)
-    {
-        cbOnRemoved += callbackFunc;
-    }
-
-    public void UnregisterOnRemovedCallback(Action<Furniture> callbackFunc)
-    {
-        cbOnRemoved -= callbackFunc;
-    }
-
+    
     public bool IsValidPosition(Tile t)
     {
         return funcPositionValidation(t);
@@ -383,6 +366,10 @@ public class Furniture : IXmlSerializable, ISelectable
                 case "Name":
                     reader.Read();
                     Name = reader.ReadContentAsString();
+                    break;
+                case "Description":
+                    reader.Read();
+                    Description = reader.ReadContentAsString();
                     break;
                 case "MovementCost":
                     reader.Read();
@@ -561,7 +548,7 @@ public class Furniture : IXmlSerializable, ISelectable
     {
         j.furniture = this;
         jobs.Add(j);
-        j.RegisterJobStoppedCallback(OnJobStopped);
+        j.cbJobStopped += OnJobStopped;
         World.current.jobQueue.Enqueue(j);
     }
 
@@ -572,7 +559,7 @@ public class Furniture : IXmlSerializable, ISelectable
 
     protected void RemoveJob(Job j)
     {
-        j.UnregisterJobStoppedCallback(OnJobStopped);
+        j.cbJobStopped -= OnJobStopped;
         jobs.Remove(j);
         j.furniture = null;
     }
@@ -641,7 +628,7 @@ public class Furniture : IXmlSerializable, ISelectable
 
     public string GetDescription()
     {
-        return "This is a piece of furniture."; // TODO: Add "Description" property and matching XML field.
+        return this.Description;
     }
 
     public string GetHitPointString()

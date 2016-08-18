@@ -93,7 +93,7 @@ public class Tile :IXmlSerializable, ISelectable
     }
 
     // The function we callback any time our tile's data changes
-    Action<Tile> cbTileChanged;
+    public event Action<Tile> cbTileChanged;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Tile"/> class.
@@ -106,22 +106,6 @@ public class Tile :IXmlSerializable, ISelectable
         this.X = x;
         this.Y = y;
         characters = new List<Character>();
-    }
-
-    /// <summary>
-    /// Register a function to be called back when our tile type changes.
-    /// </summary>
-    public void RegisterTileTypeChangedCallback(Action<Tile> callback)
-    {
-        cbTileChanged += callback;
-    }
-
-    /// <summary>
-    /// Unregister a callback.
-    /// </summary>
-    public void UnregisterTileTypeChangedCallback(Action<Tile> callback)
-    {
-        cbTileChanged -= callback;
     }
 
     public bool UnplaceFurniture()
@@ -301,6 +285,10 @@ public class Tile :IXmlSerializable, ISelectable
         // X and Y have already been read/processed
 
         room = World.current.GetRoomFromID(int.Parse(reader.GetAttribute("RoomID")));
+        if (room != null)
+        {
+            room.AssignTile(this);
+        }
 
         Type = (TileType)int.Parse(reader.GetAttribute("Type"));
 
