@@ -73,6 +73,7 @@ public class MouseController : MonoBehaviour
         {
             if (currentMode == MouseMode.BUILD)
             {
+				isDragging = false;
                 currentMode = MouseMode.SELECT;
             }
             else if (currentMode == MouseMode.SELECT)
@@ -165,7 +166,6 @@ public class MouseController : MonoBehaviour
                     mySelection.subSelection = (mySelection.subSelection + 1) % mySelection.stuffInTile.Length;
                 } while(mySelection.stuffInTile[mySelection.subSelection] == null);
             }
-            Debug.Log(mySelection.subSelection);
         }
     }
 
@@ -307,10 +307,12 @@ public class MouseController : MonoBehaviour
         // Handle screen panning
         if (Input.GetMouseButton(1) || Input.GetMouseButton(2))
         {	// Right or Middle Mouse Button
-			
             Vector3 diff = lastFramePosition - currFramePosition;
             Camera.main.transform.Translate(diff);
-			
+
+            if (Input.GetMouseButton (1)) {
+                isDragging = false;
+            }
         }
 
         Camera.main.orthographicSize -= Camera.main.orthographicSize * Input.GetAxis("Mouse ScrollWheel");
