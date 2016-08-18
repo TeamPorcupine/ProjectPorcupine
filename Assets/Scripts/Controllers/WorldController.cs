@@ -12,33 +12,23 @@ using UnityEngine.SceneManagement;
 using System.Xml.Serialization;
 using System.IO;
 
+
 public class WorldController : MonoBehaviour
 {
-
     public static WorldController Instance { get; protected set; }
 
     // The world and tile data
     public World world { get; protected set; }
+    public enum WorldSpeed { PAUSE, SLOW, NORMAL, FAST, SUPER }
+
+    public WorldSpeed currWorldSpeed { get; protected set; }
+    WorldSpeed tempWorldSpeedStore = WorldSpeed.NORMAL;
 
     static string loadWorldFromFile = null;
 
-    private bool _isPaused = false;
-
-    public bool IsPaused
-    {
-        get
-        {
-            return  _isPaused || IsModal;
-        }
-        set
-        {
-            _isPaused = value;
-        }
-    }
-
     public bool IsModal;
     // If true, a modal dialog box is open so normal inputs should be ignored.
-
+    
     // Use this for initialization
     void OnEnable()
     {
@@ -57,16 +47,67 @@ public class WorldController : MonoBehaviour
         {
             CreateEmptyWorld();
         }
+        currWorldSpeed = WorldSpeed.NORMAL;
     }
 
     void Update()
     {
-        // TODO: Add pause/unpause, speed controls, etc...
-        if (IsPaused == false)
-        {
-            world.Update(Time.deltaTime);
+        if (IsModal) {
+            return;
+        }
+        switch (currWorldSpeed) {
+            case WorldSpeed.PAUSE:
+                break;
+            case WorldSpeed.SLOW:
+                world.Update(Time.deltaTime * 0.5f);
+                break;
+            case WorldSpeed.NORMAL:
+                world.Update(Time.deltaTime);
+                break;
+            case WorldSpeed.FAST:
+                world.Update(Time.deltaTime * 2f);
+                break;
+            case WorldSpeed.SUPER:
+                world.Update(Time.deltaTime * 4f);
+                break;
         }
 
+    }
+
+    public void PauseGame() {
+        tempWorldSpeedStore = currWorldSpeed;
+        currWorldSpeed = WorldSpeed.PAUSE;
+    }
+
+    public void UnpauseGame() {
+        if(tempWorldSpeedStore == WorldSpeed.PAUSE) {
+            currWorldSpeed = WorldSpeed.NORMAL;
+            return;
+        }
+        currWorldSpeed = tempWorldSpeedStore;
+    }
+
+    public void SetWorldSpeed(string worldSpeed) {
+        switch (worldSpeed) {
+            case "Pause":
+                currWorldSpeed = WorldSpeed.PAUSE;
+                break;
+            case "Slow":
+                currWorldSpeed = WorldSpeed.SLOW;
+                break;
+            case "Normal":
+                currWorldSpeed = WorldSpeed.NORMAL;
+                break;
+            case "Fast":
+                currWorldSpeed = WorldSpeed.FAST;
+                break;
+            case "Super":
+                currWorldSpeed = WorldSpeed.SUPER;
+                break;
+            default:
+                Debug.LogError("WorldController.SetWorldSpeed() - invalid worldSpeedString!");
+                return;
+        }
     }
 
     /// <summary>
