@@ -58,7 +58,8 @@ public class World : IXmlSerializable
     {
         // Creates an empty world.
         SetupWorld(width, height);
-        WorldGenerator.Generate(this);
+        int seed = UnityEngine.Random.Range(0, 1000);
+        WorldGenerator.Generate(this, seed);
 
         // Make one character
         CreateCharacter(GetTileAt(Width / 2, Height / 2));
