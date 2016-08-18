@@ -63,6 +63,9 @@
         <MovementCost>1</MovementCost>
         <LinksToNeighbours>true</LinksToNeighbours>
 
+        <BuildingJob jobTime="0">
+        </BuildingJob>
+
         <OnUpdate FunctionName="Stockpile_UpdateAction" />
 		
 		<LocalizationCode>furn_stockpile</LocalizationCode>
@@ -76,6 +79,9 @@
         <Width>2</Width>
         <Height>2</Height>
         <Power>1</Power>
+
+        <BuildingJob jobTime="0">
+        </BuildingJob>
 
         <OnUpdate FunctionName="OnUpdate_GasGenerator" />
 
@@ -97,6 +103,9 @@
         <MovementCost>1</MovementCost>
         <Width>3</Width>
         <Height>3</Height>
+
+        <BuildingJob jobTime="0">
+        </BuildingJob>
 
         <JobSpotOffset X="1" Y="0" />
         <JobSpawnSpotOffset X="0" Y="0" />
