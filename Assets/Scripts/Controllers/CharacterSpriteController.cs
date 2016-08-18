@@ -58,7 +58,8 @@ public class CharacterSpriteController : MonoBehaviour
         inv_sr.sortingOrder = 1;
         inv_sr.sortingLayerName = "Characters";
         inv_go.transform.SetParent(char_go.transform);
-        inv_go.transform.localPosition = new Vector3(0,-0.37f,0); // Needs to be added to XML
+        inv_go.transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);// Config needs to be added to XML
+        inv_go.transform.localPosition = new Vector3(0,-0.37f,0); // Config needs to be added to XML
 
         // Register our callback so that our GameObject gets updated whenever
         // the object's into changes.
@@ -73,7 +74,6 @@ public class CharacterSpriteController : MonoBehaviour
         SpriteRenderer inv_sr = characterGameObjectMap[c].transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>();
         if (c.inventory != null)
         {
-            Debug.Log(c.inventory.objectType);
             inv_sr.sprite = SpriteManager.current.GetSprite("Inventory", c.inventory.GetName());
         }
         else
