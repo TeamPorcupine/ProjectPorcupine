@@ -374,7 +374,7 @@ public class Character : IXmlSerializable, ISelectable
 
             if (NextTile == CurrTile)
             {
-                Debug.LogError("Update_DoMovement - nextTile is currTile?");
+                //Debug.LogError("Update_DoMovement - nextTile is currTile?");
             }
         }
 
