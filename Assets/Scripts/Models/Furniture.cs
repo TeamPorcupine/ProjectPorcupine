@@ -665,7 +665,11 @@ public class Furniture : IXmlSerializable, ISelectable
             Room.DoRoomFloodFill(this.tile);
         }
 
-        World.current.InvalidateTileGraph();
+        //World.current.InvalidateTileGraph();
+        if (World.current.tileGraph != null)
+        {
+            World.current.tileGraph.RegenerateGraphAtTile(tile);
+        }
 
         // At this point, no DATA structures should be pointing to us, so we
         // should get garbage-collected.
