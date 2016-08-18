@@ -40,10 +40,11 @@ function OnUpdate_Door( furniture, deltaTime )
 		furniture.ChangeParameter("openness", deltaTime * -4)
 	end
 
-
 	furniture.SetParameter("openness", Clamp01(furniture.GetParameter("openness")) )
 
 	furniture.UpdateOnChanged(furniture);
+
+	furnitur.tile.room.EqualiseGasByTile(furniture.tile, 1.0)
 end
 
 function IsEnterable_Door( furniture )
