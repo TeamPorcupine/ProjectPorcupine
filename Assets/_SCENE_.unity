@@ -2394,7 +2394,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1011199845}
-        m_MethodName: CloseDialog
+        m_MethodName: CloseSureDialog
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3992,6 +3992,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fileListItemPrefab: {fileID: 117544, guid: 25d6a031fb3cd9840938a16729f65ae6, type: 2}
   fileList: {fileID: 1742146398}
+  dialog: {fileID: 1859189552}
 --- !u!114 &1011199846
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6559,7 +6560,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0.000022888184}
-  m_SizeDelta: {x: 281, y: 88.8}
+  m_SizeDelta: {x: 300, y: 88.8}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1859189554
 MonoBehaviour:
@@ -7284,7 +7285,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'You cannot revert this Action.
+  m_Text: 'You cannot revert this action.
 
     Delete File?'
 --- !u!222 &2071303396
