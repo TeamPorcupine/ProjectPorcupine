@@ -17,7 +17,9 @@
         <DeconstructJob>
             <Inventory objectType="Steel Plate" amount="3" />
         </DeconstructJob>
-
+		
+		<LocalizationCode>furn_steel_wall</LocalizationCode>
+		<UnlocalizedDescription>furn_steel_wall_desc</UnlocalizedDescription>
 
     </Furniture>
 
@@ -49,7 +51,8 @@
 
         <IsEnterable FunctionName="IsEnterable_Door" />
 
-
+		<LocalizationCode>furn_door</LocalizationCode>
+		<UnlocalizedDescription>furn_door_desc</UnlocalizedDescription>
 
     </Furniture>
 
@@ -61,6 +64,9 @@
         <LinksToNeighbours>true</LinksToNeighbours>
 
         <OnUpdate FunctionName="Stockpile_UpdateAction" />
+		
+		<LocalizationCode>furn_stockpile</LocalizationCode>
+		<UnlocalizedDescription>furn_stockpile_desc</UnlocalizedDescription>
 	</Furniture>
 
 	<Furniture objectType="Oxygen Generator">
@@ -78,6 +84,9 @@
             <Param name="gas_per_second" value="0.01" />
         </Params>
 
+		<LocalizationCode>furn_oxygen_generator</LocalizationCode>
+		<UnlocalizedDescription>furn_oxygen_generator_desc</UnlocalizedDescription>
+		
 	</Furniture>
 
 
@@ -92,15 +101,12 @@
         <JobSpawnSpotOffset X="0" Y="0" />
 
         <OnUpdate FunctionName="MiningDroneStation_UpdateAction" />
+		
+		<LocalizationCode>furn_mining_drone_station</LocalizationCode>
+		<UnlocalizedDescription>furn_mining_drone_station_desc</UnlocalizedDescription>
+		
 	</Furniture>
 
 
 
 </Furnitures>
-
-
-
-
-
-
-
