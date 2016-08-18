@@ -48,6 +48,7 @@
         </DeconstructJob>
 
         <OnUpdate FunctionName="OnUpdate_Door" />
+        <OnUpdate FunctionName="OnUpdate_Leak_Door" />
 
         <IsEnterable FunctionName="IsEnterable_Door" />
 
@@ -80,7 +81,8 @@
             <Inventory objectType="Steel Plate" amount="7" />
         </DeconstructJob>
 
-        <OnUpdate FunctionName="OnUpdate_Airlock" />
+        <OnUpdate FunctionName="OnUpdate_Door" />
+        <OnUpdate FunctionName="OnUpdate_Leak_Airlock" />
 
         <IsEnterable FunctionName="IsEnterable_Door" />
 
