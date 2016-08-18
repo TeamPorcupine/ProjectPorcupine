@@ -126,6 +126,7 @@ GameObject:
   - 224: {fileID: 224000013785788472}
   - 222: {fileID: 222000014151159212}
   - 114: {fileID: 114000013422605114}
+  - 114: {fileID: 114000010712632346}
   m_Layer: 5
   m_Name: Placeholder
   m_TagString: Untagged
@@ -330,6 +331,21 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &114000010712632346
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000011587293148}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f3a8d4feb5d53f4f967aac517615a07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  formatValues: []
+  localizeInStart: 1
+  text: {fileID: 0}
+  defaultText: 
 --- !u!114 &114000011142163942
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -544,7 +560,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 224000010887856254}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.9999999
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -694,7 +710,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Type a Command
+  m_Text: console_input
 --- !u!114 &114000013622100590
 MonoBehaviour:
   m_ObjectHideFlags: 1
