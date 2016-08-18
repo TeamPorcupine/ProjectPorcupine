@@ -26,14 +26,10 @@ public class CharacterSpriteController : MonoBehaviour
         {
             OnCharacterCreated(c);
         }
-
-
-        //c.SetDestination( world.GetTileAt( world.Width/2 + 5, world.Height/2 ) );
     }
 
     public void OnCharacterCreated(Character c)
     {
-//		Debug.Log("OnCharacterCreated");
         // Create a visual GameObject linked to this data.
 
         // FIXME: Does not consider multi-tile objects nor rotated objects
@@ -60,8 +56,7 @@ public class CharacterSpriteController : MonoBehaviour
 
     void OnCharacterChanged(Character c)
     {
-        //Debug.Log("OnFurnitureChanged");
-        // Make sure the furniture's graphics are correct.
+        // Make sure the character's graphics are correct.
 
         if (characterGameObjectMap.ContainsKey(c) == false)
         {
@@ -70,10 +65,6 @@ public class CharacterSpriteController : MonoBehaviour
         }
 
         GameObject char_go = characterGameObjectMap[c];
-        //Debug.Log(furn_go);
-        //Debug.Log(furn_go.GetComponent<SpriteRenderer>());
-
-        //char_go.GetComponent<SpriteRenderer>().sprite = GetSpriteForFurniture(furn);
 
         char_go.transform.position = new Vector3(c.X, c.Y, 0);
     }

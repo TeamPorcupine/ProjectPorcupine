@@ -51,8 +51,6 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
 
         // Get the file name from the save file dialog box
 
-        Debug.Log("LoadWorld button was clicked.");
-
         WorldController.Instance.LoadWorld(filePath);
     }
 }

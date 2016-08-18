@@ -198,8 +198,6 @@ public class Room : IXmlSerializable
 
     protected static void ActualFloodFill(Tile tile, Room oldRoom, int sizeOfOldRoom)
     {
-        //Debug.Log("ActualFloodFill");
-
         if (tile == null)
         {
             // We are trying to flood fill off the map, so just return
@@ -269,11 +267,6 @@ public class Room : IXmlSerializable
                         // all the tiles to Outside.
 
                         isConnectedToSpace = true;
-
-                        /*if(oldRoom != null) {
-							newRoom.ReturnTilesToOutsideRoom();
-							return;
-						}*/
                     }
                     else
                     {
@@ -289,8 +282,6 @@ public class Room : IXmlSerializable
 
             }
         }
-
-        //Debug.Log("ActualFloodFill -- Processed Tiles: " + processedTiles);
 
         if (isConnectedToSpace)
         {

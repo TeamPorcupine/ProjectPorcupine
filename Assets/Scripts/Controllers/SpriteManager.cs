@@ -27,9 +27,6 @@ public class SpriteManager : MonoBehaviour
         sprites = new Dictionary<string, Sprite>();
 
         string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "Images");
-        //filePath = System.IO.Path.Combine( Application.streamingAssetsPath, "CursorCircle.png" );
-
-        //LoadSprite("CursorCircle", filePath);
 
         LoadSpritesFromDirectory(filePath);
 
@@ -37,7 +34,6 @@ public class SpriteManager : MonoBehaviour
 
     void LoadSpritesFromDirectory(string filePath)
     {
-        Debug.Log("LoadSpritesFromDirectory: " + filePath);
         // First, we're going to see if we have any more sub-directories,
         // if so -- call LoadSpritesFromDirectory on that.
 
@@ -68,8 +64,6 @@ public class SpriteManager : MonoBehaviour
 
     void LoadImage(string spriteCategory, string filePath)
     {
-        //Debug.Log("LoadImage: " + filePath);
-
         // TODO:  LoadImage is returning TRUE for things like .meta and .xml files.  What??!
         //		So as a temporary fix, let's just bail if we have something we KNOW should not
         //  	be an image.
@@ -137,7 +131,6 @@ public class SpriteManager : MonoBehaviour
 
     void ReadSpriteFromXml(string spriteCategory, XmlReader reader, Texture2D imageTexture)
     {
-        //Debug.Log("ReadSpriteFromXml");
         string name = reader.GetAttribute("name");
         int x = int.Parse(reader.GetAttribute("x"));
         int y = int.Parse(reader.GetAttribute("y"));
@@ -151,7 +144,6 @@ public class SpriteManager : MonoBehaviour
     void LoadSprite(string spriteCategory, string spriteName, Texture2D imageTexture, Rect spriteCoordinates, int pixelsPerUnit)
     {
         spriteName = spriteCategory + "/" + spriteName;
-        //Debug.Log("LoadSprite: " + spriteName);
         Vector2 pivotPoint = new Vector2(0.5f, 0.5f);	// Ranges from 0..1 -- so 0.5f == center
 
         Sprite s = Sprite.Create(imageTexture, spriteCoordinates, pivotPoint, pixelsPerUnit);
@@ -161,14 +153,10 @@ public class SpriteManager : MonoBehaviour
 
     public Sprite GetSprite(string categoryName, string spriteName)
     {
-        //Debug.Log(spriteName);
-
-
         spriteName = categoryName + "/" + spriteName;
 
         if (sprites.ContainsKey(spriteName) == false)
         {
-            //Debug.LogError("No sprite with name: " + spriteName);
             return null;	// TODO: What if we return a "dummy" sprite, like a purple square?
         }
 

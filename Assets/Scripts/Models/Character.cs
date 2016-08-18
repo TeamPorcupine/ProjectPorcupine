@@ -185,7 +185,7 @@ public class Character : IXmlSerializable, ISelectable
     }
 
     /// <summary>
-    /// Checks weather the current job has all the materials in place and if not instructs the working character to get the materials there first.
+    /// Checks whether the current job has all the materials in place and if not instructs the working character to get the materials there first.
     /// Only ever returns true if all materials for the job are at the job location and thus signals to the calling code, that it can proceed with job execution.
     /// </summary>
     /// <returns></returns>
@@ -233,14 +233,11 @@ public class Character : IXmlSerializable, ISelectable
             // At this point, the job still requires inventory, but we aren't carrying it!
 
             // Are we standing on a tile with goods that are desired by the job?
-            Debug.Log("Standing on Tile check");
             if (CurrTile.inventory != null &&
                 myJob.DesiresInventoryType(CurrTile.inventory) > 0 &&
                 (myJob.canTakeFromStockpile || CurrTile.furniture == null || CurrTile.furniture.IsStockpile() == false))
             {
                 // Pick up the stuff!
-                Debug.Log("Pick up the stuff");
-
                 World.current.inventoryManager.PlaceInventory(
                     this,
                     CurrTile.inventory,
@@ -251,9 +248,6 @@ public class Character : IXmlSerializable, ISelectable
             else
             {
                 // Walk towards a tile containing the required goods.
-                Debug.Log("Walk to the stuff");
-                Debug.Log(myJob.canTakeFromStockpile);
-
 
                 // Find the first thing in the Job that isn't satisfied.
                 Inventory desired = myJob.GetFirstDesiredInventory();
@@ -281,14 +275,11 @@ public class Character : IXmlSerializable, ISelectable
 
                     if (newPath == null || newPath.Length() < 1)
                     {
-                        //Debug.Log("pathAStar is null and we have no path to object of type: " + desired.objectType);
                         // Cancel the job, since we have no way to get any raw materials!
                         Debug.Log("No tile contains objects of type '" + desired.objectType + "' to satisfy job requirements.");
                         AbandonJob();
                         return false;
-                    }
-
-                    Debug.Log("pathAStar returned with length of: " + newPath.Length());                    
+                    }            
 
                     DestTile = newPath.EndTile();
 
@@ -318,14 +309,6 @@ public class Character : IXmlSerializable, ISelectable
         // - Jobs also needing this item (this could serve us when building Walls, as the character could transport ressources for multiple walls at once)
         // - Stockpiles (as not to clutter the floor)
         // - Floor
-
-        //if (World.current.inventoryManager.PlaceInventory(CurrTile, inventory) == false)
-        //{
-        //    Debug.LogError("Character tried to dump inventory into an invalid tile (maybe there's already something here). FIXME: Setting inventory to null and leaking for now");
-        //    // FIXME: For the sake of continuing on, we are still going to dump any
-        //    // reference to the current inventory, but this means we are "leaking"
-        //    // inventory.  This is permanently lost now.
-        //}
 
         inventory = null;
     }

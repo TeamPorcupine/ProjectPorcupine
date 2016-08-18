@@ -161,8 +161,6 @@ public class Job
         // If not, don't register the work time.
         if (HasAllMaterial() == false)
         {
-            //Debug.LogError("Tried to do work on a job that doesn't have all the material.");
-
             // Job can't actually be worked, but still call the callbacks
             // so that animations and whatnot can be updated.
             if (cbJobWorked != null)

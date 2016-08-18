@@ -12,7 +12,7 @@ using System.Xml.Serialization;
 using MoonSharp.Interpreter;
 
 
-// InstalledObjects are things like walls, doors, and furniture (e.g. a sofa)
+// Furnitures are things like walls, doors, and furniture (e.g. a sofa)
 
 [MoonSharpUserData]
 public class Furniture : IXmlSerializable, ISelectable
@@ -30,10 +30,8 @@ public class Furniture : IXmlSerializable, ISelectable
     /// These actions are called every update. They get passed the furniture
     /// they belong to, plus a deltaTime.
     /// </summary>
-    //protected Action<Furniture, float> updateActions;
     protected List<string> updateActions;
 
-    //public Func<Furniture, ENTERABILITY> IsEnterable;
     protected string isEnterableAction;
 
     protected List<string> replaceableFurniture = new List<string>();
@@ -54,7 +52,6 @@ public class Furniture : IXmlSerializable, ISelectable
     {
         if (updateActions != null)
         {
-            //updateActions(this, deltaTime);
 
             if (powerValue > 0 && isPowerGenerator == false)
             {
@@ -75,8 +72,6 @@ public class Furniture : IXmlSerializable, ISelectable
         {
             return ENTERABILITY.Yes;
         }
-
-        //FurnitureActions.CallFunctionsWithFurniture( isEnterableActions.ToArray(), this );
 
         DynValue ret = FurnitureActions.CallFunction(isEnterableAction, this);
 
@@ -228,23 +223,6 @@ public class Furniture : IXmlSerializable, ISelectable
         return new Furniture(this);
     }
 
-    // Create furniture from parameters -- this will probably ONLY ever be used for prototypes
-    /*	public Furniture ( string objectType, float movementCost = 1f, int width=1, int height=1, bool linksToNeighbour=false, bool roomEnclosure = false ) {
-		this.objectType = objectType;
-		this.movementCost = movementCost;
-		this.roomEnclosure = roomEnclosure;
-		this.Width = width;
-		this.Height = height;
-		this.linksToNeighbour = linksToNeighbour;
-
-		this.funcPositionValidation = this.DEFAULT__IsValidPosition;
-
-		updateActions = new List<string>();
-
-		furnParameters = new Dictionary<string, float>();
-	}
-*/
-
     static public Furniture PlaceInstance(Furniture proto, Tile tile)
     {
         if (proto.funcPositionValidation(tile) == false)
@@ -384,8 +362,6 @@ public class Furniture : IXmlSerializable, ISelectable
 
     public void ReadXmlPrototype(XmlReader reader_parent)
     {
-        //Debug.Log("ReadXmlPrototype");
-
         objectType = reader_parent.GetAttribute("objectType");
 
         XmlReader reader = reader_parent.ReadSubtree();
@@ -517,8 +493,6 @@ public class Furniture : IXmlSerializable, ISelectable
         // X, Y, and objectType have already been set, and we should already
         // be assigned to a tile.  So just read extra data.
 
-        //movementCost = int.Parse( reader.GetAttribute("movementCost") );
-
         ReadXmlParams(reader);
     }
 
@@ -526,8 +500,6 @@ public class Furniture : IXmlSerializable, ISelectable
     {
         // X, Y, and objectType have already been set, and we should already
         // be assigned to a tile.  So just read extra data.
-
-        //movementCost = int.Parse( reader.GetAttribute("movementCost") );
 
         if (reader.ReadToDescendant("Param"))
         {
@@ -675,7 +647,7 @@ public class Furniture : IXmlSerializable, ISelectable
 
     public string GetName()
     {
-        return localizationCode;//this.Name;
+        return localizationCode;
     }
 
     public string GetDescription()

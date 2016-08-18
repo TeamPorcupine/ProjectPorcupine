@@ -39,21 +39,8 @@ public class MouseController : MonoBehaviour
         dragPreviewGameObjects = new List<GameObject>();
     }
 
-    /// <summary>
-    /// Gets the mouse position in world space.
-    /// </summary>
-    public Vector3 GetMousePosition()
-    {
-        return currFramePosition;
-    }
-
     public Tile GetMouseOverTile()
     {
-/*		return WorldController.Instance.world.GetTileAt(
-			Mathf.FloorToInt(currFramePosition.x), 
-			Mathf.FloorToInt(currFramePosition.y)
-		);*/
-
         return WorldController.Instance.GetTileAtWorldCoord(currFramePosition);
     }
 
@@ -81,8 +68,6 @@ public class MouseController : MonoBehaviour
                 Debug.Log("Show game menu?");
             }
         }
-
-        //UpdateCursor();
 
         UpdateDragging();
         UpdateCameraMovement();
@@ -137,7 +122,6 @@ public class MouseController : MonoBehaviour
 
             if (mySelection == null || mySelection.tile != tileUnderMouse)
             {
-                //Debug.Log("new tile");
                 // We have just selected a brand new tile, reset the info.
                 mySelection = new SelectionInfo();
                 mySelection.tile = tileUnderMouse;
@@ -251,7 +235,6 @@ public class MouseController : MonoBehaviour
             start_y = tmp;
         }
 
-        //if( isDragging ) {
         // Display a preview of the drag area
         for (int x = start_x; x <= end_x; x++)
         {
@@ -278,7 +261,6 @@ public class MouseController : MonoBehaviour
                 }
             }
         }
-        //}
 
         // End Drag
         if (isDragging && Input.GetMouseButtonUp(0))

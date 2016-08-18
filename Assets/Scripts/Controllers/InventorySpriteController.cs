@@ -39,7 +39,6 @@ public class InventorySpriteController : MonoBehaviour
 
     public void OnInventoryCreated(Inventory inv)
     {
-        //Debug.Log("OnInventoryCreated");
         // Create a visual GameObject linked to this data.
 
         // FIXME: Does not consider multi-tile objects nor rotated objects
@@ -82,8 +81,6 @@ public class InventorySpriteController : MonoBehaviour
 
     void OnInventoryChanged(Inventory inv)
     {
-
-        //Debug.Log("OnFurnitureChanged");
         // Make sure the furniture's graphics are correct.
 
         if (inventoryGameObjectMap.ContainsKey(inv) == false)
@@ -109,9 +106,5 @@ public class InventorySpriteController : MonoBehaviour
             inventoryGameObjectMap.Remove(inv);
             inv.cbInventoryChanged -= OnInventoryChanged;
         }
-
     }
-
-
-	
 }
