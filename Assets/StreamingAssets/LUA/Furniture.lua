@@ -47,6 +47,21 @@ function OnUpdate_Door( furniture, deltaTime )
 	furniture.tile.EqualiseGas(1.0 * (furniture.GetParameter("openness") + 0.1))
 end
 
+function OnUpdate_Airlock( furniture, deltaTime )
+	if (furniture.GetParameter("is_opening") >= 1.0) then
+		furniture.ChangeParameter("openness", deltaTime * 4) -- FIXME: Maybe a door open speed parameter?
+		if (furniture.GetParameter("openness") >= 1)  then
+			furniture.SetParameter("is_opening", 0)
+		end
+	else
+		furniture.ChangeParameter("openness", deltaTime * -4)
+	end
+
+	furniture.SetParameter("openness", Clamp01(furniture.GetParameter("openness")) )
+
+	furniture.UpdateOnChanged(furniture);
+end
+
 function IsEnterable_Door( furniture )
 	furniture.SetParameter("is_opening", 1)
 

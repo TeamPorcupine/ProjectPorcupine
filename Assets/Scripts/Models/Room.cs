@@ -96,8 +96,7 @@ public class Room : IXmlSerializable
         }
 
         List<string> gasses = this.GetGasNames().ToList();
-        gasses = gasses.Union(otherRoom.GetGasNames().ToList()).ToList();;
-        Debug.LogAssertion("numgas:" + gasses.Count);
+        gasses = gasses.Union(otherRoom.GetGasNames().ToList()).ToList();
         foreach (string gas in gasses)
         {
             float pressureDifference = this.GetGasPressure(gas) - otherRoom.GetGasPressure(gas);
