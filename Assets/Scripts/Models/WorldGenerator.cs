@@ -6,11 +6,11 @@ public class WorldGenerator {
     public static int startAreaSize = 3;
 
     public static TileType asteroid_floor_type = TileType.Floor;
-    public static float asteroid_noise_scale = 0.15f;
+    public static float asteroid_noise_scale = 0.2f;
     public static float asteroid_noise_threshhold = 0.75f;
-    public static float asteroid_ressource_chance = 0.8f;
-    public static int asteroid_ressource_min = 2;
-    public static int asteroid_ressource_max = 20;
+    public static float asteroid_ressource_chance = 0.85f;
+    public static int asteroid_ressource_min = 5;
+    public static int asteroid_ressource_max = 15;
 
     public static void Generate(World world, int seed){
         Random.InitState(seed);
@@ -30,7 +30,7 @@ public class WorldGenerator {
                     Tile t = world.GetTileAt(x, y);
                     t.Type = asteroid_floor_type;
 
-                    if (Random.value > asteroid_ressource_chance)
+                    if (Random.value >= asteroid_ressource_chance)
                     {
                         int stackSize = Random.Range(asteroid_ressource_min, asteroid_ressource_max);
                         Inventory inv = Inventory.New("Steel Plate", 50, stackSize);
@@ -50,8 +50,9 @@ public class WorldGenerator {
                 Tile t = world.GetTileAt(xPos, yPos);
                 t.Type = asteroid_floor_type;
 
-                if(x == -startAreaSize || x == startAreaSize || y == -startAreaSize || y == startAreaSize){
-                    if (x == 0 && y == startAreaSize)
+                if(x == -startAreaSize || x == startAreaSize || y == -startAreaSize || y == startAreaSize)
+                {
+                    if (x == 0 && y == -startAreaSize)
                     {
                         world.PlaceFurniture("Door", t, true);
                         continue;
