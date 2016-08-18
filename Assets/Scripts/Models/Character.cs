@@ -123,6 +123,7 @@ public class Character : IXmlSerializable, ISelectable, IDamageable
         CurrTile = DestTile = NextTile = tile;
 		this.maxHitpoints = 100;
 		this.hitpoints = maxHitpoints;
+		World.current.cbCharacterRemoved += onCharacterRemoved;
     }
 
 
@@ -447,6 +448,12 @@ public class Character : IXmlSerializable, ISelectable, IDamageable
         if (cbCharacterChanged != null)
             cbCharacterChanged(this);
     }
+
+	void onCharacterRemoved (Character c)
+	{
+		this.AbandonJob ();
+		this.DumpExcessInventory ();
+	}
     
     void OnJobStopped(Job j)
     {
