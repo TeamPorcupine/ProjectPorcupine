@@ -6,7 +6,18 @@ If you would like to contribute to this project by modifying/adding to the progr
 2. Clone your fork to your computer.
 3. Create a branch for your new feature.
 4. Make your changes.
+ * Avoid making changes to more files than strictly necessary for your
+   feature. This will simplify the merging process and make your changes
+   more clear.
+ * Very much avoid making changes to the Unity-specific files, like the scene
+   and the project settings unless absolutely necessary. Changes here are
+   very likely to cause difficult to merge conflicts. Work in code as much
+   as possible. (We will be trying to change the UI to be more code-driven
+   in the future.)
 5. Commit your changes and push your branch to your fork.
+  * You may want to pull in the lastest project games from the upstream
+    master before pushing your own changes, to ensure that you are up
+    to date.
 6. Make a "Pull Request" from your branch here on Github.
   * Include screenshots demonstrating your change if applicable.
 7. For a video tutorial, please see: https://www.youtube.com/watch?v=-N4Cghw0l2Q
