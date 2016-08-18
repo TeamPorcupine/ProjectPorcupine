@@ -23,3 +23,5 @@ furn_oxygen_generator=Generator Tlenu
 furn_oxygen_generator_desc=Generuje tlen dla twoich astronautów.
 furn_mining_drone_station=Dron Górniczy
 furn_mining_drone_station_desc=Tworzy materiały z... Niczego.
+furn_power_generator=Generator Prądu
+furn_power_generator_desc=Generuje prąd z niczego.
