@@ -8,6 +8,7 @@ If you would like to contribute to this project by modifying/adding to the progr
 4. Make your changes.
 5. Commit your changes and push your branch to your fork.
 6. Make a "Pull Request" from your branch here on Github.
+  * Include screenshots demonstrating your change if applicable.
 7. For a video tutorial, please see: https://www.youtube.com/watch?v=-N4Cghw0l2Q
 
 
