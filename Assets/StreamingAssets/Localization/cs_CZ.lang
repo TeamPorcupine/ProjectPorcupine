@@ -23,3 +23,5 @@ furn_oxygen_generator=Generátor kyslíku
 furn_oxygen_generator_desc=Vytváří kyslík.
 furn_mining_drone_station=Těžící stanici
 furn_mining_drone_station_desc=Těží materiály z ničeho.
+furn_power_generator=Generátor elektriny
+furn_power_generator_desc=Vytváří elektřinu z ničeho.
