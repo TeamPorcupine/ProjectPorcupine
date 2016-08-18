@@ -3,16 +3,20 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections;
 
-public class DialogListItem : MonoBehaviour, IPointerClickHandler {
+public class DialogListItem : MonoBehaviour, IPointerClickHandler
+{
+    public string fileName;
+    public InputField inputField;
 
-	public InputField inputField;
+    #region IPointerClickHandler implementation
 
-	#region IPointerClickHandler implementation
-	public void OnPointerClick(PointerEventData eventData) {
-		// Our job is to take our text label and 
-		// copy it into a target field.
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        // Our job is to take our text label and 
+        // copy it into a target field.
 
-		inputField.text = transform.GetComponentInChildren<Text>().text;
-	}
-	#endregion
+        inputField.text = fileName;
+    }
+
+    #endregion
 }
