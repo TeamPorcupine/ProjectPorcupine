@@ -5,12 +5,12 @@ public class WorldGenerator {
 
     public const int startAreaSize = 3;
 
-    public const TileType asteroid_floor_type = TileType.Floor;
-    public const float asteroid_noise_scale = 0.2f;
-    public const float asteroid_noise_threshhold = 0.75f;
-    public const float asteroid_ressource_chance = 0.85f;
-    public const int asteroid_ressource_min = 5;
-    public const int asteroid_ressource_max = 15;
+    public const TileType asteroidFloorType = TileType.Floor;
+    public const float asteroidNoiseScale = 0.2f;
+    public const float asteroidNoiseThreshhold = 0.75f;
+    public const float asteroidRessourceChance = 0.85f;
+    public const int asteroidRessourceMin = 5;
+    public const int asteroidRessourceMax = 15;
 
     public static void Generate(World world, int seed){
         Random.InitState(seed);
@@ -24,15 +24,15 @@ public class WorldGenerator {
         {
             for (int y = 0; y < height; y++)
             {
-                float val = Mathf.PerlinNoise((x + xOffset) / (width * asteroid_noise_scale), (y + yOffset) / (height * asteroid_noise_scale));
-                if(val >= asteroid_noise_threshhold)
+                float val = Mathf.PerlinNoise((x + xOffset) / (width * asteroidNoiseScale), (y + yOffset) / (height * asteroidNoiseScale));
+                if(val >= asteroidNoiseThreshhold)
                 {
                     Tile t = world.GetTileAt(x, y);
-                    t.Type = asteroid_floor_type;
+                    t.Type = asteroidFloorType;
 
-                    if (Random.value >= asteroid_ressource_chance)
+                    if (Random.value >= asteroidRessourceChance)
                     {
-                        int stackSize = Random.Range(asteroid_ressource_min, asteroid_ressource_max);
+                        int stackSize = Random.Range(asteroidRessourceMin, asteroidRessourceMax);
                         Inventory inv = Inventory.New("Steel Plate", 50, stackSize);
                         world.inventoryManager.PlaceInventory(t, inv);
                     }
@@ -48,7 +48,7 @@ public class WorldGenerator {
                 int yPos = height / 2 + y;
 
                 Tile t = world.GetTileAt(xPos, yPos);
-                t.Type = asteroid_floor_type;
+                t.Type = TileType.Floor;
 
                 if(x == -startAreaSize || x == startAreaSize || y == -startAreaSize || y == startAreaSize)
                 {
