@@ -155,6 +155,7 @@ public class World : IXmlSerializable
 
     public void Update(float deltaTime)
     {
+        foreach (Character c in characters.ToArray()) //Added .ToArray() so i can remove character when they die, whitch happens in this loop.
         {
             c.Update(deltaTime);
         }
