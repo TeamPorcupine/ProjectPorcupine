@@ -1,10 +1,10 @@
 ﻿build_floor=Boden bauen
 remove_floor=Boden entfernen
-deconstruct_furniture=Einrichtung abbauen
+deconstruct_furniture=Einrichtung entfernen
 new_world=Neue Welt
 load=Laden
 save=Speichern
-temp_pathfinding_test=Pfadfindungs-Test
+temp_pathfinding_test=Pfadfindungstest
 selection_panel_title=Momentane Auswahl
 save_file=Datei speichern...
 load_file=Datei laden...
