@@ -20,7 +20,15 @@ public class WorldGenerator {
                 float val = Mathf.PerlinNoise(x / (width * asteroid_noise_scale), y / (height * asteroid_noise_scale));
                 if(val >= asteroid_noise_break)
                 {
-                    world.GetTileAt(x, y).Type = asteroid_floor_type;
+                    Tile t = world.GetTileAt(x, y);
+                    t.Type = asteroid_floor_type;
+
+                    if (Random.value > 0.65f)
+                    {
+                        int stackSize = Random.Range(5, 25);
+                        Inventory inv = Inventory.New("Steel Plate", 50, stackSize);
+                        world.inventoryManager.PlaceInventory(t, inv);
+                    }
                 }
             }
         }
