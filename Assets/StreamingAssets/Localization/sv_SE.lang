@@ -1,11 +1,11 @@
 ﻿build_floor=Bygg Golv
 remove_floor=Ta bort Golv
-deconstruct_furniture=Dekonstruera Möbel
+deconstruct_furniture=Ta isär Möbel
 new_world=Ny Värld
 load=Ladda
 save=Spara
-temp_pathfinding_test=Stigfinnings test
-selection_panel_title=Nuvarande Selektion
+temp_pathfinding_test=Ladda testvärld
+selection_panel_title=Nuvarande Markering
 save_file=Spara Fil...
 load_file=Ladda Fil...
 okay=Okej
