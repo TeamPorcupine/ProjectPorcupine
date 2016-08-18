@@ -43,11 +43,7 @@ function OnUpdate_Door( furniture, deltaTime )
 
 	furniture.SetParameter("openness", Clamp01(furniture.GetParameter("openness")) )
 
-	if (furniture.cbOnChanged != nil) then
-		furniture.cbOnChanged(furniture)
-	end
-
-
+	furniture.UpdateOnChanged(furniture);
 end
 
 function IsEnterable_Door( furniture )
