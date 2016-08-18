@@ -16,7 +16,7 @@ using System.Xml.Serialization;
 /// Later, the Character class will likely be refactored (possibly with
 /// sub-classes or interfaces) to support friendly workers, enemies, etc...
 /// </summary>
-public class Character : IXmlSerializable, ISelectable
+public class Character : IXmlSerializable, ISelectable, IDamageable
 {
 
     /// <summary>
@@ -121,6 +121,8 @@ public class Character : IXmlSerializable, ISelectable
     public Character(Tile tile)
     {
         CurrTile = DestTile = NextTile = tile;
+		this.maxHitpoints = 100;
+		this.hitpoints = maxHitpoints;
     }
 
 
@@ -444,7 +446,6 @@ public class Character : IXmlSerializable, ISelectable
 
         if (cbCharacterChanged != null)
             cbCharacterChanged(this);
-
     }
     
     void OnJobStopped(Job j)
@@ -496,10 +497,56 @@ public class Character : IXmlSerializable, ISelectable
 
     public string GetHitPointString()
     {
-        return "100/100";
-    }
+		return this.getHitPoints () + "/" + this.getMaximumHitPoints ();
+	}
 
-    #endregion
+	#endregion
+
+	#region IDamageableInterface implemenation
+
+	// Current hitpoints
+	protected int hitpoints;
+	// Maximum hitpoints
+	protected int maxHitpoints;
+
+	public void takeDemage (int amount)
+	{
+		this.hitpoints -= amount;
+		if (this.hitpoints <= 0)
+		{
+			World.current.RemoveCharacter (this);
+		}
+	}
+
+	public bool heal (int amount)
+	{
+		if (this.hitpoints == this.maxHitpoints)
+		{
+			return false;
+		}
+		else if (this.hitpoints + amount > maxHitpoints)
+		{
+			this.hitpoints = this.maxHitpoints;
+			return true;
+		}
+		else
+		{
+			this.hitpoints += amount;
+			return true;
+		}
+	}
+
+	public int getHitPoints ()
+	{
+		return this.hitpoints;
+	}
+
+	public int getMaximumHitPoints ()
+	{
+		return this.maxHitpoints;
+	}
+
+	#endregion
 
 
 }

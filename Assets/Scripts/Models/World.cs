@@ -38,6 +38,7 @@ public class World : IXmlSerializable
 
     public event Action<Furniture> cbFurnitureCreated;
     public event Action<Character> cbCharacterCreated;
+	public event Action<Character> cbCharacterRemoved;
     public event Action<Inventory> cbInventoryCreated;
     public event Action<Tile> cbTileChanged;
 
@@ -154,7 +155,6 @@ public class World : IXmlSerializable
 
     public void Update(float deltaTime)
     {
-        foreach (Character c in characters)
         {
             c.Update(deltaTime);
         }
@@ -178,6 +178,13 @@ public class World : IXmlSerializable
 
         return c;
     }
+
+	public void RemoveCharacter(Character c)
+	{
+		Debug.Log ("Character was killed!");
+		cbCharacterRemoved (c);
+		characters.Remove (c);
+	}
 
     public void SetFurnitureJobPrototype(Job j, Furniture f)
     {
