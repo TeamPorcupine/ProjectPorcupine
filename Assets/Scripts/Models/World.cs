@@ -487,7 +487,11 @@ public class World : IXmlSerializable
 		
         cbTileChanged(t);
 
-        InvalidateTileGraph();
+        //InvalidateTileGraph();
+        if (tileGraph != null)
+        {
+            tileGraph.RegenerateGraphAtTile(t);
+        }
     }
 
     // This should be called whenever a change to the world

@@ -148,8 +148,9 @@ public class Character : IXmlSerializable, ISelectable
         // NOTE: We might not be pathing to it right away (due to 
         // requiring materials), but we still need to verify that the
         // final location can be reached.
-
+        Profiler.BeginSample("PathGeneration");
         pathAStar = new Path_AStar(World.current, CurrTile, DestTile);	// This will calculate a path from curr to dest.
+        Profiler.EndSample();
         if (pathAStar.Length() == 0)
         {
             Debug.LogError("Path_AStar returned no path to target job tile!");
