@@ -7,6 +7,16 @@ using System.IO;
 
 public class DialogBoxLoadGame : DialogBoxLoadSaveGame
 {
+    public override void ShowDialog()
+    {
+        base.ShowDialog();
+        DialogListItem[] listItems = GetComponentsInChildren<DialogListItem>();
+        foreach (DialogListItem listItem in listItems)
+        {
+            listItem.doubleclick = OkayWasClicked;
+        }
+    }
+
     public void OkayWasClicked()
     {
         string fileName = gameObject.GetComponentInChildren<InputField>().text;
