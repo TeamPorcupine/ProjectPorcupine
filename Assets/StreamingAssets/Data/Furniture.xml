@@ -75,6 +75,7 @@
         <MovementCost>10</MovementCost>
         <Width>2</Width>
         <Height>2</Height>
+        <Power>1</Power>
 
         <OnUpdate FunctionName="OnUpdate_GasGenerator" />
 
@@ -107,6 +108,16 @@
 		
 	</Furniture>
 
+
+  <Furniture objectType="Power Generator">
+    <Name>Power Generator</Name>
+    <MovementCost>10</MovementCost>
+    <Width>2</Width>
+    <Height>2</Height>
+
+    <PowerGenerator supply="5"/>
+    
+  </Furniture>
 
 
 </Furnitures>
