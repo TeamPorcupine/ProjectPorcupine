@@ -37,7 +37,8 @@ public class LuaController : MonoBehaviour
         LuaScripts.DoString(RawCode);
     }
     public DynValue Call(string functionName,params object[] args) {
-        return LuaScripts.Call(functionName, args);
+        object func = getGlobal(functionName);
+        return LuaScripts.Call(func, args);
     }
     public DynValue Call(object functionName,params object[] args) {
         return LuaScripts.Call(functionName, args);
