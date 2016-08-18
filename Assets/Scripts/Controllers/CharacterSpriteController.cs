@@ -48,8 +48,13 @@ public class CharacterSpriteController : MonoBehaviour
         char_go.transform.position = new Vector3(c.X, c.Y, 0);
         char_go.transform.SetParent(this.transform, true);
 
+        //A simple character randomization 
+        int randomCharacter = Random.Range(1, 4); //Max is exclusive thus real range is 1-3
+        //Debug.Log("Random Char: " +randomCharacter);
+
+        //Creates the sprite component for the character object
         SpriteRenderer sr = char_go.AddComponent<SpriteRenderer>();
-        sr.sprite = SpriteManager.current.GetSprite("Character", "p1_front");
+        sr.sprite = SpriteManager.current.GetSprite("Character", "p"+randomCharacter+"_front"); //sets the sprite for the character
         sr.sortingLayerName = "Characters";
 
         // Register our callback so that our GameObject gets updated whenever
