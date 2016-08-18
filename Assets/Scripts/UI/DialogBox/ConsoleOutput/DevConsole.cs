@@ -62,7 +62,7 @@ public class DevConsole : DialogBox {
 		File.AppendAllText (outPath, msg);
 		TextZone.GetComponent<Text> ().text += "<color=#ff0000ff>" + msg + "</color>";
 	}
-	public void LogInput(object message){
+	void LogInput(object message){
 		string msg = "INPUT : " + message.ToString () + System.Environment.NewLine;
 		File.AppendAllText (outPath, msg);
 		TextZone.GetComponent<Text> ().text += "<color=#0000ffff>" + msg + "</color>";
