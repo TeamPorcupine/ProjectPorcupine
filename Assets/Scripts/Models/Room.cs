@@ -97,11 +97,10 @@ public class Room : IXmlSerializable
 
         List<string> gasses = this.GetGasNames().ToList();
         gasses = gasses.Union(otherRoom.GetGasNames().ToList()).ToList();;
-
+        Debug.LogAssertion("numgas:" + gasses.Count);
         foreach (string gas in gasses)
         {
             float pressureDifference = this.GetGasPressure(gas) - otherRoom.GetGasPressure(gas);
-            Debug.LogAssertion("PResDIF:"+gas+"/"+pressureDifference);
             this.ChangeGas(gas, (-1) * pressureDifference * leakFactor);
             otherRoom.ChangeGas(gas, pressureDifference * leakFactor);
         }
