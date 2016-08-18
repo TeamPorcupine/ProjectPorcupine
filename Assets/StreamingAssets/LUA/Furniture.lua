@@ -21,8 +21,8 @@ function OnUpdate_GasGenerator( furniture, deltaTime )
 		return "Furniture's room was null."
 	end
 
-	if ( furniture.tile.room.GetGasAmount("O2") < 0.20) then
-		furniture.tile.room.ChangeGas("O2", 0.01 * deltaTime)
+	if ( furniture.tile.room.GetGasPressure("O2") < 0.20) then
+		furniture.tile.room.ChangeGas("O2", 0.1 * deltaTime)
 	else
 		-- Do we go into a standby mode to save power?
 	end
@@ -43,11 +43,7 @@ function OnUpdate_Door( furniture, deltaTime )
 
 	furniture.SetParameter("openness", Clamp01(furniture.GetParameter("openness")) )
 
-	if (furniture.cbOnChanged != nil) then
-		furniture.cbOnChanged(furniture)
-	end
-
-
+	furniture.UpdateOnChanged(furniture);
 end
 
 function IsEnterable_Door( furniture )

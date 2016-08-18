@@ -38,7 +38,7 @@ public class Inventory : ISelectable
     }
 
     // The function we callback any time our tile's data changes
-    Action<Inventory> cbInventoryChanged;
+    public event Action<Inventory> cbInventoryChanged;
 
     public Tile tile;
     public Character character;
@@ -71,18 +71,7 @@ public class Inventory : ISelectable
     {
         return new Inventory(this);
     }
-
-    public void RegisterChangedCallback(Action<Inventory> callback)
-    {
-        cbInventoryChanged += callback;
-    }
-
-    public void UnregisterChangedCallback(Action<Inventory> callback)
-    {
-        cbInventoryChanged -= callback;
-    }
-
-
+    
     #region ISelectableInterface implementation
 
     public string GetName()

@@ -50,40 +50,45 @@ public class Path_TileGraph
         // Now loop through all nodes again
         // Create edges for neighbours
 
-        int edgeCount = 0;
 
         foreach (Tile t in nodes.Keys)
         {
-            Path_Node<Tile> n = nodes[t];
-
-            List<Path_Edge<Tile>> edges = new List<Path_Edge<Tile>>();
-
-            // Get a list of neighbours for the tile
-            Tile[] neighbours = t.GetNeighbours(true);	// NOTE: Some of the array spots could be null.
-
-            // If neighbour is walkable, create an edge to the relevant node.
-            for (int i = 0; i < neighbours.Length; i++)
-            {
-                if (neighbours[i] != null && neighbours[i].movementCost > 0 && IsClippingCorner(t, neighbours[i]) == false)
-                {
-                    // This neighbour exists, is walkable, and doesn't requiring clipping a corner --> so create an edge.
-
-                    Path_Edge<Tile> e = new Path_Edge<Tile>();
-                    e.cost = neighbours[i].movementCost;
-                    e.node = nodes[neighbours[i]];
-
-                    // Add the edge to our temporary (and growable!) list
-                    edges.Add(e);
-
-                    edgeCount++;
-                }
-            }
-
-            n.edges = edges.ToArray();
+            GenerateEdgesByTile(t);
         }
 
-        Debug.Log("Path_TileGraph: Created " + edgeCount + " edges.");
 
+    }
+
+    void GenerateEdgesByTile(Tile t)
+    {
+        Path_Node<Tile> n = nodes[t];
+        List<Path_Edge<Tile>> edges = new List<Path_Edge<Tile>>();
+        // Get a list of neighbours for the tile
+        Tile[] neighbours = t.GetNeighbours(true);
+        // NOTE: Some of the array spots could be null.
+        // If neighbour is walkable, create an edge to the relevant node.
+        for (int i = 0; i < neighbours.Length; i++)
+        {
+            if (neighbours[i] != null && neighbours[i].movementCost > 0 && IsClippingCorner(t, neighbours[i]) == false)
+            {
+                // This neighbour exists, is walkable, and doesn't requiring clipping a corner --> so create an edge.
+                Path_Edge<Tile> e = new Path_Edge<Tile>();
+                e.cost = neighbours[i].movementCost;
+                e.node = nodes[neighbours[i]];
+                // Add the edge to our temporary (and growable!) list
+                edges.Add(e);
+            }
+        }
+        n.edges = edges.ToArray();
+    }
+
+    public void RegenerateGraphAtTile(Tile changedTile)
+    {
+        GenerateEdgesByTile(changedTile);
+        foreach (Tile tile in changedTile.GetNeighbours(true))
+        {
+            GenerateEdgesByTile(tile);
+        }
     }
 
     bool IsClippingCorner(Tile curr, Tile neigh)

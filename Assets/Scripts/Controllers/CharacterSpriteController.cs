@@ -19,7 +19,7 @@ public class CharacterSpriteController : MonoBehaviour
 
         // Register our callback so that our GameObject gets updated whenever
         // the tile's type changes.
-        world.RegisterCharacterCreated(OnCharacterCreated);
+        world.cbCharacterCreated += OnCharacterCreated;
 
         // Check for pre-existing characters, which won't do the callback.
         foreach (Character c in world.characters)
@@ -54,7 +54,7 @@ public class CharacterSpriteController : MonoBehaviour
 
         // Register our callback so that our GameObject gets updated whenever
         // the object's into changes.
-        c.RegisterOnChangedCallback(OnCharacterChanged);
+        c.cbCharacterChanged += OnCharacterChanged;
 
     }
 
