@@ -96,7 +96,7 @@ public static class Logger
         Log(Level.Info, message, args);
     }
 
-    public static void Log(Level level, string message, params object[] formatArgs)
+    private static void Log(Level level, string message, params object[] formatArgs)
     {
         if (level > minimumLevel)
         {
