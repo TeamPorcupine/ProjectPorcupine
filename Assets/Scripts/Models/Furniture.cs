@@ -643,6 +643,23 @@ public class Furniture : IXmlSerializable, ISelectable
     {
         Debug.Log("Deconstruct");
 
+        if tile.room.IsOutsideRoom() == false
+        {
+            Tile neighbours[] = Tile.GetNeighbours()
+            foreach Tile t in neighbours
+            {
+                if t == null || t.room == null // Check to see if the tile is valid and has a room i.e is not a wall
+                {
+                    continue
+                }
+                if t.room.IsOutsideRoom()
+                {
+                    // If any tile is linked to the outside bail out early and do not deconstruct
+                    return
+                }
+            }
+        }
+
         tile.UnplaceFurniture();
 
         if (cbOnRemoved != null)
