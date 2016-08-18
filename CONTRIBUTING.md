@@ -37,7 +37,7 @@ As a TL;DR on our coding practises, adhere to the following example:
 ```c#
 // Use camelCasing everywhere.
 // Descriptive names for variables/methods should be used.
-// Fields, properties and methods should always specify their scope, aka private/protected/internal/public
+// Fields, properties and methods should always specify their scope, aka private/protected/internal/public.
 
 // Interfaces start with an I and should use PascalCasing.
 interface IInterfaceable { } 
@@ -56,11 +56,11 @@ class Class
     // Method parameters should be camelCased.
     public void SomeMethod( int functionParameter ) 
     {
-        // Local variables should also be camelCased
+        // Local variables should also be camelCased.
         int myLocalVariable = 0; 
     } 
     
-    // Events should use PascalCasing as well 
+    // Events should use PascalCasing as well.
     public event SomeEvent; 
 }
 ```
