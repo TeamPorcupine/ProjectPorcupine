@@ -17,7 +17,7 @@ using MoonSharp.Interpreter.Interop;
 // InstalledObjects are things like walls, doors, and furniture (e.g. a sofa)
 
 [MoonSharpUserData]
-public class Furniture : IXmlSerializable, ISelectable
+public class Furniture : IXmlSerializable, ISelectable, IDamageable
 {
 
     /// <summary>
@@ -215,6 +215,9 @@ public class Furniture : IXmlSerializable, ISelectable
 
         this.isPowerGenerator = other.isPowerGenerator;
         this.powerValue = other.powerValue;
+
+		this.hitpoints = other.hitpoints;
+		this.maxHitpoints = other.maxHitpoints;
 
         if(isPowerGenerator == true)
         {
@@ -533,6 +536,12 @@ public class Furniture : IXmlSerializable, ISelectable
                     powerValue = reader.ReadContentAsFloat();
                     break;
 
+				case "HitPoints":
+					reader.Read ();
+					maxHitpoints = reader.ReadContentAsInt ();
+					hitpoints = maxHitpoints;
+					break;
+				
                 case "Params":
                     ReadXmlParams(reader);	// Read in the Param tag
                     break;
@@ -550,6 +559,12 @@ public class Furniture : IXmlSerializable, ISelectable
         }
 
 
+		//Temporary - I dont want to edit furniture definition for now
+		if (this.maxHitpoints == 0)
+		{
+			this.maxHitpoints = 100;
+			this.hitpoints = maxHitpoints;
+		}
     }
 
     public void ReadXml(XmlReader reader)
@@ -727,10 +742,56 @@ public class Furniture : IXmlSerializable, ISelectable
         return unlocalizedDescription;
     }
 
-    public string GetHitPointString()
-    {
-        return "18/18";	// TODO: Add a hitpoint system to...well...everything
-    }
+	public string GetHitPointString ()
+	{
+		return this.getHitPoints () + "/" + this.getMaximumHitPoints ();
+	}
 
-    #endregion
+	#endregion
+
+	#region IDamageableInterface implementation
+
+	// Current hitpoints
+	protected int hitpoints;
+	// Maximum hitpoints - needs to be added to XML definitions
+	protected int maxHitpoints;
+
+	public void takeDemage (int amount)
+	{
+		this.hitpoints -= amount;
+		if (this.hitpoints <= 0)
+		{
+			this.Deconstruct ();
+		}
+	}
+
+	public bool heal (int amount)
+	{
+		if (this.hitpoints == this.maxHitpoints)
+		{
+			return false;
+		}
+		else if (this.hitpoints + amount > maxHitpoints)
+		{
+			this.hitpoints = this.maxHitpoints;
+			return true;
+		}
+		else
+		{
+			this.hitpoints += amount;
+			return true;
+		}
+	}
+
+	public int getHitPoints ()
+	{
+		return this.hitpoints;
+	}
+
+	public int getMaximumHitPoints ()
+	{
+		return this.maxHitpoints;
+	}
+
+	#endregion
 }

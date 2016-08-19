@@ -20,6 +20,7 @@ public class CharacterSpriteController : MonoBehaviour
         // Register our callback so that our GameObject gets updated whenever
         // the tile's type changes.
         world.cbCharacterCreated += OnCharacterCreated;
+		world.cbCharacterRemoved += OnCharacterRemoved;
 
         // Check for pre-existing characters, which won't do the callback.
         foreach (Character c in world.characters)
@@ -97,6 +98,11 @@ public class CharacterSpriteController : MonoBehaviour
         char_go.transform.position = new Vector3(c.X, c.Y, 0);
     }
 
+	void OnCharacterRemoved(Character c)
+	{
+		GameObject char_go = characterGameObjectMap[c];
 
+		Destroy (char_go);
+	}
 	
 }
