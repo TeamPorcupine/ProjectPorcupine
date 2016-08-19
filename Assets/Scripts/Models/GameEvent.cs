@@ -27,6 +27,12 @@ public class GameEvent
         executionActions.Add(luaFunctionName);
     }
 
+    public void RegisterExecutionActions(string[] luaFunctionNames)
+    {
+
+        executionActions.AddRange(luaFunctionNames);
+    }
+
     public void UnregisterExecutionAction(string luaFunctionName)
     {
         executionActions.Remove(luaFunctionName);

@@ -95,9 +95,7 @@ public class GameEventManager : MonoBehaviour {
     {
         GameEvent gameEvent = new GameEvent(eventName);
 
-        foreach(string funcName in functionNames){
-            gameEvent.RegisterExecutionAction(funcName);
-        }
+        gameEvent.RegisterExecutionActions(functionNames);
 
         events[eventName] = gameEvent;
     }
