@@ -110,6 +110,29 @@ public class FurnitureSpriteController : MonoBehaviour
         GameObject furn_go = furnitureGameObjectMap[furn];
         //Debug.Log(furn_go);
         //Debug.Log(furn_go.GetComponent<SpriteRenderer>());
+        // FIXME: This hardcoding is not ideal!
+        if (furn.objectType == "Door")
+        {
+            // By default, the door graphic is meant for walls to the east & west
+            // Check to see if we actually have a wall north/south, and if so
+            // then rotate this GO by 90 degrees
+
+            Tile northTile = world.GetTileAt(furn.tile.X, furn.tile.Y + 1);
+            Tile southTile = world.GetTileAt(furn.tile.X, furn.tile.Y - 1);
+            Tile eastTile = world.GetTileAt(furn.tile.X + 1, furn.tile.Y);
+            Tile westTile = world.GetTileAt(furn.tile.X - 1, furn.tile.Y);
+
+            if (northTile != null && southTile != null && northTile.furniture != null && southTile.furniture != null &&
+            northTile.furniture.objectType.Contains("Wall") && southTile.furniture.objectType.Contains("Wall"))
+            {
+                furn_go.transform.rotation = Quaternion.Euler(0, 0, 90);
+            }
+            else if (eastTile != null && westTile != null && eastTile.furniture != null && westTile.furniture != null &&
+            eastTile.furniture.objectType.Contains("Wall") && westTile.furniture.objectType.Contains("Wall"))
+            {
+                furn_go.transform.rotation = Quaternion.Euler(0, 0, 0);
+            }
+        }
 
         furn_go.GetComponent<SpriteRenderer>().sprite = GetSpriteForFurniture(furn);
         furn_go.GetComponent<SpriteRenderer>().color = furn.tint;
@@ -222,11 +245,11 @@ public class FurnitureSpriteController : MonoBehaviour
         // the same type, then the string will look like:
         //       Wall_NESW
 
-/*		if(furnitureSprites.ContainsKey(spriteName) == false) {
-			Debug.LogError("GetSpriteForInstalledObject -- No sprites with name: " + spriteName);
-			return null;
-		}
-*/
+        /*		if(furnitureSprites.ContainsKey(spriteName) == false) {
+                    Debug.LogError("GetSpriteForInstalledObject -- No sprites with name: " + spriteName);
+                    return null;
+                }
+        */
 
         return SpriteManager.current.GetSprite("Furniture", spriteName); //furnitureSprites[spriteName];
 
