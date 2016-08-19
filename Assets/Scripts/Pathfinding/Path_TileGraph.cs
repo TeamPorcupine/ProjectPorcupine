@@ -19,7 +19,7 @@ public class Path_TileGraph
     public Path_TileGraph(World world)
     {
 
-        Debug.Log("Path_TileGraph");
+        Logger.Log("Path_TileGraph");
 
         // Loop through all tiles of the world
         // For each tile, create a node
@@ -44,7 +44,7 @@ public class Path_TileGraph
             }
         }
 
-        Debug.Log("Path_TileGraph: Created " + nodes.Count + " nodes.");
+        Logger.Log("Path_TileGraph: Created " + nodes.Count + " nodes.");
 
 
         // Now loop through all nodes again
