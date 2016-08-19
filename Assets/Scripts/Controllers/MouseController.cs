@@ -332,7 +332,8 @@ public class MouseController : MonoBehaviour
         sr.sortingLayerName = "Jobs";
         sr.sprite = fsc.GetSpriteForFurniture(furnitureType);
 
-        if (WorldController.Instance.world.IsFurniturePlacementValid(furnitureType, t))
+        if (WorldController.Instance.world.IsFurniturePlacementValid(furnitureType, t) &&
+            bmc.DoesBuildJobOverlapExistingBuildJob(t, furnitureType) == false)
         {
             sr.color = new Color(0.5f, 1f, 0.5f, 0.25f);
         }
