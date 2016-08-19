@@ -8,6 +8,8 @@ public class Need {
 	public float Amount;
 	bool invertDisplay;
 	public Character character;
+	Furniture restoreNeedFurn;
+	float restoreNeedTime;
 	public string DisplayAmount
 	{
 		get
