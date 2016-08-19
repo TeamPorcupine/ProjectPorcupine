@@ -1,4 +1,4 @@
-﻿//=======================================================================
+//=======================================================================
 // Copyright Martin "quill18" Glaude 2015.
 //		http://quill18.com
 //=======================================================================
@@ -325,6 +325,17 @@ public class Furniture : IXmlSerializable, ISelectable
     // connect to.
     protected bool DEFAULT__IsValidPosition(Tile t)
     {
+        // Prevent construction too close to the world's edge
+        const int minEdgeDistance = 5;
+        bool tooCloseToEdge = t.X < minEdgeDistance || t.Y < minEdgeDistance ||
+            (World.current.Width - t.X) <= minEdgeDistance || 
+            (World.current.Height - t.Y) <= minEdgeDistance;
+
+        if (tooCloseToEdge)
+        {
+            return false;
+        }
+
         for (int x_off = t.X; x_off < (t.X + Width); x_off++)
         {
             for (int y_off = t.Y; y_off < (t.Y + Height); y_off++)
