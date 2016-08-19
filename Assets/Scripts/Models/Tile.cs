@@ -89,14 +89,14 @@ public class Tile :IXmlSerializable, ISelectable
             {
                 Tile[] ns = GetNeighbours();
 
-                float movCost = 0f;
+                bool canMove = false;
 
-                foreach (Tile n in ns)
+                foreach (Tile n in ns) // Loop through all the horizontal/vertical neighbours of the empty tile.
                 {
-                    movCost += (n != null && n.Type == TileType.Floor) ? baseTileMovementCost : 0f;
+                    canMove = canMove || (n != null && n.Type == TileType.Floor); // If the neighbour is a floor tile, set canMove to true.
                 }
 
-                return Mathf.Clamp(movCost, 0f, baseTileMovementCost);
+                return canMove ? baseTileMovementCost : 0f; // If canMove is true, return baseTileMovementCost, else, return 0f.
             }
 
             if (furniture == null)
