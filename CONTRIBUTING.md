@@ -39,11 +39,11 @@ Additionally, for the sake of simplicity, we are standardizing on what should be
 
 * Pull Requests represent final code. Please ensure they are:
      * Well tested by the author. It is the author's job to ensure their code works as expected.  
-     * Be free of unnessicary log calls. Logging is great for debugging, but when a PR is made, log calls should only be present when there is an actual error or to warn of an unimplemented feature.
+     * Be free of unnecessary log calls. Logging is great for debugging, but when a PR is made, log calls should only be present when there is an actual error or to warn of an unimplemented feature.
    
    If your code is untested or log heavy, prefix your PR with "WIP", so others know it is still being tested and shouldn't be considered for merging yet.
 
-* Small changes are preferable over large ones. The larger a change is the more likely it is to conflict with the project and thus be denied. If your additon is large, be sure to extensively discuss it in an issue request before you submit a PR or even start coding.
+* Small changes are preferable over large ones. The larger a change is the more likely it is to conflict with the project and thus be denied. If your addition is large, be sure to extensively discuss it in an "issue" before you submit a PR, or even start coding.
 
 * Document your changes in your PR. If you add a feature that you expect others to use, explain exactly how future code should interact with your additions. 
 
