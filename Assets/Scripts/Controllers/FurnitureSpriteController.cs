@@ -37,7 +37,7 @@ public class FurnitureSpriteController : MonoBehaviour
 
     public void OnFurnitureCreated(Furniture furn)
     {
-        //Debug.Log("OnFurnitureCreated");
+        //Logger.Log("OnFurnitureCreated");
         // Create a visual GameObject linked to this data.
 
         // FIXME: Does not consider multi-tile objects nor rotated objects
@@ -53,7 +53,7 @@ public class FurnitureSpriteController : MonoBehaviour
         furn_go.transform.SetParent(this.transform, true);
 
         // FIXME: This hardcoding is not ideal!
-        if (furn.objectType == "Door")
+        if (furn.objectType == "Door" || furn.objectType == "Airlock")
         {
             // By default, the door graphic is meant for walls to the east & west
             // Check to see if we actually have a wall north/south, and if so
@@ -87,7 +87,7 @@ public class FurnitureSpriteController : MonoBehaviour
     {
         if (furnitureGameObjectMap.ContainsKey(furn) == false)
         {
-            Debug.LogError("OnFurnitureRemoved -- trying to change visuals for furniture not in our map.");
+            Logger.LogError("OnFurnitureRemoved -- trying to change visuals for furniture not in our map.");
             return;
         }
 
@@ -98,18 +98,18 @@ public class FurnitureSpriteController : MonoBehaviour
 
     void OnFurnitureChanged(Furniture furn)
     {
-        //Debug.Log("OnFurnitureChanged");
+        //Logger.Log("OnFurnitureChanged");
         // Make sure the furniture's graphics are correct.
 
         if (furnitureGameObjectMap.ContainsKey(furn) == false)
         {
-            Debug.LogError("OnFurnitureChanged -- trying to change visuals for furniture not in our map.");
+            Logger.LogError("OnFurnitureChanged -- trying to change visuals for furniture not in our map.");
             return;
         }
 
         GameObject furn_go = furnitureGameObjectMap[furn];
-        //Debug.Log(furn_go);
-        //Debug.Log(furn_go.GetComponent<SpriteRenderer>());
+        //Logger.Log(furn_go);
+        //Logger.Log(furn_go.GetComponent<SpriteRenderer>());
 
         furn_go.GetComponent<SpriteRenderer>().sprite = GetSpriteForFurniture(furn);
         furn_go.GetComponent<SpriteRenderer>().color = furn.tint;
@@ -150,11 +150,35 @@ public class FurnitureSpriteController : MonoBehaviour
                     // Door is a fully open
                     spriteName = "Door_openness_3";
                 }
-                //Debug.Log(spriteName);
+                //Logger.Log(spriteName);
+            }
+            if (furn.objectType == "Airlock")
+            {
+                if (furn.GetParameter("openness") < 0.1f)
+                {
+                    // Airlock is closed
+                    spriteName = "Airlock";
+                }
+                else if (furn.GetParameter("openness") < 0.5f)
+                {
+                    // Airlock is a bit open
+                    spriteName = "Airlock_openness_1";
+                }
+                else if (furn.GetParameter("openness") < 0.9f)
+                {
+                    // Airlock is a lot open
+                    spriteName = "Airlock_openness_2";
+                }
+                else
+                {
+                    // Airlock is a fully open
+                    spriteName = "Airlock_openness_3";
+                }
+                //Logger.Log(spriteName);
             }
 
             /*if(furnitureSprites.ContainsKey(spriteName) == false) {
-				Debug.Log("furnitureSprites has no definition for: " + spriteName);
+				Logger.Log("furnitureSprites has no definition for: " + spriteName);
 				return null;
 			}
 */
@@ -199,7 +223,7 @@ public class FurnitureSpriteController : MonoBehaviour
         //       Wall_NESW
 
 /*		if(furnitureSprites.ContainsKey(spriteName) == false) {
-			Debug.LogError("GetSpriteForInstalledObject -- No sprites with name: " + spriteName);
+			Logger.LogError("GetSpriteForInstalledObject -- No sprites with name: " + spriteName);
 			return null;
 		}
 */

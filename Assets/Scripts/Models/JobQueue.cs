@@ -20,7 +20,7 @@ public class JobQueue
 
     public void Enqueue(Job j)
     {
-        //Debug.Log("Adding job to queue. Existing queue size: " + jobQueue.Count);
+        //Logger.Log("Adding job to queue. Existing queue size: " + jobQueue.Count);
         if (j.jobTime < 0)
         {
             // Job has a negative job time, so it's not actually
@@ -52,7 +52,7 @@ public class JobQueue
 
         if (jobs.Contains(j) == false)
         {
-            //Debug.LogError("Trying to remove a job that doesn't exist on the queue.");
+            //Logger.LogError("Trying to remove a job that doesn't exist on the queue.");
             // Most likely, this job wasn't on the queue because a character was working it!
             return;
         }

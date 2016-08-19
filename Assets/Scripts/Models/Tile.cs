@@ -140,7 +140,7 @@ public class Tile :IXmlSerializable, ISelectable
 
         if (objInstance.IsValidPosition(this) == false)
         {
-            Debug.LogError("Trying to assign a furniture to a tile that isn't valid!");
+            Logger.LogError("Trying to assign a furniture to a tile that isn't valid!");
             return false;
         }
 		
@@ -172,7 +172,7 @@ public class Tile :IXmlSerializable, ISelectable
 
             if (inventory.objectType != inv.objectType)
             {
-                Debug.LogError("Trying to assign inventory to a tile that already has some of a different type.");
+                Logger.LogError("Trying to assign inventory to a tile that already has some of a different type.");
                 return false;
             }
 
@@ -209,6 +209,11 @@ public class Tile :IXmlSerializable, ISelectable
         // FIXME: I don't like having to manually and explicitly set
         // flags that preven conflicts. It's too easy to forget to set/clear them!
         theJob.tile.pendingBuildJob = null;
+    }
+
+    public void EqualiseGas(float leakFactor)
+    {
+        Room.EqualiseGasByTile(this, leakFactor);
     }
 
 
@@ -334,12 +339,12 @@ public class Tile :IXmlSerializable, ISelectable
 
     public string GetName()
     {
-        return this._type.ToString();
+        return "tile_"+this._type.ToString();
     }
 
     public string GetDescription()
     {
-        return "The tile.";
+        return "tile_"+this._type.ToString()+"_desc";
     }
 
     public string GetHitPointString()

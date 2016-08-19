@@ -58,6 +58,8 @@ public class World : IXmlSerializable
     {
         // Creates an empty world.
         SetupWorld(width, height);
+        int seed = UnityEngine.Random.Range(0, int.MaxValue);
+        WorldGenerator.Generate(this, seed);
 
         // Make one character
         CreateCharacter(GetTileAt(Width / 2, Height / 2));
@@ -100,7 +102,7 @@ public class World : IXmlSerializable
     {
         if (r == GetOutsideRoom())
         {
-            Debug.LogError("Tried to delete the outside room.");
+            Logger.LogError("Tried to delete the outside room.");
             return;
         }
 
@@ -218,7 +220,14 @@ public class World : IXmlSerializable
                     furnCount++;
 
                     Furniture furn = new Furniture();
-                    furn.ReadXmlPrototype(reader);
+                    try
+                    {
+                        furn.ReadXmlPrototype(reader);
+                    }
+                    catch {
+                        Logger.LogError("Error reading furniture prototype for: " + furn.objectType);
+                    }
+
 
                     furniturePrototypes[furn.objectType] = furn;
 
@@ -228,14 +237,13 @@ public class World : IXmlSerializable
             }
             else
             {
-                Debug.LogError("The furniture prototype definition file doesn't have any 'Furniture' elements.");
+                Logger.LogError("The furniture prototype definition file doesn't have any 'Furniture' elements.");
             }
         }
         else
         {
-            Debug.LogError("Did not find a 'Furnitures' element in the prototype definition file.");
+            Logger.LogError("Did not find a 'Furnitures' element in the prototype definition file.");
         }
-
     }
 
     /// <summary>
@@ -243,7 +251,6 @@ public class World : IXmlSerializable
     /// </summary>
     public void RandomizeTiles()
     {
-        Debug.Log("RandomizeTiles");
         for (int x = 0; x < Width; x++)
         {
             for (int y = 0; y < Height; y++)
@@ -313,7 +320,7 @@ public class World : IXmlSerializable
 
         if (furniturePrototypes.ContainsKey(objectType) == false)
         {
-            Debug.LogError("furniturePrototypes doesn't contain a proto for key: " + objectType);
+            Logger.LogError("furniturePrototypes doesn't contain a proto for key: " + objectType);
             return null;
         }
 
@@ -387,7 +394,7 @@ public class World : IXmlSerializable
     {
         if (furniturePrototypes.ContainsKey(objectType) == false)
         {
-            Debug.LogError("No furniture with type: " + objectType);
+            Logger.LogError("No furniture with type: " + objectType);
             return null;
         }
 
@@ -439,6 +446,18 @@ public class World : IXmlSerializable
         }
         writer.WriteEndElement();
 
+        writer.WriteStartElement("Inventories");
+        foreach (String objectType in inventoryManager.inventories.Keys)
+        {
+            foreach (Inventory inv in inventoryManager.inventories[objectType])
+            {
+                writer.WriteStartElement("Inventory");
+                inv.WriteXml(writer);
+                writer.WriteEndElement();
+            }
+        }
+        writer.WriteEndElement();
+
         writer.WriteStartElement("Furnitures");
         foreach (Furniture furn in furnitures)
         {
@@ -457,7 +476,7 @@ public class World : IXmlSerializable
             writer.WriteEndElement();
 
         }
-        writer.WriteEndElement();	
+        writer.WriteEndElement();
     }
 
     public void ReadXml(XmlReader reader)
@@ -478,6 +497,9 @@ public class World : IXmlSerializable
                     break;
                 case "Tiles":
                     ReadXml_Tiles(reader);
+                    break;
+                case "Inventories":
+                    ReadXml_Inventories(reader);
                     break;
                 case "Furnitures":
                     ReadXml_Furnitures(reader);
@@ -535,9 +557,29 @@ public class World : IXmlSerializable
 
     }
 
+    void ReadXml_Inventories(XmlReader reader)
+    {
+        Logger.Log("ReadXml_Inventories");
+
+        if(reader.ReadToDescendant("Inventory"))
+        {
+            do
+            {
+                int x = int.Parse(reader.GetAttribute("X"));
+                int y = int.Parse(reader.GetAttribute("Y"));
+
+                //Create our inventory from the file
+                Inventory inv = new Inventory(reader.GetAttribute("objectType"),
+                    int.Parse(reader.GetAttribute("maxStackSize")),
+                    int.Parse(reader.GetAttribute("stackSize")));
+                
+                inventoryManager.PlaceInventory(tiles[x,y],inv);
+            } while(reader.ReadToNextSibling("Inventory"));
+        }
+    }
+
     void ReadXml_Furnitures(XmlReader reader)
     {
-
         if (reader.ReadToDescendant("Furniture"))
         {
             do
