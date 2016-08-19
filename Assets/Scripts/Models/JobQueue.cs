@@ -15,7 +15,7 @@ public class JobQueue
 
     public JobQueue()
     {
-        jobQueue = new SortedList<Job.JobPriority, Job>(new DuplicateKeyComparer<Job.JobPriority>());
+        jobQueue = new SortedList<Job.JobPriority, Job>(new DuplicateKeyComparer<Job.JobPriority>(true));
     }
 
     public void Enqueue(Job j)
