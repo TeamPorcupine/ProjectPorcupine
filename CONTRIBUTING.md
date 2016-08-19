@@ -36,12 +36,14 @@ Additionally, for the sake of simplicity, we are standardizing on what should be
 ## Best Practices for Contributing
 [Best Practices for Contributing]: #best-practices-for-contributing
 * Before you start coding, open an issue so that the community can discuss your change to ensure it is in line with the goals of the project and not being worked on by someone else. This allows for discussion and fine tuning of your feature and results in a more succent and focused additions.
+    * If you are fixing a small glitch or bug, you may make a PR without opening an issue.
+    * If you are adding a large feaure, create an issue prefixed with "Discusion:" and be sure to take community feedback and get general approval before making your change and submitting a PR.
 
 * Pull Requests represent final code. Please ensure they are:
      * Well tested by the author. It is the author's job to ensure their code works as expected.  
      * Be free of unnecessary log calls. Logging is great for debugging, but when a PR is made, log calls should only be present when there is an actual error or to warn of an unimplemented feature.
    
-   If your code is untested or log heavy, prefix your PR with "WIP", so others know it is still being tested and shouldn't be considered for merging yet.
+   If your code is untested, log heavy, or incomplete, prefix your PR with "WIP", so others know it is still being tested and shouldn't be considered for merging yet.
 
 * Small changes are preferable over large ones. The larger a change is the more likely it is to conflict with the project and thus be denied. If your addition is large, be sure to extensively discuss it in an "issue" before you submit a PR, or even start coding.
 
@@ -49,7 +51,7 @@ Additionally, for the sake of simplicity, we are standardizing on what should be
 
 * Avoid making changes to more files than necessary for your feature (i.e. refrain from combining your "real" pull request with incidental bug fixes). This will simplify the merging process and make your changes clearer.
 
-* Avoid making changes to the Unity-specific files, like the scene and the project settings unless absolutely necessary. Changes here are very likely to cause difficult to merge conflicts. Work in code as much as possible. (We will be trying to change the UI to be more code-driven in the future.) Making changes to prefabs should generally be safe -- but create a copy of the main scene and work there instead (then delete your copy of the scene before committing).
+* Avoid making changes to the Unity-specific files, like the scene and the project settings unless absolutely necessary. Changes here are very likely to cause difficult merge conflicts. Work in code as much as possible. (We will be trying to change the UI to be more code-driven in the future.) Making changes to prefabs should generally be safe -- but create a copy of the main scene and work there instead (then delete your copy of the scene before committing).
 
 * Include screenshots demonstrating your change if applicable. All UI changes should include screenshots.
 
