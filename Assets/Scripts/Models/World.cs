@@ -228,7 +228,14 @@ public class World : IXmlSerializable
                     furnCount++;
 
                     Furniture furn = new Furniture();
-                    furn.ReadXmlPrototype(reader);
+                    try
+                    {
+                        furn.ReadXmlPrototype(reader);
+                    }
+                    catch {
+                        Debug.LogError("Error reading furniture prototype for: " + furn.objectType);
+                    }
+
 
                     furniturePrototypes[furn.objectType] = furn;
 
