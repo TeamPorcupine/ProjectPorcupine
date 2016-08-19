@@ -63,7 +63,7 @@ namespace ProjectPorcupine.Localization
                 lastLanguage = LocalizationTable.currentLanguage;
                 UpdateText(formatValues);
                 // Rescales text component of the prefab button to fit everything
-                DynamicTextScalability.RescaleButtonTexts();
+                DynamicTextScalability.RescaleAllTexts();
             }
         }
 

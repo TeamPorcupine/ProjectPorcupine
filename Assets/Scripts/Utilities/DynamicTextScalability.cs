@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,8 +6,8 @@ using UnityEngine.UI;
 public class DynamicTextScalability : MonoBehaviour
 {
     /// <summary>
-    /// Rescales text component of the button to fit horizontally, and resets text area to anchor locations. Avoiding the use of "Best Fit" resulting in smaller atlas.
-    /// Works on any text element.
+    /// Rescales text component to fit horizontally, and resets text area to anchor locations. Avoiding the use of "Best Fit" resulting in smaller atlas.
+    /// Add to any text element with localization.
     /// </summary>
 
     // List of all scripts on buttons
@@ -39,7 +38,7 @@ public class DynamicTextScalability : MonoBehaviour
         //reset values
         rectTrans.localScale = new Vector3(1, 1, 1);
         rectTrans.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, originalWidth);
-        
+
         float stringWidth = textScript.preferredWidth;
         float maxWidth = originalWidth;
         float capacityPercent = (stringWidth / (maxWidth / 100));
@@ -57,7 +56,7 @@ public class DynamicTextScalability : MonoBehaviour
     }
 
     // Trigger to rescale everything when language is changed
-    public static void RescaleButtonTexts()
+    public static void RescaleAllTexts()
     {
         foreach (DynamicTextScalability dtsScript in ActivationList)
         {
