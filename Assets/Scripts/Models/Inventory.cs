@@ -6,6 +6,9 @@
 using UnityEngine;
 using System.Collections;
 using System;
+using System.Xml;
+using System.Xml.Schema;
+using System.Xml.Serialization;
 using MoonSharp.Interpreter;
 
 
@@ -14,7 +17,7 @@ using MoonSharp.Interpreter;
 
 
 [MoonSharpUserData]
-public class Inventory : ISelectable
+public class Inventory : IXmlSerializable, ISelectable
 {
     public string objectType = "Steel Plate";
     public int maxStackSize = 50;
@@ -38,7 +41,7 @@ public class Inventory : ISelectable
     }
 
     // The function we callback any time our tile's data changes
-    Action<Inventory> cbInventoryChanged;
+    public event Action<Inventory> cbInventoryChanged;
 
     public Tile tile;
     public Character character;
@@ -71,18 +74,7 @@ public class Inventory : ISelectable
     {
         return new Inventory(this);
     }
-
-    public void RegisterChangedCallback(Action<Inventory> callback)
-    {
-        cbInventoryChanged += callback;
-    }
-
-    public void UnregisterChangedCallback(Action<Inventory> callback)
-    {
-        cbInventoryChanged -= callback;
-    }
-
-
+    
     #region ISelectableInterface implementation
 
     public string GetName()
@@ -98,6 +90,28 @@ public class Inventory : ISelectable
     public string GetHitPointString()
     {
         return "";	// Does inventory have hitpoints? How does it get destroyed? Maybe it's just a percentage chance based on damage.
+    }
+
+    #endregion
+
+    #region IXmlSerializable implementation
+
+    public XmlSchema GetSchema()
+    {
+        return null;
+    }
+
+    public void WriteXml(XmlWriter writer)
+    {
+        writer.WriteAttributeString("X", tile.X.ToString());
+        writer.WriteAttributeString("Y", tile.Y.ToString());
+        writer.WriteAttributeString("objectType", objectType);
+        writer.WriteAttributeString("maxStackSize", maxStackSize.ToString());
+        writer.WriteAttributeString("stackSize", stackSize.ToString());
+    }
+
+    public void ReadXml(XmlReader reader)
+    {
     }
 
     #endregion

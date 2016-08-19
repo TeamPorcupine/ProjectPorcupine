@@ -8,6 +8,15 @@ using System.IO;
 public class DialogBoxSaveGame : DialogBoxLoadSaveGame
 {
 
+    public override void ShowDialog()
+    {
+        base.ShowDialog();
+        DialogListItem[] listItems = GetComponentsInChildren<DialogListItem>();
+        foreach (DialogListItem listItem in listItems)
+        {
+            listItem.doubleclick = OkayWasClicked;
+        }
+    }
 
     public void OkayWasClicked()
     {
@@ -36,8 +45,7 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
         {
             // TODO: Do file overwrite dialog box.
 
-            Debug.LogError("File already exists -- overwriting the file for now.");
-
+            Debug.LogWarning("File already exists -- overwriting the file for now.");
         }
 
         CloseDialog();
