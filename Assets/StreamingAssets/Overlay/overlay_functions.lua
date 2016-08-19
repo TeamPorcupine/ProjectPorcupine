@@ -21,3 +21,18 @@ function roomNumberValueAt ( tile )
 		return tile.room.ID
 	end
 end
+
+-- Returns a magic value if furniture in tile is a power gen
+function powerValueAt(tile)
+	mid = 128
+	if tile == nil or tile.furniture == nil then
+		return mid
+	else
+		if tile.furniture.isPowerGenerator then
+			val = mid + 10*tile.furniture.powerValue
+		else
+			val = mid - 10*tile.furniture.powerValue
+		end
+	end
+	return math.max(math.min(val, 255), 0)
+end

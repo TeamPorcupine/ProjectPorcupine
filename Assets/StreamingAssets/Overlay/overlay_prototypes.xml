@@ -8,4 +8,5 @@
   <!-- content: lua function name, called on each tile, must return int -->
   <Overlay id="oxygen" min="0" max="1" color_map="Jet">oxygenValueAt</Overlay>
   <Overlay id="room" min="0" max="1" color_map="Random">roomNumberValueAt</Overlay>
+  <Overlay id="power" min="0" max="1" color_map="Jet">powerValueAt</Overlay>
 </Prototypes>
