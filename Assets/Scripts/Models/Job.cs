@@ -68,7 +68,12 @@ public class Job
 
     public Dictionary<string, Inventory> inventoryRequirements;
 
-    public Job(Tile tile, string jobObjectType, Action<Job> cbJobComplete, float jobTime, Inventory[] inventoryRequirements, JobPriority jobPriority,bool jobRepeats = false)
+    /// <summary>
+    /// If true, the work will be carried out on any adjacent tile of the target tile rather than on it.
+    /// </summary>
+    public bool adjacent;
+
+    public Job(Tile tile, string jobObjectType, Action<Job> cbJobComplete, float jobTime, Inventory[] inventoryRequirements, JobPriority jobPriority, bool jobRepeats = false)
     {
         this.tile = tile;
         this.jobObjectType = jobObjectType;
@@ -90,7 +95,7 @@ public class Job
         }
     }
 
-    public Job(Tile tile, TileType jobTileType, Action<Job> cbJobComplete, float jobTime, Inventory[] inventoryRequirements, JobPriority jobPriority, bool jobRepeats = false)
+    public Job(Tile tile, TileType jobTileType, Action<Job> cbJobComplete, float jobTime, Inventory[] inventoryRequirements, JobPriority jobPriority, bool jobRepeats = false, bool adjacent = false)
     {
         this.tile = tile;
         this.jobTileType = jobTileType;
@@ -98,6 +103,7 @@ public class Job
         this.jobTimeRequired = this.jobTime = jobTime;
         this.jobRepeats = jobRepeats;
         this.jobPriority = jobPriority;
+        this.adjacent = adjacent;
 
         cbJobWorkedLua = new List<string>();
         cbJobCompletedLua = new List<string>();
@@ -171,7 +177,7 @@ public class Job
         // If not, don't register the work time.
         if (HasAllMaterial() == false)
         {
-            //Debug.LogError("Tried to do work on a job that doesn't have all the material.");
+            //Logger.LogError("Tried to do work on a job that doesn't have all the material.");
 
             // Job can't actually be worked, but still call the callbacks
             // so that animations and whatnot can be updated.
