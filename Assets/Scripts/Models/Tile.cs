@@ -211,11 +211,6 @@ public class Tile :IXmlSerializable, ISelectable
         theJob.tile.pendingBuildJob = null;
     }
 
-    public void EqualiseGas(float leakFactor)
-    {
-        Room.EqualiseGasByTile(this, leakFactor);
-    }
-
 
     // Tells us if two tiles are adjacent.
     public bool IsNeighbour(Tile tile, bool diagOkay = false)
@@ -339,12 +334,12 @@ public class Tile :IXmlSerializable, ISelectable
 
     public string GetName()
     {
-        return "tile_"+this._type.ToString();
+        return this._type.ToString();
     }
 
     public string GetDescription()
     {
-        return "tile_"+this._type.ToString()+"_desc";
+        return "The tile.";
     }
 
     public string GetHitPointString()

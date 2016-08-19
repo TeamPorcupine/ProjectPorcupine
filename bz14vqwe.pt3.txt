@@ -1,0 +1,49 @@
+﻿Revert "Merge remote-tracking branch 'refs/remotes/TeamPorcupine/master' into Dynamic-Text-Scalability"
+
+This reverts commit 49fb572763a366a9cb758ae33737ed1fcc36c5c7, reversing
+changes made to d4716c563e8d290d882bd80afdf03c92c70306f3.
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+# On branch Dynamic-Text-Scalability
+# Your branch is up-to-date with 'origin/Dynamic-Text-Scalability'.
+#
+# Changes to be committed:
+#	deleted:    Assets/Resources/Sprites.meta
+#	deleted:    Assets/Resources/Sprites/X.png
+#	deleted:    Assets/Resources/Sprites/X.png.meta
+#	modified:   Assets/Scripts/Controllers/BuildModeController.cs
+#	modified:   Assets/Scripts/Controllers/CharacterSpriteController.cs
+#	modified:   Assets/Scripts/Controllers/FurnitureSpriteController.cs
+#	modified:   Assets/Scripts/Controllers/MouseController.cs
+#	modified:   Assets/Scripts/Controllers/WorldController.cs
+#	modified:   Assets/Scripts/Models/Character.cs
+#	modified:   Assets/Scripts/Models/Furniture.cs
+#	modified:   Assets/Scripts/Models/Inventory.cs
+#	modified:   Assets/Scripts/Models/Room.cs
+#	modified:   Assets/Scripts/Models/Tile.cs
+#	modified:   Assets/Scripts/Models/World.cs
+#	deleted:    Assets/Scripts/Models/WorldGenerator.cs
+#	deleted:    Assets/Scripts/Models/WorldGenerator.cs.meta
+#	modified:   Assets/Scripts/UI/DialogBox/FileSaveLoad/DialogBoxLoadGame.cs
+#	modified:   Assets/Scripts/UI/DialogBox/FileSaveLoad/DialogBoxSaveGame.cs
+#	deleted:    Assets/Scripts/Utilities/Logger.cs
+#	deleted:    Assets/Scripts/Utilities/Logger.cs.meta
+#	modified:   Assets/StreamingAssets/Data/Furniture.xml
+#	deleted:    Assets/StreamingAssets/Images/Furniture/Airlock.png
+#	deleted:    Assets/StreamingAssets/Images/Furniture/Airlock.png.meta
+#	deleted:    Assets/StreamingAssets/Images/Furniture/Airlock.xml
+#	deleted:    Assets/StreamingAssets/Images/Furniture/Airlock.xml.meta
+#	modified:   Assets/StreamingAssets/LUA/Furniture.lua
+#	modified:   Assets/StreamingAssets/Localization/en_US.lang
+#	modified:   Assets/StreamingAssets/Localization/es_ES.lang.meta
+#	deleted:    Assets/StreamingAssets/Localization/it_IT.lang
+#	deleted:    Assets/StreamingAssets/Localization/it_IT.lang.meta
+#	deleted:    Assets/StreamingAssets/Localization/ku_KU.lang
+#	deleted:    Assets/StreamingAssets/Localization/ku_KU.lang.meta
+#	modified:   Assets/UI/DialogListItem.cs
+#	modified:   Assets/_SCENE_.unity
+#	modified:   CONTRIBUTING.md
+#	modified:   ProjectSettings/TagManager.asset
+#
+

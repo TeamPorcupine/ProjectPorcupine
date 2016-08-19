@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Sprites>
-	<Sprite name="Airlock"                x="32" y="224" w="32" h="32" pixelPerUnit="32" />
-	<Sprite name="Airlock_openness_1"     x="32" y="192" w="32" h="32" pixelPerUnit="32" />
-	<Sprite name="Airlock_openness_2"     x="32" y="160" w="32" h="32" pixelPerUnit="32" />
-	<Sprite name="Airlock_openness_3"     x="32" y="128" w="32" h="32" pixelPerUnit="32" />
-</Sprites>
