@@ -23,3 +23,7 @@ furn_oxygen_generator=Generador de Oxígeno
 furn_oxygen_generator_desc=Generando oxígeno para tus astronautas.
 furn_mining_drone_station=Estación de minería robótica
 furn_mining_drone_station_desc=Extrayendo materiales de la nada.
+furn_airlock=Compuerta
+furn_airlock_desc=Una Compuerta que no permite que el aire salga de la base.
+furn_power_generator=Generador de Energía
+furn_power_generator_desc=Genera Energía de la nada.
