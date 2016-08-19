@@ -25,3 +25,7 @@ furn_mining_drone_station=Mining Drone
 furn_mining_drone_station_desc=Mining materials out of nothing.
 furn_airlock=Airlock
 furn_airlock_desc=An Airlock prevents air from leaving the base
+tile_Empty=Empty
+tile_Empty_desc=An empty tile.
+tile_Floor=Floor
+tile_Floor_desc=Meets the highest non-skid standards.
