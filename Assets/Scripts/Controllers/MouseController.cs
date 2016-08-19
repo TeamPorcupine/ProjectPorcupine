@@ -262,42 +262,39 @@ public class MouseController : MonoBehaviour
                 {
                     // Display the building hint on top of this tile position
 
-                    // Check for furniture dragType
-                    Furniture proto = World.current.furniturePrototypes[bmc.buildModeObjectType];
-                    string dragType = proto.dragType;
-
-                    bool isValid = false;
-
-                    // Drag type validation
-                    if (dragType == "border")
+                    if (bmc.buildMode == BuildMode.FURNITURE)
                     {
-                        if (x == start_x || x == end_x || y == start_y || y == end_y)
+                        Furniture proto = World.current.furniturePrototypes[bmc.buildModeObjectType];
+                        string dragType = proto.dragType;
+
+                        bool isValid = false;
+
+                        // Drag type validation
+                        if (dragType == "border")
                         {
-                            isValid = true;
-                        } 
-                    }
-                    else
-                    {
-                        isValid = true;
-                    }
-
-                    if (isValid)
-                    {
-                        if (bmc.buildMode == BuildMode.FURNITURE)
-                        {
-                            ShowFurnitureSpriteAtTile(bmc.buildModeObjectType, t);
+                            if (x == start_x || x == end_x || y == start_y || y == end_y)
+                            {
+                                isValid = true;
+                            } 
                         }
                         else
                         {
-                            // show the generic dragging visuals
-                            GameObject go = SimplePool.Spawn(circleCursorPrefab, new Vector3(x, y, 0), Quaternion.identity);
-                            go.transform.SetParent(this.transform, true);
-                            go.GetComponent<SpriteRenderer>().sprite=SpriteManager.current.GetSprite( "UI", "CursorCircle");
-                            dragPreviewGameObjects.Add(go);
+                            isValid = true;
+                        }
+
+                        if (isValid)
+                        {
+                            ShowFurnitureSpriteAtTile(bmc.buildModeObjectType, t);
                         }
                     }
-  
-
+                    else
+                    {
+                        // show the generic dragging visuals
+                        GameObject go = SimplePool.Spawn(circleCursorPrefab, new Vector3(x, y, 0), Quaternion.identity);
+                        go.transform.SetParent(this.transform, true);
+                        go.GetComponent<SpriteRenderer>().sprite = SpriteManager.current.GetSprite("UI", "CursorCircle");
+                        dragPreviewGameObjects.Add(go);
+                    }
                 }
             }
         }
@@ -313,36 +310,41 @@ public class MouseController : MonoBehaviour
             {
                 for (int y = start_y; y <= end_y; y++)
                 {
-                    // Check for furniture dragType
-                    Furniture proto = World.current.furniturePrototypes[bmc.buildModeObjectType];
-                    string dragType = proto.dragType;
-
-                    bool isValid = false;
-
-                    // Drag type validation
-                    if (dragType == "border")
+                    Tile t = WorldController.Instance.world.GetTileAt(x, y);
+                    if (bmc.buildMode == BuildMode.FURNITURE)
                     {
-                        if (x == start_x || x == end_x || y == start_y || y == end_y)
+                        // Check for furniture dragType
+                        Furniture proto = World.current.furniturePrototypes[bmc.buildModeObjectType];
+                        string dragType = proto.dragType;
+
+                        bool isValid = false;
+
+                        // Drag type validation
+                        if (dragType == "border")
+                        {
+                            if (x == start_x || x == end_x || y == start_y || y == end_y)
+                            {
+                                isValid = true;
+                            } 
+                        }
+                        else
                         {
                             isValid = true;
-                        } 
+                        }
+
+                        if (isValid)
+                        {
+                            if (t != null)
+                            {
+                                // Call BuildModeController::DoBuild()
+                                bmc.DoBuild(t);
+                            }
+                        }
                     }
                     else
                     {
-                        isValid = true;
+                        bmc.DoBuild(t);
                     }
-
-                    if (isValid)
-                    {
-                        Tile t = WorldController.Instance.world.GetTileAt(x, y);
-
-                        if (t != null)
-                        {
-                            // Call BuildModeController::DoBuild()
-                            bmc.DoBuild(t);
-                        }
-                    }
-
                 }
             }
         }
