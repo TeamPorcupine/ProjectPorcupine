@@ -173,17 +173,17 @@ public class MouseController : MonoBehaviour
     {
 
         // Make sure stuffInTile is big enough to handle all the characters, plus the 3 extra values
-        mySelection.stuffInTile = new ISelectable[ mySelection.tile.characters.Count + 3 ];
+        mySelection.stuffInTile = new ISelectable[ mySelection.tile.Characters.Count + 3 ];
 
         // Copy the character references
-        for (int i = 0; i < mySelection.tile.characters.Count; i++)
+        for (int i = 0; i < mySelection.tile.Characters.Count; i++)
         {
-            mySelection.stuffInTile[i] = mySelection.tile.characters[i];
+            mySelection.stuffInTile[i] = mySelection.tile.Characters[i];
         }
 
         // Now assign references to the other three sub-selections available
-        mySelection.stuffInTile[mySelection.stuffInTile.Length - 3] = mySelection.tile.furniture;
-        mySelection.stuffInTile[mySelection.stuffInTile.Length - 2] = mySelection.tile.inventory;
+        mySelection.stuffInTile[mySelection.stuffInTile.Length - 3] = mySelection.tile.Furniture;
+        mySelection.stuffInTile[mySelection.stuffInTile.Length - 2] = mySelection.tile.Inventory;
         mySelection.stuffInTile[mySelection.stuffInTile.Length - 1] = mySelection.tile;
 
     }
@@ -342,7 +342,7 @@ public class MouseController : MonoBehaviour
             sr.color = new Color(1f, 0.5f, 0.5f, 0.25f);
         }
 
-        Furniture proto = World.current.furniturePrototypes[furnitureType];
+        Furniture proto = World.Current.FurniturePrototypes[furnitureType];
 
         go.transform.position = new Vector3(t.X + ((proto.Width - 1) / 2f), t.Y + ((proto.Height - 1) / 2f), 0);
 

@@ -26,10 +26,10 @@ public class FurnitureSpriteController : MonoBehaviour
 
         // Register our callback so that our GameObject gets updated whenever
         // the tile's type changes.
-        world.cbFurnitureCreated += OnFurnitureCreated;
+        world.FurnitureCreated += OnFurnitureCreated;
 
         // Go through any EXISTING furniture (i.e. from a save that was loaded OnEnable) and call the OnCreated event manually
-        foreach (Furniture furn in world.furnitures)
+        foreach (Furniture furn in world.Furnitures)
         {
             OnFurnitureCreated(furn);
         }
@@ -48,22 +48,22 @@ public class FurnitureSpriteController : MonoBehaviour
         // Add our tile/GO pair to the dictionary.
         furnitureGameObjectMap.Add(furn, furn_go);
 
-        furn_go.name = furn.objectType + "_" + furn.tile.X + "_" + furn.tile.Y;
-        furn_go.transform.position = new Vector3(furn.tile.X + ((furn.Width - 1) / 2f), furn.tile.Y + ((furn.Height - 1) / 2f), 0);
+        furn_go.name = furn.ObjectType + "_" + furn.Tile.X + "_" + furn.Tile.Y;
+        furn_go.transform.position = new Vector3(furn.Tile.X + ((furn.Width - 1) / 2f), furn.Tile.Y + ((furn.Height - 1) / 2f), 0);
         furn_go.transform.SetParent(this.transform, true);
 
         // FIXME: This hardcoding is not ideal!
-        if (furn.objectType == "Door" || furn.objectType == "Airlock")
+        if (furn.ObjectType == "Door" || furn.ObjectType == "Airlock")
         {
             // By default, the door graphic is meant for walls to the east & west
             // Check to see if we actually have a wall north/south, and if so
             // then rotate this GO by 90 degrees
 
-            Tile northTile = world.GetTileAt(furn.tile.X, furn.tile.Y + 1);
-            Tile southTile = world.GetTileAt(furn.tile.X, furn.tile.Y - 1);
+            Tile northTile = world.GetTileAt(furn.Tile.X, furn.Tile.Y + 1);
+            Tile southTile = world.GetTileAt(furn.Tile.X, furn.Tile.Y - 1);
 
-            if (northTile != null && southTile != null && northTile.furniture != null && southTile.furniture != null &&
-            northTile.furniture.objectType.Contains("Wall") && southTile.furniture.objectType.Contains("Wall"))
+            if (northTile != null && southTile != null && northTile.Furniture != null && southTile.Furniture != null &&
+            northTile.Furniture.ObjectType.Contains("Wall") && southTile.Furniture.ObjectType.Contains("Wall"))
             {
                 furn_go.transform.rotation = Quaternion.Euler(0, 0, 90);
             }
@@ -78,8 +78,8 @@ public class FurnitureSpriteController : MonoBehaviour
 
         // Register our callback so that our GameObject gets updated whenever
         // the object's into changes.
-        furn.cbOnChanged += OnFurnitureChanged;
-        furn.cbOnRemoved += OnFurnitureRemoved;
+        furn.OnChanged += OnFurnitureChanged;
+        furn.OnRemoved += OnFurnitureRemoved;
 
     }
 
@@ -121,14 +121,14 @@ public class FurnitureSpriteController : MonoBehaviour
 
     public Sprite GetSpriteForFurniture(Furniture furn)
     {
-        string spriteName = furn.objectType;
+        string spriteName = furn.ObjectType;
 
-        if (furn.linksToNeighbour == false)
+        if (furn.LinksToNeighbour == false)
         {
 
             // If this is a DOOR, let's check OPENNESS and update the sprite.
             // FIXME: All this hardcoding needs to be generalized later.
-            if (furn.objectType == "Door")
+            if (furn.ObjectType == "Door")
             {
                 if (furn.GetParameter("openness") < 0.1f)
                 {
@@ -152,7 +152,7 @@ public class FurnitureSpriteController : MonoBehaviour
                 }
                 //Debug.Log(spriteName);
             }
-            if (furn.objectType == "Airlock")
+            if (furn.ObjectType == "Airlock")
             {
                 if (furn.GetParameter("openness") < 0.1f)
                 {
@@ -188,32 +188,32 @@ public class FurnitureSpriteController : MonoBehaviour
 
         // Otherwise, the sprite name is more complicated.
 
-        spriteName = furn.objectType + "_";
+        spriteName = furn.ObjectType + "_";
 
         // Check for neighbours North, East, South, West
 
-        int x = furn.tile.X;
-        int y = furn.tile.Y;
+        int x = furn.Tile.X;
+        int y = furn.Tile.Y;
 
         Tile t;
 
         t = world.GetTileAt(x, y + 1);
-        if (t != null && t.furniture != null && t.furniture.objectType == furn.objectType)
+        if (t != null && t.Furniture != null && t.Furniture.ObjectType == furn.ObjectType)
         {
             spriteName += "N";
         }
         t = world.GetTileAt(x + 1, y);
-        if (t != null && t.furniture != null && t.furniture.objectType == furn.objectType)
+        if (t != null && t.Furniture != null && t.Furniture.ObjectType == furn.ObjectType)
         {
             spriteName += "E";
         }
         t = world.GetTileAt(x, y - 1);
-        if (t != null && t.furniture != null && t.furniture.objectType == furn.objectType)
+        if (t != null && t.Furniture != null && t.Furniture.ObjectType == furn.ObjectType)
         {
             spriteName += "S";
         }
         t = world.GetTileAt(x - 1, y);
-        if (t != null && t.furniture != null && t.furniture.objectType == furn.objectType)
+        if (t != null && t.Furniture != null && t.Furniture.ObjectType == furn.ObjectType)
         {
             spriteName += "W";
         }

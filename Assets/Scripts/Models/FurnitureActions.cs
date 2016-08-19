@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
 using MoonSharp.Interpreter;
-using MoonSharp.Interpreter.Debugging;
 using MoonSharp.RemoteDebugger;
 using MoonSharp.RemoteDebugger.Network;
 
@@ -95,11 +93,11 @@ public class FurnitureActions
 
     public static void JobComplete_FurnitureBuilding(Job theJob)
     {
-        WorldController.Instance.world.PlaceFurniture(theJob.jobObjectType, theJob.tile);
+        WorldController.Instance.world.PlaceFurniture(theJob.JobObjectType, theJob.Tile);
 
         // FIXME: I don't like having to manually and explicitly set
         // flags that preven conflicts. It's too easy to forget to set/clear them!
-        theJob.tile.pendingBuildJob = null;
+        theJob.Tile.PendingBuildJob = null;
     }
 
 

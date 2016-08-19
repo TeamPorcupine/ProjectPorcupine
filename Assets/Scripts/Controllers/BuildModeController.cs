@@ -33,7 +33,7 @@ public class BuildModeController : MonoBehaviour
             return true;
         }
 
-        Furniture proto = WorldController.Instance.world.furniturePrototypes[buildModeObjectType];
+        Furniture proto = WorldController.Instance.world.FurniturePrototypes[buildModeObjectType];
 
         return proto.Width == 1 && proto.Height == 1;
 
@@ -92,21 +92,21 @@ public class BuildModeController : MonoBehaviour
 
                 // Check if there is existing furniture in this tile. If so delete it.
                 // TODO Possibly return resources. Will the Deconstruct() method handle that? If so what will happen if resources drop ontop of new non-passable structure.
-                if (t.furniture != null)
+                if (t.Furniture != null)
                 {
-                    t.furniture.Deconstruct();
+                    t.Furniture.Deconstruct();
                 }
 
                 // Create a job for it to be build
 
                 Job j;
 
-                if (WorldController.Instance.world.furnitureJobPrototypes.ContainsKey(furnitureType))
+                if (WorldController.Instance.world.FurnitureJobPrototypes.ContainsKey(furnitureType))
                 {
                     // Make a clone of the job prototype
-                    j = WorldController.Instance.world.furnitureJobPrototypes[furnitureType].Clone();
+                    j = WorldController.Instance.world.FurnitureJobPrototypes[furnitureType].Clone();
                     // Assign the correct tile.
-                    j.tile = t;
+                    j.Tile = t;
                 }
                 else
                 {
@@ -114,19 +114,19 @@ public class BuildModeController : MonoBehaviour
                     j = new Job(t, furnitureType, FurnitureActions.JobComplete_FurnitureBuilding, 0.1f, null);
                 }
 
-                j.furniturePrototype = WorldController.Instance.world.furniturePrototypes[furnitureType];
+                j.FurniturePrototype = WorldController.Instance.world.FurniturePrototypes[furnitureType];
 
-                for (int x_off = t.X; x_off < (t.X + WorldController.Instance.world.furniturePrototypes[furnitureType].Width); x_off++)
+                for (int x_off = t.X; x_off < (t.X + WorldController.Instance.world.FurniturePrototypes[furnitureType].Width); x_off++)
                 {
-                    for (int y_off = t.Y; y_off < (t.Y + WorldController.Instance.world.furniturePrototypes[furnitureType].Height); y_off++)
+                    for (int y_off = t.Y; y_off < (t.Y + WorldController.Instance.world.FurniturePrototypes[furnitureType].Height); y_off++)
                     {
                         // FIXME: I don't like having to manually and explicitly set
                         // flags that preven conflicts. It's too easy to forget to set/clear them!
                         Tile offsetTile = WorldController.Instance.world.GetTileAt(x_off,y_off);
-                        offsetTile.pendingBuildJob = j;
-                        j.cbJobStopped += (theJob) =>
+                        offsetTile.PendingBuildJob = j;
+                        j.JobStopped += (theJob) =>
                             {
-                                offsetTile.pendingBuildJob = null;
+                                offsetTile.PendingBuildJob = null;
                             };
                     }
                 }
@@ -134,7 +134,7 @@ public class BuildModeController : MonoBehaviour
 
 
                 // Add the job to the queue
-                WorldController.Instance.world.jobQueue.Enqueue(j);
+                WorldController.Instance.world.JobQueue.Enqueue(j);
 
             }
 
@@ -148,8 +148,8 @@ public class BuildModeController : MonoBehaviour
 
             if ( 
                 t.Type != tileType && 
-                t.furniture == null &&
-                t.pendingBuildJob == null)
+                t.Furniture == null &&
+                t.PendingBuildJob == null)
             {
                 // This tile position is valid til type
 
@@ -165,14 +165,14 @@ public class BuildModeController : MonoBehaviour
 
                 // FIXME: I don't like having to manually and explicitly set
                 // flags that preven conflicts. It's too easy to forget to set/clear them!
-                t.pendingBuildJob = j;
-                j.cbJobStopped += (theJob) =>
+                t.PendingBuildJob = j;
+                j.JobStopped += (theJob) =>
                 {
-                    theJob.tile.pendingBuildJob = null;
+                    theJob.Tile.PendingBuildJob = null;
                 };
 
                 // Add the job to the queue
-                WorldController.Instance.world.jobQueue.Enqueue(j);
+                WorldController.Instance.world.JobQueue.Enqueue(j);
 
             }
 
@@ -180,9 +180,9 @@ public class BuildModeController : MonoBehaviour
         else if (buildMode == BuildMode.DECONSTRUCT)
         {
             // TODO
-            if (t.furniture != null)
+            if (t.Furniture != null)
             {
-                t.furniture.Deconstruct();
+                t.Furniture.Deconstruct();
             }
 
         }
@@ -195,11 +195,11 @@ public class BuildModeController : MonoBehaviour
 
     public bool DoesBuildJobOverlapExistingBuildJob(Tile t, string furnitureType)
     {
-        for (int x_off = t.X; x_off < (t.X + WorldController.Instance.world.furniturePrototypes[furnitureType].Width); x_off++)
+        for (int x_off = t.X; x_off < (t.X + WorldController.Instance.world.FurniturePrototypes[furnitureType].Width); x_off++)
         {
-            for (int y_off = t.Y; y_off < (t.Y + WorldController.Instance.world.furniturePrototypes[furnitureType].Height); y_off++)
+            for (int y_off = t.Y; y_off < (t.Y + WorldController.Instance.world.FurniturePrototypes[furnitureType].Height); y_off++)
             {
-                if (WorldController.Instance.world.GetTileAt(x_off, y_off).pendingBuildJob != null)
+                if (WorldController.Instance.world.GetTileAt(x_off, y_off).PendingBuildJob != null)
                 {
                     return true;
                 }

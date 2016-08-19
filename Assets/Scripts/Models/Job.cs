@@ -17,142 +17,130 @@ public class Job
     // things like placing furniture, moving stored inventory,
     // working at a desk, and maybe even fighting enemies.
 
-    public Tile tile;
+    public Tile Tile { get; set; }
 
-    public float jobTime
-    {
-        get;
-        protected set;
-    }
+    public float JobTime { get; protected set; }
 
-    protected float jobTimeRequired;
+    protected float _jobTimeRequired;
 
-    protected bool jobRepeats = false;
+    protected bool _jobRepeats = false;
 
-    public string jobObjectType
-    {
-        get;
-        protected set;
-    }
+    public string JobObjectType { get; protected set; }
 
-    public TileType jobTileType
-    {
-        get;
-        protected set;
-    }
+    public TileType JobTileType { get; protected set; }
 
-    public Furniture furniturePrototype;
+    public Furniture FurniturePrototype { get; set; }
 
-    public Furniture furniture;
+    public Furniture Furniture { get; set; }
     // The piece of furniture that owns this job. Frequently will be null.
 
     public bool acceptsAnyInventoryItem = false;
 
-    public event Action<Job> cbJobCompleted;
+    public event Action<Job> JobCompleted;
     // We have finished the work cycle and so things should probably get built or whatever.
-    List<string> cbJobCompletedLua;
-    public event Action<Job> cbJobStopped;
+    private List<string> JobCompletedLua;
+    public event Action<Job> JobStopped;
     // The job has been stopped, either because it's non-repeating or was cancelled.
-    public event Action<Job> cbJobWorked;
+    public event Action<Job> JobWorked;
     // Gets called each time some work is performed -- maybe update the UI?
-    List<string> cbJobWorkedLua;
+    private List<string> _jobWorkedLua;
 
     public bool canTakeFromStockpile = true;
 
-    public Dictionary<string, Inventory> inventoryRequirements;
+    public Dictionary<string, Inventory> InventoryRequirements { get; set; }
 
     public Job(Tile tile, string jobObjectType, Action<Job> cbJobComplete, float jobTime, Inventory[] inventoryRequirements, bool jobRepeats = false)
     {
-        this.tile = tile;
-        this.jobObjectType = jobObjectType;
-        this.cbJobCompleted += cbJobComplete;
-        this.jobTimeRequired = this.jobTime = jobTime;
-        this.jobRepeats = jobRepeats;
+        this.Tile = tile;
+        this.JobObjectType = jobObjectType;
+        this.JobCompleted += cbJobComplete;
+        this._jobTimeRequired = this.JobTime = jobTime;
+        this._jobRepeats = jobRepeats;
 
-        cbJobWorkedLua = new List<string>();
-        cbJobCompletedLua = new List<string>();
+        _jobWorkedLua = new List<string>();
+        JobCompletedLua = new List<string>();
 
-        this.inventoryRequirements = new Dictionary<string, Inventory>();
+        this.InventoryRequirements = new Dictionary<string, Inventory>();
         if (inventoryRequirements != null)
         {
             foreach (Inventory inv in inventoryRequirements)
             {
-                this.inventoryRequirements[inv.objectType] = inv.Clone();
+                this.InventoryRequirements[inv.objectType] = inv.Clone();
             }
         }
     }
 
     public Job(Tile tile, TileType jobTileType, Action<Job> cbJobComplete, float jobTime, Inventory[] inventoryRequirements, bool jobRepeats = false)
     {
-        this.tile = tile;
-        this.jobTileType = jobTileType;
-        this.cbJobCompleted += cbJobComplete;
-        this.jobTimeRequired = this.jobTime = jobTime;
-        this.jobRepeats = jobRepeats;
+        this.Tile = tile;
+        this.JobTileType = jobTileType;
+        this.JobCompleted += cbJobComplete;
+        this._jobTimeRequired = this.JobTime = jobTime;
+        this._jobRepeats = jobRepeats;
 
-        cbJobWorkedLua = new List<string>();
-        cbJobCompletedLua = new List<string>();
+        _jobWorkedLua = new List<string>();
+        JobCompletedLua = new List<string>();
 
-        this.inventoryRequirements = new Dictionary<string, Inventory>();
+        this.InventoryRequirements = new Dictionary<string, Inventory>();
         if (inventoryRequirements != null)
         {
             foreach (Inventory inv in inventoryRequirements)
             {
-                this.inventoryRequirements[inv.objectType] = inv.Clone();
+                this.InventoryRequirements[inv.objectType] = inv.Clone();
             }
         }
     }
 
     protected Job(Job other)
     {
-        this.tile = other.tile;
-        this.jobObjectType = other.jobObjectType;
-        this.jobTileType = other.jobTileType;
-        this.cbJobCompleted = other.cbJobCompleted;
-        this.jobTime = other.jobTime;
+        this.Tile = other.Tile;
+        this.JobObjectType = other.JobObjectType;
+        this.JobTileType = other.JobTileType;
+        this.JobCompleted = other.JobCompleted;
+        this.JobTime = other.JobTime;
 
-        cbJobWorkedLua = new List<string>(other.cbJobWorkedLua);
-        cbJobCompletedLua = new List<string>(other.cbJobWorkedLua);
+        _jobWorkedLua = new List<string>(other._jobWorkedLua);
+        JobCompletedLua = new List<string>(other._jobWorkedLua);
 
 
-        this.inventoryRequirements = new Dictionary<string, Inventory>();
-        if (inventoryRequirements != null)
+        this.InventoryRequirements = new Dictionary<string, Inventory>();
+        if (InventoryRequirements != null)
         {
-            foreach (Inventory inv in other.inventoryRequirements.Values)
+            foreach (Inventory inv in other.InventoryRequirements.Values)
             {
-                this.inventoryRequirements[inv.objectType] = inv.Clone();
+                this.InventoryRequirements[inv.objectType] = inv.Clone();
             }
         }
     }
 
     public Inventory[] GetInventoryRequirementValues()
     {
-        return inventoryRequirements.Values.ToArray();
+        return InventoryRequirements.Values.ToArray();
     }
 
     virtual public Job Clone()
     {
         return new Job(this);
     }
-    
+
     public void RegisterJobCompletedCallback(string cb)
     {
-        cbJobCompletedLua.Add(cb);
+        JobCompletedLua.Add(cb);
     }
 
     public void UnregisterJobCompletedCallback(string cb)
     {
-        cbJobCompletedLua.Remove(cb);
+        JobCompletedLua.Remove(cb);
     }
-    
+
     public void RegisterJobWorkedCallback(string cb)
     {
-        cbJobWorkedLua.Add(cb);
+        _jobWorkedLua.Add(cb);
     }
 
     public void UnregisterJobWorkedCallback(string cb)
     {
-        cbJobWorkedLua.Remove(cb);
+        _jobWorkedLua.Remove(cb);
     }
 
     public void DoWork(float workTime)
@@ -165,71 +153,71 @@ public class Job
 
             // Job can't actually be worked, but still call the callbacks
             // so that animations and whatnot can be updated.
-            if (cbJobWorked != null)
-                cbJobWorked(this);
+            if (JobWorked != null)
+                JobWorked(this);
 
-            if (cbJobWorkedLua != null)
+            if (_jobWorkedLua != null)
             {
-                foreach (string luaFunction in cbJobWorkedLua)
+                foreach (string luaFunction in _jobWorkedLua)
                 {
                     FurnitureActions.CallFunction(luaFunction, this);
                 }
             }
-			
+
             return;
         }
 
-        jobTime -= workTime;
+        JobTime -= workTime;
 
-        if (cbJobWorked != null)
-            cbJobWorked(this);
+        if (JobWorked != null)
+            JobWorked(this);
 
-        if (cbJobWorkedLua != null)
+        if (_jobWorkedLua != null)
         {
-            foreach (string luaFunction in cbJobWorkedLua)
+            foreach (string luaFunction in _jobWorkedLua)
             {
                 FurnitureActions.CallFunction(luaFunction, this);
             }
         }
 
-        if (jobTime <= 0)
+        if (JobTime <= 0)
         {
             // Do whatever is supposed to happen with a job cycle completes.
-            if (cbJobCompleted != null)
-                cbJobCompleted(this);
+            if (JobCompleted != null)
+                JobCompleted(this);
 
-            foreach (string luaFunc in cbJobCompletedLua)
+            foreach (string luaFunc in JobCompletedLua)
             {
                 FurnitureActions.CallFunction(luaFunc, this);
             }
 
-            if (jobRepeats == false)
+            if (_jobRepeats == false)
             {
                 // Let everyone know that the job is officially concluded
-                if (cbJobStopped != null)
-                    cbJobStopped(this);
+                if (JobStopped != null)
+                    JobStopped(this);
             }
             else
             {
                 // This is a repeating job and must be reset.
-                jobTime += jobTimeRequired;
+                JobTime += _jobTimeRequired;
             }
         }
     }
 
     public void CancelJob()
     {
-        if (cbJobStopped != null)
-            cbJobStopped(this);	
+        if (JobStopped != null)
+            JobStopped(this);
 
-        World.current.jobQueue.Remove(this);
+        World.Current.JobQueue.Remove(this);
     }
 
     public bool HasAllMaterial()
     {
-        foreach (Inventory inv in inventoryRequirements.Values)
+        foreach (Inventory inv in InventoryRequirements.Values)
         {
-            if (inv.maxStackSize > inv.stackSize)
+            if (inv.maxStackSize > inv.StackSize)
                 return false;
         }
 
@@ -243,30 +231,29 @@ public class Job
             return inv.maxStackSize;
         }
 
-        if (inventoryRequirements.ContainsKey(inv.objectType) == false)
+        if (InventoryRequirements.ContainsKey(inv.objectType) == false)
         {
             return 0;
         }
 
-        if (inventoryRequirements[inv.objectType].stackSize >= inventoryRequirements[inv.objectType].maxStackSize)
+        if (InventoryRequirements[inv.objectType].StackSize >= InventoryRequirements[inv.objectType].maxStackSize)
         {
             // We already have all that we need!
             return 0;
         }
 
         // The inventory is of a type we want, and we still need more.
-        return inventoryRequirements[inv.objectType].maxStackSize - inventoryRequirements[inv.objectType].stackSize;
+        return InventoryRequirements[inv.objectType].maxStackSize - InventoryRequirements[inv.objectType].StackSize;
     }
 
     public Inventory GetFirstDesiredInventory()
     {
-        foreach (Inventory inv in inventoryRequirements.Values)
+        foreach (Inventory inv in InventoryRequirements.Values)
         {
-            if (inv.maxStackSize > inv.stackSize)
+            if (inv.maxStackSize > inv.StackSize)
                 return inv;
         }
 
         return null;
     }
-		
 }

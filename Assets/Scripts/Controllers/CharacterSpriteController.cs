@@ -19,10 +19,10 @@ public class CharacterSpriteController : MonoBehaviour
 
         // Register our callback so that our GameObject gets updated whenever
         // the tile's type changes.
-        world.cbCharacterCreated += OnCharacterCreated;
+        world.CharacterCreated += OnCharacterCreated;
 
         // Check for pre-existing characters, which won't do the callback.
-        foreach (Character c in world.characters)
+        foreach (Character c in world.Characters)
         {
             OnCharacterCreated(c);
         }
@@ -63,7 +63,7 @@ public class CharacterSpriteController : MonoBehaviour
 
         // Register our callback so that our GameObject gets updated whenever
         // the object's into changes.
-        c.cbCharacterChanged += OnCharacterChanged;
+        c.CharacterChanged += OnCharacterChanged;
 
     }
 
@@ -72,9 +72,9 @@ public class CharacterSpriteController : MonoBehaviour
         //Debug.Log("OnFurnitureChanged");
         // Make sure the furniture's graphics are correct.
         SpriteRenderer inv_sr = characterGameObjectMap[c].transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>();
-        if (c.inventory != null)
+        if (c.Inventory != null)
         {
-            inv_sr.sprite = SpriteManager.current.GetSprite("Inventory", c.inventory.GetName());
+            inv_sr.sprite = SpriteManager.current.GetSprite("Inventory", c.Inventory.GetName());
         }
         else
         {
