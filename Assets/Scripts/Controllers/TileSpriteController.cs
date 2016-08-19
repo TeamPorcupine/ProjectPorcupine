@@ -45,7 +45,7 @@ public class TileSpriteController : MonoBehaviour
                 // Add a Sprite Renderer
                 // Add a default sprite for empty tiles.
                 SpriteRenderer sr = tile_go.AddComponent<SpriteRenderer>();
-                sr.sprite = SpriteManager.current.GetSprite("Tile", "Empty");
+                sr.sprite = SpriteManager.current.GetSprite("Tile", "Background");
                 sr.sortingLayerName = "Tiles";
 
                 OnTileChanged(tile_data);
@@ -106,16 +106,11 @@ public class TileSpriteController : MonoBehaviour
         }
         else if (tile_data.Type == TileType.Empty)
         {
-            tile_go.GetComponent<SpriteRenderer>().sprite = SpriteManager.current.GetSprite("Tile", "Empty");
+            tile_go.GetComponent<SpriteRenderer>().sprite = SpriteManager.current.GetSprite("Tile", "Background");
         }
         else
         {
             Debug.LogError("OnTileTypeChanged - Unrecognized tile type.");
         }
-
-
     }
-
-
-
 }
