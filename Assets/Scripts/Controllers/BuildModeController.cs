@@ -131,8 +131,6 @@ public class BuildModeController : MonoBehaviour
                     }
                 }
 
-
-
                 // Add the job to the queue
                 WorldController.Instance.world.jobQueue.Enqueue(j);
 

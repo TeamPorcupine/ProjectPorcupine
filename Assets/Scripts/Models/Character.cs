@@ -335,6 +335,7 @@ public class Character : IXmlSerializable, ISelectable
     public void AbandonJob()
     {
         NextTile = DestTile = CurrTile;
+        myJob.DropPriority();   //Drops the priority a level, to lowest.
         World.current.jobQueue.Enqueue(myJob);
         myJob.cbJobStopped -= OnJobStopped;
         myJob = null;

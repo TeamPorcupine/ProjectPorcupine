@@ -278,5 +278,9 @@ public class Job
 
         return null;
     }
-		
+
+    public void DropPriority()
+    {
+        jobPriority = (JobPriority)Mathf.Max(0, (int)jobPriority - 1);
+    }
 }
