@@ -104,7 +104,7 @@ public class World : IXmlSerializable
     {
         if (r == GetOutsideRoom())
         {
-            Debug.LogError("Tried to delete the outside room.");
+            Logger.LogError("Tried to delete the outside room.");
             return;
         }
 
@@ -143,7 +143,7 @@ public class World : IXmlSerializable
             }
         }
 
-        Debug.Log("World created with " + (Width * Height) + " tiles.");
+        Logger.Log("World created with " + (Width * Height) + " tiles.");
 
         CreateFurniturePrototypes();
 
@@ -170,7 +170,7 @@ public class World : IXmlSerializable
 
     public Character CreateCharacter(Tile t)
     {
-        Debug.Log("CreateCharacter");
+        Logger.Log("CreateCharacter");
         Character c = new Character(t); 
 
         characters.Add(c);
@@ -192,8 +192,8 @@ public class World : IXmlSerializable
         filePath = System.IO.Path.Combine(filePath, "Furniture.lua");
         string myLuaCode = System.IO.File.ReadAllText(filePath);
 
-        //Debug.Log("My LUA Code");
-        //Debug.Log(myLuaCode);
+        //Logger.Log("My LUA Code");
+        //Logger.Log(myLuaCode);
 
         // Instantiate the singleton
         new FurnitureActions(myLuaCode);
@@ -233,7 +233,7 @@ public class World : IXmlSerializable
                         furn.ReadXmlPrototype(reader);
                     }
                     catch {
-                        Debug.LogError("Error reading furniture prototype for: " + furn.objectType);
+                        Logger.LogError("Error reading furniture prototype for: " + furn.objectType);
                     }
 
 
@@ -245,15 +245,15 @@ public class World : IXmlSerializable
             }
             else
             {
-                Debug.LogError("The furniture prototype definition file doesn't have any 'Furniture' elements.");
+                Logger.LogError("The furniture prototype definition file doesn't have any 'Furniture' elements.");
             }
         }
         else
         {
-            Debug.LogError("Did not find a 'Furnitures' element in the prototype definition file.");
+            Logger.LogError("Did not find a 'Furnitures' element in the prototype definition file.");
         }
 
-        Debug.Log("Furniture prototypes read: " + furnCount.ToString());
+        Logger.Log("Furniture prototypes read: " + furnCount.ToString());
 
         // This bit will come from parsing a LUA file later, but for now we still need to
         // implement furniture behaviour directly in C# code.
@@ -372,7 +372,7 @@ public class World : IXmlSerializable
     /// </summary>
     public void RandomizeTiles()
     {
-        Debug.Log("RandomizeTiles");
+        Logger.Log("RandomizeTiles");
         for (int x = 0; x < Width; x++)
         {
             for (int y = 0; y < Height; y++)
@@ -393,7 +393,7 @@ public class World : IXmlSerializable
 
     public void SetupPathfindingExample()
     {
-        Debug.Log("SetupPathfindingExample");
+        Logger.Log("SetupPathfindingExample");
 
         // Make a set of floors/walls to test pathfinding with.
 
@@ -432,7 +432,7 @@ public class World : IXmlSerializable
     {
         if (x >= Width || x < 0 || y >= Height || y < 0)
         {
-            //Debug.LogError("Tile ("+x+","+y+") is out of range.");
+            //Logger.LogError("Tile ("+x+","+y+") is out of range.");
             return null;
         }
         return tiles[x, y];
@@ -441,12 +441,12 @@ public class World : IXmlSerializable
 
     public Furniture PlaceFurniture(string objectType, Tile t, bool doRoomFloodFill = true)
     {
-        //Debug.Log("PlaceInstalledObject");
+        //Logger.Log("PlaceInstalledObject");
         // TODO: This function assumes 1x1 tiles -- change this later!
 
         if (furniturePrototypes.ContainsKey(objectType) == false)
         {
-            Debug.LogError("furniturePrototypes doesn't contain a proto for key: " + objectType);
+            Logger.LogError("furniturePrototypes doesn't contain a proto for key: " + objectType);
             return null;
         }
 
@@ -520,7 +520,7 @@ public class World : IXmlSerializable
     {
         if (furniturePrototypes.ContainsKey(objectType) == false)
         {
-            Debug.LogError("No furniture with type: " + objectType);
+            Logger.LogError("No furniture with type: " + objectType);
             return null;
         }
 
@@ -609,13 +609,13 @@ public class World : IXmlSerializable
 		writer.WriteEndElement();
 */
 
-        //Debug.Log(writer.ToString());
+        //Logger.Log(writer.ToString());
 	
     }
 
     public void ReadXml(XmlReader reader)
     {
-        Debug.Log("World::ReadXml");
+        Logger.Log("World::ReadXml");
         // Load info here
 
         Width = int.Parse(reader.GetAttribute("Width"));
@@ -674,7 +674,7 @@ public class World : IXmlSerializable
 
     void ReadXml_Tiles(XmlReader reader)
     {
-        Debug.Log("ReadXml_Tiles");
+        Logger.Log("ReadXml_Tiles");
         // We are in the "Tiles" element, so read elements until
         // we run out of "Tile" nodes.
 
@@ -695,7 +695,7 @@ public class World : IXmlSerializable
 
     void ReadXml_Inventories(XmlReader reader)
     {
-        Debug.Log("ReadXml_Inventories");
+        Logger.Log("ReadXml_Inventories");
 
         if(reader.ReadToDescendant("Inventory"))
         {
@@ -716,7 +716,7 @@ public class World : IXmlSerializable
 
     void ReadXml_Furnitures(XmlReader reader)
     {
-        Debug.Log("ReadXml_Furnitures");
+        Logger.Log("ReadXml_Furnitures");
 
         if (reader.ReadToDescendant("Furniture"))
         {
@@ -742,7 +742,7 @@ public class World : IXmlSerializable
 
     void ReadXml_Rooms(XmlReader reader)
     {
-        Debug.Log("ReadXml_Rooms");
+        Logger.Log("ReadXml_Rooms");
 
         if (reader.ReadToDescendant("Room"))
         {
@@ -768,7 +768,7 @@ public class World : IXmlSerializable
 
     void ReadXml_Characters(XmlReader reader)
     {
-        Debug.Log("ReadXml_Characters");
+        Logger.Log("ReadXml_Characters");
         if (reader.ReadToDescendant("Character"))
         {
             do
