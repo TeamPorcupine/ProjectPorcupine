@@ -2,33 +2,31 @@
 using System.Collections.Generic;
 
 public class PowerSystem {
-
-
     // List of furniture providing power into the system.
-    List<Furniture> powerGenerators;
+    private List<Furniture> _powerGenerators;
 
-    List<Furniture> powerConsumers;
+    private List<Furniture> _powerConsumers;
 
     // Current Power in the system
     float currentPower;
 
     public PowerSystem()
     {
-        powerGenerators = new List<Furniture>();
-        powerConsumers = new List<Furniture>();
+        _powerGenerators = new List<Furniture>();
+        _powerConsumers = new List<Furniture>();
     }
 
     public void RegisterPowerSupply(Furniture furn)
     {
-        powerGenerators.Add(furn);
+        _powerGenerators.Add(furn);
         CalculatePower();
 
-        furn.cbOnRemoved += RemovePowerSupply;
+        furn.OnRemoved += RemovePowerSupply;
     }
 
     public void RemovePowerSupply(Furniture furn)
     {
-        powerGenerators.Remove(furn);
+        _powerGenerators.Remove(furn);
         CalculatePower();
     }
 
@@ -41,22 +39,22 @@ public class PowerSystem {
         }
 
         //Debug.Log("Added " + furn.Name + " to power consumer list");
-        powerConsumers.Add(furn);
+        _powerConsumers.Add(furn);
         CalculatePower();
 
-        furn.cbOnRemoved += RemovePowerConsumer;
+        furn.OnRemoved += RemovePowerConsumer;
     }
 
     public void RemovePowerConsumer(Furniture furn)
     {
-        powerGenerators.Remove(furn);
+        _powerGenerators.Remove(furn);
         CalculatePower();
     }
 
 
     public bool RequestPower(Furniture furn)
     {
-        if (powerConsumers.Contains(furn))
+        if (_powerConsumers.Contains(furn))
         {
             return true;
         }
@@ -64,16 +62,16 @@ public class PowerSystem {
         return false;
     }
 
-    void CalculatePower()
+    private void CalculatePower()
     {
         float powerValues = 0;
 
-        foreach (Furniture furn in powerGenerators)
+        foreach (Furniture furn in _powerGenerators)
         {
             powerValues += furn.powerValue;
         }
 
-        foreach (Furniture furn in powerConsumers)
+        foreach (Furniture furn in _powerConsumers)
         {
             powerValues -= furn.powerValue;
         }
@@ -82,6 +80,4 @@ public class PowerSystem {
 
         Debug.Log("Current Power level: " + currentPower);
     }
-
-
 }

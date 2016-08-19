@@ -8,9 +8,9 @@ public class SoundController : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        WorldController.Instance.world.cbFurnitureCreated += OnFurnitureCreated;
+        WorldController.Instance.world.FurnitureCreated += OnFurnitureCreated;
 
-        WorldController.Instance.world.cbTileChanged += OnTileChanged;
+        WorldController.Instance.world.TileChanged += OnTileChanged;
     }
 	
     // Update is called once per frame
@@ -37,7 +37,7 @@ public class SoundController : MonoBehaviour
         if (soundCooldown > 0)
             return;
 		
-        AudioClip ac = Resources.Load<AudioClip>("Sounds/" + furn.objectType + "_OnCreated");
+        AudioClip ac = Resources.Load<AudioClip>("Sounds/" + furn.ObjectType + "_OnCreated");
 
         if (ac == null)
         {

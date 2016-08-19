@@ -16,13 +16,13 @@ public class Path_AStar
         // just turns this into an over-engineered Dijkstra's algo
 
         // Check to see if we have a valid tile graph
-        if (world.tileGraph == null)
+        if (world.TileGraph == null)
         {
-            world.tileGraph = new Path_TileGraph(world);
+            world.TileGraph = new Path_TileGraph(world);
         }
 
         // A dictionary of all valid, walkable nodes.
-        Dictionary<Tile, Path_Node<Tile>> nodes = world.tileGraph.nodes;
+        Dictionary<Tile, Path_Node<Tile>> nodes = world.TileGraph.nodes;
 
         // Make sure our start/end tiles are in the list of nodes!
         if (nodes.ContainsKey(tileStart) == false)
@@ -95,10 +95,10 @@ public class Path_AStar
             {
                 // We don't have a POSITIONAL goal, we're just trying to find
                 // some king of inventory.  Have we reached it?
-                if (current.data.inventory != null && current.data.inventory.objectType == objectType)
+                if (current.data.Inventory != null && current.data.Inventory.objectType == objectType)
                 {
                     // Type is correct
-                    if (canTakeFromStockpile || current.data.furniture == null || current.data.furniture.IsStockpile() == false)
+                    if (canTakeFromStockpile || current.data.Furniture == null || current.data.Furniture.IsStockpile() == false)
                     {
                         // Stockpile status is fine
                         reconstruct_path(Came_From, current);

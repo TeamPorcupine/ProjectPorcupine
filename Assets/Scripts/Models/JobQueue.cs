@@ -9,19 +9,19 @@ using System;
 
 public class JobQueue
 {
-    Queue<Job> jobQueue;
+    private Queue<Job> _jobQueue;
 
-    public event Action<Job> cbJobCreated;
+    public event Action<Job> JobCreated;
 
     public JobQueue()
     {
-        jobQueue = new Queue<Job>();
+        _jobQueue = new Queue<Job>();
     }
 
     public void Enqueue(Job j)
     {
         //Debug.Log("Adding job to queue. Existing queue size: " + jobQueue.Count);
-        if (j.jobTime < 0)
+        if (j.JobTime < 0)
         {
             // Job has a negative job time, so it's not actually
             // supposed to be queued up.  Just insta-complete it.
@@ -29,26 +29,26 @@ public class JobQueue
             return;
         }
 
-        jobQueue.Enqueue(j);
+        _jobQueue.Enqueue(j);
 
-        if (cbJobCreated != null)
+        if (JobCreated != null)
         {
-            cbJobCreated(j);
+            JobCreated(j);
         }
     }
 
     public Job Dequeue()
     {
-        if (jobQueue.Count == 0)
+        if (_jobQueue.Count == 0)
             return null;
 
-        return jobQueue.Dequeue();
+        return _jobQueue.Dequeue();
     }
-    
+
     public void Remove(Job j)
     {
         // TODO: Check docs to see if there's a less memory/swappy solution
-        List<Job> jobs = new List<Job>(jobQueue);
+        List<Job> jobs = new List<Job>(_jobQueue);
 
         if (jobs.Contains(j) == false)
         {
@@ -58,7 +58,6 @@ public class JobQueue
         }
 
         jobs.Remove(j);
-        jobQueue = new Queue<Job>(jobs);
+        _jobQueue = new Queue<Job>(jobs);
     }
-
 }

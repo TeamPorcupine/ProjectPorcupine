@@ -17,13 +17,13 @@ public class JobSpriteController : MonoBehaviour
         jobGameObjectMap = new Dictionary<Job, GameObject>();
         fsc = GameObject.FindObjectOfType<FurnitureSpriteController>();
         
-        WorldController.Instance.world.jobQueue.cbJobCreated += OnJobCreated;
+        WorldController.Instance.world.JobQueue.JobCreated += OnJobCreated;
     }
 
     void OnJobCreated(Job job)
     {
 
-        if (job.jobObjectType == null && job.jobTileType == TileType.Empty)
+        if (job.JobObjectType == null && job.JobTileType == TileType.Empty)
         {
             // This job doesn't really have an associated sprite with it, so no need to render.
             return;
@@ -45,48 +45,48 @@ public class JobSpriteController : MonoBehaviour
         // Add our tile/GO pair to the dictionary.
         jobGameObjectMap.Add(job, job_go);
 
-        job_go.name = "JOB_" + job.jobObjectType + "_" + job.tile.X + "_" + job.tile.Y;
+        job_go.name = "JOB_" + job.JobObjectType + "_" + job.Tile.X + "_" + job.Tile.Y;
         job_go.transform.SetParent(this.transform, true);
 
         SpriteRenderer sr = job_go.AddComponent<SpriteRenderer>();
-        if (job.jobTileType != TileType.Empty)
+        if (job.JobTileType != TileType.Empty)
         {
             //This job is for building a tile
             //For now, the only tile that could be is the floor, so just show a floor sprite
             //until the graphics system for tiles is fleshed out further
 
-            job_go.transform.position = new Vector3(job.tile.X, job.tile.Y, 0);
+            job_go.transform.position = new Vector3(job.Tile.X, job.Tile.Y, 0);
             sr.sprite = SpriteManager.current.GetSprite("Tile", "Empty");
         }
         else
         {
             //This is a normal furniture job.
-            job_go.transform.position = new Vector3(job.tile.X + ((job.furniturePrototype.Width - 1) / 2f), job.tile.Y + ((job.furniturePrototype.Height - 1) / 2f), 0);
-            sr.sprite = fsc.GetSpriteForFurniture (job.jobObjectType);
+            job_go.transform.position = new Vector3(job.Tile.X + ((job.FurniturePrototype.Width - 1) / 2f), job.Tile.Y + ((job.FurniturePrototype.Height - 1) / 2f), 0);
+            sr.sprite = fsc.GetSpriteForFurniture (job.JobObjectType);
         }
         sr.color = new Color(0.5f, 1f, 0.5f, 0.25f);
         sr.sortingLayerName = "Jobs";
 
         // FIXME: This hardcoding is not ideal!  <== Understatement
-        if (job.jobObjectType == "Door")
+        if (job.JobObjectType == "Door")
         {
             // By default, the door graphic is meant for walls to the east & west
             // Check to see if we actually have a wall north/south, and if so
             // then rotate this GO by 90 degrees
 
-            Tile northTile = World.current.GetTileAt(job.tile.X, job.tile.Y + 1);
-            Tile southTile = World.current.GetTileAt(job.tile.X, job.tile.Y - 1);
+            Tile northTile = World.Current.GetTileAt(job.Tile.X, job.Tile.Y + 1);
+            Tile southTile = World.Current.GetTileAt(job.Tile.X, job.Tile.Y - 1);
 
-            if (northTile != null && southTile != null && northTile.furniture != null && southTile.furniture != null &&
-            northTile.furniture.objectType.Contains("Wall") && southTile.furniture.objectType.Contains("Wall"))
+            if (northTile != null && southTile != null && northTile.Furniture != null && southTile.Furniture != null &&
+            northTile.Furniture.ObjectType.Contains("Wall") && southTile.Furniture.ObjectType.Contains("Wall"))
             {
                 job_go.transform.rotation = Quaternion.Euler(0, 0, 90);
             }
         }
 
 
-        job.cbJobCompleted += OnJobEnded;
-        job.cbJobStopped += OnJobEnded;
+        job.JobCompleted += OnJobEnded;
+        job.JobStopped += OnJobEnded;
     }
 
     void OnJobEnded(Job job)
@@ -97,8 +97,8 @@ public class JobSpriteController : MonoBehaviour
 
         GameObject job_go = jobGameObjectMap[job];
 
-        job.cbJobCompleted -= OnJobEnded;
-        job.cbJobStopped -= OnJobEnded;
+        job.JobCompleted -= OnJobEnded;
+        job.JobStopped -= OnJobEnded;
 
         Destroy(job_go);
 

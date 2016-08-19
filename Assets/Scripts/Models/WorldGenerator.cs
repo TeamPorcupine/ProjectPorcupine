@@ -34,7 +34,7 @@ public class WorldGenerator {
                     {
                         int stackSize = Random.Range(asteroidRessourceMin, asteroidRessourceMax);
                         Inventory inv = Inventory.New("Steel Plate", 50, stackSize);
-                        world.inventoryManager.PlaceInventory(t, inv);
+                        world.InventoryManager.PlaceInventory(t, inv);
                     }
                 }
             }

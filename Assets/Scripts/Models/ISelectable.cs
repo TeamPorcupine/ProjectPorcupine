@@ -10,5 +10,4 @@ public interface ISelectable
 
     string GetHitPointString();
     // For indestructible things (if any?) this is allowed to return blank (or null maybe??)
-
 }

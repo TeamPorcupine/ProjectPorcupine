@@ -3,8 +3,6 @@
 //		http://quill18.com
 //=======================================================================
 
-using UnityEngine;
-using System.Collections;
 using System;
 using System.Xml;
 using System.Xml.Schema;
@@ -24,31 +22,29 @@ public class Inventory : IXmlSerializable, ISelectable
 
     protected int _stackSize = 1;
 
-    public int stackSize
-    {
+    public int StackSize {
         get { return _stackSize; }
-        set
-        {
+        set {
             if (_stackSize != value)
             {
                 _stackSize = value;
-                if (cbInventoryChanged != null)
+                if (InventoryChanged != null)
                 {
-                    cbInventoryChanged(this);
+                    InventoryChanged(this);
                 }
             }
         }
     }
 
     // The function we callback any time our tile's data changes
-    public event Action<Inventory> cbInventoryChanged;
+    public event Action<Inventory> InventoryChanged;
 
-    public Tile tile;
-    public Character character;
+    public Tile Tile { get; set; }
+    public Character Character { get; set; }
 
     public Inventory()
     {
-		
+
     }
 
     static public Inventory New(string objectType, int maxStackSize, int stackSize)
@@ -60,21 +56,21 @@ public class Inventory : IXmlSerializable, ISelectable
     {
         this.objectType = objectType;
         this.maxStackSize = maxStackSize;
-        this.stackSize = stackSize;
+        this.StackSize = stackSize;
     }
 
     protected Inventory(Inventory other)
     {
         objectType = other.objectType;
         maxStackSize = other.maxStackSize;
-        stackSize = other.stackSize;
+        StackSize = other.StackSize;
     }
 
     public virtual Inventory Clone()
     {
         return new Inventory(this);
     }
-    
+
     #region ISelectableInterface implementation
 
     public string GetName()
@@ -103,11 +99,11 @@ public class Inventory : IXmlSerializable, ISelectable
 
     public void WriteXml(XmlWriter writer)
     {
-        writer.WriteAttributeString("X", tile.X.ToString());
-        writer.WriteAttributeString("Y", tile.Y.ToString());
+        writer.WriteAttributeString("X", Tile.X.ToString());
+        writer.WriteAttributeString("Y", Tile.Y.ToString());
         writer.WriteAttributeString("objectType", objectType);
         writer.WriteAttributeString("maxStackSize", maxStackSize.ToString());
-        writer.WriteAttributeString("stackSize", stackSize.ToString());
+        writer.WriteAttributeString("stackSize", StackSize.ToString());
     }
 
     public void ReadXml(XmlReader reader)
