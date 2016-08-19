@@ -167,6 +167,9 @@
 
 	<PowerGenerator supply="5"/>
 
+	<LocalizationCode>furn_power_generator</LocalizationCode>
+	<UnlocalizedDescription>furn_power_generator_desc</UnlocalizedDescription>
+
 	</Furniture>
 
 
