@@ -154,10 +154,14 @@ public class World : IXmlSerializable
 
     public void Update(float deltaTime)
     {
-        foreach (Character c in characters)
+        for (int i = 0; i < characters.Count; i++)
+        {
+            characters[i].Update(deltaTime);
+        }
+        /*foreach (Character c in characters)
         {
             c.Update(deltaTime);
-        }
+        }*/
 
         foreach (Furniture f in furnitures)
         {

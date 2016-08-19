@@ -9,6 +9,7 @@ using System;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using MoonSharp.Interpreter;
 
 /// <summary>
 /// A Character is an entity on the map that can move between tiles and,
@@ -16,6 +17,7 @@ using System.Xml.Serialization;
 /// Later, the Character class will likely be refactored (possibly with
 /// sub-classes or interfaces) to support friendly workers, enemies, etc...
 /// </summary>
+[MoonSharpUserData]
 public class Character : IXmlSerializable, ISelectable
 {
 
