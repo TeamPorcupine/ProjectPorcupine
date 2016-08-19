@@ -36,11 +36,11 @@ public class PowerSystem {
     {
         if (currentPower < furn.powerValue)
         {
-            //Debug.LogWarning("Not enough power for " + furn.Name + " to run");
+            //Logger.LogWarning("Not enough power for " + furn.Name + " to run");
             return;
         }
 
-        //Debug.Log("Added " + furn.Name + " to power consumer list");
+        //Logger.Log("Added " + furn.Name + " to power consumer list");
         powerConsumers.Add(furn);
         CalculatePower();
 
@@ -80,7 +80,7 @@ public class PowerSystem {
 
         currentPower = powerValues;
 
-        Debug.Log("Current Power level: " + currentPower);
+        Logger.Log("Current Power level: " + currentPower);
     }
 
 
