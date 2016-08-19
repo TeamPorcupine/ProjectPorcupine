@@ -1,0 +1,8 @@
+http://answers.unity3d.com/questions/618708/unity-and-mongodb-saas.html
+//http://mongodb.github.io/mongo-csharp-driver/1.11/getting_started/
+database host: https://mlab.com/home
+user: ProjectPorcupine
+pwd: ProjectPorcupine2016
+dbname: projectporcupineprimegalactictradenode
+dbuser: galactictradenodemaster
+dbpwd: galactictradenodemaster2016

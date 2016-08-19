@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using Assets.Scripts.Utilities.GalacticTradeNode;
+using Assets.Scripts.Utilities.GalacticTradeNode.Models;
+using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
 
@@ -71,6 +73,17 @@ public class BuildModeController : MonoBehaviour
     public void DoPathfindingTest()
     {
         WorldController.Instance.world.SetupPathfindingExample();
+    }
+
+    public void DoGalacticMarkerTest()
+    {
+        Debug.Log("Start DoGalacticMarkerTest");
+        GalacticMarketContext context = new GalacticMarketContext();
+
+        context.Orders.Save(new Order());
+        var orders = context.Orders.ToList();
+
+        Debug.Log(orders);
     }
 
     public void DoBuild(Tile t)
@@ -208,6 +221,4 @@ public class BuildModeController : MonoBehaviour
 
         return false;
     }
-
-
 }
