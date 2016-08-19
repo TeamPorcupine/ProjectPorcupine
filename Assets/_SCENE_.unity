@@ -3289,6 +3289,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 752785403}
   - 114: {fileID: 752785404}
+  - 114: {fileID: 752785406}
   - 114: {fileID: 752785405}
   m_Layer: 0
   m_Name: Controllers
@@ -3340,6 +3341,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5e7a894cc58fce74f8f9919998cfdc22, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &752785406
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 752785402}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dbd5bb9cda53d874cb0c4b093b301c01, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &783756916
