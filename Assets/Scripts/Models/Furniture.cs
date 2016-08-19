@@ -35,6 +35,17 @@ public class Furniture : IXmlSerializable, ISelectable
     //protected Action<Furniture, float> updateActions;
     protected List<string> updateActions;
 
+    /// <summary>
+    /// These actions are called when an object is installed. They get passed the furniture and a delta
+    /// time of 0
+    /// </summary>
+    protected List<string> installActions;
+    /// <summary>
+    /// These actions are called when an object is uninstalled. They get passed the furniture and a delta
+    /// time of 0
+    /// </summary>
+    protected List<string> uninstallActions;
+
     //public Func<Furniture, ENTERABILITY> IsEnterable;
     protected string isEnterableAction;
 
@@ -304,6 +315,9 @@ public class Furniture : IXmlSerializable, ISelectable
 
         }
 
+        // Call LUA install scripts
+        FurnitureActions.CallFunctionsWithFurniture(obj.installActions.ToArray(), obj, 0);
+
         return obj;
     }
     
@@ -515,6 +529,18 @@ public class Furniture : IXmlSerializable, ISelectable
                     RegisterUpdateAction(functionName);
 
                     break;
+                case "OnInstall":
+                    // Called when obj is installed
+                    string functionInstallName = reader.GetAttribute("FunctionName");
+                    RegisterInstallAction(functionInstallName);
+
+                    break;
+                case "OnUninstall":
+                    // Called when obj is uninstalled
+                    string functionUninstallName = reader.GetAttribute("FunctionName");
+                    RegisterUninstallAction(functionUninstallName);
+
+                    break;
                 case "IsEnterable":
 
                     isEnterableAction = reader.GetAttribute("FunctionName");
@@ -637,6 +663,32 @@ public class Furniture : IXmlSerializable, ISelectable
     public void UnregisterUpdateAction(string luaFunctionName)
     {
         updateActions.Remove(luaFunctionName);
+    }
+
+    /// <summary>
+    /// Registers a function that will be called every Install
+    /// </summary>
+    public void RegisterInstallAction(string luaFunctionName)
+    {
+        installActions.Add(luaFunctionName);
+    }
+
+    public void UnregisterInstallAction(string luaFunctionName)
+    {
+        installActions.Remove(luaFunctionName);
+    }
+
+    /// <summary>
+    /// Registers a function that will be called every UnInstall
+    /// </summary>
+    public void RegisterUninstallAction(string luaFunctionName)
+    {
+        uninstallActions.Add(luaFunctionName);
+    }
+
+    public void UnregisterUninstallAction(string luaFunctionName)
+    {
+        uninstallActions.Remove(luaFunctionName);
     }
 
     public int JobCount()
