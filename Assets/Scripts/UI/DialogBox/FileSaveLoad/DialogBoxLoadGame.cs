@@ -8,13 +8,22 @@ using UnityEditor;
 
 public class DialogBoxLoadGame : DialogBoxLoadSaveGame
 {
-	
-	public GameObject dialog;
+    public GameObject dialog;
 	GameObject go;
 	public bool pressedDelete;
 	Component fileItem;
 
-	void Update()
+    public override void ShowDialog()
+    {
+        base.ShowDialog();
+        DialogListItem[] listItems = GetComponentsInChildren<DialogListItem>();
+        foreach (DialogListItem listItem in listItems)
+        {
+            listItem.doubleclick = OkayWasClicked;
+        }
+    }
+
+    void Update()
 	{
 		if (pressedDelete)
 		{
