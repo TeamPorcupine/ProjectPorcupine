@@ -79,6 +79,12 @@ public class WorldController : MonoBehaviour
 
     void CheckTimeInput()
     {
+        if (IsModal)
+        {
+            // A modal dialog box is open. Bail.
+            return;
+        }
+
         // TODO: Move this into centralized keyboard manager where
         // all of the buttons can be rebinded.
         if (Input.GetKeyDown(KeyCode.Space))
@@ -89,7 +95,7 @@ public class WorldController : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Plus) || Input.GetKeyDown(KeyCode.KeypadPlus))
         {
-            if (currentTimeScalePosition == possibleTimeScales.Length)
+            if (currentTimeScalePosition == possibleTimeScales.Length - 1)
             {
                 // We are on the top of possibleTimeScales so just bail out.
                 return;

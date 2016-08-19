@@ -48,11 +48,46 @@
         </DeconstructJob>
 
         <OnUpdate FunctionName="OnUpdate_Door" />
+        <OnUpdate FunctionName="OnUpdate_Leak_Door" />
 
         <IsEnterable FunctionName="IsEnterable_Door" />
 
 		<LocalizationCode>furn_door</LocalizationCode>
 		<UnlocalizedDescription>furn_door_desc</UnlocalizedDescription>
+
+    </Furniture>
+
+    <Furniture objectType="Airlock">
+        <Name>Door</Name>
+        <Description>An Airlock prevents air from leaving the base</Description>
+        <MovementCost>1</MovementCost>
+        <Width>1</Width>
+        <Height>1</Height>
+        <LinksToNeighbours>false</LinksToNeighbours>
+        <EnclosesRooms>true</EnclosesRooms>
+        <CanReplaceFurniture objectName="Basic Wall" />
+
+
+        <Params>
+            <Param name="openness" value="0" />
+            <Param name="is_opening" value="0" />
+        </Params>
+
+        <BuildingJob jobTime="5">
+            <Inventory objectType="Steel Plate" amount="10" />
+        </BuildingJob>
+
+        <DeconstructJob>
+            <Inventory objectType="Steel Plate" amount="7" />
+        </DeconstructJob>
+
+        <OnUpdate FunctionName="OnUpdate_Door" />
+        <OnUpdate FunctionName="OnUpdate_Leak_Airlock" />
+
+        <IsEnterable FunctionName="IsEnterable_Door" />
+
+        <LocalizationCode>furn_airlock</LocalizationCode>
+        <UnlocalizedDescription>furn_airlock_desc</UnlocalizedDescription>
 
     </Furniture>
 

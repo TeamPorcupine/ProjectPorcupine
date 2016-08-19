@@ -23,7 +23,7 @@ public class PowerSystem {
         powerGenerators.Add(furn);
         CalculatePower();
 
-        furn.RegisterOnRemovedCallback(RemovePowerSupply);
+        furn.cbOnRemoved += RemovePowerSupply;
     }
 
     public void RemovePowerSupply(Furniture furn)
@@ -44,7 +44,7 @@ public class PowerSystem {
         powerConsumers.Add(furn);
         CalculatePower();
 
-        furn.RegisterOnRemovedCallback(RemovePowerConsumer);
+        furn.cbOnRemoved += RemovePowerConsumer;
     }
 
     public void RemovePowerConsumer(Furniture furn)

@@ -155,7 +155,12 @@ namespace ProjectPorcupine.Localization
                 //Switch the fallback mode.
                 switch (fallbackMode)
                 {
-                    case FallbackMode.ReturnKey: return key; //Just return the key.
+                    case FallbackMode.ReturnKey:
+                        if(additionalValues.Length >= 1)
+                        {
+                            return key + " " + additionalValues[0];
+                        }
+                        return key; //Just return the key.
                     case FallbackMode.ReturnEnglish: return GetLocalization(key, FallbackMode.ReturnKey, "en_US", additionalValues); //Return the english equivalent.
                     default: return ""; //Return an empty string.
                 }

@@ -73,6 +73,7 @@ public class MouseController : MonoBehaviour
         {
             if (currentMode == MouseMode.BUILD)
             {
+				isDragging = false;
                 currentMode = MouseMode.SELECT;
             }
             else if (currentMode == MouseMode.SELECT)
@@ -306,10 +307,12 @@ public class MouseController : MonoBehaviour
         // Handle screen panning
         if (Input.GetMouseButton(1) || Input.GetMouseButton(2))
         {	// Right or Middle Mouse Button
-			
             Vector3 diff = lastFramePosition - currFramePosition;
             Camera.main.transform.Translate(diff);
-			
+
+            if (Input.GetMouseButton (1)) {
+                isDragging = false;
+            }
         }
 
         Camera.main.orthographicSize -= Camera.main.orthographicSize * Input.GetAxis("Mouse ScrollWheel");
@@ -329,7 +332,8 @@ public class MouseController : MonoBehaviour
         sr.sortingLayerName = "Jobs";
         sr.sprite = fsc.GetSpriteForFurniture(furnitureType);
 
-        if (WorldController.Instance.world.IsFurniturePlacementValid(furnitureType, t))
+        if (WorldController.Instance.world.IsFurniturePlacementValid(furnitureType, t) &&
+            bmc.DoesBuildJobOverlapExistingBuildJob(t, furnitureType) == false)
         {
             sr.color = new Color(0.5f, 1f, 0.5f, 0.25f);
         }
