@@ -125,13 +125,13 @@
     <Height>2</Height>
 
     <PowerGenerator supply="5"/>
-
+	
     <BuildingJob jobTime="0">
     </BuildingJob>
 
     <LocalizationCode>furn_power_generator</LocalizationCode>
     <UnlocalizedDescription>furn_power_generator_desc</UnlocalizedDescription>
-    
+
   </Furniture>
 
 
