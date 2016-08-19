@@ -215,4 +215,28 @@ function MiningDroneStation_JobComplete(j)
 	World.current.inventoryManager.PlaceInventory( j.furniture.GetSpawnSpotTile(), Inventory.__new("Steel Plate", 50, 20) )
 end
 
+function CloningPod_UpdateAction(furniture, deltaTime)
+
+	if( furniture.JobCount() > 0 ) then
+		return
+	end
+	
+	j = Job.__new(
+	furniture.GetJobSpotTile(),
+	nil,
+	nil,
+	10,
+	nil,
+	false
+	)
+	j.RegisterJobCompletedCallback("CloningPod_JobComplete")
+	furniture.AddJob( j )
+end
+
+function CloningPod_JobComplete(j)
+	j.furniture.Deconstruct()
+	char = World.current.CreateCharacter(j.furniture.GetSpawnSpotTile())
+	
+end
+
 return "LUA Script Parsed!"
