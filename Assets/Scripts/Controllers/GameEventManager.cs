@@ -13,6 +13,7 @@ public class GameEventManager : MonoBehaviour {
     {
         current = this;
 
+        LoadLuaScript();
         LoadEvents();
     }
 
@@ -32,6 +33,15 @@ public class GameEventManager : MonoBehaviour {
         string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "GameEvents");
 
         LoadEventsFromDirectory(filePath);
+    }
+
+    void LoadLuaScript()
+    {
+        string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
+        filePath = System.IO.Path.Combine(filePath, "GameEvent.lua");
+        string luaCode = System.IO.File.ReadAllText(filePath);
+
+        new GameEventActions(luaCode);
     }
 
     void LoadEventsFromDirectory(string filePath)

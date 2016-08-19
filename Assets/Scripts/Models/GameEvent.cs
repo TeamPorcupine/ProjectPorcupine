@@ -1,6 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using MoonSharp;
+using MoonSharp.Interpreter;
+using MoonSharp.Interpreter.Interop;
 
+[MoonSharpUserData]
 public class GameEvent 
 {
 
@@ -21,7 +25,7 @@ public class GameEvent
         int conditionsMet = 0;
         foreach(string precondition in preconditions){
             // Call lua precondition it should return 1 if met otherwise 0
-            // conditionsMet += (int)(GameEventActions.CallFunctionWithEvent(precondition, this).Number);
+            conditionsMet += (int)(GameEventActions.CallFunction(precondition, this).Number);
         }
 
         if(conditionsMet >= preconditions.Count && executed == false){
@@ -34,7 +38,7 @@ public class GameEvent
         if (executionActions != null)
         {
             // Execute Lua code like in Furniture ( FurnitureActions ) 
-            // GameEventActions.CallFunctionsWithEvent(executionActions.ToArray(), this);
+            GameEventActions.CallFunctionsWithEvent(executionActions.ToArray(), this);
         }
         executed = true;
     }

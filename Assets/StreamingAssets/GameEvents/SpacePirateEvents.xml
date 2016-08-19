@@ -2,6 +2,7 @@
 <Events>
 
     <Event Name="pirateEvent01">
+      <Precondition FunctionName="Precondition_Event_Pirate01" />
       <OnExecute FunctionName="Execute_Event_Pirate01" />
     </Event>
   
