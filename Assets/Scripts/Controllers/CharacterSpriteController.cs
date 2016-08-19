@@ -49,8 +49,9 @@ public class CharacterSpriteController : MonoBehaviour
         char_go.transform.SetParent(this.transform, true);
 
         SpriteRenderer sr = char_go.AddComponent<SpriteRenderer>();
-        sr.sprite = SpriteManager.current.GetSprite("Character", "p1_front");
+        sr.sprite = SpriteManager.current.GetSprite("Character", "p2_front");
         sr.sortingLayerName = "Characters";
+		sr.color = c.GetCharacterColor();
 
         // Add the inventory sprite onto the character
         GameObject inv_go = new GameObject("Inventory");
