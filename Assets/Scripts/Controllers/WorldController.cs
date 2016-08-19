@@ -79,6 +79,12 @@ public class WorldController : MonoBehaviour
 
     void CheckTimeInput()
     {
+        if (IsModal)
+        {
+            // A modal dialog box is open. Bail.
+            return;
+        }
+
         // TODO: Move this into centralized keyboard manager where
         // all of the buttons can be rebinded.
         if (Input.GetKeyDown(KeyCode.Space))
