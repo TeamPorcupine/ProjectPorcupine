@@ -4,11 +4,12 @@
 //=======================================================================
 
 using UnityEngine;
-using System.Collections;
 using System;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using System.Collections.Generic;
+using System.Linq;
 
 /// <summary>
 /// A Character is an entity on the map that can move between tiles and,
@@ -89,6 +90,12 @@ public class Character : IXmlSerializable, ISelectable
         }
     }
 
+    /// Tile where job should be carried out.
+    public Tile JobTile
+    {
+        get { return jobTile ?? myJob.tile; }
+    }
+
     Tile _destTile;
 
     /// The next tile in the pathfinding sequence (the one we are about to enter).
@@ -108,6 +115,9 @@ public class Character : IXmlSerializable, ISelectable
 
     /// Our job, if any.
     Job myJob;
+
+    /// Tile where job should be carried out, if different from myJob.tile
+    Tile jobTile;
 
     // The item we are carrying (not gear/equipment)
     public Inventory inventory;
@@ -151,6 +161,20 @@ public class Character : IXmlSerializable, ISelectable
         Profiler.BeginSample("PathGeneration");
         pathAStar = new Path_AStar(World.current, CurrTile, DestTile);	// This will calculate a path from curr to dest.
         Profiler.EndSample();
+
+        if (myJob.adjacent)
+        {
+            IEnumerable<Tile> reversed = pathAStar.Reverse();
+            reversed = reversed.Skip(1);
+            pathAStar = new Path_AStar(new Queue<Tile>(reversed.Reverse()));
+            DestTile = pathAStar.EndTile();
+            jobTile = DestTile;
+        }
+        else
+        {
+            jobTile = myJob.tile;
+        }
+
         if (pathAStar.Length() == 0)
         {
             Debug.LogError("Path_AStar returned no path to target job tile!");
@@ -171,10 +195,10 @@ public class Character : IXmlSerializable, ISelectable
         {
             // If we get here, then the job has all the material that it needs.
             // Lets make sure that our destination tile is the job site tile.
-            DestTile = myJob.tile;
+            DestTile = JobTile;
 
             // Are we there yet?
-            if (CurrTile == myJob.tile)
+            if (CurrTile == DestTile)
             {
                 // We are at the correct tile for our job, so 
                 // execute the job's "DoWork", which is mostly
@@ -203,7 +227,7 @@ public class Character : IXmlSerializable, ISelectable
             {
                 // If so, deliver the goods.
                 // Walk to the job tile, then drop off the stack into the job.
-                if (CurrTile == myJob.tile)
+                if (CurrTile == JobTile)
                 {
                     // We are at the job's site, so drop the inventory
                     World.current.inventoryManager.PlaceInventory(myJob, inventory);
@@ -213,12 +237,12 @@ public class Character : IXmlSerializable, ISelectable
 
                     //at this point we should dump anything in our inventory
                     DumpExcessInventory();
-                  
+
                 }
                 else
                 {
                     // We still need to walk to the job site.
-                    DestTile = myJob.tile;
+                    DestTile = JobTile;
                     return false;
                 }
             }

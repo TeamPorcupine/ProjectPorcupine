@@ -61,6 +61,11 @@ public class Job
 
     public Dictionary<string, Inventory> inventoryRequirements;
 
+    /// <summary>
+    /// If true, the work will be carried out on any adjacent tile of the target tile rather than on it.
+    /// </summary>
+    public bool adjacent;
+
     public Job(Tile tile, string jobObjectType, Action<Job> cbJobComplete, float jobTime, Inventory[] inventoryRequirements, bool jobRepeats = false)
     {
         this.tile = tile;
@@ -82,13 +87,14 @@ public class Job
         }
     }
 
-    public Job(Tile tile, TileType jobTileType, Action<Job> cbJobComplete, float jobTime, Inventory[] inventoryRequirements, bool jobRepeats = false)
+    public Job(Tile tile, TileType jobTileType, Action<Job> cbJobComplete, float jobTime, Inventory[] inventoryRequirements, bool jobRepeats = false, bool adjacent = false)
     {
         this.tile = tile;
         this.jobTileType = jobTileType;
         this.cbJobCompleted += cbJobComplete;
         this.jobTimeRequired = this.jobTime = jobTime;
         this.jobRepeats = jobRepeats;
+        this.adjacent = adjacent;
 
         cbJobWorkedLua = new List<string>();
         cbJobCompletedLua = new List<string>();
