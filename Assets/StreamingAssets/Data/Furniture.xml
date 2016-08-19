@@ -159,13 +159,17 @@
 
 
   <Furniture objectType="Power Generator">
-      <Name>Power Generator</Name>
-      <BaseType>Generator</BaseType>
-      <MovementCost>10</MovementCost>
-      <Width>2</Width>
-      <Height>2</Height>
+        <Name>Power Generator</Name>
+        <BaseType>Generator</BaseType>
+        <MovementCost>10</MovementCost>
+        <Width>2</Width>
+        <Height>2</Height>
+	
 
-      <PowerGenerator supply="5"/>
+	<LocalizationCode>power_generator</LocalizationCode>
+	<UnlocalizedDescription>power_generator_desc</UnlocalizedDescription>
+
+        <PowerGenerator supply="5"/>
   </Furniture>
 
   <Furniture objectType="Metal Smelter">
