@@ -170,4 +170,28 @@
 	</Furniture>
 
 
+  <Furniture objectType="Galactic Market Terminal">
+    <Name>Galactic Market Terminal</Name>
+
+    <Description>Trade! Traaaaade!!!!</Description>
+    <OnInteract FunctionName="OpenTradeTerminal" />
+    <BaseType>GalacticMarketTerminal</BaseType>
+    <MovementCost>0</MovementCost>
+    <Width>3</Width>
+    <Height>3</Height>
+
+    <BuildingJob jobTime="1">
+      <Inventory objectType="Steel Plate" amount="5" />
+    </BuildingJob>
+
+    <DeconstructJob>
+      <Inventory objectType="Steel Plate" amount="2" />
+    </DeconstructJob>
+
+    <LocalizationCode>furn_gt_terminal</LocalizationCode>
+    <UnlocalizedDescription>furn_gt_terminal_desc</UnlocalizedDescription>
+
+  </Furniture>
+
+
 </Furnitures>

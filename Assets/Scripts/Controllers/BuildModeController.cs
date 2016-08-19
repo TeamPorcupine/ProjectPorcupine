@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Utilities.GalacticTradeNode;
+﻿using System;
+using Assets.Scripts.Utilities.GalacticTradeNode;
 using Assets.Scripts.Utilities.GalacticTradeNode.Models;
 using UnityEngine;
 using System.Collections.Generic;
@@ -80,7 +81,18 @@ public class BuildModeController : MonoBehaviour
         Debug.Log("Start DoGalacticMarkerTest");
         GalacticMarketContext context = new GalacticMarketContext();
 
-        context.Orders.Save(new Order());
+        Order order = new Order
+        {
+            CurrentQuantity = 0,
+            DateCreated = DateTime.Now,
+            Direction = OrderDirection.Sell,
+            InitialQuantity = 100,
+            ItemId = 0,
+            ItemName = "Steel Plate",
+            IsRunningOrder = true,
+            TraderName = "Not implemented - BuildModeController.DoGalacticMarkerTest"
+        };
+        context.Orders.Save(order);
         var orders = context.Orders.ToList();
 
         Debug.Log(orders);

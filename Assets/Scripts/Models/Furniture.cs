@@ -136,7 +136,7 @@ public class Furniture : IXmlSerializable, ISelectable
             return replaceableFurniture;
         }
     }
-
+    
     // This is a multipler. So a value of "2" here, means you move twice as slowly (i.e. at half speed)
     // Tile types and other environmental effects may be combined.
     // For example, a "rough" tile (cost of 2) with a table (cost of 3) that is on fire (cost of 3)
@@ -181,6 +181,8 @@ public class Furniture : IXmlSerializable, ISelectable
         this.Width = 1;
     }
 
+    public string InteractFunctionName { get; set; }
+
     // Copy Constructor -- don't call this directly, unless we never
     // do ANY sub-classing. Instead use Clone(), which is more virtual.
     protected Furniture(Furniture other)
@@ -205,6 +207,7 @@ public class Furniture : IXmlSerializable, ISelectable
         if (other.updateActions != null)
             this.updateActions = new List<string>(other.updateActions);
 
+        this.InteractFunctionName = other.InteractFunctionName;
         this.isEnterableAction = other.isEnterableAction;
 
         this.isPowerGenerator = other.isPowerGenerator;
@@ -481,6 +484,9 @@ public class Furniture : IXmlSerializable, ISelectable
                     string functionName = reader.GetAttribute("FunctionName");
                     RegisterUpdateAction(functionName);
 
+                    break;
+                case "OnInteract":
+                    InteractFunctionName = reader.GetAttribute("FunctionName");
                     break;
                 case "IsEnterable":
 
