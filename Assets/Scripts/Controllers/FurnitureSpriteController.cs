@@ -53,7 +53,7 @@ public class FurnitureSpriteController : MonoBehaviour
         furn_go.transform.SetParent(this.transform, true);
 
         // FIXME: This hardcoding is not ideal!
-        if (furn.objectType == "Door" || furn.objectType == "Airlock")
+        if (furn.objectType == "Door")
         {
             // By default, the door graphic is meant for walls to the east & west
             // Check to see if we actually have a wall north/south, and if so
@@ -70,11 +70,15 @@ public class FurnitureSpriteController : MonoBehaviour
         }
 
 
+		SpriteRenderer sr = furn_go.AddComponent<SpriteRenderer>();
 
-        SpriteRenderer sr = furn_go.AddComponent<SpriteRenderer>();
-        sr.sprite = GetSpriteForFurniture(furn);
-        sr.sortingLayerName = "Furniture";
-        sr.color = furn.tint;
+		String spriteName = GetSpriteNameForFurniture(furn);
+		Sprite tempSprite = SpriteManager.current.GetSprite("Furniture", spriteName);
+
+		sr.sprite = tempSprite;
+		sr.sprite.name = spriteName;
+		sr.sortingLayerName = "Furniture";
+		sr.color = furn.tint;
 
         // Register our callback so that our GameObject gets updated whenever
         // the object's into changes.
@@ -111,15 +115,19 @@ public class FurnitureSpriteController : MonoBehaviour
         //Debug.Log(furn_go);
         //Debug.Log(furn_go.GetComponent<SpriteRenderer>());
 
-        furn_go.GetComponent<SpriteRenderer>().sprite = GetSpriteForFurniture(furn);
-        furn_go.GetComponent<SpriteRenderer>().color = furn.tint;
+		String spriteName = GetSpriteNameForFurniture(furn);
+		Sprite tempSprite = SpriteManager.current.GetSprite("Furniture", spriteName);
+
+		furn_go.GetComponent<SpriteRenderer>().sprite = tempSprite;
+		furn_go.GetComponent<SpriteRenderer>().sprite.name = spriteName;
+		furn_go.GetComponent<SpriteRenderer>().color = furn.tint;
 
     }
 
 
 
 
-    public Sprite GetSpriteForFurniture(Furniture furn)
+    public String GetSpriteNameForFurniture(Furniture furn)
     {
         string spriteName = furn.objectType;
 
@@ -152,30 +160,6 @@ public class FurnitureSpriteController : MonoBehaviour
                 }
                 //Debug.Log(spriteName);
             }
-            if (furn.objectType == "Airlock")
-            {
-                if (furn.GetParameter("openness") < 0.1f)
-                {
-                    // Airlock is closed
-                    spriteName = "Airlock";
-                }
-                else if (furn.GetParameter("openness") < 0.5f)
-                {
-                    // Airlock is a bit open
-                    spriteName = "Airlock_openness_1";
-                }
-                else if (furn.GetParameter("openness") < 0.9f)
-                {
-                    // Airlock is a lot open
-                    spriteName = "Airlock_openness_2";
-                }
-                else
-                {
-                    // Airlock is a fully open
-                    spriteName = "Airlock_openness_3";
-                }
-                //Debug.Log(spriteName);
-            }
 
             /*if(furnitureSprites.ContainsKey(spriteName) == false) {
 				Debug.Log("furnitureSprites has no definition for: " + spriteName);
@@ -183,7 +167,7 @@ public class FurnitureSpriteController : MonoBehaviour
 			}
 */
 
-            return SpriteManager.current.GetSprite("Furniture", spriteName); // furnitureSprites[spriteName];
+            return spriteName; // furnitureSprites[spriteName];
         }
 
         // Otherwise, the sprite name is more complicated.
@@ -228,7 +212,7 @@ public class FurnitureSpriteController : MonoBehaviour
 		}
 */
 
-        return SpriteManager.current.GetSprite("Furniture", spriteName); //furnitureSprites[spriteName];
+        return spriteName; //furnitureSprites[spriteName];
 
     }
 
