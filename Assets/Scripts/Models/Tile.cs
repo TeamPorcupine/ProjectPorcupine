@@ -85,6 +85,20 @@ public class Tile :IXmlSerializable, ISelectable
             //if (Type == TileType.Empty)
             //    return 0;	// 0 is unwalkable
 
+            if(Type == TileType.Empty)
+            {
+                Tile[] ns = GetNeighbours();
+
+                float movCost = 0f;
+
+                foreach (Tile n in ns)
+                {
+                    movCost += (n != null && n.Type == TileType.Floor) ? baseTileMovementCost : 0f;
+                }
+
+                return Mathf.Clamp(movCost, 0f, baseTileMovementCost);
+            }
+
             if (furniture == null)
                 return baseTileMovementCost;
 
