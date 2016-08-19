@@ -105,9 +105,6 @@ public class Furniture : IXmlSerializable, ISelectable
         get;
         protected set;
     }
-	
-    // This is the generic type of object this is, allowing things to interact with it based on it's generic type
-    private string baseType;
 
     private string _Name = null;
 
@@ -187,7 +184,6 @@ public class Furniture : IXmlSerializable, ISelectable
     {
         this.objectType = other.objectType;
         this.Name = other.Name;
-        this.baseType = other.baseType;
         this.Description = other.Description;
         this.movementCost = other.movementCost;
         this.roomEnclosure = other.roomEnclosure;
@@ -339,7 +335,7 @@ public class Furniture : IXmlSerializable, ISelectable
                 {
                     for (int i = 0; i < ReplaceableFurniture.Count; i++)
                     {
-                        if (t2.furniture.baseType == ReplaceableFurniture[i])
+                        if (t2.furniture.Name == ReplaceableFurniture[i])
                         {
                             isReplaceable = true;
                         }
@@ -414,10 +410,6 @@ public class Furniture : IXmlSerializable, ISelectable
                     reader.Read();
                     Name = reader.ReadContentAsString();
                     break;
-                case "BaseType":
-                    reader.Read();
-                    baseType = reader.ReadContentAsString();
-                    break;
                 case "Description":
                     reader.Read();
                     Description = reader.ReadContentAsString();
@@ -443,7 +435,7 @@ public class Furniture : IXmlSerializable, ISelectable
                     roomEnclosure = reader.ReadContentAsBoolean();
                     break;
                 case "CanReplaceFurniture":
-                    replaceableFurniture.Add(reader.GetAttribute("baseType").ToString());
+                    replaceableFurniture.Add(reader.GetAttribute("objectName").ToString());
                     break;
                 case "BuildingJob":
                     float jobTime = float.Parse(reader.GetAttribute("jobTime"));
