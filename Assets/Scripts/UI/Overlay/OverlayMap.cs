@@ -50,6 +50,11 @@ public class OverlayMap : MonoBehaviour {
     Script script;
 
     /// <summary>
+    /// 
+    /// </summary>
+    public string currentOverlay;
+
+    /// <summary>
     /// You can set any function, overlay will display value of func at point (x,y)
     /// Depending on how many colors the colorMap has, the displayed values will cycle
     /// </summary>
@@ -114,6 +119,9 @@ public class OverlayMap : MonoBehaviour {
     // The texture applied to the entire overlay map
     Texture2D texture;
 
+    public GameObject parentPanel;
+    GameObject dropdownObject;
+
     /// <summary>
     /// Grabs references, sets a dummy size and evaluation function
     /// </summary>
@@ -123,19 +131,24 @@ public class OverlayMap : MonoBehaviour {
         meshRenderer = GetComponent<MeshRenderer>();
         meshFilter = GetComponent<MeshFilter>();
 
+        // Read xml prototypes
         overlays = OverlayDescriptor.ReadPrototypes(xmlFileName);
 
-
         // Read LUA
+        UserData.RegisterAssembly();
         string scriptFile = System.IO.Path.Combine(UnityEngine.Application.streamingAssetsPath,
             System.IO.Path.Combine("Overlay", LUAFileName));
         string scriptTxt = System.IO.File.ReadAllText(scriptFile);
-
+        
         script = new Script();
         script.DoString(scriptTxt);
 
+        // Build GUI
+        CreateGUI();
+
         // TODO: remove this dummy set size
         SetSize(100, 100);
+        SetOverlay("None");
     }
 
     /// <summary>
@@ -144,13 +157,19 @@ public class OverlayMap : MonoBehaviour {
     void Update()
     {
         elapsed += Time.deltaTime;
-        if (elapsed > updateInterval)
+        if (currentOverlay != "None" && elapsed > updateInterval)
         {
             Bake();
             elapsed = 0f;
         }
     }
-    
+
+    void Destroy()
+    {
+        dropdownObject.GetComponent<UnityEngine.UI.Dropdown>().onValueChanged.RemoveAllListeners();
+        Destroy(dropdownObject);
+    }
+
     /// <summary>
     /// If overlay is toggled on, it should be "baked"
     /// </summary>
@@ -397,18 +416,56 @@ public class OverlayMap : MonoBehaviour {
     /// <param name="name">name of overlay prototype</param>
     public void SetOverlay(string name)
     {
-        if (overlays.ContainsKey(name)) {
+        if(name == "None")
+        {
+            meshRenderer.enabled = false;
+            currentOverlay = name;
+            return;
+        } 
+        else if (overlays.ContainsKey(name))
+        {
+            meshRenderer.enabled = true;
+            currentOverlay = name;
             OverlayDescriptor descr = overlays[name];
-            string LUAFunctionName = descr.luaFunctionName;
+            object handle = script.Globals[descr.luaFunctionName];
+            if (handle == null)
+            {
+                Debug.LogError(string.Format("Couldn't find a function named '{0}' in '{1}'", descr.luaFunctionName));
+                return;
+            }
+            Debug.Log(string.Format("Setting LUA function for overlay to '{0}'", descr.luaFunctionName));
             valueAt = (x, y) => {
                 if (WorldController.Instance == null) return 0;
                 Tile tile = WorldController.Instance.GetTileAtWorldCoord(new Vector3(x, y, 0));
-                return (int) script.Call(LUAFunctionName, new object[] { tile }).ToScalar().CastToNumber();
+                return (int) script.Call(handle, new object[] { tile }).ToScalar().CastToNumber();
             };
             colorMap = descr.colorMap;
+            Bake();
         } else
         {
             Debug.LogWarning(string.Format("Overlay with name {0} not found in prototypes", name));
         }
+    }
+
+    void CreateGUI()
+    {
+        //dropdownObject =  new GameObject();
+        //dropdownObject.transform.SetParent(parentPanel.transform);
+        //UnityEngine.UI.Dropdown dropdown = dropdownObject.AddComponent<UnityEngine.UI.Dropdown>();
+
+        UnityEngine.UI.Dropdown dropdown = parentPanel.GetComponentInChildren<UnityEngine.UI.Dropdown>();
+        if(dropdown == null)
+        {
+            Debug.LogWarning("No parent panel was selected!");
+            return;
+        }
+
+        List<string> options = new List<string> { "None" };
+        options.AddRange(overlays.Keys);
+
+        dropdown.AddOptions(options);
+        dropdown.onValueChanged.AddListener(
+            (int idx) => { SetOverlay(dropdown.captionText.text); }
+        );
     }
 }
