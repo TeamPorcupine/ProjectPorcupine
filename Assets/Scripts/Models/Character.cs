@@ -136,6 +136,7 @@ public class Character : IXmlSerializable, ISelectable
                 null,
                 UnityEngine.Random.Range(0.1f, 0.5f),
                 null,
+                Job.JobPriority.Low,
                 false);
         }
 
