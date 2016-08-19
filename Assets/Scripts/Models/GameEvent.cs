@@ -9,28 +9,47 @@ public class GameEvent
 {
 
     public string Name { get; protected set; }
+    public bool Repeat { get; protected set; }
 
     protected List<string> preconditions;
     protected List<string> executionActions;
 
     private bool executed;
+    private float timer;
 
-    public GameEvent(string name){
+    public GameEvent(string name, bool repeat){
         Name = name;
+        Repeat = repeat;
         preconditions = new List<string>();
         executionActions = new List<string>();
+        timer = 0;
     }
 
-    public void Update(){
+    public void Update(float deltaTime){
         int conditionsMet = 0;
         foreach(string precondition in preconditions){
             // Call lua precondition it should return 1 if met otherwise 0
-            conditionsMet += (int)(GameEventActions.CallFunction(precondition, this).Number);
+            conditionsMet += (int)(GameEventActions.CallFunction(precondition, this, deltaTime).Number);
         }
 
         if(conditionsMet >= preconditions.Count && executed == false){
             Execute();
         }
+    }
+
+    public void AddTimer(float time)
+    {
+        timer += time;
+    }
+
+    public float GetTimer()
+    {
+        return timer;
+    }
+
+    public void ResetTimer()
+    {
+        timer = 0;
     }
 
     public void Execute()
@@ -40,7 +59,9 @@ public class GameEvent
             // Execute Lua code like in Furniture ( FurnitureActions ) 
             GameEventActions.CallFunctionsWithEvent(executionActions.ToArray(), this);
         }
-        executed = true;
+
+        if(!Repeat)
+            executed = true;
     }
 
     public void RegisterPrecondition(string luaFunctionName)

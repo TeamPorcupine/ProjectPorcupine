@@ -22,7 +22,7 @@ public class GameEventManager : MonoBehaviour {
     /// </summary>
     void Update(){
         foreach(GameEvent gameEvent in gameEvents.Values){
-            gameEvent.Update();
+            gameEvent.Update(Time.deltaTime);
         }
     }
 
@@ -89,6 +89,7 @@ public class GameEventManager : MonoBehaviour {
     {
         //Debug.Log("ReadSpriteFromXml");
         string name = reader.GetAttribute("Name");
+        int repeat = int.Parse(reader.GetAttribute("Repeat"));
 
         List<string> preconditionNames = new List<string>();
         List<string> onExecuteNames = new List<string>();
@@ -112,13 +113,13 @@ public class GameEventManager : MonoBehaviour {
 
         if (name.Length >= 1)
         {
-            CreateEvent(name, preconditionNames.ToArray(), onExecuteNames.ToArray());
+            CreateEvent(name, (repeat >= 1) ? true : false, preconditionNames.ToArray(), onExecuteNames.ToArray());
         }
     }
 
-    void CreateEvent(string eventName, string[] preconditionNames, string[] onExecuteNames)
+    void CreateEvent(string eventName, bool repeat, string[] preconditionNames, string[] onExecuteNames)
     {
-        GameEvent gameEvent = new GameEvent(eventName);
+        GameEvent gameEvent = new GameEvent(eventName, repeat);
 
         gameEvent.RegisterPreconditions(preconditionNames);
         gameEvent.RegisterExecutionActions(onExecuteNames);
