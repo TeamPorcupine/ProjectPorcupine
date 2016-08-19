@@ -339,12 +339,12 @@ public class Tile :IXmlSerializable, ISelectable
 
     public string GetName()
     {
-        return this._type.ToString();
+        return "tile_"+this._type.ToString();
     }
 
     public string GetDescription()
     {
-        return "The tile.";
+        return "tile_"+this._type.ToString()+"_desc";
     }
 
     public string GetHitPointString()
