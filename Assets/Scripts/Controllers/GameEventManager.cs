@@ -7,7 +7,7 @@ public class GameEventManager : MonoBehaviour {
 
     static public GameEventManager current;
 
-    Dictionary<string, GameEvent> events;
+    Dictionary<string, GameEvent> gameEvents;
 
     void OnEnable()
     {
@@ -16,9 +16,18 @@ public class GameEventManager : MonoBehaviour {
         LoadEvents();
     }
 
+    /// <summary>
+    /// Needs to be moved to world
+    /// </summary>
+    void Update(){
+        foreach(GameEvent gameEvent in gameEvents.Values){
+            gameEvent.Update();
+        }
+    }
+
     void LoadEvents()
     {
-        events = new Dictionary<string, GameEvent>();
+        gameEvents = new Dictionary<string, GameEvent>();
 
         string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "GameEvents");
 
@@ -71,15 +80,21 @@ public class GameEventManager : MonoBehaviour {
         //Debug.Log("ReadSpriteFromXml");
         string name = reader.GetAttribute("Name");
 
-        List<string> functionNames = new List<string>();
+        List<string> preconditionNames = new List<string>();
+        List<string> onExecuteNames = new List<string>();
 
         while (reader.Read())
         {
             switch (reader.Name)
             {
+                case "Precondition":
+                    string preconditionName = reader.GetAttribute("FunctionName");
+                    preconditionNames.Add(preconditionName);
+
+                    break;
                 case "OnExecute":
-                    string functionName = reader.GetAttribute("FunctionName");
-                    functionNames.Add(functionName);
+                    string onExecuteName = reader.GetAttribute("FunctionName");
+                    onExecuteNames.Add(onExecuteName);
 
                     break;
             }
@@ -87,16 +102,17 @@ public class GameEventManager : MonoBehaviour {
 
         if (name.Length >= 1)
         {
-            CreateEvent(name, functionNames.ToArray());
+            CreateEvent(name, preconditionNames.ToArray(), onExecuteNames.ToArray());
         }
     }
 
-    void CreateEvent(string eventName, string[] functionNames)
+    void CreateEvent(string eventName, string[] preconditionNames, string[] onExecuteNames)
     {
         GameEvent gameEvent = new GameEvent(eventName);
 
-        gameEvent.RegisterExecutionActions(functionNames);
+        gameEvent.RegisterPreconditions(preconditionNames);
+        gameEvent.RegisterExecutionActions(onExecuteNames);
 
-        events[eventName] = gameEvent;
+        gameEvents[eventName] = gameEvent;
     }
 }
