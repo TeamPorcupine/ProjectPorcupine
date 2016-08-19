@@ -7,3 +7,4 @@
 *.cs text
 *.xml text
 *.lua text
+*.txt text
