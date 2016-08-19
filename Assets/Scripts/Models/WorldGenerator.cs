@@ -9,6 +9,7 @@ public class WorldGenerator {
     public const float asteroidNoiseScale = 0.2f;
     public const float asteroidNoiseThreshhold = 0.75f;
     public const float asteroidRessourceChance = 0.85f;
+    public const float asteroidRareRessourceChance = 0.95f;
     public const int asteroidRessourceMin = 5;
     public const int asteroidRessourceMax = 15;
 
@@ -30,7 +31,13 @@ public class WorldGenerator {
                     Tile t = world.GetTileAt(x, y);
                     t.Type = asteroidFloorType;
 
-                    if (Random.value >= asteroidRessourceChance)
+                    if (Random.value >= asteroidRareRessourceChance)
+                    {
+                        int stackSize = Random.Range(asteroidRessourceMin, asteroidRessourceMax);
+                        Inventory inv = Inventory.New("Gold Plate", 50, stackSize);
+                        world.inventoryManager.PlaceInventory(t, inv);
+                    }
+                    else if (Random.value >= asteroidRessourceChance)
                     {
                         int stackSize = Random.Range(asteroidRessourceMin, asteroidRessourceMax);
                         Inventory inv = Inventory.New("Steel Plate", 50, stackSize);
