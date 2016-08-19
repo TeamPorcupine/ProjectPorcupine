@@ -30,7 +30,7 @@ public static class Logger
         }
     }
 
-    public static void LogAssertion(object message)
+    public static void LogAssertion(string message)
     {
         Log(Level.Assertion, message);
     }
@@ -40,7 +40,7 @@ public static class Logger
         Log(Level.Assertion, format, args);
     }
 
-    public static void LogError(object message)
+    public static void LogError(string message)
     {
         Log(Level.Error, message);
     }
@@ -50,7 +50,7 @@ public static class Logger
         Log(Level.Error, format, args);
     }
 
-    public static void LogWarning(object message)
+    public static void LogWarning(string message)
     {
         Log(Level.Warning, message);
     }
@@ -60,7 +60,7 @@ public static class Logger
         Log(Level.Warning, format, args);
     }
 
-    public static void LogInfo(object message)
+    public static void LogInfo(string message)
     {
         Log(Level.Info, message);
     }
@@ -70,7 +70,7 @@ public static class Logger
         Log(Level.Info, format, args);
     }
 
-    public static void LogVerbose(object message)
+    public static void LogVerbose(string message)
     {
         Log(Level.Verbose, message);
     }
@@ -83,7 +83,7 @@ public static class Logger
     /// <summary>
     /// Alias for info.
     /// </summary>
-    public static void Log(object message)
+    public static void Log(string message)
     {
         Log(Level.Info, message);
     }
@@ -96,7 +96,7 @@ public static class Logger
         Log(Level.Info, message, args);
     }
 
-    private static void Log(Level level, object message, params object[] formatArgs)
+    private static void Log(Level level, string message, params object[] formatArgs)
     {
         if (level > minimumLevel)
         {
@@ -105,7 +105,7 @@ public static class Logger
 
         if (formatArgs.Length > 0)
         {
-            message = string.Format(message.ToString(), formatArgs);
+            message = string.Format(message, formatArgs);
         }
 
         switch (level)
