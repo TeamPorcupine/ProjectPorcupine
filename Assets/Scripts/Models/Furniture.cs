@@ -162,6 +162,12 @@ public class Furniture : IXmlSerializable, ISelectable
         protected set;
     }
 
+    public string dragType
+    {
+        get;
+        protected set;
+    }
+
     public event Action<Furniture> cbOnChanged;
     public event Action<Furniture> cbOnRemoved;
 
@@ -255,7 +261,7 @@ public class Furniture : IXmlSerializable, ISelectable
     {
         if (proto.funcPositionValidation(tile) == false)
         {
-            Debug.LogError("PlaceInstance -- Position Validity Function returned FALSE.");
+            Logger.LogError("PlaceInstance -- Position Validity Function returned FALSE.");
             return null;
         }
 
@@ -325,6 +331,17 @@ public class Furniture : IXmlSerializable, ISelectable
     // connect to.
     protected bool DEFAULT__IsValidPosition(Tile t)
     {
+        // Prevent construction too close to the world's edge
+        const int minEdgeDistance = 5;
+        bool tooCloseToEdge = t.X < minEdgeDistance || t.Y < minEdgeDistance ||
+            (World.current.Width - t.X) <= minEdgeDistance || 
+            (World.current.Height - t.Y) <= minEdgeDistance;
+
+        if (tooCloseToEdge)
+        {
+            return false;
+        }
+
         for (int x_off = t.X; x_off < (t.X + Width); x_off++)
         {
             for (int y_off = t.Y; y_off < (t.Y + Height); y_off++)
@@ -399,7 +416,7 @@ public class Furniture : IXmlSerializable, ISelectable
 
     public void ReadXmlPrototype(XmlReader reader_parent)
     {
-        //Debug.Log("ReadXmlPrototype");
+        //Logger.Log("ReadXmlPrototype");
 
         objectType = reader_parent.GetAttribute("objectType");
 
@@ -444,6 +461,10 @@ public class Furniture : IXmlSerializable, ISelectable
                     break;
                 case "CanReplaceFurniture":
                     replaceableFurniture.Add(reader.GetAttribute("baseType").ToString());
+                    break;
+                case "DragType":
+                    reader.Read();
+                    dragType = reader.ReadContentAsString();
                     break;
                 case "BuildingJob":
                     float jobTime = float.Parse(reader.GetAttribute("jobTime"));
@@ -660,7 +681,7 @@ public class Furniture : IXmlSerializable, ISelectable
 
     public void Deconstruct()
     {
-        Debug.Log("Deconstruct");
+        Logger.Log("Deconstruct");
 
         tile.UnplaceFurniture();
 
