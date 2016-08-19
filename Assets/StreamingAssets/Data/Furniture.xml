@@ -158,7 +158,6 @@
 	</Furniture>
 
 
-
 	<Furniture objectType="Power Generator">
 		<Name>Power Generator</Name>
 		<BaseType>Generator</BaseType>
