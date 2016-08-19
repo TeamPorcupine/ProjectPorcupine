@@ -8,6 +8,15 @@ using System.IO;
 public class DialogBoxSaveGame : DialogBoxLoadSaveGame
 {
 
+    public override void ShowDialog()
+    {
+        base.ShowDialog();
+        DialogListItem[] listItems = GetComponentsInChildren<DialogListItem>();
+        foreach (DialogListItem listItem in listItems)
+        {
+            listItem.doubleclick = OkayWasClicked;
+        }
+    }
 
     public void OkayWasClicked()
     {
