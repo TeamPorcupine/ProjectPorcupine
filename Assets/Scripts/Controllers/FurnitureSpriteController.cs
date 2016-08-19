@@ -1,6 +1,6 @@
 ﻿//=======================================================================
 // Copyright Martin "quill18" Glaude 2015.
-//		http://quill18.com
+//        http://quill18.com
 //=======================================================================
 
 using System;
@@ -178,9 +178,9 @@ public class FurnitureSpriteController : MonoBehaviour
             }
 
             /*if(furnitureSprites.ContainsKey(spriteName) == false) {
-				Debug.Log("furnitureSprites has no definition for: " + spriteName);
-				return null;
-			}
+                Debug.Log("furnitureSprites has no definition for: " + spriteName);
+                return null;
+            }
 */
 
             return SpriteManager.current.GetSprite("Furniture", spriteName); // furnitureSprites[spriteName];
@@ -222,10 +222,10 @@ public class FurnitureSpriteController : MonoBehaviour
         // the same type, then the string will look like:
         //       Wall_NESW
 
-/*		if(furnitureSprites.ContainsKey(spriteName) == false) {
-			Debug.LogError("GetSpriteForInstalledObject -- No sprites with name: " + spriteName);
-			return null;
-		}
+/*        if(furnitureSprites.ContainsKey(spriteName) == false) {
+            Debug.LogError("GetSpriteForInstalledObject -- No sprites with name: " + spriteName);
+            return null;
+        }
 */
 
         return SpriteManager.current.GetSprite("Furniture", spriteName); //furnitureSprites[spriteName];

@@ -47,7 +47,7 @@ namespace ProjectPorcupine.Localization
         {
             //Set the last language to what's currently selected.
             lastLanguage = LocalizationTable.currentLanguage;
-            
+
             if(localizeInStart)
             {
                 //Update the text content, if the text should localize immediately.
@@ -82,11 +82,11 @@ namespace ProjectPorcupine.Localization
         /**
          * <summary>
          * Updates the text with the given text and formatValues.
-         * 
+         *
          * This method is called differently due to params in the UpdateText(..) method
          * that might confuse the compiler.
          * </summary>
-         * 
+         *
          * <para>
          * string text: The *new* defaultText.
          * </para>

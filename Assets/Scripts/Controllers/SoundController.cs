@@ -12,7 +12,7 @@ public class SoundController : MonoBehaviour
 
         WorldController.Instance.world.cbTileChanged += OnTileChanged;
     }
-	
+
     // Update is called once per frame
     void Update()
     {
@@ -36,7 +36,7 @@ public class SoundController : MonoBehaviour
         // FIXME
         if (soundCooldown > 0)
             return;
-		
+
         AudioClip ac = Resources.Load<AudioClip>("Sounds/" + furn.objectType + "_OnCreated");
 
         if (ac == null)

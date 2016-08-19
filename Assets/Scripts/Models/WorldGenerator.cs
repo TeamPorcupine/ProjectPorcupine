@@ -19,7 +19,7 @@ public class WorldGenerator {
 
         int xOffset = Random.Range(0, 10000);
         int yOffset = Random.Range(0, 10000);
-      
+
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
@@ -39,7 +39,7 @@ public class WorldGenerator {
                 }
             }
         }
-            
+
         for (int x = -startAreaSize; x <= startAreaSize; x++)
         {
             for (int y = -startAreaSize; y <= startAreaSize; y++)

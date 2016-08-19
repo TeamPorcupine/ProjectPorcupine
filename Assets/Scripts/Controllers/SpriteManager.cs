@@ -71,8 +71,8 @@ public class SpriteManager : MonoBehaviour
         //Debug.Log("LoadImage: " + filePath);
 
         // TODO:  LoadImage is returning TRUE for things like .meta and .xml files.  What??!
-        //		So as a temporary fix, let's just bail if we have something we KNOW should not
-        //  	be an image.
+        //        So as a temporary fix, let's just bail if we have something we KNOW should not
+        //      be an image.
         if (filePath.Contains(".xml") || filePath.Contains(".meta") || filePath.Contains(".db"))
         {
             return;
@@ -81,7 +81,7 @@ public class SpriteManager : MonoBehaviour
         // Load the file into a texture
         byte[] imageBytes = System.IO.File.ReadAllBytes(filePath);
 
-        Texture2D imageTexture = new Texture2D(2, 2);	// Create some kind of dummy instance of Texture2D
+        Texture2D imageTexture = new Texture2D(2, 2);    // Create some kind of dummy instance of Texture2D
         // LoadImage will correctly resize the texture based on the image file
 
 
@@ -130,7 +130,7 @@ public class SpriteManager : MonoBehaviour
             // Attempt to load/parse the XML file to get information on the sprite(s)
 
         }
-			
+
         // else, the file wasn't actually a image file, so just move on.
 
     }
@@ -152,7 +152,7 @@ public class SpriteManager : MonoBehaviour
     {
         spriteName = spriteCategory + "/" + spriteName;
         //Debug.Log("LoadSprite: " + spriteName);
-        Vector2 pivotPoint = new Vector2(0.5f, 0.5f);	// Ranges from 0..1 -- so 0.5f == center
+        Vector2 pivotPoint = new Vector2(0.5f, 0.5f);    // Ranges from 0..1 -- so 0.5f == center
 
         Sprite s = Sprite.Create(imageTexture, spriteCoordinates, pivotPoint, pixelsPerUnit);
 
@@ -169,7 +169,7 @@ public class SpriteManager : MonoBehaviour
         if (sprites.ContainsKey(spriteName) == false)
         {
             //Debug.LogError("No sprite with name: " + spriteName);
-            return null;	// TODO: What if we return a "dummy" sprite, like a purple square?
+            return null;    // TODO: What if we return a "dummy" sprite, like a purple square?
         }
 
         return sprites[spriteName];

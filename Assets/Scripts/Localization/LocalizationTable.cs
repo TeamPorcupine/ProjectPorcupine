@@ -32,7 +32,7 @@ namespace ProjectPorcupine.Localization
         /**
          * <summary>
          * Load a localization file from the harddrive.
-         * 
+         *
          * <param name="path">
          * The path to the file.
          * </param>
@@ -47,7 +47,7 @@ namespace ProjectPorcupine.Localization
         /**
          * <summary>
          * Load a localization file from the harddrive with a defined localization code.
-         * 
+         *
          * <para>
          * string path: The path to the file.
          * </para>
@@ -118,11 +118,11 @@ namespace ProjectPorcupine.Localization
          * <summary>
          * Returns the localization for the given key, or the key itself, if no translation exists.
          * </summary>
-         * 
+         *
          * <para>
          * string key: The key that should be searched for.
          * </para>
-         * 
+         *
          * <para>
          * params string[] additionalValues: The values that should be inserted.
          * </para>

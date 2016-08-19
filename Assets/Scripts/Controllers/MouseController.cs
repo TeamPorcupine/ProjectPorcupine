@@ -49,10 +49,10 @@ public class MouseController : MonoBehaviour
 
     public Tile GetMouseOverTile()
     {
-/*		return WorldController.Instance.world.GetTileAt(
-			Mathf.FloorToInt(currFramePosition.x), 
-			Mathf.FloorToInt(currFramePosition.y)
-		);*/
+/*        return WorldController.Instance.world.GetTileAt(
+            Mathf.FloorToInt(currFramePosition.x),
+            Mathf.FloorToInt(currFramePosition.y)
+        );*/
 
         return WorldController.Instance.GetTileAtWorldCoord(currFramePosition);
     }
@@ -73,7 +73,7 @@ public class MouseController : MonoBehaviour
         {
             if (currentMode == MouseMode.BUILD)
             {
-				isDragging = false;
+                isDragging = false;
                 currentMode = MouseMode.SELECT;
             }
             else if (currentMode == MouseMode.SELECT)
@@ -122,7 +122,7 @@ public class MouseController : MonoBehaviour
         {
             return;
         }
-			
+
         if (Input.GetMouseButtonUp(0))
         {
             // We just release the mouse button, so that's our queue to update our selection.
@@ -236,7 +236,7 @@ public class MouseController : MonoBehaviour
         int end_x = Mathf.FloorToInt(currFramePosition.x + 0.5f);
         int start_y = Mathf.FloorToInt(dragStartPosition.y + 0.5f);
         int end_y = Mathf.FloorToInt(currFramePosition.y + 0.5f);
-		
+
         // We may be dragging in the "wrong" direction, so flip things if needed.
         if (end_x < start_x)
         {
@@ -271,7 +271,7 @@ public class MouseController : MonoBehaviour
                         // show the generic dragging visuals
                         GameObject go = SimplePool.Spawn(circleCursorPrefab, new Vector3(x, y, 0), Quaternion.identity);
                         go.transform.SetParent(this.transform, true);
-						go.GetComponent<SpriteRenderer>().sprite=SpriteManager.current.GetSprite( "UI", "CursorCircle");
+                        go.GetComponent<SpriteRenderer>().sprite=SpriteManager.current.GetSprite( "UI", "CursorCircle");
                         dragPreviewGameObjects.Add(go);
                     }
 
@@ -306,7 +306,7 @@ public class MouseController : MonoBehaviour
     {
         // Handle screen panning
         if (Input.GetMouseButton(1) || Input.GetMouseButton(2))
-        {	// Right or Middle Mouse Button
+        {    // Right or Middle Mouse Button
             Vector3 diff = lastFramePosition - currFramePosition;
             Camera.main.transform.Translate(diff);
 

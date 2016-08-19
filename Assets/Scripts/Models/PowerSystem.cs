@@ -60,7 +60,7 @@ public class PowerSystem {
         {
             return true;
         }
-        
+
         return false;
     }
 

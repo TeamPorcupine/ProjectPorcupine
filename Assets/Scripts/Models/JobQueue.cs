@@ -1,6 +1,6 @@
 ﻿//=======================================================================
 // Copyright Martin "quill18" Glaude 2015-2016.
-//		http://quill18.com
+//        http://quill18.com
 //=======================================================================
 
 using UnityEngine;
@@ -44,7 +44,7 @@ public class JobQueue
 
         return jobQueue.Dequeue();
     }
-    
+
     public void Remove(Job j)
     {
         // TODO: Check docs to see if there's a less memory/swappy solution

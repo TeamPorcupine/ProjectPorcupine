@@ -1,6 +1,6 @@
 //=======================================================================
 // Copyright Martin "quill18" Glaude 2015-2016.
-//		http://quill18.com
+//        http://quill18.com
 //=======================================================================
 
 using UnityEngine;
@@ -84,7 +84,7 @@ public class Character : IXmlSerializable, ISelectable
             if (_destTile != value)
             {
                 _destTile = value;
-                pathAStar = null;	// If this is a new destination, then we need to invalidate pathfinding.
+                pathAStar = null;    // If this is a new destination, then we need to invalidate pathfinding.
             }
         }
     }
@@ -145,11 +145,11 @@ public class Character : IXmlSerializable, ISelectable
         myJob.cbJobStopped += OnJobStopped;
 
         // Immediately check to see if the job tile is reachable.
-        // NOTE: We might not be pathing to it right away (due to 
+        // NOTE: We might not be pathing to it right away (due to
         // requiring materials), but we still need to verify that the
         // final location can be reached.
         Profiler.BeginSample("PathGeneration");
-        pathAStar = new Path_AStar(World.current, CurrTile, DestTile);	// This will calculate a path from curr to dest.
+        pathAStar = new Path_AStar(World.current, CurrTile, DestTile);    // This will calculate a path from curr to dest.
         Profiler.EndSample();
         if (pathAStar.Length() == 0)
         {
@@ -158,7 +158,7 @@ public class Character : IXmlSerializable, ISelectable
             DestTile = CurrTile;
         }
     }
-    
+
     void Update_DoJob(float deltaTime)
     {
         // Do I have a job?
@@ -176,7 +176,7 @@ public class Character : IXmlSerializable, ISelectable
             // Are we there yet?
             if (CurrTile == myJob.tile)
             {
-                // We are at the correct tile for our job, so 
+                // We are at the correct tile for our job, so
                 // execute the job's "DoWork", which is mostly
                 // going to countdown jobTime and potentially
                 // call its "Job Complete" callback.
@@ -191,7 +191,7 @@ public class Character : IXmlSerializable, ISelectable
     /// </summary>
     /// <returns></returns>
     bool CheckForJobMaterials()
-    {  
+    {
         if (myJob.HasAllMaterial())
             return true; //we can return early
 
@@ -213,7 +213,7 @@ public class Character : IXmlSerializable, ISelectable
 
                     //at this point we should dump anything in our inventory
                     DumpExcessInventory();
-                  
+
                 }
                 else
                 {
@@ -226,7 +226,7 @@ public class Character : IXmlSerializable, ISelectable
             {
                 // We are carrying something, but the job doesn't want it!
                 // Dump the inventory so we can be ready to carry what the job actually wants.
-                DumpExcessInventory();                
+                DumpExcessInventory();
             }
         }
         else
@@ -289,7 +289,7 @@ public class Character : IXmlSerializable, ISelectable
                         return false;
                     }
 
-                    Debug.Log("pathAStar returned with length of: " + newPath.Length());                    
+                    Debug.Log("pathAStar returned with length of: " + newPath.Length());
 
                     DestTile = newPath.EndTile();
 
@@ -344,7 +344,7 @@ public class Character : IXmlSerializable, ISelectable
         if (CurrTile == DestTile)
         {
             pathAStar = null;
-            return;	// We're already were we want to be.
+            return;    // We're already were we want to be.
         }
 
         // currTile = The tile I am currently in (and may be in the process of leaving)
@@ -357,7 +357,7 @@ public class Character : IXmlSerializable, ISelectable
             if (pathAStar == null || pathAStar.Length() == 0)
             {
                 // Generate a path to our destination
-                pathAStar = new Path_AStar(World.current, CurrTile, DestTile);	// This will calculate a path from curr to dest.
+                pathAStar = new Path_AStar(World.current, CurrTile, DestTile);    // This will calculate a path from curr to dest.
                 if (pathAStar.Length() == 0)
                 {
                     Debug.LogError("Path_AStar returned no path to destination!");
@@ -395,12 +395,12 @@ public class Character : IXmlSerializable, ISelectable
         {
             // Most likely a wall got built, so we just need to reset our pathfinding information.
             // FIXME: Ideally, when a wall gets spawned, we should invalidate our path immediately,
-            //		  so that we don't waste a bunch of time walking towards a dead end.
-            //		  To save CPU, maybe we can only check every so often?
-            //		  Or maybe we should register a callback to the OnTileChanged event?
+            //          so that we don't waste a bunch of time walking towards a dead end.
+            //          To save CPU, maybe we can only check every so often?
+            //          Or maybe we should register a callback to the OnTileChanged event?
             // Debug.LogError("FIXME: A character was trying to enter an unwalkable tile.");
-            NextTile = null;	// our next tile is a no-go
-            pathAStar = null;	// clearly our pathfinding info is out of date.
+            NextTile = null;    // our next tile is a no-go
+            pathAStar = null;    // clearly our pathfinding info is out of date.
             return;
         }
         else if (NextTile.IsEnterable() == ENTERABILITY.Soon)
@@ -448,7 +448,7 @@ public class Character : IXmlSerializable, ISelectable
             cbCharacterChanged(this);
 
     }
-    
+
     void OnJobStopped(Job j)
     {
         // Job completed (if non-repeating) or was cancelled.

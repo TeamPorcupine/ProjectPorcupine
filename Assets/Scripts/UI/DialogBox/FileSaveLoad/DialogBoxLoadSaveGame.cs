@@ -6,8 +6,8 @@ using System.IO;
 using System.Linq;
 
 //   Object -> MonoBehaviour -> DialogBox -> DialogBoxLoadSaveGame ->
-//														DialogBoxSaveGame
-//														DialogBoxLoadGame
+//                                                        DialogBoxSaveGame
+//                                                        DialogBoxLoadGame
 //
 
 public class DialogBoxLoadSaveGame : DialogBox
@@ -82,7 +82,7 @@ public class DialogBoxLoadSaveGame : DialogBox
         while (fileList.childCount > 0)
         {
             Transform c = fileList.GetChild(0);
-            c.SetParent(null);	// Become Batman
+            c.SetParent(null);    // Become Batman
             Destroy(c.gameObject);
         }
 
@@ -91,8 +91,8 @@ public class DialogBoxLoadSaveGame : DialogBox
         // overwriting easier?
         // Alternatively, we could either:
         //   a) Clear out the text box
-        //	 b) Append an incremental number to it so that it automatically does
-        //		something like "SomeFileName 13"
+        //     b) Append an incremental number to it so that it automatically does
+        //        something like "SomeFileName 13"
 
         base.CloseDialog();
     }

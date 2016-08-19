@@ -31,7 +31,7 @@ public class MouseOverTileTypeText : MonoBehaviour
             return;
         }
     }
-	
+
     // Update is called once per frame
     void Update()
     {

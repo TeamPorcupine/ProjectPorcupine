@@ -31,7 +31,7 @@ public class MouseOverFurnitureTypeText : MonoBehaviour
             return;
         }
     }
-	
+
     // Update is called once per frame
     void Update()
     {

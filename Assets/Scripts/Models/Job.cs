@@ -1,6 +1,6 @@
 ﻿//=======================================================================
 // Copyright Martin "quill18" Glaude 2015-2016.
-//		http://quill18.com
+//        http://quill18.com
 //=======================================================================
 
 using UnityEngine;
@@ -134,7 +134,7 @@ public class Job
     {
         return new Job(this);
     }
-    
+
     public void RegisterJobCompletedCallback(string cb)
     {
         cbJobCompletedLua.Add(cb);
@@ -144,7 +144,7 @@ public class Job
     {
         cbJobCompletedLua.Remove(cb);
     }
-    
+
     public void RegisterJobWorkedCallback(string cb)
     {
         cbJobWorkedLua.Add(cb);
@@ -157,7 +157,7 @@ public class Job
 
     public void DoWork(float workTime)
     {
-        // Check to make sure we actually have everything we need. 
+        // Check to make sure we actually have everything we need.
         // If not, don't register the work time.
         if (HasAllMaterial() == false)
         {
@@ -175,7 +175,7 @@ public class Job
                     FurnitureActions.CallFunction(luaFunction, this);
                 }
             }
-			
+
             return;
         }
 
@@ -220,7 +220,7 @@ public class Job
     public void CancelJob()
     {
         if (cbJobStopped != null)
-            cbJobStopped(this);	
+            cbJobStopped(this);
 
         World.current.jobQueue.Remove(this);
     }
@@ -268,5 +268,5 @@ public class Job
 
         return null;
     }
-		
+
 }

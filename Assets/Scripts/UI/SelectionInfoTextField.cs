@@ -17,7 +17,7 @@ public class SelectionInfoTextField : MonoBehaviour
         mc = FindObjectOfType<MouseController>();
         txt = GetComponent<Text>();
     }
-	
+
     // Update is called once per frame
     void Update()
     {

@@ -13,7 +13,7 @@ public class Room : IXmlSerializable
 {
 
     // Dictionary with the amount of gas in room stored in preasure(in atm) multiplyed by number of tiles
-    Dictionary<string, float> atmosphericGasses; 
+    Dictionary<string, float> atmosphericGasses;
 
     List<Tile> tiles;
 
@@ -44,7 +44,7 @@ public class Room : IXmlSerializable
             // Belongs to some other room
             t.room.tiles.Remove(t);
         }
-			
+
         t.room = this;
         tiles.Add(t);
     }
@@ -53,7 +53,7 @@ public class Room : IXmlSerializable
     {
         for (int i = 0; i < tiles.Count; i++)
         {
-            tiles[i].room = World.current.GetOutsideRoom();	// Assign to outside
+            tiles[i].room = World.current.GetOutsideRoom();    // Assign to outside
         }
         tiles = new List<Tile>();
     }
@@ -115,7 +115,7 @@ public class Room : IXmlSerializable
             // somehow
             if (t.room == null)
                 continue;
-            
+
             if(roomsDone.Contains(t.room) == false)
             {
                 foreach (Room r in roomsDone) {
@@ -174,7 +174,7 @@ public class Room : IXmlSerializable
     public static void DoRoomFloodFill(Tile sourceTile, bool onlyIfOutside = false)
     {
         // sourceFurniture is the piece of furniture that may be
-        // splitting two existing rooms, or may be the final 
+        // splitting two existing rooms, or may be the final
         // enclosing piece to form a new room.
         // Check the NESW neighbours of the furniture's tile
         // and do flood fill from them
@@ -226,7 +226,7 @@ public class Room : IXmlSerializable
         else
         {
             // oldRoom is null, which means the source tile was probably a wall,
-            // though this MAY not be the case any longer (i.e. the wall was 
+            // though this MAY not be the case any longer (i.e. the wall was
             // probably deconstructed. So the only thing we have to try is
             // to spawn ONE new room starting from the tile in question.
             ActualFloodFill(sourceTile, null, 0);
@@ -266,7 +266,7 @@ public class Room : IXmlSerializable
             // This tile is empty space and must remain part of the outside.
             return;
         }
-			
+
 
         // If we get to this point, then we know that we need to create a new room.
 
@@ -310,9 +310,9 @@ public class Room : IXmlSerializable
                         isConnectedToSpace = true;
 
                         /*if(oldRoom != null) {
-							newRoom.ReturnTilesToOutsideRoom();
-							return;
-						}*/
+                            newRoom.ReturnTilesToOutsideRoom();
+                            return;
+                        }*/
                     }
                     else
                     {

@@ -33,7 +33,7 @@ public class CharacterSpriteController : MonoBehaviour
 
     public void OnCharacterCreated(Character c)
     {
-//		Debug.Log("OnCharacterCreated");
+//        Debug.Log("OnCharacterCreated");
         // Create a visual GameObject linked to this data.
 
         // FIXME: Does not consider multi-tile objects nor rotated objects
@@ -98,5 +98,5 @@ public class CharacterSpriteController : MonoBehaviour
     }
 
 
-	
+
 }

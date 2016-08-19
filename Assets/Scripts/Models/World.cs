@@ -1,6 +1,6 @@
 ﻿//=======================================================================
 // Copyright Martin "quill18" Glaude 2015.
-//		http://quill18.com
+//        http://quill18.com
 //=======================================================================
 
 using UnityEngine;
@@ -91,7 +91,7 @@ public class World : IXmlSerializable
     {
         if (i < 0 || i > rooms.Count - 1)
             return null;
-		
+
         return rooms[i];
     }
 
@@ -171,7 +171,7 @@ public class World : IXmlSerializable
     public Character CreateCharacter(Tile t)
     {
         Debug.Log("CreateCharacter");
-        Character c = new Character(t); 
+        Character c = new Character(t);
 
         characters.Add(c);
 
@@ -263,108 +263,108 @@ public class World : IXmlSerializable
     }
 
 
-    /*	void CreateFurniturePrototypes() {
-		// This will be replaced by a function that reads all of our furniture data
-		// from a text file in the future.
+    /*    void CreateFurniturePrototypes() {
+        // This will be replaced by a function that reads all of our furniture data
+        // from a text file in the future.
 
-		furniturePrototypes = new Dictionary<string, Furniture>();
-		furnitureJobPrototypes = new Dictionary<string, Job>();
+        furniturePrototypes = new Dictionary<string, Furniture>();
+        furnitureJobPrototypes = new Dictionary<string, Job>();
 
-		furniturePrototypes.Add("furn_SteelWall", 
-			new Furniture(
-				"furn_SteelWall",
-				0,	// Impassable
-				1,  // Width
-				1,  // Height
-				true, // Links to neighbours and "sort of" becomes part of a large object
-				true  // Enclose rooms
-			)
-		);
-		furniturePrototypes["furn_SteelWall"].Name = "Basic Wall";
-		furnitureJobPrototypes.Add("furn_SteelWall",
-			new Job( null, 
-				"furn_SteelWall", 
-				FurnitureActions.JobComplete_FurnitureBuilding, 1f, 
-				new Inventory[]{ new Inventory("Steel Plate", 5, 0) } 
-			)
-		);
+        furniturePrototypes.Add("furn_SteelWall",
+            new Furniture(
+                "furn_SteelWall",
+                0,    // Impassable
+                1,  // Width
+                1,  // Height
+                true, // Links to neighbours and "sort of" becomes part of a large object
+                true  // Enclose rooms
+            )
+        );
+        furniturePrototypes["furn_SteelWall"].Name = "Basic Wall";
+        furnitureJobPrototypes.Add("furn_SteelWall",
+            new Job( null,
+                "furn_SteelWall",
+                FurnitureActions.JobComplete_FurnitureBuilding, 1f,
+                new Inventory[]{ new Inventory("Steel Plate", 5, 0) }
+            )
+        );
 
-		furniturePrototypes.Add("Door", 
-			new Furniture(
-				"Door",
-				1,	// Door pathfinding cost
-				1,  // Width
-				1,  // Height
-				false, // Links to neighbours and "sort of" becomes part of a large object
-				true  // Enclose rooms
-			)
-		);
+        furniturePrototypes.Add("Door",
+            new Furniture(
+                "Door",
+                1,    // Door pathfinding cost
+                1,  // Width
+                1,  // Height
+                false, // Links to neighbours and "sort of" becomes part of a large object
+                true  // Enclose rooms
+            )
+        );
 
-		// What if the object behaviours were scriptable? And therefore were part of the text file
-		// we are reading in now?
+        // What if the object behaviours were scriptable? And therefore were part of the text file
+        // we are reading in now?
 
-		furniturePrototypes["Door"].SetParameter("openness", 0);
-		furniturePrototypes["Door"].SetParameter("is_opening", 0);
-		furniturePrototypes["Door"].RegisterUpdateAction( FurnitureActions.Door_UpdateAction );
+        furniturePrototypes["Door"].SetParameter("openness", 0);
+        furniturePrototypes["Door"].SetParameter("is_opening", 0);
+        furniturePrototypes["Door"].RegisterUpdateAction( FurnitureActions.Door_UpdateAction );
 
-		furniturePrototypes["Door"].IsEnterable = FurnitureActions.Door_IsEnterable;
-
-
-		furniturePrototypes.Add("Stockpile", 
-			new Furniture(
-				"Stockpile",
-				1,	// Impassable
-				1,  // Width
-				1,  // Height
-				true, // Links to neighbours and "sort of" becomes part of a large object
-				false  // Enclose rooms
-			)
-		);
-		furniturePrototypes["Stockpile"].RegisterUpdateAction( FurnitureActions.Stockpile_UpdateAction );
-		furniturePrototypes["Stockpile"].tint = new Color32( 186, 31, 31, 255 );
-		furnitureJobPrototypes.Add("Stockpile",
-			new Job( 
-				null, 
-				"Stockpile", 
-				FurnitureActions.JobComplete_FurnitureBuilding,
-				-1,
-				null
-			)
-		);
+        furniturePrototypes["Door"].IsEnterable = FurnitureActions.Door_IsEnterable;
 
 
-
-		furniturePrototypes.Add("Oxygen Generator", 
-			new Furniture(
-				"Oxygen Generator",
-				10,	// Door pathfinding cost
-				2,  // Width
-				2,  // Height
-				false, // Links to neighbours and "sort of" becomes part of a large object
-				false  // Enclose rooms
-			)
-		);
-		furniturePrototypes["Oxygen Generator"].RegisterUpdateAction( FurnitureActions.OxygenGenerator_UpdateAction );
+        furniturePrototypes.Add("Stockpile",
+            new Furniture(
+                "Stockpile",
+                1,    // Impassable
+                1,  // Width
+                1,  // Height
+                true, // Links to neighbours and "sort of" becomes part of a large object
+                false  // Enclose rooms
+            )
+        );
+        furniturePrototypes["Stockpile"].RegisterUpdateAction( FurnitureActions.Stockpile_UpdateAction );
+        furniturePrototypes["Stockpile"].tint = new Color32( 186, 31, 31, 255 );
+        furnitureJobPrototypes.Add("Stockpile",
+            new Job(
+                null,
+                "Stockpile",
+                FurnitureActions.JobComplete_FurnitureBuilding,
+                -1,
+                null
+            )
+        );
 
 
 
-		furniturePrototypes.Add("Mining Drone Station", 
-			new Furniture(
-				"Mining Drone Station",
-				1,	// Pathfinding cost
-				3,  // Width			
-				3,  // Height		// TODO: In the future, the mining drone station will be a 3x2 object with an offset work spot
-				false, // Links to neighbours and "sort of" becomes part of a large object
-				false  // Enclose rooms
-			)
-		);
-		furniturePrototypes["Mining Drone Station"].jobSpotOffset = new Vector2( 1, 0 );
-
-		furniturePrototypes["Mining Drone Station"].RegisterUpdateAction( FurnitureActions.MiningDroneStation_UpdateAction );
+        furniturePrototypes.Add("Oxygen Generator",
+            new Furniture(
+                "Oxygen Generator",
+                10,    // Door pathfinding cost
+                2,  // Width
+                2,  // Height
+                false, // Links to neighbours and "sort of" becomes part of a large object
+                false  // Enclose rooms
+            )
+        );
+        furniturePrototypes["Oxygen Generator"].RegisterUpdateAction( FurnitureActions.OxygenGenerator_UpdateAction );
 
 
 
-	}
+        furniturePrototypes.Add("Mining Drone Station",
+            new Furniture(
+                "Mining Drone Station",
+                1,    // Pathfinding cost
+                3,  // Width
+                3,  // Height        // TODO: In the future, the mining drone station will be a 3x2 object with an offset work spot
+                false, // Links to neighbours and "sort of" becomes part of a large object
+                false  // Enclose rooms
+            )
+        );
+        furniturePrototypes["Mining Drone Station"].jobSpotOffset = new Vector2( 1, 0 );
+
+        furniturePrototypes["Mining Drone Station"].RegisterUpdateAction( FurnitureActions.MiningDroneStation_UpdateAction );
+
+
+
+    }
 */
 
     /// <summary>
@@ -477,7 +477,7 @@ public class World : IXmlSerializable
                 // buy the furniture's movement cost, a furniture movement cost
                 // of exactly 1 doesn't impact our pathfinding system, so we can
                 // occasionally avoid invalidating pathfinding graphs
-                //InvalidateTileGraph();	// Reset the pathfinding system
+                //InvalidateTileGraph();    // Reset the pathfinding system
                 if (tileGraph != null)
                 {
                     tileGraph.RegenerateGraphAtTile(t);
@@ -487,13 +487,13 @@ public class World : IXmlSerializable
 
         return furn;
     }
-    
+
     // Gets called whenever ANY tile changes
     void OnTileChanged(Tile t)
     {
         if (cbTileChanged == null)
             return;
-		
+
         cbTileChanged(t);
 
         //InvalidateTileGraph();
@@ -528,9 +528,9 @@ public class World : IXmlSerializable
     }
 
     //////////////////////////////////////////////////////////////////////////////////////
-    /// 
-    /// 						SAVING & LOADING
-    /// 
+    ///
+    ///                         SAVING & LOADING
+    ///
     //////////////////////////////////////////////////////////////////////////////////////
 
     public XmlSchema GetSchema()
@@ -549,7 +549,7 @@ public class World : IXmlSerializable
         {
 
             if (GetOutsideRoom() == r)
-                continue;	// Skip the outside room. Alternatively, should SetupWorld be changed to not create one?
+                continue;    // Skip the outside room. Alternatively, should SetupWorld be changed to not create one?
 
             writer.WriteStartElement("Room");
             r.WriteXml(writer);
@@ -604,13 +604,13 @@ public class World : IXmlSerializable
         }
         writer.WriteEndElement();
 
-/*		writer.WriteStartElement("Width");
-		writer.WriteValue(Width);
-		writer.WriteEndElement();
+/*        writer.WriteStartElement("Width");
+        writer.WriteValue(Width);
+        writer.WriteEndElement();
 */
 
         //Debug.Log(writer.ToString());
-	
+
     }
 
     public void ReadXml(XmlReader reader)
@@ -708,7 +708,7 @@ public class World : IXmlSerializable
                 Inventory inv = new Inventory(reader.GetAttribute("objectType"),
                     int.Parse(reader.GetAttribute("maxStackSize")),
                     int.Parse(reader.GetAttribute("stackSize")));
-                
+
                 inventoryManager.PlaceInventory(tiles[x,y],inv);
             } while(reader.ReadToNextSibling("Inventory"));
         }
@@ -729,12 +729,12 @@ public class World : IXmlSerializable
                 furn.ReadXml(reader);
             } while (reader.ReadToNextSibling("Furniture"));
 
-/*			We don't need to do a flood fill on load, because we're getting room info
- 			from the save file
- 			
- 			foreach(Furniture furn in furnitures) {
-				Room.DoRoomFloodFill( furn.tile, true );
-			}
+/*            We don't need to do a flood fill on load, because we're getting room info
+             from the save file
+
+             foreach(Furniture furn in furnitures) {
+                Room.DoRoomFloodFill( furn.tile, true );
+            }
 */
         }
 
@@ -749,9 +749,9 @@ public class World : IXmlSerializable
             do
             {
                 /*int x = int.Parse( reader.GetAttribute("X") );
-				int y = int.Parse( reader.GetAttribute("Y") );
+                int y = int.Parse( reader.GetAttribute("Y") );
 
-				Furniture furn = PlaceFurniture( reader.GetAttribute("objectType"), tiles[x,y], false );*/
+                Furniture furn = PlaceFurniture( reader.GetAttribute("objectType"), tiles[x,y], false );*/
 
                 //furn.ReadXml(reader);
 

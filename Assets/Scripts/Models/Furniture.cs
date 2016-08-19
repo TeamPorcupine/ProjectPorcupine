@@ -1,6 +1,6 @@
 ﻿//=======================================================================
 // Copyright Martin "quill18" Glaude 2015.
-//		http://quill18.com
+//        http://quill18.com
 //=======================================================================
 
 using UnityEngine;
@@ -105,7 +105,7 @@ public class Furniture : IXmlSerializable, ISelectable
         get;
         protected set;
     }
-	
+
     // This is the generic type of object this is, allowing things to interact with it based on it's generic type
     private string baseType;
 
@@ -235,20 +235,20 @@ public class Furniture : IXmlSerializable, ISelectable
     }
 
     // Create furniture from parameters -- this will probably ONLY ever be used for prototypes
-    /*	public Furniture ( string objectType, float movementCost = 1f, int width=1, int height=1, bool linksToNeighbour=false, bool roomEnclosure = false ) {
-		this.objectType = objectType;
-		this.movementCost = movementCost;
-		this.roomEnclosure = roomEnclosure;
-		this.Width = width;
-		this.Height = height;
-		this.linksToNeighbour = linksToNeighbour;
+    /*    public Furniture ( string objectType, float movementCost = 1f, int width=1, int height=1, bool linksToNeighbour=false, bool roomEnclosure = false ) {
+        this.objectType = objectType;
+        this.movementCost = movementCost;
+        this.roomEnclosure = roomEnclosure;
+        this.Width = width;
+        this.Height = height;
+        this.linksToNeighbour = linksToNeighbour;
 
-		this.funcPositionValidation = this.DEFAULT__IsValidPosition;
+        this.funcPositionValidation = this.DEFAULT__IsValidPosition;
 
-		updateActions = new List<string>();
+        updateActions = new List<string>();
 
-		furnParameters = new Dictionary<string, float>();
-	}
+        furnParameters = new Dictionary<string, float>();
+    }
 */
 
     static public Furniture PlaceInstance(Furniture proto, Tile tile)
@@ -311,7 +311,7 @@ public class Furniture : IXmlSerializable, ISelectable
 
         return obj;
     }
-    
+
     public bool IsValidPosition(Tile t)
     {
         return funcPositionValidation(t);
@@ -374,7 +374,7 @@ public class Furniture : IXmlSerializable, ISelectable
             cbOnChanged(furn);
         }
     }
-    
+
     public XmlSchema GetSchema()
     {
         return null;
@@ -464,12 +464,12 @@ public class Furniture : IXmlSerializable, ISelectable
                                     int.Parse(invs_reader.GetAttribute("amount")),
                                     0
                                 ));
-                        } 
+                        }
                     }
 
-                    Job j = new Job(null, 
-                        objectType, 
-                        FurnitureActions.JobComplete_FurnitureBuilding, jobTime, 
+                    Job j = new Job(null,
+                        objectType,
+                        FurnitureActions.JobComplete_FurnitureBuilding, jobTime,
                         invs.ToArray()
                     );
 
@@ -513,7 +513,7 @@ public class Furniture : IXmlSerializable, ISelectable
                     break;
 
                 case "Params":
-                    ReadXmlParams(reader);	// Read in the Param tag
+                    ReadXmlParams(reader);    // Read in the Param tag
                     break;
 
                 case "LocalizationCode":
@@ -708,7 +708,7 @@ public class Furniture : IXmlSerializable, ISelectable
 
     public string GetHitPointString()
     {
-        return "18/18";	// TODO: Add a hitpoint system to...well...everything
+        return "18/18";    // TODO: Add a hitpoint system to...well...everything
     }
 
     #endregion

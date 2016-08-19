@@ -1,6 +1,6 @@
 ﻿//=======================================================================
 // Copyright Martin "quill18" Glaude 2015-2016.
-//		http://quill18.com
+//        http://quill18.com
 //=======================================================================
 
 using UnityEngine;
@@ -48,7 +48,7 @@ public class Inventory : IXmlSerializable, ISelectable
 
     public Inventory()
     {
-		
+
     }
 
     static public Inventory New(string objectType, int maxStackSize, int stackSize)
@@ -74,7 +74,7 @@ public class Inventory : IXmlSerializable, ISelectable
     {
         return new Inventory(this);
     }
-    
+
     #region ISelectableInterface implementation
 
     public string GetName()
@@ -89,7 +89,7 @@ public class Inventory : IXmlSerializable, ISelectable
 
     public string GetHitPointString()
     {
-        return "";	// Does inventory have hitpoints? How does it get destroyed? Maybe it's just a percentage chance based on damage.
+        return "";    // Does inventory have hitpoints? How does it get destroyed? Maybe it's just a percentage chance based on damage.
     }
 
     #endregion

@@ -11,5 +11,5 @@ public class SetSortingLayer : MonoBehaviour
     {
         GetComponent<Renderer>().sortingLayerName = sortingLayerName;
     }
-	
+
 }

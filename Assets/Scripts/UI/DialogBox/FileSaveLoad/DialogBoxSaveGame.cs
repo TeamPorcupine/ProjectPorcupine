@@ -26,7 +26,7 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
 
         string fileName = gameObject.GetComponentInChildren<InputField>().text;
 
-        // TODO: Is the filename valid?  I.E. we may want to ban path-delimiters (/ \ or :) and 
+        // TODO: Is the filename valid?  I.E. we may want to ban path-delimiters (/ \ or :) and
         // maybe periods?      ../../some_important_file
 
         // Right now fileName is just what was in the dialog box.  We need to pad this out to the full

@@ -84,7 +84,7 @@ public class BuildModeController : MonoBehaviour
 
             string furnitureType = buildModeObjectType;
 
-            if ( 
+            if (
                 WorldController.Instance.world.IsFurniturePlacementValid(furnitureType, t) &&
                 DoesBuildJobOverlapExistingBuildJob(t,furnitureType) == false)
             {
@@ -146,8 +146,8 @@ public class BuildModeController : MonoBehaviour
 
             TileType tileType = buildModeTile;
 
-            if ( 
-                t.Type != tileType && 
+            if (
+                t.Type != tileType &&
                 t.furniture == null &&
                 t.pendingBuildJob == null)
             {
@@ -156,10 +156,10 @@ public class BuildModeController : MonoBehaviour
                 // Create a job for it to be build
 
                 Job j = new Job(t,
-                    tileType, 
-                    Tile.ChangeTileTypeJobComplete, 
-                    0.1f, 
-                    null, 
+                    tileType,
+                    Tile.ChangeTileTypeJobComplete,
+                    0.1f,
+                    null,
                     false);
 
 

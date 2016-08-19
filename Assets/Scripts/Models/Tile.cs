@@ -1,6 +1,6 @@
 ﻿//=======================================================================
 // Copyright Martin "quill18" Glaude 2015-2016.
-//		http://quill18.com
+//        http://quill18.com
 //=======================================================================
 
 using UnityEngine;
@@ -83,7 +83,7 @@ public class Tile :IXmlSerializable, ISelectable
             // This prevented the character from walking in empty tiles. It has been diasbled to allow the character to construct floor tiles.
             // TODO: Permanent solution for handeling when a character can walk in empty tiles is required
             //if (Type == TileType.Empty)
-            //    return 0;	// 0 is unwalkable
+            //    return 0;    // 0 is unwalkable
 
             if (furniture == null)
                 return baseTileMovementCost;
@@ -143,7 +143,7 @@ public class Tile :IXmlSerializable, ISelectable
             Debug.LogError("Trying to assign a furniture to a tile that isn't valid!");
             return false;
         }
-		
+
         for (int x_off = X; x_off < (X + objInstance.Width); x_off++)
         {
             for (int y_off = Y; y_off < (Y + objInstance.Height); y_off++)
@@ -222,8 +222,8 @@ public class Tile :IXmlSerializable, ISelectable
     {
         // Check to see if we have a difference of exactly ONE between the two
         // tile coordinates.  Is so, then we are vertical or horizontal neighbours.
-        return 
-			Mathf.Abs(this.X - tile.X) + Mathf.Abs(this.Y - tile.Y) == 1 || // Check hori/vert adjacency
+        return
+            Mathf.Abs(this.X - tile.X) + Mathf.Abs(this.Y - tile.Y) == 1 || // Check hori/vert adjacency
         (diagOkay && (Mathf.Abs(this.X - tile.X) == 1 && Mathf.Abs(this.Y - tile.Y) == 1)); // Check diag adjacency
     }
 
@@ -238,34 +238,34 @@ public class Tile :IXmlSerializable, ISelectable
 
         if (diagOkay == false)
         {
-            ns = new Tile[4];	// Tile order: N E S W
+            ns = new Tile[4];    // Tile order: N E S W
         }
         else
         {
-            ns = new Tile[8];	// Tile order : N E S W NE SE SW NW
+            ns = new Tile[8];    // Tile order : N E S W NE SE SW NW
         }
 
         Tile n;
 
         n = World.current.GetTileAt(X, Y + 1);
-        ns[0] = n;	// Could be null, but that's okay.
+        ns[0] = n;    // Could be null, but that's okay.
         n = World.current.GetTileAt(X + 1, Y);
-        ns[1] = n;	// Could be null, but that's okay.
+        ns[1] = n;    // Could be null, but that's okay.
         n = World.current.GetTileAt(X, Y - 1);
-        ns[2] = n;	// Could be null, but that's okay.
+        ns[2] = n;    // Could be null, but that's okay.
         n = World.current.GetTileAt(X - 1, Y);
-        ns[3] = n;	// Could be null, but that's okay.
+        ns[3] = n;    // Could be null, but that's okay.
 
         if (diagOkay == true)
         {
             n = World.current.GetTileAt(X + 1, Y + 1);
-            ns[4] = n;	// Could be null, but that's okay.
+            ns[4] = n;    // Could be null, but that's okay.
             n = World.current.GetTileAt(X + 1, Y - 1);
-            ns[5] = n;	// Could be null, but that's okay.
+            ns[5] = n;    // Could be null, but that's okay.
             n = World.current.GetTileAt(X - 1, Y - 1);
-            ns[6] = n;	// Could be null, but that's okay.
+            ns[6] = n;    // Could be null, but that's okay.
             n = World.current.GetTileAt(X - 1, Y + 1);
-            ns[7] = n;	// Could be null, but that's okay.
+            ns[7] = n;    // Could be null, but that's okay.
         }
 
         return ns;
@@ -349,7 +349,7 @@ public class Tile :IXmlSerializable, ISelectable
 
     public string GetHitPointString()
     {
-        return "";	// Do tiles have hitpoints? Can flooring be damaged? Obviously "empty" is indestructible.
+        return "";    // Do tiles have hitpoints? Can flooring be damaged? Obviously "empty" is indestructible.
     }
 
     #endregion

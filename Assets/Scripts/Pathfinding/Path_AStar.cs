@@ -55,8 +55,8 @@ public class Path_AStar
 
         List<Path_Node<Tile>> ClosedSet = new List<Path_Node<Tile>>();
 
-/*		List<Path_Node<Tile>> OpenSet = new List<Path_Node<Tile>>();
-		OpenSet.Add( start );
+/*        List<Path_Node<Tile>> OpenSet = new List<Path_Node<Tile>>();
+        OpenSet.Add( start );
 */
 
         SimplePriorityQueue<Path_Node<Tile>> OpenSet = new SimplePriorityQueue<Path_Node<Tile>>();
@@ -175,7 +175,7 @@ public class Path_AStar
             return 1f;
         }
 
-        // Diag neighbours have a distance of 1.41421356237	
+        // Diag neighbours have a distance of 1.41421356237
         if (Mathf.Abs(a.data.X - b.data.X) == 1 && Mathf.Abs(a.data.Y - b.data.Y) == 1)
         {
             return 1.41421356237f;

@@ -25,7 +25,7 @@ namespace ProjectPorcupine.Localization
 
             //Get the filepath.
             string filePath = Path.Combine(Application.streamingAssetsPath, "Localization");
-            
+
             //Loop through all files.
             foreach(string file in Directory.GetFiles(filePath))
             {

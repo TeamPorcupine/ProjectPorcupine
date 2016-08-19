@@ -128,7 +128,7 @@ public static class Logger
                 Debug.Log(message);
                 break;
             default:
-                throw new ArgumentException("Unhandled level: " + level, "level");    
+                throw new ArgumentException("Unhandled level: " + level, "level");
         }
     }
 }

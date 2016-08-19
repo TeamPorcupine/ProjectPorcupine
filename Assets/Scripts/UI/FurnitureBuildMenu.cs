@@ -16,7 +16,7 @@ public class FurnitureBuildMenu : MonoBehaviour
     {
 
         BuildModeController bmc = GameObject.FindObjectOfType<BuildModeController>();
-	
+
         // For each furniture prototype in our world, create one instance
         // of the button to be clicked!
 
@@ -30,7 +30,7 @@ public class FurnitureBuildMenu : MonoBehaviour
             string objectName = World.current.furniturePrototypes[s].Name;
 
             go.name = "Button - Build " + objectId;
-            
+
             go.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(World.current.furniturePrototypes[s].localizationCode) };
 
             Button b = go.GetComponent<Button>();
@@ -60,5 +60,5 @@ public class FurnitureBuildMenu : MonoBehaviour
             }
         }
     }
-	
+
 }
