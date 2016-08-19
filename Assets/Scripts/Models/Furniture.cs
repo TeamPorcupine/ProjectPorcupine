@@ -162,6 +162,12 @@ public class Furniture : IXmlSerializable, ISelectable
         protected set;
     }
 
+    public string dragType
+    {
+        get;
+        protected set;
+    }
+
     public event Action<Furniture> cbOnChanged;
     public event Action<Furniture> cbOnRemoved;
 
@@ -444,6 +450,10 @@ public class Furniture : IXmlSerializable, ISelectable
                     break;
                 case "CanReplaceFurniture":
                     replaceableFurniture.Add(reader.GetAttribute("baseType").ToString());
+                    break;
+                case "DragType":
+                    reader.Read();
+                    dragType = reader.ReadContentAsString();
                     break;
                 case "BuildingJob":
                     float jobTime = float.Parse(reader.GetAttribute("jobTime"));
