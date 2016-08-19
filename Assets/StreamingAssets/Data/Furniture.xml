@@ -9,6 +9,7 @@
         <Height>1</Height>
         <LinksToNeighbours>true</LinksToNeighbours>
         <EnclosesRooms>true</EnclosesRooms>
+        <DragType>border</DragType>
 
 
         <BuildingJob jobTime="1">
