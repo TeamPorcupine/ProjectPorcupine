@@ -59,6 +59,8 @@ public class World : IXmlSerializable
     {
         // Creates an empty world.
         SetupWorld(width, height);
+        int seed = UnityEngine.Random.Range(0, int.MaxValue);
+        WorldGenerator.Generate(this, seed);
 
         // Make one character
         CreateCharacter(GetTileAt(Width / 2, Height / 2));
@@ -273,7 +275,14 @@ public class World : IXmlSerializable
                     furnCount++;
 
                     Furniture furn = new Furniture();
-                    furn.ReadXmlPrototype(reader);
+                    try
+                    {
+                        furn.ReadXmlPrototype(reader);
+                    }
+                    catch {
+                        Debug.LogError("Error reading furniture prototype for: " + furn.objectType);
+                    }
+
 
                     furniturePrototypes[furn.objectType] = furn;
 
