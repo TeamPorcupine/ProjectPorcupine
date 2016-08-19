@@ -513,7 +513,7 @@ public class Character : IXmlSerializable, ISelectable
     public Color GetCharacterColor()
     {
         return characterColor;
-	}
+    }
 
     #endregion
 

@@ -49,9 +49,9 @@ public class CharacterSpriteController : MonoBehaviour
         char_go.transform.SetParent(this.transform, true);
 
         SpriteRenderer sr = char_go.AddComponent<SpriteRenderer>();
-		sr.sprite = SpriteManager.current.GetSprite("Character", "p2_front");
+        sr.sprite = SpriteManager.current.GetSprite("Character", "p2_front");
         sr.sortingLayerName = "Characters";
-		sr.color = c.GetCharacterColor();
+        sr.color = c.GetCharacterColor();
 
         // Add the inventory sprite onto the character
         GameObject inv_go = new GameObject("Inventory");
@@ -62,7 +62,7 @@ public class CharacterSpriteController : MonoBehaviour
         inv_go.transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);// Config needs to be added to XML
         inv_go.transform.localPosition = new Vector3(0,-0.37f,0); // Config needs to be added to XML
 
-		// Add the reflection of the character's helmet
+        // Add the reflection of the character's helmet
         GameObject helmet_go = new GameObject ("HelmetGlass");
         SpriteRenderer helmet_sr = helmet_go.AddComponent<SpriteRenderer>();
         helmet_sr.sortingOrder = 1;
