@@ -194,5 +194,28 @@
       <LocalizationCode>furn_metal_smelter</LocalizationCode>
       <UnlocalizedDescription>furn_metal_smelter_desc</UnlocalizedDescription>
   </Furniture>
+  
+  <Furniture objectType="Heater">
+    <Name>Heater</Name>
+    <Description>Raises temperature in the room.</Description>
+    <BaseType>Temperature</BaseType>
+    <MovementCost>10</MovementCost>
+    <Width>1</Width>
+    <Height>1</Height>
+    <Power>4</Power>
+
+    <BuildingJob jobTime="0"></BuildingJob>
+
+    <OnInstall FunctionName="Heater_InstallAction"></OnInstall>
+    <OnUninstall FunctionName="Heater_UninstallAction"></OnUninstall>
+      
+    <Params>
+      <Param name="temperature" value="10" />
+    </Params>
+
+    <LocalizationCode>furn_heater</LocalizationCode>
+    <UnlocalizedDescription>furn_heater_desc</UnlocalizedDescription>
+
+  </Furniture>
 
 </Furnitures>
