@@ -158,25 +158,15 @@
 	</Furniture>
 
 
-<<<<<<< HEAD
 	<Furniture objectType="Power Generator">
 	<Name>Power Generator</Name>
 	<BaseType>Generator</BaseType>
 	<MovementCost>10</MovementCost>
 	<Width>2</Width>
 	<Height>2</Height>
-   <Power>5</Power>
-=======
-  <Furniture objectType="Power Generator">
-      <Name>Power Generator</Name>
-      <BaseType>Generator</BaseType>
-      <MovementCost>10</MovementCost>
-      <Width>2</Width>
-      <Height>2</Height>
+  <Power>5</Power>
 
-      <PowerGenerator supply="5"/>
   </Furniture>
->>>>>>> refs/remotes/TeamPorcupine/master
 
   <Furniture objectType="Metal Smelter">
       <Name>Metal Smelter</Name>
