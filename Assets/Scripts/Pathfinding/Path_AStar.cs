@@ -5,8 +5,16 @@ using System.Linq;
 
 public class Path_AStar
 {
-
     Queue<Tile> path;
+
+    public Path_AStar(Queue<Tile> path)
+    {
+        if (path == null || !path.Any())
+        {
+            Logger.LogWarning("Created path with no tiles, is this intended?");
+        }
+        this.path = path;
+    }
 
     public Path_AStar(World world, Tile tileStart, Tile tileEnd, string objectType = null, int desiredAmount = 0, bool canTakeFromStockpile = false)
     {
@@ -252,4 +260,8 @@ public class Path_AStar
         return path.Last();
     }
 
+    public IEnumerable<Tile> Reverse()
+    {
+        return path == null ? null : path.Reverse();
+    }
 }

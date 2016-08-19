@@ -160,7 +160,8 @@ public class BuildModeController : MonoBehaviour
                     Tile.ChangeTileTypeJobComplete, 
                     0.1f, 
                     null, 
-                    false);
+                    false,
+                    true);
 
 
                 // FIXME: I don't like having to manually and explicitly set
