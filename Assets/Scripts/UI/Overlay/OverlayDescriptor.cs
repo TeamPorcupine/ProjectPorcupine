@@ -5,20 +5,41 @@ using System.Xml;
 using System;
 using MoonSharp.Interpreter;
 
+/// <summary>
+/// Contains the description of a single overlay type. Contains LUA function name, id and coloring details.
+/// </summary>
 [MoonSharpUserData]
 public class OverlayDescriptor
 {
-    
     /// <summary>
     /// Select the type of color map (coloring scheme) you want to use
+    /// TODO: more color maps
     /// </summary>
     public enum ColorMap { Jet, Random };
 
+    /// <summary>
+    /// Unique identifier
+    /// TODO: l10n
+    /// </summary>
     public string id;
+    /// <summary>
+    /// Type of color map used by this descriptor
+    /// </summary>
     public ColorMap colorMap = ColorMap.Jet;
+    /// <summary>
+    /// Name of function returning int (index of color) given a tile t
+    /// </summary>
     public string luaFunctionName;
+    /// <summary>
+    /// Bounds for clipping coloring
+    /// </summary>
     public int min = 0, max = 255;
 
+    /// <summary>
+    /// Creates an OverlayDescriptor form a xml subtree with node \<Overlay></Overlay>\
+    /// </summary>
+    /// <param name="xmlReader">The subtree pointing to Overlay</param>
+    /// <returns></returns>
     static OverlayDescriptor ReadFromXml(XmlReader xmlReader)
     {
         xmlReader.Read();
@@ -43,6 +64,11 @@ public class OverlayDescriptor
         return ret;
     }
 
+    /// <summary>
+    /// Read an xml file containing a list of protorypes of overlays descriptors
+    /// </summary>
+    /// <param name="fileName">Name of xml file.</param>
+    /// <returns></returns>
     public static Dictionary<string, OverlayDescriptor> ReadPrototypes(string fileName)
     {
         string XmlFile = System.IO.Path.Combine(UnityEngine.Application.streamingAssetsPath,
