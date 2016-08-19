@@ -34,13 +34,11 @@ public class PowerSystem {
 
     public void RegisterPowerConsumer(Furniture furn)
     {
-        if (currentPower < furn.powerValue)
+        if (currentPower + furn.powerValue < 0)
         {
-            //Logger.LogWarning("Not enough power for " + furn.Name + " to run");
             return;
         }
 
-        //Logger.Log("Added " + furn.Name + " to power consumer list");
         powerConsumers.Add(furn);
         CalculatePower();
 
@@ -75,7 +73,7 @@ public class PowerSystem {
 
         foreach (Furniture furn in powerConsumers)
         {
-            powerValues -= furn.powerValue;
+            powerValues += furn.powerValue;
         }
 
         currentPower = powerValues;

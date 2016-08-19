@@ -17,6 +17,10 @@ end
 
 -------------------------------- Furniture Actions --------------------------------
 function OnUpdate_GasGenerator( furniture, deltaTime )
+	if ( furniture.HasPower() == false) then
+		return
+	end
+
 	if ( furniture.tile.room == nil ) then
 		return "Furniture's room was null."
 	end
