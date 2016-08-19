@@ -98,11 +98,23 @@ public class CharacterSpriteController : MonoBehaviour
             return;
         }
 
-        GameObject char_go = characterGameObjectMap[c];
+        GameObject char_go = characterGameObjectMap [c];
         //Debug.Log(furn_go);
         //Debug.Log(furn_go.GetComponent<SpriteRenderer>());
 
         //char_go.GetComponent<SpriteRenderer>().sprite = GetSpriteForFurniture(furn);
+        if (c.CurrTile.room != null)
+        {
+            if (c.CurrTile.room.GetGasAmount ("O2") <= 0.5f && char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled == false)
+            {
+                char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled = true;
+            }
+            else if(c.CurrTile.room.GetGasAmount ("O2") >= 0.5f && char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled == true)
+            {
+                char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled = false;
+            }
+        }
+
 
         char_go.transform.position = new Vector3(c.X, c.Y, 0);
     }
