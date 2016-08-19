@@ -166,16 +166,12 @@
 	<Height>2</Height>
   <Power>5</Power>
 
-<<<<<<< HEAD
-=======
       <BuildingJob jobTime="0">
       </BuildingJob>
 
       <LocalizationCode>furn_power_generator</LocalizationCode>
       <UnlocalizedDescription>furn_power_generator_desc</UnlocalizedDescription>
 
-      <PowerGenerator supply="5"/>
->>>>>>> refs/remotes/TeamPorcupine/master
   </Furniture>
 
   <Furniture objectType="Metal Smelter">

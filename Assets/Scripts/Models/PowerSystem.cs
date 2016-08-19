@@ -36,17 +36,9 @@ public class PowerSystem {
     {
         if (currentPower + furn.powerValue < 0)
         {
-<<<<<<< HEAD
             return;
         }
 
-=======
-            //Logger.LogWarning("Not enough power for " + furn.Name + " to run");
-            return;
-        }
-
-        //Logger.Log("Added " + furn.Name + " to power consumer list");
->>>>>>> refs/remotes/TeamPorcupine/master
         powerConsumers.Add(furn);
         CalculatePower();
 
