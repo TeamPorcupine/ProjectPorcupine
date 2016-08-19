@@ -63,13 +63,13 @@ public class CharacterSpriteController : MonoBehaviour
         inv_go.transform.localPosition = new Vector3(0,-0.37f,0); // Config needs to be added to XML
 
 		// Add the reflection of the character's helmet
-		GameObject helmet_go = new GameObject ("HelmetGlass");
-		SpriteRenderer helmet_sr = helmet_go.AddComponent<SpriteRenderer>();
-		helmet_sr.sortingOrder = 1;
-		helmet_sr.sprite = SpriteManager.current.GetSprite("Character", "p2_helmet");
-		helmet_sr.sortingLayerName = "Characters";
-		helmet_go.transform.SetParent (char_go.transform);
-		helmet_go.transform.localPosition = new Vector3(0,0,0);
+	    GameObject helmet_go = new GameObject ("HelmetGlass");
+	    SpriteRenderer helmet_sr = helmet_go.AddComponent<SpriteRenderer>();
+	    helmet_sr.sortingOrder = 1;
+	    helmet_sr.sprite = SpriteManager.current.GetSprite("Character", "p2_helmet");
+	    helmet_sr.sortingLayerName = "Characters";
+	    helmet_go.transform.SetParent (char_go.transform);
+	    helmet_go.transform.localPosition = new Vector3(0,0,0);
 
         // Register our callback so that our GameObject gets updated whenever
         // the object's into changes.

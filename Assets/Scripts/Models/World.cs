@@ -788,21 +788,21 @@ public class World : IXmlSerializable
             {
                 int x = int.Parse(reader.GetAttribute("X"));
                 int y = int.Parse(reader.GetAttribute("Y"));
-				if(reader.GetAttribute("r") != null)
-				{
-					float r = float.Parse(reader.GetAttribute("r"));
-					float b = float.Parse(reader.GetAttribute("b"));;
-					float g = float.Parse(reader.GetAttribute("g"));;
-					Color color = new Color(r, g, b, 1.0f);
-					Character c = CreateCharacter(tiles[x, y], color);
-					c.ReadXml(reader);
-				}
+			    if(reader.GetAttribute("r") != null)
+			    {
+				    float r = float.Parse(reader.GetAttribute("r"));
+				    float b = float.Parse(reader.GetAttribute("b"));;
+				    float g = float.Parse(reader.GetAttribute("g"));;
+				    Color color = new Color(r, g, b, 1.0f);
+				    Character c = CreateCharacter(tiles[x, y], color);
+				    c.ReadXml(reader);
+			    }
 
-				else
-				{
-					Character c = CreateCharacter(tiles[x, y]);
-					c.ReadXml(reader);
-				}
+			    else
+			    {
+				    Character c = CreateCharacter(tiles[x, y]);
+				    c.ReadXml(reader);
+			    }
                 
             } while(reader.ReadToNextSibling("Character"));
         }
