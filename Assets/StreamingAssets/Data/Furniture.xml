@@ -165,6 +165,9 @@
       <Width>2</Width>
       <Height>2</Height>
 
+      <BuildingJob jobTime="0">
+      </BuildingJob>
+
       <PowerGenerator supply="5"/>
   </Furniture>
 
