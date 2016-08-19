@@ -46,11 +46,14 @@ interface IInterfaceable { }
 // Braces are on a new line. ;)
 class Class 
 {
-    // Fields start with an underscore and should be private if possible.
+    // Fields backing properties start with an underscore and should be private.
     private int _memberField; 
     
     // Properties should use PascalCasing.
     public int MemberField { get { return _memberField; } } 
+    
+    // Regular fields not backing a property should be camelCased.
+    private string someString;
     
     // Methods should use PascalCasing.
     // Method parameters should be camelCased.
