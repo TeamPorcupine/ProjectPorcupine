@@ -6,108 +6,116 @@ using MoonSharp.RemoteDebugger;
 using MoonSharp.RemoteDebugger.Network;
 
 
-public class FurnitureActions {
+public class FurnitureActions
+{
 
-	static FurnitureActions _Instance;
+    static FurnitureActions _Instance;
 
-	Script myLuaScript;
+    Script myLuaScript;
 
-	public FurnitureActions( string rawLuaCode ) {
-		// Tell the LUA interpreter system to load all the classes
-		// that we have marked as [MoonSharpUserData]
-		UserData.RegisterAssembly();
+    public FurnitureActions(string rawLuaCode)
+    {
+        // Tell the LUA interpreter system to load all the classes
+        // that we have marked as [MoonSharpUserData]
+        UserData.RegisterAssembly();
 
-		_Instance = this;
+        _Instance = this;
 
-		myLuaScript = new Script();
+        myLuaScript = new Script();
 
-		// If we want to be able to instantiate a new object of a class
-		//   i.e. by doing    SomeClass.__new()
-		// We need to make the base type visible.
-		myLuaScript.Globals["Inventory"] = typeof(Inventory);
-		myLuaScript.Globals["Job"] = typeof(Job);
+        // If we want to be able to instantiate a new object of a class
+        //   i.e. by doing    SomeClass.__new()
+        // We need to make the base type visible.
+        myLuaScript.Globals["Inventory"] = typeof(Inventory);
+        myLuaScript.Globals["Job"] = typeof(Job);
 
-		// Also to access statics/globals
-		myLuaScript.Globals["World"] = typeof(World);
+        // Also to access statics/globals
+        myLuaScript.Globals["World"] = typeof(World);
 
-		//ActivateRemoteDebugger(myLuaScript);
-		myLuaScript.DoString( rawLuaCode );
-	}
+        //ActivateRemoteDebugger(myLuaScript);
+        myLuaScript.DoString(rawLuaCode);
+    }
 
-	static RemoteDebuggerService remoteDebugger;
+    static RemoteDebuggerService remoteDebugger;
 
-	private void ActivateRemoteDebugger(Script script)
-	{
-		if (remoteDebugger == null)
-		{
-			remoteDebugger = new RemoteDebuggerService( new RemoteDebuggerOptions()
-				{
-					NetworkOptions = Utf8TcpServerOptions.LocalHostOnly | Utf8TcpServerOptions.SingleClientOnly,
-					SingleScriptMode = true,
-					HttpPort = 2705,
-					RpcPortBase = 2006,
-				} );
+    private void ActivateRemoteDebugger(Script script)
+    {
+        if (remoteDebugger == null)
+        {
+            remoteDebugger = new RemoteDebuggerService(new RemoteDebuggerOptions()
+                {
+                    NetworkOptions = Utf8TcpServerOptions.LocalHostOnly | Utf8TcpServerOptions.SingleClientOnly,
+                    SingleScriptMode = true,
+                    HttpPort = 2705,
+                    RpcPortBase = 2006,
+                });
 
-			// the last boolean is to specify if the script is free to run 
-			// after attachment, defaults to false
-			remoteDebugger.Attach(script, "My Awesome Debugger", true);
+            // the last boolean is to specify if the script is free to run 
+            // after attachment, defaults to false
+            remoteDebugger.Attach(script, "My Awesome Debugger", true);
 
-			// start the web-browser at the correct url. Replace this or just
-			// pass the url to the user in some way.
-			System.Diagnostics.Process.Start(remoteDebugger.HttpUrlStringLocalHost);
+            // start the web-browser at the correct url. Replace this or just
+            // pass the url to the user in some way.
+            System.Diagnostics.Process.Start(remoteDebugger.HttpUrlStringLocalHost);
 
-		}
+        }
 
-	}
-
-
-
-	static public void CallFunctionsWithFurniture(string[] functionNames, Furniture furn, float deltaTime) {
-		foreach(string fn in functionNames) {
-			object func = _Instance.myLuaScript.Globals[fn];
-
-			if(func == null) {
-				Debug.LogError("'"+ fn +"' is not a LUA function.");
-				return;
-			}
-
-			DynValue result = _Instance.myLuaScript.Call( func, furn, deltaTime );
-
-			if( result.Type == DataType.String ) {
-				Debug.Log(result.String);
-			}
-		}
-	}
-
-	static public DynValue CallFunction(string functionName, params object[] args) {
-		//Debug.Log("Calling function: " + functionName);
-		object func = _Instance.myLuaScript.Globals[functionName];
-
-		return _Instance.myLuaScript.Call( func, args );
-	}
-
-	public static void JobComplete_FurnitureBuilding(Job theJob) {
-		WorldController.Instance.world.PlaceFurniture( theJob.jobObjectType, theJob.tile );
-
-		// FIXME: I don't like having to manually and explicitly set
-		// flags that preven conflicts. It's too easy to forget to set/clear them!
-		theJob.tile.pendingFurnitureJob = null;
-	}
+    }
 
 
 
+    static public void CallFunctionsWithFurniture(string[] functionNames, Furniture furn, float deltaTime)
+    {
+        foreach (string fn in functionNames)
+        {
+            object func = _Instance.myLuaScript.Globals[fn];
+
+            if (func == null)
+            {
+                Debug.LogError("'" + fn + "' is not a LUA function.");
+                return;
+            }
+
+            DynValue result = _Instance.myLuaScript.Call(func, furn, deltaTime);
+
+            if (result.Type == DataType.String)
+            {
+                Debug.Log(result.String);
+            }
+        }
+    }
+
+    static public DynValue CallFunction(string functionName, params object[] args)
+    {
+        //Debug.Log("Calling function: " + functionName);
+        object func = _Instance.myLuaScript.Globals[functionName];
+
+        return _Instance.myLuaScript.Call(func, args);
+    }
+
+    public static void JobComplete_FurnitureBuilding(Job theJob)
+    {
+        WorldController.Instance.world.PlaceFurniture(theJob.jobObjectType, theJob.tile);
+
+        // FIXME: I don't like having to manually and explicitly set
+        // flags that preven conflicts. It's too easy to forget to set/clear them!
+        theJob.tile.pendingBuildJob = null;
+    }
 
 
 
 
 
 
-	// This file contains code which will likely be completely moved to
-	// some LUA files later on and will be parsed at run-time.
 
 
 
-/*	public static void Door_UpdateAction(Furniture furn, float deltaTime) {
+    // This file contains code which will likely be completely moved to
+    // some LUA files later on and will be parsed at run-time.
+
+
+
+    /*	public static void Door_UpdateAction(Furniture furn, float deltaTime) {
 		//Debug.Log("Door_UpdateAction: " + furn.furnParameters["openness"]);
 
 		if(furn.GetParameter("is_opening") >= 1) {
