@@ -20,6 +20,6 @@ furn_door_desc=Une porte.
 furn_stockpile=Stock
 furn_stockpile_desc=Un stockage, pour vos matériaux.
 furn_oxygen_generator=Générateur d'oxygène
-furn_oxygen_generator_desc=Génère l'oxigène pour vos astronautes.
+furn_oxygen_generator_desc=Génère l'oxygène pour vos astronautes.
 furn_mining_drone_station=Drone de minage
 furn_mining_drone_station_desc=Mine des matériaux.
