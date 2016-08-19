@@ -266,7 +266,13 @@ public class Character : IXmlSerializable, ISelectable
                 }
 
                 // Any chance we already have a path that leads to the items we want?
-                if (pathAStar != null && pathAStar.EndTile() != null && pathAStar.EndTile().inventory != null && (pathAStar.EndTile().furniture != null && !(myJob.canTakeFromStockpile == false && pathAStar.EndTile().furniture.IsStockpile() == true)) && pathAStar.EndTile().inventory.objectType == desired.objectType)
+
+                // Check that we have an end tile and that it has content.
+                if (pathAStar != null && pathAStar.EndTile() != null && pathAStar.EndTile().inventory != null && 
+                    // Check if it is a stockpile and we are allowed to grab from it or just not a stockpile
+                    !(pathAStar.EndTile().furniture != null && (myJob.canTakeFromStockpile == false && pathAStar.EndTile().furniture.IsStockpile() == true)) &&
+                    // Check if contains the desired objectType
+                    ( pathAStar.EndTile().inventory.objectType == desired.objectType))
                 {
                     // We are already moving towards a tile that contains what we want!
                     // so....do nothing?
