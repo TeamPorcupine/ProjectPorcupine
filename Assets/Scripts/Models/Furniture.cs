@@ -10,6 +10,8 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
+using MoonSharp;
+using MoonSharp.Interpreter.Interop;
 
 
 // InstalledObjects are things like walls, doors, and furniture (e.g. a sofa)
@@ -55,6 +57,16 @@ public class Furniture : IXmlSerializable, ISelectable
         if (updateActions != null)
         {
             //updateActions(this, deltaTime);
+
+            if (powerValue > 0 && isPowerGenerator == false)
+            {
+                if(World.current.powerSystem.RequestPower(this) == false)
+                {
+                    World.current.powerSystem.RegisterPowerConsumer(this);
+                    return;
+                }
+            }
+
             FurnitureActions.CallFunctionsWithFurniture(updateActions.ToArray(), this, deltaTime);
         }
     }
@@ -74,6 +86,11 @@ public class Furniture : IXmlSerializable, ISelectable
 
     }
 
+    // This is true if the Furniture produces power
+    public bool isPowerGenerator;
+    // If it is a generator this is the amount of power it produces otherwise this is the amount it consumes.
+    public float powerValue;
+
     // This represents the BASE tile of the object -- but in practice, large objects may actually occupy
     // multile tiles.
     public Tile tile
@@ -88,6 +105,9 @@ public class Furniture : IXmlSerializable, ISelectable
         get;
         protected set;
     }
+	
+    // This is the generic type of object this is, allowing things to interact with it based on it's generic type
+    private string baseType;
 
     private string _Name = null;
 
@@ -106,6 +126,8 @@ public class Furniture : IXmlSerializable, ISelectable
             _Name = value;
         }
     }
+
+    private string Description = "";
 
     public List<string> ReplaceableFurniture
     {
@@ -129,6 +151,9 @@ public class Furniture : IXmlSerializable, ISelectable
 
     public int Height { get; protected set; }
 
+    public string localizationCode { get; protected set; }
+    public string unlocalizedDescription { get; protected set; }
+
     public Color tint = Color.white;
 
     public bool linksToNeighbour
@@ -137,8 +162,8 @@ public class Furniture : IXmlSerializable, ISelectable
         protected set;
     }
 
-    public Action<Furniture> cbOnChanged;
-    public Action<Furniture> cbOnRemoved;
+    public event Action<Furniture> cbOnChanged;
+    public event Action<Furniture> cbOnRemoved;
 
     Func<Tile, bool> funcPositionValidation;
 
@@ -162,6 +187,8 @@ public class Furniture : IXmlSerializable, ISelectable
     {
         this.objectType = other.objectType;
         this.Name = other.Name;
+        this.baseType = other.baseType;
+        this.Description = other.Description;
         this.movementCost = other.movementCost;
         this.roomEnclosure = other.roomEnclosure;
         this.Width = other.Width;
@@ -180,9 +207,23 @@ public class Furniture : IXmlSerializable, ISelectable
 
         this.isEnterableAction = other.isEnterableAction;
 
+        this.isPowerGenerator = other.isPowerGenerator;
+        this.powerValue = other.powerValue;
+
+        if(isPowerGenerator == true)
+        {
+            World.current.powerSystem.RegisterPowerSupply(this);
+        }
+        else if(powerValue > 0)
+        {
+            World.current.powerSystem.RegisterPowerConsumer(this);
+        }
+
         if (other.funcPositionValidation != null)
             this.funcPositionValidation = (Func<Tile, bool>)other.funcPositionValidation.Clone();
 
+        this.localizationCode = other.localizationCode;
+        this.unlocalizedDescription = other.unlocalizedDescription;
     }
 
     // Make a copy of the current furniture.  Sub-classed should
@@ -270,27 +311,7 @@ public class Furniture : IXmlSerializable, ISelectable
 
         return obj;
     }
-
-    public void RegisterOnChangedCallback(Action<Furniture> callbackFunc)
-    {
-        cbOnChanged += callbackFunc;
-    }
-
-    public void UnregisterOnChangedCallback(Action<Furniture> callbackFunc)
-    {
-        cbOnChanged -= callbackFunc;
-    }
-
-    public void RegisterOnRemovedCallback(Action<Furniture> callbackFunc)
-    {
-        cbOnRemoved += callbackFunc;
-    }
-
-    public void UnregisterOnRemovedCallback(Action<Furniture> callbackFunc)
-    {
-        cbOnRemoved -= callbackFunc;
-    }
-
+    
     public bool IsValidPosition(Tile t)
     {
         return funcPositionValidation(t);
@@ -318,7 +339,7 @@ public class Furniture : IXmlSerializable, ISelectable
                 {
                     for (int i = 0; i < ReplaceableFurniture.Count; i++)
                     {
-                        if (t2.furniture.Name == ReplaceableFurniture[i])
+                        if (t2.furniture.baseType == ReplaceableFurniture[i])
                         {
                             isReplaceable = true;
                         }
@@ -345,6 +366,15 @@ public class Furniture : IXmlSerializable, ISelectable
         return true;
     }
 
+    [MoonSharpVisible(true)]
+    private void UpdateOnChanged(Furniture furn)
+    {
+        if (cbOnChanged != null)
+        {
+            cbOnChanged(furn);
+        }
+    }
+    
     public XmlSchema GetSchema()
     {
         return null;
@@ -384,6 +414,14 @@ public class Furniture : IXmlSerializable, ISelectable
                     reader.Read();
                     Name = reader.ReadContentAsString();
                     break;
+                case "BaseType":
+                    reader.Read();
+                    baseType = reader.ReadContentAsString();
+                    break;
+                case "Description":
+                    reader.Read();
+                    Description = reader.ReadContentAsString();
+                    break;
                 case "MovementCost":
                     reader.Read();
                     movementCost = reader.ReadContentAsFloat();
@@ -405,7 +443,7 @@ public class Furniture : IXmlSerializable, ISelectable
                     roomEnclosure = reader.ReadContentAsBoolean();
                     break;
                 case "CanReplaceFurniture":
-                    replaceableFurniture.Add(reader.GetAttribute("objectName").ToString());
+                    replaceableFurniture.Add(reader.GetAttribute("baseType").ToString());
                     break;
                 case "BuildingJob":
                     float jobTime = float.Parse(reader.GetAttribute("jobTime"));
@@ -464,8 +502,28 @@ public class Furniture : IXmlSerializable, ISelectable
                     );
 
                     break;
+
+                case "PowerGenerator":
+                    isPowerGenerator = true;
+                    powerValue = float.Parse(reader.GetAttribute("supply"));
+                    break;
+                case "Power":
+                    reader.Read();
+                    powerValue = reader.ReadContentAsFloat();
+                    break;
+
                 case "Params":
                     ReadXmlParams(reader);	// Read in the Param tag
+                    break;
+
+                case "LocalizationCode":
+                    reader.Read();
+                    localizationCode = reader.ReadContentAsString();
+                    break;
+
+                case "UnlocalizedDescription":
+                    reader.Read();
+                    unlocalizedDescription = reader.ReadContentAsString();
                     break;
             }
         }
@@ -561,7 +619,7 @@ public class Furniture : IXmlSerializable, ISelectable
     {
         j.furniture = this;
         jobs.Add(j);
-        j.RegisterJobStoppedCallback(OnJobStopped);
+        j.cbJobStopped += OnJobStopped;
         World.current.jobQueue.Enqueue(j);
     }
 
@@ -572,7 +630,7 @@ public class Furniture : IXmlSerializable, ISelectable
 
     protected void RemoveJob(Job j)
     {
-        j.UnregisterJobStoppedCallback(OnJobStopped);
+        j.cbJobStopped -= OnJobStopped;
         jobs.Remove(j);
         j.furniture = null;
     }
@@ -615,7 +673,11 @@ public class Furniture : IXmlSerializable, ISelectable
             Room.DoRoomFloodFill(this.tile);
         }
 
-        World.current.InvalidateTileGraph();
+        //World.current.InvalidateTileGraph();
+        if (World.current.tileGraph != null)
+        {
+            World.current.tileGraph.RegenerateGraphAtTile(tile);
+        }
 
         // At this point, no DATA structures should be pointing to us, so we
         // should get garbage-collected.
@@ -636,12 +698,12 @@ public class Furniture : IXmlSerializable, ISelectable
 
     public string GetName()
     {
-        return this.Name;
+        return localizationCode;//this.Name;
     }
 
     public string GetDescription()
     {
-        return "This is a piece of furniture."; // TODO: Add "Description" property and matching XML field.
+        return unlocalizedDescription;
     }
 
     public string GetHitPointString()
