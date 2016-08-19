@@ -215,4 +215,42 @@ function MiningDroneStation_JobComplete(j)
 	World.current.inventoryManager.PlaceInventory( j.furniture.GetSpawnSpotTile(), Inventory.__new("Steel Plate", 50, 20) )
 end
 
+function PowerCellPress_UpdaeAction( furniture, deltaTime)
+
+	spawnSpot = furniture.GetSpawnSpotTile()
+	
+	if(furniture.JobCount() > 0 ) then
+	
+		if( spawnSpot.inventory != nil and spawnSpot.inventory.stackSize >= spawnSpot.inventory.maxStackSize) then
+			furniture.CancelJob()
+		end
+	end
+	
+	--checks if steel is there to press
+	if( spawnSpot.input = nil ) then
+		if( spawnSpot.inventory != nil and spawnSpot.inventory.stackSize >= spawnSpot.inventory.maxStackSize ) then
+			return
+		end
+		return
+	end
+	
+	--job is created
+	
+	jobSpot = furniture.getJobTile()
+	
+	press = Job.__new(
+		jobSpot,
+		nil,
+		nil,
+		2,
+		nil,
+		5 -- job should create only 5 Power Cells a time
+	)
+	
+	j.RegisterJobCompletedCallback("PowerCellPress_JobComplete")
+	furniture.addJob( press )
+	
+	return
+end
+
 return "LUA Script Parsed!"
