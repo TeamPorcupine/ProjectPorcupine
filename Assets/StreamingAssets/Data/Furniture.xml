@@ -154,10 +154,11 @@
 		
 		<LocalizationCode>furn_mining_drone_station</LocalizationCode>
 		<UnlocalizedDescription>furn_mining_drone_station_desc</UnlocalizedDescription>
-		
+
 	</Furniture>
 
 
+<<<<<<< HEAD
 	<Furniture objectType="Power Generator">
 	<Name>Power Generator</Name>
 	<BaseType>Generator</BaseType>
@@ -165,8 +166,36 @@
 	<Width>2</Width>
 	<Height>2</Height>
    <Power>5</Power>
+=======
+  <Furniture objectType="Power Generator">
+      <Name>Power Generator</Name>
+      <BaseType>Generator</BaseType>
+      <MovementCost>10</MovementCost>
+      <Width>2</Width>
+      <Height>2</Height>
 
-	</Furniture>
+      <PowerGenerator supply="5"/>
+  </Furniture>
+>>>>>>> refs/remotes/TeamPorcupine/master
 
+  <Furniture objectType="Metal Smelter">
+      <Name>Metal Smelter</Name>
+      <Description>Smelts your raw iron into metal.</Description>
+      <MovementCost>1</MovementCost>
+      <Width>3</Width>
+      <Height>3</Height>
+
+      <BuildingJob jobTime="0"/>
+
+      <OnUpdate FunctionName="MetalSmelter_UpdateAction" />
+
+      <Params>
+          <Param name="smelttime" value="0" />
+          <Param name="smelttime_required" value="6" />
+      </Params>
+
+      <LocalizationCode>furn_metal_smelter</LocalizationCode>
+      <UnlocalizedDescription>furn_metal_smelter_desc</UnlocalizedDescription>
+  </Furniture>
 
 </Furnitures>
