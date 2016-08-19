@@ -47,12 +47,12 @@ Additionally, for the sake of simplicity, we are standardizing on what should be
 
 * Document your changes in your PR. If you add a feature that you expect others to use, explain exactly how future code should interact with your additions. 
 
- * Avoid making changes to more files than necessary for your feature (i.e. refrain from combining your "real" pull request with incidental bug fixes). This will simplify the merging process and make your changes clearer.
+* Avoid making changes to more files than necessary for your feature (i.e. refrain from combining your "real" pull request with incidental bug fixes). This will simplify the merging process and make your changes clearer.
 
- * Avoid making changes to the Unity-specific files, like the scene and the project settings unless absolutely necessary. Changes here are very likely to cause difficult to merge conflicts. Work in code as much as possible. (We will be trying to change the UI to be more code-driven in the future.) Making changes to prefabs should generally be safe -- but create a copy of the main scene and work there instead (then delete your copy of the scene before committing).
+* Avoid making changes to the Unity-specific files, like the scene and the project settings unless absolutely necessary. Changes here are very likely to cause difficult to merge conflicts. Work in code as much as possible. (We will be trying to change the UI to be more code-driven in the future.) Making changes to prefabs should generally be safe -- but create a copy of the main scene and work there instead (then delete your copy of the scene before committing).
 
-  * Include screenshots demonstrating your change if applicable. All UI changes should include screenshots.
+* Include screenshots demonstrating your change if applicable. All UI changes should include screenshots.
 
-Thats it! Following these guidelines will ensure that your additions are approved quickly and integrated into the project. Thanks for your contribution!
+That's it! Following these guidelines will ensure that your additions are approved quickly and integrated into the project. Thanks for your contribution!
 
 
