@@ -77,7 +77,7 @@ Additionally, for the sake of simplicity, we are standardizing on what should be
 [Best Practices for Contributing]: #best-practices-for-contributing
 * Before you start coding, open an issue so that the community can discuss your change to ensure it is in line with the goals of the project and not being worked on by someone else. This allows for discussion and fine tuning of your feature and results in a more succent and focused additions.
     * If you are fixing a small glitch or bug, you may make a PR without opening an issue.
-    * If you are adding a large feaure, create an issue prefixed with "Discusion:" and be sure to take community feedback and get general approval before making your change and submitting a PR.
+    * If you are adding a large feaure, create an issue prefixed with "Discussion:" and be sure to take community feedback and get general approval before making your change and submitting a PR.
 
 * Pull Requests represent final code. Please ensure they are:
      * Well tested by the author. It is the author's job to ensure their code works as expected.  
