@@ -17,7 +17,7 @@ end
 
 -------------------------------- Furniture Actions --------------------------------
 function OnUpdate_GasGenerator( furniture, deltaTime )
-	if ( furniture.HasPowerCheck() == false) then
+	if ( furniture.HasPower() == false) then
 		return
 	end
 

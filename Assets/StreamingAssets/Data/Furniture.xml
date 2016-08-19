@@ -117,7 +117,7 @@
         <MovementCost>10</MovementCost>
         <Width>2</Width>
         <Height>2</Height>
-        <Power>1</Power>
+        <Power>-1</Power>
 
         <BuildingJob jobTime="0">
         </BuildingJob>
@@ -164,8 +164,7 @@
 	<MovementCost>10</MovementCost>
 	<Width>2</Width>
 	<Height>2</Height>
-
-	<PowerGenerator supply="5"/>
+   <Power>5</Power>
 
 	</Furniture>
 

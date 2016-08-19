@@ -77,9 +77,8 @@ public class Furniture : IXmlSerializable, ISelectable
 
     }
 
-    // This is true if the Furniture produces power
-    public bool isPowerGenerator;
-    // If it is a generator this is the amount of power it produces otherwise this is the amount it consumes.
+
+    // If this furniture generates power then powerValue will be positive, if it consumer power then it will be negative
     public float powerValue;
 
     // This represents the BASE tile of the object -- but in practice, large objects may actually occupy
@@ -198,14 +197,13 @@ public class Furniture : IXmlSerializable, ISelectable
 
         this.isEnterableAction = other.isEnterableAction;
 
-        this.isPowerGenerator = other.isPowerGenerator;
         this.powerValue = other.powerValue;
 
-        if(isPowerGenerator == true)
+        if(powerValue > 0)
         {
             World.current.powerSystem.RegisterPowerSupply(this);
         }
-        else if(powerValue > 0)
+        else if(powerValue < 0)
         {
             World.current.powerSystem.RegisterPowerConsumer(this);
         }
@@ -358,10 +356,10 @@ public class Furniture : IXmlSerializable, ISelectable
     }
 
 
-    public bool HasPowerCheck()
+    public bool HasPower()
     {
 
-        if (powerValue > 0 && isPowerGenerator == false)
+        if (powerValue < 0)
         {
             if (World.current.powerSystem.RequestPower(this) == true)
             {
@@ -516,10 +514,6 @@ public class Furniture : IXmlSerializable, ISelectable
 
                     break;
 
-                case "PowerGenerator":
-                    isPowerGenerator = true;
-                    powerValue = float.Parse(reader.GetAttribute("supply"));
-                    break;
                 case "Power":
                     reader.Read();
                     powerValue = reader.ReadContentAsFloat();
