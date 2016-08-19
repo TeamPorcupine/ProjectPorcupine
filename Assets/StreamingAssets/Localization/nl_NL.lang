@@ -25,3 +25,7 @@ furn_mining_drone_station=Mijnbouw Drone
 furn_mining_drone_station_desc=Delft uit het niets.
 furn_power_generator=Stroomgenerator
 furn_power_generator_desc=Genereert stroom uit het niets.
+tile_Empty=Leeg
+tile_Empty_desc=Een lege tegel.
+tile_Floor=Vloer
+tile_Floor_desc=Voldoet aan de hoogste anti-slip normen.
