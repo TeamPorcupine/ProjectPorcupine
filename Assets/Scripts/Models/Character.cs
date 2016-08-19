@@ -234,13 +234,13 @@ public class Character : IXmlSerializable, ISelectable
             // At this point, the job still requires inventory, but we aren't carrying it!
 
             // Are we standing on a tile with goods that are desired by the job?
-            Debug.Log("Standing on Tile check");
+            Logger.LogVerbose("Standing on Tile check");
             if (CurrTile.inventory != null &&
                 myJob.DesiresInventoryType(CurrTile.inventory) > 0 &&
                 (myJob.canTakeFromStockpile || CurrTile.furniture == null || CurrTile.furniture.IsStockpile() == false))
             {
                 // Pick up the stuff!
-                Debug.Log("Pick up the stuff");
+                Logger.LogVerbose("Pick up the stuff");
 
                 World.current.inventoryManager.PlaceInventory(
                     this,
@@ -252,8 +252,8 @@ public class Character : IXmlSerializable, ISelectable
             else
             {
                 // Walk towards a tile containing the required goods.
-                Debug.Log("Walk to the stuff");
-                Debug.Log(myJob.canTakeFromStockpile);
+                Logger.LogVerbose("Walk to the stuff");
+                Logger.LogVerbose(myJob.canTakeFromStockpile.ToString());
 
 
                 // Find the first thing in the Job that isn't satisfied.
@@ -289,7 +289,7 @@ public class Character : IXmlSerializable, ISelectable
                         return false;
                     }
 
-                    Debug.Log("pathAStar returned with length of: " + newPath.Length());                    
+                    Logger.LogVerbose("pathAStar returned with length of: " + newPath.Length());                    
 
                     DestTile = newPath.EndTile();
 
