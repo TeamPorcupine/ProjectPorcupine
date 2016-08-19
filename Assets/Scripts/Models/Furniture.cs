@@ -491,7 +491,8 @@ public class Furniture : IXmlSerializable, ISelectable
                     Job j = new Job(null, 
                         objectType, 
                         FurnitureActions.JobComplete_FurnitureBuilding, jobTime, 
-                        invs.ToArray()
+                        invs.ToArray(),
+                        Job.JobPriority.High
                     );
 
                     World.current.SetFurnitureJobPrototype(j, this);
