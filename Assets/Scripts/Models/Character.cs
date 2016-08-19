@@ -121,7 +121,14 @@ public class Character : IXmlSerializable, ISelectable
     public Character(Tile tile)
     {
         CurrTile = DestTile = NextTile = tile;
+		characterColor = new Color (UnityEngine.Random.Range (0f, 1f), UnityEngine.Random.Range (0f, 1f), UnityEngine.Random.Range (0f, 1f), 1.0f);
     }
+
+	public Character(Tile tile, Color color)
+	{
+		CurrTile = DestTile = NextTile = tile;
+		characterColor = color;
+	}
 
 
     void GetNewJob()
@@ -476,6 +483,9 @@ public class Character : IXmlSerializable, ISelectable
     {
         writer.WriteAttributeString("X", CurrTile.X.ToString());
         writer.WriteAttributeString("Y", CurrTile.Y.ToString());
+		writer.WriteAttributeString("r", characterColor.r.ToString());
+		writer.WriteAttributeString("b", characterColor.b.ToString());
+		writer.WriteAttributeString("g", characterColor.g.ToString());
     }
 
     public void ReadXml(XmlReader reader)
@@ -501,7 +511,12 @@ public class Character : IXmlSerializable, ISelectable
         return "100/100";
     }
 
+	public Color GetCharacterColor()
+	{
+		return characterColor;
+	}
+
     #endregion
 
-
+	Color characterColor;
 }
