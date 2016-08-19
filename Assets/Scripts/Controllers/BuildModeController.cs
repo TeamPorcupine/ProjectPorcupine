@@ -110,7 +110,7 @@ public class BuildModeController : MonoBehaviour
                 }
                 else
                 {
-                    Debug.LogError("There is no furniture job prototype for '" + furnitureType + "'");
+                    Logger.LogError("There is no furniture job prototype for '" + furnitureType + "'");
                     j = new Job(t, furnitureType, FurnitureActions.JobComplete_FurnitureBuilding, 0.1f, null);
                 }
 
@@ -188,7 +188,7 @@ public class BuildModeController : MonoBehaviour
         }
         else
         {
-            Debug.LogError("UNIMPLMENTED BUILD MODE");
+            Logger.LogError("UNIMPLMENTED BUILD MODE");
         }
 
     }

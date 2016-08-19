@@ -140,7 +140,7 @@ public class Tile :IXmlSerializable, ISelectable
 
         if (objInstance.IsValidPosition(this) == false)
         {
-            Debug.LogError("Trying to assign a furniture to a tile that isn't valid!");
+            Logger.LogError("Trying to assign a furniture to a tile that isn't valid!");
             return false;
         }
 		
@@ -172,7 +172,7 @@ public class Tile :IXmlSerializable, ISelectable
 
             if (inventory.objectType != inv.objectType)
             {
-                Debug.LogError("Trying to assign inventory to a tile that already has some of a different type.");
+                Logger.LogError("Trying to assign inventory to a tile that already has some of a different type.");
                 return false;
             }
 

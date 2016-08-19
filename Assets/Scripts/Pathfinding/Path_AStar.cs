@@ -27,7 +27,7 @@ public class Path_AStar
         // Make sure our start/end tiles are in the list of nodes!
         if (nodes.ContainsKey(tileStart) == false)
         {
-            Debug.LogError("Path_AStar: The starting tile isn't in the list of nodes!");
+            Logger.LogError("Path_AStar: The starting tile isn't in the list of nodes!");
 
             return;
         }
@@ -42,7 +42,7 @@ public class Path_AStar
         {
             if (nodes.ContainsKey(tileEnd) == false)
             {
-                Debug.LogError("Path_AStar: The ending tile isn't in the list of nodes!");
+                Logger.LogError("Path_AStar: The ending tile isn't in the list of nodes!");
                 return;
             }
 
@@ -222,12 +222,12 @@ public class Path_AStar
     {
         if (path == null)
         {
-            Debug.LogError("Attempting to dequeue from an null path.");
+            Logger.LogError("Attempting to dequeue from an null path.");
             return null;
         }
         if (path.Count <= 0)
         {
-            Debug.LogError("what???");
+            Logger.LogError("what???");
             return null;
         }
         return path.Dequeue();
@@ -245,7 +245,7 @@ public class Path_AStar
     {
         if (path == null || path.Count == 0)
         {
-            Debug.Log("Path is null or empty.");
+            Logger.Log("Path is null or empty.");
             return null;
         }
 
