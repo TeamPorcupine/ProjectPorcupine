@@ -16,6 +16,9 @@ If you would like to contribute to this project by modifying/adding to the progr
   * Include screenshots demonstrating your change if applicable.
 7. For a video tutorial, please see: https://www.youtube.com/watch?v=-N4Cghw0l2Q
 
+# Unity Version
+We are using Unity version 5.4 .
+All pull requests must build in 5.4 to be a valid patch.
 
 # General resources
 * [Github Tutorial by Quill18](https://www.youtube.com/watch?v=-N4Cghw0l2Q)
@@ -28,9 +31,45 @@ If you would like to contribute to this project by modifying/adding to the progr
 
 ## Style Guidelines
 
-We have standardized on Microsoft's [C# Coding Conventions](https://msdn.microsoft.com/en-us/library/ff926074.aspx) and [General Naming Conventions](https://msdn.microsoft.com/en-us/library/ms229045(v=vs.110).aspx), with a few exceptions.
+We have standardized on Microsoft's [C# Coding Conventions](https://msdn.microsoft.com/en-us/library/ff926074.aspx) and [General Naming Conventions](https://msdn.microsoft.com/en-us/library/ms229045(v=vs.110).aspx), with the following exception:
 
 * Avoid using 'var', even when the type would be clear from context. Verbose typing is best typing.
+
+As a TL;DR on our coding practises, adhere to the following example:
+
+```c#
+// Use camelCasing unless stated otherwise.
+// Descriptive names for variables/methods should be used.
+// Fields, properties and methods should always specify their scope, aka private/protected/internal/public.
+
+// Interfaces start with an I and should use PascalCasing.
+interface IInterfaceable { } 
+
+// Class names should use PascalCasing.
+// Braces are on a new line. ;)
+class Class 
+{
+    // Fields backing properties start with an underscore and should be private.
+    private int _memberField; 
+    
+    // Properties should use PascalCasing.
+    public int MemberField { get { return _memberField; } } 
+    
+    // Regular fields not backing a property should be camelCased.
+    private string someString;
+    
+    // Methods should use PascalCasing.
+    // Method parameters should be camelCased.
+    public void SomeMethod( int functionParameter ) 
+    {
+        // Local variables should also be camelCased.
+        int myLocalVariable = 0; 
+    } 
+    
+    // Events should use PascalCasing as well.
+    public event SomeEvent; 
+}
+```
 
 Additionally, for the sake of simplicity, we are standardizing on what should be Microsoft Visual Studio's default code formatting rules. If you are using MonoDevelop (as many of us are), please go to your preferences and set the C# source code formatting rules to the MVS setting:  
 

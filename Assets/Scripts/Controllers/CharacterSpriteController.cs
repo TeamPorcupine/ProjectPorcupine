@@ -52,6 +52,15 @@ public class CharacterSpriteController : MonoBehaviour
         sr.sprite = SpriteManager.current.GetSprite("Character", "p1_front");
         sr.sortingLayerName = "Characters";
 
+        // Add the inventory sprite onto the character
+        GameObject inv_go = new GameObject("Inventory");
+        SpriteRenderer inv_sr = inv_go.AddComponent<SpriteRenderer>();
+        inv_sr.sortingOrder = 1;
+        inv_sr.sortingLayerName = "Characters";
+        inv_go.transform.SetParent(char_go.transform);
+        inv_go.transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);// Config needs to be added to XML
+        inv_go.transform.localPosition = new Vector3(0,-0.37f,0); // Config needs to be added to XML
+
         // Register our callback so that our GameObject gets updated whenever
         // the object's into changes.
         c.cbCharacterChanged += OnCharacterChanged;
@@ -62,6 +71,16 @@ public class CharacterSpriteController : MonoBehaviour
     {
         //Debug.Log("OnFurnitureChanged");
         // Make sure the furniture's graphics are correct.
+        SpriteRenderer inv_sr = characterGameObjectMap[c].transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>();
+        if (c.inventory != null)
+        {
+            inv_sr.sprite = SpriteManager.current.GetSprite("Inventory", c.inventory.GetName());
+        }
+        else
+        {
+            inv_sr.sprite = null;
+        }
+
 
         if (characterGameObjectMap.ContainsKey(c) == false)
         {
