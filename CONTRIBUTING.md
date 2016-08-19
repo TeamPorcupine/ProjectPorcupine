@@ -47,8 +47,7 @@ interface IInterfaceable { }
 
 // Class names should use PascalCasing.
 // Braces are on a new line. ;)
-class Class 
-{
+class Class {
     // Fields backing properties start with an underscore and should be private.
     private int _memberField; 
     
@@ -60,8 +59,7 @@ class Class
     
     // Methods should use PascalCasing.
     // Method parameters should be camelCased.
-    public void SomeMethod( int functionParameter ) 
-    {
+    public void SomeMethod( int functionParameter ) {
         // Local variables should also be camelCased.
         int myLocalVariable = 0; 
     } 
