@@ -16,6 +16,9 @@ If you would like to contribute to this project by modifying/adding to the progr
   * Include screenshots demonstrating your change if applicable.
 7. For a video tutorial, please see: https://www.youtube.com/watch?v=-N4Cghw0l2Q
 
+# Unity Version
+We are using Unity version 5.4 .
+All pull requests must build in 5.4 to be a valid patch.
 
 # General resources
 * [Github Tutorial by Quill18](https://www.youtube.com/watch?v=-N4Cghw0l2Q)
