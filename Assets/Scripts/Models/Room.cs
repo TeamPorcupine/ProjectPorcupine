@@ -110,6 +110,12 @@ public class Room : IXmlSerializable
         List<Room> roomsDone = new List<Room>();
         foreach (Tile t in tile.GetNeighbours())
         {
+            // Skip tiles with a null room (i.e. outside)
+            // TODO: Verify that gas still leaks to the outside
+            // somehow
+            if (t.room == null)
+                continue;
+            
             if(roomsDone.Contains(t.room) == false)
             {
                 foreach (Room r in roomsDone) {
