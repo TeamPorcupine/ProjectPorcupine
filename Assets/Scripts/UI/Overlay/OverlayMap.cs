@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using System.Collections.Generic;
+using MoonSharp.Interpreter;
 
 /// <summary>
 /// This game object manages a mesh+texture+renderer+material that is
@@ -8,8 +10,10 @@ using System;
 /// </summary>
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]
-public class OverlayMap : MonoBehaviour
-{
+public class OverlayMap : MonoBehaviour {
+
+    public Dictionary<string, OverlayDescriptor> overlays;
+
     /// <summary>
     /// Starting left corner (x,y) and z-coordinate of mesh and (3d left corner)
     /// </summary>
@@ -41,10 +45,41 @@ public class OverlayMap : MonoBehaviour
     public int ySize = 10;
 
     /// <summary>
+    /// Script with user-defined lua valueAt functions
+    /// </summary>
+    Script script;
+
+    /// <summary>
     /// You can set any function, overlay will display value of func at point (x,y)
     /// Depending on how many colors the colorMap has, the displayed values will cycle
     /// </summary>
     public Func<int, int, int> valueAt;
+    /// <summary>
+    /// Current color map, setting the map causes the colorMapArray to be recreated
+    /// </summary>
+    private OverlayDescriptor.ColorMap _colorMap;
+    public OverlayDescriptor.ColorMap colorMap
+    {
+        set
+        {
+            _colorMap = value;
+            GenerateColorMap();
+        }
+        get
+        {
+            return _colorMap;
+        }
+    }
+
+    /// <summary>
+    /// Name of xml file containing overlay prototypes
+    /// </summary>
+    public string xmlFileName = "overlay_prototypes.xml";
+    /// <summary>
+    /// Name of lua script containing overlay prototypes functions
+    /// </summary>
+    public string LUAFileName = "overlay_functions.lua";
+
     /// <summary>
     /// Storage for color map as texture, copied from using copyTexture on GPUs
     /// This texture is made of n*x times y pixels, where n is the size of the "colorMap"
@@ -69,7 +104,7 @@ public class OverlayMap : MonoBehaviour
     /// Array with colors for overlay (colormap)
     /// Each element is a color that will be part of the color palette
     /// </summary>
-    Color32[] colorMap;
+    Color32[] colorMapArray;
 
     /// <summary>
     /// True if Init() has been called (i.e. there is a mesh and a color map)
@@ -88,15 +123,17 @@ public class OverlayMap : MonoBehaviour
         meshRenderer = GetComponent<MeshRenderer>();
         meshFilter = GetComponent<MeshFilter>();
 
-        // TODO: remove this dummy function
-        //valueAt = (x, y) => { return (x + y) % 255; };
-        valueAt = (x, y) => {
-            if (WorldController.Instance == null) return 0;
-            Tile tile = WorldController.Instance.GetTileAtWorldCoord(new Vector3(x, y, 0));
-            if (tile == null) return 0;
-            Room room = WorldController.Instance.GetTileAtWorldCoord(new Vector3(x, y, 0)).room;
-            if (room == null) return 0;
-            return (int) (room.GetGasAmount("O2") * 1E3f); };
+        overlays = OverlayDescriptor.ReadPrototypes(xmlFileName);
+
+
+        // Read LUA
+        string scriptFile = System.IO.Path.Combine(UnityEngine.Application.streamingAssetsPath,
+            System.IO.Path.Combine("Overlay", LUAFileName));
+        string scriptTxt = System.IO.File.ReadAllText(scriptFile);
+
+        script = new Script();
+        script.DoString(scriptTxt);
+
         // TODO: remove this dummy set size
         SetSize(100, 100);
     }
@@ -173,16 +210,16 @@ public class OverlayMap : MonoBehaviour
     void GenerateColorMap()
     {
         // TODO: make the map configurable
-        colorMap = ColorMap("jet", 255);
+        colorMapArray = ColorMap(colorMap, 255);
 
         // Colormap texture
-        int textureWidth = colorMap.Length * xPixelsPerTile;
+        int textureWidth = colorMapArray.Length * xPixelsPerTile;
         int textureHeight = yPixelsPerTile;
         colorMapTexture = new Texture2D(textureWidth, textureHeight);
         
         // Loop over each color in the palette and build a noisy texture
         int n = 0;
-        foreach (Color32 baseColor in colorMap)
+        foreach (Color32 baseColor in colorMapArray)
         {
             for (int y = 0; y < yPixelsPerTile; y++)
             {
@@ -283,19 +320,20 @@ public class OverlayMap : MonoBehaviour
     /// Returns an array of color, using the preset colormap with the name "name"
     /// Sets the alpha channel to alpha and uses "size" colors
     /// </summary>
-    /// <param name="name">Name of colormap</param>
+    /// <param name="colorMap">Name of colormap</param>
     /// <param name="size">Number of colors to use</param>
     /// <param name="alpha">Alpha channel of color</param>
     /// <returns></returns>
-    public static Color32[] ColorMap(string name, int size = 256, byte alpha = 128)
+    public static Color32[] ColorMap(OverlayDescriptor.ColorMap colorMap,
+        int size = 256, byte alpha = 128)
     {
         Color32[] cm = new Color32[size];
         Func<int, Color32> map;
 
-        switch (name)
+        switch (colorMap)
         {
             default:
-            case "jet":
+            case OverlayDescriptor.ColorMap.Jet:
                 map = (int v) =>
                 {
                     Color32 c = new Color32(255, 255, 255, alpha);
@@ -338,6 +376,12 @@ public class OverlayMap : MonoBehaviour
                     return c;
                 };
                 break;
+            case OverlayDescriptor.ColorMap.Random:
+                map = (int v) =>
+                {
+                    return UnityEngine.Random.ColorHSV();
+                };
+                break;
         }
 
         for (int i = 0; i < size; i++)
@@ -345,5 +389,26 @@ public class OverlayMap : MonoBehaviour
             cm[i] = map(i);
         }
         return cm;
+    }
+
+    /// <summary>
+    /// Set overlay to display perototype with name "name"
+    /// </summary>
+    /// <param name="name">name of overlay prototype</param>
+    public void SetOverlay(string name)
+    {
+        if (overlays.ContainsKey(name)) {
+            OverlayDescriptor descr = overlays[name];
+            string LUAFunctionName = descr.luaFunctionName;
+            valueAt = (x, y) => {
+                if (WorldController.Instance == null) return 0;
+                Tile tile = WorldController.Instance.GetTileAtWorldCoord(new Vector3(x, y, 0));
+                return (int) script.Call(LUAFunctionName, new object[] { tile }).ToScalar().CastToNumber();
+            };
+            colorMap = descr.colorMap;
+        } else
+        {
+            Debug.LogWarning(string.Format("Overlay with name {0} not found in prototypes", name));
+        }
     }
 }
