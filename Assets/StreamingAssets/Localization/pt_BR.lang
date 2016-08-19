@@ -1,4 +1,4 @@
-﻿build_floor=Build FloorConstruir Chão
+﻿build_floor=Construir Chão
 remove_floor=Remover Chão
 deconstruct_furniture=Descontruir Mobília
 new_world=Novo Mundo
@@ -22,4 +22,3 @@ furn_stockpile_desc=Armazém para seus materiais.
 furn_oxygen_generator=Gerador de Oxigênio
 furn_oxygen_generator_desc=Gerando oxigênio para seus astronaustas. 
 furn_mining_drone_station=Drone Minerador
-furn_mining_drone_station_desc=Extraindo materiais de lugar nenhum.
