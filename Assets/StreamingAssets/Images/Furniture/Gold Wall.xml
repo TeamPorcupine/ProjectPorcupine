@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Sprites>
+	<Sprite name="furn_GoldWall_"     x="0" y="224" w="32" h="32" pixelPerUnit="32" />
+	<Sprite name="furn_GoldWall_E"    x="320" y="192" w="32" h="32" pixelPerUnit="32" />
+	<Sprite name="furn_GoldWall_ES"   x="0" y="160" w="32" h="32" pixelPerUnit="32" />
+	<Sprite name="furn_GoldWall_ESW"  x="192" y="32" w="32" h="32" pixelPerUnit="32" />
+	<Sprite name="furn_GoldWall_EW"   x="32" y="160" w="32" h="32" pixelPerUnit="32" />
+	<Sprite name="furn_GoldWall_N"    x="352" y="160" w="32" h="32" pixelPerUnit="32" />
+	<Sprite name="furn_GoldWall_NE"   x="0" y="96" w="32" h="32" pixelPerUnit="32" />
+	<Sprite name="furn_GoldWall_NES"  x="128" y="192" w="32" h="32" pixelPerUnit="32" />
+	<Sprite name="furn_GoldWall_NESW" x="352" y="192" w="32" h="32" pixelPerUnit="32" />
+	<Sprite name="furn_GoldWall_NEW"  x="192" y="96" w="32" h="32" pixelPerUnit="32" />
+	<Sprite name="furn_GoldWall_NS"   x="64" y="128" w="32" h="32" pixelPerUnit="32" />
+	<Sprite name="furn_GoldWall_NSW"  x="256" y="192" w="32" h="32" pixelPerUnit="32" />
+	<Sprite name="furn_GoldWall_NW"   x="64" y="96" w="32" h="32" pixelPerUnit="32" />
+	<Sprite name="furn_GoldWall_S"    x="352" y="224" w="32" h="32" pixelPerUnit="32" />
+	<Sprite name="furn_GoldWall_SW"   x="64" y="160" w="32" h="32" pixelPerUnit="32" />
+	<Sprite name="furn_GoldWall_W"    x="384" y="192" w="32" h="32" pixelPerUnit="32" />
+</Sprites>
