@@ -88,6 +88,38 @@ public class Room : IXmlSerializable
 
     }
 
+    public void EqualiseGas(Room otherRoom, float leakFactor)
+    {
+        if (otherRoom == null)
+        {
+            return;
+        }
+
+        List<string> gasses = this.GetGasNames().ToList();
+        gasses = gasses.Union(otherRoom.GetGasNames().ToList()).ToList();
+        foreach (string gas in gasses)
+        {
+            float pressureDifference = this.GetGasPressure(gas) - otherRoom.GetGasPressure(gas);
+            this.ChangeGas(gas, (-1) * pressureDifference * leakFactor);
+            otherRoom.ChangeGas(gas, pressureDifference * leakFactor);
+        }
+    }
+
+    public static void EqualiseGasByTile(Tile tile, float leakFactor)
+    {
+        List<Room> roomsDone = new List<Room>();
+        foreach (Tile t in tile.GetNeighbours())
+        {
+            if(roomsDone.Contains(t.room) == false)
+            {
+                foreach (Room r in roomsDone) {
+                    t.room.EqualiseGas(r, leakFactor);
+                }
+                roomsDone.Add(t.room);
+            }
+        }
+    }
+
     // Gets absolute gas amount in preasure(in atm) multiplyed by number of tiles
     public float GetGasAmount(string name)
     {
@@ -131,6 +163,7 @@ public class Room : IXmlSerializable
     {
         return atmosphericGasses.Keys.ToArray();
     }
+
 
     public static void DoRoomFloodFill(Tile sourceTile, bool onlyIfOutside = false)
     {

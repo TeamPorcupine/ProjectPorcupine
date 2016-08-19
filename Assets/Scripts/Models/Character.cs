@@ -398,7 +398,7 @@ public class Character : IXmlSerializable, ISelectable
             //		  so that we don't waste a bunch of time walking towards a dead end.
             //		  To save CPU, maybe we can only check every so often?
             //		  Or maybe we should register a callback to the OnTileChanged event?
-            Debug.LogError("FIXME: A character was trying to enter an unwalkable tile.");
+            // Debug.LogError("FIXME: A character was trying to enter an unwalkable tile.");
             NextTile = null;	// our next tile is a no-go
             pathAStar = null;	// clearly our pathfinding info is out of date.
             return;
