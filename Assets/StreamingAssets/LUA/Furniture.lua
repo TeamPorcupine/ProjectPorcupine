@@ -17,6 +17,10 @@ end
 
 -------------------------------- Furniture Actions --------------------------------
 function OnUpdate_GasGenerator( furniture, deltaTime )
+	if ( furniture.HasPower() == false) then
+		return
+	end
+
 	if ( furniture.tile.room == nil ) then
 		return "Furniture's room was null."
 	end
@@ -146,6 +150,7 @@ function Stockpile_UpdateAction( furniture, deltaTime )
 		nil,
 		0,
 		itemsDesired,
+		Job.JobPriority.Low,
 		false
 	)
 
@@ -203,6 +208,7 @@ function MiningDroneStation_UpdateAction( furniture, deltaTime )
 		nil,
 		1,
 		nil,
+		Job.JobPriority.Medium,
 		true	-- This job repeats until the destination tile is full.
 	)
 	j.RegisterJobCompletedCallback("MiningDroneStation_JobComplete")

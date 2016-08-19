@@ -111,7 +111,7 @@ public class BuildModeController : MonoBehaviour
                 else
                 {
                     Logger.LogError("There is no furniture job prototype for '" + furnitureType + "'");
-                    j = new Job(t, furnitureType, FurnitureActions.JobComplete_FurnitureBuilding, 0.1f, null);
+                    j = new Job(t, furnitureType, FurnitureActions.JobComplete_FurnitureBuilding, 0.1f, null,Job.JobPriority.High);
                 }
 
                 j.furniturePrototype = WorldController.Instance.world.furniturePrototypes[furnitureType];
@@ -130,8 +130,6 @@ public class BuildModeController : MonoBehaviour
                             };
                     }
                 }
-
-
 
                 // Add the job to the queue
                 WorldController.Instance.world.jobQueue.Enqueue(j);
@@ -159,7 +157,8 @@ public class BuildModeController : MonoBehaviour
                     tileType, 
                     Tile.ChangeTileTypeJobComplete, 
                     0.1f, 
-                    null, 
+                    null,
+                    Job.JobPriority.High, 
                     false,
                     true);
 

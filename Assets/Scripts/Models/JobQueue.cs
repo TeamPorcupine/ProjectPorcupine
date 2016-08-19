@@ -9,13 +9,13 @@ using System;
 
 public class JobQueue
 {
-    Queue<Job> jobQueue;
+    SortedList<Job.JobPriority, Job> jobQueue;
 
     public event Action<Job> cbJobCreated;
 
     public JobQueue()
     {
-        jobQueue = new Queue<Job>();
+        jobQueue = new SortedList<Job.JobPriority, Job>(new DuplicateKeyComparer<Job.JobPriority>(true));
     }
 
     public void Enqueue(Job j)
@@ -29,7 +29,7 @@ public class JobQueue
             return;
         }
 
-        jobQueue.Enqueue(j);
+        jobQueue.Add(j.jobPriority,j);
 
         if (cbJobCreated != null)
         {
@@ -42,23 +42,20 @@ public class JobQueue
         if (jobQueue.Count == 0)
             return null;
 
-        return jobQueue.Dequeue();
+        Job job = jobQueue.Values[0];
+        jobQueue.RemoveAt(0);
+        return job;
     }
     
     public void Remove(Job j)
     {
-        // TODO: Check docs to see if there's a less memory/swappy solution
-        List<Job> jobs = new List<Job>(jobQueue);
-
-        if (jobs.Contains(j) == false)
+        if (jobQueue.ContainsValue(j)==false)
         {
             //Logger.LogError("Trying to remove a job that doesn't exist on the queue.");
             // Most likely, this job wasn't on the queue because a character was working it!
             return;
         }
-
-        jobs.Remove(j);
-        jobQueue = new Queue<Job>(jobs);
+        jobQueue.RemoveAt(jobQueue.IndexOfValue(j));
     }
 
 }
