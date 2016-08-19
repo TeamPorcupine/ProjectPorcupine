@@ -335,6 +335,20 @@ public class OverlayMap : MonoBehaviour {
         mesh.normals = newNormals;
 
     }
+
+    static List<Color32> _random_colors;
+    static void GenerateRandomColors(int size)
+    {
+        if (_random_colors == null)
+        {
+            _random_colors = new List<Color32>();
+        }
+        for (int i = _random_colors.Count; i < size; i++)
+        {
+            _random_colors.Add(UnityEngine.Random.ColorHSV());
+        }
+    }
+
     /// <summary>
     /// Returns an array of color, using the preset colormap with the name "name"
     /// Sets the alpha channel to alpha and uses "size" colors
@@ -396,9 +410,10 @@ public class OverlayMap : MonoBehaviour {
                 };
                 break;
             case OverlayDescriptor.ColorMap.Random:
+                GenerateRandomColors(size);
                 map = (int v) =>
                 {
-                    return UnityEngine.Random.ColorHSV();
+                    return _random_colors[v];
                 };
                 break;
         }
