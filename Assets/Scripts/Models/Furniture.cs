@@ -58,15 +58,6 @@ public class Furniture : IXmlSerializable, ISelectable
         {
             //updateActions(this, deltaTime);
 
-            if (powerValue > 0 && isPowerGenerator == false)
-            {
-                if(World.current.powerSystem.RequestPower(this) == false)
-                {
-                    World.current.powerSystem.RegisterPowerConsumer(this);
-                    return;
-                }
-            }
-
             FurnitureActions.CallFunctionsWithFurniture(updateActions.ToArray(), this, deltaTime);
         }
     }
@@ -365,6 +356,28 @@ public class Furniture : IXmlSerializable, ISelectable
 
         return true;
     }
+
+
+    public bool HasPowerCheck()
+    {
+
+        if (powerValue > 0 && isPowerGenerator == false)
+        {
+            if (World.current.powerSystem.RequestPower(this) == true)
+            {
+                return true;
+            }
+            else
+            {
+                World.current.powerSystem.RegisterPowerConsumer(this);
+                return false;
+            }
+        }
+
+        return false;
+
+    }
+
 
     [MoonSharpVisible(true)]
     private void UpdateOnChanged(Furniture furn)
