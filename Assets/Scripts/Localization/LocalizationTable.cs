@@ -70,8 +70,10 @@ namespace ProjectPorcupine.Localization
 
             // The key that the loop assembled.
             string currentKey = "";
+
             // The value that the loop assembled.
             string currentValue = "";
+
             // Is the loop already done with figuring out the key?
             bool searchingValue = false;
 
@@ -82,8 +84,10 @@ namespace ProjectPorcupine.Localization
 
                 // Set searching value to false.
                 searchingValue = false;
+
                 // Set the key to an empty string.
                 currentKey = "";
+
                 // Set the value to an empty string.
                 currentValue = "";
 
