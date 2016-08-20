@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using MoonSharp.Interpreter;
+//using MathNet.Numerics.LinearAlgebra;
+//using MathNet.Numerics.LinearAlgebra.Single;
 
 /// <summary>
 /// A  Temperature management system. Temperature is stored at each tile and evolved using
@@ -20,7 +22,7 @@ public class Temperature
     /// <summary>
     /// How often doe the physics update
     /// </summary>
-    public float updateInterval = 1f;
+    public float updateInterval = 0.01f;
 
     /// <summary>
     /// Internal only variables
@@ -74,7 +76,8 @@ public class Temperature
         }
 
         // TODO: remove, dummy heater at x=50, y=50, with power=1000
-        sinksAndSources += () => { SetTemperature(50, 50, 1000); };
+        sinksAndSources += () => { SetTemperature(50, 50, 300); };
+        
     }
 
     /// <summary>
@@ -87,6 +90,7 @@ public class Temperature
 
         if (elapsed >= updateInterval)
         {
+            //BuildMatrix();
             ProgressTemperature();
             elapsed = 0;
         }
@@ -167,7 +171,7 @@ public class Temperature
 
         // Compute a constant:
         // delta.Time * magic_coefficient * 0.5 (avg for thermalDiffusivity)
-        float C = 0.1f * 0.5f;
+        float C = 0.3f * 0.5f;
         for (int y = 0; y < ySize; y++)
         {
             for (int x = 0; x < xSize; x++)
@@ -184,10 +188,10 @@ public class Temperature
                 temp_curr[index] = temp_old[index];
 
                 // TODO: if empty space, set temperature to 0
-                //if (WorldController.Instance.GetTileAtWorldCoord(new Vector3(x, y, 0)).room == null)
-                //{
-                //    temp_curr[index] = 0f;
-                //}
+                if (WorldController.Instance.GetTileAtWorldCoord(new Vector3(x, y, 0)).room == null)
+                {
+                    temp_curr[index] = 0f;
+                }
                 if (x > 0)
                 {
                     temp_curr[index] +=
@@ -219,5 +223,76 @@ public class Temperature
 
     }
 
+    void BuildMatrix()
+    {
+        //OfIndexed(int rows, int columns, IEnumerable < Tuple < int, int, double >> enumerable)
+        //List<MathNet.Numerics.Tuple<int, int, float>> tuples = new List<MathNet.Numerics.Tuple<int, int, float>>();
 
+        //float C = 0.3f * 0.5f;
+        //for (int y = 0; y < ySize; y++)
+        //{
+        //    for (int x = 0; x < xSize; x++)
+        //    {
+        //        int index = GetIndex(x, y);
+        //        int index_up = GetIndex(x, y + 1);
+        //        int index_down = GetIndex(x, y - 1);
+        //        int index_left = GetIndex(x - 1, y);
+        //        int index_right = GetIndex(x + 1, y);
+
+                //        // Update temperature using finite difference and forward method:
+                //        // U^{n+1} = U^n + dt*(\Div alpha \Grad U^n)
+
+
+
+                //        // TODO: if empty space, set temperature to 0
+                //if (WorldController.Instance.GetTileAtWorldCoord(new Vector3(x, y, 0)).room == null)
+                //{
+                //    tuples.Add(new MathNet.Numerics.Tuple<int, int, float>(index, index, 0f));
+                //}
+                //else
+                //{
+                //}
+                //tuples.Add(new MathNet.Numerics.Tuple<int, int, float>(index, index, 1f));
+                //if (x > 0)
+                //{
+                //    float D = C * (thermalDiffusivity[index] + thermalDiffusivity[index_left]);
+                //    tuples.Add(new MathNet.Numerics.Tuple<int, int, float>(index, index_left, D));
+                //    tuples.Add(new MathNet.Numerics.Tuple<int, int, float>(index, index, -D));
+                //}
+                //if (y > 0)
+                //{
+                //    float D = C * (thermalDiffusivity[index] + thermalDiffusivity[index_down]);
+                //    tuples.Add(new MathNet.Numerics.Tuple<int, int, float>(index, index_down, D));
+                //    tuples.Add(new MathNet.Numerics.Tuple<int, int, float>(index, index, -D));
+                //}
+                //if (x < xSize - 1)
+                //{
+                //    float D = C * (thermalDiffusivity[index] + thermalDiffusivity[index_right]);
+                //    tuples.Add(new MathNet.Numerics.Tuple<int, int, float>(index, index_right, D));
+                //    tuples.Add(new MathNet.Numerics.Tuple<int, int, float>(index, index, -D));
+                //}
+                //if (y < ySize - 1)
+                //{
+                //    float D = C * (thermalDiffusivity[index] + thermalDiffusivity[index_up]);
+                //    tuples.Add(new MathNet.Numerics.Tuple<int, int, float>(index, index_up, D));
+                //    tuples.Add(new MathNet.Numerics.Tuple<int, int, float>(index, index, -D));
+                //}
+        //    }
+        //}
+
+        //SparseMatrix Mat = SparseMatrix.OfIndexed(xSize * ySize, xSize * ySize, tuples);
+
+        //MathNet.Numerics.LinearAlgebra.Single.Solvers.BiCgStab bcg = new MathNet.Numerics.LinearAlgebra.Single.Solvers.BiCgStab();
+
+        //Vector<float> v = Vector.Build.DenseOfArray(temperature[0]);
+        //Vector<float> w = Vector.Build.DenseOfArray(temperature[1]);
+        ////MathNet.Numerics.LinearAlgebra.Single.Solvers.ILU0Preconditioner ilu = new MathNet.Numerics.LinearAlgebra.Single.Solvers.ILU0Preconditioner();
+        //MathNet.Numerics.LinearAlgebra.Single.Solvers.DiagonalPreconditioner ilu = new MathNet.Numerics.LinearAlgebra.Single.Solvers.DiagonalPreconditioner();
+
+        //Mat.Multiply(v);
+
+        //MathNet.Numerics.LinearAlgebra.Solvers.Iterator<float> it = new MathNet.Numerics.LinearAlgebra.Solvers.Iterator<float>();
+        //bcg.Solve(Mat, v, w, it, ilu);
+
+    }
 }

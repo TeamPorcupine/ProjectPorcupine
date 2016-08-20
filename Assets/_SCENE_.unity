@@ -756,6 +756,7 @@ GameObject:
   - 222: {fileID: 225993475}
   - 114: {fileID: 225993474}
   - 114: {fileID: 225993473}
+  - 114: {fileID: 225993476}
   m_Layer: 5
   m_Name: OverlaySelector
   m_TagString: Untagged
@@ -828,6 +829,26 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 225993471}
+--- !u!114 &225993476
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 225993471}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1297475563, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 0
+  m_Spacing: 0
+  m_ChildForceExpandWidth: 0
+  m_ChildForceExpandHeight: 0
 --- !u!1 &241437491
 GameObject:
   m_ObjectHideFlags: 0
@@ -1076,6 +1097,7 @@ GameObject:
   - 222: {fileID: 281162112}
   - 114: {fileID: 281162111}
   - 114: {fileID: 281162110}
+  - 114: {fileID: 281162113}
   m_Layer: 5
   m_Name: Dropdown
   m_TagString: Untagged
@@ -1099,10 +1121,10 @@ RectTransform:
   - {fileID: 1216615290}
   m_Father: {fileID: 225993472}
   m_RootOrder: 0
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 80, y: 0}
-  m_SizeDelta: {x: 160, y: 30}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &281162110
 MonoBehaviour:
@@ -1186,6 +1208,24 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 281162108}
+--- !u!114 &281162113
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 281162108}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1679637790, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: 150
+  m_MinHeight: 30
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
 --- !u!1 &283097494
 GameObject:
   m_ObjectHideFlags: 0
@@ -2313,7 +2353,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 686dabcfc36262244be46c0ec10b0757, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scrollSpeed: 0.1
 --- !u!1 &610974495
 GameObject:
   m_ObjectHideFlags: 0

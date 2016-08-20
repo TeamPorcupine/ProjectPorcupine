@@ -31,7 +31,7 @@ function powerValueAt(tile)
 	else
 		val = mid + 10*tile.furniture.powerValue
 	end
-	return math.max(math.min(val, 255), 0)
+	return math.max(math.min(val, 254), 0)
 end
 
 -- Return temperature (in K) in current tile
@@ -43,7 +43,7 @@ function temperatureValueAt( tile, world )
 	--if tile == nil then
 	--	return -2
 	--end
-	return math.max(math.min(world.temperature.GetTemperature(tile.X, tile.Y) / 10, 255), 0)
+	return math.max(math.min(world.temperature.GetTemperature(tile.X, tile.Y) / 3, 254), 0)
 end
 
 
