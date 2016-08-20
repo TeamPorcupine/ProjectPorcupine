@@ -14,7 +14,17 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
 	public bool pressedDelete;
 	Component fileItem;
 
-	void Update()
+    public override void ShowDialog()
+    {
+        base.ShowDialog();
+        DialogListItem[] listItems = GetComponentsInChildren<DialogListItem>();
+        foreach (DialogListItem listItem in listItems)
+        {
+            listItem.doubleclick = OkayWasClicked;
+        }
+    }
+
+    void Update()
 	{
 		if (pressedDelete)
 		{
@@ -60,7 +70,7 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
 		{
 			// TODO: Do file overwrite dialog box.
 
-			Debug.LogError("File doesn't exist.  What?");
+			Logger.LogError("File doesn't exist.  What?");
 			CloseDialog();
 			return;
 		}
@@ -91,7 +101,7 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
 		if (File.Exists(filePath) == false)
 		{
 
-			Debug.LogError("File doesn't exist.  What?");
+			Logger.LogError("File doesn't exist.  What?");
 			CloseDialog();
 			return;
 		}
@@ -120,7 +130,7 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
 
 		// Get the file name from the save file dialog box
 
-		Debug.Log("LoadWorld button was clicked.");
+		Logger.Log("LoadWorld button was clicked.");
 
 		WorldController.Instance.LoadWorld(filePath);
 	}
