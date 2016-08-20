@@ -26,7 +26,7 @@ If you would like to contribute to this project by modifying/adding to the progr
     `git push origin my-feature-branch-name`  
 8. Make a "Pull Request" from your branch here on Github.
   * Include screenshots demonstrating your change if applicable.
-9. For a video tutorial, please see: https://www.youtube.com/watch?v=-R2fl17eEpwI
+9. For a video tutorial, please see: https://www.youtube.com/watch?v=R2fl17eEpwI
 
 # Resolving Merge Conflicts
 
