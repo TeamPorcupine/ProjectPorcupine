@@ -8,3 +8,5 @@
 *.xml text
 *.lua text
 *.txt text
+*.lang text
+*.md text

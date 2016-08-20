@@ -12,6 +12,7 @@ using System.Linq;
 [MoonSharpUserData]
 public class Job
 {
+    public enum JobPriority { High, Medium, Low }
 
     // This class holds info for a queued up job, which can include
     // things like placing furniture, moving stored inventory,
@@ -20,6 +21,12 @@ public class Job
     public Tile tile;
 
     public float jobTime
+    {
+        get;
+        protected set;
+    }
+
+    public JobPriority jobPriority
     {
         get;
         protected set;
@@ -61,13 +68,19 @@ public class Job
 
     public Dictionary<string, Inventory> inventoryRequirements;
 
-    public Job(Tile tile, string jobObjectType, Action<Job> cbJobComplete, float jobTime, Inventory[] inventoryRequirements, bool jobRepeats = false)
+    /// <summary>
+    /// If true, the work will be carried out on any adjacent tile of the target tile rather than on it.
+    /// </summary>
+    public bool adjacent;
+
+    public Job(Tile tile, string jobObjectType, Action<Job> cbJobComplete, float jobTime, Inventory[] inventoryRequirements, JobPriority jobPriority, bool jobRepeats = false)
     {
         this.tile = tile;
         this.jobObjectType = jobObjectType;
         this.cbJobCompleted += cbJobComplete;
         this.jobTimeRequired = this.jobTime = jobTime;
         this.jobRepeats = jobRepeats;
+        this.jobPriority = jobPriority;
 
         cbJobWorkedLua = new List<string>();
         cbJobCompletedLua = new List<string>();
@@ -82,13 +95,15 @@ public class Job
         }
     }
 
-    public Job(Tile tile, TileType jobTileType, Action<Job> cbJobComplete, float jobTime, Inventory[] inventoryRequirements, bool jobRepeats = false)
+    public Job(Tile tile, TileType jobTileType, Action<Job> cbJobComplete, float jobTime, Inventory[] inventoryRequirements, JobPriority jobPriority, bool jobRepeats = false, bool adjacent = false)
     {
         this.tile = tile;
         this.jobTileType = jobTileType;
         this.cbJobCompleted += cbJobComplete;
         this.jobTimeRequired = this.jobTime = jobTime;
         this.jobRepeats = jobRepeats;
+        this.jobPriority = jobPriority;
+        this.adjacent = adjacent;
 
         cbJobWorkedLua = new List<string>();
         cbJobCompletedLua = new List<string>();
@@ -110,6 +125,7 @@ public class Job
         this.jobTileType = other.jobTileType;
         this.cbJobCompleted = other.cbJobCompleted;
         this.jobTime = other.jobTime;
+        this.jobPriority = other.jobPriority;
 
         cbJobWorkedLua = new List<string>(other.cbJobWorkedLua);
         cbJobCompletedLua = new List<string>(other.cbJobWorkedLua);
@@ -161,7 +177,7 @@ public class Job
         // If not, don't register the work time.
         if (HasAllMaterial() == false)
         {
-            //Debug.LogError("Tried to do work on a job that doesn't have all the material.");
+            //Logger.LogError("Tried to do work on a job that doesn't have all the material.");
 
             // Job can't actually be worked, but still call the callbacks
             // so that animations and whatnot can be updated.
@@ -268,5 +284,9 @@ public class Job
 
         return null;
     }
-		
+
+    public void DropPriority()
+    {
+        jobPriority = (JobPriority)Mathf.Max(0, (int)jobPriority - 1);
+    }
 }

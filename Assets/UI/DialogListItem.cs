@@ -21,10 +21,13 @@ public class DialogListItem : MonoBehaviour, IPointerClickHandler
 
 		inputField.text = fileName;
 		GameObject go = GameObject.FindGameObjectWithTag("DeleteButton");
-		go.GetComponent<Image>().color = new Color(255, 255, 255, 255);
-		Component text = transform.GetComponentInChildren<Text>();
-		GetComponentInParent<DialogBoxLoadGame>().pressedDelete = true;
-		GetComponentInParent<DialogBoxLoadGame>().SetFileItem(text);
+        if (go != null)
+        {
+            go.GetComponent<Image>().color = new Color(255, 255, 255, 255);
+            Component text = transform.GetComponentInChildren<Text>();
+            GetComponentInParent<DialogBoxLoadGame>().pressedDelete = true;
+            GetComponentInParent<DialogBoxLoadGame>().SetFileItem(text);
+        }
 
         if (eventData.clickCount > 1)
         {
