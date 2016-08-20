@@ -452,7 +452,7 @@ public class OverlayMap : MonoBehaviour {
                 Debug.LogError(string.Format("Couldn't find a function named '{0}' in '{1}'", descr.luaFunctionName));
                 return;
             }
-            Debug.Log(string.Format("Setting LUA function for overlay to '{0}'", descr.luaFunctionName));
+            //Debug.Log(string.Format("Setting LUA function for overlay to '{0}'", descr.luaFunctionName));
             valueAt = (x, y) => {
                 if (WorldController.Instance == null) return 0;
                 Tile tile = WorldController.Instance.GetTileAtWorldCoord(new Vector3(x, y, 0));

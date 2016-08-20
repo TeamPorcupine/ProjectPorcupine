@@ -84,7 +84,7 @@ public class Temperature
 
     void ProgressTemperature()
     {
-        Debug.Log("Updating temperature!");
+        //Debug.Log("Updating temperature!");
         // TODO: Compute temperature sources
         // foreach(Tile tile in sinkAndSources)
         // GetTileAt(55, 55).temp_old = 1000;
