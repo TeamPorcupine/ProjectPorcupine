@@ -104,16 +104,14 @@ public class Need {
 				reader.Read ();
 				addedInVacuum = reader.ReadContentAsFloat();
 				break;
-			}
 			case "RestoreNeedAmount":
-			reader.Read ();
-			restoreNeedAmount = reader.ReadContentAsFloat();
-			break;
+				reader.Read ();
+				restoreNeedAmount = reader.ReadContentAsFloat();
+				break;
+			}
 		}
-		}
-
-
 	}
+
 	public void CompleteJobNorm (Job j)
 	{
 		Amount -= restoreNeedAmount;
