@@ -300,7 +300,14 @@ public class Job: ISelectable
 
     public string GetDescription()
     {
-        return "Hello";
+        string desc = "Requirements:\n";
+        foreach (Inventory inv in inventoryRequirements.Values)
+        {
+            desc += "\t" + inv.GetName() + "\t";
+            desc += inv.stackSize + " / " + inv.maxStackSize;
+            desc += "\n";
+        }
+        return desc;
     }
 
     public string GetHitPointString()
