@@ -46,6 +46,9 @@ TagManager:
   - name: Furniture
     uniqueID: 1892590203
     locked: 0
+  - name: Power
+    uniqueID: 186703983
+    locked: 0
   - name: Jobs
     uniqueID: 3858056555
     locked: 0
