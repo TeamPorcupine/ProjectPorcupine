@@ -1,8 +1,11 @@
-//=======================================================================
-// Copyright Martin "quill18" Glaude 2015-2016.
-//		http://quill18.com
-//=======================================================================
-
+#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
 using UnityEngine;
 using System;
 using System.Xml;
@@ -120,6 +123,9 @@ public class Character : IXmlSerializable, ISelectable
 
     /// Tile where job should be carried out, if different from myJob.tile
     Tile jobTile;
+
+    /// Name of the Character
+    public string name;
 
     // The item we are carrying (not gear/equipment)
     public Inventory inventory;
@@ -557,7 +563,7 @@ public class Character : IXmlSerializable, ISelectable
 
     public string GetName()
     {
-        return "Sally S. Smith";
+        return name;
     }
 
     public string GetDescription()
