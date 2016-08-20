@@ -220,7 +220,7 @@ public class MouseController : MonoBehaviour
     {
 
         // Make sure stuffInTile is big enough to handle all the characters, plus the 3 extra values
-        mySelection.stuffInTile = new ISelectable[ mySelection.tile.characters.Count + 3 ];
+        mySelection.stuffInTile = new ISelectable[ mySelection.tile.characters.Count + 4 ];
 
         // Copy the character references
         for (int i = 0; i < mySelection.tile.characters.Count; i++)
@@ -229,9 +229,10 @@ public class MouseController : MonoBehaviour
         }
 
         // Now assign references to the other three sub-selections available
-        mySelection.stuffInTile[mySelection.stuffInTile.Length - 3] = mySelection.tile.furniture;
-        mySelection.stuffInTile[mySelection.stuffInTile.Length - 2] = mySelection.tile.inventory;
-        mySelection.stuffInTile[mySelection.stuffInTile.Length - 1] = mySelection.tile;
+        mySelection.stuffInTile[mySelection.stuffInTile.Length - 4] = mySelection.tile.furniture;
+        mySelection.stuffInTile[mySelection.stuffInTile.Length - 3] = mySelection.tile.inventory;
+        mySelection.stuffInTile[mySelection.stuffInTile.Length - 2] = mySelection.tile;
+        mySelection.stuffInTile[mySelection.stuffInTile.Length - 1] = mySelection.tile.pendingBuildJob;
 
     }
 
