@@ -156,14 +156,11 @@ public class World : IXmlSerializable
 
     public void Update(float deltaTime)
     {
+        //Change from a foreach due to the collection being modified while its being looped through
         for (int i = 0; i < characters.Count; i++)
         {
             characters[i].Update(deltaTime);
         }
-        /*foreach (Character c in characters)
-        {
-            c.Update(deltaTime);
-        }*/
 
         foreach (Furniture f in furnitures)
         {
