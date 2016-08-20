@@ -22,7 +22,7 @@ public class PathfindingPriorityQueue<T>
     protected Dictionary<T, WrappedNode> _mapDataToWrappedNode;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="PriorityQueueWrapper`1"/> class.
+    /// Initializes a new instance of the <see cref="PathfindingPriorityQueue`1"/> class.
     /// </summary>
     /// <param name="startingSize">The starting size.</param>
     public PathfindingPriorityQueue(int startingSize = 10)
@@ -42,7 +42,7 @@ public class PathfindingPriorityQueue<T>
         public readonly T data;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PriorityQueueWrapper`1+WrappedNode"/> class.
+        /// Initializes a new instance of the <see cref="PathfindingPriorityQueue`1+WrappedNode"/> class.
         /// </summary>
         /// <param name="data">The data that this WrappedNode represents in the queue.</param>
         public WrappedNode(T data)
