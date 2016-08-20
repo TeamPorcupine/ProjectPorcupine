@@ -184,7 +184,7 @@ public class Furniture : IXmlSerializable, ISelectable
     {
         this.objectType = other.objectType;
         this.Name = other.Name;
-        this.typeTags = other.typeTags;
+        this.typeTags = new HashSet<string>(other.typeTags);
         this.Description = other.Description;
         this.movementCost = other.movementCost;
         this.roomEnclosure = other.roomEnclosure;
