@@ -58,15 +58,6 @@ public class Furniture : IXmlSerializable, ISelectable
         {
             //updateActions(this, deltaTime);
 
-            if (powerValue > 0 && isPowerGenerator == false)
-            {
-                if(World.current.powerSystem.RequestPower(this) == false)
-                {
-                    World.current.powerSystem.RegisterPowerConsumer(this);
-                    return;
-                }
-            }
-
             FurnitureActions.CallFunctionsWithFurniture(updateActions.ToArray(), this, deltaTime);
         }
     }
@@ -86,9 +77,8 @@ public class Furniture : IXmlSerializable, ISelectable
 
     }
 
-    // This is true if the Furniture produces power
-    public bool isPowerGenerator;
-    // If it is a generator this is the amount of power it produces otherwise this is the amount it consumes.
+
+    // If this furniture generates power then powerValue will be positive, if it consumer power then it will be negative
     public float powerValue;
 
     // This represents the BASE tile of the object -- but in practice, large objects may actually occupy
@@ -105,6 +95,9 @@ public class Furniture : IXmlSerializable, ISelectable
         get;
         protected set;
     }
+	
+    // This is the generic type of object this is, allowing things to interact with it based on it's generic type
+    private HashSet<string> typeTags;
 
     private string _Name = null;
 
@@ -159,6 +152,12 @@ public class Furniture : IXmlSerializable, ISelectable
         protected set;
     }
 
+    public string dragType
+    {
+        get;
+        protected set;
+    }
+
     public event Action<Furniture> cbOnChanged;
     public event Action<Furniture> cbOnRemoved;
 
@@ -173,6 +172,7 @@ public class Furniture : IXmlSerializable, ISelectable
         updateActions = new List<string>();
         furnParameters = new Dictionary<string, float>();
         jobs = new List<Job>();
+        typeTags = new HashSet<string>();
         this.funcPositionValidation = this.DEFAULT__IsValidPosition;
         this.Height = 1;
         this.Width = 1;
@@ -184,6 +184,7 @@ public class Furniture : IXmlSerializable, ISelectable
     {
         this.objectType = other.objectType;
         this.Name = other.Name;
+        this.typeTags = new HashSet<string>(other.typeTags);
         this.Description = other.Description;
         this.movementCost = other.movementCost;
         this.roomEnclosure = other.roomEnclosure;
@@ -203,14 +204,13 @@ public class Furniture : IXmlSerializable, ISelectable
 
         this.isEnterableAction = other.isEnterableAction;
 
-        this.isPowerGenerator = other.isPowerGenerator;
         this.powerValue = other.powerValue;
 
-        if(isPowerGenerator == true)
+        if(powerValue > 0)
         {
             World.current.powerSystem.RegisterPowerSupply(this);
         }
-        else if(powerValue > 0)
+        else if(powerValue < 0)
         {
             World.current.powerSystem.RegisterPowerConsumer(this);
         }
@@ -251,7 +251,7 @@ public class Furniture : IXmlSerializable, ISelectable
     {
         if (proto.funcPositionValidation(tile) == false)
         {
-            Debug.LogError("PlaceInstance -- Position Validity Function returned FALSE.");
+            Logger.LogError("PlaceInstance -- Position Validity Function returned FALSE.");
             return null;
         }
 
@@ -321,6 +321,17 @@ public class Furniture : IXmlSerializable, ISelectable
     // connect to.
     protected bool DEFAULT__IsValidPosition(Tile t)
     {
+        // Prevent construction too close to the world's edge
+        const int minEdgeDistance = 5;
+        bool tooCloseToEdge = t.X < minEdgeDistance || t.Y < minEdgeDistance ||
+            (World.current.Width - t.X) <= minEdgeDistance || 
+            (World.current.Height - t.Y) <= minEdgeDistance;
+
+        if (tooCloseToEdge)
+        {
+            return false;
+        }
+
         for (int x_off = t.X; x_off < (t.X + Width); x_off++)
         {
             for (int y_off = t.Y; y_off < (t.Y + Height); y_off++)
@@ -335,7 +346,7 @@ public class Furniture : IXmlSerializable, ISelectable
                 {
                     for (int i = 0; i < ReplaceableFurniture.Count; i++)
                     {
-                        if (t2.furniture.Name == ReplaceableFurniture[i])
+                        if (t2.furniture.HasTypeTag(ReplaceableFurniture[i]))
                         {
                             isReplaceable = true;
                         }
@@ -361,6 +372,28 @@ public class Furniture : IXmlSerializable, ISelectable
 
         return true;
     }
+
+
+    public bool HasPower()
+    {
+
+        if (powerValue < 0)
+        {
+            if (World.current.powerSystem.RequestPower(this) == true)
+            {
+                return true;
+            }
+            else
+            {
+                World.current.powerSystem.RegisterPowerConsumer(this);
+                return false;
+            }
+        }
+
+        return false;
+
+    }
+
 
     [MoonSharpVisible(true)]
     private void UpdateOnChanged(Furniture furn)
@@ -395,7 +428,7 @@ public class Furniture : IXmlSerializable, ISelectable
 
     public void ReadXmlPrototype(XmlReader reader_parent)
     {
-        //Debug.Log("ReadXmlPrototype");
+        //Logger.Log("ReadXmlPrototype");
 
         objectType = reader_parent.GetAttribute("objectType");
 
@@ -409,6 +442,10 @@ public class Furniture : IXmlSerializable, ISelectable
                 case "Name":
                     reader.Read();
                     Name = reader.ReadContentAsString();
+                    break;
+                case "TypeTag":
+                    reader.Read();
+                    typeTags.Add(reader.ReadContentAsString());
                     break;
                 case "Description":
                     reader.Read();
@@ -435,7 +472,11 @@ public class Furniture : IXmlSerializable, ISelectable
                     roomEnclosure = reader.ReadContentAsBoolean();
                     break;
                 case "CanReplaceFurniture":
-                    replaceableFurniture.Add(reader.GetAttribute("objectName").ToString());
+                    replaceableFurniture.Add(reader.GetAttribute("typeTag").ToString());
+                    break;
+                case "DragType":
+                    reader.Read();
+                    dragType = reader.ReadContentAsString();
                     break;
                 case "BuildingJob":
                     float jobTime = float.Parse(reader.GetAttribute("jobTime"));
@@ -462,7 +503,8 @@ public class Furniture : IXmlSerializable, ISelectable
                     Job j = new Job(null, 
                         objectType, 
                         FurnitureActions.JobComplete_FurnitureBuilding, jobTime, 
-                        invs.ToArray()
+                        invs.ToArray(),
+                        Job.JobPriority.High
                     );
 
                     World.current.SetFurnitureJobPrototype(j, this);
@@ -495,10 +537,6 @@ public class Furniture : IXmlSerializable, ISelectable
 
                     break;
 
-                case "PowerGenerator":
-                    isPowerGenerator = true;
-                    powerValue = float.Parse(reader.GetAttribute("supply"));
-                    break;
                 case "Power":
                     reader.Read();
                     powerValue = reader.ReadContentAsFloat();
@@ -652,7 +690,7 @@ public class Furniture : IXmlSerializable, ISelectable
 
     public void Deconstruct()
     {
-        Debug.Log("Deconstruct");
+        Logger.Log("Deconstruct");
 
         tile.UnplaceFurniture();
 
@@ -684,6 +722,13 @@ public class Furniture : IXmlSerializable, ISelectable
     public Tile GetSpawnSpotTile()
     {
         return World.current.GetTileAt(tile.X + (int)jobSpawnSpotOffset.x, tile.Y + (int)jobSpawnSpotOffset.y);
+    }
+
+    // Returns true if furniture has typeTag, though simple, the intent is to separate the interaction with
+    //  the Furniture's typeTags from the implementation.
+    public bool HasTypeTag(string typeTag)
+    {
+        return typeTags.Contains(typeTag);
     }
 
     #region ISelectableInterface implementation

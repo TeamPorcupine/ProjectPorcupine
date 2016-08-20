@@ -3,11 +3,13 @@
     <Furniture objectType="furn_SteelWall">
         <Name>Basic Wall</Name>
 		<Description>This is a basic wall.</Description>
+		<TypeTag>Wall</TypeTag>
         <MovementCost>0</MovementCost>
         <Width>1</Width>
         <Height>1</Height>
         <LinksToNeighbours>true</LinksToNeighbours>
         <EnclosesRooms>true</EnclosesRooms>
+        <DragType>border</DragType>
 
 
         <BuildingJob jobTime="1">
@@ -26,12 +28,13 @@
     <Furniture objectType="Door">
         <Name>Door</Name>
 		<Description>A door that characters can walk through.</Description>
+		<TypeTag>Door</TypeTag>
         <MovementCost>1</MovementCost>
         <Width>1</Width>
         <Height>1</Height>
         <LinksToNeighbours>false</LinksToNeighbours>
         <EnclosesRooms>true</EnclosesRooms>
-        <CanReplaceFurniture objectName="Basic Wall" />
+        <CanReplaceFurniture typeTag="Wall" />
 
 
         <Params>
@@ -48,6 +51,7 @@
         </DeconstructJob>
 
         <OnUpdate FunctionName="OnUpdate_Door" />
+        <OnUpdate FunctionName="OnUpdate_Leak_Door" />
 
         <IsEnterable FunctionName="IsEnterable_Door" />
 
@@ -56,10 +60,45 @@
 
     </Furniture>
 
+    <Furniture objectType="Airlock">
+        <Name>Door</Name>
+        <Description>An Airlock prevents air from leaving the base</Description>
+        <MovementCost>1</MovementCost>
+        <Width>1</Width>
+        <Height>1</Height>
+        <LinksToNeighbours>false</LinksToNeighbours>
+        <EnclosesRooms>true</EnclosesRooms>
+        <CanReplaceFurniture typeTag="Wall" />
+
+
+        <Params>
+            <Param name="openness" value="0" />
+            <Param name="is_opening" value="0" />
+        </Params>
+
+        <BuildingJob jobTime="5">
+            <Inventory objectType="Steel Plate" amount="10" />
+        </BuildingJob>
+
+        <DeconstructJob>
+            <Inventory objectType="Steel Plate" amount="7" />
+        </DeconstructJob>
+
+        <OnUpdate FunctionName="OnUpdate_Door" />
+        <OnUpdate FunctionName="OnUpdate_Leak_Airlock" />
+
+        <IsEnterable FunctionName="IsEnterable_Door" />
+
+        <LocalizationCode>furn_airlock</LocalizationCode>
+        <UnlocalizedDescription>furn_airlock_desc</UnlocalizedDescription>
+
+    </Furniture>
+
 
 	<Furniture objectType="Stockpile">
 		<Name>Stockpile</Name>
 		<Description>Characters will brings inventory here for storage.</Description>
+		<TypeTag>Storage</TypeTag>
         <MovementCost>1</MovementCost>
         <LinksToNeighbours>true</LinksToNeighbours>
 
@@ -75,10 +114,11 @@
 	<Furniture objectType="Oxygen Generator">
 		<Name>Oxygen Generator</Name>
 		<Description>Create O2 in the room in which it is built.</Description>
+		<TypeTag>Generator</TypeTag>
         <MovementCost>10</MovementCost>
         <Width>2</Width>
         <Height>2</Height>
-        <Power>1</Power>
+        <Power>-1</Power>
 
         <BuildingJob jobTime="0">
         </BuildingJob>
@@ -100,6 +140,7 @@
 	<Furniture objectType="Mining Drone Station">
 		<Name>Mining Drone Station</Name>
 		<Description>Creates Steel Plates when worked by a character.</Description>
+		<TypeTag>Workstation</TypeTag>
         <MovementCost>1</MovementCost>
         <Width>3</Width>
         <Height>3</Height>
@@ -114,19 +155,44 @@
 		
 		<LocalizationCode>furn_mining_drone_station</LocalizationCode>
 		<UnlocalizedDescription>furn_mining_drone_station_desc</UnlocalizedDescription>
-		
+
 	</Furniture>
 
 
-  <Furniture objectType="Power Generator">
-    <Name>Power Generator</Name>
-    <MovementCost>10</MovementCost>
-    <Width>2</Width>
-    <Height>2</Height>
+	<Furniture objectType="Power Generator">
+	<Name>Power Generator</Name>
+	<TypeTag>Generator</TypeTag>
+	<MovementCost>10</MovementCost>
+	<Width>2</Width>
+	<Height>2</Height>
+  <Power>5</Power>
 
-    <PowerGenerator supply="5"/>
-    
+      <BuildingJob jobTime="0">
+      </BuildingJob>
+
+      <LocalizationCode>furn_power_generator</LocalizationCode>
+      <UnlocalizedDescription>furn_power_generator_desc</UnlocalizedDescription>
+
   </Furniture>
 
+  <Furniture objectType="Metal Smelter">
+      <Name>Metal Smelter</Name>
+      <Description>Smelts your raw iron into metal.</Description>
+      <MovementCost>1</MovementCost>
+      <Width>3</Width>
+      <Height>3</Height>
+
+      <BuildingJob jobTime="0"/>
+
+      <OnUpdate FunctionName="MetalSmelter_UpdateAction" />
+
+      <Params>
+          <Param name="smelttime" value="0" />
+          <Param name="smelttime_required" value="6" />
+      </Params>
+
+      <LocalizationCode>furn_metal_smelter</LocalizationCode>
+      <UnlocalizedDescription>furn_metal_smelter_desc</UnlocalizedDescription>
+  </Furniture>
 
 </Furnitures>
