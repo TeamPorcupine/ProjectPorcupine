@@ -52,7 +52,7 @@ public class WorldController : MonoBehaviour
     {
         if (Instance != null)
         {
-            Debug.LogError("There should never be two world controllers.");
+            Logger.LogError("There should never be two world controllers.");
         }
         Instance = this;
 
@@ -90,7 +90,7 @@ public class WorldController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             IsPaused = !IsPaused;
-            Debug.Log("Game " + (IsPaused ? "paused" : "resumed"));
+            Logger.Log("Game " + (IsPaused ? "paused" : "resumed"));
         }
 
         if (Input.GetKeyDown(KeyCode.Plus) || Input.GetKeyDown(KeyCode.KeypadPlus))
@@ -139,7 +139,7 @@ public class WorldController : MonoBehaviour
     public void SetTimeScale(float timeScale)
     {
         this.timeScale = timeScale;
-        Debug.Log("Game speed set to " + timeScale + "x");
+        Logger.Log("Game speed set to " + timeScale + "x");
     }
 
     /// <summary>
@@ -157,7 +157,7 @@ public class WorldController : MonoBehaviour
 
     public void NewWorld()
     {
-        Debug.Log("NewWorld button was clicked.");
+        Logger.Log("NewWorld button was clicked.");
 
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
@@ -169,7 +169,7 @@ public class WorldController : MonoBehaviour
 
     public void LoadWorld(string fileName)
     {
-        Debug.Log("LoadWorld button was clicked.");
+        Logger.Log("LoadWorld button was clicked.");
 
         // Reload the scene to reset all data (and purge old references)
         loadWorldFromFile = fileName;
@@ -187,7 +187,7 @@ public class WorldController : MonoBehaviour
 
     void CreateWorldFromSaveFile()
     {
-        Debug.Log("CreateWorldFromSaveFile");
+        Logger.Log("CreateWorldFromSaveFile");
         // Create a world from our save file data.
 
         XmlSerializer serializer = new XmlSerializer(typeof(World));
@@ -199,7 +199,7 @@ public class WorldController : MonoBehaviour
         TextReader reader = new StringReader(saveGameText);
 
 
-        Debug.Log(reader.ToString());
+        Logger.Log(reader.ToString());
         world = (World)serializer.Deserialize(reader);
         reader.Close();
 
