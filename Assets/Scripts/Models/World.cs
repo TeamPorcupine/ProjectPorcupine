@@ -29,6 +29,7 @@ public class World : IXmlSerializable
 
     public Dictionary<string, Furniture> furniturePrototypes;
     public Dictionary<string, Job> furnitureJobPrototypes;
+	public Dictionary<string, Need> needPrototypes;
 
     // The tile width of the world.
     public int Width { get; protected set; }
@@ -366,6 +367,66 @@ public class World : IXmlSerializable
 
 	}
 */
+	void CreateNeedPrototypes()
+	{
+		
+
+
+		needPrototypes = new Dictionary<string, Need>();
+
+		// READ FURNITURE PROTOTYPE XML FILE HERE
+		// TODO:  Probably we should be getting past a StreamIO handle or the raw
+		// text here, rather than opening the file ourselves.
+
+		string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
+		filePath = System.IO.Path.Combine(filePath, "Need.xml");
+		string furnitureXmlText = System.IO.File.ReadAllText(filePath);
+
+		XmlTextReader reader = new XmlTextReader(new StringReader(furnitureXmlText));
+
+		int needCount = 0;
+		if (reader.ReadToDescendant("Needs"))
+		{
+			if (reader.ReadToDescendant("Need"))
+			{
+				do
+				{
+					needCount++;
+
+					Need need = new Need();
+					try
+					{
+						need.ReadXmlPrototype(reader);
+					}
+					catch {
+						Debug.LogError("Error reading furniture prototype for: " + need.needType);
+					}
+
+
+					needPrototypes[need.needType] = need;
+
+
+
+				} while (reader.ReadToNextSibling("Furniture"));
+			}
+			else
+			{
+				Debug.LogError("The furniture prototype definition file doesn't have any 'Furniture' elements.");
+			}
+		}
+		else
+		{
+			Debug.LogError("Did not find a 'Furnitures' element in the prototype definition file.");
+		}
+
+		Debug.Log("Furniture prototypes read: " + needCount.ToString());
+
+		// This bit will come from parsing a LUA file later, but for now we still need to
+		// implement furniture behaviour directly in C# code.
+		//furniturePrototypes["Door"].RegisterUpdateAction( FurnitureActions.Door_UpdateAction );
+		//furniturePrototypes["Door"].IsEnterable = FurnitureActions.Door_IsEnterable;
+
+	}
 
     /// <summary>
     /// A function for testing out the system

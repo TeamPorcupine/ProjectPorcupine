@@ -11,8 +11,9 @@ public class Need {
 	public float Amount = 0;
 	protected bool highToLow = true;
 	public Character character;
-	protected Furniture restoreNeedFurn;
-	protected float restoreNeedTime;
+	public Furniture restoreNeedFurn { get; protected set; }
+	public float restoreNeedTime { get; protected set; }
+	float restoreNeedAmount = 100;
 	public string DisplayAmount
 	{
 		get
@@ -24,7 +25,7 @@ public class Need {
 			return ((int)Amount) + "%";
 		}
 	}
-	protected bool completeOnFail;
+	public bool completeOnFail { get; protected set; }
 	protected float addedInVacuum;
 	protected float dps;
 	// Use this for initialization
@@ -45,6 +46,16 @@ public class Need {
 		if (Amount > 75 && character.myJob.isNeed == false)
 		{
 			character.AbandonJob ();
+		}
+		if (Amount == 100 && character.myJob.critical == false)
+		{
+			if (character.myJob.isNeed == false) {
+				character.AbandonJob ();
+			}
+			else
+			{
+				character.CancelNeed ();
+			}
 		}
 	}
 
@@ -97,5 +108,13 @@ public class Need {
 		}
 
 
+	}
+	public void CompleteJobNorm (Job j)
+	{
+		Amount -= restoreNeedAmount;
+	}
+	public void CompleteJobCrit (Job j)
+	{
+		Amount -= restoreNeedAmount/4;
 	}
 }

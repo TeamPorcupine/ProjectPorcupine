@@ -48,7 +48,7 @@ public class Character : IXmlSerializable, ISelectable
             return Mathf.Lerp(CurrTile.Y, NextTile.Y, movementPercentage);
         }
     }
-
+	Need[] needs;
     /// <summary>
     /// The tile the Character is considered to still be standing in.
     /// </summary>
@@ -115,19 +115,37 @@ public class Character : IXmlSerializable, ISelectable
     /// Use only for serialization
     public Character()
     {
-
+		needs = new Need[World.current.needPrototypes.Count];
+		World.current.needPrototypes.Values.CopyTo (needs, 0);
     }
 
     public Character(Tile tile)
     {
         CurrTile = DestTile = NextTile = tile;
+		needs = new Need[World.current.needPrototypes.Count];
+		World.current.needPrototypes.Values.CopyTo (needs, 0);
     }
 
 
     void GetNewJob()
     {
+		float needPercent = 0;
+		Need need = null;
+		foreach (Need n in needs)
+		{
+			if (n.Amount > needPercent)
+			{
+				need = n;
+				needPercent = n.Amount;
+			}
+		}
+		if (needPercent > 50 && needPercent < 100 && need != null)
+			myJob = new Job (null, need.restoreNeedFurn.objectType, need.CompleteJobNorm, need.restoreNeedTime, null, false, true, false);
+		if (needPercent == 100 && need != null)
+			myJob = new Job (CurrTile, null, need.CompleteJobCrit, need.restoreNeedTime*10, null, false, true, true);
         // Get the first job on the queue.
-        myJob = World.current.jobQueue.Dequeue();
+		if (myJob == null)
+        	myJob = World.current.jobQueue.Dequeue();
 
         if (myJob == null)
         {
@@ -333,11 +351,22 @@ public class Character : IXmlSerializable, ISelectable
 
     public void AbandonJob()
     {
+		if (myJob.isNeed)
+		{
+			CancelNeed ();
+			return;
+		}
         NextTile = DestTile = CurrTile;
         World.current.jobQueue.Enqueue(myJob);
         myJob.cbJobStopped -= OnJobStopped;
         myJob = null;
     }
+	public void CancelNeed()
+	{
+		NextTile = DestTile = CurrTile;
+		myJob.cbJobStopped -= OnJobStopped;
+		myJob = null;
+	}
 
     void Update_DoMovement(float deltaTime)
     {
