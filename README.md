@@ -1,6 +1,14 @@
 # ProjectPorcupine
 Project Porcupine: A Base-Building Game...in Space!
 
+#### Table of Content
+[About](#about)  
+[Copyright & Licensing](#copyright--licensing)  
+[Contributing](#contributing)  
+[Vote on Proposed Features](#vote-on-proposed-features)  
+[Contact](#contact)  
+
+
 ## About
 
 Project Porcupine was created to serve two purposes:
