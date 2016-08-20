@@ -81,7 +81,8 @@ public class MouseController : MonoBehaviour
 
         CalculatePlacingPosition();
 
-        if (Input.GetKeyUp(KeyCode.Escape) || Input.GetMouseButtonUp(1))
+
+        if (Input.GetKeyUp(KeyCode.Escape) || Input.GetMouseButtonUp(1))//Right Click
         {
             if (currentMode == MouseMode.BUILD)
             {
@@ -152,7 +153,6 @@ public class MouseController : MonoBehaviour
         {
             mySelection = null;
         }
-
         if (currentMode != MouseMode.SELECT)
         {
             return;
@@ -163,7 +163,13 @@ public class MouseController : MonoBehaviour
         {
             return;
         }
-			
+        if (Input.GetMouseButtonDown(1)) {
+            Tile tileUnderMouse = GetMouseOverTile();
+            if (tileUnderMouse.pendingBuildJob != null) {
+                Debug.Log("Canceling!");
+                tileUnderMouse.pendingBuildJob.CancelJob();
+            }
+        }
         if (Input.GetMouseButtonUp(0))
         {
             // We just release the mouse button, so that's our queue to update our selection.
