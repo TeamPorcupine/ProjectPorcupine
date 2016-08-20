@@ -18,7 +18,7 @@ namespace ProjectPorcupine.Localization
 
         // The current language. This will be automatically be set by the LocalizationLoader.
         // Default is English.
-        public static string currentLanguage = "English (US)";
+        public static string currentLanguage = "English (UK)";
 
         public static string languageNameIdentifier = "language_name";
 
