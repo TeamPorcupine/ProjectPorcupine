@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class MenuController : MonoBehaviour {
@@ -13,9 +14,27 @@ public class MenuController : MonoBehaviour {
 	public GameObject optionsMenu;
 	public GameObject settingsMenu;
 
+
+	public Button buttonConstructor;
+	public Button buttonWorld;
+	public Button buttonWork;
+	public Button buttonOptions;
+	public Button buttonSettings;
+
 	// Use this for initialization
 	void Start () {
 		DeactivateAll ();
+
+		//Add liseners
+		buttonConstructor.onClick.AddListener(delegate { OnButtonConstruction(); } );
+
+		buttonWorld.onClick.AddListener(delegate { OnButtonWorld(); } );
+
+		buttonWork.onClick.AddListener(delegate { OnButtonWork(); } );
+
+		buttonOptions.onClick.AddListener(delegate { OnButtonOptions(); } );
+
+		buttonSettings.onClick.AddListener(delegate { OnButtonSettings(); } );
 	}
 
 	//Deactivates All Menus
@@ -60,5 +79,30 @@ public class MenuController : MonoBehaviour {
 		if (Input.GetKey (KeyCode.Escape)) {
 			DeactivateAll ();
 		}
+	}
+
+	public void OnButtonConstruction(){
+		DeactivateAll ();
+		constructorMenu.SetActive (true);
+	}
+
+	public void OnButtonWork(){
+		DeactivateAll ();
+
+	}
+
+	public void OnButtonWorld(){
+		DeactivateAll ();
+
+	}
+
+	public void OnButtonOptions(){
+		DeactivateAll ();
+		optionsMenu.SetActive (true);
+	}
+
+	public void OnButtonSettings(){
+		DeactivateAll ();
+		settingsMenu.SetActive (true);
 	}
 }

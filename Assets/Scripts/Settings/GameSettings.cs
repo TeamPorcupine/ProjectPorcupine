@@ -1,4 +1,5 @@
-﻿public class GameSettings {
+﻿public class GameSettings 
+{
 	//this is for saving in the furture
 
 	public bool isVisableFPS;
