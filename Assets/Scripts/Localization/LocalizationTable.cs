@@ -16,15 +16,15 @@ namespace ProjectPorcupine.Localization
             ReturnKey, ReturnEmpty, ReturnEnglish
         }
 
-        //The dictionary that stores all the localization values.
-        static Dictionary<string, string> localizationTable = new Dictionary<string, string>();
-
         //The current language. This will be automatically be set by the LocalizationLoader.
         //Default is English.
         public static string currentLanguage = "en_US";
 
         //Used by the LocalizationLoader to ensure that the localization files are only loaded once.
         public static bool initialized = false;
+
+        //The dictionary that stores all the localization values.
+        static Dictionary<string, string> localizationTable = new Dictionary<string, string>();
 
         //List with all languages.
         static List<string> registeredLanguages = new List<string>();
