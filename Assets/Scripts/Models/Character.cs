@@ -119,6 +119,9 @@ public class Character : IXmlSerializable, ISelectable
     /// Tile where job should be carried out, if different from myJob.tile
     Tile jobTile;
 
+    /// Name of the Character
+    public string name;
+
     // The item we are carrying (not gear/equipment)
     public Inventory inventory;
 
@@ -519,7 +522,7 @@ public class Character : IXmlSerializable, ISelectable
 
     public string GetName()
     {
-        return "Sally S. Smith";
+        return name;
     }
 
     public string GetDescription()
