@@ -16,7 +16,10 @@ public class JobSpriteController : MonoBehaviour
     {
         jobGameObjectMap = new Dictionary<Job, GameObject>();
         fsc = GameObject.FindObjectOfType<FurnitureSpriteController>();
+<<<<<<< HEAD
 
+=======
+>>>>>>> FuelingSystem
         WorldController.Instance.world.jobQueue.cbJobCreated += OnJobCreated;
     }
 
