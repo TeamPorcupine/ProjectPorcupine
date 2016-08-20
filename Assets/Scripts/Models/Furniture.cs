@@ -472,7 +472,7 @@ public class Furniture : IXmlSerializable, ISelectable
                     roomEnclosure = reader.ReadContentAsBoolean();
                     break;
                 case "CanReplaceFurniture":
-                    replaceableFurniture.Add(reader.GetAttribute("baseType").ToString());
+                    replaceableFurniture.Add(reader.GetAttribute("typeTag").ToString());
                     break;
                 case "DragType":
                     reader.Read();
