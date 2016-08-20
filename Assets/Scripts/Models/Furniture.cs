@@ -97,7 +97,7 @@ public class Furniture : IXmlSerializable, ISelectable
     }
 	
     // This is the generic type of object this is, allowing things to interact with it based on it's generic type
-    private string baseType;
+    private HashSet<string> typeTags;
 
     private string _Name = null;
 
@@ -172,6 +172,7 @@ public class Furniture : IXmlSerializable, ISelectable
         updateActions = new List<string>();
         furnParameters = new Dictionary<string, float>();
         jobs = new List<Job>();
+        typeTags = new HashSet<string>();
         this.funcPositionValidation = this.DEFAULT__IsValidPosition;
         this.Height = 1;
         this.Width = 1;
@@ -183,7 +184,7 @@ public class Furniture : IXmlSerializable, ISelectable
     {
         this.objectType = other.objectType;
         this.Name = other.Name;
-        this.baseType = other.baseType;
+        this.typeTags = new HashSet<string>(other.typeTags);
         this.Description = other.Description;
         this.movementCost = other.movementCost;
         this.roomEnclosure = other.roomEnclosure;
@@ -345,7 +346,7 @@ public class Furniture : IXmlSerializable, ISelectable
                 {
                     for (int i = 0; i < ReplaceableFurniture.Count; i++)
                     {
-                        if (t2.furniture.baseType == ReplaceableFurniture[i])
+                        if (t2.furniture.HasTypeTag(ReplaceableFurniture[i]))
                         {
                             isReplaceable = true;
                         }
@@ -442,9 +443,9 @@ public class Furniture : IXmlSerializable, ISelectable
                     reader.Read();
                     Name = reader.ReadContentAsString();
                     break;
-                case "BaseType":
+                case "TypeTag":
                     reader.Read();
-                    baseType = reader.ReadContentAsString();
+                    typeTags.Add(reader.ReadContentAsString());
                     break;
                 case "Description":
                     reader.Read();
@@ -471,7 +472,7 @@ public class Furniture : IXmlSerializable, ISelectable
                     roomEnclosure = reader.ReadContentAsBoolean();
                     break;
                 case "CanReplaceFurniture":
-                    replaceableFurniture.Add(reader.GetAttribute("baseType").ToString());
+                    replaceableFurniture.Add(reader.GetAttribute("typeTag").ToString());
                     break;
                 case "DragType":
                     reader.Read();
@@ -721,6 +722,13 @@ public class Furniture : IXmlSerializable, ISelectable
     public Tile GetSpawnSpotTile()
     {
         return World.current.GetTileAt(tile.X + (int)jobSpawnSpotOffset.x, tile.Y + (int)jobSpawnSpotOffset.y);
+    }
+
+    // Returns true if furniture has typeTag, though simple, the intent is to separate the interaction with
+    //  the Furniture's typeTags from the implementation.
+    public bool HasTypeTag(string typeTag)
+    {
+        return typeTags.Contains(typeTag);
     }
 
     #region ISelectableInterface implementation
