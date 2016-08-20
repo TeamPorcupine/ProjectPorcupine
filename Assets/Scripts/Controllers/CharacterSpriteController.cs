@@ -68,8 +68,8 @@ public class CharacterSpriteController : MonoBehaviour
 
         // Adds a random name to the Character
         TextAsset names = Resources.Load("names") as TextAsset;
-        string[] lines = Regex.Split( names.text, "\n|\r|\r\n" );
-        c.name = lines[Random.Range(0, lines.Length-1)];
+        string[] lines = Regex.Split( names.text, "\r\n" );
+        c.name = lines[Random.Range(0, lines.Length)];
 
 
     }
