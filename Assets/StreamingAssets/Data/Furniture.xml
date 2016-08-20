@@ -202,7 +202,12 @@
         <Width>2</Width>
         <Height>2</Height>
 
-        <BuildingJob jobTime="0"/>
+        <BuildingJob jobTime="1"/>
+		
+	  <Params>
+          <Param name="presstime" value="0" />
+          <Param name="presstime_required" value="15" />
+      </Params>
 
         <OnUpdate FunctionName="PowerCellPress_UpdateAction" />
 		
