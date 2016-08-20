@@ -9,7 +9,7 @@ public class Need {
 	public string localisationID;
 	public string Name;
 	protected float growthRate;
-	public float Amount = 0;
+	public float Amount { get { return Amount; } set { Amount = Mathf.Clamp (value, 0f, 100f); } }
 	protected bool highToLow = true;
 	public Character character;
 	public Furniture restoreNeedFurn { get; protected set; }
@@ -32,7 +32,7 @@ public class Need {
 	// Use this for initialization
 	public Need ()
 	{
-	
+		Amount = 0;
 	}
 	
 	// Update is called once per frame
@@ -112,7 +112,7 @@ public class Need {
 				reader.Read ();
 				restoreNeedAmount = reader.ReadContentAsFloat();
 				break;
-			case "Locaization":
+			case "Localization":
 				reader.Read ();
 				localisationID = reader.ReadContentAsString();
 				break;

@@ -99,7 +99,12 @@ public class Character : IXmlSerializable, ISelectable
     /// Tile where job should be carried out.
     public Tile JobTile
     {
-        get { return jobTile ?? myJob.tile; }
+        get
+		{
+			if (jobTile == null && myJob == null)
+				return null;
+			return jobTile ?? myJob.tile;
+		}
     }
 
     Tile _destTile;
@@ -193,7 +198,10 @@ public class Character : IXmlSerializable, ISelectable
         // requiring materials), but we still need to verify that the
         // final location can be reached.
         Profiler.BeginSample("PathGeneration");
-        pathAStar = new Path_AStar(World.current, CurrTile, DestTile);	// This will calculate a path from curr to dest.
+		if (myJob.isNeed)
+			pathAStar = new Path_AStar (World.current, CurrTile, DestTile, need.restoreNeedFurn.objectType, 0, false, true);	// This will calculate a path from curr to dest.
+		else
+			pathAStar = new Path_AStar (World.current, CurrTile, DestTile);
         Profiler.EndSample();
 
         if (myJob.adjacent)
@@ -253,7 +261,9 @@ public class Character : IXmlSerializable, ISelectable
     /// <returns></returns>
     bool CheckForJobMaterials()
     {  
-        if (myJob.HasAllMaterial())
+		if (myJob != null && myJob.isNeed)
+			myJob.tile = jobTile = new Path_AStar (World.current, CurrTile, null, myJob.jobObjectType, 0, false, true).EndTile ();
+        if (myJob == null || myJob.HasAllMaterial())
             return true; //we can return early
 
         // At this point we know, that the job still needs materials.
@@ -399,6 +409,8 @@ public class Character : IXmlSerializable, ISelectable
 
     public void AbandonJob()
     {
+		if (myJob == null)
+			return;
 		if (myJob.isNeed)
 		{
 			CancelNeed ();
@@ -571,10 +583,10 @@ public class Character : IXmlSerializable, ISelectable
 
     public string GetDescription()
     {
-		string needText;
+		string needText = "";
 		foreach (Need n in needs)
 		{
-			needText += "/n" + LocalizationTable.GetLocalization (n.localisationID, n.DisplayAmount);
+			needText += "\n" + LocalizationTable.GetLocalization (n.localisationID, n.DisplayAmount);
 		}
         return "A human astronaut." + needText;
     }

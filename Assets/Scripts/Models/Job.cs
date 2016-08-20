@@ -258,6 +258,8 @@ public class Job
 
     public bool HasAllMaterial()
     {
+		if (inventoryRequirements == null)
+			return true;
         foreach (Inventory inv in inventoryRequirements.Values)
         {
             if (inv.maxStackSize > inv.stackSize)
