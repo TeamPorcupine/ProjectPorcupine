@@ -11,43 +11,67 @@ public class HealthSystem
             return _currentHealth;
         }
 
-        private set
+        set
         {
-            if (Invincible == true) return;
+            if (Invincible == true) 
+            {
+                return;
+            }
+            
+            // Make sure we don't overflow or underflow Health
+            if (value < 0) 
+            {
+                value = 0;
+            } 
+            else if (value > MaxHealth)
+            {
+                value = MaxHealth;
+            }
+            
             //We have been Revived!
-            if (_currentHealth == 0 && value > _currentHealth)
+            if (_currentHealth <= 0 && 0 < value)
             {
                 _currentHealth = value;
 
                 if (OnRevive != null)
+                {
                     OnRevive();
-                return;
-            }
+                }
+            } 
             //we have been hit but we are not dead!
-            if (_currentHealth <= 0 && value > 0)
+            else if (0 < value && value < _currentHealth) 
             {
                 _currentHealth = value;
+                
                 if (OnHit != null)
+                {
                     OnHit();
+                }
             }
             //we have been healed!
-            if (value > _currentHealth)
+            else if (_currentHealth < value)
             {
-                if (value > MaxHealth)
-                    value = MaxHealth;
                 _currentHealth = value;
                 if (OnHeal != null)
+                {
                     OnHeal();
+                }
 
             }
             //We have died and this means we have been hit!
-            if (value <= 0 && IsAlive)
+            else if (value <= 0 && IsAlive)
             {
                 _currentHealth = 0;
+                
                 if (OnHit != null)
+                {
                     OnHit();
+                }
+                
                 if (OnDestruction != null)
+                {
                     OnDestruction();
+                }
             }
         }
     }
@@ -73,31 +97,5 @@ public class HealthSystem
         MaxHealth = maxHealth;
         Invincible = invincible;
         Healable = healAble;
-    }
-
-    private HealthSystem(HealthSystem h)
-    {
-        Value = h.Value;
-        MaxHealth = h.MaxHealth;
-        Invincible = h.Invincible;
-        Healable = h.Healable;
-        _currentHealth = h._currentHealth;
-        OnHit = h.OnHit;
-        OnHeal = h.OnHeal;
-        OnRevive = h.OnRevive;
-        OnDestruction = h.OnDestruction;
-    }
-
-    public static HealthSystem operator+(HealthSystem h1, float num)
-    {
-        HealthSystem h = new HealthSystem(h1);
-        h.Value += num;
-        return h;
-    }
-    public static HealthSystem operator -(HealthSystem h1, float num)
-    {
-        HealthSystem h = new HealthSystem(h1);
-        h.Value -= num;
-        return h;
     }
 }
