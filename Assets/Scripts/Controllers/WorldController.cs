@@ -20,6 +20,7 @@ public class WorldController : MonoBehaviour
     SoundController soundController;
     TileSpriteController tileSpriteController;
     CharacterSpriteController characterSpriteController;
+    JobSpriteController jobSpriteController;
 
     public static WorldController Instance { get; protected set; }
 
@@ -81,6 +82,7 @@ public class WorldController : MonoBehaviour
         tileSpriteController = new TileSpriteController(world);
         tileSpriteController.Render();
         characterSpriteController = new CharacterSpriteController(world);
+        jobSpriteController = new JobSpriteController(world);
     }
 
     void Update()
