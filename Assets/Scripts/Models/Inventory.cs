@@ -21,6 +21,7 @@ public class Inventory : IXmlSerializable, ISelectable
 {
     public string objectType = "Steel Plate";
     public int maxStackSize = 50;
+    public float basePrice = 1f;
 
     protected int _stackSize = 1;
 
@@ -112,6 +113,7 @@ public class Inventory : IXmlSerializable, ISelectable
         writer.WriteAttributeString("objectType", objectType);
         writer.WriteAttributeString("maxStackSize", maxStackSize.ToString());
         writer.WriteAttributeString("stackSize", stackSize.ToString());
+        writer.WriteAttributeString("basePrice", basePrice.ToString());
     }
 
     public void ReadXml(XmlReader reader)

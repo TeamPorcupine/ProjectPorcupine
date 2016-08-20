@@ -47,6 +47,8 @@ public class WorldController : MonoBehaviour
     // Current position in that array.
     int currentTimeScalePosition = 2;
 
+    public bool devMode = false;
+
     // Use this for initialization
     void OnEnable()
     {

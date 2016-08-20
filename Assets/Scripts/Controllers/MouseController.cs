@@ -396,6 +396,12 @@ public class MouseController : MonoBehaviour
             }
         }
 
+		// If we're over a UI element, then bail out from this.
+		if (EventSystem.current.IsPointerOverGameObject())
+		{
+			return;
+		}
+
         Camera.main.orthographicSize -= Camera.main.orthographicSize * Input.GetAxis("Mouse ScrollWheel");
 
         Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize, 3f, 25f);
