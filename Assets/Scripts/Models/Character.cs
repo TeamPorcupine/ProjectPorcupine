@@ -141,7 +141,7 @@ public class Character : IXmlSerializable, ISelectable
 		}
 		if (needPercent > 50 && needPercent < 100 && need != null)
 			myJob = new Job (null, need.restoreNeedFurn.objectType, need.CompleteJobNorm, need.restoreNeedTime, null, false, true, false);
-		if (needPercent == 100 && need != null)
+		if (needPercent == 100 && need != null && need.completeOnFail)
 			myJob = new Job (CurrTile, null, need.CompleteJobCrit, need.restoreNeedTime*10, null, false, true, true);
         // Get the first job on the queue.
 		if (myJob == null)
