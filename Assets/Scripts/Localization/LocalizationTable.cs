@@ -65,7 +65,8 @@ namespace ProjectPorcupine.Localization
                     string[] keyValuePair = line.Split(new char[] { '=' }, 2);
                     if (keyValuePair.Length != 2)
                     {
-                        throw new InvalidOperationException(string.Format("Invalid format of localization string. Actual {0}", line));
+                        Logger.LogErrorFormat("Invalid format of localization string. Actual {0}", line);
+                        continue;
                     }
                     localizationTable[localizationCode].Add(keyValuePair[0], keyValuePair[1]);
                 }
@@ -101,7 +102,7 @@ namespace ProjectPorcupine.Localization
             if (!missingKeysLogged.Contains(key))
             {
                 missingKeysLogged.Add(key);
-                Logger.LogWarning(string.Format("Translation for {0} in {1} failed: Key not in dictionary.", key, language));
+                Logger.LogWarning(string.Format("Translation for {0} in {1} language failed: Key not in dictionary.", key, language));
             }
 
             switch (fallbackMode)
