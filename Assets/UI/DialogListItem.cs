@@ -5,8 +5,8 @@ using System.Collections;
 
 public class DialogListItem : MonoBehaviour, IPointerClickHandler
 {
-	public string fileName;
-	public InputField inputField;
+    public string fileName;
+    public InputField inputField;
     public delegate void doubleClickAction();
     public doubleClickAction doubleclick;
 
@@ -14,13 +14,13 @@ public class DialogListItem : MonoBehaviour, IPointerClickHandler
     #region IPointerClickHandler implementation
 
     public void OnPointerClick(PointerEventData eventData)
-	{
-		// Our job is to take our text label and 
-		// copy it into a target field.
+    {
+        // Our job is to take our text label and 
+        // copy it into a target field.
 
 
-		inputField.text = fileName;
-		GameObject go = GameObject.FindGameObjectWithTag("DeleteButton");
+        inputField.text = fileName;
+        GameObject go = GameObject.FindGameObjectWithTag("DeleteButton");
         if (go != null)
         {
             go.GetComponent<Image>().color = new Color(255, 255, 255, 255);
@@ -34,9 +34,8 @@ public class DialogListItem : MonoBehaviour, IPointerClickHandler
             if (doubleclick != null)
                 doubleclick();
         }
-     }
+    }
 
-	#endregion
-
+    #endregion
 
 }
