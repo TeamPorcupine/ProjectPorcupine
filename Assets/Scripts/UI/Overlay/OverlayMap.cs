@@ -456,7 +456,7 @@ public class OverlayMap : MonoBehaviour {
             valueAt = (x, y) => {
                 if (WorldController.Instance == null) return 0;
                 Tile tile = WorldController.Instance.GetTileAtWorldCoord(new Vector3(x, y, 0));
-                return (int) script.Call(handle, new object[] { tile }).ToScalar().CastToNumber();
+                return (int) script.Call(handle, new object[] { tile, World.current }).ToScalar().CastToNumber();
             };
             colorMap = descr.colorMap;
             Bake();

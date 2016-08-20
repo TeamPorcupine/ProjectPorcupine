@@ -2,7 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using MoonSharp.Interpreter;
 
+[MoonSharpUserData]
 public class Temperature
 {
 
@@ -39,6 +41,8 @@ public class Temperature
                 _thermalDiffusivity[index] = 1f;
             }
         }
+
+        sinksAndSources += () => { SetTemperature(50, 50, 100); };
     }
 
     public void Update()
@@ -80,9 +84,11 @@ public class Temperature
 
     void ProgressTemperature()
     {
+        Debug.Log("Updating temperature!");
         // TODO: Compute temperature sources
         // foreach(Tile tile in sinkAndSources)
         // GetTileAt(55, 55).temp_old = 1000;
+        if (sinksAndSources != null) sinksAndSources();
 
         float[] temp_curr = _temperature[1 - offset];
         float[] temp_old = _temperature[offset];
@@ -102,7 +108,10 @@ public class Temperature
                 temp_curr[index] = temp_old[index];
 
                 // TODO: if empty space, set temperature to 0
-                //temp_curr = 0f;
+                //if (WorldController.Instance.GetTileAtWorldCoord(new Vector3(x, y, 0)).room == null)
+                //{
+                //    temp_curr[index] = 0f;
+                //}
                 if (x > 0)
                 {
                     temp_curr[index] +=

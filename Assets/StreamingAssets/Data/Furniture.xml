@@ -206,7 +206,9 @@
 
     <BuildingJob jobTime="0"></BuildingJob>
 
+    <!-- This method gets called on Install -->
     <OnInstall FunctionName="Heater_InstallAction"></OnInstall>
+    <!-- This method gets called on Uninstall -->
     <OnUninstall FunctionName="Heater_UninstallAction"></OnUninstall>
       
     <Params>
