@@ -43,8 +43,7 @@ public class GameEvent
             conditionsMet += (int)(GameEventActions.CallFunction(precondition, this, deltaTime).Number);
         }
 
-        if(conditionsMet >= preconditions.Count && executed == false && repeats < MaxRepeats){
-            Debug.Log(repeats);
+        if(conditionsMet >= preconditions.Count && executed == false && (MaxRepeats <= 0 || repeats < MaxRepeats)){
             repeats++;
             Execute();
         }
