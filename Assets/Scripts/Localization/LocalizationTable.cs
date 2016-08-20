@@ -77,7 +77,7 @@ namespace ProjectPorcupine.Localization
             // Is the loop already done with figuring out the key?
             bool searchingValue = false;
 
-            foreach(string line in lines)
+            foreach (string line in lines)
             {
                 // Reuse the array (for reducing RAM usage).
                 chars = line.ToCharArray();
