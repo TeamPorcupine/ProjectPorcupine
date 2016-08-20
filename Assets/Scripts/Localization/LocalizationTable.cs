@@ -168,6 +168,7 @@ namespace ProjectPorcupine.Localization
                         {
                             return key + " " + additionalValues[0];
                         }
+
                         return key;
                     case FallbackMode.ReturnEnglish:
                         return GetLocalization(key, FallbackMode.ReturnKey, "en_US", additionalValues);
