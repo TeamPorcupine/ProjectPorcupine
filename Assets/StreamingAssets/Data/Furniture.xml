@@ -194,5 +194,21 @@
       <LocalizationCode>furn_metal_smelter</LocalizationCode>
       <UnlocalizedDescription>furn_metal_smelter_desc</UnlocalizedDescription>
   </Furniture>
+  
+  	<Furniture objectType="Power Cell Press">
+		<Name>Power Cell Press</Name>
+		<Description>A press that converts steel plate and something into power cells.</Description>
+        <MovementCost>1</MovementCost>
+        <Width>2</Width>
+        <Height>2</Height>
+
+        <BuildingJob jobTime="0"/>
+
+        <OnUpdate FunctionName="PowerCellPress_UpdateAction" />
+		
+		<LocalizationCode>furn_power_cell_press</LocalizationCode>
+		<UnlocalizedDescription>furn_power_cell_press_desc</UnlocalizedDescription>
+
+	</Furniture>
 
 </Furnitures>
