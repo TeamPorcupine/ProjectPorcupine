@@ -124,6 +124,16 @@ public class Tile :IXmlSerializable, ISelectable
             {
 
                 Tile t = World.current.GetTileAt(x_off, y_off);
+
+                Dictionary<string, Job> prototype = World.current.furnitureJobPrototypes;
+                if (prototype.ContainsKey(f.objectType))
+                {
+                    if (prototype[f.objectType].inventoryRequirements != null && prototype[f.objectType].inventoryRequirements.ContainsKey("Steel Plate"))
+                    {
+                        World.current.inventoryManager.PlaceInventory(t, Inventory.New("Steel Plate", 50, (int)(prototype[f.objectType].inventoryRequirements["Steel Plate"].maxStackSize * 0.75f)));
+                    }
+                }
+
                 t.furniture = null;
             }
         }
