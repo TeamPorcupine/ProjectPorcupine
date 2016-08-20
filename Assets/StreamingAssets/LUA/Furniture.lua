@@ -17,12 +17,16 @@ end
 
 -------------------------------- Furniture Actions --------------------------------
 function OnUpdate_GasGenerator( furniture, deltaTime )
+	if ( furniture.HasPower() == false) then
+		return
+	end
+
 	if ( furniture.tile.room == nil ) then
 		return "Furniture's room was null."
 	end
 
-	if ( furniture.tile.room.GetGasPressure("O2") < 0.20) then
-		furniture.tile.room.ChangeGas("O2", 0.1 * deltaTime)
+	if ( furniture.tile.room.GetGasPressure("O2") < furniture.GetParameter("gas_limit", 0.2)) then
+		furniture.tile.room.ChangeGas("O2", furniture.GetParameter("gas_per_second", 0.01) * deltaTime)
 	else
 		-- Do we go into a standby mode to save power?
 	end
@@ -40,10 +44,17 @@ function OnUpdate_Door( furniture, deltaTime )
 		furniture.ChangeParameter("openness", deltaTime * -4)
 	end
 
-
 	furniture.SetParameter("openness", Clamp01(furniture.GetParameter("openness")) )
 
 	furniture.UpdateOnChanged(furniture);
+end
+
+function OnUpdate_Leak_Door( furniture, deltaTime )
+	furniture.tile.EqualiseGas(deltaTime * 10.0 * (furniture.GetParameter("openness") + 0.1))
+end
+
+function OnUpdate_Leak_Airlock( furniture, deltaTime )
+	furniture.tile.EqualiseGas(deltaTime * 10.0 * (furniture.GetParameter("openness")))
 end
 
 function IsEnterable_Door( furniture )
@@ -139,6 +150,7 @@ function Stockpile_UpdateAction( furniture, deltaTime )
 		nil,
 		0,
 		itemsDesired,
+		Job.JobPriority.Low,
 		false
 	)
 
@@ -196,6 +208,7 @@ function MiningDroneStation_UpdateAction( furniture, deltaTime )
 		nil,
 		1,
 		nil,
+		Job.JobPriority.Medium,
 		true	-- This job repeats until the destination tile is full.
 	)
 	j.RegisterJobCompletedCallback("MiningDroneStation_JobComplete")
@@ -205,7 +218,93 @@ end
 
 
 function MiningDroneStation_JobComplete(j)
-	World.current.inventoryManager.PlaceInventory( j.furniture.GetSpawnSpotTile(), Inventory.__new("Steel Plate", 50, 20) )
+	World.current.inventoryManager.PlaceInventory( j.furniture.GetSpawnSpotTile(), Inventory.__new("Raw Iron", 50, 20) )
+end
+
+function MetalSmelter_UpdateAction(furniture, deltaTime)
+	spawnSpot = furniture.GetSpawnSpotTile()
+	
+	if(spawnSpot.inventory == nil) then
+		if(furniture.JobCount() == 0) then
+			itemsDesired = {Inventory.__new("Raw Iron", 50, 0)}
+			
+			jobSpot = furniture.GetJobSpotTile()
+
+			j = Job.__new(
+			jobSpot,
+			nil,
+			nil,
+			0.4,
+			itemsDesired,
+			Job.JobPriority.Medium,
+			false
+			)
+			
+			j.RegisterJobCompletedCallback("MetalSmelter_JobComplete")
+			
+			furniture.AddJob(j)
+		end
+	else
+		furniture.ChangeParameter("smelttime", deltaTime)
+		
+		if(furniture.GetParameter("smelttime") >= furniture.GetParameter("smelttime_required")) then
+			furniture.SetParameter("smelttime", 0)
+			
+			outputSpot = World.current.GetTileAt(spawnSpot.X+2, spawnSpot.y)
+			
+			if(outputSpot.inventory == nil) then
+				World.current.inventoryManager.PlaceInventory( outputSpot, Inventory.__new("Steel Plate", 50, 5) )
+			
+				spawnSpot.inventory.stackSize = spawnSpot.inventory.stackSize-5
+			else
+				if(outputSpot.inventory.stackSize <= 45) then
+					outputSpot.inventory.stackSize = outputSpot.inventory.stackSize+5
+				
+					spawnSpot.inventory.stackSize = spawnSpot.inventory.stackSize-5
+				end
+			end
+			
+			if(spawnSpot.inventory.stackSize <= 0) then
+				spawnSpot.inventory = nil
+			end
+		end
+	end
+end
+
+function MetalSmelter_JobComplete(j)
+	spawnSpot = j.tile.furniture.GetSpawnSpotTile()
+	
+	for k, inv in pairs(j.inventoryRequirements) do
+		if(inv.stackSize > 0) then
+			World.current.inventoryManager.PlaceInventory(spawnSpot, inv)
+			spawnSpot.inventory.isLocked = true
+			return
+		end
+	end
+end
+
+function CloningPod_UpdateAction(furniture, deltaTime)
+
+	if( furniture.JobCount() > 0 ) then
+		return
+	end
+	
+	j = Job.__new(
+	furniture.GetJobSpotTile(),
+	nil,
+	nil,
+	10,
+	nil,
+	false
+	)
+	j.RegisterJobCompletedCallback("CloningPod_JobComplete")
+	furniture.AddJob( j )
+end
+
+function CloningPod_JobComplete(j)
+	j.furniture.Deconstruct()
+	char = World.current.CreateCharacter(j.furniture.GetSpawnSpotTile())
+	
 end
 
 return "LUA Script Parsed!"
