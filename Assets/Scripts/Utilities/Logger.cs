@@ -38,7 +38,7 @@ public static class Logger
         }
     }
 
-    public static void LogAssertion(string message)
+    public static void LogAssertion(object message)
     {
         Log(Level.Assertion, message);
     }
@@ -48,7 +48,7 @@ public static class Logger
         Log(Level.Assertion, format, args);
     }
 
-    public static void LogError(string message)
+    public static void LogError(object message)
     {
         Log(Level.Error, message);
     }
@@ -58,7 +58,7 @@ public static class Logger
         Log(Level.Error, format, args);
     }
 
-    public static void LogWarning(string message)
+    public static void LogWarning(object message)
     {
         Log(Level.Warning, message);
     }
@@ -68,7 +68,7 @@ public static class Logger
         Log(Level.Warning, format, args);
     }
 
-    public static void LogInfo(string message)
+    public static void LogInfo(object message)
     {
         Log(Level.Info, message);
     }
@@ -78,7 +78,7 @@ public static class Logger
         Log(Level.Info, format, args);
     }
 
-    public static void LogVerbose(string message)
+    public static void LogVerbose(object message)
     {
         Log(Level.Verbose, message);
     }
@@ -91,7 +91,7 @@ public static class Logger
     /// <summary>
     /// Alias for info.
     /// </summary>
-    public static void Log(string message)
+    public static void Log(object message)
     {
         Log(Level.Info, message);
     }
@@ -102,6 +102,17 @@ public static class Logger
     public static void LogFormat(string message, params object[] args)
     {
         Log(Level.Info, message, args);
+    }
+
+    private static void Log(Level level, object message)
+    {
+        // This method just formats the messsage, but just in case ToString is expensive on this object we check level first.
+        if (level > minimumLevel)
+        {
+            return;
+        }
+
+        Log(level, message == null ? null : message.ToString());
     }
 
     private static void Log(Level level, string message, params object[] formatArgs)

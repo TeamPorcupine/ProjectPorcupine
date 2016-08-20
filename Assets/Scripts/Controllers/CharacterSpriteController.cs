@@ -41,7 +41,7 @@ public class CharacterSpriteController : MonoBehaviour
 
     public void OnCharacterCreated(Character c)
     {
-//		Debug.Log("OnCharacterCreated");
+//		Logger.Log("OnCharacterCreated");
         // Create a visual GameObject linked to this data.
 
         // FIXME: Does not consider multi-tile objects nor rotated objects
@@ -77,7 +77,7 @@ public class CharacterSpriteController : MonoBehaviour
 
     void OnCharacterChanged(Character c)
     {
-        //Debug.Log("OnFurnitureChanged");
+        //Logger.Log("OnFurnitureChanged");
         // Make sure the furniture's graphics are correct.
         SpriteRenderer inv_sr = characterGameObjectMap[c].transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>();
         if (c.inventory != null)
@@ -92,13 +92,13 @@ public class CharacterSpriteController : MonoBehaviour
 
         if (characterGameObjectMap.ContainsKey(c) == false)
         {
-            Debug.LogError("OnCharacterChanged -- trying to change visuals for character not in our map.");
+            Logger.LogError("OnCharacterChanged -- trying to change visuals for character not in our map.");
             return;
         }
 
         GameObject char_go = characterGameObjectMap[c];
-        //Debug.Log(furn_go);
-        //Debug.Log(furn_go.GetComponent<SpriteRenderer>());
+        //Logger.Log(furn_go);
+        //Logger.Log(furn_go.GetComponent<SpriteRenderer>());
 
         //char_go.GetComponent<SpriteRenderer>().sprite = GetSpriteForFurniture(furn);
 

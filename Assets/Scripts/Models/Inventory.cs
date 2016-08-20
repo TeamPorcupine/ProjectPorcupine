@@ -49,6 +49,9 @@ public class Inventory : IXmlSerializable, ISelectable
     public Tile tile;
     public Character character;
 
+    //Should this inventory be allowed to be picked up for completing a job?
+    public bool isLocked = false;
+
     public Inventory()
     {
 		
@@ -71,6 +74,7 @@ public class Inventory : IXmlSerializable, ISelectable
         objectType = other.objectType;
         maxStackSize = other.maxStackSize;
         stackSize = other.stackSize;
+        isLocked = other.isLocked;
     }
 
     public virtual Inventory Clone()

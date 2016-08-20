@@ -13,8 +13,16 @@ using System.Linq;
 
 public class Path_AStar
 {
-
     Queue<Tile> path;
+
+    public Path_AStar(Queue<Tile> path)
+    {
+        if (path == null || !path.Any())
+        {
+            Logger.LogWarning("Created path with no tiles, is this intended?");
+        }
+        this.path = path;
+    }
 
     public Path_AStar(World world, Tile tileStart, Tile tileEnd, string objectType = null, int desiredAmount = 0, bool canTakeFromStockpile = false)
     {
@@ -35,7 +43,7 @@ public class Path_AStar
         // Make sure our start/end tiles are in the list of nodes!
         if (nodes.ContainsKey(tileStart) == false)
         {
-            Debug.LogError("Path_AStar: The starting tile isn't in the list of nodes!");
+            Logger.LogError("Path_AStar: The starting tile isn't in the list of nodes!");
 
             return;
         }
@@ -50,7 +58,7 @@ public class Path_AStar
         {
             if (nodes.ContainsKey(tileEnd) == false)
             {
-                Debug.LogError("Path_AStar: The ending tile isn't in the list of nodes!");
+                Logger.LogError("Path_AStar: The ending tile isn't in the list of nodes!");
                 return;
             }
 
@@ -103,9 +111,9 @@ public class Path_AStar
             {
                 // We don't have a POSITIONAL goal, we're just trying to find
                 // some king of inventory.  Have we reached it?
-                if (current.data.inventory != null && current.data.inventory.objectType == objectType)
+                if (current.data.inventory != null && current.data.inventory.objectType == objectType && !current.data.inventory.isLocked)
                 {
-                    // Type is correct
+                    // Type is correct and we are allowed to pick it up
                     if (canTakeFromStockpile || current.data.furniture == null || current.data.furniture.IsStockpile() == false)
                     {
                         // Stockpile status is fine
@@ -230,12 +238,12 @@ public class Path_AStar
     {
         if (path == null)
         {
-            Debug.LogError("Attempting to dequeue from an null path.");
+            Logger.LogError("Attempting to dequeue from an null path.");
             return null;
         }
         if (path.Count <= 0)
         {
-            Debug.LogError("what???");
+            Logger.LogError("what???");
             return null;
         }
         return path.Dequeue();
@@ -253,11 +261,15 @@ public class Path_AStar
     {
         if (path == null || path.Count == 0)
         {
-            Debug.Log("Path is null or empty.");
+            Logger.Log("Path is null or empty.");
             return null;
         }
 
         return path.Last();
     }
 
+    public IEnumerable<Tile> Reverse()
+    {
+        return path == null ? null : path.Reverse();
+    }
 }

@@ -8,6 +8,7 @@
 #endregion
 using UnityEngine;
 using System.Collections.Generic;
+using System;
 
 public class PowerSystem {
 
@@ -19,6 +20,8 @@ public class PowerSystem {
 
     // Current Power in the system
     float currentPower;
+
+    public event Action<Furniture> cbOnChanged;
 
     public PowerSystem()
     {
@@ -42,13 +45,11 @@ public class PowerSystem {
 
     public void RegisterPowerConsumer(Furniture furn)
     {
-        if (currentPower < furn.powerValue)
+        if (PowerLevel + furn.powerValue < 0)
         {
-            //Debug.LogWarning("Not enough power for " + furn.Name + " to run");
             return;
         }
 
-        //Debug.Log("Added " + furn.Name + " to power consumer list");
         powerConsumers.Add(furn);
         CalculatePower();
 
@@ -76,20 +77,35 @@ public class PowerSystem {
     {
         float powerValues = 0;
 
+        foreach (Furniture furn in powerConsumers) 
+        {
+            powerValues += furn.powerValue;            
+        }
+
         foreach (Furniture furn in powerGenerators)
         {
-            powerValues += furn.powerValue;
+            powerValues += furn.powerValue;            
         }
 
-        foreach (Furniture furn in powerConsumers)
-        {
-            powerValues -= furn.powerValue;
-        }
+        PowerLevel = powerValues;
 
-        currentPower = powerValues;
-
-        Debug.Log("Current Power level: " + currentPower);
+        Logger.Log("Current Power level: " + PowerLevel);
     }
 
+    public float PowerLevel {
+        get { return currentPower; }
+        set 
+        {
+            float oldPower = currentPower;
+            currentPower = value;
 
+            if(oldPower != currentPower) 
+            {
+                foreach (Furniture furn in powerConsumers)
+                {
+                    cbOnChanged(furn);
+                }                
+            }
+        }
+    }
 }
