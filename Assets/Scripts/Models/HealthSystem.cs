@@ -56,7 +56,7 @@ public class HealthSystem
 
             }
             //We have died and this means we have been hit!
-            if (value <= 0 && IsAlive)
+            else if (value <= 0 && IsAlive)
             {
                 _currentHealth = 0;
                 
