@@ -14,7 +14,7 @@ using System.IO;
 
 public class WorldController : MonoBehaviour
 {
-
+    protected SoundController soundController;
     public static WorldController Instance { get; protected set; }
 
     // The world and tile data
@@ -67,6 +67,8 @@ public class WorldController : MonoBehaviour
         {
             CreateEmptyWorld();
         }
+
+        soundController = new SoundController(world);
     }
 
     void Update()
@@ -77,6 +79,8 @@ public class WorldController : MonoBehaviour
         {
             world.Update(Time.deltaTime * timeScale);
         }
+
+        soundController.Update(Time.deltaTime);
     }
 
     void CheckTimeInput()
