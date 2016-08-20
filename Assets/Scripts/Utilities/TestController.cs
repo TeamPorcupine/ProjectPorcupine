@@ -186,7 +186,7 @@ public class TestController : MonoBehaviour
 
         // compute the standard sample deviation
         // formula based on Wikipedia
-
+        // https://en.wikipedia.org/wiki/Standard_deviation#Corrected_sample_standard_deviation
         float sumOfSquaredError = 0.0f;
 
         for (int i = 0; i < count; ++i)
