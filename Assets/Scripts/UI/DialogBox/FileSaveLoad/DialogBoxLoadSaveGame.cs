@@ -81,6 +81,9 @@ public class DialogBoxLoadSaveGame : DialogBox
 
             go.GetComponent<Image>().color = (i % 2 == 0 ? Color.white : secondaryColor);
         }
+
+		// Set scroll sensitivity based on the save-item count
+		fileList.GetComponentInParent<ScrollRect> ().scrollSensitivity = fileList.childCount / 2;
     }
 
     public override void CloseDialog()
