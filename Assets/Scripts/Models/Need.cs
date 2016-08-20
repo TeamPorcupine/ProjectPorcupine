@@ -60,7 +60,7 @@ public class Need {
 		}
 		if (Amount == 100)
 		{
-			//FIXME: Insert damage code here.
+			//FIXME: Insert need fail damage code here.
 		}
 	}
 
