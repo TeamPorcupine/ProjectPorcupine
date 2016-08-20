@@ -35,6 +35,13 @@ public class SelectionInfoTextField : MonoBehaviour
 
         ISelectable actualSelection = mc.mySelection.stuffInTile[mc.mySelection.subSelection];
 
-        txt.text = LocalizationTable.GetLocalization(actualSelection.GetName()) + "\n" + LocalizationTable.GetLocalization(actualSelection.GetDescription()) + "\n" + actualSelection.GetHitPointString(); //TODO: Change the hitpoint stuff.
+        if(actualSelection.GetType() == typeof(Character))
+        {
+            txt.text = actualSelection.GetName() + "\n" + actualSelection.GetDescription() + "\n" + actualSelection.GetHitPointString(); //TODO: Change the hitpoint stuff.
+        }
+        else
+        {
+            txt.text = LocalizationTable.GetLocalization(actualSelection.GetName()) + "\n" + LocalizationTable.GetLocalization(actualSelection.GetDescription()) + "\n" + actualSelection.GetHitPointString(); //TODO: Change the hitpoint stuff.
+        }
     }
 }

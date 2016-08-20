@@ -132,7 +132,14 @@ public class BuildModeController : MonoBehaviour
                 }
 
                 // Add the job to the queue
-                WorldController.Instance.world.jobQueue.Enqueue(j);
+                if (WorldController.Instance.devMode)
+                {
+                    WorldController.Instance.world.PlaceFurniture(j.jobObjectType, j.tile);
+                }
+                else
+                {
+                    WorldController.Instance.world.jobQueue.Enqueue(j);
+                }
 
             }
 
@@ -172,7 +179,14 @@ public class BuildModeController : MonoBehaviour
                 };
 
                 // Add the job to the queue
-                WorldController.Instance.world.jobQueue.Enqueue(j);
+                if (WorldController.Instance.devMode)
+                {
+                    j.tile.Type = j.jobTileType;
+                }
+                else
+                {
+                    WorldController.Instance.world.jobQueue.Enqueue(j);
+                }
 
             }
 
