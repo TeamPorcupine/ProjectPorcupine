@@ -86,7 +86,8 @@ public class TestController : MonoBehaviour
     /// </summary>
     /// <param name="name">The text to be displayed on the button.</param>
     /// <param name="coroutine">A function that returns a coroutine that runs the test.</param>
-    public void AddTest(string name, Func<IEnumerator> coroutine) {
+    public void AddTest(string name, Func<IEnumerator> coroutine)
+    {
         if (testButtonContainer == null || testButtonPrefab == null)
         {
             Logger.LogWarning("Can't set up tests in TestController without a container and a prefab.");
@@ -107,7 +108,8 @@ public class TestController : MonoBehaviour
     /// Wipes the log file on disk, and also clears the display log.
     /// </summary>
     /// <returns>The coroutine for performing the wipe.</returns>
-    public IEnumerator WipeLogFile() {
+    public IEnumerator WipeLogFile()
+    {
         if (logFile != null)
             logFile.Close();
         
@@ -124,7 +126,8 @@ public class TestController : MonoBehaviour
     /// Clears the display log.
     /// </summary>
     /// <returns>The coroutine performing the clear.</returns>
-    public IEnumerator ClearDisplayLog() {
+    public IEnumerator ClearDisplayLog()
+    {
         if (logText != null)
             logText.text = "";
 
@@ -135,7 +138,8 @@ public class TestController : MonoBehaviour
     /// Stops all coroutines in this object.
     /// </summary>
     /// <returns>A coroutine for stopping all coroutines.</returns>
-    public IEnumerator StopCoroutines() {
+    public IEnumerator StopCoroutines()
+    {
         StopAllCoroutines();
         yield return null;
     }
@@ -144,7 +148,8 @@ public class TestController : MonoBehaviour
     /// Logs the given message to both the logfile and the displayed console.
     /// </summary>
     /// <param name="message">The message to be displayed.</param>
-    protected void Log(string message) {
+    protected void Log(string message)
+    {
         if (logText != null)
             logText.text += message + "\n";
 
@@ -163,7 +168,8 @@ public class TestController : MonoBehaviour
     /// <param name="action">The action to be run.</param>
     /// <param name="count">The number of times to run it.</param>
     /// <param name="name">The name to print out the information for.</param>
-    public IEnumerator DoTest(Action action, int count, string name) {
+    public IEnumerator DoTest(Action action, int count, string name)
+    {
         float totalTime = 0.0f, startTime;
 
         for (int i = 0; i < count; ++i)
