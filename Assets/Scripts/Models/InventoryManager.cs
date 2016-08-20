@@ -173,6 +173,12 @@ public class InventoryManager
         {
             return null;
         }
+        
+        //We shouldn't search if all inventories are locked.
+        if (inventories[objectType].TrueForAll(i => i.tile != null && i.tile.furniture != null && i.tile.inventory.isLocked))
+        {
+            return null;
+        }
 
         // Test that there is at least one stack on the floor, otherwise the
         // search below might cause a full map search for nothing.
