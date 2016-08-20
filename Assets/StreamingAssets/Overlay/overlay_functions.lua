@@ -1,6 +1,7 @@
 -- Example of overlay function
 -- Input: tile, the current tile for which the
 -- overlay wants to display the data
+-- Input: world, world class
 -- Return: an integer (by default should be scaled between 0 and 255)
 function oxygenValueAt ( tile )
 	if tile == nil then
@@ -42,19 +43,17 @@ function temperatureValueAt( tile, world )
 	--if tile == nil then
 	--	return -2
 	--end
-	return math.max(math.min(world.current.temperature.GetTemperature(tile.X, tile.Y) / 10, 255), 0)
+	return math.max(math.min(world.temperature.GetTemperature(tile.X, tile.Y) / 10, 255), 0)
 end
 
 
 -- Returns coloring of thermal diffusivity of tile
 function thermalDiffusivityValueAt(tile, world)
-	mid = 128
 	if tile == nil then
-		return mid
+		return 255
 	else
-		val = mid + 10*world.current.temperature.GetThermalDiffusivity(tile.X, tile.Y)
+		return math.max(math.min(254*world.temperature.GetThermalDiffusivity(tile.X, tile.Y)))
 	end
-	return math.max(math.min(val, 255), 0)
 end
 
 -- Dummy function, will be implemented

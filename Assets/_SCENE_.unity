@@ -6441,7 +6441,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   leftBottomCorner: {x: -0.5, y: -0.5, z: 1}
-  transparency: 0.4
+  transparency: 0.69
   updateInterval: 5
   xPixelsPerTile: 20
   yPixelsPerTile: 20
