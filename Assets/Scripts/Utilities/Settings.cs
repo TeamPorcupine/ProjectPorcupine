@@ -11,21 +11,18 @@ public static class Settings {
     private static Dictionary<string,string> settingsDict;
     private static string settingsFilePath = "Settings.xml" ;
 
-
-    public static string getSetting( string key )
+    public static string getSetting(string key )
     {
-
         // if we haven't already loaded our settings do it now
         if (settingsDict == null) 
         {
-            loadSettings ();
+            loadSettings();
         }
-
 
         string value;
 
         // attempt to get the requested setting, if it is not found log a warning and return the null string
-        if (settingsDict.TryGetValue(key,out value) == false)
+        if (settingsDict.TryGetValue(key, out value) == false)
         {
             Debug.LogWarning("Atempted to access a setting that was not loaded from Settings.xml :\t" + key);
         }
@@ -33,9 +30,8 @@ public static class Settings {
         return value;
     }
 
-    public static void setSetting( string key , string value )
+    public static void setSetting(string key, string value)
     {
-
         if (settingsDict.ContainsKey(key))
         {
             // update the setting
@@ -51,19 +47,17 @@ public static class Settings {
         }
 
         saveSettings();
-
     }
 
     private static void saveSettings()
     {
-
         // create an xml document
         XmlDocument xDoc = new XmlDocument();
 
         // create main settings node
         XmlNode settingsNode = xDoc.CreateElement("Settings");
 
-        foreach( KeyValuePair<string,string> pair in settingsDict)
+        foreach (KeyValuePair<string, string> pair in settingsDict)
         {
             // create a new element for each pair in the dict
             XmlElement settingElement = xDoc.CreateElement(pair.Key);
@@ -79,10 +73,9 @@ public static class Settings {
         // get file path of Settings.xml 
         string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, settingsFilePath);
 
-        //save document
-        System.IO.File.WriteAllText(filePath , xDoc.ToString());
+        // save document
+        System.IO.File.WriteAllText(filePath, xDoc.ToString());
     }
-
 
     private static void loadSettings()
     {
@@ -96,14 +89,14 @@ public static class Settings {
         // create an xml document from Settings.xml
         XmlDocument xDoc = new XmlDocument();
         xDoc.LoadXml(furnitureXmlText);
-        Debug.Log("Loaded settings from : \t" + filePath );
+        Debug.Log("Loaded settings from : \t" + filePath);
 
         // get the Settings node , it's children are the individual settings
         XmlNode settingsNode = xDoc.GetElementsByTagName("Settings").Item(0);
         XmlNodeList settingNodes = settingsNode.ChildNodes;
-        Debug.Log(settingNodes.Count+" settings loaded");
+        Debug.Log(settingNodes.Count + " settings loaded");
 
-        //loop for each setting
+        // loop for each setting
         foreach (XmlNode node in settingNodes)
         {
             if (node != null)
@@ -115,7 +108,5 @@ public static class Settings {
                 // Debug.Log( node.Name + " : " + node.InnerText );
             }
         }
-
     }
-
 }
