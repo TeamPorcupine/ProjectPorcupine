@@ -1,13 +1,17 @@
-//=======================================================================
-// Copyright Martin "quill18" Glaude 2015-2016.
-//		http://quill18.com
-//=======================================================================
-
+#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
 using UnityEngine;
 using System;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using MoonSharp.Interpreter;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -17,6 +21,7 @@ using System.Linq;
 /// Later, the Character class will likely be refactored (possibly with
 /// sub-classes or interfaces) to support friendly workers, enemies, etc...
 /// </summary>
+[MoonSharpUserData]
 public class Character : IXmlSerializable, ISelectable
 {
 
@@ -118,6 +123,9 @@ public class Character : IXmlSerializable, ISelectable
 
     /// Tile where job should be carried out, if different from myJob.tile
     Tile jobTile;
+
+    /// Name of the Character
+    public string name;
 
     // The item we are carrying (not gear/equipment)
     public Inventory inventory;
@@ -261,7 +269,7 @@ public class Character : IXmlSerializable, ISelectable
             // Are we standing on a tile with goods that are desired by the job?
             Logger.LogVerbose("Standing on Tile check");
             if (CurrTile.inventory != null &&
-                myJob.DesiresInventoryType(CurrTile.inventory) > 0 &&
+                myJob.DesiresInventoryType(CurrTile.inventory) > 0 && !CurrTile.inventory.isLocked &&
                 (myJob.canTakeFromStockpile || CurrTile.furniture == null || CurrTile.furniture.IsStockpile() == false))
             {
                 // Pick up the stuff!
@@ -519,7 +527,7 @@ public class Character : IXmlSerializable, ISelectable
 
     public string GetName()
     {
-        return "Sally S. Smith";
+        return name;
     }
 
     public string GetDescription()

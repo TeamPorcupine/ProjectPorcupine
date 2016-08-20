@@ -1,4 +1,12 @@
-﻿using UnityEngine;
+#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
+using UnityEngine;
 using System.Collections.Generic;
 using Priority_Queue;
 using System.Linq;
@@ -103,9 +111,9 @@ public class Path_AStar
             {
                 // We don't have a POSITIONAL goal, we're just trying to find
                 // some king of inventory.  Have we reached it?
-                if (current.data.inventory != null && current.data.inventory.objectType == objectType)
+                if (current.data.inventory != null && current.data.inventory.objectType == objectType && !current.data.inventory.isLocked)
                 {
-                    // Type is correct
+                    // Type is correct and we are allowed to pick it up
                     if (canTakeFromStockpile || current.data.furniture == null || current.data.furniture.IsStockpile() == false)
                     {
                         // Stockpile status is fine

@@ -1,4 +1,12 @@
-﻿using UnityEngine;
+#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
+using UnityEngine;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
@@ -89,8 +97,8 @@ public class GameEventManager : MonoBehaviour {
     {
         //Debug.Log("ReadSpriteFromXml");
         string name = reader.GetAttribute("Name");
-        int repeat = int.Parse(reader.GetAttribute("Repeat"));
-        int maxRepeats = int.Parse(reader.GetAttribute("MaxRepeats"));
+        bool repeat = false;
+        int maxRepeats = 0;
 
         List<string> preconditionNames = new List<string>();
         List<string> onExecuteNames = new List<string>();
@@ -99,6 +107,10 @@ public class GameEventManager : MonoBehaviour {
         {
             switch (reader.Name)
             {
+                case "Repeats":
+                    maxRepeats = int.Parse(reader.GetAttribute("MaxRepeats"));
+                    repeat = true;
+                    break;
                 case "Precondition":
                     string preconditionName = reader.GetAttribute("FunctionName");
                     preconditionNames.Add(preconditionName);
@@ -114,7 +126,7 @@ public class GameEventManager : MonoBehaviour {
 
         if (name.Length >= 1)
         {
-            CreateEvent(name, (repeat >= 1) ? true : false, maxRepeats, preconditionNames.ToArray(), onExecuteNames.ToArray());
+            CreateEvent(name, repeat, maxRepeats, preconditionNames.ToArray(), onExecuteNames.ToArray());
         }
     }
 
