@@ -325,45 +325,49 @@ function LandingPad_Temp_UpdateAction(furniture, deltaTime)
 			Job.JobPriority.Medium,
 			false
 			)
+            
+            j.furniture = furniture
 			
 			j.RegisterJobCompletedCallback("LandingPad_Temp_JobComplete")
 			
 			furniture.AddJob(j)
 		end
 	else
-		furniture.ChangeParameter("smelttime", deltaTime)
+		furniture.ChangeParameter("tradetime", deltaTime)
 		
-		if(furniture.GetParameter("smelttime") >= furniture.GetParameter("smelttime_required")) then
-			furniture.SetParameter("smelttime", 0)
+		if(furniture.GetParameter("tradetime") >= furniture.GetParameter("tradetime_required")) then
+			furniture.SetParameter("tradetime", 0)
 			
-		 --[[	outputSpot = World.current.GetTileAt(spawnSpot.X+2, spawnSpot.y)
+		 	outputSpot = World.current.GetTileAt(spawnSpot.X+1, spawnSpot.y)
 			
 			if(outputSpot.inventory == nil) then
 				World.current.inventoryManager.PlaceInventory( outputSpot, Inventory.__new("Steel Plate", 50, furniture.GetParameter("tradeoutamount")) )
 			
-				inputSpot.inventory.stackSize = spawnSpot.inventory.stackSize-furniture.GetParameter("smelttime_required")
+				inputSpot.inventory.stackSize = inputSpot.inventory.stackSize-furniture.GetParameter("tradeinamount")
 			else
 				if(outputSpot.inventory.stackSize <= 50 - outputSpot.inventory.stackSize+furniture.GetParameter("tradeoutamount")) then
 					outputSpot.inventory.stackSize = outputSpot.inventory.stackSize+furniture.GetParameter("tradeoutamount")				
-					inputSpot.inventory.stackSize = spawnSpot.inventory.stackSize-furniture.GetParameter("smelttime_required")
+					inputSpot.inventory.stackSize = inputSpot.inventory.stackSize-furniture.GetParameter("tradeinamount")
 				end
 			end
 			
 			if(inputSpot.inventory.stackSize <= 0) then
 				inputSpot.inventory = nil
 			end
-            ]]--
+            
 		end
 	end
 end
 
 function LandingPad_Temp_JobComplete(j)
-	spawnSpot = j.tile.furniture.GetSpawnSpotTile()
+	jobSpot = j.furniture.GetJobSpotTile()
+	inputSpot = World.current.GetTileAt(jobSpot.X, jobSpot.y-1)
 	
 	for k, inv in pairs(j.inventoryRequirements) do
 		if(inv.stackSize > 0) then
-			World.current.inventoryManager.PlaceInventory(spawnSpot, inv)
-			spawnSpot.inventory.isLocked = true
+			World.current.inventoryManager.PlaceInventory(inputSpot, inv)
+			inputSpot.inventory.isLocked = true
+            
 			return
 		end
 	end
