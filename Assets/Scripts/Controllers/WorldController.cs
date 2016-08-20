@@ -70,6 +70,10 @@ public class WorldController : MonoBehaviour
         {
             CreateEmptyWorld();
         }
+
+        //Initialising controllers
+        GameObject Controllers = GameObject.Find("Controllers");
+        Instantiate(Resources.Load("UIController"), Controllers.transform);
     }
 
     void Update()
