@@ -1,4 +1,14 @@
-﻿build_floor=Build Floor
+﻿menu_construction=Construction
+menu_work=Work
+menu_world=World
+menu_options=Options
+menu_settings=Settings
+menu_furniture=Furniture
+menu_floor=Floor
+menu_save=Save
+menu_resume=Resume
+menu_quit=Quit
+build_floor=Build Floor
 remove_floor=Remove Floor
 deconstruct_furniture=Deconstruct Furniture
 new_world=New World
