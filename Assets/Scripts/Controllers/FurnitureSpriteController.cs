@@ -78,7 +78,8 @@ public class FurnitureSpriteController : MonoBehaviour
         sr.sortingLayerName = "Furniture";
         sr.color = furn.tint;
 
-        if (furn.powerValue < 0) {
+        if (furn.powerValue < 0) 
+        {
             GameObject power_go = new GameObject();
             powerStatusGameObjectMap.Add(furn, power_go);
             power_go.transform.parent = furn_go.transform;

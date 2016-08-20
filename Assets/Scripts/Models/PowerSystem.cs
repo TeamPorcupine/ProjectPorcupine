@@ -69,7 +69,8 @@ public class PowerSystem {
     {
         float powerValues = 0;
 
-        foreach (Furniture furn in powerConsumers) {
+        foreach (Furniture furn in powerConsumers) 
+        {
             powerValues += furn.powerValue;            
         }
 
