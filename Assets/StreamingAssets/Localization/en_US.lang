@@ -33,3 +33,5 @@ tile_Floor=Floor
 tile_Floor_desc=Meets the highest non-skid standards.
 furn_power_generator=Power Generator
 furn_power_generator_desc=Generates power out of nothing.
+furn_heater=Heater
+furn_heater_desc=Warms up the mind... and the body.

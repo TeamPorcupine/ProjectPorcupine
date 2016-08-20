@@ -282,4 +282,14 @@ function MetalSmelter_JobComplete(j)
 	end
 end
 
+-- Dummy heater install function
+function Heater_InstallAction( furniture, deltaTime)
+
+end
+
+-- Dummy heater uninstall function
+function Heater_UninstallAction( furniture, deltaTime)
+
+end
+
 return "LUA Script Parsed!"

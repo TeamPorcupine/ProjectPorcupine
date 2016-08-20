@@ -36,3 +36,8 @@ function powerValueAt(tile)
 	end
 	return math.max(math.min(val, 255), 0)
 end
+
+-- Dummy function, will be implemented
+function temperatureValueAt(tile)
+	return 0
+end

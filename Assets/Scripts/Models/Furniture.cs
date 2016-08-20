@@ -181,6 +181,8 @@ public class Furniture : IXmlSerializable, ISelectable
     public Furniture()
     {
         updateActions = new List<string>();
+        installActions = new List<string>();
+        uninstallActions = new List<string>();
         furnParameters = new Dictionary<string, float>();
         jobs = new List<Job>();
         this.funcPositionValidation = this.DEFAULT__IsValidPosition;
@@ -316,6 +318,7 @@ public class Furniture : IXmlSerializable, ISelectable
         }
 
         // Call LUA install scripts
+        if(obj.installActions != null )
         FurnitureActions.CallFunctionsWithFurniture(obj.installActions.ToArray(), obj, 0);
 
         return obj;
@@ -743,6 +746,10 @@ public class Furniture : IXmlSerializable, ISelectable
     {
         Logger.Log("Deconstruct");
 
+        // We call lua to decostruct
+        if (uninstallActions != null)
+            FurnitureActions.CallFunctionsWithFurniture(uninstallActions.ToArray(), this, 0);
+        
         tile.UnplaceFurniture();
 
         if (cbOnRemoved != null)
