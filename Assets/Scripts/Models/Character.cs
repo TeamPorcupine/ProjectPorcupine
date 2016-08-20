@@ -14,6 +14,7 @@ using System.Xml.Serialization;
 using MoonSharp.Interpreter;
 using System.Collections.Generic;
 using System.Linq;
+using ProjectPorcupine.Localization;
 
 /// <summary>
 /// A Character is an entity on the map that can move between tiles and,
@@ -570,7 +571,12 @@ public class Character : IXmlSerializable, ISelectable
 
     public string GetDescription()
     {
-        return "A human astronaut. She is currently depressed because her friend was ejected out of an airlock.";
+		string needText;
+		foreach (Need n in needs)
+		{
+			needText += "/n" + LocalizationTable.GetLocalization (n.localisationID, n.DisplayAmount);
+		}
+        return "A human astronaut." + needText;
     }
 
     public string GetHitPointString()
