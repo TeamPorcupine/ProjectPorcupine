@@ -21,6 +21,7 @@ public class WorldController : MonoBehaviour
     TileSpriteController tileSpriteController;
     CharacterSpriteController characterSpriteController;
     JobSpriteController jobSpriteController;
+    InventorySpriteController inventorySpriteController;
 
     public static WorldController Instance { get; protected set; }
 
@@ -56,6 +57,8 @@ public class WorldController : MonoBehaviour
 
     public bool devMode = false;
 
+    public GameObject inventoryUI;
+
     // Use this for initialization
     void OnEnable()
     {
@@ -83,6 +86,7 @@ public class WorldController : MonoBehaviour
         tileSpriteController.Render();
         characterSpriteController = new CharacterSpriteController(world);
         jobSpriteController = new JobSpriteController(world);
+        inventorySpriteController = new InventorySpriteController(world, inventoryUI);
 
         //Initialising controllers
         GameObject Controllers = GameObject.Find("Controllers");

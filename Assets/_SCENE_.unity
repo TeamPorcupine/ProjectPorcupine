@@ -1378,6 +1378,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   IsModal: 0
   devMode: 0
+  inventoryUI: {fileID: 191780, guid: d1e1fcd802f51614595cb99879a132a5, type: 2}
 --- !u!4 &179601669
 Transform:
   m_ObjectHideFlags: 0
