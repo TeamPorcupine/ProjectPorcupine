@@ -184,6 +184,10 @@ public class BuildModeController : MonoBehaviour
             {
                 t.furniture.Deconstruct();
             }
+            else if (t.pendingBuildJob != null)
+            {
+                t.pendingBuildJob.CancelJob();
+            }
 
         }
         else
