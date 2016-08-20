@@ -33,7 +33,7 @@ public class WorldGenerator {
                     if (Random.value >= asteroidRessourceChance)
                     {
                         int stackSize = Random.Range(asteroidRessourceMin, asteroidRessourceMax);
-                        Inventory inv = Inventory.New("Steel Plate", 50, stackSize);
+                        Inventory inv = Inventory.New("Raw Iron", 50, stackSize);
                         world.inventoryManager.PlaceInventory(t, inv);
                     }
                 }
