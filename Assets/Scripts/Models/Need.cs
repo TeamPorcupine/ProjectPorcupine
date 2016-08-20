@@ -105,6 +105,11 @@ public class Need {
 				addedInVacuum = reader.ReadContentAsFloat();
 				break;
 			}
+			case "RestoreNeedAmount":
+			reader.Read ();
+			restoreNeedAmount = reader.ReadContentAsFloat();
+			break;
+		}
 		}
 
 
