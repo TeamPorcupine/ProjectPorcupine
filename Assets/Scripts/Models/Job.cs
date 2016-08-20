@@ -34,6 +34,16 @@ public class Job
         get;
         protected set;
     }
+	public bool isNeed
+	{
+		get;
+		protected set;
+	}
+	public bool critical
+	{
+		get;
+		protected set;
+	}
 
     public TileType jobTileType
     {
@@ -61,13 +71,15 @@ public class Job
 
     public Dictionary<string, Inventory> inventoryRequirements;
 
-    public Job(Tile tile, string jobObjectType, Action<Job> cbJobComplete, float jobTime, Inventory[] inventoryRequirements, bool jobRepeats = false)
+	public Job(Tile tile, string jobObjectType, Action<Job> cbJobComplete, float jobTime, Inventory[] inventoryRequirements, bool jobRepeats = false, bool isNeed = false, bool critical = false)
     {
         this.tile = tile;
         this.jobObjectType = jobObjectType;
         this.cbJobCompleted += cbJobComplete;
         this.jobTimeRequired = this.jobTime = jobTime;
         this.jobRepeats = jobRepeats;
+		this.isNeed = isNeed;
+		this.critical = critical;
 
         cbJobWorkedLua = new List<string>();
         cbJobCompletedLua = new List<string>();

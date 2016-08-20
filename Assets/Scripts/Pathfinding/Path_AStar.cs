@@ -8,7 +8,7 @@ public class Path_AStar
 
     Queue<Tile> path;
 
-    public Path_AStar(World world, Tile tileStart, Tile tileEnd, string objectType = null, int desiredAmount = 0, bool canTakeFromStockpile = false)
+	public Path_AStar(World world, Tile tileStart, Tile tileEnd, string objectType = null, int desiredAmount = 0, bool canTakeFromStockpile = false, bool lookingForFurn = false)
     {
 
         // if tileEnd is null, then we are simply scanning for the nearest objectType.
@@ -94,8 +94,8 @@ public class Path_AStar
             else
             {
                 // We don't have a POSITIONAL goal, we're just trying to find
-                // some king of inventory.  Have we reached it?
-                if (current.data.inventory != null && current.data.inventory.objectType == objectType)
+                // some kind of inventory or furniture.  Have we reached it?
+                if (current.data.inventory != null && current.data.inventory.objectType == objectType && lookingForFurn == false)
                 {
                     // Type is correct
                     if (canTakeFromStockpile || current.data.furniture == null || current.data.furniture.IsStockpile() == false)
@@ -105,6 +105,12 @@ public class Path_AStar
                         return;
                     }
                 }
+				if (current.data.furniture != null && current.data.furniture.objectType == objectType && lookingForFurn)
+				{
+					// Type is correct
+					reconstruct_path(Came_From, current);
+					return;
+				}
             }
 
             ClosedSet.Add(current);

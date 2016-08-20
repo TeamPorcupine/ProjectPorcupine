@@ -42,6 +42,10 @@ public class Need {
 			Amount += (addedInVacuum - (addedInVacuum * (character.CurrTile.room.GetGasPressure ("O2") * 5))) * deltaTime;
 		}
 		//TODO: What happens at 100%?
+		if (Amount > 75 && character.myJob.isNeed == false)
+		{
+			character.AbandonJob ();
+		}
 	}
 
 	public void ReadXmlPrototype(XmlReader reader_parent)
