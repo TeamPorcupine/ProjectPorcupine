@@ -29,6 +29,9 @@ namespace ProjectPorcupine.Localization
         //List with all languages.
         static List<string> registeredLanguages = new List<string>();
 
+        // Keeps track of what keys we've already logged are missing.
+        static HashSet<string> missingKeysLogged = new HashSet<string>();
+
         /**
          * <summary>
          * Load a localization file from the harddrive.
@@ -140,29 +143,34 @@ namespace ProjectPorcupine.Localization
          */
         public static string GetLocalization(string key, FallbackMode fallbackMode, string language, params string[] additionalValues)
         {
-            try //Use a try-catch statement, since this operation might throw a KeyNotFoundException.
+            key = language + "_" + key;
+            string value;
+            if (localizationTable.TryGetValue(key, out value))
             {
-                //Ideally, return the correct value.
-                return string.Format(localizationTable[language + "_" + key], additionalValues);
+                return string.Format(value, additionalValues);
             }
-            catch
+            else
             {
-#if UNITY_EDITOR //TODO: Think if #if is a good idea or not.
-                //Log a warning into the console if this operation fails.
-                Logger.LogWarning("Translation for " + key + " failed: Key not in dictionary.");
-#endif
+                if (!missingKeysLogged.Contains(key))
+                {
+                    missingKeysLogged.Add(key);
+                    Logger.LogWarning("Translation for " + key + " failed: Key not in dictionary.");
+                }
 
-                //Switch the fallback mode.
                 switch (fallbackMode)
                 {
                     case FallbackMode.ReturnKey:
-                        if(additionalValues.Length >= 1)
+                        if (additionalValues.Length >= 1)
                         {
                             return key + " " + additionalValues[0];
                         }
-                        return key; //Just return the key.
-                    case FallbackMode.ReturnEnglish: return GetLocalization(key, FallbackMode.ReturnKey, "en_US", additionalValues); //Return the english equivalent.
-                    default: return ""; //Return an empty string.
+                        return key;
+                    case FallbackMode.ReturnEnglish:
+                        return GetLocalization(key, FallbackMode.ReturnKey, "en_US", additionalValues);
+                    case FallbackMode.ReturnEmpty:
+                        return "";
+                    default:
+                        return "";
                 }
             }
         }
