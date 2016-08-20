@@ -18,7 +18,6 @@ using MoonSharp.Interpreter;
 [MoonSharpUserData]
 public class World : IXmlSerializable
 {
-
     // A two-dimensional array to hold our tile data.
     Tile[,] tiles;
     public List<Character> characters;
@@ -50,7 +49,7 @@ public class World : IXmlSerializable
     // For now, this is just a PUBLIC member of World
     public JobQueue jobQueue;
 
-    static public World current { get; protected set; }
+    public static World current { get; protected set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="World"/> class.
@@ -76,8 +75,6 @@ public class World : IXmlSerializable
 
     }
 
-
-
     public Room GetOutsideRoom()
     {
         return rooms[0];
@@ -92,7 +89,7 @@ public class World : IXmlSerializable
     {
         if (i < 0 || i > rooms.Count - 1)
             return null;
-		
+
         return rooms[i];
     }
 
@@ -117,7 +114,7 @@ public class World : IXmlSerializable
         r.ReturnTilesToOutsideRoom();
     }
 
-    void SetupWorld(int width, int height)
+    private void SetupWorld(int width, int height)
     {
 
         jobQueue = new JobQueue();
@@ -170,7 +167,7 @@ public class World : IXmlSerializable
 
     public Character CreateCharacter(Tile t)
     {
-        Character c = new Character(t); 
+        Character c = new Character(t);
 
         characters.Add(c);
 
@@ -185,7 +182,7 @@ public class World : IXmlSerializable
         furnitureJobPrototypes[f.objectType] = j;
     }
 
-    void LoadFurnitureLua()
+    private void LoadFurnitureLua()
     {
         string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
         filePath = System.IO.Path.Combine(filePath, "Furniture.lua");
@@ -196,7 +193,7 @@ public class World : IXmlSerializable
 
     }
 
-    void CreateFurniturePrototypes()
+    private void CreateFurniturePrototypes()
     {
         LoadFurnitureLua();
 
@@ -215,29 +212,24 @@ public class World : IXmlSerializable
         XmlTextReader reader = new XmlTextReader(new StringReader(furnitureXmlText));
 
         int furnCount = 0;
-        if (reader.ReadToDescendant("Furnitures"))
+        if (reader.ReadToDescendant(FurnituresXMLNodeName))
         {
-            if (reader.ReadToDescendant("Furniture"))
+            if (reader.ReadToDescendant(FurnitureXMLNodeeName))
             {
                 do
                 {
                     furnCount++;
-
                     Furniture furn = new Furniture();
                     try
                     {
                         furn.ReadXmlPrototype(reader);
                     }
-                    catch {
+                    catch
+                    {
                         Logger.LogError("Error reading furniture prototype for: " + furn.objectType);
                     }
-
-
                     furniturePrototypes[furn.objectType] = furn;
-
-
-
-                } while (reader.ReadToNextSibling("Furniture"));
+                } while (reader.ReadToNextSibling(FurnitureXMLNodeeName));
             }
             else
             {
@@ -365,13 +357,13 @@ public class World : IXmlSerializable
 
         return furn;
     }
-    
+
     // Gets called whenever ANY tile changes
     void OnTileChanged(Tile t)
     {
         if (cbTileChanged == null)
             return;
-		
+
         cbTileChanged(t);
 
         //InvalidateTileGraph();
@@ -411,6 +403,24 @@ public class World : IXmlSerializable
     /// 
     //////////////////////////////////////////////////////////////////////////////////////
 
+    private const string WidthXMLAttributeName = "Width";
+    private const string HeightXMLAttributeName = "Height";
+    private const string RoorsXMLNodeName = "Rooms";
+    private const string RoomXMLNodeeName = "Room";
+    private const string TilesXMLNodeName = "Tiles";
+    private const string TileXMLNodeeName = "Tile";
+    private const string XCoordinateXMLAttributeName = "X";
+    private const string YCoordinateXMLAttributeName = "Y";
+    private const string InventoriesXMLNodeName = "Inventories";
+    private const string InventoryXMLNodeeName = "Inventory";
+    private const string ObjectTypeXMLAttributeName = "objectType";
+    private const string MaxStackSizeXMLAttributeName = "maxStackSize";
+    private const string StackSizeXMLAttributeName = "stackSize";
+    private const string FurnituresXMLNodeName = "Furnitures";
+    private const string FurnitureXMLNodeeName = "Furniture";
+    private const string CharactersXMLNodeName = "Characters";
+    private const string CharacterXMLNodeeName = "Character";
+    
     public XmlSchema GetSchema()
     {
         return null;
@@ -419,30 +429,29 @@ public class World : IXmlSerializable
     public void WriteXml(XmlWriter writer)
     {
         // Save info here
-        writer.WriteAttributeString("Width", Width.ToString());
-        writer.WriteAttributeString("Height", Height.ToString());
+        writer.WriteAttributeString(WidthXMLAttributeName, Width.ToString());
+        writer.WriteAttributeString(HeightXMLAttributeName, Height.ToString());
 
-        writer.WriteStartElement("Rooms");
+        writer.WriteStartElement(RoorsXMLNodeName);
         foreach (Room r in rooms)
         {
-
             if (GetOutsideRoom() == r)
                 continue;	// Skip the outside room. Alternatively, should SetupWorld be changed to not create one?
 
-            writer.WriteStartElement("Room");
+            writer.WriteStartElement(RoomXMLNodeeName);
             r.WriteXml(writer);
             writer.WriteEndElement();
         }
         writer.WriteEndElement();
 
-        writer.WriteStartElement("Tiles");
+        writer.WriteStartElement(TilesXMLNodeName);
         for (int x = 0; x < Width; x++)
         {
             for (int y = 0; y < Height; y++)
             {
                 if (tiles[x, y].Type != TileType.Empty)
                 {
-                    writer.WriteStartElement("Tile");
+                    writer.WriteStartElement(TileXMLNodeeName);
                     tiles[x, y].WriteXml(writer);
                     writer.WriteEndElement();
                 }
@@ -450,32 +459,32 @@ public class World : IXmlSerializable
         }
         writer.WriteEndElement();
 
-        writer.WriteStartElement("Inventories");
+        writer.WriteStartElement(InventoriesXMLNodeName);
         foreach (String objectType in inventoryManager.inventories.Keys)
         {
             foreach (Inventory inv in inventoryManager.inventories[objectType])
             {
-                writer.WriteStartElement("Inventory");
+                writer.WriteStartElement(InventoryXMLNodeeName);
                 inv.WriteXml(writer);
                 writer.WriteEndElement();
             }
         }
         writer.WriteEndElement();
 
-        writer.WriteStartElement("Furnitures");
+        writer.WriteStartElement(FurnituresXMLNodeName);
         foreach (Furniture furn in furnitures)
         {
-            writer.WriteStartElement("Furniture");
+            writer.WriteStartElement(FurnitureXMLNodeeName);
             furn.WriteXml(writer);
             writer.WriteEndElement();
 
         }
         writer.WriteEndElement();
 
-        writer.WriteStartElement("Characters");
+        writer.WriteStartElement(CharactersXMLNodeName);
         foreach (Character c in characters)
         {
-            writer.WriteStartElement("Character");
+            writer.WriteStartElement(CharacterXMLNodeeName);
             c.WriteXml(writer);
             writer.WriteEndElement();
 
@@ -486,9 +495,8 @@ public class World : IXmlSerializable
     public void ReadXml(XmlReader reader)
     {
         // Load info here
-
-        Width = int.Parse(reader.GetAttribute("Width"));
-        Height = int.Parse(reader.GetAttribute("Height"));
+        Width = int.Parse(reader.GetAttribute(WidthXMLAttributeName));
+        Height = int.Parse(reader.GetAttribute(HeightXMLAttributeName));
 
         SetupWorld(Width, Height);
 
@@ -496,21 +504,21 @@ public class World : IXmlSerializable
         {
             switch (reader.Name)
             {
-                case "Rooms":
-                    ReadXml_Rooms(reader);
-                    break;
-                case "Tiles":
-                    ReadXml_Tiles(reader);
-                    break;
-                case "Inventories":
-                    ReadXml_Inventories(reader);
-                    break;
-                case "Furnitures":
-                    ReadXml_Furnitures(reader);
-                    break;
-                case "Characters":
-                    ReadXml_Characters(reader);
-                    break;
+            case RoorsXMLNodeName:
+                ReadXml_Rooms(reader);
+                break;
+            case TilesXMLNodeName:
+                ReadXml_Tiles(reader);
+                break;
+            case InventoriesXMLNodeName:
+                ReadXml_Inventories(reader);
+                break;
+            case FurnituresXMLNodeName:
+                ReadXml_Furnitures(reader);
+                break;
+            case CharactersXMLNodeName:
+                ReadXml_Characters(reader);
+                break;
             }
         }
 
@@ -541,94 +549,84 @@ public class World : IXmlSerializable
         }
     }
 
-    void ReadXml_Tiles(XmlReader reader)
+    private void ReadXml_Tiles(XmlReader reader)
     {
         // We are in the "Tiles" element, so read elements until
         // we run out of "Tile" nodes.
-
-        if (reader.ReadToDescendant("Tile"))
+        if (reader.ReadToDescendant(TileXMLNodeeName))
         {
             // We have at least one tile, so do something with it.
-
             do
             {
-                int x = int.Parse(reader.GetAttribute("X"));
-                int y = int.Parse(reader.GetAttribute("Y"));
+                int x = int.Parse(reader.GetAttribute(XCoordinateXMLAttributeName));
+                int y = int.Parse(reader.GetAttribute(YCoordinateXMLAttributeName));
                 tiles[x, y].ReadXml(reader);
-            } while (reader.ReadToNextSibling("Tile"));
-
+            } while (reader.ReadToNextSibling(TileXMLNodeeName));
         }
-
     }
 
-    void ReadXml_Inventories(XmlReader reader)
+    private void ReadXml_Inventories(XmlReader reader)
     {
         Logger.Log("ReadXml_Inventories");
 
-        if(reader.ReadToDescendant("Inventory"))
+        if (reader.ReadToDescendant(InventoryXMLNodeeName))
         {
             do
             {
-                int x = int.Parse(reader.GetAttribute("X"));
-                int y = int.Parse(reader.GetAttribute("Y"));
+                int x = int.Parse(reader.GetAttribute(XCoordinateXMLAttributeName));
+                int y = int.Parse(reader.GetAttribute(YCoordinateXMLAttributeName));
 
                 //Create our inventory from the file
-                Inventory inv = new Inventory(reader.GetAttribute("objectType"),
-                    int.Parse(reader.GetAttribute("maxStackSize")),
-                    int.Parse(reader.GetAttribute("stackSize")));
-                
-                inventoryManager.PlaceInventory(tiles[x,y],inv);
-            } while(reader.ReadToNextSibling("Inventory"));
+                Inventory inv = new Inventory(reader.GetAttribute(ObjectTypeXMLAttributeName),
+                    int.Parse(reader.GetAttribute(MaxStackSizeXMLAttributeName)),
+                    int.Parse(reader.GetAttribute(StackSizeXMLAttributeName)));
+
+                inventoryManager.PlaceInventory(tiles[x, y], inv);
+            } while (reader.ReadToNextSibling(InventoryXMLNodeeName));
         }
     }
 
-    void ReadXml_Furnitures(XmlReader reader)
+    private void ReadXml_Furnitures(XmlReader reader)
     {
-        if (reader.ReadToDescendant("Furniture"))
+        if (reader.ReadToDescendant(FurnitureXMLNodeeName))
         {
             do
             {
-                int x = int.Parse(reader.GetAttribute("X"));
-                int y = int.Parse(reader.GetAttribute("Y"));
+                int x = int.Parse(reader.GetAttribute(XCoordinateXMLAttributeName));
+                int y = int.Parse(reader.GetAttribute(YCoordinateXMLAttributeName));
 
-                Furniture furn = PlaceFurniture(reader.GetAttribute("objectType"), tiles[x, y], false);
+                Furniture furn = PlaceFurniture(reader.GetAttribute(ObjectTypeXMLAttributeName), tiles[x, y], false);
                 furn.ReadXml(reader);
-            } while (reader.ReadToNextSibling("Furniture"));
+            } while (reader.ReadToNextSibling(FurnitureXMLNodeeName));
         }
-
     }
 
-    void ReadXml_Rooms(XmlReader reader)
+    private void ReadXml_Rooms(XmlReader reader)
     {
-        if (reader.ReadToDescendant("Room"))
+        if (reader.ReadToDescendant(RoomXMLNodeeName))
         {
             do
             {
                 Room r = new Room();
                 rooms.Add(r);
                 r.ReadXml(reader);
-            } while (reader.ReadToNextSibling("Room"));
-
+            } while (reader.ReadToNextSibling(RoomXMLNodeeName));
         }
-
     }
 
-
-
-    void ReadXml_Characters(XmlReader reader)
+    private void ReadXml_Characters(XmlReader reader)
     {
-        if (reader.ReadToDescendant("Character"))
+        if (reader.ReadToDescendant(CharacterXMLNodeeName))
         {
             do
             {
-                int x = int.Parse(reader.GetAttribute("X"));
-                int y = int.Parse(reader.GetAttribute("Y"));
+                int x = int.Parse(reader.GetAttribute(XCoordinateXMLAttributeName));
+                int y = int.Parse(reader.GetAttribute(YCoordinateXMLAttributeName));
 
                 Character c = CreateCharacter(tiles[x, y]);
                 c.ReadXml(reader);
-            } while(reader.ReadToNextSibling("Character"));
+            } while (reader.ReadToNextSibling(CharacterXMLNodeeName));
         }
-
     }
 
     public void OnInventoryCreated(Inventory inv)
