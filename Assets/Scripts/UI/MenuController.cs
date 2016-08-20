@@ -43,6 +43,19 @@ public class MenuController : MonoBehaviour {
         menu.SetActive(!menu.activeSelf);
     }
 
+	//quit the app wheather in editor or a build version
+	public void QuitGame()
+	{
+		//maybe ask the user if he want to save or is sure they want to quit??
+
+		#if UNITY_EDITOR
+	    //alows you to quit in the editor
+		UnityEditor.EditorApplication.isPlaying = false;
+		#else
+		Application.Quit();
+		#endif
+	}
+
 	void Update() {
 		if (Input.GetKey (KeyCode.Escape)) {
 			DeactivateAll ();
