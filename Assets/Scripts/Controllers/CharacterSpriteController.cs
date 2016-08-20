@@ -64,7 +64,7 @@ public class CharacterSpriteController : MonoBehaviour
         // Add the inventory sprite onto the character
         GameObject inv_go = new GameObject("Inventory");
         SpriteRenderer inv_sr = inv_go.AddComponent<SpriteRenderer>();
-        inv_sr.sortingOrder = 1;
+        inv_sr.sortingOrder = 2;
         inv_sr.sortingLayerName = "Characters";
         inv_go.transform.SetParent(char_go.transform);
         inv_go.transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);// Config needs to be added to XML
@@ -79,6 +79,7 @@ public class CharacterSpriteController : MonoBehaviour
         string[] lines = Regex.Split( names.text, "\r\n" );
         c.name = lines[Random.Range(0, lines.Length-1)];
 
+        //Adds a Name Tag To The Player (-1.25 Below, Under Other Players) 
 
     }
 
