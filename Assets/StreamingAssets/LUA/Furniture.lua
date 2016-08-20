@@ -283,4 +283,41 @@ function MetalSmelter_JobComplete(j)
 	end
 end
 
+function PowerCellPress_UpdateAction( furniture, deltaTime)
+--[[
+	spawnSpot = furniture.GetSpawnSpotTile()
+	
+	--checks if steel is there to press
+	if( spawnSpot.inventory = nil ) then
+		if(furniture.JobCount() = 0) then
+			itemsDesired = {inventory.__new("Steel Plate", 5, 0)}
+			jobSpot = furniture.getJobTile()
+		
+			press = Job.__new(
+				jobSpot,
+				nil,
+				nil,
+				2,
+				itemsDesired,
+				Job.JobPriority.Medium,
+				true 
+			)
+	
+			j.RegisterJobCompletedCallback("PowerCellPress_JobComplete")
+			furniture.addJob( press )
+		end
+
+		return
+	end
+	
+	if(furniture.JobCount() > 0 ) then
+	
+		if( spawnSpot.inventory != nil and spawnSpot.inventory.stackSize >= spawnSpot.inventory.maxStackSize) then
+			furniture.CancelJob()
+		end
+	end--]]
+	
+	return
+end
+
 return "LUA Script Parsed!"
