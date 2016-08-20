@@ -88,6 +88,44 @@ public class Room : IXmlSerializable
 
     }
 
+    public void EqualiseGas(Room otherRoom, float leakFactor)
+    {
+        if (otherRoom == null)
+        {
+            return;
+        }
+
+        List<string> gasses = this.GetGasNames().ToList();
+        gasses = gasses.Union(otherRoom.GetGasNames().ToList()).ToList();
+        foreach (string gas in gasses)
+        {
+            float pressureDifference = this.GetGasPressure(gas) - otherRoom.GetGasPressure(gas);
+            this.ChangeGas(gas, (-1) * pressureDifference * leakFactor);
+            otherRoom.ChangeGas(gas, pressureDifference * leakFactor);
+        }
+    }
+
+    public static void EqualiseGasByTile(Tile tile, float leakFactor)
+    {
+        List<Room> roomsDone = new List<Room>();
+        foreach (Tile t in tile.GetNeighbours())
+        {
+            // Skip tiles with a null room (i.e. outside)
+            // TODO: Verify that gas still leaks to the outside
+            // somehow
+            if (t.room == null)
+                continue;
+            
+            if(roomsDone.Contains(t.room) == false)
+            {
+                foreach (Room r in roomsDone) {
+                    t.room.EqualiseGas(r, leakFactor);
+                }
+                roomsDone.Add(t.room);
+            }
+        }
+    }
+
     // Gets absolute gas amount in preasure(in atm) multiplyed by number of tiles
     public float GetGasAmount(string name)
     {
@@ -131,6 +169,7 @@ public class Room : IXmlSerializable
     {
         return atmosphericGasses.Keys.ToArray();
     }
+
 
     public static void DoRoomFloodFill(Tile sourceTile, bool onlyIfOutside = false)
     {
@@ -178,7 +217,7 @@ public class Room : IXmlSerializable
 
                 if (oldRoom.tiles.Count > 0)
                 {
-                    Debug.LogError("'oldRoom' still has tiles assigned to it. This is clearly wrong.");
+                    Logger.LogError("'oldRoom' still has tiles assigned to it. This is clearly wrong.");
                 }
 
                 world.DeleteRoom(oldRoom);
@@ -198,7 +237,7 @@ public class Room : IXmlSerializable
 
     protected static void ActualFloodFill(Tile tile, Room oldRoom, int sizeOfOldRoom)
     {
-        //Debug.Log("ActualFloodFill");
+        //Logger.Log("ActualFloodFill");
 
         if (tile == null)
         {
@@ -290,7 +329,7 @@ public class Room : IXmlSerializable
             }
         }
 
-        //Debug.Log("ActualFloodFill -- Processed Tiles: " + processedTiles);
+        //Logger.Log("ActualFloodFill -- Processed Tiles: " + processedTiles);
 
         if (isConnectedToSpace)
         {

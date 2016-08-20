@@ -76,7 +76,7 @@ public class InventoryManager
     {
         if (job.inventoryRequirements.ContainsKey(inv.objectType) == false)
         {
-            Debug.LogError("Trying to add inventory to a job that it doesn't want.");
+            Logger.LogError("Trying to add inventory to a job that it doesn't want.");
             return false;
         }
 
@@ -116,7 +116,7 @@ public class InventoryManager
         }
         else if (character.inventory.objectType != sourceInventory.objectType)
         {
-            Debug.LogError("Character is trying to pick up a mismatched inventory object type.");
+            Logger.LogError("Character is trying to pick up a mismatched inventory object type.");
             return false;
         }
 
