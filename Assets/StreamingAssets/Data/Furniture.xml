@@ -69,6 +69,7 @@
         <LinksToNeighbours>false</LinksToNeighbours>
         <EnclosesRooms>true</EnclosesRooms>
         <CanReplaceFurniture typeTag="Wall" />
+        <CanReplaceFurniture typeTag="Door" />
 
 
         <Params>
