@@ -524,7 +524,6 @@ public class World : IXmlSerializable
 
         }
         writer.WriteEndElement();
-<<<<<<< HEAD
         
         writer.WriteElementString("Skybox", skybox.name);
 
@@ -534,9 +533,6 @@ public class World : IXmlSerializable
 */
 
         //Debug.Log(writer.ToString());
-	
-=======
->>>>>>> refs/remotes/TeamPorcupine/master
     }
 
     public void ReadXml(XmlReader reader)
