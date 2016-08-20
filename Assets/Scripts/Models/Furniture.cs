@@ -213,10 +213,6 @@ public class Furniture : IXmlSerializable, ISelectable
         {
             World.current.powerSystem.RegisterPowerSupply(this);
         }
-        else if(powerValue < 0)
-        {
-            World.current.powerSystem.RegisterPowerConsumer(this);
-        }
 
         if (other.funcPositionValidation != null)
             this.funcPositionValidation = (Func<Tile, bool>)other.funcPositionValidation.Clone();
@@ -388,8 +384,7 @@ public class Furniture : IXmlSerializable, ISelectable
             }
             else
             {
-                World.current.powerSystem.RegisterPowerConsumer(this);
-                return false;
+                return (World.current.powerSystem.RegisterPowerConsumer(this));
             }
         }
 
