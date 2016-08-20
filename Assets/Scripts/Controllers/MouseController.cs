@@ -156,7 +156,6 @@ public class MouseController : MonoBehaviour
             return;
         }
         if (Input.GetMouseButtonDown(1)) {
-            Debug.Log("Test");
             Tile tileUnderMouse = GetMouseOverTile();
             if (tileUnderMouse.pendingBuildJob != null) {
                 Debug.Log("Canceling!");
