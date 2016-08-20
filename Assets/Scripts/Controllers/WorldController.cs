@@ -19,6 +19,7 @@ public class WorldController : MonoBehaviour
 {
     SoundController soundController;
     TileSpriteController tileSpriteController;
+    CharacterSpriteController characterSpriteController;
 
     public static WorldController Instance { get; protected set; }
 
@@ -79,6 +80,7 @@ public class WorldController : MonoBehaviour
     void Start() {
         tileSpriteController = new TileSpriteController(world);
         tileSpriteController.Render();
+        characterSpriteController = new CharacterSpriteController(world);
     }
 
     void Update()

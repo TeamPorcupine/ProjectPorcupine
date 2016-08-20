@@ -10,19 +10,19 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-public class CharacterSpriteController : MonoBehaviour
+public class CharacterSpriteController
 {
 
     Dictionary<Character, GameObject> characterGameObjectMap;
 
-    World world
-    {
-        get { return WorldController.Instance.world; }
-    }
+    World world;
+    GameObject characterParent;
 
     // Use this for initialization
-    void Start()
+    public CharacterSpriteController(World currentWorld)
     {
+        world = currentWorld;
+        characterParent = new GameObject("Characters");
         // Instantiate our dictionary that tracks which GameObject is rendering which Tile data.
         characterGameObjectMap = new Dictionary<Character, GameObject>();
 
@@ -55,7 +55,7 @@ public class CharacterSpriteController : MonoBehaviour
 
         char_go.name = "Character";
         char_go.transform.position = new Vector3(c.X, c.Y, 0);
-        char_go.transform.SetParent(this.transform, true);
+        char_go.transform.SetParent(characterParent.transform, true);
 
         SpriteRenderer sr = char_go.AddComponent<SpriteRenderer>();
         sr.sprite = SpriteManager.current.GetSprite("Character", "p1_front");
