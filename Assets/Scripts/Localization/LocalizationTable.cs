@@ -61,7 +61,7 @@ namespace ProjectPorcupine.Localization
          * </para>
          * </summary>
          */
-        public static void LoadLocalizationFile(string path, string localizationCode)
+        public static void LoadLocalizationFile(string path, string localizationName)
         {
             // Read the contents of the file. This might throw an exception!
             string[] lines = File.ReadAllLines(path);
@@ -78,8 +78,6 @@ namespace ProjectPorcupine.Localization
 
             // Is the loop already done with figuring out the key?
             bool searchingValue = false;
-
-            string languageName = default(string);
 
             foreach (string line in lines)
             {
@@ -120,14 +118,14 @@ namespace ProjectPorcupine.Localization
                     }
                 }
 
-                // Add the new key+value to the localization table.
-                localizationTable.Add(localizationCode + "_" + currentKey, currentValue);
-
                 if (line.Contains(languageNameIdentifier))
-                    languageName = line.Substring(line.IndexOf('=') + 1);
+                    localizationName = line.Substring(line.IndexOf('=') + 1);
+
+                // Add the new key+value to the localization table.
+                localizationTable.Add(localizationName + "_" + currentKey, currentValue);
             }
 
-            registeredLanguages.Add(languageName == default(string) ? localizationCode : languageName);
+            registeredLanguages.Add(localizationName);
         }
 
         /**
@@ -180,7 +178,7 @@ namespace ProjectPorcupine.Localization
 
                         return key;
                     case FallbackMode.ReturnEnglish:
-                        return GetLocalization(key, FallbackMode.ReturnKey, "en_US", additionalValues);
+                        return GetLocalization(key, FallbackMode.ReturnKey, currentLanguage, additionalValues);
                     case FallbackMode.ReturnEmpty:
                         return "";
                     default:
