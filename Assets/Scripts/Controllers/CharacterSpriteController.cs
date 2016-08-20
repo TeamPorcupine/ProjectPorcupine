@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 public class CharacterSpriteController : MonoBehaviour
 {
@@ -33,7 +34,7 @@ public class CharacterSpriteController : MonoBehaviour
 
     public void OnCharacterCreated(Character c)
     {
-//		Logger.Log("OnCharacterCreated");
+        // Logger.Log("OnCharacterCreated");
         // Create a visual GameObject linked to this data.
 
         // FIXME: Does not consider multi-tile objects nor rotated objects
@@ -64,6 +65,13 @@ public class CharacterSpriteController : MonoBehaviour
         // Register our callback so that our GameObject gets updated whenever
         // the object's into changes.
         c.cbCharacterChanged += OnCharacterChanged;
+
+        // Adds a random name to the Character
+        TextAsset names = Resources.Load("names") as TextAsset;
+        Debug.Log(names.text);
+        string[] lines = Regex.Split( names.text, "\r\n" );
+        c.name = lines[Random.Range(0, lines.Length)];
+
 
     }
 
