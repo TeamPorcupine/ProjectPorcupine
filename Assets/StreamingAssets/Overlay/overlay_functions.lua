@@ -42,5 +42,5 @@ function temperatureValueAt( tile, world )
 	--if tile == nil then
 	--	return -2
 	--end
-	return world.current.temperature.GetTemperature(tile.X, tile.Y)
+	return math.max(math.min(world.current.temperature.GetTemperature(tile.X, tile.Y) / 10, 255), 0)
 end

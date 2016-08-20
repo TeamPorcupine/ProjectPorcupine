@@ -42,7 +42,7 @@ public class Temperature
             }
         }
 
-        sinksAndSources += () => { SetTemperature(50, 50, 100); };
+        sinksAndSources += () => { SetTemperature(50, 50, 1000); };
     }
 
     public void Update()
@@ -100,10 +100,10 @@ public class Temperature
             for (int x = 0; x < xSize; x++)
             {
                 int index = GetIndex(x, y);
-                int index_up = GetIndex(x, y);
-                int index_down = GetIndex(x, y);
-                int index_left = GetIndex(x, y);
-                int index_right = GetIndex(x, y);
+                int index_up = GetIndex(x, y+1);
+                int index_down = GetIndex(x, y-1);
+                int index_left = GetIndex(x-1, y);
+                int index_right = GetIndex(x+1, y);
 
                 temp_curr[index] = temp_old[index];
 
