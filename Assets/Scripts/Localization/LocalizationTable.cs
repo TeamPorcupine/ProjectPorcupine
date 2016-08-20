@@ -101,7 +101,7 @@ namespace ProjectPorcupine.Localization
             if (!missingKeysLogged.Contains(key))
             {
                 missingKeysLogged.Add(key);
-                Logger.LogWarning("Translation for " + key + " failed: Key not in dictionary.");
+                Logger.LogWarning(string.Format("Translation for {0} in {1} failed: Key not in dictionary.", key, language));
             }
 
             switch (fallbackMode)
