@@ -98,17 +98,4 @@ public class HealthSystem
         Invincible = invincible;
         Healable = healAble;
     }
-
-    private HealthSystem(HealthSystem h)
-    {
-        Value = h.Value;
-        MaxHealth = h.MaxHealth;
-        Invincible = h.Invincible;
-        Healable = h.Healable;
-        _currentHealth = h._currentHealth;
-        OnHit = h.OnHit;
-        OnHeal = h.OnHeal;
-        OnRevive = h.OnRevive;
-        OnDestruction = h.OnDestruction;
-    }
 }
