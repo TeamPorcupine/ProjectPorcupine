@@ -8,6 +8,7 @@ using System;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using MoonSharp.Interpreter;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -17,6 +18,7 @@ using System.Linq;
 /// Later, the Character class will likely be refactored (possibly with
 /// sub-classes or interfaces) to support friendly workers, enemies, etc...
 /// </summary>
+[MoonSharpUserData]
 public class Character : IXmlSerializable, ISelectable
 {
 

@@ -172,11 +172,33 @@
       <BuildingJob jobTime="0">
       </BuildingJob>
 
+	
       <LocalizationCode>furn_power_generator</LocalizationCode>
       <UnlocalizedDescription>furn_power_generator_desc</UnlocalizedDescription>
 
   </Furniture>
+  <Furniture objectType="Cloning Pod">
+	<Name>Cloning Pod</Name>
+	<Description>Creates an additional worker, then is destroyed.</Description>
+        <MovementCost>50</MovementCost>
+        <Width>2</Width>
+        <Height>2</Height>
 
+	<BuildingJob jobTime="10">
+            <Inventory objectType="Steel Plate" amount="50" />
+        </BuildingJob>
+		<DeconstructJob>
+            <Inventory objectType="Steel Plate" amount="15" />
+        </DeconstructJob>
+
+        <JobSpotOffset X="0" Y="-1" />
+        <JobSpawnSpotOffset X="1" Y="-1" />
+
+	<OnUpdate FunctionName="CloningPod_UpdateAction" />
+			
+	<LocalizationCode>furn_cloning_pod</LocalizationCode>
+	<UnlocalizedDescription>furn_cloning_pod_desc</UnlocalizedDescription>
+  </Furniture>
   <Furniture objectType="Metal Smelter">
       <Name>Metal Smelter</Name>
       <TypeTag>Processor</TypeTag>
