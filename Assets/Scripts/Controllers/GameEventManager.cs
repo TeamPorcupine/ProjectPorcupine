@@ -90,6 +90,7 @@ public class GameEventManager : MonoBehaviour {
         //Debug.Log("ReadSpriteFromXml");
         string name = reader.GetAttribute("Name");
         int repeat = int.Parse(reader.GetAttribute("Repeat"));
+        int maxRepeats = int.Parse(reader.GetAttribute("MaxRepeats"));
 
         List<string> preconditionNames = new List<string>();
         List<string> onExecuteNames = new List<string>();
@@ -113,13 +114,13 @@ public class GameEventManager : MonoBehaviour {
 
         if (name.Length >= 1)
         {
-            CreateEvent(name, (repeat >= 1) ? true : false, preconditionNames.ToArray(), onExecuteNames.ToArray());
+            CreateEvent(name, (repeat >= 1) ? true : false, maxRepeats, preconditionNames.ToArray(), onExecuteNames.ToArray());
         }
     }
 
-    void CreateEvent(string eventName, bool repeat, string[] preconditionNames, string[] onExecuteNames)
+    void CreateEvent(string eventName, bool repeat, int maxRepeats, string[] preconditionNames, string[] onExecuteNames)
     {
-        GameEvent gameEvent = new GameEvent(eventName, repeat);
+        GameEvent gameEvent = new GameEvent(eventName, repeat, maxRepeats);
 
         gameEvent.RegisterPreconditions(preconditionNames);
         gameEvent.RegisterExecutionActions(onExecuteNames);
