@@ -8,8 +8,8 @@
 #endregion
 
 using System;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace ProjectPorcupine.Localization
@@ -19,13 +19,6 @@ namespace ProjectPorcupine.Localization
     /// </summary>
     public static class LocalizationTable
     {
-        public enum FallbackMode
-        {
-            ReturnKey, ReturnDefaultLanguage
-        }
-
-        private static readonly string defaultLanguage = "en_US";
-
         // The current language. This will be automatically be set by the LocalizationLoader.
         // Default is English.
         public static string currentLanguage = defaultLanguage;
@@ -33,11 +26,18 @@ namespace ProjectPorcupine.Localization
         // Used by the LocalizationLoader to ensure that the localization files are only loaded once.
         public static bool initialized = false;
 
+        private static readonly string defaultLanguage = "en_US";
+
         // The dictionary that stores all the localization values.
         private static Dictionary<string, Dictionary<string, string>> localizationTable = new Dictionary<string, Dictionary<string, string>>();
 
         // Keeps track of what keys we've already logged are missing.
         private static HashSet<string> missingKeysLogged = new HashSet<string>();
+
+        private enum FallbackMode
+        {
+            ReturnKey, ReturnDefaultLanguage
+        }
 
         /// <summary>
         /// Load a localization file from the harddrive.
@@ -47,34 +47,6 @@ namespace ProjectPorcupine.Localization
         {
             string localizationCode = Path.GetFileNameWithoutExtension(path);
             LoadLocalizationFile(path, localizationCode);
-        }
-
-        /// <summary>
-        /// Load a localization file from the harddrive with a defined localization code.
-        /// </summary>
-        /// <param name="path">The path to the file.</param>
-        /// <param name="localizationCode">The localization code, e.g.: "en_US", "en_UK"</param>
-        private static void LoadLocalizationFile(string path, string localizationCode)
-        {
-            try
-            {
-                localizationTable[localizationCode] = new Dictionary<string, string>();
-                string[] lines = File.ReadAllLines(path);
-                foreach (string line in lines)
-                {
-                    string[] keyValuePair = line.Split(new char[] { '=' }, 2);
-                    if (keyValuePair.Length != 2)
-                    {
-                        Logger.LogErrorFormat("Invalid format of localization string. Actual {0}", line);
-                        continue;
-                    }
-                    localizationTable[localizationCode].Add(keyValuePair[0], keyValuePair[1]);
-                }
-            }
-            catch (FileNotFoundException exception)
-            {
-                Logger.LogException(new Exception(string.Format("There is no localization file for {0}", localizationCode), exception));
-            }
         }
 
         /// <summary>
@@ -90,6 +62,43 @@ namespace ProjectPorcupine.Localization
         }
 
         /// <summary>
+        /// Gets all languages present in library.
+        /// </summary>
+        public static string[] GetLanguages()
+        {
+            return localizationTable.Keys.ToArray();
+        }
+
+        /// <summary>
+        /// Load a localization file from the harddrive with a defined localization code.
+        /// </summary>
+        /// <param name="path">The path to the file.</param>
+        /// <param name="localizationCode">The localization code, e.g.: "en_US", "en_UK".</param>
+        private static void LoadLocalizationFile(string path, string localizationCode)
+        {
+            try
+            {
+                localizationTable[localizationCode] = new Dictionary<string, string>();
+                string[] lines = File.ReadAllLines(path);
+                foreach (string line in lines)
+                {
+                    string[] keyValuePair = line.Split(new char[] { '=' }, 2);
+                    if (keyValuePair.Length != 2)
+                    {
+                        Logger.LogErrorFormat("Invalid format of localization string. Actual {0}", line);
+                        continue;
+                    }
+
+                    localizationTable[localizationCode].Add(keyValuePair[0], keyValuePair[1]);
+                }
+            }
+            catch (FileNotFoundException exception)
+            {
+                Logger.LogException(new Exception(string.Format("There is no localization file for {0}", localizationCode), exception));
+            }
+        }
+
+        /// <summary>
         /// Returns the localization for the given key, or the key itself, if no translation exists.
         /// </summary>
         private static string GetLocalization(string key, FallbackMode fallbackMode, string language, params string[] additionalValues)
@@ -99,6 +108,7 @@ namespace ProjectPorcupine.Localization
             {
                 return string.Format(value, additionalValues);
             }
+
             if (!missingKeysLogged.Contains(key))
             {
                 missingKeysLogged.Add(key);
@@ -114,11 +124,6 @@ namespace ProjectPorcupine.Localization
             default:
                 return string.Empty;
             }
-        }
-
-        public static string[] GetLanguages()
-        {
-            return localizationTable.Keys.ToArray();
         }
     }
 }
