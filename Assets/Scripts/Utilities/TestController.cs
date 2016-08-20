@@ -170,17 +170,35 @@ public class TestController : MonoBehaviour
     /// <param name="name">The name to print out the information for.</param>
     public IEnumerator DoTest(Action action, int count, string name)
     {
+        float[] results = new float[count];
         float totalTime = 0.0f, startTime;
 
         for (int i = 0; i < count; ++i)
         {
             startTime = Time.realtimeSinceStartup;
             action();
-            totalTime += Time.realtimeSinceStartup - startTime;
+            results[i] = Time.realtimeSinceStartup - startTime;
+            totalTime += results[i];
             yield return null;
         }
 
-        Log(name + ": " + (totalTime / count) + " seconds average, " + count + " trials");
+        float average = (totalTime / count);
+
+        // compute the standard sample deviation
+        // formula based on Wikipedia
+
+        float sumOfSquaredError = 0.0f;
+
+        for (int i = 0; i < count; ++i)
+        {
+            sumOfSquaredError += (results[i] - average) * (results[i] - average);
+        }
+
+        float correctedSampleStandardDeviation = Mathf.Sqrt(sumOfSquaredError / (count - 1));
+
+        Log(name + ": " + (totalTime / count) + " seconds average, " +
+            correctedSampleStandardDeviation + " standard deviation, " +
+            count + " trials");
     }
 
     /// <summary>
