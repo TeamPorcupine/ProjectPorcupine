@@ -17,7 +17,9 @@ using System.IO;
 
 public class WorldController : MonoBehaviour
 {
-    protected SoundController soundController;
+    SoundController soundController;
+    TileSpriteController tileSpriteController;
+
     public static WorldController Instance { get; protected set; }
 
     // The world and tile data
@@ -72,6 +74,11 @@ public class WorldController : MonoBehaviour
         }
 
         soundController = new SoundController(world);
+    }
+
+    void Start() {
+        tileSpriteController = new TileSpriteController(world);
+        tileSpriteController.Render();
     }
 
     void Update()
