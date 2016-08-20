@@ -1,4 +1,6 @@
-﻿menu_construction=Construction
+﻿Steel Plate_desc=A plate of steel used to build machines and walls.
+Raw Iron_desc=Smelts into steel.
+menu_construction=Construction
 menu_work=Work
 menu_world=World
 menu_options=Options
