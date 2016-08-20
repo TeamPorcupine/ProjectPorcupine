@@ -83,6 +83,10 @@ public class WorldController : MonoBehaviour
         tileSpriteController.Render();
         characterSpriteController = new CharacterSpriteController(world);
         jobSpriteController = new JobSpriteController(world);
+
+        //Initialising controllers
+        GameObject Controllers = GameObject.Find("Controllers");
+        Instantiate(Resources.Load("UIController"), Controllers.transform);
     }
 
     void Update()
