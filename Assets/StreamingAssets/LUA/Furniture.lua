@@ -307,4 +307,66 @@ function CloningPod_JobComplete(j)
 	
 end
 
+function LandingPad_Temp_UpdateAction(furniture, deltaTime)
+	spawnSpot = furniture.GetSpawnSpotTile()	
+	jobSpot = furniture.GetJobSpotTile()
+	inputSpot = World.current.GetTileAt(jobSpot.X, jobSpot.y-1)
+    
+	if(inputSpot.inventory == nil) then
+		if(furniture.JobCount() == 0) then
+			itemsDesired = {Inventory.__new("Steel Plate", furniture.GetParameter("tradeinamount"), 0)}
+			
+			j = Job.__new(
+			inputSpot,
+			nil,
+			nil,
+			0.4,
+			itemsDesired,
+			Job.JobPriority.Medium,
+			false
+			)
+			
+			j.RegisterJobCompletedCallback("LandingPad_Temp_JobComplete")
+			
+			furniture.AddJob(j)
+		end
+	else
+		furniture.ChangeParameter("smelttime", deltaTime)
+		
+		if(furniture.GetParameter("smelttime") >= furniture.GetParameter("smelttime_required")) then
+			furniture.SetParameter("smelttime", 0)
+			
+		 --[[	outputSpot = World.current.GetTileAt(spawnSpot.X+2, spawnSpot.y)
+			
+			if(outputSpot.inventory == nil) then
+				World.current.inventoryManager.PlaceInventory( outputSpot, Inventory.__new("Steel Plate", 50, furniture.GetParameter("tradeoutamount")) )
+			
+				inputSpot.inventory.stackSize = spawnSpot.inventory.stackSize-furniture.GetParameter("smelttime_required")
+			else
+				if(outputSpot.inventory.stackSize <= 50 - outputSpot.inventory.stackSize+furniture.GetParameter("tradeoutamount")) then
+					outputSpot.inventory.stackSize = outputSpot.inventory.stackSize+furniture.GetParameter("tradeoutamount")				
+					inputSpot.inventory.stackSize = spawnSpot.inventory.stackSize-furniture.GetParameter("smelttime_required")
+				end
+			end
+			
+			if(inputSpot.inventory.stackSize <= 0) then
+				inputSpot.inventory = nil
+			end
+            ]]--
+		end
+	end
+end
+
+function LandingPad_Temp_JobComplete(j)
+	spawnSpot = j.tile.furniture.GetSpawnSpotTile()
+	
+	for k, inv in pairs(j.inventoryRequirements) do
+		if(inv.stackSize > 0) then
+			World.current.inventoryManager.PlaceInventory(spawnSpot, inv)
+			spawnSpot.inventory.isLocked = true
+			return
+		end
+	end
+end
+
 return "LUA Script Parsed!"
