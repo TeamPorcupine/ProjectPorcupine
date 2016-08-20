@@ -33,6 +33,7 @@ public class LanguageDropdownUpdater : MonoBehaviour
             }
         }
 
+		// Set scroll sensitivity based on the save-item count
 		dropdown.template.GetComponent<ScrollRect> ().scrollSensitivity = dropdown.options.Count / 3;
     }
 
