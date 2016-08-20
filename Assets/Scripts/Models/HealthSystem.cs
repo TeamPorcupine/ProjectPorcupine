@@ -15,20 +15,20 @@ public class HealthSystem
         {
             if (Invincible == true) return;
             //We have been Revived!
-            if (_currentHealth <= 0 && value > _currentHealth)
+            if (_currentHealth == 0 && value > _currentHealth)
             {
                 _currentHealth = value;
 
-                if (_OnRevive != null)
-                    _OnRevive();
+                if (OnRevive != null)
+                    OnRevive();
                 return;
             }
             //we have been hit but we are not dead!
-            if (value < _currentHealth && value > 0)
+            if (value < _currentHealth && _currentHealth > 0)
             {
                 _currentHealth = value;
-                if (_OnHit != null)
-                    _OnHit();
+                if (OnHit != null)
+                    OnHit();
             }
             //we have been healed!
             if (value > _currentHealth)
@@ -36,18 +36,18 @@ public class HealthSystem
                 if (value > MaxHealth)
                     value = MaxHealth;
                 _currentHealth = value;
-                if (_OnHeal != null)
-                    _OnHeal();
+                if (OnHeal != null)
+                    OnHeal();
 
             }
             //We have died and this means we have been hit!
             if (value <= 0 && IsAlive)
             {
                 _currentHealth = 0;
-                if (_OnHit != null)
-                    _OnHit();
-                if (_OnDestruction != null)
-                    _OnDestruction();
+                if (OnHit != null)
+                    OnHit();
+                if (OnDestruction != null)
+                    OnDestruction();
             }
         }
     }
@@ -56,11 +56,16 @@ public class HealthSystem
     public bool Healable { get; set; }
     public bool IsAlive { get { return Value > 0; } }
 
+    public event Action OnHit;
+    public event Action OnHeal;
+    public event Action OnRevive;
+    public event Action OnDestruction;
+
     private float _currentHealth = 100.0f;
-    private Action _OnHit;
-    private Action _OnHeal;
-    private Action _OnRevive;
-    private Action _OnDestruction;
+
+
+    //Just to have a default constructor so everything stays as default value.
+    public HealthSystem() { }
 
     public HealthSystem(float currentHealth, float maxHealth, bool invincible, bool healAble)
     {
@@ -70,48 +75,29 @@ public class HealthSystem
         Healable = healAble;
     }
 
-    public void RegisterOnHit(Action act)
+    private HealthSystem(HealthSystem h)
     {
-        _OnHit += act;
-    }
-    public void RegisterOnHeal(Action act)
-    {
-        _OnHeal += act;
-    }
-    public void RegisterOnRevive(Action act)
-    {
-        _OnRevive += act;
-    }
-    public void RegisterOnDestruction(Action act)
-    {
-        _OnDestruction += act;
-    }
-
-    public void UnregisterOnHit(Action act)
-    {
-        _OnHit -= act;
-    }
-    public void UnregisterOnHeal(Action act)
-    {
-        _OnHeal -= act;
-    }
-    public void UnregisterOnRevive(Action act)
-    {
-        _OnRevive -= act;
-    }
-    public void UnregisterOnDestruction(Action act)
-    {
-        _OnDestruction -= act;
+        Value = h.Value;
+        MaxHealth = h.MaxHealth;
+        Invincible = h.Invincible;
+        Healable = h.Healable;
+        _currentHealth = h._currentHealth;
+        OnHit = h.OnHit;
+        OnHeal = h.OnHeal;
+        OnRevive = h.OnRevive;
+        OnDestruction = h.OnDestruction;
     }
 
     public static HealthSystem operator+(HealthSystem h1, float num)
     {
-        h1.Value += num;
-        return h1;
+        HealthSystem h = new HealthSystem(h1);
+        h.Value += num;
+        return h;
     }
     public static HealthSystem operator -(HealthSystem h1, float num)
     {
-        h1.Value -= num;
-        return h1;
+        HealthSystem h = new HealthSystem(h1);
+        h.Value -= num;
+        return h;
     }
 }
