@@ -471,7 +471,11 @@ public class World : IXmlSerializable
                 // buy the furniture's movement cost, a furniture movement cost
                 // of exactly 1 doesn't impact our pathfinding system, so we can
                 // occasionally avoid invalidating pathfinding graphs
-                InvalidateTileGraph();	// Reset the pathfinding system
+                //InvalidateTileGraph();	// Reset the pathfinding system
+                if (tileGraph != null)
+                {
+                    tileGraph.RegenerateGraphAtTile(t);
+                }
             }
         }
 
@@ -486,7 +490,11 @@ public class World : IXmlSerializable
 		
         cbTileChanged(t);
 
-        InvalidateTileGraph();
+        //InvalidateTileGraph();
+        if (tileGraph != null)
+        {
+            tileGraph.RegenerateGraphAtTile(t);
+        }
     }
 
     // This should be called whenever a change to the world
@@ -495,6 +503,7 @@ public class World : IXmlSerializable
     {
         tileGraph = null;
     }
+
 
     public bool IsFurniturePlacementValid(string furnitureType, Tile t)
     {

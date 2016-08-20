@@ -10,6 +10,8 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
+using MoonSharp;
+using MoonSharp.Interpreter.Interop;
 
 
 // InstalledObjects are things like walls, doors, and furniture (e.g. a sofa)
@@ -360,6 +362,15 @@ public class Furniture : IXmlSerializable, ISelectable
         return true;
     }
 
+    [MoonSharpVisible(true)]
+    private void UpdateOnChanged(Furniture furn)
+    {
+        if (cbOnChanged != null)
+        {
+            cbOnChanged(furn);
+        }
+    }
+    
     public XmlSchema GetSchema()
     {
         return null;
@@ -654,7 +665,11 @@ public class Furniture : IXmlSerializable, ISelectable
             Room.DoRoomFloodFill(this.tile);
         }
 
-        World.current.InvalidateTileGraph();
+        //World.current.InvalidateTileGraph();
+        if (World.current.tileGraph != null)
+        {
+            World.current.tileGraph.RegenerateGraphAtTile(tile);
+        }
 
         // At this point, no DATA structures should be pointing to us, so we
         // should get garbage-collected.
