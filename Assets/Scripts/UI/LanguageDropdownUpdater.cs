@@ -30,6 +30,6 @@ public class LanguageDropdownUpdater : MonoBehaviour
     {
         string[] languages = LocalizationTable.GetLanguages();
         LocalizationTable.currentLanguage = languages[lang];
-        Settings.setSetting("localisation", languages[lang]);
+        Settings.setSetting("localization", languages[lang]);
     }
 }

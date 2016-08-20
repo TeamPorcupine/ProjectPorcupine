@@ -43,7 +43,7 @@ namespace ProjectPorcupine.Localization
 
 
             // Atempt to get setting of currently selected language. (Will default to English).
-            string lang = Settings.getSetting("localisation", "en_US");
+            string lang = Settings.getSetting("localization", "en_US");
 
             // setup LocalizationTable with either loaded or defaulted language
             LocalizationTable.currentLanguage = lang;
