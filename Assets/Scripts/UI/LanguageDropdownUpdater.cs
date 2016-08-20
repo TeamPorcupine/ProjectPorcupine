@@ -24,6 +24,8 @@ public class LanguageDropdownUpdater : MonoBehaviour
                 dropdown.value = i;
             }
         }
+
+		dropdown.template.GetComponent<ScrollRect> ().scrollSensitivity = dropdown.options.Count / 3;
     }
 
     public void SelectLanguage(int lang)
