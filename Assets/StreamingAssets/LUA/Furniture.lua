@@ -236,6 +236,7 @@ function MetalSmelter_UpdateAction(furniture, deltaTime)
 			nil,
 			0.4,
 			itemsDesired,
+			Job.JobPriority.Medium,
 			false
 			)
 			
