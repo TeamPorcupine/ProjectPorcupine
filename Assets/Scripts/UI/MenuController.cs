@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class MenuController : MonoBehaviour {
+public class MenuController : MonoBehaviour 
+{
 	//The left build menu
 	public GameObject constructorMenu;
 
@@ -14,38 +15,44 @@ public class MenuController : MonoBehaviour {
 	public GameObject settingsMenu;
 
 	// Use this for initialization
-	void Start () {
-		DeactivateAll ();
+	void Start() 
+	{
+		DeactivateAll();
 	}
 
 	//Deactivates All Menus
-	public void DeactivateAll () {
-		DeactivateConstructor ();
-		settingsMenu.SetActive (false);
-		optionsMenu.SetActive (false);
+	public void DeactivateAll() 
+	{
+		DeactivateConstructor();
+		settingsMenu.SetActive(false);
+		optionsMenu.SetActive(false);
 	}
 
 	//Deactivates All Menus Except the settings and options
-	public void DeactivateConstructor () {
-		DeactivateSubs ();
-		constructorMenu.SetActive (false);
-
+	public void DeactivateConstructor() 
+	{
+		DeactivateSubs();
+		constructorMenu.SetActive(false);
 	}
 
 	//Deactivates any sub menu of the constrution options
-	public void DeactivateSubs () {
-		furnitureMenu.SetActive (false);
-		floorMenu.SetActive (false);
+	public void DeactivateSubs() 
+	{
+		furnitureMenu.SetActive(false);
+		floorMenu.SetActive(false);
 	}
 
     //toggles whether menu is active
-    public void ToggleMenu(GameObject menu) {
+    public void ToggleMenu(GameObject menu) 
+	{
         menu.SetActive(!menu.activeSelf);
     }
 
-	void Update() {
-		if (Input.GetKey (KeyCode.Escape)) {
-			DeactivateAll ();
+	void Update() 
+	{
+		if (Input.GetKey(KeyCode.Escape)) 
+		{
+			DeactivateAll();
 		}
 	}
 }
