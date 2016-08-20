@@ -37,4 +37,10 @@ public class MenuController : MonoBehaviour {
 		furnitureMenu.SetActive (false);
 		floorMenu.SetActive (false);
 	}
+
+	void Update() {
+		if (Input.GetKey (KeyCode.Escape)) {
+			DeactivateAll ();
+		}
+	}
 }
