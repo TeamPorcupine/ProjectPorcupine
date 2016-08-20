@@ -286,7 +286,7 @@ public class Character : IXmlSerializable, ISelectable
             // Are we standing on a tile with goods that are desired by the job?
             Logger.LogVerbose("Standing on Tile check");
             if (CurrTile.inventory != null &&
-                myJob.DesiresInventoryType(CurrTile.inventory) > 0 &&
+                myJob.DesiresInventoryType(CurrTile.inventory) > 0 && !CurrTile.inventory.isLocked &&
                 (myJob.canTakeFromStockpile || CurrTile.furniture == null || CurrTile.furniture.IsStockpile() == false))
             {
                 // Pick up the stuff!
