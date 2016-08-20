@@ -277,7 +277,7 @@ function MetalSmelter_JobComplete(j)
 	for k, inv in pairs(j.inventoryRequirements) do
 		if(inv.stackSize > 0) then
 			World.current.inventoryManager.PlaceInventory(spawnSpot, inv)
-
+			spawnSpot.inventory.isLocked = true
 			return
 		end
 	end
