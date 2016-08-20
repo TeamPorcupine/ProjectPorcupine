@@ -88,7 +88,14 @@ public class FurnitureSpriteController : MonoBehaviour
             SpriteRenderer powerSR = power_go.AddComponent<SpriteRenderer>();
             powerSR.sprite = GetPowerStatusSprite();
             powerSR.sortingLayerName = "Power";
-            powerSR.color = PowerStatusColor(furn);
+            powerSR.color = PowerStatusColor();
+
+            if (world.powerSystem.PowerLevel > 0) {
+                power_go.SetActive(false);
+            }
+            else {
+                power_go.SetActive(true);
+            }
 
         }
 
@@ -144,7 +151,17 @@ public class FurnitureSpriteController : MonoBehaviour
             return;
 
         GameObject power_go = powerStatusGameObjectMap[furn];
-        power_go.GetComponent<SpriteRenderer>().color = PowerStatusColor(furn);        
+
+        if (world.powerSystem.PowerLevel > 0)
+        {
+            power_go.SetActive(false);
+        }
+        else 
+        {
+            power_go.SetActive(true);
+        }
+        
+        power_go.GetComponent<SpriteRenderer>().color = PowerStatusColor();        
     }
 
 
@@ -266,7 +283,7 @@ public class FurnitureSpriteController : MonoBehaviour
         return SpriteManager.current.GetSprite("Power", "PowerIcon");
     }
 
-    Color PowerStatusColor(Furniture furn) 
+    Color PowerStatusColor() 
     {
         if (world.powerSystem.PowerLevel > 0)
             return Color.green;
