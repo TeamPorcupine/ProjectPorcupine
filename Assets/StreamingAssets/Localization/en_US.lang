@@ -45,3 +45,5 @@ furn_cloning_pod=Cloning Pod
 furn_cloning_pod_desc=Creates an additional worker, then is destroyed.
 furn_power_generator=Power Generator
 furn_power_generator_desc=Generates power out of nothing.
+furn_power_cell_press=Power Cell Press
+furn_power_cell_press_desc=Presses metal and flux into Power Cells
