@@ -153,14 +153,21 @@ public class InventoryManager
         return path.EndTile().inventory;
     }
 
+	public bool QuickCheck(string objectType)
+	{
+		// If the inventories doesn't contain the objectType, we know that no
+		// stacks of this type exists and can return.
+		if (inventories.ContainsKey(objectType) == false)
+		{
+			return false;
+		}
+
+		return true;
+	}
+
     public Path_AStar GetPathToClosestInventoryOfType(string objectType, Tile t, int desiredAmount, bool canTakeFromStockpile)
     {
-        // If the inventories doesn't contain the objectType, we know that no
-        // stacks of this type exists and can return.
-        if (inventories.ContainsKey(objectType) == false)
-        {
-            return null;
-        }
+		QuickCheck (objectType);
 
         // We know that there is a list for objectType, we still need to test if
         // the list contains anything

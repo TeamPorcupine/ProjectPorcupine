@@ -21,6 +21,11 @@ public class JobQueue
         jobQueue = new SortedList<Job.JobPriority, Job>(new DuplicateKeyComparer<Job.JobPriority>(true));
     }
 
+	public bool IsEmpty()
+	{
+		return jobQueue.Count == 0;
+	}
+
     public void Enqueue(Job j)
     {
         //Logger.Log("Adding job to queue. Existing queue size: " + jobQueue.Count);
