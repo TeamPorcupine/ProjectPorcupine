@@ -11,9 +11,12 @@ public class HealthSystem
             return _currentHealth;
         }
 
-        private set
+        set
         {
-            if (Invincible == true) return;
+            if (Invincible == true) 
+            {
+                return;
+            }
             
             // Make sure we don't overflow or underflow Health
             if (value < 0) 
