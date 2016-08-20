@@ -19,6 +19,7 @@ namespace ProjectPorcupine.Localization
 
         //The dictionary that stores all the localization values.
         private static Dictionary<string, Dictionary<string,string>> localizationTable = new Dictionary<string, Dictionary<string, string>>();
+        private static HashSet<string> missingKeysLogged = new HashSet<string>();
 
         private static readonly string defaultLanguage = "en_US";
 
