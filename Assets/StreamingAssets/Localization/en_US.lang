@@ -45,3 +45,4 @@ furn_cloning_pod=Cloning Pod
 furn_cloning_pod_desc=Creates an additional worker, then is destroyed.
 furn_power_generator=Power Generator
 furn_power_generator_desc=Generates power out of nothing.
+need_oxygen=Oxygen

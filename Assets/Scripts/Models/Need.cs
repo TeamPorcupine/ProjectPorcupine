@@ -6,6 +6,7 @@ using System.Xml.Serialization;
 
 public class Need {
 	public string needType;
+	public string localisationID;
 	public string Name;
 	protected float growthRate;
 	public float Amount = 0;
@@ -38,7 +39,7 @@ public class Need {
 	public void Update (float deltaTime)
 	{
 		Amount += growthRate * deltaTime;
-		if (character != null && character.CurrTile.room.GetGasPressure ("O2") < 0.15)
+		if (character != null && character.CurrTile.room != null && character.CurrTile.room.GetGasPressure ("O2") < 0.15)
 		{
 			Amount += (addedInVacuum - (addedInVacuum * (character.CurrTile.room.GetGasPressure ("O2") * 5))) * deltaTime;
 		}
@@ -56,6 +57,10 @@ public class Need {
 			{
 				character.CancelNeed ();
 			}
+		}
+		if (Amount == 100)
+		{
+			//FIXME: Insert damage code here.
 		}
 	}
 
@@ -107,6 +112,10 @@ public class Need {
 			case "RestoreNeedAmount":
 				reader.Read ();
 				restoreNeedAmount = reader.ReadContentAsFloat();
+				break;
+			case "Locaization":
+				reader.Read ();
+				localisationID = reader.ReadContentAsString();
 				break;
 			}
 		}

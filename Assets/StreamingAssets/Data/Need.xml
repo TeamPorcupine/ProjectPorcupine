@@ -10,5 +10,6 @@
 		<Damage>20</Damage>
 		<CompleteOnFail>false</CompleteOnFail>
 		<HighToLow>true</HighToLow>
+		<Localization>need_oxygen</Localization>
     </Need>
 </Needs>
