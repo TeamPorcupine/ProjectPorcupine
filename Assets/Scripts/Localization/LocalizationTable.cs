@@ -18,7 +18,9 @@ namespace ProjectPorcupine.Localization
 
         // The current language. This will be automatically be set by the LocalizationLoader.
         // Default is English.
-        public static string currentLanguage = "en_US";
+        public static string currentLanguage = "English (US)";
+
+        public static string languageNameIdentifier = "language_name";
 
         // Used by the LocalizationLoader to ensure that the localization files are only loaded once.
         public static bool initialized = false;
@@ -77,6 +79,8 @@ namespace ProjectPorcupine.Localization
             // Is the loop already done with figuring out the key?
             bool searchingValue = false;
 
+            string languageName = default(string);
+
             foreach (string line in lines)
             {
                 // Reuse the array (for reducing RAM usage).
@@ -118,9 +122,12 @@ namespace ProjectPorcupine.Localization
 
                 // Add the new key+value to the localization table.
                 localizationTable.Add(localizationCode + "_" + currentKey, currentValue);
+
+                if (line.Contains(languageNameIdentifier))
+                    languageName = line.Substring(line.IndexOf('=') + 1);
             }
 
-            registeredLanguages.Add(localizationCode);
+            registeredLanguages.Add(languageName == default(string) ? localizationCode : languageName);
         }
 
         /**
