@@ -22,7 +22,8 @@ using MoonSharp.Interpreter;
 public enum TileType
 {
     Empty,
-    Floor
+    Floor,
+    Ladder
 };
 
 public enum ENTERABILITY
