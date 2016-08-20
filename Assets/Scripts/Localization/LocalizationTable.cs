@@ -94,9 +94,11 @@ namespace ProjectPorcupine.Localization
                 // Go through each char contained in this line.
                 foreach (char c in chars)
                 {
-                    if (!searchingValue) // Check if the loop is searching for a value.
+                    // Check if the loop is searching for a value.
+                    if (!searchingValue)
                     {
-                        if (c != '=') // Check if the current char is an '=', if not, add the char to the key.
+                        // Check if the current char is an '=', if not, add the char to the key.
+                        if (c != '=')
                         {
                             // Add the char to the key.
                             currentKey += c;
