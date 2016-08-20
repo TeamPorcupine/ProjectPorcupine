@@ -22,6 +22,8 @@ public static class Settings {
         string s = getSetting(key);
         if (s == null)
         {
+            settingsDict.Add(key, defaultValue);
+            saveSettings();
             return defaultValue;
         }
         else
