@@ -22,7 +22,7 @@ public class OverlayMap : MonoBehaviour {
     /// Transparency of overlay
     /// </summary>
     [Range(0,1)]
-    public float transparency = 0.4f;
+    public float transparency = 0.8f;
     /// <summary>
     /// Update interval (0 for every Update, inf for never)
     /// </summary>
