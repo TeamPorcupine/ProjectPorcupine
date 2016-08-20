@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Events>
 
-    <Event Name="NewCrewMember" Repeat="1">
+    <Event Name="NewCrewMember" Repeat="1" MaxRepeats="2">
       <Precondition FunctionName="Precondition_Event_NewCrewMember" />
       <OnExecute FunctionName="Execute_Event_NewCrewMember" />
     </Event>

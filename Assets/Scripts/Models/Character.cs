@@ -176,7 +176,7 @@ public class Character : IXmlSerializable, ISelectable
             jobTile = myJob.tile;
         }
 
-        if (pathAStar.Length() == 0)
+        if (pathAStar != null && pathAStar.Length() == 0)
         {
             Logger.LogError("Path_AStar returned no path to target job tile!");
             AbandonJob();
