@@ -88,7 +88,6 @@ public class Furniture : IXmlSerializable, ISelectable
 
     }
 
-
     // If this furniture generates power then powerValue will be positive, if it consumer power then it will be negative
     public float powerValue;
 
@@ -320,6 +319,15 @@ public class Furniture : IXmlSerializable, ISelectable
         // Call LUA install scripts
         if(obj.installActions != null )
         FurnitureActions.CallFunctionsWithFurniture(obj.installActions.ToArray(), obj, 0);
+
+        // Update thermalDiffusifity using coefficient
+        float thermalDiffusivity = Temperature.defaultThermalDiffusivity;
+        if(obj.furnParameters.ContainsKey("thermal_diffusivity"))
+        {
+            thermalDiffusivity = obj.furnParameters["thermal_diffusivity"];
+        }
+
+        World.current.temperature.SetThermalDiffusivity(tile.X, tile.Y, thermalDiffusivity);
 
         return obj;
     }
@@ -749,7 +757,11 @@ public class Furniture : IXmlSerializable, ISelectable
         // We call lua to decostruct
         if (uninstallActions != null)
             FurnitureActions.CallFunctionsWithFurniture(uninstallActions.ToArray(), this, 0);
-        
+
+        // Update thermalDiffusifity to default value
+        World.current.temperature.SetThermalDiffusivity(tile.X, tile.Y,
+            Temperature.defaultThermalDiffusivity);
+
         tile.UnplaceFurniture();
 
         if (cbOnRemoved != null)

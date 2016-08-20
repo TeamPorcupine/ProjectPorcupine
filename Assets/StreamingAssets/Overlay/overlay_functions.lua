@@ -33,7 +33,7 @@ function powerValueAt(tile)
 	return math.max(math.min(val, 255), 0)
 end
 
--- Dummy function, will be implemented
+-- Return temperature (in K) in current tile
 function temperatureValueAt( tile, world )
 	--if world == nil or world.current == nil or world.current.temperature == nil then
 	--	return -1
@@ -43,4 +43,21 @@ function temperatureValueAt( tile, world )
 	--	return -2
 	--end
 	return math.max(math.min(world.current.temperature.GetTemperature(tile.X, tile.Y) / 10, 255), 0)
+end
+
+
+-- Returns coloring of thermal diffusivity of tile
+function thermalDiffusivityValueAt(tile, world)
+	mid = 128
+	if tile == nil then
+		return mid
+	else
+		val = mid + 10*world.current.temperature.GetThermalDiffusivity(tile.X, tile.Y)
+	end
+	return math.max(math.min(val, 255), 0)
+end
+
+-- Dummy function, will be implemented
+function heatGenerationValueAt( tile, world )
+	return 0
 end

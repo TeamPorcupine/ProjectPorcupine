@@ -19,8 +19,19 @@
         <DeconstructJob>
             <Inventory objectType="Steel Plate" amount="3" />
         </DeconstructJob>
-		
-		<LocalizationCode>furn_steel_wall</LocalizationCode>
+
+
+      <Params>
+        <!-- Temperature stuff  example -->
+        <!-- Thermal diffusivity (also called alpha) is how much the furniture is "isolating" the tile it is placed on. -->
+        <!-- 0 means *NO* temperature is exchanged between tiles -->
+        <!-- 1 means a regular amout is exchanged -->
+        <!-- Walls will likely have low values, whilst tables and so on will have values close to 1 (if not 1). -->
+        <!-- Leave default value (i.e. nothing) if the furniture does not have any isolation effect. -->
+        <Param name="thermal_diffusivity" value="0.1" />
+      </Params>
+
+      <LocalizationCode>furn_steel_wall</LocalizationCode>
 		<UnlocalizedDescription>furn_steel_wall_desc</UnlocalizedDescription>
 
     </Furniture>

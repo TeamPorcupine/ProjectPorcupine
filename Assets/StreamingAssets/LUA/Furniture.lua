@@ -284,13 +284,15 @@ function MetalSmelter_JobComplete(j)
 end
 
 -- Dummy heater install function
+-- THis function gets called once, when the funriture is isntalled
 function Heater_InstallAction( furniture, deltaTime)
-
+	-- TODO: find elegant way to register heat source and sinks to Temperature
 end
 
 -- Dummy heater uninstall function
+-- THis function gets called once, when the funriture is unisntalled
 function Heater_UninstallAction( furniture, deltaTime)
-
+	-- TODO: find elegant way to unregister previous register
 end
 
 return "LUA Script Parsed!"
