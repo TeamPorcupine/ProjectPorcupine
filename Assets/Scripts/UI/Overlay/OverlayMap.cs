@@ -208,8 +208,12 @@ public class OverlayMap : MonoBehaviour {
         // Set material
         Shader shader = Shader.Find("Transparent/Diffuse");
         Material mat = new Material(shader);
-        meshRenderer.sharedMaterials[0] = mat;
-        meshRenderer.sharedMaterials[0].mainTexture = texture;
+        meshRenderer.material = mat;
+        if(mat == null || meshRenderer == null || texture == null)
+        {
+            Logger.LogError("Material or renderer is null. Failing.");
+        }
+        meshRenderer.material.mainTexture = texture;
 
         initialized = true;
     }
