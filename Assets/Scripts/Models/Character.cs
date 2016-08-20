@@ -107,7 +107,7 @@ public class Character : IXmlSerializable, ISelectable
     public event Action<Character> cbCharacterChanged;
 
     /// Our job, if any.
-    Job myJob;
+	Job myJob { get; protected set; }
 
     // The item we are carrying (not gear/equipment)
     public Inventory inventory;
