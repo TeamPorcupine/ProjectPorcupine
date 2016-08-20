@@ -64,7 +64,7 @@ public class World : IXmlSerializable
         SetupWorld(width, height);
         int seed = UnityEngine.Random.Range(0, int.MaxValue);
         WorldGenerator.Generate(this, seed);
-
+		Debug.Log ("Generated World");
         // Make one character
         CreateCharacter(GetTileAt(Width / 2, Height / 2));
     }
@@ -146,7 +146,7 @@ public class World : IXmlSerializable
         }
 
         CreateFurniturePrototypes();
-
+		CreateNeedPrototypes ();
         characters = new List<Character>();
         furnitures = new List<Furniture>();
         inventoryManager = new InventoryManager();
