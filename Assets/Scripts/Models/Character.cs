@@ -117,6 +117,8 @@ public class Character : IXmlSerializable, ISelectable
     {
 		needs = new Need[World.current.needPrototypes.Count];
 		World.current.needPrototypes.Values.CopyTo (needs, 0);
+		foreach (Need n in needs)
+			n.character = this;
     }
 
     public Character(Tile tile)
@@ -124,6 +126,8 @@ public class Character : IXmlSerializable, ISelectable
         CurrTile = DestTile = NextTile = tile;
 		needs = new Need[World.current.needPrototypes.Count];
 		World.current.needPrototypes.Values.CopyTo (needs, 0);
+		foreach (Need n in needs)
+			n.character = this;
     }
 
 
@@ -201,6 +205,9 @@ public class Character : IXmlSerializable, ISelectable
                 myJob.DoWork(deltaTime);
             }
         }
+		//calculate needs
+		foreach (Need n in needs)
+			n.Update (deltaTime);
     }
 
     /// <summary>
