@@ -2,7 +2,8 @@
 using UnityEngine.UI;
 using System.Collections;
 
-public class SettingHelper : MonoBehaviour {
+public class SettingHelper : MonoBehaviour 
+{
 
 	//langage Option
 	public Toggle langToggle;
@@ -101,14 +102,12 @@ public class SettingHelper : MonoBehaviour {
 
 	public void OnMasterChange()
 	{
-		//TODO: add Volume controll later
-		//gameSettings.masterVolume = masterVolume.value;
+
 	}
 
 	public void OnMusicChange()
 	{
-		//TODO: add music later
-		//gameSettings.musicVolume = musicVolume.value;
+		
 	}
 
 	public void SaveSetting()
@@ -129,16 +128,6 @@ public class SettingHelper : MonoBehaviour {
 
 	void CreateResDropDown()
 	{
-		/*
-		for (int i = 0; i < myResolutions.Length; i++) {
-			resolutionDropdown.AddOptions (myResolutions [i].height.ToString () + "x" + myResolutions [i].width.ToString () + "   " + myResolutions [i].refreshRate.ToString ());
-		}
-		*/
-		//???
-		/*
-		foreach (Resolution res in myResolutions) {
-			resolutionDropdown.AddOptions (res);
-		}
-		*/
+
 	}
 }
