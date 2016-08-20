@@ -24,7 +24,7 @@ public class HealthSystem
                 return;
             }
             //we have been hit but we are not dead!
-            if (value < _currentHealth && _currentHealth > 0)
+            if (_currentHealth <= 0 && value > 0)
             {
                 _currentHealth = value;
                 if (OnHit != null)
