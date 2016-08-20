@@ -26,7 +26,7 @@ namespace ProjectPorcupine.Localization
         //Default is English.
         public static string currentLanguage = defaultLanguage;
 
-        //Used by the LocalizationLoader to ensure that the localization files are only loaded once.
+        // Used by the LocalizationLoader to ensure that the localization files are only loaded once.
         public static bool initialized = false;
 
         /// <summary>
@@ -88,10 +88,11 @@ namespace ProjectPorcupine.Localization
             {
                 return string.Format(localizationTable[language][key], additionalValues);
             }
-#if UNITY_EDITOR //TODO: Think if #if is a good idea or not.
-            //Log a warning into the console if this operation fails.
-            Logger.LogWarning("Translation for " + key + " failed: Key not in dictionary.");
-#endif
+            if (!missingKeysLogged.Contains(key))
+            {
+                missingKeysLogged.Add(key);
+                Logger.LogWarning("Translation for " + key + " failed: Key not in dictionary.");
+            }
             //Switch the fallback mode.
             switch (fallbackMode)
             {
