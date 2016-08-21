@@ -18,7 +18,6 @@ using MoonSharp.Interpreter;
 [MoonSharpUserData]
 public class World : IXmlSerializable
 {
-
     // A two-dimensional array to hold our tile data.
     Tile[,] tiles;
     public List<Character> characters;
@@ -187,20 +186,21 @@ public class World : IXmlSerializable
         furnitureJobPrototypes[f.objectType] = j;
     }
 
-    void LoadFurnitureLua()
+    void LoadFurnitureLua(string filePath)
     {
-        string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
-        filePath = System.IO.Path.Combine(filePath, "Furniture.lua");
         string myLuaCode = System.IO.File.ReadAllText(filePath);
 
         // Instantiate the singleton
-        new FurnitureActions(myLuaCode);
 
+        FurnitureActions.addScript(myLuaCode);
     }
 
     void CreateFurniturePrototypes()
     {
-        LoadFurnitureLua();
+        new FurnitureActions();
+        string luaFilePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
+        luaFilePath = System.IO.Path.Combine(luaFilePath, "Furniture.lua");
+        LoadFurnitureLua(luaFilePath);
 
 
         furniturePrototypes = new Dictionary<string, Furniture>();
@@ -210,10 +210,33 @@ public class World : IXmlSerializable
         // TODO:  Probably we should be getting past a StreamIO handle or the raw
         // text here, rather than opening the file ourselves.
 
-        string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
-        filePath = System.IO.Path.Combine(filePath, "Furniture.xml");
+        string dataPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
+        string filePath = System.IO.Path.Combine(dataPath, "Furniture.xml");
         string furnitureXmlText = System.IO.File.ReadAllText(filePath);
+        LoadFurniturePrototypesFromFile(furnitureXmlText);
 
+
+        DirectoryInfo[] mods = WorldController.Instance.modsManager.GetMods();
+        foreach (DirectoryInfo mod in mods)
+        {
+            Logger.Log("MOD: " + mod.FullName);
+            string furnitureLuaModFile = System.IO.Path.Combine(mod.FullName, "Furniture.lua");
+            if (File.Exists(furnitureLuaModFile))
+            {
+                LoadFurnitureLua(furnitureLuaModFile);
+            }
+
+            string furnitureXmlModFile = System.IO.Path.Combine(mod.FullName, "Furniture.xml");
+            if (File.Exists(furnitureXmlModFile))
+            {
+                string furnitureXmlModText = System.IO.File.ReadAllText(furnitureXmlModFile);
+                LoadFurniturePrototypesFromFile(furnitureXmlModText);
+            }
+        }
+    }
+
+    void LoadFurniturePrototypesFromFile(string furnitureXmlText) 
+    {
         XmlTextReader reader = new XmlTextReader(new StringReader(furnitureXmlText));
 
         int furnCount = 0;
