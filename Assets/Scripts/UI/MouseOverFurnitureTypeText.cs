@@ -9,6 +9,7 @@
 using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using ProjectPorcupine.Localization;
 
 public class MouseOverFurnitureTypeText : MonoBehaviour
 {
@@ -38,6 +39,7 @@ public class MouseOverFurnitureTypeText : MonoBehaviour
             Logger.LogError("How do we not have an instance of mouse controller?");
             return;
         }
+
     }
 	
     // Update is called once per frame
@@ -50,12 +52,14 @@ public class MouseOverFurnitureTypeText : MonoBehaviour
         if (t != null && t.furniture != null)
         {
             s = t.furniture.Name;
-            myText.text = "Furniture: " + s;
+            myText.text = LocalizationTable.GetLocalization("furniture") + ": " + s;
         } else
         {
             myText.text = "";
         }
 
-        
+       
+
+
     }
 }
