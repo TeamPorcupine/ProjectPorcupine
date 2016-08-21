@@ -91,7 +91,7 @@ public class Temperature
         if (elapsed >= updateInterval)
         {
             ProgressTemperature();
-            BuildMatrix();
+            //BuildMatrix();
             updateInterval = Mathf.Infinity;
             elapsed = 0;
         }
