@@ -379,10 +379,10 @@ public class Character : IXmlSerializable, ISelectable
     /// </summary>
     private void DumpExcessInventory()
     {
-        //// TODO: Look for Places accepting the inventory in the following order:
-        //// - Jobs also needing this item (this could serve us when building Walls, as the character could transport ressources for multiple walls at once)
-        //// - Stockpiles (as not to clutter the floor)
-        //// - Floor
+        // TODO: Look for Places accepting the inventory in the following order:
+        // - Jobs also needing this item (this could serve us when building Walls, as the character could transport ressources for multiple walls at once)
+        // - Stockpiles (as not to clutter the floor)
+        // - Floor
 
         ////if (World.current.inventoryManager.PlaceInventory(CurrTile, inventory) == false)
         ////{

@@ -16,8 +16,7 @@ using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
 using UnityEngine;
 
-//// InstalledObjects are things like walls, doors, and furniture (e.g. a sofa)
-
+// InstalledObjects are things like walls, doors, and furniture (e.g. a sofa)
 [MoonSharpUserData]
 public class Furniture : IXmlSerializable, ISelectable
 {
