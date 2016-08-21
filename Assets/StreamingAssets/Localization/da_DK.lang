@@ -1,3 +1,11 @@
+inv_copper_wire=Copper Ledning
+inv_copper_wire_desc=Fører strøm til maskiner.
+inv_ice=Is
+inv_ice_desc=Frossen vand.
+inv_raw_iron=Rå Jern
+inv_raw_iron_desc=En rå resource brugt i stålproduction.
+inv_steel_plate=Stål Plade
+inv_steel_plate_desc=Brugt til at konstruere maskiner og andre møbler.
 menu_construction=Byg
 menu_work=Arbejd
 menu_world=Verden

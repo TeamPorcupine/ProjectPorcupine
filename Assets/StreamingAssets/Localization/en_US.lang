@@ -1,4 +1,12 @@
-﻿menu_construction=Construction
+﻿inv_copper_wire=Copper Wire
+inv_copper_wire_desc=For Wiring up machines.
+inv_ice=Ice
+inv_ice_desc=Frozen Water.
+inv_raw_iron=Raw Iron
+inv_raw_iron_desc=A raw resource used for making steel.
+inv_steel_plate=Steel Plate
+inv_steel_plate_desc=Used for building machines and other furniture.
+menu_construction=Construction
 menu_work=Work
 menu_world=World
 menu_options=Options
