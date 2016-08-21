@@ -1,3 +1,12 @@
+[Contributing](#contributing)  
+[Resolving Merge Conflicts](#resolving-merge-conflicts)  
+[Unity Version](#unity-version)  
+[General resources](#general-resources)  
+[Style Guidelines](#style-guidelines)  
+[Best Practices for Contributing](#best-practices-for-contributing)
+
+
+
 # Contributing
 
 If you would like to contribute to this project by modifying/adding to the program code or various creative assets, read the [Best Practices for Contributing] below and feel free to follow the standard Github workflow:
