@@ -1,3 +1,12 @@
+[Contributing](#contributing)  
+[Resolving Merge Conflicts](#resolving-merge-conflicts)  
+[Unity Version](#unity-version)  
+[General resources](#general-resources)  
+[Style Guidelines](#style-guidelines)  
+[Best Practices for Contributing](#best-practices-for-contributing)
+
+
+
 # Contributing
 
 If you would like to contribute to this project by modifying/adding to the program code or various creative assets, read the [Best Practices for Contributing] below and feel free to follow the standard Github workflow:
@@ -26,7 +35,7 @@ If you would like to contribute to this project by modifying/adding to the progr
     `git push origin my-feature-branch-name`  
 8. Make a "Pull Request" from your branch here on Github.
   * Include screenshots demonstrating your change if applicable.
-9. For a video tutorial, please see: https://www.youtube.com/watch?v=-R2fl17eEpwI
+9. For a video tutorial, please see: https://www.youtube.com/watch?v=R2fl17eEpwI
 
 # Resolving Merge Conflicts
 

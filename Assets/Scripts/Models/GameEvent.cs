@@ -1,4 +1,12 @@
-﻿using UnityEngine;
+#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
+using UnityEngine;
 using System.Collections.Generic;
 using MoonSharp;
 using MoonSharp.Interpreter;
@@ -35,8 +43,7 @@ public class GameEvent
             conditionsMet += (int)(GameEventActions.CallFunction(precondition, this, deltaTime).Number);
         }
 
-        if(conditionsMet >= preconditions.Count && executed == false && repeats < MaxRepeats){
-            Debug.Log(repeats);
+        if(conditionsMet >= preconditions.Count && executed == false && (MaxRepeats <= 0 || repeats < MaxRepeats)){
             repeats++;
             Execute();
         }
