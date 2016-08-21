@@ -35,19 +35,27 @@ namespace ProjectPorcupine.Localization
 
             // Get the file path.
             string filePath = Path.Combine(Application.streamingAssetsPath, "Localization");
-
-            // Loop through all files.
-            foreach (string file in Directory.GetFiles(filePath))
+            
+            //Loop through all files.
+            //TODO: Think over the extension ".lang", might change that in the future.
+            foreach (string file in Directory.GetFiles(filePath, "*.lang"))
             {
-                // Check if the file is really a .lang file, and nothing else.
-                // TODO: Think over the extension ".lang", might change that in the future.
-                if (file.EndsWith(".lang"))
-                {
-                    // The file extension is .lang, load it.
-                    LocalizationTable.LoadLocalizationFile(file);
+                //The file extention is .lang, load it.
+                LocalizationTable.LoadLocalizationFile(file);
 
-                    // Just write a little debug info into the console.
-                    Debug.Log("Loaded localization at path\n" + file);
+                //Just write a little debug info into the console.
+                Debug.Log("Loaded localization at path\n" + file);
+            }
+
+            foreach (DirectoryInfo mod in WorldController.Instance.modsManager.GetMods())
+            {
+                foreach (FileInfo file in mod.GetFiles("*.lang"))
+                {
+                    //Load the mod localization.
+                    LocalizationTable.LoadLocalizationFile(file.FullName);
+
+                    //Just write a little debug info into the console.
+                    Debug.Log("Loaded mod localization at path\n" + file);
                 }
             }
 
