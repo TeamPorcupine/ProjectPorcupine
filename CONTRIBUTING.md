@@ -1,5 +1,5 @@
 [Contributing](#contributing)  
-[Resolving Merge Conflicts](#resolving-merge-conflicts)
+[Resolving Merge Conflicts](#resolving-merge-conflicts)  
 [Unity Version](#unity-version)  
 [General resources](#general-resources)  
 [Style Guidelines](#style-guidelines)  
