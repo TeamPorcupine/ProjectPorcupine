@@ -1,4 +1,12 @@
-﻿using UnityEngine;
+#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
+using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
 
@@ -73,7 +81,8 @@ public class MouseController : MonoBehaviour
 
         CalculatePlacingPosition();
 
-        if (Input.GetKeyUp(KeyCode.Escape) || Input.GetMouseButtonUp(1))
+
+        if (Input.GetKeyUp(KeyCode.Escape) || Input.GetMouseButtonUp(1))//Right Click
         {
             if (currentMode == MouseMode.BUILD)
             {
@@ -144,7 +153,6 @@ public class MouseController : MonoBehaviour
         {
             mySelection = null;
         }
-
         if (currentMode != MouseMode.SELECT)
         {
             return;
@@ -155,7 +163,13 @@ public class MouseController : MonoBehaviour
         {
             return;
         }
-			
+        if (Input.GetMouseButtonDown(1)) {
+            Tile tileUnderMouse = GetMouseOverTile();
+            if (tileUnderMouse.pendingBuildJob != null) {
+                Debug.Log("Canceling!");
+                tileUnderMouse.pendingBuildJob.CancelJob();
+            }
+        }
         if (Input.GetMouseButtonUp(0))
         {
             // We just release the mouse button, so that's our queue to update our selection.
@@ -395,6 +409,12 @@ public class MouseController : MonoBehaviour
                 isDragging = false;
             }
         }
+
+		// If we're over a UI element, then bail out from this.
+		if (EventSystem.current.IsPointerOverGameObject())
+		{
+			return;
+		}
 
         Camera.main.orthographicSize -= Camera.main.orthographicSize * Input.GetAxis("Mouse ScrollWheel");
 
