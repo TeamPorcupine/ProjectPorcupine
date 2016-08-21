@@ -17,7 +17,8 @@ public class FloorMenu : MonoBehaviour
             {
                 bmc.SetMode_BuildFloor();
             });
-        if(ladderBuild != null) {
+        if(ladderBuild != null)
+        {
             ladderBuild.onClick.AddListener(delegate
                 {
                     bmc.SetMode_BuildLadder();

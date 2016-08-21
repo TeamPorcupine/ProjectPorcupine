@@ -228,8 +228,8 @@ public class BuildModeController : MonoBehaviour
 
     }
 
-    // Checks whether the given floor type is allowed to be built on the tile
-    // TODO Export this kind of check to an XML/LUA file for easier modding of floor types
+    // Checks whether the given floor type is allowed to be built on the tile.
+    // TODO Export this kind of check to an XML/LUA file for easier modding of floor types.
     private bool CanBuildTileTypeHere(Tile t, TileType tileType)
     {
         switch(tileType) {
