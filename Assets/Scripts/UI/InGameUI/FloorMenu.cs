@@ -17,10 +17,12 @@ public class FloorMenu : MonoBehaviour
             {
                 bmc.SetMode_BuildFloor();
             });
-        ladderBuild.onClick.AddListener(delegate
-            {
-                bmc.SetMode_BuildLadder();
-            });
+        if(ladderBuild != null) {
+            ladderBuild.onClick.AddListener(delegate
+                {
+                    bmc.SetMode_BuildLadder();
+                });
+        }
         floorRemove.onClick.AddListener(delegate
             {
                 bmc.SetMode_Bulldoze();
