@@ -11,23 +11,23 @@ using System.Linq;
 using UnityEngine;
 using System.Collections.Generic;
 
-public class FurnitureSpriteController : MonoBehaviour
+public class FurnitureSpriteController
 {
 
     Dictionary<Furniture, GameObject> furnitureGameObjectMap;
     Dictionary<Furniture, GameObject> powerStatusGameObjectMap;
 
-    World world
-    {
-        get { return WorldController.Instance.world; }
-    }
+    World world;
+    GameObject furnnitureParent;
 
     // Use this for initialization
-    void Start()
+    public FurnitureSpriteController(World currentWorld)
     {
+        world = currentWorld;
         // Instantiate our dictionary that tracks which GameObject is rendering which Tile data.
         furnitureGameObjectMap = new Dictionary<Furniture, GameObject>();
         powerStatusGameObjectMap = new Dictionary<Furniture, GameObject>();
+        furnnitureParent = new GameObject("Furniture");
 
         // Register our callback so that our GameObject gets updated whenever
         // the tile's type changes.
@@ -38,6 +38,7 @@ public class FurnitureSpriteController : MonoBehaviour
         {
             OnFurnitureCreated(furn);
         }
+            
     }
 
     public void OnFurnitureCreated(Furniture furn)
@@ -55,7 +56,7 @@ public class FurnitureSpriteController : MonoBehaviour
 
         furn_go.name = furn.objectType + "_" + furn.tile.X + "_" + furn.tile.Y;
         furn_go.transform.position = new Vector3(furn.tile.X + ((furn.Width - 1) / 2f), furn.tile.Y + ((furn.Height - 1) / 2f), 0);
-        furn_go.transform.SetParent(this.transform, true);
+        furn_go.transform.SetParent(furnnitureParent.transform, true);
 
         // FIXME: This hardcoding is not ideal!
         if (furn.objectType == "Door" || furn.objectType == "Airlock")
@@ -119,7 +120,7 @@ public class FurnitureSpriteController : MonoBehaviour
         }
 
         GameObject furn_go = furnitureGameObjectMap[furn];
-        Destroy(furn_go);
+        GameObject.Destroy(furn_go);
         furnitureGameObjectMap.Remove(furn);
 
         if (powerStatusGameObjectMap.ContainsKey(furn) == false)

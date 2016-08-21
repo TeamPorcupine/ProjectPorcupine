@@ -22,6 +22,7 @@ public class WorldController : MonoBehaviour
     CharacterSpriteController characterSpriteController;
     JobSpriteController jobSpriteController;
     InventorySpriteController inventorySpriteController;
+    FurnitureSpriteController furnitureSpriteController;
 
     public BuildModeController buildModeController;
     public MouseController mouseController;
@@ -89,10 +90,11 @@ public class WorldController : MonoBehaviour
         tileSpriteController = new TileSpriteController(world);
         tileSpriteController.Render();
         characterSpriteController = new CharacterSpriteController(world);
-        jobSpriteController = new JobSpriteController(world);
+        furnitureSpriteController = new FurnitureSpriteController(world);
+        jobSpriteController = new JobSpriteController(world, furnitureSpriteController);
         inventorySpriteController = new InventorySpriteController(world, inventoryUI);
         buildModeController = new BuildModeController();
-        mouseController = new MouseController(buildModeController, circleCursorPrefab);
+        mouseController = new MouseController(buildModeController, furnitureSpriteController, circleCursorPrefab);
 
         //Initialising controllers
         GameObject Controllers = GameObject.Find("Controllers");

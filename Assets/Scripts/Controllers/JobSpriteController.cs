@@ -22,11 +22,11 @@ public class JobSpriteController
     GameObject jobParent;
 
     // Use this for initialization
-    public JobSpriteController(World currentWorld)
+    public JobSpriteController(World currentWorld, FurnitureSpriteController furnitureSpriteController)
     {
         world = currentWorld;
         jobGameObjectMap = new Dictionary<Job, GameObject>();
-        fsc = GameObject.FindObjectOfType<FurnitureSpriteController>();
+        fsc = furnitureSpriteController;
         
         world.jobQueue.cbJobCreated += OnJobCreated;
         jobParent = new GameObject("Jobs");

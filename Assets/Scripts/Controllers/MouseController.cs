@@ -13,7 +13,8 @@ using UnityEngine.EventSystems;
 public class MouseController
 {
 
-    protected GameObject circleCursorPrefab;
+    GameObject circleCursorPrefab;
+    GameObject cursorParent;
 
     // The world-position of the mouse last frame.
     Vector3 lastFramePosition;
@@ -40,14 +41,15 @@ public class MouseController
     MouseMode currentMode = MouseMode.SELECT;
 
     // Use this for initialization.
-    public MouseController(BuildModeController buildModeController, GameObject cursorObject)
+    public MouseController(BuildModeController buildModeController, FurnitureSpriteController furnitureSpriteController, GameObject cursorObject)
     {
         bmc = buildModeController;
         bmc.setMouseController(this);
         circleCursorPrefab = cursorObject;
-        fsc = GameObject.FindObjectOfType<FurnitureSpriteController>();
+        fsc = furnitureSpriteController;
         menuController = GameObject.FindObjectOfType<MenuController>();
         dragPreviewGameObjects = new List<GameObject>();
+        cursorParent = new GameObject("Cursor");
     }
 
     /// <summary>
@@ -331,7 +333,7 @@ public class MouseController
                     {
                         // Show the generic dragging visuals.
                         GameObject go = SimplePool.Spawn(circleCursorPrefab, new Vector3(x, y, 0), Quaternion.identity);
-//FIXME                        go.transform.SetParent(this.transform, true);
+                        go.transform.SetParent(cursorParent.transform, true);
                         go.GetComponent<SpriteRenderer>().sprite = SpriteManager.current.GetSprite("UI", "CursorCircle");
                         dragPreviewGameObjects.Add(go);
                     }
