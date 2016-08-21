@@ -228,8 +228,8 @@ public class World : IXmlSerializable
                     {
                         furn.ReadXmlPrototype(reader);
                     }
-                    catch {
-                        Logger.LogError("Error reading furniture prototype for: " + furn.objectType);
+                    catch (Exception e) {
+                        Logger.LogError("Error reading furniture prototype for: " + furn.objectType + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
                     }
 
 
@@ -532,7 +532,7 @@ public class World : IXmlSerializable
             cbInventoryCreated(t.inventory);
         }
 
-        inv = new Inventory("Steel Plate", 50, 3);
+        inv = new Inventory("Copper Wire", 50, 3);
         t = GetTileAt(Width / 2 + 1, Height / 2 + 2);
         inventoryManager.PlaceInventory(t, inv);
         if (cbInventoryCreated != null)
