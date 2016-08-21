@@ -430,7 +430,7 @@ public class Character : IXmlSerializable, ISelectable
                 pathAStar = new Path_AStar(World.current, CurrTile, DestTile);	// This will calculate a path from curr to dest.
                 if (pathAStar.Length() == 0)
                 {
-                    Logger.LogError("Path_AStar returned no path to destination!");
+                    //Logger.LogError("Path_AStar returned no path to destination!");
                     AbandonJob();
                     return;
                 }
