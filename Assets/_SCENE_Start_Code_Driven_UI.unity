@@ -18297,7 +18297,7 @@ MonoBehaviour:
   resolutionDropdown: {fileID: 475152177}
   aliasingDropdown: {fileID: 382723723}
   vSyncDropdown: {fileID: 1021040812}
-  quilityDropdown: {fileID: 474610572}
+  qualityDropdown: {fileID: 474610572}
 --- !u!1 &1718996145
 GameObject:
   m_ObjectHideFlags: 0
