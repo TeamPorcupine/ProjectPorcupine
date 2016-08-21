@@ -2,7 +2,8 @@
 using UnityEngine.UI;
 using System.Collections;
 
-public class SettingHelper : MonoBehaviour {
+public class SettingHelper : MonoBehaviour 
+{
 
 	//langage Option
 	public Toggle langToggle;
@@ -12,9 +13,48 @@ public class SettingHelper : MonoBehaviour {
 	public Toggle fpsToggle;
 	public GameObject fpsObject;
 
-	// Use this for initialization
-	void Start () {
-	
+	public Toggle fullScreenToggle;
+
+	//public Slider masterVolume;
+	public Slider musicVolume;
+
+	public Resolution[] myResolutions;
+	public Dropdown resolutionDropdown;
+
+	public Dropdown aliasingDropdown;
+	public Dropdown vSyncDropdown;
+	public Dropdown quilityDropdown;
+
+	public GameSettings gameSettings;
+
+
+	void OnEnable()
+	{
+		//create an instance of this class
+		gameSettings = new GameSettings ();
+
+		//get all avalible resolution for the display
+		myResolutions = Screen.resolutions;
+
+		//Add our listeners
+		fpsToggle.onValueChanged.AddListener(delegate { OnFPSToggle(); } );
+		langToggle.onValueChanged.AddListener(delegate { OnLangageToggle(); } );
+		fullScreenToggle.onValueChanged.AddListener(delegate { OnFullScreenToggle(); } );
+
+		resolutionDropdown.onValueChanged.AddListener(delegate { OnResolutionChange(); } );
+		aliasingDropdown.onValueChanged.AddListener(delegate { OnAliasingChange(); } );
+		vSyncDropdown.onValueChanged.AddListener(delegate { OnVSyncChange(); } );
+		quilityDropdown.onValueChanged.AddListener(delegate { OnQuilityChange(); } );
+
+		//masterVolume.onValueChanged.AddListener(delegate { OnMasterChange(); } );
+		musicVolume.onValueChanged.AddListener(delegate { OnMusicChange(); } );
+
+		//create the drop down for resolution
+		CreateResDropDown();
+
+		//Load the setting
+		LoadSetting();
+
 	}
 	
 	// Update is called once per frame
@@ -22,15 +62,72 @@ public class SettingHelper : MonoBehaviour {
 	
 	}
 
-	public void toggleLang()
+	public void OnLangageToggle()
 	{
-		
+		gameSettings.isVisableLangage = langToggle.isOn;
 		langDropDown.SetActive (langToggle.isOn);
 	}
 
-	public void toggleFPS()
+	public void OnFPSToggle()
+	{
+		gameSettings.isVisableFPS = fpsToggle.isOn;
+		fpsObject.SetActive (fpsToggle.isOn);
+	}
+
+	public void OnFullScreenToggle()
+	{
+		gameSettings.isFullscreen = Screen.fullScreen = fullScreenToggle.isOn;
+	}
+
+	public void OnQuilityChange()
+	{
+		gameSettings.quilityIndex = QualitySettings.masterTextureLimit = quilityDropdown.value;
+	}
+
+	public void OnVSyncChange()
+	{
+		gameSettings.vSyncIndex = QualitySettings.vSyncCount = vSyncDropdown.value;
+	}
+
+	public void OnResolutionChange()
+	{
+		gameSettings.resultionIndex = resolutionDropdown.value;
+	    //need to make work
+	}
+
+	public void OnAliasingChange()
+	{
+		gameSettings.antiAliasingindex = QualitySettings.antiAliasing = aliasingDropdown.value;
+	}
+
+	public void OnMasterChange()
 	{
 
-		fpsObject.SetActive (fpsToggle.isOn);
+	}
+
+	public void OnMusicChange()
+	{
+		
+	}
+
+	public void SaveSetting()
+	{
+		
+	}
+
+	void LoadSetting()
+	{
+		aliasingDropdown.value = QualitySettings.antiAliasing;
+		vSyncDropdown.value =  QualitySettings.vSyncCount;
+		quilityDropdown.value = QualitySettings.masterTextureLimit;
+
+		fullScreenToggle.isOn = Screen.fullScreen;
+		fpsToggle.isOn = fpsObject.activeSelf;
+		langToggle.isOn =langDropDown.activeSelf;
+	}
+
+	void CreateResDropDown()
+	{
+
 	}
 }
