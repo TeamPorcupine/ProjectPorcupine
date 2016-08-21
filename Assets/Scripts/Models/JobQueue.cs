@@ -26,6 +26,13 @@ public class JobQueue
         return jobQueue.Count == 0;
     }
 
+    // Returns the job count in the queue.
+    // (Necessary, since jobQueue is private.)
+    public int GetCount()
+    {
+        return jobQueue.Count;
+    }
+
     public void Enqueue(Job j)
     {
         //Logger.Log("Adding job to queue. Existing queue size: " + jobQueue.Count);

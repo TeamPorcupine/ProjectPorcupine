@@ -49,6 +49,7 @@ public class World : IXmlSerializable
     // be semi-static or self initializing or some damn thing.
     // For now, this is just a PUBLIC member of World
     public JobQueue jobQueue;
+    public JobQueue jobWaitingQueue;
 
     static public World current { get; protected set; }
 
@@ -121,6 +122,7 @@ public class World : IXmlSerializable
     {
 
         jobQueue = new JobQueue();
+        jobWaitingQueue = new JobQueue();
 
         // Set the current world to be this world.
         // TODO: Do we need to do any cleanup of the old world?
