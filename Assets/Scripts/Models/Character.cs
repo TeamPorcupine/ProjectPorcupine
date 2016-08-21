@@ -233,10 +233,10 @@ public class Character : IXmlSerializable, ISelectable
         if (myJob.HasAllMaterial ()) {
             return true; //we can return early
         } else {
-            // Do a quick check, if any inventories with the desired objectType exist
+            // Do a quick check, if any inventories with the desired objectType exists.
             Inventory desired = myJob.GetFirstDesiredInventory ();
             if (!World.current.inventoryManager.QuickCheck (desired.objectType)) {
-                // If not, abandon the job and return false
+                // If not, abandon the job and return false.
                 AbandonJob();
                 return false;
             }
