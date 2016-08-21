@@ -9,7 +9,17 @@ public class Need {
 	public string localisationID;
 	public string Name;
 	protected float growthRate;
-	public float Amount { get { return Amount; } set { Amount = Mathf.Clamp (value, 0f, 100f); } }
+	float _amount = 0;
+	public float Amount { get { return _amount; } set
+		{
+			float f = value;
+			if (f < 0)
+				f = 0;
+			if (f > 100)
+				f = 100;
+			_amount = f;
+		}
+	}
 	protected bool highToLow = true;
 	public Character character;
 	public Furniture restoreNeedFurn { get; protected set; }
