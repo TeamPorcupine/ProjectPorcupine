@@ -125,7 +125,7 @@ Additionally, for the sake of simplicity, we are standardizing on what should be
 ![screen shot 2016-08-16 at 8 03 22 pm](https://cloud.githubusercontent.com/assets/777633/17719999/920fb534-63ec-11e6-8903-3725f2cd05b0.png)
 ![screen shot 2016-08-16 at 8 03 36 pm](https://cloud.githubusercontent.com/assets/777633/17719998/920cff6a-63ec-11e6-8f76-0ac7a5fa0c9d.png)
 
-# Adding Furniture and Inventory
+## Adding Furniture and Inventory
 
 We have standardized the names of Furniture and Inventory to match 'steel_wall' out of code and 'furn_steel_wall' or 'inv_steel_plate' in code. This means a few things:
 
