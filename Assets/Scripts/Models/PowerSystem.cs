@@ -40,26 +40,32 @@ public class PowerSystem {
     public void RemovePowerSupply(Furniture furn)
     {
         powerGenerators.Remove(furn);
+        powerConsumers = new List<Furniture>();
         CalculatePower();
     }
 
-    public void RegisterPowerConsumer(Furniture furn)
+    public bool RegisterPowerConsumer(Furniture furn)
     {
         if (PowerLevel + furn.powerValue < 0)
         {
-            return;
+            return false;
         }
 
         powerConsumers.Add(furn);
         CalculatePower();
 
         furn.cbOnRemoved += RemovePowerConsumer;
+
+        return true;
     }
 
     public void RemovePowerConsumer(Furniture furn)
     {
         powerGenerators.Remove(furn);
         CalculatePower();
+
+        furn.cbOnRemoved -= RemovePowerConsumer;
+
     }
 
 
@@ -69,9 +75,9 @@ public class PowerSystem {
         {
             return true;
         }
-        
         return false;
     }
+    
 
     void CalculatePower()
     {
