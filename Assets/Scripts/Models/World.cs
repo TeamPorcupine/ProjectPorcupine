@@ -228,8 +228,8 @@ public class World : IXmlSerializable
                     {
                         furn.ReadXmlPrototype(reader);
                     }
-                    catch {
-                        Logger.LogError("Error reading furniture prototype for: " + furn.objectType);
+                    catch (Exception e) {
+                        Logger.LogError("Error reading furniture prototype for: " + furn.objectType + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
                     }
 
 
