@@ -283,29 +283,17 @@ public class Furniture : IXmlSerializable, ISelectable
             int x = tile.X;
             int y = tile.Y;
 
-            t = World.current.GetTileAt(x, y + 1);
-            if (t != null && t.furniture != null && t.furniture.cbOnChanged != null && t.furniture.objectType == obj.objectType)
+            for (int xpos = x - 1; xpos < (x + proto.Width + 1); xpos++)
             {
-                // We have a Northern Neighbour with the same object type as us, so
-                // tell it that it has changed by firing is callback.
-                t.furniture.cbOnChanged(t.furniture);
+                for (int ypos = y - 1; ypos < (y + proto.Height + 1); ypos++)
+                {
+                    t = World.current.GetTileAt(xpos, ypos);
+                    if (t != null && t.furniture != null && t.furniture.cbOnChanged != null)
+                    {
+                        t.furniture.cbOnChanged(t.furniture);
+                    }
+                }
             }
-            t = World.current.GetTileAt(x + 1, y);
-            if (t != null && t.furniture != null && t.furniture.cbOnChanged != null && t.furniture.objectType == obj.objectType)
-            {
-                t.furniture.cbOnChanged(t.furniture);
-            }
-            t = World.current.GetTileAt(x, y - 1);
-            if (t != null && t.furniture != null && t.furniture.cbOnChanged != null && t.furniture.objectType == obj.objectType)
-            {
-                t.furniture.cbOnChanged(t.furniture);
-            }
-            t = World.current.GetTileAt(x - 1, y);
-            if (t != null && t.furniture != null && t.furniture.cbOnChanged != null && t.furniture.objectType == obj.objectType)
-            {
-                t.furniture.cbOnChanged(t.furniture);
-            }
-
         }
 
         return obj;
@@ -694,6 +682,19 @@ public class Furniture : IXmlSerializable, ISelectable
     public void Deconstruct()
     {
         Logger.Log("Deconstruct");
+        int x = tile.X;
+        int y = tile.Y;
+        int fwidth = 1;
+        int fheight = 1;
+        bool linksToNeighbour = false;
+        if (tile.furniture != null)
+        {
+            Furniture f = tile.furniture;
+            fwidth = f.Width;
+            fheight = f.Height;
+            linksToNeighbour = f.linksToNeighbour;
+            f.CancelJobs();
+        }
 
         tile.UnplaceFurniture();
 
@@ -710,6 +711,24 @@ public class Furniture : IXmlSerializable, ISelectable
         if (World.current.tileGraph != null)
         {
             World.current.tileGraph.RegenerateGraphAtTile(tile);
+        }
+
+        // We should inform our neighbours that they have just lost a
+        // neighbour regardless of objectType.  
+        // Just trigger their OnChangedCallback. 
+        if (linksToNeighbour == true)
+        {
+            for (int xpos = x - 1; xpos < (x + fwidth + 1); xpos++)
+            {
+                for (int ypos = y - 1; ypos < (y + fheight + 1); ypos++)
+                {
+                    Tile t = World.current.GetTileAt(xpos, ypos);
+                    if (t != null && t.furniture != null && t.furniture.cbOnChanged != null)
+                    {
+                        t.furniture.cbOnChanged(t.furniture);
+                    }
+                }
+            }
         }
 
         // At this point, no DATA structures should be pointing to us, so we
