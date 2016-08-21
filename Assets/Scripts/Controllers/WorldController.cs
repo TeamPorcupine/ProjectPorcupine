@@ -1,8 +1,11 @@
-﻿//=======================================================================
-// Copyright Martin "quill18" Glaude 2015.
-//		http://quill18.com
-//=======================================================================
-
+#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
 using System;
 using System.Linq;
 using UnityEngine;
@@ -14,7 +17,7 @@ using System.IO;
 
 public class WorldController : MonoBehaviour
 {
-
+    public ModsManager modsManager;
     public static WorldController Instance { get; protected set; }
 
     // The world and tile data
@@ -47,9 +50,14 @@ public class WorldController : MonoBehaviour
     // Current position in that array.
     int currentTimeScalePosition = 2;
 
+    public bool devMode = false;
+
     // Use this for initialization
     void OnEnable()
     {
+        string dataPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
+        modsManager = new ModsManager(dataPath);
+
         if (Instance != null)
         {
             Logger.LogError("There should never be two world controllers.");
@@ -65,6 +73,12 @@ public class WorldController : MonoBehaviour
         {
             CreateEmptyWorld();
         }
+
+        //Initialising controllers
+        GameObject Controllers = GameObject.Find("Controllers");
+        Instantiate(Resources.Load("UIController"), Controllers.transform);
+
+
     }
 
     void Update()
@@ -178,8 +192,12 @@ public class WorldController : MonoBehaviour
 
     void CreateEmptyWorld()
     {
+        // get world size from settings
+        int width = int.Parse(Settings.getSetting("worldWidth", "100"));
+        int height = int.Parse(Settings.getSetting("worldHeight", "100"));
+
         // Create a world with Empty tiles
-        world = new World(100, 100);
+        world = new World(width, height);
 
         // Center the Camera
         Camera.main.transform.position = new Vector3(world.Width / 2, world.Height / 2, Camera.main.transform.position.z);

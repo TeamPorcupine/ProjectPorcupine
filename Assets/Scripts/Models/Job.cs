@@ -1,8 +1,11 @@
-﻿//=======================================================================
-// Copyright Martin "quill18" Glaude 2015-2016.
-//		http://quill18.com
-//=======================================================================
-
+#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
 using UnityEngine;
 using System.Collections.Generic;
 using System;
@@ -287,6 +290,7 @@ public class Job
 
     public void DropPriority()
     {
-        jobPriority = (JobPriority)Mathf.Max(0, (int)jobPriority - 1);
+        // TODO: This casting to and from enums are a bit wierd. We should decide on ONE priority system.
+        jobPriority = (JobPriority)Mathf.Min((int)JobPriority.Low, (int)jobPriority + 1);
     }
 }
