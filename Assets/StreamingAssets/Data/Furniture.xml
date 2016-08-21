@@ -220,22 +220,22 @@
       <UnlocalizedDescription>furn_metal_smelter_desc</UnlocalizedDescription>
   </Furniture>
   
-  	<Furniture objectType="Power Cell Press">
+	<Furniture objectType="Power Cell Press">
 		<Name>Power Cell Press</Name>
 		<Description>A press that converts steel plate and something into power cells.</Description>
-        <MovementCost>1</MovementCost>
-        <Width>2</Width>
-        <Height>2</Height>
+		<MovementCost>1</MovementCost>
+		<Width>2</Width>
+		<Height>2</Height>
 
-        <BuildingJob jobTime="1"/>
-		
-	  <Params>
-          <Param name="presstime" value="0" />
-          <Param name="presstime_required" value="15" />
-      </Params>
+		<BuildingJob jobTime="1"/>
 
-        <OnUpdate FunctionName="PowerCellPress_UpdateAction" />
-		
+		<Params>
+			<Param name="presstime" value="0" />
+			<Param name="presstime_required" value="15" />
+		</Params>
+
+		<OnUpdate FunctionName="PowerCellPress_UpdateAction" />
+
 		<LocalizationCode>furn_power_cell_press</LocalizationCode>
 		<UnlocalizedDescription>furn_power_cell_press_desc</UnlocalizedDescription>
 
