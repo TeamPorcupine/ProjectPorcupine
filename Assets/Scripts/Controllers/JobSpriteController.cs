@@ -112,6 +112,14 @@ public class JobSpriteController : MonoBehaviour
 
     }
 
-
+    // Debug view for jobqueue
+    void OnGUI()
+    {
+        int cnt = 0;
+        foreach (var j in WorldController.Instance.world.jobQueue.PeekJobs())
+        {
+            GUI.Label(new Rect(10, 10 + cnt++ * 20, 200, 20), string.Format("({2}) {0} - {1}", j.jobObjectType, j.jobTileType,j.jobPriority));
+        }
+    }
 
 }
