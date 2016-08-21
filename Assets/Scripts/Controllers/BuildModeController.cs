@@ -170,9 +170,10 @@ public class BuildModeController : MonoBehaviour
             if ( 
                 t.Type != tileType && 
                 t.furniture == null &&
-                t.pendingBuildJob == null)
+                t.pendingBuildJob == null &&
+                CanBuildTileTypeHere(t, tileType))
             {
-                // This tile position is valid til type
+                // This tile position is valid tile type
 
                 // Create a job for it to be build
 
@@ -222,9 +223,25 @@ public class BuildModeController : MonoBehaviour
         }
         else
         {
-            Logger.LogError("UNIMPLMENTED BUILD MODE");
+            Logger.LogError("UNIMPLEMENTED BUILD MODE");
         }
 
+    }
+
+    // Checks whether the given floor type is allowed to be built on the tile
+    // TODO Export this kind of check to an XML/LUA file for easier modding of floor types
+    private bool CanBuildTileTypeHere(Tile t, TileType tileType)
+    {
+        switch(tileType) {
+            case TileType.Empty:
+                return true;
+            case TileType.Floor:
+                return true;
+            case TileType.Ladder:
+                return t.room.IsOutsideRoom();
+            default:
+                return true;
+        }
     }
 
     public bool DoesBuildJobOverlapExistingBuildJob(Tile t, string furnitureType)
