@@ -9,7 +9,7 @@
     <Ressources>
       <Ressource objectType="Raw Iron" maxStack="50" chance="0.5" />
       <Ressource objectType="Ice" maxStack="10" chance="0.15" />
-      <Ressource objectType="Coal" maxStack="20" chance="0.35" />
+      <Ressource objectType="Uranium" maxStack="20" chance="0.35" />
     </Ressources>
   </Asteroid>
 </WorldGenerator>

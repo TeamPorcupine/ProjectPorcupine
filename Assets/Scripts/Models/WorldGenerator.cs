@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
 // This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
@@ -55,11 +55,14 @@ public class WorldGenerator
                             
                             foreach (Inventory i in ressources)
                             {
-                                int chance = i.stackSize;
+                                int chance = i.stackSize; // In stacksize the chance was cached
                                 currentchance += chance;
 
                                 if (randomchance <= currentchance)
                                 {
+                                    if (stackSize > i.maxStackSize)
+                                        stackSize = i.maxStackSize;
+
                                     world.inventoryManager.PlaceInventory(t, new Inventory(i.objectType, i.maxStackSize, stackSize));
                                     break;
                                 }

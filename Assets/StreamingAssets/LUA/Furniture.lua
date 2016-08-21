@@ -312,7 +312,8 @@ function PowerGenerator_UpdateAction(furniture, deltatime)
     if ( furniture.JobCount() < 1 and furniture.GetParameter("burnTime") == 0 ) then
         
         furniture.SetPower(0)
-        itemsDesired = {Inventory.__new("Coal", 5, 0)}
+        --itemsDesired = {Inventory.__new(furniture.GetParameter("fuelType"), 5, 0)}
+        itemsDesired = {Inventory.__new("Uranium", 5, 0)}
         
         j = Job.__new(
             furniture.GetJobSpotTile(),
