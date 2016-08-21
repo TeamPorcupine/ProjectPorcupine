@@ -6,23 +6,23 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using UnityEngine;
-using System.Collections.Generic;
+
 using System;
+using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
-using MoonSharp;
 using MoonSharp.Interpreter.Interop;
+using UnityEngine;
 
-
-// InstalledObjects are things like walls, doors, and furniture (e.g. a sofa)
-
+/// <summary>
+/// InstalledObjects are things like walls, doors, and furniture (e.g. a sofa).
+/// </summary>
 [MoonSharpUserData]
-public class Furniture : IXmlSerializable, ISelectable
+public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
 {
-
+    private float powerValue;
     /// <summary>
     /// Custom parameter for this particular piece of furniture.  We are
     /// using a dictionary because later, custom LUA function will be
@@ -55,6 +55,25 @@ public class Furniture : IXmlSerializable, ISelectable
     // If the job causes some kind of object to be spawned, where will it appear?
     public Vector2 jobSpawnSpotOffset = Vector2.zero;
 
+    public event Action<IPowerRelated> PowerValueChanged;
+
+    public float PowerValue
+    {
+        get
+        {
+            return powerValue;
+        }
+
+        set
+        {
+            if (powerValue == value) return;
+            powerValue = value;
+            InvokePowerValueChanged(this);
+        }
+    }
+
+    public bool IsPowerConsumer { get { return PowerValue < 0; } }
+
     public void Update(float deltaTime)
     {
         if (updateActions != null)
@@ -79,12 +98,15 @@ public class Furniture : IXmlSerializable, ISelectable
         return (ENTERABILITY)ret.Number;
 
     }
-
-
-    // If this furniture generates power then powerValue will be positive, if it consumer power then it will be negative
-    public float powerValue;
-
-    public bool IsPowerConsumer { get { return powerValue < 0; } }
+   
+    private void InvokePowerValueChanged(IPowerRelated powerRelated)
+    {
+        Action<IPowerRelated> handler = PowerValueChanged;
+        if (handler != null)
+        {
+            handler(powerRelated);
+        }
+    }
 
     // This represents the BASE tile of the object -- but in practice, large objects may actually occupy
     // multile tiles.
@@ -211,7 +233,7 @@ public class Furniture : IXmlSerializable, ISelectable
 
         this.powerValue = other.powerValue;
 
-        if (!powerValue.Equals(0))
+        if (!PowerValue.Equals(0))
         {
             World.current.powerSystem.AddToPowerGrid(this);
         }
