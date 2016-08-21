@@ -69,7 +69,7 @@ public class JobQueue
     public IEnumerable<Job> PeekJobs()
     {
         // For debugging only. For the real thing we want to return something safer (like preformatted strings.).
-        foreach (var job in jobQueue.Values)
+        foreach (Job job in jobQueue.Values)
         {
             yield return job;
         }
