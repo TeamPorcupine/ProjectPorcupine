@@ -92,7 +92,8 @@ public class Inventory : IXmlSerializable, ISelectable
 
     public string GetDescription()
     {
-        return "A stack of inventory.";
+        // The real description is found through localization.
+        return this.objectType + "_desc";
     }
 
     public string GetHitPointString()
