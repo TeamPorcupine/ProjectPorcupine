@@ -38,7 +38,7 @@ public class JobQueue
         }
 
         jobQueue.Add(j.jobPriority,j);
-
+		Debug.Log ("Enquued job for " + j.jobObjectType ?? "");
         if (cbJobCreated != null)
         {
             cbJobCreated(j);

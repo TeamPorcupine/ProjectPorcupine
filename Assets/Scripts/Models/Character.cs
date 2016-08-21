@@ -180,21 +180,25 @@ public class Character : IXmlSerializable, ISelectable
 		if (myJob == null)
         	myJob = World.current.jobQueue.Dequeue();
 
-        if (myJob == null)
-        {
-            myJob = new Job(CurrTile,
-                "Waiting",
-                null,
-                UnityEngine.Random.Range(0.1f, 0.5f),
-                null,
-                Job.JobPriority.Low,
-                false);
-        }
+		if (myJob == null) {
+			Debug.Log (name + " did not find a job.");
+			myJob = new Job (CurrTile,
+				"Waiting",
+				null,
+				UnityEngine.Random.Range (0.1f, 0.5f),
+				null,
+				Job.JobPriority.Low,
+				false);
+		}
+		else
+		{
+			Debug.Log (name + " found a job.");
+		}
 
         // Get our destination from the job
         DestTile = myJob.tile;
 
-        myJob.cbJobStopped += OnJobStopped;
+		myJob.cbJobStopped += OnJobStopped;
 
         // Immediately check to see if the job tile is reachable.
         // NOTE: We might not be pathing to it right away (due to
@@ -210,7 +214,8 @@ public class Character : IXmlSerializable, ISelectable
         if (pathAStar != null && pathAStar.Length() == 0)
         {
             Logger.LogVerbose("Path_AStar returned no path to target job tile!");
-            AbandonJob();
+			Debug.Log("Path_AStar returned no path to target job tile!");
+			AbandonJob();
             return;
         }
 
@@ -277,7 +282,7 @@ public class Character : IXmlSerializable, ISelectable
     /// <returns></returns>
     bool CheckForJobMaterials()
 	{
-		if (myJob != null && myJob.isNeed)
+		if (myJob != null && myJob.isNeed && myJob.critical == false)
 			myJob.tile = jobTile = new Path_AStar (World.current, CurrTile, null, myJob.jobObjectType, 0, false, true).EndTile ();
         if (myJob == null || myJob.HasAllMaterial())
 		{
@@ -321,7 +326,7 @@ public class Character : IXmlSerializable, ISelectable
                     DestTile = JobTile;
                     return false;
                 }
-            }
+			}
             else
             {
                 // We are carrying something, but the job doesn't want it!
