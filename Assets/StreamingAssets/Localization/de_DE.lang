@@ -31,18 +31,13 @@ furn_stockpile=Vorrat
 furn_stockpile_desc=Ein Speicher für deine Ressourcen.
 furn_oxygen_generator=Sauerstoffgenerator
 furn_oxygen_generator_desc=Generiert Sauerstoff für deine Astronauten.
-<<<<<<< HEAD
-furn_mining_drone_station=Bergbaudrohne
-furn_mining_drone_station_desc=Baut Materialien aus dem Nichts ab.
-furn_mining_drone_station_desc=Baut Materialien aus dem Nichts ab.
-furn_power_generator=Stromgenerator
-furn_power_generator_desc=Generiert Strom aus dem nirvana.
 furn_mining_drone_station=Abbaudrone
 furn_mining_drone_station_desc=Baut Ressourcen aus dem Nichts ab.
 furn_metal_smelter=Schmelzofen
 furn_metal_smelter_desc=Schmilzt dein rohes Eisen zu Metall.
 furn_airlock=Luftschleuse
-furn_airlock_desc=Eine Luftschleuse verhindert das Austreten von Sauerstoff.tile_Empty=Leer
+furn_airlock_desc=Eine Luftschleuse verhindert das Austreten von Sauerstoff.
+tile_Empty=Leer
 tile_Empty_desc=Eine leere Kachel.
 tile_Floor=Floor
 tile_Floor_desc=Meets the highest non-skid standards.
