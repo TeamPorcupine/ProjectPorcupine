@@ -554,13 +554,6 @@ public class World : IXmlSerializable
         writer.WriteEndElement();
         
         writer.WriteElementString("Skybox", skybox.name);
-
-/*		writer.WriteStartElement("Width");
-		writer.WriteValue(Width);
-		writer.WriteEndElement();
-*/
-
-        //Debug.Log(writer.ToString());
     }
 
     public void ReadXml(XmlReader reader)
