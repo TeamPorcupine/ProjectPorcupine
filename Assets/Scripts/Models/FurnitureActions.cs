@@ -21,7 +21,7 @@ public class FurnitureActions
 
     Script myLuaScript;
 
-    public FurnitureActions(string rawLuaCode)
+    public FurnitureActions()
     {
         // Tell the LUA interpreter system to load all the classes
         // that we have marked as [MoonSharpUserData]
@@ -39,8 +39,11 @@ public class FurnitureActions
 
         // Also to access statics/globals
         myLuaScript.Globals["World"] = typeof(World);
+    }
 
-        myLuaScript.DoString(rawLuaCode);
+    public static void addScript(string rawLuaCode)
+    {
+        _Instance.myLuaScript.DoString(rawLuaCode);
     }
 
     static public void CallFunctionsWithFurniture(string[] functionNames, Furniture furn, float deltaTime)
