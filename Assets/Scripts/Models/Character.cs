@@ -143,23 +143,24 @@ public class Character : IXmlSerializable, ISelectable
     public Character()
     {
 		needs = new Need[World.current.needPrototypes.Count];
-		World.current.needPrototypes.Values.CopyTo (needs, 0);
-		foreach (Need n in needs)
-			n.character = this;
+		LoadNeeds ();
     }
 
     public Character(Tile tile)
     {
         CurrTile = DestTile = NextTile = tile;
+		LoadNeeds ();
+    }
+
+	void LoadNeeds()
+	{
 		needs = new Need[World.current.needPrototypes.Count];
 		World.current.needPrototypes.Values.CopyTo (needs, 0);
 		foreach (Need n in needs)
 		{
 			n.character = this;
 		}
-    }
-
-
+	}
     void GetNewJob()
     {
 		float needPercent = 0;
@@ -192,10 +193,13 @@ public class Character : IXmlSerializable, ISelectable
 		}
 		else
 		{
-			if (myJob.tile == null)
+			if (myJob.tile == null) {
 				Debug.Log (name + " found a job.");
+			}
 			else
+			{
 				Debug.Log (name + " found a job at x " + myJob.tile.X + " y " + myJob.tile.Y + ".");
+			}
 		}
 
         // Get our destination from the job
@@ -275,7 +279,9 @@ public class Character : IXmlSerializable, ISelectable
         }
 		//calculate needs
 		foreach (Need n in needs)
+		{
 			n.Update (deltaTime);
+		}
     }
 
     /// <summary>
@@ -286,7 +292,9 @@ public class Character : IXmlSerializable, ISelectable
     bool CheckForJobMaterials()
 	{
 		if (myJob != null && myJob.isNeed && myJob.critical == false)
+		{
 			myJob.tile = jobTile = new Path_AStar (World.current, CurrTile, null, myJob.jobObjectType, 0, false, true).EndTile ();
+		}
         if (myJob == null || myJob.HasAllMaterial())
 		{
             return true; //we can return early
@@ -449,7 +457,9 @@ public class Character : IXmlSerializable, ISelectable
     {
 		Debug.Log (name + " abandoned their job.");
 		if (myJob == null)
+		{
 			return;
+		}
 		if (myJob.isNeed)
 		{
 			CancelNeed ();
