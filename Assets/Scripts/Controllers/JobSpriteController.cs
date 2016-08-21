@@ -22,10 +22,10 @@ public class JobSpriteController : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-		jobGameObjectMap = new Dictionary<Job, GameObject>();
-		fsc = GameObject.FindObjectOfType<FurnitureSpriteController>();
+        jobGameObjectMap = new Dictionary<Job, GameObject>();
+        fsc = GameObject.FindObjectOfType<FurnitureSpriteController>();
 
-		WorldController.Instance.world.jobQueue.cbJobCreated += OnJobCreated;
+        WorldController.Instance.world.jobQueue.cbJobCreated += OnJobCreated;
     }
 
     void OnJobCreated(Job job)
