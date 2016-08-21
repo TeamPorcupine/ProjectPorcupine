@@ -15,6 +15,7 @@ public class MouseController
 
     GameObject circleCursorPrefab;
     GameObject cursorParent;
+    GameObject furnitureParent;
 
     // The world-position of the mouse last frame.
     Vector3 lastFramePosition;
@@ -50,6 +51,7 @@ public class MouseController
         menuController = GameObject.FindObjectOfType<MenuController>();
         dragPreviewGameObjects = new List<GameObject>();
         cursorParent = new GameObject("Cursor");
+        furnitureParent = new GameObject("Furniture Preview Sprites");
     }
 
     /// <summary>
@@ -421,7 +423,7 @@ public class MouseController
     {
 
         GameObject go = new GameObject();
-//FIXME        go.transform.SetParent(this.transform, true);
+        go.transform.SetParent(furnitureParent.transform, true);
         dragPreviewGameObjects.Add(go);
 
 
