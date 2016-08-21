@@ -219,7 +219,6 @@ public class World : IXmlSerializable
         DirectoryInfo[] mods = WorldController.Instance.modsManager.GetMods();
         foreach (DirectoryInfo mod in mods)
         {
-            Logger.Log("MOD: " + mod.FullName);
             string furnitureLuaModFile = System.IO.Path.Combine(mod.FullName, "Furniture.lua");
             if (File.Exists(furnitureLuaModFile))
             {

@@ -203,7 +203,7 @@ public class SpriteManager : MonoBehaviour
 
         if (sprites.ContainsKey(spriteName) == false)
         {
-            Logger.LogError("No sprite with name: " + spriteName);
+            //Logger.LogError("No sprite with name: " + spriteName);
             
             //Return a magenta image
             return Sprite.Create(noRescourceTexture, new Rect(Vector2.zero, new Vector3(32, 32)), new Vector2(0.5f, 0.5f), 32);
