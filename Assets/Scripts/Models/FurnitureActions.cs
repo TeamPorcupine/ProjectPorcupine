@@ -1,4 +1,12 @@
-﻿using UnityEngine;
+#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
+using UnityEngine;
 using System.Collections.Generic;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Debugging;
@@ -13,7 +21,7 @@ public class FurnitureActions
 
     Script myLuaScript;
 
-    public FurnitureActions(string rawLuaCode)
+    public FurnitureActions()
     {
         // Tell the LUA interpreter system to load all the classes
         // that we have marked as [MoonSharpUserData]
@@ -31,8 +39,11 @@ public class FurnitureActions
 
         // Also to access statics/globals
         myLuaScript.Globals["World"] = typeof(World);
+    }
 
-        myLuaScript.DoString(rawLuaCode);
+    public static void addScript(string rawLuaCode)
+    {
+        _Instance.myLuaScript.DoString(rawLuaCode);
     }
 
     static public void CallFunctionsWithFurniture(string[] functionNames, Furniture furn, float deltaTime)

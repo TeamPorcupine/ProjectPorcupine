@@ -1,6 +1,11 @@
 fileFormatVersion: 2
+<<<<<<< HEAD
 guid: a864798e3cc5ed74eb768549eb010393
 timeCreated: 1471694695
+=======
+guid: 66bbc7a5212f2f840bf1e6bce071236a
+timeCreated: 1471699095
+>>>>>>> refs/remotes/TeamPorcupine/master
 licenseType: Free
 AudioImporter:
   serializedVersion: 6

@@ -1,8 +1,11 @@
-﻿//=======================================================================
-// Copyright Martin "quill18" Glaude 2015.
-//		http://quill18.com
-//=======================================================================
-
+#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
 using UnityEngine;
 using System.Collections.Generic;
 using System;
@@ -15,7 +18,6 @@ using MoonSharp.Interpreter;
 [MoonSharpUserData]
 public class World : IXmlSerializable
 {
-
     // A two-dimensional array to hold our tile data.
     Tile[,] tiles;
     public List<Character> characters;
@@ -47,6 +49,7 @@ public class World : IXmlSerializable
     // be semi-static or self initializing or some damn thing.
     // For now, this is just a PUBLIC member of World
     public JobQueue jobQueue;
+    public JobQueue jobWaitingQueue;
 
     static public World current { get; protected set; }
 
@@ -119,6 +122,7 @@ public class World : IXmlSerializable
     {
 
         jobQueue = new JobQueue();
+        jobWaitingQueue = new JobQueue();
 
         // Set the current world to be this world.
         // TODO: Do we need to do any cleanup of the old world?
@@ -199,9 +203,10 @@ public class World : IXmlSerializable
 
     public void Update(float deltaTime)
     {
-        foreach (Character c in characters)
+        //Change from a foreach due to the collection being modified while its being looped through
+        for (int i = 0; i < characters.Count; i++)
         {
-            c.Update(deltaTime);
+            characters[i].Update(deltaTime);
         }
 
         foreach (Furniture f in furnitures)
@@ -228,20 +233,21 @@ public class World : IXmlSerializable
         furnitureJobPrototypes[f.objectType] = j;
     }
 
-    void LoadFurnitureLua()
+    void LoadFurnitureLua(string filePath)
     {
-        string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
-        filePath = System.IO.Path.Combine(filePath, "Furniture.lua");
         string myLuaCode = System.IO.File.ReadAllText(filePath);
 
         // Instantiate the singleton
-        new FurnitureActions(myLuaCode);
 
+        FurnitureActions.addScript(myLuaCode);
     }
 
     void CreateFurniturePrototypes()
     {
-        LoadFurnitureLua();
+        new FurnitureActions();
+        string luaFilePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
+        luaFilePath = System.IO.Path.Combine(luaFilePath, "Furniture.lua");
+        LoadFurnitureLua(luaFilePath);
 
 
         furniturePrototypes = new Dictionary<string, Furniture>();
@@ -251,10 +257,32 @@ public class World : IXmlSerializable
         // TODO:  Probably we should be getting past a StreamIO handle or the raw
         // text here, rather than opening the file ourselves.
 
-        string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
-        filePath = System.IO.Path.Combine(filePath, "Furniture.xml");
+        string dataPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
+        string filePath = System.IO.Path.Combine(dataPath, "Furniture.xml");
         string furnitureXmlText = System.IO.File.ReadAllText(filePath);
+        LoadFurniturePrototypesFromFile(furnitureXmlText);
 
+
+        DirectoryInfo[] mods = WorldController.Instance.modsManager.GetMods();
+        foreach (DirectoryInfo mod in mods)
+        {
+            string furnitureLuaModFile = System.IO.Path.Combine(mod.FullName, "Furniture.lua");
+            if (File.Exists(furnitureLuaModFile))
+            {
+                LoadFurnitureLua(furnitureLuaModFile);
+            }
+
+            string furnitureXmlModFile = System.IO.Path.Combine(mod.FullName, "Furniture.xml");
+            if (File.Exists(furnitureXmlModFile))
+            {
+                string furnitureXmlModText = System.IO.File.ReadAllText(furnitureXmlModFile);
+                LoadFurniturePrototypesFromFile(furnitureXmlModText);
+            }
+        }
+    }
+
+    void LoadFurniturePrototypesFromFile(string furnitureXmlText) 
+    {
         XmlTextReader reader = new XmlTextReader(new StringReader(furnitureXmlText));
 
         int furnCount = 0;
@@ -271,8 +299,8 @@ public class World : IXmlSerializable
                     {
                         furn.ReadXmlPrototype(reader);
                     }
-                    catch {
-                        Logger.LogError("Error reading furniture prototype for: " + furn.objectType);
+                    catch (Exception e) {
+                        Logger.LogError("Error reading furniture prototype for: " + furn.objectType + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
                     }
 
 
@@ -591,7 +619,7 @@ public class World : IXmlSerializable
             cbInventoryCreated(t.inventory);
         }
 
-        inv = new Inventory("Steel Plate", 50, 3);
+        inv = new Inventory("Copper Wire", 50, 3);
         t = GetTileAt(Width / 2 + 1, Height / 2 + 2);
         inventoryManager.PlaceInventory(t, inv);
         if (cbInventoryCreated != null)

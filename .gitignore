@@ -4,6 +4,7 @@
 /[Bb]uild/
 /[Bb]uilds/
 /Assets/AssetStoreTools*
+/Assets/StreamingAssets/Data/Mods/*
 /[Pp]roject[Ss]ettings/ProjectSettings.asset
 /[Pp]roject[Ss]ettings/ProjectVersion.txt
 
@@ -32,5 +33,4 @@ sysinfo.txt
 *.unitypackage
 
 # StyleCop
-/Assets/StyleCop.Cache
-/Assets/StyleCop.Cache.meta
+**StyleCop.Cache*
