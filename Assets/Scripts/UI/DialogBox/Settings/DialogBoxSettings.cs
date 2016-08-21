@@ -58,13 +58,13 @@ public class DialogBoxSettings : DialogBox {
 
 	public void OnLangageToggle()
 	{
-		gameSettings.isVisableLangage = langToggle.isOn;
+		gameSettings.isVisibleLangage = langToggle.isOn;
 		langDropDown.SetActive (langToggle.isOn);
 	}
 
 	public void OnFPSToggle()
 	{
-		gameSettings.isVisableFPS = fpsToggle.isOn;
+		gameSettings.isVisibleFPS = fpsToggle.isOn;
 		fpsObject.SetActive (fpsToggle.isOn);
 	}
 
@@ -85,13 +85,13 @@ public class DialogBoxSettings : DialogBox {
 
 	public void OnResolutionChange()
 	{
-		gameSettings.resultionIndex = resolutionDropdown.value;
+		gameSettings.resolutionIndex = resolutionDropdown.value;
 		//need to make work
 	}
 
 	public void OnAliasingChange()
 	{
-		gameSettings.antiAliasingindex = QualitySettings.antiAliasing = aliasingDropdown.value;
+		gameSettings.antiAliasingIndex = QualitySettings.antiAliasing = aliasingDropdown.value;
 	}
 
 	public void OnMasterChange()

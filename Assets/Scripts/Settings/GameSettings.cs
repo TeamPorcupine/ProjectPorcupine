@@ -2,13 +2,13 @@
 {
 	//this is for saving in the furture
 
-	public bool isVisableFPS;
-	public bool isVisableLangage;
+	public bool isVisibleFPS;
+	public bool isVisibleLangage;
 	public bool isFullscreen;
 	public float masterVolume;
 	public float musicVolume;
 	public int qualityIndex;
-	public int resultionIndex;
+	public int resolutionIndex;
 	public int vSyncIndex;
-	public int antiAliasingindex;
+	public int antiAliasingIndex;
 }
