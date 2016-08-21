@@ -44,16 +44,16 @@ public class Job
         get;
         protected set;
     }
-	public bool isNeed
-	{
-		get;
-		protected set;
-	}
-	public bool critical
-	{
-		get;
-		protected set;
-	}
+    public bool isNeed
+    {
+        get;
+        protected set;
+    }
+    public bool critical
+    {
+        get;
+        protected set;
+    }
 
     public TileType jobTileType
     {
@@ -93,8 +93,8 @@ public class Job
         this.cbJobCompleted += cbJobComplete;
         this.jobTimeRequired = this.jobTime = jobTime;
         this.jobRepeats = jobRepeats;
-		this.isNeed = isNeed;
-		this.critical = critical;
+        this.isNeed = isNeed;
+        this.critical = critical;
         this.jobPriority = jobPriority;
 
         cbJobWorkedLua = new List<string>();
@@ -206,7 +206,7 @@ public class Job
                     FurnitureActions.CallFunction(luaFunction, this);
                 }
             }
-			
+            
             return;
         }
 
@@ -251,15 +251,15 @@ public class Job
     public void CancelJob()
     {
         if (cbJobStopped != null)
-            cbJobStopped(this);	
+            cbJobStopped(this);    
 
         World.current.jobQueue.Remove(this);
     }
 
     public bool HasAllMaterial()
     {
-		if (inventoryRequirements == null)
-			return true;
+        if (inventoryRequirements == null)
+            return true;
         foreach (Inventory inv in inventoryRequirements.Values)
         {
             if (inv.maxStackSize > inv.stackSize)

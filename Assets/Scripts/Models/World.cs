@@ -32,7 +32,7 @@ public class World : IXmlSerializable
 
     public Dictionary<string, Furniture> furniturePrototypes;
     public Dictionary<string, Job> furnitureJobPrototypes;
-	public Dictionary<string, Need> needPrototypes;
+    public Dictionary<string, Need> needPrototypes;
 
     // The tile width of the world.
     public int Width { get; protected set; }
@@ -50,6 +50,7 @@ public class World : IXmlSerializable
     // be semi-static or self initializing or some damn thing.
     // For now, this is just a PUBLIC member of World
     public JobQueue jobQueue;
+    public JobQueue jobWaitingQueue;
 
     static public World current { get; protected set; }
 
@@ -64,7 +65,7 @@ public class World : IXmlSerializable
         SetupWorld(width, height);
         int seed = UnityEngine.Random.Range(0, int.MaxValue);
         WorldGenerator.Generate(this, seed);
-		Debug.Log ("Generated World");
+        Debug.Log ("Generated World");
         // Make one character
         CreateCharacter(GetTileAt(Width / 2, Height / 2));
     }
@@ -93,7 +94,7 @@ public class World : IXmlSerializable
     {
         if (i < 0 || i > rooms.Count - 1)
             return null;
-		
+        
         return rooms[i];
     }
 
@@ -122,6 +123,7 @@ public class World : IXmlSerializable
     {
 
         jobQueue = new JobQueue();
+        jobWaitingQueue = new JobQueue();
 
         // Set the current world to be this world.
         // TODO: Do we need to do any cleanup of the old world?
@@ -146,7 +148,7 @@ public class World : IXmlSerializable
         }
 
         CreateFurniturePrototypes();
-		CreateNeedPrototypes ();
+        CreateNeedPrototypes ();
         characters = new List<Character>();
         furnitures = new List<Furniture>();
         inventoryManager = new InventoryManager();
@@ -252,64 +254,64 @@ public class World : IXmlSerializable
     }
 
 
-	void CreateNeedPrototypes()
-	{
-		
-		needPrototypes = new Dictionary<string, Need>();
+    void CreateNeedPrototypes()
+    {
+        
+        needPrototypes = new Dictionary<string, Need>();
 
-		// READ FURNITURE PROTOTYPE XML FILE HERE
-		// TODO:  Probably we should be getting past a StreamIO handle or the raw
-		// text here, rather than opening the file ourselves.
+        // READ FURNITURE PROTOTYPE XML FILE HERE
+        // TODO:  Probably we should be getting past a StreamIO handle or the raw
+        // text here, rather than opening the file ourselves.
 
-		string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
-		filePath = System.IO.Path.Combine(filePath, "Need.xml");
-		string furnitureXmlText = System.IO.File.ReadAllText(filePath);
+        string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
+        filePath = System.IO.Path.Combine(filePath, "Need.xml");
+        string furnitureXmlText = System.IO.File.ReadAllText(filePath);
 
-		XmlTextReader reader = new XmlTextReader(new StringReader(furnitureXmlText));
+        XmlTextReader reader = new XmlTextReader(new StringReader(furnitureXmlText));
 
-		int needCount = 0;
-		if (reader.ReadToDescendant("Needs"))
-		{
-			if (reader.ReadToDescendant("Need"))
-			{
-				do
-				{
-					needCount++;
+        int needCount = 0;
+        if (reader.ReadToDescendant("Needs"))
+        {
+            if (reader.ReadToDescendant("Need"))
+            {
+                do
+                {
+                    needCount++;
 
-					Need need = new Need();
-					try
-					{
-						need.ReadXmlPrototype(reader);
-					}
-					catch {
-						Debug.LogError("Error reading furniture prototype for: " + need.needType);
-					}
-
-
-					needPrototypes[need.needType] = need;
+                    Need need = new Need();
+                    try
+                    {
+                        need.ReadXmlPrototype(reader);
+                    }
+                    catch {
+                        Debug.LogError("Error reading furniture prototype for: " + need.needType);
+                    }
 
 
+                    needPrototypes[need.needType] = need;
 
-				} while (reader.ReadToNextSibling("Furniture"));
-			}
-			else
-			{
-				Debug.LogError("The furniture prototype definition file doesn't have any 'Furniture' elements.");
-			}
-		}
-		else
-		{
-			Debug.LogError("Did not find a 'Furnitures' element in the prototype definition file.");
-		}
 
-		Debug.Log("Furniture prototypes read: " + needCount.ToString());
 
-		// This bit will come from parsing a LUA file later, but for now we still need to
-		// implement furniture behaviour directly in C# code.
-		//furniturePrototypes["Door"].RegisterUpdateAction( FurnitureActions.Door_UpdateAction );
-		//furniturePrototypes["Door"].IsEnterable = FurnitureActions.Door_IsEnterable;
+                } while (reader.ReadToNextSibling("Furniture"));
+            }
+            else
+            {
+                Debug.LogError("The furniture prototype definition file doesn't have any 'Furniture' elements.");
+            }
+        }
+        else
+        {
+            Debug.LogError("Did not find a 'Furnitures' element in the prototype definition file.");
+        }
 
-	}
+        Debug.Log("Furniture prototypes read: " + needCount.ToString());
+
+        // This bit will come from parsing a LUA file later, but for now we still need to
+        // implement furniture behaviour directly in C# code.
+        //furniturePrototypes["Door"].RegisterUpdateAction( FurnitureActions.Door_UpdateAction );
+        //furniturePrototypes["Door"].IsEnterable = FurnitureActions.Door_IsEnterable;
+
+    }
 
     /// <summary>
     /// A function for testing out the system
@@ -416,7 +418,7 @@ public class World : IXmlSerializable
                 // buy the furniture's movement cost, a furniture movement cost
                 // of exactly 1 doesn't impact our pathfinding system, so we can
                 // occasionally avoid invalidating pathfinding graphs
-                //InvalidateTileGraph();	// Reset the pathfinding system
+                //InvalidateTileGraph();    // Reset the pathfinding system
                 if (tileGraph != null)
                 {
                     tileGraph.RegenerateGraphAtTile(t);
@@ -432,7 +434,7 @@ public class World : IXmlSerializable
     {
         if (cbTileChanged == null)
             return;
-		
+        
         cbTileChanged(t);
 
         //InvalidateTileGraph();
@@ -468,7 +470,7 @@ public class World : IXmlSerializable
 
     //////////////////////////////////////////////////////////////////////////////////////
     /// 
-    /// 						SAVING & LOADING
+    ///                         SAVING & LOADING
     /// 
     //////////////////////////////////////////////////////////////////////////////////////
 
@@ -488,7 +490,7 @@ public class World : IXmlSerializable
         {
 
             if (GetOutsideRoom() == r)
-                continue;	// Skip the outside room. Alternatively, should SetupWorld be changed to not create one?
+                continue;    // Skip the outside room. Alternatively, should SetupWorld be changed to not create one?
 
             writer.WriteStartElement("Room");
             r.WriteXml(writer);
