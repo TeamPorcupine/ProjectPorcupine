@@ -3,6 +3,7 @@
 [Unity Version](#unity-version)  
 [General resources](#general-resources)  
 [Style Guidelines](#style-guidelines)  
+[Adding Furniture and Inventory](#Adding Furniture and Inventory)
 [Best Practices for Contributing](#best-practices-for-contributing)
 
 
@@ -123,6 +124,18 @@ Additionally, for the sake of simplicity, we are standardizing on what should be
 
 ![screen shot 2016-08-16 at 8 03 22 pm](https://cloud.githubusercontent.com/assets/777633/17719999/920fb534-63ec-11e6-8903-3725f2cd05b0.png)
 ![screen shot 2016-08-16 at 8 03 36 pm](https://cloud.githubusercontent.com/assets/777633/17719998/920cff6a-63ec-11e6-8f76-0ac7a5fa0c9d.png)
+
+# Adding Furniture and Inventory
+
+We have standardized the names of Furniture and Inventory to match 'steel_wall' out of code and 'furn_steel_wall' or 'inv_steel_plate' in code. This means a few things:
+
+* When adding a new Furniture or inventory the files should be named "my_new_furniture" and this should also be the objectType.
+
+* When coding an event or world generation, inventory is called 'inv_cool_item' and furniture is 'furn_cool_chair'.
+
+* In the Localization the string to translate will be 'inv_cool_sword=Cool Sword'.
+
+* In Localization the description can be set with 'inv_cool_sword_desc=This sword is flaming and does a million damage.'
 
 ## Best Practices for Contributing
 [Best Practices for Contributing]: #best-practices-for-contributing
