@@ -7,9 +7,9 @@
     <RessourceMin>5</RessourceMin>
     <RessourceMax>15</RessourceMax>
     <Ressources>
-      <Ressource objectType="Raw Iron" maxStack="50" chance="0.8" />
-      <Ressource objectType="Ice" maxStack="10" chance="0.2" />
-      <Ressource objectType="Coal" maxStack="20" chance="0.3" />
+      <Ressource objectType="Raw Iron" maxStack="50" chance="0.7" />
+      <Ressource objectType="Ice" maxStack="10" chance="0.15" />
+      <Ressource objectType="Coal" maxStack="20" chance="0.15" />
     </Ressources>
   </Asteroid>
 </WorldGenerator>
