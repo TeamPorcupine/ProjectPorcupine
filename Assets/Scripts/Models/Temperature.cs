@@ -3,9 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using MoonSharp.Interpreter;
-// TESTING stuff, to be removed or kept depending on stuff but left for testing
-//using MathNet.Numerics.LinearAlgebra;
-//using MathNet.Numerics.LinearAlgebra.Single;
 
 /// <summary>
 /// A  Temperature management system. Temperature is stored at each tile and evolved using
@@ -49,9 +46,6 @@ public class Temperature
     /// We switch between two "states" of temperatrue, because we reuqire a tempoerary array containing the old value
     /// </summary>
     int offset = 0;
-
-    // TESTING stuff, to be removed or kept depending on stuff but left for testing
-    //private SparseMatrix Mat;
 
     /// <summary>
     /// Create and Initialize arrays with default values.
@@ -176,7 +170,6 @@ public class Temperature
         if (sinksAndSources != null) sinksAndSources();
 
         ForwardTemp();
-        //BackwardTemp();
     }
 
     void ForwardTemp()
@@ -239,105 +232,5 @@ public class Temperature
         // Swap variable order
         offset = 1 - offset;
     }
-
-    // TESTING stuff, to be removed or kept depending on stuffbut left for testing
-    //
-    //
-    //
-    //void BackwardTemp()
-    //{
-
-    //    Vector<float> b = Vector.Build.DenseOfArray(temperature[offset]);
-    //    Vector<float> __x = Vector.Build.DenseOfArray(temperature[1-offset]);
-    //    b.CopyTo(__x);
-    //    Debug.Log(string.Format("{0} {1} {2} {3}", (Mat * __x - b).L2Norm(), __x.L2Norm(), b.L2Norm(), b.At(50 + 100 * 50)));
-
-    //    MathNet.Numerics.LinearAlgebra.Single.Solvers.BiCgStab bcg = new MathNet.Numerics.LinearAlgebra.Single.Solvers.BiCgStab();
-
-    //    //MathNet.Numerics.LinearAlgebra.Single.Solvers.ILU0Preconditioner ilu = new MathNet.Numerics.LinearAlgebra.Single.Solvers.ILU0Preconditioner();
-    //    MathNet.Numerics.LinearAlgebra.Single.Solvers.DiagonalPreconditioner ilu = new MathNet.Numerics.LinearAlgebra.Single.Solvers.DiagonalPreconditioner();
-
-    //    //Mat.Multiply(v);
-
-
-    //    // Stop calculation if 1000 iterations reached during calculation
-    //    var iterationCountStopCriterion = new MathNet.Numerics.LinearAlgebra.Solvers.IterationCountStopCriterion<float>(100);
-
-    //    // Stop calculation if residuals are below 1E-10 --> the calculation is considered converged
-    //    var residualStopCriterion = new MathNet.Numerics.LinearAlgebra.Solvers.ResidualStopCriterion<float>(0.1f);
-
-    //    // Create monitor with defined stop criteria
-    //    var monitor = new MathNet.Numerics.LinearAlgebra.Solvers.Iterator<float>(iterationCountStopCriterion, residualStopCriterion);
-
-    //    MathNet.Numerics.LinearAlgebra.Solvers.Iterator<float> it = new MathNet.Numerics.LinearAlgebra.Solvers.Iterator<float>();
-    //    __x = Mat.SolveIterative(b, bcg, monitor, ilu);
-    //    //bcg.Solve(Mat, v, w, it, ilu);
-    //    Debug.Log(string.Format("{0} {1} {2} {3}", (Mat * __x - b).L2Norm(), __x.L2Norm(), b.L2Norm(), __x.At(49 + 100 * 49)));
-    //    temperature[1-offset] = __x.ToArray();
-    //    offset = 1 - offset;
-    //}
-
-    // TESTING stuff, to be removed or kept depending on stuff but left for testing
-    //
-    //
-    //void BuildMatrix()
-    //{
-    //    //OfIndexed(int rows, int columns, IEnumerable < Tuple < int, int, double >> enumerable);
-    //    List<MathNet.Numerics.Tuple<int, int, float>> tuples = new List<MathNet.Numerics.Tuple<int, int, float>>();
-
-    //    float C = 0.1f * 0.5f;
-    //    for (int y = 0; y < ySize; y++)
-    //    {
-    //        for (int x = 0; x < xSize; x++)
-    //        {
-    //            int index = GetIndex(x, y);
-    //            int index_up = GetIndex(x, y + 1);
-    //            int index_down = GetIndex(x, y - 1);
-    //            int index_left = GetIndex(x - 1, y);
-    //            int index_right = GetIndex(x + 1, y);
-
-    //            // Update temperature using finite difference and forward method:
-    //            // U^{n+1} = U^n + dt*(\Div alpha \Grad U^n)
-
-
-
-    //            // TODO: if empty space, set temperature to 0
-    //            //if (WorldController.Instance.GetTileAtWorldCoord(new Vector3(x, y, 0)).room == null)
-    //            //{
-    //            //        tuples.Add(new MathNet.Numerics.Tuple<int, int, float>(index, index, 1f));
-    //            //}
-    //            //    else
-    //            //    {
-    //            //}
-    //            tuples.Add(new MathNet.Numerics.Tuple<int, int, float>(index, index, 1f));
-    //            if (x > 0)
-    //            {
-    //                float D = C * (thermalDiffusivity[index] + thermalDiffusivity[index_left]);
-    //                tuples.Add(new MathNet.Numerics.Tuple<int, int, float>(index, index_left, -D));
-    //                tuples.Add(new MathNet.Numerics.Tuple<int, int, float>(index, index, D));
-    //            }
-    //            if (y > 0)
-    //            {
-    //                float D = C * (thermalDiffusivity[index] + thermalDiffusivity[index_down]);
-    //                tuples.Add(new MathNet.Numerics.Tuple<int, int, float>(index, index_down, -D));
-    //                tuples.Add(new MathNet.Numerics.Tuple<int, int, float>(index, index, D));
-    //            }
-    //            if (x < xSize - 1)
-    //            {
-    //                float D = C * (thermalDiffusivity[index] + thermalDiffusivity[index_right]);
-    //                tuples.Add(new MathNet.Numerics.Tuple<int, int, float>(index, index_right, -D));
-    //                tuples.Add(new MathNet.Numerics.Tuple<int, int, float>(index, index, D));
-    //            }
-    //            if (y < ySize - 1)
-    //            {
-    //                float D = C * (thermalDiffusivity[index] + thermalDiffusivity[index_up]);
-    //                tuples.Add(new MathNet.Numerics.Tuple<int, int, float>(index, index_up, -D));
-    //                tuples.Add(new MathNet.Numerics.Tuple<int, int, float>(index, index, D));
-    //            }
-    //        }
-    //    }
-
-    //    Mat = SparseMatrix.OfIndexed(xSize * ySize, xSize * ySize, tuples);
-
-    //}
+    
 }
