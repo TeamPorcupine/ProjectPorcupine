@@ -9,6 +9,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
+using System.ComponentModel;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
@@ -22,6 +23,16 @@ using MoonSharp.Interpreter.Interop;
 [MoonSharpUserData]
 public class Furniture : IXmlSerializable, ISelectable
 {
+    protected class Parameter
+    {
+        public string value;
+        public string type;
+    }
+
+    protected class EventAction
+    {
+        public List<string> luaFunctionNames = new List<string>();
+    }
 
     /// <summary>
     /// Custom parameter for this particular piece of furniture.  We are
@@ -29,14 +40,14 @@ public class Furniture : IXmlSerializable, ISelectable
     /// able to use whatever parameters the user/modder would like.
     /// Basically, the LUA code will bind to this dictionary.
     /// </summary>
-    protected Dictionary<string, float> furnParameters;
+    protected Dictionary<string, Parameter> furnParameters;
 
     /// <summary>
     /// These actions are called every update. They get passed the furniture
     /// they belong to, plus a deltaTime.
     /// </summary>
     //protected Action<Furniture, float> updateActions;
-    protected List<string> updateActions;
+    protected Dictionary<string, EventAction> eventActions;
 
     //public Func<Furniture, ENTERABILITY> IsEnterable;
     protected string isEnterableAction;
@@ -57,11 +68,11 @@ public class Furniture : IXmlSerializable, ISelectable
 
     public void Update(float deltaTime)
     {
-        if (updateActions != null)
+        if (HasValidRegisteredActions("OnUpdate"))
         {
             //updateActions(this, deltaTime);
-
-            FurnitureActions.CallFunctionsWithFurniture(updateActions.ToArray(), this, deltaTime);
+            Debug.Log(string.Join(" ", eventActions["OnUpdate"].luaFunctionNames.ToArray()));
+            FurnitureActions.CallFunctionsWithFurniture(eventActions["OnUpdate"].luaFunctionNames.ToArray(), this, deltaTime);
         }
     }
 
@@ -174,8 +185,8 @@ public class Furniture : IXmlSerializable, ISelectable
     // Empty constructor is used for serialization
     public Furniture()
     {
-        updateActions = new List<string>();
-        furnParameters = new Dictionary<string, float>();
+        eventActions = new Dictionary<string, EventAction>();
+        furnParameters = new Dictionary<string, Parameter>();
         jobs = new List<Job>();
         typeTags = new HashSet<string>();
         this.funcPositionValidation = this.DEFAULT__IsValidPosition;
@@ -201,11 +212,11 @@ public class Furniture : IXmlSerializable, ISelectable
         this.jobSpotOffset = other.jobSpotOffset;
         this.jobSpawnSpotOffset = other.jobSpawnSpotOffset;
 
-        this.furnParameters = new Dictionary<string, float>(other.furnParameters);
+        this.furnParameters = new Dictionary<string, Parameter>(other.furnParameters);
         jobs = new List<Job>();
 
-        if (other.updateActions != null)
-            this.updateActions = new List<string>(other.updateActions);
+        if (other.eventActions != null)
+            this.eventActions = new Dictionary<string, EventAction>(other.eventActions);
 
         this.isEnterableAction = other.isEnterableAction;
 
@@ -469,10 +480,19 @@ public class Furniture : IXmlSerializable, ISelectable
                 World.current.SetFurnitureJobPrototype(j, this);
 
                 break;
-            case "OnUpdate":
+            case "Action":
+                string name = reader.GetAttribute("event");
+                if (name == null)
+                {
+                    Debug.LogError(string.Format("The attribute \"event\" is a mandatory for an \"Action\" element."));
+                }
+                string functionName = reader.GetAttribute("function_name");
+                if(functionName == null)
+                {
+                    Debug.LogError(string.Format("No function name was provided for the Action {0}.", name));
+                }
 
-                string functionName = reader.GetAttribute("FunctionName");
-                RegisterUpdateAction(functionName);
+                RegisterAction(name, functionName);
 
                 break;
             case "IsEnterable":
@@ -541,10 +561,30 @@ public class Furniture : IXmlSerializable, ISelectable
         {
             do
             {
-                string k = reader.GetAttribute("name");
-                float v = float.Parse(reader.GetAttribute("value"));
-                furnParameters[k] = v;
+                string name = reader.GetAttribute("name");
+                string value = reader.GetAttribute("value");
+                // "type" attirubte is optional, defaults to float
+                string type = reader.GetAttribute("type");
+                if(type == null || type == "")
+                {
+                    type = "float";
+                }
+                AddParameter(name, value, type);
             } while (reader.ReadToNextSibling("Param"));
+        }
+    }
+
+    void AddParameter(string name, string value, string type)
+    {
+        switch (type)
+        {
+            case "string":
+            case "float":
+                SetParameter(name, value);
+                break;
+            default:
+                Debug.LogError(string.Format("Invalid type \"{0}\" for parameters.", type));
+                break;
         }
     }
 
@@ -554,49 +594,91 @@ public class Furniture : IXmlSerializable, ISelectable
     /// <returns>The parameter value (float).</returns>
     /// <param name="key">Key string.</param>
     /// <param name="default_value">Default value.</param>
-    public float GetParameter(string key, float default_value)
+    public string GetParameter(string key, string default_value = null)
+    {
+        if (furnParameters.ContainsKey(key) == false)
+        {
+            if (default_value == null) return "";
+            return default_value;
+        }
+
+        return furnParameters[key].value;
+        //return (T) T.parse(furnParameters[key].value);
+    }
+
+    /// <summary>
+    /// Gets the custom furniture parameter from a string key.
+    /// </summary>
+    /// <returns>The parameter value (float).</returns>
+    /// <param name="key">Key string.</param>
+    /// <param name="default_value">Default value.</param>
+    public float GetParameterAsFloat(string key, float default_value = 0f)
     {
         if (furnParameters.ContainsKey(key) == false)
         {
             return default_value;
         }
 
-        return furnParameters[key];
+        return float.Parse(furnParameters[key].value);
     }
 
-    public float GetParameter(string key)
+    public void SetParameterAsFloat(string key, float value)
     {
-        return GetParameter(key, 0);
-    }
-
-
-    public void SetParameter(string key, float value)
-    {
-        furnParameters[key] = value;
-    }
-
-    public void ChangeParameter(string key, float value)
-    {
-        if (furnParameters.ContainsKey(key) == false)
+        if (!furnParameters.ContainsKey(key) || furnParameters[key] == null)
         {
-            furnParameters[key] = value;
+            furnParameters[key] = new Parameter();
         }
+        furnParameters[key].value = value.ToString();
+    }
 
-        furnParameters[key] += value;
+    public void SetParameter(string key, string value)
+    {
+        if(!furnParameters.ContainsKey(key) || furnParameters[key] == null)
+        {
+            furnParameters[key] = new Parameter();
+        }
+        furnParameters[key].value = value;
+    }
+    
+    public void ChangeParameterAsFloat(string key, float value)
+    {
+        if (!furnParameters.ContainsKey(key) || furnParameters[key] == null)
+        {
+            furnParameters[key] = new Parameter();
+            furnParameters[key].value = value.ToString();
+        }
+        furnParameters[key].value = (float.Parse(furnParameters[key].value) + value).ToString();
     }
 
     /// <summary>
     /// Registers a function that will be called every Update.
     /// (Later this implementation might change a bit as we support LUA.)
     /// </summary>
-    public void RegisterUpdateAction(string luaFunctionName)
+    public void RegisterAction(string eventName, string luaFunctionName)
     {
-        updateActions.Add(luaFunctionName);
+        if(!eventActions.ContainsKey(eventName)) {
+            eventActions[eventName] = new EventAction();
+        }
+        eventActions[eventName].luaFunctionNames.Add(luaFunctionName);
     }
 
-    public void UnregisterUpdateAction(string luaFunctionName)
+    public bool HasValidRegisteredActions(string eventName)
     {
-        updateActions.Remove(luaFunctionName);
+        if(eventActions.ContainsKey("OnUpdate") && eventActions["OnUpdate"] != null &&
+            eventActions["OnUpdate"] != null && eventActions["OnUpdate"].luaFunctionNames.Count > 1)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public void UnregisterAction(string eventName, string luaFunctionName)
+    {
+        if (!eventActions.ContainsKey(eventName))
+        {
+            Debug.LogError(string.Format("Trying to remove \"{0}\" but is not in the dictionary.", eventName));
+        }
+        eventActions[eventName].luaFunctionNames.Remove(luaFunctionName);
     }
 
     public int JobCount()
