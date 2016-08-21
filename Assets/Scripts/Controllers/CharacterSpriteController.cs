@@ -72,7 +72,7 @@ public class CharacterSpriteController : MonoBehaviour
         // Register our callback so that our GameObject gets updated whenever
         // the object's into changes.
         c.cbCharacterChanged += OnCharacterChanged;
-
+        
     }
 
     void OnCharacterChanged(Character c)
