@@ -236,6 +236,7 @@ function MetalSmelter_UpdateAction(furniture, deltaTime)
 			nil,
 			0.4,
 			itemsDesired,
+			Job.JobPriority.Medium,
 			false
 			)
 			
@@ -276,10 +277,34 @@ function MetalSmelter_JobComplete(j)
 	for k, inv in pairs(j.inventoryRequirements) do
 		if(inv.stackSize > 0) then
 			World.current.inventoryManager.PlaceInventory(spawnSpot, inv)
-
+			spawnSpot.inventory.isLocked = true
 			return
 		end
 	end
+end
+
+function CloningPod_UpdateAction(furniture, deltaTime)
+
+	if( furniture.JobCount() > 0 ) then
+		return
+	end
+	
+	j = Job.__new(
+	furniture.GetJobSpotTile(),
+	nil,
+	nil,
+	10,
+	nil,
+	false
+	)
+	j.RegisterJobCompletedCallback("CloningPod_JobComplete")
+	furniture.AddJob( j )
+end
+
+function CloningPod_JobComplete(j)
+	j.furniture.Deconstruct()
+	char = World.current.CreateCharacter(j.furniture.GetSpawnSpotTile())
+	
 end
 
 return "LUA Script Parsed!"

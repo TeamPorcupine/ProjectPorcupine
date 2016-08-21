@@ -1,13 +1,17 @@
-//=======================================================================
-// Copyright Martin "quill18" Glaude 2015-2016.
-//		http://quill18.com
-//=======================================================================
-
+#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
 using UnityEngine;
 using System;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using MoonSharp.Interpreter;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -17,6 +21,7 @@ using System.Linq;
 /// Later, the Character class will likely be refactored (possibly with
 /// sub-classes or interfaces) to support friendly workers, enemies, etc...
 /// </summary>
+[MoonSharpUserData]
 public class Character : IXmlSerializable, ISelectable
 {
 
@@ -119,6 +124,9 @@ public class Character : IXmlSerializable, ISelectable
     /// Tile where job should be carried out, if different from myJob.tile
     Tile jobTile;
 
+    /// Name of the Character
+    public string name;
+
     // The item we are carrying (not gear/equipment)
     public Inventory inventory;
 
@@ -176,7 +184,7 @@ public class Character : IXmlSerializable, ISelectable
             jobTile = myJob.tile;
         }
 
-        if (pathAStar.Length() == 0)
+        if (pathAStar != null && pathAStar.Length() == 0)
         {
             Logger.LogError("Path_AStar returned no path to target job tile!");
             AbandonJob();
@@ -259,13 +267,13 @@ public class Character : IXmlSerializable, ISelectable
             // At this point, the job still requires inventory, but we aren't carrying it!
 
             // Are we standing on a tile with goods that are desired by the job?
-            Logger.Log("Standing on Tile check");
+            Logger.LogVerbose("Standing on Tile check");
             if (CurrTile.inventory != null &&
-                myJob.DesiresInventoryType(CurrTile.inventory) > 0 &&
+                myJob.DesiresInventoryType(CurrTile.inventory) > 0 && !CurrTile.inventory.isLocked &&
                 (myJob.canTakeFromStockpile || CurrTile.furniture == null || CurrTile.furniture.IsStockpile() == false))
             {
                 // Pick up the stuff!
-                Logger.Log("Pick up the stuff");
+                Logger.LogVerbose("Pick up the stuff");
 
                 World.current.inventoryManager.PlaceInventory(
                     this,
@@ -277,8 +285,8 @@ public class Character : IXmlSerializable, ISelectable
             else
             {
                 // Walk towards a tile containing the required goods.
-                Logger.Log("Walk to the stuff");
-                Logger.Log(myJob.canTakeFromStockpile);
+                Logger.LogVerbose("Walk to the stuff");
+                Logger.LogVerbose(myJob.canTakeFromStockpile);
 
                 // Find the first thing in the Job that isn't satisfied.
                 Inventory desired = myJob.GetFirstDesiredInventory();
@@ -290,7 +298,13 @@ public class Character : IXmlSerializable, ISelectable
                 }
 
                 // Any chance we already have a path that leads to the items we want?
-                if (pathAStar != null && pathAStar.EndTile() != null && pathAStar.EndTile().inventory != null && (pathAStar.EndTile().furniture != null && !(myJob.canTakeFromStockpile == false && pathAStar.EndTile().furniture.IsStockpile() == true)) && pathAStar.EndTile().inventory.objectType == desired.objectType)
+
+                // Check that we have an end tile and that it has content.
+                if (pathAStar != null && pathAStar.EndTile() != null && pathAStar.EndTile().inventory != null && 
+                    // Check if it is a stockpile and we are allowed to grab from it or just not a stockpile
+                    !(pathAStar.EndTile().furniture != null && (myJob.canTakeFromStockpile == false && pathAStar.EndTile().furniture.IsStockpile() == true)) &&
+                    // Check if contains the desired objectType
+                    ( pathAStar.EndTile().inventory.objectType == desired.objectType))
                 {
                     // We are already moving towards a tile that contains what we want!
                     // so....do nothing?
@@ -513,7 +527,7 @@ public class Character : IXmlSerializable, ISelectable
 
     public string GetName()
     {
-        return "Sally S. Smith";
+        return name;
     }
 
     public string GetDescription()

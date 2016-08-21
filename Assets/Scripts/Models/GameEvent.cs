@@ -1,4 +1,12 @@
-﻿using UnityEngine;
+#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
+using UnityEngine;
 using System.Collections.Generic;
 using MoonSharp;
 using MoonSharp.Interpreter;
@@ -7,22 +15,25 @@ using MoonSharp.Interpreter.Interop;
 [MoonSharpUserData]
 public class GameEvent 
 {
-
     public string Name { get; protected set; }
     public bool Repeat { get; protected set; }
+    public int MaxRepeats { get; protected set; }
 
     protected List<string> preconditions;
     protected List<string> executionActions;
 
     private bool executed;
     private float timer;
+    private int repeats;
 
-    public GameEvent(string name, bool repeat){
+    public GameEvent(string name, bool repeat, int maxRepeats){
         Name = name;
         Repeat = repeat;
+        MaxRepeats = maxRepeats;
         preconditions = new List<string>();
         executionActions = new List<string>();
         timer = 0;
+        repeats = 0;
     }
 
     public void Update(float deltaTime){
@@ -32,7 +43,8 @@ public class GameEvent
             conditionsMet += (int)(GameEventActions.CallFunction(precondition, this, deltaTime).Number);
         }
 
-        if(conditionsMet >= preconditions.Count && executed == false){
+        if(conditionsMet >= preconditions.Count && executed == false && (MaxRepeats <= 0 || repeats < MaxRepeats)){
+            repeats++;
             Execute();
         }
     }
