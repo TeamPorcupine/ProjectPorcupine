@@ -173,8 +173,8 @@
       </BuildingJob>
       
       <Params>
-        <Param name="burnTime" value="0" />
-        <Param name="burnTimeRequired" value="10" />
+          <Param name="burnTime" value="0" />
+          <Param name="burnTimeRequired" value="10" />
       </Params>
       
 	  <OnUpdate FunctionName="PowerGenerator_UpdateAction" />
