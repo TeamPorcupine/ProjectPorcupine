@@ -55,6 +55,14 @@ public class BuildModeController : MonoBehaviour
         GameObject.FindObjectOfType<MouseController>().StartBuildMode();
     }
 
+    public void SetMode_BuildLadder()
+    {
+        buildMode = BuildMode.FLOOR;
+        buildModeTile = TileType.Ladder;
+
+        GameObject.FindObjectOfType<MouseController>().StartBuildMode();
+    }
+
     public void SetMode_Bulldoze()
     {
         buildMode = BuildMode.FLOOR;
