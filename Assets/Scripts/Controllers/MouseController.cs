@@ -110,7 +110,7 @@ public class MouseController : MonoBehaviour
     public class SelectionInfo
     {
         public Tile tile;
-        public ISelectable[] stuffInTile;
+        public List<ISelectable> stuffInTile;
         public int subSelection = 0;
     }
 
@@ -191,7 +191,7 @@ public class MouseController : MonoBehaviour
                 RebuildSelectionStuffInTile();
 
                 // Select the first non-null entry.
-                for (int i = 0; i < mySelection.stuffInTile.Length; i++)
+                for (int i = 0; i < mySelection.stuffInTile.Count; i++)
                 {
                     if (mySelection.stuffInTile[i] != null)
                     {
@@ -210,7 +210,7 @@ public class MouseController : MonoBehaviour
 
                 do
                 {
-                    mySelection.subSelection = (mySelection.subSelection + 1) % mySelection.stuffInTile.Length;
+                    mySelection.subSelection = (mySelection.subSelection + 1) % mySelection.stuffInTile.Count;
                 } while(mySelection.stuffInTile[mySelection.subSelection] == null);
             }
         }
@@ -220,18 +220,19 @@ public class MouseController : MonoBehaviour
     {
 
         // Make sure stuffInTile is big enough to handle all the characters, plus the 3 extra values
-        mySelection.stuffInTile = new ISelectable[ mySelection.tile.characters.Count + 3 ];
+        mySelection.stuffInTile = new List<ISelectable>( );
 
         // Copy the character references
-        for (int i = 0; i < mySelection.tile.characters.Count; i++)
+        foreach (Character character in mySelection.tile.characters)
         {
-            mySelection.stuffInTile[i] = mySelection.tile.characters[i];
+            mySelection.stuffInTile.Add(character);
         }
 
         // Now assign references to the other three sub-selections available
-        mySelection.stuffInTile[mySelection.stuffInTile.Length - 3] = mySelection.tile.furniture;
-        mySelection.stuffInTile[mySelection.stuffInTile.Length - 2] = mySelection.tile.inventory;
-        mySelection.stuffInTile[mySelection.stuffInTile.Length - 1] = mySelection.tile;
+        mySelection.stuffInTile.Add( mySelection.tile.furniture );
+        mySelection.stuffInTile.Add( mySelection.tile.inventory );
+        mySelection.stuffInTile.Add( mySelection.tile );
+        mySelection.stuffInTile.Add( mySelection.tile.pendingBuildJob );
 
     }
 

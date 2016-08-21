@@ -13,7 +13,7 @@ using MoonSharp.Interpreter;
 using System.Linq;
 
 [MoonSharpUserData]
-public class Job
+public class Job: ISelectable
 {
     public enum JobPriority { High, Medium, Low }
 
@@ -291,5 +291,27 @@ public class Job
     public void DropPriority()
     {
         jobPriority = (JobPriority)Mathf.Max(0, (int)jobPriority - 1);
+    }
+
+    public string GetName()
+    {
+        return this.jobObjectType;
+    }
+
+    public string GetDescription()
+    {
+        string desc = "Requirements:\n";
+        foreach (Inventory inv in inventoryRequirements.Values)
+        {
+            desc += "\t" + inv.GetName() + "\t";
+            desc += inv.stackSize + " / " + inv.maxStackSize;
+            desc += "\n";
+        }
+        return desc;
+    }
+
+    public string GetHitPointString()
+    {
+        return "";
     }
 }
