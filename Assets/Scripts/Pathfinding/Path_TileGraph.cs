@@ -72,11 +72,11 @@ public class Path_TileGraph
         // If neighbour is walkable, create an edge to the relevant node.
         for (int i = 0; i < neighbours.Length; i++)
         {
-            if (neighbours[i] != null && neighbours[i].movementCost > 0 && IsClippingCorner(t, neighbours[i]) == false)
+            if (neighbours[i] != null && neighbours[i].MovementCost > 0 && IsClippingCorner(t, neighbours[i]) == false)
             {
                 // This neighbour exists, is walkable, and doesn't requiring clipping a corner --> so create an edge.
                 Path_Edge<Tile> e = new Path_Edge<Tile>();
-                e.cost = neighbours[i].movementCost;
+                e.cost = neighbours[i].MovementCost;
                 e.node = nodes[neighbours[i]];
                 // Add the edge to our temporary (and growable!) list
                 edges.Add(e);
@@ -106,13 +106,13 @@ public class Path_TileGraph
         {
             // We are diagonal
 
-            if (World.current.GetTileAt(curr.X - dX, curr.Y).movementCost == 0)
+            if (World.current.GetTileAt(curr.X - dX, curr.Y).MovementCost == 0)
             {
                 // East or West is unwalkable, therefore this would be a clipped movement.
                 return true;
             }
 
-            if (World.current.GetTileAt(curr.X, curr.Y - dY).movementCost == 0)
+            if (World.current.GetTileAt(curr.X, curr.Y - dY).MovementCost == 0)
             {
                 // North or South is unwalkable, therefore this would be a clipped movement.
                 return true;
