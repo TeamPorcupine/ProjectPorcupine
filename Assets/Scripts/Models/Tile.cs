@@ -90,6 +90,20 @@ public class Tile :IXmlSerializable, ISelectable
             //if (Type == TileType.Empty)
             //    return 0;	// 0 is unwalkable
 
+            if(Type == TileType.Empty)
+            {
+                Tile[] ns = GetNeighbours();
+
+                bool canMove = false;
+
+                foreach (Tile n in ns) // Loop through all the horizontal/vertical neighbours of the empty tile.
+                {
+                    canMove = canMove || (n != null && n.Type == TileType.Floor); // If the neighbour is a floor tile, set canMove to true.
+                }
+
+                return canMove ? baseTileMovementCost : 0f; // If canMove is true, return baseTileMovementCost, else, return 0f.
+            }
+
             if (furniture == null)
                 return baseTileMovementCost;
 

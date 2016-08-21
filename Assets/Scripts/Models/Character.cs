@@ -1,8 +1,8 @@
 #region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
-// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
-// and you are welcome to redistribute it under certain conditions; See 
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
@@ -164,12 +164,19 @@ public class Character : IXmlSerializable, ISelectable
         myJob.cbJobStopped += OnJobStopped;
 
         // Immediately check to see if the job tile is reachable.
-        // NOTE: We might not be pathing to it right away (due to 
+        // NOTE: We might not be pathing to it right away (due to
         // requiring materials), but we still need to verify that the
         // final location can be reached.
         Profiler.BeginSample("PathGeneration");
         pathAStar = new Path_AStar(World.current, CurrTile, DestTile);	// This will calculate a path from curr to dest.
         Profiler.EndSample();
+
+        if (pathAStar != null && pathAStar.Length() == 0)
+        {
+            Logger.LogVerbose("Path_AStar returned no path to target job tile!");
+            AbandonJob(false);
+            return;
+        }
 
         if (myJob.adjacent)
         {
@@ -183,37 +190,38 @@ public class Character : IXmlSerializable, ISelectable
         {
             jobTile = myJob.tile;
         }
-
-        if (pathAStar != null && pathAStar.Length() == 0)
-        {
-            Logger.LogError("Path_AStar returned no path to target job tile!");
-            AbandonJob();
-            DestTile = CurrTile;
-        }
     }
-    
+
     void Update_DoJob(float deltaTime)
     {
-        // Do I have a job?
-        if (myJob == null)
+        // Check if I already have a job.
+        if (myJob == null) 
         {
             GetNewJob();
+            // This should only be the case, if there was a pathing issue
+            // or insufficent materials after getting the job.
+            // In that case, just return early.
+            if (myJob == null)
+            {
+                return;
+            }
         }
 
-        if (CheckForJobMaterials()) //make sure all materials are in place
-        {
+        // Make sure all materials are in place.
+        if (CheckForJobMaterials())
+        { 
             // If we get here, then the job has all the material that it needs.
             // Lets make sure that our destination tile is the job site tile.
             DestTile = JobTile;
 
-            // Are we there yet?
+            // Check if we have reached the destination tiles.
             if (CurrTile == DestTile)
             {
-                // We are at the correct tile for our job, so 
+                // We are at the correct tile for our job, so
                 // execute the job's "DoWork", which is mostly
                 // going to countdown jobTime and potentially
                 // call its "Job Complete" callback.
-                myJob.DoWork(deltaTime);
+                myJob.DoWork (deltaTime);
             }
         }
     }
@@ -224,9 +232,18 @@ public class Character : IXmlSerializable, ISelectable
     /// </summary>
     /// <returns></returns>
     bool CheckForJobMaterials()
-    {  
-        if (myJob.HasAllMaterial())
+    {
+        if (myJob.HasAllMaterial ()) {
             return true; //we can return early
+        } else {
+            // Do a quick check, if any inventories with the desired objectType exists.
+            Inventory desired = myJob.GetFirstDesiredInventory ();
+            if (!World.current.inventoryManager.QuickCheck(desired.objectType)) {
+                // If not, abandon the job and return false.
+                AbandonJob(true);
+                return false;
+            }
+        }
 
         // At this point we know, that the job still needs materials.
         // First we check if we carry any materials the job wants by chance.
@@ -259,7 +276,7 @@ public class Character : IXmlSerializable, ISelectable
             {
                 // We are carrying something, but the job doesn't want it!
                 // Dump the inventory so we can be ready to carry what the job actually wants.
-                DumpExcessInventory();                
+                DumpExcessInventory();
             }
         }
         else
@@ -300,7 +317,7 @@ public class Character : IXmlSerializable, ISelectable
                 // Any chance we already have a path that leads to the items we want?
 
                 // Check that we have an end tile and that it has content.
-                if (pathAStar != null && pathAStar.EndTile() != null && pathAStar.EndTile().inventory != null && 
+                if (pathAStar != null && pathAStar.EndTile() != null && pathAStar.EndTile().inventory != null &&
                     // Check if it is a stockpile and we are allowed to grab from it or just not a stockpile
                     !(pathAStar.EndTile().furniture != null && (myJob.canTakeFromStockpile == false && pathAStar.EndTile().furniture.IsStockpile() == true)) &&
                     // Check if contains the desired objectType
@@ -322,8 +339,8 @@ public class Character : IXmlSerializable, ISelectable
                     {
                         //Logger.Log("pathAStar is null and we have no path to object of type: " + desired.objectType);
                         // Cancel the job, since we have no way to get any raw materials!
-                        Logger.Log("No tile contains objects of type '" + desired.objectType + "' to satisfy job requirements.");
-                        AbandonJob();
+                        Logger.LogVerbose("No tile contains objects of type '" + desired.objectType + "' to satisfy job requirements.");
+                        AbandonJob(true);
                         return false;
                     }
 
@@ -369,13 +386,35 @@ public class Character : IXmlSerializable, ISelectable
         inventory = null;
     }
 
-    public void AbandonJob()
+    public void AbandonJob(bool intoWaitingQueue)
     {
+        // Character does not have to move,
+        // so destination tile is the one
+        // he is standing on.
         NextTile = DestTile = CurrTile;
-        myJob.DropPriority();   //Drops the priority a level, to lowest.
-        World.current.jobQueue.Enqueue(myJob);
-        myJob.cbJobStopped -= OnJobStopped;
-        myJob = null;
+
+        // Drops the priority a level, to lowest.
+        myJob.DropPriority();
+
+        if (intoWaitingQueue)
+        {
+            // If the job gets abandoned because of missing materials,
+            // put it into the waiting queue.
+            // Also create a callback for when an inventory gets created.
+            // Lastly, remove the job from "myJob".
+            World.current.jobWaitingQueue.Enqueue(myJob);
+            World.current.cbInventoryCreated += OnInventoryCreated;
+            myJob.cbJobStopped -= OnJobStopped;
+            myJob = null;
+        }
+        else
+        {
+            // If the job gets abandoned because of pathing issues or something else,
+            // just put it into the normal job queue and remove the job from "myJob".
+            World.current.jobQueue.Enqueue(myJob);
+            myJob.cbJobStopped -= OnJobStopped;
+            myJob = null;
+        }
     }
 
     void Update_DoMovement(float deltaTime)
@@ -400,7 +439,7 @@ public class Character : IXmlSerializable, ISelectable
                 if (pathAStar.Length() == 0)
                 {
                     Logger.LogError("Path_AStar returned no path to destination!");
-                    AbandonJob();
+                    AbandonJob(false);
                     return;
                 }
 
@@ -487,7 +526,7 @@ public class Character : IXmlSerializable, ISelectable
             cbCharacterChanged(this);
 
     }
-    
+
     void OnJobStopped(Job j)
     {
         // Job completed (if non-repeating) or was cancelled.
@@ -501,6 +540,32 @@ public class Character : IXmlSerializable, ISelectable
         }
 
         myJob = null;
+    }
+
+    void OnInventoryCreated(Inventory inv)
+    {
+        // First remove the callback.
+        World.current.cbInventoryCreated -= OnInventoryCreated;
+
+        // Get the relevant job and dequeue it from the waiting queue.
+        Job job = World.current.jobWaitingQueue.Dequeue();
+        // Get the (first) desired inventory for the job.
+        Inventory desired = job.GetFirstDesiredInventory();
+        // Checking if the objectType from the created inventory
+        // and the objectType from the desired one match.
+        if (inv.objectType == desired.objectType)
+        {
+            // If so, enqueue the job onto the (normal)
+            // job queue.
+            World.current.jobQueue.Enqueue(job);
+        }
+        else
+        {
+            // If not, (re)enqueue the job onto the waiting queu
+            // and also register a callback for the future.
+            World.current.jobWaitingQueue.Enqueue(job);
+            World.current.cbInventoryCreated += OnInventoryCreated;
+        }
     }
 
 
