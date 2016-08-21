@@ -49,8 +49,13 @@ namespace ProjectPorcupine.Localization
                 }
             }
 
-            //Look through the PlayerPrefs to see the currently selected language. (Will default to English).
-            LocalizationTable.currentLanguage = PlayerPrefs.GetString("CurrentLanguage", "en_US");
+
+            // Atempt to get setting of currently selected language. (Will default to English).
+            string lang = Settings.getSetting("localization", "en_US");
+
+            // setup LocalizationTable with either loaded or defaulted language
+            LocalizationTable.currentLanguage = lang;
+
 
             //Tell the LocalizationTable that it has been initialized.
             LocalizationTable.initialized = true;

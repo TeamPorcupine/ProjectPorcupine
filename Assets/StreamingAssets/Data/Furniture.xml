@@ -220,4 +220,30 @@
       <UnlocalizedDescription>furn_metal_smelter_desc</UnlocalizedDescription>
   </Furniture>
 
+  <Furniture objectType="Small Landing Pad">
+    <Name>Small Landing Pad</Name>
+    <Description>A landing pad for small spaceboats to land.</Description>
+    <OnUpdate FunctionName="LandingPad_Temp_UpdateAction" />
+    <MovementCost>5</MovementCost>
+    <Width>3</Width>
+    <Height>3</Height>
+    <BuildingJob jobTime="5">
+      <Inventory objectType="Steel Plate" amount="20" />
+    </BuildingJob>
+    <DeconstructJob>
+      <Inventory objectType="Steel Plate" amount="10" />
+    </DeconstructJob>
+    <JobSpotOffset X="0" Y="0" />
+    <!--<JobSpawnSpotOffset X="0" Y="-2" />-->
+    <JobSpawnSpotOffset X="1" Y="-1" />
+    <Params>
+      <Param name="tradetime" value="0" />
+      <Param name="tradetime_required" value="15" />
+      <Param name="tradeinamount" value="10" />
+      <Param name="tradeoutamount" value="15" />
+    </Params>
+    <LocalizationCode>furn_small_landing_pad</LocalizationCode>
+    <UnlocalizedDescription>furn_small_landing_pad_desc</UnlocalizedDescription>
+  </Furniture>
+
 </Furnitures>

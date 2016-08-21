@@ -1,8 +1,8 @@
 #region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
-// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
-// and you are welcome to redistribute it under certain conditions; See 
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
@@ -19,6 +19,11 @@ public class JobQueue
     public JobQueue()
     {
         jobQueue = new SortedList<Job.JobPriority, Job>(new DuplicateKeyComparer<Job.JobPriority>(true));
+    }
+
+    public bool IsEmpty()
+    {
+        return jobQueue.Count == 0;
     }
 
     public void Enqueue(Job j)
@@ -49,7 +54,7 @@ public class JobQueue
         jobQueue.RemoveAt(0);
         return job;
     }
-    
+
     public void Remove(Job j)
     {
         if (jobQueue.ContainsValue(j)==false)

@@ -40,9 +40,18 @@ public class WorldGenerator {
 
                     if (Random.value >= asteroidRessourceChance)
                     {
+                        float chanceOfIce = 0.2f;
                         int stackSize = Random.Range(asteroidRessourceMin, asteroidRessourceMax);
                         Inventory inv = Inventory.New("Raw Iron", 50, stackSize);
-                        world.inventoryManager.PlaceInventory(t, inv);
+                        Inventory inv2 = Inventory.New("Ice", 10, stackSize);
+                        if (Random.Range(0.0f, 1.0f) < chanceOfIce)
+                        {
+                            world.inventoryManager.PlaceInventory(t, inv2);
+                        } 
+                        else
+                        {
+                            world.inventoryManager.PlaceInventory(t, inv);
+                        }
                     }
                 }
             }
