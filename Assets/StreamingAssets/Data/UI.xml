@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UI>
+    <Button OnClick = OnTestClick()>
+        <Name>Button - Test</Name>
+        <Tag>UI</Tag>
+        <AnchoredPosition>False</AnchoredPosition>
+        <Width>100</Width>
+        <Height>40</Height>
+        <PosX>100</PosX>
+        <PosY>40</PosY>
+        <PosZ>100</PosZ>
+
+        <LocalizationCode>button_test</LocalizationCode>
+        <UnlocalizedDescription>button_test</UnlocalizedDescription>
+
+    </Button>
+
+    <Button OnClick = OnTest2Click()>
+        <Name>Button - Test2</Name>
+        <Tag>UI</Tag>
+        <AnchoredPosition>Bottom Left</AnchoredPosition>
+        <Width>100</Width>
+        <Height>40</Height>
+        <PosX>100</PosX>
+        <PosY>40</PosY>
+        <PosZ>100</PosZ>
+
+        <LocalizationCode>button_test2</LocalizationCode>
+        <UnlocalizedDescription>button_test2</UnlocalizedDescription>
+
+    </Button>
+
+</UI>
