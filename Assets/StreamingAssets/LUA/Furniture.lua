@@ -307,10 +307,10 @@ function PowerCellPress_UpdateAction(furniture, deltaTime)
 			furniture.AddJob(j)
 		end
 	else
-		furniture.ChangeParameter("smelttime", deltaTime)
+		furniture.ChangeParameter("presstime", deltaTime)
 		
-		if(furniture.GetParameter("smelttime") >= furniture.GetParameter("smelttime_required")) then
-			furniture.SetParameter("smelttime", 0)
+		if(furniture.GetParameter("presstime") >= furniture.GetParameter("presstime_required")) then
+			furniture.SetParameter("presstime", 0)
 			
 			outputSpot = World.current.GetTileAt(spawnSpot.X+2, spawnSpot.y)
 			
