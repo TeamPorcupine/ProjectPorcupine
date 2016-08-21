@@ -50,8 +50,12 @@ public class MouseOverFurnitureTypeText : MonoBehaviour
         if (t != null && t.furniture != null)
         {
             s = t.furniture.Name;
+            myText.text = "Furniture: " + s;
+        } else
+        {
+            myText.text = "";
         }
 
-        myText.text = "Furniture: " + s;
+        
     }
 }
