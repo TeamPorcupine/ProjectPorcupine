@@ -92,7 +92,7 @@ public class Inventory : IXmlSerializable, ISelectable
 
     public string GetDescription()
     {
-        //The real description is found through localization.
+        // The real description is found through localization.
         return this.objectType + "_desc";
     }
 
