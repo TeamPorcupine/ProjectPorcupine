@@ -22,7 +22,7 @@ using System.Linq;
 /// sub-classes or interfaces) to support friendly workers, enemies, etc...
 /// </summary>
 [MoonSharpUserData]
-public class Character : IXmlSerializable, ISelectable
+public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 {
 
     /// <summary>
@@ -578,5 +578,13 @@ public class Character : IXmlSerializable, ISelectable
 
     #endregion
 
-
+    public IEnumerable<ContextMenuAction> GetContextMenuActions(ContextMenu contextMenu)
+    {
+        yield return new ContextMenuAction
+        {
+            Text = "Poke "+GetName(),
+            RequiereCharacterSelected = false,
+            Action = (cm, c) => Debug.Log(GetDescription())
+        };
+    }
 }

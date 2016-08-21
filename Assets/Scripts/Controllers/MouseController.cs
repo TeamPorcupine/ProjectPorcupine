@@ -14,7 +14,7 @@ public class MouseController : MonoBehaviour
 {
 
     public GameObject circleCursorPrefab;
-
+    
     // The world-position of the mouse last frame.
     Vector3 lastFramePosition;
     Vector3 currFramePosition;
@@ -28,6 +28,7 @@ public class MouseController : MonoBehaviour
     BuildModeController bmc;
     FurnitureSpriteController fsc;
     MenuController menuController;
+    ContextMenu contextMenu;
 
     bool isDragging = false;
 
@@ -45,6 +46,7 @@ public class MouseController : MonoBehaviour
         bmc = GameObject.FindObjectOfType<BuildModeController>();
         fsc = GameObject.FindObjectOfType<FurnitureSpriteController>();
         menuController = GameObject.FindObjectOfType<MenuController>();
+        contextMenu = FindObjectOfType<ContextMenu>();
         dragPreviewGameObjects = new List<GameObject>();
     }
 
@@ -85,7 +87,8 @@ public class MouseController : MonoBehaviour
             }
             else if (currentMode == MouseMode.SELECT)
             {
-                Logger.Log("Show game menu?");
+                if (contextMenu != null)
+                    contextMenu.Open(GetMouseOverTile());
             }
         }
 
@@ -164,6 +167,9 @@ public class MouseController : MonoBehaviour
         }
         if (Input.GetMouseButtonUp(0))
         {
+            if (contextMenu != null)
+                contextMenu.Close();
+
             // We just release the mouse button, so that's our queue to update our selection.
             Tile tileUnderMouse = GetMouseOverTile();
 

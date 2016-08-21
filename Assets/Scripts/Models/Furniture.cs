@@ -20,7 +20,7 @@ using MoonSharp.Interpreter.Interop;
 // InstalledObjects are things like walls, doors, and furniture (e.g. a sofa)
 
 [MoonSharpUserData]
-public class Furniture : IXmlSerializable, ISelectable
+public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 {
 
     /// <summary>
@@ -739,4 +739,16 @@ public class Furniture : IXmlSerializable, ISelectable
     }
 
     #endregion
+
+    public IEnumerable<ContextMenuAction> GetContextMenuActions(ContextMenu contextMenu)
+    {
+        yield return new ContextMenuAction
+        {
+            Text = "Deconstruct "+Name,
+            RequiereCharacterSelected = false,
+            Action = (ca, c) => Deconstruct()
+        };
+
+        //todo add a hook to LUA Action via the furniture.xml definition
+    }
 }
