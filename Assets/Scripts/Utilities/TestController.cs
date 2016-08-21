@@ -49,8 +49,11 @@ public class TestController : MonoBehaviour
         AddTest("Wipe Log File", WipeLogFile);
         AddTest("Clear Displayed Log", ClearDisplayLog);
         AddTest("Stop Coroutines", StopCoroutines);
-        AddTest("Pathfinding Speed Test (x10)", () => { return PathfindingSpeedTest(10); });
-        AddTest("Pathfinding Speed Test (x100)", () => { return PathfindingSpeedTest(100); });
+        AddTest("All Pathfinding Speed Tests (x10)", () => { return PathfindingSpeedTest(10); });
+        AddTest("All Pathfinding Speed Tests (x100)", () => { return PathfindingSpeedTest(100); });
+        AddTest("Empty World Speed Tests (x10)", () => { return DoEmptyTests(10); });
+        AddTest("Switchback World Speed Tests (x10)", () => { return DoSwitchbackTests(10); });
+        AddTest("Diagonal World Speed Tests (x10)", () => { return DoDiagonalsTests(10); });
     }
 
     /// <summary>
@@ -234,9 +237,9 @@ public class TestController : MonoBehaviour
 
         // pathfinding in a world with different types of inventory
         Inventory invCorner = new Inventory("Steel", 10, 10);
-        corner.PlaceInventory(invCorner);
+        world.inventoryManager.PlaceInventory(corner, invCorner);
         Inventory invNearby = new Inventory("Iron", 10, 10);
-        nearby.PlaceInventory(invNearby);
+        world.inventoryManager.PlaceInventory(nearby, invNearby);
 
         yield return StartCoroutine(DoTest(() =>
                 {
@@ -255,27 +258,67 @@ public class TestController : MonoBehaviour
     }
 
     /// <summary>
-    /// Generates two worlds (one empty, one with a long winding corridor), and runs pathfinding
-    /// tests on both of them.
+    /// Runs all of the pathfinding tests.
     /// </summary>
     /// <returns>A coroutine that can be run with StartCoroutine.</returns>
     public IEnumerator PathfindingSpeedTest(int count)
     {
-        // put it at the beginning so that it won't actually do anything when we first call it
+        yield return StartCoroutine(DoEmptyTests(count));
+        yield return StartCoroutine(DoSwitchbackTests(count));
+        yield return StartCoroutine(DoDiagonalsTests(count));
+    }
+
+    /// <summary>
+    /// Performs pathfinding tests on the empty world.
+    /// </summary>
+    /// <returns>The coroutine that can be run with StartCoroutine.</returns>
+    /// <param name="count">The number of tests to run.</param>
+    public IEnumerator DoEmptyTests(int count)
+    {
         yield return null;
 
-        Log("Warning: These tests will cause Unity to slow down, and it may take a long time for the buttons to respond.");
-        Log("Beginning Pathfinding Speed Tests");
+        Log("Beginning " + count + " pathfinding speed tests on the empty world ...");
 
-        World empty = new World(100, 100, false);
-        yield return StartCoroutine(PathSpeedTests(empty, "[Empty]", count));
+        World world = new World(100, 100, false);
+        yield return StartCoroutine(PathSpeedTests(world, "[Empty]", count));
 
-        // now set up the switchback corridors
-        World switchback = new World(100, 100, false);
-        MakeSwitchback(switchback);
-        yield return StartCoroutine(PathSpeedTests(switchback, "[Switchback]", count));
+        Log("Finished empty world speed tests.");
+    }
 
-        Log("Completed Pathfinding Speed Tests");
+    /// <summary>
+    /// Performs pathfinding tests on the switchback world.
+    /// </summary>
+    /// <returns>The coroutine that can be run with StartCoroutine.</returns>
+    /// <param name="count">The number of tests to run.</param>
+    public IEnumerator DoSwitchbackTests(int count)
+    {
+        yield return null;
+
+        Log("Beginning " + count + " pathfinding speed tests on the switchback world ...");
+
+        World world = new World(100, 100, false);
+        MakeSwitchback(world);
+        yield return StartCoroutine(PathSpeedTests(world, "[Switchback]", count));
+
+        Log("Finished switchback world speed tests.");
+    }
+
+    /// <summary>
+    /// Performs pathfinding tests on the diagonals world.
+    /// </summary>
+    /// <returns>The coroutine that can be run with StartCoroutine.</returns>
+    /// <param name="count">The number of tests to run.</param>
+    public IEnumerator DoDiagonalsTests(int count)
+    {
+        yield return null;
+
+        Log("Beginning " + count + " pathfinding speed tests on the diagonal world ...");
+
+        World world = new World(100, 100, false);
+        MakeDiagonals(world);
+        yield return StartCoroutine(PathSpeedTests(world, "[Diagonals]", count));
+
+        Log("Finished diagonal world speed tests.");
     }
 
     /// <summary>
@@ -330,6 +373,45 @@ public class TestController : MonoBehaviour
                 PlaceWall(world, x, y);
             }
         }
+    }
+
+    /// <summary>
+    /// Creates a world with a long diagonal box.
+    /// The side of the box closest to (0, 0) is closed.
+    /// The side of the box closest to (Width, Height) is open.
+    /// This funnels all paths from the center into the upper-right corner.
+    /// </summary>
+    /// <param name="world">World.</param>
+    public static void MakeDiagonals(World world)
+    {
+        int boundarySize = 10;
+        int thickness = 8;
+
+        int xMin = boundarySize, xMax = world.Width - boundarySize - 1;
+        int yMin = boundarySize, yMax = world.Height - boundarySize - 1;
+
+        for (int i = 0; i <= thickness; ++i)
+        {
+            PlaceWall(world, xMin + i, yMin + thickness - i);
+        }
+
+        int xSize = (xMax - thickness) - (xMin + thickness);
+        int ySize = (yMax - thickness) - (yMin + thickness);
+        int size = Math.Min(xSize, ySize);
+
+        for (int i = 1; i <= size; ++i)
+        {
+            PlaceWall(world, xMin + i, yMin + thickness + i);
+            PlaceWall(world, xMin + thickness + i, yMin + i);
+        }
+    }
+
+    /// <summary>
+    /// Sets up a maze, in order to really test the pathfinding.
+    /// </summary>
+    /// <param name="world">The world that we're modifying.</param>
+    public static void MakeMaze(World world)
+    {
     }
 
 }
