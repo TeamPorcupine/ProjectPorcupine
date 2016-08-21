@@ -8,6 +8,7 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public class PowerSystem
 {
@@ -73,16 +74,24 @@ public class PowerSystem
         {
             PowerLevel -= furniture.powerValue;
         }
+        if (PowerLevel < 0)
+        {
+            RemovePowerConsumer();
+        }
+    }
+
+    private void RemovePowerConsumer()
+    {
+        Furniture powerConsumer = powerGrid.FirstOrDefault(furniture => furniture.IsPowerConsumer);
+        if (powerConsumer == null) { return; }
+        RemoveFromPowerGrid(powerConsumer);
     }
 
     private void NotifyPowerConsumers()
     {
-        foreach (Furniture furniture in powerGrid)
+        foreach (Furniture furniture in powerGrid.Where(furniture => furniture.IsPowerConsumer))
         {
-            if (furniture.powerValue < 0)
-            {
-                InvokePowerLevelChanged(furniture);
-            }
+            InvokePowerLevelChanged(furniture);
         }
     }
 
