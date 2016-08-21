@@ -290,6 +290,7 @@ public class Job
 
     public void DropPriority()
     {
-        jobPriority = (JobPriority)Mathf.Max(0, (int)jobPriority - 1);
+        // TODO: This casting to and from enums are a bit wierd. We should decide on ONE priority system.
+        jobPriority = (JobPriority)Mathf.Min((int)JobPriority.Low, (int)jobPriority + 1);
     }
 }

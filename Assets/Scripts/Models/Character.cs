@@ -174,6 +174,13 @@ public class Character : IXmlSerializable, ISelectable
         pathAStar = new Path_AStar(World.current, CurrTile, DestTile);	// This will calculate a path from curr to dest.
         Profiler.EndSample();
 
+        if (pathAStar != null && pathAStar.Length() == 0)
+        {
+            Logger.LogVerbose("Path_AStar returned no path to target job tile!");
+            AbandonJob();
+            return;
+        }
+
         if (myJob.adjacent)
         {
             IEnumerable<Tile> reversed = pathAStar.Reverse();
@@ -185,13 +192,6 @@ public class Character : IXmlSerializable, ISelectable
         else
         {
             jobTile = myJob.tile;
-        }
-
-        if (pathAStar != null && pathAStar.Length() == 0)
-        {
-            Logger.LogError("Path_AStar returned no path to target job tile!");
-            AbandonJob();
-            DestTile = CurrTile;
         }
     }
 
@@ -208,6 +208,10 @@ public class Character : IXmlSerializable, ISelectable
             if (myJob == null) 
             {
                 GetNewJob ();
+                if (myJob == null)
+                {
+                    return;
+                }
             }
 
             // Make sure all materials are in place.
