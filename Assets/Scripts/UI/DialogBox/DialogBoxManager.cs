@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class DialogBoxManager : MonoBehaviour {
+public class DialogBoxManager : MonoBehaviour
+{
 
     // This will just keep a reference to all the dialog boxes since there inactive on start you cant find them.
 
