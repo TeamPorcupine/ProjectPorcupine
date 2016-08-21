@@ -409,8 +409,23 @@ public class MouseController : MonoBehaviour
             return;
         }
 
-        Camera.main.orthographicSize -= Camera.main.orthographicSize * Input.GetAxis("Mouse ScrollWheel");
-        Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize, 3f, 25f);
+        if (Input.GetAxis ("Mouse ScrollWheel") != 0) {
+            Vector3 oldMousePosition;
+            oldMousePosition = Camera.main.ScreenToWorldPoint (Input.mousePosition);
+            oldMousePosition.z = 0;
+
+            Camera.main.orthographicSize -= Camera.main.orthographicSize * Input.GetAxis ("Mouse ScrollWheel");
+            Camera.main.orthographicSize = Mathf.Clamp (Camera.main.orthographicSize, 3f, 25f);
+
+            //refocus game so the mouse stays in the same spot when zooming
+            Vector3 newMousePosition;
+            newMousePosition = Camera.main.ScreenToWorldPoint (Input.mousePosition);
+            newMousePosition.z = 0;
+
+            Vector3 pushedAmount = (oldMousePosition - newMousePosition);
+            Camera.main.transform.Translate (pushedAmount);
+            Debug.Log (pushedAmount.ToString ());
+        }
     }
 
     void ShowFurnitureSpriteAtTile(string furnitureType, Tile t)
