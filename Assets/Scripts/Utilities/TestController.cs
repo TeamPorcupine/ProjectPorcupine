@@ -350,7 +350,7 @@ public class TestController : MonoBehaviour
     {
         Tile tile = world.GetTileAt(x, y);
         tile.Type = TileType.Floor;
-        world.PlaceFurniture("furn_SteelWall", tile);
+        world.PlaceFurniture("furn_SteelWall", tile, false);
     }
 
     /// <summary>

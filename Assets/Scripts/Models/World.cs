@@ -220,6 +220,9 @@ public class World : IXmlSerializable
         LoadFurniturePrototypesFromFile(furnitureXmlText);
 
 
+        if (WorldController.Instance == null)
+            return;
+
         DirectoryInfo[] mods = WorldController.Instance.modsManager.GetMods();
         foreach (DirectoryInfo mod in mods)
         {
