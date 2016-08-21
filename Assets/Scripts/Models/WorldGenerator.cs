@@ -6,17 +6,17 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using UnityEngine;
 using System.Collections;
-using System.Xml;
 using System.IO;
+using System.Xml;
+using UnityEngine;
 
 public class WorldGenerator
 {
+    public const TileType asteroidFloorType = TileType.Floor;
 
     public static int startAreaSize = 3;
 
-    public const TileType asteroidFloorType = TileType.Floor;
     public static float asteroidNoiseScale = 0.2f;
     public static float asteroidNoiseThreshhold = 0.75f;
     public static float asteroidRessourceChance = 0.85f;
@@ -61,7 +61,9 @@ public class WorldGenerator
                                 if (randomchance <= currentchance)
                                 {
                                     if (stackSize > i.maxStackSize)
+                                    {
                                         stackSize = i.maxStackSize;
+                                    }
 
                                     world.inventoryManager.PlaceInventory(t, new Inventory(i.objectType, i.maxStackSize, stackSize));
                                     break;
@@ -77,8 +79,8 @@ public class WorldGenerator
         {
             for (int y = -startAreaSize; y <= startAreaSize; y++)
             {
-                int xPos = width / 2 + x;
-                int yPos = height / 2 + y;
+                int xPos = (width / 2) + x;
+                int yPos = (height / 2) + y;
 
                 Tile t = world.GetTileAt(xPos, yPos);
                 t.Type = TileType.Floor;
@@ -152,8 +154,7 @@ public class WorldGenerator
                                         res.Add(new Inventory(
                                                 res_reader.GetAttribute("objectType"),
                                                 int.Parse(res_reader.GetAttribute("maxStack")),
-                                                (int)(float.Parse(res_reader.GetAttribute("chance")) * 100)
-                                            ));
+                                                (int)(float.Parse(res_reader.GetAttribute("chance")) * 100)));
                                     }
                                 }
 
@@ -163,7 +164,7 @@ public class WorldGenerator
                         }
                     }
                 }
-                catch(System.Exception e)
+                catch (System.Exception e)
                 {
                     Logger.LogError("Error reading WorldGenerator/Asteroid" + System.Environment.NewLine + "Exception: " + e.Message + System.Environment.NewLine + "StackTrace: " + e.StackTrace);
                 }
