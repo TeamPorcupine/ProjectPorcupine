@@ -105,7 +105,7 @@ public class FurnitureSpriteController : MonoBehaviour
         // Register our callback so that our GameObject gets updated whenever
         // the object's into changes.
         furn.cbOnChanged += OnFurnitureChanged;
-        world.powerSystem.cbOnChanged += OnPowerStatusChange;
+        world.powerSystem.PowerLevelChanged += OnPowerStatusChange;
         furn.cbOnRemoved += OnFurnitureRemoved;
 
     }
@@ -140,8 +140,30 @@ public class FurnitureSpriteController : MonoBehaviour
         }
 
         GameObject furn_go = furnitureGameObjectMap[furn];
-        //Logger.Log(furn_go);
-        //Logger.Log(furn_go.GetComponent<SpriteRenderer>());
+
+        // FIXME: This hardcoding is not ideal!
+        if (furn.objectType == "Door" || furn.objectType == "Airlock")
+        {
+            // By default, the door graphic is meant for walls to the east & west
+            // Check to see if we actually have a wall north/south, and if so
+            // then rotate this GO by 90 degrees
+
+            Tile northTile = world.GetTileAt(furn.tile.X, furn.tile.Y + 1);
+            Tile southTile = world.GetTileAt(furn.tile.X, furn.tile.Y - 1);
+            Tile eastTile = world.GetTileAt(furn.tile.X + 1, furn.tile.Y);
+            Tile westTile = world.GetTileAt(furn.tile.X - 1, furn.tile.Y);
+
+            if (northTile != null && southTile != null && northTile.furniture != null && southTile.furniture != null &&
+            northTile.furniture.objectType.Contains("Wall") && southTile.furniture.objectType.Contains("Wall"))
+            {
+                furn_go.transform.rotation = Quaternion.Euler(0, 0, 90);
+            }
+            else if (eastTile != null && westTile != null && eastTile.furniture != null && westTile.furniture != null &&
+            eastTile.furniture.objectType.Contains("Wall") && westTile.furniture.objectType.Contains("Wall"))
+            {
+                furn_go.transform.rotation = Quaternion.Euler(0, 0, 0);
+            }
+        }
 
         furn_go.GetComponent<SpriteRenderer>().sprite = GetSpriteForFurniture(furn);
         furn_go.GetComponent<SpriteRenderer>().color = furn.tint;                   
@@ -296,13 +318,8 @@ public class FurnitureSpriteController : MonoBehaviour
 
     public Sprite GetSpriteForFurniture(string objectType)
     {
-        Sprite s = SpriteManager.current.GetSprite("Furniture", objectType);
-
-        if (s == null)
-        {
-            s = SpriteManager.current.GetSprite("Furniture", objectType + "_");
-        }
-
+        Sprite s = SpriteManager.current.GetSprite("Furniture", objectType + (World.current.furniturePrototypes[objectType].linksToNeighbour ? "_" : ""));
+        
         return s;
     }
 }

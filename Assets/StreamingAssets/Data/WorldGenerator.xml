@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<WorldGenerator startAreaSize="3">
+  <Asteroid>
+    <NoiseScale>0.2</NoiseScale>
+    <NoiseThreshhold>0.75</NoiseThreshhold>
+    <RessourceChance>0.85</RessourceChance>
+    <RessourceMin>5</RessourceMin>
+    <RessourceMax>15</RessourceMax>
+    <Ressources>
+      <Ressource objectType="Raw Iron" maxStack="50" chance="0.8"/>
+      <Ressource objectType="Ice" maxStack="10" chance="0.2"/>
+    </Ressources>
+  </Asteroid>
+</WorldGenerator>

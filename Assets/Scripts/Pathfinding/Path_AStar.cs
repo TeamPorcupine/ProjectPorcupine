@@ -75,23 +75,15 @@ public class Path_AStar
 		OpenSet.Add( start );
 */
 
-        SimplePriorityQueue<Path_Node<Tile>> OpenSet = new SimplePriorityQueue<Path_Node<Tile>>();
+        PathfindingPriorityQueue<Path_Node<Tile>> OpenSet = new PathfindingPriorityQueue<Path_Node<Tile>>();
         OpenSet.Enqueue(start, 0);
 
         Dictionary<Path_Node<Tile>, Path_Node<Tile>> Came_From = new Dictionary<Path_Node<Tile>, Path_Node<Tile>>();
 
         Dictionary<Path_Node<Tile>, float> g_score = new Dictionary<Path_Node<Tile>, float>();
-        foreach (Path_Node<Tile> n in nodes.Values)
-        {
-            g_score[n] = Mathf.Infinity;
-        }
         g_score[start] = 0;
 
         Dictionary<Path_Node<Tile>, float> f_score = new Dictionary<Path_Node<Tile>, float>();
-        foreach (Path_Node<Tile> n in nodes.Values)
-        {
-            f_score[n] = Mathf.Infinity;
-        }
         f_score[start] = heuristic_cost_estimate(start, goal);
 
         while (OpenSet.Count > 0)
@@ -143,15 +135,7 @@ public class Path_AStar
                 g_score[neighbor] = tentative_g_score;
                 f_score[neighbor] = g_score[neighbor] + heuristic_cost_estimate(neighbor, goal);
 
-                if (OpenSet.Contains(neighbor) == false)
-                {
-                    OpenSet.Enqueue(neighbor, f_score[neighbor]);
-                }
-                else
-                {
-                    OpenSet.UpdatePriority(neighbor, f_score[neighbor]);
-                }
-
+                OpenSet.EnqueueOrUpdate(neighbor, f_score[neighbor]);
             } // foreach neighbour
         } // while
 
