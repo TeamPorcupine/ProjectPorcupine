@@ -1,6 +1,6 @@
 ﻿public class GameSettings 
 {
-	//this is for saving in the future
+	// this is for saving in the future
 
 	public bool isVisibleFPS;
 	public bool isVisibleLangage;
