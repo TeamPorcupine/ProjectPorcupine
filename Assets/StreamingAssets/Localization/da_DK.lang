@@ -53,3 +53,5 @@ furn_cloning_pod=Kloningsmaskine
 furn_cloning_pod_desc=Laver en ekstra arbejder og bliver derefter ødelagt.
 furn_power_generator=Strøm Generator
 furn_power_generator_desc=Genererer strøm ud af ingenting.
+furn_small_landing_pad=Lille landingsplads
+furn_small_landing_pad_desc=Et sted hvor små rumskibe kan lande.
