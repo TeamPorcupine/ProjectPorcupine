@@ -113,7 +113,7 @@ public class TileSpriteController : MonoBehaviour
         }
         else
         {
-            Logger.LogError("OnTileTypeChanged - Unrecognized tile type.");
+            Logger.LogError("OnTileChanged - Unrecognized tile type.");
         }
 
 
