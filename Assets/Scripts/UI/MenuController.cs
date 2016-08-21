@@ -40,6 +40,7 @@ public class MenuController : MonoBehaviour {
 
     //toggles whether menu is active
     public void ToggleMenu(GameObject menu) {
+        DeactivateSubs();
         menu.SetActive(!menu.activeSelf);
     }
 
