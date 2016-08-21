@@ -82,19 +82,16 @@ public class PowerSystem
 
     private void RemovePowerConsumer()
     {
-        Furniture powerConsumer = powerGrid.FirstOrDefault(furniture => furniture.IsPoerConsumer);
+        Furniture powerConsumer = powerGrid.FirstOrDefault(furniture => furniture.IsPowerConsumer);
         if (powerConsumer == null) { return; }
         RemoveFromPowerGrid(powerConsumer);
     }
 
     private void NotifyPowerConsumers()
     {
-        foreach (Furniture furniture in powerGrid)
+        foreach (Furniture furniture in powerGrid.Where(furniture => furniture.IsPowerConsumer))
         {
-            if (furniture.powerValue < 0)
-            {
-                InvokePowerLevelChanged(furniture);
-            }
+            InvokePowerLevelChanged(furniture);
         }
     }
 

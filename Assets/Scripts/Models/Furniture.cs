@@ -84,7 +84,7 @@ public class Furniture : IXmlSerializable, ISelectable
     // If this furniture generates power then powerValue will be positive, if it consumer power then it will be negative
     public float powerValue;
 
-    public bool IsPoerConsumer { get { return powerValue < 0; } }
+    public bool IsPowerConsumer { get { return powerValue < 0; } }
 
     // This represents the BASE tile of the object -- but in practice, large objects may actually occupy
     // multile tiles.
