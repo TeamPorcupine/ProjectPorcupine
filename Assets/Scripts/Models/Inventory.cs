@@ -1,11 +1,17 @@
-﻿//=======================================================================
-// Copyright Martin "quill18" Glaude 2015-2016.
-//		http://quill18.com
-//=======================================================================
-
+#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
 using UnityEngine;
 using System.Collections;
 using System;
+using System.Xml;
+using System.Xml.Schema;
+using System.Xml.Serialization;
 using MoonSharp.Interpreter;
 
 
@@ -14,10 +20,11 @@ using MoonSharp.Interpreter;
 
 
 [MoonSharpUserData]
-public class Inventory : ISelectable
+public class Inventory : IXmlSerializable, ISelectable
 {
     public string objectType = "Steel Plate";
     public int maxStackSize = 50;
+    public float basePrice = 1f;
 
     protected int _stackSize = 1;
 
@@ -43,6 +50,9 @@ public class Inventory : ISelectable
     public Tile tile;
     public Character character;
 
+    //Should this inventory be allowed to be picked up for completing a job?
+    public bool isLocked = false;
+
     public Inventory()
     {
 		
@@ -65,6 +75,7 @@ public class Inventory : ISelectable
         objectType = other.objectType;
         maxStackSize = other.maxStackSize;
         stackSize = other.stackSize;
+        isLocked = other.isLocked;
     }
 
     public virtual Inventory Clone()
@@ -87,6 +98,29 @@ public class Inventory : ISelectable
     public string GetHitPointString()
     {
         return "";	// Does inventory have hitpoints? How does it get destroyed? Maybe it's just a percentage chance based on damage.
+    }
+
+    #endregion
+
+    #region IXmlSerializable implementation
+
+    public XmlSchema GetSchema()
+    {
+        return null;
+    }
+
+    public void WriteXml(XmlWriter writer)
+    {
+        writer.WriteAttributeString("X", tile.X.ToString());
+        writer.WriteAttributeString("Y", tile.Y.ToString());
+        writer.WriteAttributeString("objectType", objectType);
+        writer.WriteAttributeString("maxStackSize", maxStackSize.ToString());
+        writer.WriteAttributeString("stackSize", stackSize.ToString());
+        writer.WriteAttributeString("basePrice", basePrice.ToString());
+    }
+
+    public void ReadXml(XmlReader reader)
+    {
     }
 
     #endregion

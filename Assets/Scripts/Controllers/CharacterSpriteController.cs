@@ -1,5 +1,14 @@
-﻿using UnityEngine;
+#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
+using UnityEngine;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 public class CharacterSpriteController : MonoBehaviour
 {
@@ -33,7 +42,7 @@ public class CharacterSpriteController : MonoBehaviour
 
     public void OnCharacterCreated(Character c)
     {
-//		Debug.Log("OnCharacterCreated");
+        // Logger.Log("OnCharacterCreated");
         // Create a visual GameObject linked to this data.
 
         // FIXME: Does not consider multi-tile objects nor rotated objects
@@ -52,26 +61,51 @@ public class CharacterSpriteController : MonoBehaviour
         sr.sprite = SpriteManager.current.GetSprite("Character", "p1_front");
         sr.sortingLayerName = "Characters";
 
+        // Add the inventory sprite onto the character
+        GameObject inv_go = new GameObject("Inventory");
+        SpriteRenderer inv_sr = inv_go.AddComponent<SpriteRenderer>();
+        inv_sr.sortingOrder = 1;
+        inv_sr.sortingLayerName = "Characters";
+        inv_go.transform.SetParent(char_go.transform);
+        inv_go.transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);// Config needs to be added to XML
+        inv_go.transform.localPosition = new Vector3(0,-0.37f,0); // Config needs to be added to XML
+
         // Register our callback so that our GameObject gets updated whenever
         // the object's into changes.
         c.cbCharacterChanged += OnCharacterChanged;
+
+        // Adds a random name to the Character
+        TextAsset names = Resources.Load("names") as TextAsset;
+        string[] lines = names.text.Split( new string[]  { "\r\n", "\n" }, System.StringSplitOptions.RemoveEmptyEntries );
+        c.name = lines[Random.Range(0, lines.Length-1)];
+
 
     }
 
     void OnCharacterChanged(Character c)
     {
-        //Debug.Log("OnFurnitureChanged");
+        //Logger.Log("OnFurnitureChanged");
         // Make sure the furniture's graphics are correct.
+        SpriteRenderer inv_sr = characterGameObjectMap[c].transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>();
+        if (c.inventory != null)
+        {
+            inv_sr.sprite = SpriteManager.current.GetSprite("Inventory", c.inventory.GetName());
+        }
+        else
+        {
+            inv_sr.sprite = null;
+        }
+
 
         if (characterGameObjectMap.ContainsKey(c) == false)
         {
-            Debug.LogError("OnCharacterChanged -- trying to change visuals for character not in our map.");
+            Logger.LogError("OnCharacterChanged -- trying to change visuals for character not in our map.");
             return;
         }
 
         GameObject char_go = characterGameObjectMap[c];
-        //Debug.Log(furn_go);
-        //Debug.Log(furn_go.GetComponent<SpriteRenderer>());
+        //Logger.Log(furn_go);
+        //Logger.Log(furn_go.GetComponent<SpriteRenderer>());
 
         //char_go.GetComponent<SpriteRenderer>().sprite = GetSpriteForFurniture(furn);
 

@@ -1,8 +1,11 @@
-﻿//=======================================================================
-// Copyright Martin "quill18" Glaude 2015.
-//		http://quill18.com
-//=======================================================================
-
+#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
 using System;
 using System.Linq;
 using UnityEngine;
@@ -88,7 +91,7 @@ public class TileSpriteController : MonoBehaviour
 
         if (tileGameObjectMap.ContainsKey(tile_data) == false)
         {
-            Debug.LogError("tileGameObjectMap doesn't contain the tile_data -- did you forget to add the tile to the dictionary? Or maybe forget to unregister a callback?");
+            Logger.LogError("tileGameObjectMap doesn't contain the tile_data -- did you forget to add the tile to the dictionary? Or maybe forget to unregister a callback?");
             return;
         }
 
@@ -96,7 +99,7 @@ public class TileSpriteController : MonoBehaviour
 
         if (tile_go == null)
         {
-            Debug.LogError("tileGameObjectMap's returned GameObject is null -- did you forget to add the tile to the dictionary? Or maybe forget to unregister a callback?");
+            Logger.LogError("tileGameObjectMap's returned GameObject is null -- did you forget to add the tile to the dictionary? Or maybe forget to unregister a callback?");
             return;
         }
 
@@ -110,7 +113,7 @@ public class TileSpriteController : MonoBehaviour
         }
         else
         {
-            Debug.LogError("OnTileTypeChanged - Unrecognized tile type.");
+            Logger.LogError("OnTileTypeChanged - Unrecognized tile type.");
         }
 
 

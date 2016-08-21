@@ -1,4 +1,12 @@
-﻿using UnityEngine;
+#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
+using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
 
@@ -79,9 +87,6 @@ public class BuildModeController : MonoBehaviour
         {
             // Create the Furniture and assign it to the tile
 
-            // FIXME: This instantly builds the furnite:
-            //WorldController.Instance.World.PlaceFurniture( buildModeObjectType, t );
-
             // Can we build the furniture in the selected tile?
             // Run the ValidPlacement function!
 
@@ -89,7 +94,7 @@ public class BuildModeController : MonoBehaviour
 
             if ( 
                 WorldController.Instance.world.IsFurniturePlacementValid(furnitureType, t) &&
-                t.pendingBuildJob == null)
+                DoesBuildJobOverlapExistingBuildJob(t,furnitureType) == false)
             {
                 // This tile position is valid for this furniture
 
@@ -113,27 +118,38 @@ public class BuildModeController : MonoBehaviour
                 }
                 else
                 {
-                    Debug.LogError("There is no furniture job prototype for '" + furnitureType + "'");
-                    j = new Job(t, furnitureType, FurnitureActions.JobComplete_FurnitureBuilding, 0.1f, null);
+                    Logger.LogError("There is no furniture job prototype for '" + furnitureType + "'");
+                    j = new Job(t, furnitureType, FurnitureActions.JobComplete_FurnitureBuilding, 0.1f, null,Job.JobPriority.High);
                 }
 
                 j.furniturePrototype = WorldController.Instance.world.furniturePrototypes[furnitureType];
 
-
-                // FIXME: I don't like having to manually and explicitly set
-                // flags that preven conflicts. It's too easy to forget to set/clear them!
-                t.pendingBuildJob = j;
-                j.cbJobStopped += (theJob) =>
+                for (int x_off = t.X; x_off < (t.X + WorldController.Instance.world.furniturePrototypes[furnitureType].Width); x_off++)
                 {
-                    theJob.tile.pendingBuildJob = null;
-                };
+                    for (int y_off = t.Y; y_off < (t.Y + WorldController.Instance.world.furniturePrototypes[furnitureType].Height); y_off++)
+                    {
+                        // FIXME: I don't like having to manually and explicitly set
+                        // flags that preven conflicts. It's too easy to forget to set/clear them!
+                        Tile offsetTile = WorldController.Instance.world.GetTileAt(x_off,y_off);
+                        offsetTile.pendingBuildJob = j;
+                        j.cbJobStopped += (theJob) =>
+                            {
+                                offsetTile.pendingBuildJob = null;
+                            };
+                    }
+                }
 
                 // Add the job to the queue
-                WorldController.Instance.world.jobQueue.Enqueue(j);
+                if (WorldController.Instance.devMode)
+                {
+                    WorldController.Instance.world.PlaceFurniture(j.jobObjectType, j.tile);
+                }
+                else
+                {
+                    WorldController.Instance.world.jobQueue.Enqueue(j);
+                }
 
             }
-
-
 
         }
         else if (buildMode == BuildMode.FLOOR)
@@ -156,8 +172,10 @@ public class BuildModeController : MonoBehaviour
                     tileType, 
                     Tile.ChangeTileTypeJobComplete, 
                     0.1f, 
-                    null, 
-                    false);
+                    null,
+                    Job.JobPriority.High, 
+                    false,
+                    true);
 
 
                 // FIXME: I don't like having to manually and explicitly set
@@ -169,7 +187,14 @@ public class BuildModeController : MonoBehaviour
                 };
 
                 // Add the job to the queue
-                WorldController.Instance.world.jobQueue.Enqueue(j);
+                if (WorldController.Instance.devMode)
+                {
+                    j.tile.Type = j.jobTileType;
+                }
+                else
+                {
+                    WorldController.Instance.world.jobQueue.Enqueue(j);
+                }
 
             }
 
@@ -181,13 +206,33 @@ public class BuildModeController : MonoBehaviour
             {
                 t.furniture.Deconstruct();
             }
+            else if (t.pendingBuildJob != null)
+            {
+                t.pendingBuildJob.CancelJob();
+            }
 
         }
         else
         {
-            Debug.LogError("UNIMPLMENTED BUILD MODE");
+            Logger.LogError("UNIMPLMENTED BUILD MODE");
         }
 
+    }
+
+    public bool DoesBuildJobOverlapExistingBuildJob(Tile t, string furnitureType)
+    {
+        for (int x_off = t.X; x_off < (t.X + WorldController.Instance.world.furniturePrototypes[furnitureType].Width); x_off++)
+        {
+            for (int y_off = t.Y; y_off < (t.Y + WorldController.Instance.world.furniturePrototypes[furnitureType].Height); y_off++)
+            {
+                if (WorldController.Instance.world.GetTileAt(x_off, y_off).pendingBuildJob != null)
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
 
