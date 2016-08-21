@@ -3265,10 +3265,10 @@ RectTransform:
   - {fileID: 1216615290}
   m_Father: {fileID: 847403564}
   m_RootOrder: 0
-  m_AnchorMin: {x: 0.5, y: 1}
-  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 205, y: 30}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &281162110
 MonoBehaviour:
@@ -3363,6 +3363,7 @@ GameObject:
   - 222: {fileID: 283097497}
   - 114: {fileID: 283097496}
   - 225: {fileID: 283097498}
+  - 114: {fileID: 283097499}
   m_Layer: 5
   m_Name: Selection Panel
   m_TagString: Untagged
@@ -3385,10 +3386,10 @@ RectTransform:
   - {fileID: 465520516}
   m_Father: {fileID: 1108852562}
   m_RootOrder: 1
-  m_AnchorMin: {x: 0.5, y: 0}
-  m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: 130}
-  m_SizeDelta: {x: 205, y: 105}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &283097496
 MonoBehaviour:
@@ -3434,6 +3435,24 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &283097499
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 283097494}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1679637790, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: 200
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
 --- !u!1 &311178760
 GameObject:
   m_ObjectHideFlags: 0
@@ -4981,6 +5000,7 @@ GameObject:
   - 222: {fileID: 487323419}
   - 114: {fileID: 487323418}
   - 114: {fileID: 487323417}
+  - 114: {fileID: 487323420}
   m_Layer: 5
   m_Name: Tile Inspector
   m_TagString: Untagged
@@ -5005,10 +5025,10 @@ RectTransform:
   - {fileID: 701192491}
   m_Father: {fileID: 1108852562}
   m_RootOrder: 2
-  m_AnchorMin: {x: 0.5, y: 0}
-  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 205, y: 130}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &487323417
 MonoBehaviour:
@@ -5063,6 +5083,24 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 487323415}
+--- !u!114 &487323420
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 487323415}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1679637790, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: 200
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
 --- !u!1 &488830356
 GameObject:
   m_ObjectHideFlags: 0
@@ -6253,9 +6291,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 584071412}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b170f215acabe9a4ca7126498dc96d36, type: 3}
+  m_Script: {fileID: 11500000, guid: 4b351ed190df04a458e33d57321c133a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  scrollSpeed: 0.1
 --- !u!1 &584534926
 GameObject:
   m_ObjectHideFlags: 0
@@ -9692,6 +9731,8 @@ GameObject:
   - 224: {fileID: 847403564}
   - 222: {fileID: 847403566}
   - 114: {fileID: 847403565}
+  - 114: {fileID: 847403567}
+  - 114: {fileID: 847403568}
   m_Layer: 5
   m_Name: OverlayPanel
   m_TagString: Untagged
@@ -9714,7 +9755,7 @@ RectTransform:
   m_Father: {fileID: 1108852562}
   m_RootOrder: 0
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -9751,6 +9792,44 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 847403563}
+--- !u!114 &847403567
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 847403563}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1297475563, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 0
+  m_Spacing: 0
+  m_ChildForceExpandWidth: 1
+  m_ChildForceExpandHeight: 1
+--- !u!114 &847403568
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 847403563}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1679637790, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: 200
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
 --- !u!1 &848021751
 GameObject:
   m_ObjectHideFlags: 0
@@ -13315,6 +13394,7 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 224: {fileID: 1108852562}
+  - 114: {fileID: 1108852563}
   m_Layer: 5
   m_Name: Right Menu
   m_TagString: Untagged
@@ -13340,9 +13420,29 @@ RectTransform:
   m_RootOrder: 2
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -0.06, y: 42}
-  m_SizeDelta: {x: 205, y: 265}
+  m_AnchoredPosition: {x: 0, y: 100}
+  m_SizeDelta: {x: 200, y: 400}
   m_Pivot: {x: 1, y: 0}
+--- !u!114 &1108852563
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1108852561}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1297475563, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 0
+  m_Spacing: 0
+  m_ChildForceExpandWidth: 1
+  m_ChildForceExpandHeight: 1
 --- !u!1 &1108972508
 GameObject:
   m_ObjectHideFlags: 0
@@ -16848,7 +16948,7 @@ MonoBehaviour:
   currentOverlay: 
   xmlFileName: overlay_prototypes.xml
   LUAFileName: overlay_functions.lua
-  parentPanel: {fileID: 1108852561}
+  parentPanel: {fileID: 847403563}
 --- !u!33 &1495659351
 MeshFilter:
   m_ObjectHideFlags: 0
