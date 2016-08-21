@@ -32,7 +32,7 @@ public static class Settings {
         }
     }
 
-    public static string getSetting(string key )
+    private static string getSetting(string key )
     {
         // if we haven't already loaded our settings do it now
         if (settingsDict == null) 
@@ -140,4 +140,62 @@ public static class Settings {
             }
         }
     }
+
+    public static int getSettingAsInt( string key , int defaultValue  ){
+
+        // Atempt to get the string value from the dict
+        string s = getSetting(key , defaultValue.ToString());
+
+        int i ;
+        // Atempt to parse the string, if the parse failed return the default value
+        if ( int.TryParse(s, out i) == false )
+        {
+            Logger.LogWarning("Could not parse setting " + key + " of value " + s + " to type int");
+            return defaultValue;
+        }
+        else
+        {
+            // we managed to get the setting we wanted
+            return i;
+        }
+    }
+
+    public static float getSettingAsFloat( string key , float defaultValue  ){
+
+        // Atempt to get the string value from the dict
+        string s = getSetting(key , defaultValue.ToString());
+
+        float f;
+        // Atempt to parse the string, if the parse failed return the default value
+        if (float.TryParse(s, out f) == false )
+        {
+            Logger.LogWarning("Could not parse setting " + key + " of value " + s + " to type float");
+            return defaultValue;
+        }
+        else
+        {
+            // we managed to get the setting we wanted
+            return f;
+        }
+    }
+
+    public static bool getSettingAsBool( string key , bool defaultValue  ){
+
+        // Atempt to get the string value from the dict
+        string s = getSetting(key , defaultValue.ToString());
+
+        bool b;
+        // Atempt to parse the string, if the parse failed return the default value
+        if (bool.TryParse(s, out b) == false )
+        {
+            Logger.LogWarning("Could not parse setting " + key + " of value " + s + " to type bool");
+            return defaultValue;
+        }
+        else
+        {
+            // we managed to get the setting we wanted
+            return b;
+        }
+    }
+
 }
