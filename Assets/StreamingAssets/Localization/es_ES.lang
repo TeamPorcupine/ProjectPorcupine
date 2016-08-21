@@ -37,6 +37,7 @@ furn_oxygen_generator=Generador de Oxígeno
 furn_oxygen_generator_desc=Generando oxígeno para tus astronautas.
 furn_mining_drone_station=Estación de minería robótica
 furn_mining_drone_station_desc=Extrayendo materiales de la nada.
+furn_mining_drone_station_desc=Extrayendo materiales de la nada.
 furn_power_generator=Generador eléctrico
 furn_power_generator_desc=Genera electricidad de la nada. 
 furn_metal_smelter=Fundidor de metales
