@@ -64,8 +64,8 @@
         <Height>1</Height>
         <LinksToNeighbours>false</LinksToNeighbours>
         <EnclosesRooms>true</EnclosesRooms>
-        <CanReplaceFurniture typeTag="Wall" />
-        <CanReplaceFurniture typeTag="Door" />
+        <CanReplaceFurniture typeTag="wall" />
+        <CanReplaceFurniture typeTag="door" />
 
 
         <Params>

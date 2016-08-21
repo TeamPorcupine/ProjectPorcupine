@@ -534,15 +534,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
                 ReadXmlParams(reader);  // Read in the Param tag
                 break;
 
-            case "LocalizationCode":
-                reader.Read();
-                localizationCode = reader.ReadContentAsString();
-                break;
-
-            case "UnlocalizedDescription":
-                reader.Read();
-                unlocalizedDescription = reader.ReadContentAsString();
-                break;
             }
         }
     }
