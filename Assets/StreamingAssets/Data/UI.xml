@@ -30,4 +30,87 @@
 
     </Button>
 
+    <BuildThis>
+    	<New parent=Canvas>
+        	<panel>
+        		<Name>Black Screen</Name>
+        		<Tag>UI</Tag>
+        		<AnchoredPosition>Full Stretch</AnchoredPosition>
+
+        		<Modify>
+
+        		<Component = Image>
+        		<Color>Black</Color>
+        		</Component>
+
+        		</Modify>>
+
+    		</panel>
+        </New>
+    </BuildThis>>
+
+    <BuildThis>
+
+        <New parent=Canvas>
+        	<panel>
+        		<Name>Black Screen</Name>
+        		<Tag>UI</Tag>
+        		<AnchoredPosition>Bottom Stretch</AnchoredPosition>
+        		<Height>45</Height>
+
+        		<Add component =Horizontal Layout>
+
+        		<Modify>
+
+        		<Component = Horizontal Layout>
+        		<Spaceing>10</Spaceing>
+        		</Component>
+
+        		</Modifiy>
+    		</panel>
+        </New>
+
+        <New parent=Construction Bar>
+        	<Button OnClick = OnTest3Click()>
+        		<Name>Button - Test3</Name>
+        		<Tag>UI</Tag>
+        		<AnchoredPosition>Bottom Left</AnchoredPosition>
+        		<Width>100</Width>
+        		<Height>40</Height>
+        		<PosX>100</PosX>
+        		<PosY>40</PosY>
+        		<PosZ>100</PosZ>
+
+        		<LocalizationCode>button_test3</LocalizationCode>
+        		<UnlocalizedDescription>button_test3</UnlocalizedDescription>
+
+    		</Button>
+        </New>
+
+        <New parent=Construction Bar>
+        	<Button OnClick = OnTest4Click()>
+        		<Name>Button - Test4</Name>
+        		<Tag>UI</Tag>
+        		<AnchoredPosition>Bottom Left</AnchoredPosition>
+        		<Width>100</Width>
+        		<Height>40</Height>
+        		<PosX>100</PosX>
+        		<PosY>40</PosY>
+        		<PosZ>100</PosZ>
+
+        		<LocalizationCode>button_test4</LocalizationCode>
+        		<UnlocalizedDescription>button_test4</UnlocalizedDescription>
+
+    		</Button>
+        </New>
+    </BuildThis>
+
+    <Prefab>
+        <Name>Dialog Box Options</Name>
+        <PrefabPath>Assets/XMLUI/Prerfabs/DialogBoxOptions</PrefabPath>PrefabPath>
+        <Tag>UI</Tag>
+        <AnchoredPosition>Center</AnchoredPosition>
+
+    </Prefab>
+
 </UI>
