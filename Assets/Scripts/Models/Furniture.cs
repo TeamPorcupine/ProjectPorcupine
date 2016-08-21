@@ -372,7 +372,21 @@ public class Furniture : IXmlSerializable, ISelectable
 
         return true;
     }
+    
+    public void SetPower(float power)
+    {
+        if (power <= 0 && powerValue > 0)
+            World.current.powerSystem.RemovePowerSupply(this);
+        if (power >= 0 && powerValue < 0)
+            World.current.powerSystem.RemovePowerConsumer(this);
 
+        powerValue = power;
+
+        if (power > 0)
+            World.current.powerSystem.RegisterPowerSupply(this);
+        if (power < 0)
+            World.current.powerSystem.RegisterPowerConsumer(this);
+    }
 
     public bool HasPower()
     {

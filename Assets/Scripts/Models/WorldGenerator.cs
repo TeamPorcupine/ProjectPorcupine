@@ -12,6 +12,8 @@ public class WorldGenerator {
     public const int asteroidRessourceMin = 5;
     public const int asteroidRessourceMax = 15;
 
+    public static string[] asteroidRessources = new string[] { "Raw Iron", "Coal" };
+
     public static void Generate(World world, int seed){
         Random.InitState(seed);
         int width = world.Width;
@@ -33,7 +35,7 @@ public class WorldGenerator {
                     if (Random.value >= asteroidRessourceChance)
                     {
                         int stackSize = Random.Range(asteroidRessourceMin, asteroidRessourceMax);
-                        Inventory inv = Inventory.New("Raw Iron", 50, stackSize);
+                        Inventory inv = Inventory.New(asteroidRessources[(int) Mathf.Floor(Random.value * asteroidRessources.Length)], 50, stackSize);
                         world.inventoryManager.PlaceInventory(t, inv);
                     }
                 }
