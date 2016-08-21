@@ -1,6 +1,12 @@
 # ProjectPorcupine
 Project Porcupine: A Base-Building Game...in Space!
 
+[About](#about)  
+[Copyright & Licensing](#copyright--licensing)  
+[Contributing](#contributing)  
+[Vote on Proposed Features](#vote-on-proposed-features)  
+[Contact](#contact) 
+
 ## About
 
 Project Porcupine was created to serve two purposes:
@@ -49,6 +55,13 @@ are licensed under the MIT License and can be found here:
 ## Contributing
 
 Please check the [CONTRIBUTING.md](CONTRIBUTING.md) file for contribution instructions and guidelines.
+
+## Vote on Proposed Features
+
+You can propose features you'd like to see and vote on which ones to prioritize here:  [http://feathub.com/TeamPorcupine/ProjectPorcupine/](http://feathub.com/TeamPorcupine/ProjectPorcupine/)
+
+Here's the current list of proposed features:  
+[![Feature Requests](http://feathub.com/TeamPorcupine/ProjectPorcupine?format=svg)](http://feathub.com/TeamPorcupine/ProjectPorcupine)
 
 ## Contact
 

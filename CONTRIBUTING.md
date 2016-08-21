@@ -1,3 +1,12 @@
+[Contributing](#contributing)  
+[Resolving Merge Conflicts](#resolving-merge-conflicts)  
+[Unity Version](#unity-version)  
+[General resources](#general-resources)  
+[Style Guidelines](#style-guidelines)  
+[Best Practices for Contributing](#best-practices-for-contributing)
+
+
+
 # Contributing
 
 If you would like to contribute to this project by modifying/adding to the program code or various creative assets, read the [Best Practices for Contributing] below and feel free to follow the standard Github workflow:
@@ -14,7 +23,7 @@ If you would like to contribute to this project by modifying/adding to the progr
 6. [optional]  It is recommended that you rebase your branch on top of the latest master, to minimize excess commit messages.
  * From the command line:  
      `git fetch upstream master`  
-     `get rebase upstream/master`  
+     `git rebase upstream/master`  
 6. Make your changes.
  * Avoid making changes to more files than necessary for your feature (i.e. refrain from combining your "real" pull request with incidental bug fixes). This will simplify the merging process and make your changes clearer.
  * Very much avoid making changes to the Unity-specific files, like the scene and the project settings unless absolutely necessary. Changes here are very likely to cause difficult to merge conflicts. Work in code as much as possible. (We will be trying to change the UI to be more code-driven in the future.) Making changes to prefabs should generally be safe -- but create a copy of the main scene and work there instead (then delete your copy of the scene before committing).
@@ -26,7 +35,7 @@ If you would like to contribute to this project by modifying/adding to the progr
     `git push origin my-feature-branch-name`  
 8. Make a "Pull Request" from your branch here on Github.
   * Include screenshots demonstrating your change if applicable.
-9. For a video tutorial, please see: https://www.youtube.com/watch?v=-R2fl17eEpwI
+9. For a video tutorial, please see: https://www.youtube.com/watch?v=R2fl17eEpwI
 
 # Resolving Merge Conflicts
 
