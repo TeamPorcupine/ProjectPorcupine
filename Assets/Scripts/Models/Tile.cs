@@ -99,7 +99,7 @@ public class Tile :IXmlSerializable, ISelectable
 
                 foreach (Tile n in ns) // Loop through all the horizontal/vertical neighbours of the empty tile.
                 {
-                    canMove = canMove || (n != null && n.Type == TileType.Floor); // If the neighbour is a floor tile, set canMove to true.
+                    canMove = canMove || (n != null && (n.Type == TileType.Floor || n.Type == TileType.Ladder)); // If the neighbour is a floor tile, set canMove to true.
                 }
 
                 return canMove ? baseTileMovementCost : 0f; // If canMove is true, return baseTileMovementCost, else, return 0f.
