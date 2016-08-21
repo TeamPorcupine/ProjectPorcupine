@@ -52,9 +52,10 @@ public class WorldGenerator
                         {
                             int currentchance = 0;
                             int randomchance = Random.Range(0, 100);
+                            
                             foreach (Inventory i in ressources)
                             {
-                                int chance = ressources[0].stackSize; // In stacksize the chance was cached
+                                int chance = i.stackSize;
                                 currentchance += chance;
 
                                 if (randomchance <= currentchance)
