@@ -127,15 +127,15 @@ Additionally, for the sake of simplicity, we are standardizing on what should be
 
 ## Adding Furniture and Inventory
 
-We have standardized the names of Furniture and Inventory to match 'furn_steel_wall' or 'inv_steel_plate' in Localization and 'steel_wall' or 'steel plate' everywhere else. This means a few things:
+We have standardized the objectTypes of Furniture and Inventory to match 'type_material', such as 'wall_steel' and 'generator_oxygen' or 'generator_power', for localization a matching prefix is added automaticly to objectType such as 'inv' and 'furn. This means a few things:
 
-* When adding a new Furniture or inventory the files should be named "my_new_furniture" and this should also be the objectType.
+* When adding a new Furniture or inventory the files should have the objectType "type_material", you could give it the more english sounding name, as of now name is not used for anything.
 
-* When coding an event or world generation, inventory is called 'cool_item' and furniture is 'cool_chair'.
+* When coding an event or world generation just use en objectType to get the Inventory or Furniture.
 
-* In the Localization a line could be will be 'inv_cool_sword=Cool Sword'.
+* In the Localization a line could be will be 'inv_type_material=Material Type'.
 
-* In Localization the description can be set with 'inv_cool_sword_desc=This sword is flaming and does a million damage.'
+* In Localization the description can be set with 'inv_type_material_desc=Some cool description.'
 
 ## Best Practices for Contributing
 [Best Practices for Contributing]: #best-practices-for-contributing

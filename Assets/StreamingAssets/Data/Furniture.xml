@@ -14,11 +14,11 @@
 
 
         <BuildingJob jobTime="1">
-            <Inventory objectType="steel_plate" amount="5" />
+            <Inventory objectType="plate_steel" amount="5" />
         </BuildingJob>
 
         <DeconstructJob>
-            <Inventory objectType="steel_plate" amount="3" />
+            <Inventory objectType="plate_steel" amount="3" />
         </DeconstructJob>
 
     </Furniture>
@@ -41,11 +41,11 @@
         </Params>
 
         <BuildingJob jobTime="1">
-            <Inventory objectType="steel_plate" amount="2" />
+            <Inventory objectType="plate_steel" amount="2" />
         </BuildingJob>
 
         <DeconstructJob>
-            <Inventory objectType="steel_plate" amount="1" />
+            <Inventory objectType="plate_steel" amount="1" />
         </DeconstructJob>
 
         <OnUpdate FunctionName="OnUpdate_Door" />
@@ -74,11 +74,11 @@
         </Params>
 
         <BuildingJob jobTime="5">
-            <Inventory objectType="steel_plate" amount="10" />
+            <Inventory objectType="plate_steel" amount="10" />
         </BuildingJob>
 
         <DeconstructJob>
-            <Inventory objectType="steel_plate" amount="7" />
+            <Inventory objectType="plate_steel" amount="7" />
         </DeconstructJob>
 
         <OnUpdate FunctionName="OnUpdate_Door" />
@@ -103,7 +103,7 @@
         
     </Furniture>
 
-    <Furniture objectType="oxygen_generator">
+    <Furniture objectType="generator_oxygen">
         <Name>Oxygen Generator</Name>
         <Description>Create O2 in the room in which it is built.</Description>
         <TypeTag>Generator</TypeTag>
@@ -144,7 +144,7 @@
 
     </Furniture>
 
-    <Furniture objectType="power_generator">
+    <Furniture objectType="generator_power">
     <Name>Power Generator</Name>
     <TypeTag>Generator</TypeTag>
     <MovementCost>10</MovementCost>
@@ -172,10 +172,10 @@
         <Height>2</Height>
 
 	<BuildingJob jobTime="10">
-            <Inventory objectType="steel_plate" amount="50" />
+            <Inventory objectType="plate_steel" amount="50" />
         </BuildingJob>
 		<DeconstructJob>
-            <Inventory objectType="steel_plate" amount="15" />
+            <Inventory objectType="plate_steel" amount="15" />
         </DeconstructJob>
 
         <JobSpotOffset X="0" Y="-1" />
@@ -187,7 +187,7 @@
 	<UnlocalizedDescription>furn_cloning_pod_desc</UnlocalizedDescription>
   </Furniture>
   
-  <Furniture objectType="metal_smelter">
+  <Furniture objectType="smelter_metal">
       <Name>Metal Smelter</Name>
       <TypeTag>Processor</TypeTag>
       <Description>Smelts your raw iron into metal.</Description>
@@ -234,10 +234,10 @@
     <Width>3</Width>
     <Height>3</Height>
     <BuildingJob jobTime="5">
-      <Inventory objectType="steel_plate" amount="20" />
+      <Inventory objectType="plate_steel" amount="20" />
     </BuildingJob>
     <DeconstructJob>
-      <Inventory objectType="steel_plate" amount="10" />
+      <Inventory objectType="plate_steel" amount="10" />
     </DeconstructJob>
     <JobSpotOffset X="0" Y="0" />
     <!--<JobSpawnSpotOffset X="0" Y="-2" />-->

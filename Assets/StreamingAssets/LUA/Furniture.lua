@@ -77,7 +77,7 @@ function Stockpile_GetItemsFromFilter()
 	-- Since jobs copy arrays automatically, we could already have
 	-- an Inventory[] prepared and just return that (as a sort of example filter)
 
-	return { Inventory.__new("steel_plate", 50, 0) }
+	return { Inventory.__new("plate_steel", 50, 0) }
 end
 
 
@@ -416,7 +416,7 @@ function LandingPad_Temp_UpdateAction(furniture, deltaTime)
 
 	if(inputSpot.inventory == nil) then
 		if(furniture.JobCount() == 0) then
-			itemsDesired = {Inventory.__new("steel_plate", furniture.GetParameter("tradeinamount"), 0)}
+			itemsDesired = {Inventory.__new("plate_steel", furniture.GetParameter("tradeinamount"), 0)}
 			
 			j = Job.__new(
 			inputSpot,
@@ -443,7 +443,7 @@ function LandingPad_Temp_UpdateAction(furniture, deltaTime)
 		 	outputSpot = World.current.GetTileAt(spawnSpot.X+1, spawnSpot.y)
 
 			if(outputSpot.inventory == nil) then
-				World.current.inventoryManager.PlaceInventory( outputSpot, Inventory.__new("steel_plate", 50, furniture.GetParameter("tradeoutamount")) )
+				World.current.inventoryManager.PlaceInventory( outputSpot, Inventory.__new("plate_steel", 50, furniture.GetParameter("tradeoutamount")) )
 			
 				inputSpot.inventory.stackSize = inputSpot.inventory.stackSize-furniture.GetParameter("tradeinamount")
 			else
