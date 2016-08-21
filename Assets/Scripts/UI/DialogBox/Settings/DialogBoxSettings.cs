@@ -4,17 +4,16 @@ using System.Collections;
 
 public class DialogBoxSettings : DialogBox {
 
-	// langage Option
+	// langage Option.
 	public Toggle langToggle;
 	public GameObject langDropDown;
 
-	// FPS Option
+	// FPS Option.
 	public Toggle fpsToggle;
 	public GameObject fpsObject;
 
 	public Toggle fullScreenToggle;
 
-	// Public Slider masterVolume;
 	public Slider musicVolume;
 
 	public Resolution[] myResolutions;
@@ -32,13 +31,13 @@ public class DialogBoxSettings : DialogBox {
 
 	void OnEnable()
 	{
-		// create an instance of this class
+		// Create an instance of this class.
 		gameSettings = new GameSettings ();
 
-		//get all avalible resolution for the display
+		// Get all avalible resolution for the display.
 		myResolutions = Screen.resolutions;
 
-		// Add our listeners
+		// Add our listeners.
         closeButton.onClick.AddListener(delegate { OnClickClose(); } );
         saveButton.onClick.AddListener(delegate { OnClickSave(); } );
 
@@ -51,13 +50,12 @@ public class DialogBoxSettings : DialogBox {
 		vSyncDropdown.onValueChanged.AddListener(delegate { OnVSyncChange(); } );
 		qualityDropdown.onValueChanged.AddListener(delegate { OnQualityChange(); } );
 
-		// masterVolume.onValueChanged.AddListener(delegate { OnMasterChange(); } );
 		musicVolume.onValueChanged.AddListener(delegate { OnMusicChange(); } );
 
-		// create the drop down for resolution
+		// Create the drop down for resolution.
 		CreateResDropDown();
 
-		// Load the setting
+		// Load the setting.
 		LoadSetting();
 
 	}
@@ -92,18 +90,14 @@ public class DialogBoxSettings : DialogBox {
 	public void OnResolutionChange()
 	{
 		gameSettings.resolutionIndex = resolutionDropdown.value;
-		// need to make work
+		// Need to make work.
 	}
 
 	public void OnAliasingChange()
 	{
 		gameSettings.antiAliasingIndex = QualitySettings.antiAliasing = aliasingDropdown.value;
 	}
-
-	public void OnMasterChange()
-	{
-
-	}
+        
 
 	public void OnMusicChange()
 	{

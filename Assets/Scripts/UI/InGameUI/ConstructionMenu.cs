@@ -4,7 +4,7 @@ using System.Collections;
 
 public class ConstructionMenu : MonoBehaviour {
 
-	// The sub menus of the build menu (furniture, floor..... later - power, security, drones)
+	// The sub menus of the build menu (furniture, floor..... later - power, security, drones).
 	public GameObject furnitureMenu;
 	public GameObject floorMenu;
 
@@ -13,7 +13,7 @@ public class ConstructionMenu : MonoBehaviour {
 
 	void OnEnable()
 	{
-		// Add liseners
+		// Add liseners here.
 		buttonFloors.onClick.AddListener(delegate { OnClickFloors(); } );
 		buttonFurniture.onClick.AddListener(delegate { OnClickFurniture(); } );
 	}
@@ -30,13 +30,13 @@ public class ConstructionMenu : MonoBehaviour {
 		ToggleMenu (furnitureMenu);
 	}
 
-	// Deactivates any sub menu of the constrution options
+	// Deactivates any sub menu of the constrution options.
 	public void DeactivateSubs () {
 		furnitureMenu.SetActive (false);
 		floorMenu.SetActive (false);
 	}
 
-	// toggles whether menu is active
+	// Toggles whether menu is active.
 	public void ToggleMenu(GameObject menu) {
 		menu.SetActive(!menu.activeSelf);
 	}

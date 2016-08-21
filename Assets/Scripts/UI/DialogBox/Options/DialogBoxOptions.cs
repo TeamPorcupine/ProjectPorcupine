@@ -16,14 +16,13 @@ public class DialogBoxOptions : DialogBox {
         dialogManager = GameObject.FindObjectOfType<DialogBoxManager>();
         WorldController wc = GameObject.FindObjectOfType<WorldController>();
 
-		// Add liseners
+		// Add liseners here.
 		buttonQuit.onClick.AddListener(delegate { OnButtonQuitGame(); } );
 		buttonResume.onClick.AddListener(delegate { this.CloseDialog(); } );
         buttonNewWorld.onClick.AddListener(delegate { wc.NewWorld(); } );
 
         buttonSave.onClick.AddListener(delegate { OnButtonSaveGame(); } );
         buttonLoad.onClick.AddListener(delegate { OnButtonLoadGame(); } );
-
 
 	}
 
@@ -39,13 +38,13 @@ public class DialogBoxOptions : DialogBox {
         dialogManager.dialogBoxLoadGame.ShowDialog();
     }
 
-	// quit the app wheather in editor or a build version
+	// Quit the app wheather in editor or a build version.
 	public void OnButtonQuitGame()
 	{
 		// maybe ask the user if he want to save or is sure they want to quit??
 
 		#if UNITY_EDITOR
-		//alows you to quit in the editor
+		//alows you to quit in the editor.
 		UnityEditor.EditorApplication.isPlaying = false;
 		#else
 		Application.Quit();
