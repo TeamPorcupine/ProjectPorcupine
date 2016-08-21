@@ -60,6 +60,9 @@ public class WorldGenerator
 
                                 if (randomchance <= currentchance)
                                 {
+                                    if (stackSize > i.maxStackSize)
+                                        stackSize = i.maxStackSize;
+
                                     world.inventoryManager.PlaceInventory(t, new Inventory(i.objectType, i.maxStackSize, stackSize));
                                     break;
                                 }
