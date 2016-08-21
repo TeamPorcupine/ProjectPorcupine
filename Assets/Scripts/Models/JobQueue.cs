@@ -1,26 +1,29 @@
-﻿//=======================================================================
-// Copyright Martin "quill18" Glaude 2015-2016.
-//		http://quill18.com
-//=======================================================================
-
+#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
 using UnityEngine;
 using System.Collections.Generic;
 using System;
 
 public class JobQueue
 {
-    Queue<Job> jobQueue;
+    SortedList<Job.JobPriority, Job> jobQueue;
 
     public event Action<Job> cbJobCreated;
 
     public JobQueue()
     {
-        jobQueue = new Queue<Job>();
+        jobQueue = new SortedList<Job.JobPriority, Job>(new DuplicateKeyComparer<Job.JobPriority>(true));
     }
 
     public void Enqueue(Job j)
     {
-        //Debug.Log("Adding job to queue. Existing queue size: " + jobQueue.Count);
+        //Logger.Log("Adding job to queue. Existing queue size: " + jobQueue.Count);
         if (j.jobTime < 0)
         {
             // Job has a negative job time, so it's not actually
@@ -29,7 +32,7 @@ public class JobQueue
             return;
         }
 
-        jobQueue.Enqueue(j);
+        jobQueue.Add(j.jobPriority,j);
 
         if (cbJobCreated != null)
         {
@@ -42,23 +45,20 @@ public class JobQueue
         if (jobQueue.Count == 0)
             return null;
 
-        return jobQueue.Dequeue();
+        Job job = jobQueue.Values[0];
+        jobQueue.RemoveAt(0);
+        return job;
     }
     
     public void Remove(Job j)
     {
-        // TODO: Check docs to see if there's a less memory/swappy solution
-        List<Job> jobs = new List<Job>(jobQueue);
-
-        if (jobs.Contains(j) == false)
+        if (jobQueue.ContainsValue(j)==false)
         {
-            //Debug.LogError("Trying to remove a job that doesn't exist on the queue.");
+            //Logger.LogError("Trying to remove a job that doesn't exist on the queue.");
             // Most likely, this job wasn't on the queue because a character was working it!
             return;
         }
-
-        jobs.Remove(j);
-        jobQueue = new Queue<Job>(jobs);
+        jobQueue.RemoveAt(jobQueue.IndexOfValue(j));
     }
 
 }

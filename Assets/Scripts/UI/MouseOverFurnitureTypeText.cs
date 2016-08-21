@@ -1,4 +1,12 @@
-﻿using UnityEngine;
+#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
+using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
 
@@ -19,7 +27,7 @@ public class MouseOverFurnitureTypeText : MonoBehaviour
 
         if (myText == null)
         {
-            Debug.LogError("MouseOverTileTypeText: No 'Text' UI component on this object.");
+            Logger.LogError("MouseOverTileTypeText: No 'Text' UI component on this object.");
             this.enabled = false;
             return;
         }
@@ -27,7 +35,7 @@ public class MouseOverFurnitureTypeText : MonoBehaviour
         mouseController = GameObject.FindObjectOfType<MouseController>();
         if (mouseController == null)
         {
-            Debug.LogError("How do we not have an instance of mouse controller?");
+            Logger.LogError("How do we not have an instance of mouse controller?");
             return;
         }
     }

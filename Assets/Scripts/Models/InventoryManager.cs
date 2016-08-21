@@ -1,8 +1,11 @@
-﻿//=======================================================================
-// Copyright Martin "quill18" Glaude 2015-2016.
-//		http://quill18.com
-//=======================================================================
-
+#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
 using UnityEngine;
 using System.Collections.Generic;
 using MoonSharp.Interpreter;
@@ -76,7 +79,7 @@ public class InventoryManager
     {
         if (job.inventoryRequirements.ContainsKey(inv.objectType) == false)
         {
-            Debug.LogError("Trying to add inventory to a job that it doesn't want.");
+            Logger.LogError("Trying to add inventory to a job that it doesn't want.");
             return false;
         }
 
@@ -116,7 +119,7 @@ public class InventoryManager
         }
         else if (character.inventory.objectType != sourceInventory.objectType)
         {
-            Debug.LogError("Character is trying to pick up a mismatched inventory object type.");
+            Logger.LogError("Character is trying to pick up a mismatched inventory object type.");
             return false;
         }
 
@@ -170,6 +173,12 @@ public class InventoryManager
         // that all available inventories are stockpiles and we are not allowed
         // to touch those
         if (!canTakeFromStockpile && inventories[objectType].TrueForAll(i => i.tile != null && i.tile.furniture != null && i.tile.furniture.IsStockpile()))
+        {
+            return null;
+        }
+        
+        //We shouldn't search if all inventories are locked.
+        if (inventories[objectType].TrueForAll(i => i.tile != null && i.tile.furniture != null && i.tile.inventory.isLocked))
         {
             return null;
         }

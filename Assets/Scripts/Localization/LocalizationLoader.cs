@@ -1,4 +1,12 @@
-﻿using UnityEngine;
+#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
+using UnityEngine;
 using System.IO;
 using System.Collections;
 
@@ -37,7 +45,7 @@ namespace ProjectPorcupine.Localization
                     LocalizationTable.LoadLocalizationFile(file);
 
                     //Just write a little debug info into the console.
-                    Debug.Log("Loaded localization at path\n" + file);
+                    Logger.Log("Loaded localization at path\n" + file);
                 }
             }
 

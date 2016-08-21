@@ -1,8 +1,11 @@
-﻿//=======================================================================
-// Copyright Martin "quill18" Glaude 2015.
-//		http://quill18.com
-//=======================================================================
-
+#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -19,7 +22,7 @@ public class Path_TileGraph
     public Path_TileGraph(World world)
     {
 
-        Debug.Log("Path_TileGraph");
+        Logger.Log("Path_TileGraph");
 
         // Loop through all tiles of the world
         // For each tile, create a node
@@ -44,7 +47,7 @@ public class Path_TileGraph
             }
         }
 
-        Debug.Log("Path_TileGraph: Created " + nodes.Count + " nodes.");
+        Logger.Log("Path_TileGraph: Created " + nodes.Count + " nodes.");
 
 
         // Now loop through all nodes again

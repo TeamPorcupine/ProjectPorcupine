@@ -1,4 +1,12 @@
-﻿using UnityEngine;
+#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
+using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UI;
 
@@ -39,7 +47,7 @@ public class InventorySpriteController : MonoBehaviour
 
     public void OnInventoryCreated(Inventory inv)
     {
-        //Debug.Log("OnInventoryCreated");
+        //Logger.Log("OnInventoryCreated");
         // Create a visual GameObject linked to this data.
 
         // FIXME: Does not consider multi-tile objects nor rotated objects
@@ -58,7 +66,7 @@ public class InventorySpriteController : MonoBehaviour
         sr.sprite = SpriteManager.current.GetSprite("Inventory", inv.objectType);
         if (sr.sprite == null)
         {
-            Debug.LogError("No sprite for: " + inv.objectType);
+            Logger.LogError("No sprite for: " + inv.objectType);
         }
         sr.sortingLayerName = "Inventory";
 
@@ -83,12 +91,12 @@ public class InventorySpriteController : MonoBehaviour
     void OnInventoryChanged(Inventory inv)
     {
 
-        //Debug.Log("OnFurnitureChanged");
+        //Logger.Log("OnFurnitureChanged");
         // Make sure the furniture's graphics are correct.
 
         if (inventoryGameObjectMap.ContainsKey(inv) == false)
         {
-            Debug.LogError("OnCharacterChanged -- trying to change visuals for inventory not in our map.");
+            Logger.LogError("OnCharacterChanged -- trying to change visuals for inventory not in our map.");
             return;
         }
 

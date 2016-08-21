@@ -1,4 +1,12 @@
-﻿using UnityEngine;
+#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
+using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using ProjectPorcupine.Localization;
@@ -35,6 +43,13 @@ public class SelectionInfoTextField : MonoBehaviour
 
         ISelectable actualSelection = mc.mySelection.stuffInTile[mc.mySelection.subSelection];
 
-        txt.text = LocalizationTable.GetLocalization(actualSelection.GetName()) + "\n" + LocalizationTable.GetLocalization(actualSelection.GetDescription()) + "\n" + actualSelection.GetHitPointString(); //TODO: Change the hitpoint stuff.
+        if(actualSelection.GetType() == typeof(Character))
+        {
+            txt.text = actualSelection.GetName() + "\n" + actualSelection.GetDescription() + "\n" + actualSelection.GetHitPointString(); //TODO: Change the hitpoint stuff.
+        }
+        else
+        {
+            txt.text = LocalizationTable.GetLocalization(actualSelection.GetName()) + "\n" + LocalizationTable.GetLocalization(actualSelection.GetDescription()) + "\n" + actualSelection.GetHitPointString(); //TODO: Change the hitpoint stuff.
+        }
     }
 }
