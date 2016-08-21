@@ -23,6 +23,9 @@ public class WorldController : MonoBehaviour
     JobSpriteController jobSpriteController;
     InventorySpriteController inventorySpriteController;
 
+    public BuildModeController buildModeController;
+    public MouseController mouseController;
+
     public static WorldController Instance { get; protected set; }
 
     // The world and tile data
@@ -58,6 +61,7 @@ public class WorldController : MonoBehaviour
     public bool devMode = false;
 
     public GameObject inventoryUI;
+    public GameObject circleCursorPrefab;
 
     // Use this for initialization
     void OnEnable()
@@ -87,6 +91,8 @@ public class WorldController : MonoBehaviour
         characterSpriteController = new CharacterSpriteController(world);
         jobSpriteController = new JobSpriteController(world);
         inventorySpriteController = new InventorySpriteController(world, inventoryUI);
+        buildModeController = new BuildModeController();
+        mouseController = new MouseController(buildModeController, circleCursorPrefab);
 
         //Initialising controllers
         GameObject Controllers = GameObject.Find("Controllers");
@@ -96,6 +102,7 @@ public class WorldController : MonoBehaviour
     void Update()
     {
         CheckTimeInput();
+        mouseController.Update(IsModal);
 
         if (IsPaused == false)
         {

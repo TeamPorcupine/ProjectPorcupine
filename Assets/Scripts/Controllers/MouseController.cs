@@ -10,10 +10,10 @@ using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
 
-public class MouseController : MonoBehaviour
+public class MouseController
 {
 
-    public GameObject circleCursorPrefab;
+    protected GameObject circleCursorPrefab;
 
     // The world-position of the mouse last frame.
     Vector3 lastFramePosition;
@@ -40,9 +40,11 @@ public class MouseController : MonoBehaviour
     MouseMode currentMode = MouseMode.SELECT;
 
     // Use this for initialization.
-    void Start()
+    public MouseController(BuildModeController buildModeController, GameObject cursorObject)
     {
-        bmc = GameObject.FindObjectOfType<BuildModeController>();
+        bmc = buildModeController;
+        bmc.setMouseController(this);
+        circleCursorPrefab = cursorObject;
         fsc = GameObject.FindObjectOfType<FurnitureSpriteController>();
         menuController = GameObject.FindObjectOfType<MenuController>();
         dragPreviewGameObjects = new List<GameObject>();
@@ -62,9 +64,9 @@ public class MouseController : MonoBehaviour
     }
 
     // Update is called once per frame.
-    void Update()
+    public void Update(bool isModal)
     {
-        if (WorldController.Instance.IsModal)
+        if (isModal)
         {
             // A modal dialog is open, so don't process any game inputs from the mouse.
             return;
@@ -329,7 +331,7 @@ public class MouseController : MonoBehaviour
                     {
                         // Show the generic dragging visuals.
                         GameObject go = SimplePool.Spawn(circleCursorPrefab, new Vector3(x, y, 0), Quaternion.identity);
-                        go.transform.SetParent(this.transform, true);
+//FIXME                        go.transform.SetParent(this.transform, true);
                         go.GetComponent<SpriteRenderer>().sprite = SpriteManager.current.GetSprite("UI", "CursorCircle");
                         dragPreviewGameObjects.Add(go);
                     }
@@ -417,7 +419,7 @@ public class MouseController : MonoBehaviour
     {
 
         GameObject go = new GameObject();
-        go.transform.SetParent(this.transform, true);
+//FIXME        go.transform.SetParent(this.transform, true);
         dragPreviewGameObjects.Add(go);
 
 

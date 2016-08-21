@@ -17,9 +17,9 @@ public enum BuildMode
     DECONSTRUCT
 }
 
-public class BuildModeController : MonoBehaviour
+public class BuildModeController
 {
-
+    MouseController mouseController;
     public BuildMode buildMode = BuildMode.FLOOR;
     TileType buildModeTile = TileType.Floor;
     public string buildModeObjectType;
@@ -27,10 +27,9 @@ public class BuildModeController : MonoBehaviour
 
 
     // Use this for initialization
-    void Start()
+    public void setMouseController(MouseController currentMouseController)
     {
-
-
+        mouseController = currentMouseController;
     }
 
     public bool IsObjectDraggable()
@@ -52,14 +51,14 @@ public class BuildModeController : MonoBehaviour
         buildMode = BuildMode.FLOOR;
         buildModeTile = TileType.Floor;
 
-        GameObject.FindObjectOfType<MouseController>().StartBuildMode();
+        mouseController.StartBuildMode();
     }
 
     public void SetMode_Bulldoze()
     {
         buildMode = BuildMode.FLOOR;
         buildModeTile = TileType.Empty;
-        GameObject.FindObjectOfType<MouseController>().StartBuildMode();
+        mouseController.StartBuildMode();
     }
 
     public void SetMode_BuildFurniture(string objectType)
@@ -67,13 +66,13 @@ public class BuildModeController : MonoBehaviour
         // Wall is not a Tile!  Wall is an "Furniture" that exists on TOP of a tile.
         buildMode = BuildMode.FURNITURE;
         buildModeObjectType = objectType;
-        GameObject.FindObjectOfType<MouseController>().StartBuildMode();
+        mouseController.StartBuildMode();
     }
 
     public void SetMode_Deconstruct()
     {
         buildMode = BuildMode.DECONSTRUCT;
-        GameObject.FindObjectOfType<MouseController>().StartBuildMode();
+        mouseController.StartBuildMode();
     }
 
     public void DoPathfindingTest()

@@ -759,7 +759,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1721979303}
+      - m_Target: {fileID: 0}
         m_MethodName: DoPathfindingTest
         m_Mode: 1
         m_Arguments:
@@ -1893,6 +1893,7 @@ MonoBehaviour:
   IsModal: 0
   devMode: 0
   inventoryUI: {fileID: 191780, guid: d1e1fcd802f51614595cb99879a132a5, type: 2}
+  circleCursorPrefab: {fileID: 110048, guid: 782976062f887844ca858482495fcdbd, type: 2}
 --- !u!4 &179601669
 Transform:
   m_ObjectHideFlags: 0
@@ -6124,7 +6125,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 752785403}
-  m_RootOrder: 4
+  m_RootOrder: 2
 --- !u!114 &584071414
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7749,7 +7750,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1721979303}
+      - m_Target: {fileID: 0}
         m_MethodName: SetMode_Deconstruct
         m_Mode: 1
         m_Arguments:
@@ -8350,9 +8351,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 179601669}
-  - {fileID: 1234004930}
   - {fileID: 1718996146}
-  - {fileID: 1721979302}
   - {fileID: 584071413}
   m_Father: {fileID: 0}
   m_RootOrder: 4
@@ -13922,47 +13921,6 @@ MonoBehaviour:
   m_PreferredHeight: 32
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
---- !u!1 &1234004929
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 4
-  m_Component:
-  - 4: {fileID: 1234004930}
-  - 114: {fileID: 1234004931}
-  m_Layer: 0
-  m_Name: MouseController
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1234004930
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1234004929}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_Children: []
-  m_Father: {fileID: 752785403}
-  m_RootOrder: 1
---- !u!114 &1234004931
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1234004929}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f42f18c989df2345a5df797b86f18af, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  circleCursorPrefab: {fileID: 110048, guid: 782976062f887844ca858482495fcdbd, type: 2}
 --- !u!1 &1244224387
 GameObject:
   m_ObjectHideFlags: 0
@@ -18065,7 +18023,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children: []
   m_Father: {fileID: 752785403}
-  m_RootOrder: 2
+  m_RootOrder: 1
 --- !u!114 &1718996147
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18077,48 +18035,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1c455ad235fc9c4ebdd1bfde4ac8d05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &1721979301
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 4
-  m_Component:
-  - 4: {fileID: 1721979302}
-  - 114: {fileID: 1721979303}
-  m_Layer: 0
-  m_Name: BuildModeController
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1721979302
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1721979301}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_Children: []
-  m_Father: {fileID: 752785403}
-  m_RootOrder: 3
---- !u!114 &1721979303
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1721979301}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4540e9fce9f437b429d4b959dbb63717, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  buildMode: 0
-  buildModeObjectType: 
 --- !u!1 &1723244262
 GameObject:
   m_ObjectHideFlags: 0
