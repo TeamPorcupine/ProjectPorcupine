@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Sprites>
+	<Sprite name="Ice"     x="0" y="0" w="64" h="64" pixelPerUnit="64" />
+</Sprites>
