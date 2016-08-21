@@ -2,7 +2,7 @@
 using UnityEngine.UI;
 using System.Collections;
 
-public class RootMenuController : MonoBehaviour {
+public class MenuController : MonoBehaviour {
 	// The left build menu
 	public GameObject constructorMenu;
 
