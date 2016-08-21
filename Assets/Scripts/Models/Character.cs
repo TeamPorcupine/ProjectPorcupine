@@ -121,8 +121,8 @@ public class Character : IXmlSerializable, ISelectable
     /// Our job, if any.
     Job myJob;
 
-	/// Job wait timer (to lessen material checks)
-	int jobWaitTimer = 0;
+    /// Job wait timer (to lessen material checks)
+    int jobWaitTimer = 0;
 
     /// Tile where job should be carried out, if different from myJob.tile
     Tile jobTile;
@@ -197,22 +197,29 @@ public class Character : IXmlSerializable, ISelectable
 
     void Update_DoJob(float deltaTime)
     {
-        if (jobWaitTimer > 0) {
+        if (jobWaitTimer > 0) 
+        {
             jobWaitTimer -= 1;
             //Logger.LogInfo (jobWaitTimer);
-        } else {
-            // Do I have a job?
-            if (myJob == null) {
+        }
+        else 
+        {
+            // Check if I already have a job.
+            if (myJob == null) 
+            {
                 GetNewJob ();
             }
 
-            if (CheckForJobMaterials ()) { //make sure all materials are in place
+            // Make sure all materials are in place.
+            if (CheckForJobMaterials ())
+            { 
                 // If we get here, then the job has all the material that it needs.
                 // Lets make sure that our destination tile is the job site tile.
                 DestTile = JobTile;
 
-                // Are we there yet?
-                if (CurrTile == DestTile) {
+                // Check if we have reached the destination tiles.
+                if (CurrTile == DestTile)
+                {
                     // We are at the correct tile for our job, so
                     // execute the job's "DoWork", which is mostly
                     // going to countdown jobTime and potentially
