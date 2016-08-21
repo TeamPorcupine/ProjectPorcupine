@@ -69,7 +69,7 @@ public class Path_AStar
         // Mostly following this pseusocode:
         // https://en.wikipedia.org/wiki/A*_search_algorithm
 
-        Dictionary<Path_Node<Tile>, bool> inClosedSet = new Dictionary<Path_Node<Tile>, bool>();
+        HashSet<Path_Node<Tile>> ClosedSet = new HashSet<Path_Node<Tile>>();
 
 /*		List<Path_Node<Tile>> OpenSet = new List<Path_Node<Tile>>();
 		OpenSet.Add( start );
@@ -115,13 +115,13 @@ public class Path_AStar
                 }
             }
 
-            inClosedSet[current] = true;
+            ClosedSet.Add(current);
 
             foreach (Path_Edge<Tile> edge_neighbor in current.edges)
             {
                 Path_Node<Tile> neighbor = edge_neighbor.node;
 
-                if (inClosedSet.ContainsKey(neighbor) && inClosedSet[neighbor] == true)
+                if (ClosedSet.Contains(neighbor))
                     continue; // ignore this already completed neighbor
 
                 float movement_cost_to_neighbor = neighbor.data.movementCost * dist_between(current, neighbor);
