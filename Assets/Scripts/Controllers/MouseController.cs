@@ -424,7 +424,6 @@ public class MouseController : MonoBehaviour
 
             Vector3 pushedAmount = (oldMousePosition - newMousePosition);
             Camera.main.transform.Translate (pushedAmount);
-            Debug.Log (pushedAmount.ToString ());
         }
     }
 
