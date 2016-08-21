@@ -7,7 +7,7 @@
 	public bool isFullscreen;
 	public float masterVolume;
 	public float musicVolume;
-	public int quilityIndex;
+	public int qualityIndex;
 	public int resultionIndex;
 	public int vSyncIndex;
 	public int antiAliasingindex;

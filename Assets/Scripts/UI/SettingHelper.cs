@@ -23,7 +23,7 @@ public class SettingHelper : MonoBehaviour
 
 	public Dropdown aliasingDropdown;
 	public Dropdown vSyncDropdown;
-	public Dropdown quilityDropdown;
+	public Dropdown qualityDropdown;
 
 	public GameSettings gameSettings;
 
@@ -44,7 +44,7 @@ public class SettingHelper : MonoBehaviour
 		resolutionDropdown.onValueChanged.AddListener(delegate { OnResolutionChange(); } );
 		aliasingDropdown.onValueChanged.AddListener(delegate { OnAliasingChange(); } );
 		vSyncDropdown.onValueChanged.AddListener(delegate { OnVSyncChange(); } );
-		quilityDropdown.onValueChanged.AddListener(delegate { OnQuilityChange(); } );
+		qualityDropdown.onValueChanged.AddListener(delegate { OnQualityChange(); } );
 
 		//masterVolume.onValueChanged.AddListener(delegate { OnMasterChange(); } );
 		musicVolume.onValueChanged.AddListener(delegate { OnMusicChange(); } );
@@ -79,9 +79,9 @@ public class SettingHelper : MonoBehaviour
 		gameSettings.isFullscreen = Screen.fullScreen = fullScreenToggle.isOn;
 	}
 
-	public void OnQuilityChange()
+	public void OnQualityChange()
 	{
-		gameSettings.quilityIndex = QualitySettings.masterTextureLimit = quilityDropdown.value;
+		gameSettings.qualityIndex = QualitySettings.masterTextureLimit = qualityDropdown.value;
 	}
 
 	public void OnVSyncChange()
@@ -119,7 +119,7 @@ public class SettingHelper : MonoBehaviour
 	{
 		aliasingDropdown.value = QualitySettings.antiAliasing;
 		vSyncDropdown.value =  QualitySettings.vSyncCount;
-		quilityDropdown.value = QualitySettings.masterTextureLimit;
+		qualityDropdown.value = QualitySettings.masterTextureLimit;
 
 		fullScreenToggle.isOn = Screen.fullScreen;
 		fpsToggle.isOn = fpsObject.activeSelf;
