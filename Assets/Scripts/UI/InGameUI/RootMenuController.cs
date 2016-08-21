@@ -2,7 +2,7 @@
 using UnityEngine.UI;
 using System.Collections;
 
-public class MenuController : MonoBehaviour {
+public class RootMenuController : MonoBehaviour {
 	//The left build menu
 	public GameObject constructorMenu;
 
@@ -39,15 +39,10 @@ public class MenuController : MonoBehaviour {
 
 	//Deactivates All Menus
 	public void DeactivateAll () {
-		DeactivateConstructor ();
+		constructorMenu.SetActive (false);
 		settingsMenu.SetActive (false);
 		optionsMenu.SetActive (false);
-	}
-
-	//Deactivates All Menus Except the settings and options
-	public void DeactivateConstructor () {
 		DeactivateSubs ();
-		constructorMenu.SetActive (false);
 
 	}
 
@@ -61,19 +56,6 @@ public class MenuController : MonoBehaviour {
     public void ToggleMenu(GameObject menu) {
         menu.SetActive(!menu.activeSelf);
     }
-
-	//quit the app wheather in editor or a build version
-	public void QuitGame()
-	{
-		//maybe ask the user if he want to save or is sure they want to quit??
-
-		#if UNITY_EDITOR
-	    //alows you to quit in the editor
-		UnityEditor.EditorApplication.isPlaying = false;
-		#else
-		Application.Quit();
-		#endif
-	}
 
 	void Update() {
 		if (Input.GetKey (KeyCode.Escape)) {

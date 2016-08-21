@@ -2,8 +2,7 @@
 using UnityEngine.UI;
 using System.Collections;
 
-public class SettingHelper : MonoBehaviour 
-{
+public class DialogBoxSettings : DialogBox {
 
 	//langage Option
 	public Toggle langToggle;
@@ -87,7 +86,7 @@ public class SettingHelper : MonoBehaviour
 	public void OnResolutionChange()
 	{
 		gameSettings.resultionIndex = resolutionDropdown.value;
-	    //need to make work
+		//need to make work
 	}
 
 	public void OnAliasingChange()
@@ -102,12 +101,12 @@ public class SettingHelper : MonoBehaviour
 
 	public void OnMusicChange()
 	{
-		
+
 	}
 
 	public void SaveSetting()
 	{
-		
+
 	}
 
 	void LoadSetting()
@@ -124,5 +123,11 @@ public class SettingHelper : MonoBehaviour
 	void CreateResDropDown()
 	{
 
+	}
+
+	void Update() {
+		if (Input.GetKey (KeyCode.Escape)) {
+			this.CloseDialog ();
+		}
 	}
 }
