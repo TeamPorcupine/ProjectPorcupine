@@ -105,7 +105,7 @@ public class FurnitureSpriteController : MonoBehaviour
         // Register our callback so that our GameObject gets updated whenever
         // the object's into changes.
         furn.cbOnChanged += OnFurnitureChanged;
-        world.powerSystem.cbOnChanged += OnPowerStatusChange;
+        world.powerSystem.PowerLevelChanged += OnPowerStatusChange;
         furn.cbOnRemoved += OnFurnitureRemoved;
 
     }
