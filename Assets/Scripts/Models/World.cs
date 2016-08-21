@@ -5,7 +5,6 @@
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
-using System.Text.RegularExpressions;
 
 
 #endregion
@@ -15,6 +14,7 @@ using System;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using System.Text.RegularExpressions;
 using System.IO;
 using MoonSharp.Interpreter;
 
