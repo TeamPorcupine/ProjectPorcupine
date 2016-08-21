@@ -162,19 +162,19 @@ public class InventoryManager
             return false;
         }
 
+        // We know that there is a list for objectType, we still need to test if
+        // the list contains anything
+        if (inventories[objectType].Count == 0)
+        {
+            return false;
+        }
+
         return true;
     }
 
     public Path_AStar GetPathToClosestInventoryOfType(string objectType, Tile t, int desiredAmount, bool canTakeFromStockpile)
     {
         QuickCheck (objectType);
-
-        // We know that there is a list for objectType, we still need to test if
-        // the list contains anything
-        if (inventories[objectType].Count == 0)
-        {
-            return null;
-        }
 
         // We can also avoid going through the Astar construction if we know
         // that all available inventories are stockpiles and we are not allowed
