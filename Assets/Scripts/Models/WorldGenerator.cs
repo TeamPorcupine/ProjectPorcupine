@@ -55,11 +55,14 @@ public class WorldGenerator
                             int randomchance = Random.Range(0, 100);
                             foreach (Inventory i in ressources)
                             {
-                                int chance = ressources[0].stackSize; // In stacksize the chance was cached
+                                int chance = i.stackSize; // In stacksize the chance was cached
                                 currentchance += chance;
 
                                 if (randomchance <= currentchance)
                                 {
+                                    if (stackSize > i.maxStackSize)
+                                        stackSize = i.maxStackSize;
+
                                     world.inventoryManager.PlaceInventory(t, new Inventory(i.objectType, i.maxStackSize, stackSize));
                                     break;
                                 }
