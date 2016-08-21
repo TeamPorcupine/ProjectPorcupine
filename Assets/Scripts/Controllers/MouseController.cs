@@ -27,6 +27,7 @@ public class MouseController : MonoBehaviour
 
     BuildModeController bmc;
     FurnitureSpriteController fsc;
+    MenuController menuController;
 
     bool isDragging = false;
 
@@ -45,6 +46,7 @@ public class MouseController : MonoBehaviour
 
         fsc = GameObject.FindObjectOfType<FurnitureSpriteController>();
 
+        menuController = GameObject.FindObjectOfType<MenuController>();
 
         dragPreviewGameObjects = new List<GameObject>();
     }
@@ -59,11 +61,11 @@ public class MouseController : MonoBehaviour
 
     public Tile GetMouseOverTile()
     {
-/*		return WorldController.Instance.world.GetTileAt(
-			Mathf.FloorToInt(currFramePosition.x), 
-			Mathf.FloorToInt(currFramePosition.y)
-		);*/
-        
+        /*      return WorldController.Instance.world.GetTileAt(
+            Mathf.FloorToInt(currFramePosition.x), 
+            Mathf.FloorToInt(currFramePosition.y)
+        );*/
+
         return WorldController.Instance.GetTileAtWorldCoord(currFramePosition);
     }
 
@@ -86,7 +88,7 @@ public class MouseController : MonoBehaviour
         {
             if (currentMode == MouseMode.BUILD)
             {
-				isDragging = false;
+                isDragging = false;
                 currentMode = MouseMode.SELECT;
             }
             else if (currentMode == MouseMode.SELECT)
@@ -283,7 +285,7 @@ public class MouseController : MonoBehaviour
         int end_x = Mathf.FloorToInt(currPlacingPosition.x + 0.5f);
         int start_y = Mathf.FloorToInt(dragStartPosition.y + 0.5f);
         int end_y = Mathf.FloorToInt(currPlacingPosition.y + 0.5f);
-		
+
         // We may be dragging in the "wrong" direction, so flip things if needed.
         if (end_x < start_x)
         {
@@ -401,7 +403,7 @@ public class MouseController : MonoBehaviour
     {
         // Handle screen panning
         if (Input.GetMouseButton(1) || Input.GetMouseButton(2))
-        {	// Right or Middle Mouse Button
+        {   // Right or Middle Mouse Button
             Vector3 diff = lastFramePosition - currFramePosition;
             Camera.main.transform.Translate(diff);
 
@@ -410,11 +412,13 @@ public class MouseController : MonoBehaviour
             }
         }
 
-		// If we're over a UI element, then bail out from this.
-		if (EventSystem.current.IsPointerOverGameObject())
-		{
-			return;
-		}
+        // If we're over a UI element or the settings/options menu is open, then bail out from this.
+        if (EventSystem.current.IsPointerOverGameObject()
+            || menuController.settingsMenu.activeSelf
+            || menuController.optionsMenu.activeSelf)
+        {
+            return;
+        }
 
         Camera.main.orthographicSize -= Camera.main.orthographicSize * Input.GetAxis("Mouse ScrollWheel");
 
