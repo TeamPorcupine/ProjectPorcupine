@@ -26,6 +26,9 @@ public class DialogBoxSettings : DialogBox {
 
 	public GameSettings gameSettings;
 
+    public Button closeButton;
+    public Button saveButton;
+
 
 	void OnEnable()
 	{
@@ -36,6 +39,9 @@ public class DialogBoxSettings : DialogBox {
 		myResolutions = Screen.resolutions;
 
 		// Add our listeners
+        closeButton.onClick.AddListener(delegate { OnClickClose(); } );
+        saveButton.onClick.AddListener(delegate { OnClickSave(); } );
+
 		fpsToggle.onValueChanged.AddListener(delegate { OnFPSToggle(); } );
 		langToggle.onValueChanged.AddListener(delegate { OnLangageToggle(); } );
 		fullScreenToggle.onValueChanged.AddListener(delegate { OnFullScreenToggle(); } );
@@ -108,6 +114,17 @@ public class DialogBoxSettings : DialogBox {
 	{
 
 	}
+
+    public void OnClickClose()
+    {
+        this.CloseDialog();
+    }
+
+    public void OnClickSave()
+    {
+        this.CloseDialog();
+        SaveSetting();
+    }
 
 	void LoadSetting()
 	{

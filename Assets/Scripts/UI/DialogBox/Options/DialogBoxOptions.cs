@@ -5,14 +5,39 @@ using System.Collections;
 public class DialogBoxOptions : DialogBox {
 
 	public Button buttonResume;
+    public Button buttonNewWorld;
+    public Button buttonSave;
+    public Button buttonLoad;
 	public Button buttonQuit;
+    DialogBoxManager dialogManager;
 
-	void OnEnable()
+	void Start()
 	{
+        dialogManager = GameObject.FindObjectOfType<DialogBoxManager>();
+        WorldController wc = GameObject.FindObjectOfType<WorldController>();
+
 		// Add liseners
 		buttonQuit.onClick.AddListener(delegate { OnButtonQuitGame(); } );
 		buttonResume.onClick.AddListener(delegate { this.CloseDialog(); } );
+        buttonNewWorld.onClick.AddListener(delegate { wc.NewWorld(); } );
+
+        buttonSave.onClick.AddListener(delegate { OnButtonSaveGame(); } );
+        buttonLoad.onClick.AddListener(delegate { OnButtonLoadGame(); } );
+
+
 	}
+
+    public void OnButtonSaveGame()
+    {
+        this.CloseDialog();
+        dialogManager.dialogBoxSaveGame.ShowDialog();
+    }
+
+    public void OnButtonLoadGame()
+    {
+        this.CloseDialog();
+        dialogManager.dialogBoxLoadGame.ShowDialog();
+    }
 
 	// quit the app wheather in editor or a build version
 	public void OnButtonQuitGame()

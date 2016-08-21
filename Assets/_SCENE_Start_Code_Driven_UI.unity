@@ -7396,18 +7396,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 663146204}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1721979303}
-        m_MethodName: SetMode_BuildFloor
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 12345
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &663146204
@@ -11061,18 +11050,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 963618977}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 179601668}
-        m_MethodName: NewWorld
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 12345
-          m_StringArgument: Wall
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &963618977
@@ -11766,7 +11744,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 993537168}
   m_HandleRect: {fileID: 1342453247}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -15596,6 +15574,7 @@ GameObject:
   - 224: {fileID: 1376947279}
   - 114: {fileID: 1376947281}
   - 114: {fileID: 1376947280}
+  - 114: {fileID: 1376947282}
   m_Layer: 5
   m_Name: Floor Menu
   m_TagString: Untagged
@@ -15655,6 +15634,19 @@ MonoBehaviour:
   m_Spacing: 2
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
+--- !u!114 &1376947282
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1376947278}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df1c5b63333a7e3408e98747c0f324ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  floorBuild: {fileID: 663146203}
+  floorRemove: {fileID: 1593422454}
 --- !u!1 &1385661825
 GameObject:
   m_ObjectHideFlags: 0
@@ -17542,18 +17534,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1593422455}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1721979303}
-        m_MethodName: SetMode_Bulldoze
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &1593422455
@@ -17685,18 +17666,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1613538911}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1011199845}
-        m_MethodName: ShowDialog
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 12345
-          m_StringArgument: Wall
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &1613538911
@@ -18281,6 +18251,8 @@ MonoBehaviour:
   aliasingDropdown: {fileID: 382723723}
   vSyncDropdown: {fileID: 1021040812}
   qualityDropdown: {fileID: 474610572}
+  closeButton: {fileID: 2081639517}
+  saveButton: {fileID: 606938511}
 --- !u!1 &1718996145
 GameObject:
   m_ObjectHideFlags: 0
@@ -20656,18 +20628,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1950928200}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 856109082}
-        m_MethodName: ShowDialog
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 12345
-          m_StringArgument: Wall
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &1950928200
@@ -21396,6 +21357,7 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 224: {fileID: 2020152304}
+  - 114: {fileID: 2020152305}
   m_Layer: 5
   m_Name: Dialog Boxes
   m_TagString: Untagged
@@ -21427,6 +21389,22 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &2020152305
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2020152303}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9500ef008befed7449f0b38f088a5b1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dialogBoxLoadGame: {fileID: 1011199845}
+  dialogBoxSaveGame: {fileID: 856109082}
+  dialogBoxOptions: {fileID: 2038705775}
+  dialogBoxSettings: {fileID: 1687916273}
+  dialogBoxTrade: {fileID: 1692664}
 --- !u!1 &2025195116
 GameObject:
   m_ObjectHideFlags: 0
@@ -22155,6 +22133,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buttonResume: {fileID: 55244632}
+  buttonNewWorld: {fileID: 963618976}
+  buttonSave: {fileID: 1950928199}
+  buttonLoad: {fileID: 1613538910}
   buttonQuit: {fileID: 462783632}
 --- !u!1 &2047095705
 GameObject:
@@ -22969,18 +22950,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2081639518}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1567433674}
-        m_MethodName: DeactivateAll
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 12345
-          m_StringArgument: Wall
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &2081639518
