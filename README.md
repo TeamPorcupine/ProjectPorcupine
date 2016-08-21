@@ -5,7 +5,7 @@ Project Porcupine: A Base-Building Game...in Space!
 [Copyright & Licensing](#copyright--licensing)  
 [Contributing](#contributing)  
 [Vote on Proposed Features](#vote-on-proposed-features)  
-[Community](#community) 
+[Community](#community)  
 [Contact](#contact) 
 
 ## About
