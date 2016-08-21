@@ -17,6 +17,7 @@ using System.IO;
 
 public class WorldController : MonoBehaviour
 {
+
     SoundController soundController;
     TileSpriteController tileSpriteController;
     CharacterSpriteController characterSpriteController;
@@ -26,6 +27,7 @@ public class WorldController : MonoBehaviour
 
     public BuildModeController buildModeController;
     public MouseController mouseController;
+    public ModsManager modsManager;
 
     public static WorldController Instance { get; protected set; }
 
@@ -67,6 +69,9 @@ public class WorldController : MonoBehaviour
     // Use this for initialization
     void OnEnable()
     {
+        string dataPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
+        modsManager = new ModsManager(dataPath);
+
         if (Instance != null)
         {
             Logger.LogError("There should never be two world controllers.");
@@ -99,6 +104,8 @@ public class WorldController : MonoBehaviour
         //Initialising controllers
         GameObject Controllers = GameObject.Find("Controllers");
         Instantiate(Resources.Load("UIController"), Controllers.transform);
+
+
     }
 
     void Update()
