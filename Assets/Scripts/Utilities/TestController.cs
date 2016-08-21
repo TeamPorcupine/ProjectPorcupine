@@ -280,6 +280,7 @@ public class TestController : MonoBehaviour
         Log("Beginning " + count + " pathfinding speed tests on the empty world ...");
 
         World world = new World(100, 100, false);
+        MakeWorldTraversible(world);
         yield return StartCoroutine(PathSpeedTests(world, "[Empty]", count));
 
         Log("Finished empty world speed tests.");
@@ -297,6 +298,7 @@ public class TestController : MonoBehaviour
         Log("Beginning " + count + " pathfinding speed tests on the switchback world ...");
 
         World world = new World(100, 100, false);
+        MakeWorldTraversible(world);
         MakeSwitchback(world);
         yield return StartCoroutine(PathSpeedTests(world, "[Switchback]", count));
 
@@ -315,10 +317,27 @@ public class TestController : MonoBehaviour
         Log("Beginning " + count + " pathfinding speed tests on the diagonal world ...");
 
         World world = new World(100, 100, false);
+        MakeWorldTraversible(world);
         MakeDiagonals(world);
         yield return StartCoroutine(PathSpeedTests(world, "[Diagonals]", count));
 
         Log("Finished diagonal world speed tests.");
+    }
+
+    /// <summary>
+    /// Makes the entire world traversible, because there's no better way to test
+    /// the pathfinding system.
+    /// </summary>
+    /// <param name="world">The world to change.</param>
+    protected static void MakeWorldTraversible(World world)
+    {
+        for (int x = 0; x < world.Width; ++x)
+        {
+            for (int y = 0; y < world.Height; ++y)
+            {
+                world.GetTileAt(x, y).Type = TileType.Floor;
+            }
+        }
     }
 
     /// <summary>
