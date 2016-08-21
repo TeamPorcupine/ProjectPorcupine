@@ -127,13 +127,13 @@ Additionally, for the sake of simplicity, we are standardizing on what should be
 
 ## Adding Furniture and Inventory
 
-We have standardized the names of Furniture and Inventory to match 'steel_wall' out of code and 'furn_steel_wall' or 'inv_steel_plate' in code. This means a few things:
+We have standardized the names of Furniture and Inventory to match 'furn_steel_wall' or 'inv_steel_plate' in Localization and 'steel_wall' or 'steel plate' everywhere else. This means a few things:
 
 * When adding a new Furniture or inventory the files should be named "my_new_furniture" and this should also be the objectType.
 
-* When coding an event or world generation, inventory is called 'inv_cool_item' and furniture is 'furn_cool_chair'.
+* When coding an event or world generation, inventory is called 'cool_item' and furniture is 'cool_chair'.
 
-* In the Localization the string to translate will be 'inv_cool_sword=Cool Sword'.
+* In the Localization a line could be will be 'inv_cool_sword=Cool Sword'.
 
 * In Localization the description can be set with 'inv_cool_sword_desc=This sword is flaming and does a million damage.'
 
