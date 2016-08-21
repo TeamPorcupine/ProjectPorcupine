@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Sprites>
-	<Sprite name="furn_oxygen_generator"     x="0" y="128" w="128" h="128" pixelPerUnit="64" />
+	<Sprite name="oxygen_generator"     x="0" y="128" w="128" h="128" pixelPerUnit="64" />
 </Sprites>
