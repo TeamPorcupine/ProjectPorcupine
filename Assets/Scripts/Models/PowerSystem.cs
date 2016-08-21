@@ -12,7 +12,7 @@ using System.Linq;
 
 public class PowerSystem
 {
-    private HashSet<Furniture> powerGrid;
+    private readonly HashSet<Furniture> powerGrid;
 
     private float currentPower;
 
@@ -74,7 +74,7 @@ public class PowerSystem
         {
             PowerLevel -= furniture.powerValue;
         }
-        if (PowerLevel < 0)
+        if (PowerLevel < 0.0f)
         {
             RemovePowerConsumer();
         }
