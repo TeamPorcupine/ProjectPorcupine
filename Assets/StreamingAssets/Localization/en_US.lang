@@ -45,3 +45,5 @@ furn_cloning_pod=Cloning Pod
 furn_cloning_pod_desc=Creates an additional worker, then is destroyed.
 furn_power_generator=Power Generator
 furn_power_generator_desc=Generates power out of nothing.
+furn_small_landing_pad=Small Landing Pad
+furn_small_landing_pad_desc=A landing pad for small spaceboats to land.
