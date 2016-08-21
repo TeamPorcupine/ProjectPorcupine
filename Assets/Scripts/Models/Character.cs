@@ -127,11 +127,11 @@ public class Character : IXmlSerializable, ISelectable
     /// Name of the Character
     public string name;
 
-    //The Percentage of the health Of The Character from 0 to 1f (NOTE:Damage Not Implemented)
-    public float health = 1f;
+    //The Percentage of the health the Character has from 0 to 1f (NOTE:Damage Not Implemented)
+    public float health = 1;
 
     //The Max Health The PLayer Can Have(in HP)
-    public int hp = 100;
+    public int maxHealth = 100;
     
     // The item we are carrying (not gear/equipment)
     public Inventory inventory;

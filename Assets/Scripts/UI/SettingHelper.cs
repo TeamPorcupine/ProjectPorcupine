@@ -12,6 +12,8 @@ public class SettingHelper : MonoBehaviour {
 	public Toggle fpsToggle;
 	public GameObject fpsObject;
 
+    //Toggle Nametag Health as Percentage
+    public Toggle ntHealth;
 	// Use this for initialization
 	void Start () {
 	

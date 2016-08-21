@@ -13,7 +13,9 @@ using System.Text.RegularExpressions;
 public class CharacterSpriteController : MonoBehaviour
 {
 
-    Dictionary<Character, GameObject> characterGameObjectMap;
+    public GameObject NameTagPrefab;
+    public SettingHelper settings;
+    public Dictionary<Character, GameObject> characterGameObjectMap;
 
     World world
     {
@@ -80,7 +82,13 @@ public class CharacterSpriteController : MonoBehaviour
         c.name = lines[Random.Range(0, lines.Length-1)];
 
         //Adds a Name Tag To The Player (-1.25 Below, Under Other Players) 
-
+        GameObject nt = Instantiate(NameTagPrefab);
+		nt.name = "Name Tag";	
+		nt.AddComponent<NameTagUpdater>();
+		nt.GetComponent<NameTagUpdater>().character = c;
+		nt.GetComponent<NameTagUpdater>().settings = settings;
+		RectTransform rt = nt.GetComponent<RectTransform>();
+		rt.SetParent (char_go.transform,false);
     }
 
     void OnCharacterChanged(Character c)
