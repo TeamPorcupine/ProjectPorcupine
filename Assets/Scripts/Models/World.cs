@@ -326,7 +326,7 @@ public class World : IXmlSerializable
                 {
                     if (x != (l + 9) && y != (b + 4))
                     {
-                        PlaceFurniture("steel_wall", tiles[x, y]);
+                        PlaceFurniture("wall_steel", tiles[x, y]);
                     }
                 }
 
