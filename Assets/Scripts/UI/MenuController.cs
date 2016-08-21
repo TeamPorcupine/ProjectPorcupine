@@ -38,6 +38,11 @@ public class MenuController : MonoBehaviour {
 		floorMenu.SetActive (false);
 	}
 
+    //toggles whether menu is active
+    public void ToggleMenu(GameObject menu) {
+        menu.SetActive(!menu.activeSelf);
+    }
+
 	void Update() {
 		if (Input.GetKey (KeyCode.Escape)) {
 			DeactivateAll ();
