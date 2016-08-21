@@ -208,6 +208,8 @@
       <Height>3</Height>
 
       <BuildingJob jobTime="0"/>
+	  
+	  <JobSpotOffset X="1" Y="0" />
 
       <OnUpdate FunctionName="MetalSmelter_UpdateAction" />
 
