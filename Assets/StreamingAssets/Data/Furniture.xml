@@ -171,8 +171,14 @@
 
       <BuildingJob jobTime="0">
       </BuildingJob>
-
-	
+      
+      <Params>
+        <Param name="burnTime" value="0" />
+        <Param name="burnTimeRequired" value="10" />
+      </Params>
+      
+	  <OnUpdate FunctionName="PowerGenerator_UpdateAction" />
+        
       <LocalizationCode>furn_power_generator</LocalizationCode>
       <UnlocalizedDescription>furn_power_generator_desc</UnlocalizedDescription>
 
