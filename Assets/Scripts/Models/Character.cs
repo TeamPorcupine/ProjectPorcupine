@@ -164,6 +164,15 @@ public class Character : IXmlSerializable, ISelectable
         // Get our destination from the job
         DestTile = myJob.tile;
 
+        // If the dest tile does not have neighbours it's very
+        if (DestTile.HasNeighboursOfType(TileType.Floor) == false)
+        {
+            Logger.LogVerbose("No neighbouring floor tiles! Abandoning job.");
+            AbandonJob();
+            jobWaitTimer = 0;
+            return;
+        }
+
         myJob.cbJobStopped += OnJobStopped;
 
         // Immediately check to see if the job tile is reachable.
