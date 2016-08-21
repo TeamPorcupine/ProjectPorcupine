@@ -43,8 +43,7 @@ public class Path_AStar
         // Make sure our start/end tiles are in the list of nodes!
         if (nodes.ContainsKey(tileStart) == false)
         {
-            Logger.LogError("Path_AStar: The starting tile isn't in the list of nodes!");
-
+            //Logger.LogError("Path_AStar: The starting tile isn't in the list of nodes!");
             return;
         }
 
@@ -58,7 +57,7 @@ public class Path_AStar
         {
             if (nodes.ContainsKey(tileEnd) == false)
             {
-                Logger.LogError("Path_AStar: The ending tile isn't in the list of nodes!");
+                //Logger.LogError("Path_AStar: The ending tile isn't in the list of nodes!");
                 return;
             }
 
@@ -245,7 +244,7 @@ public class Path_AStar
     {
         if (path == null || path.Count == 0)
         {
-            Logger.Log("Path is null or empty.");
+            Logger.LogVerbose("Path is null or empty.");
             return null;
         }
 

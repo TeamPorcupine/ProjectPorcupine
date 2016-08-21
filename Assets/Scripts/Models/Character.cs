@@ -177,8 +177,8 @@ public class Character : IXmlSerializable, ISelectable
         if (myJob.adjacent)
         {
             IEnumerable<Tile> reversed = pathAStar.Reverse();
-            reversed = reversed.Skip(1);
-            pathAStar = new Path_AStar(new Queue<Tile>(reversed.Reverse()));
+            reversed = reversed == null ? null : reversed.Skip(1);
+            pathAStar = reversed == null ? pathAStar : new Path_AStar(new Queue<Tile>(reversed.Reverse()));
             DestTile = pathAStar.EndTile();
             jobTile = DestTile;
         }
@@ -191,7 +191,6 @@ public class Character : IXmlSerializable, ISelectable
         {
             Logger.LogError("Path_AStar returned no path to target job tile!");
             AbandonJob();
-            DestTile = CurrTile;
         }
     }
 
@@ -431,7 +430,7 @@ public class Character : IXmlSerializable, ISelectable
                 pathAStar = new Path_AStar(World.current, CurrTile, DestTile);	// This will calculate a path from curr to dest.
                 if (pathAStar.Length() == 0)
                 {
-                    Logger.LogError("Path_AStar returned no path to destination!");
+                    //Logger.LogError("Path_AStar returned no path to destination!");
                     AbandonJob();
                     return;
                 }
