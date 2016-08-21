@@ -384,7 +384,7 @@ public class Furniture : IXmlSerializable, ISelectable
         {
             if (World.current.powerSystem.RequestPower(this) == true)
             {
-                return true;
+                return World.current.powerSystem.PowerLevel > 0;
             }
             else
             {
