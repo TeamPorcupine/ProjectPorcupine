@@ -9,15 +9,15 @@ public class DialogBoxOptions : DialogBox {
 
 	void OnEnable()
 	{
-		//Add liseners
+		// Add liseners
 		buttonQuit.onClick.AddListener(delegate { OnButtonQuitGame(); } );
 		buttonResume.onClick.AddListener(delegate { this.CloseDialog(); } );
 	}
 
-	//quit the app wheather in editor or a build version
+	// quit the app wheather in editor or a build version
 	public void OnButtonQuitGame()
 	{
-		//maybe ask the user if he want to save or is sure they want to quit??
+		// maybe ask the user if he want to save or is sure they want to quit??
 
 		#if UNITY_EDITOR
 		//alows you to quit in the editor

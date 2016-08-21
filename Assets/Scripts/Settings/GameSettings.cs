@@ -1,6 +1,6 @@
 ﻿public class GameSettings 
 {
-	//this is for saving in the furture
+	// This is for saving in the furture
 
 	public bool isVisibleFPS;
 	public bool isVisibleLangage;

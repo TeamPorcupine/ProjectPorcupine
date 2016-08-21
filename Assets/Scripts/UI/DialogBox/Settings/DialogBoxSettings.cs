@@ -4,17 +4,17 @@ using System.Collections;
 
 public class DialogBoxSettings : DialogBox {
 
-	//langage Option
+	// langage Option
 	public Toggle langToggle;
 	public GameObject langDropDown;
 
-	//FPS Option
+	// FPS Option
 	public Toggle fpsToggle;
 	public GameObject fpsObject;
 
 	public Toggle fullScreenToggle;
 
-	//public Slider masterVolume;
+	// Public Slider masterVolume;
 	public Slider musicVolume;
 
 	public Resolution[] myResolutions;
@@ -29,13 +29,13 @@ public class DialogBoxSettings : DialogBox {
 
 	void OnEnable()
 	{
-		//create an instance of this class
+		// create an instance of this class
 		gameSettings = new GameSettings ();
 
 		//get all avalible resolution for the display
 		myResolutions = Screen.resolutions;
 
-		//Add our listeners
+		// Add our listeners
 		fpsToggle.onValueChanged.AddListener(delegate { OnFPSToggle(); } );
 		langToggle.onValueChanged.AddListener(delegate { OnLangageToggle(); } );
 		fullScreenToggle.onValueChanged.AddListener(delegate { OnFullScreenToggle(); } );
@@ -45,13 +45,13 @@ public class DialogBoxSettings : DialogBox {
 		vSyncDropdown.onValueChanged.AddListener(delegate { OnVSyncChange(); } );
 		qualityDropdown.onValueChanged.AddListener(delegate { OnQualityChange(); } );
 
-		//masterVolume.onValueChanged.AddListener(delegate { OnMasterChange(); } );
+		// masterVolume.onValueChanged.AddListener(delegate { OnMasterChange(); } );
 		musicVolume.onValueChanged.AddListener(delegate { OnMusicChange(); } );
 
-		//create the drop down for resolution
+		// create the drop down for resolution
 		CreateResDropDown();
 
-		//Load the setting
+		// Load the setting
 		LoadSetting();
 
 	}
@@ -86,7 +86,7 @@ public class DialogBoxSettings : DialogBox {
 	public void OnResolutionChange()
 	{
 		gameSettings.resolutionIndex = resolutionDropdown.value;
-		//need to make work
+		// need to make work
 	}
 
 	public void OnAliasingChange()
