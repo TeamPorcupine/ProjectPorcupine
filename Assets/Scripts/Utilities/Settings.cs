@@ -59,6 +59,9 @@ public static class Settings
 
         return value;
     }
+    public static void setSetting(string key, object obj){
+        setSetting(key, obj.ToString());
+    }
 
     public static void setSetting(string key, string value)
     {
