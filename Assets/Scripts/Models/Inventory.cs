@@ -88,12 +88,12 @@ public class Inventory : IXmlSerializable, ISelectable
 
     public string GetName()
     {
-        return this.objectType;
+        return "inv_"+ this.objectType;
     }
 
     public string GetDescription()
     {
-        return "A stack of inventory.";
+        return GetName() + "_desc";
     }
 
     public string GetHitPointString()
