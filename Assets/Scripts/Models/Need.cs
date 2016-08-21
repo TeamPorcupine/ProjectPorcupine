@@ -55,10 +55,12 @@ public class Need {
 		}
 		if (Amount > 75 && character.myJob.isNeed == false)
 		{
+			Debug.Log (character.name + " needs " + Name);
 			character.AbandonJob ();
 		}
 		if (Amount == 100 && character.myJob.critical == false)
 		{
+			Debug.Log (character.name + " failed their " + Name + " need.");
 			if (character.myJob.isNeed == false) {
 				character.AbandonJob ();
 			}

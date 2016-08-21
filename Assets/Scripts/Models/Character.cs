@@ -192,7 +192,10 @@ public class Character : IXmlSerializable, ISelectable
 		}
 		else
 		{
-			Debug.Log (name + " found a job.");
+			if (myJob.tile == null)
+				Debug.Log (name + " found a job.");
+			else
+				Debug.Log (name + " found a job at x " + myJob.tile.X + " y " + myJob.tile.Y + ".");
 		}
 
         // Get our destination from the job
@@ -295,6 +298,7 @@ public class Character : IXmlSerializable, ISelectable
             if (!World.current.inventoryManager.QuickCheck (desired.objectType))
 			{
                 // If not, abandon the job and return false.
+				Debug.Log (name + " does not have everything they need to complete their job.");
                 AbandonJob();
                 return false;
             }
@@ -443,6 +447,7 @@ public class Character : IXmlSerializable, ISelectable
 
     public void AbandonJob()
     {
+		Debug.Log (name + " abandoned their job.");
 		if (myJob == null)
 			return;
 		if (myJob.isNeed)
