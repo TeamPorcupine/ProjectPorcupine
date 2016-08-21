@@ -1,8 +1,11 @@
-﻿//=======================================================================
-// Copyright Martin "quill18" Glaude 2015-2016.
-//		http://quill18.com
-//=======================================================================
-
+#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
 using UnityEngine;
 using System.Collections.Generic;
 using System;
@@ -86,6 +89,20 @@ public class Tile :IXmlSerializable, ISelectable
             // TODO: Permanent solution for handeling when a character can walk in empty tiles is required
             //if (Type == TileType.Empty)
             //    return 0;	// 0 is unwalkable
+
+            if(Type == TileType.Empty)
+            {
+                Tile[] ns = GetNeighbours();
+
+                bool canMove = false;
+
+                foreach (Tile n in ns) // Loop through all the horizontal/vertical neighbours of the empty tile.
+                {
+                    canMove = canMove || (n != null && n.Type == TileType.Floor); // If the neighbour is a floor tile, set canMove to true.
+                }
+
+                return canMove ? baseTileMovementCost : 0f; // If canMove is true, return baseTileMovementCost, else, return 0f.
+            }
 
             if (furniture == null)
                 return baseTileMovementCost;

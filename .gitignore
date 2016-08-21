@@ -32,5 +32,4 @@ sysinfo.txt
 *.unitypackage
 
 # StyleCop
-/Assets/StyleCop.Cache
-/Assets/StyleCop.Cache.meta
+**StyleCop.Cache*

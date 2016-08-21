@@ -1,8 +1,11 @@
-﻿//=======================================================================
-// Copyright Martin "quill18" Glaude 2015.
-//		http://quill18.com
-//=======================================================================
-
+#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
 using UnityEngine;
 using System.Collections.Generic;
 using System;
@@ -152,9 +155,10 @@ public class World : IXmlSerializable
 
     public void Update(float deltaTime)
     {
-        foreach (Character c in characters)
+        //Change from a foreach due to the collection being modified while its being looped through
+        for (int i = 0; i < characters.Count; i++)
         {
-            c.Update(deltaTime);
+            characters[i].Update(deltaTime);
         }
 
         foreach (Furniture f in furnitures)
@@ -224,8 +228,8 @@ public class World : IXmlSerializable
                     {
                         furn.ReadXmlPrototype(reader);
                     }
-                    catch {
-                        Logger.LogError("Error reading furniture prototype for: " + furn.objectType);
+                    catch (Exception e) {
+                        Logger.LogError("Error reading furniture prototype for: " + furn.objectType + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
                     }
 
 
@@ -528,7 +532,7 @@ public class World : IXmlSerializable
             cbInventoryCreated(t.inventory);
         }
 
-        inv = new Inventory("Steel Plate", 50, 3);
+        inv = new Inventory("Copper Wire", 50, 3);
         t = GetTileAt(Width / 2 + 1, Height / 2 + 2);
         inventoryManager.PlaceInventory(t, inv);
         if (cbInventoryCreated != null)

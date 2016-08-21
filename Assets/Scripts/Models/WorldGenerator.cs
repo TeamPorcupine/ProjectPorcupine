@@ -1,4 +1,12 @@
-﻿using UnityEngine;
+#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
+using UnityEngine;
 using System.Collections;
 
 public class WorldGenerator {
@@ -32,9 +40,18 @@ public class WorldGenerator {
 
                     if (Random.value >= asteroidRessourceChance)
                     {
+                        float chanceOfIce = 0.2f;
                         int stackSize = Random.Range(asteroidRessourceMin, asteroidRessourceMax);
                         Inventory inv = Inventory.New("Raw Iron", 50, stackSize);
-                        world.inventoryManager.PlaceInventory(t, inv);
+                        Inventory inv2 = Inventory.New("Ice", 10, stackSize);
+                        if (Random.Range(0.0f, 1.0f) < chanceOfIce)
+                        {
+                            world.inventoryManager.PlaceInventory(t, inv2);
+                        } 
+                        else
+                        {
+                            world.inventoryManager.PlaceInventory(t, inv);
+                        }
                     }
                 }
             }
