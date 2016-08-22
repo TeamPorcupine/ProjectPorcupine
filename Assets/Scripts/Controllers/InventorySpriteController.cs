@@ -10,21 +10,22 @@ using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UI;
 
-public class InventorySpriteController : MonoBehaviour
+public class InventorySpriteController
 {
 
-    public GameObject inventoryUIPrefab;
-
+    GameObject inventoryUIPrefab;
+    GameObject inventoryParent;
     Dictionary<Inventory, GameObject> inventoryGameObjectMap;
 
-    World world
-    {
-        get { return WorldController.Instance.world; }
-    }
+    World world;
+
 
     // Use this for initialization
-    void Start()
+    public InventorySpriteController(World currentWorld, GameObject inventoryUI)
     {
+        inventoryUIPrefab = inventoryUI;
+        world = currentWorld;
+        inventoryParent = new GameObject("Inventory");
         // Instantiate our dictionary that tracks which GameObject is rendering which Tile data.
         inventoryGameObjectMap = new Dictionary<Inventory, GameObject>();
 
@@ -40,7 +41,6 @@ public class InventorySpriteController : MonoBehaviour
                 OnInventoryCreated(inv);
             }
         }
-
 
         //c.SetDestination( world.GetTileAt( world.Width/2 + 5, world.Height/2 ) );
     }
@@ -60,7 +60,7 @@ public class InventorySpriteController : MonoBehaviour
 
         inv_go.name = inv.objectType;
         inv_go.transform.position = new Vector3(inv.tile.X, inv.tile.Y, 0);
-        inv_go.transform.SetParent(this.transform, true);
+        inv_go.transform.SetParent(inventoryParent.transform, true);
 
         SpriteRenderer sr = inv_go.AddComponent<SpriteRenderer>();
         sr.sprite = SpriteManager.current.GetSprite("Inventory", inv.objectType);
@@ -75,7 +75,7 @@ public class InventorySpriteController : MonoBehaviour
             // This is a stackable object, so let's add a InventoryUI component
             // (Which is text that shows the current stackSize.)
 
-            GameObject ui_go = Instantiate(inventoryUIPrefab);
+            GameObject ui_go = GameObject.Instantiate(inventoryUIPrefab);
             ui_go.transform.SetParent(inv_go.transform);
             ui_go.transform.localPosition = Vector3.zero;
             ui_go.GetComponentInChildren<Text>().text = inv.stackSize.ToString();
@@ -113,7 +113,7 @@ public class InventorySpriteController : MonoBehaviour
         else
         {
             // This stack has gone to zero, so remove the sprite!
-            Destroy(inv_go);
+            GameObject.Destroy(inv_go);
             inventoryGameObjectMap.Remove(inv);
             inv.cbInventoryChanged -= OnInventoryChanged;
         }

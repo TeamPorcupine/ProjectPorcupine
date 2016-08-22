@@ -18,6 +18,17 @@ using System.IO;
 public class WorldController : MonoBehaviour
 {
 
+    SoundController soundController;
+    TileSpriteController tileSpriteController;
+    CharacterSpriteController characterSpriteController;
+    JobSpriteController jobSpriteController;
+    InventorySpriteController inventorySpriteController;
+    FurnitureSpriteController furnitureSpriteController;
+
+    public BuildModeController buildModeController;
+    public MouseController mouseController;
+    public ModsManager modsManager;
+
     public static WorldController Instance { get; protected set; }
 
     // The world and tile data
@@ -52,9 +63,15 @@ public class WorldController : MonoBehaviour
 
     public bool devMode = false;
 
+    public GameObject inventoryUI;
+    public GameObject circleCursorPrefab;
+
     // Use this for initialization
     void OnEnable()
     {
+        string dataPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
+        modsManager = new ModsManager(dataPath);
+
         if (Instance != null)
         {
             Logger.LogError("There should never be two world controllers.");
@@ -71,19 +88,37 @@ public class WorldController : MonoBehaviour
             CreateEmptyWorld();
         }
 
+        soundController = new SoundController(world);
+    }
+
+    void Start() {
+        tileSpriteController = new TileSpriteController(world);
+        tileSpriteController.Render();
+        characterSpriteController = new CharacterSpriteController(world);
+        furnitureSpriteController = new FurnitureSpriteController(world);
+        jobSpriteController = new JobSpriteController(world, furnitureSpriteController);
+        inventorySpriteController = new InventorySpriteController(world, inventoryUI);
+        buildModeController = new BuildModeController();
+        mouseController = new MouseController(buildModeController, furnitureSpriteController, circleCursorPrefab);
+
         //Initialising controllers
         GameObject Controllers = GameObject.Find("Controllers");
         Instantiate(Resources.Load("UIController"), Controllers.transform);
+
+
     }
 
     void Update()
     {
         CheckTimeInput();
+        mouseController.Update(IsModal);
 
         if (IsPaused == false)
         {
             world.Update(Time.deltaTime * timeScale);
         }
+
+        soundController.Update(Time.deltaTime);
     }
 
     void CheckTimeInput()
@@ -188,8 +223,8 @@ public class WorldController : MonoBehaviour
     void CreateEmptyWorld()
     {
         // get world size from settings
-        int width = int.Parse(Settings.getSetting("worldWidth", "100"));
-        int height = int.Parse(Settings.getSetting("worldHeight", "100"));
+        int width = Settings.getSettingAsInt("worldWidth", 100);
+        int height = Settings.getSettingAsInt("worldHeight", 100);
 
         // Create a world with Empty tiles
         world = new World(width, height);

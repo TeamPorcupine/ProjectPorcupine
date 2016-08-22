@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<Sprites>
+	<Sprite name="Power Cell Press"     x="0" y="0" w="128" h="128" pixelPerUnit="64" />
+</Sprites>

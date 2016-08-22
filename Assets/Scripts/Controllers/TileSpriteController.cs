@@ -11,19 +11,22 @@ using System.Linq;
 using UnityEngine;
 using System.Collections.Generic;
 
-public class TileSpriteController : MonoBehaviour
+public class TileSpriteController
 {
 
     Dictionary<Tile, GameObject> tileGameObjectMap;
 
-    World world
-    {
-        get { return WorldController.Instance.world; }
-    }
+    World world;
 
     // Use this for initialization
-    void Start()
+    public TileSpriteController(World currnetWorld)
     {
+        world = currnetWorld;
+    }
+
+    public void Render() {
+        GameObject tileParent = new GameObject("Tiles");
+
         // Instantiate our dictionary that tracks which GameObject is rendering which Tile data.
         tileGameObjectMap = new Dictionary<Tile, GameObject>();
 
@@ -43,7 +46,7 @@ public class TileSpriteController : MonoBehaviour
 
                 tile_go.name = "Tile_" + x + "_" + y;
                 tile_go.transform.position = new Vector3(tile_data.X, tile_data.Y, 0);
-                tile_go.transform.SetParent(this.transform, true);
+                tile_go.transform.SetParent(tileParent.transform, true);
 
                 // Add a Sprite Renderer
                 // Add a default sprite for empty tiles.
@@ -78,7 +81,7 @@ public class TileSpriteController : MonoBehaviour
             tile_data.cbTileChanged -= OnTileChanged;
 
             // Destroy the visual GameObject
-            Destroy(tile_go);
+            GameObject.Destroy(tile_go);
         }
 
         // Presumably, after this function gets called, we'd be calling another
@@ -107,13 +110,17 @@ public class TileSpriteController : MonoBehaviour
         {
             tile_go.GetComponent<SpriteRenderer>().sprite = SpriteManager.current.GetSprite("Tile", "Floor");
         }
+        else if (tile_data.Type == TileType.Ladder)
+        {
+            tile_go.GetComponent<SpriteRenderer>().sprite = SpriteManager.current.GetSprite("Tile", "Ladder");
+        }
         else if (tile_data.Type == TileType.Empty)
         {
             tile_go.GetComponent<SpriteRenderer>().sprite = SpriteManager.current.GetSprite("Tile", "Empty");
         }
         else
         {
-            Logger.LogError("OnTileTypeChanged - Unrecognized tile type.");
+            Logger.LogError("OnTileChanged - Unrecognized tile type.");
         }
 
 
