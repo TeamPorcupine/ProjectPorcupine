@@ -24,6 +24,7 @@ public class WorldController : MonoBehaviour
     JobSpriteController jobSpriteController;
     InventorySpriteController inventorySpriteController;
     FurnitureSpriteController furnitureSpriteController;
+    MouseCursorBuildInfo mouseCursorBuildInfo;
 
     public BuildModeController buildModeController;
     public MouseController mouseController;
@@ -100,6 +101,7 @@ public class WorldController : MonoBehaviour
         inventorySpriteController = new InventorySpriteController(world, inventoryUI);
         buildModeController = new BuildModeController();
         mouseController = new MouseController(buildModeController, furnitureSpriteController, circleCursorPrefab);
+        mouseCursorBuildInfo = new MouseCursorBuildInfo(mouseController, buildModeController);
 
         //Initialising controllers
         GameObject Controllers = GameObject.Find("Controllers");
@@ -112,6 +114,7 @@ public class WorldController : MonoBehaviour
     {
         CheckTimeInput();
         mouseController.Update(IsModal);
+        mouseCursorBuildInfo.Update(IsModal);
 
         if (IsPaused == false)
         {
