@@ -80,6 +80,7 @@ public class PowerSystem
         {
             PowerLevel -= powerRelated.PowerValue;
         }
+
         if (PowerLevel < 0)
         {
             RemovePowerConsumer();
@@ -89,7 +90,11 @@ public class PowerSystem
     private void RemovePowerConsumer()
     {
         IPowerRelated powerConsumer = powerGrid.FirstOrDefault(powerRelated => powerRelated.IsPowerConsumer);
-        if (powerConsumer == null) { return; }
+        if (powerConsumer == null)
+        {
+            return;
+        }
+
         RemoveFromPowerGrid(powerConsumer);
     }
 
