@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
-using MoonSharp;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
 using UnityEngine;
@@ -72,7 +71,13 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
         }
     }
 
-    public bool IsPowerConsumer { get { return PowerValue < 0; } }
+    public bool IsPowerConsumer
+    {
+        get
+        {
+            return PowerValue < 0.0f;
+        }
+    }
 
     public void Update(float deltaTime)
     {
