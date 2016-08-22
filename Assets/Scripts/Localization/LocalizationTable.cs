@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using UnityEngine;
 
 namespace ProjectPorcupine.Localization
 {
@@ -85,7 +86,7 @@ namespace ProjectPorcupine.Localization
                     string[] keyValuePair = line.Split(new char[] { '=' }, 2);
                     if (keyValuePair.Length != 2)
                     {
-                        Logger.LogErrorFormat("Invalid format of localization string. Actual {0}", line);
+                        Debug.LogErrorFormat("Invalid format of localization string. Actual {0}", line);
                         continue;
                     }
 
@@ -94,7 +95,7 @@ namespace ProjectPorcupine.Localization
             }
             catch (FileNotFoundException exception)
             {
-                Logger.LogException(new Exception(string.Format("There is no localization file for {0}", localizationCode), exception));
+                Debug.LogError(new Exception(string.Format("There is no localization file for {0}", localizationCode), exception));
             }
         }
 
@@ -112,7 +113,7 @@ namespace ProjectPorcupine.Localization
             if (!missingKeysLogged.Contains(key))
             {
                 missingKeysLogged.Add(key);
-                Logger.LogWarning(string.Format("Translation for {0} in {1} language failed: Key not in dictionary.", key, language));
+                Debug.LogWarning(string.Format("Translation for {0} in {1} language failed: Key not in dictionary.", key, language));
             }
 
             switch (fallbackMode)

@@ -228,7 +228,7 @@ public class Room : IXmlSerializable
                 // to remove the room from the world's list.
                 if (oldRoom.tiles.Count > 0)
                 {
-                    Logger.LogError("'oldRoom' still has tiles assigned to it. This is clearly wrong.");
+                    Debug.LogError("'oldRoom' still has tiles assigned to it. This is clearly wrong.");
                 }
 
                 world.DeleteRoom(oldRoom);
@@ -246,7 +246,7 @@ public class Room : IXmlSerializable
 
     protected static void ActualFloodFill(Tile tile, Room oldRoom, int sizeOfOldRoom)
     {
-        ////Logger.Log("ActualFloodFill");
+        ////Debug.Log("ActualFloodFill");
 
         if (tile == null)
         {
@@ -333,7 +333,7 @@ public class Room : IXmlSerializable
             }
         }
 
-        ////Logger.Log("ActualFloodFill -- Processed Tiles: " + processedTiles);
+        ////Debug.Log("ActualFloodFill -- Processed Tiles: " + processedTiles);
 
         if (isConnectedToSpace)
         {

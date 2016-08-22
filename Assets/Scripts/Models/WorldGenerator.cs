@@ -168,17 +168,17 @@ public class WorldGenerator
                 }
                 catch (System.Exception e)
                 {
-                    Logger.LogError("Error reading WorldGenerator/Asteroid" + System.Environment.NewLine + "Exception: " + e.Message + System.Environment.NewLine + "StackTrace: " + e.StackTrace);
+                    Debug.LogError("Error reading WorldGenerator/Asteroid" + System.Environment.NewLine + "Exception: " + e.Message + System.Environment.NewLine + "StackTrace: " + e.StackTrace);
                 }
             }
             else
             {
-                Logger.LogError("Did not find a 'Asteroid' element in the WorldGenerator definition file.");
+                Debug.LogError("Did not find a 'Asteroid' element in the WorldGenerator definition file.");
             }
         }
         else
         {
-            Logger.LogError("Did not find a 'WorldGenerator' element in the WorldGenerator definition file.");
+            Debug.LogError("Did not find a 'WorldGenerator' element in the WorldGenerator definition file.");
         }
     }
 }

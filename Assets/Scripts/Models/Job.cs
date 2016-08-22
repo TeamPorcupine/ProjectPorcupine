@@ -182,32 +182,8 @@ public class Job
 
     public void DoWork(float workTime)
     {
-        // Check to make sure we actually have everything we need. 
-        // If not, don't register the work time.
-        if (HasAllMaterial() == false)
-        {
-            ////Logger.LogError("Tried to do work on a job that doesn't have all the material.");
-
-            // Job can't actually be worked, but still call the callbacks
-            // so that animations and whatnot can be updated.
-            if (cbJobWorked != null)
-            {
-                cbJobWorked(this);
-            }
-
-            if (cbJobWorkedLua != null)
-            {
-                foreach (string luaFunction in cbJobWorkedLua)
-                {
-                    FurnitureActions.CallFunction(luaFunction, this);
-                }
-            }
-
-            return;
-        }
-
-        jobTime -= workTime;
-
+        // We don't know if the Job can actually be worked, but still call the callbacks
+        // so that animations and whatnot can be updated.
         if (cbJobWorked != null)
         {
             cbJobWorked(this);
@@ -215,12 +191,22 @@ public class Job
 
         if (cbJobWorkedLua != null)
         {
-            foreach (string luaFunction in cbJobWorkedLua)
+            foreach (string luaFunction in cbJobWorkedLua.ToList())
             {
                 FurnitureActions.CallFunction(luaFunction, this);
             }
         }
 
+        // Check to make sure we actually have everything we need. 
+        // If not, don't register the work time.
+        if (HasAllMaterial() == false)
+        {
+            ////Debug.LogError("Tried to do work on a job that doesn't have all the material.");
+            return;
+        }
+
+        jobTime -= workTime;
+        
         if (jobTime <= 0)
         {
             // Do whatever is supposed to happen with a job cycle completes.
@@ -229,11 +215,11 @@ public class Job
                 cbJobCompleted(this);
             }
 
-            foreach (string luaFunc in cbJobCompletedLua)
+            foreach (string luaFunction in cbJobCompletedLua.ToList())
             {
-                FurnitureActions.CallFunction(luaFunc, this);
+                FurnitureActions.CallFunction(luaFunction, this);
             }
-
+            
             if (jobRepeats == false)
             {
                 // Let everyone know that the job is officially concluded

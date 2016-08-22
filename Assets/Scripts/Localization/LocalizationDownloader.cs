@@ -36,18 +36,18 @@ namespace ProjectPorcupine.Localization
             }
             catch (FileNotFoundException e)
             {
-                Logger.LogWarning(e.Message);
+                Debug.LogWarning(e.Message);
                 currentLocalizationVersion = string.Empty;
             }
             catch (DirectoryNotFoundException e)
             {
-                Logger.LogWarning(e.Message);
+                Debug.LogWarning(e.Message);
                 Directory.CreateDirectory(LocalizationFolderPath);
                 currentLocalizationVersion = string.Empty;
             }
             catch (System.Exception e)
             {
-                Logger.LogException(e);
+                Debug.LogError(e);
                 yield break;
             }
 
@@ -61,7 +61,7 @@ namespace ProjectPorcupine.Localization
             if (versionChecker.error != null)
             {
                 // This could be a thing when for example user has no internet connection.
-                Logger.LogError("Error while checking for available localization updates: " + www.error);
+                Debug.LogError("Error while checking for available localization updates: " + www.error);
                 yield break;
             }
 
@@ -70,7 +70,7 @@ namespace ProjectPorcupine.Localization
                 // There are still some updates available. We should probably notify
                 // user about it and offer him an option to download it right now.
                 // For now... Let's just force it >.> Beginners task!
-                Logger.LogVerbose("There is an update for localization files!");
+                Debug.Log("There is an update for localization files!");
                 yield return DownloadLocalizationFromWeb();
             }
         }
@@ -86,14 +86,14 @@ namespace ProjectPorcupine.Localization
                 www.Dispose();
             }
 
-            Logger.LogVerbose("Localization files download has started");
+            Debug.Log("Localization files download has started");
 
             www = new WWW(LocalizationRepositoryZipLocation);
 
             // Wait for www to download current localization files.
             yield return www;
 
-            Logger.LogVerbose("Localization files download has finished!");
+            Debug.Log("Localization files download has finished!");
 
             // Almost like a callback call
             OnDownloadLocalizationComplete();
@@ -108,7 +108,7 @@ namespace ProjectPorcupine.Localization
             if (www.isDone == false)
             {
                 // This should never happen.
-                Logger.LogException(new System.Exception("OnDownloadLocalizationComplete got called before www finished downloading."));
+                Debug.LogError(new System.Exception("OnDownloadLocalizationComplete got called before www finished downloading."));
                 www.Dispose();
                 return;
             }
@@ -116,7 +116,7 @@ namespace ProjectPorcupine.Localization
             if (www.error != null)
             {
                 // This could be a thing when for example user has no internet connection.
-                Logger.LogError("Error while downloading localizations file: " + www.error);
+                Debug.LogError("Error while downloading localizations file: " + www.error);
                 return;
             }
 
@@ -135,7 +135,7 @@ namespace ProjectPorcupine.Localization
                     // b) We are in a wrong directory, so let's hope we didn't delete anything important.
                     if (file.Extension != ".lang" && file.Extension != ".meta" && file.Extension != ".ver")
                     {
-                        Logger.LogException(new System.Exception("SOMETHING WENT HORRIBLY WRONG AT DOWNLOADING LOCALIZATION!"));
+                        Debug.LogError(new System.Exception("SOMETHING WENT HORRIBLY WRONG AT DOWNLOADING LOCALIZATION!"));
                         Debug.Break();
                         return;
                     }
@@ -199,13 +199,13 @@ namespace ProjectPorcupine.Localization
                 FileInfo[] fileInfo = localizationFolderInfo.GetFiles();
                 if (fileInfo.Length > 0)
                 {
-                    Logger.LogError("There should be no files here.");
+                    Debug.LogError("There should be no files here.");
                 }
 
                 DirectoryInfo[] dirInfo = localizationFolderInfo.GetDirectories();
                 if (dirInfo.Length > 1)
                 {
-                    Logger.LogError("There should be only one directory");
+                    Debug.LogError("There should be only one directory");
                 }
 
                 // Move files from ProjectPorcupineLocalization-*branch name* to Application.streamingAssetsPath/Localization.
@@ -224,14 +224,14 @@ namespace ProjectPorcupine.Localization
 
                 // Maybe there is an easy fix to that restart-need thing? 
                 // Beginners task!
-                Logger.Log("New localization downloaded, please restart the game for it to take effect.");
+                Debug.Log("New localization downloaded, please restart the game for it to take effect.");
             }
             catch (System.Exception e)
             {
                 // Something happen in the file system. 
                 // TODO: Handle this properly, for now this is as useful as:
                 // http://i.imgur.com/9ArGADw.png
-                Logger.LogException(e);
+                Debug.LogError(e);
             }
         }
     }

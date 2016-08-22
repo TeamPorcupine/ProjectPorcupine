@@ -19,7 +19,7 @@ public class Path_AStar
     {
         if (path == null || !path.Any())
         {
-            Logger.LogWarning("Created path with no tiles, is this intended?");
+            Debug.LogWarning("Created path with no tiles, is this intended?");
         }
         this.path = path;
     }
@@ -43,7 +43,7 @@ public class Path_AStar
         // Make sure our start/end tiles are in the list of nodes!
         if (nodes.ContainsKey(tileStart) == false)
         {
-            Logger.LogError("Path_AStar: The starting tile isn't in the list of nodes!");
+            Debug.LogError("Path_AStar: The starting tile isn't in the list of nodes!");
 
             return;
         }
@@ -58,7 +58,7 @@ public class Path_AStar
         {
             if (nodes.ContainsKey(tileEnd) == false)
             {
-                Logger.LogError("Path_AStar: The ending tile isn't in the list of nodes!");
+                Debug.LogError("Path_AStar: The ending tile isn't in the list of nodes!");
                 return;
             }
 
@@ -222,12 +222,12 @@ public class Path_AStar
     {
         if (path == null)
         {
-            Logger.LogError("Attempting to dequeue from an null path.");
+            Debug.LogError("Attempting to dequeue from an null path.");
             return null;
         }
         if (path.Count <= 0)
         {
-            Logger.LogError("what???");
+            Debug.LogError("what???");
             return null;
         }
         return path.Dequeue();
@@ -245,7 +245,7 @@ public class Path_AStar
     {
         if (path == null || path.Count == 0)
         {
-            Logger.Log("Path is null or empty.");
+            Debug.Log("Path is null or empty.");
             return null;
         }
 

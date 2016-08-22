@@ -48,7 +48,7 @@ public class JobSpriteController
 
         if (jobGameObjectMap.ContainsKey(job))
         {
-            //Logger.LogError("OnJobCreated for a jobGO that already exists -- most likely a job being RE-QUEUED, as opposed to created.");
+            //Debug.LogError("OnJobCreated for a jobGO that already exists -- most likely a job being RE-QUEUED, as opposed to created.");
             return;
         }
 
