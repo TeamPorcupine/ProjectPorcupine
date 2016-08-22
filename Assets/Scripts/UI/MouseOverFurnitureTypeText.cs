@@ -33,7 +33,7 @@ public class MouseOverFurnitureTypeText : MonoBehaviour
             return;
         }
 
-        mouseController = GameObject.FindObjectOfType<MouseController>();
+        mouseController = WorldController.Instance.mouseController;
         if (mouseController == null)
         {
             Logger.LogError("How do we not have an instance of mouse controller?");

@@ -11,7 +11,7 @@ public class FloorMenu : MonoBehaviour
     // Use this for initialization.
     void Start()
     {
-        BuildModeController bmc = GameObject.FindObjectOfType<BuildModeController>();
+        BuildModeController bmc = WorldController.Instance.buildModeController;
 
         floorBuild.onClick.AddListener(delegate
             {
