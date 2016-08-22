@@ -20,8 +20,18 @@ public class ConstructionMenu : MonoBehaviour
     public Button buttonFloors;
     public Button buttonFurniture;
 
-    void OnEnable()
+    Button buttonDeconstruction;
+
+    void Start()
     {
+        BuildModeController bmc = WorldController.Instance.buildModeController;
+
+        buttonDeconstruction = transform.FindChild("Button - Deconstruct Furniture (1)").GetComponent<Button>();
+        buttonDeconstruction.onClick.AddListener(delegate
+            {
+                bmc.SetMode_Deconstruct();
+            });
+        
         // Add liseners here.
         buttonFloors.onClick.AddListener(delegate
             {
@@ -29,9 +39,10 @@ public class ConstructionMenu : MonoBehaviour
             });
         buttonFurniture.onClick.AddListener(delegate
             {
-                OnClickFurniture();
+                OnClickFurniture(); 
             });
     }
+
 
     public void OnClickFloors()
     {
