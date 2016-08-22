@@ -1,4 +1,12 @@
-﻿using UnityEngine;
+﻿#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
+using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 
@@ -104,7 +112,12 @@ public class DialogBoxSettings : DialogBox
 
     public void OnQualityChange()
     {
-        /// TODO : impliment Quality changes
+        // masterTextureLimit should get 0 for High quality and higher values for lower qualities.
+        // For example count is 3 (0:Low, 1:Med, 2:High)
+        // for High: count - 1 - value  =  3 - 1 - 2  =  0  (therefore no limit = high quality)
+        // for Med:  count - 1 - value  =  3 - 1 - 1  =  1  (therefore a slight limit = medium quality)
+        // for Low:  count - 1 - value  =  3 - 1 - 0  =  1  (therefore more limit = low quality)
+        QualitySettings.masterTextureLimit = qualityDropdown.options.Count - 1 - qualityDropdown.value;
     }
 
     public void OnVSyncChange()
@@ -125,7 +138,7 @@ public class DialogBoxSettings : DialogBox
 
     public void OnMusicChange()
     {
-        /// TODO : impliment VSync changes
+        /// TODO : impliment Music changes
     }
 
     public void OnClickClose()
@@ -144,16 +157,16 @@ public class DialogBoxSettings : DialogBox
     /// </summary>
     public void SaveSetting()
     {
-        Settings.setSetting("DialogBoxSettings_musicVolume", musicVolume.normalizedValue.ToString());
+        Settings.setSetting("DialogBoxSettings_musicVolume", musicVolume.normalizedValue);
 
-        Settings.setSetting("DialogBoxSettings_langToggle", langToggle.isOn.ToString());
-        Settings.setSetting("DialogBoxSettings_fpsToggle", fpsToggle.isOn.ToString());
-        Settings.setSetting("DialogBoxSettings_fullScreenToggle", fullScreenToggle.isOn.ToString());
+        Settings.setSetting("DialogBoxSettings_langToggle", langToggle.isOn);
+        Settings.setSetting("DialogBoxSettings_fpsToggle", fpsToggle.isOn);
+        Settings.setSetting("DialogBoxSettings_fullScreenToggle", fullScreenToggle.isOn);
 
-        Settings.setSetting("DialogBoxSettings_qualityDropdown", qualityDropdown.value.ToString());
-        Settings.setSetting("DialogBoxSettings_vSyncDropdown", vSyncDropdown.value.ToString());
-        Settings.setSetting("DialogBoxSettings_resolutionDropdown", resolutionDropdown.value.ToString());
-        Settings.setSetting("DialogBoxSettings_aliasingDropdown", aliasingDropdown.value.ToString());
+        Settings.setSetting("DialogBoxSettings_qualityDropdown", qualityDropdown.value);
+        Settings.setSetting("DialogBoxSettings_vSyncDropdown", vSyncDropdown.value);
+        Settings.setSetting("DialogBoxSettings_resolutionDropdown", resolutionDropdown.value);
+        Settings.setSetting("DialogBoxSettings_aliasingDropdown", aliasingDropdown.value);
     }
 
     /// <summary>
@@ -161,16 +174,16 @@ public class DialogBoxSettings : DialogBox
     /// </summary>
     void LoadSetting()
     {
-        musicVolume.normalizedValue = float.Parse(Settings.getSetting("DialogBoxSettings_musicVolume", 0.5.ToString()));
+        musicVolume.normalizedValue = Settings.getSettingAsFloat("DialogBoxSettings_musicVolume", 0.5f);
 
-        langToggle.isOn = bool.Parse(Settings.getSetting("DialogBoxSettings_langToggle", true.ToString()));
-        fpsToggle.isOn = bool.Parse(Settings.getSetting("DialogBoxSettings_fpsToggle", true.ToString()));
-        fullScreenToggle.isOn = bool.Parse(Settings.getSetting("DialogBoxSettings_fullScreenToggle", true.ToString()));
+        langToggle.isOn = Settings.getSettingAsBool("DialogBoxSettings_langToggle", true);
+        fpsToggle.isOn = Settings.getSettingAsBool("DialogBoxSettings_fpsToggle", true);
+        fullScreenToggle.isOn = Settings.getSettingAsBool("DialogBoxSettings_fullScreenToggle", true);
 
-        qualityDropdown.value = int.Parse(Settings.getSetting("DialogBoxSettings_qualityDropdown", 0.ToString()));
-        vSyncDropdown.value = int.Parse(Settings.getSetting("DialogBoxSettings_vSyncDropdown", 0.ToString()));
-        resolutionDropdown.value = int.Parse(Settings.getSetting("DialogBoxSettings_resolutionDropdown", 0.ToString()));
-        aliasingDropdown.value = int.Parse(Settings.getSetting("DialogBoxSettings_aliasingDropdown", 0.ToString()));
+        qualityDropdown.value = Settings.getSettingAsInt("DialogBoxSettings_qualityDropdown", 0);
+        vSyncDropdown.value = Settings.getSettingAsInt("DialogBoxSettings_vSyncDropdown", 0);
+        resolutionDropdown.value = Settings.getSettingAsInt("DialogBoxSettings_resolutionDropdown", 0);
+        aliasingDropdown.value = Settings.getSettingAsInt("DialogBoxSettings_aliasingDropdown", 0);
 
     }
 
