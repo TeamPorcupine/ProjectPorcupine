@@ -47,7 +47,7 @@ namespace ProjectPorcupine.Localization
                     LocalizationTable.LoadLocalizationFile(file);
 
                     // Just write a little debug info into the console.
-                    Logger.LogVerbose("Loaded localization at path\n" + file);
+                    Debug.Log("Loaded localization at path\n" + file);
                 }
             }
 

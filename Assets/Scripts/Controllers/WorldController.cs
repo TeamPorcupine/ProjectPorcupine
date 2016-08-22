@@ -27,6 +27,7 @@ public class WorldController : MonoBehaviour
 
     public BuildModeController buildModeController;
     public MouseController mouseController;
+    public SpawnInventoryController spawnInventoryController;
     public ModsManager modsManager;
 
     public static WorldController Instance { get; protected set; }
@@ -74,7 +75,7 @@ public class WorldController : MonoBehaviour
 
         if (Instance != null)
         {
-            Logger.LogError("There should never be two world controllers.");
+            Debug.LogError("There should never be two world controllers.");
         }
         Instance = this;
 
@@ -99,6 +100,10 @@ public class WorldController : MonoBehaviour
         jobSpriteController = new JobSpriteController(world, furnitureSpriteController);
         inventorySpriteController = new InventorySpriteController(world, inventoryUI);
         buildModeController = new BuildModeController();
+        if(Settings.getSettingAsBool("DevTools_enabled", false))
+        {
+            spawnInventoryController = new SpawnInventoryController();
+        }
         mouseController = new MouseController(buildModeController, furnitureSpriteController, circleCursorPrefab);
 
         //Initialising controllers
@@ -134,7 +139,7 @@ public class WorldController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             IsPaused = !IsPaused;
-            Logger.Log("Game " + (IsPaused ? "paused" : "resumed"));
+            Debug.Log("Game " + (IsPaused ? "paused" : "resumed"));
         }
 
         if (Input.GetKeyDown(KeyCode.Plus) || Input.GetKeyDown(KeyCode.KeypadPlus))
@@ -183,7 +188,7 @@ public class WorldController : MonoBehaviour
     public void SetTimeScale(float timeScale)
     {
         this.timeScale = timeScale;
-        Logger.Log("Game speed set to " + timeScale + "x");
+        Debug.Log("Game speed set to " + timeScale + "x");
     }
 
     /// <summary>
@@ -201,7 +206,7 @@ public class WorldController : MonoBehaviour
 
     public void NewWorld()
     {
-        Logger.Log("NewWorld button was clicked.");
+        Debug.Log("NewWorld button was clicked.");
 
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
@@ -213,7 +218,7 @@ public class WorldController : MonoBehaviour
 
     public void LoadWorld(string fileName)
     {
-        Logger.Log("LoadWorld button was clicked.");
+        Debug.Log("LoadWorld button was clicked.");
 
         // Reload the scene to reset all data (and purge old references)
         loadWorldFromFile = fileName;
@@ -235,7 +240,7 @@ public class WorldController : MonoBehaviour
 
     void CreateWorldFromSaveFile()
     {
-        Logger.Log("CreateWorldFromSaveFile");
+        Debug.Log("CreateWorldFromSaveFile");
         // Create a world from our save file data.
 
         XmlSerializer serializer = new XmlSerializer(typeof(World));
@@ -247,7 +252,7 @@ public class WorldController : MonoBehaviour
         TextReader reader = new StringReader(saveGameText);
 
 
-        Logger.Log(reader.ToString());
+        Debug.Log(reader.ToString());
         world = (World)serializer.Deserialize(reader);
         reader.Close();
 
