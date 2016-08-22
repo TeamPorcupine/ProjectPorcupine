@@ -15,7 +15,7 @@ public class MouseController
     public SelectionInfo mySelection;
 
     private GameObject circleCursorPrefab;
-    private GameObject cursorParent;
+    public GameObject cursorParent { get; protected set; }
     private GameObject furnitureParent;
     
     // The world-position of the mouse last frame.
@@ -26,13 +26,13 @@ public class MouseController
 
     // The world-position start of our left-mouse drag operation.
     private Vector3 dragStartPosition;
-    private List<GameObject> dragPreviewGameObjects;
+    public List<GameObject> dragPreviewGameObjects { get; protected set; }
     private BuildModeController bmc;
     private FurnitureSpriteController fsc;
     private MenuController menuController;
     ContextMenu contextMenu;
 
-    private bool isDragging = false;
+    public bool isDragging { get; protected set; }
 
     private MouseMode currentMode = MouseMode.SELECT;
 
@@ -63,6 +63,11 @@ public class MouseController
     public Vector3 GetMousePosition()
     {
         return currFramePosition;
+    }
+
+    public Vector3 GetPlacingPosition()
+    {
+        return currPlacingPosition;
     }
 
     public Tile GetMouseOverTile()
