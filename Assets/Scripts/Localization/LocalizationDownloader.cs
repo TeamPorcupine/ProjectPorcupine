@@ -42,6 +42,7 @@ namespace ProjectPorcupine.Localization
             catch (DirectoryNotFoundException e)
             {
                 Logger.LogWarning(e.Message);
+                Directory.CreateDirectory(LocalizationFolderPath);
                 currentLocalizationVersion = string.Empty;
             }
             catch (System.Exception e)
