@@ -1,6 +1,14 @@
-﻿using UnityEngine;
+﻿#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
+using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
+using System.Collections.Generic;
 
 public class DialogBoxSettings : DialogBox
 {
@@ -24,16 +32,12 @@ public class DialogBoxSettings : DialogBox
     public Dropdown vSyncDropdown;
     public Dropdown qualityDropdown;
 
-    public GameSettings gameSettings;
-
     public Button closeButton;
     public Button saveButton;
 
 
     void OnEnable()
     {
-        // Create an instance of this class.
-        gameSettings = new GameSettings();
 
         // Get all avalible resolution for the display.
         myResolutions = Screen.resolutions;
@@ -93,51 +97,48 @@ public class DialogBoxSettings : DialogBox
 
     public void OnLangageToggle()
     {
-        gameSettings.isVisibleLangage = langToggle.isOn;
         langDropDown.SetActive(langToggle.isOn);
     }
 
     public void OnFPSToggle()
     {
-        gameSettings.isVisibleFPS = fpsToggle.isOn;
         fpsObject.SetActive(fpsToggle.isOn);
     }
 
     public void OnFullScreenToggle()
     {
-        gameSettings.isFullscreen = Screen.fullScreen = fullScreenToggle.isOn;
+        /// TODO : impliment full screen toggle
     }
 
     public void OnQualityChange()
     {
-        gameSettings.qualityIndex = QualitySettings.masterTextureLimit = qualityDropdown.value;
+        // masterTextureLimit should get 0 for High quality and higher values for lower qualities.
+        // For example count is 3 (0:Low, 1:Med, 2:High)
+        // for High: count - 1 - value  =  3 - 1 - 2  =  0  (therefore no limit = high quality)
+        // for Med:  count - 1 - value  =  3 - 1 - 1  =  1  (therefore a slight limit = medium quality)
+        // for Low:  count - 1 - value  =  3 - 1 - 0  =  1  (therefore more limit = low quality)
+        QualitySettings.masterTextureLimit = qualityDropdown.options.Count - 1 - qualityDropdown.value;
     }
 
     public void OnVSyncChange()
     {
-        gameSettings.vSyncIndex = QualitySettings.vSyncCount = vSyncDropdown.value;
+        /// TODO : impliment VSync changes
     }
 
     public void OnResolutionChange()
     {
-        gameSettings.resolutionIndex = resolutionDropdown.value;
-        // Need to make work.
+        /// TODO : impliment Resolution changes
     }
 
     public void OnAliasingChange()
     {
-        gameSettings.antiAliasingIndex = QualitySettings.antiAliasing = aliasingDropdown.value;
+        /// TODO : impliment AA changes
     }
 
 
     public void OnMusicChange()
     {
-
-    }
-
-    public void SaveSetting()
-    {
-
+        /// TODO : impliment Music changes
     }
 
     public void OnClickClose()
@@ -151,20 +152,49 @@ public class DialogBoxSettings : DialogBox
         SaveSetting();
     }
 
+    /// <summary>
+    /// saves settings to Settings.xml via the Settings class
+    /// </summary>
+    public void SaveSetting()
+    {
+        Settings.setSetting("DialogBoxSettings_musicVolume", musicVolume.normalizedValue);
+
+        Settings.setSetting("DialogBoxSettings_langToggle", langToggle.isOn);
+        Settings.setSetting("DialogBoxSettings_fpsToggle", fpsToggle.isOn);
+        Settings.setSetting("DialogBoxSettings_fullScreenToggle", fullScreenToggle.isOn);
+
+        Settings.setSetting("DialogBoxSettings_qualityDropdown", qualityDropdown.value);
+        Settings.setSetting("DialogBoxSettings_vSyncDropdown", vSyncDropdown.value);
+        Settings.setSetting("DialogBoxSettings_resolutionDropdown", resolutionDropdown.value);
+        Settings.setSetting("DialogBoxSettings_aliasingDropdown", aliasingDropdown.value);
+    }
+
+    /// <summary>
+    /// Loads settings from Settings.xml via the Settings class
+    /// </summary>
     void LoadSetting()
     {
-        aliasingDropdown.value = QualitySettings.antiAliasing;
-        vSyncDropdown.value = QualitySettings.vSyncCount;
-        qualityDropdown.value = QualitySettings.masterTextureLimit;
+        musicVolume.normalizedValue = Settings.getSettingAsFloat("DialogBoxSettings_musicVolume", 0.5f);
 
-        fullScreenToggle.isOn = Screen.fullScreen;
-        fpsToggle.isOn = fpsObject.activeSelf;
-        langToggle.isOn = langDropDown.activeSelf;
+        langToggle.isOn = Settings.getSettingAsBool("DialogBoxSettings_langToggle", true);
+        fpsToggle.isOn = Settings.getSettingAsBool("DialogBoxSettings_fpsToggle", true);
+        fullScreenToggle.isOn = Settings.getSettingAsBool("DialogBoxSettings_fullScreenToggle", true);
+
+        qualityDropdown.value = Settings.getSettingAsInt("DialogBoxSettings_qualityDropdown", 0);
+        vSyncDropdown.value = Settings.getSettingAsInt("DialogBoxSettings_vSyncDropdown", 0);
+        resolutionDropdown.value = Settings.getSettingAsInt("DialogBoxSettings_resolutionDropdown", 0);
+        aliasingDropdown.value = Settings.getSettingAsInt("DialogBoxSettings_aliasingDropdown", 0);
+
     }
 
     void CreateResDropDown()
     {
-
+        List<string> myResolutionStrings = new List<string>();
+        foreach (Resolution r in myResolutions)
+        {
+            myResolutionStrings.Add(r.ToString());
+        }
+        resolutionDropdown.AddOptions(myResolutionStrings);
     }
 
     void Update()
