@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Sprites>
+	<Sprite name="p2_front"     x="0" y="0" w="66" h="92" pixelPerUnit="66" />
+</Sprites>

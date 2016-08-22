@@ -5,6 +5,8 @@
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
+
+
 #endregion
 using UnityEngine;
 using System.Collections.Generic;
@@ -12,12 +14,17 @@ using System;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using System.Text.RegularExpressions;
 using System.IO;
 using MoonSharp.Interpreter;
 
 [MoonSharpUserData]
 public class World : IXmlSerializable
 {
+    // TODO: Should this be also saved with the world data?
+    // If so - beginner task!
+    public readonly string currentGameVersion = "Someone_will_come_up_with_a_proper_naming_scheme_later";
+
     // A two-dimensional array to hold our tile data.
     Tile[,] tiles;
     public List<Character> characters;
@@ -25,12 +32,15 @@ public class World : IXmlSerializable
     public List<Room> rooms;
     public InventoryManager inventoryManager;
     public PowerSystem powerSystem;
+    // Store all temperature information
+    public Temperature temperature;
 
     // The pathfinding graph used to navigate our world map.
     public Path_TileGraph tileGraph;
 
     public Dictionary<string, Furniture> furniturePrototypes;
     public Dictionary<string, Job> furnitureJobPrototypes;
+    public Dictionary<string, InventoryCommon> inventoryPrototypes;
 
     // The tile width of the world.
     public int Width { get; protected set; }
@@ -105,7 +115,7 @@ public class World : IXmlSerializable
     {
         if (r == GetOutsideRoom())
         {
-            Logger.LogError("Tried to delete the outside room.");
+            Debug.LogError("Tried to delete the outside room.");
             return;
         }
 
@@ -147,11 +157,13 @@ public class World : IXmlSerializable
 
         CreateFurniturePrototypes();
 
+        CreateInventoryPrototypes();
+
         characters = new List<Character>();
         furnitures = new List<Furniture>();
         inventoryManager = new InventoryManager();
         powerSystem = new PowerSystem();
-
+        temperature = new Temperature(Width, Height);
     }
 
     public void Update(float deltaTime)
@@ -167,11 +179,21 @@ public class World : IXmlSerializable
             f.Update(deltaTime);
         }
 
+        // Progress temperature modelling
+        temperature.Update();
     }
 
     public Character CreateCharacter(Tile t)
     {
-        Character c = new Character(t); 
+        Character c = new Character(t);
+
+        // Adds a random name to the Character
+        string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
+        filePath = System.IO.Path.Combine(filePath, "CharacterNames.txt");
+        string names = System.IO.File.ReadAllText(filePath);
+
+        string[] lines = Regex.Split( names, "\r\n" );
+        c.name = lines[UnityEngine.Random.Range(0, lines.Length-1)];
 
         characters.Add(c);
 
@@ -181,6 +203,19 @@ public class World : IXmlSerializable
         return c;
     }
 
+    public Character CreateCharacter(Tile t, Color color)
+    {
+        Debug.Log("CreateCharacter");
+        Character c = new Character(t, color); 
+
+        characters.Add(c);
+
+        if (cbCharacterCreated != null)
+            cbCharacterCreated(c);
+            
+        return c;
+    }
+    
     public void SetFurnitureJobPrototype(Job j, Furniture f)
     {
         furnitureJobPrototypes[f.objectType] = j;
@@ -253,7 +288,7 @@ public class World : IXmlSerializable
                         furn.ReadXmlPrototype(reader);
                     }
                     catch (Exception e) {
-                        Logger.LogError("Error reading furniture prototype for: " + furn.objectType + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
+                        Debug.LogError("Error reading furniture prototype for: " + furn.objectType + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
                     }
 
 
@@ -265,12 +300,75 @@ public class World : IXmlSerializable
             }
             else
             {
-                Logger.LogError("The furniture prototype definition file doesn't have any 'Furniture' elements.");
+                Debug.LogError("The furniture prototype definition file doesn't have any 'Furniture' elements.");
             }
         }
         else
         {
-            Logger.LogError("Did not find a 'Furnitures' element in the prototype definition file.");
+            Debug.LogError("Did not find a 'Furnitures' element in the prototype definition file.");
+        }
+    }
+
+    void CreateInventoryPrototypes()
+    {
+        inventoryPrototypes = new Dictionary<string, InventoryCommon>();
+
+        string dataPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
+        string filePath = System.IO.Path.Combine(dataPath, "Inventory.xml");
+        string inventoryXmlText = System.IO.File.ReadAllText(filePath);
+        LoadInventoryPrototypesFromFile(inventoryXmlText);
+
+
+        DirectoryInfo[] mods = WorldController.Instance.modsManager.GetMods();
+        foreach (DirectoryInfo mod in mods)
+        {
+            string inventoryXmlModFile = System.IO.Path.Combine(mod.FullName, "Inventory.xml");
+            if (File.Exists(inventoryXmlModFile))
+            {
+                string inventoryXmlModText = System.IO.File.ReadAllText(inventoryXmlModFile);
+                LoadInventoryPrototypesFromFile(inventoryXmlModText);
+            }
+        }
+    }
+
+    void LoadInventoryPrototypesFromFile(string inventoryXmlText)
+    {
+        XmlTextReader reader = new XmlTextReader(new StringReader(inventoryXmlText));
+
+        int inventoryCount = 0;
+        if (reader.ReadToDescendant("Inventories"))
+        {
+            if (reader.ReadToDescendant("Inventory"))
+            {
+                do
+                {
+                    inventoryCount++;
+
+                    InventoryCommon inv = new InventoryCommon();
+                    try
+                    {
+                        inv.ReadXmlPrototype(reader);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogError("Error reading inventory prototype for: " + inv.objectType + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
+                    }
+
+
+                    inventoryPrototypes[inv.objectType] = inv;
+
+
+
+                } while (reader.ReadToNextSibling("Inventory"));
+            }
+            else
+            {
+                Debug.LogError("The inventory prototype definition file doesn't have any 'Inventory' elements.");
+            }
+        }
+        else
+        {
+            Debug.LogError("Did not find a 'Inventories' element in the prototype definition file.");
         }
     }
 
@@ -348,7 +446,7 @@ public class World : IXmlSerializable
 
         if (furniturePrototypes.ContainsKey(objectType) == false)
         {
-            Logger.LogError("furniturePrototypes doesn't contain a proto for key: " + objectType);
+            Debug.LogError("furniturePrototypes doesn't contain a proto for key: " + objectType);
             return null;
         }
 
@@ -422,7 +520,7 @@ public class World : IXmlSerializable
     {
         if (furniturePrototypes.ContainsKey(objectType) == false)
         {
-            Logger.LogError("No furniture with type: " + objectType);
+            Debug.LogError("No furniture with type: " + objectType);
             return null;
         }
 
@@ -587,7 +685,7 @@ public class World : IXmlSerializable
 
     void ReadXml_Inventories(XmlReader reader)
     {
-        Logger.Log("ReadXml_Inventories");
+        Debug.Log("ReadXml_Inventories");
 
         if(reader.ReadToDescendant("Inventory"))
         {
@@ -647,9 +745,22 @@ public class World : IXmlSerializable
             {
                 int x = int.Parse(reader.GetAttribute("X"));
                 int y = int.Parse(reader.GetAttribute("Y"));
+                if(reader.GetAttribute("r") != null)
+                {
+                    float r = float.Parse(reader.GetAttribute("r"));
+                    float b = float.Parse(reader.GetAttribute("b"));;
+                    float g = float.Parse(reader.GetAttribute("g"));;
+                    Color color = new Color(r, g, b, 1.0f);
+                    Character c = CreateCharacter(tiles[x, y], color);
+                    c.ReadXml(reader);
+                }
 
-                Character c = CreateCharacter(tiles[x, y]);
-                c.ReadXml(reader);
+                else
+                {
+                    Character c = CreateCharacter(tiles[x, y]);
+                    c.ReadXml(reader);
+                }
+                
             } while(reader.ReadToNextSibling("Character"));
         }
 
