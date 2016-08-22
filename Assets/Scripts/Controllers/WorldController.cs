@@ -101,7 +101,7 @@ public class WorldController : MonoBehaviour
         inventorySpriteController = new InventorySpriteController(world, inventoryUI);
         buildModeController = new BuildModeController();
         mouseController = new MouseController(buildModeController, furnitureSpriteController, circleCursorPrefab);
-        if(SpawnInventoryController.isEnabled)
+        if(Settings.getSettingAsBool("DevTools_enabled", false))
         {
             spawnInventoryController = new SpawnInventoryController();
         }
