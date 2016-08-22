@@ -27,7 +27,6 @@ public class WorldGenerator
     public static void Generate(World world, int seed)
     {
         ReadXML();
-
         Random.InitState(seed);
         int width = world.Width;
         int height = world.Height;
@@ -53,6 +52,7 @@ public class WorldGenerator
                         {
                             int currentchance = 0;
                             int randomchance = Random.Range(0, 100);
+                            
                             foreach (Inventory i in ressources)
                             {
                                 int chance = i.stackSize; // In stacksize the chance was cached

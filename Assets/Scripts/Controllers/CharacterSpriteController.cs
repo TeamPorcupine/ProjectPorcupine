@@ -8,7 +8,6 @@
 #endregion
 using UnityEngine;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 
 public class CharacterSpriteController : MonoBehaviour
 {
@@ -73,13 +72,7 @@ public class CharacterSpriteController : MonoBehaviour
         // Register our callback so that our GameObject gets updated whenever
         // the object's into changes.
         c.cbCharacterChanged += OnCharacterChanged;
-
-        // Adds a random name to the Character
-        TextAsset names = Resources.Load("names") as TextAsset;
-        string[] lines = names.text.Split( new string[]  { "\r\n", "\n" }, System.StringSplitOptions.RemoveEmptyEntries );
-        c.name = lines[Random.Range(0, lines.Length-1)];
-
-
+        
     }
 
     void OnCharacterChanged(Character c)

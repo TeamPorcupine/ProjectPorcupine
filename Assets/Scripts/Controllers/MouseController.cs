@@ -229,13 +229,7 @@ public class MouseController : MonoBehaviour
 
     void UpdateDragging()
     {
-        // If we're over a UI element, then bail out from this.
-        if (EventSystem.current.IsPointerOverGameObject())
-        {
-            return;
-        }
-
-        // Clean up old drag previews.
+        // Clean up old drag previews
         while (dragPreviewGameObjects.Count > 0)
         {
             GameObject go = dragPreviewGameObjects[0];
@@ -342,7 +336,13 @@ public class MouseController : MonoBehaviour
         {
             isDragging = false;
 
-            // Loop through all the tiles.
+            // If we're over a UI element, then bail out from this.
+            if (EventSystem.current.IsPointerOverGameObject())
+            {
+                return;
+            }
+
+            // Loop through all the tiles
             for (int x = start_x; x <= end_x; x++)
             {
                 for (int y = start_y; y <= end_y; y++)
@@ -409,8 +409,22 @@ public class MouseController : MonoBehaviour
             return;
         }
 
-        Camera.main.orthographicSize -= Camera.main.orthographicSize * Input.GetAxis("Mouse ScrollWheel");
-        Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize, 3f, 25f);
+        if (Input.GetAxis ("Mouse ScrollWheel") != 0) {
+            Vector3 oldMousePosition;
+            oldMousePosition = Camera.main.ScreenToWorldPoint (Input.mousePosition);
+            oldMousePosition.z = 0;
+
+            Camera.main.orthographicSize -= Camera.main.orthographicSize * Input.GetAxis ("Mouse ScrollWheel");
+            Camera.main.orthographicSize = Mathf.Clamp (Camera.main.orthographicSize, 3f, 25f);
+
+            //refocus game so the mouse stays in the same spot when zooming
+            Vector3 newMousePosition;
+            newMousePosition = Camera.main.ScreenToWorldPoint (Input.mousePosition);
+            newMousePosition.z = 0;
+
+            Vector3 pushedAmount = (oldMousePosition - newMousePosition);
+            Camera.main.transform.Translate (pushedAmount);
+        }
     }
 
     void ShowFurnitureSpriteAtTile(string furnitureType, Tile t)

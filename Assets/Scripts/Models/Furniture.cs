@@ -345,6 +345,11 @@ public class Furniture : IXmlSerializable, ISelectable
 
         return true;
     }
+    
+    public void SetPower(float power)
+    {
+        powerValue = power;
+    }
 
     public bool HasPower()
     {
