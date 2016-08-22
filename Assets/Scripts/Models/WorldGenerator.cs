@@ -78,7 +78,7 @@ public class WorldGenerator
                     Tile t = world.GetTileAt(x, y);
                     t.Type = AsteroidFloorType;
 
-                    if (Random.value <= asteroidResourceChance && t.furniture == null)
+                    if (Random.value <= asteroidResourceChance && t.Furniture == null)
                     {
                         if (resources.Length > 0)
                         {
