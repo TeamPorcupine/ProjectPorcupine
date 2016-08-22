@@ -6,19 +6,18 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using UnityEngine;
 using System.Collections.Generic;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Debugging;
 using MoonSharp.RemoteDebugger;
 using MoonSharp.RemoteDebugger.Network;
+using UnityEngine;
 
 public class GameEventActions
 {
+    private static GameEventActions _Instance;
 
-    static GameEventActions _Instance;
-
-    Script myLuaScript;
+    private Script myLuaScript;
 
     public GameEventActions(string rawLuaCode)
     {
@@ -42,7 +41,7 @@ public class GameEventActions
         myLuaScript.DoString(rawLuaCode);
     }
 
-    static public void CallFunctionsWithEvent(string[] functionNames, GameEvent gameEvent)
+    public static void CallFunctionsWithEvent(string[] functionNames, GameEvent gameEvent)
     {
         foreach (string fn in functionNames)
         {
@@ -63,7 +62,7 @@ public class GameEventActions
         }
     }
 
-    static public DynValue CallFunction(string functionName, params object[] args)
+    public static DynValue CallFunction(string functionName, params object[] args)
     {
         object func = _Instance.myLuaScript.Globals[functionName];
 
