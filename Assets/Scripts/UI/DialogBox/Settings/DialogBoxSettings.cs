@@ -112,7 +112,12 @@ public class DialogBoxSettings : DialogBox
 
     public void OnQualityChange()
     {
-        /// TODO : impliment Quality changes
+        // masterTextureLimit should get 0 for High quality and higher values for lower qualities.
+        // For example count is 3 (0:Low, 1:Med, 2:High)
+        // for High: count - 1 - value  =  3 - 1 - 2  =  0  (therefore no limit = high quality)
+        // for Med:  count - 1 - value  =  3 - 1 - 1  =  1  (therefore a slight limit = medium quality)
+        // for Low:  count - 1 - value  =  3 - 1 - 0  =  1  (therefore more limit = low quality)
+        QualitySettings.masterTextureLimit = qualityDropdown.options.Count - 1 - qualityDropdown.value;
     }
 
     public void OnVSyncChange()
