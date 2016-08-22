@@ -69,7 +69,7 @@ public class Path_AStar
         // Mostly following this pseusocode:
         // https://en.wikipedia.org/wiki/A*_search_algorithm
 
-        List<Path_Node<Tile>> ClosedSet = new List<Path_Node<Tile>>();
+        HashSet<Path_Node<Tile>> ClosedSet = new HashSet<Path_Node<Tile>>();
 
 /*		List<Path_Node<Tile>> OpenSet = new List<Path_Node<Tile>>();
 		OpenSet.Add( start );
@@ -121,7 +121,7 @@ public class Path_AStar
             {
                 Path_Node<Tile> neighbor = edge_neighbor.node;
 
-                if (ClosedSet.Contains(neighbor) == true)
+                if (ClosedSet.Contains(neighbor))
                     continue; // ignore this already completed neighbor
 
                 float movement_cost_to_neighbor = neighbor.data.MovementCost * dist_between(current, neighbor);

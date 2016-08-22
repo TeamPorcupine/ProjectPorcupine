@@ -17,7 +17,7 @@ public class MouseController
     private GameObject circleCursorPrefab;
     private GameObject cursorParent;
     private GameObject furnitureParent;
-
+    
     // The world-position of the mouse last frame.
     private Vector3 lastFramePosition;
     private Vector3 currFramePosition;
@@ -30,6 +30,7 @@ public class MouseController
     private BuildModeController bmc;
     private FurnitureSpriteController fsc;
     private MenuController menuController;
+    ContextMenu contextMenu;
 
     private bool isDragging = false;
 
@@ -43,6 +44,7 @@ public class MouseController
         circleCursorPrefab = cursorObject;
         fsc = furnitureSpriteController;
         menuController = GameObject.FindObjectOfType<MenuController>();
+        contextMenu = GameObject.FindObjectOfType<ContextMenu>();
         dragPreviewGameObjects = new List<GameObject>();
         cursorParent = new GameObject("Cursor");
         furnitureParent = new GameObject("Furniture Preview Sprites");
@@ -95,7 +97,8 @@ public class MouseController
             }
             else if (currentMode == MouseMode.SELECT)
             {
-                Debug.Log("Show game menu?");
+                if (contextMenu != null)
+                    contextMenu.Open(GetMouseOverTile());
             }
         }
 
@@ -186,6 +189,9 @@ public class MouseController
 
         if (Input.GetMouseButtonUp(0))
         {
+            if (contextMenu != null)
+                contextMenu.Close();
+
             // We just release the mouse button, so that's our queue to update our selection.
             Tile tileUnderMouse = GetMouseOverTile();
 
