@@ -75,6 +75,6 @@ public class GameEventActions
 
         // FIXME: I don't like having to manually and explicitly set
         // flags that preven conflicts. It's too easy to forget to set/clear them!
-        theJob.tile.pendingBuildJob = null;
+        theJob.tile.PendingBuildJob = null;
     }
 }

@@ -94,7 +94,7 @@ public class TileSpriteController
 
         if (tileGameObjectMap.ContainsKey(tile_data) == false)
         {
-            Logger.LogError("tileGameObjectMap doesn't contain the tile_data -- did you forget to add the tile to the dictionary? Or maybe forget to unregister a callback?");
+            Debug.LogError("tileGameObjectMap doesn't contain the tile_data -- did you forget to add the tile to the dictionary? Or maybe forget to unregister a callback?");
             return;
         }
 
@@ -102,7 +102,7 @@ public class TileSpriteController
 
         if (tile_go == null)
         {
-            Logger.LogError("tileGameObjectMap's returned GameObject is null -- did you forget to add the tile to the dictionary? Or maybe forget to unregister a callback?");
+            Debug.LogError("tileGameObjectMap's returned GameObject is null -- did you forget to add the tile to the dictionary? Or maybe forget to unregister a callback?");
             return;
         }
 
@@ -120,7 +120,7 @@ public class TileSpriteController
         }
         else
         {
-            Logger.LogError("OnTileChanged - Unrecognized tile type.");
+            Debug.LogError("OnTileChanged - Unrecognized tile type.");
         }
 
 
