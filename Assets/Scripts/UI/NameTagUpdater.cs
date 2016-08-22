@@ -6,11 +6,6 @@ public class NameTagUpdater : MonoBehaviour {
     public Character character;
     public SettingHelper settings;
 	void Update () {
-		character.health = character.health -= 0.01f;
-		if (character.health < 0)
-		{
-			character.health = 1;
-		}
         GameObject canvas = gameObject.GetComponentInChildren<Canvas>().gameObject;
         Text[] TextFields = gameObject.GetComponentsInChildren<Text>();
         if (TextFields.Length == 2)
