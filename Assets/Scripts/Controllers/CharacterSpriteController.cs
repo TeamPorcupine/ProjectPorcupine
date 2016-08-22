@@ -57,8 +57,9 @@ public class CharacterSpriteController
         char_go.transform.SetParent(characterParent.transform, true);
 
         SpriteRenderer sr = char_go.AddComponent<SpriteRenderer>();
-        sr.sprite = SpriteManager.current.GetSprite("Character", "p1_front");
+        sr.sprite = SpriteManager.current.GetSprite("Character", "p2_front");
         sr.sortingLayerName = "Characters";
+        sr.color = c.GetCharacterColor();
 
         // Add the inventory sprite onto the character
         GameObject inv_go = new GameObject("Inventory");
@@ -68,6 +69,15 @@ public class CharacterSpriteController
         inv_go.transform.SetParent(char_go.transform);
         inv_go.transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);// Config needs to be added to XML
         inv_go.transform.localPosition = new Vector3(0,-0.37f,0); // Config needs to be added to XML
+
+        // Add the reflection of the character's helmet
+        GameObject helmet_go = new GameObject ("HelmetGlass");
+        SpriteRenderer helmet_sr = helmet_go.AddComponent<SpriteRenderer>();
+        helmet_sr.sortingOrder = 1;
+        helmet_sr.sprite = SpriteManager.current.GetSprite("Character", "p2_helmet");
+        helmet_sr.sortingLayerName = "Characters";
+        helmet_go.transform.SetParent (char_go.transform);
+        helmet_go.transform.localPosition = new Vector3(0,0,0);
 
         // Register our callback so that our GameObject gets updated whenever
         // the object's into changes.
@@ -101,6 +111,18 @@ public class CharacterSpriteController
         //Debug.Log(furn_go.GetComponent<SpriteRenderer>());
 
         //char_go.GetComponent<SpriteRenderer>().sprite = GetSpriteForFurniture(furn);
+        if (c.CurrTile.room != null)
+        {
+            if (c.CurrTile.room.GetGasAmount ("O2") <= 0.5f && char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled == false)
+            {
+                char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled = true;
+            }
+            else if(c.CurrTile.room.GetGasAmount ("O2") >= 0.5f && char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled == true)
+            {
+                char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled = false;
+            }
+        }
+
 
         char_go.transform.position = new Vector3(c.X, c.Y, 0);
     }

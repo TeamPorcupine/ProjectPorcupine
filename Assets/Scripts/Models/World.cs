@@ -203,6 +203,19 @@ public class World : IXmlSerializable
         return c;
     }
 
+    public Character CreateCharacter(Tile t, Color color)
+    {
+        Debug.Log("CreateCharacter");
+        Character c = new Character(t, color); 
+
+        characters.Add(c);
+
+        if (cbCharacterCreated != null)
+            cbCharacterCreated(c);
+            
+        return c;
+    }
+    
     public void SetFurnitureJobPrototype(Job j, Furniture f)
     {
         furnitureJobPrototypes[f.objectType] = j;
@@ -732,9 +745,22 @@ public class World : IXmlSerializable
             {
                 int x = int.Parse(reader.GetAttribute("X"));
                 int y = int.Parse(reader.GetAttribute("Y"));
+                if(reader.GetAttribute("r") != null)
+                {
+                    float r = float.Parse(reader.GetAttribute("r"));
+                    float b = float.Parse(reader.GetAttribute("b"));;
+                    float g = float.Parse(reader.GetAttribute("g"));;
+                    Color color = new Color(r, g, b, 1.0f);
+                    Character c = CreateCharacter(tiles[x, y], color);
+                    c.ReadXml(reader);
+                }
 
-                Character c = CreateCharacter(tiles[x, y]);
-                c.ReadXml(reader);
+                else
+                {
+                    Character c = CreateCharacter(tiles[x, y]);
+                    c.ReadXml(reader);
+                }
+                
             } while(reader.ReadToNextSibling("Character"));
         }
 
