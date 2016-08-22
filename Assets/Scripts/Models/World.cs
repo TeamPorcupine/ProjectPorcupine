@@ -32,6 +32,8 @@ public class World : IXmlSerializable
     public List<Room> rooms;
     public InventoryManager inventoryManager;
     public PowerSystem powerSystem;
+    // Store all temperature information
+    public Temperature temperature;
 
     // The pathfinding graph used to navigate our world map.
     public Path_TileGraph tileGraph;
@@ -161,7 +163,7 @@ public class World : IXmlSerializable
         furnitures = new List<Furniture>();
         inventoryManager = new InventoryManager();
         powerSystem = new PowerSystem();
-
+        temperature = new Temperature(Width, Height);
     }
 
     public void Update(float deltaTime)
@@ -177,6 +179,8 @@ public class World : IXmlSerializable
             f.Update(deltaTime);
         }
 
+        // Progress temperature modelling
+        temperature.Update();
     }
 
     public Character CreateCharacter(Tile t)

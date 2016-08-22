@@ -36,7 +36,18 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
     /// </summary>
     // protected Action<Furniture, float> updateActions;
     protected List<string> updateActions;
-
+    
+    /// <summary>
+    /// These actions are called when an object is installed. They get passed the furniture and a delta
+    /// time of 0
+    /// </summary>
+    protected List<string> installActions;
+    /// <summary>
+    /// These actions are called when an object is uninstalled. They get passed the furniture and a delta
+    /// time of 0
+    /// </summary>
+    protected List<string> uninstallActions;
+    
     // public Func<Furniture, ENTERABILITY> IsEnterable;
     protected string isEnterableAction;
 
@@ -101,6 +112,8 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
 
         return (ENTERABILITY)ret.Number;
     }
+
+    // If this furniture generates power then powerValue will be positive, if it consumer power then it will be negative
    
     private void InvokePowerValueChanged(IPowerRelated powerRelated)
     {
@@ -204,6 +217,8 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
     public Furniture()
     {
         updateActions = new List<string>();
+        installActions = new List<string>();
+        uninstallActions = new List<string>();
         furnParameters = new Dictionary<string, float>();
         jobs = new List<Job>();
         typeTags = new HashSet<string>();
@@ -309,6 +324,19 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
                 }
             }
         }
+
+        // Call LUA install scripts
+        if(obj.installActions != null )
+        FurnitureActions.CallFunctionsWithFurniture(obj.installActions.ToArray(), obj, 0);
+
+        // Update thermalDiffusifity using coefficient
+        float thermalDiffusivity = Temperature.defaultThermalDiffusivity;
+        if(obj.furnParameters.ContainsKey("thermal_diffusivity"))
+        {
+            thermalDiffusivity = obj.furnParameters["thermal_diffusivity"];
+        }
+
+        World.current.temperature.SetThermalDiffusivity(tile.X, tile.Y, thermalDiffusivity);
 
         return obj;
     }
@@ -499,10 +527,20 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
 
                 string functionName = reader.GetAttribute("FunctionName");
                 RegisterUpdateAction(functionName);
+                    break;
+            case "OnInstall":
+                // Called when obj is installed
+                string functionInstallName = reader.GetAttribute("FunctionName");
+                RegisterInstallAction(functionInstallName);
+
+                break;
+            case "OnUninstall":
+                // Called when obj is uninstalled
+                string functionUninstallName = reader.GetAttribute("FunctionName");
+                RegisterUninstallAction(functionUninstallName);
 
                 break;
             case "IsEnterable":
-
                 isEnterableAction = reader.GetAttribute("FunctionName");
 
                 break;
@@ -621,6 +659,32 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
         updateActions.Remove(luaFunctionName);
     }
 
+    /// <summary>
+    /// Registers a function that will be called every Install
+    /// </summary>
+    public void RegisterInstallAction(string luaFunctionName)
+    {
+        installActions.Add(luaFunctionName);
+    }
+
+    public void UnregisterInstallAction(string luaFunctionName)
+    {
+        installActions.Remove(luaFunctionName);
+    }
+
+    /// <summary>
+    /// Registers a function that will be called every UnInstall
+    /// </summary>
+    public void RegisterUninstallAction(string luaFunctionName)
+    {
+        uninstallActions.Add(luaFunctionName);
+    }
+
+    public void UnregisterUninstallAction(string luaFunctionName)
+    {
+        uninstallActions.Remove(luaFunctionName);
+    }
+
     public int JobCount()
     {
         return jobs.Count;
@@ -685,6 +749,14 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
             linksToNeighbour = f.linksToNeighbour;
             f.CancelJobs();
         }
+
+        // We call lua to decostruct
+        if (uninstallActions != null)
+            FurnitureActions.CallFunctionsWithFurniture(uninstallActions.ToArray(), this, 0);
+
+        // Update thermalDiffusifity to default value
+        World.current.temperature.SetThermalDiffusivity(tile.X, tile.Y,
+            Temperature.defaultThermalDiffusivity);
 
         tile.UnplaceFurniture();
 
