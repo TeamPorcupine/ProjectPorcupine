@@ -229,7 +229,7 @@ public class Job
                 cbJobCompleted(this);
             }
 
-            foreach (string luaFunc in cbJobCompletedLua)
+            foreach (string luaFunc in cbJobCompletedLua.ToList())
             {
                 FurnitureActions.CallFunction(luaFunc, this);
             }

@@ -410,6 +410,11 @@ function PowerGenerator_JobComplete( j )
 end
 
 function LandingPad_Temp_UpdateAction(furniture, deltaTime)
+    
+    if(furniture.tile.room.ID ~= 0) then
+        return
+    end
+    
 	spawnSpot = furniture.GetSpawnSpotTile()
 	jobSpot = furniture.GetJobSpotTile()
 	inputSpot = World.current.GetTileAt(jobSpot.X, jobSpot.y-1)
