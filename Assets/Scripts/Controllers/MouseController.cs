@@ -396,6 +396,26 @@ public class MouseController
                             {
                                 isValid = true;
                             } 
+                        } else if (dragType == "path")
+                        {
+                            bool xNeg = raw_start_x > raw_end_x ? true : false;
+
+                            if (xNeg && x >= raw_end_x && x <= raw_start_x)
+                            {
+                                if (y == raw_start_y || x == raw_end_x)
+                                {
+                                    isValid = true;
+                                }
+
+                            }
+                            else if (!xNeg && x <= raw_end_x && x >= raw_start_x)
+                            {
+                                if (y == raw_start_y || x == raw_end_x)
+                                {
+                                    isValid = true;
+                                }
+                            }
+
                         }
                         else
                         {
