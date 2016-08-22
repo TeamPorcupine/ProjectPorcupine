@@ -27,7 +27,6 @@ public class MouseController
     // The world-position start of our left-mouse drag operation.
     private Vector3 dragStartPosition;
     private List<GameObject> dragPreviewGameObjects;
-
     private BuildModeController bmc;
     private FurnitureSpriteController fsc;
     private MenuController menuController;
