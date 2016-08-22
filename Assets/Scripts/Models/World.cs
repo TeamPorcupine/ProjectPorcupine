@@ -5,6 +5,8 @@
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
+
+
 #endregion
 using UnityEngine;
 using System.Collections.Generic;
@@ -12,6 +14,7 @@ using System;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using System.Text.RegularExpressions;
 using System.IO;
 using MoonSharp.Interpreter;
 
@@ -172,7 +175,15 @@ public class World : IXmlSerializable
 
     public Character CreateCharacter(Tile t)
     {
-        Character c = new Character(t); 
+        Character c = new Character(t);
+
+        // Adds a random name to the Character
+        string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
+        filePath = System.IO.Path.Combine(filePath, "CharacterNames.txt");
+        string names = System.IO.File.ReadAllText(filePath);
+
+        string[] lines = Regex.Split( names, "\r\n" );
+        c.name = lines[UnityEngine.Random.Range(0, lines.Length-1)];
 
         characters.Add(c);
 
