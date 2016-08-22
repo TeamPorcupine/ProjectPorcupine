@@ -1,14 +1,22 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
+﻿#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
-using System.IO;
+using UnityEngine;
 
-public static class Settings {
-
-    private static Dictionary<string,string> settingsDict;
+public static class Settings 
+{
+    private static Dictionary<string, string> settingsDict;
     private static string settingsFilePath = System.IO.Path.Combine("Settings", "Settings.xml");
 
     public static string getSetting(string key , string defaultValue)
@@ -32,7 +40,7 @@ public static class Settings {
         }
     }
 
-    public static string getSetting(string key )
+    private static string getSetting(string key )
     {
         // if we haven't already loaded our settings do it now
         if (settingsDict == null) 
@@ -45,16 +53,18 @@ public static class Settings {
         // attempt to get the requested setting, if it is not found log a warning and return the null string
         if (settingsDict.TryGetValue(key, out value) == false)
         {
-            Logger.LogWarning("Atempted to access a setting that was not loaded from Settings.xml :\t" + key);
+            Debug.LogWarning("Atempted to access a setting that was not loaded from Settings.xml :\t" + key);
             return null;
         }
 
         return value;
     }
+    public static void setSetting(string key, object obj){
+        setSetting(key, obj.ToString());
+    }
 
     public static void setSetting(string key, string value)
     {
-
         // if we haven't already loaded our settings do it now
         if (settingsDict == null) 
         {
@@ -67,13 +77,13 @@ public static class Settings {
             // update the setting
             settingsDict.Remove(key); 
             settingsDict.Add(key, value);
-            Logger.Log("updated setting : " + key + " to value of " + value);
+            Debug.Log("updated setting : " + key + " to value of " + value);
         }
-        else // create a new setting
+        else 
         {
             // add a new setting to the dict
             settingsDict.Add(key, value);
-            Logger.Log("created new setting : " + key + " to value of " + value);
+            Debug.Log("created new setting : " + key + " to value of " + value);
         }
 
         saveSettings();
@@ -92,7 +102,7 @@ public static class Settings {
             // create a new element for each pair in the dict
             XmlElement settingElement = xDoc.CreateElement(pair.Key);
             settingElement.InnerText = pair.Value;
-            Logger.LogVerbose( pair.Key + " : " + pair.Value );
+            Debug.Log(pair.Key + " : " + pair.Value);
 
             // add this element inside the Settings element
             settingsNode.AppendChild(settingElement);
@@ -120,13 +130,13 @@ public static class Settings {
         // create an xml document from Settings.xml
         XmlDocument xDoc = new XmlDocument();
         xDoc.LoadXml(furnitureXmlText);
-        Logger.Log("Loaded settings from : \t" + filePath);
-        Logger.LogVerbose( xDoc.InnerText );
+        Debug.Log("Loaded settings from : \t" + filePath);
+        Debug.Log(xDoc.InnerText);
 
         // get the Settings node , it's children are the individual settings
         XmlNode settingsNode = xDoc.GetElementsByTagName("Settings").Item(0);
         XmlNodeList settingNodes = settingsNode.ChildNodes;
-        Logger.Log(settingNodes.Count + " settings loaded");
+        Debug.Log(settingNodes.Count + " settings loaded");
 
         // loop for each setting
         foreach (XmlNode node in settingNodes)
@@ -135,9 +145,70 @@ public static class Settings {
             {
                 // add setting to the settings dict
                 settingsDict.Add(node.Name, node.InnerText);
-                Logger.LogVerbose( node.Name + " : " + node.InnerText );
-
+                Debug.Log(node.Name + " : " + node.InnerText);
             }
         }
     }
+
+    public static int getSettingAsInt(string key, int defaultValue){
+
+        // Atempt to get the string value from the dict
+        string s = getSetting(key, defaultValue.ToString());
+
+        int i;
+
+        // Atempt to parse the string, if the parse failed return the default value
+        if (int.TryParse(s, out i) == false)
+        {
+            Debug.LogWarning("Could not parse setting " + key + " of value " + s + " to type int");
+            return defaultValue;
+        }
+        else
+        {
+            // we managed to get the setting we wanted
+            return i;
+        }
+    }
+
+    public static float getSettingAsFloat(string key, float defaultValue){
+
+        // Atempt to get the string value from the dict
+        string s = getSetting(key, defaultValue.ToString());
+
+        float f;
+
+        // Atempt to parse the string, if the parse failed return the default value
+        if (float.TryParse(s, out f) == false)
+        {
+            Debug.LogWarning("Could not parse setting " + key + " of value " + s + " to type float");
+            return defaultValue;
+        }
+        else
+        {
+            // we managed to get the setting we wanted
+            return f;
+        }
+    }
+
+    public static bool getSettingAsBool(string key, bool defaultValue){
+
+        // Atempt to get the string value from the dict
+        string s = getSetting(key, defaultValue.ToString());
+
+        bool b;
+
+        // Atempt to parse the string, if the parse failed return the default value
+        if (bool.TryParse(s, out b) == false)
+        {
+            Debug.LogWarning("Could not parse setting " + key + " of value " + s + " to type bool");
+            return defaultValue;
+        }
+        else
+        {
+            // we managed to get the setting we wanted
+            return b;
+        }
+    }
+        
+    // TODO : make generic getSettingAs that infers return type from default value
 }

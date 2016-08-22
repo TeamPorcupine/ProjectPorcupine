@@ -73,7 +73,7 @@ public class SpriteManager : MonoBehaviour
 
     void LoadSpritesFromDirectory(string filePath)
     {
-        Logger.Log("LoadSpritesFromDirectory: " + filePath);
+        Debug.Log("LoadSpritesFromDirectory: " + filePath);
         // First, we're going to see if we have any more sub-directories,
         // if so -- call LoadSpritesFromDirectory on that.
 
@@ -104,7 +104,7 @@ public class SpriteManager : MonoBehaviour
 
     void LoadImage(string spriteCategory, string filePath)
     {
-        //Logger.Log("LoadImage: " + filePath);
+        //Debug.Log("LoadImage: " + filePath);
 
         // TODO:  LoadImage is returning TRUE for things like .meta and .xml files.  What??!
         //		So as a temporary fix, let's just bail if we have something we KNOW should not
@@ -137,7 +137,7 @@ public class SpriteManager : MonoBehaviour
                 string xmlText = System.IO.File.ReadAllText(xmlPath);
                 // TODO: Loop through the xml file finding all the <sprite> tags
                 // and calling LoadSprite once for each of them.
-
+                
                 XmlTextReader reader = new XmlTextReader(new StringReader(xmlText));
 
                 // Set our cursor on the first Sprite we find.
@@ -150,7 +150,7 @@ public class SpriteManager : MonoBehaviour
                 }
                 else
                 {
-                    Logger.LogError("Could not find a <Sprites> tag.");
+                    Debug.LogError("Could not find a <Sprites> tag.");
                     return;
                 }
 
@@ -159,7 +159,7 @@ public class SpriteManager : MonoBehaviour
             {
                 // File couldn't be read, probably because it doesn't exist
                 // so we'll just assume the whole image is one sprite with pixelPerUnit = 32
-                LoadSprite(spriteCategory, baseSpriteName, imageTexture, new Rect(0, 0, imageTexture.width, imageTexture.height), 32);
+                LoadSprite(spriteCategory, baseSpriteName, imageTexture, new Rect(0, 0, imageTexture.width, imageTexture.height), 32, new Vector2(0.5f, 0.5f));
 
             }
 
@@ -173,22 +173,46 @@ public class SpriteManager : MonoBehaviour
 
     void ReadSpriteFromXml(string spriteCategory, XmlReader reader, Texture2D imageTexture)
     {
-        //Logger.Log("ReadSpriteFromXml");
+        //Debug.Log("ReadSpriteFromXml");
         string name = reader.GetAttribute("name");
         int x = int.Parse(reader.GetAttribute("x"));
         int y = int.Parse(reader.GetAttribute("y"));
         int w = int.Parse(reader.GetAttribute("w"));
         int h = int.Parse(reader.GetAttribute("h"));
+
+        //Try read the pivot point
+        string pivotXAttribute = reader.GetAttribute("pivotX");
+        float pivotX;
+        if (float.TryParse(pivotXAttribute, out pivotX) == false)
+        {
+            //If pivot point didn't exist default to 0.5f
+            pivotX = 0.5f;
+        }
+
+        //Clamp pivot between 0..1
+        pivotX = Mathf.Clamp01(pivotX);
+
+        //Try read the pivot point
+        string pivotYAttribute = reader.GetAttribute("pivotY");
+        float pivotY;
+        if (float.TryParse(pivotYAttribute, out pivotY) == false)
+        {
+            //If pivot point didn't exist default to 0.5f
+            pivotY = 0.5f;
+        }
+
+        //Clamp pivot between 0..1
+        pivotY = Mathf.Clamp01(pivotY);
+        
         int pixelPerUnit = int.Parse(reader.GetAttribute("pixelPerUnit"));
 
-        LoadSprite(spriteCategory, name, imageTexture, new Rect(x, y, w, h), pixelPerUnit);
+        LoadSprite(spriteCategory, name, imageTexture, new Rect(x, y, w, h), pixelPerUnit, new Vector2(pivotX, pivotY));
     }
 
-    void LoadSprite(string spriteCategory, string spriteName, Texture2D imageTexture, Rect spriteCoordinates, int pixelsPerUnit)
+    void LoadSprite(string spriteCategory, string spriteName, Texture2D imageTexture, Rect spriteCoordinates, int pixelsPerUnit, Vector2 pivotPoint)
     {
         spriteName = spriteCategory + "/" + spriteName;
-        //Logger.Log("LoadSprite: " + spriteName);
-        Vector2 pivotPoint = new Vector2(0.5f, 0.5f);	// Ranges from 0..1 -- so 0.5f == center
+        //Debug.Log("LoadSprite: " + spriteName);
 
         Sprite s = Sprite.Create(imageTexture, spriteCoordinates, pivotPoint, pixelsPerUnit);
 
@@ -197,13 +221,13 @@ public class SpriteManager : MonoBehaviour
 
     public Sprite GetSprite(string categoryName, string spriteName)
     {
-        //Logger.Log(spriteName);
+        //Debug.Log(spriteName);
 
         spriteName = categoryName + "/" + spriteName;
 
         if (sprites.ContainsKey(spriteName) == false)
         {
-            //Logger.LogError("No sprite with name: " + spriteName);
+            //Debug.LogError("No sprite with name: " + spriteName);
             
             //Return a magenta image
             return Sprite.Create(noRescourceTexture, new Rect(Vector2.zero, new Vector3(32, 32)), new Vector2(0.5f, 0.5f), 32);

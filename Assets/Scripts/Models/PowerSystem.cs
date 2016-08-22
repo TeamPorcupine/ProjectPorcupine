@@ -12,16 +12,16 @@ using System.Linq;
 
 public class PowerSystem
 {
-    private HashSet<Furniture> powerGrid;
+    private readonly HashSet<IPowerRelated> powerGrid;
 
     private float currentPower;
 
     public PowerSystem()
     {
-        powerGrid = new HashSet<Furniture>();
+        powerGrid = new HashSet<IPowerRelated>();
     }
 
-    public event Action<Furniture> PowerLevelChanged;
+    public event Action<IPowerRelated> PowerLevelChanged;
 
     public float PowerLevel
     {
@@ -32,49 +32,46 @@ public class PowerSystem
 
         private set
         {
-            if (!currentPower.Equals(value))
-            {
-                currentPower = value;
-                NotifyPowerConsumers();
-            }
+            if (currentPower.Equals(value)) return;
+            currentPower = value;
+            NotifyPowerConsumers();
         }
     }
 
-    public bool AddToPowerGrid(Furniture furniture)
+    public bool AddToPowerGrid(IPowerRelated powerRelated)
     {
-        if (PowerLevel + furniture.powerValue < 0)
+        if (PowerLevel + powerRelated.PowerValue < 0)
         {
             return false;
         }
 
-        powerGrid.Add(furniture);
-        AdjustPowelLevel(furniture);
-        furniture.cbOnRemoved += RemoveFromPowerGrid;
+        powerGrid.Add(powerRelated);
+        AdjustPowelLevel();
+        powerRelated.PowerValueChanged += OnPowerValueChanged;
+        Furniture furniture = powerRelated as Furniture;
+        if (furniture != null)
+        {            
+            furniture.cbOnRemoved += RemoveFromPowerGrid;
+        }
+
         return true;
     }
 
-    public void RemoveFromPowerGrid(Furniture furniture)
+    public void RemoveFromPowerGrid(IPowerRelated powerRelated)
     {
-        powerGrid.Remove(furniture);
-        AdjustPowelLevel(furniture, false);
+        powerGrid.Remove(powerRelated);
+        AdjustPowelLevel();
     }
 
-    public bool RequestPower(Furniture furniture)
+    public bool RequestPower(IPowerRelated powerRelated)
     {
-        return powerGrid.Contains(furniture);
+        return powerGrid.Contains(powerRelated);
     }
 
-    private void AdjustPowelLevel(Furniture furniture, bool isFurnitureAdded = true)
+    private void AdjustPowelLevel()
     {
-        if (isFurnitureAdded)
-        {
-            PowerLevel += furniture.powerValue;
-        }
-        else
-        {
-            PowerLevel -= furniture.powerValue;
-        }
-        if (PowerLevel < 0)
+        PowerLevel = powerGrid.Sum(related => related.PowerValue);
+        if (PowerLevel < 0.0f)
         {
             RemovePowerConsumer();
         }
@@ -82,25 +79,35 @@ public class PowerSystem
 
     private void RemovePowerConsumer()
     {
-        Furniture powerConsumer = powerGrid.FirstOrDefault(furniture => furniture.IsPowerConsumer);
-        if (powerConsumer == null) { return; }
+        IPowerRelated powerConsumer = powerGrid.FirstOrDefault(powerRelated => powerRelated.IsPowerConsumer);
+        if (powerConsumer == null)
+        {
+            return;
+        }
+
         RemoveFromPowerGrid(powerConsumer);
     }
 
     private void NotifyPowerConsumers()
     {
-        foreach (Furniture furniture in powerGrid.Where(furniture => furniture.IsPowerConsumer))
+        foreach (IPowerRelated powerRelated in powerGrid.Where(powerRelated => powerRelated.IsPowerConsumer))
         {
-            InvokePowerLevelChanged(furniture);
+            InvokePowerLevelChanged(powerRelated);
         }
     }
 
-    private void InvokePowerLevelChanged(Furniture furniture)
+    private void OnPowerValueChanged(IPowerRelated powerRelated)
     {
-        Action<Furniture> handler = PowerLevelChanged;
+        RemoveFromPowerGrid(powerRelated);
+        AddToPowerGrid(powerRelated);
+    }
+
+    private void InvokePowerLevelChanged(IPowerRelated powerRelated)
+    {
+        Action<IPowerRelated> handler = PowerLevelChanged;
         if (handler != null)
         {
-            handler(furniture);
+            handler(powerRelated);
         }
     }
 }

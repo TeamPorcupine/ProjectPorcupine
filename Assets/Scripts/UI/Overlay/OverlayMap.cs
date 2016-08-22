@@ -30,7 +30,7 @@ public class OverlayMap : MonoBehaviour {
     /// Transparency of overlay
     /// </summary>
     [Range(0,1)]
-    public float transparency = 0.4f;
+    public float transparency = 0.8f;
     /// <summary>
     /// Update interval (0 for every Update, inf for never)
     /// </summary>
@@ -170,6 +170,13 @@ public class OverlayMap : MonoBehaviour {
             Bake();
             elapsed = 0f;
         }
+
+        // TODO: Prettify
+        Vector2 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        //World.current.GetTileAt((int) pos.x, (int) pos.y);
+        if(valueAt != null)
+            textView.GetComponent<UnityEngine.UI.Text>().text =
+                string.Format("[DEBUG] Currently over: {0}", valueAt((int)(pos.x + 0.5f), (int)(pos.y + 0.5f)));
     }
 
     void Destroy()
@@ -216,8 +223,12 @@ public class OverlayMap : MonoBehaviour {
         // Set material
         Shader shader = Shader.Find("Transparent/Diffuse");
         Material mat = new Material(shader);
-        meshRenderer.sharedMaterials[0] = mat;
-        meshRenderer.sharedMaterials[0].mainTexture = texture;
+        meshRenderer.material = mat;
+        if(mat == null || meshRenderer == null || texture == null)
+        {
+            Debug.LogError("Material or renderer is null. Failing.");
+        }
+        meshRenderer.material.mainTexture = texture;
 
         initialized = true;
     }
@@ -265,6 +276,9 @@ public class OverlayMap : MonoBehaviour {
             ++n;
         }
         colorMapTexture.Apply();
+
+        colorMapView.GetComponent<UnityEngine.UI.Image>().material.mainTexture = colorMapTexture;
+        //colorMapView.GetComponent<UnityEngine.UI.Image>()
     }
 
     /// <summary>
@@ -280,9 +294,11 @@ public class OverlayMap : MonoBehaviour {
         {
             for (int x = 0; x < xSize; x++)
             {
+                float v = valueAt(x, y);
+                Debug.Assert(v >= 0 && v < 256);
                 Graphics.CopyTexture(colorMapTexture,
                     0, 0,
-                    (valueAt(x, y) % 256) * xPixelsPerTile, 0,
+                    ((int) v % 256) * xPixelsPerTile, 0,
                     xPixelsPerTile, yPixelsPerTile,
                     texture,
                     0, 0,
@@ -345,6 +361,9 @@ public class OverlayMap : MonoBehaviour {
     }
 
     static List<Color32> _random_colors;
+    private GameObject colorMapView;
+    private GameObject textView;
+
     static void GenerateRandomColors(int size)
     {
         if (_random_colors == null)
@@ -456,11 +475,11 @@ public class OverlayMap : MonoBehaviour {
                 Debug.LogError(string.Format("Couldn't find a function named '{0}' in '{1}'", descr.luaFunctionName));
                 return;
             }
-            Debug.Log(string.Format("Setting LUA function for overlay to '{0}'", descr.luaFunctionName));
+            //Debug.Log(string.Format("Setting LUA function for overlay to '{0}'", descr.luaFunctionName));
             valueAt = (x, y) => {
                 if (WorldController.Instance == null) return 0;
                 Tile tile = WorldController.Instance.GetTileAtWorldCoord(new Vector3(x, y, 0));
-                return (int) script.Call(handle, new object[] { tile }).ToScalar().CastToNumber();
+                return (int) script.Call(handle, new object[] { tile, World.current }).ToScalar().CastToNumber();
             };
             colorMap = descr.colorMap;
             Bake();
@@ -483,7 +502,28 @@ public class OverlayMap : MonoBehaviour {
             return;
         }
 
-        List<string> options = new List<string> { "None" };
+        textView = new GameObject();
+        textView.AddComponent<UnityEngine.UI.Text>();
+        textView.AddComponent<UnityEngine.UI.LayoutElement>();
+        textView.GetComponent<UnityEngine.UI.LayoutElement>().minHeight = 30;
+        textView.GetComponent<UnityEngine.UI.LayoutElement>().minWidth = 150;
+        textView.transform.SetParent(parentPanel.transform);
+        textView.GetComponent<UnityEngine.UI.Text>().text = "Currently slected:";
+        textView.GetComponent<UnityEngine.UI.Text>().resizeTextForBestFit = true;
+        textView.GetComponent<UnityEngine.UI.Text>().font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+
+        //colorMapView = GameObject.CreatePrimitive(PrimitiveType.Quad);
+        colorMapView = new GameObject();
+        colorMapView.AddComponent<UnityEngine.UI.Image>();
+        colorMapView.transform.SetParent(parentPanel.transform);
+        colorMapView.AddComponent<UnityEngine.UI.Text>();
+        colorMapView.AddComponent<UnityEngine.UI.LayoutElement>();
+        colorMapView.GetComponent<UnityEngine.UI.LayoutElement>().minHeight = 30;
+        colorMapView.GetComponent<UnityEngine.UI.LayoutElement>().minWidth = 150;
+        Shader shader = Shader.Find("UI/Unlit/Transparent");
+        colorMapView.GetComponent<UnityEngine.UI.Image>().material = new Material(shader);
+
+        List <string> options = new List<string> { "None" };
         options.AddRange(overlays.Keys);
 
         dropdown.AddOptions(options);
