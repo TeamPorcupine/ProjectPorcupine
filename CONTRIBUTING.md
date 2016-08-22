@@ -69,7 +69,7 @@ We are using Unity version 5.4 .
 All pull requests must build in 5.4 to be a valid patch.  
 
 # General resources
-* [Github Tutorial by Quill18](https://www.youtube.com/watch?v=-N4Cghw0l2Q)
+* [Github Tutorial by Quill18](https://www.youtube.com/watch?v=R2fl17eEpwI)
 * [GitHub Forking Overview](https://gist.github.com/Chaser324/ce0505fbed06b947d962)
 * [GitHub Documentation for Desktop Client](https://help.github.com/desktop/guides/contributing/)
 * [GitHub Desktop Client](https://desktop.github.com/)
@@ -145,6 +145,8 @@ Additionally, for the sake of simplicity, we are standardizing on what should be
 * Avoid making changes to the Unity-specific files, like the scene and the project settings unless absolutely necessary. Changes here are very likely to cause difficult merge conflicts. Work in code as much as possible. (We will be trying to change the UI to be more code-driven in the future.) Making changes to prefabs should generally be safe -- but create a copy of the main scene and work there instead (then delete your copy of the scene before committing).
 
 * Include screenshots demonstrating your change if applicable. All UI changes should include screenshots.
+
+* If you want to help with localization of the project you can submit your work over at [Localization Repo](https://github.com/QuiZr/ProjectPorcupineLocalization)
 
 That's it! Following these guidelines will ensure that your additions are approved quickly and integrated into the project. Thanks for your contribution!
 
