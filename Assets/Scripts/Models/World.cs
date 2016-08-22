@@ -34,6 +34,7 @@ public class World : IXmlSerializable
 
     public Dictionary<string, Furniture> furniturePrototypes;
     public Dictionary<string, Job> furnitureJobPrototypes;
+    public Dictionary<string, InventoryCommon> inventoryPrototypes;
 
     // The tile width of the world.
     public int Width { get; protected set; }
@@ -149,6 +150,8 @@ public class World : IXmlSerializable
         }
 
         CreateFurniturePrototypes();
+
+        CreateInventoryPrototypes();
 
         characters = new List<Character>();
         furnitures = new List<Furniture>();
@@ -282,6 +285,69 @@ public class World : IXmlSerializable
         else
         {
             Logger.LogError("Did not find a 'Furnitures' element in the prototype definition file.");
+        }
+    }
+
+    void CreateInventoryPrototypes()
+    {
+        inventoryPrototypes = new Dictionary<string, InventoryCommon>();
+
+        string dataPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
+        string filePath = System.IO.Path.Combine(dataPath, "Inventory.xml");
+        string inventoryXmlText = System.IO.File.ReadAllText(filePath);
+        LoadInventoryPrototypesFromFile(inventoryXmlText);
+
+
+        DirectoryInfo[] mods = WorldController.Instance.modsManager.GetMods();
+        foreach (DirectoryInfo mod in mods)
+        {
+            string inventoryXmlModFile = System.IO.Path.Combine(mod.FullName, "Inventory.xml");
+            if (File.Exists(inventoryXmlModFile))
+            {
+                string inventoryXmlModText = System.IO.File.ReadAllText(inventoryXmlModFile);
+                LoadInventoryPrototypesFromFile(inventoryXmlModText);
+            }
+        }
+    }
+
+    void LoadInventoryPrototypesFromFile(string inventoryXmlText)
+    {
+        XmlTextReader reader = new XmlTextReader(new StringReader(inventoryXmlText));
+
+        int inventoryCount = 0;
+        if (reader.ReadToDescendant("Inventories"))
+        {
+            if (reader.ReadToDescendant("Inventory"))
+            {
+                do
+                {
+                    inventoryCount++;
+
+                    InventoryCommon inv = new InventoryCommon();
+                    try
+                    {
+                        inv.ReadXmlPrototype(reader);
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.LogError("Error reading inventory prototype for: " + inv.objectType + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
+                    }
+
+
+                    inventoryPrototypes[inv.objectType] = inv;
+
+
+
+                } while (reader.ReadToNextSibling("Inventory"));
+            }
+            else
+            {
+                Logger.LogError("The inventory prototype definition file doesn't have any 'Inventory' elements.");
+            }
+        }
+        else
+        {
+            Logger.LogError("Did not find a 'Inventories' element in the prototype definition file.");
         }
     }
 
