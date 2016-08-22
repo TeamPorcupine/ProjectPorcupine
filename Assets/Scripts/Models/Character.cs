@@ -216,7 +216,7 @@ public class Character : IXmlSerializable, ISelectable
         DestTile = myJob.tile;
 
         // If the dest tile does not have neighbours it's very
-        if (DestTile.HasNeighboursOfType(TileType.Floor) == false)
+		if ((DestTile == null || DestTile.HasNeighboursOfType(TileType.Floor) || DestTile.HasNeighboursOfType(TileType.Ladder)) == false)
         {
             Logger.LogVerbose("No neighbouring floor tiles! Abandoning job.");
             AbandonJob(false);
