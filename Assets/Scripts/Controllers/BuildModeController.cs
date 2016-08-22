@@ -7,8 +7,6 @@
 // ====================================================
 #endregion
 using UnityEngine;
-using System.Collections.Generic;
-using UnityEngine.EventSystems;
 
 public enum BuildMode
 {
@@ -19,19 +17,10 @@ public enum BuildMode
 
 public class BuildModeController : MonoBehaviour
 {
-
     public BuildMode buildMode = BuildMode.FLOOR;
-    TileType buildModeTile = TileType.Floor;
     public string buildModeObjectType;
 
-
-
-    // Use this for initialization
-    void Start()
-    {
-
-
-    }
+    private TileType buildModeTile = TileType.Floor;
 
     public bool IsObjectDraggable()
     {
@@ -44,7 +33,6 @@ public class BuildModeController : MonoBehaviour
         Furniture proto = WorldController.Instance.world.furniturePrototypes[buildModeObjectType];
 
         return proto.Width == 1 && proto.Height == 1;
-
     }
 
     public void SetMode_BuildFloor()
@@ -94,15 +82,13 @@ public class BuildModeController : MonoBehaviour
         if (buildMode == BuildMode.FURNITURE)
         {
             // Create the Furniture and assign it to the tile
-
             // Can we build the furniture in the selected tile?
             // Run the ValidPlacement function!
-
             string furnitureType = buildModeObjectType;
 
             if ( 
                 WorldController.Instance.world.IsFurniturePlacementValid(furnitureType, t) &&
-                DoesBuildJobOverlapExistingBuildJob(t,furnitureType) == false)
+                DoesBuildJobOverlapExistingBuildJob(t, furnitureType) == false)
             {
                 // This tile position is valid for this furniture
 
@@ -114,20 +100,20 @@ public class BuildModeController : MonoBehaviour
                 }
 
                 // Create a job for it to be build
-
                 Job j;
 
                 if (WorldController.Instance.world.furnitureJobPrototypes.ContainsKey(furnitureType))
                 {
                     // Make a clone of the job prototype
                     j = WorldController.Instance.world.furnitureJobPrototypes[furnitureType].Clone();
+
                     // Assign the correct tile.
                     j.tile = t;
                 }
                 else
                 {
                     Logger.LogError("There is no furniture job prototype for '" + furnitureType + "'");
-                    j = new Job(t, furnitureType, FurnitureActions.JobComplete_FurnitureBuilding, 0.1f, null,Job.JobPriority.High);
+                    j = new Job(t, furnitureType, FurnitureActions.JobComplete_FurnitureBuilding, 0.1f, null, Job.JobPriority.High);
                 }
 
                 j.furniturePrototype = WorldController.Instance.world.furniturePrototypes[furnitureType];
@@ -138,7 +124,7 @@ public class BuildModeController : MonoBehaviour
                     {
                         // FIXME: I don't like having to manually and explicitly set
                         // flags that preven conflicts. It's too easy to forget to set/clear them!
-                        Tile offsetTile = WorldController.Instance.world.GetTileAt(x_off,y_off);
+                        Tile offsetTile = WorldController.Instance.world.GetTileAt(x_off, y_off);
                         offsetTile.pendingBuildJob = j;
                         j.cbJobStopped += (theJob) =>
                             {
@@ -156,14 +142,12 @@ public class BuildModeController : MonoBehaviour
                 {
                     WorldController.Instance.world.jobQueue.Enqueue(j);
                 }
-
             }
-
         }
         else if (buildMode == BuildMode.FLOOR)
         {
             // We are in tile-changing mode.
-            //t.Type = buildModeTile;
+            ////t.Type = buildModeTile;
 
             TileType tileType = buildModeTile;
 
@@ -176,8 +160,8 @@ public class BuildModeController : MonoBehaviour
                 // This tile position is valid tile type
 
                 // Create a job for it to be build
-
-                Job j = new Job(t,
+                Job j = new Job(
+                    t,
                     tileType, 
                     Tile.ChangeTileTypeJobComplete, 
                     0.1f, 
@@ -185,7 +169,6 @@ public class BuildModeController : MonoBehaviour
                     Job.JobPriority.High, 
                     false,
                     true);
-
 
                 // FIXME: I don't like having to manually and explicitly set
                 // flags that preven conflicts. It's too easy to forget to set/clear them!
@@ -204,9 +187,7 @@ public class BuildModeController : MonoBehaviour
                 {
                     WorldController.Instance.world.jobQueue.Enqueue(j);
                 }
-
             }
-
         }
         else if (buildMode == BuildMode.DECONSTRUCT)
         {
@@ -219,13 +200,11 @@ public class BuildModeController : MonoBehaviour
             {
                 t.pendingBuildJob.CancelJob();
             }
-
         }
         else
         {
             Logger.LogError("UNIMPLEMENTED BUILD MODE");
         }
-
     }
 
     // Checks whether the given floor type is allowed to be built on the tile.
@@ -260,5 +239,8 @@ public class BuildModeController : MonoBehaviour
         return false;
     }
 
-
+    // Use this for initialization
+    private void Start()
+    {
+    }
 }
