@@ -229,9 +229,9 @@ public class Job
                 cbJobCompleted(this);
             }
 
-            foreach (string luaFunc in cbJobCompletedLua)
+            for (int i = 0; i < cbJobCompletedLua.Count; i++)
             {
-                FurnitureActions.CallFunction(luaFunc, this);
+                FurnitureActions.CallFunction(cbJobCompletedLua[i], this);
             }
 
             if (jobRepeats == false)
