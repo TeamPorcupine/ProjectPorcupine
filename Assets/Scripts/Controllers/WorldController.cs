@@ -27,6 +27,7 @@ public class WorldController : MonoBehaviour
 
     public BuildModeController buildModeController;
     public MouseController mouseController;
+    public SpawnInventoryController spawnInventoryController;
     public ModsManager modsManager;
 
     public static WorldController Instance { get; protected set; }
@@ -99,6 +100,10 @@ public class WorldController : MonoBehaviour
         jobSpriteController = new JobSpriteController(world, furnitureSpriteController);
         inventorySpriteController = new InventorySpriteController(world, inventoryUI);
         buildModeController = new BuildModeController();
+        if(Settings.getSettingAsBool("DevTools_enabled", false))
+        {
+            spawnInventoryController = new SpawnInventoryController();
+        }
         mouseController = new MouseController(buildModeController, furnitureSpriteController, circleCursorPrefab);
 
         //Initialising controllers
