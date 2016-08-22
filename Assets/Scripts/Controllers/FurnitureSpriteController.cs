@@ -144,8 +144,7 @@ public class FurnitureSpriteController
 
         GameObject furn_go = furnitureGameObjectMap[furn];
 
-        // FIXME: This hardcoding is not ideal!
-        if (furn.objectType == "Door" || furn.objectType == "Airlock")
+        if (furn.HasTypeTag("Door"))
         {
             // By default, the door graphic is meant for walls to the east & west
             // Check to see if we actually have a wall north/south, and if so
