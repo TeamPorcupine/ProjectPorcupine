@@ -224,7 +224,8 @@ end
 function MetalSmelter_UpdateAction(furniture, deltaTime)
 	spawnSpot = furniture.GetSpawnSpotTile()
 
-	if(spawnSpot.Inventory == nil) then
+	--if(spawnSpot.Inventory == nil) then
+	if(furniture.GetParameter("smelting") == 0) then
 		if(furniture.JobCount() == 0) then
 			itemsDesired = {Inventory.__new("Raw Iron", 50, 0)}
 
@@ -245,6 +246,11 @@ function MetalSmelter_UpdateAction(furniture, deltaTime)
 			furniture.AddJob(j)
 		end
 	else
+		-- ugly hack because spawnSpot inventory is disappearing, so just reset it to what it should be if it's gone
+		if(spawnSpot.inventory == nil) then
+			spawnSpot.inventory = Inventory.__new("Raw Iron", 50, 0)
+		end
+
 		furniture.ChangeParameter("smelttime", deltaTime)
 
 		if(furniture.GetParameter("smelttime") >= furniture.GetParameter("smelttime_required")) then
@@ -266,12 +272,14 @@ function MetalSmelter_UpdateAction(furniture, deltaTime)
 
 			if(spawnSpot.Inventory.stackSize <= 0) then
 				spawnSpot.Inventory = nil
+				furniture.ChangeParameter("smelting", 0)
 			end
 		end
 	end
 end
 
 function MetalSmelter_JobComplete(j)
+	j.furniture.ChangeParameter("smelting", 1)
     j.UnregisterJobCompletedCallback("MetalSmelter_JobComplete")
     j.UnregisterJobWorkedCallback("MetalSmelter_JobWorked")
 end
