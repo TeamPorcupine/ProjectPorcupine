@@ -189,12 +189,12 @@ public class WorldGenerator
                 }
                 catch (System.Exception e)
                 {
-                    Logger.LogError("Error reading WorldGenerator/Asteroid" + System.Environment.NewLine + "Exception: " + e.Message + System.Environment.NewLine + "StackTrace: " + e.StackTrace);
+                    Debug.LogError("Error reading WorldGenerator/Asteroid" + System.Environment.NewLine + "Exception: " + e.Message + System.Environment.NewLine + "StackTrace: " + e.StackTrace);
                 }
             }
             else
             {
-                Logger.LogError("Did not find a 'Asteroid' element in the WorldGenerator definition file.");
+                Debug.LogError("Did not find a 'Asteroid' element in the WorldGenerator definition file.");
             }
 
             if (reader.ReadToNextSibling("StartArea"))
@@ -221,7 +221,7 @@ public class WorldGenerator
 
                                 if (splittedString.Length < startAreaWidth * startAreaHeight)
                                 {
-                                    Logger.LogError("Error reading 'Tiles' array to short: " + splittedString.Length + " !");
+                                    Debug.LogError("Error reading 'Tiles' array to short: " + splittedString.Length + " !");
                                     break;
                                 }
 
@@ -255,17 +255,17 @@ public class WorldGenerator
                 }
                 catch (System.Exception e)
                 {
-                    Logger.LogError("Error reading WorldGenerator/StartArea" + System.Environment.NewLine + "Exception: " + e.Message + System.Environment.NewLine + "StackTrace: " + e.StackTrace);
+                    Debug.LogError("Error reading WorldGenerator/StartArea" + System.Environment.NewLine + "Exception: " + e.Message + System.Environment.NewLine + "StackTrace: " + e.StackTrace);
                 }
             }
             else
             {
-                Logger.LogError("Did not find a 'StartArea' element in the WorldGenerator definition file.");
+                Debug.LogError("Did not find a 'StartArea' element in the WorldGenerator definition file.");
             }
         }
         else
         {
-            Logger.LogError("Did not find a 'WorldGenerator' element in the WorldGenerator definition file.");
+            Debug.LogError("Did not find a 'WorldGenerator' element in the WorldGenerator definition file.");
         }
     }
 }
