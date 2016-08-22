@@ -6,17 +6,19 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using UnityEngine;
 using System.Collections.Generic;
 using MoonSharp;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
+using UnityEngine;
 
 [MoonSharpUserData]
 public class GameEvent 
 {
     public string Name { get; protected set; }
+
     public bool Repeat { get; protected set; }
+
     public int MaxRepeats { get; protected set; }
 
     protected List<string> preconditions;
@@ -26,7 +28,8 @@ public class GameEvent
     private float timer;
     private int repeats;
 
-    public GameEvent(string name, bool repeat, int maxRepeats){
+    public GameEvent(string name, bool repeat, int maxRepeats)
+    {
         Name = name;
         Repeat = repeat;
         MaxRepeats = maxRepeats;
@@ -36,14 +39,17 @@ public class GameEvent
         repeats = 0;
     }
 
-    public void Update(float deltaTime){
+    public void Update(float deltaTime)
+    {
         int conditionsMet = 0;
-        foreach(string precondition in preconditions){
+        foreach (string precondition in preconditions)
+        {
             // Call lua precondition it should return 1 if met otherwise 0
-            conditionsMet += (int)(GameEventActions.CallFunction(precondition, this, deltaTime).Number);
+            conditionsMet += (int)GameEventActions.CallFunction(precondition, this, deltaTime).Number;
         }
 
-        if(conditionsMet >= preconditions.Count && executed == false && (MaxRepeats <= 0 || repeats < MaxRepeats)){
+        if (conditionsMet >= preconditions.Count && executed == false && (MaxRepeats <= 0 || repeats < MaxRepeats))
+        {
             repeats++;
             Execute();
         }
@@ -72,8 +78,10 @@ public class GameEvent
             GameEventActions.CallFunctionsWithEvent(executionActions.ToArray(), this);
         }
 
-        if(!Repeat)
+        if (!Repeat)
+        {
             executed = true;
+        }
     }
 
     public void RegisterPrecondition(string luaFunctionName)
@@ -83,7 +91,6 @@ public class GameEvent
 
     public void RegisterPreconditions(string[] luaFunctionNames)
     {
-
         preconditions.AddRange(luaFunctionNames);
     }
 
@@ -94,7 +101,6 @@ public class GameEvent
 
     public void RegisterExecutionActions(string[] luaFunctionNames)
     {
-
         executionActions.AddRange(luaFunctionNames);
     }
 }

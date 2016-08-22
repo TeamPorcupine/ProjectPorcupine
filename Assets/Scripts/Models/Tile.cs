@@ -22,7 +22,8 @@ using MoonSharp.Interpreter;
 public enum TileType
 {
     Empty,
-    Floor
+    Floor,
+    Ladder
 };
 
 public enum ENTERABILITY
@@ -96,12 +97,15 @@ public class Tile :IXmlSerializable, ISelectable
 
                 bool canMove = false;
 
-                foreach (Tile n in ns) // Loop through all the horizontal/vertical neighbours of the empty tile.
+                // Loop through all the horizontal/vertical neighbours of the empty tile.
+                foreach (Tile n in ns)
                 {
-                    canMove = canMove || (n != null && n.Type == TileType.Floor); // If the neighbour is a floor tile, set canMove to true.
+                    // If the neighbour is a floor tile, set canMove to true.
+                    canMove = canMove || (n != null && (n.Type == TileType.Floor || n.Type == TileType.Ladder));
                 }
 
-                return canMove ? baseTileMovementCost : 0f; // If canMove is true, return baseTileMovementCost, else, return 0f.
+                // If canMove is true, return baseTileMovementCost, else, return 0f.
+                return canMove ? baseTileMovementCost : 0f;
             }
 
             if (furniture == null)
@@ -289,6 +293,22 @@ public class Tile :IXmlSerializable, ISelectable
         return ns;
     }
 
+    /// <summary>
+    /// If one of the 8 neighbouring tiles is of TileType type then this returns true.
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
+    public bool HasNeighboursOfType(TileType type)
+    {
+        foreach (Tile tile in GetNeighbours(true))
+        {
+            if (tile.Type == type)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public XmlSchema GetSchema()
     {

@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Inventories>
+  <Inventory objectType="Raw Iron">
+    <maxStackSize>50</maxStackSize>
+  </Inventory>
+  <Inventory objectType="Ice">
+    <maxStackSize>10</maxStackSize>
+  </Inventory>
+  <Inventory objectType="Uranium">
+    <maxStackSize>20</maxStackSize>
+  </Inventory>
+  <Inventory objectType="Steel Plate">
+    <maxStackSize>50</maxStackSize>
+  </Inventory>
+  <Inventory objectType="Power Cell">
+    <maxStackSize>5</maxStackSize>
+  </Inventory>
+  <Inventory objectType="Copper Wire">
+    <maxStackSize>50</maxStackSize>
+  </Inventory>
+</Inventories>

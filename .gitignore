@@ -5,6 +5,8 @@
 /[Bb]uilds/
 /Assets/AssetStoreTools*
 /Assets/StreamingAssets/Data/Mods/*
+!/Assets/StreamingAssets/Data/Mods/README.md
+!/Assets/StreamingAssets/Data/Mods/README.md.meta
 /[Pp]roject[Ss]ettings/ProjectSettings.asset
 /[Pp]roject[Ss]ettings/ProjectVersion.txt
 
@@ -34,3 +36,7 @@ sysinfo.txt
 
 # StyleCop
 **StyleCop.Cache*
+
+# Localization files
+/Assets/StreamingAssets/Localization/*
+/Assets/StreamingAssets/Localization.meta
