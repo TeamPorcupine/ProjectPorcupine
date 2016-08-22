@@ -320,7 +320,7 @@ public class World : IXmlSerializable
                         need.ReadXmlPrototype(reader);
                     }
                     catch {
-                        Debug.LogError("Error reading furniture prototype for: " + need.needType);
+                        Debug.LogError("Error reading need prototype for: " + need.needType);
                     }
 
 
@@ -328,12 +328,13 @@ public class World : IXmlSerializable
 
 
 
-                } while (reader.ReadToNextSibling("Furniture"));
+                } while (reader.ReadToNextSibling("Need"));
             }
             else
             {
-                Debug.LogError("The furniture prototype definition file doesn't have any 'Furniture' elements.");
+                Debug.LogError("The need prototype definition file doesn't have any 'Need' elements.");
             }
+			Debug.Log("Need prototypes read: " + needCount.ToString());
         }
     }
     void CreateInventoryPrototypes()
@@ -395,10 +396,10 @@ public class World : IXmlSerializable
         }
         else
         {
-            Debug.LogError("Did not find a 'Furnitures' element in the prototype definition file.");
+            Debug.LogError("Did not find a 'Inventories' element in the prototype definition file.");
         }
 
-        Debug.Log("Furniture prototypes read: " + needCount.ToString());
+
 
         // This bit will come from parsing a LUA file later, but for now we still need to
         // implement furniture behaviour directly in C# code.
