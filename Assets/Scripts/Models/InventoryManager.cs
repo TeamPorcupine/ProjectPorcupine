@@ -6,25 +6,24 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using UnityEngine;
 using System.Collections.Generic;
 using MoonSharp.Interpreter;
+using UnityEngine;
 
 [MoonSharpUserData]
 public class InventoryManager
 {
-
     // This is a list of all "live" inventories.
     // Later on this will likely be organized by rooms instead
     // of a single master list. (Or in addition to.)
-    public Dictionary< string, List<Inventory> > inventories;
+    public Dictionary<string, List<Inventory>> inventories;
 
     public InventoryManager()
     {
-        inventories = new Dictionary< string, List<Inventory> >();
+        inventories = new Dictionary<string, List<Inventory>>();
     }
 
-    void CleanupInventory(Inventory inv)
+    private void CleanupInventory(Inventory inv)
     {
         if (inv.stackSize == 0)
         {
@@ -32,23 +31,23 @@ public class InventoryManager
             {
                 inventories[inv.objectType].Remove(inv);
             }
+
             if (inv.tile != null)
             {
                 inv.tile.inventory = null;
                 inv.tile = null;
             }
+
             if (inv.character != null)
             {
                 inv.character.inventory = null;
                 inv.character = null;
             }
         }
-
     }
 
     public bool PlaceInventory(Tile tile, Inventory inv)
     {
-
         bool tileWasEmpty = tile.inventory == null;
 
         if (tile.PlaceInventory(inv) == false)
@@ -145,8 +144,8 @@ public class InventoryManager
     /// </summary>
     /// <returns>The closest inventory of type.</returns>
     /// <param name="objectType">Object type.</param>
-    /// <param name="t">T.</param>
-    /// <param name="desiredAmount">Desired amount. If no stack has enough, it instead returns the largest</param>
+    /// <param name="t">Tile from, which distance is mesured.</param>
+    /// <param name="desiredAmount">Desired amount. If no stack has enough, it instead returns the largest.</param>
     public Inventory GetClosestInventoryOfType(string objectType, Tile t, int desiredAmount, bool canTakeFromStockpile)
     {
         Path_AStar path = GetPathToClosestInventoryOfType(objectType, t, desiredAmount, canTakeFromStockpile);
@@ -174,7 +173,7 @@ public class InventoryManager
 
     public Path_AStar GetPathToClosestInventoryOfType(string objectType, Tile t, int desiredAmount, bool canTakeFromStockpile)
     {
-        QuickCheck (objectType);
+        QuickCheck(objectType);
 
         // We can also avoid going through the Astar construction if we know
         // that all available inventories are stockpiles and we are not allowed
@@ -184,7 +183,7 @@ public class InventoryManager
             return null;
         }
 
-        //We shouldn't search if all inventories are locked.
+        // We shouldn't search if all inventories are locked.
         if (inventories[objectType].TrueForAll(i => i.tile != null && i.tile.furniture != null && i.tile.inventory.isLocked))
         {
             return null;
