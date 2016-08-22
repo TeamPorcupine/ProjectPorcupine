@@ -6,13 +6,13 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using UnityEngine;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class JobQueue
 {
-    SortedList<Job.JobPriority, Job> jobQueue;
+    private SortedList<Job.JobPriority, Job> jobQueue;
 
     public event Action<Job> cbJobCreated;
 
@@ -26,9 +26,16 @@ public class JobQueue
         return jobQueue.Count == 0;
     }
 
+    // Returns the job count in the queue.
+    // (Necessary, since jobQueue is private.)
+    public int GetCount()
+    {
+        return jobQueue.Count;
+    }
+
     public void Enqueue(Job j)
     {
-        //Logger.Log("Adding job to queue. Existing queue size: " + jobQueue.Count);
+        ////Logger.Log("Adding job to queue. Existing queue size: " + jobQueue.Count);
         if (j.jobTime < 0)
         {
             // Job has a negative job time, so it's not actually
@@ -37,7 +44,7 @@ public class JobQueue
             return;
         }
 
-        jobQueue.Add(j.jobPriority,j);
+        jobQueue.Add(j.jobPriority, j);
 
         if (cbJobCreated != null)
         {
@@ -48,7 +55,9 @@ public class JobQueue
     public Job Dequeue()
     {
         if (jobQueue.Count == 0)
+        {
             return null;
+        }
 
         Job job = jobQueue.Values[0];
         jobQueue.RemoveAt(0);
@@ -57,12 +66,13 @@ public class JobQueue
 
     public void Remove(Job j)
     {
-        if (jobQueue.ContainsValue(j)==false)
+        if (jobQueue.ContainsValue(j) == false)
         {
-            //Logger.LogError("Trying to remove a job that doesn't exist on the queue.");
+            ////Logger.LogError("Trying to remove a job that doesn't exist on the queue.");
             // Most likely, this job wasn't on the queue because a character was working it!
             return;
         }
+
         jobQueue.RemoveAt(jobQueue.IndexOfValue(j));
     }
 

@@ -69,7 +69,7 @@ We are using Unity version 5.4 .
 All pull requests must build in 5.4 to be a valid patch.  
 
 # General resources
-* [Github Tutorial by Quill18](https://www.youtube.com/watch?v=-N4Cghw0l2Q)
+* [Github Tutorial by Quill18](https://www.youtube.com/watch?v=R2fl17eEpwI)
 * [GitHub Forking Overview](https://gist.github.com/Chaser324/ce0505fbed06b947d962)
 * [GitHub Documentation for Desktop Client](https://help.github.com/desktop/guides/contributing/)
 * [GitHub Desktop Client](https://desktop.github.com/)

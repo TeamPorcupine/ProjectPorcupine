@@ -5,6 +5,7 @@ Project Porcupine: A Base-Building Game...in Space!
 [Copyright & Licensing](#copyright--licensing)  
 [Contributing](#contributing)  
 [Vote on Proposed Features](#vote-on-proposed-features)  
+[Community](#community)  
 [Contact](#contact) 
 
 ## About
@@ -62,6 +63,10 @@ You can propose features you'd like to see and vote on which ones to prioritize 
 
 Here's the current list of proposed features:  
 [![Feature Requests](http://feathub.com/TeamPorcupine/ProjectPorcupine?format=svg)](http://feathub.com/TeamPorcupine/ProjectPorcupine)
+
+## Community
+
+* [unoffical discord channel ](https://discord.gg/68hkpSA)<discord.projectporcupine.com>
 
 ## Contact
 

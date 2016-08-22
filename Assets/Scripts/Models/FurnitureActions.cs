@@ -6,22 +6,20 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using UnityEngine;
 using System.Collections.Generic;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Debugging;
 using MoonSharp.RemoteDebugger;
 using MoonSharp.RemoteDebugger.Network;
-
+using UnityEngine;
 
 public class FurnitureActions
 {
+    private static FurnitureActions _Instance;
 
-    static FurnitureActions _Instance;
+    private Script myLuaScript;
 
-    Script myLuaScript;
-
-    public FurnitureActions(string rawLuaCode)
+    public FurnitureActions()
     {
         // Tell the LUA interpreter system to load all the classes
         // that we have marked as [MoonSharpUserData]
@@ -39,11 +37,14 @@ public class FurnitureActions
 
         // Also to access statics/globals
         myLuaScript.Globals["World"] = typeof(World);
-
-        myLuaScript.DoString(rawLuaCode);
     }
 
-    static public void CallFunctionsWithFurniture(string[] functionNames, Furniture furn, float deltaTime)
+    public static void addScript(string rawLuaCode)
+    {
+        _Instance.myLuaScript.DoString(rawLuaCode);
+    }
+
+    public static void CallFunctionsWithFurniture(string[] functionNames, Furniture furn, float deltaTime)
     {
         foreach (string fn in functionNames)
         {
@@ -64,7 +65,7 @@ public class FurnitureActions
         }
     }
 
-    static public DynValue CallFunction(string functionName, params object[] args)
+    public static DynValue CallFunction(string functionName, params object[] args)
     {
         object func = _Instance.myLuaScript.Globals[functionName];
 

@@ -9,6 +9,7 @@
 using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using ProjectPorcupine.Localization;
 
 public class MouseOverFurnitureTypeText : MonoBehaviour
 {
@@ -32,12 +33,13 @@ public class MouseOverFurnitureTypeText : MonoBehaviour
             return;
         }
 
-        mouseController = GameObject.FindObjectOfType<MouseController>();
+        mouseController = WorldController.Instance.mouseController;
         if (mouseController == null)
         {
             Logger.LogError("How do we not have an instance of mouse controller?");
             return;
         }
+
     }
 	
     // Update is called once per frame
@@ -50,8 +52,11 @@ public class MouseOverFurnitureTypeText : MonoBehaviour
         if (t != null && t.furniture != null)
         {
             s = t.furniture.Name;
+            myText.text = LocalizationTable.GetLocalization("furniture") + ": " + s;
+        } else
+        {
+            myText.text = "";
         }
 
-        myText.text = "Furniture: " + s;
     }
 }
