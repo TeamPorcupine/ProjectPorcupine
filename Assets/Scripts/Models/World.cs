@@ -41,7 +41,7 @@ public class World : IXmlSerializable
     public Dictionary<string, Furniture> furniturePrototypes;
     public Dictionary<string, Job> furnitureJobPrototypes;
     public Dictionary<string, InventoryCommon> inventoryPrototypes;
-    public Dictionary<string, Trader> traderPrototypes;
+    public Dictionary<string, TraderPrototype> traderPrototypes;
 
     // The tile width of the world.
     public int Width { get; protected set; }
@@ -336,7 +336,7 @@ public class World : IXmlSerializable
 
     void CreateTraderPrototypes()
     {
-        traderPrototypes = new Dictionary<string, Trader>();
+        traderPrototypes = new Dictionary<string, TraderPrototype>();
 
         string dataPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
         string filePath = System.IO.Path.Combine(dataPath, "Trader.xml");
@@ -369,29 +369,29 @@ public class World : IXmlSerializable
                 {
                     inventoryCount++;
 
-                    Trader trader = new Trader();
+                    TraderPrototype trader = new TraderPrototype();
                     try
                     {
                         trader.ReadXmlPrototype(reader);
                     }
                     catch (Exception e)
                     {
-                        Logger.LogError("Error reading inventory prototype for: " + trader.Name + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
+                        Debug.LogError("Error reading trader prototype for: " + trader.ObjectType + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
                     }
 
 
-                    traderPrototypes[trader.Name] = trader;
+                    traderPrototypes[trader.ObjectType] = trader;
                     
                 } while (reader.ReadToNextSibling("Trader"));
             }
             else
             {
-                Logger.LogError("The trader prototype definition file doesn't have any 'Trader' elements.");
+                Debug.LogError("The trader prototype definition file doesn't have any 'Trader' elements.");
             }
         }
         else
         {
-            Logger.LogError("Did not find a 'Traders' element in the prototype definition file.");
+            Debug.LogError("Did not find a 'Traders' element in the prototype definition file.");
         }
     }
 

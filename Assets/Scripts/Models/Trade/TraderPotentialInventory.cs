@@ -6,12 +6,14 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System.Collections.Generic;
+using UnityEngine;
 
-public class Trader
+public class TraderPotentialInventory
 {
-    public string Name;
-    public float CurrencyBalance;
-    public float SaleMarginMultiplier;
-    public List<Inventory> Stock;
+    public string ObjectType;
+    public int MinQuantity;
+    public int MaxQuantity;
+
+    [Range(0,1)]
+    public float Rarity;
 }
