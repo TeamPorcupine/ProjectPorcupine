@@ -117,7 +117,7 @@ public class WorldGenerator
         int boundX = (world.Width / 2) - startAreaCenterX;
         int boundY = (world.Height / 2) + startAreaCenterY;
 
-        if(x >= boundX && x < boundX + startAreaWidth && y >= boundY && y < boundY + startAreaHeight){
+        if(x >= boundX && x < boundX + startAreaWidth && y >= boundY && y < boundY - startAreaHeight){
             return true;
         }
 
