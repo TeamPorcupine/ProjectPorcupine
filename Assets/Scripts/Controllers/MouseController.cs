@@ -14,7 +14,7 @@ public class MouseController
 {
 
     GameObject circleCursorPrefab;
-    GameObject cursorParent;
+    public GameObject cursorParent { get; protected set; }
     GameObject furnitureParent;
 
     // The world-position of the mouse last frame.
@@ -25,13 +25,13 @@ public class MouseController
 
     // The world-position start of our left-mouse drag operation.
     Vector3 dragStartPosition;
-    List<GameObject> dragPreviewGameObjects;
+    public List<GameObject> dragPreviewGameObjects { get; protected set; }
 
     BuildModeController bmc;
     FurnitureSpriteController fsc;
     MenuController menuController;
 
-    bool isDragging = false;
+    public bool isDragging { get; protected set; }
 
     enum MouseMode
     {
@@ -60,6 +60,11 @@ public class MouseController
     public Vector3 GetMousePosition()
     {
         return currFramePosition;
+    }
+
+    public Vector3 GetPlacingPosition()
+    {
+        return currPlacingPosition;
     }
 
     public Tile GetMouseOverTile()
