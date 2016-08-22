@@ -6,17 +6,16 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
 
 public interface ISelectable
 {
-
     string GetName();
 
     string GetDescription();
 
     string GetHitPointString();
-    // For indestructible things (if any?) this is allowed to return blank (or null maybe??)
 
+    // For indestructible things (if any?) this is allowed to return blank (or null maybe??)
 }

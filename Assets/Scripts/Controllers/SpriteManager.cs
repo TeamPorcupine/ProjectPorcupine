@@ -53,12 +53,22 @@ public class SpriteManager : MonoBehaviour
         sprites = new Dictionary<string, Sprite>();
 
         string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "Images");
+        string modsPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Mods");
         //filePath = System.IO.Path.Combine( Application.streamingAssetsPath, "CursorCircle.png" );
 
         //LoadSprite("CursorCircle", filePath);
 
         LoadSpritesFromDirectory(filePath);
 
+        DirectoryInfo[] mods = WorldController.Instance.modsManager.GetMods();
+        foreach (DirectoryInfo mod in mods)
+        {
+            string modImagesPath = Path.Combine(mod.FullName, "Images");
+            if (Directory.Exists(modImagesPath))
+            {
+                LoadSpritesFromDirectory(modImagesPath);
+            }
+        }
     }
 
     void LoadSpritesFromDirectory(string filePath)

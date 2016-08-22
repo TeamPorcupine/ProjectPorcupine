@@ -10,7 +10,7 @@ public class ContextMenuItem : MonoBehaviour
 
     public void Start()
     {
-        mouseController = FindObjectOfType<MouseController>();
+        mouseController = WorldController.Instance.mouseController;
     }
 
     public void BuildInterface()
