@@ -1,13 +1,128 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<WorldGenerator startAreaSize="3">
+<WorldGenerator>
   <Asteroid>
     <NoiseScale>0.2</NoiseScale>
     <NoiseThreshhold>0.75</NoiseThreshhold>
-    <ResourceChance>0.85</ResourceChance>
+    <ResourceChance>0.15</ResourceChance>
     <Resources>
         <Resource objectType="Raw Iron" maxStack="50" min="5" max="15" chance="0.5" />
         <Resource objectType="Ice" maxStack="10" min="5" max="10" chance="0.15" />
         <Resource objectType="Uranium" maxStack="20" min="5" max="15" chance="0.35" />
     </Resources>
   </Asteroid>
+  <StartArea width="18" height="15" centerX="8" centerY="7">
+    <Tiles>
+      0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,
+      0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,
+      0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,
+      0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,
+      0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,0,
+      0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+      0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+      1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+      0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+      0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+      0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,0,
+      0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,
+      0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,
+      0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,
+      0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,
+    </Tiles>
+    <Furnitures>
+        <Furniture x="11" y="0" name="furn_SteelWall" />
+        <Furniture x="12" y="0" name="furn_SteelWall" />
+        <Furniture x="13" y="0" name="furn_SteelWall" />
+        <Furniture x="14" y="0" name="furn_SteelWall" />
+        <Furniture x="15" y="0" name="furn_SteelWall" />
+        <Furniture x="16" y="0" name="furn_SteelWall" />
+        <Furniture x="17" y="0" name="furn_SteelWall" />
+      
+        <Furniture x="10" y="1" name="furn_SteelWall" />
+        <Furniture x="16" y="1" name="furn_SteelWall" />
+
+        <Furniture x="9" y="2" name="furn_SteelWall" />
+        <Furniture x="16" y="2" name="furn_SteelWall" />
+
+        <Furniture x="10" y="3" name="furn_SteelWall" />
+        <Furniture x="11" y="3" name="furn_SteelWall" />
+        <Furniture x="12" y="3" name="furn_SteelWall" />
+        <Furniture x="13" y="3" name="furn_SteelWall" />
+        <Furniture x="14" y="3" name="furn_SteelWall" />
+        <Furniture x="15" y="3" name="furn_SteelWall" />
+
+        <Furniture x="6" y="4" name="furn_SteelWall" />
+        <Furniture x="7" y="4" name="furn_SteelWall" />
+        <Furniture x="8" y="4" name="Airlock" />
+        <Furniture x="9" y="4" name="furn_SteelWall" />
+        <Furniture x="10" y="4" name="furn_SteelWall" />
+        <Furniture x="16" y="4" name="furn_SteelWall" />
+
+        <Furniture x="2" y="5" name="furn_SteelWall" />
+        <Furniture x="3" y="5" name="furn_SteelWall" />
+        <Furniture x="4" y="5" name="furn_SteelWall" />
+        <Furniture x="5" y="5" name="furn_SteelWall" />
+        <Furniture x="6" y="5" name="furn_SteelWall" />
+        <Furniture x="10" y="5" name="furn_SteelWall" />
+        <Furniture x="11" y="5" name="Oxygen Generator" />
+        <Furniture x="17" y="5" name="furn_SteelWall" />
+
+        <Furniture x="1" y="6" name="furn_SteelWall" />
+        <Furniture x="6" y="6" name="furn_SteelWall" />
+        <Furniture x="10" y="6" name="furn_SteelWall" />
+        <Furniture x="15" y="6" name="Stockpile" />
+        <Furniture x="16" y="6" name="Stockpile" />
+        <Furniture x="17" y="6" name="furn_SteelWall" />
+
+        <Furniture x="0" y="7" name="furn_SteelWall" />
+        <Furniture x="6" y="7" name="Door" />
+        <Furniture x="10" y="7" name="Door" />
+        <Furniture x="15" y="7" name="Stockpile" />
+        <Furniture x="16" y="7" name="Stockpile" />
+        <Furniture x="17" y="7" name="furn_SteelWall" />
+
+        <Furniture x="1" y="8" name="furn_SteelWall" />
+        <Furniture x="6" y="8" name="furn_SteelWall" />
+        <Furniture x="10" y="8" name="furn_SteelWall" />
+        <Furniture x="15" y="8" name="Stockpile" />
+        <Furniture x="16" y="8" name="Stockpile" />
+        <Furniture x="17" y="8" name="furn_SteelWall" />
+
+        <Furniture x="2" y="9" name="furn_SteelWall" />
+        <Furniture x="3" y="9" name="furn_SteelWall" />
+        <Furniture x="4" y="9" name="furn_SteelWall" />
+        <Furniture x="5" y="9" name="furn_SteelWall" />
+        <Furniture x="6" y="9" name="furn_SteelWall" />
+        <Furniture x="10" y="9" name="furn_SteelWall" />
+        <Furniture x="17" y="9" name="furn_SteelWall" />
+
+        <Furniture x="6" y="10" name="furn_SteelWall" />
+        <Furniture x="7" y="10" name="furn_SteelWall" />
+        <Furniture x="8" y="10" name="Airlock" />
+        <Furniture x="9" y="10" name="furn_SteelWall" />
+        <Furniture x="10" y="10" name="furn_SteelWall" />
+        <Furniture x="11" y="10" name="Power Generator" />
+        <Furniture x="16" y="10" name="furn_SteelWall" />
+
+        <Furniture x="10" y="11" name="furn_SteelWall" />
+        <Furniture x="11" y="11" name="furn_SteelWall" />
+        <Furniture x="12" y="11" name="furn_SteelWall" />
+        <Furniture x="13" y="11" name="furn_SteelWall" />
+        <Furniture x="14" y="11" name="furn_SteelWall" />
+        <Furniture x="15" y="11" name="furn_SteelWall" />
+
+        <Furniture x="9" y="12" name="furn_SteelWall" />
+        <Furniture x="16" y="12" name="furn_SteelWall" />
+
+        <Furniture x="10" y="13" name="furn_SteelWall" />
+        <Furniture x="16" y="13" name="furn_SteelWall" />
+
+        <Furniture x="11" y="14" name="furn_SteelWall" />
+        <Furniture x="12" y="14" name="furn_SteelWall" />
+        <Furniture x="13" y="14" name="furn_SteelWall" />
+        <Furniture x="14" y="14" name="furn_SteelWall" />
+        <Furniture x="15" y="14" name="furn_SteelWall" />
+        <Furniture x="16" y="14" name="furn_SteelWall" />
+        <Furniture x="17" y="14" name="furn_SteelWall" />
+    </Furnitures>
+  </StartArea>
 </WorldGenerator>
