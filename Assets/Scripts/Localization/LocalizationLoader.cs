@@ -20,6 +20,87 @@ namespace ProjectPorcupine.Localization
     [AddComponentMenu("Localization/Localization Loader")]
     public class LocalizationLoader : MonoBehaviour
     {
+        // TODO: Change this to the official repo before PR.
+        private readonly string localizationRepositoryZip = "https://github.com/QuiZr/ProjectPorcupineLocalization/archive/master.zip";
+
+        private readonly string currentLocalizationVersion = "THIS_IS_PRE_ALFA_SO_I_THINK_THAT_IT_SHOULDN'T_MATTER_FOR_NOW";
+
+        // Object for downloading localization data from web.
+        private WWW www;
+
+        // For now Unity's implementation of .net WebClient will do just fine,
+        // especially that it doesn't have problems with downloading from https.
+        private IEnumerator DownloadLocalizationFromWeb()
+        {
+            // If there were some files downloading previously (maybe user tried to download the newest
+            // language pack and mashed a download button?) just cancel them and start a new one.
+            if (www != null)
+            {
+                www.Dispose();
+            }
+
+            Logger.LogVerbose("Localization files download has started");
+
+            www = new WWW(localizationRepositoryZip);
+
+            Logger.LogVerbose("Localization files download has finished!");
+
+            // Wait for www to download current localization files.
+            yield return www;
+
+            // Almost like a callback call
+            OnDownloadLocalizationComplete();
+        }
+
+        // Callback for DownloadLocalizationFromWeb. 
+        // For now it just saves downloaded data (master.zip) in 
+        // Application.streamingAssetsPath/Localization directory.
+        private void OnDownloadLocalizationComplete()
+        {
+            if (www.isDone != true)
+            {
+                // This should never happen.
+                Logger.LogException(new System.Exception("OnDownloadLocalizationComplete got called before www finished downloading."));
+                www.Dispose();
+                return;
+            }
+
+            if (www.error != null)
+            {
+                // This could be a thing when for example user has no internet connection.
+                Logger.LogError("Error while downloading localizations file: " + www.error);
+                return;
+            }
+
+            try
+            {
+                // TODO: Make something with this data (unpack, verify version, replace files).
+                // For now just debug write to HDD.
+                string localizationFolderPath = Path.Combine(Application.streamingAssetsPath, "Localization");
+
+                BinaryWriter writer = new BinaryWriter(File.Open(Path.Combine(localizationFolderPath, "master.zip"), FileMode.OpenOrCreate));
+
+                writer.Write(www.bytes);
+                writer.Close();
+            }
+            catch (System.Exception e)
+            {
+                // Something happen in file system. 
+                // TODO: Handle this properly, for now this is as useful as:
+                // http://i.imgur.com/9ArGADw.png
+                throw e;
+            }
+        }
+
+        private void OnDestroy()
+        {
+            // Make sure that any downloads in progress will be canceled when the game closes.
+            if (www != null)
+            {
+                www.Dispose();
+            }
+        }
+
         // Initialize the localization files before Unity loads the scene entirely.
         // Used to ensure that the TextLocalizer scripts won't throw errors.
         private void Awake()
@@ -30,6 +111,9 @@ namespace ProjectPorcupine.Localization
                 // Return in this case.
                 return;
             }
+
+            // Update localization from the internet.
+            StartCoroutine(DownloadLocalizationFromWeb());
 
             // Get the file path.
             string filePath = Path.Combine(Application.streamingAssetsPath, "Localization");
