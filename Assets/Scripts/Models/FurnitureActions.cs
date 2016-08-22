@@ -52,7 +52,7 @@ public class FurnitureActions
 
             if (func == null)
             {
-                Logger.LogError("'" + fn + "' is not a LUA function.");
+                Debug.LogError("'" + fn + "' is not a LUA function.");
                 return;
             }
 
@@ -60,7 +60,7 @@ public class FurnitureActions
 
             if (result.Type == DataType.String)
             {
-                Logger.Log(result.String);
+                Debug.Log(result.String);
             }
         }
     }

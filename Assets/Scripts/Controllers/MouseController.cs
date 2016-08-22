@@ -91,7 +91,7 @@ public class MouseController
             }
             else if (currentMode == MouseMode.SELECT)
             {
-                Logger.Log("Show game menu?");
+                Debug.Log("Show game menu?");
             }
         }
 
@@ -182,7 +182,7 @@ public class MouseController
 
             if (mySelection == null || mySelection.tile != tileUnderMouse)
             {
-                //Logger.Log("new tile");
+                //Debug.Log("new tile");
                 // We have just selected a brand new tile, reset the info.
                 mySelection = new SelectionInfo();
                 mySelection.tile = tileUnderMouse;
@@ -276,6 +276,12 @@ public class MouseController
         int start_y = Mathf.FloorToInt(dragStartPosition.y + 0.5f);
         int end_y = Mathf.FloorToInt(currPlacingPosition.y + 0.5f);
 
+        // Keep an un-flipped copy of start/end points
+        int raw_start_x = start_x;
+        int raw_end_x = end_x;
+        int raw_start_y = start_y;
+        int raw_end_y = end_y;
+
         // We may be dragging in the "wrong" direction, so flip things if needed.
         if (end_x < start_x)
         {
@@ -314,6 +320,27 @@ public class MouseController
                             {
                                 isValid = true;
                             } 
+                        }
+                        else if (dragType == "path")
+                        {
+                            bool xNeg = raw_start_x > raw_end_x ? true : false;
+
+                            if (xNeg && x >= raw_end_x && x <= raw_start_x)
+                            {
+                                if (y == raw_start_y || x == raw_end_x)
+                                {
+                                    isValid = true;
+                                }
+
+                            }
+                            else if (!xNeg && x <= raw_end_x && x >= raw_start_x)
+                            {
+                                if (y == raw_start_y || x == raw_end_x)
+                                {
+                                    isValid = true;
+                                }
+                            }
+    
                         }
                         else
                         {
@@ -369,6 +396,26 @@ public class MouseController
                             {
                                 isValid = true;
                             } 
+                        } else if (dragType == "path")
+                        {
+                            bool xNeg = raw_start_x > raw_end_x ? true : false;
+
+                            if (xNeg && x >= raw_end_x && x <= raw_start_x)
+                            {
+                                if (y == raw_start_y || x == raw_end_x)
+                                {
+                                    isValid = true;
+                                }
+
+                            }
+                            else if (!xNeg && x <= raw_end_x && x >= raw_start_x)
+                            {
+                                if (y == raw_start_y || x == raw_end_x)
+                                {
+                                    isValid = true;
+                                }
+                            }
+
                         }
                         else
                         {

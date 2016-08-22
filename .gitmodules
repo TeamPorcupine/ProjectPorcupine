@@ -1,0 +1,3 @@
+[submodule "Assets/UberLogger"]
+	path = Assets/UberLogger
+	url = https://github.com/bbbscarter/UberLogger.git
