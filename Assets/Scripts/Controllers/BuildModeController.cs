@@ -119,7 +119,7 @@ public class BuildModeController
                 }
                 else
                 {
-                    Logger.LogError("There is no furniture job prototype for '" + furnitureType + "'");
+                    Debug.LogError("There is no furniture job prototype for '" + furnitureType + "'");
                     j = new Job(t, furnitureType, FurnitureActions.JobComplete_FurnitureBuilding, 0.1f, null, Job.JobPriority.High);
                 }
 
@@ -210,7 +210,7 @@ public class BuildModeController
         }
         else
         {
-            Logger.LogError("UNIMPLEMENTED BUILD MODE");
+            Debug.LogError("UNIMPLEMENTED BUILD MODE");
         }
     }
 

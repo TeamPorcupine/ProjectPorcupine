@@ -28,7 +28,7 @@ public class MouseOverFurnitureTypeText : MonoBehaviour
 
         if (myText == null)
         {
-            Logger.LogError("MouseOverTileTypeText: No 'Text' UI component on this object.");
+            Debug.LogError("MouseOverTileTypeText: No 'Text' UI component on this object.");
             this.enabled = false;
             return;
         }
@@ -36,7 +36,7 @@ public class MouseOverFurnitureTypeText : MonoBehaviour
         mouseController = WorldController.Instance.mouseController;
         if (mouseController == null)
         {
-            Logger.LogError("How do we not have an instance of mouse controller?");
+            Debug.LogError("How do we not have an instance of mouse controller?");
             return;
         }
 

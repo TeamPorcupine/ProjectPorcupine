@@ -43,7 +43,7 @@ public class FurnitureSpriteController
 
     public void OnFurnitureCreated(Furniture furn)
     {
-        //Logger.Log("OnFurnitureCreated");
+        //Debug.Log("OnFurnitureCreated");
         // Create a visual GameObject linked to this data.
 
         // FIXME: Does not consider multi-tile objects nor rotated objects
@@ -117,7 +117,7 @@ public class FurnitureSpriteController
     {
         if (furnitureGameObjectMap.ContainsKey(furn) == false)
         {
-            Logger.LogError("OnFurnitureRemoved -- trying to change visuals for furniture not in our map.");
+            Debug.LogError("OnFurnitureRemoved -- trying to change visuals for furniture not in our map.");
             return;
         }
 
@@ -133,12 +133,12 @@ public class FurnitureSpriteController
 
     void OnFurnitureChanged(Furniture furn)
     {
-        //Logger.Log("OnFurnitureChanged");
+        //Debug.Log("OnFurnitureChanged");
         // Make sure the furniture's graphics are correct.
 
         if (furnitureGameObjectMap.ContainsKey(furn) == false)
         {
-            Logger.LogError("OnFurnitureChanged -- trying to change visuals for furniture not in our map.");
+            Debug.LogError("OnFurnitureChanged -- trying to change visuals for furniture not in our map.");
             return;
         }
 
@@ -226,7 +226,7 @@ public class FurnitureSpriteController
                     // Door is a fully open
                     spriteName = "Door_openness_3";
                 }
-                //Logger.Log(spriteName);
+                //Debug.Log(spriteName);
             }
             if (furn.objectType == "Airlock")
             {
@@ -250,11 +250,11 @@ public class FurnitureSpriteController
                     // Airlock is a fully open
                     spriteName = "Airlock_openness_3";
                 }
-                //Logger.Log(spriteName);
+                //Debug.Log(spriteName);
             }
 
             /*if(furnitureSprites.ContainsKey(spriteName) == false) {
-				Logger.Log("furnitureSprites has no definition for: " + spriteName);
+				Debug.Log("furnitureSprites has no definition for: " + spriteName);
 				return null;
 			}
 */
@@ -299,7 +299,7 @@ public class FurnitureSpriteController
         //       Wall_NESW
 
         /*		if(furnitureSprites.ContainsKey(spriteName) == false) {
-                    Logger.LogError("GetSpriteForInstalledObject -- No sprites with name: " + spriteName);
+                    Debug.LogError("GetSpriteForInstalledObject -- No sprites with name: " + spriteName);
                     return null;
                 }
         */

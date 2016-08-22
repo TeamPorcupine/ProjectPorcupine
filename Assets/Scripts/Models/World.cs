@@ -109,7 +109,7 @@ public class World : IXmlSerializable
     {
         if (r == GetOutsideRoom())
         {
-            Logger.LogError("Tried to delete the outside room.");
+            Debug.LogError("Tried to delete the outside room.");
             return;
         }
 
@@ -267,7 +267,7 @@ public class World : IXmlSerializable
                         furn.ReadXmlPrototype(reader);
                     }
                     catch (Exception e) {
-                        Logger.LogError("Error reading furniture prototype for: " + furn.objectType + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
+                        Debug.LogError("Error reading furniture prototype for: " + furn.objectType + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
                     }
 
 
@@ -279,12 +279,12 @@ public class World : IXmlSerializable
             }
             else
             {
-                Logger.LogError("The furniture prototype definition file doesn't have any 'Furniture' elements.");
+                Debug.LogError("The furniture prototype definition file doesn't have any 'Furniture' elements.");
             }
         }
         else
         {
-            Logger.LogError("Did not find a 'Furnitures' element in the prototype definition file.");
+            Debug.LogError("Did not find a 'Furnitures' element in the prototype definition file.");
         }
     }
 
@@ -330,7 +330,7 @@ public class World : IXmlSerializable
                     }
                     catch (Exception e)
                     {
-                        Logger.LogError("Error reading inventory prototype for: " + inv.objectType + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
+                        Debug.LogError("Error reading inventory prototype for: " + inv.objectType + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
                     }
 
 
@@ -342,12 +342,12 @@ public class World : IXmlSerializable
             }
             else
             {
-                Logger.LogError("The inventory prototype definition file doesn't have any 'Inventory' elements.");
+                Debug.LogError("The inventory prototype definition file doesn't have any 'Inventory' elements.");
             }
         }
         else
         {
-            Logger.LogError("Did not find a 'Inventories' element in the prototype definition file.");
+            Debug.LogError("Did not find a 'Inventories' element in the prototype definition file.");
         }
     }
 
@@ -425,7 +425,7 @@ public class World : IXmlSerializable
 
         if (furniturePrototypes.ContainsKey(objectType) == false)
         {
-            Logger.LogError("furniturePrototypes doesn't contain a proto for key: " + objectType);
+            Debug.LogError("furniturePrototypes doesn't contain a proto for key: " + objectType);
             return null;
         }
 
@@ -499,7 +499,7 @@ public class World : IXmlSerializable
     {
         if (furniturePrototypes.ContainsKey(objectType) == false)
         {
-            Logger.LogError("No furniture with type: " + objectType);
+            Debug.LogError("No furniture with type: " + objectType);
             return null;
         }
 
@@ -664,7 +664,7 @@ public class World : IXmlSerializable
 
     void ReadXml_Inventories(XmlReader reader)
     {
-        Logger.Log("ReadXml_Inventories");
+        Debug.Log("ReadXml_Inventories");
 
         if(reader.ReadToDescendant("Inventory"))
         {

@@ -15,7 +15,7 @@ public class InventoryCommon
 
     public void ReadXmlPrototype(XmlReader reader_parent)
     {
-        ////Logger.Log("ReadXmlPrototype");
+        ////Debug.Log("ReadXmlPrototype");
 
         objectType = reader_parent.GetAttribute("objectType");
 

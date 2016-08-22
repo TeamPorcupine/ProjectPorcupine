@@ -91,7 +91,7 @@ public class MouseController
             }
             else if (currentMode == MouseMode.SELECT)
             {
-                Logger.Log("Show game menu?");
+                Debug.Log("Show game menu?");
             }
         }
 
@@ -182,7 +182,7 @@ public class MouseController
 
             if (mySelection == null || mySelection.tile != tileUnderMouse)
             {
-                //Logger.Log("new tile");
+                //Debug.Log("new tile");
                 // We have just selected a brand new tile, reset the info.
                 mySelection = new SelectionInfo();
                 mySelection.tile = tileUnderMouse;
