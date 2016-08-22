@@ -6,18 +6,16 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using UnityEngine;
-using System.Collections;
 using System;
+using System.Collections;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
-
+using UnityEngine;
 
 // Inventory are things that are lying on the floor/stockpile, like a bunch of metal bars
 // or potentially a non-installed copy of furniture (e.g. a cabinet still in the box from Ikea)
-
 
 [MoonSharpUserData]
 public class Inventory : IXmlSerializable, ISelectable
@@ -30,7 +28,11 @@ public class Inventory : IXmlSerializable, ISelectable
 
     public int stackSize
     {
-        get { return _stackSize; }
+        get 
+        {
+            return _stackSize; 
+        }
+
         set
         {
             if (_stackSize != value)
@@ -50,15 +52,14 @@ public class Inventory : IXmlSerializable, ISelectable
     public Tile tile;
     public Character character;
 
-    //Should this inventory be allowed to be picked up for completing a job?
+    // Should this inventory be allowed to be picked up for completing a job?
     public bool isLocked = false;
 
     public Inventory()
     {
-		
     }
 
-    static public Inventory New(string objectType, int maxStackSize, int stackSize)
+    public static Inventory New(string objectType, int maxStackSize, int stackSize)
     {
         return new Inventory(objectType, maxStackSize, stackSize);
     }
@@ -67,6 +68,27 @@ public class Inventory : IXmlSerializable, ISelectable
     {
         this.objectType = objectType;
         this.maxStackSize = maxStackSize;
+        this.stackSize = stackSize;
+    }
+
+    public static Inventory New(string objectType, int stackSize)
+    {
+        return new Inventory(objectType, stackSize);
+    }
+
+    public Inventory(string objectType, int stackSize)
+    {
+        this.objectType = objectType;
+
+        if (World.current.inventoryPrototypes.ContainsKey(objectType))
+        {
+            this.maxStackSize = World.current.inventoryPrototypes[objectType].maxStackSize;
+        }
+        else
+        {
+            this.maxStackSize = 50;
+        }
+
         this.stackSize = stackSize;
     }
 
@@ -97,7 +119,7 @@ public class Inventory : IXmlSerializable, ISelectable
 
     public string GetHitPointString()
     {
-        return "";	// Does inventory have hitpoints? How does it get destroyed? Maybe it's just a percentage chance based on damage.
+        return string.Empty;  // Does inventory have hitpoints? How does it get destroyed? Maybe it's just a percentage chance based on damage.
     }
 
     #endregion

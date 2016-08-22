@@ -8,21 +8,20 @@
 #endregion
 using UnityEngine;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 
-public class CharacterSpriteController : MonoBehaviour
+public class CharacterSpriteController
 {
 
     Dictionary<Character, GameObject> characterGameObjectMap;
 
-    World world
-    {
-        get { return WorldController.Instance.world; }
-    }
+    World world;
+    GameObject characterParent;
 
     // Use this for initialization
-    void Start()
+    public CharacterSpriteController(World currentWorld)
     {
+        world = currentWorld;
+        characterParent = new GameObject("Characters");
         // Instantiate our dictionary that tracks which GameObject is rendering which Tile data.
         characterGameObjectMap = new Dictionary<Character, GameObject>();
 
@@ -55,7 +54,7 @@ public class CharacterSpriteController : MonoBehaviour
 
         char_go.name = "Character";
         char_go.transform.position = new Vector3(c.X, c.Y, 0);
-        char_go.transform.SetParent(this.transform, true);
+        char_go.transform.SetParent(characterParent.transform, true);
 
         SpriteRenderer sr = char_go.AddComponent<SpriteRenderer>();
         sr.sprite = SpriteManager.current.GetSprite("Character", "p2_front");
@@ -83,13 +82,7 @@ public class CharacterSpriteController : MonoBehaviour
         // Register our callback so that our GameObject gets updated whenever
         // the object's into changes.
         c.cbCharacterChanged += OnCharacterChanged;
-
-        // Adds a random name to the Character
-        TextAsset names = Resources.Load("names") as TextAsset;
-        string[] lines = names.text.Split( new string[]  { "\r\n", "\n" }, System.StringSplitOptions.RemoveEmptyEntries );
-        c.name = lines[Random.Range(0, lines.Length-1)];
-
-
+        
     }
 
     void OnCharacterChanged(Character c)
@@ -113,15 +106,9 @@ public class CharacterSpriteController : MonoBehaviour
             return;
         }
 
-<<<<<<< HEAD
-        GameObject char_go = characterGameObjectMap [c];
-        //Debug.Log(furn_go);
-        //Debug.Log(furn_go.GetComponent<SpriteRenderer>());
-=======
         GameObject char_go = characterGameObjectMap[c];
         //Logger.Log(furn_go);
         //Logger.Log(furn_go.GetComponent<SpriteRenderer>());
->>>>>>> refs/remotes/TeamPorcupine/master
 
         //char_go.GetComponent<SpriteRenderer>().sprite = GetSpriteForFurniture(furn);
         if (c.CurrTile.room != null)

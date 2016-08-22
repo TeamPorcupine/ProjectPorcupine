@@ -5,6 +5,8 @@
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
+
+
 #endregion
 using UnityEngine;
 using System.Collections.Generic;
@@ -12,13 +14,13 @@ using System;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using System.Text.RegularExpressions;
 using System.IO;
 using MoonSharp.Interpreter;
 
 [MoonSharpUserData]
 public class World : IXmlSerializable
 {
-
     // A two-dimensional array to hold our tile data.
     Tile[,] tiles;
     public List<Character> characters;
@@ -32,6 +34,7 @@ public class World : IXmlSerializable
 
     public Dictionary<string, Furniture> furniturePrototypes;
     public Dictionary<string, Job> furnitureJobPrototypes;
+    public Dictionary<string, InventoryCommon> inventoryPrototypes;
 
     // The tile width of the world.
     public int Width { get; protected set; }
@@ -49,6 +52,7 @@ public class World : IXmlSerializable
     // be semi-static or self initializing or some damn thing.
     // For now, this is just a PUBLIC member of World
     public JobQueue jobQueue;
+    public JobQueue jobWaitingQueue;
 
     static public World current { get; protected set; }
 
@@ -121,6 +125,7 @@ public class World : IXmlSerializable
     {
 
         jobQueue = new JobQueue();
+        jobWaitingQueue = new JobQueue();
 
         // Set the current world to be this world.
         // TODO: Do we need to do any cleanup of the old world?
@@ -146,6 +151,8 @@ public class World : IXmlSerializable
 
         CreateFurniturePrototypes();
 
+        CreateInventoryPrototypes();
+
         characters = new List<Character>();
         furnitures = new List<Furniture>();
         inventoryManager = new InventoryManager();
@@ -170,7 +177,15 @@ public class World : IXmlSerializable
 
     public Character CreateCharacter(Tile t)
     {
-        Character c = new Character(t); 
+        Character c = new Character(t);
+
+        // Adds a random name to the Character
+        string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
+        filePath = System.IO.Path.Combine(filePath, "CharacterNames.txt");
+        string names = System.IO.File.ReadAllText(filePath);
+
+        string[] lines = Regex.Split( names, "\r\n" );
+        c.name = lines[UnityEngine.Random.Range(0, lines.Length-1)];
 
         characters.Add(c);
 
@@ -198,20 +213,21 @@ public class World : IXmlSerializable
         furnitureJobPrototypes[f.objectType] = j;
     }
 
-    void LoadFurnitureLua()
+    void LoadFurnitureLua(string filePath)
     {
-        string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
-        filePath = System.IO.Path.Combine(filePath, "Furniture.lua");
         string myLuaCode = System.IO.File.ReadAllText(filePath);
 
         // Instantiate the singleton
-        new FurnitureActions(myLuaCode);
 
+        FurnitureActions.addScript(myLuaCode);
     }
 
     void CreateFurniturePrototypes()
     {
-        LoadFurnitureLua();
+        new FurnitureActions();
+        string luaFilePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
+        luaFilePath = System.IO.Path.Combine(luaFilePath, "Furniture.lua");
+        LoadFurnitureLua(luaFilePath);
 
 
         furniturePrototypes = new Dictionary<string, Furniture>();
@@ -221,10 +237,32 @@ public class World : IXmlSerializable
         // TODO:  Probably we should be getting past a StreamIO handle or the raw
         // text here, rather than opening the file ourselves.
 
-        string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
-        filePath = System.IO.Path.Combine(filePath, "Furniture.xml");
+        string dataPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
+        string filePath = System.IO.Path.Combine(dataPath, "Furniture.xml");
         string furnitureXmlText = System.IO.File.ReadAllText(filePath);
+        LoadFurniturePrototypesFromFile(furnitureXmlText);
 
+
+        DirectoryInfo[] mods = WorldController.Instance.modsManager.GetMods();
+        foreach (DirectoryInfo mod in mods)
+        {
+            string furnitureLuaModFile = System.IO.Path.Combine(mod.FullName, "Furniture.lua");
+            if (File.Exists(furnitureLuaModFile))
+            {
+                LoadFurnitureLua(furnitureLuaModFile);
+            }
+
+            string furnitureXmlModFile = System.IO.Path.Combine(mod.FullName, "Furniture.xml");
+            if (File.Exists(furnitureXmlModFile))
+            {
+                string furnitureXmlModText = System.IO.File.ReadAllText(furnitureXmlModFile);
+                LoadFurniturePrototypesFromFile(furnitureXmlModText);
+            }
+        }
+    }
+
+    void LoadFurniturePrototypesFromFile(string furnitureXmlText) 
+    {
         XmlTextReader reader = new XmlTextReader(new StringReader(furnitureXmlText));
 
         int furnCount = 0;
@@ -260,6 +298,69 @@ public class World : IXmlSerializable
         else
         {
             Logger.LogError("Did not find a 'Furnitures' element in the prototype definition file.");
+        }
+    }
+
+    void CreateInventoryPrototypes()
+    {
+        inventoryPrototypes = new Dictionary<string, InventoryCommon>();
+
+        string dataPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
+        string filePath = System.IO.Path.Combine(dataPath, "Inventory.xml");
+        string inventoryXmlText = System.IO.File.ReadAllText(filePath);
+        LoadInventoryPrototypesFromFile(inventoryXmlText);
+
+
+        DirectoryInfo[] mods = WorldController.Instance.modsManager.GetMods();
+        foreach (DirectoryInfo mod in mods)
+        {
+            string inventoryXmlModFile = System.IO.Path.Combine(mod.FullName, "Inventory.xml");
+            if (File.Exists(inventoryXmlModFile))
+            {
+                string inventoryXmlModText = System.IO.File.ReadAllText(inventoryXmlModFile);
+                LoadInventoryPrototypesFromFile(inventoryXmlModText);
+            }
+        }
+    }
+
+    void LoadInventoryPrototypesFromFile(string inventoryXmlText)
+    {
+        XmlTextReader reader = new XmlTextReader(new StringReader(inventoryXmlText));
+
+        int inventoryCount = 0;
+        if (reader.ReadToDescendant("Inventories"))
+        {
+            if (reader.ReadToDescendant("Inventory"))
+            {
+                do
+                {
+                    inventoryCount++;
+
+                    InventoryCommon inv = new InventoryCommon();
+                    try
+                    {
+                        inv.ReadXmlPrototype(reader);
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.LogError("Error reading inventory prototype for: " + inv.objectType + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
+                    }
+
+
+                    inventoryPrototypes[inv.objectType] = inv;
+
+
+
+                } while (reader.ReadToNextSibling("Inventory"));
+            }
+            else
+            {
+                Logger.LogError("The inventory prototype definition file doesn't have any 'Inventory' elements.");
+            }
+        }
+        else
+        {
+            Logger.LogError("Did not find a 'Inventories' element in the prototype definition file.");
         }
     }
 
