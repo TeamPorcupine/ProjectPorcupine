@@ -224,7 +224,7 @@ public class BuildModeController
             case TileType.Floor:
                 return true;
             case TileType.Ladder:
-                return t.room.IsOutsideRoom();
+                return t.Room.IsOutsideRoom();
             default:
                 return true;
         }
