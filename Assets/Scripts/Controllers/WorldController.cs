@@ -17,7 +17,6 @@ using System.IO;
 
 public class WorldController : MonoBehaviour
 {
-
     SoundController soundController;
     TileSpriteController tileSpriteController;
     CharacterSpriteController characterSpriteController;
@@ -104,7 +103,6 @@ public class WorldController : MonoBehaviour
         //Initialising controllers
         GameObject Controllers = GameObject.Find("Controllers");
         Instantiate(Resources.Load("UIController"), Controllers.transform);
-
 
     }
 
