@@ -1,8 +1,8 @@
 #region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
-// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
-// and you are welcome to redistribute it under certain conditions; See 
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
@@ -19,10 +19,10 @@ public class WorldGenerator
 
     public static float asteroidNoiseScale = 0.2f;
     public static float asteroidNoiseThreshhold = 0.75f;
-    public static float asteroidRessourceChance = 0.85f;
-    public static Inventory[] ressources;
-    public static int[] ressourceMin;
-    public static int[] ressourceMax;
+    public static float asteroidResourceChance = 0.85f;
+    public static Inventory[] resources;
+    public static int[] resourceMin;
+    public static int[] resourceMax;
 
     public static void Generate(World world, int seed)
     {
@@ -44,23 +44,23 @@ public class WorldGenerator
                     Tile t = world.GetTileAt(x, y);
                     t.Type = asteroidFloorType;
 
-                    if (Random.value >= asteroidRessourceChance)
+                    if (Random.value >= asteroidResourceChance)
                     {
-                        if (ressources.Length > 0)
+                        if (resources.Length > 0)
                         {
                             int currentchance = 0;
                             int randomchance = Random.Range(0, 100);
 
-                            for (int i = 0; i < ressources.Length; i++)
+                            for (int i = 0; i < resources.Length; i++)
                             {
-                                Inventory inv = ressources[i];
+                                Inventory inv = resources[i];
 
                                 int chance = inv.stackSize; // In stacksize the chance was cached
                                 currentchance += chance;
 
                                 if (randomchance <= currentchance)
                                 {
-                                    int stackSize = Random.Range(ressourceMin[i], ressourceMax[i]);
+                                    int stackSize = Random.Range(resourceMin[i], resourceMax[i]);
 
                                     if (stackSize > inv.maxStackSize)
                                     {
@@ -132,11 +132,11 @@ public class WorldGenerator
                                 reader.Read();
                                 asteroidNoiseThreshhold = asteroid.ReadContentAsFloat();
                                 break;
-                            case "RessourceChance":
+                            case "ResourceChance":
                                 reader.Read();
-                                asteroidRessourceChance = asteroid.ReadContentAsFloat();
+                                asteroidResourceChance = asteroid.ReadContentAsFloat();
                                 break;
-                            case "Ressources":
+                            case "Resources":
                                 XmlReader res_reader = reader.ReadSubtree();
 
                                 System.Collections.Generic.List<Inventory> res = new System.Collections.Generic.List<Inventory>();
@@ -145,7 +145,7 @@ public class WorldGenerator
 
                                 while (res_reader.Read())
                                 {
-                                    if (res_reader.Name == "Ressource")
+                                    if (res_reader.Name == "Resource")
                                     {
                                         res.Add(new Inventory(
                                                 res_reader.GetAttribute("objectType"),
@@ -158,9 +158,9 @@ public class WorldGenerator
                                     }
                                 }
 
-                                ressources = res.ToArray();
-                                ressourceMin = resMin.ToArray();
-                                ressourceMax = resMax.ToArray();
+                                resources = res.ToArray();
+                                resourceMin = resMin.ToArray();
+                                resourceMax = resMax.ToArray();
 
                                 break;
                         }
