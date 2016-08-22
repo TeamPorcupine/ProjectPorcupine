@@ -197,7 +197,7 @@ public class Job
 
             if (cbJobWorkedLua != null)
             {
-                foreach (string luaFunction in cbJobWorkedLua)
+                foreach (string luaFunction in cbJobCompletedLua.ToList())
                 {
                     FurnitureActions.CallFunction(luaFunction, this);
                 }
@@ -215,7 +215,7 @@ public class Job
 
         if (cbJobWorkedLua != null)
         {
-            foreach (string luaFunction in cbJobWorkedLua)
+            foreach (string luaFunction in cbJobCompletedLua.ToList())
             {
                 FurnitureActions.CallFunction(luaFunction, this);
             }
@@ -229,9 +229,9 @@ public class Job
                 cbJobCompleted(this);
             }
 
-            for (int i = 0; i < cbJobCompletedLua.Count; i++)
+            foreach (string luaFunction in cbJobCompletedLua.ToList())
             {
-                FurnitureActions.CallFunction(cbJobCompletedLua[i], this);
+                FurnitureActions.CallFunction(luaFunction, this);
             }
 
             if (jobRepeats == false)
