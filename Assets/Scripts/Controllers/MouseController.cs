@@ -177,10 +177,10 @@ public class MouseController
         if (Input.GetMouseButtonDown(1))
         {
             Tile tileUnderMouse = GetMouseOverTile();
-            if (tileUnderMouse.pendingBuildJob != null)
+            if (tileUnderMouse.PendingBuildJob != null)
             {
                 Debug.Log("Canceling!");
-                tileUnderMouse.pendingBuildJob.CancelJob();
+                tileUnderMouse.PendingBuildJob.CancelJob();
             }
         }
 
@@ -232,17 +232,17 @@ public class MouseController
     private void RebuildSelectionStuffInTile()
     {
         // Make sure stuffInTile is big enough to handle all the characters, plus the 3 extra values.
-        mySelection.stuffInTile = new ISelectable[mySelection.tile.characters.Count + 3];
+        mySelection.stuffInTile = new ISelectable[mySelection.tile.Characters.Count + 3];
 
         // Copy the character references.
-        for (int i = 0; i < mySelection.tile.characters.Count; i++)
+        for (int i = 0; i < mySelection.tile.Characters.Count; i++)
         {
-            mySelection.stuffInTile[i] = mySelection.tile.characters[i];
+            mySelection.stuffInTile[i] = mySelection.tile.Characters[i];
         }
 
         // Now assign references to the other three sub-selections available.
-        mySelection.stuffInTile[mySelection.stuffInTile.Length - 3] = mySelection.tile.furniture;
-        mySelection.stuffInTile[mySelection.stuffInTile.Length - 2] = mySelection.tile.inventory;
+        mySelection.stuffInTile[mySelection.stuffInTile.Length - 3] = mySelection.tile.Furniture;
+        mySelection.stuffInTile[mySelection.stuffInTile.Length - 2] = mySelection.tile.Inventory;
         mySelection.stuffInTile[mySelection.stuffInTile.Length - 1] = mySelection.tile;
     }
 

@@ -103,10 +103,10 @@ public class Path_AStar
             {
                 // We don't have a POSITIONAL goal, we're just trying to find
                 // some king of inventory.  Have we reached it?
-                if (current.data.inventory != null && current.data.inventory.objectType == objectType && !current.data.inventory.isLocked)
+                if (current.data.Inventory != null && current.data.Inventory.objectType == objectType && !current.data.Inventory.isLocked)
                 {
                     // Type is correct and we are allowed to pick it up
-                    if (canTakeFromStockpile || current.data.furniture == null || current.data.furniture.IsStockpile() == false)
+                    if (canTakeFromStockpile || current.data.Furniture == null || current.data.Furniture.IsStockpile() == false)
                     {
                         // Stockpile status is fine
                         reconstruct_path(Came_From, current);
@@ -124,7 +124,7 @@ public class Path_AStar
                 if (ClosedSet.Contains(neighbor) == true)
                     continue; // ignore this already completed neighbor
 
-                float movement_cost_to_neighbor = neighbor.data.movementCost * dist_between(current, neighbor);
+                float movement_cost_to_neighbor = neighbor.data.MovementCost * dist_between(current, neighbor);
 
                 float tentative_g_score = g_score[current] + movement_cost_to_neighbor;
 

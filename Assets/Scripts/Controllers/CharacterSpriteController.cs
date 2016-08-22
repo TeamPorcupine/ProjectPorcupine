@@ -111,13 +111,13 @@ public class CharacterSpriteController
         //Debug.Log(furn_go.GetComponent<SpriteRenderer>());
 
         //char_go.GetComponent<SpriteRenderer>().sprite = GetSpriteForFurniture(furn);
-        if (c.CurrTile.room != null)
+        if (c.CurrTile.Room != null)
         {
-            if (c.CurrTile.room.GetGasAmount ("O2") <= 0.5f && char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled == false)
+            if (c.CurrTile.Room.GetGasAmount ("O2") <= 0.5f && char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled == false)
             {
                 char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled = true;
             }
-            else if(c.CurrTile.room.GetGasAmount ("O2") >= 0.5f && char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled == true)
+            else if(c.CurrTile.Room.GetGasAmount ("O2") >= 0.5f && char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled == true)
             {
                 char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled = false;
             }
