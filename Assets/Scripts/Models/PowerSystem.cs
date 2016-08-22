@@ -12,7 +12,7 @@ using System.Linq;
 
 public class PowerSystem
 {
-    private HashSet<IPowerRelated> powerGrid;
+    private readonly HashSet<IPowerRelated> powerGrid;
 
     private float currentPower;
 
@@ -32,11 +32,9 @@ public class PowerSystem
 
         private set
         {
-            if (!currentPower.Equals(value))
-            {
-                currentPower = value;
-                NotifyPowerConsumers();
-            }
+            if (currentPower.Equals(value)) return;
+            currentPower = value;
+            NotifyPowerConsumers();
         }
     }
 
@@ -48,7 +46,7 @@ public class PowerSystem
         }
 
         powerGrid.Add(powerRelated);
-        AdjustPowelLevel(powerRelated);
+        AdjustPowelLevel();
         powerRelated.PowerValueChanged += OnPowerValueChanged;
         Furniture furniture = powerRelated as Furniture;
         if (furniture != null)
@@ -62,7 +60,7 @@ public class PowerSystem
     public void RemoveFromPowerGrid(IPowerRelated powerRelated)
     {
         powerGrid.Remove(powerRelated);
-        AdjustPowelLevel(powerRelated, false);
+        AdjustPowelLevel();
     }
 
     public bool RequestPower(IPowerRelated powerRelated)
@@ -70,18 +68,10 @@ public class PowerSystem
         return powerGrid.Contains(powerRelated);
     }
 
-    private void AdjustPowelLevel(IPowerRelated powerRelated, bool isFurnitureAdded = true)
+    private void AdjustPowelLevel()
     {
-        if (isFurnitureAdded)
-        {
-            PowerLevel += powerRelated.PowerValue;
-        }
-        else
-        {
-            PowerLevel -= powerRelated.PowerValue;
-        }
-
-        if (PowerLevel < 0)
+        PowerLevel = powerGrid.Sum(related => related.PowerValue);
+        if (PowerLevel < 0.0f)
         {
             RemovePowerConsumer();
         }

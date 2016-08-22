@@ -214,7 +214,7 @@ namespace ProjectPorcupine.Localization
                 {
                     string fileName = Path.GetFileName(file);
                     string destFile = Path.Combine(LocalizationFolderPath, fileName);
-                    File.Copy(file, destFile);
+                    File.Copy(file, destFile, true);
                     File.Delete(file);
                 }
 
