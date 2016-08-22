@@ -25,8 +25,8 @@ function OnUpdate_GasGenerator( furniture, deltaTime )
 		return "Furniture's room was null."
 	end
 
-	if ( furniture.tile.room.GetGasPressure("O2") < furniture.GetParameter("gas_limit", 0.2)) then
-		furniture.tile.room.ChangeGas("O2", furniture.GetParameter("gas_per_second", 0.01) * deltaTime)
+	if ( furniture.tile.room.GetGasPressure("O2") < furniture.GetParameterAsFloat("gas_limit", 0.2)) then
+		furniture.tile.room.ChangeGas("O2", furniture.GetParameterAsFloat("gas_per_second", 0.01) * deltaTime)
 	else
 		-- Do we go into a standby mode to save power?
 	end
@@ -35,32 +35,32 @@ function OnUpdate_GasGenerator( furniture, deltaTime )
 end
 
 function OnUpdate_Door( furniture, deltaTime )
-	if (furniture.GetParameter("is_opening") >= 1.0) then
-		furniture.ChangeParameter("openness", deltaTime * 4) -- FIXME: Maybe a door open speed parameter?
-		if (furniture.GetParameter("openness") >= 1)  then
-			furniture.SetParameter("is_opening", 0)
+	if (furniture.GetParameterAsFloat("is_opening") >= 1.0) then
+		furniture.ChangeParameterAsFloat("openness", deltaTime * 4) -- FIXME: Maybe a door open speed parameter?
+		if (furniture.GetParameterAsFloat("openness") >= 1)  then
+			furniture.SetParameterAsFloat("is_opening", 0)
 		end
 	else
-		furniture.ChangeParameter("openness", deltaTime * -4)
+		furniture.ChangeParameterAsFloat("openness", deltaTime * -4)
 	end
 
-	furniture.SetParameter("openness", Clamp01(furniture.GetParameter("openness")) )
+	furniture.SetParameterAsFloat("openness", Clamp01(furniture.GetParameterAsFloat("openness")) )
 
 	furniture.UpdateOnChanged(furniture);
 end
 
 function OnUpdate_Leak_Door( furniture, deltaTime )
-	furniture.tile.EqualiseGas(deltaTime * 10.0 * (furniture.GetParameter("openness") + 0.1))
+	furniture.tile.EqualiseGas(deltaTime * 10.0 * (furniture.GetParameterAsFloat("openness") + 0.1))
 end
 
 function OnUpdate_Leak_Airlock( furniture, deltaTime )
-	furniture.tile.EqualiseGas(deltaTime * 10.0 * (furniture.GetParameter("openness")))
+	furniture.tile.EqualiseGas(deltaTime * 10.0 * (furniture.GetParameterAsFloat("openness")))
 end
 
 function IsEnterable_Door( furniture )
-	furniture.SetParameter("is_opening", 1)
+	furniture.SetParameterAsFloat("is_opening", 1)
 
-	if (furniture.GetParameter("openness") >= 1) then
+	if (furniture.GetParameterAsFloat("openness") >= 1) then
 		return ENTERABILITY_YES --ENTERABILITY.Yes
 	end
 
@@ -245,10 +245,10 @@ function MetalSmelter_UpdateAction(furniture, deltaTime)
 			furniture.AddJob(j)
 		end
 	else
-		furniture.ChangeParameter("smelttime", deltaTime)
+		furniture.ChangeParameterAsFloat("smelttime", deltaTime)
 
-		if(furniture.GetParameter("smelttime") >= furniture.GetParameter("smelttime_required")) then
-			furniture.SetParameter("smelttime", 0)
+		if(furniture.GetParameterAsFloat("smelttime") >= furniture.GetParameterAsFloat("smelttime_required")) then
+			furniture.SetParameterAsFloat("smelttime", 0)
 
 			outputSpot = World.current.GetTileAt(spawnSpot.X+2, spawnSpot.y)
 
@@ -416,7 +416,7 @@ function LandingPad_Temp_UpdateAction(furniture, deltaTime)
 
 	if(inputSpot.inventory == nil) then
 		if(furniture.JobCount() == 0) then
-			itemsDesired = {Inventory.__new("Steel Plate", furniture.GetParameter("tradeinamount"), 0)}
+			itemsDesired = {Inventory.__new("Steel Plate", furniture.GetParameterAsFloat("tradeinamount"), 0)}
 
 			j = Job.__new(
 			inputSpot,
@@ -435,21 +435,22 @@ function LandingPad_Temp_UpdateAction(furniture, deltaTime)
 			furniture.AddJob(j)
 		end
 	else
-		furniture.ChangeParameter("tradetime", deltaTime)
+		furniture.ChangeParameterAsFloat("tradetime", deltaTime)
 
-		if(furniture.GetParameter("tradetime") >= furniture.GetParameter("tradetime_required")) then
-			furniture.SetParameter("tradetime", 0)
+		if(furniture.GetParameterAsFloat("tradetime") >= furniture.GetParameterAsFloat("tradetime_required")) then
+			furniture.SetParameterAsFloat("tradetime", 0)
 
 		 	outputSpot = World.current.GetTileAt(spawnSpot.X+1, spawnSpot.y)
 
 			if(outputSpot.inventory == nil) then
-				World.current.inventoryManager.PlaceInventory( outputSpot, Inventory.__new("Steel Plate", 50, furniture.GetParameter("tradeoutamount")) )
+				World.current.inventoryManager.PlaceInventory( 
+					outputSpot, Inventory.__new("Steel Plate", 50, furniture.GetParameterAsFloat("tradeoutamount")) )
 
-				inputSpot.inventory.stackSize = inputSpot.inventory.stackSize-furniture.GetParameter("tradeinamount")
+				inputSpot.inventory.stackSize = inputSpot.inventory.stackSize-furniture.GetParameterAsFloat("tradeinamount")
 			else
-				if(outputSpot.inventory.stackSize <= 50 - outputSpot.inventory.stackSize+furniture.GetParameter("tradeoutamount")) then
-					outputSpot.inventory.stackSize = outputSpot.inventory.stackSize+furniture.GetParameter("tradeoutamount")
-					inputSpot.inventory.stackSize = inputSpot.inventory.stackSize-furniture.GetParameter("tradeinamount")
+				if(outputSpot.inventory.stackSize <= 50 - outputSpot.inventory.stackSize+furniture.GetParameterAsFloat("tradeoutamount")) then
+					outputSpot.inventory.stackSize = outputSpot.inventory.stackSize+furniture.GetParameterAsFloat("tradeoutamount")
+					inputSpot.inventory.stackSize = inputSpot.inventory.stackSize-furniture.GetParameterAsFloat("tradeinamount")
 				end
 			end
 
