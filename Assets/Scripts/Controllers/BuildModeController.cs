@@ -15,12 +15,19 @@ public enum BuildMode
     DECONSTRUCT
 }
 
-public class BuildModeController : MonoBehaviour
+public class BuildModeController
 {
     public BuildMode buildMode = BuildMode.FLOOR;
     public string buildModeObjectType;
 
+    private MouseController mouseController;
     private TileType buildModeTile = TileType.Floor;
+
+    // Use this for initialization
+    public void SetMouseController(MouseController currentMouseController)
+    {
+        mouseController = currentMouseController;
+    }
 
     public bool IsObjectDraggable()
     {
@@ -40,7 +47,7 @@ public class BuildModeController : MonoBehaviour
         buildMode = BuildMode.FLOOR;
         buildModeTile = TileType.Floor;
 
-        GameObject.FindObjectOfType<MouseController>().StartBuildMode();
+        mouseController.StartBuildMode();
     }
 
     public void SetMode_BuildLadder()
@@ -48,14 +55,14 @@ public class BuildModeController : MonoBehaviour
         buildMode = BuildMode.FLOOR;
         buildModeTile = TileType.Ladder;
 
-        GameObject.FindObjectOfType<MouseController>().StartBuildMode();
+        mouseController.StartBuildMode();
     }
 
     public void SetMode_Bulldoze()
     {
         buildMode = BuildMode.FLOOR;
         buildModeTile = TileType.Empty;
-        GameObject.FindObjectOfType<MouseController>().StartBuildMode();
+        mouseController.StartBuildMode();
     }
 
     public void SetMode_BuildFurniture(string objectType)
@@ -63,13 +70,13 @@ public class BuildModeController : MonoBehaviour
         // Wall is not a Tile!  Wall is an "Furniture" that exists on TOP of a tile.
         buildMode = BuildMode.FURNITURE;
         buildModeObjectType = objectType;
-        GameObject.FindObjectOfType<MouseController>().StartBuildMode();
+        mouseController.StartBuildMode();
     }
 
     public void SetMode_Deconstruct()
     {
         buildMode = BuildMode.DECONSTRUCT;
-        GameObject.FindObjectOfType<MouseController>().StartBuildMode();
+        mouseController.StartBuildMode();
     }
 
     public void DoPathfindingTest()
