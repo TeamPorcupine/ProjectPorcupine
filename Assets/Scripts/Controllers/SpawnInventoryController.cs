@@ -3,8 +3,6 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 
 public class SpawnInventoryController {
-    public static bool isEnabled = true;
-
     public string InventoryToBuild { get; protected set; }
 
     private GameObject spawnUI;
@@ -48,14 +46,20 @@ public class SpawnInventoryController {
         {
             GameObject inventoryButton_go = new GameObject();
             inventoryButton_go.name = "Button - " + iName;
+            inventoryButton_go.layer = LayerMask.NameToLayer("UI");
+
             inventoryButton_go.transform.SetParent(spawnUI.transform);
 
             Image image = inventoryButton_go.AddComponent<Image>();
 
             Button button = inventoryButton_go.AddComponent<Button>();
+            ColorBlock colorBlock = new ColorBlock();
+            colorBlock.normalColor = Color.white;
+            colorBlock.pressedColor = Color.blue;
+            button.colors = colorBlock;
             string localName = iName;
             button.onClick.AddListener(
-                () => { InventoryToBuild = localName; }
+                () => { OnButtonClick(localName); }
             );
 
             GameObject text_go = CreateTextComponent(inventoryButton_go, iName);
@@ -69,6 +73,7 @@ public class SpawnInventoryController {
     private GameObject CreateTextComponent(GameObject go, string iName) {
         GameObject text_go = new GameObject();
         text_go.name = "Text";
+        text_go.layer = LayerMask.NameToLayer("UI");
 
         RectTransform rectTransform = text_go.AddComponent<RectTransform>();
         rectTransform.SetParent(go.transform);
@@ -78,8 +83,32 @@ public class SpawnInventoryController {
         rectTransform.offsetMax = Vector2.zero;
 
         Text text = text_go.AddComponent<Text>();
+        text.font = Font.CreateDynamicFontFromOSFont("Arial",14);
+        text.alignment = TextAnchor.MiddleLeft;
+        text.color = Color.black;
         text.text = iName;
 
         return text_go;
+    }
+
+    private void OnButtonClick(string iName) {
+        InventoryToBuild = iName;
+        WorldController.Instance.mouseController.StartSpawnMode();
+        Logger.Log("Build inventory: " + iName);
+    }
+
+    public void SpawnInventory(Tile t) {
+        Inventory inventoryChange = new Inventory(InventoryToBuild, 1);
+
+        // You can't spawn on occupied tiles
+        if (t.furniture != null)
+        {
+            return; 
+        }
+
+        if (t.inventory == null || t.inventory.objectType == InventoryToBuild)
+        {
+            World.current.inventoryManager.PlaceInventory(t, inventoryChange);
+        }
     }
 }
