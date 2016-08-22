@@ -321,7 +321,7 @@ public class MouseController
                                 isValid = true;
                             } 
                         }
-                        else if (dragType == "line")
+                        else if (dragType == "path")
                         {
                             bool xNeg = raw_start_x > raw_end_x ? true : false;
 
