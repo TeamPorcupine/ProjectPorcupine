@@ -19,7 +19,7 @@ public class Path_AStar
     {
         if (path == null || !path.Any())
         {
-            Logger.LogWarning("Created path with no tiles, is this intended?");
+            Debug.LogWarning("Created path with no tiles, is this intended?");
         }
         this.path = path;
     }
@@ -43,7 +43,7 @@ public class Path_AStar
         // Make sure our start/end tiles are in the list of nodes!
         if (nodes.ContainsKey(tileStart) == false)
         {
-            Logger.LogError("Path_AStar: The starting tile isn't in the list of nodes!");
+            Debug.LogError("Path_AStar: The starting tile isn't in the list of nodes!");
 
             return;
         }
@@ -58,7 +58,7 @@ public class Path_AStar
         {
             if (nodes.ContainsKey(tileEnd) == false)
             {
-                Logger.LogError("Path_AStar: The ending tile isn't in the list of nodes!");
+                Debug.LogError("Path_AStar: The ending tile isn't in the list of nodes!");
                 return;
             }
 
@@ -103,10 +103,10 @@ public class Path_AStar
             {
                 // We don't have a POSITIONAL goal, we're just trying to find
                 // some king of inventory.  Have we reached it?
-                if (current.data.inventory != null && current.data.inventory.objectType == objectType && !current.data.inventory.isLocked)
+                if (current.data.Inventory != null && current.data.Inventory.objectType == objectType && !current.data.Inventory.isLocked)
                 {
                     // Type is correct and we are allowed to pick it up
-                    if (canTakeFromStockpile || current.data.furniture == null || current.data.furniture.IsStockpile() == false)
+                    if (canTakeFromStockpile || current.data.Furniture == null || current.data.Furniture.IsStockpile() == false)
                     {
                         // Stockpile status is fine
                         reconstruct_path(Came_From, current);
@@ -124,7 +124,7 @@ public class Path_AStar
                 if (ClosedSet.Contains(neighbor) == true)
                     continue; // ignore this already completed neighbor
 
-                float movement_cost_to_neighbor = neighbor.data.movementCost * dist_between(current, neighbor);
+                float movement_cost_to_neighbor = neighbor.data.MovementCost * dist_between(current, neighbor);
 
                 float tentative_g_score = g_score[current] + movement_cost_to_neighbor;
 
@@ -222,12 +222,12 @@ public class Path_AStar
     {
         if (path == null)
         {
-            Logger.LogError("Attempting to dequeue from an null path.");
+            Debug.LogError("Attempting to dequeue from an null path.");
             return null;
         }
         if (path.Count <= 0)
         {
-            Logger.LogError("what???");
+            Debug.LogError("what???");
             return null;
         }
         return path.Dequeue();
@@ -245,7 +245,7 @@ public class Path_AStar
     {
         if (path == null || path.Count == 0)
         {
-            Logger.Log("Path is null or empty.");
+            Debug.Log("Path is null or empty.");
             return null;
         }
 

@@ -53,7 +53,7 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
         {
             // TODO: Do file overwrite dialog box.
 
-            Logger.LogWarning("File already exists -- overwriting the file for now.");
+            Debug.LogWarning("File already exists -- overwriting the file for now.");
         }
 
         CloseDialog();
@@ -68,14 +68,14 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
 
         // Get the file name from the save file dialog box
 
-        Logger.Log("SaveWorld button was clicked.");
+        Debug.Log("SaveWorld button was clicked.");
 
         XmlSerializer serializer = new XmlSerializer(typeof(World));
         TextWriter writer = new StringWriter();
         serializer.Serialize(writer, WorldController.Instance.world);
         writer.Close();
 
-        Logger.Log(writer.ToString());
+        Debug.Log(writer.ToString());
 
         //PlayerPrefs.SetString("SaveGame00", writer.ToString());
 

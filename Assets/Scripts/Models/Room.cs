@@ -46,13 +46,13 @@ public class Room : IXmlSerializable
             return;
         }
 
-        if (t.room != null)
+        if (t.Room != null)
         {
             // Belongs to some other room
-            t.room.tiles.Remove(t);
+            t.Room.tiles.Remove(t);
         }
-
-        t.room = this;
+        	
+        t.Room = this;
         tiles.Add(t);
     }
 
@@ -60,7 +60,7 @@ public class Room : IXmlSerializable
     {
         for (int i = 0; i < tiles.Count; i++)
         {
-            tiles[i].room = World.current.GetOutsideRoom(); // Assign to outside
+            tiles[i].Room = World.current.GetOutsideRoom();	// Assign to outside
         }
 
         tiles = new List<Tile>();
@@ -124,19 +124,19 @@ public class Room : IXmlSerializable
             // Skip tiles with a null room (i.e. outside)
             // TODO: Verify that gas still leaks to the outside
             // somehow
-            if (t.room == null)
+            if (t.Room == null)
             {
                 continue;
             }
 
-            if (roomsDone.Contains(t.room) == false)
+            if (roomsDone.Contains(t.Room) == false)
             {
                 foreach (Room r in roomsDone) 
                 {
-                    t.room.EqualiseGas(r, leakFactor);
+                    t.Room.EqualiseGas(r, leakFactor);
                 }
 
-                roomsDone.Add(t.room);
+                roomsDone.Add(t.Room);
             }
         }
     }
@@ -194,7 +194,7 @@ public class Room : IXmlSerializable
         // and do flood fill from them
         World world = World.current;
 
-        Room oldRoom = sourceTile.room;
+        Room oldRoom = sourceTile.Room;
 
         if (oldRoom != null)
         {
@@ -208,13 +208,13 @@ public class Room : IXmlSerializable
             // Try building new rooms for each of our NESW directions
             foreach (Tile t in sourceTile.GetNeighbours())
             {
-                if (t.room != null && (onlyIfOutside == false || t.room.IsOutsideRoom()))
+                if (t.Room != null && (onlyIfOutside == false || t.Room.IsOutsideRoom()))
                 {
                     ActualFloodFill(t, oldRoom, sizeOfOldRoom);
                 }
             }
 
-            sourceTile.room = null;
+            sourceTile.Room = null;
 
             oldRoom.tiles.Remove(sourceTile);
 
@@ -228,7 +228,7 @@ public class Room : IXmlSerializable
                 // to remove the room from the world's list.
                 if (oldRoom.tiles.Count > 0)
                 {
-                    Logger.LogError("'oldRoom' still has tiles assigned to it. This is clearly wrong.");
+                    Debug.LogError("'oldRoom' still has tiles assigned to it. This is clearly wrong.");
                 }
 
                 world.DeleteRoom(oldRoom);
@@ -246,7 +246,7 @@ public class Room : IXmlSerializable
 
     protected static void ActualFloodFill(Tile tile, Room oldRoom, int sizeOfOldRoom)
     {
-        ////Logger.Log("ActualFloodFill");
+        ////Debug.Log("ActualFloodFill");
 
         if (tile == null)
         {
@@ -255,7 +255,7 @@ public class Room : IXmlSerializable
             return;
         }
 
-        if (tile.room != oldRoom)
+        if (tile.Room != oldRoom)
         {
             // This tile was already assigned to another "new" room, which means
             // that the direction picked isn't isolated. So we can just return
@@ -263,7 +263,7 @@ public class Room : IXmlSerializable
             return;
         }
 
-        if (tile.furniture != null && tile.furniture.roomEnclosure)
+        if (tile.Furniture != null && tile.Furniture.roomEnclosure)
         {
             // This tile has a wall/door/whatever in it, so clearly
             // we can't do a room here.
@@ -292,12 +292,12 @@ public class Room : IXmlSerializable
 
             processedTiles++;
 
-            if (t.room != newRoom)
+            if (t.Room != newRoom)
             {
-                if (t.room != null && listOfOldRooms.Contains(t.room) == false)
+                if (t.Room != null && listOfOldRooms.Contains(t.Room) == false)
                 {
-                    listOfOldRooms.Add(t.room);
-                    newRoom.MoveGas(t.room);
+                    listOfOldRooms.Add(t.Room);
+                    newRoom.MoveGas(t.Room);
                 }
 
                 newRoom.AssignTile(t);
@@ -324,7 +324,7 @@ public class Room : IXmlSerializable
                         // We know t2 is not null nor is it an empty tile, so just make sure it
                         // hasn't already been processed and isn't a "wall" type tile.
                         if (
-                            t2.room != newRoom && (t2.furniture == null || t2.furniture.roomEnclosure == false))
+                            t2.Room != newRoom && (t2.Furniture == null || t2.Furniture.roomEnclosure == false))
                         {
                             tilesToCheck.Enqueue(t2);
                         }
@@ -333,7 +333,7 @@ public class Room : IXmlSerializable
             }
         }
 
-        ////Logger.Log("ActualFloodFill -- Processed Tiles: " + processedTiles);
+        ////Debug.Log("ActualFloodFill -- Processed Tiles: " + processedTiles);
 
         if (isConnectedToSpace)
         {

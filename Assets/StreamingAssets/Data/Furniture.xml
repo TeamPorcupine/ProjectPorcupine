@@ -9,7 +9,7 @@
         <Height>1</Height>
         <LinksToNeighbours>true</LinksToNeighbours>
         <EnclosesRooms>true</EnclosesRooms>
-        <DragType>border</DragType>
+        <DragType>path</DragType>
 
 
         <BuildingJob jobTime="1">
@@ -19,10 +19,20 @@
         <DeconstructJob>
             <Inventory objectType="Steel Plate" amount="3" />
         </DeconstructJob>
+
+        <Params>
+          <!-- Temperature stuff  example -->
+          <!-- Thermal diffusivity (also called alpha) is how much the furniture is "isolating" the tile it is placed on. -->
+          <!-- 0 means *NO* temperature is exchanged between tiles -->
+          <!-- 1 means a regular amout is exchanged -->
+          <!-- Walls will likely have low values, whilst tables and so on will have values close to 1 (if not 1). -->
+          <!-- Leave default value (i.e. nothing) if the furniture does not have any isolation effect. -->
+          <Param name="thermal_diffusivity" value="0.0" />
+        </Params>
         
         <LocalizationCode>furn_steel_wall</LocalizationCode>
         <UnlocalizedDescription>furn_steel_wall_desc</UnlocalizedDescription>
-
+      
     </Furniture>
 
     <Furniture objectType="Door">
@@ -40,6 +50,7 @@
         <Params>
             <Param name="openness" value="0" />
             <Param name="is_opening" value="0" />
+            <Param name="thermal_diffusivity" value="0.0" />
         </Params>
 
         <BuildingJob jobTime="1">
@@ -214,6 +225,8 @@
       <Height>3</Height>
 
       <BuildingJob jobTime="0"/>
+      
+      <JobSpotOffset X="1" Y="0" />
 
       <OnUpdate FunctionName="MetalSmelter_UpdateAction" />
 
@@ -226,27 +239,52 @@
       <UnlocalizedDescription>furn_metal_smelter_desc</UnlocalizedDescription>
   </Furniture>
   
-    <Furniture objectType="Power Cell Press">
-        <Name>Power Cell Press</Name>
-        <Description>A press that converts steel plate and something into power cells.</Description>
-        <MovementCost>1</MovementCost>
-        <Width>2</Width>
-        <Height>2</Height>
+  <Furniture objectType="Heater">
+    <Name>Heater</Name>
+    <Description>Raises temperature in the room.</Description>
+    <BaseType>Temperature</BaseType>
+    <MovementCost>10</MovementCost>
+    <Width>1</Width>
+    <Height>1</Height>
+    <Power>4</Power>
 
-        <BuildingJob jobTime="1"/>
+    <BuildingJob jobTime="0"></BuildingJob>
 
-        <Params>
-            <Param name="presstime" value="0" />
-            <Param name="presstime_required" value="15" />
-        </Params>
+    <!-- This method gets called on Install -->
+    <OnInstall FunctionName="Heater_InstallAction"></OnInstall>
+    <!-- This method gets called on Uninstall -->
+    <OnUninstall FunctionName="Heater_UninstallAction"></OnUninstall>
+      
+    <Params>
+      <Param name="temperature" value="10" />
+    </Params>
 
-        <OnUpdate FunctionName="PowerCellPress_UpdateAction" />
+    <LocalizationCode>furn_heater</LocalizationCode>
+    <UnlocalizedDescription>furn_heater_desc</UnlocalizedDescription>
 
-        <LocalizationCode>furn_power_cell_press</LocalizationCode>
-        <UnlocalizedDescription>furn_power_cell_press_desc</UnlocalizedDescription>
+	</Furniture>
 
-    </Furniture>
+	<Furniture objectType="Power Cell Press">
+		<Name>Power Cell Press</Name>
+		<Description>A press that converts steel plate and something into power cells.</Description>
+		<MovementCost>1</MovementCost>
+		<Width>2</Width>
+		<Height>2</Height>
 
+		<BuildingJob jobTime="1"/>
+
+		<Params>
+			<Param name="presstime" value="0" />
+			<Param name="presstime_required" value="15" />
+		</Params>
+
+		<OnUpdate FunctionName="PowerCellPress_UpdateAction" />
+
+		<LocalizationCode>furn_power_cell_press</LocalizationCode>
+		<UnlocalizedDescription>furn_power_cell_press_desc</UnlocalizedDescription>
+
+  </Furniture>
+	
   <Furniture objectType="Small Landing Pad">
     <Name>Small Landing Pad</Name>
     <Description>A landing pad for small spaceboats to land.</Description>
