@@ -135,9 +135,9 @@ We have standardized the objectTypes of Furniture and Inventory to match `type_m
 
 * For multiword parts it will be `myType_myMaterial`.
 
-* In the Localization a line could be will be 'inv_type_material=Material Type' and `furn_type_material=Material Type`.
+* In the Localization a line could be will be `inv_type_material=Material Type` and `furn_type_material=Material Type`.
 
-* In Localization the description can be set with 'inv_type_material_desc=Some cool description.' and `furn_type_material_desc=Some awesome description`.
+* In Localization the description can be set with `inv_type_material_desc=Some cool description.` and `furn_type_material_desc=Some awesome description`.
 
 * For image files and their xml files use the objectType as the name.
 
