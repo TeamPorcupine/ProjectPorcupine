@@ -287,6 +287,68 @@ function MetalSmelter_JobWorked(j)
     end
 end
 
+function PowerCellPress_UpdateAction(furniture, deltaTime)
+	spawnSpot = furniture.GetSpawnSpotTile()
+	
+	if(spawnSpot.inventory == nil) then
+		if(furniture.JobCount() == 0) then
+			itemsDesired = {Inventory.__new("Steel Plate", 10, 0)}
+			
+			jobSpot = furniture.GetJobSpotTile()
+
+			j = Job.__new(
+			jobSpot,
+			nil,
+			nil,
+			1,
+			itemsDesired,
+			Job.JobPriority.Medium,
+			false
+			)
+			
+			j.RegisterJobCompletedCallback("PowerCellPress_JobComplete")
+			
+			furniture.AddJob(j)
+		end
+	else
+		furniture.ChangeParameter("presstime", deltaTime)
+		
+		if(furniture.GetParameter("presstime") >= furniture.GetParameter("presstime_required")) then
+			furniture.SetParameter("presstime", 0)
+			
+			outputSpot = World.current.GetTileAt(spawnSpot.X+2, spawnSpot.y)
+			
+			if(outputSpot.inventory == nil) then
+				World.current.inventoryManager.PlaceInventory( outputSpot, Inventory.__new("Power Cell", 5, 1) )
+			
+				spawnSpot.inventory.stackSize = spawnSpot.inventory.stackSize-10
+			else
+				if(outputSpot.inventory.stackSize <= 4) then
+					outputSpot.inventory.stackSize = outputSpot.inventory.stackSize+1
+				
+					spawnSpot.inventory.stackSize = spawnSpot.inventory.stackSize-10
+				end
+			end
+			
+			if(spawnSpot.inventory.stackSize <= 0) then
+				spawnSpot.inventory = nil
+			end
+		end
+	end
+end
+
+function PowerCellPress_JobComplete(j)
+	spawnSpot = j.tile.furniture.GetSpawnSpotTile()
+	
+	for k, inv in pairs(j.inventoryRequirements) do
+		if(inv.stackSize > 0) then
+			World.current.inventoryManager.PlaceInventory(spawnSpot, inv)
+
+			return
+		end
+	end
+end
+
 function CloningPod_UpdateAction(furniture, deltaTime)
 
 	if( furniture.JobCount() > 0 ) then
