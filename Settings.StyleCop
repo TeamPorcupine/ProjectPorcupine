@@ -2,11 +2,6 @@
   <Analyzers>
     <Analyzer AnalyzerId="StyleCop.CSharp.DocumentationRules">
       <Rules>
-        <Rule Name="FileMustHaveHeader">
-          <RuleSettings>
-            <BooleanProperty Name="Enabled">False</BooleanProperty>
-          </RuleSettings>
-        </Rule>
         <Rule Name="ElementsMustBeDocumented">
           <RuleSettings>
             <BooleanProperty Name="Enabled">False</BooleanProperty>
@@ -202,11 +197,6 @@
             <BooleanProperty Name="Enabled">False</BooleanProperty>
           </RuleSettings>
         </Rule>
-        <Rule Name="FileHeaderMustHaveCopyrightText">
-          <RuleSettings>
-            <BooleanProperty Name="Enabled">False</BooleanProperty>
-          </RuleSettings>
-        </Rule>
         <Rule Name="FileHeaderMustContainFileName">
           <RuleSettings>
             <BooleanProperty Name="Enabled">False</BooleanProperty>
@@ -237,16 +227,16 @@
             <BooleanProperty Name="Enabled">False</BooleanProperty>
           </RuleSettings>
         </Rule>
+          <Rule Name="PrefixLocalCallsWithThis">
+            <RuleSettings>
+              <BooleanProperty Name="Enabled">False</BooleanProperty>
+            </RuleSettings>
+          </Rule>
       </Rules>
       <AnalyzerSettings />
     </Analyzer>
     <Analyzer AnalyzerId="StyleCop.CSharp.MaintainabilityRules">
       <Rules>
-        <Rule Name="AccessModifierMustBeDeclared">
-          <RuleSettings>
-            <BooleanProperty Name="Enabled">False</BooleanProperty>
-          </RuleSettings>
-        </Rule>
         <Rule Name="FieldsMustBePrivate">
           <RuleSettings>
             <BooleanProperty Name="Enabled">False</BooleanProperty>

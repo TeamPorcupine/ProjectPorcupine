@@ -1,3 +1,13 @@
+[Contributing](#contributing)  
+[Resolving Merge Conflicts](#resolving-merge-conflicts)  
+[Unity Version](#unity-version)  
+[General resources](#general-resources)  
+[Style Guidelines](#style-guidelines)  
+[Adding Furniture and Inventory](#adding-furniture-and-inventory)  
+[Best Practices for Contributing](#best-practices-for-contributing)
+
+
+
 # Contributing
 
 If you would like to contribute to this project by modifying/adding to the program code or various creative assets, read the [Best Practices for Contributing] below and feel free to follow the standard Github workflow:
@@ -60,7 +70,7 @@ We are using Unity version 5.4 .
 All pull requests must build in 5.4 to be a valid patch.  
 
 # General resources
-* [Github Tutorial by Quill18](https://www.youtube.com/watch?v=-N4Cghw0l2Q)
+* [Github Tutorial by Quill18](https://www.youtube.com/watch?v=R2fl17eEpwI)
 * [GitHub Forking Overview](https://gist.github.com/Chaser324/ce0505fbed06b947d962)
 * [GitHub Documentation for Desktop Client](https://help.github.com/desktop/guides/contributing/)
 * [GitHub Desktop Client](https://desktop.github.com/)
@@ -115,6 +125,22 @@ Additionally, for the sake of simplicity, we are standardizing on what should be
 ![screen shot 2016-08-16 at 8 03 22 pm](https://cloud.githubusercontent.com/assets/777633/17719999/920fb534-63ec-11e6-8903-3725f2cd05b0.png)
 ![screen shot 2016-08-16 at 8 03 36 pm](https://cloud.githubusercontent.com/assets/777633/17719998/920cff6a-63ec-11e6-8f76-0ac7a5fa0c9d.png)
 
+## Adding Furniture and Inventory
+
+We have standardized the objectTypes of Furniture and Inventory to match `type_material`, such as `wall_steel` and `generator_oxygen` or `generator_power`, for localization a matching prefix is added automaticly to objectType such as `inv` and `furn`. This means a few things:
+
+* When adding a new Furniture or inventory the files should have the objectType "type_material", you could give it the more english sounding name, as of now name is not used for anything.
+
+* For machines the convention will be `whatItDoes_whatItMakes`.
+
+* For multiword parts it will be `myType_myMaterial`.
+
+* In the Localization a line could be will be 'inv_type_material=Material Type' and `furn_type_material=Material Type`.
+
+* In Localization the description can be set with 'inv_type_material_desc=Some cool description.' and `furn_type_material_desc=Some awesome description`.
+
+* For image files and their xml files use the objectType as the name.
+
 ## Best Practices for Contributing
 [Best Practices for Contributing]: #best-practices-for-contributing
 * Before you start coding, open an issue so that the community can discuss your change to ensure it is in line with the goals of the project and not being worked on by someone else. This allows for discussion and fine tuning of your feature and results in a more succent and focused additions.
@@ -136,6 +162,8 @@ Additionally, for the sake of simplicity, we are standardizing on what should be
 * Avoid making changes to the Unity-specific files, like the scene and the project settings unless absolutely necessary. Changes here are very likely to cause difficult merge conflicts. Work in code as much as possible. (We will be trying to change the UI to be more code-driven in the future.) Making changes to prefabs should generally be safe -- but create a copy of the main scene and work there instead (then delete your copy of the scene before committing).
 
 * Include screenshots demonstrating your change if applicable. All UI changes should include screenshots.
+
+* If you want to help with localization of the project you can submit your work over at [Localization Repo](https://github.com/QuiZr/ProjectPorcupineLocalization)
 
 That's it! Following these guidelines will ensure that your additions are approved quickly and integrated into the project. Thanks for your contribution!
 

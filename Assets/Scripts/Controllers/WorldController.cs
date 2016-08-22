@@ -18,6 +18,18 @@ using System.IO;
 public class WorldController : MonoBehaviour
 {
 
+    SoundController soundController;
+    TileSpriteController tileSpriteController;
+    CharacterSpriteController characterSpriteController;
+    JobSpriteController jobSpriteController;
+    InventorySpriteController inventorySpriteController;
+    FurnitureSpriteController furnitureSpriteController;
+
+    public BuildModeController buildModeController;
+    public MouseController mouseController;
+    public SpawnInventoryController spawnInventoryController;
+    public ModsManager modsManager;
+
     public static WorldController Instance { get; protected set; }
 
     // The world and tile data
@@ -52,12 +64,18 @@ public class WorldController : MonoBehaviour
 
     public bool devMode = false;
 
+    public GameObject inventoryUI;
+    public GameObject circleCursorPrefab;
+
     // Use this for initialization
     void OnEnable()
     {
+        string dataPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
+        modsManager = new ModsManager(dataPath);
+
         if (Instance != null)
         {
-            Logger.LogError("There should never be two world controllers.");
+            Debug.LogError("There should never be two world controllers.");
         }
         Instance = this;
 
@@ -71,19 +89,41 @@ public class WorldController : MonoBehaviour
             CreateEmptyWorld();
         }
 
+        soundController = new SoundController(world);
+    }
+
+    void Start() {
+        tileSpriteController = new TileSpriteController(world);
+        tileSpriteController.Render();
+        characterSpriteController = new CharacterSpriteController(world);
+        furnitureSpriteController = new FurnitureSpriteController(world);
+        jobSpriteController = new JobSpriteController(world, furnitureSpriteController);
+        inventorySpriteController = new InventorySpriteController(world, inventoryUI);
+        buildModeController = new BuildModeController();
+        if(Settings.getSettingAsBool("DevTools_enabled", false))
+        {
+            spawnInventoryController = new SpawnInventoryController();
+        }
+        mouseController = new MouseController(buildModeController, furnitureSpriteController, circleCursorPrefab);
+
         //Initialising controllers
         GameObject Controllers = GameObject.Find("Controllers");
         Instantiate(Resources.Load("UIController"), Controllers.transform);
+
+
     }
 
     void Update()
     {
         CheckTimeInput();
+        mouseController.Update(IsModal);
 
         if (IsPaused == false)
         {
             world.Update(Time.deltaTime * timeScale);
         }
+
+        soundController.Update(Time.deltaTime);
     }
 
     void CheckTimeInput()
@@ -99,7 +139,7 @@ public class WorldController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             IsPaused = !IsPaused;
-            Logger.Log("Game " + (IsPaused ? "paused" : "resumed"));
+            Debug.Log("Game " + (IsPaused ? "paused" : "resumed"));
         }
 
         if (Input.GetKeyDown(KeyCode.Plus) || Input.GetKeyDown(KeyCode.KeypadPlus))
@@ -148,7 +188,7 @@ public class WorldController : MonoBehaviour
     public void SetTimeScale(float timeScale)
     {
         this.timeScale = timeScale;
-        Logger.Log("Game speed set to " + timeScale + "x");
+        Debug.Log("Game speed set to " + timeScale + "x");
     }
 
     /// <summary>
@@ -166,7 +206,7 @@ public class WorldController : MonoBehaviour
 
     public void NewWorld()
     {
-        Logger.Log("NewWorld button was clicked.");
+        Debug.Log("NewWorld button was clicked.");
 
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
@@ -178,7 +218,7 @@ public class WorldController : MonoBehaviour
 
     public void LoadWorld(string fileName)
     {
-        Logger.Log("LoadWorld button was clicked.");
+        Debug.Log("LoadWorld button was clicked.");
 
         // Reload the scene to reset all data (and purge old references)
         loadWorldFromFile = fileName;
@@ -187,8 +227,12 @@ public class WorldController : MonoBehaviour
 
     void CreateEmptyWorld()
     {
+        // get world size from settings
+        int width = Settings.getSettingAsInt("worldWidth", 100);
+        int height = Settings.getSettingAsInt("worldHeight", 100);
+
         // Create a world with Empty tiles
-        world = new World(100, 100);
+        world = new World(width, height);
 
         // Center the Camera
         Camera.main.transform.position = new Vector3(world.Width / 2, world.Height / 2, Camera.main.transform.position.z);
@@ -196,7 +240,7 @@ public class WorldController : MonoBehaviour
 
     void CreateWorldFromSaveFile()
     {
-        Logger.Log("CreateWorldFromSaveFile");
+        Debug.Log("CreateWorldFromSaveFile");
         // Create a world from our save file data.
 
         XmlSerializer serializer = new XmlSerializer(typeof(World));
@@ -208,7 +252,7 @@ public class WorldController : MonoBehaviour
         TextReader reader = new StringReader(saveGameText);
 
 
-        Logger.Log(reader.ToString());
+        Debug.Log(reader.ToString());
         world = (World)serializer.Deserialize(reader);
         reader.Close();
 

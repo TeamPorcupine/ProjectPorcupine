@@ -22,7 +22,8 @@ using MoonSharp.Interpreter;
 public enum TileType
 {
     Empty,
-    Floor
+    Floor,
+    Ladder
 };
 
 public enum ENTERABILITY
@@ -90,6 +91,23 @@ public class Tile :IXmlSerializable, ISelectable
             //if (Type == TileType.Empty)
             //    return 0;	// 0 is unwalkable
 
+            if(Type == TileType.Empty)
+            {
+                Tile[] ns = GetNeighbours();
+
+                bool canMove = false;
+
+                // Loop through all the horizontal/vertical neighbours of the empty tile.
+                foreach (Tile n in ns)
+                {
+                    // If the neighbour is a floor tile, set canMove to true.
+                    canMove = canMove || (n != null && (n.Type == TileType.Floor || n.Type == TileType.Ladder));
+                }
+
+                // If canMove is true, return baseTileMovementCost, else, return 0f.
+                return canMove ? baseTileMovementCost : 0f;
+            }
+
             if (furniture == null)
                 return baseTileMovementCost;
 
@@ -144,7 +162,7 @@ public class Tile :IXmlSerializable, ISelectable
 
         if (objInstance.IsValidPosition(this) == false)
         {
-            Logger.LogError("Trying to assign a furniture to a tile that isn't valid!");
+            Debug.LogError("Trying to assign a furniture to a tile that isn't valid!");
             return false;
         }
 		
@@ -176,7 +194,7 @@ public class Tile :IXmlSerializable, ISelectable
 
             if (inventory.objectType != inv.objectType)
             {
-                Logger.LogError("Trying to assign inventory to a tile that already has some of a different type.");
+                Debug.LogError("Trying to assign inventory to a tile that already has some of a different type.");
                 return false;
             }
 
@@ -275,6 +293,22 @@ public class Tile :IXmlSerializable, ISelectable
         return ns;
     }
 
+    /// <summary>
+    /// If one of the 8 neighbouring tiles is of TileType type then this returns true.
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
+    public bool HasNeighboursOfType(TileType type)
+    {
+        foreach (Tile tile in GetNeighbours(true))
+        {
+            if (tile.Type == type)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public XmlSchema GetSchema()
     {
