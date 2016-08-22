@@ -44,13 +44,18 @@ namespace ProjectPorcupine.Localization
                     //The file extention is .lang, load it.
                     LocalizationTable.LoadLocalizationFile(file);
 
-                    //Just write a little debug info into the console.
-                    Logger.Log("Loaded localization at path\n" + file);
+                    // Just write a little debug info into the console.
+                    Logger.LogVerbose("Loaded localization at path\n" + file);
                 }
             }
 
-            //Look through the PlayerPrefs to see the currently selected language. (Will default to English).
-            LocalizationTable.currentLanguage = PlayerPrefs.GetString("CurrentLanguage", "en_US");
+
+            // Atempt to get setting of currently selected language. (Will default to English).
+            string lang = Settings.getSetting("localization", "en_US");
+
+            // setup LocalizationTable with either loaded or defaulted language
+            LocalizationTable.currentLanguage = lang;
+
 
             //Tell the LocalizationTable that it has been initialized.
             LocalizationTable.initialized = true;

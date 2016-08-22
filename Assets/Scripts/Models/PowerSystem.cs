@@ -6,106 +6,106 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using UnityEngine;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
-public class PowerSystem {
+public class PowerSystem
+{
+    private HashSet<Furniture> powerGrid;
 
-
-    // List of furniture providing power into the system.
-    List<Furniture> powerGenerators;
-
-    List<Furniture> powerConsumers;
-
-    // Current Power in the system
-    float currentPower;
-
-    public event Action<Furniture> cbOnChanged;
+    private float currentPower;
 
     public PowerSystem()
     {
-        powerGenerators = new List<Furniture>();
-        powerConsumers = new List<Furniture>();
+        powerGrid = new HashSet<Furniture>();
     }
 
-    public void RegisterPowerSupply(Furniture furn)
-    {
-        powerGenerators.Add(furn);
-        CalculatePower();
+    public event Action<Furniture> PowerLevelChanged;
 
-        furn.cbOnRemoved += RemovePowerSupply;
+    public float PowerLevel
+    {
+        get
+        {
+            return currentPower;
+        }
+
+        private set
+        {
+            if (!currentPower.Equals(value))
+            {
+                currentPower = value;
+                NotifyPowerConsumers();
+            }
+        }
     }
 
-    public void RemovePowerSupply(Furniture furn)
+    public bool AddToPowerGrid(Furniture furniture)
     {
-        powerGenerators.Remove(furn);
-        CalculatePower();
+        if (PowerLevel + furniture.powerValue < 0)
+        {
+            return false;
+        }
+
+        powerGrid.Add(furniture);
+        AdjustPowelLevel(furniture);
+        furniture.cbOnRemoved += RemoveFromPowerGrid;
+        return true;
     }
 
-    public void RegisterPowerConsumer(Furniture furn)
+    public void RemoveFromPowerGrid(Furniture furniture)
     {
-        if (PowerLevel + furn.powerValue < 0)
+        powerGrid.Remove(furniture);
+        AdjustPowelLevel(furniture, false);
+    }
+
+    public bool RequestPower(Furniture furniture)
+    {
+        return powerGrid.Contains(furniture);
+    }
+
+    private void AdjustPowelLevel(Furniture furniture, bool isFurnitureAdded = true)
+    {
+        if (isFurnitureAdded)
+        {
+            PowerLevel += furniture.powerValue;
+        }
+        else
+        {
+            PowerLevel -= furniture.powerValue;
+        }
+
+        if (PowerLevel < 0)
+        {
+            RemovePowerConsumer();
+        }
+    }
+
+    private void RemovePowerConsumer()
+    {
+        Furniture powerConsumer = powerGrid.FirstOrDefault(furniture => furniture.IsPowerConsumer);
+        if (powerConsumer == null) 
         {
             return;
         }
 
-        powerConsumers.Add(furn);
-        CalculatePower();
-
-        furn.cbOnRemoved += RemovePowerConsumer;
+        RemoveFromPowerGrid(powerConsumer);
     }
 
-    public void RemovePowerConsumer(Furniture furn)
+    private void NotifyPowerConsumers()
     {
-        powerGenerators.Remove(furn);
-        CalculatePower();
+        foreach (Furniture furniture in powerGrid.Where(furniture => furniture.IsPowerConsumer))
+        {
+            InvokePowerLevelChanged(furniture);
+        }
     }
 
-
-    public bool RequestPower(Furniture furn)
+    private void InvokePowerLevelChanged(Furniture furniture)
     {
-        if (powerConsumers.Contains(furn))
+        Action<Furniture> handler = PowerLevelChanged;
+        if (handler != null)
         {
-            return true;
-        }
-        
-        return false;
-    }
-
-    void CalculatePower()
-    {
-        float powerValues = 0;
-
-        foreach (Furniture furn in powerConsumers) 
-        {
-            powerValues += furn.powerValue;            
-        }
-
-        foreach (Furniture furn in powerGenerators)
-        {
-            powerValues += furn.powerValue;            
-        }
-
-        PowerLevel = powerValues;
-
-        Logger.Log("Current Power level: " + PowerLevel);
-    }
-
-    public float PowerLevel {
-        get { return currentPower; }
-        set 
-        {
-            float oldPower = currentPower;
-            currentPower = value;
-
-            if(oldPower != currentPower) 
-            {
-                foreach (Furniture furn in powerConsumers)
-                {
-                    cbOnChanged(furn);
-                }                
-            }
+            handler(furniture);
         }
     }
 }

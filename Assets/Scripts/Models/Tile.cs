@@ -22,7 +22,8 @@ using MoonSharp.Interpreter;
 public enum TileType
 {
     Empty,
-    Floor
+    Floor,
+    Ladder
 };
 
 public enum ENTERABILITY
@@ -89,6 +90,23 @@ public class Tile :IXmlSerializable, ISelectable
             // TODO: Permanent solution for handeling when a character can walk in empty tiles is required
             //if (Type == TileType.Empty)
             //    return 0;	// 0 is unwalkable
+
+            if(Type == TileType.Empty)
+            {
+                Tile[] ns = GetNeighbours();
+
+                bool canMove = false;
+
+                // Loop through all the horizontal/vertical neighbours of the empty tile.
+                foreach (Tile n in ns)
+                {
+                    // If the neighbour is a floor tile, set canMove to true.
+                    canMove = canMove || (n != null && (n.Type == TileType.Floor || n.Type == TileType.Ladder));
+                }
+
+                // If canMove is true, return baseTileMovementCost, else, return 0f.
+                return canMove ? baseTileMovementCost : 0f;
+            }
 
             if (furniture == null)
                 return baseTileMovementCost;

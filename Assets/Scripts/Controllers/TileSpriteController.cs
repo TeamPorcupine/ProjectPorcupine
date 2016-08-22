@@ -107,6 +107,10 @@ public class TileSpriteController : MonoBehaviour
         {
             tile_go.GetComponent<SpriteRenderer>().sprite = SpriteManager.current.GetSprite("Tile", "Floor");
         }
+        else if (tile_data.Type == TileType.Ladder)
+        {
+            tile_go.GetComponent<SpriteRenderer>().sprite = SpriteManager.current.GetSprite("Tile", "Ladder");
+        }
         else if (tile_data.Type == TileType.Empty)
         {
             tile_go.GetComponent<SpriteRenderer>().sprite = SpriteManager.current.GetSprite("Tile", "Empty");

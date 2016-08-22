@@ -1,3 +1,12 @@
+[Contributing](#contributing)  
+[Resolving Merge Conflicts](#resolving-merge-conflicts)  
+[Unity Version](#unity-version)  
+[General resources](#general-resources)  
+[Style Guidelines](#style-guidelines)  
+[Best Practices for Contributing](#best-practices-for-contributing)
+
+
+
 # Contributing
 
 If you would like to contribute to this project by modifying/adding to the program code or various creative assets, read the [Best Practices for Contributing] below and feel free to follow the standard Github workflow:
@@ -60,7 +69,7 @@ We are using Unity version 5.4 .
 All pull requests must build in 5.4 to be a valid patch.  
 
 # General resources
-* [Github Tutorial by Quill18](https://www.youtube.com/watch?v=-N4Cghw0l2Q)
+* [Github Tutorial by Quill18](https://www.youtube.com/watch?v=R2fl17eEpwI)
 * [GitHub Forking Overview](https://gist.github.com/Chaser324/ce0505fbed06b947d962)
 * [GitHub Documentation for Desktop Client](https://help.github.com/desktop/guides/contributing/)
 * [GitHub Desktop Client](https://desktop.github.com/)
