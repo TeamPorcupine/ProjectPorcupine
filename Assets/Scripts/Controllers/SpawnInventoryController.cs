@@ -100,12 +100,12 @@ public class SpawnInventoryController {
         Inventory inventoryChange = new Inventory(InventoryToBuild, 1);
 
         // You can't spawn on occupied tiles
-        if (t.furniture != null)
+        if (t.Furniture != null)
         {
             return; 
         }
 
-        if (t.inventory == null || t.inventory.objectType == InventoryToBuild)
+        if (t.Inventory == null || t.Inventory.objectType == InventoryToBuild)
         {
             World.current.inventoryManager.PlaceInventory(t, inventoryChange);
         }
