@@ -8,6 +8,7 @@
 #endregion
 using System.Collections;
 using System.IO;
+using ICSharpCode.SharpZipLib.Zip;
 using UnityEngine;
 
 namespace ProjectPorcupine.Localization
@@ -78,17 +79,63 @@ namespace ProjectPorcupine.Localization
                 // For now just debug write to HDD.
                 string localizationFolderPath = Path.Combine(Application.streamingAssetsPath, "Localization");
 
-                BinaryWriter writer = new BinaryWriter(File.Open(Path.Combine(localizationFolderPath, "master.zip"), FileMode.OpenOrCreate));
+                // Turn's out that System.IO.Compression.GZipStream is not working in unity:
+                // http://forum.unity3d.com/threads/cant-use-gzipstream-from-c-behaviours.33973/
+                // So I need to use some sort of 3rd party solution.
 
-                writer.Write(www.bytes);
-                writer.Close();
+                // Convert array of downloaded bytes to stream.
+                using (ZipInputStream zipReadStream = new ZipInputStream(new MemoryStream(www.bytes)))
+                {
+                    ZipEntry theEntry;
+                    while ((theEntry = zipReadStream.GetNextEntry()) != null)
+                    {
+                        string directoryName = Path.GetDirectoryName(theEntry.Name);
+                        string fileName = Path.GetFileName(theEntry.Name);
+
+                        // If there was a subfolder in zip (which there probably is) create one.
+                        if (string.IsNullOrEmpty(directoryName) == false)
+                        {
+                            string directoryFullPath = Path.Combine(localizationFolderPath, directoryName);
+                            if (Directory.Exists(directoryFullPath) == false)
+                            {
+                                Directory.CreateDirectory(directoryFullPath);
+                            }
+                        }
+
+                        if (string.IsNullOrEmpty(fileName) == false)
+                        {
+                            string fullFilePath = Path.Combine(localizationFolderPath, theEntry.Name);
+                            using (FileStream fileWriter = File.Create(fullFilePath))
+                            {
+                                int size = 2048;
+                                byte[] fdata = new byte[2048];
+                                while (true)
+                                {
+                                    size = zipReadStream.Read(fdata, 0, fdata.Length);
+                                    if (size > 0)
+                                    {
+                                        fileWriter.Write(fdata, 0, size);
+                                    }
+                                    else
+                                    {
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // At this point we should have an subfolder in Application.streamingAssetsPath/Localization
+                // called ProjectPorcupineLocalization-*branch name*. Now we need to move all files from that directory
+                // to Application.streamingAssetsPath/Localization.
             }
             catch (System.Exception e)
             {
                 // Something happen in file system. 
                 // TODO: Handle this properly, for now this is as useful as:
                 // http://i.imgur.com/9ArGADw.png
-                throw e;
+                Logger.LogException(e);
             }
         }
 
