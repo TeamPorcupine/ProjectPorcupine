@@ -24,7 +24,7 @@ public class Need {
     public Character character;
     public Furniture restoreNeedFurn { get; protected set; }
     public float restoreNeedTime { get; protected set; }
-    float restoreNeedAmount = 100;
+    protected float restoreNeedAmount = 100;
     public string DisplayAmount
     {
         get
@@ -43,6 +43,21 @@ public class Need {
     public Need ()
     {
         Amount = 0;
+    }
+    protected Need (Need other)
+    {
+        Amount = 0;
+        this.needType = other.needType;
+        this.localisationID = other.localisationID;
+        this.Name = other.Name;
+        this.growthRate = other.growthRate;
+        this.highToLow = other.highToLow;
+        this.restoreNeedFurn = other.restoreNeedFurn;
+        this.restoreNeedTime = other.restoreNeedTime;
+        this.restoreNeedAmount = other.restoreNeedAmount;
+        this.completeOnFail = other.completeOnFail;
+        this.addedInVacuum = other.addedInVacuum;
+        this.dps = other.dps;
     }
     
     // Update is called once per frame
@@ -133,5 +148,9 @@ public class Need {
     public void CompleteJobCrit (Job j)
     {
         Amount -= restoreNeedAmount/4;
+    }
+    public Need Clone()
+    {
+        return new Need(this);
     }
 }

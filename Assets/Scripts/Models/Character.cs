@@ -163,9 +163,11 @@ public class Character : IXmlSerializable, ISelectable
     {
         needs = new Need[World.current.needPrototypes.Count];
         World.current.needPrototypes.Values.CopyTo (needs, 0);
-        foreach (Need n in needs)
+        for (int i = 0; i < World.current.needPrototypes.Count; i++)
         {
-            n.character = this;
+            Need need = needs[i];
+            needs[i] = need.Clone();
+            needs[i].character = this;
         }
     }
     
