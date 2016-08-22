@@ -34,7 +34,7 @@ public class DialogBoxLoadSaveGame : DialogBox
     {
         if (Directory.Exists(directoryPath) == false)
         {
-            Logger.LogWarning("Directory: " + directoryPath + " doesn't exist - creating.");
+            Debug.LogWarning("Directory: " + directoryPath + " doesn't exist - creating.");
             Directory.CreateDirectory(directoryPath);
         }
     }

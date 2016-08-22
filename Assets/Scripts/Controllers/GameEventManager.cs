@@ -88,7 +88,7 @@ public class GameEventManager : MonoBehaviour {
         }
         else
         {
-            Logger.LogError("Could not read the event file: " + filePath);
+            Debug.LogError("Could not read the event file: " + filePath);
             return;
         }
     }

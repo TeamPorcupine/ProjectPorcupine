@@ -201,7 +201,7 @@ public class Job
         // If not, don't register the work time.
         if (HasAllMaterial() == false)
         {
-            ////Logger.LogError("Tried to do work on a job that doesn't have all the material.");
+            ////Debug.LogError("Tried to do work on a job that doesn't have all the material.");
             return;
         }
 

@@ -73,7 +73,7 @@ public class SpriteManager : MonoBehaviour
 
     void LoadSpritesFromDirectory(string filePath)
     {
-        Logger.Log("LoadSpritesFromDirectory: " + filePath);
+        Debug.Log("LoadSpritesFromDirectory: " + filePath);
         // First, we're going to see if we have any more sub-directories,
         // if so -- call LoadSpritesFromDirectory on that.
 
@@ -104,7 +104,7 @@ public class SpriteManager : MonoBehaviour
 
     void LoadImage(string spriteCategory, string filePath)
     {
-        //Logger.Log("LoadImage: " + filePath);
+        //Debug.Log("LoadImage: " + filePath);
 
         // TODO:  LoadImage is returning TRUE for things like .meta and .xml files.  What??!
         //		So as a temporary fix, let's just bail if we have something we KNOW should not
@@ -150,7 +150,7 @@ public class SpriteManager : MonoBehaviour
                 }
                 else
                 {
-                    Logger.LogError("Could not find a <Sprites> tag.");
+                    Debug.LogError("Could not find a <Sprites> tag.");
                     return;
                 }
 
@@ -173,7 +173,7 @@ public class SpriteManager : MonoBehaviour
 
     void ReadSpriteFromXml(string spriteCategory, XmlReader reader, Texture2D imageTexture)
     {
-        //Logger.Log("ReadSpriteFromXml");
+        //Debug.Log("ReadSpriteFromXml");
         string name = reader.GetAttribute("name");
         int x = int.Parse(reader.GetAttribute("x"));
         int y = int.Parse(reader.GetAttribute("y"));
@@ -212,7 +212,7 @@ public class SpriteManager : MonoBehaviour
     void LoadSprite(string spriteCategory, string spriteName, Texture2D imageTexture, Rect spriteCoordinates, int pixelsPerUnit, Vector2 pivotPoint)
     {
         spriteName = spriteCategory + "/" + spriteName;
-        //Logger.Log("LoadSprite: " + spriteName);
+        //Debug.Log("LoadSprite: " + spriteName);
 
         Sprite s = Sprite.Create(imageTexture, spriteCoordinates, pivotPoint, pixelsPerUnit);
 
@@ -221,13 +221,13 @@ public class SpriteManager : MonoBehaviour
 
     public Sprite GetSprite(string categoryName, string spriteName)
     {
-        //Logger.Log(spriteName);
+        //Debug.Log(spriteName);
 
         spriteName = categoryName + "/" + spriteName;
 
         if (sprites.ContainsKey(spriteName) == false)
         {
-            //Logger.LogError("No sprite with name: " + spriteName);
+            //Debug.LogError("No sprite with name: " + spriteName);
             
             //Return a magenta image
             return Sprite.Create(noRescourceTexture, new Rect(Vector2.zero, new Vector3(32, 32)), new Vector2(0.5f, 0.5f), 32);

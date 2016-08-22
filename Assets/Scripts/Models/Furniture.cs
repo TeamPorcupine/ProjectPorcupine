@@ -283,7 +283,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
     {
         if (proto.funcPositionValidation(tile) == false)
         {
-            Logger.LogError("PlaceInstance -- Position Validity Function returned FALSE.");
+            Debug.LogError("PlaceInstance -- Position Validity Function returned FALSE.");
             return null;
         }
 
@@ -444,7 +444,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
 
     public void ReadXmlPrototype(XmlReader reader_parent)
     {
-        ////Logger.Log("ReadXmlPrototype");
+        ////Debug.Log("ReadXmlPrototype");
 
         objectType = reader_parent.GetAttribute("objectType");
 
@@ -735,7 +735,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
 
     public void Deconstruct()
     {
-        Logger.Log("Deconstruct");
+        Debug.Log("Deconstruct");
         int x = tile.X;
         int y = tile.Y;
         int fwidth = 1;

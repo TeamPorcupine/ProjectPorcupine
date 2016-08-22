@@ -171,7 +171,7 @@ public class Character : IXmlSerializable, ISelectable
         // If the dest tile does not have neighbours it's very
         if (DestTile.HasNeighboursOfType(TileType.Floor) == false)
         {
-            Logger.LogVerbose("No neighbouring floor tiles! Abandoning job.");
+            Debug.Log("No neighbouring floor tiles! Abandoning job.");
             AbandonJob(false);
             return;
         }
@@ -188,7 +188,7 @@ public class Character : IXmlSerializable, ISelectable
 
         if (pathAStar != null && pathAStar.Length() == 0)
         {
-            Logger.LogVerbose("Path_AStar returned no path to target job tile!");
+            Debug.Log("Path_AStar returned no path to target job tile!");
             AbandonJob(false);
             return;
         }
@@ -303,13 +303,13 @@ public class Character : IXmlSerializable, ISelectable
             // At this point, the job still requires inventory, but we aren't carrying it!
 
             // Are we standing on a tile with goods that are desired by the job?
-            Logger.LogVerbose("Standing on Tile check");
+            Debug.Log("Standing on Tile check");
             if (CurrTile.inventory != null &&
                 myJob.DesiresInventoryType(CurrTile.inventory) > 0 && !CurrTile.inventory.isLocked &&
                 (myJob.canTakeFromStockpile || CurrTile.furniture == null || CurrTile.furniture.IsStockpile() == false))
             {
                 // Pick up the stuff!
-                Logger.LogVerbose("Pick up the stuff");
+                Debug.Log("Pick up the stuff");
 
                 World.current.inventoryManager.PlaceInventory(
                     this,
@@ -319,8 +319,8 @@ public class Character : IXmlSerializable, ISelectable
             else
             {
                 // Walk towards a tile containing the required goods.
-                Logger.LogVerbose("Walk to the stuff");
-                Logger.LogVerbose(myJob.canTakeFromStockpile);
+                Debug.Log("Walk to the stuff");
+                Debug.Log(myJob.canTakeFromStockpile);
 
                 // Find the first thing in the Job that isn't satisfied.
                 Inventory desired = myJob.GetFirstDesiredInventory();
@@ -355,14 +355,14 @@ public class Character : IXmlSerializable, ISelectable
 
                     if (newPath == null || newPath.Length() < 1)
                     {
-                        //Logger.Log("pathAStar is null and we have no path to object of type: " + desired.objectType);
+                        //Debug.Log("pathAStar is null and we have no path to object of type: " + desired.objectType);
                         // Cancel the job, since we have no way to get any raw materials!
-                        Logger.LogVerbose("No tile contains objects of type '" + desired.objectType + "' to satisfy job requirements.");
+                        Debug.Log("No tile contains objects of type '" + desired.objectType + "' to satisfy job requirements.");
                         AbandonJob(true);
                         return false;
                     }
 
-                    Logger.Log("pathAStar returned with length of: " + newPath.Length());
+                    Debug.Log("pathAStar returned with length of: " + newPath.Length());
 
                     DestTile = newPath.EndTile();
 
@@ -394,7 +394,7 @@ public class Character : IXmlSerializable, ISelectable
 
         ////if (World.current.inventoryManager.PlaceInventory(CurrTile, inventory) == false)
         ////{
-        ////    Logger.LogError("Character tried to dump inventory into an invalid tile (maybe there's already something here). FIXME: Setting inventory to null and leaking for now");
+        ////    Debug.LogError("Character tried to dump inventory into an invalid tile (maybe there's already something here). FIXME: Setting inventory to null and leaking for now");
         ////    // FIXME: For the sake of continuing on, we are still going to dump any
         ////    // reference to the current inventory, but this means we are "leaking"
         ////    // inventory.  This is permanently lost now.
@@ -454,7 +454,7 @@ public class Character : IXmlSerializable, ISelectable
                 pathAStar = new Path_AStar(World.current, CurrTile, DestTile);  // This will calculate a path from curr to dest.
                 if (pathAStar.Length() == 0)
                 {
-                    Logger.LogError("Path_AStar returned no path to destination!");
+                    Debug.LogError("Path_AStar returned no path to destination!");
                     AbandonJob(false);
                     return;
                 }
@@ -468,7 +468,7 @@ public class Character : IXmlSerializable, ISelectable
 
             if (NextTile == CurrTile)
             {
-                // Logger.LogError("Update_DoMovement - nextTile is currTile?");
+                // Debug.LogError("Update_DoMovement - nextTile is currTile?");
             }
         }
 
@@ -489,7 +489,7 @@ public class Character : IXmlSerializable, ISelectable
             ////            so that we don't waste a bunch of time walking towards a dead end.
             ////            To save CPU, maybe we can only check every so often?
             ////            Or maybe we should register a callback to the OnTileChanged event?
-            //// Logger.LogError("FIXME: A character was trying to enter an unwalkable tile.");
+            //// Debug.LogError("FIXME: A character was trying to enter an unwalkable tile.");
             NextTile = null;    // our next tile is a no-go
             pathAStar = null;   // clearly our pathfinding info is out of date.
             return;
@@ -547,7 +547,7 @@ public class Character : IXmlSerializable, ISelectable
 
         if (j != myJob)
         {
-            Logger.LogError("Character being told about job that isn't his. You forgot to unregister something.");
+            Debug.LogError("Character being told about job that isn't his. You forgot to unregister something.");
             return;
         }
 

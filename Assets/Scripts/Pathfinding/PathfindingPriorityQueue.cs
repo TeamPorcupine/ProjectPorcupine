@@ -80,7 +80,7 @@ public class PathfindingPriorityQueue<T>
     {
         if (_mapDataToWrappedNode.ContainsKey(data))
         {
-            Logger.LogError("Priority Queue can't re-enqueue a node that's already enqueued.");
+            Debug.LogError("Priority Queue can't re-enqueue a node that's already enqueued.");
             return;
         }
 
