@@ -35,7 +35,7 @@ public class JobSpriteController
     void OnJobCreated(Job job)
     {
 
-        if (job.jobObjectType == null && job.jobTileType == TileType.Empty)
+        if (job.jobObjectType == null && job.jobTileType == null)
         {
             // This job doesn't really have an associated sprite with it, so no need to render.
             return;
