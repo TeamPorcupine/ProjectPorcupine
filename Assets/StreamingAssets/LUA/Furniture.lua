@@ -373,6 +373,42 @@ function CloningPod_JobComplete(j)
 
 end
 
+function PowerGenerator_UpdateAction(furniture, deltatime)
+    
+    if ( furniture.JobCount() < 1 and furniture.GetParameter("burnTime") == 0 ) then
+        
+        furniture.SetPower(0)
+        itemsDesired = {Inventory.__new("Uranium", 5, 0)}
+        
+        j = Job.__new(
+            furniture.GetJobSpotTile(),
+            nil,
+            nil,
+            0.5,
+            itemsDesired,
+            Job.JobPriority.High,
+            false
+        )
+
+        j.RegisterJobCompletedCallback("PowerGenerator_JobComplete")
+        furniture.AddJob( j )
+        
+    else
+        
+        furniture.ChangeParameter("burnTime", -deltatime)
+        if ( furniture.GetParameter("burnTime") < 0 ) then
+            furniture.SetParameter("burnTime", 0)
+        end
+        
+    end
+    
+end
+
+function PowerGenerator_JobComplete( j )
+    j.furniture.SetParameter("burnTime", j.furniture.GetParameter("burnTimeRequired"))
+    j.furniture.SetPower(5)
+end
+
 function LandingPad_Temp_UpdateAction(furniture, deltaTime)
 	spawnSpot = furniture.GetSpawnSpotTile()
 	jobSpot = furniture.GetJobSpotTile()
