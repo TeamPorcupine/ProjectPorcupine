@@ -14,7 +14,7 @@ using UnityEngine;
 
 public class WorldGenerator
 {
-    public const TileType asteroidFloorType = TileType.Floor;
+    public const TileType AsteroidFloorType = TileType.Floor;
 
     public static int startAreaWidth = 0;
     public static int startAreaHeight = 0;
@@ -61,7 +61,7 @@ public class WorldGenerator
 
                 Tile tile = world.GetTileAt(worldX, worldY);
 
-                if(startAreaFurnitures[x, y] != null && startAreaFurnitures[x, y] != string.Empty)
+                if (startAreaFurnitures[x, y] != null && startAreaFurnitures[x, y] != string.Empty)
                 {
                     world.PlaceFurniture(startAreaFurnitures[x, y], tile, false);
                 }
@@ -76,7 +76,7 @@ public class WorldGenerator
                 if (noiseValue >= asteroidNoiseThreshhold && !IsStartArea(x, y, world))
                 {
                     Tile t = world.GetTileAt(x, y);
-                    t.Type = asteroidFloorType;
+                    t.Type = AsteroidFloorType;
 
                     if (Random.value <= asteroidResourceChance && t.furniture == null)
                     {
@@ -117,7 +117,8 @@ public class WorldGenerator
         int boundX = (world.Width / 2) - startAreaCenterX;
         int boundY = (world.Height / 2) + startAreaCenterY;
 
-        if(x >= boundX && x < boundX + startAreaWidth && y >= boundY && y < boundY - startAreaHeight){
+        if (x >= boundX && x < boundX + startAreaWidth && y >= boundY && y < boundY - startAreaHeight)
+        {
             return true;
         }
 
@@ -171,8 +172,7 @@ public class WorldGenerator
                                         res.Add(new Inventory(
                                                 res_reader.GetAttribute("objectType"),
                                                 int.Parse(res_reader.GetAttribute("maxStack")),
-                                                (int)(float.Parse(res_reader.GetAttribute("chance")) * 100)
-                                            ));
+                                                (int)(float.Parse(res_reader.GetAttribute("chance")) * 100)));
 
                                         resMin.Add(int.Parse(res_reader.GetAttribute("min")));
                                         resMax.Add(int.Parse(res_reader.GetAttribute("max")));
@@ -219,17 +219,17 @@ public class WorldGenerator
                                 string tilesString = startArea.ReadContentAsString();
                                 string[] splittedString = tilesString.Split(","[0]);
 
-                                if(splittedString.Length < startAreaWidth * startAreaHeight)
+                                if (splittedString.Length < startAreaWidth * startAreaHeight)
                                 {
                                     Logger.LogError("Error reading 'Tiles' array to short: " + splittedString.Length + " !");
                                     break;
                                 }
 
-                                for(int x = 0; x < startAreaWidth; x++)
+                                for (int x = 0; x < startAreaWidth; x++)
                                 {
-                                    for(int y = 0; y < startAreaHeight; y++)
+                                    for (int y = 0; y < startAreaHeight; y++)
                                     {
-                                        startAreaTiles[x, y] = int.Parse(splittedString[x + y * startAreaWidth]);
+                                        startAreaTiles[x, y] = int.Parse(splittedString[x + (y * startAreaWidth)]);
                                     }
                                 }
 
