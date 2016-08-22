@@ -670,10 +670,39 @@ public class Character : IXmlSerializable, ISelectable
     {
         writer.WriteAttributeString("X", CurrTile.X.ToString());
         writer.WriteAttributeString("Y", CurrTile.Y.ToString());
+        string needString = "";
+        foreach (Need n in needs)
+        {
+            int storeAmount = (int)n.Amount * 10;
+            needString = needString + n.needType + ";" + storeAmount.ToString() + ":";
+        }
+        writer.WriteAttributeString("needs", needString);
     }
 
     public void ReadXml(XmlReader reader)
     {
+        if (reader.GetAttribute("needs") == null)
+            return;
+        string[] needListA = reader.GetAttribute("needs").Split(new Char[] {':'});
+        foreach (string s in needListA)
+        {
+            string[] needListB = s.Split(new Char[] { ';' });
+            foreach (Need n in needs)
+            {
+                if (n.needType == needListB[0])
+                {
+                    int storeAmount;
+                    if (int.TryParse(needListB[1], out storeAmount))
+                    {
+                        n.Amount = (float)storeAmount / 10;
+                    }
+                    else
+                    {
+                        Logger.LogError("Character.ReadXml() expected an int when deserializing needs");
+                    }
+                }
+            }
+        }
     }
 
     #endregion
