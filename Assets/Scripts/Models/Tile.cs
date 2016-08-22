@@ -293,6 +293,22 @@ public class Tile :IXmlSerializable, ISelectable
         return ns;
     }
 
+    /// <summary>
+    /// If one of the 8 neighbouring tiles is of TileType type then this returns true.
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
+    public bool HasNeighboursOfType(TileType type)
+    {
+        foreach (Tile tile in GetNeighbours(true))
+        {
+            if (tile.Type == type)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public XmlSchema GetSchema()
     {
