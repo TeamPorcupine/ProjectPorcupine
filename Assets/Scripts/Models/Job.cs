@@ -269,6 +269,8 @@ public class Job
             cbJobStopped(this);
         }
 
+        // Remove the job out of both job queues.
+        World.current.jobWaitingQueue.Remove(this);
         World.current.jobQueue.Remove(this);
     }
 
