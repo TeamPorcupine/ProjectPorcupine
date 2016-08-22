@@ -58,8 +58,5 @@ public class MouseOverFurnitureTypeText : MonoBehaviour
             myText.text = "";
         }
 
-       
-
-
     }
 }
