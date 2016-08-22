@@ -138,6 +138,8 @@ We have standardized the objectTypes of Furniture and Inventory to match `type_m
 
 * In Localization the description can be set with 'inv_type_material_desc=Some cool description.' and `furn_type_material_desc=Some awesome description`.
 
+* For image files and their xml files use the objectType as the name.
+
 ## Best Practices for Contributing
 [Best Practices for Contributing]: #best-practices-for-contributing
 * Before you start coding, open an issue so that the community can discuss your change to ensure it is in line with the goals of the project and not being worked on by someone else. This allows for discussion and fine tuning of your feature and results in a more succent and focused additions.
