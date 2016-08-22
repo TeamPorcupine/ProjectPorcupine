@@ -46,6 +46,7 @@ public class FurnitureBuildMenu : MonoBehaviour
             b.onClick.AddListener(delegate
                 {
                     bmc.SetMode_BuildFurniture(objectId);
+                    this.gameObject.SetActive(false);
                 });
 
         }
