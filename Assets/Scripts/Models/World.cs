@@ -304,6 +304,8 @@ public class World : IXmlSerializable
         string inventoryXmlText = System.IO.File.ReadAllText(filePath);
         LoadInventoryPrototypesFromFile(inventoryXmlText);
 
+        if (WorldController.Instance == null)
+            return;
 
         DirectoryInfo[] mods = WorldController.Instance.modsManager.GetMods();
         foreach (DirectoryInfo mod in mods)

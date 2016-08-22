@@ -229,9 +229,16 @@ public class TestController : MonoBehaviour
         yield return null;
 
         yield return StartCoroutine(DoTest(() =>
-                {
-                    new Path_AStar(world, center, corner);
-                }, count, prefix + " Center to Corner"));
+            {
+                new Path_AStar(world, center, corner);
+            }, count, prefix + " Center to Corner"));
+
+        yield return null;
+
+        yield return StartCoroutine(DoTest(() =>
+            {
+                new Path_AStar(world, corner, center);
+            }, count, prefix + " Corner to Center"));
 
         yield return null;
 
@@ -329,7 +336,7 @@ public class TestController : MonoBehaviour
     /// the pathfinding system.
     /// </summary>
     /// <param name="world">The world to change.</param>
-    protected static void MakeWorldTraversible(World world)
+    public static void MakeWorldTraversible(World world)
     {
         for (int x = 0; x < world.Width; ++x)
         {
@@ -374,14 +381,14 @@ public class TestController : MonoBehaviour
             PlaceWall(world, x, world.Height - boundarySize - 1);
         }
 
-        for (int y = boundarySize; y < world.Height - boundarySize; ++y)
+        for (int y = boundarySize + 1; y < world.Height - boundarySize - 1; ++y)
         {
             PlaceWall(world, boundarySize, y);
             PlaceWall(world, world.Width - boundarySize - 1, y);
         }
 
         // then set up the rows dividing us up
-        for (int y = boundarySize; y < world.Height - boundarySize; y += corridorSize)
+        for (int y = boundarySize + corridorSize; y < world.Height - boundarySize - corridorSize; y += corridorSize)
         {
             xIsOffset = !(xIsOffset);
 
