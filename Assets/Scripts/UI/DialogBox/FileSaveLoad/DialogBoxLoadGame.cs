@@ -11,7 +11,9 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Xml.Serialization;
 using System.IO;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 
 
 public class DialogBoxLoadGame : DialogBoxLoadSaveGame
@@ -115,11 +117,51 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
 		}
 
 		CloseSureDialog();
-		FileUtil.DeleteFileOrDirectory(filePath);
+		DeleteFileOrDirectory(filePath);
 		CloseDialog();
 		ShowDialog();
 	}
 
+	/// <summary>
+    /// Deletes file or directory supplied. Includes compiler directives since "Using UnityEditor" isn't allowed in build code.
+    /// </summary>
+    /// <param name="filePath">Path to file/directory to delete</param>
+    private void DeleteFileOrDirectory(string filePath)
+    {
+#if UNITY_EDITOR
+        FileUtil.DeleteFileOrDirectory(filePath);
+#else
+        if (File.Exists(filePath) == true)
+        {
+            File.Delete(filePath);
+        }
+        else if (Directory.Exists(filePath) == true && IsDirectoryEmpty(filePath) == true)
+        {
+            Directory.Delete(filePath);     
+        }
+#endif
+    }
+
+    /// <summary>
+    /// Checks if the directory is empty. 
+    /// </summary>
+    /// <param name="path">The path to check fokr emptiness.</param>
+    /// <returns></returns>
+    private bool IsDirectoryEmpty(string path)
+    {
+        int fileCount = Directory.GetFiles(path).Length;
+        if (fileCount > 0)
+        {
+            return false;
+        }
+        int dirCount = Directory.GetDirectories(path).Length;
+        if (dirCount > 0)
+            {
+                return false;
+            }
+        return true;
+    }
+	
 	public void CloseSureDialog()
 	{
 		dialog.SetActive(false);
