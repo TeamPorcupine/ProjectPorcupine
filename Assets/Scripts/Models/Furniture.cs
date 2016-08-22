@@ -71,7 +71,7 @@ public class Furniture : IXmlSerializable, ISelectable
         if (HasValidRegisteredActions("OnUpdate"))
         {
             //updateActions(this, deltaTime);
-            Debug.Log(string.Join(" ", eventActions["OnUpdate"].luaFunctionNames.ToArray()));
+            //Debug.Log(string.Join(" ", eventActions["OnUpdate"].luaFunctionNames.ToArray()));
             FurnitureActions.CallFunctionsWithFurniture(eventActions["OnUpdate"].luaFunctionNames.ToArray(), this, deltaTime);
         }
     }
@@ -614,12 +614,23 @@ public class Furniture : IXmlSerializable, ISelectable
     /// <param name="default_value">Default value.</param>
     public float GetParameterAsFloat(string key, float default_value = 0f)
     {
+        Debug.Log("Float");
         if (furnParameters.ContainsKey(key) == false)
         {
             return default_value;
         }
 
         return float.Parse(furnParameters[key].value);
+    }
+
+    public void SetParameterAsFloat(string key, string value)
+    {
+        Debug.Log("String");
+        if (!furnParameters.ContainsKey(key) || furnParameters[key] == null)
+        {
+            furnParameters[key] = new Parameter();
+        }
+        furnParameters[key].value = value;
     }
 
     public void SetParameterAsFloat(string key, float value)
