@@ -19,6 +19,7 @@ function MovementCost_Standard ( tile )
 end
 
 function MovementCost_Ladder ( tile )
+	return MovementCost_Standard ( tile )
 end
 
 --TODO: This needs to be cleaned up
