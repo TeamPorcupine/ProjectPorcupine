@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<inventories>
+<Inventories>
   <Inventory objectType="Raw Iron">
     <maxStackSize>50</maxStackSize>
   </Inventory>
@@ -18,4 +18,4 @@
   <Inventory objectType="Copper Wire">
     <maxStackSize>50</maxStackSize>
   </Inventory>
-</inventories>
+</Inventories>
