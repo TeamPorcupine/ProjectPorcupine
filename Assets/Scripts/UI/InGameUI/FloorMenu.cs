@@ -4,8 +4,8 @@ using System.Collections;
 
 public class FloorMenu : MonoBehaviour
 {
-
     public Button floorBuild;
+    public Button ladderBuild;
     public Button floorRemove;
 
     // Use this for initialization.
@@ -17,6 +17,13 @@ public class FloorMenu : MonoBehaviour
             {
                 bmc.SetMode_BuildFloor();
             });
+        if(ladderBuild != null)
+        {
+            ladderBuild.onClick.AddListener(delegate
+                {
+                    bmc.SetMode_BuildLadder();
+                });
+        }
         floorRemove.onClick.AddListener(delegate
             {
                 bmc.SetMode_Bulldoze();
