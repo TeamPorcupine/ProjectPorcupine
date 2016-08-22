@@ -34,3 +34,6 @@ sysinfo.txt
 
 # StyleCop
 **StyleCop.Cache*
+
+# Localization files
+/Assets/StreamingAssets/Localization/*

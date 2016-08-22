@@ -53,9 +53,11 @@ namespace ProjectPorcupine.Localization
             OnDownloadLocalizationComplete();
         }
 
-        // Callback for DownloadLocalizationFromWeb. 
-        // For now it just saves downloaded data (master.zip) in 
-        // Application.streamingAssetsPath/Localization directory.
+        /// <summary>
+        /// Callback for DownloadLocalizationFromWeb. 
+        /// For now it just saves downloaded data (master.zip) in 
+        /// Application.streamingAssetsPath/Localization directory.
+        /// </summary>
         private void OnDownloadLocalizationComplete()
         {
             if (www.isDone != true)
@@ -75,8 +77,6 @@ namespace ProjectPorcupine.Localization
 
             try
             {
-                // TODO: Make something with this data (unpack, verify version, replace files).
-                // For now just debug write to HDD.
                 string localizationFolderPath = Path.Combine(Application.streamingAssetsPath, "Localization");
 
                 // Turn's out that System.IO.Compression.GZipStream is not working in unity:
@@ -84,17 +84,21 @@ namespace ProjectPorcupine.Localization
                 // So I need to use some sort of 3rd party solution.
 
                 // Clear Application.streamingAssetsPath/Localization folder
-                DirectoryInfo di = new DirectoryInfo(localizationFolderPath);
-                foreach (FileInfo file in di.GetFiles())
+                DirectoryInfo localizationFolderInfo = new DirectoryInfo(localizationFolderPath);
+                foreach (FileInfo file in localizationFolderInfo.GetFiles())
                 {
-                    if (file.Extension != "lang" || file.Extension != "meta" || file.Extension != "ver")
+                    // If there are files without that extension then:
+                    // a) someone made a change to localization system and didn't update this
+                    // b) We are in a wrong directory, so let's hope we didn't delete anything important.
+                    if (file.Extension != ".lang" && file.Extension != ".meta" && file.Extension != ".ver")
                     {
                         Logger.LogException(new System.Exception("SOMETHING WENT HORRIBLY WRONG AT DOWNLOADING LOCALIZATION!"));
+                        Debug.Break();
                         return;
                     }
                     file.Delete();
                 }
-                foreach (DirectoryInfo dir in di.GetDirectories())
+                foreach (DirectoryInfo dir in localizationFolderInfo.GetDirectories())
                 {
                     dir.Delete(true);
                 }
@@ -103,6 +107,8 @@ namespace ProjectPorcupine.Localization
                 using (ZipInputStream zipReadStream = new ZipInputStream(new MemoryStream(www.bytes)))
                 {
                     ZipEntry theEntry;
+
+                    // While there are still files inside zip archive.
                     while ((theEntry = zipReadStream.GetNextEntry()) != null)
                     {
                         string directoryName = Path.GetDirectoryName(theEntry.Name);
@@ -118,6 +124,8 @@ namespace ProjectPorcupine.Localization
                             }
                         }
 
+                        // Read files from stream to files on HDD.
+                        // 2048 buffer should be plenty.
                         if (string.IsNullOrEmpty(fileName) == false)
                         {
                             string fullFilePath = Path.Combine(localizationFolderPath, theEntry.Name);
@@ -145,36 +153,37 @@ namespace ProjectPorcupine.Localization
                 // At this point we should have an subfolder in Application.streamingAssetsPath/Localization
                 // called ProjectPorcupineLocalization-*branch name*. Now we need to move all files from that directory
                 // to Application.streamingAssetsPath/Localization.
-                FileInfo[] fileInfo = di.GetFiles();
+                FileInfo[] fileInfo = localizationFolderInfo.GetFiles();
                 if (fileInfo.Length > 0)
                 {
                     Logger.LogError("There should be no files here.");
                 }
 
-                DirectoryInfo[] dirInfo = di.GetDirectories();
+                DirectoryInfo[] dirInfo = localizationFolderInfo.GetDirectories();
                 if (dirInfo.Length > 1)
                 {
                     Logger.LogError("There should be only one directory");
                 }
 
                 // Move files from ProjectPorcupineLocalization-*branch name* to Application.streamingAssetsPath/Localization.
-                string[] files = Directory.GetFiles(dirInfo[0].FullName);
+                string[] filesToMove = Directory.GetFiles(dirInfo[0].FullName);
 
-                // Move the files and overwrite destination files if they already exist.
-                foreach (string s in files)
+                foreach (string file in filesToMove)
                 {
-                    string fileName = Path.GetFileName(s);
+                    string fileName = Path.GetFileName(file);
                     string destFile = Path.Combine(localizationFolderPath, fileName);
-                    File.Copy(s, destFile, true);
-                    File.Delete(fileName);
+                    File.Copy(file, destFile);
+                    File.Delete(file);
                 }
 
                 // Remove ProjectPorcupineLocalization-*branch name*
                 Directory.Delete(dirInfo[0].FullName);
+
+                Logger.Log("New localization downloaded, please restart the game for it to take effect.");
             }
             catch (System.Exception e)
             {
-                // Something happen in file system. 
+                // Something happen in the file system. 
                 // TODO: Handle this properly, for now this is as useful as:
                 // http://i.imgur.com/9ArGADw.png
                 Logger.LogException(e);
