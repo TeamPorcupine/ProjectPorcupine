@@ -81,7 +81,7 @@ public class FurnitureSpriteController : MonoBehaviour
         sr.sortingLayerName = "Furniture";
         sr.color = furn.tint;
 
-        if (furn.powerValue < 0) 
+        if (furn.PowerValue < 0)
         {
             GameObject power_go = new GameObject();
             powerStatusGameObjectMap.Add(furn, power_go);
@@ -93,10 +93,12 @@ public class FurnitureSpriteController : MonoBehaviour
             powerSR.sortingLayerName = "Power";
             powerSR.color = PowerStatusColor();
 
-            if (world.powerSystem.PowerLevel > 0) {
+            if (world.powerSystem.PowerLevel > 0)
+            {
                 power_go.SetActive(false);
             }
-            else {
+            else
+            {
                 power_go.SetActive(true);
             }
 
@@ -166,12 +168,14 @@ public class FurnitureSpriteController : MonoBehaviour
         }
 
         furn_go.GetComponent<SpriteRenderer>().sprite = GetSpriteForFurniture(furn);
-        furn_go.GetComponent<SpriteRenderer>().color = furn.tint;                   
+        furn_go.GetComponent<SpriteRenderer>().color = furn.tint;
 
     }
 
-    void OnPowerStatusChange(Furniture furn) 
+    void OnPowerStatusChange(IPowerRelated powerRelated)
     {
+        Furniture furn = powerRelated as Furniture;
+        if (furn == null) return;
         if (powerStatusGameObjectMap.ContainsKey(furn) == false)
             return;
 
@@ -181,12 +185,12 @@ public class FurnitureSpriteController : MonoBehaviour
         {
             power_go.SetActive(false);
         }
-        else 
+        else
         {
             power_go.SetActive(true);
         }
-        
-        power_go.GetComponent<SpriteRenderer>().color = PowerStatusColor();        
+
+        power_go.GetComponent<SpriteRenderer>().color = PowerStatusColor();
     }
 
 
@@ -293,22 +297,22 @@ public class FurnitureSpriteController : MonoBehaviour
         // the same type, then the string will look like:
         //       Wall_NESW
 
-/*		if(furnitureSprites.ContainsKey(spriteName) == false) {
-			Logger.LogError("GetSpriteForInstalledObject -- No sprites with name: " + spriteName);
-			return null;
-		}
-*/
+        /*		if(furnitureSprites.ContainsKey(spriteName) == false) {
+                    Logger.LogError("GetSpriteForInstalledObject -- No sprites with name: " + spriteName);
+                    return null;
+                }
+        */
 
         return SpriteManager.current.GetSprite("Furniture", spriteName); //furnitureSprites[spriteName];
 
     }
 
-    Sprite GetPowerStatusSprite() 
+    Sprite GetPowerStatusSprite()
     {
         return SpriteManager.current.GetSprite("Power", "PowerIcon");
     }
 
-    Color PowerStatusColor() 
+    Color PowerStatusColor()
     {
         if (world.powerSystem.PowerLevel > 0)
             return Color.green;
@@ -319,7 +323,7 @@ public class FurnitureSpriteController : MonoBehaviour
     public Sprite GetSpriteForFurniture(string objectType)
     {
         Sprite s = SpriteManager.current.GetSprite("Furniture", objectType + (World.current.furniturePrototypes[objectType].linksToNeighbour ? "_" : ""));
-        
+
         return s;
     }
 }
