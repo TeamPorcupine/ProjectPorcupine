@@ -1,4 +1,12 @@
-﻿using System.Collections;
+﻿#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
+using System.Collections;
 using System.IO;
 using ICSharpCode.SharpZipLib.Zip;
 using UnityEngine;
@@ -8,9 +16,9 @@ namespace ProjectPorcupine.Localization
     public static class LocalizationDownloader
     {
         // TODO: Change this to the official repo before PR.
-        private static readonly string localizationRepositoryZipLocation = "https://github.com/QuiZr/ProjectPorcupineLocalization/archive/" + World.current.currentGameVersion + ".zip";
+        private static readonly string LocalizationRepositoryZipLocation = "https://github.com/QuiZr/ProjectPorcupineLocalization/archive/" + World.current.currentGameVersion + ".zip";
 
-        private static readonly string localizationFolderPath = Path.Combine(Application.streamingAssetsPath, "Localization");
+        private static readonly string LocalizationFolderPath = Path.Combine(Application.streamingAssetsPath, "Localization");
 
         // Object for downloading localization data from web.
         private static WWW www;
@@ -24,7 +32,7 @@ namespace ProjectPorcupine.Localization
             string currentLocalizationVersion;
             try
             {
-                currentLocalizationVersion = File.OpenText(Path.Combine(localizationFolderPath, "curr.ver")).ReadToEnd();
+                currentLocalizationVersion = File.OpenText(Path.Combine(LocalizationFolderPath, "curr.ver")).ReadToEnd();
             }
             catch (FileNotFoundException e)
             {
@@ -72,7 +80,7 @@ namespace ProjectPorcupine.Localization
 
             Logger.LogVerbose("Localization files download has started");
 
-            www = new WWW(localizationRepositoryZipLocation);
+            www = new WWW(LocalizationRepositoryZipLocation);
 
             // Wait for www to download current localization files.
             yield return www;
@@ -111,7 +119,7 @@ namespace ProjectPorcupine.Localization
                 // So I need to use some sort of 3rd party solution.
 
                 // Clear Application.streamingAssetsPath/Localization folder
-                DirectoryInfo localizationFolderInfo = new DirectoryInfo(localizationFolderPath);
+                DirectoryInfo localizationFolderInfo = new DirectoryInfo(LocalizationFolderPath);
                 foreach (FileInfo file in localizationFolderInfo.GetFiles())
                 {
                     // If there are files without that extension then:
@@ -144,7 +152,7 @@ namespace ProjectPorcupine.Localization
                         // If there was a subfolder in zip (which there probably is) create one.
                         if (string.IsNullOrEmpty(directoryName) == false)
                         {
-                            string directoryFullPath = Path.Combine(localizationFolderPath, directoryName);
+                            string directoryFullPath = Path.Combine(LocalizationFolderPath, directoryName);
                             if (Directory.Exists(directoryFullPath) == false)
                             {
                                 Directory.CreateDirectory(directoryFullPath);
@@ -155,7 +163,7 @@ namespace ProjectPorcupine.Localization
                         // 2048 buffer should be plenty.
                         if (string.IsNullOrEmpty(fileName) == false)
                         {
-                            string fullFilePath = Path.Combine(localizationFolderPath, theEntry.Name);
+                            string fullFilePath = Path.Combine(LocalizationFolderPath, theEntry.Name);
                             using (FileStream fileWriter = File.Create(fullFilePath))
                             {
                                 int size = 2048;
@@ -198,7 +206,7 @@ namespace ProjectPorcupine.Localization
                 foreach (string file in filesToMove)
                 {
                     string fileName = Path.GetFileName(file);
-                    string destFile = Path.Combine(localizationFolderPath, fileName);
+                    string destFile = Path.Combine(LocalizationFolderPath, fileName);
                     File.Copy(file, destFile);
                     File.Delete(file);
                 }
