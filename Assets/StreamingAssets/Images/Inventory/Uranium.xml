@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Sprites>
+    <Sprite name="Uranium"     x="0" y="0" w="16" h="16" pixelPerUnit="16" />
+</Sprites>
