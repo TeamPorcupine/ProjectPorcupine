@@ -223,8 +223,8 @@ public class WorldController : MonoBehaviour
     void CreateEmptyWorld()
     {
         // get world size from settings
-        int width = int.Parse(Settings.getSetting("worldWidth", "100"));
-        int height = int.Parse(Settings.getSetting("worldHeight", "100"));
+        int width = Settings.getSettingAsInt("worldWidth", 100);
+        int height = Settings.getSettingAsInt("worldHeight", 100);
 
         // Create a world with Empty tiles
         world = new World(width, height);
