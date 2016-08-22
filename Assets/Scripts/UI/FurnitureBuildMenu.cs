@@ -39,7 +39,7 @@ public class FurnitureBuildMenu : MonoBehaviour
 
             go.name = "Button - Build " + objectId;
             
-            go.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(World.current.furniturePrototypes[s].localizationCode) };
+            go.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(World.current.furniturePrototypes[s].GetName()) };
 
             Button b = go.GetComponent<Button>();
 

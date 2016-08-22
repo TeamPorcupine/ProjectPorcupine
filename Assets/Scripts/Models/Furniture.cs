@@ -529,15 +529,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
                 ReadXmlParams(reader);  // Read in the Param tag
                 break;
 
-            case "LocalizationCode":
-                reader.Read();
-                localizationCode = reader.ReadContentAsString();
-                break;
-
-            case "UnlocalizedDescription":
-                reader.Read();
-                unlocalizedDescription = reader.ReadContentAsString();
-                break;
             }
         }
     }
@@ -748,12 +739,12 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
 
     public string GetName()
     {
-        return localizationCode; // this.Name;
+        return "furn_" + this.objectType;
     }
 
     public string GetDescription()
     {
-        return unlocalizedDescription;
+        return GetName() + "_desc";
     }
 
     public string GetHitPointString()

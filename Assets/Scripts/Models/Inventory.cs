@@ -20,7 +20,7 @@ using UnityEngine;
 [MoonSharpUserData]
 public class Inventory : IXmlSerializable, ISelectable
 {
-    public string objectType = "Steel Plate";
+    public string objectType = "plate_steel";
     public int maxStackSize = 50;
     public float basePrice = 1f;
 
@@ -109,12 +109,12 @@ public class Inventory : IXmlSerializable, ISelectable
 
     public string GetName()
     {
-        return this.objectType;
+        return "inv_"+ this.objectType;
     }
 
     public string GetDescription()
     {
-        return "A stack of inventory.";
+        return GetName() + "_desc";
     }
 
     public string GetHitPointString()

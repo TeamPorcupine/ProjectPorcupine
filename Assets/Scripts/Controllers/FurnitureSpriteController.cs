@@ -59,7 +59,7 @@ public class FurnitureSpriteController
         furn_go.transform.SetParent(furnnitureParent.transform, true);
 
         // FIXME: This hardcoding is not ideal!
-        if (furn.objectType == "Door" || furn.objectType == "Airlock")
+        if (furn.objectType == "door" || furn.objectType == "airlock")
         {
             // By default, the door graphic is meant for walls to the east & west
             // Check to see if we actually have a wall north/south, and if so
@@ -69,7 +69,7 @@ public class FurnitureSpriteController
             Tile southTile = world.GetTileAt(furn.tile.X, furn.tile.Y - 1);
 
             if (northTile != null && southTile != null && northTile.furniture != null && southTile.furniture != null &&
-            northTile.furniture.objectType.Contains("Wall") && southTile.furniture.objectType.Contains("Wall"))
+            northTile.furniture.objectType.Contains("wall") && southTile.furniture.objectType.Contains("wall"))
             {
                 furn_go.transform.rotation = Quaternion.Euler(0, 0, 90);
             }
@@ -204,51 +204,51 @@ public class FurnitureSpriteController
 
             // If this is a DOOR, let's check OPENNESS and update the sprite.
             // FIXME: All this hardcoding needs to be generalized later.
-            if (furn.objectType == "Door")
+            if (furn.objectType == "door")
             {
                 if (furn.GetParameter("openness") < 0.1f)
                 {
                     // Door is closed
-                    spriteName = "Door";
+                    spriteName = "door";
                 }
                 else if (furn.GetParameter("openness") < 0.5f)
                 {
                     // Door is a bit open
-                    spriteName = "Door_openness_1";
+                    spriteName = "door_openness_1";
                 }
                 else if (furn.GetParameter("openness") < 0.9f)
                 {
                     // Door is a lot open
-                    spriteName = "Door_openness_2";
+                    spriteName = "door_openness_2";
                 }
                 else
                 {
                     // Door is a fully open
-                    spriteName = "Door_openness_3";
+                    spriteName = "door_openness_3";
                 }
                 //Logger.Log(spriteName);
             }
-            if (furn.objectType == "Airlock")
+            if (furn.objectType == "airlock")
             {
                 if (furn.GetParameter("openness") < 0.1f)
                 {
                     // Airlock is closed
-                    spriteName = "Airlock";
+                    spriteName = "airlock";
                 }
                 else if (furn.GetParameter("openness") < 0.5f)
                 {
                     // Airlock is a bit open
-                    spriteName = "Airlock_openness_1";
+                    spriteName = "airlock_openness_1";
                 }
                 else if (furn.GetParameter("openness") < 0.9f)
                 {
                     // Airlock is a lot open
-                    spriteName = "Airlock_openness_2";
+                    spriteName = "airlock_openness_2";
                 }
                 else
                 {
                     // Airlock is a fully open
-                    spriteName = "Airlock_openness_3";
+                    spriteName = "airlock_openness_3";
                 }
                 //Logger.Log(spriteName);
             }

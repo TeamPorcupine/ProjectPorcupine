@@ -77,7 +77,7 @@ function Stockpile_GetItemsFromFilter()
 	-- Since jobs copy arrays automatically, we could already have
 	-- an Inventory[] prepared and just return that (as a sort of example filter)
 
-	return { Inventory.__new("Steel Plate", 50, 0) }
+	return { Inventory.__new("plate_steel", 50, 0) }
 end
 
 
@@ -218,7 +218,7 @@ end
 
 
 function MiningDroneStation_JobComplete(j)
-	World.current.inventoryManager.PlaceInventory( j.furniture.GetSpawnSpotTile(), Inventory.__new("Raw Iron", 50, 20) )
+	World.current.inventoryManager.PlaceInventory( j.furniture.GetSpawnSpotTile(), Inventory.__new("raw_iron", 50, 20) )
 end
 
 function MetalSmelter_UpdateAction(furniture, deltaTime)
@@ -226,8 +226,8 @@ function MetalSmelter_UpdateAction(furniture, deltaTime)
 
 	if(spawnSpot.inventory == nil) then
 		if(furniture.JobCount() == 0) then
-			itemsDesired = {Inventory.__new("Raw Iron", 50, 0)}
-
+			itemsDesired = {Inventory.__new("raw_iron", 50, 0)}
+			
 			jobSpot = furniture.GetJobSpotTile()
 
 			j = Job.__new(
@@ -253,8 +253,8 @@ function MetalSmelter_UpdateAction(furniture, deltaTime)
 			outputSpot = World.current.GetTileAt(spawnSpot.X+2, spawnSpot.y)
 
 			if(outputSpot.inventory == nil) then
-				World.current.inventoryManager.PlaceInventory( outputSpot, Inventory.__new("Steel Plate", 50, 5) )
-
+				World.current.inventoryManager.PlaceInventory( outputSpot, Inventory.__new("plate_steel", 50, 5) )
+			
 				spawnSpot.inventory.stackSize = spawnSpot.inventory.stackSize-5
 			else
 				if(outputSpot.inventory.stackSize <= 45) then
@@ -416,8 +416,8 @@ function LandingPad_Temp_UpdateAction(furniture, deltaTime)
 
 	if(inputSpot.inventory == nil) then
 		if(furniture.JobCount() == 0) then
-			itemsDesired = {Inventory.__new("Steel Plate", furniture.GetParameter("tradeinamount"), 0)}
-
+			itemsDesired = {Inventory.__new("plate_steel", furniture.GetParameter("tradeinamount"), 0)}
+			
 			j = Job.__new(
 			inputSpot,
 			nil,
@@ -443,8 +443,8 @@ function LandingPad_Temp_UpdateAction(furniture, deltaTime)
 		 	outputSpot = World.current.GetTileAt(spawnSpot.X+1, spawnSpot.y)
 
 			if(outputSpot.inventory == nil) then
-				World.current.inventoryManager.PlaceInventory( outputSpot, Inventory.__new("Steel Plate", 50, furniture.GetParameter("tradeoutamount")) )
-
+				World.current.inventoryManager.PlaceInventory( outputSpot, Inventory.__new("plate_steel", 50, furniture.GetParameter("tradeoutamount")) )
+			
 				inputSpot.inventory.stackSize = inputSpot.inventory.stackSize-furniture.GetParameter("tradeinamount")
 			else
 				if(outputSpot.inventory.stackSize <= 50 - outputSpot.inventory.stackSize+furniture.GetParameter("tradeoutamount")) then
