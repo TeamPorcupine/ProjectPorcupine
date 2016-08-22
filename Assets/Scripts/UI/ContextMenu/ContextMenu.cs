@@ -47,22 +47,22 @@ public class ContextMenu : MonoBehaviour
     {
         var providers = new List<IContextActionProvider>();
 
-        if (tile.furniture != null)
+        if (tile.Furniture != null)
         {
-            providers.Add(tile.furniture);
+            providers.Add(tile.Furniture);
         }
 
-        if (tile.characters != null)
+        if (tile.Characters != null)
         {
-            foreach (var character in tile.characters)
+            foreach (var character in tile.Characters)
             {
                 providers.Add(character);
             }
         }
 
-        if (tile.inventory != null)
+        if (tile.Inventory != null)
         {
-            providers.Add(tile.inventory);
+            providers.Add(tile.Inventory);
         }
 
         return providers;
