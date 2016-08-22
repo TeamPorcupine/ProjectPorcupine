@@ -561,24 +561,29 @@ public class Character : IXmlSerializable, ISelectable
 
         // Get the relevant job and dequeue it from the waiting queue.
         Job job = World.current.jobWaitingQueue.Dequeue();
-
-        // Get the (first) desired inventory for the job.
-        Inventory desired = job.GetFirstDesiredInventory();
-
-        // Checking if the objectType from the created inventory
-        // and the objectType from the desired one match.
-        if (inv.objectType == desired.objectType)
+        // Check if the initial job still exists.
+        // It could have been deleted through the user
+        // cancelling the job manually.
+        if (job != null)
         {
-            // If so, enqueue the job onto the (normal)
-            // job queue.
-            World.current.jobQueue.Enqueue(job);
-        }
-        else
-        {
-            // If not, (re)enqueue the job onto the waiting queu
-            // and also register a callback for the future.
-            World.current.jobWaitingQueue.Enqueue(job);
-            World.current.cbInventoryCreated += OnInventoryCreated;
+            // Get the (first) desired inventory for the job.
+            Inventory desired = job.GetFirstDesiredInventory();
+
+            // Checking if the objectType from the created inventory
+            // and the objectType from the desired one match.
+            if (inv.objectType == desired.objectType)
+            {
+                // If so, enqueue the job onto the (normal)
+                // job queue.
+                World.current.jobQueue.Enqueue(job);
+            }
+            else
+            {
+                // If not, (re)enqueue the job onto the waiting queu
+                // and also register a callback for the future.
+                World.current.jobWaitingQueue.Enqueue(job);
+                World.current.cbInventoryCreated += OnInventoryCreated;
+            }
         }
     }
 
