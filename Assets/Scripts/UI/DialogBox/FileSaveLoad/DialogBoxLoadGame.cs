@@ -1,4 +1,12 @@
-﻿using UnityEngine;
+#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
+using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using System.Xml.Serialization;
@@ -70,7 +78,7 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
 		{
 			// TODO: Do file overwrite dialog box.
 
-			Debug.LogError("File doesn't exist.  What?");
+			Logger.LogError("File doesn't exist.  What?");
 			CloseDialog();
 			return;
 		}
@@ -101,7 +109,7 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
 		if (File.Exists(filePath) == false)
 		{
 
-			Debug.LogError("File doesn't exist.  What?");
+			Logger.LogError("File doesn't exist.  What?");
 			CloseDialog();
 			return;
 		}
@@ -130,7 +138,7 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
 
 		// Get the file name from the save file dialog box
 
-		Debug.Log("LoadWorld button was clicked.");
+		Logger.Log("LoadWorld button was clicked.");
 
 		WorldController.Instance.LoadWorld(filePath);
 	}

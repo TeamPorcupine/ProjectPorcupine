@@ -1,4 +1,12 @@
-﻿using UnityEngine;
+#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
+using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
 
@@ -110,8 +118,8 @@ public class BuildModeController : MonoBehaviour
                 }
                 else
                 {
-                    Debug.LogError("There is no furniture job prototype for '" + furnitureType + "'");
-                    j = new Job(t, furnitureType, FurnitureActions.JobComplete_FurnitureBuilding, 0.1f, null);
+                    Logger.LogError("There is no furniture job prototype for '" + furnitureType + "'");
+                    j = new Job(t, furnitureType, FurnitureActions.JobComplete_FurnitureBuilding, 0.1f, null,Job.JobPriority.High);
                 }
 
                 j.furniturePrototype = WorldController.Instance.world.furniturePrototypes[furnitureType];
@@ -131,10 +139,15 @@ public class BuildModeController : MonoBehaviour
                     }
                 }
 
-
-
                 // Add the job to the queue
-                WorldController.Instance.world.jobQueue.Enqueue(j);
+                if (WorldController.Instance.devMode)
+                {
+                    WorldController.Instance.world.PlaceFurniture(j.jobObjectType, j.tile);
+                }
+                else
+                {
+                    WorldController.Instance.world.jobQueue.Enqueue(j);
+                }
 
             }
 
@@ -159,8 +172,10 @@ public class BuildModeController : MonoBehaviour
                     tileType, 
                     Tile.ChangeTileTypeJobComplete, 
                     0.1f, 
-                    null, 
-                    false);
+                    null,
+                    Job.JobPriority.High, 
+                    false,
+                    true);
 
 
                 // FIXME: I don't like having to manually and explicitly set
@@ -172,7 +187,14 @@ public class BuildModeController : MonoBehaviour
                 };
 
                 // Add the job to the queue
-                WorldController.Instance.world.jobQueue.Enqueue(j);
+                if (WorldController.Instance.devMode)
+                {
+                    j.tile.Type = j.jobTileType;
+                }
+                else
+                {
+                    WorldController.Instance.world.jobQueue.Enqueue(j);
+                }
 
             }
 
@@ -184,11 +206,15 @@ public class BuildModeController : MonoBehaviour
             {
                 t.furniture.Deconstruct();
             }
+            else if (t.pendingBuildJob != null)
+            {
+                t.pendingBuildJob.CancelJob();
+            }
 
         }
         else
         {
-            Debug.LogError("UNIMPLMENTED BUILD MODE");
+            Logger.LogError("UNIMPLMENTED BUILD MODE");
         }
 
     }

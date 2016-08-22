@@ -1,4 +1,12 @@
-﻿using UnityEngine;
+#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
+using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 using System;
@@ -217,7 +225,7 @@ public class Room : IXmlSerializable
 
                 if (oldRoom.tiles.Count > 0)
                 {
-                    Debug.LogError("'oldRoom' still has tiles assigned to it. This is clearly wrong.");
+                    Logger.LogError("'oldRoom' still has tiles assigned to it. This is clearly wrong.");
                 }
 
                 world.DeleteRoom(oldRoom);
@@ -237,7 +245,7 @@ public class Room : IXmlSerializable
 
     protected static void ActualFloodFill(Tile tile, Room oldRoom, int sizeOfOldRoom)
     {
-        //Debug.Log("ActualFloodFill");
+        //Logger.Log("ActualFloodFill");
 
         if (tile == null)
         {
@@ -329,7 +337,7 @@ public class Room : IXmlSerializable
             }
         }
 
-        //Debug.Log("ActualFloodFill -- Processed Tiles: " + processedTiles);
+        //Logger.Log("ActualFloodFill -- Processed Tiles: " + processedTiles);
 
         if (isConnectedToSpace)
         {

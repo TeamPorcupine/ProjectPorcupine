@@ -1,4 +1,12 @@
-﻿using UnityEngine;
+#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
+using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using System.Xml.Serialization;
@@ -45,7 +53,7 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
         {
             // TODO: Do file overwrite dialog box.
 
-            Debug.LogWarning("File already exists -- overwriting the file for now.");
+            Logger.LogWarning("File already exists -- overwriting the file for now.");
         }
 
         CloseDialog();
@@ -60,14 +68,14 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
 
         // Get the file name from the save file dialog box
 
-        Debug.Log("SaveWorld button was clicked.");
+        Logger.Log("SaveWorld button was clicked.");
 
         XmlSerializer serializer = new XmlSerializer(typeof(World));
         TextWriter writer = new StringWriter();
         serializer.Serialize(writer, WorldController.Instance.world);
         writer.Close();
 
-        Debug.Log(writer.ToString());
+        Logger.Log(writer.ToString());
 
         //PlayerPrefs.SetString("SaveGame00", writer.ToString());
 
