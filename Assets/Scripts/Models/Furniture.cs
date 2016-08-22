@@ -242,7 +242,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
 
         this.powerValue = other.powerValue;
 
-        if (!PowerValue.Equals(0))
+        if (!powerValue.IsZero())
         {
             World.current.powerSystem.AddToPowerGrid(this);
         }

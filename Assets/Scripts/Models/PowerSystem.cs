@@ -12,7 +12,7 @@ using System.Linq;
 
 public class PowerSystem
 {
-    private HashSet<IPowerRelated> powerGrid;
+    private readonly HashSet<IPowerRelated> powerGrid;
 
     private float currentPower;
 
@@ -81,7 +81,7 @@ public class PowerSystem
             PowerLevel -= powerRelated.PowerValue;
         }
 
-        if (PowerLevel < 0)
+        if (PowerLevel < 0.0f)
         {
             RemovePowerConsumer();
         }
