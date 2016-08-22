@@ -24,6 +24,7 @@ public class WorldController : MonoBehaviour
     JobSpriteController jobSpriteController;
     InventorySpriteController inventorySpriteController;
     FurnitureSpriteController furnitureSpriteController;
+    SpawnInventoryController spawnInventoryController;
 
     public BuildModeController buildModeController;
     public MouseController mouseController;
@@ -100,6 +101,10 @@ public class WorldController : MonoBehaviour
         inventorySpriteController = new InventorySpriteController(world, inventoryUI);
         buildModeController = new BuildModeController();
         mouseController = new MouseController(buildModeController, furnitureSpriteController, circleCursorPrefab);
+        if(SpawnInventoryController.isEnabled)
+        {
+            spawnInventoryController = new SpawnInventoryController();
+        }
 
         //Initialising controllers
         GameObject Controllers = GameObject.Find("Controllers");
