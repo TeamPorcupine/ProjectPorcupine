@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Traders>
+  
+  <Trader name="Wire Inc.">
+    <currencyBalance>5000</currencyBalance>
+    <saleMarginMultiplier>1.5</saleMarginMultiplier>
+    <stock>
+      <Inventory objectType="Steel Plate" amount="100" />
+      <Inventory objectType="Power Cell" amount="200" />
+      <Inventory objectType="Copper Wire" amount="20" />
+    </stock>
+  </Trader>
+
+  <Trader name="Raw Depot">
+    <currencyBalance>1000</currencyBalance>
+    <saleMarginMultiplier>1.2</saleMarginMultiplier>
+    <stock>
+      <Inventory objectType="Uranium" amount="100" />
+      <Inventory objectType="Raw Iron" amount="2000" />
+      <Inventory objectType="Ice" amount="2000" />
+    </stock>
+  </Trader>
+  
+</Traders>
