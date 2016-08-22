@@ -71,6 +71,27 @@ public class Inventory : IXmlSerializable, ISelectable
         this.stackSize = stackSize;
     }
 
+    public static Inventory New(string objectType, int stackSize)
+    {
+        return new Inventory(objectType, stackSize);
+    }
+
+    public Inventory(string objectType, int stackSize)
+    {
+        this.objectType = objectType;
+
+        if (World.current.inventoryPrototypes.ContainsKey(objectType))
+        {
+            this.maxStackSize = World.current.inventoryPrototypes[objectType].maxStackSize;
+        }
+        else
+        {
+            this.maxStackSize = 50;
+        }
+
+        this.stackSize = stackSize;
+    }
+
     protected Inventory(Inventory other)
     {
         objectType = other.objectType;

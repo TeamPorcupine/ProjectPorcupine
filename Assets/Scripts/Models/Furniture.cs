@@ -65,7 +65,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
 
         set
         {
-            if (powerValue == value) return;
+            if (powerValue.AreEqual(value)) return;
             powerValue = value;
             InvokePowerValueChanged(this);
         }
@@ -372,11 +372,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
         }
 
         return true;
-    }
-    
-    public void SetPower(float power)
-    {
-        powerValue = power;
     }
 
     public bool HasPower()
