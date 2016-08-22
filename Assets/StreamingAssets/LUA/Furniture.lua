@@ -17,6 +17,10 @@ end
 
 -------------------------------- Furniture Actions --------------------------------
 function OnUpdate_GasGenerator( furniture, deltaTime )
+	if ( furniture.HasPower() == false) then
+		return
+	end
+
 	if ( furniture.tile.room == nil ) then
 		return "Furniture's room was null."
 	end
@@ -146,6 +150,7 @@ function Stockpile_UpdateAction( furniture, deltaTime )
 		nil,
 		0,
 		itemsDesired,
+		Job.JobPriority.Low,
 		false
 	)
 
@@ -203,6 +208,7 @@ function MiningDroneStation_UpdateAction( furniture, deltaTime )
 		nil,
 		1,
 		nil,
+		Job.JobPriority.Medium,
 		true	-- This job repeats until the destination tile is full.
 	)
 	j.RegisterJobCompletedCallback("MiningDroneStation_JobComplete")
@@ -230,6 +236,7 @@ function MetalSmelter_UpdateAction(furniture, deltaTime)
 			nil,
 			0.4,
 			itemsDesired,
+			Job.JobPriority.Medium,
 			false
 			)
 			
@@ -270,7 +277,97 @@ function MetalSmelter_JobComplete(j)
 	for k, inv in pairs(j.inventoryRequirements) do
 		if(inv.stackSize > 0) then
 			World.current.inventoryManager.PlaceInventory(spawnSpot, inv)
+			spawnSpot.inventory.isLocked = true
+			return
+		end
+	end
+end
 
+function CloningPod_UpdateAction(furniture, deltaTime)
+
+	if( furniture.JobCount() > 0 ) then
+		return
+	end
+	
+	j = Job.__new(
+	furniture.GetJobSpotTile(),
+	nil,
+	nil,
+	10,
+	nil,
+	false
+	)
+	j.RegisterJobCompletedCallback("CloningPod_JobComplete")
+	furniture.AddJob( j )
+end
+
+function CloningPod_JobComplete(j)
+	j.furniture.Deconstruct()
+	char = World.current.CreateCharacter(j.furniture.GetSpawnSpotTile())
+	
+end
+
+function LandingPad_Temp_UpdateAction(furniture, deltaTime)
+	spawnSpot = furniture.GetSpawnSpotTile()	
+	jobSpot = furniture.GetJobSpotTile()
+	inputSpot = World.current.GetTileAt(jobSpot.X, jobSpot.y-1)
+    
+	if(inputSpot.inventory == nil) then
+		if(furniture.JobCount() == 0) then
+			itemsDesired = {Inventory.__new("Steel Plate", furniture.GetParameter("tradeinamount"), 0)}
+			
+			j = Job.__new(
+			inputSpot,
+			nil,
+			nil,
+			0.4,
+			itemsDesired,
+			Job.JobPriority.Medium,
+			false
+			)
+            
+            j.furniture = furniture
+			
+			j.RegisterJobCompletedCallback("LandingPad_Temp_JobComplete")
+			
+			furniture.AddJob(j)
+		end
+	else
+		furniture.ChangeParameter("tradetime", deltaTime)
+		
+		if(furniture.GetParameter("tradetime") >= furniture.GetParameter("tradetime_required")) then
+			furniture.SetParameter("tradetime", 0)
+			
+		 	outputSpot = World.current.GetTileAt(spawnSpot.X+1, spawnSpot.y)
+			
+			if(outputSpot.inventory == nil) then
+				World.current.inventoryManager.PlaceInventory( outputSpot, Inventory.__new("Steel Plate", 50, furniture.GetParameter("tradeoutamount")) )
+			
+				inputSpot.inventory.stackSize = inputSpot.inventory.stackSize-furniture.GetParameter("tradeinamount")
+			else
+				if(outputSpot.inventory.stackSize <= 50 - outputSpot.inventory.stackSize+furniture.GetParameter("tradeoutamount")) then
+					outputSpot.inventory.stackSize = outputSpot.inventory.stackSize+furniture.GetParameter("tradeoutamount")				
+					inputSpot.inventory.stackSize = inputSpot.inventory.stackSize-furniture.GetParameter("tradeinamount")
+				end
+			end
+			
+			if(inputSpot.inventory.stackSize <= 0) then
+				inputSpot.inventory = nil
+			end
+            
+		end
+	end
+end
+
+function LandingPad_Temp_JobComplete(j)
+	jobSpot = j.furniture.GetJobSpotTile()
+	inputSpot = World.current.GetTileAt(jobSpot.X, jobSpot.y-1)
+	
+	for k, inv in pairs(j.inventoryRequirements) do
+		if(inv.stackSize > 0) then
+			World.current.inventoryManager.PlaceInventory(inputSpot, inv)
+			inputSpot.inventory.isLocked = true
+            
 			return
 		end
 	end

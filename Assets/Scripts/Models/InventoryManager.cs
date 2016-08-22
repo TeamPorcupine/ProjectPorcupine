@@ -1,8 +1,11 @@
-﻿//=======================================================================
-// Copyright Martin "quill18" Glaude 2015-2016.
-//		http://quill18.com
-//=======================================================================
-
+#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
 using UnityEngine;
 using System.Collections.Generic;
 using MoonSharp.Interpreter;
@@ -150,14 +153,21 @@ public class InventoryManager
         return path.EndTile().inventory;
     }
 
-    public Path_AStar GetPathToClosestInventoryOfType(string objectType, Tile t, int desiredAmount, bool canTakeFromStockpile)
+    public bool QuickCheck(string objectType)
     {
         // If the inventories doesn't contain the objectType, we know that no
         // stacks of this type exists and can return.
         if (inventories.ContainsKey(objectType) == false)
         {
-            return null;
+            return false;
         }
+
+        return true;
+    }
+
+    public Path_AStar GetPathToClosestInventoryOfType(string objectType, Tile t, int desiredAmount, bool canTakeFromStockpile)
+    {
+        QuickCheck (objectType);
 
         // We know that there is a list for objectType, we still need to test if
         // the list contains anything
@@ -170,6 +180,12 @@ public class InventoryManager
         // that all available inventories are stockpiles and we are not allowed
         // to touch those
         if (!canTakeFromStockpile && inventories[objectType].TrueForAll(i => i.tile != null && i.tile.furniture != null && i.tile.furniture.IsStockpile()))
+        {
+            return null;
+        }
+
+        //We shouldn't search if all inventories are locked.
+        if (inventories[objectType].TrueForAll(i => i.tile != null && i.tile.furniture != null && i.tile.inventory.isLocked))
         {
             return null;
         }

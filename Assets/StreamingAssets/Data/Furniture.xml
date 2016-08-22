@@ -2,8 +2,8 @@
 <Furnitures>
     <Furniture objectType="furn_SteelWall">
         <Name>Basic Wall</Name>
-		<Description>This is a basic wall.</Description>
-		<BaseType>Wall</BaseType>
+        <Description>This is a basic wall.</Description>
+        <TypeTag>Wall</TypeTag>
         <MovementCost>0</MovementCost>
         <Width>1</Width>
         <Height>1</Height>
@@ -19,22 +19,22 @@
         <DeconstructJob>
             <Inventory objectType="Steel Plate" amount="3" />
         </DeconstructJob>
-		
-		<LocalizationCode>furn_steel_wall</LocalizationCode>
-		<UnlocalizedDescription>furn_steel_wall_desc</UnlocalizedDescription>
+        
+        <LocalizationCode>furn_steel_wall</LocalizationCode>
+        <UnlocalizedDescription>furn_steel_wall_desc</UnlocalizedDescription>
 
     </Furniture>
 
     <Furniture objectType="Door">
         <Name>Door</Name>
-		<Description>A door that characters can walk through.</Description>
-		<BaseType>Door</BaseType>
+        <Description>A door that characters can walk through.</Description>
+        <TypeTag>Door</TypeTag>
         <MovementCost>1</MovementCost>
         <Width>1</Width>
         <Height>1</Height>
         <LinksToNeighbours>false</LinksToNeighbours>
         <EnclosesRooms>true</EnclosesRooms>
-        <CanReplaceFurniture baseType="Wall" />
+        <CanReplaceFurniture typeTag="Wall" />
 
 
         <Params>
@@ -55,20 +55,22 @@
 
         <IsEnterable FunctionName="IsEnterable_Door" />
 
-		<LocalizationCode>furn_door</LocalizationCode>
-		<UnlocalizedDescription>furn_door_desc</UnlocalizedDescription>
+        <LocalizationCode>furn_door</LocalizationCode>
+        <UnlocalizedDescription>furn_door_desc</UnlocalizedDescription>
 
     </Furniture>
 
     <Furniture objectType="Airlock">
         <Name>Door</Name>
+        <TypeTag>Door</TypeTag>
         <Description>An Airlock prevents air from leaving the base</Description>
         <MovementCost>1</MovementCost>
         <Width>1</Width>
         <Height>1</Height>
         <LinksToNeighbours>false</LinksToNeighbours>
         <EnclosesRooms>true</EnclosesRooms>
-        <CanReplaceFurniture baseType="Wall" />
+        <CanReplaceFurniture typeTag="Wall" />
+        <CanReplaceFurniture typeTag="Door" />
 
 
         <Params>
@@ -95,10 +97,10 @@
     </Furniture>
 
 
-	<Furniture objectType="Stockpile">
-		<Name>Stockpile</Name>
-		<Description>Characters will brings inventory here for storage.</Description>
-		<BaseType>Storage</BaseType>
+    <Furniture objectType="Stockpile">
+        <Name>Stockpile</Name>
+        <Description>Characters will brings inventory here for storage.</Description>
+        <TypeTag>Storage</TypeTag>
         <MovementCost>1</MovementCost>
         <LinksToNeighbours>true</LinksToNeighbours>
 
@@ -106,19 +108,19 @@
         </BuildingJob>
 
         <OnUpdate FunctionName="Stockpile_UpdateAction" />
-		
-		<LocalizationCode>furn_stockpile</LocalizationCode>
-		<UnlocalizedDescription>furn_stockpile_desc</UnlocalizedDescription>
-	</Furniture>
+        
+        <LocalizationCode>furn_stockpile</LocalizationCode>
+        <UnlocalizedDescription>furn_stockpile_desc</UnlocalizedDescription>
+    </Furniture>
 
-	<Furniture objectType="Oxygen Generator">
-		<Name>Oxygen Generator</Name>
-		<Description>Create O2 in the room in which it is built.</Description>
-		<BaseType>Generator</BaseType>
+    <Furniture objectType="Oxygen Generator">
+        <Name>Oxygen Generator</Name>
+        <Description>Create O2 in the room in which it is built.</Description>
+        <TypeTag>Generator</TypeTag>
         <MovementCost>10</MovementCost>
         <Width>2</Width>
         <Height>2</Height>
-        <Power>1</Power>
+        <Power>-1</Power>
 
         <BuildingJob jobTime="0">
         </BuildingJob>
@@ -131,16 +133,16 @@
             <Param name="gas_per_second" value="0.01" />
         </Params>
 
-		<LocalizationCode>furn_oxygen_generator</LocalizationCode>
-		<UnlocalizedDescription>furn_oxygen_generator_desc</UnlocalizedDescription>
-		
-	</Furniture>
+        <LocalizationCode>furn_oxygen_generator</LocalizationCode>
+        <UnlocalizedDescription>furn_oxygen_generator_desc</UnlocalizedDescription>
+        
+    </Furniture>
 
 
-	<Furniture objectType="Mining Drone Station">
-		<Name>Mining Drone Station</Name>
-		<Description>Creates Steel Plates when worked by a character.</Description>
-		<BaseType>Workstation</BaseType>
+    <Furniture objectType="Mining Drone Station">
+        <Name>Mining Drone Station</Name>
+        <Description>Creates Steel Plates when worked by a character.</Description>
+        <TypeTag>Workstation</TypeTag>
         <MovementCost>1</MovementCost>
         <Width>3</Width>
         <Height>3</Height>
@@ -152,31 +154,54 @@
         <JobSpawnSpotOffset X="0" Y="0" />
 
         <OnUpdate FunctionName="MiningDroneStation_UpdateAction" />
-		
-		<LocalizationCode>furn_mining_drone_station</LocalizationCode>
-		<UnlocalizedDescription>furn_mining_drone_station_desc</UnlocalizedDescription>
+        
+        <LocalizationCode>furn_mining_drone_station</LocalizationCode>
+        <UnlocalizedDescription>furn_mining_drone_station_desc</UnlocalizedDescription>
 
-	</Furniture>
+    </Furniture>
 
 
-  <Furniture objectType="Power Generator">
-      <Name>Power Generator</Name>
-      <BaseType>Generator</BaseType>
-      <MovementCost>10</MovementCost>
-      <Width>2</Width>
-      <Height>2</Height>
+    <Furniture objectType="Power Generator">
+    <Name>Power Generator</Name>
+    <TypeTag>Generator</TypeTag>
+    <MovementCost>10</MovementCost>
+    <Width>2</Width>
+    <Height>2</Height>
+    <Power>5</Power>
 
       <BuildingJob jobTime="0">
       </BuildingJob>
 
+	
       <LocalizationCode>furn_power_generator</LocalizationCode>
       <UnlocalizedDescription>furn_power_generator_desc</UnlocalizedDescription>
 
-      <PowerGenerator supply="5"/>
   </Furniture>
+  <Furniture objectType="Cloning Pod">
+	<Name>Cloning Pod</Name>
+	<Description>Creates an additional worker, then is destroyed.</Description>
+        <MovementCost>50</MovementCost>
+        <Width>2</Width>
+        <Height>2</Height>
 
+	<BuildingJob jobTime="10">
+            <Inventory objectType="Steel Plate" amount="50" />
+        </BuildingJob>
+		<DeconstructJob>
+            <Inventory objectType="Steel Plate" amount="15" />
+        </DeconstructJob>
+
+        <JobSpotOffset X="0" Y="-1" />
+        <JobSpawnSpotOffset X="1" Y="-1" />
+
+	<OnUpdate FunctionName="CloningPod_UpdateAction" />
+			
+	<LocalizationCode>furn_cloning_pod</LocalizationCode>
+	<UnlocalizedDescription>furn_cloning_pod_desc</UnlocalizedDescription>
+  </Furniture>
   <Furniture objectType="Metal Smelter">
       <Name>Metal Smelter</Name>
+      <TypeTag>Processor</TypeTag>
       <Description>Smelts your raw iron into metal.</Description>
       <MovementCost>1</MovementCost>
       <Width>3</Width>
@@ -193,6 +218,32 @@
 
       <LocalizationCode>furn_metal_smelter</LocalizationCode>
       <UnlocalizedDescription>furn_metal_smelter_desc</UnlocalizedDescription>
+  </Furniture>
+
+  <Furniture objectType="Small Landing Pad">
+    <Name>Small Landing Pad</Name>
+    <Description>A landing pad for small spaceboats to land.</Description>
+    <OnUpdate FunctionName="LandingPad_Temp_UpdateAction" />
+    <MovementCost>5</MovementCost>
+    <Width>3</Width>
+    <Height>3</Height>
+    <BuildingJob jobTime="5">
+      <Inventory objectType="Steel Plate" amount="20" />
+    </BuildingJob>
+    <DeconstructJob>
+      <Inventory objectType="Steel Plate" amount="10" />
+    </DeconstructJob>
+    <JobSpotOffset X="0" Y="0" />
+    <!--<JobSpawnSpotOffset X="0" Y="-2" />-->
+    <JobSpawnSpotOffset X="1" Y="-1" />
+    <Params>
+      <Param name="tradetime" value="0" />
+      <Param name="tradetime_required" value="15" />
+      <Param name="tradeinamount" value="10" />
+      <Param name="tradeoutamount" value="15" />
+    </Params>
+    <LocalizationCode>furn_small_landing_pad</LocalizationCode>
+    <UnlocalizedDescription>furn_small_landing_pad_desc</UnlocalizedDescription>
   </Furniture>
 
 </Furnitures>

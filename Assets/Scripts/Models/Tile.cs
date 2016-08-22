@@ -1,8 +1,11 @@
-﻿//=======================================================================
-// Copyright Martin "quill18" Glaude 2015-2016.
-//		http://quill18.com
-//=======================================================================
-
+#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
 using UnityEngine;
 using System.Collections.Generic;
 using System;
@@ -39,13 +42,15 @@ public class Tile :IXmlSerializable, ISelectable
         get { return _type; }
         set
         {
-            TileType oldType = _type;
-            _type = value;
-            // Call the callback and let things know we've changed.
-
-            if (cbTileChanged != null && oldType != _type)
+            if(_type != value)
             {
-                cbTileChanged(this);
+                _type = value;
+
+                // Call the callback and let things know we've changed.
+                if (cbTileChanged != null)
+                {
+                    cbTileChanged(this);
+                }
             }
         }
     }
@@ -85,6 +90,20 @@ public class Tile :IXmlSerializable, ISelectable
             //if (Type == TileType.Empty)
             //    return 0;	// 0 is unwalkable
 
+            if(Type == TileType.Empty)
+            {
+                Tile[] ns = GetNeighbours();
+
+                bool canMove = false;
+
+                foreach (Tile n in ns) // Loop through all the horizontal/vertical neighbours of the empty tile.
+                {
+                    canMove = canMove || (n != null && n.Type == TileType.Floor); // If the neighbour is a floor tile, set canMove to true.
+                }
+
+                return canMove ? baseTileMovementCost : 0f; // If canMove is true, return baseTileMovementCost, else, return 0f.
+            }
+
             if (furniture == null)
                 return baseTileMovementCost;
 
@@ -98,7 +117,6 @@ public class Tile :IXmlSerializable, ISelectable
     /// <summary>
     /// Initializes a new instance of the <see cref="Tile"/> class.
     /// </summary>
-    /// <param name="World.current">A World.current instance.</param>
     /// <param name="x">The x coordinate.</param>
     /// <param name="y">The y coordinate.</param>
     public Tile(int x, int y)

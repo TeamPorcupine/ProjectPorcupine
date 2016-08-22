@@ -1,87 +1,106 @@
-﻿using UnityEngine;
+#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
-public class PowerSystem {
+public class PowerSystem
+{
+    private HashSet<Furniture> powerGrid;
 
-
-    // List of furniture providing power into the system.
-    List<Furniture> powerGenerators;
-
-    List<Furniture> powerConsumers;
-
-    // Current Power in the system
-    float currentPower;
+    private float currentPower;
 
     public PowerSystem()
     {
-        powerGenerators = new List<Furniture>();
-        powerConsumers = new List<Furniture>();
+        powerGrid = new HashSet<Furniture>();
     }
 
-    public void RegisterPowerSupply(Furniture furn)
-    {
-        powerGenerators.Add(furn);
-        CalculatePower();
+    public event Action<Furniture> PowerLevelChanged;
 
-        furn.cbOnRemoved += RemovePowerSupply;
-    }
-
-    public void RemovePowerSupply(Furniture furn)
+    public float PowerLevel
     {
-        powerGenerators.Remove(furn);
-        CalculatePower();
-    }
-
-    public void RegisterPowerConsumer(Furniture furn)
-    {
-        if (currentPower < furn.powerValue)
+        get
         {
-            //Logger.LogWarning("Not enough power for " + furn.Name + " to run");
-            return;
+            return currentPower;
         }
 
-        //Logger.Log("Added " + furn.Name + " to power consumer list");
-        powerConsumers.Add(furn);
-        CalculatePower();
-
-        furn.cbOnRemoved += RemovePowerConsumer;
-    }
-
-    public void RemovePowerConsumer(Furniture furn)
-    {
-        powerGenerators.Remove(furn);
-        CalculatePower();
-    }
-
-
-    public bool RequestPower(Furniture furn)
-    {
-        if (powerConsumers.Contains(furn))
+        private set
         {
-            return true;
+            if (!currentPower.Equals(value))
+            {
+                currentPower = value;
+                NotifyPowerConsumers();
+            }
         }
-        
-        return false;
     }
 
-    void CalculatePower()
+    public bool AddToPowerGrid(Furniture furniture)
     {
-        float powerValues = 0;
-
-        foreach (Furniture furn in powerGenerators)
+        if (PowerLevel + furniture.powerValue < 0)
         {
-            powerValues += furn.powerValue;
+            return false;
         }
 
-        foreach (Furniture furn in powerConsumers)
-        {
-            powerValues -= furn.powerValue;
-        }
-
-        currentPower = powerValues;
-
-        Logger.Log("Current Power level: " + currentPower);
+        powerGrid.Add(furniture);
+        AdjustPowelLevel(furniture);
+        furniture.cbOnRemoved += RemoveFromPowerGrid;
+        return true;
     }
 
+    public void RemoveFromPowerGrid(Furniture furniture)
+    {
+        powerGrid.Remove(furniture);
+        AdjustPowelLevel(furniture, false);
+    }
 
+    public bool RequestPower(Furniture furniture)
+    {
+        return powerGrid.Contains(furniture);
+    }
+
+    private void AdjustPowelLevel(Furniture furniture, bool isFurnitureAdded = true)
+    {
+        if (isFurnitureAdded)
+        {
+            PowerLevel += furniture.powerValue;
+        }
+        else
+        {
+            PowerLevel -= furniture.powerValue;
+        }
+        if (PowerLevel < 0)
+        {
+            RemovePowerConsumer();
+        }
+    }
+
+    private void RemovePowerConsumer()
+    {
+        Furniture powerConsumer = powerGrid.FirstOrDefault(furniture => furniture.IsPowerConsumer);
+        if (powerConsumer == null) { return; }
+        RemoveFromPowerGrid(powerConsumer);
+    }
+
+    private void NotifyPowerConsumers()
+    {
+        foreach (Furniture furniture in powerGrid.Where(furniture => furniture.IsPowerConsumer))
+        {
+            InvokePowerLevelChanged(furniture);
+        }
+    }
+
+    private void InvokePowerLevelChanged(Furniture furniture)
+    {
+        Action<Furniture> handler = PowerLevelChanged;
+        if (handler != null)
+        {
+            handler(furniture);
+        }
+    }
 }
