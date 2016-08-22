@@ -171,8 +171,8 @@
         <BuildingJob jobTime="0">
         </BuildingJob>
         <Params>
-          <Param name="Raw Iron" value="0" />
-          <Param name="Copper Wire" value="1" />
+          <Param name="Raw Iron" value="1" />
+          <Param name="Copper Wire" value="0" />
       </Params>
 
         <JobSpotOffset X="1" Y="0" />
