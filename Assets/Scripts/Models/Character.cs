@@ -168,8 +168,7 @@ public class Character : IXmlSerializable, ISelectable
             n.character = this;
         }
     }
-
-    void GetNewJob()
+    
     private void GetNewJob()
     {
         float needPercent = 0;
@@ -190,7 +189,7 @@ public class Character : IXmlSerializable, ISelectable
         if (myJob == null)
             myJob = World.current.jobQueue.Dequeue();
 
-        if (myJob == null) {
+        if (myJob == null)
         {
             Debug.Log (name + " did not find a job.");
             myJob = new Job(
