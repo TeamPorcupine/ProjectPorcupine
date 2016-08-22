@@ -114,9 +114,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
     }
 
     // If this furniture generates power then powerValue will be positive, if it consumer power then it will be negative
-    public float powerValue;
-
-    public bool IsPowerConsumer { get { return powerValue < 0; } }
    
     private void InvokePowerValueChanged(IPowerRelated powerRelated)
     {
