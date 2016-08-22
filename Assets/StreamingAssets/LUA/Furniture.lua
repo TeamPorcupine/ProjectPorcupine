@@ -212,13 +212,19 @@ function MiningDroneStation_UpdateAction( furniture, deltaTime )
 		true	-- This job repeats until the destination tile is full.
 	)
 	j.RegisterJobCompletedCallback("MiningDroneStation_JobComplete")
-
 	furniture.AddJob( j )
 end
 
 
 function MiningDroneStation_JobComplete(j)
-	World.current.inventoryManager.PlaceInventory( j.furniture.GetSpawnSpotTile(), Inventory.__new("Raw Iron", 50, 20) )
+	if (j.furniture.GetParameter("Raw Iron") == 1.0) then
+		World.current.inventoryManager.PlaceInventory( j.furniture.GetSpawnSpotTile(), Inventory.__new("Raw Iron", 50, 20) )
+		return
+	end
+	if (j.furniture.GetParameter("Copper Wire") == 1.0) then
+		World.current.inventoryManager.PlaceInventory( j.furniture.GetSpawnSpotTile(), Inventory.__new("Copper Wire", 50, 20) )
+		return
+	end
 end
 
 function MetalSmelter_UpdateAction(furniture, deltaTime)
