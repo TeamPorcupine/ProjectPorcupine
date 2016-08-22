@@ -8,6 +8,7 @@ menu_floor=Floor
 menu_save=Save
 menu_resume=Resume
 menu_quit=Quit
+furniture=Furniture
 build_floor=Build Floor
 build_ladder=Build Ladder
 remove_floor=Remove Floor
