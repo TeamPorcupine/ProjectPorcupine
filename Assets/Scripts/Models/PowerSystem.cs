@@ -74,6 +74,7 @@ public class PowerSystem
         {
             PowerLevel -= furniture.powerValue;
         }
+
         if (PowerLevel < 0.0f)
         {
             RemovePowerConsumer();
@@ -83,7 +84,11 @@ public class PowerSystem
     private void RemovePowerConsumer()
     {
         Furniture powerConsumer = powerGrid.FirstOrDefault(furniture => furniture.IsPowerConsumer);
-        if (powerConsumer == null) { return; }
+        if (powerConsumer == null) 
+        {
+            return;
+        }
+
         RemoveFromPowerGrid(powerConsumer);
     }
 

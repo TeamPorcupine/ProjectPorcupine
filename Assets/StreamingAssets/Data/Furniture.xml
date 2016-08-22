@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Furnitures>
     <Furniture objectType="furn_SteelWall">
-        <Name>Basic Wall</Name>
-        <Description>This is a basic wall.</Description>
+        <Name>Steel Wall</Name>
+        <Description>This is a steel wall.</Description>
         <TypeTag>Wall</TypeTag>
         <MovementCost>0</MovementCost>
         <Width>1</Width>
@@ -171,8 +171,14 @@
 
       <BuildingJob jobTime="0">
       </BuildingJob>
-
-	
+      
+      <Params>
+          <Param name="burnTime" value="0" />
+          <Param name="burnTimeRequired" value="10" />
+      </Params>
+      
+	  <OnUpdate FunctionName="PowerGenerator_UpdateAction" />
+        
       <LocalizationCode>furn_power_generator</LocalizationCode>
       <UnlocalizedDescription>furn_power_generator_desc</UnlocalizedDescription>
 
@@ -219,6 +225,27 @@
       <LocalizationCode>furn_metal_smelter</LocalizationCode>
       <UnlocalizedDescription>furn_metal_smelter_desc</UnlocalizedDescription>
   </Furniture>
+  
+    <Furniture objectType="Power Cell Press">
+        <Name>Power Cell Press</Name>
+        <Description>A press that converts steel plate and something into power cells.</Description>
+        <MovementCost>1</MovementCost>
+        <Width>2</Width>
+        <Height>2</Height>
+
+        <BuildingJob jobTime="1"/>
+
+        <Params>
+            <Param name="presstime" value="0" />
+            <Param name="presstime_required" value="15" />
+        </Params>
+
+        <OnUpdate FunctionName="PowerCellPress_UpdateAction" />
+
+        <LocalizationCode>furn_power_cell_press</LocalizationCode>
+        <UnlocalizedDescription>furn_power_cell_press_desc</UnlocalizedDescription>
+
+    </Furniture>
 
   <Furniture objectType="Small Landing Pad">
     <Name>Small Landing Pad</Name>

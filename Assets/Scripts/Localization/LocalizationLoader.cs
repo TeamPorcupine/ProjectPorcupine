@@ -44,8 +44,8 @@ namespace ProjectPorcupine.Localization
                     //The file extention is .lang, load it.
                     LocalizationTable.LoadLocalizationFile(file);
 
-                    //Just write a little debug info into the console.
-                    Logger.Log("Loaded localization at path\n" + file);
+                    // Just write a little debug info into the console.
+                    Logger.LogVerbose("Loaded localization at path\n" + file);
                 }
             }
 
