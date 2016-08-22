@@ -57,12 +57,19 @@ namespace ProjectPorcupine.Localization
 
             yield return versionChecker;
 
+            if (versionChecker.error != null)
+            {
+                // This could be a thing when for example user has no internet connection.
+                Logger.LogError("Error while checking for available localization updates: " + www.error);
+                yield break;
+            }
+
             if (versionChecker.text != currentLocalizationVersion)
             {
                 // There are still some updates available. We should probably notify
                 // user about it and offer him an option to download it right now.
                 // For now... Let's just force it >.> Beginners task!
-                Logger.LogVerbose("Localization files download has started");
+                Logger.LogVerbose("There is an update for localization files!");
                 yield return DownloadLocalizationFromWeb();
             }
         }
@@ -97,7 +104,7 @@ namespace ProjectPorcupine.Localization
         /// </summary>
         private static void OnDownloadLocalizationComplete()
         {
-            if (www.isDone != true)
+            if (www.isDone == false)
             {
                 // This should never happen.
                 Logger.LogException(new System.Exception("OnDownloadLocalizationComplete got called before www finished downloading."));
