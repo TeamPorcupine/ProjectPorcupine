@@ -94,7 +94,6 @@ public class SpawnInventoryController {
     private void OnButtonClick(string iName) {
         InventoryToBuild = iName;
         WorldController.Instance.mouseController.StartSpawnMode();
-        Logger.Log("Build inventory: " + iName);
     }
 
     public void SpawnInventory(Tile t) {
