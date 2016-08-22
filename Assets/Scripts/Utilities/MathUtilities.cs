@@ -6,9 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-
 using System;
-using System.Linq;
 
 /// <summary>
 /// Different mathemathical calculations. 
@@ -61,44 +59,5 @@ public static class MathUtilities
     public static bool IsZero(this float value)
     {
         return Math.Abs(value) < double.Epsilon;
-    }
-
-    /// <returns>Returns null if both arguments are null, otherwise the sum of the arguments.</returns>
-    public static double? Add(double? amount1, double? amount2)
-    {
-        return Sum(amount1, amount2);
-    }
-
-    /// <returns>Returns null if all values are null, otherwise the sum of the values.</returns>
-    public static double? Sum(params double?[] values)
-    {
-        if (values.Any(value => value.HasValue))
-        {
-            return values.Sum(value => value ?? 0d);
-        }
-
-        return null;
-    }
-
-    /// <returns>Returns null if the denominator is null or 0, otherwise the division.</returns>
-    public static double? Divide(double? numerator, double? denominator)
-    {
-        if (!denominator.HasValue || denominator.Value.IsZero())
-        {
-            return null;
-        }
-
-        return (numerator ?? 0d) / denominator.Value;
-    }
-
-    /// <returns>Returns null if both arguments are null, otherwise the difference between the arguments.</returns>
-    public static double? Subtract(double? amount1, double? amount2)
-    {
-        if (amount1.HasValue || amount2.HasValue)
-        {
-            return (amount1 ?? 0d) - (amount2 ?? 0d);
-        }
-
-        return null;
     }
 }
