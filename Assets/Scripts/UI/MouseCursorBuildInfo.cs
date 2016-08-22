@@ -228,6 +228,7 @@ public class MouseCursorBuildInfo {
         else
         {
             upperLeftText.color = Color.white;
+            upperRightText.color = Color.white;
             //for placing tiles 
             if (t != null && mc.isDragging == true && mc.dragPreviewGameObjects.Count >= 1)
             {
