@@ -83,6 +83,22 @@ namespace ProjectPorcupine.Localization
                 // http://forum.unity3d.com/threads/cant-use-gzipstream-from-c-behaviours.33973/
                 // So I need to use some sort of 3rd party solution.
 
+                // Clear Application.streamingAssetsPath/Localization folder
+                DirectoryInfo di = new DirectoryInfo(localizationFolderPath);
+                foreach (FileInfo file in di.GetFiles())
+                {
+                    if (file.Extension != "lang" || file.Extension != "meta" || file.Extension != "ver")
+                    {
+                        Logger.LogException(new System.Exception("SOMETHING WENT HORRIBLY WRONG AT DOWNLOADING LOCALIZATION!"));
+                        return;
+                    }
+                    file.Delete();
+                }
+                foreach (DirectoryInfo dir in di.GetDirectories())
+                {
+                    dir.Delete(true);
+                }
+
                 // Convert array of downloaded bytes to stream.
                 using (ZipInputStream zipReadStream = new ZipInputStream(new MemoryStream(www.bytes)))
                 {
@@ -129,6 +145,32 @@ namespace ProjectPorcupine.Localization
                 // At this point we should have an subfolder in Application.streamingAssetsPath/Localization
                 // called ProjectPorcupineLocalization-*branch name*. Now we need to move all files from that directory
                 // to Application.streamingAssetsPath/Localization.
+                FileInfo[] fileInfo = di.GetFiles();
+                if (fileInfo.Length > 0)
+                {
+                    Logger.LogError("There should be no files here.");
+                }
+
+                DirectoryInfo[] dirInfo = di.GetDirectories();
+                if (dirInfo.Length > 1)
+                {
+                    Logger.LogError("There should be only one directory");
+                }
+
+                // Move files from ProjectPorcupineLocalization-*branch name* to Application.streamingAssetsPath/Localization.
+                string[] files = Directory.GetFiles(dirInfo[0].FullName);
+
+                // Move the files and overwrite destination files if they already exist.
+                foreach (string s in files)
+                {
+                    string fileName = Path.GetFileName(s);
+                    string destFile = Path.Combine(localizationFolderPath, fileName);
+                    File.Copy(s, destFile, true);
+                    File.Delete(fileName);
+                }
+
+                // Remove ProjectPorcupineLocalization-*branch name*
+                Directory.Delete(dirInfo[0].FullName);
             }
             catch (System.Exception e)
             {
