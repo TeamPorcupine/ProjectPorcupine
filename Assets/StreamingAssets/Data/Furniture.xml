@@ -291,6 +291,8 @@
     <PowerConnection inputRate="4" outputRate="" capacity=""/>
 
     <BuildingJob jobTime="0" />
+    
+    <OnUpdate FunctionName="Heater_OnUpdate" />
 
     <!-- This method gets called on Install -->
     <Action event="OnInstall" functionName="Heater_InstallAction"></Action>
