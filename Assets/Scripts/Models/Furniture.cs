@@ -36,6 +36,11 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     /// </summary>
     // protected Action<Furniture, float> updateActions;
     protected List<string> updateActions;
+
+    /// <summary>
+    /// These context menu lua action are used to build the context menu of the furniture
+    /// </summary>
+    protected List<ContextMenuLuaAction> contextMenuLuaActions; 
     
     /// <summary>
     /// These actions are called when an object is installed. They get passed the furniture and a delta
@@ -217,6 +222,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     public Furniture()
     {
         updateActions = new List<string>();
+        contextMenuLuaActions = new List<ContextMenuLuaAction>();
         installActions = new List<string>();
         uninstallActions = new List<string>();
         furnParameters = new Dictionary<string, float>();
@@ -251,6 +257,11 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         if (other.updateActions != null)
         {
             this.updateActions = new List<string>(other.updateActions);
+        }
+
+        if (other.contextMenuLuaActions != null)
+        {
+            this.contextMenuLuaActions = new List<ContextMenuLuaAction>(other.contextMenuLuaActions);
         }
 
         this.isEnterableAction = other.isEnterableAction;
@@ -528,6 +539,14 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
                 string functionName = reader.GetAttribute("FunctionName");
                 RegisterUpdateAction(functionName);
                     break;
+            case "ContextMenuAction":
+                    contextMenuLuaActions.Add(new ContextMenuLuaAction
+                    {
+                        LuaFunction = reader.GetAttribute("FunctionName"),
+                        Text = reader.GetAttribute("Text"),
+                        RequiereCharacterSelected = bool.Parse(reader.GetAttribute("RequiereCharacterSelected"))
+                    });
+                break;
             case "OnInstall":
                 // Called when obj is installed
                 string functionInstallName = reader.GetAttribute("FunctionName");
@@ -844,6 +863,19 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
             Action = (ca, c) => Deconstruct()
         };
 
-        //todo add a hook to LUA Action via the furniture.xml definition
+        foreach (var contextMenuLuaAction in contextMenuLuaActions)
+        {
+            yield return new ContextMenuAction
+            {
+                Text = contextMenuLuaAction.Text,
+                RequiereCharacterSelected = contextMenuLuaAction.RequiereCharacterSelected,
+                Action = (cma, c) => InvokeContextMenuLuaAction(contextMenuLuaAction.LuaFunction, c)
+            };
+        }
+    }
+
+    private void InvokeContextMenuLuaAction(string luaFunction, Character character)
+    {
+        FurnitureActions.CallFunction(luaFunction, this, character);
     }
 }
