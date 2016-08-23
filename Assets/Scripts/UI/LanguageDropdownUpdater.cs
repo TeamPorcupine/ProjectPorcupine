@@ -6,16 +6,23 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using ProjectPorcupine.Localization;
 using UnityEngine;
 using UnityEngine.UI;
-using ProjectPorcupine.Localization;
 
 public class LanguageDropdownUpdater : MonoBehaviour
 {
-    void Start()
+    public void SelectLanguage(int lang)
+    {
+        string[] languages = LocalizationTable.GetLanguages();
+        LocalizationTable.currentLanguage = languages[lang];
+        Settings.setSetting("localization", languages[lang]);
+    }
+
+    private void Start()
     {
         UpdateLanguageDropdown();
-        LocalizationTable.cbLocalizationChanged += UpdateLanguageDropdown;
+        LocalizationTable.CBLocalizationFilesChanged += UpdateLanguageDropdown;
     }
 
     private void UpdateLanguageDropdown()
@@ -35,7 +42,7 @@ public class LanguageDropdownUpdater : MonoBehaviour
         {
             if (languages[i] == LocalizationTable.currentLanguage)
             {
-                //This tbh quite stupid looking code is necessary due to a Unity (optimization?, bug(?)).
+                // This tbh quite stupid looking code is necessary due to a Unity (optimization?, bug(?)).
                 dropdown.value = i + 1;
                 dropdown.value = i;
             }
@@ -43,12 +50,5 @@ public class LanguageDropdownUpdater : MonoBehaviour
 
         // Set scroll sensitivity based on the save-item count
         dropdown.template.GetComponent<ScrollRect>().scrollSensitivity = dropdown.options.Count / 3;
-    }
-
-    public void SelectLanguage(int lang)
-    {
-        string[] languages = LocalizationTable.GetLanguages();
-        LocalizationTable.currentLanguage = languages[lang];
-        Settings.setSetting("localization", languages[lang]);
     }
 }

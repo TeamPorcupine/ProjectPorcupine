@@ -19,66 +19,30 @@ namespace ProjectPorcupine.Localization
     [AddComponentMenu("Localization/Text Localizer"), RequireComponent(typeof(Text))]
     public class TextLocalizer : MonoBehaviour
     {
-        //The values that will be inserted with string.Format(..).
-        //The array can have a length of 0 without any issue.
+        // The values that will be inserted with string.Format(..).
+        // The array can have a length of 0 without any issue.
         public string[] formatValues;
 
-        //Should the text immediately localize in the Start() method?
-        //In most cases, that is what you'll want. (Thats why it defaults to true)
+        // Should the text immediately localize in the Start() method?
+        // In most cases, that is what you'll want. (Thats why it defaults to true)
         public bool localizeInStart = true;
 
-        //The text this localizer is localizing.
-        //Hide this in the inspector, due to it being useless there.
+        // The text this localizer is localizing.
+        // Hide this in the inspector, due to it being useless there.
         [HideInInspector]
         public Text text;
 
-        //The language that was selected last frame.
-        //This is used for auto-translating as soon as the user switches language to something else.
-        string lastLanguage;
-
-        //The string the text had before localizing.
-        //Hide this in the inspector, due to it being useless there.
+        // The string the text had before localizing.
+        // Hide this in the inspector, due to it being useless there.
         [HideInInspector]
         public string defaultText;
 
-        void Awake()
-        {
-            //Get the Text component on this GameObject.
-            //This can't throw errors, due to the RequireComponent.
-            text = GetComponent<Text>();
-
-            //Set the defaultText to what the text currently has.
-            defaultText = text.text;
-        }
-
-        void Start()
-        {
-            Debug.Log(transform.parent.name + " Start");
-            //Set the last language to what's currently selected.
-            lastLanguage = LocalizationTable.currentLanguage;
-            LocalizationTable.cbLocalizationChanged += UpdateText;
-            if (localizeInStart)
-            {
-                Debug.Log(transform.parent.name + " localizeInStart");
-                //Update the text content, if the text should localize immediately.
-                UpdateText(formatValues);
-            }
-        }
-
-        void Update()
-        {
-            if (lastLanguage != LocalizationTable.currentLanguage) //Check if the language has changed.
-            {
-                //The language has changed, apply changes to the text.
-                lastLanguage = LocalizationTable.currentLanguage;
-                UpdateText(formatValues);
-                // Rescales text component of the prefab button to fit everything
-                TextScaling.ScaleAllTexts();
-            }
-        }
+        // The language that was selected last frame.
+        // This is used for auto-translating as soon as the user switches language to something else.
+        private string lastLanguage;
 
         /// <summary>
-        /// Updates the text with the last formatValues
+        /// Updates the text with last formatValues.
         /// </summary>
         public void UpdateText()
         {
@@ -95,6 +59,7 @@ namespace ProjectPorcupine.Localization
          */
         public void UpdateText(params string[] formatValues)
         {
+            lastLanguage = LocalizationTable.currentLanguage;
             this.formatValues = formatValues;
             text.text = LocalizationTable.GetLocalization(defaultText, formatValues);
         }
@@ -116,8 +81,48 @@ namespace ProjectPorcupine.Localization
          */
         public void UpdateTextCustom(string text, params string[] formatValues)
         {
+            lastLanguage = LocalizationTable.currentLanguage;
             this.formatValues = formatValues;
             this.text.text = LocalizationTable.GetLocalization(text, formatValues);
+        }
+
+        private void Awake()
+        {
+            // Get the Text component on this GameObject.
+            // This can't throw errors, due to the RequireComponent.
+            text = GetComponent<Text>();
+
+            // Set the defaultText to what the text currently has.
+            defaultText = text.text;
+        }
+
+        private void Start()
+        {
+            // Set the last language to what's currently selected.
+            lastLanguage = LocalizationTable.currentLanguage;
+
+            // Register callback, used when new localization files are downloaded
+            LocalizationTable.CBLocalizationFilesChanged += UpdateText;
+
+            if (localizeInStart)
+            {
+                // Update the text content, if the text should localize immediately.
+                UpdateText(formatValues);
+            }
+        }
+
+        private void Update()
+        {
+            // Check if the language has changed.
+            if (lastLanguage != LocalizationTable.currentLanguage)
+            {
+                // The language has changed, apply changes to the text.
+                lastLanguage = LocalizationTable.currentLanguage;
+                UpdateText(formatValues);
+
+                // Rescales text component of the prefab button to fit everything
+                TextScaling.ScaleAllTexts();
+            }
         }
     }
 }
