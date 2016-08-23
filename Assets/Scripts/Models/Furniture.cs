@@ -28,7 +28,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     /// able to use whatever parameters the user/modder would like.
     /// Basically, the LUA code will bind to this dictionary.
     /// </summary>
-    protected Dictionary<string, float> furnParameters;
+    protected Parameter furnParameters;
 
     /// <summary>
     /// These actions are called every update. They get passed the furniture
@@ -36,7 +36,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     /// </summary>
     // protected Action<Furniture, float> updateActions;
     protected List<string> updateActions;
-    
+
     /// <summary>
     /// These actions are called when an object is installed. They get passed the furniture and a delta
     /// time of 0
@@ -47,7 +47,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     /// time of 0
     /// </summary>
     protected List<string> uninstallActions;
-    
+
     // public Func<Furniture, ENTERABILITY> IsEnterable;
     protected string isEnterableAction;
 
@@ -114,7 +114,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     }
 
     // If this furniture generates power then powerValue will be positive, if it consumer power then it will be negative
-   
+
     private void InvokePowerValueChanged(IPowerRelated powerRelated)
     {
         Action<IPowerRelated> handler = PowerValueChanged;
@@ -187,7 +187,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     public int Height { get; protected set; }
 
     public string localizationCode { get; protected set; }
-   
+
     public string unlocalizedDescription { get; protected set; }
 
     public Color tint = Color.white;
@@ -219,7 +219,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         updateActions = new List<string>();
         installActions = new List<string>();
         uninstallActions = new List<string>();
-        furnParameters = new Dictionary<string, float>();
+        furnParameters = new Parameter("furnParameters");
         jobs = new List<Job>();
         typeTags = new HashSet<string>();
         this.funcPositionValidation = this.DEFAULT__IsValidPosition;
@@ -245,7 +245,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         this.jobSpotOffset = other.jobSpotOffset;
         this.jobSpawnSpotOffset = other.jobSpawnSpotOffset;
 
-        this.furnParameters = new Dictionary<string, float>(other.furnParameters);
+        this.furnParameters = new Parameter(other.furnParameters);
         jobs = new List<Job>();
 
         if (other.updateActions != null)
@@ -327,13 +327,13 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
 
         // Call LUA install scripts
         if(obj.installActions != null )
-        FurnitureActions.CallFunctionsWithFurniture(obj.installActions.ToArray(), obj, 0);
+            FurnitureActions.CallFunctionsWithFurniture(obj.installActions.ToArray(), obj, 0);
 
         // Update thermalDiffusifity using coefficient
         float thermalDiffusivity = Temperature.defaultThermalDiffusivity;
         if(obj.furnParameters.ContainsKey("thermal_diffusivity"))
         {
-            thermalDiffusivity = obj.furnParameters["thermal_diffusivity"];
+            thermalDiffusivity = obj.furnParameters["thermal_diffusivity"].ToFloat();
         }
 
         World.current.temperature.SetThermalDiffusivity(tile.X, tile.Y, thermalDiffusivity);
@@ -432,14 +432,14 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         writer.WriteAttributeString("Y", tile.Y.ToString());
         writer.WriteAttributeString("objectType", objectType);
         // writer.WriteAttributeString( "movementCost", movementCost.ToString() );
-
-        foreach (string k in furnParameters.Keys)
-        {
-            writer.WriteStartElement("Param");
-            writer.WriteAttributeString("name", k);
-            writer.WriteAttributeString("value", furnParameters[k].ToString());
-            writer.WriteEndElement();
-        }
+        furnParameters.WriteXml(writer);
+        //        foreach (string k in furnParameters.Keys)
+        //        {
+        //            writer.WriteStartElement("Param");
+        //            writer.WriteAttributeString("name", k);
+        //            writer.WriteAttributeString("value", furnParameters[k].ToString());
+        //            writer.WriteEndElement();
+        //        }
     }
 
     public void ReadXmlPrototype(XmlReader reader_parent)
@@ -454,128 +454,128 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         {
             switch (reader.Name)
             {
-            case "Name":
-                reader.Read();
-                Name = reader.ReadContentAsString();
-                break;
-            case "TypeTag":
-                reader.Read();
-                typeTags.Add(reader.ReadContentAsString());
-                break;
-            case "Description":
-                reader.Read();
-                Description = reader.ReadContentAsString();
-                break;
-            case "MovementCost":
-                reader.Read();
-                movementCost = reader.ReadContentAsFloat();
-                break;
-            case "Width":
-                reader.Read();
-                Width = reader.ReadContentAsInt();
-                break;
-            case "Height":
-                reader.Read();
-                Height = reader.ReadContentAsInt();
-                break;
-            case "LinksToNeighbours":
-                reader.Read();
-                linksToNeighbour = reader.ReadContentAsBoolean();
-                break;
-            case "EnclosesRooms":
-                reader.Read();
-                roomEnclosure = reader.ReadContentAsBoolean();
-                break;
-            case "CanReplaceFurniture":
-                replaceableFurniture.Add(reader.GetAttribute("typeTag").ToString());
-                break;
-            case "DragType":
-                reader.Read();
-                dragType = reader.ReadContentAsString();
-                break;
-            case "BuildingJob":
-                float jobTime = float.Parse(reader.GetAttribute("jobTime"));
+                case "Name":
+                    reader.Read();
+                    Name = reader.ReadContentAsString();
+                    break;
+                case "TypeTag":
+                    reader.Read();
+                    typeTags.Add(reader.ReadContentAsString());
+                    break;
+                case "Description":
+                    reader.Read();
+                    Description = reader.ReadContentAsString();
+                    break;
+                case "MovementCost":
+                    reader.Read();
+                    movementCost = reader.ReadContentAsFloat();
+                    break;
+                case "Width":
+                    reader.Read();
+                    Width = reader.ReadContentAsInt();
+                    break;
+                case "Height":
+                    reader.Read();
+                    Height = reader.ReadContentAsInt();
+                    break;
+                case "LinksToNeighbours":
+                    reader.Read();
+                    linksToNeighbour = reader.ReadContentAsBoolean();
+                    break;
+                case "EnclosesRooms":
+                    reader.Read();
+                    roomEnclosure = reader.ReadContentAsBoolean();
+                    break;
+                case "CanReplaceFurniture":
+                    replaceableFurniture.Add(reader.GetAttribute("typeTag").ToString());
+                    break;
+                case "DragType":
+                    reader.Read();
+                    dragType = reader.ReadContentAsString();
+                    break;
+                case "BuildingJob":
+                    float jobTime = float.Parse(reader.GetAttribute("jobTime"));
 
-                List<Inventory> invs = new List<Inventory>();
+                    List<Inventory> invs = new List<Inventory>();
 
-                XmlReader invs_reader = reader.ReadSubtree();
+                    XmlReader invs_reader = reader.ReadSubtree();
 
-                while (invs_reader.Read())
-                {
-                    if (invs_reader.Name == "Inventory")
+                    while (invs_reader.Read())
                     {
-                        // Found an inventory requirement, so add it to the list!
-                        invs.Add(new Inventory(
+                        if (invs_reader.Name == "Inventory")
+                        {
+                            // Found an inventory requirement, so add it to the list!
+                            invs.Add(new Inventory(
                                 invs_reader.GetAttribute("objectType"),
                                 int.Parse(invs_reader.GetAttribute("amount")),
                                 0));
+                        }
                     }
-                }
 
-                Job j = new Job(
-                    null,
-                    objectType,
-                    FurnitureActions.JobComplete_FurnitureBuilding,
-                    jobTime,
-                    invs.ToArray(),
-                    Job.JobPriority.High );
+                    Job j = new Job(
+                        null,
+                        objectType,
+                        FurnitureActions.JobComplete_FurnitureBuilding,
+                        jobTime,
+                        invs.ToArray(),
+                        Job.JobPriority.High );
 
-                World.current.SetFurnitureJobPrototype(j, this);
+                    World.current.SetFurnitureJobPrototype(j, this);
 
-                break;
-            case "OnUpdate":
-
-                string functionName = reader.GetAttribute("FunctionName");
-                RegisterUpdateAction(functionName);
                     break;
-            case "OnInstall":
-                // Called when obj is installed
-                string functionInstallName = reader.GetAttribute("FunctionName");
-                RegisterInstallAction(functionInstallName);
+                case "OnUpdate":
 
-                break;
-            case "OnUninstall":
-                // Called when obj is uninstalled
-                string functionUninstallName = reader.GetAttribute("FunctionName");
-                RegisterUninstallAction(functionUninstallName);
+                    string functionName = reader.GetAttribute("FunctionName");
+                    RegisterUpdateAction(functionName);
+                    break;
+                case "OnInstall":
+                    // Called when obj is installed
+                    string functionInstallName = reader.GetAttribute("FunctionName");
+                    RegisterInstallAction(functionInstallName);
 
-                break;
-            case "IsEnterable":
-                isEnterableAction = reader.GetAttribute("FunctionName");
+                    break;
+                case "OnUninstall":
+                    // Called when obj is uninstalled
+                    string functionUninstallName = reader.GetAttribute("FunctionName");
+                    RegisterUninstallAction(functionUninstallName);
 
-                break;
+                    break;
+                case "IsEnterable":
+                    isEnterableAction = reader.GetAttribute("FunctionName");
 
-            case "JobSpotOffset":
-                jobSpotOffset = new Vector2(
-                    int.Parse(reader.GetAttribute("X")),
-                    int.Parse(reader.GetAttribute("Y")));
+                    break;
 
-                break;
-            case "JobSpawnSpotOffset":
-                jobSpawnSpotOffset = new Vector2(
-                    int.Parse(reader.GetAttribute("X")),
-                    int.Parse(reader.GetAttribute("Y")));
+                case "JobSpotOffset":
+                    jobSpotOffset = new Vector2(
+                        int.Parse(reader.GetAttribute("X")),
+                        int.Parse(reader.GetAttribute("Y")));
 
-                break;
+                    break;
+                case "JobSpawnSpotOffset":
+                    jobSpawnSpotOffset = new Vector2(
+                        int.Parse(reader.GetAttribute("X")),
+                        int.Parse(reader.GetAttribute("Y")));
 
-            case "Power":
-                reader.Read();
-                powerValue = reader.ReadContentAsFloat();
-                break;
+                    break;
 
-            case "Params":
-                ReadXmlParams(reader);  // Read in the Param tag
-                break;
+                case "Power":
+                    reader.Read();
+                    powerValue = reader.ReadContentAsFloat();
+                    break;
 
-            case "LocalizationCode":
-                reader.Read();
-                localizationCode = reader.ReadContentAsString();
-                break;
+                case "Params":
+                    ReadXmlParams(reader);  // Read in the Param tag
+                    break;
 
-            case "UnlocalizedDescription":
-                reader.Read();
-                unlocalizedDescription = reader.ReadContentAsString();
-                break;
+                case "LocalizationCode":
+                    reader.Read();
+                    localizationCode = reader.ReadContentAsString();
+                    break;
+
+                case "UnlocalizedDescription":
+                    reader.Read();
+                    unlocalizedDescription = reader.ReadContentAsString();
+                    break;
             }
         }
     }
@@ -597,16 +597,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
 
         ////movementCost = int.Parse( reader.GetAttribute("movementCost") );
 
-        if (reader.ReadToDescendant("Param"))
-        {
-            do
-            {
-                string k = reader.GetAttribute("name");
-                float v = float.Parse(reader.GetAttribute("value"));
-                furnParameters[k] = v;
-            } 
-            while (reader.ReadToNextSibling("Param"));
-        }
+        furnParameters = Parameter.ReadXml(reader);
     }
 
     /// <summary>
@@ -615,34 +606,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     /// <returns>The parameter value (float).</returns>
     /// <param name="key">Key string.</param>
     /// <param name="default_value">Default value.</param>
-    public float GetParameter(string key, float default_value)
-    {
-        if (furnParameters.ContainsKey(key) == false)
-        {
-            return default_value;
-        }
-
-        return furnParameters[key];
-    }
-
-    public float GetParameter(string key)
-    {
-        return GetParameter(key, 0);
-    }
-
-    public void SetParameter(string key, float value)
-    {
-        furnParameters[key] = value;
-    }
-
-    public void ChangeParameter(string key, float value)
-    {
-        if (furnParameters.ContainsKey(key) == false)
-        {
-            furnParameters[key] = value;
-        }
-
-        furnParameters[key] += value;
+    public Parameter GetParameters() {
+        return furnParameters;
     }
 
     /// <summary>
