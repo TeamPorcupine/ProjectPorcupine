@@ -231,19 +231,7 @@ public class MouseController
             if (mySelection == null || mySelection.tile != tileUnderMouse)
             {
                 // We have just selected a brand new tile, reset the info.
-                mySelection = new SelectionInfo();
-                mySelection.tile = tileUnderMouse;
-                RebuildSelectionStuffInTile();
-
-                // Select the first non-null entry.
-                for (int i = 0; i < mySelection.stuffInTile.Length; i++)
-                {
-                    if (mySelection.stuffInTile[i] != null)
-                    {
-                        mySelection.subSelection = i;
-                        break;
-                    }
-                }
+                mySelection = new SelectionInfo(tileUnderMouse);
             }
             else
             {
@@ -251,32 +239,10 @@ public class MouseController
                 // Not that the tile sub selection can NEVER be null, so we know we'll always find something.
 
                 // Rebuild the array of possible sub-selection in case characters moved in or out of the tile.
-                RebuildSelectionStuffInTile();
-
-                do
-                {
-                    mySelection.subSelection = (mySelection.subSelection + 1) % mySelection.stuffInTile.Length;
-                }
-                while (mySelection.stuffInTile[mySelection.subSelection] == null);
+                mySelection.BuildStuffInTile();
+                mySelection.SelectNextStuff();
             }
         }
-    }
-
-    private void RebuildSelectionStuffInTile()
-    {
-        // Make sure stuffInTile is big enough to handle all the characters, plus the 3 extra values.
-        mySelection.stuffInTile = new ISelectable[mySelection.tile.Characters.Count + 3];
-
-        // Copy the character references.
-        for (int i = 0; i < mySelection.tile.Characters.Count; i++)
-        {
-            mySelection.stuffInTile[i] = mySelection.tile.Characters[i];
-        }
-
-        // Now assign references to the other three sub-selections available.
-        mySelection.stuffInTile[mySelection.stuffInTile.Length - 3] = mySelection.tile.Furniture;
-        mySelection.stuffInTile[mySelection.stuffInTile.Length - 2] = mySelection.tile.Inventory;
-        mySelection.stuffInTile[mySelection.stuffInTile.Length - 1] = mySelection.tile;
     }
 
     private void UpdateDragging()
@@ -542,12 +508,5 @@ public class MouseController
         public int StartY { get; private set; }
 
         public int EndY { get; private set; }
-    }
-
-    public class SelectionInfo
-    {
-        public Tile tile;
-        public ISelectable[] stuffInTile;
-        public int subSelection = 0;
     }
 }

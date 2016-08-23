@@ -41,7 +41,7 @@ public class SelectionInfoTextField : MonoBehaviour
         canvasGroup.interactable = true;
         canvasGroup.blocksRaycasts = true;
 
-        ISelectable actualSelection = mc.mySelection.stuffInTile[mc.mySelection.subSelection];
+        ISelectable actualSelection = mc.mySelection.GetSelectedStuff();
 
         if(actualSelection.GetType() == typeof(Character))
         {

@@ -15,8 +15,7 @@ public class ContextMenuAction
             {
                 if (mouseController.mySelection != null)
                 {
-                    ISelectable actualSelection =
-                        mouseController.mySelection.stuffInTile[mouseController.mySelection.subSelection];
+                    ISelectable actualSelection = mouseController.mySelection.GetSelectedStuff();
                     if (actualSelection is Character)
                     {
                         Action(this, actualSelection as Character);
