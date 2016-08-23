@@ -28,8 +28,15 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     [MoonSharpUserData]
     protected class EventAction
     {
+        /// <summary>
+        /// Stores a list of LUA functions for each type of event (eventName). All will be called at once
+        /// </summary>
         Dictionary<string, List<string>> actionsList = new Dictionary<string, List<string>>();
         
+        /// <summary>
+        /// Used to transfer registere actions to new object.
+        /// </summary>
+        /// <returns>A new object copy of this.</returns>
         public EventAction Clone()
         {
             EventAction evt = new EventAction();
@@ -39,6 +46,10 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
             return evt;
         }
 
+        /// <summary>
+        /// Fill the values of this using an xml specification.
+        /// </summary>
+        /// <param name="reader">Reader pointing to an Action tag.</param>
         public void ReadXml(XmlReader reader)
         {
             reader.Read();
@@ -59,6 +70,11 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
             Register(name, functionName);
         }
 
+        /// <summary>
+        /// Register a function named luaFunc, that gets fired in respnse to an action named actionName
+        /// </summary>
+        /// <param name="actionName">Name of event triggering action</param>
+        /// <param name="luaFunc">Lua function to add to list of actions</param>
         public void Register(string actionName, string luaFunc)
         {
             //Debug.Log(string.Format("Registering the LUA function {0} to Action {1}.", luaFunc, actionName));
@@ -66,6 +82,12 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
             actionsList[actionName].Add(luaFunc);
         }
 
+        /// <summary>
+        /// "Fire" the event named actionName, resulting in all lua functions being called
+        /// </summary>
+        /// <param name="actionName">Name of the action being triggered</param>
+        /// <param name="target">Object, passed to LUA function as 1-argument (TODO: make it an object)</param>
+        /// <param name="deltaTime">Time since last Trigger of this event</param>
         public void Trigger(string  actionName, Furniture target, float deltaTime = 0f )
         {
             if (!actionsList.ContainsKey(actionName) || actionsList[actionName] == null)
@@ -90,10 +112,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     protected Dictionary<string, float> furnParameters;
 
     /// <summary>
-    /// These actions are called every update. They get passed the furniture
-    /// they belong to, plus a deltaTime.
+    /// These actions are called when Trigger is called. They get passed the furniture
+    /// they belong to, plus a deltaTime (which defaults to 0).
     /// </summary>
-    // protected Action<Furniture, float> updateActions;
     protected EventAction eventActions;
     
     // public Func<Furniture, ENTERABILITY> IsEnterable;
