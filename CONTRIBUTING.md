@@ -3,6 +3,7 @@
 [Unity Version](#unity-version)  
 [General resources](#general-resources)  
 [Style Guidelines](#style-guidelines)  
+[Adding Furniture and Inventory](#adding-furniture-and-inventory)  
 [Best Practices for Contributing](#best-practices-for-contributing)
 
 
@@ -123,6 +124,22 @@ Additionally, for the sake of simplicity, we are standardizing on what should be
 
 ![screen shot 2016-08-16 at 8 03 22 pm](https://cloud.githubusercontent.com/assets/777633/17719999/920fb534-63ec-11e6-8903-3725f2cd05b0.png)
 ![screen shot 2016-08-16 at 8 03 36 pm](https://cloud.githubusercontent.com/assets/777633/17719998/920cff6a-63ec-11e6-8f76-0ac7a5fa0c9d.png)
+
+## Adding Furniture and Inventory
+
+We have standardized the objectTypes of Furniture and Inventory to match `type_material`, such as `wall_steel` and `generator_oxygen` or `generator_power`, for localization a matching prefix is added automaticly to objectType such as `inv` and `furn`. This means a few things:
+
+* When adding a new Furniture or inventory the files should have the objectType "type_material", you could give it the more english sounding name, as of now name is not used for anything.
+
+* For machines the convention will be `whatItDoes_whatItMakes`.
+
+* For multiword parts it will be `myType_myMaterial`.
+
+* In the Localization a line could be will be `inv_type_material=Material Type` and `furn_type_material=Material Type`.
+
+* In Localization the description can be set with `inv_type_material_desc=Some cool description.` and `furn_type_material_desc=Some awesome description`.
+
+* For image files and their xml files use the objectType as the name.
 
 ## Best Practices for Contributing
 [Best Practices for Contributing]: #best-practices-for-contributing

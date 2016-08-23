@@ -78,7 +78,7 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
         {
             // TODO: Do file overwrite dialog box.
 
-            Logger.LogError("File doesn't exist.  What?");
+            Debug.LogError("File doesn't exist.  What?");
             CloseDialog();
             return;
         }
@@ -109,7 +109,7 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
         if (File.Exists(filePath) == false)
         {
 
-            Logger.LogError("File doesn't exist.  What?");
+            Debug.LogError("File doesn't exist.  What?");
             CloseDialog();
             return;
         }
@@ -138,7 +138,7 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
 
         // Get the file name from the save file dialog box
 
-        Logger.Log("LoadWorld button was clicked.");
+        Debug.Log("LoadWorld button was clicked.");
 
         WorldController.Instance.LoadWorld(filePath);
     }

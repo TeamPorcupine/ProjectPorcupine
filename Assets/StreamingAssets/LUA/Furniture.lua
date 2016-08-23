@@ -21,12 +21,12 @@ function OnUpdate_GasGenerator( furniture, deltaTime )
 		return
 	end
 
-	if ( furniture.tile.room == nil ) then
+	if ( furniture.tile.Room == nil ) then
 		return "Furniture's room was null."
 	end
 
-	if ( furniture.tile.room.GetGasPressure("O2") < furniture.GetParameter("gas_limit", 0.2)) then
-		furniture.tile.room.ChangeGas("O2", furniture.GetParameter("gas_per_second", 0.01) * deltaTime)
+	if ( furniture.tile.Room.GetGasPressure("O2") < furniture.GetParameter("gas_limit", 0.2)) then
+		furniture.tile.Room.ChangeGas("O2", furniture.GetParameter("gas_per_second", 0.01) * deltaTime)
 	else
 		-- Do we go into a standby mode to save power?
 	end
@@ -97,7 +97,7 @@ function Stockpile_UpdateAction( furniture, deltaTime )
 	--		-- The UI's filter of allowed items gets changed
 
 
-	if( furniture.tile.inventory != nil and furniture.tile.inventory.stackSize >= furniture.tile.inventory.maxStackSize ) then
+	if( furniture.tile.Inventory != nil and furniture.tile.Inventory.stackSize >= furniture.tile.Inventory.maxStackSize ) then
 		-- We are full!
 		furniture.CancelJobs()
 		return
@@ -114,7 +114,7 @@ function Stockpile_UpdateAction( furniture, deltaTime )
 	-- Two possibilities: Either we have SOME inventory, or we have NO inventory.
 
 	-- Third possibility: Something is WHACK
-	if( furniture.tile.inventory != nil and furniture.tile.inventory.stackSize == 0 ) then
+	if( furniture.tile.Inventory != nil and furniture.tile.Inventory.stackSize == 0 ) then
 		furniture.CancelJobs()
 		return "Stockpile has a zero-size stack. This is clearly WRONG!"
 	end
@@ -132,12 +132,12 @@ function Stockpile_UpdateAction( furniture, deltaTime )
 
 	itemsDesired = {}
 
-	if( furniture.tile.inventory == nil ) then
+	if( furniture.tile.Inventory == nil ) then
 		--Debug.Log("Creating job for new stack.");
 		itemsDesired = Stockpile_GetItemsFromFilter()
 	else
 		--Debug.Log("Creating job for existing stack.");
-		desInv = furniture.tile.inventory.Clone()
+		desInv = furniture.tile.Inventory.Clone()
 		desInv.maxStackSize = desInv.maxStackSize - desInv.stackSize
 		desInv.stackSize = 0
 
@@ -184,7 +184,7 @@ function MiningDroneStation_UpdateAction( furniture, deltaTime )
 	if( furniture.JobCount() > 0 ) then
 
 		-- Check to see if the Metal Plate destination tile is full.
-		if( spawnSpot.inventory != nil and spawnSpot.inventory.stackSize >= spawnSpot.inventory.maxStackSize ) then
+		if( spawnSpot.Inventory != nil and spawnSpot.Inventory.stackSize >= spawnSpot.Inventory.maxStackSize ) then
 			-- We should stop this job, because it's impossible to make any more items.
 			furniture.CancelJobs()
 		end
@@ -193,7 +193,7 @@ function MiningDroneStation_UpdateAction( furniture, deltaTime )
 	end
 
 	-- If we get here, then we have no current job. Check to see if our destination is full.
-	if( spawnSpot.inventory != nil and spawnSpot.inventory.stackSize >= spawnSpot.inventory.maxStackSize ) then
+	if( spawnSpot.Inventory != nil and spawnSpot.Inventory.stackSize >= spawnSpot.Inventory.maxStackSize ) then
 		-- We are full! Don't make a job!
 		return
 	end
@@ -224,7 +224,7 @@ end
 function MetalSmelter_UpdateAction(furniture, deltaTime)
 	spawnSpot = furniture.GetSpawnSpotTile()
 
-	if(spawnSpot.inventory == nil) then
+	if(furniture.GetParameter("smelting") == 0) then
 		if(furniture.JobCount() == 0) then
 			itemsDesired = {Inventory.__new("Raw Iron", 50, 0)}
 
@@ -245,6 +245,10 @@ function MetalSmelter_UpdateAction(furniture, deltaTime)
 			furniture.AddJob(j)
 		end
 	else
+		-- ugly hack because spawnSpot inventory is disappearing, so just reset it to what it should be if it's gone
+		if(spawnSpot.Inventory == nil) then
+			spawnSpot.Inventory = Inventory.__new("Raw Iron", 50, 0)
+		end
 		furniture.ChangeParameter("smelttime", deltaTime)
 
 		if(furniture.GetParameter("smelttime") >= furniture.GetParameter("smelttime_required")) then
@@ -252,26 +256,28 @@ function MetalSmelter_UpdateAction(furniture, deltaTime)
 
 			outputSpot = World.current.GetTileAt(spawnSpot.X+2, spawnSpot.y)
 
-			if(outputSpot.inventory == nil) then
+			if(outputSpot.Inventory == nil) then
 				World.current.inventoryManager.PlaceInventory( outputSpot, Inventory.__new("Steel Plate", 50, 5) )
 
-				spawnSpot.inventory.stackSize = spawnSpot.inventory.stackSize-5
+				spawnSpot.Inventory.stackSize = spawnSpot.Inventory.stackSize-5
 			else
-				if(outputSpot.inventory.stackSize <= 45) then
-					outputSpot.inventory.stackSize = outputSpot.inventory.stackSize+5
+				if(outputSpot.Inventory.stackSize <= 45) then
+					outputSpot.Inventory.stackSize = outputSpot.Inventory.stackSize+5
 
-					spawnSpot.inventory.stackSize = spawnSpot.inventory.stackSize-5
+					spawnSpot.Inventory.stackSize = spawnSpot.Inventory.stackSize-5
 				end
 			end
 
-			if(spawnSpot.inventory.stackSize <= 0) then
-				spawnSpot.inventory = nil
+			if(spawnSpot.Inventory.stackSize <= 0) then
+				spawnSpot.Inventory = nil
+				furniture.SetParameter("smelting", 0)
 			end
 		end
 	end
 end
 
 function MetalSmelter_JobComplete(j)
+	j.furniture.SetParameter("smelting", 1)
     j.UnregisterJobCompletedCallback("MetalSmelter_JobComplete")
     j.UnregisterJobWorkedCallback("MetalSmelter_JobWorked")
 end
@@ -279,9 +285,9 @@ end
 function MetalSmelter_JobWorked(j)
     for k, inv in pairs(j.inventoryRequirements) do
         if(inv ~= nil and inv.stackSize > 0) then
-            spawnSpot = j.tile.furniture.GetSpawnSpotTile()
+            spawnSpot = j.tile.Furniture.GetSpawnSpotTile()
             World.current.inventoryManager.PlaceInventory(spawnSpot, inv)
-            spawnSpot.inventory.isLocked = true
+            spawnSpot.Inventory.isLocked = true
             return
         end
     end
@@ -290,7 +296,7 @@ end
 function PowerCellPress_UpdateAction(furniture, deltaTime)
 	spawnSpot = furniture.GetSpawnSpotTile()
 	
-	if(spawnSpot.inventory == nil) then
+	if(spawnSpot.Inventory == nil) then
 		if(furniture.JobCount() == 0) then
 			itemsDesired = {Inventory.__new("Steel Plate", 10, 0)}
 			
@@ -318,27 +324,27 @@ function PowerCellPress_UpdateAction(furniture, deltaTime)
 			
 			outputSpot = World.current.GetTileAt(spawnSpot.X+2, spawnSpot.y)
 			
-			if(outputSpot.inventory == nil) then
+			if(outputSpot.Inventory == nil) then
 				World.current.inventoryManager.PlaceInventory( outputSpot, Inventory.__new("Power Cell", 5, 1) )
 			
-				spawnSpot.inventory.stackSize = spawnSpot.inventory.stackSize-10
+				spawnSpot.Inventory.stackSize = spawnSpot.Inventory.stackSize-10
 			else
-				if(outputSpot.inventory.stackSize <= 4) then
-					outputSpot.inventory.stackSize = outputSpot.inventory.stackSize+1
+				if(outputSpot.Inventory.stackSize <= 4) then
+					outputSpot.Inventory.stackSize = outputSpot.Inventory.stackSize+1
 				
-					spawnSpot.inventory.stackSize = spawnSpot.inventory.stackSize-10
+					spawnSpot.Inventory.stackSize = spawnSpot.Inventory.stackSize-10
 				end
 			end
 			
-			if(spawnSpot.inventory.stackSize <= 0) then
-				spawnSpot.inventory = nil
+			if(spawnSpot.Inventory.stackSize <= 0) then
+				spawnSpot.Inventory = nil
 			end
 		end
 	end
 end
 
 function PowerCellPress_JobComplete(j)
-	spawnSpot = j.tile.furniture.GetSpawnSpotTile()
+	spawnSpot = j.tile.Furniture.GetSpawnSpotTile()
 	
 	for k, inv in pairs(j.inventoryRequirements) do
 		if(inv.stackSize > 0) then
@@ -414,7 +420,7 @@ function LandingPad_Temp_UpdateAction(furniture, deltaTime)
 	jobSpot = furniture.GetJobSpotTile()
 	inputSpot = World.current.GetTileAt(jobSpot.X, jobSpot.y-1)
 
-	if(inputSpot.inventory == nil) then
+	if(inputSpot.Inventory == nil) then
 		if(furniture.JobCount() == 0) then
 			itemsDesired = {Inventory.__new("Steel Plate", furniture.GetParameter("tradeinamount"), 0)}
 
@@ -442,19 +448,19 @@ function LandingPad_Temp_UpdateAction(furniture, deltaTime)
 
 		 	outputSpot = World.current.GetTileAt(spawnSpot.X+1, spawnSpot.y)
 
-			if(outputSpot.inventory == nil) then
+			if(outputSpot.Inventory == nil) then
 				World.current.inventoryManager.PlaceInventory( outputSpot, Inventory.__new("Steel Plate", 50, furniture.GetParameter("tradeoutamount")) )
 
-				inputSpot.inventory.stackSize = inputSpot.inventory.stackSize-furniture.GetParameter("tradeinamount")
+				inputSpot.Inventory.stackSize = inputSpot.Inventory.stackSize-furniture.GetParameter("tradeinamount")
 			else
-				if(outputSpot.inventory.stackSize <= 50 - outputSpot.inventory.stackSize+furniture.GetParameter("tradeoutamount")) then
-					outputSpot.inventory.stackSize = outputSpot.inventory.stackSize+furniture.GetParameter("tradeoutamount")
-					inputSpot.inventory.stackSize = inputSpot.inventory.stackSize-furniture.GetParameter("tradeinamount")
+				if(outputSpot.Inventory.stackSize <= 50 - outputSpot.Inventory.stackSize+furniture.GetParameter("tradeoutamount")) then
+					outputSpot.Inventory.stackSize = outputSpot.Inventory.stackSize+furniture.GetParameter("tradeoutamount")
+					inputSpot.Inventory.stackSize = inputSpot.Inventory.stackSize-furniture.GetParameter("tradeinamount")
 				end
 			end
 
-			if(inputSpot.inventory.stackSize <= 0) then
-				inputSpot.inventory = nil
+			if(inputSpot.Inventory.stackSize <= 0) then
+				inputSpot.Inventory = nil
 			end
 
 		end
@@ -468,11 +474,23 @@ function LandingPad_Temp_JobComplete(j)
 	for k, inv in pairs(j.inventoryRequirements) do
 		if(inv.stackSize > 0) then
 			World.current.inventoryManager.PlaceInventory(inputSpot, inv)
-			inputSpot.inventory.isLocked = true
+			inputSpot.Inventory.isLocked = true
 
 			return
 		end
 	end
+end
+
+-- Dummy heater install function
+-- THis function gets called once, when the funriture is isntalled
+function Heater_InstallAction( furniture, deltaTime)
+	-- TODO: find elegant way to register heat source and sinks to Temperature
+end
+
+-- Dummy heater uninstall function
+-- THis function gets called once, when the funriture is unisntalled
+function Heater_UninstallAction( furniture, deltaTime)
+	-- TODO: find elegant way to unregister previous register
 end
 
 return "LUA Script Parsed!"

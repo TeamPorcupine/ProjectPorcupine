@@ -32,12 +32,15 @@ public class World : IXmlSerializable
     public List<Room> rooms;
     public InventoryManager inventoryManager;
     public PowerSystem powerSystem;
+    // Store all temperature information
+    public Temperature temperature;
 
     // The pathfinding graph used to navigate our world map.
     public Path_TileGraph tileGraph;
 
     public Dictionary<string, Furniture> furniturePrototypes;
     public Dictionary<string, Job> furnitureJobPrototypes;
+    public Dictionary<string, Need> needPrototypes;
     public Dictionary<string, InventoryCommon> inventoryPrototypes;
 
     // The tile width of the world.
@@ -71,7 +74,7 @@ public class World : IXmlSerializable
         SetupWorld(width, height);
         int seed = UnityEngine.Random.Range(0, int.MaxValue);
         WorldGenerator.Generate(this, seed);
-
+        Debug.Log ("Generated World");
         // Make one character
         CreateCharacter(GetTileAt(Width / 2, Height / 2));
     }
@@ -100,7 +103,6 @@ public class World : IXmlSerializable
     {
         if (i < 0 || i > rooms.Count - 1)
             return null;
-		
         return rooms[i];
     }
 
@@ -113,7 +115,7 @@ public class World : IXmlSerializable
     {
         if (r == GetOutsideRoom())
         {
-            Logger.LogError("Tried to delete the outside room.");
+            Debug.LogError("Tried to delete the outside room.");
             return;
         }
 
@@ -149,19 +151,18 @@ public class World : IXmlSerializable
             {
                 tiles[x, y] = new Tile(x, y);
                 tiles[x, y].cbTileChanged += OnTileChanged;
-                tiles[x, y].room = GetOutsideRoom(); // Rooms 0 is always going to be outside, and that is our default room
+                tiles[x, y].Room = GetOutsideRoom(); // Rooms 0 is always going to be outside, and that is our default room
             }
         }
 
         CreateFurniturePrototypes();
-
+        CreateNeedPrototypes ();
         CreateInventoryPrototypes();
-
         characters = new List<Character>();
         furnitures = new List<Furniture>();
         inventoryManager = new InventoryManager();
         powerSystem = new PowerSystem();
-
+        temperature = new Temperature(Width, Height);
     }
 
     public void Update(float deltaTime)
@@ -177,6 +178,8 @@ public class World : IXmlSerializable
             f.Update(deltaTime);
         }
 
+        // Progress temperature modelling
+        temperature.Update();
     }
 
     public Character CreateCharacter(Tile t)
@@ -199,6 +202,19 @@ public class World : IXmlSerializable
         return c;
     }
 
+    public Character CreateCharacter(Tile t, Color color)
+    {
+        Debug.Log("CreateCharacter");
+        Character c = new Character(t, color); 
+
+        characters.Add(c);
+
+        if (cbCharacterCreated != null)
+            cbCharacterCreated(c);
+            
+        return c;
+    }
+    
     public void SetFurnitureJobPrototype(Job j, Furniture f)
     {
         furnitureJobPrototypes[f.objectType] = j;
@@ -271,7 +287,7 @@ public class World : IXmlSerializable
                         furn.ReadXmlPrototype(reader);
                     }
                     catch (Exception e) {
-                        Logger.LogError("Error reading furniture prototype for: " + furn.objectType + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
+                        Debug.LogError("Error reading furniture prototype for: " + furn.objectType + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
                     }
 
 
@@ -283,15 +299,64 @@ public class World : IXmlSerializable
             }
             else
             {
-                Logger.LogError("The furniture prototype definition file doesn't have any 'Furniture' elements.");
+                Debug.LogError("The furniture prototype definition file doesn't have any 'Furniture' elements.");
             }
         }
         else
         {
-            Logger.LogError("Did not find a 'Furnitures' element in the prototype definition file.");
+            Debug.LogError("Did not find a 'Furnitures' element in the prototype definition file.");
         }
     }
 
+
+
+    void CreateNeedPrototypes()
+    {
+        
+        needPrototypes = new Dictionary<string, Need>();
+
+        // READ FURNITURE PROTOTYPE XML FILE HERE
+        // TODO:  Probably we should be getting past a StreamIO handle or the raw
+        // text here, rather than opening the file ourselves.
+
+        string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
+        filePath = System.IO.Path.Combine(filePath, "Need.xml");
+        string furnitureXmlText = System.IO.File.ReadAllText(filePath);
+
+        XmlTextReader reader = new XmlTextReader(new StringReader(furnitureXmlText));
+
+        int needCount = 0;
+        if (reader.ReadToDescendant("Needs"))
+        {
+            if (reader.ReadToDescendant("Need"))
+            {
+                do
+                {
+                    needCount++;
+
+                    Need need = new Need();
+                    try
+                    {
+                        need.ReadXmlPrototype(reader);
+                    }
+                    catch {
+                        Debug.LogError("Error reading need prototype for: " + need.needType);
+                    }
+
+
+                    needPrototypes[need.needType] = need;
+
+
+
+                } while (reader.ReadToNextSibling("Need"));
+            }
+            else
+            {
+                Debug.LogError("The need prototype definition file doesn't have any 'Need' elements.");
+            }
+			Debug.Log("Need prototypes read: " + needCount.ToString());
+        }
+    }
     void CreateInventoryPrototypes()
     {
         inventoryPrototypes = new Dictionary<string, InventoryCommon>();
@@ -334,7 +399,7 @@ public class World : IXmlSerializable
                     }
                     catch (Exception e)
                     {
-                        Logger.LogError("Error reading inventory prototype for: " + inv.objectType + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
+                        Debug.LogError("Error reading inventory prototype for: " + inv.objectType + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
                     }
 
 
@@ -346,13 +411,22 @@ public class World : IXmlSerializable
             }
             else
             {
-                Logger.LogError("The inventory prototype definition file doesn't have any 'Inventory' elements.");
+                Debug.LogError("The inventory prototype definition file doesn't have any 'Inventory' elements.");
             }
         }
         else
         {
-            Logger.LogError("Did not find a 'Inventories' element in the prototype definition file.");
+            Debug.LogError("Did not find a 'Inventories' element in the prototype definition file.");
         }
+
+
+
+        // This bit will come from parsing a LUA file later, but for now we still need to
+        // implement furniture behaviour directly in C# code.
+        //furniturePrototypes["Door"].RegisterUpdateAction( FurnitureActions.Door_UpdateAction );
+        //furniturePrototypes["Door"].IsEnterable = FurnitureActions.Door_IsEnterable;
+
+            //Logger.LogError("Did not find a 'Inventories' element in the prototype definition file.");
     }
 
     /// <summary>
@@ -429,7 +503,7 @@ public class World : IXmlSerializable
 
         if (furniturePrototypes.ContainsKey(objectType) == false)
         {
-            Logger.LogError("furniturePrototypes doesn't contain a proto for key: " + objectType);
+            Debug.LogError("furniturePrototypes doesn't contain a proto for key: " + objectType);
             return null;
         }
 
@@ -460,7 +534,7 @@ public class World : IXmlSerializable
                 // buy the furniture's movement cost, a furniture movement cost
                 // of exactly 1 doesn't impact our pathfinding system, so we can
                 // occasionally avoid invalidating pathfinding graphs
-                //InvalidateTileGraph();	// Reset the pathfinding system
+                //InvalidateTileGraph();    // Reset the pathfinding system
                 if (tileGraph != null)
                 {
                     tileGraph.RegenerateGraphAtTile(t);
@@ -476,9 +550,7 @@ public class World : IXmlSerializable
     {
         if (cbTileChanged == null)
             return;
-		
         cbTileChanged(t);
-
         //InvalidateTileGraph();
         if (tileGraph != null)
         {
@@ -503,7 +575,7 @@ public class World : IXmlSerializable
     {
         if (furniturePrototypes.ContainsKey(objectType) == false)
         {
-            Logger.LogError("No furniture with type: " + objectType);
+            Debug.LogError("No furniture with type: " + objectType);
             return null;
         }
 
@@ -512,7 +584,7 @@ public class World : IXmlSerializable
 
     //////////////////////////////////////////////////////////////////////////////////////
     /// 
-    /// 						SAVING & LOADING
+    ///                         SAVING & LOADING
     /// 
     //////////////////////////////////////////////////////////////////////////////////////
 
@@ -532,7 +604,7 @@ public class World : IXmlSerializable
         {
 
             if (GetOutsideRoom() == r)
-                continue;	// Skip the outside room. Alternatively, should SetupWorld be changed to not create one?
+                continue;    // Skip the outside room. Alternatively, should SetupWorld be changed to not create one?
 
             writer.WriteStartElement("Room");
             r.WriteXml(writer);
@@ -626,7 +698,7 @@ public class World : IXmlSerializable
         inventoryManager.PlaceInventory(t, inv);
         if (cbInventoryCreated != null)
         {
-            cbInventoryCreated(t.inventory);
+            cbInventoryCreated(t.Inventory);
         }
 
         inv = new Inventory("Steel Plate", 50, 4);
@@ -634,7 +706,7 @@ public class World : IXmlSerializable
         inventoryManager.PlaceInventory(t, inv);
         if (cbInventoryCreated != null)
         {
-            cbInventoryCreated(t.inventory);
+            cbInventoryCreated(t.Inventory);
         }
 
         inv = new Inventory("Copper Wire", 50, 3);
@@ -642,7 +714,7 @@ public class World : IXmlSerializable
         inventoryManager.PlaceInventory(t, inv);
         if (cbInventoryCreated != null)
         {
-            cbInventoryCreated(t.inventory);
+            cbInventoryCreated(t.Inventory);
         }
     }
 
@@ -668,7 +740,7 @@ public class World : IXmlSerializable
 
     void ReadXml_Inventories(XmlReader reader)
     {
-        Logger.Log("ReadXml_Inventories");
+        Debug.Log("ReadXml_Inventories");
 
         if(reader.ReadToDescendant("Inventory"))
         {
@@ -728,9 +800,22 @@ public class World : IXmlSerializable
             {
                 int x = int.Parse(reader.GetAttribute("X"));
                 int y = int.Parse(reader.GetAttribute("Y"));
+                if(reader.GetAttribute("r") != null)
+                {
+                    float r = float.Parse(reader.GetAttribute("r"));
+                    float b = float.Parse(reader.GetAttribute("b"));;
+                    float g = float.Parse(reader.GetAttribute("g"));;
+                    Color color = new Color(r, g, b, 1.0f);
+                    Character c = CreateCharacter(tiles[x, y], color);
+                    c.ReadXml(reader);
+                }
 
-                Character c = CreateCharacter(tiles[x, y]);
-                c.ReadXml(reader);
+                else
+                {
+                    Character c = CreateCharacter(tiles[x, y]);
+                    c.ReadXml(reader);
+                }
+                
             } while(reader.ReadToNextSibling("Character"));
         }
 

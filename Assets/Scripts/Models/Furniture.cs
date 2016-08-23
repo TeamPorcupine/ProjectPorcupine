@@ -19,7 +19,7 @@ using UnityEngine;
 /// InstalledObjects are things like walls, doors, and furniture (e.g. a sofa).
 /// </summary>
 [MoonSharpUserData]
-public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
+public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, IPowerRelated
 {
     private float powerValue;
     /// <summary>
@@ -36,7 +36,18 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
     /// </summary>
     // protected Action<Furniture, float> updateActions;
     protected List<string> updateActions;
-
+    
+    /// <summary>
+    /// These actions are called when an object is installed. They get passed the furniture and a delta
+    /// time of 0
+    /// </summary>
+    protected List<string> installActions;
+    /// <summary>
+    /// These actions are called when an object is uninstalled. They get passed the furniture and a delta
+    /// time of 0
+    /// </summary>
+    protected List<string> uninstallActions;
+    
     // public Func<Furniture, ENTERABILITY> IsEnterable;
     protected string isEnterableAction;
 
@@ -101,6 +112,8 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
 
         return (ENTERABILITY)ret.Number;
     }
+
+    // If this furniture generates power then powerValue will be positive, if it consumer power then it will be negative
    
     private void InvokePowerValueChanged(IPowerRelated powerRelated)
     {
@@ -204,6 +217,8 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
     public Furniture()
     {
         updateActions = new List<string>();
+        installActions = new List<string>();
+        uninstallActions = new List<string>();
         furnParameters = new Dictionary<string, float>();
         jobs = new List<Job>();
         typeTags = new HashSet<string>();
@@ -268,7 +283,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
     {
         if (proto.funcPositionValidation(tile) == false)
         {
-            Logger.LogError("PlaceInstance -- Position Validity Function returned FALSE.");
+            Debug.LogError("PlaceInstance -- Position Validity Function returned FALSE.");
             return null;
         }
 
@@ -302,13 +317,26 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
                 for (int ypos = y - 1; ypos < (y + proto.Height + 1); ypos++)
                 {
                     t = World.current.GetTileAt(xpos, ypos);
-                    if (t != null && t.furniture != null && t.furniture.cbOnChanged != null)
+                    if (t != null && t.Furniture != null && t.Furniture.cbOnChanged != null)
                     {
-                        t.furniture.cbOnChanged(t.furniture);
+                        t.Furniture.cbOnChanged(t.Furniture);
                     }
                 }
             }
         }
+
+        // Call LUA install scripts
+        if(obj.installActions != null )
+        FurnitureActions.CallFunctionsWithFurniture(obj.installActions.ToArray(), obj, 0);
+
+        // Update thermalDiffusifity using coefficient
+        float thermalDiffusivity = Temperature.defaultThermalDiffusivity;
+        if(obj.furnParameters.ContainsKey("thermal_diffusivity"))
+        {
+            thermalDiffusivity = obj.furnParameters["thermal_diffusivity"];
+        }
+
+        World.current.temperature.SetThermalDiffusivity(tile.X, tile.Y, thermalDiffusivity);
 
         return obj;
     }
@@ -346,11 +374,11 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
                 // Check to see if there is furniture which is replaceable
                 bool isReplaceable = false;
 
-                if (t2.furniture != null)
+                if (t2.Furniture != null)
                 {
                     for (int i = 0; i < ReplaceableFurniture.Count; i++)
                     {
-                        if (t2.furniture.HasTypeTag(ReplaceableFurniture[i]))
+                        if (t2.Furniture.HasTypeTag(ReplaceableFurniture[i]))
                         {
                             isReplaceable = true;
                         }
@@ -364,7 +392,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
                 }
 
                 // Make sure tile doesn't already have furniture
-                if (t2.furniture != null && isReplaceable == false)
+                if (t2.Furniture != null && isReplaceable == false)
                 {
                     return false;
                 }
@@ -416,7 +444,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
 
     public void ReadXmlPrototype(XmlReader reader_parent)
     {
-        ////Logger.Log("ReadXmlPrototype");
+        ////Debug.Log("ReadXmlPrototype");
 
         objectType = reader_parent.GetAttribute("objectType");
 
@@ -499,10 +527,20 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
 
                 string functionName = reader.GetAttribute("FunctionName");
                 RegisterUpdateAction(functionName);
+                    break;
+            case "OnInstall":
+                // Called when obj is installed
+                string functionInstallName = reader.GetAttribute("FunctionName");
+                RegisterInstallAction(functionInstallName);
+
+                break;
+            case "OnUninstall":
+                // Called when obj is uninstalled
+                string functionUninstallName = reader.GetAttribute("FunctionName");
+                RegisterUninstallAction(functionUninstallName);
 
                 break;
             case "IsEnterable":
-
                 isEnterableAction = reader.GetAttribute("FunctionName");
 
                 break;
@@ -621,6 +659,32 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
         updateActions.Remove(luaFunctionName);
     }
 
+    /// <summary>
+    /// Registers a function that will be called every Install
+    /// </summary>
+    public void RegisterInstallAction(string luaFunctionName)
+    {
+        installActions.Add(luaFunctionName);
+    }
+
+    public void UnregisterInstallAction(string luaFunctionName)
+    {
+        installActions.Remove(luaFunctionName);
+    }
+
+    /// <summary>
+    /// Registers a function that will be called every UnInstall
+    /// </summary>
+    public void RegisterUninstallAction(string luaFunctionName)
+    {
+        uninstallActions.Add(luaFunctionName);
+    }
+
+    public void UnregisterUninstallAction(string luaFunctionName)
+    {
+        uninstallActions.Remove(luaFunctionName);
+    }
+
     public int JobCount()
     {
         return jobs.Count;
@@ -671,20 +735,28 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
 
     public void Deconstruct()
     {
-        Logger.Log("Deconstruct");
+        Debug.Log("Deconstruct");
         int x = tile.X;
         int y = tile.Y;
         int fwidth = 1;
         int fheight = 1;
         bool linksToNeighbour = false;
-        if (tile.furniture != null)
+        if (tile.Furniture != null)
         {
-            Furniture f = tile.furniture;
+            Furniture f = tile.Furniture;
             fwidth = f.Width;
             fheight = f.Height;
             linksToNeighbour = f.linksToNeighbour;
             f.CancelJobs();
         }
+
+        // We call lua to decostruct
+        if (uninstallActions != null)
+            FurnitureActions.CallFunctionsWithFurniture(uninstallActions.ToArray(), this, 0);
+
+        // Update thermalDiffusifity to default value
+        World.current.temperature.SetThermalDiffusivity(tile.X, tile.Y,
+            Temperature.defaultThermalDiffusivity);
 
         tile.UnplaceFurniture();
 
@@ -715,9 +787,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
                 for (int ypos = y - 1; ypos < (y + fheight + 1); ypos++)
                 {
                     Tile t = World.current.GetTileAt(xpos, ypos);
-                    if (t != null && t.furniture != null && t.furniture.cbOnChanged != null)
+                    if (t != null && t.Furniture != null && t.Furniture.cbOnChanged != null)
                     {
-                        t.furniture.cbOnChanged(t.furniture);
+                        t.Furniture.cbOnChanged(t.Furniture);
                     }
                 }
             }
@@ -762,4 +834,16 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
     }
 
     #endregion
+
+    public IEnumerable<ContextMenuAction> GetContextMenuActions(ContextMenu contextMenu)
+    {
+        yield return new ContextMenuAction
+        {
+            Text = "Deconstruct "+Name,
+            RequiereCharacterSelected = false,
+            Action = (ca, c) => Deconstruct()
+        };
+
+        //todo add a hook to LUA Action via the furniture.xml definition
+    }
 }

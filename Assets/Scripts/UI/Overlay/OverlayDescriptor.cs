@@ -68,7 +68,7 @@ public class OverlayDescriptor
         }
         xmlReader.Read();
         ret.luaFunctionName = xmlReader.ReadContentAsString();
-        Debug.Log(string.Format("Reading overlay prototype with id {0} and LUA function {1}", ret.id, ret.luaFunctionName));
+        //Debug.Log(string.Format("Reading overlay prototype with id {0} and LUA function {1}", ret.id, ret.luaFunctionName));
         return ret;
     }
 

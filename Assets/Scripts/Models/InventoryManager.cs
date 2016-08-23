@@ -34,7 +34,7 @@ public class InventoryManager
 
             if (inv.tile != null)
             {
-                inv.tile.inventory = null;
+                inv.tile.Inventory = null;
                 inv.tile = null;
             }
 
@@ -48,7 +48,7 @@ public class InventoryManager
 
     public bool PlaceInventory(Tile tile, Inventory inv)
     {
-        bool tileWasEmpty = tile.inventory == null;
+        bool tileWasEmpty = tile.Inventory == null;
 
         if (tile.PlaceInventory(inv) == false)
         {
@@ -61,14 +61,14 @@ public class InventoryManager
         // We may also created a new stack on the tile, if the tile was previously empty.
         if (tileWasEmpty)
         {
-            if (inventories.ContainsKey(tile.inventory.objectType) == false)
+            if (inventories.ContainsKey(tile.Inventory.objectType) == false)
             {
-                inventories[tile.inventory.objectType] = new List<Inventory>();
+                inventories[tile.Inventory.objectType] = new List<Inventory>();
             }
 
-            inventories[tile.inventory.objectType].Add(tile.inventory);
+            inventories[tile.Inventory.objectType].Add(tile.Inventory);
 
-            World.current.OnInventoryCreated(tile.inventory);
+            World.current.OnInventoryCreated(tile.Inventory);
         }
 
         return true;
@@ -78,7 +78,7 @@ public class InventoryManager
     {
         if (job.inventoryRequirements.ContainsKey(inv.objectType) == false)
         {
-            Logger.LogError("Trying to add inventory to a job that it doesn't want.");
+            Debug.LogError("Trying to add inventory to a job that it doesn't want.");
             return false;
         }
 
@@ -118,7 +118,7 @@ public class InventoryManager
         }
         else if (character.inventory.objectType != sourceInventory.objectType)
         {
-            Logger.LogError("Character is trying to pick up a mismatched inventory object type.");
+            Debug.LogError("Character is trying to pick up a mismatched inventory object type.");
             return false;
         }
 
@@ -149,7 +149,7 @@ public class InventoryManager
     public Inventory GetClosestInventoryOfType(string objectType, Tile t, int desiredAmount, bool canTakeFromStockpile)
     {
         Path_AStar path = GetPathToClosestInventoryOfType(objectType, t, desiredAmount, canTakeFromStockpile);
-        return path.EndTile().inventory;
+        return path.EndTile().Inventory;
     }
 
     public bool QuickCheck(string objectType)
@@ -178,13 +178,13 @@ public class InventoryManager
         // We can also avoid going through the Astar construction if we know
         // that all available inventories are stockpiles and we are not allowed
         // to touch those
-        if (!canTakeFromStockpile && inventories[objectType].TrueForAll(i => i.tile != null && i.tile.furniture != null && i.tile.furniture.IsStockpile()))
+        if (!canTakeFromStockpile && inventories[objectType].TrueForAll(i => i.tile != null && i.tile.Furniture != null && i.tile.Furniture.IsStockpile()))
         {
             return null;
         }
 
         // We shouldn't search if all inventories are locked.
-        if (inventories[objectType].TrueForAll(i => i.tile != null && i.tile.furniture != null && i.tile.inventory.isLocked))
+        if (inventories[objectType].TrueForAll(i => i.tile != null && i.tile.Furniture != null && i.tile.Inventory.isLocked))
         {
             return null;
         }
