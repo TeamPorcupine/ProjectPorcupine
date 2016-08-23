@@ -42,6 +42,7 @@ public class World : IXmlSerializable
     public Dictionary<string, Job> furnitureJobPrototypes;
     public Dictionary<string, Need> needPrototypes;
     public Dictionary<string, InventoryCommon> inventoryPrototypes;
+    public Dictionary<string, TraderPrototype> traderPrototypes;
 
     // The tile width of the world.
     public int Width { get; protected set; }
@@ -158,6 +159,8 @@ public class World : IXmlSerializable
         CreateFurniturePrototypes();
         CreateNeedPrototypes ();
         CreateInventoryPrototypes();
+        CreateTraderPrototypes();
+
         characters = new List<Character>();
         furnitures = new List<Furniture>();
         inventoryManager = new InventoryManager();
@@ -376,6 +379,67 @@ public class World : IXmlSerializable
                 string inventoryXmlModText = System.IO.File.ReadAllText(inventoryXmlModFile);
                 LoadInventoryPrototypesFromFile(inventoryXmlModText);
             }
+        }
+    }
+
+    void CreateTraderPrototypes()
+    {
+        traderPrototypes = new Dictionary<string, TraderPrototype>();
+
+        string dataPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
+        string filePath = System.IO.Path.Combine(dataPath, "Trader.xml");
+        string traderXmlText = System.IO.File.ReadAllText(filePath);
+        LoadTraderPrototypesFromFile(traderXmlText);
+
+
+        DirectoryInfo[] mods = WorldController.Instance.modsManager.GetMods();
+        foreach (DirectoryInfo mod in mods)
+        {
+            string traderXmlModFile = System.IO.Path.Combine(mod.FullName, "Traders.xml");
+            if (File.Exists(traderXmlModFile))
+            {
+                string traderXmlModText = System.IO.File.ReadAllText(traderXmlModFile);
+                LoadTraderPrototypesFromFile(traderXmlModText);
+            }
+        }
+    }
+
+    void LoadTraderPrototypesFromFile(string traderXmlText)
+    {
+        XmlTextReader reader = new XmlTextReader(new StringReader(traderXmlText));
+
+        int inventoryCount = 0;
+        if (reader.ReadToDescendant("Traders"))
+        {
+            if (reader.ReadToDescendant("Trader"))
+            {
+                do
+                {
+                    inventoryCount++;
+
+                    TraderPrototype trader = new TraderPrototype();
+                    try
+                    {
+                        trader.ReadXmlPrototype(reader);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogError("Error reading trader prototype for: " + trader.ObjectType + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
+                    }
+
+
+                    traderPrototypes[trader.ObjectType] = trader;
+                    
+                } while (reader.ReadToNextSibling("Trader"));
+            }
+            else
+            {
+                Debug.LogError("The trader prototype definition file doesn't have any 'Trader' elements.");
+            }
+        }
+        else
+        {
+            Debug.LogError("Did not find a 'Traders' element in the prototype definition file.");
         }
     }
 
