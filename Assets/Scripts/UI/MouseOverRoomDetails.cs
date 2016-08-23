@@ -45,7 +45,7 @@ public class MouseOverRoomDetails : MonoBehaviour
     {
         Tile t = mouseController.GetMouseOverTile();
 
-        if (t == null || t.room == null)
+        if (t == null || t.Room == null)
         {
             myText.text = "";
             return;
@@ -53,9 +53,9 @@ public class MouseOverRoomDetails : MonoBehaviour
 
         string s = "";
 
-        foreach (string g in t.room.GetGasNames())
+        foreach (string g in t.Room.GetGasNames())
         {
-            s += g + ": " + t.room.GetGasPressure(g) + " (" + (t.room.GetGasPercentage(g) * 100) + "%) ";
+            s += g + ": " + t.Room.GetGasPressure(g) + " (" + (t.Room.GetGasPercentage(g) * 100) + "%) ";
         }
 
         myText.text = s;

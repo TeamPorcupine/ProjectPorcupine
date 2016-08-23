@@ -22,7 +22,7 @@ using UnityEngine;
 /// sub-classes or interfaces) to support friendly workers, enemies, etc...
 /// </summary>
 [MoonSharpUserData]
-public class Character : IXmlSerializable, ISelectable
+public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 {
     /// <summary>
     /// Returns a float representing the Character's X position, which can
@@ -72,11 +72,11 @@ public class Character : IXmlSerializable, ISelectable
         {
             if (_currTile != null)
             {
-                _currTile.characters.Remove(this);
+                _currTile.Characters.Remove(this);
             }
 
             _currTile = value;
-            _currTile.characters.Add(this);
+            _currTile.Characters.Add(this);
         }
     }
 
@@ -311,17 +311,18 @@ public class Character : IXmlSerializable, ISelectable
 
             // Are we standing on a tile with goods that are desired by the job?
             Debug.Log("Standing on Tile check");
-            if (CurrTile.inventory != null &&
-                myJob.DesiresInventoryType(CurrTile.inventory) > 0 && !CurrTile.inventory.isLocked &&
-                (myJob.canTakeFromStockpile || CurrTile.furniture == null || CurrTile.furniture.IsStockpile() == false))
+            if (CurrTile.Inventory != null &&
+                myJob.DesiresInventoryType(CurrTile.Inventory) > 0 && !CurrTile.Inventory.isLocked &&
+                (myJob.canTakeFromStockpile || CurrTile.Furniture == null || CurrTile.Furniture.IsStockpile() == false))
             {
                 // Pick up the stuff!
                 Debug.Log("Pick up the stuff");
 
                 World.current.inventoryManager.PlaceInventory(
                     this,
-                    CurrTile.inventory,
-                    myJob.DesiresInventoryType(CurrTile.inventory));
+                    CurrTile.Inventory,
+                    myJob.DesiresInventoryType(CurrTile.Inventory));
+                
             }
             else
             {
@@ -341,13 +342,11 @@ public class Character : IXmlSerializable, ISelectable
                 // Any chance we already have a path that leads to the items we want?
 
                 // Check that we have an end tile and that it has content.
-                if (pathAStar != null && pathAStar.EndTile() != null && pathAStar.EndTile().inventory != null &&
-                    
+                if (pathAStar != null && pathAStar.EndTile() != null && pathAStar.EndTile().Inventory != null &&
                     // Check if it is a stockpile and we are allowed to grab from it or just not a stockpile
-                    !(pathAStar.EndTile().furniture != null && (myJob.canTakeFromStockpile == false && pathAStar.EndTile().furniture.IsStockpile() == true)) &&
-
+                    !(pathAStar.EndTile().Furniture != null && (myJob.canTakeFromStockpile == false && pathAStar.EndTile().Furniture.IsStockpile() == true)) &&
                     // Check if contains the desired objectType
-                    (pathAStar.EndTile().inventory.objectType == desired.objectType))
+                    ( pathAStar.EndTile().Inventory.objectType == desired.objectType))
                 {
                     // We are already moving towards a tile that contains what we want!
                     // so....do nothing?
@@ -511,7 +510,7 @@ public class Character : IXmlSerializable, ISelectable
         }
 
         // How much distance can be travel this Update?
-        float distThisFrame = speed / NextTile.movementCost * deltaTime;
+        float distThisFrame = speed / NextTile.MovementCost * deltaTime;
 
         // How much is that in terms of percentage to our destination?
         float percThisFrame = distThisFrame / distToTravel;
@@ -641,4 +640,14 @@ public class Character : IXmlSerializable, ISelectable
     #endregion
 
     Color characterColor;
+
+    public IEnumerable<ContextMenuAction> GetContextMenuActions(ContextMenu contextMenu)
+    {
+        yield return new ContextMenuAction
+        {
+            Text = "Poke "+GetName(),
+            RequiereCharacterSelected = false,
+            Action = (cm, c) => Debug.Log(GetDescription())
+        };
+    }
 }

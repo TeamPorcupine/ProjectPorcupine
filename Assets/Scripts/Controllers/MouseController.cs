@@ -30,6 +30,7 @@ public class MouseController
     private BuildModeController bmc;
     private FurnitureSpriteController fsc;
     private MenuController menuController;
+    ContextMenu contextMenu;
 
     private bool isDragging = false;
 
@@ -43,6 +44,7 @@ public class MouseController
         circleCursorPrefab = cursorObject;
         fsc = furnitureSpriteController;
         menuController = GameObject.FindObjectOfType<MenuController>();
+        contextMenu = GameObject.FindObjectOfType<ContextMenu>();
         dragPreviewGameObjects = new List<GameObject>();
         cursorParent = new GameObject("Cursor");
         furnitureParent = new GameObject("Furniture Preview Sprites");
@@ -95,7 +97,8 @@ public class MouseController
             }
             else if (currentMode == MouseMode.SELECT)
             {
-                Debug.Log("Show game menu?");
+                if (contextMenu != null)
+                    contextMenu.Open(GetMouseOverTile());
             }
         }
 
@@ -177,15 +180,18 @@ public class MouseController
         if (Input.GetMouseButtonDown(1))
         {
             Tile tileUnderMouse = GetMouseOverTile();
-            if (tileUnderMouse.pendingBuildJob != null)
+            if (tileUnderMouse.PendingBuildJob != null)
             {
                 Debug.Log("Canceling!");
-                tileUnderMouse.pendingBuildJob.CancelJob();
+                tileUnderMouse.PendingBuildJob.CancelJob();
             }
         }
 
         if (Input.GetMouseButtonUp(0))
         {
+            if (contextMenu != null)
+                contextMenu.Close();
+
             // We just release the mouse button, so that's our queue to update our selection.
             Tile tileUnderMouse = GetMouseOverTile();
 
@@ -232,17 +238,17 @@ public class MouseController
     private void RebuildSelectionStuffInTile()
     {
         // Make sure stuffInTile is big enough to handle all the characters, plus the 3 extra values.
-        mySelection.stuffInTile = new ISelectable[mySelection.tile.characters.Count + 3];
+        mySelection.stuffInTile = new ISelectable[mySelection.tile.Characters.Count + 3];
 
         // Copy the character references.
-        for (int i = 0; i < mySelection.tile.characters.Count; i++)
+        for (int i = 0; i < mySelection.tile.Characters.Count; i++)
         {
-            mySelection.stuffInTile[i] = mySelection.tile.characters[i];
+            mySelection.stuffInTile[i] = mySelection.tile.Characters[i];
         }
 
         // Now assign references to the other three sub-selections available.
-        mySelection.stuffInTile[mySelection.stuffInTile.Length - 3] = mySelection.tile.furniture;
-        mySelection.stuffInTile[mySelection.stuffInTile.Length - 2] = mySelection.tile.inventory;
+        mySelection.stuffInTile[mySelection.stuffInTile.Length - 3] = mySelection.tile.Furniture;
+        mySelection.stuffInTile[mySelection.stuffInTile.Length - 2] = mySelection.tile.Inventory;
         mySelection.stuffInTile[mySelection.stuffInTile.Length - 1] = mySelection.tile;
     }
 
