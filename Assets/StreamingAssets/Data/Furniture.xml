@@ -65,6 +65,7 @@
         <OnUpdate FunctionName="OnUpdate_Leak_Door" />
 
         <IsEnterable FunctionName="IsEnterable_Door" />
+        <GetSpriteName FunctionName="GetSpriteName_Door" />
 
         <LocalizationCode>furn_door</LocalizationCode>
         <UnlocalizedDescription>furn_door_desc</UnlocalizedDescription>
@@ -101,6 +102,7 @@
         <OnUpdate FunctionName="OnUpdate_Leak_Airlock" />
 
         <IsEnterable FunctionName="IsEnterable_Door" />
+        <GetSpriteName FunctionName="GetSpriteName_Airlock" />
 
         <LocalizationCode>furn_airlock</LocalizationCode>
         <UnlocalizedDescription>furn_airlock_desc</UnlocalizedDescription>
