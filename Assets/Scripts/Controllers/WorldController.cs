@@ -89,6 +89,8 @@ public class WorldController : MonoBehaviour
     }
 
     void Start() {
+        GameObject go;
+
         tileSpriteController = new TileSpriteController(world);
         tileSpriteController.Render();
         characterSpriteController = new CharacterSpriteController(world);
@@ -106,6 +108,11 @@ public class WorldController : MonoBehaviour
         //Initialising controllers
         GameObject Controllers = GameObject.Find("Controllers");
         Instantiate(Resources.Load("UIController"), Controllers.transform);
+
+        GameObject Canvas = GameObject.Find("Canvas");
+        go = Instantiate(Resources.Load("UI/ContextMenu"),Canvas.transform.position, Canvas.transform.rotation, Canvas.transform) as GameObject;
+        go.name = "ContextMenu";
+
 
 
     }
