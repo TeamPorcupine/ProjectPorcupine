@@ -154,7 +154,6 @@ public class BuildModeController
                 // This tile position is valid tile type
 
                 // Create a job for it to be build
-
                 Job j = TileType.GetConstructionJobPrototype(tileType);
                 
                 j.tile = t;
