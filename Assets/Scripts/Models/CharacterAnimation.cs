@@ -1,10 +1,18 @@
-﻿using System;
+﻿#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
 /// CharacterAnimation gets reference to character, and should be able to 
-/// figure out which animation to play, by looking at character Facing and IsMoving
+/// figure out which animation to play, by looking at character Facing and IsMoving.
 /// </summary>
 public class CharacterAnimation
 {
@@ -20,7 +28,6 @@ public class CharacterAnimation
     // TODO: should be more flexible ....
     private Sprite[] sprites = new Sprite[9];
 
-
     public CharacterAnimation(Character c, SpriteRenderer r)
     {
         character = c;
@@ -29,13 +36,22 @@ public class CharacterAnimation
 
     public void Update(float deltaTime)
     {
-        if (currentFrame >= animationLength) currentFrame = 0;
+        if (currentFrame >= animationLength)
+        {
+            currentFrame = 0;
+        }
+
         currentFrame++;
 
-        callAnimation();
+        CallAnimation();
     }
 
-    private void callAnimation()
+    public void SetSprites(Sprite[] s)
+    {
+        sprites = s;
+    }
+
+    private void CallAnimation()
     {
         if (character.IsWalking)
         {
@@ -43,19 +59,19 @@ public class CharacterAnimation
             switch (character.Facing)
             {
                 case 0: // walk north
-                    toggleAnimation(5, 6);
+                    ToggleAnimation(5, 6);
                     renderer.flipX = false;
                     break;
                 case 1: // walk east
-                    toggleAnimation(3, 4);
+                    ToggleAnimation(3, 4);
                     renderer.flipX = false;
                     break;
                 case 2: // walk south
-                    toggleAnimation(7, 8);
+                    ToggleAnimation(7, 8);
                     renderer.flipX = false;
                     break;
                 case 3: // walk west
-                    toggleAnimation(3, 4); // FLIP east sprite
+                    ToggleAnimation(3, 4); // FLIP east sprite
                     renderer.flipX = true;
                     break;
                 default:
@@ -64,23 +80,23 @@ public class CharacterAnimation
         }
         else
         {
-            //character idle
+            // character idle
             switch (character.Facing)
             {
                 case 0: // walk north
-                    showSprite(2);
+                    ShowSprite(2);
                     renderer.flipX = false;
                     break;
                 case 1: // walk east
-                    showSprite(1);
+                    ShowSprite(1);
                     renderer.flipX = false;
                     break;
                 case 2: // walk south
-                    showSprite(0);
+                    ShowSprite(0);
                     renderer.flipX = false;
                     break;
                 case 3: // walk west
-                    showSprite(1); // FLIP east sprite
+                    ShowSprite(1); // FLIP east sprite
                     renderer.flipX = true;
                     break;
                 default:
@@ -89,7 +105,7 @@ public class CharacterAnimation
         }
     }
 
-    private void toggleAnimation(int s1, int s2)
+    private void ToggleAnimation(int s1, int s2)
     {
         if (currentFrame == 1)
         {
@@ -99,18 +115,10 @@ public class CharacterAnimation
         {
             renderer.sprite = sprites[s2];
         }        
-
     }
 
-    private void showSprite(int s)
+    private void ShowSprite(int s)
     {        
         renderer.sprite = sprites[s];                       
     }
-
-    public void setSprites(Sprite[] s)
-    {
-        sprites = s;
-    }
-
 }
-
