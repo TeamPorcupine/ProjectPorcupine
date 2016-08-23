@@ -56,21 +56,21 @@ public class CharacterAnimation
         if (character.IsWalking)
         {
             // character walking
-            switch (character.Facing)
+            switch (character.CharFacing)
             {
-                case 0: // walk north
+                case Facing.NORTH: // walk north
                     ToggleAnimation(5, 6);
                     renderer.flipX = false;
                     break;
-                case 1: // walk east
+                case Facing.EAST: // walk east
                     ToggleAnimation(3, 4);
                     renderer.flipX = false;
                     break;
-                case 2: // walk south
+                case Facing.SOUTH: // walk south
                     ToggleAnimation(7, 8);
                     renderer.flipX = false;
                     break;
-                case 3: // walk west
+                case Facing.WEST: // walk west
                     ToggleAnimation(3, 4); // FLIP east sprite
                     renderer.flipX = true;
                     break;
@@ -81,21 +81,21 @@ public class CharacterAnimation
         else
         {
             // character idle
-            switch (character.Facing)
+            switch (character.CharFacing)
             {
-                case 0: // walk north
+                case Facing.NORTH: // walk north
                     ShowSprite(2);
                     renderer.flipX = false;
                     break;
-                case 1: // walk east
+                case Facing.EAST: // walk east
                     ShowSprite(1);
                     renderer.flipX = false;
                     break;
-                case 2: // walk south
+                case Facing.SOUTH: // walk south
                     ShowSprite(0);
                     renderer.flipX = false;
                     break;
-                case 3: // walk west
+                case Facing.WEST: // walk west
                     ShowSprite(1); // FLIP east sprite
                     renderer.flipX = true;
                     break;

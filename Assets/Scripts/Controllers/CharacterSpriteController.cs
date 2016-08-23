@@ -73,6 +73,7 @@ public class CharacterSpriteController
                 ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p3_walk_south_01"), c.GetCharacterColor()),
                 ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p3_walk_south_02"), c.GetCharacterColor())
             };
+
         c.animation.SetSprites(sprites);
         
         // Add the inventory sprite onto the character
@@ -182,11 +183,7 @@ public class CharacterSpriteController
                 char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled = false;
             }
         }
-
-
+        
         char_go.transform.position = new Vector3(c.X, c.Y, 0);
     }
-
-
-	
 }
