@@ -488,10 +488,9 @@ public class MouseController
 
         if (Camera.main.orthographicSize != zoomTarget)
         {
-            Camera.main.orthographicSize = Mathf.Clamp(Mathf.Lerp( Camera.main.orthographicSize, zoomTarget, Settings.getSettingAsFloat("ZoomLerp", 3) * Time.deltaTime), 3f, 25f);
+            float target = Mathf.Lerp(Camera.main.orthographicSize, zoomTarget, Settings.getSettingAsFloat("ZoomLerp", 3) * Time.deltaTime);
+            Camera.main.orthographicSize = Mathf.Clamp(target, 3f, 25f);
         }
-       
-       
     } 
 
     private void ShowFurnitureSpriteAtTile(string furnitureType, Tile t)
