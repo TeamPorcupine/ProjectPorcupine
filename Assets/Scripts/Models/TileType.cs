@@ -29,6 +29,8 @@ public class TileType : IXmlSerializable {
     // A private dictionary for storing all TileTypes
     private static Dictionary<string, TileType> tileTypeDictionary = new Dictionary<string, TileType>();
 
+    private static Dictionary<TileType, Job> tileTypeBuildJobPrototypes = new Dictionary<TileType, Job>();
+
     public string Type { get; protected set; }
 
     public string Name { get; protected set; }
@@ -95,6 +97,23 @@ public class TileType : IXmlSerializable {
         return tileTypeDictionary.Values.ToArray();
     }
 
+    /// <summary>
+    /// Gets the construction job prototype for this tileType.
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
+    public static Job GetConstructionJobPrototype(TileType type)
+    {
+        if (tileTypeBuildJobPrototypes.ContainsKey(type))
+        {
+            return tileTypeBuildJobPrototypes[type].Clone();
+        }
+
+        Debug.ULogWarningChannel("TileType", "TileType job prototype for " + type + " did not exits!");
+
+        return null;
+    }
+    
     /// <summary>
     /// Loads all TileType definitions in Data\ and Data\Mods
     /// </summary>
@@ -204,9 +223,6 @@ public class TileType : IXmlSerializable {
                     reader.Read();
                     Description = reader.ReadContentAsString();
                     break;
-                case "TypeTag":
-                    Debug.LogError("TODO: Should tiles have typeTags?");
-                    break;
                 case "BaseMovementCost":
                     reader.Read();
                     BaseMovementCost = reader.ReadContentAsFloat();
@@ -216,10 +232,37 @@ public class TileType : IXmlSerializable {
                     LinksToNeighbours = reader.ReadContentAsBoolean();
                     break;
                 case "BuildingJob":
-                    Debug.LogError("TODO: Building job for tiles!");
-                    break;
-                case "DeconstructionJob":
-                    Debug.LogError("TODO: Deconstruction job for tiles!");
+
+                    float jobTime = float.Parse(reader.GetAttribute("jobTime"));
+
+                    List<Inventory> invs = new List<Inventory>();
+
+                    XmlReader invs_reader = reader.ReadSubtree();
+
+                    while (invs_reader.Read())
+                    {
+                        if (invs_reader.Name == "Inventory")
+                        {
+                            // Found an inventory requirement, so add it to the list!
+                            invs.Add(new Inventory(
+                                    invs_reader.GetAttribute("objectType"),
+                                    int.Parse(invs_reader.GetAttribute("amount")),
+                                    0));
+                        }
+                    }
+                    
+                    Job j = new Job(
+                        null,
+                        this,
+                        Tile.ChangeTileTypeJobComplete,
+                        jobTime,
+                        invs.ToArray(),
+                        Job.JobPriority.High,
+                        false,
+                        true);
+                    
+                    tileTypeBuildJobPrototypes[this] = j;
+
                     break;
                 case "MovementCost":
                     string movementCostAttribute = reader.GetAttribute("FunctionName");

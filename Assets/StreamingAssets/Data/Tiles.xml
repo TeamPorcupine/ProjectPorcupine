@@ -5,13 +5,10 @@
     <Tile tileType="Empty">
         <Name>Empty</Name>
         <Description>This is a empty tile.</Description>
-        <TypeTag>Empty</TypeTag>
         <BaseMovementCost>1</BaseMovementCost>
         <LinksToNeighbours>false</LinksToNeighbours>
 
         <BuildingJob jobTime="0"></BuildingJob>
-
-        <DeconstructJob></DeconstructJob>
         
         <LocalizationCode>tile_Empty</LocalizationCode>
         <UnlocalizedDescription>tile_Empty_desc</UnlocalizedDescription>
@@ -20,16 +17,11 @@
      <Tile tileType="Floor">
         <Name>Floor</Name>
         <Description>This is a floor tile.</Description>
-        <TypeTag>Floor</TypeTag>
         <BaseMovementCost>1</BaseMovementCost>
         <LinksToNeighbours>false</LinksToNeighbours>
 
-        <BuildingJob jobTime="1">
-        </BuildingJob>
+        <BuildingJob jobTime="0.1"></BuildingJob>
 
-        <DeconstructJob>
-        </DeconstructJob>
-        
         <LocalizationCode>tile_Floor</LocalizationCode>
         <UnlocalizedDescription>tile_Floor_desc</UnlocalizedDescription>
     </Tile>
@@ -37,17 +29,14 @@
     <Tile tileType="Ladder">
         <Name>Ladder</Name>
         <Description>This is a ladder tile.</Description>
-        <TypeTag>Ladder</TypeTag>
         <BaseMovementCost>1.5</BaseMovementCost>
         <LinksToNeighbours>false</LinksToNeighbours>
 
         <CanPlaceHere FunctionName="CanBuildHere_Ladder"/>
 
-        <BuildingJob jobTime="1">
+        <BuildingJob jobTime="0.5">
+            <Inventory objectType="Steel Plate" amount="1" />
         </BuildingJob>
-
-        <DeconstructJob>
-        </DeconstructJob>
         
         <LocalizationCode>tile_Ladder</LocalizationCode>
         <UnlocalizedDescription>tile_Ladder_desc</UnlocalizedDescription>

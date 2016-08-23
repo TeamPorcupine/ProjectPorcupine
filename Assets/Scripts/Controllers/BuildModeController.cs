@@ -153,15 +153,9 @@ public class BuildModeController
                 // This tile position is valid tile type
 
                 // Create a job for it to be build
-                Job j = new Job(
-                    t,
-                    tileType, 
-                    Tile.ChangeTileTypeJobComplete, 
-                    0.1f, 
-                    null,
-                    Job.JobPriority.High, 
-                    false,
-                    true);
+                Job j = TileType.GetConstructionJobPrototype(tileType);
+                
+                j.tile = t;
 
                 // FIXME: I don't like having to manually and explicitly set
                 // flags that preven conflicts. It's too easy to forget to set/clear them!
