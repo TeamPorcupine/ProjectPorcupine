@@ -105,27 +105,8 @@ public class TileSpriteController
             Debug.LogError("tileGameObjectMap's returned GameObject is null -- did you forget to add the tile to the dictionary? Or maybe forget to unregister a callback?");
             return;
         }
-
-        if (tile_data.Type == TileType.Floor)
-        {
-            tile_go.GetComponent<SpriteRenderer>().sprite = SpriteManager.current.GetSprite("Tile", "Floor");
-        }
-        else if (tile_data.Type == TileType.Ladder)
-        {
-            tile_go.GetComponent<SpriteRenderer>().sprite = SpriteManager.current.GetSprite("Tile", "Ladder");
-        }
-        else if (tile_data.Type == TileType.Empty)
-        {
-            tile_go.GetComponent<SpriteRenderer>().sprite = SpriteManager.current.GetSprite("Tile", "Empty");
-        }
-        else
-        {
-            Debug.LogError("OnTileChanged - Unrecognized tile type.");
-        }
-
+        
+        tile_go.GetComponent<SpriteRenderer>().sprite = SpriteManager.current.GetSprite("Tile", tile_data.Type.Name);
 
     }
-
-
-
 }

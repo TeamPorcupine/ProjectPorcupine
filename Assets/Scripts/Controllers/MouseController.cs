@@ -17,7 +17,7 @@ public class MouseController
     private GameObject circleCursorPrefab;
     private GameObject cursorParent;
     private GameObject furnitureParent;
-    
+
     // The world-position of the mouse last frame.
     private Vector3 lastFramePosition;
     private Vector3 currFramePosition;
@@ -30,7 +30,7 @@ public class MouseController
     private BuildModeController bmc;
     private FurnitureSpriteController fsc;
     private MenuController menuController;
-    ContextMenu contextMenu;
+    private ContextMenu contextMenu;
 
     private bool isDragging = false;
 
@@ -70,6 +70,16 @@ public class MouseController
         return WorldController.Instance.GetTileAtWorldCoord(currFramePosition);
     }
 
+    public void StartBuildMode()
+    {
+        currentMode = MouseMode.BUILD;
+    }
+
+    public void StartSpawnMode()
+    {
+        currentMode = MouseMode.SPAWN_INVENTORY;
+    }
+
     // Update is called once per frame.
     public void Update(bool isModal)
     {
@@ -79,28 +89,11 @@ public class MouseController
             return;
         }
 
-        currFramePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        currFramePosition.z = 0;
+        UpdateCurrentFramePosition();
 
         CalculatePlacingPosition();
-
-        if (Input.GetKeyUp(KeyCode.Escape) || Input.GetMouseButtonUp(1))
-        {
-            if (currentMode == MouseMode.BUILD)
-            {
-                isDragging = false;
-                currentMode = MouseMode.SELECT;
-            }
-            else if (currentMode == MouseMode.SPAWN_INVENTORY)
-            {
-                currentMode = MouseMode.SELECT;
-            }
-            else if (currentMode == MouseMode.SELECT)
-            {
-                if (contextMenu != null)
-                    contextMenu.Open(GetMouseOverTile());
-            }
-        }
+        CheckModeChanges();
+        CheckIfContextMenuActivated();
 
         UpdateDragging();
         UpdateCameraMovement();
@@ -112,18 +105,50 @@ public class MouseController
 
         // Save the mouse position from this frame.
         // We don't use currFramePosition because we may have moved the camera.
+        StoreFramePosition();
+    }
+
+    private void UpdateCurrentFramePosition()
+    {
+        currFramePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        currFramePosition.z = 0;
+    }
+
+    private void CheckModeChanges()
+    {
+        if (Input.GetKeyUp(KeyCode.Escape) || Input.GetMouseButtonUp(1))
+        {
+            if (currentMode == MouseMode.BUILD)
+            {
+                isDragging = false;
+                currentMode = MouseMode.SELECT;
+            }
+            else if (currentMode == MouseMode.SPAWN_INVENTORY)
+            {
+                currentMode = MouseMode.SELECT;
+            }
+        }
+    }
+
+    private void CheckIfContextMenuActivated()
+    {
+        if (Input.GetKeyUp(KeyCode.Escape) || Input.GetMouseButtonUp(1))
+        {
+            // Is the context also supposed to open on ESCAPE? That seems wrong
+            if (currentMode == MouseMode.SELECT)
+            {
+                if (contextMenu != null)
+                {
+                    contextMenu.Open(GetMouseOverTile());
+                }
+            }
+        }
+    }
+
+    private void StoreFramePosition()
+    {
         lastFramePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         lastFramePosition.z = 0;
-    }
-
-    public void StartBuildMode()
-    {
-        currentMode = MouseMode.BUILD;
-    }
-
-    public void StartSpawnMode()
-    {
-        currentMode = MouseMode.SPAWN_INVENTORY;
     }
 
     private void CalculatePlacingPosition()
@@ -190,7 +215,9 @@ public class MouseController
         if (Input.GetMouseButtonUp(0))
         {
             if (contextMenu != null)
+            {
                 contextMenu.Close();
+            }
 
             // We just release the mouse button, so that's our queue to update our selection.
             Tile tileUnderMouse = GetMouseOverTile();
@@ -254,134 +281,23 @@ public class MouseController
 
     private void UpdateDragging()
     {
-        // Clean up old drag previews
-        while (dragPreviewGameObjects.Count > 0)
-        {
-            GameObject go = dragPreviewGameObjects[0];
-            dragPreviewGameObjects.RemoveAt(0);
-            SimplePool.Despawn(go);
-        }
+        CleanUpDragPreviews();
 
         if (currentMode != MouseMode.BUILD)
         {
             return;
         }
 
-        // Start Drag.
-        if (Input.GetMouseButtonDown(0))
-        {
-            dragStartPosition = currPlacingPosition;
-            isDragging = true;
-        }
-        else if (isDragging == false)
+        UpdateIsDragging();
+
+        if (isDragging == false || bmc.IsObjectDraggable() == false)
         {
             dragStartPosition = currPlacingPosition;
         }
 
-        if (Input.GetMouseButtonUp(1) || Input.GetKeyUp(KeyCode.Escape))
-        {
-            // The RIGHT mouse button was released, so we
-            // are cancelling any dragging/build mode.
-            isDragging = false;
-        }
+        DragParameters dragParams = GetDragParameters();
 
-        if (bmc.IsObjectDraggable() == false)
-        {
-            dragStartPosition = currPlacingPosition;
-        }
-
-        int start_x = Mathf.FloorToInt(dragStartPosition.x + 0.5f);
-        int end_x = Mathf.FloorToInt(currPlacingPosition.x + 0.5f);
-        int start_y = Mathf.FloorToInt(dragStartPosition.y + 0.5f);
-        int end_y = Mathf.FloorToInt(currPlacingPosition.y + 0.5f);
-
-        // Keep an un-flipped copy of start/end points
-        int raw_start_x = start_x;
-        int raw_end_x = end_x;
-        int raw_start_y = start_y;
-        int raw_end_y = end_y;
-
-        // We may be dragging in the "wrong" direction, so flip things if needed.
-        if (end_x < start_x)
-        {
-            int tmp = end_x;
-            end_x = start_x;
-            start_x = tmp;
-        }
-
-        if (end_y < start_y)
-        {
-            int tmp = end_y;
-            end_y = start_y;
-            start_y = tmp;
-        }
-
-        // Display a preview of the drag area.
-        for (int x = start_x; x <= end_x; x++)
-        {
-            for (int y = start_y; y <= end_y; y++)
-            {
-                Tile t = WorldController.Instance.world.GetTileAt(x, y);
-                if (t != null)
-                {
-                    // Display the building hint on top of this tile position.
-                    if (bmc.buildMode == BuildMode.FURNITURE)
-                    {
-                        Furniture proto = World.current.furniturePrototypes[bmc.buildModeObjectType];
-                        string dragType = proto.dragType;
-
-                        bool isValid = false;
-
-                        // Drag type validation.
-                        if (dragType == "border")
-                        {
-                            if (x == start_x || x == end_x || y == start_y || y == end_y)
-                            {
-                                isValid = true;
-                            } 
-                        }
-                        else if (dragType == "path")
-                        {
-                            bool xNeg = raw_start_x > raw_end_x ? true : false;
-
-                            if (xNeg && x >= raw_end_x && x <= raw_start_x)
-                            {
-                                if (y == raw_start_y || x == raw_end_x)
-                                {
-                                    isValid = true;
-                                }
-
-                            }
-                            else if (!xNeg && x <= raw_end_x && x >= raw_start_x)
-                            {
-                                if (y == raw_start_y || x == raw_end_x)
-                                {
-                                    isValid = true;
-                                }
-                            }
-    
-                        }
-                        else
-                        {
-                            isValid = true;
-                        }
-
-                        if (isValid)
-                        {
-                            ShowFurnitureSpriteAtTile(bmc.buildModeObjectType, t);
-                        }
-                    }
-                    else
-                    {
-                        // Show the generic dragging visuals.
-                        GameObject go = SimplePool.Spawn(circleCursorPrefab, new Vector3(x, y, 0), Quaternion.identity);
-                        go.transform.SetParent(cursorParent.transform, true);
-                        go.GetComponent<SpriteRenderer>().sprite = SpriteManager.current.GetSprite("UI", "CursorCircle");
-                        dragPreviewGameObjects.Add(go);
-                    }
-                }
-            }
-        }
+        ShowPreviews(dragParams);
 
         // End Drag.
         if (isDragging && Input.GetMouseButtonUp(0))
@@ -394,68 +310,120 @@ public class MouseController
                 return;
             }
 
-            // Loop through all the tiles
-            for (int x = start_x; x <= end_x; x++)
+            BuildOnDraggedTiles(dragParams);
+        }
+    }
+
+    private void CleanUpDragPreviews()
+    {
+        while (dragPreviewGameObjects.Count > 0)
+        {
+            GameObject go = dragPreviewGameObjects[0];
+            dragPreviewGameObjects.RemoveAt(0);
+            SimplePool.Despawn(go);
+        }
+    }
+
+    private void UpdateIsDragging()
+    {
+        // TODO Keyboard input does not belong in MouseController. Move to KeyboardController?
+        if (isDragging && (Input.GetMouseButtonUp(1) || Input.GetKeyDown(KeyCode.Escape)))
+        {
+            isDragging = false;
+        }
+        else if (isDragging == false && Input.GetMouseButtonDown(0))
+        {
+            isDragging = true;
+        }
+    }
+
+    private DragParameters GetDragParameters()
+    {
+        int startX = Mathf.FloorToInt(dragStartPosition.x + 0.5f);
+        int endX = Mathf.FloorToInt(currPlacingPosition.x + 0.5f);
+        int startY = Mathf.FloorToInt(dragStartPosition.y + 0.5f);
+        int endY = Mathf.FloorToInt(currPlacingPosition.y + 0.5f);
+        return new DragParameters(startX, endX, startY, endY);
+    }
+
+    private void ShowPreviews(DragParameters dragParams)
+    {
+        for (int x = dragParams.StartX; x <= dragParams.EndX; x++)
+        {
+            for (int y = dragParams.StartY; y <= dragParams.EndY; y++)
             {
-                for (int y = start_y; y <= end_y; y++)
+                Tile t = WorldController.Instance.world.GetTileAt(x, y);
+                if (t != null)
                 {
-                    Tile t = WorldController.Instance.world.GetTileAt(x, y);
+                    // Display the building hint on top of this tile position.
                     if (bmc.buildMode == BuildMode.FURNITURE)
                     {
-                        // Check for furniture dragType.
                         Furniture proto = World.current.furniturePrototypes[bmc.buildModeObjectType];
-                        string dragType = proto.dragType;
-
-                        bool isValid = false;
-
-                        // Drag type validation.
-                        if (dragType == "border")
+                        if (IsPartOfDrag(t, dragParams, proto.dragType))
                         {
-                            if (x == start_x || x == end_x || y == start_y || y == end_y)
-                            {
-                                isValid = true;
-                            } 
-                        } else if (dragType == "path")
-                        {
-                            bool xNeg = raw_start_x > raw_end_x ? true : false;
-
-                            if (xNeg && x >= raw_end_x && x <= raw_start_x)
-                            {
-                                if (y == raw_start_y || x == raw_end_x)
-                                {
-                                    isValid = true;
-                                }
-
-                            }
-                            else if (!xNeg && x <= raw_end_x && x >= raw_start_x)
-                            {
-                                if (y == raw_start_y || x == raw_end_x)
-                                {
-                                    isValid = true;
-                                }
-                            }
-
-                        }
-                        else
-                        {
-                            isValid = true;
-                        }
-
-                        if (isValid)
-                        {
-                            if (t != null)
-                            {
-                                // Call BuildModeController::DoBuild().
-                                bmc.DoBuild(t);
-                            }
+                            ShowFurnitureSpriteAtTile(bmc.buildModeObjectType, t);
                         }
                     }
                     else
                     {
-                        bmc.DoBuild(t);
+                        ShowGenericVisuals(x, y);
                     }
                 }
             }
+        }
+    }
+
+    private void ShowGenericVisuals(int x, int y)
+    {
+        GameObject go = SimplePool.Spawn(circleCursorPrefab, new Vector3(x, y, 0), Quaternion.identity);
+        go.transform.SetParent(cursorParent.transform, true);
+        go.GetComponent<SpriteRenderer>().sprite = SpriteManager.current.GetSprite("UI", "CursorCircle");
+        dragPreviewGameObjects.Add(go);
+    }
+
+    private void BuildOnDraggedTiles(DragParameters dragParams)
+    {
+        for (int x = dragParams.StartX; x <= dragParams.EndX; x++)
+        {
+            for (int y = dragParams.StartY; y <= dragParams.EndY; y++)
+            {
+                Tile t = WorldController.Instance.world.GetTileAt(x, y);
+                if (bmc.buildMode == BuildMode.FURNITURE)
+                {
+                    // Check for furniture dragType.
+                    Furniture proto = World.current.furniturePrototypes[bmc.buildModeObjectType];
+
+                    if (IsPartOfDrag(t, dragParams, proto.dragType))
+                    {
+                        if (t != null)
+                        {
+                            // Call BuildModeController::DoBuild().
+                            bmc.DoBuild(t);
+                        }
+                    }
+                }
+                else
+                {
+                    bmc.DoBuild(t);
+                }
+            }
+        }
+    }
+
+    // Checks whether a tile is valid for the drag type, given the drag parameters
+    // Returns true if tile should be included, false otherwise
+    private bool IsPartOfDrag(Tile tile, DragParameters dragParams, string dragType)
+    {
+        switch (dragType)
+        {
+            case "border":
+                return tile.X == dragParams.StartX || tile.X == dragParams.EndX || tile.Y == dragParams.StartY || tile.Y == dragParams.EndY;
+            case "path":
+                bool withinXBounds = dragParams.StartX <= tile.X && tile.X <= dragParams.EndX;
+                bool onPath = tile.Y == dragParams.RawStartY || tile.X == dragParams.RawEndX;
+                return withinXBounds && onPath;
+            default:
+                return true;
         }
     }
 
@@ -542,6 +510,38 @@ public class MouseController
         Furniture proto = World.current.furniturePrototypes[furnitureType];
 
         go.transform.position = new Vector3(t.X + ((proto.Width - 1) / 2f), t.Y + ((proto.Height - 1) / 2f), 0);
+    }
+
+    public class DragParameters
+    {
+        public DragParameters(int startX, int endX, int startY, int endY)
+        {
+            this.RawStartX = startX;
+            this.RawEndX = endX;
+            this.RawStartY = startY;
+            this.RawEndY = endY;
+
+            this.StartX = Mathf.Min(startX, endX);
+            this.EndX = Mathf.Max(startX, endX);
+            this.StartY = Mathf.Min(startY, endY);
+            this.EndY = Mathf.Max(startY, endY);
+        }
+
+        public int RawStartX { get; private set; }
+
+        public int RawEndX { get; private set; }
+
+        public int RawStartY { get; private set; }
+
+        public int RawEndY { get; private set; }
+
+        public int StartX { get; private set; }
+
+        public int EndX { get; private set; }
+
+        public int StartY { get; private set; }
+
+        public int EndY { get; private set; }
     }
 
     public class SelectionInfo
