@@ -169,7 +169,7 @@ public class MouseController
                     0);
             }
             else
-            {   
+            {
                 // Otherwise we use the center.
                 currPlacingPosition = new Vector3(
                     currFramePosition.x - ((World.current.furniturePrototypes[bmc.buildModeObjectType].Width - 1f) / 2f),
@@ -236,7 +236,7 @@ public class MouseController
                 RebuildSelectionStuffInTile();
 
                 // Select the first non-null entry.
-                for (int i = 0; i < mySelection.stuffInTile.Length; i++)
+                for (int i = 0; i < mySelection.stuffInTile.Count; i++)
                 {
                     if (mySelection.stuffInTile[i] != null)
                     {
@@ -255,7 +255,7 @@ public class MouseController
 
                 do
                 {
-                    mySelection.subSelection = (mySelection.subSelection + 1) % mySelection.stuffInTile.Length;
+                    mySelection.subSelection = (mySelection.subSelection + 1) % mySelection.stuffInTile.Count;
                 }
                 while (mySelection.stuffInTile[mySelection.subSelection] == null);
             }
@@ -264,19 +264,17 @@ public class MouseController
 
     private void RebuildSelectionStuffInTile()
     {
-        // Make sure stuffInTile is big enough to handle all the characters, plus the 3 extra values.
-        mySelection.stuffInTile = new ISelectable[mySelection.tile.Characters.Count + 3];
-
         // Copy the character references.
         for (int i = 0; i < mySelection.tile.Characters.Count; i++)
         {
-            mySelection.stuffInTile[i] = mySelection.tile.Characters[i];
+            mySelection.stuffInTile.Add(mySelection.tile.Characters[i]);
         }
 
         // Now assign references to the other three sub-selections available.
-        mySelection.stuffInTile[mySelection.stuffInTile.Length - 3] = mySelection.tile.Furniture;
-        mySelection.stuffInTile[mySelection.stuffInTile.Length - 2] = mySelection.tile.Inventory;
-        mySelection.stuffInTile[mySelection.stuffInTile.Length - 1] = mySelection.tile;
+        mySelection.stuffInTile.Add(mySelection.tile.Furniture);
+        mySelection.stuffInTile.Add(mySelection.tile.Inventory);
+        mySelection.stuffInTile.Add(mySelection.tile.PendingBuildJob);
+        mySelection.stuffInTile.Add(mySelection.tile);
     }
 
     private void UpdateDragging()
@@ -439,7 +437,7 @@ public class MouseController
             return;
         }
 
-        if (Input.GetMouseButtonUp(0)) 
+        if (Input.GetMouseButtonUp(0))
         {
             Tile t = GetMouseOverTile();
             WorldController.Instance.spawnInventoryController.SpawnInventory(t);
@@ -546,8 +544,12 @@ public class MouseController
 
     public class SelectionInfo
     {
+        public SelectionInfo()
+        {
+            stuffInTile = new List<ISelectable>();
+        }
         public Tile tile;
-        public ISelectable[] stuffInTile;
+        public List<ISelectable> stuffInTile;
         public int subSelection = 0;
     }
 }

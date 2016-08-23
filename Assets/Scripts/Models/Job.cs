@@ -11,13 +11,14 @@ using System.Collections.Generic;
 using System.Linq;
 using MoonSharp.Interpreter;
 using UnityEngine;
+using ProjectPorcupine.Localization;
 
 [MoonSharpUserData]
-public class Job
+public class Job : ISelectable
 {
-    public enum JobPriority 
+    public enum JobPriority
     {
-        High, Medium, Low 
+        High, Medium, Low
     }
 
     // This class holds info for a queued up job, which can include
@@ -73,7 +74,7 @@ public class Job
 
     // We have finished the work cycle and so things should probably get built or whatever.
     public event Action<Job> cbJobCompleted;
-   
+
     // The job has been stopped, either because it's non-repeating or was cancelled.
     private List<string> cbJobCompletedLua;
 
@@ -172,7 +173,7 @@ public class Job
     {
         return new Job(this);
     }
-    
+
     public void RegisterJobCompletedCallback(string cb)
     {
         cbJobCompletedLua.Add(cb);
@@ -182,7 +183,7 @@ public class Job
     {
         cbJobCompletedLua.Remove(cb);
     }
-    
+
     public void RegisterJobWorkedCallback(string cb)
     {
         cbJobWorkedLua.Add(cb);
@@ -219,7 +220,7 @@ public class Job
         }
 
         jobTime -= workTime;
-        
+
         if (jobTime <= 0)
         {
             // Do whatever is supposed to happen with a job cycle completes.
@@ -232,7 +233,7 @@ public class Job
             {
                 FurnitureActions.CallFunction(luaFunction, this);
             }
-            
+
             if (jobRepeats == false)
             {
                 // Let everyone know that the job is officially concluded
@@ -315,5 +316,27 @@ public class Job
     {
         // TODO: This casting to and from enums are a bit wierd. We should decide on ONE priority system.
         jobPriority = (JobPriority)Mathf.Min((int)JobPriority.Low, (int)jobPriority + 1);
+    }
+
+    public string GetName()
+    {
+        if (furniturePrototype != null)
+            return LocalizationTable.GetLocalization(furniturePrototype.GetName());
+        return jobObjectType;
+    }
+
+    public string GetDescription()
+    {
+        string result = "Requirements:\n";
+        foreach (Inventory inv in inventoryRequirements.Values)
+        {
+            result += "\t" + inv.GetName() + " " + inv.stackSize + "/" + inv.maxStackSize + "\n";
+        }
+        return result;
+    }
+
+    public string GetHitPointString()
+    {
+        return "";
     }
 }
