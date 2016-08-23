@@ -204,6 +204,18 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         protected set;
     }
 
+    public Parameter Parameters
+    {
+        get
+        {
+            return furnParameters;
+        }
+        private set
+        {
+            furnParameters = value;
+        }
+    }
+
     public event Action<Furniture> cbOnChanged;
 
     public event Action<Furniture> cbOnRemoved;
