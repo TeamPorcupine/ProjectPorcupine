@@ -29,9 +29,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     protected class EventAction
     {
         /// <summary>
-        /// Stores a list of LUA functions for each type of event (eventName). All will be called at once
+        /// Stores a list of LUA functions for each type of event (eventName). All will be called at once.
         /// </summary>
-        Dictionary<string, List<string>> actionsList = new Dictionary<string, List<string>>();
+        protected Dictionary<string, List<string>> actionsList = new Dictionary<string, List<string>>();
         
         /// <summary>
         /// Used to transfer registere actions to new object.
@@ -53,17 +53,20 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         public void ReadXml(XmlReader reader)
         {
             reader.Read();
-            if(reader.Name != "Action")
+            if( reader.Name != "Action" )
             {
                 Debug.LogError(string.Format("The element is not an Action, but a \"{0}\"", reader.Name));
             }
 
             string name = reader.GetAttribute("event");
-            if (name == null) {
+            if (name == null)
+            {
                 Debug.LogError(string.Format("The attribute \"event\" is a mandatory for an \"Action\" element."));
-             }
+            }
+
             string functionName = reader.GetAttribute("functionName");
-            if (functionName == null) {
+            if (functionName == null)
+            {
                 Debug.LogError(string.Format("No function name was provided for the Action {0}.", name));
             }
 
@@ -71,47 +74,56 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         }
 
         /// <summary>
-        /// Register a function named luaFunc, that gets fired in respnse to an action named actionName
+        /// Register a function named luaFunc, that gets fired in respnse to an action named actionName.
         /// </summary>
-        /// <param name="actionName">Name of event triggering action</param>
-        /// <param name="luaFunc">Lua function to add to list of actions</param>
+        /// <param name="actionName">Name of event triggering action.</param>
+        /// <param name="luaFunc">Lua function to add to list of actions.</param>
         public void Register(string actionName, string luaFunc)
         {
-            //Debug.Log(string.Format("Registering the LUA function {0} to Action {1}.", luaFunc, actionName));
-            if (!actionsList.ContainsKey(actionName) || actionsList[actionName] == null) actionsList[actionName] = new List<string>();
+            ////Debug.Log(string.Format("Registering the LUA function {0} to Action {1}.", luaFunc, actionName));
+            if (!actionsList.ContainsKey(actionName) || actionsList[actionName] == null)
+            {
+                actionsList[actionName] = new List<string>();
+            }
+
             actionsList[actionName].Add(luaFunc);
         }
 
         /// <summary>
-        /// Deregister a function named luaFunc, from the action
+        /// Deregister a function named luaFunc, from the action.
         /// </summary>
-        /// <param name="actionName">Name of event triggering action</param>
-        /// <param name="luaFunc">Lua function to add to list of actions</param>
+        /// <param name="actionName">Name of event triggering action.</param>
+        /// <param name="luaFunc">Lua function to add to list of actions.</param>
         public void Deregister(string actionName, string luaFunc)
         {
-            //Debug.Log(string.Format("Registering the LUA function {0} to Action {1}.", luaFunc, actionName));
-            if (!actionsList.ContainsKey(actionName) || actionsList[actionName] == null) return;
+            ////Debug.Log(string.Format("Registering the LUA function {0} to Action {1}.", luaFunc, actionName));
+            if (!actionsList.ContainsKey(actionName) || actionsList[actionName] == null)
+            {
+                return;
+            }
             actionsList[actionName].Remove(luaFunc);
         }
 
         /// <summary>
-        /// "Fire" the event named actionName, resulting in all lua functions being called
+        /// "Fire" the event named actionName, resulting in all lua functions being called.
         /// </summary>
-        /// <param name="actionName">Name of the action being triggered</param>
-        /// <param name="target">Object, passed to LUA function as 1-argument (TODO: make it an object)</param>
-        /// <param name="deltaTime">Time since last Trigger of this event</param>
+        /// <param name="actionName">Name of the action being triggered.</param>
+        /// <param name="target">Object, passed to LUA function as 1-argument (TODO: make it an object).</param>
+        /// <param name="deltaTime">Time since last Trigger of this event.</param>
         public void Trigger(string  actionName, Furniture target, float deltaTime = 0f )
         {
             if (!actionsList.ContainsKey(actionName) || actionsList[actionName] == null)
             {
-                //Debug.LogWarning(string.Format("The action \"{0}\" is associated with no LUA function.", actionName));
+                ////Debug.LogWarning(string.Format("The action \"{0}\" is associated with no LUA function.", actionName));
                 return;
             }
             else
             {
                 FurnitureActions.CallFunctionsWithFurniture(actionsList[actionName].ToArray(), target, deltaTime);
             }
+
         }
+
     }
 
     private float powerValue;
