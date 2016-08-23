@@ -19,7 +19,7 @@ using UnityEngine;
 /// InstalledObjects are things like walls, doors, and furniture (e.g. a sofa).
 /// </summary>
 [MoonSharpUserData]
-public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
+public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, IPowerRelated
 {
     private float powerValue;
     /// <summary>
@@ -834,4 +834,16 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
     }
 
     #endregion
+
+    public IEnumerable<ContextMenuAction> GetContextMenuActions(ContextMenu contextMenu)
+    {
+        yield return new ContextMenuAction
+        {
+            Text = "Deconstruct "+Name,
+            RequiereCharacterSelected = false,
+            Action = (ca, c) => Deconstruct()
+        };
+
+        //todo add a hook to LUA Action via the furniture.xml definition
+    }
 }
