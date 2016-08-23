@@ -39,19 +39,24 @@ public class CharacterAnimation
     {
         if (character.IsWalking)
         {
+            // character walking
             switch (character.Facing)
             {
                 case 0: // walk north
                     toggleAnimation(5, 6);
+                    renderer.flipX = false;
                     break;
                 case 1: // walk east
-                    toggleAnimation(3, 4); 
+                    toggleAnimation(3, 4);
+                    renderer.flipX = false;
                     break;
                 case 2: // walk south
                     toggleAnimation(7, 8);
+                    renderer.flipX = false;
                     break;
                 case 3: // walk west
-                    toggleAnimation(3, 4); //TODO: FLIP east sprite
+                    toggleAnimation(3, 4); // FLIP east sprite
+                    renderer.flipX = true;
                     break;
                 default:
                     break;
@@ -59,19 +64,24 @@ public class CharacterAnimation
         }
         else
         {
+            //character idle
             switch (character.Facing)
             {
                 case 0: // walk north
                     showSprite(2);
+                    renderer.flipX = false;
                     break;
                 case 1: // walk east
                     showSprite(1);
+                    renderer.flipX = false;
                     break;
                 case 2: // walk south
                     showSprite(0);
+                    renderer.flipX = false;
                     break;
                 case 3: // walk west
-                    showSprite(1); //TODO: FLIP east sprite
+                    showSprite(1); // FLIP east sprite
+                    renderer.flipX = true;
                     break;
                 default:
                     break;
@@ -93,11 +103,8 @@ public class CharacterAnimation
     }
 
     private void showSprite(int s)
-    {
-        if (currentFrame == 1)
-        {
-            renderer.sprite = sprites[s];
-        }
+    {        
+        renderer.sprite = sprites[s];                       
     }
 
     public void setSprites(Sprite[] s)

@@ -502,12 +502,13 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         }
         else if (NextTile.X < CurrTile.X)
         {
-            Facing = 4;
+            Facing = 3;
         }
         else 
         {
-            Facing = 3;
+            Facing = 2;
         }
+        
         // At this point we should have a valid nextTile to move to.
 
         // What's the total distance from point A to point B?
@@ -568,9 +569,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     {
         Update_DoJob(deltaTime);
 
-        Update_DoMovement(deltaTime);
-        
-        Facing = 3;
+        Update_DoMovement(deltaTime);                
         
         if (cbCharacterChanged != null)
         {

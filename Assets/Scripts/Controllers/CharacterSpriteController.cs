@@ -63,15 +63,15 @@ public class CharacterSpriteController
 
         c.animation = new CharacterAnimation(c, sr);
         Sprite[] sprites = {
-                SpriteManager.current.GetSprite("Character", "p1_idle_south"),
-                SpriteManager.current.GetSprite("Character", "p1_idle_east"),
-                SpriteManager.current.GetSprite("Character", "p1_idle_north"),
-                SpriteManager.current.GetSprite("Character", "p1_walk_east_01"),
-                SpriteManager.current.GetSprite("Character", "p1_walk_east_02"),
-                SpriteManager.current.GetSprite("Character", "p1_walk_north_01"),
-                SpriteManager.current.GetSprite("Character", "p1_walk_north_02"),
-                SpriteManager.current.GetSprite("Character", "p1_walk_south_01"),
-                SpriteManager.current.GetSprite("Character", "p1_walk_south_02")
+                SpriteManager.current.GetSprite("Character", "p1_nh_idle_south"),
+                SpriteManager.current.GetSprite("Character", "p1_nh_idle_east"),
+                SpriteManager.current.GetSprite("Character", "p1_nh_idle_north"),
+                SpriteManager.current.GetSprite("Character", "p1_nh_walk_east_01"),
+                SpriteManager.current.GetSprite("Character", "p1_nh_walk_east_02"),
+                SpriteManager.current.GetSprite("Character", "p1_nh_walk_north_01"),
+                SpriteManager.current.GetSprite("Character", "p1_nh_walk_north_02"),
+                SpriteManager.current.GetSprite("Character", "p1_nh_walk_south_01"),
+                SpriteManager.current.GetSprite("Character", "p1_nh_walk_south_02")
         };
         c.animation.setSprites(sprites);
         
