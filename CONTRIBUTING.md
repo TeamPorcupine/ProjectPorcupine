@@ -146,7 +146,7 @@ Additionally, for the sake of simplicity, we are standardizing on what should be
 
 * Include screenshots demonstrating your change if applicable. All UI changes should include screenshots.
 
-* If you want to help with localization of the project you can submit your work over at [Localization Repo](https://github.com/QuiZr/ProjectPorcupineLocalization)
+* If you want to help with localization of the project you can submit your work over at [Localization Repo](https://github.com/QuiZr/ProjectPorcupineLocalization/tree/Someone_will_come_up_with_a_proper_naming_scheme_later)
 
 That's it! Following these guidelines will ensure that your additions are approved quickly and integrated into the project. Thanks for your contribution!
 
