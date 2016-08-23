@@ -138,6 +138,15 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     // The item we are carrying (not gear/equipment)
     public Inventory inventory;
 
+    // holds all character animations
+    public CharacterAnimation animation;
+
+    // is the character walking or idle
+    public bool IsWalking;
+
+    // 0=north, 1=east, 2=south, 3=west
+    public int Facing;
+
     /// Use only for serialization
     public Character()
     {
@@ -329,7 +338,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 // Walk towards a tile containing the required goods.
                 Debug.Log("Walk to the stuff");
                 Debug.Log(myJob.canTakeFromStockpile);
-
+                
                 // Find the first thing in the Job that isn't satisfied.
                 Inventory desired = myJob.GetFirstDesiredInventory();
 
@@ -445,9 +454,10 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         if (CurrTile == DestTile)
         {
             pathAStar = null;
+            IsWalking = false;
             return; // We're already were we want to be.
         }
-
+        
         // currTile = The tile I am currently in (and may be in the process of leaving)
         // nextTile = The tile I am currently entering
         // destTile = Our final destination -- we never walk here directly, but instead use it for the pathfinding
@@ -469,15 +479,35 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 NextTile = pathAStar.Dequeue();
             }
 
+            IsWalking = true;
+
             // Grab the next waypoint from the pathing system!
             NextTile = pathAStar.Dequeue();
 
             if (NextTile == CurrTile)
             {
+                IsWalking = false;
                 // Debug.LogError("Update_DoMovement - nextTile is currTile?");
             }
         }
 
+        // Find character facing
+        if (NextTile.X > CurrTile.X)
+        {
+            Facing = 1;
+        }
+        else if (NextTile.Y > CurrTile.Y)
+        {
+            Facing = 0;
+        }
+        else if (NextTile.X < CurrTile.X)
+        {
+            Facing = 4;
+        }
+        else 
+        {
+            Facing = 3;
+        }
         // At this point we should have a valid nextTile to move to.
 
         // What's the total distance from point A to point B?
@@ -539,11 +569,16 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         Update_DoJob(deltaTime);
 
         Update_DoMovement(deltaTime);
-
+        
+        Facing = 3;
+        
         if (cbCharacterChanged != null)
         {
-            cbCharacterChanged(this);
+            cbCharacterChanged(this);            
         }
+
+        animation.Update(deltaTime);
+
     }
 
     private void OnJobStopped(Job j)
