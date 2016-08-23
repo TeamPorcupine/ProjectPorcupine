@@ -64,9 +64,9 @@ public class Need {
     public void Update (float deltaTime)
     {
         Amount += growthRate * deltaTime;
-        if (character != null && character.CurrTile.room != null && character.CurrTile.room.GetGasPressure ("O2") < 0.15)
+        if (character != null && character.CurrTile.Room != null && character.CurrTile.Room.GetGasPressure ("O2") < 0.15)
         {
-            Amount += (addedInVacuum - (addedInVacuum * (character.CurrTile.room.GetGasPressure ("O2") * 5))) * deltaTime;
+            Amount += (addedInVacuum - (addedInVacuum * (character.CurrTile.Room.GetGasPressure ("O2") * 5))) * deltaTime;
         }
         if (Amount > 75 && character.myJob.isNeed == false)
         {

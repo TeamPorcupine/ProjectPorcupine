@@ -709,7 +709,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                     }
                     else
                     {
-                        Logger.LogError("Character.ReadXml() expected an int when deserializing needs");
+                        Debug.LogError("Character.ReadXml() expected an int when deserializing needs");
                     }
                 }
             }

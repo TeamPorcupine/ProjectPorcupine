@@ -104,7 +104,7 @@ public class Path_AStar
             {
                 // We don't have a POSITIONAL goal, we're just trying to find
                 // some kind of inventory or furniture.  Have we reached it?
-                if (current.data.inventory != null && current.data.inventory.objectType == objectType && lookingForFurn == false && current.data.inventory.isLocked == false)
+                if (current.data.Inventory != null && current.data.Inventory.objectType == objectType && lookingForFurn == false && current.data.Inventory.isLocked == false)
                 {
                     // Type is correct and we are allowed to pick it up
                     if (canTakeFromStockpile || current.data.Furniture == null || current.data.Furniture.IsStockpile() == false)
@@ -114,7 +114,7 @@ public class Path_AStar
                         return;
                     }
                 }
-                if (current.data.furniture != null && current.data.furniture.objectType == objectType && lookingForFurn)
+                if (current.data.Furniture != null && current.data.Furniture.objectType == objectType && lookingForFurn)
                 {
                     // Type is correct
                     reconstruct_path(Came_From, current);
