@@ -407,7 +407,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 // Walk towards a tile containing the required goods.
                 Debug.Log("Walk to the stuff");
                 Debug.Log(myJob.canTakeFromStockpile);
-                
+
                 // Find the first thing in the Job that isn't satisfied.
                 Inventory desired = myJob.GetFirstDesiredInventory();
 
@@ -537,7 +537,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             IsWalking = false;
             return; // We're already were we want to be.
         }
-        
+
         // currTile = The tile I am currently in (and may be in the process of leaving)
         // nextTile = The tile I am currently entering
         // destTile = Our final destination -- we never walk here directly, but instead use it for the pathfinding
@@ -649,8 +649,8 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     {
         Update_DoJob(deltaTime);
 
-        Update_DoMovement(deltaTime);                
-        
+        Update_DoMovement(deltaTime);
+
         if (cbCharacterChanged != null)
         {
             cbCharacterChanged(this);            
