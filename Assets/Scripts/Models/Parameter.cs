@@ -7,8 +7,11 @@ using System.Linq;
 
 [MoonSharpUserData]
 public class Parameter {
+    // Name is primarily to simplify writing to XML, and will be the same as the key used to access it in a higher up Parameter when read from XML
     private string name;
+    // Value is stored as a string and converted as needed, this simplifies storing multiple value types.
     private string value;
+    // If this Parameter contains other Parameters, contents will contain the actual parameters
     private Dictionary<string, Parameter> contents;
 
     public Parameter(string name, string value) 
@@ -17,21 +20,22 @@ public class Parameter {
         this.value = value;
     }
 
-
+    // Constructor with object parameter allows it to easily create a Parameter with any object that has a string representation (primarily for use if that string
+    //  representation can be converted back to the original value, such as with a float. Not suitable for holding a Parameter object.
     public Parameter(string name, object value) 
     {
         this.name = name;
         this.value = value.ToString();
     }
 
-
+    // Parameter with no value assumes it is being used for Parameter with contents, and initialized the dictionary
     public Parameter(string name) 
     {
         this.name = name;
         contents = new Dictionary<string, Parameter>();
     }
 
-
+    // Copy constructur, should properly handle copying both types of Parameters (singular and group)
     public Parameter(Parameter other)
     {
         this.name = other.GetName();
@@ -42,6 +46,7 @@ public class Parameter {
         this.value = other.ToString();
     }
 
+    // Iterator to simplify usage, this works properly in Lua
     public Parameter this[string key]
     {
         get
@@ -55,6 +60,7 @@ public class Parameter {
     }
 
 
+    // Provides a deep clone of the dictionary, to ensure contained Parameters aren't linked between old and new objects
     private Dictionary<string, Parameter> GetDictionary()
     {
         return contents.ToDictionary(entry => entry.Key, 
@@ -84,6 +90,7 @@ public class Parameter {
         this.value = value.ToString();
     }
 
+    // Change value by a float, primarily here to approximate old parameter system usage
     public void ChangeFloatValue(float value)
     {
         this.value = "" + (ToFloat() + value);
@@ -94,6 +101,7 @@ public class Parameter {
         return name;
     }
 
+    // Converts contents Keys from KeyCollection to plain array
     public string[] Keys()
     {
         string[] keys = new string[contents.Keys.Count];
@@ -111,6 +119,7 @@ public class Parameter {
         contents[parameter.GetName()] = parameter;
     }
 
+    // Primary method to differentiate an unknown Parameter between a singular Parameter and Group Parameter
     public bool HasContents() 
     {
         return contents != null;
@@ -119,7 +128,7 @@ public class Parameter {
     public void WriteXmlParamGroup(XmlWriter writer)
     {
 
-        writer.WriteStartElement("ParamGroup");
+        writer.WriteStartElement("Param");
         writer.WriteAttributeString("name", name);
         if (!value.Equals(""))
         {
@@ -156,70 +165,38 @@ public class Parameter {
 
     public static Parameter ReadXml(XmlReader reader)
     {
-        //        Debug.Log("**PROPER RELOAD**");
-        int cycleCount = 0;
-        //        while (!(reader.IsStartElement()) && cycleCount <40)
-        //        {
-        //            //            reader.MoveToContent();
-        //            reader.Skip();
-        //            reader.Read();
-        //            //            reader.ReadStartElement();
-        //            Debug.Log(cycleCount + ": " + reader.NodeType);
-        //            cycleCount++;
-        //        }
         XmlReader subReader = reader.ReadSubtree();
         Parameter paramGroup = new Parameter(subReader.GetAttribute("name"));
 
-        // Advance to the first inner element
+        // Advance to the first inner element. Two reads are needed to ensure we don't get stuck on containing Element, or an EndElement
         subReader.Read();
         subReader.Read();
-        //        int i = 0;
 
         while(subReader.ReadToNextSibling("Param"))
         {
-            //            Debug.Log(subReader.Name);
-            //            return paramGroup;
             string k = subReader.GetAttribute("name");
+            // Sometimes the look will get stuck on a Whitespace or an EndElement and error, so continue to next loop if we encounter one
             if (subReader.NodeType == XmlNodeType.Whitespace || subReader.NodeType ==  XmlNodeType.EndElement)
                 continue;
-
-
+            // Somewhat redundant check to make absolutely sure we're on an Element
             if (subReader.NodeType == XmlNodeType.Element)
             {
+                // An empty element is a singular Param such as <Param name="name" value="value />
                 if (subReader.IsEmptyElement)
                 {
                     string v = subReader.GetAttribute("value");
                     paramGroup[k] = new Parameter(k, v);
 
                 }
+                // This must be a group element, so we recurse and dive deeper
                 else
                 {
                     paramGroup[k] = Parameter.ReadXml(subReader);
 
                 }
             }
-            //            switch (reader.Name)
-            //            {
-            //                case "Param":
-            //                    //                    reader.Read();
-            //                    string v = subReader.GetAttribute("value");
-            //                    paramGroup[k] = new Parameter(k,v);
-            //
-            //                    Debug.Log(i + "Cycle Mid");
-            //                    break;
-            //                case "ParamGroup":
-            //                    paramGroup[k] = Parameter.ReadXml(subReader);
-            //
-            //                    Debug.Log(i + "Cycle Mid");
-            //                    break;
-            //            }
-            //            Debug.Log(i + "Cycle End");
         }
         subReader.Close();
-        // Advance reader past the end element
-        //        Debug.Log("EndTag: " + reader.Name);
-        //        Debug.Log("PostEndTag: " + reader.Name);
-        //        Debug.Log("We really should print here!");
         return paramGroup;
     }
 }

@@ -24,9 +24,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     private float powerValue;
     /// <summary>
     /// Custom parameter for this particular piece of furniture.  We are
-    /// using a dictionary because later, custom LUA function will be
-    /// able to use whatever parameters the user/modder would like.
-    /// Basically, the LUA code will bind to this dictionary.
+    /// using a custom Parameter class because later, custom LUA function will be
+    /// able to use whatever parameters the user/modder would like, and contain strings or floats.
+    /// Basically, the LUA code will bind to this Parameter.
     /// </summary>
     protected Parameter furnParameters;
 
@@ -431,15 +431,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         writer.WriteAttributeString("X", tile.X.ToString());
         writer.WriteAttributeString("Y", tile.Y.ToString());
         writer.WriteAttributeString("objectType", objectType);
-        // writer.WriteAttributeString( "movementCost", movementCost.ToString() );
+        // Let the Parameters handle their own xml
         furnParameters.WriteXml(writer);
-        //        foreach (string k in furnParameters.Keys)
-        //        {
-        //            writer.WriteStartElement("Param");
-        //            writer.WriteAttributeString("name", k);
-        //            writer.WriteAttributeString("value", furnParameters[k].ToString());
-        //            writer.WriteEndElement();
-        //        }
     }
 
     public void ReadXmlPrototype(XmlReader reader_parent)
@@ -585,8 +578,6 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         // X, Y, and objectType have already been set, and we should already
         // be assigned to a tile.  So just read extra data.
 
-        ////movementCost = int.Parse( reader.GetAttribute("movementCost") );
-
         ReadXmlParams(reader);
     }
 
@@ -595,17 +586,14 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         // X, Y, and objectType have already been set, and we should already
         // be assigned to a tile.  So just read extra data.
 
-        ////movementCost = int.Parse( reader.GetAttribute("movementCost") );
-
         furnParameters = Parameter.ReadXml(reader);
     }
 
     /// <summary>
-    /// Gets the custom furniture parameter from a string key.
+    /// Gets the furniture's Parameter structure from a string key.
     /// </summary>
-    /// <returns>The parameter value (float).</returns>
+    /// <returns>The Parameter value..</returns>
     /// <param name="key">Key string.</param>
-    /// <param name="default_value">Default value.</param>
     public Parameter GetParameters() {
         return furnParameters;
     }
