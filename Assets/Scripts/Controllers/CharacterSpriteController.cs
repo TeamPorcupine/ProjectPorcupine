@@ -35,7 +35,6 @@ public class CharacterSpriteController
             OnCharacterCreated(c);
         }
 
-
         //c.SetDestination( world.GetTileAt( world.Width/2 + 5, world.Height/2 ) );
     }
 
@@ -58,20 +57,22 @@ public class CharacterSpriteController
 
         SpriteRenderer sr = char_go.AddComponent<SpriteRenderer>();        
         sr.sortingLayerName = "Characters";
-        sr.color = c.GetCharacterColor();
-
+        
         c.animation = new CharacterAnimation(c, sr);
-        Sprite[] sprites = {
-                SpriteManager.current.GetSprite("Character", "p1_nh_idle_south"),
-                SpriteManager.current.GetSprite("Character", "p1_nh_idle_east"),
-                SpriteManager.current.GetSprite("Character", "p1_nh_idle_north"),
-                SpriteManager.current.GetSprite("Character", "p1_nh_walk_east_01"),
-                SpriteManager.current.GetSprite("Character", "p1_nh_walk_east_02"),
-                SpriteManager.current.GetSprite("Character", "p1_nh_walk_north_01"),
-                SpriteManager.current.GetSprite("Character", "p1_nh_walk_north_02"),
-                SpriteManager.current.GetSprite("Character", "p1_nh_walk_south_01"),
-                SpriteManager.current.GetSprite("Character", "p1_nh_walk_south_02")
-        };
+        
+        // load all character sprites and change colors
+        Sprite[] sprites = 
+            {
+                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p1_nh_idle_south"), c.GetCharacterColor()),
+                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p1_nh_idle_east"), c.GetCharacterColor()),
+                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p1_nh_idle_north"), c.GetCharacterColor()),
+                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p1_nh_walk_east_01"), c.GetCharacterColor()),
+                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p1_nh_walk_east_02"), c.GetCharacterColor()),
+                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p1_nh_walk_north_01"), c.GetCharacterColor()),
+                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p1_nh_walk_north_02"), c.GetCharacterColor()),
+                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p1_nh_walk_south_01"), c.GetCharacterColor()),
+                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p1_nh_walk_south_02"), c.GetCharacterColor())
+            };
         c.animation.SetSprites(sprites);
         
         // Add the inventory sprite onto the character
@@ -96,6 +97,52 @@ public class CharacterSpriteController
         // the object's into changes.
         c.cbCharacterChanged += OnCharacterChanged;
         
+    }
+
+    // change relevant pixels in sprite and return a colorized version.
+    private Sprite ReplaceSpriteColor(Sprite sprite, Color32 newColor)
+    {
+        Texture2D newTexture = CopyTexture2D(sprite.texture, newColor);
+        Sprite s = Sprite.Create(newTexture, sprite.textureRect, new Vector2(0.5f, 0.3f), sprite.pixelsPerUnit);
+        return s;
+    }
+
+    private Texture2D CopyTexture2D(Texture2D fromTexture, Color32 newColor)
+    {
+        Texture2D texture = new Texture2D(fromTexture.width, fromTexture.height);
+        texture.filterMode = fromTexture.filterMode;
+        texture.wrapMode = fromTexture.wrapMode;
+
+        Color[] pixelColors = fromTexture.GetPixels(0, 0, fromTexture.width, fromTexture.height);
+
+        Color32 fromColorMain = new Color32(71, 86, 163, 255);
+        Color32 fromColorLight = new Color32(142, 154, 212, 255);
+        Color32 fromColorDark = new Color32(42, 56, 126, 255);
+
+        Color newColorLight = Color32.Lerp(newColor, new Color32(255, 255, 255, 255),0.5f);
+        Color newColorDark = Color32.Lerp(newColor, new Color32(0, 0, 0, 255),0.5f);
+        
+        int y = 0;
+        while (y < pixelColors.Length)
+        {
+            if (pixelColors[y] == fromColorMain)
+            {
+                pixelColors[y] = newColor;                
+            }
+            else if (pixelColors[y] == fromColorLight)
+            {
+                pixelColors[y] = newColorLight;
+            }
+            else if (pixelColors[y] == fromColorDark)
+            {
+                pixelColors[y] = newColorDark;
+            }
+            ++y;
+        }
+
+        texture.SetPixels(pixelColors);
+        texture.Apply();
+        return texture;
     }
 
     void OnCharacterChanged(Character c)
