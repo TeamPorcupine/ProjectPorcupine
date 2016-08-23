@@ -79,7 +79,7 @@ namespace ProjectPorcupine.Localization
         {
             try
             {
-                if(localizationTable.ContainsKey(Localization) == false) {
+                if(localizationTable.ContainsKey(localizationCode) == false) {
                     localizationTable[localizationCode] = new Dictionary<string, string>();
                 }
 
