@@ -792,12 +792,10 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     {
         if (myJob == null)
         {
-            return "No job";
+            return "job_no_job_desc";
         }
-
         return myJob.JobDescription;
     }
-
     #endregion
 
     Color characterColor;

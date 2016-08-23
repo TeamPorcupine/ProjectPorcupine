@@ -123,7 +123,6 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
     {
         return string.Empty;  // Does inventory have hitpoints? How does it get destroyed? Maybe it's just a percentage chance based on damage.
     }
-
     #endregion
 
     #region IXmlSerializable implementation

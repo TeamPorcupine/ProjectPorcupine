@@ -89,7 +89,6 @@ public class Job
     public Dictionary<string, Inventory> inventoryRequirements;
     
     public string JobDescription { get; set; }
-    
 
     /// <summary>
     /// If true, the work will be carried out on any adjacent tile of the target tile rather than on it.
