@@ -16,6 +16,7 @@ public class ConstructionMenu : MonoBehaviour
     // The sub menus of the build menu (furniture, floor..... later - power, security, drones).
     public GameObject furnitureMenu;
     public GameObject floorMenu;
+    public GameObject removeFurniture;
 
     public Button buttonFloors;
     public Button buttonFurniture;

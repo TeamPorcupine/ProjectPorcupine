@@ -14,18 +14,6 @@ using System.Xml.Schema;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
 
-
-// TileType is the base type of the tile. In some tile-based games, that might be
-// the terrain type. For us, we only need to differentiate between empty space
-// and floor (a.k.a. the station structure/scaffold). Walls/Doors/etc... will be
-// InstalledObjects sitting on top of the floor.
-public enum TileType
-{
-    Empty,
-    Floor,
-    Ladder
-};
-
 public enum ENTERABILITY
 {
     Yes,
@@ -78,10 +66,6 @@ public class Tile :IXmlSerializable, ISelectable
 
     public int Y { get; protected set; }
 
-    // FIXME: This is just hardcoded for now.  Basically just a reminder of something we
-    // might want to do more with in the future.
-    const float baseTileMovementCost = 1;
-
     public float MovementCost
     {
         get
@@ -90,28 +74,8 @@ public class Tile :IXmlSerializable, ISelectable
             // TODO: Permanent solution for handeling when a character can walk in empty tiles is required
             //if (Type == TileType.Empty)
             //    return 0;	// 0 is unwalkable
-
-            if(Type == TileType.Empty)
-            {
-                Tile[] ns = GetNeighbours();
-
-                bool canMove = false;
-
-                // Loop through all the horizontal/vertical neighbours of the empty tile.
-                foreach (Tile n in ns)
-                {
-                    // If the neighbour is a floor tile, set canMove to true.
-                    canMove = canMove || (n != null && (n.Type == TileType.Floor || n.Type == TileType.Ladder));
-                }
-
-                // If canMove is true, return baseTileMovementCost, else, return 0f.
-                return canMove ? baseTileMovementCost : 0f;
-            }
-
-            if (Furniture == null)
-                return baseTileMovementCost;
-
-            return baseTileMovementCost * Furniture.movementCost;
+            
+            return (float) FurnitureActions.CallFunction(Type.MovementCostLua, this).Number;
         }
     }
 
@@ -320,7 +284,7 @@ public class Tile :IXmlSerializable, ISelectable
         writer.WriteAttributeString("X", X.ToString());
         writer.WriteAttributeString("Y", Y.ToString());
         writer.WriteAttributeString("RoomID", Room == null ? "-1" : Room.ID.ToString());
-        writer.WriteAttributeString("Type", ((int)Type).ToString());
+        writer.WriteAttributeString("Type", Type.Type);
     }
 
     public void ReadXml(XmlReader reader)
@@ -333,7 +297,7 @@ public class Tile :IXmlSerializable, ISelectable
             Room.AssignTile(this);
         }
 
-        Type = (TileType)int.Parse(reader.GetAttribute("Type"));
+        Type = TileType.GetTileType(reader.GetAttribute("Type"));
 
 
     }
