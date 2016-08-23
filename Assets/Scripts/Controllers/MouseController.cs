@@ -205,7 +205,7 @@ public class MouseController
         if (Input.GetMouseButtonDown(1))
         {
             Tile tileUnderMouse = GetMouseOverTile();
-            if(tileUnderMouse != null)
+            if (tileUnderMouse != null)
             {
                 if (tileUnderMouse.PendingBuildJob != null)
                 {
@@ -213,7 +213,6 @@ public class MouseController
                     tileUnderMouse.PendingBuildJob.CancelJob();
                 }
             }
-
         }
 
         if (Input.GetMouseButtonUp(0))
