@@ -33,8 +33,25 @@ namespace ProjectPorcupine.Localization
             // Update localization from the internet.
             StartCoroutine(LocalizationDownloader.CheckIfCurrentLocalizationIsUpToDate());
 
+            LoadLocalizationInDirectory(Application.streamingAssetsPath);
+
+            // Attempt to get setting of currently selected language. (Will default to English).
+            string lang = Settings.getSetting("localization", "en_US");
+
+            // Setup LocalizationTable with either loaded or defaulted language
+            LocalizationTable.currentLanguage = lang;
+
+            // Tell the LocalizationTable that it has been initialized.
+            LocalizationTable.initialized = true;
+        }
+
+        /// <summary>
+        /// Loads the localization in directory.
+        /// </summary>
+        /// <param name="path">Arbitrary path to load Localization files from</param>
+        private void LoadLocalizationInDirectory(string path) {
             // Get the file path.
-            string filePath = Path.Combine(Application.streamingAssetsPath, "Localization");
+            string filePath = Path.Combine(path, "Localization");
 
             // Loop through all files.
             foreach (string file in Directory.GetFiles(filePath))
@@ -50,15 +67,6 @@ namespace ProjectPorcupine.Localization
                     Debug.Log("Loaded localization at path\n" + file);
                 }
             }
-
-            // Attempt to get setting of currently selected language. (Will default to English).
-            string lang = Settings.getSetting("localization", "en_US");
-
-            // Setup LocalizationTable with either loaded or defaulted language
-            LocalizationTable.currentLanguage = lang;
-
-            // Tell the LocalizationTable that it has been initialized.
-            LocalizationTable.initialized = true;
         }
     }
 }
