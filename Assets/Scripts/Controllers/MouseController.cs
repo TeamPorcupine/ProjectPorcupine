@@ -30,7 +30,7 @@ public class MouseController
     private BuildModeController bmc;
     private FurnitureSpriteController fsc;
     private MenuController menuController;
-    ContextMenu contextMenu;
+    private ContextMenu contextMenu;
 
     private bool isDragging = false;
 
@@ -138,7 +138,9 @@ public class MouseController
             if (currentMode == MouseMode.SELECT)
             {
                 if (contextMenu != null)
+                {
                     contextMenu.Open(GetMouseOverTile());
+                }
             }
         }
     }
@@ -213,7 +215,9 @@ public class MouseController
         if (Input.GetMouseButtonUp(0))
         {
             if (contextMenu != null)
+            {
                 contextMenu.Close();
+            }
 
             // We just release the mouse button, so that's our queue to update our selection.
             Tile tileUnderMouse = GetMouseOverTile();
@@ -286,9 +290,8 @@ public class MouseController
 
         UpdateIsDragging();
 
-        if(isDragging == false || bmc.IsObjectDraggable() == false)
+        if (isDragging == false || bmc.IsObjectDraggable() == false)
         {
-            Debug.Log("Not dragging");
             dragStartPosition = currPlacingPosition;
         }
 
@@ -328,7 +331,7 @@ public class MouseController
         {
             isDragging = false;
         }
-        else if(isDragging == false && Input.GetMouseButtonDown(0))
+        else if (isDragging == false && Input.GetMouseButtonDown(0))
         {
             isDragging = true;
         }
@@ -336,8 +339,6 @@ public class MouseController
 
     private DragParameters GetDragParameters()
     {
-        Debug.Log(dragStartPosition + ", " + currPlacingPosition);
-
         int startX = Mathf.FloorToInt(dragStartPosition.x + 0.5f);
         int endX = Mathf.FloorToInt(currPlacingPosition.x + 0.5f);
         int startY = Mathf.FloorToInt(dragStartPosition.y + 0.5f);
@@ -358,7 +359,7 @@ public class MouseController
                     if (bmc.buildMode == BuildMode.FURNITURE)
                     {
                         Furniture proto = World.current.furniturePrototypes[bmc.buildModeObjectType];
-                        if(IsPartOfDrag(t, dragParams, proto.dragType))
+                        if (IsPartOfDrag(t, dragParams, proto.dragType))
                         {
                             ShowFurnitureSpriteAtTile(bmc.buildModeObjectType, t);
                         }
@@ -413,7 +414,7 @@ public class MouseController
     // Returns true if tile should be included, false otherwise
     private bool IsPartOfDrag(Tile tile, DragParameters dragParams, string dragType)
     {
-        switch(dragType)
+        switch (dragType)
         {
             case "border":
                 return tile.X == dragParams.StartX || tile.X == dragParams.EndX || tile.Y == dragParams.StartY || tile.Y == dragParams.EndY;
@@ -513,15 +514,6 @@ public class MouseController
 
     public class DragParameters
     {
-        public int RawStartX { get; private set; }
-        public int RawEndX { get; private set; }
-        public int RawStartY { get; private set; }
-        public int RawEndY { get; private set; }
-        public int StartX { get; private set; }
-        public int EndX { get; private set; }
-        public int StartY { get; private set; }
-        public int EndY { get; private set; }
-
         public DragParameters(int startX, int endX, int startY, int endY)
         {
             this.RawStartX = startX;
@@ -533,10 +525,23 @@ public class MouseController
             this.EndX = Mathf.Max(startX, endX);
             this.StartY = Mathf.Min(startY, endY);
             this.EndY = Mathf.Max(startY, endY);
-
-            Debug.Log("Drag params: (" + StartX + "," + StartY + ") - (" + EndX + "," + EndY + ")");
-
         }
+
+        public int RawStartX { get; private set; }
+
+        public int RawEndX { get; private set; }
+
+        public int RawStartY { get; private set; }
+
+        public int RawEndY { get; private set; }
+
+        public int StartX { get; private set; }
+
+        public int EndX { get; private set; }
+
+        public int StartY { get; private set; }
+
+        public int EndY { get; private set; }
     }
 
     public class SelectionInfo
