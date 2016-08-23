@@ -3,6 +3,7 @@ using System.Collections;
 using System.Xml;
 using System.Collections.Generic;
 using MoonSharp.Interpreter;
+using System.Linq;
 
 [MoonSharpUserData]
 public class Parameter {
@@ -34,7 +35,11 @@ public class Parameter {
     public Parameter(Parameter other)
     {
         this.name = other.GetName();
-        this.contents = new Dictionary<string, Parameter>(other.GetDictionary());
+        if (other.HasContents())
+        {
+            this.contents = other.GetDictionary();
+        }
+        this.value = other.ToString();
     }
 
     public Parameter this[string key]
@@ -52,7 +57,9 @@ public class Parameter {
 
     private Dictionary<string, Parameter> GetDictionary()
     {
-        return contents;
+        return contents.ToDictionary(entry => entry.Key, 
+            entry => new Parameter((Parameter) entry.Value));
+//        return new Dictionary<string, Parameter>(contents);
     }
 
     public string ToString() 
