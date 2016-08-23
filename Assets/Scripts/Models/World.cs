@@ -311,22 +311,51 @@ public class World : IXmlSerializable
         }
     }
 
+	void LoadNeedLua(string filePath)
+	{
+		string myLuaCode = System.IO.File.ReadAllText(filePath);
 
+		// Instantiate the singleton
+
+		NeedActions.addScript(myLuaCode);
+	}
 
     void CreateNeedPrototypes()
+	{
+		needPrototypes = new Dictionary<string, Need>();
+		string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
+		filePath = System.IO.Path.Combine(filePath, "Need.xml");
+		string needXmlText = System.IO.File.ReadAllText(filePath);
+		LoadNeedPrototypesFromFile (needXmlText);
+		DirectoryInfo[] mods = WorldController.Instance.modsManager.GetMods();
+		foreach (DirectoryInfo mod in mods)
+		{
+			string needLuaModFile = System.IO.Path.Combine(mod.FullName, "Need.lua");
+			if (File.Exists(needLuaModFile))
+			{
+				LoadFurnitureLua(needLuaModFile);
+			}
+
+			string needXmlModFile = System.IO.Path.Combine(mod.FullName, "Need.xml");
+			if (File.Exists(needXmlModFile))
+			{
+				string needXmlModText = System.IO.File.ReadAllText(needXmlModFile);
+				LoadFurniturePrototypesFromFile(needXmlModText);
+			}
+		}
+	}
+
+	void LoadNeedPrototypesFromFile(string needXmlText)
     {
         
-        needPrototypes = new Dictionary<string, Need>();
+        
 
         // READ FURNITURE PROTOTYPE XML FILE HERE
         // TODO:  Probably we should be getting past a StreamIO handle or the raw
         // text here, rather than opening the file ourselves.
 
-        string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
-        filePath = System.IO.Path.Combine(filePath, "Need.xml");
-        string furnitureXmlText = System.IO.File.ReadAllText(filePath);
 
-        XmlTextReader reader = new XmlTextReader(new StringReader(furnitureXmlText));
+        XmlTextReader reader = new XmlTextReader(new StringReader(needXmlText));
 
         int needCount = 0;
         if (reader.ReadToDescendant("Needs"))
