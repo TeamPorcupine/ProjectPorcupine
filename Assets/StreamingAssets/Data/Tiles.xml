@@ -42,7 +42,6 @@
         <LinksToNeighbours>false</LinksToNeighbours>
 
         <CanPlaceHere FunctionName="CanBuildHere_Ladder"/>
-        <MovementCost FunctionName="MovementCost_Standard"/>
 
         <BuildingJob jobTime="1">
         </BuildingJob>

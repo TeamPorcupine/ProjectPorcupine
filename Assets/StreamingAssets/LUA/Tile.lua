@@ -18,10 +18,6 @@ function MovementCost_Standard ( tile )
 	return tile.Type.BaseMovementCost * tile.furniture.movementCost
 end
 
-function MovementCost_Ladder ( tile )
-	return MovementCost_Standard ( tile )
-end
-
 --TODO: This needs to be cleaned up
 function CanBuildHere_Standard ( tile )
 	return true
