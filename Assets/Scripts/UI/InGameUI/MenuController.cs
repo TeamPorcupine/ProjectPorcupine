@@ -92,8 +92,15 @@ public class MenuController : MonoBehaviour
 
     public void OnButtonConstruction()
     {
-        DeactivateAll();
-        constructorMenu.SetActive(true);
+        if (constructorMenu.activeSelf)
+        {
+            DeactivateAll();
+        } 
+        else 
+        { 
+            DeactivateAll();
+            constructorMenu.SetActive(true);
+        }
     }
 
     public void OnButtonWork()
@@ -110,19 +117,27 @@ public class MenuController : MonoBehaviour
 
     public void OnButtonOptions()
     {
-        if (!WorldController.Instance.IsModal)
+        if (optionsMenu.activeSelf)
         {
             DeactivateAll();
-            dbm.dialogBoxOptions.ShowDialog();
+        }
+        else
+        {
+            DeactivateAll();
+            optionsMenu.SetActive(true);
         }
     }
 
     public void OnButtonSettings()
     {
-        if (!WorldController.Instance.IsModal)
+        if (settingsMenu.activeSelf)
         {
             DeactivateAll();
-            dbm.dialogBoxSettings.ShowDialog();
+        }
+        else
+        {
+            DeactivateAll();
+            settingsMenu.SetActive(true);
         }
     }
 }
