@@ -40,10 +40,10 @@ public class WorldGenerator
         int xOffset = Random.Range(0, 10000);
         int yOffset = Random.Range(0, 10000);
 
-        int sumOfAllWeights = 0;
+        int sumOfAllSpawnWeights = 0;
         foreach(Inventory resource in resources)
         {
-            sumOfAllWeights += resource.stackSize;
+            sumOfAllSpawnWeights += resource.stackSize;
         }
 
         for (int x = 0; x < startAreaWidth; x++)
@@ -89,7 +89,7 @@ public class WorldGenerator
                         if (resources.Length > 0)
                         {
                             int currentweight = 0;
-                            int randomweight = Random.Range(0, sumOfAllWeights);
+                            int randomweight = Random.Range(0, sumOfAllSpawnWeights);
 
                             for (int i = 0; i < resources.Length; i++)
                             {
@@ -178,7 +178,7 @@ public class WorldGenerator
                                         res.Add(new Inventory(
                                                 res_reader.GetAttribute("objectType"),
                                                 int.Parse(res_reader.GetAttribute("maxStack")),
-                                                Mathf.CeilToInt(float.Parse(res_reader.GetAttribute("weight")))));
+                                                Mathf.CeilToInt(float.Parse(res_reader.GetAttribute("spawnWeight")))));
 
                                         resMin.Add(int.Parse(res_reader.GetAttribute("min")));
                                         resMax.Add(int.Parse(res_reader.GetAttribute("max")));
