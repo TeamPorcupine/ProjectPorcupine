@@ -35,6 +35,11 @@ namespace ProjectPorcupine.Localization
 
             LoadLocalizationInDirectory(Application.streamingAssetsPath);
 
+            DirectoryInfo[] mods = WorldController.Instance.modsManager.GetMods();
+            foreach(DirectoryInfo mod in mods) {
+                LoadLocalizationInDirectory(mod.FullName);
+            }
+
             // Attempt to get setting of currently selected language. (Will default to English).
             string lang = Settings.getSetting("localization", "en_US");
 
