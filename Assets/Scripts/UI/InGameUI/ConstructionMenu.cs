@@ -19,6 +19,7 @@ public class ConstructionMenu : MonoBehaviour
 
     public Button buttonFloors;
     public Button buttonFurniture;
+    public Button buttonDeconstruct;
 
     void OnEnable()
     {
@@ -30,6 +31,10 @@ public class ConstructionMenu : MonoBehaviour
         buttonFurniture.onClick.AddListener(delegate
             {
                 OnClickFurniture();
+            });
+        buttonDeconstruct.onClick.AddListener(delegate
+            {
+                WorldController.Instance.buildModeController.SetMode_Deconstruct ();
             });
     }
 

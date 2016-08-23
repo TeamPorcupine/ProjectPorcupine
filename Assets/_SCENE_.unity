@@ -6639,6 +6639,7 @@ MonoBehaviour:
   floorMenu: {fileID: 1376947278}
   buttonFloors: {fileID: 485473224}
   buttonFurniture: {fileID: 1723244264}
+  buttonDeconstruct: {fileID: 689530427}
 --- !u!114 &600248680
 MonoBehaviour:
   m_ObjectHideFlags: 0
