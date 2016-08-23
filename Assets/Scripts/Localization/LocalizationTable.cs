@@ -35,6 +35,8 @@ namespace ProjectPorcupine.Localization
         // Keeps track of what keys we've already logged are missing.
         private static HashSet<string> missingKeysLogged = new HashSet<string>();
 
+        public static event Action cbLocalizationChanged;
+
         private enum FallbackMode
         {
             ReturnKey, ReturnDefaultLanguage
@@ -60,6 +62,17 @@ namespace ProjectPorcupine.Localization
         {
             // Return the localization of the advanced method.
             return GetLocalization(key, FallbackMode.ReturnDefaultLanguage, currentLanguage, additionalValues);
+        }
+
+        public static void LoadingLanguagesFinished()
+        {
+            initialized = true;
+
+            // C# 6 Support pls ;_;
+            if (cbLocalizationChanged != null)
+            {
+                cbLocalizationChanged();
+            }
         }
 
         /// <summary>
@@ -118,12 +131,12 @@ namespace ProjectPorcupine.Localization
 
             switch (fallbackMode)
             {
-            case FallbackMode.ReturnKey:
-                return additionalValues != null && additionalValues.Length >= 1 ? key + " " + additionalValues[0] : key;
-            case FallbackMode.ReturnDefaultLanguage:
-                return GetLocalization(key, FallbackMode.ReturnKey, defaultLanguage, additionalValues);
-            default:
-                return string.Empty;
+                case FallbackMode.ReturnKey:
+                    return additionalValues != null && additionalValues.Length >= 1 ? key + " " + additionalValues[0] : key;
+                case FallbackMode.ReturnDefaultLanguage:
+                    return GetLocalization(key, FallbackMode.ReturnKey, defaultLanguage, additionalValues);
+                default:
+                    return string.Empty;
             }
         }
     }

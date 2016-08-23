@@ -53,11 +53,13 @@ namespace ProjectPorcupine.Localization
 
         void Start()
         {
+            Debug.Log(transform.parent.name + " Start");
             //Set the last language to what's currently selected.
             lastLanguage = LocalizationTable.currentLanguage;
-            
-            if(localizeInStart)
+            LocalizationTable.cbLocalizationChanged += UpdateText;
+            if (localizeInStart)
             {
+                Debug.Log(transform.parent.name + " localizeInStart");
                 //Update the text content, if the text should localize immediately.
                 UpdateText(formatValues);
             }
@@ -73,6 +75,14 @@ namespace ProjectPorcupine.Localization
                 // Rescales text component of the prefab button to fit everything
                 TextScaling.ScaleAllTexts();
             }
+        }
+
+        /// <summary>
+        /// Updates the text with the last formatValues
+        /// </summary>
+        public void UpdateText()
+        {
+            text.text = LocalizationTable.GetLocalization(defaultText, formatValues);
         }
 
         /**

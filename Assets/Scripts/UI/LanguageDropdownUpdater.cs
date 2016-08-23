@@ -14,9 +14,17 @@ public class LanguageDropdownUpdater : MonoBehaviour
 {
     void Start()
     {
+        UpdateLanguageDropdown();
+        LocalizationTable.cbLocalizationChanged += UpdateLanguageDropdown;
+    }
+
+    private void UpdateLanguageDropdown()
+    {
         Dropdown dropdown = GetComponent<Dropdown>();
 
         string[] languages = LocalizationTable.GetLanguages();
+
+        dropdown.options.RemoveRange(0, dropdown.options.Count);
 
         foreach (string lang in languages)
         {
@@ -33,8 +41,8 @@ public class LanguageDropdownUpdater : MonoBehaviour
             }
         }
 
-		// Set scroll sensitivity based on the save-item count
-		dropdown.template.GetComponent<ScrollRect> ().scrollSensitivity = dropdown.options.Count / 3;
+        // Set scroll sensitivity based on the save-item count
+        dropdown.template.GetComponent<ScrollRect>().scrollSensitivity = dropdown.options.Count / 3;
     }
 
     public void SelectLanguage(int lang)

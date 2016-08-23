@@ -10,6 +10,7 @@ using System.Collections;
 using System.IO;
 using ICSharpCode.SharpZipLib.Zip;
 using UnityEngine;
+using System;
 
 namespace ProjectPorcupine.Localization
 {
@@ -26,7 +27,7 @@ namespace ProjectPorcupine.Localization
         /// <summary>
         /// Check if there are any new updates for localization. TODO: Add a choice for a user to not update them right now.
         /// </summary>
-        public static IEnumerator CheckIfCurrentLocalizationIsUpToDate()
+        public static IEnumerator CheckIfCurrentLocalizationIsUpToDate(Action OnLocalizationDownloadedCallback)
         {
             // Check current version of localization
             string currentLocalizationVersion;
@@ -71,13 +72,13 @@ namespace ProjectPorcupine.Localization
                 // user about it and offer him an option to download it right now.
                 // For now... Let's just force it >.> Beginners task!
                 Debug.Log("There is an update for localization files!");
-                yield return DownloadLocalizationFromWeb();
+                yield return DownloadLocalizationFromWeb(OnLocalizationDownloadedCallback);
             }
         }
 
         // For now Unity's implementation of .net WebClient will do just fine,
         // especially that it doesn't have problems with downloading from https.
-        private static IEnumerator DownloadLocalizationFromWeb()
+        private static IEnumerator DownloadLocalizationFromWeb(Action OnLocalizationDownloadedCallback)
         {
             // If there were some files downloading previously (maybe user tried to download the newest
             // language pack and mashed a download button?) just cancel them and start a new one.
@@ -96,14 +97,14 @@ namespace ProjectPorcupine.Localization
             Debug.Log("Localization files download has finished!");
 
             // Almost like a callback call
-            OnDownloadLocalizationComplete();
+            OnDownloadLocalizationComplete(OnLocalizationDownloadedCallback);
         }
 
         /// <summary>
         /// Callback for DownloadLocalizationFromWeb. 
         /// It replaces current content of localizationFolderPath with fresh, downloaded one.
         /// </summary>
-        private static void OnDownloadLocalizationComplete()
+        private static void OnDownloadLocalizationComplete(Action OnLocalizationDownloadedCallback)
         {
             if (www.isDone == false)
             {
@@ -233,6 +234,8 @@ namespace ProjectPorcupine.Localization
                 // http://i.imgur.com/9ArGADw.png
                 Debug.LogError(e);
             }
+
+            OnLocalizationDownloadedCallback();
         }
     }
 }

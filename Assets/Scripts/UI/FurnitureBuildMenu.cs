@@ -22,7 +22,6 @@ public class FurnitureBuildMenu : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-
         BuildModeController bmc = WorldController.Instance.buildModeController;
 	
         // For each furniture prototype in our world, create one instance
