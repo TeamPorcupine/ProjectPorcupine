@@ -314,41 +314,41 @@ public class World : IXmlSerializable
         }
     }
 
-	void LoadNeedLua(string filePath)
-	{
-		string myLuaCode = System.IO.File.ReadAllText(filePath);
+    void LoadNeedLua(string filePath)
+    {
+        string myLuaCode = System.IO.File.ReadAllText(filePath);
 
-		// Instantiate the singleton
+        // Instantiate the singleton
 
-		NeedActions.addScript(myLuaCode);
-	}
+        NeedActions.addScript(myLuaCode);
+    }
 
     void CreateNeedPrototypes()
-	{
-		needPrototypes = new Dictionary<string, Need>();
-		string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
-		filePath = System.IO.Path.Combine(filePath, "Need.xml");
-		string needXmlText = System.IO.File.ReadAllText(filePath);
-		LoadNeedPrototypesFromFile (needXmlText);
-		DirectoryInfo[] mods = WorldController.Instance.modsManager.GetMods();
-		foreach (DirectoryInfo mod in mods)
-		{
-			string needLuaModFile = System.IO.Path.Combine(mod.FullName, "Need.lua");
-			if (File.Exists(needLuaModFile))
-			{
-				LoadFurnitureLua(needLuaModFile);
-			}
+    {
+        needPrototypes = new Dictionary<string, Need>();
+        string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
+        filePath = System.IO.Path.Combine(filePath, "Need.xml");
+        string needXmlText = System.IO.File.ReadAllText(filePath);
+        LoadNeedPrototypesFromFile (needXmlText);
+        DirectoryInfo[] mods = WorldController.Instance.modsManager.GetMods();
+        foreach (DirectoryInfo mod in mods)
+        {
+            string needLuaModFile = System.IO.Path.Combine(mod.FullName, "Need.lua");
+            if (File.Exists(needLuaModFile))
+            {
+                LoadFurnitureLua(needLuaModFile);
+            }
 
-			string needXmlModFile = System.IO.Path.Combine(mod.FullName, "Need.xml");
-			if (File.Exists(needXmlModFile))
-			{
-				string needXmlModText = System.IO.File.ReadAllText(needXmlModFile);
-				LoadFurniturePrototypesFromFile(needXmlModText);
-			}
-		}
-	}
+            string needXmlModFile = System.IO.Path.Combine(mod.FullName, "Need.xml");
+            if (File.Exists(needXmlModFile))
+            {
+                string needXmlModText = System.IO.File.ReadAllText(needXmlModFile);
+                LoadFurniturePrototypesFromFile(needXmlModText);
+            }
+        }
+    }
 
-	void LoadNeedPrototypesFromFile(string needXmlText)
+    void LoadNeedPrototypesFromFile(string needXmlText)
     {
         
         
@@ -389,7 +389,7 @@ public class World : IXmlSerializable
             {
                 Debug.LogError("The need prototype definition file doesn't have any 'Need' elements.");
             }
-			Debug.Log("Need prototypes read: " + needCount.ToString());
+            Debug.Log("Need prototypes read: " + needCount.ToString());
         }
     }
     void CreateInventoryPrototypes()

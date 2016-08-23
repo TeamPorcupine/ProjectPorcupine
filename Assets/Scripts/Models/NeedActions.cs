@@ -44,7 +44,7 @@ public class NeedActions
         _Instance.myLuaScript.DoString(rawLuaCode);
     }
     
-	public static void CallFunctionsWithNeed(string[] functionNames, Need need, float deltaTime)
+    public static void CallFunctionsWithNeed(string[] functionNames, Need need, float deltaTime)
     {
         foreach (string fn in functionNames)
         {
