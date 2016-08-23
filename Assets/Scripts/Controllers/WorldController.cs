@@ -17,13 +17,12 @@ using System.IO;
 
 public class WorldController : MonoBehaviour
 {
-
-    SoundController soundController;
-    TileSpriteController tileSpriteController;
-    CharacterSpriteController characterSpriteController;
-    JobSpriteController jobSpriteController;
-    InventorySpriteController inventorySpriteController;
-    FurnitureSpriteController furnitureSpriteController;
+    Dictionary<World, SoundController> soundController;
+    Dictionary<World, TileSpriteController> tileSpriteController;
+    Dictionary<World, CharacterSpriteController> characterSpriteController;
+    Dictionary<World, JobSpriteController> jobSpriteController;
+    Dictionary<World, InventorySpriteController> inventorySpriteController;
+    Dictionary<World, FurnitureSpriteController> furnitureSpriteController;
 
     public BuildModeController buildModeController;
     public MouseController mouseController;
@@ -33,7 +32,29 @@ public class WorldController : MonoBehaviour
     public static WorldController Instance { get; protected set; }
 
     // The world and tile data
-    public World world { get; protected set; }
+    private World _currentWorld;
+
+    // rename to CurrentWorld
+    public World world { 
+        get
+        { 
+            return _currentWorld;
+        }
+        set
+        {
+            if (worlds.Contains(value))
+            {
+                _currentWorld = value;
+            }
+            else
+            {
+                worlds.Add(value);
+                _currentWorld = value;
+            }
+        }
+    }
+
+    private List<World> worlds;
 
     static string loadWorldFromFile = null;
 
@@ -70,6 +91,13 @@ public class WorldController : MonoBehaviour
     // Use this for initialization
     void OnEnable()
     {
+        soundController = new Dictionary<World, SoundController>();
+        tileSpriteController = new Dictionary<World, TileSpriteController>();
+        characterSpriteController = new Dictionary<World, CharacterSpriteController>();
+        jobSpriteController = new Dictionary<World, JobSpriteController>();
+        inventorySpriteController = new Dictionary<World, InventorySpriteController>();
+        furnitureSpriteController = new Dictionary<World, FurnitureSpriteController>();
+
         string dataPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
         modsManager = new ModsManager(dataPath);
 
@@ -79,6 +107,7 @@ public class WorldController : MonoBehaviour
         }
         Instance = this;
 
+        worlds = new List<World>();
         if (loadWorldFromFile != null)
         {
             CreateWorldFromSaveFile();
@@ -88,31 +117,46 @@ public class WorldController : MonoBehaviour
         {
             CreateEmptyWorld();
         }
-
-        soundController = new SoundController(world);
     }
 
-    void Start() {
-        tileSpriteController = new TileSpriteController(world);
-        tileSpriteController.Render();
-        characterSpriteController = new CharacterSpriteController(world);
-        furnitureSpriteController = new FurnitureSpriteController(world);
-        jobSpriteController = new JobSpriteController(world, furnitureSpriteController);
-        inventorySpriteController = new InventorySpriteController(world, inventoryUI);
+    void Start()
+    {
+        LoadWorldControllers(world);
+        LoadControllers();
+    }
+
+    private void LoadControllers()
+    {
         buildModeController = new BuildModeController();
         if(Settings.getSettingAsBool("DevTools_enabled", false))
         {
             spawnInventoryController = new SpawnInventoryController();
         }
-        mouseController = new MouseController(buildModeController, furnitureSpriteController, circleCursorPrefab);
+        mouseController = new MouseController(buildModeController, furnitureSpriteController[world], circleCursorPrefab);
 
         //Initialising controllers
         GameObject Controllers = GameObject.Find("Controllers");
         Instantiate(Resources.Load("UIController"), Controllers.transform);
-
-
     }
 
+    private void LoadWorldControllers(World __world)
+    {
+        soundController[__world] = new SoundController(__world);
+        tileSpriteController[__world] = new TileSpriteController(__world);
+        tileSpriteController[__world].Render();
+        characterSpriteController[__world] = new CharacterSpriteController(__world);
+
+        FurnitureSpriteController fsc = new FurnitureSpriteController(__world);
+        furnitureSpriteController[__world] = fsc;
+
+        jobSpriteController[__world] = new JobSpriteController(__world, fsc);
+        inventorySpriteController[__world] = new InventorySpriteController(__world, inventoryUI);
+
+        if(mouseController != null){
+            mouseController.SetFurnitureSpriteController(fsc);
+        }
+    }
+        
     void Update()
     {
         CheckTimeInput();
@@ -120,10 +164,13 @@ public class WorldController : MonoBehaviour
 
         if (IsPaused == false)
         {
-            world.Update(Time.deltaTime * timeScale);
+            foreach(World __world in worlds)
+            {
+                __world.Update(Time.deltaTime * timeScale);
+            }
         }
 
-        soundController.Update(Time.deltaTime);
+        soundController[world].Update(Time.deltaTime);
     }
 
     void CheckTimeInput()
@@ -255,7 +302,6 @@ public class WorldController : MonoBehaviour
         Debug.Log(reader.ToString());
         world = (World)serializer.Deserialize(reader);
         reader.Close();
-
 
         // Center the Camera
         Camera.main.transform.position = new Vector3(world.Width / 2, world.Height / 2, Camera.main.transform.position.z);
