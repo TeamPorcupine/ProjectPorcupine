@@ -28,6 +28,7 @@ public class Room : IXmlSerializable
     {
         tiles = new List<Tile>();
         atmosphericGasses = new Dictionary<string, float>();
+        temperature = 0;
     }
 
     public int ID
@@ -38,14 +39,7 @@ public class Room : IXmlSerializable
         }
     }
 
-    private float _Temperature;
-    public float Temperature
-    {
-        get
-        {
-            return _Temperature;
-        }
-    }
+    private float temperature;
 
     public void AssignTile(Tile t)
     {
@@ -204,9 +198,14 @@ public class Room : IXmlSerializable
         return atmosphericGasses.Keys.ToArray();
     }
 
+    public float GetTemperature()
+    {
+        return temperature;
+    }
+
     public void ChangeTemperature(float change)
     {
-        _Temperature += change;
+        temperature += change;
     }
 
     public static void DoRoomFloodFill(Tile sourceTile, bool onlyIfOutside = false)
