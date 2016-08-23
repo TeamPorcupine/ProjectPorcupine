@@ -59,7 +59,7 @@ public class FurnitureSpriteController
         furn_go.transform.SetParent(furnnitureParent.transform, true);
 
         // FIXME: This hardcoding is not ideal!
-        if (furn.objectType == "Door" || furn.objectType == "Airlock")
+        if (furn.HasTypeTag("Door"))
         {
             // By default, the door graphic is meant for walls to the east & west
             // Check to see if we actually have a wall north/south, and if so
@@ -69,7 +69,7 @@ public class FurnitureSpriteController
             Tile southTile = world.GetTileAt(furn.tile.X, furn.tile.Y - 1);
 
             if (northTile != null && southTile != null && northTile.Furniture != null && southTile.Furniture != null &&
-            northTile.Furniture.objectType.Contains("Wall") && southTile.Furniture.objectType.Contains("Wall"))
+                northTile.Furniture.HasTypeTag("Wall") && southTile.Furniture.HasTypeTag("Wall"))
             {
                 furn_go.transform.rotation = Quaternion.Euler(0, 0, 90);
             }
@@ -144,8 +144,7 @@ public class FurnitureSpriteController
 
         GameObject furn_go = furnitureGameObjectMap[furn];
 
-        // FIXME: This hardcoding is not ideal!
-        if (furn.objectType == "Door" || furn.objectType == "Airlock")
+        if (furn.HasTypeTag("Door"))
         {
             // By default, the door graphic is meant for walls to the east & west
             // Check to see if we actually have a wall north/south, and if so
@@ -157,12 +156,12 @@ public class FurnitureSpriteController
             Tile westTile = world.GetTileAt(furn.tile.X - 1, furn.tile.Y);
 
             if (northTile != null && southTile != null && northTile.Furniture != null && southTile.Furniture != null &&
-            northTile.Furniture.objectType.Contains("Wall") && southTile.Furniture.objectType.Contains("Wall"))
+                northTile.Furniture.HasTypeTag("Wall") && southTile.Furniture.HasTypeTag("Wall"))
             {
                 furn_go.transform.rotation = Quaternion.Euler(0, 0, 90);
             }
             else if (eastTile != null && westTile != null && eastTile.Furniture != null && westTile.Furniture != null &&
-            eastTile.Furniture.objectType.Contains("Wall") && westTile.Furniture.objectType.Contains("Wall"))
+                eastTile.Furniture.HasTypeTag("Wall") && westTile.Furniture.HasTypeTag("Wall"))
             {
                 furn_go.transform.rotation = Quaternion.Euler(0, 0, 0);
             }

@@ -40,6 +40,7 @@ public class World : IXmlSerializable
 
     public Dictionary<string, Furniture> furniturePrototypes;
     public Dictionary<string, Job> furnitureJobPrototypes;
+    public Dictionary<string, Need> needPrototypes;
     public Dictionary<string, InventoryCommon> inventoryPrototypes;
     public Dictionary<string, TraderPrototype> traderPrototypes;
 
@@ -74,7 +75,7 @@ public class World : IXmlSerializable
         SetupWorld(width, height);
         int seed = UnityEngine.Random.Range(0, int.MaxValue);
         WorldGenerator.Generate(this, seed);
-
+        Debug.Log ("Generated World");
         // Make one character
         CreateCharacter(GetTileAt(Width / 2, Height / 2));
     }
@@ -103,7 +104,6 @@ public class World : IXmlSerializable
     {
         if (i < 0 || i > rooms.Count - 1)
             return null;
-		
         return rooms[i];
     }
 
@@ -157,9 +157,8 @@ public class World : IXmlSerializable
         }
 
         CreateFurniturePrototypes();
-
+        CreateNeedPrototypes ();
         CreateInventoryPrototypes();
-
         CreateTraderPrototypes();
 
         characters = new List<Character>();
@@ -312,6 +311,55 @@ public class World : IXmlSerializable
         }
     }
 
+
+
+    void CreateNeedPrototypes()
+    {
+        
+        needPrototypes = new Dictionary<string, Need>();
+
+        // READ FURNITURE PROTOTYPE XML FILE HERE
+        // TODO:  Probably we should be getting past a StreamIO handle or the raw
+        // text here, rather than opening the file ourselves.
+
+        string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
+        filePath = System.IO.Path.Combine(filePath, "Need.xml");
+        string furnitureXmlText = System.IO.File.ReadAllText(filePath);
+
+        XmlTextReader reader = new XmlTextReader(new StringReader(furnitureXmlText));
+
+        int needCount = 0;
+        if (reader.ReadToDescendant("Needs"))
+        {
+            if (reader.ReadToDescendant("Need"))
+            {
+                do
+                {
+                    needCount++;
+
+                    Need need = new Need();
+                    try
+                    {
+                        need.ReadXmlPrototype(reader);
+                    }
+                    catch {
+                        Debug.LogError("Error reading need prototype for: " + need.needType);
+                    }
+
+
+                    needPrototypes[need.needType] = need;
+
+
+
+                } while (reader.ReadToNextSibling("Need"));
+            }
+            else
+            {
+                Debug.LogError("The need prototype definition file doesn't have any 'Need' elements.");
+            }
+			Debug.Log("Need prototypes read: " + needCount.ToString());
+        }
+    }
     void CreateInventoryPrototypes()
     {
         inventoryPrototypes = new Dictionary<string, InventoryCommon>();
@@ -434,6 +482,15 @@ public class World : IXmlSerializable
         {
             Debug.LogError("Did not find a 'Inventories' element in the prototype definition file.");
         }
+
+
+
+        // This bit will come from parsing a LUA file later, but for now we still need to
+        // implement furniture behaviour directly in C# code.
+        //furniturePrototypes["Door"].RegisterUpdateAction( FurnitureActions.Door_UpdateAction );
+        //furniturePrototypes["Door"].IsEnterable = FurnitureActions.Door_IsEnterable;
+
+            //Logger.LogError("Did not find a 'Inventories' element in the prototype definition file.");
     }
 
     /// <summary>
@@ -541,7 +598,7 @@ public class World : IXmlSerializable
                 // buy the furniture's movement cost, a furniture movement cost
                 // of exactly 1 doesn't impact our pathfinding system, so we can
                 // occasionally avoid invalidating pathfinding graphs
-                //InvalidateTileGraph();	// Reset the pathfinding system
+                //InvalidateTileGraph();    // Reset the pathfinding system
                 if (tileGraph != null)
                 {
                     tileGraph.RegenerateGraphAtTile(t);
@@ -557,9 +614,7 @@ public class World : IXmlSerializable
     {
         if (cbTileChanged == null)
             return;
-		
         cbTileChanged(t);
-
         //InvalidateTileGraph();
         if (tileGraph != null)
         {
@@ -593,7 +648,7 @@ public class World : IXmlSerializable
 
     //////////////////////////////////////////////////////////////////////////////////////
     /// 
-    /// 						SAVING & LOADING
+    ///                         SAVING & LOADING
     /// 
     //////////////////////////////////////////////////////////////////////////////////////
 
@@ -613,7 +668,7 @@ public class World : IXmlSerializable
         {
 
             if (GetOutsideRoom() == r)
-                continue;	// Skip the outside room. Alternatively, should SetupWorld be changed to not create one?
+                continue;    // Skip the outside room. Alternatively, should SetupWorld be changed to not create one?
 
             writer.WriteStartElement("Room");
             r.WriteXml(writer);
