@@ -205,17 +205,17 @@ public class FurnitureSpriteController
             // FIXME: All this hardcoding needs to be generalized later.
             if (furn.objectType == "Door")
             {
-                if (furn.GetParameter("openness") < 0.1f)
+                if (furn.GetParameters()["openness"].ToFloat() < 0.1f)
                 {
                     // Door is closed
                     spriteName = "Door";
                 }
-                else if (furn.GetParameter("openness") < 0.5f)
+                else if (furn.GetParameters()["openness"].ToFloat() < 0.5f)
                 {
                     // Door is a bit open
                     spriteName = "Door_openness_1";
                 }
-                else if (furn.GetParameter("openness") < 0.9f)
+                else if (furn.GetParameters()["openness"].ToFloat() < 0.9f)
                 {
                     // Door is a lot open
                     spriteName = "Door_openness_2";
@@ -229,17 +229,17 @@ public class FurnitureSpriteController
             }
             if (furn.objectType == "Airlock")
             {
-                if (furn.GetParameter("openness") < 0.1f)
+                if (furn.GetParameters()["openness"].ToFloat() < 0.1f)
                 {
                     // Airlock is closed
                     spriteName = "Airlock";
                 }
-                else if (furn.GetParameter("openness") < 0.5f)
+                else if (furn.GetParameters()["openness"].ToFloat() < 0.5f)
                 {
                     // Airlock is a bit open
                     spriteName = "Airlock_openness_1";
                 }
-                else if (furn.GetParameter("openness") < 0.9f)
+                else if (furn.GetParameters()["openness"].ToFloat() < 0.9f)
                 {
                     // Airlock is a lot open
                     spriteName = "Airlock_openness_2";
