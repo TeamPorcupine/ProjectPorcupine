@@ -44,7 +44,7 @@ public class FurnitureActions
         _Instance.myLuaScript.DoString(rawLuaCode);
     }
 
-    public static void CallFunctionsWithFurniture(string[] functionNames, Furniture furn, float deltaTime)
+    public static void CallFunctionsWithFurniture(string[] functionNames, object furn, float deltaTime)
     {
         foreach (string fn in functionNames)
         {
