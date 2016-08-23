@@ -15,6 +15,14 @@ using System.Xml.Serialization;
 using MoonSharp.Interpreter;
 using UnityEngine;
 
+public enum Facing
+{
+    NORTH,
+    EAST,
+    SOUTH,
+    WEST
+}
+
 /// <summary>
 /// A Character is an entity on the map that can move between tiles and,
 /// for now, grabs jobs from the work queue and performs this.
@@ -145,7 +153,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     public bool IsWalking;
 
     // 0=north, 1=east, 2=south, 3=west
-    public int Facing;
+    public Facing CharFacing;
 
     /// Use only for serialization
     public Character()
@@ -494,19 +502,19 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         // Find character facing
         if (NextTile.X > CurrTile.X)
         {
-            Facing = 1;
-        }
-        else if (NextTile.Y > CurrTile.Y)
-        {
-            Facing = 0;
+            CharFacing = Facing.EAST;
         }
         else if (NextTile.X < CurrTile.X)
         {
-            Facing = 3;
+            CharFacing = Facing.WEST;
         }
-        else 
+        else if (NextTile.Y > CurrTile.Y)
         {
-            Facing = 2;
+            CharFacing = Facing.NORTH;
+        }        
+        else
+        {
+            CharFacing = Facing.SOUTH;
         }
         
         // At this point we should have a valid nextTile to move to.
