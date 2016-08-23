@@ -48,8 +48,13 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     /// </summary>
     protected List<string> uninstallActions;
     
-    // public Func<Furniture, ENTERABILITY> IsEnterable;
+    // protected Func<Furniture, ENTERABILITY> IsEnterable;
     protected string isEnterableAction;
+    
+    /// <summary>
+    /// These action is called to get the sprite name based on the furniture parameters
+    /// </summary>
+    protected string getSpriteNameAction;
 
     protected List<string> replaceableFurniture = new List<string>();
 
@@ -111,6 +116,18 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         DynValue ret = FurnitureActions.CallFunction(isEnterableAction, this);
 
         return (ENTERABILITY)ret.Number;
+    }
+    
+    public string GetSpriteName()
+    {
+        if (getSpriteNameAction == null || getSpriteNameAction.Length == 0)
+        {
+            return objectType;
+        }
+        
+        DynValue ret = FurnitureActions.CallFunction(getSpriteNameAction, this);
+
+        return ret.String;
     }
 
     // If this furniture generates power then powerValue will be positive, if it consumer power then it will be negative
@@ -254,6 +271,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         }
 
         this.isEnterableAction = other.isEnterableAction;
+        this.getSpriteNameAction = other.getSpriteNameAction;
 
         this.powerValue = other.powerValue;
 
@@ -521,41 +539,41 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
                     Job.JobPriority.High );
 
                 World.current.SetFurnitureJobPrototype(j, this);
-
                 break;
+            
             case "OnUpdate":
-
                 string functionName = reader.GetAttribute("FunctionName");
                 RegisterUpdateAction(functionName);
-                    break;
+                break;
+            
             case "OnInstall":
                 // Called when obj is installed
                 string functionInstallName = reader.GetAttribute("FunctionName");
                 RegisterInstallAction(functionInstallName);
-
                 break;
+            
             case "OnUninstall":
                 // Called when obj is uninstalled
                 string functionUninstallName = reader.GetAttribute("FunctionName");
                 RegisterUninstallAction(functionUninstallName);
-
                 break;
+            
             case "IsEnterable":
                 isEnterableAction = reader.GetAttribute("FunctionName");
-
+                break;
+            case "GetSpriteName":
+                getSpriteNameAction = reader.GetAttribute("FunctionName");
                 break;
 
             case "JobSpotOffset":
                 jobSpotOffset = new Vector2(
                     int.Parse(reader.GetAttribute("X")),
                     int.Parse(reader.GetAttribute("Y")));
-
                 break;
             case "JobSpawnSpotOffset":
                 jobSpawnSpotOffset = new Vector2(
                     int.Parse(reader.GetAttribute("X")),
                     int.Parse(reader.GetAttribute("Y")));
-
                 break;
 
             case "Power":

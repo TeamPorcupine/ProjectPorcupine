@@ -67,6 +67,48 @@ function IsEnterable_Door( furniture )
 	return ENTERABILITY_SOON --ENTERABILITY.Soon
 end
 
+function GetSpriteName_Door( furniture )
+	if (furniture.GetParameter("openness") < 0.1) then
+		-- Door is closed
+		spriteName = "Door";
+	
+	else if (furn.GetParameter("openness") < 0.5) then
+		-- Door is a bit open
+		spriteName = "Door_openness_1";
+	
+	else if (furn.GetParameter("openness") < 0.9) then
+		-- Door is a lot open
+		spriteName = "Door_openness_2";
+	
+	else
+		-- Door is a fully open
+		spriteName = "Door_openness_3";
+	end
+	
+	return spriteName
+end
+
+function GetSpriteName_Airlock( furniture )
+	if (furniture.GetParameter("openness") < 0.1) then
+		-- Door is closed
+		spriteName = "Airlock";
+	
+	else if (furn.GetParameter("openness") < 0.5) then
+		-- Door is a bit open
+		spriteName = "Airlock_openness_1";
+	
+	else if (furn.GetParameter("openness") < 0.9) then
+		-- Door is a lot open
+		spriteName = "Airlock_openness_2";
+	
+	else
+		-- Door is a fully open
+		spriteName = "Airlock_openness_3";
+	end
+	
+	return spriteName
+end
+
 function Stockpile_GetItemsFromFilter()
 	-- TODO: This should be reading from some kind of UI for this
 	-- particular stockpile
