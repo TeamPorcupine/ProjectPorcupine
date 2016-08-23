@@ -98,7 +98,8 @@ public class MenuController : MonoBehaviour
         if (constructorMenu.activeSelf)
         {
             DeactivateAll();
-        } else 
+        } 
+        else 
         { 
             DeactivateAll();
             constructorMenu.SetActive(true);
