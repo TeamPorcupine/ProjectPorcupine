@@ -226,7 +226,7 @@ public class OverlayMap : MonoBehaviour {
         meshRenderer.material = mat;
         if(mat == null || meshRenderer == null || texture == null)
         {
-            Logger.LogError("Material or renderer is null. Failing.");
+            Debug.LogError("Material or renderer is null. Failing.");
         }
         meshRenderer.material.mainTexture = texture;
 

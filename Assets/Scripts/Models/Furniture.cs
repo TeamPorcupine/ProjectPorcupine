@@ -19,7 +19,7 @@ using UnityEngine;
 /// InstalledObjects are things like walls, doors, and furniture (e.g. a sofa).
 /// </summary>
 [MoonSharpUserData]
-public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
+public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, IPowerRelated
 {
     private float powerValue;
     /// <summary>
@@ -317,9 +317,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
                 for (int ypos = y - 1; ypos < (y + proto.Height + 1); ypos++)
                 {
                     t = World.current.GetTileAt(xpos, ypos);
-                    if (t != null && t.furniture != null && t.furniture.cbOnChanged != null)
+                    if (t != null && t.Furniture != null && t.Furniture.cbOnChanged != null)
                     {
-                        t.furniture.cbOnChanged(t.furniture);
+                        t.Furniture.cbOnChanged(t.Furniture);
                     }
                 }
             }
@@ -374,11 +374,11 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
                 // Check to see if there is furniture which is replaceable
                 bool isReplaceable = false;
 
-                if (t2.furniture != null)
+                if (t2.Furniture != null)
                 {
                     for (int i = 0; i < ReplaceableFurniture.Count; i++)
                     {
-                        if (t2.furniture.HasTypeTag(ReplaceableFurniture[i]))
+                        if (t2.Furniture.HasTypeTag(ReplaceableFurniture[i]))
                         {
                             isReplaceable = true;
                         }
@@ -392,7 +392,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
                 }
 
                 // Make sure tile doesn't already have furniture
-                if (t2.furniture != null && isReplaceable == false)
+                if (t2.Furniture != null && isReplaceable == false)
                 {
                     return false;
                 }
@@ -741,9 +741,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
         int fwidth = 1;
         int fheight = 1;
         bool linksToNeighbour = false;
-        if (tile.furniture != null)
+        if (tile.Furniture != null)
         {
-            Furniture f = tile.furniture;
+            Furniture f = tile.Furniture;
             fwidth = f.Width;
             fheight = f.Height;
             linksToNeighbour = f.linksToNeighbour;
@@ -787,9 +787,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
                 for (int ypos = y - 1; ypos < (y + fheight + 1); ypos++)
                 {
                     Tile t = World.current.GetTileAt(xpos, ypos);
-                    if (t != null && t.furniture != null && t.furniture.cbOnChanged != null)
+                    if (t != null && t.Furniture != null && t.Furniture.cbOnChanged != null)
                     {
-                        t.furniture.cbOnChanged(t.furniture);
+                        t.Furniture.cbOnChanged(t.Furniture);
                     }
                 }
             }
@@ -834,4 +834,16 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
     }
 
     #endregion
+
+    public IEnumerable<ContextMenuAction> GetContextMenuActions(ContextMenu contextMenu)
+    {
+        yield return new ContextMenuAction
+        {
+            Text = "Deconstruct "+Name,
+            RequiereCharacterSelected = false,
+            Action = (ca, c) => Deconstruct()
+        };
+
+        //todo add a hook to LUA Action via the furniture.xml definition
+    }
 }
