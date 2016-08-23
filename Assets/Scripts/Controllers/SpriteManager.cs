@@ -120,6 +120,7 @@ public class SpriteManager : MonoBehaviour
         Texture2D imageTexture = new Texture2D(2, 2);	// Create some kind of dummy instance of Texture2D
         // LoadImage will correctly resize the texture based on the image file
 
+
         if (imageTexture.LoadImage(imageBytes))
         {
 
