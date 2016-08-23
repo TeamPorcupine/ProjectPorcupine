@@ -151,7 +151,7 @@ public class World : IXmlSerializable
             {
                 tiles[x, y] = new Tile(x, y);
                 tiles[x, y].cbTileChanged += OnTileChanged;
-                tiles[x, y].room = GetOutsideRoom(); // Rooms 0 is always going to be outside, and that is our default room
+                tiles[x, y].Room = GetOutsideRoom(); // Rooms 0 is always going to be outside, and that is our default room
             }
         }
 
@@ -643,7 +643,7 @@ public class World : IXmlSerializable
         inventoryManager.PlaceInventory(t, inv);
         if (cbInventoryCreated != null)
         {
-            cbInventoryCreated(t.inventory);
+            cbInventoryCreated(t.Inventory);
         }
 
         inv = new Inventory("Steel Plate", 50, 4);
@@ -651,7 +651,7 @@ public class World : IXmlSerializable
         inventoryManager.PlaceInventory(t, inv);
         if (cbInventoryCreated != null)
         {
-            cbInventoryCreated(t.inventory);
+            cbInventoryCreated(t.Inventory);
         }
 
         inv = new Inventory("Copper Wire", 50, 3);
@@ -659,7 +659,7 @@ public class World : IXmlSerializable
         inventoryManager.PlaceInventory(t, inv);
         if (cbInventoryCreated != null)
         {
-            cbInventoryCreated(t.inventory);
+            cbInventoryCreated(t.Inventory);
         }
     }
 
