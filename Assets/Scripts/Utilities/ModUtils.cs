@@ -18,4 +18,19 @@ public static class ModUtils
     {
         return Mathf.Clamp01(value); 
     }
+
+    public static void Log(object obj) 
+    {
+        Debug.Log(obj);
+    }
+
+    public static void LogWarning(object obj) 
+    {
+        Debug.LogWarning(obj);
+    }
+
+    public static void LogError(object obj) 
+    {
+        Debug.LogError(obj);
+    }
 }
