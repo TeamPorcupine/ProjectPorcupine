@@ -36,23 +36,24 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     /// </summary>
     // protected Action<Furniture, float> updateActions;
     protected List<string> updateActions;
-    
+
     /// <summary>
     /// These actions are called when an object is installed. They get passed the furniture and a delta
     /// time of 0
     /// </summary>
     protected List<string> installActions;
+
     /// <summary>
     /// These actions are called when an object is uninstalled. They get passed the furniture and a delta
     /// time of 0
     /// </summary>
     protected List<string> uninstallActions;
-    
-    // protected Func<Furniture, ENTERABILITY> IsEnterable;
+
+    // private Func<Furniture, ENTERABILITY> IsEnterable;
     protected string isEnterableAction;
-    
+
     /// <summary>
-    /// These action is called to get the sprite name based on the furniture parameters
+    /// This action is called to get the sprite name based on the furniture parameters
     /// </summary>
     protected string getSpriteNameAction;
 
@@ -117,20 +118,20 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
 
         return (ENTERABILITY)ret.Number;
     }
-    
+
     public string GetSpriteName()
     {
         if (getSpriteNameAction == null || getSpriteNameAction.Length == 0)
         {
             return objectType;
         }
-        
+
         DynValue ret = FurnitureActions.CallFunction(getSpriteNameAction, this);
         return ret.String;
     }
 
     // If this furniture generates power then powerValue will be positive, if it consumer power then it will be negative
-   
+
     private void InvokePowerValueChanged(IPowerRelated powerRelated)
     {
         Action<IPowerRelated> handler = PowerValueChanged;
@@ -203,7 +204,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     public int Height { get; protected set; }
 
     public string localizationCode { get; protected set; }
-   
+
     public string unlocalizedDescription { get; protected set; }
 
     public Color tint = Color.white;
@@ -539,24 +540,24 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
 
                 World.current.SetFurnitureJobPrototype(j, this);
                 break;
-            
+
             case "OnUpdate":
                 string functionName = reader.GetAttribute("FunctionName");
                 RegisterUpdateAction(functionName);
                 break;
-            
+
             case "OnInstall":
                 // Called when obj is installed
                 string functionInstallName = reader.GetAttribute("FunctionName");
                 RegisterInstallAction(functionInstallName);
                 break;
-            
+
             case "OnUninstall":
                 // Called when obj is uninstalled
                 string functionUninstallName = reader.GetAttribute("FunctionName");
                 RegisterUninstallAction(functionUninstallName);
                 break;
-            
+
             case "IsEnterable":
                 isEnterableAction = reader.GetAttribute("FunctionName");
                 break;
