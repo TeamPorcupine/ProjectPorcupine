@@ -63,15 +63,15 @@ public class CharacterSpriteController
         // load all character sprites and change colors
         Sprite[] sprites = 
             {
-                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p1_nh_idle_south"), c.GetCharacterColor()),
-                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p1_nh_idle_east"), c.GetCharacterColor()),
-                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p1_nh_idle_north"), c.GetCharacterColor()),
-                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p1_nh_walk_east_01"), c.GetCharacterColor()),
-                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p1_nh_walk_east_02"), c.GetCharacterColor()),
-                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p1_nh_walk_north_01"), c.GetCharacterColor()),
-                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p1_nh_walk_north_02"), c.GetCharacterColor()),
-                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p1_nh_walk_south_01"), c.GetCharacterColor()),
-                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p1_nh_walk_south_02"), c.GetCharacterColor())
+                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p3_idle_south"), c.GetCharacterColor()),
+                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p3_idle_east"), c.GetCharacterColor()),
+                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p3_idle_north"), c.GetCharacterColor()),
+                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p3_walk_east_01"), c.GetCharacterColor()),
+                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p3_walk_east_02"), c.GetCharacterColor()),
+                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p3_walk_north_01"), c.GetCharacterColor()),
+                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p3_walk_north_02"), c.GetCharacterColor()),
+                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p3_walk_south_01"), c.GetCharacterColor()),
+                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p3_walk_south_02"), c.GetCharacterColor())
             };
         c.animation.SetSprites(sprites);
         
@@ -88,7 +88,7 @@ public class CharacterSpriteController
         GameObject helmet_go = new GameObject ("HelmetGlass");
         SpriteRenderer helmet_sr = helmet_go.AddComponent<SpriteRenderer>();
         helmet_sr.sortingOrder = 1;
-        helmet_sr.sprite = SpriteManager.current.GetSprite("Character", "p2_helmet");
+        //helmet_sr.sprite = SpriteManager.current.GetSprite("Character", "p2_helmet");
         helmet_sr.sortingLayerName = "Characters";
         helmet_go.transform.SetParent (char_go.transform);
         helmet_go.transform.localPosition = new Vector3(0,0,0);
@@ -115,12 +115,12 @@ public class CharacterSpriteController
 
         Color[] pixelColors = fromTexture.GetPixels(0, 0, fromTexture.width, fromTexture.height);
 
-        Color32 fromColorMain = new Color32(71, 86, 163, 255);
-        Color32 fromColorLight = new Color32(142, 154, 212, 255);
-        Color32 fromColorDark = new Color32(42, 56, 126, 255);
+        Color32 fromColorMain = new Color32(255, 0, 170, 255);
+        Color32 fromColorLight = new Color32(255, 128, 213, 255);
+        Color32 fromColorDark = new Color32(128, 0, 85, 255);
 
-        Color newColorLight = Color32.Lerp(newColor, new Color32(255, 255, 255, 255),0.5f);
-        Color newColorDark = Color32.Lerp(newColor, new Color32(0, 0, 0, 255),0.5f);
+        Color newColorLight = Color32.Lerp(newColor, new Color32(255, 255, 255, 255), 0.5f);
+        Color newColorDark = Color32.Lerp(newColor, new Color32(0, 0, 0, 255), 0.5f);
         
         int y = 0;
         while (y < pixelColors.Length)
