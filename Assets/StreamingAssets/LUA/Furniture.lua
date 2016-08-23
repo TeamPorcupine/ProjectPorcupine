@@ -626,7 +626,7 @@ function Heater_OnUpdate ( furniture, deltaTime)
         pressure = 0.5
     end
     temperatureChange = 1 * (pressure / 0.5) * deltaTime
-    World.current.temperature.ChangeTemperature(tile.X, tile.Y, temperatureChange)
+    tile.Room.ChangeTemperature(temperatureChange)
 end
 
 ModUtils.ULog("Furniture.lua loaded")
