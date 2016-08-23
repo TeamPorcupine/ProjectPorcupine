@@ -289,6 +289,8 @@
     <Name>Small Landing Pad</Name>
     <Description>A landing pad for small spaceboats to land.</Description>
     <OnUpdate FunctionName="LandingPad_Temp_UpdateAction" />
+    <ContextMenuAction FunctionName="LandingPad_Test_ContextMenuAction" Text="Lua Test Deconstruct 1" RequiereCharacterSelected="false"/>
+    <ContextMenuAction FunctionName="LandingPad_Test_ContextMenuAction" Text="Lua Test Deconstruct 2" RequiereCharacterSelected="true" />
     <MovementCost>5</MovementCost>
     <Width>3</Width>
     <Height>3</Height>
