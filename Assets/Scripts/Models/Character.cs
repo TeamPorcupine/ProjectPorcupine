@@ -795,9 +795,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             return "No job";
         }
 
-        // TODO: This (as the whole ISelectable system) should use localization
         return myJob.JobDescription;
-
     }
 
     #endregion
