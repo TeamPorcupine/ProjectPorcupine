@@ -39,7 +39,7 @@ public class NeedActions
         myLuaScript.Globals["World"] = typeof(World);
     }
 
-    public static void addScript(string rawLuaCode)
+    public static void AddScript(string rawLuaCode)
     {
         _Instance.myLuaScript.DoString(rawLuaCode);
     }

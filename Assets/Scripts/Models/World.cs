@@ -320,7 +320,7 @@ public class World : IXmlSerializable
 
         // Instantiate the singleton
 
-        NeedActions.addScript(myLuaCode);
+        NeedActions.AddScript(myLuaCode);
     }
 
     void CreateNeedPrototypes()
@@ -336,14 +336,14 @@ public class World : IXmlSerializable
             string needLuaModFile = System.IO.Path.Combine(mod.FullName, "Need.lua");
             if (File.Exists(needLuaModFile))
             {
-                LoadFurnitureLua(needLuaModFile);
+                LoadNeedLua(needLuaModFile);
             }
 
             string needXmlModFile = System.IO.Path.Combine(mod.FullName, "Need.xml");
             if (File.Exists(needXmlModFile))
             {
                 string needXmlModText = System.IO.File.ReadAllText(needXmlModFile);
-                LoadFurniturePrototypesFromFile(needXmlModText);
+                LoadNeedPrototypesFromFile(needXmlModText);
             }
         }
     }
