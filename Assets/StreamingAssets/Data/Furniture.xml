@@ -141,7 +141,15 @@
         <Params>
             <!-- <Param name="gas_name" value="O2" /> -->
             <Param name="gas_limit" value="0.2" />
-            <Param name="gas_per_second" value="0.01" />
+            <Param name="gas_per_second" value="0.16" />
+            <Param name="gas_gen">
+                <Param name="O2">
+                    <Param name="gas_limit" value="0.2" />
+                </Param>
+                <Param name="N2">
+                    <Param name="gas_limit" value="0.8" />
+                </Param>
+            </Param>
         </Params>
 
         <LocalizationCode>furn_oxygen_generator</LocalizationCode>
