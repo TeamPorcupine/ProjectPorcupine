@@ -447,128 +447,128 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         {
             switch (reader.Name)
             {
-                case "Name":
-                    reader.Read();
-                    Name = reader.ReadContentAsString();
-                    break;
-                case "TypeTag":
-                    reader.Read();
-                    typeTags.Add(reader.ReadContentAsString());
-                    break;
-                case "Description":
-                    reader.Read();
-                    Description = reader.ReadContentAsString();
-                    break;
-                case "MovementCost":
-                    reader.Read();
-                    movementCost = reader.ReadContentAsFloat();
-                    break;
-                case "Width":
-                    reader.Read();
-                    Width = reader.ReadContentAsInt();
-                    break;
-                case "Height":
-                    reader.Read();
-                    Height = reader.ReadContentAsInt();
-                    break;
-                case "LinksToNeighbours":
-                    reader.Read();
-                    linksToNeighbour = reader.ReadContentAsBoolean();
-                    break;
-                case "EnclosesRooms":
-                    reader.Read();
-                    roomEnclosure = reader.ReadContentAsBoolean();
-                    break;
-                case "CanReplaceFurniture":
-                    replaceableFurniture.Add(reader.GetAttribute("typeTag").ToString());
-                    break;
-                case "DragType":
-                    reader.Read();
-                    dragType = reader.ReadContentAsString();
-                    break;
-                case "BuildingJob":
-                    float jobTime = float.Parse(reader.GetAttribute("jobTime"));
+            case "Name":
+                reader.Read();
+                Name = reader.ReadContentAsString();
+                break;
+            case "TypeTag":
+                reader.Read();
+                typeTags.Add(reader.ReadContentAsString());
+                break;
+            case "Description":
+                reader.Read();
+                Description = reader.ReadContentAsString();
+                break;
+            case "MovementCost":
+                reader.Read();
+                movementCost = reader.ReadContentAsFloat();
+                break;
+            case "Width":
+                reader.Read();
+                Width = reader.ReadContentAsInt();
+                break;
+            case "Height":
+                reader.Read();
+                Height = reader.ReadContentAsInt();
+                break;
+            case "LinksToNeighbours":
+                reader.Read();
+                linksToNeighbour = reader.ReadContentAsBoolean();
+                break;
+            case "EnclosesRooms":
+                reader.Read();
+                roomEnclosure = reader.ReadContentAsBoolean();
+                break;
+            case "CanReplaceFurniture":
+                replaceableFurniture.Add(reader.GetAttribute("typeTag").ToString());
+                break;
+            case "DragType":
+                reader.Read();
+                dragType = reader.ReadContentAsString();
+                break;
+            case "BuildingJob":
+                float jobTime = float.Parse(reader.GetAttribute("jobTime"));
 
-                    List<Inventory> invs = new List<Inventory>();
+                List<Inventory> invs = new List<Inventory>();
 
-                    XmlReader invs_reader = reader.ReadSubtree();
+                XmlReader invs_reader = reader.ReadSubtree();
 
-                    while (invs_reader.Read())
+                while (invs_reader.Read())
+                {
+                    if (invs_reader.Name == "Inventory")
                     {
-                        if (invs_reader.Name == "Inventory")
-                        {
-                            // Found an inventory requirement, so add it to the list!
-                            invs.Add(new Inventory(
-                                invs_reader.GetAttribute("objectType"),
-                                int.Parse(invs_reader.GetAttribute("amount")),
-                                0));
-                        }
+                        // Found an inventory requirement, so add it to the list!
+                        invs.Add(new Inventory(
+                            invs_reader.GetAttribute("objectType"),
+                            int.Parse(invs_reader.GetAttribute("amount")),
+                            0));
                     }
+                }
 
-                    Job j = new Job(
-                        null,
-                        objectType,
-                        FurnitureActions.JobComplete_FurnitureBuilding,
-                        jobTime,
-                        invs.ToArray(),
-                        Job.JobPriority.High );
+                Job j = new Job(
+                    null,
+                    objectType,
+                    FurnitureActions.JobComplete_FurnitureBuilding,
+                    jobTime,
+                    invs.ToArray(),
+                    Job.JobPriority.High );
 
-                    World.current.SetFurnitureJobPrototype(j, this);
+                World.current.SetFurnitureJobPrototype(j, this);
 
-                    break;
-                case "OnUpdate":
+                break;
+            case "OnUpdate":
 
-                    string functionName = reader.GetAttribute("FunctionName");
-                    RegisterUpdateAction(functionName);
-                    break;
-                case "OnInstall":
-                    // Called when obj is installed
-                    string functionInstallName = reader.GetAttribute("FunctionName");
-                    RegisterInstallAction(functionInstallName);
+                string functionName = reader.GetAttribute("FunctionName");
+                RegisterUpdateAction(functionName);
+                break;
+            case "OnInstall":
+                // Called when obj is installed
+                string functionInstallName = reader.GetAttribute("FunctionName");
+                RegisterInstallAction(functionInstallName);
 
-                    break;
-                case "OnUninstall":
-                    // Called when obj is uninstalled
-                    string functionUninstallName = reader.GetAttribute("FunctionName");
-                    RegisterUninstallAction(functionUninstallName);
+                break;
+            case "OnUninstall":
+                // Called when obj is uninstalled
+                string functionUninstallName = reader.GetAttribute("FunctionName");
+                RegisterUninstallAction(functionUninstallName);
 
-                    break;
-                case "IsEnterable":
-                    isEnterableAction = reader.GetAttribute("FunctionName");
+                break;
+            case "IsEnterable":
+                isEnterableAction = reader.GetAttribute("FunctionName");
 
-                    break;
+                break;
 
-                case "JobSpotOffset":
-                    jobSpotOffset = new Vector2(
-                        int.Parse(reader.GetAttribute("X")),
-                        int.Parse(reader.GetAttribute("Y")));
+            case "JobSpotOffset":
+                jobSpotOffset = new Vector2(
+                    int.Parse(reader.GetAttribute("X")),
+                    int.Parse(reader.GetAttribute("Y")));
 
-                    break;
-                case "JobSpawnSpotOffset":
-                    jobSpawnSpotOffset = new Vector2(
-                        int.Parse(reader.GetAttribute("X")),
-                        int.Parse(reader.GetAttribute("Y")));
+                break;
+            case "JobSpawnSpotOffset":
+                jobSpawnSpotOffset = new Vector2(
+                    int.Parse(reader.GetAttribute("X")),
+                    int.Parse(reader.GetAttribute("Y")));
 
-                    break;
+                break;
 
-                case "Power":
-                    reader.Read();
-                    powerValue = reader.ReadContentAsFloat();
-                    break;
+            case "Power":
+                reader.Read();
+                powerValue = reader.ReadContentAsFloat();
+                break;
 
-                case "Params":
-                    ReadXmlParams(reader);  // Read in the Param tag
-                    break;
+            case "Params":
+                ReadXmlParams(reader);  // Read in the Param tag
+                break;
 
-                case "LocalizationCode":
-                    reader.Read();
-                    localizationCode = reader.ReadContentAsString();
-                    break;
+            case "LocalizationCode":
+                reader.Read();
+                localizationCode = reader.ReadContentAsString();
+                break;
 
-                case "UnlocalizedDescription":
-                    reader.Read();
-                    unlocalizedDescription = reader.ReadContentAsString();
-                    break;
+            case "UnlocalizedDescription":
+                reader.Read();
+                unlocalizedDescription = reader.ReadContentAsString();
+                break;
             }
         }
     }
