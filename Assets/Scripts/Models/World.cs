@@ -250,7 +250,7 @@ public class World : IXmlSerializable
         LoadFurniturePrototypesFromFile(furnitureXmlText);
 
 
-        DirectoryInfo[] mods = WorldController.Instance.modsManager.GetMods();
+        DirectoryInfo[] mods = ModsManager.current.GetMods();
         foreach (DirectoryInfo mod in mods)
         {
             string furnitureLuaModFile = System.IO.Path.Combine(mod.FullName, "Furniture.lua");
@@ -367,7 +367,7 @@ public class World : IXmlSerializable
         LoadInventoryPrototypesFromFile(inventoryXmlText);
 
 
-        DirectoryInfo[] mods = WorldController.Instance.modsManager.GetMods();
+        DirectoryInfo[] mods = ModsManager.current.GetMods();
         foreach (DirectoryInfo mod in mods)
         {
             string inventoryXmlModFile = System.IO.Path.Combine(mod.FullName, "Inventory.xml");

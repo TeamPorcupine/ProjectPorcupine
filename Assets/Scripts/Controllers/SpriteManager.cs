@@ -60,7 +60,7 @@ public class SpriteManager : MonoBehaviour
 
         LoadSpritesFromDirectory(filePath);
 
-        DirectoryInfo[] mods = WorldController.Instance.modsManager.GetMods();
+        DirectoryInfo[] mods = ModsManager.current.GetMods();
         foreach (DirectoryInfo mod in mods)
         {
             string modImagesPath = Path.Combine(mod.FullName, "Images");

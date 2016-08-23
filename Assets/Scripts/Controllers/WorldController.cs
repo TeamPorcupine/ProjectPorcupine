@@ -27,7 +27,6 @@ public class WorldController : MonoBehaviour
     public BuildModeController buildModeController;
     public MouseController mouseController;
     public SpawnInventoryController spawnInventoryController;
-    public ModsManager modsManager;
 
     public static WorldController Instance { get; protected set; }
 
@@ -44,12 +43,16 @@ public class WorldController : MonoBehaviour
         {
             if (worlds.Contains(value))
             {
+                // DisableControllers(_currentWorld) or DeleteControllers(_currentWorld)
                 _currentWorld = value;
+                // EnableControllers(_currentWorld);
             }
             else
             {
                 worlds.Add(value);
+                // DisableControllers(_currentWorld) or DeleteControllers(_currentWorld)
                 _currentWorld = value;
+                // LoadWorldControllers(value)
             }
         }
     }
@@ -98,9 +101,6 @@ public class WorldController : MonoBehaviour
         inventorySpriteController = new Dictionary<World, InventorySpriteController>();
         furnitureSpriteController = new Dictionary<World, FurnitureSpriteController>();
 
-        string dataPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
-        modsManager = new ModsManager(dataPath);
-
         if (Instance != null)
         {
             Debug.LogError("There should never be two world controllers.");
@@ -116,13 +116,16 @@ public class WorldController : MonoBehaviour
         else
         {
             CreateEmptyWorld();
+            LoadWorldControllers(world);
         }
+
+        LoadControllers();
     }
 
     void Start()
     {
-        LoadWorldControllers(world);
-        LoadControllers();
+        //LoadWorldControllers(world);
+        //LoadControllers();
     }
 
     private void LoadControllers()
@@ -159,6 +162,9 @@ public class WorldController : MonoBehaviour
         
     void Update()
     {
+        if (world == null)
+            return;
+
         CheckTimeInput();
         mouseController.Update(IsModal);
 
