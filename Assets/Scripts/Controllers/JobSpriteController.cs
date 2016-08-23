@@ -61,7 +61,7 @@ public class JobSpriteController
         job_go.transform.SetParent(jobParent.transform, true);
 
         SpriteRenderer sr = job_go.AddComponent<SpriteRenderer>();
-        if (job.jobTileType != TileType.Empty)
+        if (job.jobTileType != null)
         {
             //This job is for building a tile
             //For now, the only tile that could be is the floor, so just show a floor sprite

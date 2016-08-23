@@ -224,9 +224,9 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         // Get our destination from the job
         DestTile = myJob.tile;
-
-        // If the dest tile does not have neighbours it's very
-		if ((DestTile == null || DestTile.HasNeighboursOfType(TileType.Floor) || DestTile.HasNeighboursOfType(TileType.Ladder)) == false)
+        
+        // If the dest tile does not have neighbours that are walkable it's very likable that they can't be walked to
+        if (DestTile.GetNeighbours().Any((tile) => { return tile.MovementCost > 0; }) == false)
         {
             Debug.Log("No neighbouring floor tiles! Abandoning job.");
             AbandonJob(false);

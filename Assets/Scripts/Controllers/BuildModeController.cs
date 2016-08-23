@@ -6,6 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using MoonSharp.Interpreter;
 using UnityEngine;
 
 public enum BuildMode
@@ -42,29 +43,14 @@ public class BuildModeController
         return proto.Width == 1 && proto.Height == 1;
     }
 
-    public void SetMode_BuildFloor()
+    public void SetModeBuildTile(TileType type)
     {
         buildMode = BuildMode.FLOOR;
-        buildModeTile = TileType.Floor;
+        buildModeTile = type;
 
         mouseController.StartBuildMode();
     }
-
-    public void SetMode_BuildLadder()
-    {
-        buildMode = BuildMode.FLOOR;
-        buildModeTile = TileType.Ladder;
-
-        mouseController.StartBuildMode();
-    }
-
-    public void SetMode_Bulldoze()
-    {
-        buildMode = BuildMode.FLOOR;
-        buildModeTile = TileType.Empty;
-        mouseController.StartBuildMode();
-    }
-
+    
     public void SetMode_BuildFurniture(string objectType)
     {
         // Wall is not a Tile!  Wall is an "Furniture" that exists on TOP of a tile.
@@ -218,15 +204,17 @@ public class BuildModeController
     // TODO Export this kind of check to an XML/LUA file for easier modding of floor types.
     private bool CanBuildTileTypeHere(Tile t, TileType tileType)
     {
-        switch(tileType) {
-            case TileType.Empty:
-                return true;
-            case TileType.Floor:
-                return true;
-            case TileType.Ladder:
-                return t.Room.IsOutsideRoom();
-            default:
-                return true;
+        DynValue value = FurnitureActions.CallFunction(tileType.CanBuildHereLua, t);
+
+        if (value != null)
+        {
+            return value.Boolean;
+        }
+        else
+        {
+            Debug.ULogChannel("Lua", "Found no lua function " + tileType.CanBuildHereLua);
+
+            return false;
         }
     }
 

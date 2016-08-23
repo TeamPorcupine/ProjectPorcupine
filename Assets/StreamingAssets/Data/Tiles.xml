@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Tiles>
+    <!-- NOTE!!! TypeTag, BuildingJob and DeconstructionJob is TODO atm -->
+
+    <Tile tileType="Empty">
+        <Name>Empty</Name>
+        <Description>This is a empty tile.</Description>
+        <TypeTag>Empty</TypeTag>
+        <BaseMovementCost>1</BaseMovementCost>
+        <LinksToNeighbours>false</LinksToNeighbours>
+
+        <BuildingJob jobTime="0"></BuildingJob>
+
+        <DeconstructJob></DeconstructJob>
+        
+        <LocalizationCode>tile_Empty</LocalizationCode>
+        <UnlocalizedDescription>tile_Empty_desc</UnlocalizedDescription>
+    </Tile>
+
+     <Tile tileType="Floor">
+        <Name>Floor</Name>
+        <Description>This is a floor tile.</Description>
+        <TypeTag>Floor</TypeTag>
+        <BaseMovementCost>1</BaseMovementCost>
+        <LinksToNeighbours>false</LinksToNeighbours>
+
+        <BuildingJob jobTime="1">
+        </BuildingJob>
+
+        <DeconstructJob>
+        </DeconstructJob>
+        
+        <LocalizationCode>tile_Floor</LocalizationCode>
+        <UnlocalizedDescription>tile_Floor_desc</UnlocalizedDescription>
+    </Tile>
+
+    <Tile tileType="Ladder">
+        <Name>Ladder</Name>
+        <Description>This is a ladder tile.</Description>
+        <TypeTag>Ladder</TypeTag>
+        <BaseMovementCost>1.5</BaseMovementCost>
+        <LinksToNeighbours>false</LinksToNeighbours>
+
+        <CanPlaceHere FunctionName="CanBuildHere_Ladder"/>
+        <MovementCost FunctionName="MovementCost_Standard"/>
+
+        <BuildingJob jobTime="1">
+        </BuildingJob>
+
+        <DeconstructJob>
+        </DeconstructJob>
+        
+        <LocalizationCode>tile_Ladder</LocalizationCode>
+        <UnlocalizedDescription>tile_Ladder_desc</UnlocalizedDescription>
+    </Tile>
+</Tiles>
