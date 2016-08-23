@@ -286,6 +286,7 @@
   </Furniture>
 	
   <Furniture objectType="Small Landing Pad">
+    <TypeTag>OutdoorOnly</TypeTag>
     <Name>Small Landing Pad</Name>
     <Description>A landing pad for small spaceboats to land.</Description>
     <OnUpdate FunctionName="LandingPad_Temp_UpdateAction" />

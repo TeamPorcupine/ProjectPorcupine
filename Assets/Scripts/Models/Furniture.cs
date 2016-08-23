@@ -365,6 +365,12 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
             return false;
         }
 
+        if (HasTypeTag("OutdoorOnly"))
+        {
+            if (t.Room == null || !t.Room.IsOutsideRoom())
+                return false;
+        }
+
         for (int x_off = t.X; x_off < (t.X + Width); x_off++)
         {
             for (int y_off = t.Y; y_off < (t.Y + Height); y_off++)
