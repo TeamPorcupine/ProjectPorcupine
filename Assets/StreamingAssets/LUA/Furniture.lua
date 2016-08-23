@@ -493,4 +493,14 @@ function Heater_UninstallAction( furniture, deltaTime)
 	-- TODO: find elegant way to unregister previous register
 end
 
+function Heater_OnUpdate ( furniture, deltaTime)
+    tile = furniture.tile
+    pressure = tile.Room.GetGasPressure()
+    if (pressure > 0.5) then
+        pressure = 0.5
+    end
+    temperatureChange = 1 * (pressure / 0.5) * deltaTime
+    World.current.temperature.ChangeTemperature(tile.X, tile.Y, temperatureChange)
+end
+
 return "LUA Script Parsed!"

@@ -249,6 +249,8 @@
     <Power>4</Power>
 
     <BuildingJob jobTime="0"></BuildingJob>
+    
+    <OnUpdate FunctionName="Heater_OnUpdate" />
 
     <!-- This method gets called on Install -->
     <OnInstall FunctionName="Heater_InstallAction"></OnInstall>
