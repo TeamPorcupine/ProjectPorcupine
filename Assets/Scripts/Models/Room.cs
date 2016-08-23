@@ -19,10 +19,10 @@ using UnityEngine;
 public class Room : IXmlSerializable
 {
     // Dictionary with the amount of gas in room stored in preasure(in atm) multiplyed by number of tiles.
-    private Dictionary<string, float> atmosphericGasses; 
-    private Dictionary<string, string> deltaGas;
+    private Dictionary<string, float> atmosphericGasses;
 
     private List<Tile> tiles;
+    private float _Temperature;
 
     public Room()
     {
@@ -36,6 +36,14 @@ public class Room : IXmlSerializable
         get
         {
             return World.Current.GetRoomID(this);
+        }
+    }
+
+    public float Temperature
+    {
+        get
+        {
+            return _Temperature;
         }
     }
 
@@ -341,6 +349,11 @@ public class Room : IXmlSerializable
         }
 
         return t;
+    }
+
+    public void ChangeTemperature(float change)
+    {
+        _Temperature += change;
     }
 
     public string[] GetGasNames()
