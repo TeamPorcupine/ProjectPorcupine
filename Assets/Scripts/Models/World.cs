@@ -67,12 +67,16 @@ public class World : IXmlSerializable
     /// </summary>
     /// <param name="width">Width in tiles.</param>
     /// <param name="height">Height in tiles.</param>
-    public World(int width, int height)
+    /// <param name="useWorldGenerator">Determines whether WorldGenerator.Generator is called.</param>
+    public World(int width, int height, bool useWorldGenerator = true)
     {
         // Creates an empty world.
         SetupWorld(width, height);
-        int seed = UnityEngine.Random.Range(0, int.MaxValue);
-        WorldGenerator.Generate(this, seed);
+        if (useWorldGenerator)
+        {
+            int seed = UnityEngine.Random.Range(0, int.MaxValue);
+            WorldGenerator.Generate(this, seed);
+        }
 
         // Make one character
         CreateCharacter(GetTileAt(Width / 2, Height / 2));
@@ -251,6 +255,9 @@ public class World : IXmlSerializable
         LoadFurniturePrototypesFromFile(furnitureXmlText);
 
 
+        if (WorldController.Instance == null)
+            return;
+
         DirectoryInfo[] mods = WorldController.Instance.modsManager.GetMods();
         foreach (DirectoryInfo mod in mods)
         {
@@ -318,6 +325,8 @@ public class World : IXmlSerializable
         string inventoryXmlText = System.IO.File.ReadAllText(filePath);
         LoadInventoryPrototypesFromFile(inventoryXmlText);
 
+        if (WorldController.Instance == null)
+            return;
 
         DirectoryInfo[] mods = WorldController.Instance.modsManager.GetMods();
         foreach (DirectoryInfo mod in mods)
