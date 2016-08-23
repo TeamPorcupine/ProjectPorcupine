@@ -47,6 +47,16 @@ public class Job
         get;
         protected set;
     }
+    public bool isNeed
+    {
+        get;
+        protected set;
+    }
+    public bool critical
+    {
+        get;
+        protected set;
+    }
 
     public TileType jobTileType
     {
@@ -83,13 +93,15 @@ public class Job
     /// </summary>
     public bool adjacent;
 
-    public Job(Tile tile, string jobObjectType, Action<Job> cbJobComplete, float jobTime, Inventory[] inventoryRequirements, JobPriority jobPriority, bool jobRepeats = false)
+    public Job(Tile tile, string jobObjectType, Action<Job> cbJobComplete, float jobTime, Inventory[] inventoryRequirements, JobPriority jobPriority, bool jobRepeats = false, bool isNeed = false, bool critical = false)
     {
         this.tile = tile;
         this.jobObjectType = jobObjectType;
         this.cbJobCompleted += cbJobComplete;
         this.jobTimeRequired = this.jobTime = jobTime;
         this.jobRepeats = jobRepeats;
+        this.isNeed = isNeed;
+        this.critical = critical;
         this.jobPriority = jobPriority;
 
         cbJobWorkedLua = new List<string>();
@@ -250,6 +262,8 @@ public class Job
 
     public bool HasAllMaterial()
     {
+        if (inventoryRequirements == null)
+            return true;
         foreach (Inventory inv in inventoryRequirements.Values)
         {
             if (inv.maxStackSize > inv.stackSize)
