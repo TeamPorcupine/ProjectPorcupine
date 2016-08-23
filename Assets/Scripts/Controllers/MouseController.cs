@@ -70,6 +70,16 @@ public class MouseController
         return WorldController.Instance.GetTileAtWorldCoord(currFramePosition);
     }
 
+    public void StartBuildMode()
+    {
+        currentMode = MouseMode.BUILD;
+    }
+
+    public void StartSpawnMode()
+    {
+        currentMode = MouseMode.SPAWN_INVENTORY;
+    }
+
     // Update is called once per frame.
     public void Update(bool isModal)
     {
@@ -79,28 +89,11 @@ public class MouseController
             return;
         }
 
-        currFramePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        currFramePosition.z = 0;
+        UpdateCurrentFramePosition();
 
         CalculatePlacingPosition();
-
-        if (Input.GetKeyUp(KeyCode.Escape) || Input.GetMouseButtonUp(1))
-        {
-            if (currentMode == MouseMode.BUILD)
-            {
-                isDragging = false;
-                currentMode = MouseMode.SELECT;
-            }
-            else if (currentMode == MouseMode.SPAWN_INVENTORY)
-            {
-                currentMode = MouseMode.SELECT;
-            }
-            else if (currentMode == MouseMode.SELECT)
-            {
-                if (contextMenu != null)
-                    contextMenu.Open(GetMouseOverTile());
-            }
-        }
+        CheckModeChanges();
+        CheckIfContextMenuActivated();
 
         UpdateDragging();
         UpdateCameraMovement();
@@ -112,18 +105,48 @@ public class MouseController
 
         // Save the mouse position from this frame.
         // We don't use currFramePosition because we may have moved the camera.
+        StoreFramePosition();
+    }
+
+    private void UpdateCurrentFramePosition()
+    {
+        currFramePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        currFramePosition.z = 0;
+    }
+
+    private void CheckModeChanges()
+    {
+        if (Input.GetKeyUp(KeyCode.Escape) || Input.GetMouseButtonUp(1))
+        {
+            if (currentMode == MouseMode.BUILD)
+            {
+                isDragging = false;
+                currentMode = MouseMode.SELECT;
+            }
+            else if (currentMode == MouseMode.SPAWN_INVENTORY)
+            {
+                currentMode = MouseMode.SELECT;
+            }
+        }
+    }
+
+    private void CheckIfContextMenuActivated()
+    {
+        if (Input.GetKeyUp(KeyCode.Escape) || Input.GetMouseButtonUp(1))
+        {
+            // Is the context also supposed to open on ESCAPE? That seems wrong
+            if (currentMode == MouseMode.SELECT)
+            {
+                if (contextMenu != null)
+                    contextMenu.Open(GetMouseOverTile());
+            }
+        }
+    }
+
+    private void StoreFramePosition()
+    {
         lastFramePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         lastFramePosition.z = 0;
-    }
-
-    public void StartBuildMode()
-    {
-        currentMode = MouseMode.BUILD;
-    }
-
-    public void StartSpawnMode()
-    {
-        currentMode = MouseMode.SPAWN_INVENTORY;
     }
 
     private void CalculatePlacingPosition()
