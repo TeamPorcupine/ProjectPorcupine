@@ -194,9 +194,8 @@ public class World : IXmlSerializable
         filePath = System.IO.Path.Combine(filePath, "CharacterNames.txt");
         string names = System.IO.File.ReadAllText(filePath);
 
-        string[] lines = Regex.Split( names, "\r\n" );
+        string[] lines = Regex.Split( names, "\n" );
         c.name = lines[UnityEngine.Random.Range(0, lines.Length-1)];
-
         characters.Add(c);
 
         if (cbCharacterCreated != null)
