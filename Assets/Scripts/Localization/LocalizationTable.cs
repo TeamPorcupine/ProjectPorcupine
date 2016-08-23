@@ -79,7 +79,10 @@ namespace ProjectPorcupine.Localization
         {
             try
             {
-                localizationTable[localizationCode] = new Dictionary<string, string>();
+                if(localizationTable.ContainsKey(Localization) == false) {
+                    localizationTable[localizationCode] = new Dictionary<string, string>();
+                }
+
                 string[] lines = File.ReadAllLines(path);
                 foreach (string line in lines)
                 {
