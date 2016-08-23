@@ -48,7 +48,7 @@ public class JobSpriteController
 
         if (jobGameObjectMap.ContainsKey(job))
         {
-            //Logger.LogError("OnJobCreated for a jobGO that already exists -- most likely a job being RE-QUEUED, as opposed to created.");
+            //Debug.LogError("OnJobCreated for a jobGO that already exists -- most likely a job being RE-QUEUED, as opposed to created.");
             return;
         }
 
@@ -89,8 +89,8 @@ public class JobSpriteController
             Tile northTile = world.GetTileAt(job.tile.X, job.tile.Y + 1);
             Tile southTile = world.GetTileAt(job.tile.X, job.tile.Y - 1);
 
-            if (northTile != null && southTile != null && northTile.furniture != null && southTile.furniture != null &&
-            northTile.furniture.objectType.Contains("Wall") && southTile.furniture.objectType.Contains("Wall"))
+            if (northTile != null && southTile != null && northTile.Furniture != null && southTile.Furniture != null &&
+            northTile.Furniture.objectType.Contains("Wall") && southTile.Furniture.objectType.Contains("Wall"))
             {
                 job_go.transform.rotation = Quaternion.Euler(0, 0, 90);
             }

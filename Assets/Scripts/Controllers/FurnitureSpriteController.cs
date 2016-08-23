@@ -43,7 +43,7 @@ public class FurnitureSpriteController
 
     public void OnFurnitureCreated(Furniture furn)
     {
-        //Logger.Log("OnFurnitureCreated");
+        //Debug.Log("OnFurnitureCreated");
         // Create a visual GameObject linked to this data.
 
         // FIXME: Does not consider multi-tile objects nor rotated objects
@@ -68,8 +68,8 @@ public class FurnitureSpriteController
             Tile northTile = world.GetTileAt(furn.tile.X, furn.tile.Y + 1);
             Tile southTile = world.GetTileAt(furn.tile.X, furn.tile.Y - 1);
 
-            if (northTile != null && southTile != null && northTile.furniture != null && southTile.furniture != null &&
-            northTile.furniture.objectType.Contains("Wall") && southTile.furniture.objectType.Contains("Wall"))
+            if (northTile != null && southTile != null && northTile.Furniture != null && southTile.Furniture != null &&
+            northTile.Furniture.objectType.Contains("Wall") && southTile.Furniture.objectType.Contains("Wall"))
             {
                 furn_go.transform.rotation = Quaternion.Euler(0, 0, 90);
             }
@@ -117,7 +117,7 @@ public class FurnitureSpriteController
     {
         if (furnitureGameObjectMap.ContainsKey(furn) == false)
         {
-            Logger.LogError("OnFurnitureRemoved -- trying to change visuals for furniture not in our map.");
+            Debug.LogError("OnFurnitureRemoved -- trying to change visuals for furniture not in our map.");
             return;
         }
 
@@ -133,12 +133,12 @@ public class FurnitureSpriteController
 
     void OnFurnitureChanged(Furniture furn)
     {
-        //Logger.Log("OnFurnitureChanged");
+        //Debug.Log("OnFurnitureChanged");
         // Make sure the furniture's graphics are correct.
 
         if (furnitureGameObjectMap.ContainsKey(furn) == false)
         {
-            Logger.LogError("OnFurnitureChanged -- trying to change visuals for furniture not in our map.");
+            Debug.LogError("OnFurnitureChanged -- trying to change visuals for furniture not in our map.");
             return;
         }
 
@@ -156,13 +156,13 @@ public class FurnitureSpriteController
             Tile eastTile = world.GetTileAt(furn.tile.X + 1, furn.tile.Y);
             Tile westTile = world.GetTileAt(furn.tile.X - 1, furn.tile.Y);
 
-            if (northTile != null && southTile != null && northTile.furniture != null && southTile.furniture != null &&
-            northTile.furniture.objectType.Contains("Wall") && southTile.furniture.objectType.Contains("Wall"))
+            if (northTile != null && southTile != null && northTile.Furniture != null && southTile.Furniture != null &&
+            northTile.Furniture.objectType.Contains("Wall") && southTile.Furniture.objectType.Contains("Wall"))
             {
                 furn_go.transform.rotation = Quaternion.Euler(0, 0, 90);
             }
-            else if (eastTile != null && westTile != null && eastTile.furniture != null && westTile.furniture != null &&
-            eastTile.furniture.objectType.Contains("Wall") && westTile.furniture.objectType.Contains("Wall"))
+            else if (eastTile != null && westTile != null && eastTile.Furniture != null && westTile.Furniture != null &&
+            eastTile.Furniture.objectType.Contains("Wall") && westTile.Furniture.objectType.Contains("Wall"))
             {
                 furn_go.transform.rotation = Quaternion.Euler(0, 0, 0);
             }
@@ -226,7 +226,7 @@ public class FurnitureSpriteController
                     // Door is a fully open
                     spriteName = "Door_openness_3";
                 }
-                //Logger.Log(spriteName);
+                //Debug.Log(spriteName);
             }
             if (furn.objectType == "Airlock")
             {
@@ -250,11 +250,11 @@ public class FurnitureSpriteController
                     // Airlock is a fully open
                     spriteName = "Airlock_openness_3";
                 }
-                //Logger.Log(spriteName);
+                //Debug.Log(spriteName);
             }
 
             /*if(furnitureSprites.ContainsKey(spriteName) == false) {
-				Logger.Log("furnitureSprites has no definition for: " + spriteName);
+				Debug.Log("furnitureSprites has no definition for: " + spriteName);
 				return null;
 			}
 */
@@ -274,22 +274,22 @@ public class FurnitureSpriteController
         Tile t;
 
         t = world.GetTileAt(x, y + 1);
-        if (t != null && t.furniture != null && t.furniture.objectType == furn.objectType)
+        if (t != null && t.Furniture != null && t.Furniture.objectType == furn.objectType)
         {
             spriteName += "N";
         }
         t = world.GetTileAt(x + 1, y);
-        if (t != null && t.furniture != null && t.furniture.objectType == furn.objectType)
+        if (t != null && t.Furniture != null && t.Furniture.objectType == furn.objectType)
         {
             spriteName += "E";
         }
         t = world.GetTileAt(x, y - 1);
-        if (t != null && t.furniture != null && t.furniture.objectType == furn.objectType)
+        if (t != null && t.Furniture != null && t.Furniture.objectType == furn.objectType)
         {
             spriteName += "S";
         }
         t = world.GetTileAt(x - 1, y);
-        if (t != null && t.furniture != null && t.furniture.objectType == furn.objectType)
+        if (t != null && t.Furniture != null && t.Furniture.objectType == furn.objectType)
         {
             spriteName += "W";
         }
@@ -299,7 +299,7 @@ public class FurnitureSpriteController
         //       Wall_NESW
 
         /*		if(furnitureSprites.ContainsKey(spriteName) == false) {
-                    Logger.LogError("GetSpriteForInstalledObject -- No sprites with name: " + spriteName);
+                    Debug.LogError("GetSpriteForInstalledObject -- No sprites with name: " + spriteName);
                     return null;
                 }
         */

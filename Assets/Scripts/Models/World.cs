@@ -21,6 +21,10 @@ using MoonSharp.Interpreter;
 [MoonSharpUserData]
 public class World : IXmlSerializable
 {
+    // TODO: Should this be also saved with the world data?
+    // If so - beginner task!
+    public readonly string currentGameVersion = "Someone_will_come_up_with_a_proper_naming_scheme_later";
+
     // A two-dimensional array to hold our tile data.
     Tile[,] tiles;
     public List<Character> characters;
@@ -28,6 +32,8 @@ public class World : IXmlSerializable
     public List<Room> rooms;
     public InventoryManager inventoryManager;
     public PowerSystem powerSystem;
+    // Store all temperature information
+    public Temperature temperature;
 
     // The pathfinding graph used to navigate our world map.
     public Path_TileGraph tileGraph;
@@ -110,7 +116,7 @@ public class World : IXmlSerializable
     {
         if (r == GetOutsideRoom())
         {
-            Logger.LogError("Tried to delete the outside room.");
+            Debug.LogError("Tried to delete the outside room.");
             return;
         }
 
@@ -146,7 +152,7 @@ public class World : IXmlSerializable
             {
                 tiles[x, y] = new Tile(x, y);
                 tiles[x, y].cbTileChanged += OnTileChanged;
-                tiles[x, y].room = GetOutsideRoom(); // Rooms 0 is always going to be outside, and that is our default room
+                tiles[x, y].Room = GetOutsideRoom(); // Rooms 0 is always going to be outside, and that is our default room
             }
         }
 
@@ -157,7 +163,7 @@ public class World : IXmlSerializable
         furnitures = new List<Furniture>();
         inventoryManager = new InventoryManager();
         powerSystem = new PowerSystem();
-
+        temperature = new Temperature(Width, Height);
     }
 
     public void Update(float deltaTime)
@@ -173,6 +179,8 @@ public class World : IXmlSerializable
             f.Update(deltaTime);
         }
 
+        // Progress temperature modelling
+        temperature.Update();
     }
 
     public Character CreateCharacter(Tile t)
@@ -195,6 +203,19 @@ public class World : IXmlSerializable
         return c;
     }
 
+    public Character CreateCharacter(Tile t, Color color)
+    {
+        Debug.Log("CreateCharacter");
+        Character c = new Character(t, color); 
+
+        characters.Add(c);
+
+        if (cbCharacterCreated != null)
+            cbCharacterCreated(c);
+            
+        return c;
+    }
+    
     public void SetFurnitureJobPrototype(Job j, Furniture f)
     {
         furnitureJobPrototypes[f.objectType] = j;
@@ -267,7 +288,7 @@ public class World : IXmlSerializable
                         furn.ReadXmlPrototype(reader);
                     }
                     catch (Exception e) {
-                        Logger.LogError("Error reading furniture prototype for: " + furn.objectType + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
+                        Debug.LogError("Error reading furniture prototype for: " + furn.objectType + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
                     }
 
 
@@ -279,12 +300,12 @@ public class World : IXmlSerializable
             }
             else
             {
-                Logger.LogError("The furniture prototype definition file doesn't have any 'Furniture' elements.");
+                Debug.LogError("The furniture prototype definition file doesn't have any 'Furniture' elements.");
             }
         }
         else
         {
-            Logger.LogError("Did not find a 'Furnitures' element in the prototype definition file.");
+            Debug.LogError("Did not find a 'Furnitures' element in the prototype definition file.");
         }
     }
 
@@ -379,7 +400,7 @@ public class World : IXmlSerializable
                     }
                     catch (Exception e)
                     {
-                        Logger.LogError("Error reading inventory prototype for: " + inv.objectType + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
+                        Debug.LogError("Error reading inventory prototype for: " + inv.objectType + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
                     }
 
 
@@ -391,7 +412,7 @@ public class World : IXmlSerializable
             }
             else
             {
-                Logger.LogError("The inventory prototype definition file doesn't have any 'Inventory' elements.");
+                Debug.LogError("The inventory prototype definition file doesn't have any 'Inventory' elements.");
             }
         }
         else
@@ -483,7 +504,7 @@ public class World : IXmlSerializable
 
         if (furniturePrototypes.ContainsKey(objectType) == false)
         {
-            Logger.LogError("furniturePrototypes doesn't contain a proto for key: " + objectType);
+            Debug.LogError("furniturePrototypes doesn't contain a proto for key: " + objectType);
             return null;
         }
 
@@ -557,7 +578,7 @@ public class World : IXmlSerializable
     {
         if (furniturePrototypes.ContainsKey(objectType) == false)
         {
-            Logger.LogError("No furniture with type: " + objectType);
+            Debug.LogError("No furniture with type: " + objectType);
             return null;
         }
 
@@ -680,7 +701,7 @@ public class World : IXmlSerializable
         inventoryManager.PlaceInventory(t, inv);
         if (cbInventoryCreated != null)
         {
-            cbInventoryCreated(t.inventory);
+            cbInventoryCreated(t.Inventory);
         }
 
         inv = new Inventory("Steel Plate", 50, 4);
@@ -688,7 +709,7 @@ public class World : IXmlSerializable
         inventoryManager.PlaceInventory(t, inv);
         if (cbInventoryCreated != null)
         {
-            cbInventoryCreated(t.inventory);
+            cbInventoryCreated(t.Inventory);
         }
 
         inv = new Inventory("Copper Wire", 50, 3);
@@ -696,7 +717,7 @@ public class World : IXmlSerializable
         inventoryManager.PlaceInventory(t, inv);
         if (cbInventoryCreated != null)
         {
-            cbInventoryCreated(t.inventory);
+            cbInventoryCreated(t.Inventory);
         }
     }
 
@@ -722,7 +743,7 @@ public class World : IXmlSerializable
 
     void ReadXml_Inventories(XmlReader reader)
     {
-        Logger.Log("ReadXml_Inventories");
+        Debug.Log("ReadXml_Inventories");
 
         if(reader.ReadToDescendant("Inventory"))
         {
@@ -782,9 +803,22 @@ public class World : IXmlSerializable
             {
                 int x = int.Parse(reader.GetAttribute("X"));
                 int y = int.Parse(reader.GetAttribute("Y"));
+                if(reader.GetAttribute("r") != null)
+                {
+                    float r = float.Parse(reader.GetAttribute("r"));
+                    float b = float.Parse(reader.GetAttribute("b"));;
+                    float g = float.Parse(reader.GetAttribute("g"));;
+                    Color color = new Color(r, g, b, 1.0f);
+                    Character c = CreateCharacter(tiles[x, y], color);
+                    c.ReadXml(reader);
+                }
 
-                Character c = CreateCharacter(tiles[x, y]);
-                c.ReadXml(reader);
+                else
+                {
+                    Character c = CreateCharacter(tiles[x, y]);
+                    c.ReadXml(reader);
+                }
+                
             } while(reader.ReadToNextSibling("Character"));
         }
 

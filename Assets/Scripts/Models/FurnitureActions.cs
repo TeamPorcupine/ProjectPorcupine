@@ -52,7 +52,7 @@ public class FurnitureActions
 
             if (func == null)
             {
-                Logger.LogError("'" + fn + "' is not a LUA function.");
+                Debug.LogError("'" + fn + "' is not a LUA function.");
                 return;
             }
 
@@ -60,7 +60,7 @@ public class FurnitureActions
 
             if (result.Type == DataType.String)
             {
-                Logger.Log(result.String);
+                Debug.Log(result.String);
             }
         }
     }
@@ -78,6 +78,6 @@ public class FurnitureActions
 
         // FIXME: I don't like having to manually and explicitly set
         // flags that preven conflicts. It's too easy to forget to set/clear them!
-        theJob.tile.pendingBuildJob = null;
+        theJob.tile.PendingBuildJob = null;
     }
 }

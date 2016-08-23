@@ -27,7 +27,7 @@ public class MouseOverRoomIndexText : MonoBehaviour
 
         if (myText == null)
         {
-            Logger.LogError("MouseOverTileTypeText: No 'Text' UI component on this object.");
+            Debug.LogError("MouseOverTileTypeText: No 'Text' UI component on this object.");
             this.enabled = false;
             return;
         }
@@ -35,7 +35,7 @@ public class MouseOverRoomIndexText : MonoBehaviour
         mouseController = WorldController.Instance.mouseController;
         if (mouseController == null)
         {
-            Logger.LogError("How do we not have an instance of mouse controller?");
+            Debug.LogError("How do we not have an instance of mouse controller?");
             return;
         }
     }
@@ -47,9 +47,9 @@ public class MouseOverRoomIndexText : MonoBehaviour
 
         string roomID = "N/A";
 
-        if (t != null && t.room != null)
+        if (t != null && t.Room != null)
         {
-            roomID = t.room.ID.ToString();
+            roomID = t.Room.ID.ToString();
         }
 
         myText.text = "Room Index: " + roomID;

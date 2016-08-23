@@ -101,9 +101,9 @@ public class BuildModeController
 
                 // Check if there is existing furniture in this tile. If so delete it.
                 // TODO Possibly return resources. Will the Deconstruct() method handle that? If so what will happen if resources drop ontop of new non-passable structure.
-                if (t.furniture != null)
+                if (t.Furniture != null)
                 {
-                    t.furniture.Deconstruct();
+                    t.Furniture.Deconstruct();
                 }
 
                 // Create a job for it to be build
@@ -119,7 +119,7 @@ public class BuildModeController
                 }
                 else
                 {
-                    Logger.LogError("There is no furniture job prototype for '" + furnitureType + "'");
+                    Debug.LogError("There is no furniture job prototype for '" + furnitureType + "'");
                     j = new Job(t, furnitureType, FurnitureActions.JobComplete_FurnitureBuilding, 0.1f, null, Job.JobPriority.High);
                 }
 
@@ -131,11 +131,11 @@ public class BuildModeController
                     {
                         // FIXME: I don't like having to manually and explicitly set
                         // flags that preven conflicts. It's too easy to forget to set/clear them!
-                        Tile offsetTile = WorldController.Instance.world.GetTileAt(x_off, y_off);
-                        offsetTile.pendingBuildJob = j;
+                        Tile offsetTile = WorldController.Instance.world.GetTileAt(x_off,y_off);
+                        offsetTile.PendingBuildJob = j;
                         j.cbJobStopped += (theJob) =>
                             {
-                                offsetTile.pendingBuildJob = null;
+                                offsetTile.PendingBuildJob = null;
                             };
                     }
                 }
@@ -160,8 +160,8 @@ public class BuildModeController
 
             if ( 
                 t.Type != tileType && 
-                t.furniture == null &&
-                t.pendingBuildJob == null &&
+                t.Furniture == null &&
+                t.PendingBuildJob == null &&
                 CanBuildTileTypeHere(t, tileType))
             {
                 // This tile position is valid tile type
@@ -179,10 +179,10 @@ public class BuildModeController
 
                 // FIXME: I don't like having to manually and explicitly set
                 // flags that preven conflicts. It's too easy to forget to set/clear them!
-                t.pendingBuildJob = j;
+                t.PendingBuildJob = j;
                 j.cbJobStopped += (theJob) =>
                 {
-                    theJob.tile.pendingBuildJob = null;
+                    theJob.tile.PendingBuildJob = null;
                 };
 
                 // Add the job to the queue
@@ -199,18 +199,18 @@ public class BuildModeController
         else if (buildMode == BuildMode.DECONSTRUCT)
         {
             // TODO
-            if (t.furniture != null)
+            if (t.Furniture != null)
             {
-                t.furniture.Deconstruct();
+                t.Furniture.Deconstruct();
             }
-            else if (t.pendingBuildJob != null)
+            else if (t.PendingBuildJob != null)
             {
-                t.pendingBuildJob.CancelJob();
+                t.PendingBuildJob.CancelJob();
             }
         }
         else
         {
-            Logger.LogError("UNIMPLEMENTED BUILD MODE");
+            Debug.LogError("UNIMPLEMENTED BUILD MODE");
         }
     }
 
@@ -224,7 +224,7 @@ public class BuildModeController
             case TileType.Floor:
                 return true;
             case TileType.Ladder:
-                return t.room.IsOutsideRoom();
+                return t.Room.IsOutsideRoom();
             default:
                 return true;
         }
@@ -236,7 +236,7 @@ public class BuildModeController
         {
             for (int y_off = t.Y; y_off < (t.Y + WorldController.Instance.world.furniturePrototypes[furnitureType].Height); y_off++)
             {
-                if (WorldController.Instance.world.GetTileAt(x_off, y_off).pendingBuildJob != null)
+                if (WorldController.Instance.world.GetTileAt(x_off, y_off).PendingBuildJob != null)
                 {
                     return true;
                 }
