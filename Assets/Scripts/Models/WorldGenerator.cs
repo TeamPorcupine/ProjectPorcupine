@@ -63,7 +63,7 @@ public class WorldGenerator
 
                 if (startAreaFurnitures[x, y] != null && startAreaFurnitures[x, y] != string.Empty)
                 {
-                    world.PlaceFurniture(startAreaFurnitures[x, y], tile, false);
+                    world.PlaceFurniture(startAreaFurnitures[x, y], tile, true);
                 }
             }
         }
@@ -117,7 +117,7 @@ public class WorldGenerator
         int boundX = (world.Width / 2) - startAreaCenterX;
         int boundY = (world.Height / 2) + startAreaCenterY;
 
-        if (x >= boundX && x < boundX + startAreaWidth && y >= boundY && y < boundY - startAreaHeight)
+        if (x >= boundX && x < (boundX + startAreaWidth) && y >= (boundY - startAreaHeight) && y < boundY)
         {
             return true;
         }
