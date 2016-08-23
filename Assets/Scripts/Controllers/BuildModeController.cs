@@ -121,6 +121,7 @@ public class BuildModeController
                 {
                     Debug.LogError("There is no furniture job prototype for '" + furnitureType + "'");
                     j = new Job(t, furnitureType, FurnitureActions.JobComplete_FurnitureBuilding, 0.1f, null, Job.JobPriority.High);
+                    j.JobDescription = "job_build_" + furnitureType + "_desc";
                 }
 
                 j.furniturePrototype = WorldController.Instance.world.furniturePrototypes[furnitureType];
@@ -176,6 +177,7 @@ public class BuildModeController
                     Job.JobPriority.High, 
                     false,
                     true);
+                j.JobDescription = "job_build_floor_" + tileType;
 
                 // FIXME: I don't like having to manually and explicitly set
                 // flags that preven conflicts. It's too easy to forget to set/clear them!

@@ -77,6 +77,9 @@ public class Job
     public bool canTakeFromStockpile = true;
 
     public Dictionary<string, Inventory> inventoryRequirements;
+    
+    public string JobDescription { get; set; }
+    
 
     /// <summary>
     /// If true, the work will be carried out on any adjacent tile of the target tile rather than on it.
@@ -136,6 +139,7 @@ public class Job
         this.cbJobCompleted = other.cbJobCompleted;
         this.jobTime = other.jobTime;
         this.jobPriority = other.jobPriority;
+        this.JobDescription = other.JobDescription;
 
         cbJobWorkedLua = new List<string>(other.cbJobWorkedLua);
         cbJobCompletedLua = new List<string>(other.cbJobWorkedLua);

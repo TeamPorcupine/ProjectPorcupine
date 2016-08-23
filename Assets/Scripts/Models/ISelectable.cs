@@ -17,5 +17,7 @@ public interface ISelectable
 
     string GetHitPointString();
 
+    string GetJobDescription();
+
     // For indestructible things (if any?) this is allowed to return blank (or null maybe??)
 }

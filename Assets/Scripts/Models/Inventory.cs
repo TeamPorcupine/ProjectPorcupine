@@ -145,5 +145,10 @@ public class Inventory : IXmlSerializable, ISelectable
     {
     }
 
+    public string GetJobDescription()
+    {
+        return "";
+    }
+
     #endregion
 }

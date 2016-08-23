@@ -170,6 +170,7 @@ public class Character : IXmlSerializable, ISelectable
                 null,
                 Job.JobPriority.Low,
                 false);
+            myJob.JobDescription = "job_waiting_desc";
         }
 
         // Get our destination from the job
@@ -635,6 +636,18 @@ public class Character : IXmlSerializable, ISelectable
     public Color GetCharacterColor()
     {
         return characterColor;
+    }
+
+    public string GetJobDescription()
+    {
+        if (myJob == null)
+        {
+            return "No job";
+        }
+
+        // TODO: This (as the whole ISelectable system) should use localization
+        return myJob.JobDescription;
+
     }
 
     #endregion
