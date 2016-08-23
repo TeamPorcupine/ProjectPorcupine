@@ -12,17 +12,14 @@ using System.Collections;
 
 public class MenuController : MonoBehaviour
 {
+    DialogBoxManager dbm;
+
     // The left build menu.
     public GameObject constructorMenu;
 
     // The sub menus of the build menu (furniture, floor..... later - power, security, drones).
     public GameObject furnitureMenu;
     public GameObject floorMenu;
-
-    //The options and settings
-    public GameObject optionsMenu;
-    public GameObject settingsMenu;
-
 
     public Button buttonConstructor;
     public Button buttonWorld;
@@ -33,7 +30,7 @@ public class MenuController : MonoBehaviour
     // Use this for initialization.
     void Start()
     {
-        DeactivateAll();
+        dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
 
         // Add liseners here.
         buttonConstructor.onClick.AddListener(delegate
@@ -60,14 +57,14 @@ public class MenuController : MonoBehaviour
             {
                 OnButtonSettings();
             });
+
+        DeactivateAll();
     }
 
     // Deactivates All Menus.
     public void DeactivateAll()
     {
         constructorMenu.SetActive(false);
-        settingsMenu.SetActive(false);
-        optionsMenu.SetActive(false);
         DeactivateSubs();
 
     }
@@ -113,13 +110,19 @@ public class MenuController : MonoBehaviour
 
     public void OnButtonOptions()
     {
-        DeactivateAll();
-        optionsMenu.SetActive(true);
+        if (!WorldController.Instance.IsModal)
+        {
+            DeactivateAll();
+            dbm.dialogBoxOptions.ShowDialog();
+        }
     }
 
     public void OnButtonSettings()
     {
-        DeactivateAll();
-        settingsMenu.SetActive(true);
+        if (!WorldController.Instance.IsModal)
+        {
+            DeactivateAll();
+            dbm.dialogBoxSettings.ShowDialog();
+        }
     }
 }
