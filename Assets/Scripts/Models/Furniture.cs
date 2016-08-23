@@ -126,7 +126,6 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         }
         
         DynValue ret = FurnitureActions.CallFunction(getSpriteNameAction, this);
-
         return ret.String;
     }
 

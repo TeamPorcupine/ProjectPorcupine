@@ -68,45 +68,37 @@ function IsEnterable_Door( furniture )
 end
 
 function GetSpriteName_Door( furniture )
+	-- Door is closed
 	if (furniture.GetParameter("openness") < 0.1) then
-		-- Door is closed
-		spriteName = "Door";
-	
-	else if (furn.GetParameter("openness") < 0.5) then
-		-- Door is a bit open
-		spriteName = "Door_openness_1";
-	
-	else if (furn.GetParameter("openness") < 0.9) then
-		-- Door is a lot open
-		spriteName = "Door_openness_2";
-	
-	else
-		-- Door is a fully open
-		spriteName = "Door_openness_3";
+		return "Door"
 	end
-	
-	return spriteName
+	-- Door is a bit open
+	if (furniture.GetParameter("openness") < 0.5) then
+		return "Door_openness_1"
+	end
+	-- Door is a lot open
+	if (furniture.GetParameter("openness") < 0.9) then
+		return "Door_openness_2"
+	end
+	-- Door is a fully open
+	return "Door_openness_3"
 end
 
 function GetSpriteName_Airlock( furniture )
+	-- Door is closed
 	if (furniture.GetParameter("openness") < 0.1) then
-		-- Door is closed
-		spriteName = "Airlock";
-	
-	else if (furn.GetParameter("openness") < 0.5) then
-		-- Door is a bit open
-		spriteName = "Airlock_openness_1";
-	
-	else if (furn.GetParameter("openness") < 0.9) then
-		-- Door is a lot open
-		spriteName = "Airlock_openness_2";
-	
-	else
-		-- Door is a fully open
-		spriteName = "Airlock_openness_3";
+		return "Airlock"
 	end
-	
-	return spriteName
+	-- Door is a bit open
+	if (furniture.GetParameter("openness") < 0.5) then
+		return "Airlock_openness_1"
+	end
+	-- Door is a lot open
+	if (furniture.GetParameter("openness") < 0.9) then
+		return "Airlock_openness_2"
+	end
+	-- Door is a fully open
+	return "Airlock_openness_3"
 end
 
 function Stockpile_GetItemsFromFilter()

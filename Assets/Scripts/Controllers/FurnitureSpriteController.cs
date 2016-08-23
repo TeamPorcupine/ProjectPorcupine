@@ -201,53 +201,36 @@ public class FurnitureSpriteController
 
         if (furn.linksToNeighbour == false)
         {
-            return SpriteManager.current.GetSprite("Furniture", spriteName); // furnitureSprites[spriteName];
+            return SpriteManager.current.GetSprite("Furniture", spriteName);
         }
 
         // Otherwise, the sprite name is more complicated.
-
-        spriteName = furn.objectType + "_";
+        spriteName += "_";
 
         // Check for neighbours North, East, South, West
-
         int x = furn.tile.X;
         int y = furn.tile.Y;
 
-        Tile t;
-
-        t = world.GetTileAt(x, y + 1);
-        if (t != null && t.Furniture != null && t.Furniture.objectType == furn.objectType)
-        {
-            spriteName += "N";
-        }
-        t = world.GetTileAt(x + 1, y);
-        if (t != null && t.Furniture != null && t.Furniture.objectType == furn.objectType)
-        {
-            spriteName += "E";
-        }
-        t = world.GetTileAt(x, y - 1);
-        if (t != null && t.Furniture != null && t.Furniture.objectType == furn.objectType)
-        {
-            spriteName += "S";
-        }
-        t = world.GetTileAt(x - 1, y);
-        if (t != null && t.Furniture != null && t.Furniture.objectType == furn.objectType)
-        {
-            spriteName += "W";
-        }
+        spriteName += GetSuffixForNeighbour(x, y + 1, "N");
+        spriteName += GetSuffixForNeighbour(x + 1, y, "E");
+        spriteName += GetSuffixForNeighbour(x, y - 1, "S");
+        spriteName += GetSuffixForNeighbour(x - 1, y, "W");
 
         // For example, if this object has all four neighbours of
         // the same type, then the string will look like:
         //       Wall_NESW
-
-        /*		if(furnitureSprites.ContainsKey(spriteName) == false) {
-                    Debug.LogError("GetSpriteForInstalledObject -- No sprites with name: " + spriteName);
-                    return null;
-                }
-        */
-
-        return SpriteManager.current.GetSprite("Furniture", spriteName); //furnitureSprites[spriteName];
-
+        
+        return SpriteManager.current.GetSprite("Furniture", spriteName);
+    }
+    
+    private function GetSuffixForNeighbour(int x, int y, string suffix)
+    {
+         Tile t = world.GetTileAt(x, y);
+         if (t != null && t.Furniture != null && t.Furniture.objectType == furn.objectType)
+         {
+             return suffix;
+         }
+         return "";
     }
 
     Sprite GetPowerStatusSprite()
