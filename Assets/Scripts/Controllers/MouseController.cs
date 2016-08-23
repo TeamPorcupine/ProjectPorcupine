@@ -248,26 +248,15 @@ public class MouseController
 
     private void UpdateDragging()
     {
-        // Clean up old drag previews
-        while (dragPreviewGameObjects.Count > 0)
-        {
-            GameObject go = dragPreviewGameObjects[0];
-            dragPreviewGameObjects.RemoveAt(0);
-            SimplePool.Despawn(go);
-        }
+        CleanUpDragPreviews();
 
         if (currentMode != MouseMode.BUILD)
         {
             return;
         }
 
-        // Start Drag.
-        if (Input.GetMouseButtonDown(0))
-        {
-            dragStartPosition = currPlacingPosition;
-            isDragging = true;
-        }
-        else if (isDragging == false)
+        isDragging = CheckDragStart();
+        if(isDragging == false || bmc.IsObjectDraggable())
         {
             dragStartPosition = currPlacingPosition;
         }
@@ -277,11 +266,6 @@ public class MouseController
             // The RIGHT mouse button was released, so we
             // are cancelling any dragging/build mode.
             isDragging = false;
-        }
-
-        if (bmc.IsObjectDraggable() == false)
-        {
-            dragStartPosition = currPlacingPosition;
         }
 
         int start_x = Mathf.FloorToInt(dragStartPosition.x + 0.5f);
@@ -344,7 +328,6 @@ public class MouseController
                                 {
                                     isValid = true;
                                 }
-
                             }
                             else if (!xNeg && x <= raw_end_x && x >= raw_start_x)
                             {
@@ -353,7 +336,6 @@ public class MouseController
                                     isValid = true;
                                 }
                             }
-    
                         }
                         else
                         {
@@ -409,7 +391,8 @@ public class MouseController
                             {
                                 isValid = true;
                             } 
-                        } else if (dragType == "path")
+                        }
+                        else if (dragType == "path")
                         {
                             bool xNeg = raw_start_x > raw_end_x ? true : false;
 
@@ -419,7 +402,6 @@ public class MouseController
                                 {
                                     isValid = true;
                                 }
-
                             }
                             else if (!xNeg && x <= raw_end_x && x >= raw_start_x)
                             {
@@ -428,7 +410,6 @@ public class MouseController
                                     isValid = true;
                                 }
                             }
-
                         }
                         else
                         {
@@ -451,6 +432,31 @@ public class MouseController
                 }
             }
         }
+    }
+
+    private void CleanUpDragPreviews()
+    {
+        while (dragPreviewGameObjects.Count > 0)
+        {
+            GameObject go = dragPreviewGameObjects[0];
+            dragPreviewGameObjects.RemoveAt(0);
+            SimplePool.Despawn(go);
+        }
+    }
+
+    private bool CheckDragStart()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            dragStartPosition = currPlacingPosition;
+            return true;
+        }
+        return false;
+    }
+
+    private void CheckDragEnd()
+    {
+        
     }
 
     private void UpdateSpawnClicking()
