@@ -148,6 +148,7 @@ public class Job
         this.cbJobCompleted = other.cbJobCompleted;
         this.jobTime = other.jobTime;
         this.jobPriority = other.jobPriority;
+        this.adjacent = other.adjacent;
 
         cbJobWorkedLua = new List<string>(other.cbJobWorkedLua);
         cbJobCompletedLua = new List<string>(other.cbJobWorkedLua);
