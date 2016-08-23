@@ -21,14 +21,18 @@ using UnityEngine;
 [MoonSharpUserData]
 public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, IPowerRelated
 {
+    /// <summary>
+    /// This class handles LUA actions take in response to events triggered within C# or LUA. For each event name (e.g. OnUpdate, ...) there
+    /// is a list of LUA function that are registered and will be called once the event with that name is fired.
+    /// </summary>
     [MoonSharpUserData]
-    protected class EventAction<T>
+    protected class EventAction
     {
         Dictionary<string, List<string>> actionsList = new Dictionary<string, List<string>>();
         
-        public EventAction<T> Clone(T new_parent)
+        public EventAction Clone()
         {
-            EventAction<T> evt = new EventAction<T>();
+            EventAction evt = new EventAction();
 
             evt.actionsList = new Dictionary<string, List<string>>(actionsList);
 
@@ -90,7 +94,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     /// they belong to, plus a deltaTime.
     /// </summary>
     // protected Action<Furniture, float> updateActions;
-    protected EventAction<Furniture> eventActions;
+    protected EventAction eventActions;
     
     // public Func<Furniture, ENTERABILITY> IsEnterable;
     protected string isEnterableAction;
@@ -262,7 +266,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     // Empty constructor is used for serialization
     public Furniture()
     {
-        eventActions = new EventAction<Furniture>();
+        eventActions = new EventAction();
 
         furnParameters = new Dictionary<string, float>();
         jobs = new List<Job>();
@@ -295,7 +299,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
 
         if (other.eventActions != null)
         {
-            this.eventActions = other.eventActions.Clone(other);
+            this.eventActions = other.eventActions.Clone();
         }
 
         this.isEnterableAction = other.isEnterableAction;
