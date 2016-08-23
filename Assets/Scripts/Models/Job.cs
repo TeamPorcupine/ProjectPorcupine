@@ -105,6 +105,7 @@ public class Job
         this.isNeed = isNeed;
         this.critical = critical;
         this.jobPriority = jobPriority;
+        this.JobDescription = "job_error_missing_desc";
 
         cbJobWorkedLua = new List<string>();
         cbJobCompletedLua = new List<string>();
@@ -128,6 +129,7 @@ public class Job
         this.jobRepeats = jobRepeats;
         this.jobPriority = jobPriority;
         this.adjacent = adjacent;
+        this.JobDescription = "job_error_missing_desc";
 
         cbJobWorkedLua = new List<string>();
         cbJobCompletedLua = new List<string>();
