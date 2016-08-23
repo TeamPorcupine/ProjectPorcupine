@@ -45,6 +45,22 @@ public class InventorySpriteController
         //c.SetDestination( world.GetTileAt( world.Width/2 + 5, world.Height/2 ) );
     }
 
+    public void Remove()
+    {
+        GameObject.Destroy(inventoryParent);
+        inventoryGameObjectMap.Clear();
+
+        world.cbInventoryCreated -= OnInventoryCreated;
+
+        foreach (string objectType in world.inventoryManager.inventories.Keys)
+        {
+            foreach (Inventory inv in world.inventoryManager.inventories[objectType])
+            {
+                inv.cbInventoryChanged -= OnInventoryChanged;
+            }
+        }
+    }
+
     public void OnInventoryCreated(Inventory inv)
     {
         //Debug.Log("OnInventoryCreated");

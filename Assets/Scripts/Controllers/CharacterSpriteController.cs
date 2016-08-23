@@ -39,6 +39,19 @@ public class CharacterSpriteController
         //c.SetDestination( world.GetTileAt( world.Width/2 + 5, world.Height/2 ) );
     }
 
+    public void Remove()
+    {
+        GameObject.Destroy(characterParent);
+        characterGameObjectMap.Clear();
+
+        world.cbCharacterCreated -= OnCharacterCreated;
+
+        foreach (Character c in world.characters)
+        {
+            c.cbCharacterChanged -= OnCharacterChanged;
+        }
+    }
+
     public void OnCharacterCreated(Character c)
     {
         // Debug.Log("OnCharacterCreated");

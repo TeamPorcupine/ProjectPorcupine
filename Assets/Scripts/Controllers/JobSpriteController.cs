@@ -32,6 +32,25 @@ public class JobSpriteController
         jobParent = new GameObject("Jobs");
     }
 
+    public void Remove(){
+        jobGameObjectMap.Clear();
+
+        world.jobQueue.cbJobCreated -= OnJobCreated;
+        world.jobWaitingQueue.cbJobCreated -= OnJobCreated;
+
+        foreach(Job job in world.jobQueue.PeekJobs()){
+            job.cbJobCompleted -= OnJobEnded;
+            job.cbJobStopped -= OnJobEnded;
+        }
+
+        foreach(Job job in world.jobWaitingQueue.PeekJobs()){
+            job.cbJobCompleted -= OnJobEnded;
+            job.cbJobStopped -= OnJobEnded;
+        }
+
+        GameObject.Destroy(jobParent);
+    }
+
     void OnJobCreated(Job job)
     {
 

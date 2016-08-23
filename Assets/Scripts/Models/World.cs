@@ -61,7 +61,7 @@ public class World : IXmlSerializable
     public JobQueue jobQueue;
     public JobQueue jobWaitingQueue;
 
-    static public World current { get; protected set; }
+    static public World current;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="World"/> class.
@@ -86,8 +86,6 @@ public class World : IXmlSerializable
     {
 
     }
-
-
 
     public Room GetOutsideRoom()
     {

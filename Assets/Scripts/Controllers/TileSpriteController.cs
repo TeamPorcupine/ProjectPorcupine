@@ -17,15 +17,26 @@ public class TileSpriteController
     Dictionary<Tile, GameObject> tileGameObjectMap;
 
     World world;
+    private GameObject tileParent;
 
     // Use this for initialization
     public TileSpriteController(World currnetWorld)
     {
         world = currnetWorld;
+        Render();
     }
 
-    public void Render() {
-        GameObject tileParent = new GameObject("Tiles");
+    public void Remove()
+    {
+        GameObject.Destroy(tileParent);
+
+        tileGameObjectMap.Clear();
+
+        world.cbTileChanged -= OnTileChanged;
+    }
+
+    private void Render() {
+        tileParent = new GameObject("Tiles");
 
         // Instantiate our dictionary that tracks which GameObject is rendering which Tile data.
         tileGameObjectMap = new Dictionary<Tile, GameObject>();

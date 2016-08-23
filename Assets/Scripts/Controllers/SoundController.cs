@@ -11,14 +11,22 @@ using System.Collections;
 
 public class SoundController
 {
-    float soundCooldown = 0;
+    private float soundCooldown = 0;
+    private World world;
 
     // Use this for initialization
     public SoundController(World world)
     {
+        this.world = world;
         world.cbFurnitureCreated += OnFurnitureCreated;
         world.cbTileChanged += OnTileChanged;
     }
+
+    public void Remove(){
+        world.cbFurnitureCreated -= OnFurnitureCreated;
+        world.cbTileChanged -= OnTileChanged;
+    }
+
 	
     // Update is called once per frame
     public void Update(float deltaTime)

@@ -17,12 +17,12 @@ using System.IO;
 
 public class WorldController : MonoBehaviour
 {
-    Dictionary<World, SoundController> soundController;
-    Dictionary<World, TileSpriteController> tileSpriteController;
-    Dictionary<World, CharacterSpriteController> characterSpriteController;
-    Dictionary<World, JobSpriteController> jobSpriteController;
-    Dictionary<World, InventorySpriteController> inventorySpriteController;
-    Dictionary<World, FurnitureSpriteController> furnitureSpriteController;
+    SoundController soundController;
+    TileSpriteController tileSpriteController;
+    CharacterSpriteController characterSpriteController;
+    JobSpriteController jobSpriteController;
+    InventorySpriteController inventorySpriteController;
+    FurnitureSpriteController furnitureSpriteController;
 
     public BuildModeController buildModeController;
     public MouseController mouseController;
@@ -43,16 +43,18 @@ public class WorldController : MonoBehaviour
         {
             if (worlds.Contains(value))
             {
-                // DisableControllers(_currentWorld) or DeleteControllers(_currentWorld)
+                DisableControllers();
                 _currentWorld = value;
-                // EnableControllers(_currentWorld);
+                World.current = _currentWorld;
+                LoadWorldControllers();
             }
             else
             {
                 worlds.Add(value);
-                // DisableControllers(_currentWorld) or DeleteControllers(_currentWorld)
+                DisableControllers();
                 _currentWorld = value;
-                // LoadWorldControllers(value)
+                World.current = _currentWorld;
+                LoadWorldControllers();
             }
         }
     }
@@ -94,13 +96,6 @@ public class WorldController : MonoBehaviour
     // Use this for initialization
     void OnEnable()
     {
-        soundController = new Dictionary<World, SoundController>();
-        tileSpriteController = new Dictionary<World, TileSpriteController>();
-        characterSpriteController = new Dictionary<World, CharacterSpriteController>();
-        jobSpriteController = new Dictionary<World, JobSpriteController>();
-        inventorySpriteController = new Dictionary<World, InventorySpriteController>();
-        furnitureSpriteController = new Dictionary<World, FurnitureSpriteController>();
-
         if (Instance != null)
         {
             Debug.LogError("There should never be two world controllers.");
@@ -116,16 +111,9 @@ public class WorldController : MonoBehaviour
         else
         {
             CreateEmptyWorld();
-            LoadWorldControllers(world);
         }
 
         LoadControllers();
-    }
-
-    void Start()
-    {
-        //LoadWorldControllers(world);
-        //LoadControllers();
     }
 
     private void LoadControllers()
@@ -135,48 +123,78 @@ public class WorldController : MonoBehaviour
         {
             spawnInventoryController = new SpawnInventoryController();
         }
-        mouseController = new MouseController(buildModeController, furnitureSpriteController[world], circleCursorPrefab);
+        mouseController = new MouseController(buildModeController, furnitureSpriteController, circleCursorPrefab);
 
         //Initialising controllers
         GameObject Controllers = GameObject.Find("Controllers");
         Instantiate(Resources.Load("UIController"), Controllers.transform);
     }
 
-    private void LoadWorldControllers(World __world)
+    private void LoadWorldControllers()
     {
-        soundController[__world] = new SoundController(__world);
-        tileSpriteController[__world] = new TileSpriteController(__world);
-        tileSpriteController[__world].Render();
-        characterSpriteController[__world] = new CharacterSpriteController(__world);
+        soundController = new SoundController(_currentWorld);
+        tileSpriteController = new TileSpriteController(_currentWorld);
+        characterSpriteController = new CharacterSpriteController(_currentWorld);
+        furnitureSpriteController = new FurnitureSpriteController(_currentWorld);
+        jobSpriteController = new JobSpriteController(_currentWorld, furnitureSpriteController);
+        inventorySpriteController = new InventorySpriteController(_currentWorld, inventoryUI);
 
-        FurnitureSpriteController fsc = new FurnitureSpriteController(__world);
-        furnitureSpriteController[__world] = fsc;
-
-        jobSpriteController[__world] = new JobSpriteController(__world, fsc);
-        inventorySpriteController[__world] = new InventorySpriteController(__world, inventoryUI);
-
-        if(mouseController != null){
-            mouseController.SetFurnitureSpriteController(fsc);
+        if (mouseController != null)
+        {
+            mouseController.SetFurnitureSpriteController(furnitureSpriteController);
         }
     }
+
+    private void DisableControllers()
+    {
+        if(soundController != null) 
+            soundController.Remove();
         
+        if(tileSpriteController != null) 
+            tileSpriteController.Remove();
+
+        if(characterSpriteController != null) 
+            characterSpriteController.Remove();
+
+        if(furnitureSpriteController != null) 
+            furnitureSpriteController.Remove();
+
+        if(jobSpriteController != null) 
+            jobSpriteController.Remove();
+
+        if(inventorySpriteController != null) 
+            inventorySpriteController.Remove();
+    }
+        
+    // For testing only
+    public bool goBack, newWorld;
+
     void Update()
     {
         if (world == null)
             return;
+
+        if(goBack)
+        {
+            world = worlds[0];
+            goBack = false;
+        }
+
+        if(newWorld)
+        {
+            CreateEmptyWorld();
+            newWorld = false;
+        }
 
         CheckTimeInput();
         mouseController.Update(IsModal);
 
         if (IsPaused == false)
         {
-            foreach(World __world in worlds)
-            {
-                __world.Update(Time.deltaTime * timeScale);
-            }
+            world.Update(Time.deltaTime * timeScale);
         }
 
-        soundController[world].Update(Time.deltaTime);
+        soundController.Update(Time.deltaTime);
     }
 
     void CheckTimeInput()
