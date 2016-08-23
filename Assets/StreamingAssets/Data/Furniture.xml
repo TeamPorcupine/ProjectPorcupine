@@ -61,8 +61,8 @@
             <Inventory objectType="Steel Plate" amount="1" />
         </DeconstructJob>
 
-        <Action event="OnUpdate" FunctionName="OnUpdate_Door" />
-        <Action event="OnUpdate" FunctionName="OnUpdate_Leak_Door" />
+        <Action event="OnUpdate" functionName="OnUpdate_Door" />
+        <Action event="OnUpdate" functionName="OnUpdate_Leak_Door" />
 
         <IsEnterable FunctionName="IsEnterable_Door" />
 
@@ -97,8 +97,8 @@
             <Inventory objectType="Steel Plate" amount="7" />
         </DeconstructJob>
 
-        <Action event="OnUpdate" FunctionName="OnUpdate_Door" />
-        <Action event="OnUpdate" FunctionName="OnUpdate_Leak_Airlock" />
+        <Action event="OnUpdate" functionName="OnUpdate_Door" />
+        <Action event="OnUpdate" functionName="OnUpdate_Leak_Airlock" />
 
         <IsEnterable FunctionName="IsEnterable_Door" />
 
@@ -118,7 +118,7 @@
         <BuildingJob jobTime="0">
         </BuildingJob>
 
-        <Action event="OnUpdate" FunctionName="Stockpile_UpdateAction" />
+        <Action event="OnUpdate" functionName="Stockpile_UpdateAction" />
         
         <LocalizationCode>furn_stockpile</LocalizationCode>
         <UnlocalizedDescription>furn_stockpile_desc</UnlocalizedDescription>
@@ -136,7 +136,7 @@
         <BuildingJob jobTime="0">
         </BuildingJob>
 
-        <Action event="OnUpdate" FunctionName="OnUpdate_GasGenerator" />
+        <Action event="OnUpdate" functionName="OnUpdate_GasGenerator" />
 
         <Params>
             <!-- <Param name="gas_name" value="O2" /> -->
@@ -164,7 +164,7 @@
         <JobSpotOffset X="1" Y="0" />
         <JobSpawnSpotOffset X="0" Y="0" />
 
-        <Action event="OnUpdate" FunctionName="MiningDroneStation_UpdateAction" />
+        <Action event="OnUpdate" functionName="MiningDroneStation_UpdateAction" />
         
         <LocalizationCode>furn_mining_drone_station</LocalizationCode>
         <UnlocalizedDescription>furn_mining_drone_station_desc</UnlocalizedDescription>
@@ -188,7 +188,7 @@
           <Param name="burnTimeRequired" value="10" />
       </Params>
       
-	  <Action event="OnUpdate" FunctionName="PowerGenerator_UpdateAction" />
+	  <Action event="OnUpdate" functionName="PowerGenerator_UpdateAction" />
         
       <LocalizationCode>furn_power_generator</LocalizationCode>
       <UnlocalizedDescription>furn_power_generator_desc</UnlocalizedDescription>
@@ -211,7 +211,7 @@
         <JobSpotOffset X="0" Y="-1" />
         <JobSpawnSpotOffset X="1" Y="-1" />
 
-	<Action event="OnUpdate" FunctionName="CloningPod_UpdateAction" />
+	<Action event="OnUpdate" functionName="CloningPod_UpdateAction" />
 			
 	<LocalizationCode>furn_cloning_pod</LocalizationCode>
 	<UnlocalizedDescription>furn_cloning_pod_desc</UnlocalizedDescription>
@@ -228,7 +228,7 @@
       
       <JobSpotOffset X="1" Y="0" />
 
-      <Action event="OnUpdate" FunctionName="MetalSmelter_UpdateAction" />
+      <Action event="OnUpdate" functionName="MetalSmelter_UpdateAction" />
 
       <Params>
           <Param name="smelttime" value="0" />
@@ -251,9 +251,9 @@
     <BuildingJob jobTime="0"></BuildingJob>
 
     <!-- This method gets called on Install -->
-    <Action event="OnInstall" FunctionName="Heater_InstallAction"></Action>
+    <Action event="OnInstall" functionName="Heater_InstallAction"></Action>
     <!-- This method gets called on Uninstall -->
-    <Action event="OnUninstall" FunctionName="Heater_UninstallAction"></Action>
+    <Action event="OnUninstall" functionName="Heater_UninstallAction"></Action>
       
     <Params>
       <Param name="temperature" value="10" />
@@ -278,7 +278,7 @@
 			<Param name="presstime_required" value="15" />
 		</Params>
 
-		<Action event="OnUpdate" FunctionName="PowerCellPress_UpdateAction" />
+		<Action event="OnUpdate" functionName="PowerCellPress_UpdateAction" />
 
 		<LocalizationCode>furn_power_cell_press</LocalizationCode>
 		<UnlocalizedDescription>furn_power_cell_press_desc</UnlocalizedDescription>
@@ -288,7 +288,7 @@
   <Furniture objectType="Small Landing Pad">
     <Name>Small Landing Pad</Name>
     <Description>A landing pad for small spaceboats to land.</Description>
-    <Action event="OnUpdate" FunctionName="LandingPad_Temp_UpdateAction" />
+    <Action event="OnUpdate" functionName="LandingPad_Temp_UpdateAction" />
     <MovementCost>5</MovementCost>
     <Width>3</Width>
     <Height>3</Height>

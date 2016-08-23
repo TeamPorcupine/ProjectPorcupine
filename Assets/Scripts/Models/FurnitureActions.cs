@@ -44,10 +44,16 @@ public class FurnitureActions
         _Instance.myLuaScript.DoString(rawLuaCode);
     }
 
-    public static void CallFunctionsWithFurniture(string[] functionNames, object furn, float deltaTime)
+    public static void CallFunctionsWithFurniture<T>(string[] functionNames, T furn, float deltaTime)
     {
+        if (furn == null)
+        {
+            Debug.LogError("Furn is null, cannot call LUA function (something is fishy).");
+        }
+
         foreach (string fn in functionNames)
         {
+            Debug.Log("Calling " + fn);
             object func = _Instance.myLuaScript.Globals[fn];
 
             if (func == null)

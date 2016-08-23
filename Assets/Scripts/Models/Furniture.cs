@@ -21,19 +21,20 @@ using UnityEngine;
 [MoonSharpUserData]
 public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, IPowerRelated
 {
-    protected class EventAction
+    [MoonSharpUserData]
+    protected class EventAction<T>
     {
-        Dictionary<string, List<string>> actionsList;
-        object parent;
+        Dictionary<string, List<string>> actionsList = new Dictionary<string, List<string>>();
+        public T parent;
 
-        public EventAction(object _parent)
+        public EventAction(T _parent)
         {
             parent = _parent;
         }
 
-        public EventAction Clone(object new_parent)
+        public EventAction<T> Clone(T new_parent)
         {
-            EventAction evt = new EventAction(new_parent);
+            EventAction<T> evt = new EventAction<T>(new_parent);
 
             evt.actionsList = new Dictionary<string, List<string>>(actionsList);
 
@@ -42,8 +43,14 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
 
         public void ReadXml(XmlReader reader)
         {
+            reader.Read();
+            if(reader.Name != "Action")
+            {
+                Debug.LogError(string.Format("The element is not an Action, but a \"{0}\"", reader.Name));
+            }
+
             string name = reader.GetAttribute("event");
-             if (name == null) {
+            if (name == null) {
                 Debug.LogError(string.Format("The attribute \"event\" is a mandatory for an \"Action\" element."));
              }
             string functionName = reader.GetAttribute("functionName");
@@ -56,13 +63,18 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
 
         public void Register(string actionName, string luaFunc)
         {
-            if (actionsList[actionName] == null) actionsList[actionName] = new List<string>();
+            Debug.Log(string.Format("Registering the LUA function {0} to Action {1}.", luaFunc, actionName));
+            if (!actionsList.ContainsKey(actionName) || actionsList[actionName] == null) actionsList[actionName] = new List<string>();
             actionsList[actionName].Add(luaFunc);
         }
 
-        public void Trigger(string  actionName, float deltaTime = 0)
+        public void Trigger(string  actionName, float deltaTime = 0f)
         {
-            if (actionsList[actionName] == null) return;
+            if (!actionsList.ContainsKey(actionName) || actionsList[actionName] == null)
+            {
+                //Debug.LogWarning(string.Format("The action \"{0}\" is associated with no LUA function.", actionName));
+                return;
+            }
             else
             {
                 FurnitureActions.CallFunctionsWithFurniture(actionsList[actionName].ToArray(), parent, deltaTime);
@@ -84,7 +96,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     /// they belong to, plus a deltaTime.
     /// </summary>
     // protected Action<Furniture, float> updateActions;
-    protected EventAction eventActions;
+    protected EventAction<Furniture> eventActions;
     
     // public Func<Furniture, ENTERABILITY> IsEnterable;
     protected string isEnterableAction;
@@ -130,8 +142,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
 
     public void Update(float deltaTime)
     {
-        if (eventActions != null)
+        if (eventActions != null && eventActions.parent.tile != null)
         {
+
             // updateActions(this, deltaTime);
             eventActions.Trigger("OnUpdate");
         }
@@ -254,7 +267,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     // Empty constructor is used for serialization
     public Furniture()
     {
-        eventActions = new EventAction(this);
+        eventActions = new EventAction<Furniture>(this);
         furnParameters = new Dictionary<string, float>();
         jobs = new List<Job>();
         typeTags = new HashSet<string>();
@@ -362,7 +375,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         }
 
         // Call LUA install scripts
-        obj.eventActions.Trigger("Oninstall");
+        obj.eventActions.Trigger("OnInstall");
 
         // Update thermalDiffusifity using coefficient
         float thermalDiffusivity = Temperature.defaultThermalDiffusivity;
@@ -559,7 +572,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
 
                 break;
             case "Action":
-                    eventActions.ReadXml(reader);
+                XmlReader subtree = reader.ReadSubtree();
+                eventActions.ReadXml(subtree);
+                subtree.Close();
 
                 break;
             case "IsEnterable":
