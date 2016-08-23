@@ -83,6 +83,18 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         }
 
         /// <summary>
+        /// Deregister a function named luaFunc, from the action
+        /// </summary>
+        /// <param name="actionName">Name of event triggering action</param>
+        /// <param name="luaFunc">Lua function to add to list of actions</param>
+        public void Deregister(string actionName, string luaFunc)
+        {
+            //Debug.Log(string.Format("Registering the LUA function {0} to Action {1}.", luaFunc, actionName));
+            if (!actionsList.ContainsKey(actionName) || actionsList[actionName] == null) return;
+            actionsList[actionName].Remove(luaFunc);
+        }
+
+        /// <summary>
         /// "Fire" the event named actionName, resulting in all lua functions being called
         /// </summary>
         /// <param name="actionName">Name of the action being triggered</param>
