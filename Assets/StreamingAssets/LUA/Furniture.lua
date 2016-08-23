@@ -140,7 +140,6 @@ function Stockpile_GetItemsFromFilter( furniture )
     -- Since jobs copy arrays automatically, we could already have
     -- an Inventory[] prepared and just return that (as a sort of example filter)
 
-	--return { Inventory.__new("Steel Plate", 50, 0) }
 	return furniture.AcceptsForStorage()
 end
 
@@ -368,6 +367,7 @@ function MetalSmelter_JobWorked(j)
 end
 
 function PowerCellPress_UpdateAction(furniture, deltaTime)
+<<<<<<< 6d42db4eadcaee2c1ac85d403c9c06703997b463
     local spawnSpot = furniture.GetSpawnSpotTile()
 
     if(spawnSpot.Inventory == nil) then
@@ -411,6 +411,56 @@ function PowerCellPress_UpdateAction(furniture, deltaTime)
             end
         end
     end
+=======
+	spawnSpot = furniture.GetSpawnSpotTile()
+	
+	if(spawnSpot.Inventory == nil) then
+		if(furniture.JobCount() == 0) then
+			itemsDesired = {Inventory.__new("plate_steel", 10, 0)}
+			
+			jobSpot = furniture.GetJobSpotTile()
+
+			j = Job.__new(
+			jobSpot,
+			nil,
+			nil,
+			1,
+			itemsDesired,
+			Job.JobPriority.Medium,
+			false
+			)
+			
+			j.RegisterJobCompletedCallback("PowerCellPress_JobComplete")
+			j.JobDescription = "job_power_cell_fulling_desc"
+			
+			furniture.AddJob(j)
+		end
+	else
+		furniture.Parameters["presstime"].ChangeFloatValue(deltaTime)
+		
+		if(furniture.Parameters["presstime"].ToFloat() >= furniture.Parameters["presstime_required"].ToFloat()) then
+			furniture.Parameters["presstime"].SetValue(0)
+			
+			outputSpot = World.current.GetTileAt(spawnSpot.X+2, spawnSpot.y)
+			
+			if(outputSpot.Inventory == nil) then
+				World.current.inventoryManager.PlaceInventory( outputSpot, Inventory.__new("cell_power", 5, 1) )
+			
+				spawnSpot.Inventory.stackSize = spawnSpot.Inventory.stackSize-10
+			else
+				if(outputSpot.Inventory.stackSize <= 4) then
+					outputSpot.Inventory.stackSize = outputSpot.Inventory.stackSize+1
+				
+					spawnSpot.Inventory.stackSize = spawnSpot.Inventory.stackSize-10
+				end
+			end
+			
+			if(spawnSpot.Inventory.stackSize <= 0) then
+				spawnSpot.Inventory = nil
+			end
+		end
+	end
+>>>>>>> Refactor of xml and lua files to new naming standard
 end
 
 function PowerCellPress_JobComplete(j)
@@ -452,9 +502,15 @@ end
 function PowerGenerator_UpdateAction(furniture, deltatime)
     if (furniture.JobCount() < 1 and furniture.Parameters["burnTime"].ToFloat() == 0) then
         furniture.PowerValue = 0
+<<<<<<< 6d42db4eadcaee2c1ac85d403c9c06703997b463
         local itemsDesired = {Inventory.__new("Uranium", 5, 0)}
 
         local j = Job.__new(
+=======
+        itemsDesired = {Inventory.__new("uranium", 5, 0)}
+        
+        j = Job.__new(
+>>>>>>> Refactor of xml and lua files to new naming standard
             furniture.GetJobSpotTile(),
             nil,
             nil,
@@ -484,6 +540,27 @@ function LandingPad_Temp_UpdateAction(furniture, deltaTime)
     if(not furniture.tile.room.IsOutsideRoom()) then
         return
     end
+<<<<<<< 6d42db4eadcaee2c1ac85d403c9c06703997b463
+=======
+    
+	spawnSpot = furniture.GetSpawnSpotTile()
+	jobSpot = furniture.GetJobSpotTile()
+	inputSpot = World.current.GetTileAt(jobSpot.X, jobSpot.y-1)
+
+	if(inputSpot.Inventory == nil) then
+		if(furniture.JobCount() == 0) then
+			itemsDesired = {Inventory.__new("plate_steel", furniture.Parameters["tradeinamount"].ToFloat())}
+
+			j = Job.__new(
+			inputSpot,
+			nil,
+			nil,
+			0.4,
+			itemsDesired,
+			Job.JobPriority.Medium,
+			false
+			)
+>>>>>>> Refactor of xml and lua files to new naming standard
 
     local spawnSpot = furniture.GetSpawnSpotTile()
     local jobSpot = furniture.GetJobSpotTile()
@@ -513,6 +590,7 @@ function LandingPad_Temp_UpdateAction(furniture, deltaTime)
 
 		if(furniture.Parameters["tradetime"].ToFloat() >= furniture.Parameters["tradetime_required"].ToFloat()) then
 			furniture.Parameters["tradetime"].SetValue(0)
+<<<<<<< 6d42db4eadcaee2c1ac85d403c9c06703997b463
             local outputSpot = World.current.GetTileAt(spawnSpot.X+1, spawnSpot.y)
 
             if(outputSpot.Inventory == nil) then
@@ -530,6 +608,28 @@ function LandingPad_Temp_UpdateAction(furniture, deltaTime)
             end
         end
     end
+=======
+
+		 	outputSpot = World.current.GetTileAt(spawnSpot.X+1, spawnSpot.y)
+
+			if(outputSpot.Inventory == nil) then
+				World.current.inventoryManager.PlaceInventory( outputSpot, Inventory.__new("plate_steel", 50, furniture.Parameters["tradeoutamount"].ToFloat()) )
+
+				inputSpot.inventory.stackSize = inputSpot.inventory.stackSize-furniture.Parameters["tradeinamount"].ToFloat()
+			else
+				if(outputSpot.inventory.stackSize <= 50 - outputSpot.inventory.stackSize+furniture.Parameters["tradeoutamount"].ToFloat()) then
+					outputSpot.inventory.stackSize = outputSpot.inventory.stackSize+furniture.Parameters["tradeoutamount"].ToFloat()
+					inputSpot.inventory.stackSize = inputSpot.inventory.stackSize-furniture.Parameters["tradeinamount"].ToFloat()
+				end
+			end
+
+			if(inputSpot.Inventory.stackSize <= 0) then
+				inputSpot.Inventory = nil
+			end
+
+		end
+	end
+>>>>>>> Refactor of xml and lua files to new naming standard
 end
 
 function LandingPad_Temp_JobComplete(j)
