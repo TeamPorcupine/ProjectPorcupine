@@ -15,7 +15,7 @@ public class MusicController : MonoBehaviour
 {
     AudioSource backgroundMusic;
 
-	void Awake ()
+    void Awake ()
     {
         backgroundMusic = GetComponent<AudioSource>();
         AudioClip ac = Resources.Load<AudioClip>("Music/SpaceTheme");
