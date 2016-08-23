@@ -5,9 +5,9 @@
     <NoiseThreshhold>0.75</NoiseThreshhold>
     <ResourceChance>0.15</ResourceChance>
     <Resources>
-        <Resource objectType="Raw Iron" maxStack="50" min="5" max="15" chance="0.5" />
-        <Resource objectType="Ice" maxStack="10" min="5" max="10" chance="0.15" />
-        <Resource objectType="Uranium" maxStack="20" min="5" max="15" chance="0.35" />
+        <Resource objectType="Raw Iron" maxStack="50" min="5" max="15" weightedChance="50" />
+        <Resource objectType="Ice" maxStack="10" min="5" max="10" weightedChance="15" />
+        <Resource objectType="Uranium" maxStack="20" min="5" max="15" weightedChance="35" />
     </Resources>
   </Asteroid>
   <StartArea width="18" height="15" centerX="8" centerY="7">
