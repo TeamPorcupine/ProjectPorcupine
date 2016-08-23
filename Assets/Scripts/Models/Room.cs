@@ -22,13 +22,13 @@ public class Room : IXmlSerializable
     private Dictionary<string, float> atmosphericGasses;
 
     private List<Tile> tiles;
-    private float _Temperature;
+    private float temperature;
 
     public Room()
     {
         tiles = new List<Tile>();
         atmosphericGasses = new Dictionary<string, float>();
-        deltaGas = new Dictionary<string, string>();
+        temperature = 0;
     }
 
     public int ID
@@ -43,7 +43,7 @@ public class Room : IXmlSerializable
     {
         get
         {
-            return _Temperature;
+            return temperature;
         }
     }
 
@@ -351,9 +351,14 @@ public class Room : IXmlSerializable
         return t;
     }
 
+    public float GetTemperature()
+    {
+        return temperature;
+    }
+
     public void ChangeTemperature(float change)
     {
-        _Temperature += change;
+        temperature += change;
     }
 
     public string[] GetGasNames()
