@@ -48,7 +48,7 @@ public class SelectionInfo
 
     public void SelectFirstStuff()
     {
-		if (stuffInTile[selectedIndex] == null)
+        if (stuffInTile[selectedIndex] == null)
         {
             SelectNextStuff();
         }
