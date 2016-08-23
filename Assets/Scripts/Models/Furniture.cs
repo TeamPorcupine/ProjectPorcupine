@@ -25,16 +25,10 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     protected class EventAction<T>
     {
         Dictionary<string, List<string>> actionsList = new Dictionary<string, List<string>>();
-        public T parent;
-
-        public EventAction(T _parent)
-        {
-            parent = _parent;
-        }
-
+        
         public EventAction<T> Clone(T new_parent)
         {
-            EventAction<T> evt = new EventAction<T>(new_parent);
+            EventAction<T> evt = new EventAction<T>();
 
             evt.actionsList = new Dictionary<string, List<string>>(actionsList);
 
@@ -63,12 +57,12 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
 
         public void Register(string actionName, string luaFunc)
         {
-            Debug.Log(string.Format("Registering the LUA function {0} to Action {1}.", luaFunc, actionName));
+            //Debug.Log(string.Format("Registering the LUA function {0} to Action {1}.", luaFunc, actionName));
             if (!actionsList.ContainsKey(actionName) || actionsList[actionName] == null) actionsList[actionName] = new List<string>();
             actionsList[actionName].Add(luaFunc);
         }
 
-        public void Trigger(string  actionName, float deltaTime = 0f)
+        public void Trigger(string  actionName, Furniture target, float deltaTime = 0f )
         {
             if (!actionsList.ContainsKey(actionName) || actionsList[actionName] == null)
             {
@@ -77,7 +71,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
             }
             else
             {
-                FurnitureActions.CallFunctionsWithFurniture(actionsList[actionName].ToArray(), parent, deltaTime);
+                FurnitureActions.CallFunctionsWithFurniture(actionsList[actionName].ToArray(), target, deltaTime);
             }
         }
     }
@@ -142,11 +136,12 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
 
     public void Update(float deltaTime)
     {
-        if (eventActions != null && eventActions.parent.tile != null)
+        // TODO: some weird thing happens
+        if (eventActions != null)
         {
 
             // updateActions(this, deltaTime);
-            eventActions.Trigger("OnUpdate");
+            eventActions.Trigger("OnUpdate", this, deltaTime);
         }
     }
 
@@ -267,7 +262,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     // Empty constructor is used for serialization
     public Furniture()
     {
-        eventActions = new EventAction<Furniture>(this);
+        eventActions = new EventAction<Furniture>();
+
         furnParameters = new Dictionary<string, float>();
         jobs = new List<Job>();
         typeTags = new HashSet<string>();
@@ -375,7 +371,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         }
 
         // Call LUA install scripts
-        obj.eventActions.Trigger("OnInstall");
+        obj.eventActions.Trigger("OnInstall", obj);
 
         // Update thermalDiffusifity using coefficient
         float thermalDiffusivity = Temperature.defaultThermalDiffusivity;
@@ -748,7 +744,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         }
 
         // We call lua to decostruct
-        eventActions.Trigger("OnUninstall");
+        eventActions.Trigger("OnUninstall", this);
 
         // Update thermalDiffusifity to default value
         World.current.temperature.SetThermalDiffusivity(tile.X, tile.Y,

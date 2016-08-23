@@ -53,7 +53,7 @@ public class FurnitureActions
 
         foreach (string fn in functionNames)
         {
-            Debug.Log("Calling " + fn);
+            //Debug.Log("Calling " + fn);
             object func = _Instance.myLuaScript.Globals[fn];
 
             if (func == null)
