@@ -211,10 +211,10 @@ public class FurnitureSpriteController
         int x = furn.tile.X;
         int y = furn.tile.Y;
 
-        spriteName += GetSuffixForNeighbour(x, y + 1, "N");
-        spriteName += GetSuffixForNeighbour(x + 1, y, "E");
-        spriteName += GetSuffixForNeighbour(x, y - 1, "S");
-        spriteName += GetSuffixForNeighbour(x - 1, y, "W");
+        spriteName += GetSuffixForNeighbour(furn, x, y + 1, "N");
+        spriteName += GetSuffixForNeighbour(furn, x + 1, y, "E");
+        spriteName += GetSuffixForNeighbour(furn, x, y - 1, "S");
+        spriteName += GetSuffixForNeighbour(furn, x - 1, y, "W");
 
         // For example, if this object has all four neighbours of
         // the same type, then the string will look like:
@@ -223,7 +223,7 @@ public class FurnitureSpriteController
         return SpriteManager.current.GetSprite("Furniture", spriteName);
     }
     
-    private function GetSuffixForNeighbour(int x, int y, string suffix)
+    private string GetSuffixForNeighbour(Furniture furn, int x, int y, string suffix)
     {
          Tile t = world.GetTileAt(x, y);
          if (t != null && t.Furniture != null && t.Furniture.objectType == furn.objectType)
