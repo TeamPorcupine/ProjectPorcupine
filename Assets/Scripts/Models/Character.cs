@@ -18,6 +18,14 @@ using System.Linq;
 using ProjectPorcupine.Localization;
 using UnityEngine;
 
+public enum Facing
+{
+    NORTH,
+    EAST,
+    SOUTH,
+    WEST
+}
+
 /// <summary>
 /// A Character is an entity on the map that can move between tiles and,
 /// for now, grabs jobs from the work queue and performs this.
@@ -145,6 +153,15 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
     // The item we are carrying (not gear/equipment)
     public Inventory inventory;
+
+    // holds all character animations
+    public CharacterAnimation animation;
+
+    // is the character walking or idle
+    public bool IsWalking;
+
+    // 0=north, 1=east, 2=south, 3=west
+    public Facing CharFacing;
 
     /// Use only for serialization
     public Character()
@@ -519,6 +536,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         if (CurrTile == DestTile)
         {
             pathAStar = null;
+            IsWalking = false;
             return; // We're already were we want to be.
         }
 
@@ -543,15 +561,36 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 NextTile = pathAStar.Dequeue();
             }
 
+            IsWalking = true;
+
             // Grab the next waypoint from the pathing system!
             NextTile = pathAStar.Dequeue();
 
             if (NextTile == CurrTile)
             {
+                IsWalking = false;
                 // Debug.LogError("Update_DoMovement - nextTile is currTile?");
             }
         }
 
+        // Find character facing
+        if (NextTile.X > CurrTile.X)
+        {
+            CharFacing = Facing.EAST;
+        }
+        else if (NextTile.X < CurrTile.X)
+        {
+            CharFacing = Facing.WEST;
+        }
+        else if (NextTile.Y > CurrTile.Y)
+        {
+            CharFacing = Facing.NORTH;
+        }        
+        else
+        {
+            CharFacing = Facing.SOUTH;
+        }
+        
         // At this point we should have a valid nextTile to move to.
 
         // What's the total distance from point A to point B?
@@ -618,6 +657,9 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         {
             cbCharacterChanged(this);
         }
+
+        animation.Update(deltaTime);
+
     }
 
     private void OnJobStopped(Job j)
