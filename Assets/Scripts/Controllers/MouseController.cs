@@ -473,7 +473,7 @@ public class MouseController
             }
         }
 
-        if (Input.GetMouseButtonUp(1) || Input.GetMouseButtonUp(2))
+        if (!Input.GetMouseButton(1) && !Input.GetMouseButton(2))
         {
             isPanning = false;
         }
