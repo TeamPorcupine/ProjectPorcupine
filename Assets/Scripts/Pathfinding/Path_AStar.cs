@@ -182,7 +182,7 @@ public class Path_AStar
             return 1f;
         }
 
-        // Diag neighbours have a distance of 1.41421356237    
+        // Diag neighbours have a distance of 1.41421356237
         if (Mathf.Abs(a.data.X - b.data.X) == 1 && Mathf.Abs(a.data.Y - b.data.Y) == 1)
         {
             return 1.41421356237f;

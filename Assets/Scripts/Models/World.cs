@@ -103,7 +103,6 @@ public class World : IXmlSerializable
     {
         if (i < 0 || i > rooms.Count - 1)
             return null;
-        
         return rooms[i];
     }
 
@@ -551,9 +550,7 @@ public class World : IXmlSerializable
     {
         if (cbTileChanged == null)
             return;
-        
         cbTileChanged(t);
-
         //InvalidateTileGraph();
         if (tileGraph != null)
         {
