@@ -342,15 +342,19 @@ public class MouseController
                     }
                     else
                     {
-                        // Show the generic dragging visuals.
-                        GameObject go = SimplePool.Spawn(circleCursorPrefab, new Vector3(x, y, 0), Quaternion.identity);
-                        go.transform.SetParent(cursorParent.transform, true);
-                        go.GetComponent<SpriteRenderer>().sprite = SpriteManager.current.GetSprite("UI", "CursorCircle");
-                        dragPreviewGameObjects.Add(go);
+                        ShowGenericVisuals(x, y);
                     }
                 }
             }
         }
+    }
+
+    private void ShowGenericVisuals(int x, int y)
+    {
+        GameObject go = SimplePool.Spawn(circleCursorPrefab, new Vector3(x, y, 0), Quaternion.identity);
+        go.transform.SetParent(cursorParent.transform, true);
+        go.GetComponent<SpriteRenderer>().sprite = SpriteManager.current.GetSprite("UI", "CursorCircle");
+        dragPreviewGameObjects.Add(go);
     }
 
     private void BuildOnDraggedTiles(DragParameters dragParams)
