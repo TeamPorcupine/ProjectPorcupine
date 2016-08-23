@@ -123,6 +123,11 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
     {
         return string.Empty;  // Does inventory have hitpoints? How does it get destroyed? Maybe it's just a percentage chance based on damage.
     }
+
+    public string GetJobDescription()
+    {
+        return "";
+    }
     #endregion
 
     #region IXmlSerializable implementation
@@ -145,12 +150,6 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
     public void ReadXml(XmlReader reader)
     {
     }
-
-    public string GetJobDescription()
-    {
-        return "";
-    }
-
     #endregion
 
     public IEnumerable<ContextMenuAction> GetContextMenuActions(ContextMenu contextMenu)
