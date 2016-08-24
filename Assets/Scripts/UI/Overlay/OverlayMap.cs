@@ -128,7 +128,6 @@ public class OverlayMap : MonoBehaviour {
     Texture2D texture;
 
     public GameObject parentPanel;
-    GameObject dropdownObject;
 
     /// <summary>
     /// Grabs references, sets a dummy size and evaluation function
@@ -181,8 +180,8 @@ public class OverlayMap : MonoBehaviour {
 
     void Destroy()
     {
-        dropdownObject.GetComponent<UnityEngine.UI.Dropdown>().onValueChanged.RemoveAllListeners();
-        Destroy(dropdownObject);
+        //dropdownObject.GetComponent<UnityEngine.UI.Dropdown>().onValueChanged.RemoveAllListeners();
+        //Destroy(dropdownObject);
     }
 
     /// <summary>
