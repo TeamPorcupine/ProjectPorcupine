@@ -32,6 +32,11 @@ public class MenuController : MonoBehaviour
     {
         dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
 
+        constructorMenu =GameObject.Find("MenuConstruction");
+
+        furnitureMenu = GameObject.Find("Furniture Menu");
+        floorMenu = GameObject.Find("Floor Menu");
+
         // Add liseners here.
         buttonConstructor.onClick.AddListener(delegate
             {
@@ -57,7 +62,8 @@ public class MenuController : MonoBehaviour
             {
                 OnButtonSettings();
             });
-               
+        
+        DeactivateAll();
     }
 
     // Deactivates All Menus.
@@ -104,8 +110,10 @@ public class MenuController : MonoBehaviour
 
     public void OnButtonWork()
     {
-        DeactivateAll();
-
+        if (!WorldController.Instance.IsModal)
+        {
+            DeactivateAll();
+        }
     }
 
     public void OnButtonWorld()
