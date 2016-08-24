@@ -21,11 +21,14 @@ public class Parameter {
     private string value;
     // If this Parameter contains other Parameters, contents will contain the actual parameters
     private Dictionary<string, Parameter> contents;
-
+    // Tracks if value has been explicitly set
+    private bool uninitializedValue = true;
     public Parameter(string name, string value) 
     {
         this.name = name;
         this.value = value;
+        contents = new Dictionary<string, Parameter>();
+        uninitializedValue = false;
     }
 
     // Constructor with object parameter allows it to easily create a Parameter with any object that has a string representation (primarily for use if that string
@@ -34,6 +37,8 @@ public class Parameter {
     {
         this.name = name;
         this.value = value.ToString();
+        contents = new Dictionary<string, Parameter>();
+        uninitializedValue = false;
     }
 
     // Parameter with no value assumes it is being used for Parameter with contents, and initialized the dictionary
@@ -51,6 +56,10 @@ public class Parameter {
         {
             this.contents = other.GetDictionary();
         }
+        else
+        {
+            contents = new Dictionary<string, Parameter>();
+        }
         this.value = other.ToString();
     }
 
@@ -62,7 +71,8 @@ public class Parameter {
             if (contents == null || contents.ContainsKey(key) == false)
             {
                 Debug.ULogWarningChannel("Parameter", "Trying to access non-existent key: '" + key + "'. Probably a Lua problem.");
-                return new Parameter(key); // return empty parameter for now
+                // Add a new blank key to contents, that will then be returned.
+                contents.Add(key, new Parameter(key));
             }
             return contents[key];
         }
@@ -86,6 +96,15 @@ public class Parameter {
         return value;
     }
 
+    public string ToString(string defaultValue) 
+    {
+        if (uninitializedValue)
+        {
+            return defaultValue;
+        }
+        return ToString();
+    }
+
     public float ToFloat() 
     {
         float returnValue = 0;
@@ -93,20 +112,33 @@ public class Parameter {
         return returnValue;
     }
 
+    public float ToFloat(float defaultValue) 
+    {
+        if (uninitializedValue)
+        {
+            return defaultValue;
+        }
+        return ToFloat();
+    }
+
+
     public void SetValue(string value) 
     {
         this.value = value;
+        uninitializedValue = false;
     }
 
     public void SetValue(object value)
     {
         this.value = value.ToString();
+        uninitializedValue = false;
     }
 
     // Change value by a float, primarily here to approximate old parameter system usage
     public void ChangeFloatValue(float value)
     {
         this.value = "" + (ToFloat() + value);
+        uninitializedValue = false;
     }
 
     public string GetName()
@@ -135,7 +167,7 @@ public class Parameter {
     // Primary method to differentiate an unknown Parameter between a singular Parameter and Group Parameter
     public bool HasContents() 
     {
-        return contents != null;
+        return contents.Count > 0;
     }
 
     public void WriteXmlParamGroup(XmlWriter writer)
