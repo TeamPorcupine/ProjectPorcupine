@@ -15,8 +15,6 @@ using UnityEngine;
 
 public class FurnitureActions
 {
-    private static FurnitureActions _Instance;
-    
     public FurnitureActions()
     {
         // TODO: This should be moved to a more logical location
