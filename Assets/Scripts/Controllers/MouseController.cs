@@ -567,4 +567,15 @@ public class MouseController
         public ISelectable[] stuffInTile;
         public int subSelection = 0;
     }
+
+    public bool IsCharacterSelected()
+    {
+        if (mySelection != null && mySelection.stuffInTile != null && mySelection.stuffInTile.Length != 0)
+        {
+            ISelectable actualSelection =
+                mySelection.stuffInTile[mySelection.subSelection];
+            return actualSelection is Character;
+        }
+        return false;
+    }
 }

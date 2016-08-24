@@ -5,7 +5,7 @@ using UnityEngine;
 public class ContextMenu : MonoBehaviour
 {
     public GameObject ContextualMenuItemPrefab;
-
+    
     public void Open(Tile tile)
     {
         gameObject.SetActive(true);
@@ -30,16 +30,21 @@ public class ContextMenu : MonoBehaviour
     {
         gameObject.transform.position = Input.mousePosition + new Vector3(10, -10, 0);
 
+        bool characterSelected = WorldController.Instance.mouseController.IsCharacterSelected();
+
         foreach (var contextMenuAction in contextualActions)
         {
-            var go = (GameObject)Instantiate(ContextualMenuItemPrefab);
-            go.transform.SetParent(gameObject.transform);
+            if (contextMenuAction.RequiereCharacterSelected && characterSelected ||
+                !contextMenuAction.RequiereCharacterSelected)
+            {
+                var go = (GameObject) Instantiate(ContextualMenuItemPrefab);
+                go.transform.SetParent(gameObject.transform);
 
-
-            var contextMenuItem = go.GetComponent<ContextMenuItem>();
-            contextMenuItem.ContextMenu = this;
-            contextMenuItem.Action = contextMenuAction;
-            contextMenuItem.BuildInterface();
+                var contextMenuItem = go.GetComponent<ContextMenuItem>();
+                contextMenuItem.ContextMenu = this;
+                contextMenuItem.Action = contextMenuAction;
+                contextMenuItem.BuildInterface();
+            }
         }
     }
 

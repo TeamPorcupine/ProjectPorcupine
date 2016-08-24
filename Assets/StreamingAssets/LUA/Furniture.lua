@@ -527,6 +527,10 @@ function LandingPad_Temp_JobComplete(j)
 	end
 end
 
+function LandingPad_Test_ContextMenuAction(furniture, character)
+   furniture.Deconstruct()
+end
+
 -- Dummy heater install function
 -- THis function gets called once, when the funriture is isntalled
 function Heater_InstallAction( furniture, deltaTime)
