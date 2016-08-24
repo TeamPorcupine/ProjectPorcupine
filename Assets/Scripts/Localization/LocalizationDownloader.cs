@@ -51,7 +51,6 @@ namespace ProjectPorcupine.Localization
             }
             catch (System.Exception e)
             {
-                //Debug.LogError(e);
                 Debug.ULogErrorChannel("LocalizationDownloader", (e.ToString()));
                 yield break;
             }
