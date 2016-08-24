@@ -620,12 +620,18 @@ function Accumulator_GetSpriteName(furniture)
 end
 
 function Heater_OnUpdate ( furniture, deltaTime)
+    if (furniture.HasPower() == false) then
+        return
+    end
+    
     tile = furniture.tile
     pressure = tile.Room.GetGasPressure()
+    
+    -- Clamp the value. There might be a better way to do this
     if (pressure > 0.5) then
         pressure = 0.5
     end
-    temperatureChange = 100 * (pressure / 0.5) * deltaTime
+    temperatureChange = 10 * (pressure / 0.5) * deltaTime
     tile.Room.ChangeTemperature(temperatureChange)
 end
 
