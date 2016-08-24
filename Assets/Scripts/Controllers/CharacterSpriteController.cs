@@ -84,16 +84,7 @@ public class CharacterSpriteController
         inv_go.transform.SetParent(char_go.transform);
         inv_go.transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);// Config needs to be added to XML
         inv_go.transform.localPosition = new Vector3(0,-0.37f,0); // Config needs to be added to XML
-
-        // Add the reflection of the character's helmet
-        GameObject helmet_go = new GameObject ("HelmetGlass");
-        SpriteRenderer helmet_sr = helmet_go.AddComponent<SpriteRenderer>();
-        helmet_sr.sortingOrder = 1;
-        //helmet_sr.sprite = SpriteManager.current.GetSprite("Character", "p2_helmet");
-        helmet_sr.sortingLayerName = "Characters";
-        helmet_go.transform.SetParent (char_go.transform);
-        helmet_go.transform.localPosition = new Vector3(0,0,0);
-
+        
         // Register our callback so that our GameObject gets updated whenever
         // the object's into changes.
         c.cbCharacterChanged += OnCharacterChanged;
@@ -174,14 +165,19 @@ public class CharacterSpriteController
         //char_go.GetComponent<SpriteRenderer>().sprite = GetSpriteForFurniture(furn);
         if (c.CurrTile.Room != null)
         {
+            // TODO: switch spritesheets instead of using separate go for helmet
+            /*
             if (c.CurrTile.Room.GetGasAmount ("O2") <= 0.5f && char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled == false)
             {
-                char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled = true;
+                // TODO: switch spritesheet to use WITH helmet
+                //char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled = true;
             }
             else if(c.CurrTile.Room.GetGasAmount ("O2") >= 0.5f && char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled == true)
             {
-                char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled = false;
+                // TODO: switch spritesheet to use WITHOUT helmet
+                //char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled = false;
             }
+            */
         }
         
         char_go.transform.position = new Vector3(c.X, c.Y, 0);
