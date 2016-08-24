@@ -28,7 +28,6 @@ public class Room : IXmlSerializable
     {
         tiles = new List<Tile>();
         atmosphericGasses = new Dictionary<string, float>();
-        temperature = 0;
     }
 
     public int ID

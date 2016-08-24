@@ -562,16 +562,28 @@ end
 
 -- This function gets called once, when the funriture is unisntalled
 function Heater_UninstallAction( furniture, deltaTime)
-    -- TODO: find elegant way to unregister previous register
-	furniture.EventActions.Deregister("OnUpdateTemperature", "Heater_UpdateTemperature")
+    furniture.EventActions.Deregister("OnUpdateTemperature", "Heater_UpdateTemperature")
 	World.Current.temperature.DeregisterSinkOrSource(furniture)
+	-- TODO: find elegant way to unregister previous register
 end
 
--- Dummy heater uninstall function
--- THis function gets called once, when the funriture is unisntalled
-function Heater_UpdateTemperature( furniture, deltaTime)
-	World.Current.temperature.SetTemperature(furniture.Tile.X, furniture.Tile.Y, 300)
-end
+function Heater_OnUpdate ( furniture, deltaTime)
+    if (furniture.HasPower() == false) then
+        return
+    end
+    
+    tile = furniture.tile
+    pressure = tile.Room.GetGasPressure()
+    
+    -- Clamp the value. There might be a better way to do this
+    if (pressure > 0.5) then
+        pressure = 0.5
+    end
+    temperatureChange = 10 * (pressure / 0.5) * deltaTime
+    --tile.Room.ChangeTemperature(temperatureChange)
+    
+    -- Double, for testing
+    World.Current.temperature.ChangeTemperature(tile.X, tile.Y, temperatureChange)
 
 -- Should maybe later be integrated with GasGenerator function by
 -- someone who knows how that would work in this case
