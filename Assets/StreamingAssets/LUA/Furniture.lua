@@ -4,6 +4,11 @@ ENTERABILITY_YES  = 0
 ENTERABILITY_NO   = 1
 ENTERABILITY_SOON = 2
 
+-- HOWTO Log:
+--ModUtils.ULog("Testing ModUtils.ULogChannel")
+--ModUtils.ULogWarning("Testing ModUtils.ULogWarningChannel")
+--ModUtils.ULogError("Testing ModUtils.ULogErrorChannel") -- Note: pauses the game
+
 -------------------------------- Furniture Actions --------------------------------
 function OnUpdate_GasGenerator( furniture, deltaTime )
 	if ( furniture.HasPower() == false) then
@@ -158,10 +163,10 @@ function Stockpile_UpdateAction( furniture, deltaTime )
 	itemsDesired = {}
 
 	if( furniture.tile.Inventory == nil ) then
-		--Debug.Log("Creating job for new stack.");
+		--ModUtils.ULog("Creating job for new stack.")
 		itemsDesired = Stockpile_GetItemsFromFilter()
 	else
-		--Debug.Log("Creating job for existing stack.");
+		--ModUtils.ULog("Creating job for existing stack.")
 		desInv = furniture.tile.Inventory.Clone()
 		desInv.maxStackSize = desInv.maxStackSize - desInv.stackSize
 		desInv.stackSize = 0
@@ -534,4 +539,38 @@ function Heater_UninstallAction( furniture, deltaTime)
 	-- TODO: find elegant way to unregister previous register
 end
 
+-- Should maybe later be integrated with GasGenerator function by
+-- someone who knows how that would work in this case
+function OxygenCompressor_OnUpdate(furniture, deltaTime)
+    room = furniture.tile.Room
+    pressure = room.GetGasPressure("O2")
+    gasAmount = furniture.Parameters["flow_rate"].ToFloat() * deltaTime
+    if (pressure < furniture.Parameters["give_threshold"].ToFloat()) then
+        -- Expel gas if available
+        if (furniture.Parameters["gas_content"].ToFloat() > 0) then
+            furniture.Parameters["gas_content"].ChangeFloatValue(-gasAmount)
+            room.ChangeGas("O2", gasAmount / room.GetSize())
+            furniture.UpdateOnChanged(furniture)
+        end
+    elseif (pressure > furniture.Parameters["take_threshold"].ToFloat()) then
+        -- Suck in gas if not full
+        if (furniture.Parameters["gas_content"].ToFloat() < furniture.Parameters["max_gas_content"].ToFloat()) then
+            furniture.Parameters["gas_content"].ChangeFloatValue(gasAmount)
+            room.ChangeGas("O2", -gasAmount / room.GetSize())
+            furniture.UpdateOnChanged(furniture)
+        end
+    end
+end
+
+function OxygenCompressor_GetSpriteName(furniture)
+    baseName = "Oxygen_Compressor"
+    suffix = 0
+    if (furniture.Parameters["gas_content"].ToFloat() > 0) then
+        idxAsFloat = 8 * (furniture.Parameters["gas_content"].ToFloat() / furniture.Parameters["max_gas_content"].ToFloat())
+        suffix = ModUtils.FloorToInt(idxAsFloat)
+    end
+    return baseName .. "_" .. suffix
+end
+
+ModUtils.ULog("Furniture.lua loaded")
 return "LUA Script Parsed!"
