@@ -143,7 +143,15 @@
         <Params>
             <!-- <Param name="gas_name" value="O2" /> -->
             <Param name="gas_limit" value="0.2" />
-            <Param name="gas_per_second" value="0.01" />
+            <Param name="gas_per_second" value="0.16" />
+            <Param name="gas_gen">
+                <Param name="O2">
+                    <Param name="gas_limit" value="0.2" />
+                </Param>
+                <Param name="N2">
+                    <Param name="gas_limit" value="0.8" />
+                </Param>
+            </Param>
         </Params>
 
         <LocalizationCode>furn_oxygen_generator</LocalizationCode>
@@ -288,9 +296,12 @@
   </Furniture>
 	
   <Furniture objectType="Small Landing Pad">
+    <TypeTag>OutdoorOnly</TypeTag>
     <Name>Small Landing Pad</Name>
     <Description>A landing pad for small spaceboats to land.</Description>
     <OnUpdate FunctionName="LandingPad_Temp_UpdateAction" />
+    <ContextMenuAction FunctionName="LandingPad_Test_ContextMenuAction" Text="Lua Test Deconstruct 1" RequiereCharacterSelected="false"/>
+    <ContextMenuAction FunctionName="LandingPad_Test_ContextMenuAction" Text="Lua Test Deconstruct 2" RequiereCharacterSelected="true" />
     <MovementCost>5</MovementCost>
     <Width>3</Width>
     <Height>3</Height>

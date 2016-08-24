@@ -1,4 +1,4 @@
-#region License
+﻿#region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
 // This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
@@ -6,17 +6,31 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+
 using System.Collections;
+using MoonSharp.Interpreter;
 using UnityEngine;
 
-public interface ISelectable
+[MoonSharpUserData]
+public static class ModUtils
 {
-    string GetName();
+    public static float Clamp01(float value) 
+    {
+        return Mathf.Clamp01(value); 
+    }
 
-    string GetDescription();
+    public static void Log(object obj) 
+    {
+        Debug.Log(obj);
+    }
 
-    string GetHitPointString();
-    // For indestructible things (if any?) this is allowed to return blank (or null maybe??)
+    public static void LogWarning(object obj) 
+    {
+        Debug.LogWarning(obj);
+    }
 
-    string GetJobDescription();
+    public static void LogError(object obj) 
+    {
+        Debug.LogError(obj);
+    }
 }
