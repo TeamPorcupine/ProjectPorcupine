@@ -69,22 +69,22 @@
         <Furniture x="1" y="6" name="wall_steel" />
         <Furniture x="6" y="6" name="wall_steel" />
         <Furniture x="10" y="6" name="wall_steel" />
-        <Furniture x="15" y="6" name="Stockpile" />
-        <Furniture x="16" y="6" name="Stockpile" />
+        <Furniture x="15" y="6" name="stockpile" />
+        <Furniture x="16" y="6" name="stockpile" />
         <Furniture x="17" y="6" name="wall_steel" />
 
         <Furniture x="0" y="7" name="wall_steel" />
         <Furniture x="6" y="7" name="door" />
         <Furniture x="10" y="7" name="door" />
-        <Furniture x="15" y="7" name="Stockpile" />
-        <Furniture x="16" y="7" name="Stockpile" />
+        <Furniture x="15" y="7" name="stockpile" />
+        <Furniture x="16" y="7" name="stockpile" />
         <Furniture x="17" y="7" name="wall_steel" />
 
         <Furniture x="1" y="8" name="wall_steel" />
         <Furniture x="6" y="8" name="wall_steel" />
         <Furniture x="10" y="8" name="wall_steel" />
-        <Furniture x="15" y="8" name="Stockpile" />
-        <Furniture x="16" y="8" name="Stockpile" />
+        <Furniture x="15" y="8" name="stockpile" />
+        <Furniture x="16" y="8" name="stockpile" />
         <Furniture x="17" y="8" name="wall_steel" />
 
         <Furniture x="2" y="9" name="wall_steel" />
@@ -97,7 +97,7 @@
 
         <Furniture x="6" y="10" name="wall_steel" />
         <Furniture x="7" y="10" name="wall_steel" />
-        <Furniture x="8" y="10" name="Airlock" />
+        <Furniture x="8" y="10" name="airlock" />
         <Furniture x="9" y="10" name="wall_steel" />
         <Furniture x="10" y="10" name="wall_steel" />
         <Furniture x="11" y="10" name="generator_power" />

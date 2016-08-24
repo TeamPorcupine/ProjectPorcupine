@@ -126,7 +126,7 @@
         <UnlocalizedDescription>furn_stockpile_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture objectType="oxygen_generator">
+    <Furniture objectType="generator_oxygen">
         <Name>Oxygen Generator</Name>
         <Description>Create O2 in the room in which it is built.</Description>
         <TypeTag>Generator</TypeTag>

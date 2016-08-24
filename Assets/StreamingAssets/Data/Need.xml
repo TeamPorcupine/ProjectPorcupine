@@ -4,7 +4,7 @@
         <Name>Oxygen</Name>
 		<GrowthRate>0</GrowthRate>
 		<GrowthInVacuum>0.1</GrowthInVacuum>
-		<RestoreNeedFurnitureType>Oxygen Generator</RestoreNeedFurnitureType>
+		<RestoreNeedFurnitureType>generator_oxygen</RestoreNeedFurnitureType>
 		<RestoreNeedTime>10</RestoreNeedTime>
 		<RestoreNeedAmount>100</RestoreNeedAmount>
 		<Damage>20</Damage>
