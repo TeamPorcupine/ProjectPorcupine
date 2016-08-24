@@ -64,7 +64,7 @@ namespace ProjectPorcupine.Localization
                     LocalizationTable.LoadLocalizationFile(file.FullName);
 
                     // Just write a little debug info into the console.
-                    Debug.Log("Loaded mod localization at path\n" + file);
+                    Debug.Log("Loaded mod localization at path: " + file);
                 }
             }
 
