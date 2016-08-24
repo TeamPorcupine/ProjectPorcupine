@@ -140,13 +140,16 @@ public class MouseController
             // Is the context also supposed to open on ESCAPE? That seems wrong
             if (currentMode == MouseMode.SELECT)
             {
-                if (isPanning)
+                if (contextMenu != null && GetMouseOverTile() != null)
                 {
-                    contextMenu.Close();
-                }
-                else if (contextMenu != null)
-                {
-                    contextMenu.Open(GetMouseOverTile());
+                    if (isPanning)
+                    {
+                        contextMenu.Close();
+                    }
+                    else if (contextMenu != null)
+                    {
+                        contextMenu.Open(GetMouseOverTile());
+                    }
                 }
             }
         }
@@ -212,10 +215,13 @@ public class MouseController
         if (Input.GetMouseButtonDown(1))
         {
             Tile tileUnderMouse = GetMouseOverTile();
-            if (tileUnderMouse.PendingBuildJob != null)
+            if (tileUnderMouse != null)
             {
-                Debug.Log("Canceling!");
-                tileUnderMouse.PendingBuildJob.CancelJob();
+                if (tileUnderMouse.PendingBuildJob != null)
+                {
+                    Debug.Log("Canceling!");
+                    tileUnderMouse.PendingBuildJob.CancelJob();
+                }
             }
         }
 
