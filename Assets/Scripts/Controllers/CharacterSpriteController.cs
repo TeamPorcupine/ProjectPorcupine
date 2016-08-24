@@ -59,19 +59,23 @@ public class CharacterSpriteController
         sr.sortingLayerName = "Characters";
         
         c.animation = new CharacterAnimation(c, sr);
-        
-        // load all character sprites and change colors
+
+        // Change colors on the texture
+        // Grab the first sprite, and copy the texture from that
+        Texture2D newTexture = CopyTexture2D(SpriteManager.current.GetSprite("Character", "p2_idle_south").texture, c.GetCharacterColor());
+
+        // load all character sprites and replace the textures with the colorized version
         Sprite[] sprites = 
             {
-                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p2_idle_south"), c.GetCharacterColor()),
-                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p2_idle_east"), c.GetCharacterColor()),
-                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p2_idle_north"), c.GetCharacterColor()),
-                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p2_walk_east_01"), c.GetCharacterColor()),
-                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p2_walk_east_02"), c.GetCharacterColor()),
-                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p2_walk_north_01"), c.GetCharacterColor()),
-                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p2_walk_north_02"), c.GetCharacterColor()),
-                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p2_walk_south_01"), c.GetCharacterColor()),
-                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p2_walk_south_02"), c.GetCharacterColor())
+                ReplaceSpriteTexture(newTexture, SpriteManager.current.GetSprite("Character", "p2_idle_south")),
+                ReplaceSpriteTexture(newTexture, SpriteManager.current.GetSprite("Character", "p2_idle_east")),
+                ReplaceSpriteTexture(newTexture, SpriteManager.current.GetSprite("Character", "p2_idle_north")),
+                ReplaceSpriteTexture(newTexture, SpriteManager.current.GetSprite("Character", "p2_walk_east_01")),
+                ReplaceSpriteTexture(newTexture, SpriteManager.current.GetSprite("Character", "p2_walk_east_02")),
+                ReplaceSpriteTexture(newTexture, SpriteManager.current.GetSprite("Character", "p2_walk_north_01")),
+                ReplaceSpriteTexture(newTexture, SpriteManager.current.GetSprite("Character", "p2_walk_north_02")),
+                ReplaceSpriteTexture(newTexture, SpriteManager.current.GetSprite("Character", "p2_walk_south_01")),
+                ReplaceSpriteTexture(newTexture, SpriteManager.current.GetSprite("Character", "p2_walk_south_02"))
             };
 
         c.animation.SetSprites(sprites);
@@ -87,18 +91,16 @@ public class CharacterSpriteController
         
         // Register our callback so that our GameObject gets updated whenever
         // the object's into changes.
-        c.cbCharacterChanged += OnCharacterChanged;
-        
+        c.cbCharacterChanged += OnCharacterChanged;        
     }
 
-    // change relevant pixels in sprite and return a colorized version.
-    private Sprite ReplaceSpriteColor(Sprite sprite, Color32 newColor)
-    {
-        Texture2D newTexture = CopyTexture2D(sprite.texture, newColor);
+    // Replace sprite texture with the colorized version
+    private Sprite ReplaceSpriteTexture(Texture2D newTexture, Sprite sprite)
+    {        
         Sprite s = Sprite.Create(newTexture, sprite.textureRect, new Vector2(0.5f, 0.3f), sprite.pixelsPerUnit);
         return s;
     }
-
+    
     private Texture2D CopyTexture2D(Texture2D fromTexture, Color32 newColor)
     {
         Texture2D texture = new Texture2D(fromTexture.width, fromTexture.height);
@@ -139,7 +141,6 @@ public class CharacterSpriteController
 
     void OnCharacterChanged(Character c)
     {
-        //Debug.Log("OnFurnitureChanged");
         // Make sure the furniture's graphics are correct.
         SpriteRenderer inv_sr = characterGameObjectMap[c].transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>();
         if (c.inventory != null)
@@ -158,9 +159,7 @@ public class CharacterSpriteController
             return;
         }
 
-        GameObject char_go = characterGameObjectMap[c];
-        //Debug.Log(furn_go);
-        //Debug.Log(furn_go.GetComponent<SpriteRenderer>());
+        GameObject char_go = characterGameObjectMap[c];        
 
         //char_go.GetComponent<SpriteRenderer>().sprite = GetSpriteForFurniture(furn);
         if (c.CurrTile.Room != null)
