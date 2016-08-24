@@ -357,6 +357,100 @@ public class World : IXmlSerializable
         }
     }
 
+<<<<<<< HEAD
+    public void SetUtilityJobPrototype(Job j, Utility u)
+    {
+        utilityJobPrototypes[u.objectType] = j;
+    }
+
+    void LoadUtilityLua(string filePath)
+    {
+        string luaCode = System.IO.File.ReadAllText(filePath);
+
+        // Instantiate the singleton
+
+        LuaUtilities.LoadScript(luaCode);
+    }
+
+    void CreateUtilityPrototypes()
+    {
+        string luaFilePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
+        luaFilePath = System.IO.Path.Combine(luaFilePath, "Utility.lua");
+        LoadFurnitureLua(luaFilePath);
+
+
+        utilityPrototypes = new Dictionary<string, Utility>();
+        utilityJobPrototypes = new Dictionary<string, Job>();
+
+        // READ FURNITURE PROTOTYPE XML FILE HERE
+        // TODO:  Probably we should be getting past a StreamIO handle or the raw
+        // text here, rather than opening the file ourselves.
+
+        string dataPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
+        string filePath = System.IO.Path.Combine(dataPath, "Utility.xml");
+        string utilityXmlText = System.IO.File.ReadAllText(filePath);
+        LoadUtilityPrototypesFromFile(utilityXmlText);
+
+        DirectoryInfo[] mods = WorldController.Instance.modsManager.GetMods();
+        foreach (DirectoryInfo mod in mods)
+        {
+            string utilityLuaModFile = System.IO.Path.Combine(mod.FullName, "Utility.lua");
+            if (File.Exists(utilityLuaModFile))
+            {
+                LoadUtilityLua(utilityLuaModFile);
+            }
+
+            string utilityXmlModFile = System.IO.Path.Combine(mod.FullName, "Utility.xml");
+            if (File.Exists(utilityXmlModFile))
+            {
+                string utilityXmlModText = System.IO.File.ReadAllText(utilityXmlModFile);
+                LoadUtilityPrototypesFromFile(utilityXmlModText);
+            }
+        }
+    }
+
+    void LoadUtilityPrototypesFromFile(string utilityXmlText) 
+    {
+        XmlTextReader reader = new XmlTextReader(new StringReader(utilityXmlText));
+
+        int utilCount = 0;
+        if (reader.ReadToDescendant("Utilities"))
+        {
+            if (reader.ReadToDescendant("Utility"))
+            {
+                do
+                {
+                    utilCount++;
+
+                    Utility util = new Utility();
+                    try
+                    {
+                        util.ReadXmlPrototype(reader);
+                    }
+                    catch (Exception e) {
+                        Debug.LogError("Error reading utility prototype for: " + util.objectType + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
+                    }
+
+
+                    utilityPrototypes[util.objectType] = util;
+
+
+
+                } while (reader.ReadToNextSibling("Utility"));
+            }
+            else
+            {
+                Debug.LogError("The utility prototype definition file doesn't have any 'Utility' elements.");
+            }
+        }
+        else
+        {
+            Debug.LogError("Did not find a 'Utilities' element in the prototype definition file.");
+        }
+    }
+=======
+>>>>>>> parent of db08483... Added a base for utility objects.
+
     void LoadNeedLua(string filePath)
     {
         string myLuaCode = System.IO.File.ReadAllText(filePath);
