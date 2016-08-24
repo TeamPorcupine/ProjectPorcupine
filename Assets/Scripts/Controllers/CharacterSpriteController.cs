@@ -63,15 +63,15 @@ public class CharacterSpriteController
         // load all character sprites and change colors
         Sprite[] sprites = 
             {
-                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p3_idle_south"), c.GetCharacterColor()),
-                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p3_idle_east"), c.GetCharacterColor()),
-                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p3_idle_north"), c.GetCharacterColor()),
-                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p3_walk_east_01"), c.GetCharacterColor()),
-                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p3_walk_east_02"), c.GetCharacterColor()),
-                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p3_walk_north_01"), c.GetCharacterColor()),
-                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p3_walk_north_02"), c.GetCharacterColor()),
-                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p3_walk_south_01"), c.GetCharacterColor()),
-                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p3_walk_south_02"), c.GetCharacterColor())
+                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p2_idle_south"), c.GetCharacterColor()),
+                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p2_idle_east"), c.GetCharacterColor()),
+                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p2_idle_north"), c.GetCharacterColor()),
+                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p2_walk_east_01"), c.GetCharacterColor()),
+                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p2_walk_east_02"), c.GetCharacterColor()),
+                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p2_walk_north_01"), c.GetCharacterColor()),
+                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p2_walk_north_02"), c.GetCharacterColor()),
+                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p2_walk_south_01"), c.GetCharacterColor()),
+                ReplaceSpriteColor(SpriteManager.current.GetSprite("Character", "p2_walk_south_02"), c.GetCharacterColor())
             };
 
         c.animation.SetSprites(sprites);
