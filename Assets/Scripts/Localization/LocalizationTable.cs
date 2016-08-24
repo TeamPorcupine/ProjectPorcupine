@@ -92,7 +92,11 @@ namespace ProjectPorcupine.Localization
         {
             try
             {
-                localizationTable[localizationCode] = new Dictionary<string, string>();
+                if (localizationTable.ContainsKey(localizationCode) == false)
+                {
+                    localizationTable[localizationCode] = new Dictionary<string, string>();
+                }
+                
                 string[] lines = File.ReadAllLines(path);
                 foreach (string line in lines)
                 {
@@ -102,8 +106,7 @@ namespace ProjectPorcupine.Localization
                         Debug.LogErrorFormat("Invalid format of localization string. Actual {0}", line);
                         continue;
                     }
-
-                    localizationTable[localizationCode].Add(keyValuePair[0], keyValuePair[1]);
+                    localizationTable[localizationCode][keyValuePair[0]] = keyValuePair[1];
                 }
             }
             catch (FileNotFoundException exception)
