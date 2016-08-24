@@ -272,11 +272,11 @@ public class World : IXmlSerializable
 
     void LoadFurnitureLua(string filePath)
     {
-        string luaCode = System.IO.File.ReadAllText(filePath);
+        string myLuaCode = System.IO.File.ReadAllText(filePath);
 
         // Instantiate the singleton
 
-        LuaUtilities.LoadScript(luaCode);
+        FurnitureActions.addScript(myLuaCode);
     }
 
     void CreateFurniturePrototypes()

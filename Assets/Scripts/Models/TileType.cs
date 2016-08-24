@@ -124,7 +124,7 @@ public class TileType : IXmlSerializable {
         string luaFilePath = System.IO.Path.Combine(luaPath, "Tile.lua");
         string luaCode = System.IO.File.ReadAllText(luaFilePath);
         
-        LuaUtilities.LoadScript(luaCode);
+        FurnitureActions.addScript(luaCode);
 
         // Load all mod defined lua code
         foreach (DirectoryInfo mod in WorldController.Instance.modsManager.GetMods())
@@ -135,7 +135,7 @@ public class TileType : IXmlSerializable {
 
                 luaCode = System.IO.File.ReadAllText(file.FullName);
 
-                LuaUtilities.LoadScript(luaCode);
+                FurnitureActions.addScript(luaCode);
             }
         }
 
