@@ -35,7 +35,7 @@ public class JobSpriteController
     void OnJobCreated(Job job)
     {
 
-        if (job.jobObjectType == null && job.jobTileType == TileType.Empty)
+        if (job.jobObjectType == null && job.jobTileType == null)
         {
             // This job doesn't really have an associated sprite with it, so no need to render.
             return;
@@ -61,7 +61,7 @@ public class JobSpriteController
         job_go.transform.SetParent(jobParent.transform, true);
 
         SpriteRenderer sr = job_go.AddComponent<SpriteRenderer>();
-        if (job.jobTileType != TileType.Empty)
+        if (job.jobTileType != null)
         {
             //This job is for building a tile
             //For now, the only tile that could be is the floor, so just show a floor sprite

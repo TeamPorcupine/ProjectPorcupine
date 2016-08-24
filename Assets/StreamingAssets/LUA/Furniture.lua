@@ -67,6 +67,40 @@ function IsEnterable_Door( furniture )
 	return ENTERABILITY_SOON --ENTERABILITY.Soon
 end
 
+function GetSpriteName_Door( furniture )
+	-- Door is closed
+	if (furniture.GetParameter("openness") < 0.1) then
+		return "Door"
+	end
+	-- Door is a bit open
+	if (furniture.GetParameter("openness") < 0.5) then
+		return "Door_openness_1"
+	end
+	-- Door is a lot open
+	if (furniture.GetParameter("openness") < 0.9) then
+		return "Door_openness_2"
+	end
+	-- Door is a fully open
+	return "Door_openness_3"
+end
+
+function GetSpriteName_Airlock( furniture )
+	-- Door is closed
+	if (furniture.GetParameter("openness") < 0.1) then
+		return "Airlock"
+	end
+	-- Door is a bit open
+	if (furniture.GetParameter("openness") < 0.5) then
+		return "Airlock_openness_1"
+	end
+	-- Door is a lot open
+	if (furniture.GetParameter("openness") < 0.9) then
+		return "Airlock_openness_2"
+	end
+	-- Door is a fully open
+	return "Airlock_openness_3"
+end
+
 function Stockpile_GetItemsFromFilter()
 	-- TODO: This should be reading from some kind of UI for this
 	-- particular stockpile
@@ -224,7 +258,6 @@ end
 function MetalSmelter_UpdateAction(furniture, deltaTime)
 	spawnSpot = furniture.GetSpawnSpotTile()
 
-	--if(spawnSpot.Inventory == nil) then
 	if(furniture.GetParameter("smelting") == 0) then
 		if(furniture.JobCount() == 0) then
 			itemsDesired = {Inventory.__new("Raw Iron", 50, 0)}
@@ -247,10 +280,9 @@ function MetalSmelter_UpdateAction(furniture, deltaTime)
 		end
 	else
 		-- ugly hack because spawnSpot inventory is disappearing, so just reset it to what it should be if it's gone
-		if(spawnSpot.inventory == nil) then
-			spawnSpot.inventory = Inventory.__new("Raw Iron", 50, 0)
+		if(spawnSpot.Inventory == nil) then
+			spawnSpot.Inventory = Inventory.__new("Raw Iron", 50, 0)
 		end
-
 		furniture.ChangeParameter("smelttime", deltaTime)
 
 		if(furniture.GetParameter("smelttime") >= furniture.GetParameter("smelttime_required")) then
@@ -272,14 +304,14 @@ function MetalSmelter_UpdateAction(furniture, deltaTime)
 
 			if(spawnSpot.Inventory.stackSize <= 0) then
 				spawnSpot.Inventory = nil
-				furniture.ChangeParameter("smelting", 0)
+				furniture.SetParameter("smelting", 0)
 			end
 		end
 	end
 end
 
 function MetalSmelter_JobComplete(j)
-	j.furniture.ChangeParameter("smelting", 1)
+	j.furniture.SetParameter("smelting", 1)
     j.UnregisterJobCompletedCallback("MetalSmelter_JobComplete")
     j.UnregisterJobWorkedCallback("MetalSmelter_JobWorked")
 end

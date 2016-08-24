@@ -6,6 +6,8 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+
+using System.Collections.Generic;
 using System;
 using System.Collections;
 using System.Xml;
@@ -18,7 +20,7 @@ using UnityEngine;
 // or potentially a non-installed copy of furniture (e.g. a cabinet still in the box from Ikea)
 
 [MoonSharpUserData]
-public class Inventory : IXmlSerializable, ISelectable
+public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
 {
     public string objectType = "Steel Plate";
     public int maxStackSize = 50;
@@ -146,4 +148,14 @@ public class Inventory : IXmlSerializable, ISelectable
     }
 
     #endregion
+
+    public IEnumerable<ContextMenuAction> GetContextMenuActions(ContextMenu contextMenu)
+    {
+        yield return new ContextMenuAction
+        {
+            Text = "Sample Item Context action",
+            RequiereCharacterSelected = true,
+            Action = (cm, c) => Debug.Log("Sample menu action")
+        };
+    }
 }
