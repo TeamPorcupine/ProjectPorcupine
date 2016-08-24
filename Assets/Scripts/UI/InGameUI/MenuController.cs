@@ -26,6 +26,7 @@ public class MenuController : MonoBehaviour
     public Button buttonWork;
     public Button buttonOptions;
     public Button buttonSettings;
+    public Button buttonQuests;
 
     // Use this for initialization.
     void Start()
@@ -56,6 +57,11 @@ public class MenuController : MonoBehaviour
         buttonSettings.onClick.AddListener(delegate
             {
                 OnButtonSettings();
+            });
+
+        buttonQuests.onClick.AddListener(delegate
+            {
+                OnButtonQuests();
             });
 
         DeactivateAll();
@@ -116,6 +122,15 @@ public class MenuController : MonoBehaviour
             DeactivateAll();
         }
 
+    }
+
+    public void OnButtonQuests()
+    {
+        if (!WorldController.Instance.IsModal)
+        {
+            DeactivateAll();
+            dbm.dialogBoxQuests.ShowDialog();
+        }
     }
 
     public void OnButtonOptions()

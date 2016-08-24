@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Quests>
+
+  <Quest Name="Mining Drone Beta Test Program">
+    <Description>Participate in the Beta Program of brand new mining Drones!</Description>
+    <Goals>
+      <Goal Description="Build 2 Mining Drone Station" IsCompletedLuaFunction="Quest_Have_Furniture_Built">
+        <Params>
+          <Param name="objectType" value="Mining Drone Station"/>
+          <Param name="amount" value="2"/>
+        </Params>
+      </Goal>
+    </Goals>
+    <Rewards>
+      <Reward Description="Receive 50 free Raw Iron" OnRewardLuaFunction="Quest_Spawn_Inventory">
+        <Params>
+          <Param name="objectType" value="Raw Iron"/>
+          <Param name="amount" value="50"/>
+        </Params>
+      </Reward>
+    </Rewards>
+  </Quest>
+
+  <Quest Name="Fresh">
+    <Description>Build 2 Oxygen Generator and the power for it</Description>
+    <Goals>
+      <Goal Description="Build 2 Power Generator" IsCompletedLuaFunction="Quest_Have_Furniture_Built">
+        <Params>
+          <Param name="objectType" value="Power Generator"/>
+          <Param name="amount" value="2"/>
+        </Params>
+      </Goal>
+      <Goal Description="Build 2 Oxygen Generator" IsCompletedLuaFunction="Quest_Have_Furniture_Built">
+        <Params>
+          <Param name="objectType" value="Oxygen Generator"/>
+          <Param name="amount" value="2"/>
+        </Params>
+      </Goal>
+    </Goals>
+    <Rewards>
+      <Reward Description="Receive 10 free Power Cell" OnRewardLuaFunction="Quest_Spawn_Inventory">
+        <Params>
+          <Param name="objectType" value="Power Cell"/>
+          <Param name="amount" value="10"/>
+        </Params>
+      </Reward>
+    </Rewards>
+  </Quest>
+  
+</Quests>

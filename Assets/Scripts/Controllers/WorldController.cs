@@ -24,6 +24,7 @@ public class WorldController : MonoBehaviour
     JobSpriteController jobSpriteController;
     InventorySpriteController inventorySpriteController;
     FurnitureSpriteController furnitureSpriteController;
+    QuestController questController;
 
     public BuildModeController buildModeController;
     public MouseController mouseController;
@@ -104,6 +105,7 @@ public class WorldController : MonoBehaviour
         }
         mouseController = new MouseController(buildModeController, furnitureSpriteController, circleCursorPrefab);
         keyboardController = new KeyboardController(buildModeController, Instance);
+        questController = new QuestController();
 
         //Initialising controllers
         GameObject Controllers = GameObject.Find("Controllers");
@@ -127,6 +129,7 @@ public class WorldController : MonoBehaviour
             world.Update(Time.deltaTime * timeScale);
         }
 
+        questController.Update(Time.deltaTime);
         soundController.Update(Time.deltaTime);
     }
 
