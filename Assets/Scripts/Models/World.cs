@@ -89,8 +89,6 @@ public class World : IXmlSerializable
 
     }
 
-
-
     public Room GetOutsideRoom()
     {
         return rooms[0];
@@ -243,11 +241,9 @@ public class World : IXmlSerializable
         // Adds a random name to the Character
         string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
         filePath = System.IO.Path.Combine(filePath, "CharacterNames.txt");
-        string names = System.IO.File.ReadAllText(filePath);
 
-        string[] lines = Regex.Split( names, "\r\n" );
-        c.name = lines[UnityEngine.Random.Range(0, lines.Length-1)];
-
+        string[] names = File.ReadAllLines(filePath);
+        c.name = names[UnityEngine.Random.Range(0, names.Length-1)];
         characters.Add(c);
 
         if (cbCharacterCreated != null)
