@@ -41,11 +41,11 @@ public class SelectionInfoTextField : MonoBehaviour
         canvasGroup.interactable = true;
         canvasGroup.blocksRaycasts = true;
 
-        ISelectable actualSelection = mc.mySelection.stuffInTile[mc.mySelection.subSelection];
+        ISelectable actualSelection = mc.mySelection.GetSelectedStuff();
 
         if(actualSelection.GetType() == typeof(Character))
         {
-            txt.text = actualSelection.GetName() + "\n" + actualSelection.GetDescription() + "\n" + actualSelection.GetHitPointString(); //TODO: Change the hitpoint stuff.
+            txt.text = actualSelection.GetName() + "\n" + actualSelection.GetDescription() + "\n" + actualSelection.GetHitPointString() + "\n" + LocalizationTable.GetLocalization(actualSelection.GetJobDescription()); //TODO: Change the hitpoint stuff.
         }
         else
         {

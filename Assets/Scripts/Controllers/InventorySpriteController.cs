@@ -47,9 +47,6 @@ public class InventorySpriteController
 
     public void Remove()
     {
-        GameObject.Destroy(inventoryParent);
-        inventoryGameObjectMap.Clear();
-
         world.cbInventoryCreated -= OnInventoryCreated;
 
         foreach (string objectType in world.inventoryManager.inventories.Keys)
@@ -59,6 +56,9 @@ public class InventorySpriteController
                 inv.cbInventoryChanged -= OnInventoryChanged;
             }
         }
+
+        inventoryGameObjectMap.Clear();
+        GameObject.Destroy(inventoryParent);
     }
 
     public void OnInventoryCreated(Inventory inv)
