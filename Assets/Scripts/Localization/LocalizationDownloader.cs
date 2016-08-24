@@ -37,18 +37,19 @@ namespace ProjectPorcupine.Localization
             }
             catch (FileNotFoundException e)
             {
-                Debug.LogWarning(e.Message);
+                Debug.ULogWarningChannel("LocalizationDownloader", (e.Message));
                 currentLocalizationVersion = string.Empty;
             }
             catch (DirectoryNotFoundException e)
             {
-                Debug.LogWarning(e.Message);
+                Debug.ULogWarningChannel("LocalizationDownloader", (e.Message));
                 Directory.CreateDirectory(LocalizationFolderPath);
                 currentLocalizationVersion = string.Empty;
             }
             catch (System.Exception e)
             {
-                Debug.LogError(e);
+                //Debug.LogError(e);
+                Debug.ULogErrorChannel("LocalizationDownloader", (e.ToString()));
                 yield break;
             }
 
@@ -62,7 +63,7 @@ namespace ProjectPorcupine.Localization
             if (versionChecker.error != null)
             {
                 // This could be a thing when for example user has no internet connection.
-                Debug.LogError("Error while checking for available localization updates: " + www.error);
+                Debug.ULogErrorChannel("LocalizationDownloader", "Error while checking for available localization updates: " + www.error);
                 yield break;
             }
 
@@ -71,7 +72,7 @@ namespace ProjectPorcupine.Localization
                 // There are still some updates available. We should probably notify
                 // user about it and offer him an option to download it right now.
                 // For now... Let's just force it >.> Beginners task!
-                Debug.Log("There is an update for localization files!");
+                Debug.ULogChannel("LocalizationDownloader", "There is an update for localization files!");
                 yield return DownloadLocalizationFromWeb(onLocalizationDownloadedCallback);
             }
         }
@@ -87,14 +88,14 @@ namespace ProjectPorcupine.Localization
                 www.Dispose();
             }
 
-            Debug.Log("Localization files download has started");
+            Debug.ULogChannel("LocalizationDownloader", "Localization files download has started");
 
             www = new WWW(LocalizationRepositoryZipLocation);
 
             // Wait for www to download current localization files.
             yield return www;
 
-            Debug.Log("Localization files download has finished!");
+            Debug.ULogChannel("LocalizationDownloader", "Localization files download has finished!");
 
             // Almost like a callback call
             OnDownloadLocalizationComplete(onLocalizationDownloadedCallback);
@@ -109,7 +110,7 @@ namespace ProjectPorcupine.Localization
             if (www.isDone == false)
             {
                 // This should never happen.
-                Debug.LogError(new System.Exception("OnDownloadLocalizationComplete got called before www finished downloading."));
+                Debug.ULogErrorChannel("LocalizationDownloader", new System.Exception("OnDownloadLocalizationComplete got called before www finished downloading.").ToString());
                 www.Dispose();
                 return;
             }
@@ -117,7 +118,7 @@ namespace ProjectPorcupine.Localization
             if (www.error != null)
             {
                 // This could be a thing when for example user has no internet connection.
-                Debug.LogError("Error while downloading localizations file: " + www.error);
+                Debug.ULogErrorChannel("LocalizationDownloader", "Error while downloading localizations file: " + www.error);
                 return;
             }
 
@@ -136,7 +137,7 @@ namespace ProjectPorcupine.Localization
                     // b) We are in a wrong directory, so let's hope we didn't delete anything important.
                     if (file.Extension != ".lang" && file.Extension != ".meta" && file.Extension != ".ver")
                     {
-                        Debug.LogError(new System.Exception("SOMETHING WENT HORRIBLY WRONG AT DOWNLOADING LOCALIZATION!"));
+                        Debug.ULogErrorChannel("LocalizationDownloader", new System.Exception("SOMETHING WENT HORRIBLY WRONG AT DOWNLOADING LOCALIZATION!").ToString());
                         Debug.Break();
                         return;
                     }
@@ -202,13 +203,13 @@ namespace ProjectPorcupine.Localization
                 FileInfo[] fileInfo = localizationFolderInfo.GetFiles();
                 if (fileInfo.Length > 0)
                 {
-                    Debug.LogError("There should be no files here.");
+                    Debug.ULogErrorChannel("LocalizationDownloader", "There should be no files here.");
                 }
 
                 DirectoryInfo[] dirInfo = localizationFolderInfo.GetDirectories();
                 if (dirInfo.Length > 1)
                 {
-                    Debug.LogError("There should be only one directory");
+                    Debug.ULogErrorChannel("LocalizationDownloader", "There should be only one directory");
                 }
 
                 // Move files from ProjectPorcupineLocalization-*branch name* to Application.streamingAssetsPath/Localization.
@@ -225,14 +226,14 @@ namespace ProjectPorcupine.Localization
                 // Remove ProjectPorcupineLocalization-*branch name*
                 Directory.Delete(dirInfo[0].FullName);
 
-                Debug.Log("New localization files downloaded!");
+                Debug.ULogErrorChannel("LocalizationDownloader", "New localization files downloaded!");
             }
             catch (System.Exception e)
             {
                 // Something happen in the file system. 
                 // TODO: Handle this properly, for now this is as useful as:
                 // http://i.imgur.com/9ArGADw.png
-                Debug.LogError(e);
+                Debug.ULogErrorChannel("LocalizationDownloader", e.ToString());
             }
 
             onLocalizationDownloadedCallback();
