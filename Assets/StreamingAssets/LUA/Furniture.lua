@@ -432,6 +432,7 @@ function CloningPod_UpdateAction(furniture, deltaTime)
     nil,
     10,
     nil,
+    Job.JobPriority.Medium,
     false)
 
     j.RegisterJobCompletedCallback("CloningPod_JobComplete")
@@ -440,8 +441,8 @@ function CloningPod_UpdateAction(furniture, deltaTime)
 end
 
 function CloningPod_JobComplete(j)
+    World.current.CreateCharacter(j.furniture.GetSpawnSpotTile())
     j.furniture.Deconstruct()
-    char = World.current.CreateCharacter(j.furniture.GetSpawnSpotTile())
 end
 
 function PowerGenerator_UpdateAction(furniture, deltatime)
