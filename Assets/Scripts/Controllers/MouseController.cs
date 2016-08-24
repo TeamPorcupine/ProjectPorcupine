@@ -458,21 +458,13 @@ public class MouseController
             return;
         }
 
+        Vector3 oldMousePosition;
+        oldMousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        oldMousePosition.z = 0;
+
         if (Input.GetAxis("Mouse ScrollWheel") != 0)
         {
-            Vector3 oldMousePosition;
-            oldMousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            oldMousePosition.z = 0;
-
             zoomTarget = Camera.main.orthographicSize - Settings.getSettingAsFloat("ZoomSensitivity", 3) * (Camera.main.orthographicSize * Input.GetAxis("Mouse ScrollWheel"));
-
-            // Refocus game so the mouse stays in the same spot when zooming
-            Vector3 newMousePosition;
-            newMousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            newMousePosition.z = 0;
-
-            Vector3 pushedAmount = oldMousePosition - newMousePosition;
-            Camera.main.transform.Translate(pushedAmount);
         }
 
         if (Camera.main.orthographicSize != zoomTarget)
@@ -481,9 +473,20 @@ public class MouseController
             Camera.main.orthographicSize = Mathf.Clamp(target, 3f, 25f);
         }
 
+        // Refocus game so the mouse stays in the same spot when zooming
+        Vector3 newMousePosition = Vector3.zero;
+        newMousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        newMousePosition.z = 0;
+
+        Vector3 pushedAmount = oldMousePosition - newMousePosition;
+        Camera.main.transform.Translate(pushedAmount);
+
         UpdateCameraBounds();
     }
 
+    /// <summary>
+    /// Make the camera stay within the world boundaries.
+    /// </summary>
     private void UpdateCameraBounds()
     {
         Vector3 oldPos = Camera.main.transform.position;
