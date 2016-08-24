@@ -7,7 +7,6 @@
 // ====================================================
 #endregion
 using System;
-using UnityEngine;
 
 /// <summary>
 /// Different mathemathical calculations. 
@@ -63,7 +62,7 @@ public static class MathUtilities
     }
     public static float RoundFloat(this float value, int decimalplace)
     {
-        int dp = (int)Mathf.Pow(10, decimalplace);
-        return Mathf.Round(value * dp) / dp;
+        int dp = (int)Math.Pow(10, decimalplace);
+        return (float)Math.Round(value * dp) / dp;
     }
 }
