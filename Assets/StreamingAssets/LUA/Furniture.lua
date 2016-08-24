@@ -18,7 +18,7 @@ function OnUpdate_GasGenerator( furniture, deltaTime )
 	if ( furniture.tile.room == nil ) then
 		return "Furniture's room was null."
 	end
-    
+
     keys = furniture.Parameters["gas_gen"].Keys()
     for discard, key in pairs(keys) do
         if ( furniture.tile.room.GetGasPressure(key) < furniture.Parameters["gas_gen"][key]["gas_limit"].ToFloat()) then
@@ -192,7 +192,7 @@ function Stockpile_UpdateAction( furniture, deltaTime )
 	-- could be a lot smarter, in that even if the stockpile has some stuff in it, it
 	-- can also still be requestion different object types in its job creation.
 
-	itemsDesired = {}
+    itemsDesired = {}
 
 	if( furniture.tile.Inventory == nil ) then
 		--ModUtils.ULog("Creating job for new stack.")
@@ -323,21 +323,21 @@ function MetalSmelter_UpdateAction(furniture, deltaTime)
         j.RegisterJobWorkedCallback("MetalSmelter_JobWorked")
         furniture.AddJob(j)
     elseif (spawnSpot.Inventory ~= nil and spawnSpot.Inventory.stackSize >= 5) then
-        furniture.ChangeParameter("smelttime", deltaTime)
+        furniture.Parameters["smelttime"].ChangeFloatValue(deltaTime)
 
-        if(furniture.GetParameter("smelttime") >= furniture.GetParameter("smelttime_required")) then
-            furniture.SetParameter("smelttime", 0)
+        if(furniture.Parameters["smelttime"].ToFloat() >= furniture.Parameters["smelttime_required"].ToFloat()) then
+            furniture.Parameters["smelttime"].SetValue(0)
 
             outputSpot = World.current.GetTileAt(spawnSpot.X+2, spawnSpot.y)
 
             if(outputSpot.Inventory == nil) then
-                World.current.inventoryManager.PlaceInventory( outputSpot, Inventory.__new("Steel Plate", 50, 5) )
-                spawnSpot.Inventory.stackSize = spawnSpot.Inventory.stackSize-5
+                World.current.inventoryManager.PlaceInventory(outputSpot, Inventory.__new("Steel Plate", 50, 5))
+                spawnSpot.Inventory.stackSize = spawnSpot.Inventory.stackSize - 5
             else
                 if(outputSpot.Inventory.stackSize <= 45) then
-                    outputSpot.Inventory.stackSize = outputSpot.Inventory.stackSize+5
+                    outputSpot.Inventory.stackSize = outputSpot.Inventory.stackSize + 5
 
-                    spawnSpot.Inventory.stackSize = spawnSpot.Inventory.stackSize-5
+                    spawnSpot.Inventory.stackSize = spawnSpot.Inventory.stackSize - 5
                 end
             end
 
@@ -383,13 +383,14 @@ function PowerCellPress_UpdateAction(furniture, deltaTime)
             false)
 
             j.RegisterJobCompletedCallback("PowerCellPress_JobComplete")
+            j.JobDescription = "job_power_cell_fulling_desc"
             furniture.AddJob(j)
         end
     else
-        furniture.ChangeParameter("presstime", deltaTime)
+        furniture.Parameters["presstime"].ChangeFloatValue(deltaTime)
 
-        if(furniture.GetParameter("presstime") >= furniture.GetParameter("presstime_required")) then
-            furniture.SetParameter("presstime", 0)
+        if(furniture.Parameters["presstime"].ToFloat() >= furniture.Parameters["presstime_required"].ToFloat()) then
+            furniture.Parameters["presstime"].SetValue(0)
             outputSpot = World.current.GetTileAt(spawnSpot.X+2, spawnSpot.y)
 
             if(outputSpot.Inventory == nil) then
@@ -444,7 +445,7 @@ function CloningPod_JobComplete(j)
 end
 
 function PowerGenerator_UpdateAction(furniture, deltatime)
-    if ( furniture.JobCount() < 1 and furniture.GetParameter("burnTime") == 0 ) then
+    if (furniture.JobCount() < 1 and furniture.Parameters["burnTime"].ToFloat() == 0) then
         furniture.PowerValue = 0
         itemsDesired = {Inventory.__new("Uranium", 5, 0)}
 
@@ -458,11 +459,12 @@ function PowerGenerator_UpdateAction(furniture, deltatime)
         false)
 
         j.RegisterJobCompletedCallback("PowerGenerator_JobComplete")
+        j.JobDescription = "job_power_generator_fulling_desc"
         furniture.AddJob( j )
     else
-        furniture.ChangeParameter("burnTime", -deltatime)
-        if ( furniture.GetParameter("burnTime") < 0 ) then
-            furniture.SetParameter("burnTime", 0)
+        furniture.Parameters["burnTime"].ChangeFloatValue(-deltatime)
+        if ( furniture.Parameters["burnTime"].ToFloat() < 0 ) then
+            furniture.Parameters["burnTime"].SetValue(0)
         end
     end
 end
@@ -473,18 +475,18 @@ function PowerGenerator_JobComplete( j )
 end
 
 function LandingPad_Temp_UpdateAction(furniture, deltaTime)
-    
+
     if(not furniture.tile.room.IsOutsideRoom()) then
         return
     end
-    
+
     spawnSpot = furniture.GetSpawnSpotTile()
     jobSpot = furniture.GetJobSpotTile()
     inputSpot = World.current.GetTileAt(jobSpot.X, jobSpot.y-1)
 
     if(inputSpot.Inventory == nil) then
         if(furniture.JobCount() == 0) then
-            itemsDesired = {Inventory.__new("Steel Plate", furniture.GetParameter("tradeinamount"), 0)}
+            itemsDesired = {Inventory.__new("Steel Plate", furniture.Parameters["tradeinamount"].ToFloat())}
 
             j = Job.__new(
             inputSpot,
@@ -502,19 +504,19 @@ function LandingPad_Temp_UpdateAction(furniture, deltaTime)
             furniture.AddJob(j)
         end
     else
-        furniture.ChangeParameter("tradetime", deltaTime)
+        furniture.Parameters["tradetime"].ChangeFloatValue(deltaTime)
 
-        if(furniture.GetParameter("tradetime") >= furniture.GetParameter("tradetime_required")) then
-            furniture.SetParameter("tradetime", 0)
+		if(furniture.Parameters["tradetime"].ToFloat() >= furniture.Parameters["tradetime_required"].ToFloat()) then
+			furniture.Parameters["tradetime"].SetValue(0)
             outputSpot = World.current.GetTileAt(spawnSpot.X+1, spawnSpot.y)
 
             if(outputSpot.Inventory == nil) then
-                World.current.inventoryManager.PlaceInventory( outputSpot, Inventory.__new("Steel Plate", 50, furniture.GetParameter("tradeoutamount")) )
-                inputSpot.Inventory.stackSize = inputSpot.Inventory.stackSize-furniture.GetParameter("tradeinamount")
+                World.current.inventoryManager.PlaceInventory( outputSpot, Inventory.__new("Steel Plate", 50, furniture.Parameters["tradeoutamount"].ToFloat()))
+                inputSpot.Inventory.stackSize = inputSpot.Inventory.stackSize-furniture.Parameters["tradeinamount"].ToFloat()
             else
-                if(outputSpot.Inventory.stackSize <= 50 - outputSpot.Inventory.stackSize+furniture.GetParameter("tradeoutamount")) then
-                    outputSpot.Inventory.stackSize = outputSpot.Inventory.stackSize+furniture.GetParameter("tradeoutamount")
-                    inputSpot.Inventory.stackSize = inputSpot.Inventory.stackSize-furniture.GetParameter("tradeinamount")
+                if(outputSpot.Inventory.stackSize <= 50 - outputSpot.Inventory.stackSize + furniture.Parameters["tradeoutamount"].ToFloat()) then
+                    outputSpot.Inventory.stackSize = outputSpot.Inventory.stackSize + furniture.Parameters["tradeoutamount"].ToFloat()
+                    inputSpot.Inventory.stackSize = inputSpot.Inventory.stackSize - furniture.Parameters["tradeoutamount"].ToFloat()
                 end
             end
 
