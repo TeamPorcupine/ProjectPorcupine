@@ -338,8 +338,8 @@
         <!-- <Param name="gas_name" value="O2" /> -->
         <Param name="max_gas_content" value="5" />
         <Param name="gas_content" value="0" />
-        <Param name="give_threshold" value="0.1" />
-        <Param name="take_threshold" value="0.15" />
+        <Param name="give_threshold" value="0.005" />
+        <Param name="take_threshold" value="0.01" />
         <Param name="flow_rate" value="0.1" />
     </Params>
     
