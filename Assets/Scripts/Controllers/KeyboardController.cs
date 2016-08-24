@@ -52,6 +52,16 @@ public class KeyboardController {
                 Input.GetAxis("Vertical"),
                 0
             );
+
+        if (Input.GetKey(KeyCode.PageUp))
+        {
+            wc.cameraController.ChangeZoom(0.1f);
+        }
+
+        if (Input.GetKey(KeyCode.PageDown))
+        {
+            wc.cameraController.ChangeZoom(-0.1f);
+        }
     }
 
     void CheckTimeInput()

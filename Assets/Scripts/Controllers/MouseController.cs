@@ -36,7 +36,6 @@ public class MouseController
     private bool isDragging = false;
     // Ìs panning the camera
     private bool isPanning = false;
-    private float zoomTarget;
 	
     private MouseMode currentMode = MouseMode.SELECT;
 
@@ -458,28 +457,11 @@ public class MouseController
             return;
         }
 
-        Vector3 oldMousePosition;
-        oldMousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        oldMousePosition.z = 0;
-
         if (Input.GetAxis("Mouse ScrollWheel") != 0)
         {
-            zoomTarget = Camera.main.orthographicSize - Settings.getSettingAsFloat("ZoomSensitivity", 3) * (Camera.main.orthographicSize * Input.GetAxis("Mouse ScrollWheel"));
+            WorldController.Instance.cameraController.ChangeZoom(Input.GetAxis("Mouse ScrollWheel"));
         }
 
-        if (Camera.main.orthographicSize != zoomTarget)
-        {
-            float target = Mathf.Lerp(Camera.main.orthographicSize, zoomTarget, Settings.getSettingAsFloat("ZoomLerp", 3) * Time.deltaTime);
-            Camera.main.orthographicSize = Mathf.Clamp(target, 3f, 25f);
-        }
-
-        // Refocus game so the mouse stays in the same spot when zooming
-        Vector3 newMousePosition = Vector3.zero;
-        newMousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        newMousePosition.z = 0;
-
-        Vector3 pushedAmount = oldMousePosition - newMousePosition;
-        Camera.main.transform.Translate(pushedAmount);
     } 
 
     private void ShowFurnitureSpriteAtTile(string furnitureType, Tile t)
