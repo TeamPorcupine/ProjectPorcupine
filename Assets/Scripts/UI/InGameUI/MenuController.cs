@@ -75,7 +75,8 @@ public class MenuController : MonoBehaviour
         GameObject buttonQuestGameObject = (GameObject)Instantiate(Resources.Load("UI/MenuButton"), this.gameObject.transform);
         buttonQuestGameObject.name = "Button - " + text;
         Text buttonText = buttonQuestGameObject.transform.GetChild(0).GetComponent<Text>();
-        buttonText.text = "text";
+        buttonText.text = text;
+        buttonText.GetComponent<TextLocalizer>().text = buttonText;
         buttonText.GetComponent<TextLocalizer>().UpdateText();
         return  buttonQuestGameObject.GetComponent<Button>();
     }
