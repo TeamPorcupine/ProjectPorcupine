@@ -29,6 +29,11 @@ public static class ModUtils
         Debug.Log(obj);
     }
 
+    public static void Log(string channel, object obj)
+    {
+        Debug.ULogChannel(channel, obj.ToString());
+    }
+
     public static void LogWarning(object obj) 
     {
         Debug.LogWarning(obj);
