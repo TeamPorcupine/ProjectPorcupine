@@ -14,6 +14,8 @@ using UnityEngine;
 [MoonSharpUserData]
 public static class ModUtils
 {
+    static string defaultLogChannel = "Lua";
+
     public static float Clamp01(float value) 
     {
         return Mathf.Clamp01(value); 
@@ -47,5 +49,20 @@ public static class ModUtils
     public static void ULogErrorChannel(string channel, string message)
     {
         Debug.ULogErrorChannel(channel, message);
+    }
+
+    public static void ULog(string message)
+    {
+        Debug.ULogChannel(defaultLogChannel, message);
+    }
+
+    public static void ULogWarning(string message)
+    {
+        Debug.ULogWarningChannel(defaultLogChannel, message);
+    }
+
+    public static void ULogError(string message)
+    {
+        Debug.ULogErrorChannel(defaultLogChannel, message);
     }
 }
