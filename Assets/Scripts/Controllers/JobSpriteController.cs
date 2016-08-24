@@ -68,7 +68,7 @@ public class JobSpriteController
             //until the graphics system for tiles is fleshed out further
 
             job_go.transform.position = new Vector3(job.tile.X, job.tile.Y, 0);
-            sr.sprite = SpriteManager.current.GetSprite("Tile", "Empty");
+            sr.sprite = SpriteManager.current.GetSprite("Tile", "Solid");
         }
         else
         {

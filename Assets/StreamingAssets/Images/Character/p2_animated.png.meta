@@ -1,6 +1,11 @@
 fileFormatVersion: 2
+<<<<<<< HEAD
 guid: d52fefe787bbec845a40a012874394e0
 timeCreated: 1472006316
+=======
+guid: c9c8d135e4a674929a4ed626f62840d4
+timeCreated: 1472007141
+>>>>>>> refs/remotes/TeamPorcupine/master
 licenseType: Free
 DefaultImporter:
   userData: 
