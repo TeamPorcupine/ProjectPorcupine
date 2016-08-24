@@ -43,16 +43,16 @@ function temperatureValueAt( tile, world )
 	--if tile == nil then
 	--	return -2
 	--end
-	--return math.max(math.min(world.temperature.GetTemperature(tile.X, tile.Y) / 3, 254), 0)
+	return math.max(math.min(world.temperature.GetTemperature(tile.X, tile.Y) / 3, 254), 0)
     
-    if (tile == nil) then
-        return -1
-    end
-    if (tile.Room == nil) then
-        -- Not part of a room, probably wall
-        return 0
-    end
-    return math.max(math.min(tile.Room.GetTemperature() / 3, 254), 0)
+    --if (tile == nil) then
+    --    return -1
+    --end
+    --if (tile.Room == nil) then
+    --    -- Not part of a room, probably wall
+    --    return 0
+    --end
+    --return math.max(math.min(tile.Room.GetTemperature() / 3, 254), 0)
 end
 
 
