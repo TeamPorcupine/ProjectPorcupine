@@ -22,10 +22,6 @@ public class FurnitureActions
         LuaUtilities.RegisterGlobal(typeof(Job));
         LuaUtilities.RegisterGlobal(typeof(ModUtils));
         LuaUtilities.RegisterGlobal(typeof(World));
-        myLuaScript.Globals["Quest"] = typeof(Quest);
-        myLuaScript.Globals["QuestGoal"] = typeof(QuestGoal);
-        myLuaScript.Globals["QuestReward"] = typeof(QuestReward);
-
 
     }
 

@@ -572,26 +572,5 @@ function OxygenCompressor_GetSpriteName(furniture)
     return baseName .. "_" .. suffix
 end
 
--------------------------------- Quests Actions --------------------------------
--- TODO in the future we should split the LUA into multiple files, but this is
--- a task for another PR
-
-function Quest_Have_Furniture_Built(goal)
-    goal.IsCompleted = false
-    objectType = goal.Parameters["objectType"].Value
-    amount = goal.Parameters["amount"].ToInt()
-    amountFound = World.current.CountFurnitureType(objectType)
-    if(amountFound >= amount) then
-        goal.IsCompleted = true
-    end
-end
-
-function Quest_Spawn_Inventory(reward)
- tile = World.current.GetCenterTile()
- objectType = reward.Parameters["objectType"].Value
- amount = reward.Parameters["amount"].ToInt()
- World.current.inventoryManager.PlaceInventory( tile, Inventory.__new(objectType, amount, amount))
-end
-
 ModUtils.ULog("Furniture.lua loaded")
 return "LUA Script Parsed!"

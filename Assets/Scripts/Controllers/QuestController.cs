@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 public class QuestController
 {
@@ -10,7 +11,18 @@ public class QuestController
     public QuestController()
     {
         checkDelayInSeconds = 5f;
+        LoadLuaScript();
     }
+
+    void LoadLuaScript()
+    {
+        string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
+        filePath = System.IO.Path.Combine(filePath, "Quest.lua");
+        string luaCode = System.IO.File.ReadAllText(filePath);
+
+        new QuestActions(luaCode);
+    }
+
 
     public void Update(float deltaTime)
     {
@@ -40,7 +52,7 @@ public class QuestController
         quest.IsCompleted = true;
         foreach (QuestGoal goal in quest.Goals)
         {
-            FurnitureActions.CallFunction(goal.IsCompletedLuaFunction, goal);
+            QuestActions.CallFunction(goal.IsCompletedLuaFunction, goal);
             quest.IsCompleted &= goal.IsCompleted;
         }
 
@@ -51,7 +63,7 @@ public class QuestController
     {
         foreach (QuestReward reward in quest.Rewards)
         {
-            FurnitureActions.CallFunction(reward.OnRewardLuaFunction, reward);
+            QuestActions.CallFunction(reward.OnRewardLuaFunction, reward);
         }
     }
 }
