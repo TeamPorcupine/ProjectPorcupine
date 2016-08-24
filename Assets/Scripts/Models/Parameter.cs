@@ -59,6 +59,11 @@ public class Parameter {
     {
         get
         {
+            if (contents == null || contents.ContainsKey(key) == false)
+            {
+                Debug.ULogWarningChannel("Parameter", "Trying to access non-existent key: '" + key + "'. Probably a Lua problem.");
+                return new Parameter(key); // return empty parameter for now
+            }
             return contents[key];
         }
         set
