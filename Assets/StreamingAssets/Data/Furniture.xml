@@ -11,7 +11,6 @@
         <EnclosesRooms>true</EnclosesRooms>
         <DragType>path</DragType>
 
-
         <BuildingJob jobTime="1">
             <Inventory objectType="Steel Plate" amount="5" />
         </BuildingJob>
@@ -46,20 +45,19 @@
         <EnclosesRooms>true</EnclosesRooms>
         <CanReplaceFurniture typeTag="Wall" />
 
-
-        <Params>
-            <Param name="openness" value="0" />
-            <Param name="is_opening" value="0" />
-            <Param name="thermal_diffusivity" value="0.0" />
-        </Params>
-
-        <BuildingJob jobTime="1">
+		<BuildingJob jobTime="1">
             <Inventory objectType="Steel Plate" amount="2" />
         </BuildingJob>
 
         <DeconstructJob>
             <Inventory objectType="Steel Plate" amount="1" />
         </DeconstructJob>
+        
+		<Params>
+            <Param name="openness" value="0" />
+            <Param name="is_opening" value="0" />
+            <Param name="thermal_diffusivity" value="0.0" />
+        </Params>
 
         <OnUpdate FunctionName="OnUpdate_Door" />
         <OnUpdate FunctionName="OnUpdate_Leak_Door" />
@@ -84,12 +82,6 @@
         <CanReplaceFurniture typeTag="Wall" />
         <CanReplaceFurniture typeTag="Door" />
 
-
-        <Params>
-            <Param name="openness" value="0" />
-            <Param name="is_opening" value="0" />
-        </Params>
-
         <BuildingJob jobTime="5">
             <Inventory objectType="Steel Plate" amount="10" />
         </BuildingJob>
@@ -97,6 +89,11 @@
         <DeconstructJob>
             <Inventory objectType="Steel Plate" amount="7" />
         </DeconstructJob>
+		
+        <Params>
+            <Param name="openness" value="0" />
+            <Param name="is_opening" value="0" />
+        </Params>
 
         <OnUpdate FunctionName="OnUpdate_Door" />
         <OnUpdate FunctionName="OnUpdate_Leak_Airlock" />
@@ -124,6 +121,7 @@
         
         <LocalizationCode>furn_stockpile</LocalizationCode>
         <UnlocalizedDescription>furn_stockpile_desc</UnlocalizedDescription>
+		
     </Furniture>
 
     <Furniture objectType="Oxygen Generator">
@@ -138,13 +136,13 @@
         <BuildingJob jobTime="0">
         </BuildingJob>
 
-        <OnUpdate FunctionName="OnUpdate_GasGenerator" />
-
         <Params>
             <!-- <Param name="gas_name" value="O2" /> -->
             <Param name="gas_limit" value="0.2" />
             <Param name="gas_per_second" value="0.01" />
         </Params>
+
+		<OnUpdate FunctionName="OnUpdate_GasGenerator" />
 
         <LocalizationCode>furn_oxygen_generator</LocalizationCode>
         <UnlocalizedDescription>furn_oxygen_generator_desc</UnlocalizedDescription>
@@ -175,37 +173,38 @@
 
 
     <Furniture objectType="Power Generator">
-    <Name>Power Generator</Name>
-    <TypeTag>Generator</TypeTag>
-    <MovementCost>10</MovementCost>
-    <Width>2</Width>
-    <Height>2</Height>
-    <Power>5</Power>
+		<Name>Power Generator</Name>
+		<TypeTag>Generator</TypeTag>
+		<MovementCost>10</MovementCost>
+		<Width>2</Width>
+		<Height>2</Height>
+		<Power>5</Power>
 
-      <BuildingJob jobTime="0">
-      </BuildingJob>
+		<BuildingJob jobTime="0">
+		</BuildingJob>
       
-      <Params>
+		<Params>
           <Param name="burnTime" value="0" />
           <Param name="burnTimeRequired" value="10" />
-      </Params>
+		</Params>
       
-	  <OnUpdate FunctionName="PowerGenerator_UpdateAction" />
+		<OnUpdate FunctionName="PowerGenerator_UpdateAction" />
         
-      <LocalizationCode>furn_power_generator</LocalizationCode>
-      <UnlocalizedDescription>furn_power_generator_desc</UnlocalizedDescription>
+		<LocalizationCode>furn_power_generator</LocalizationCode>
+		<UnlocalizedDescription>furn_power_generator_desc</UnlocalizedDescription>
 
-  </Furniture>
-  <Furniture objectType="Cloning Pod">
-	<Name>Cloning Pod</Name>
-	<Description>Creates an additional worker, then is destroyed.</Description>
+	</Furniture>
+  
+	<Furniture objectType="Cloning Pod">
+		<Name>Cloning Pod</Name>
+		<Description>Creates an additional worker, then is destroyed.</Description>
         <MovementCost>50</MovementCost>
         <Width>2</Width>
         <Height>2</Height>
 
-	<BuildingJob jobTime="10">
+		<BuildingJob jobTime="10">
             <Inventory objectType="Steel Plate" amount="50" />
-        </BuildingJob>
+		</BuildingJob>
 		<DeconstructJob>
             <Inventory objectType="Steel Plate" amount="15" />
         </DeconstructJob>
@@ -213,56 +212,58 @@
         <JobSpotOffset X="0" Y="-1" />
         <JobSpawnSpotOffset X="1" Y="-1" />
 
-	<OnUpdate FunctionName="CloningPod_UpdateAction" />
+		<OnUpdate FunctionName="CloningPod_UpdateAction" />
 			
-	<LocalizationCode>furn_cloning_pod</LocalizationCode>
-	<UnlocalizedDescription>furn_cloning_pod_desc</UnlocalizedDescription>
-  </Furniture>
-  <Furniture objectType="Metal Smelter">
-      <Name>Metal Smelter</Name>
-      <TypeTag>Processor</TypeTag>
-      <Description>Smelts your raw iron into metal.</Description>
-      <MovementCost>1</MovementCost>
-      <Width>3</Width>
-      <Height>3</Height>
-
-      <BuildingJob jobTime="0"/>
-      
-      <JobSpotOffset X="1" Y="0" />
-
-      <OnUpdate FunctionName="MetalSmelter_UpdateAction" />
-
-      <Params>
-          <Param name="smelttime" value="0" />
-          <Param name="smelttime_required" value="6" />
-      </Params>
-
-      <LocalizationCode>furn_metal_smelter</LocalizationCode>
-      <UnlocalizedDescription>furn_metal_smelter_desc</UnlocalizedDescription>
-  </Furniture>
+		<LocalizationCode>furn_cloning_pod</LocalizationCode>
+		<UnlocalizedDescription>furn_cloning_pod_desc</UnlocalizedDescription>
+	</Furniture>
   
-  <Furniture objectType="Heater">
-    <Name>Heater</Name>
-    <Description>Raises temperature in the room.</Description>
-    <BaseType>Temperature</BaseType>
-    <MovementCost>10</MovementCost>
-    <Width>1</Width>
-    <Height>1</Height>
-    <Power>4</Power>
+	<Furniture objectType="Metal Smelter">
+		<Name>Metal Smelter</Name>
+		<TypeTag>Processor</TypeTag>
+		<Description>Smelts your raw iron into metal.</Description>
+		<MovementCost>1</MovementCost>
+		<Width>3</Width>
+		<Height>3</Height>
 
-    <BuildingJob jobTime="0"></BuildingJob>
-
-    <!-- This method gets called on Install -->
-    <OnInstall FunctionName="Heater_InstallAction"></OnInstall>
-    <!-- This method gets called on Uninstall -->
-    <OnUninstall FunctionName="Heater_UninstallAction"></OnUninstall>
+		<BuildingJob jobTime="0"/>
       
-    <Params>
-      <Param name="temperature" value="10" />
-    </Params>
+		<JobSpotOffset X="1" Y="0" />
 
-    <LocalizationCode>furn_heater</LocalizationCode>
-    <UnlocalizedDescription>furn_heater_desc</UnlocalizedDescription>
+		<OnUpdate FunctionName="MetalSmelter_UpdateAction" />
+
+		<Params>
+			<Param name="smelttime" value="0" />
+			<Param name="smelttime_required" value="6" />
+		</Params>
+
+		<LocalizationCode>furn_metal_smelter</LocalizationCode>
+		<UnlocalizedDescription>furn_metal_smelter_desc</UnlocalizedDescription>
+		
+	</Furniture>
+  
+	<Furniture objectType="Heater">
+		<Name>Heater</Name>
+		<Description>Raises temperature in the room.</Description>
+		<BaseType>Temperature</BaseType>
+		<MovementCost>10</MovementCost>
+		<Width>1</Width>
+		<Height>1</Height>
+		<Power>4</Power>
+
+		<BuildingJob jobTime="0"></BuildingJob>
+
+		<!-- This method gets called on Install -->
+		<OnInstall FunctionName="Heater_InstallAction"></OnInstall>
+		<!-- This method gets called on Uninstall -->
+		<OnUninstall FunctionName="Heater_UninstallAction"></OnUninstall>
+      
+		<Params>
+			<Param name="temperature" value="10" />
+		</Params>
+
+		<LocalizationCode>furn_heater</LocalizationCode>
+		<UnlocalizedDescription>furn_heater_desc</UnlocalizedDescription>
 
 	</Furniture>
 
@@ -285,32 +286,37 @@
 		<LocalizationCode>furn_power_cell_press</LocalizationCode>
 		<UnlocalizedDescription>furn_power_cell_press_desc</UnlocalizedDescription>
 
-  </Furniture>
+	</Furniture>
 	
-  <Furniture objectType="Small Landing Pad">
-    <Name>Small Landing Pad</Name>
-    <Description>A landing pad for small spaceboats to land.</Description>
-    <OnUpdate FunctionName="LandingPad_Temp_UpdateAction" />
-    <MovementCost>5</MovementCost>
-    <Width>3</Width>
-    <Height>3</Height>
-    <BuildingJob jobTime="5">
-      <Inventory objectType="Steel Plate" amount="20" />
-    </BuildingJob>
-    <DeconstructJob>
-      <Inventory objectType="Steel Plate" amount="10" />
-    </DeconstructJob>
-    <JobSpotOffset X="0" Y="0" />
-    <!--<JobSpawnSpotOffset X="0" Y="-2" />-->
-    <JobSpawnSpotOffset X="1" Y="-1" />
-    <Params>
-      <Param name="tradetime" value="0" />
-      <Param name="tradetime_required" value="15" />
-      <Param name="tradeinamount" value="10" />
-      <Param name="tradeoutamount" value="15" />
-    </Params>
-    <LocalizationCode>furn_small_landing_pad</LocalizationCode>
-    <UnlocalizedDescription>furn_small_landing_pad_desc</UnlocalizedDescription>
-  </Furniture>
+	<Furniture objectType="Small Landing Pad">
+		<Name>Small Landing Pad</Name>
+		<Description>A landing pad for small spaceboats to land.</Description>
+		<OnUpdate FunctionName="LandingPad_Temp_UpdateAction" />
+		<MovementCost>5</MovementCost>
+		<Width>3</Width>
+		<Height>3</Height>
+		
+		<BuildingJob jobTime="5">
+			<Inventory objectType="Steel Plate" amount="20" />
+		</BuildingJob>
+		<DeconstructJob>
+			<Inventory objectType="Steel Plate" amount="10" />
+		</DeconstructJob>
+		
+		<JobSpotOffset X="0" Y="0" />
+		<!--<JobSpawnSpotOffset X="0" Y="-2" />-->
+		<JobSpawnSpotOffset X="1" Y="-1" />
+		
+		<Params>
+			<Param name="tradetime" value="0" />
+			<Param name="tradetime_required" value="15" />
+			<Param name="tradeinamount" value="10" />
+			<Param name="tradeoutamount" value="15" />
+		</Params>
+		
+		<LocalizationCode>furn_small_landing_pad</LocalizationCode>
+		<UnlocalizedDescription>furn_small_landing_pad_desc</UnlocalizedDescription>
+		
+	</Furniture>
 
 </Furnitures>
