@@ -16,43 +16,11 @@ namespace ProjectPorcupine.Localization
 {
     public static class LocalizationDownloader
     {
-        static IEnumerator testing()
-        {
-            string url = "https://api.github.com/repos/QuiZr/ProjectPorcupineLocalization/commits/Someone_will_come_up_with_a_proper_naming_scheme_later";
-
-            WWW www = new WWW(url);
-
-            yield return www;
-
-            if (www.error != null)
-            {
-                Debug.LogError(www.error);
-                yield break;
-            }
-
-            string json = www.text;
-            int index = json.IndexOf("sha\":\"") + 6;
-            Debug.ULogChannel("asf", index.ToString());
-            char currentChar = json[index];
-            string hash = string.Empty;
-            while (true)
-            {
-                if(currentChar == '\"')
-                {
-                    break;
-                }
-
-                hash += json[index];
-                currentChar = json[index];
-
-                index++;
-            }
-
-            Debug.ULogChannel("asf", hash);
-        }
-
         // TODO: Change this to the official repo before PR.
         private static readonly string LocalizationRepositoryZipLocation = "https://github.com/QuiZr/ProjectPorcupineLocalization/archive/" + World.current.currentGameVersion + ".zip";
+
+        // TODO: Change this to the official repo before PR.
+        private static readonly string LastCommitGithubApiLocation = "https://api.github.com/repos/QuiZr/ProjectPorcupineLocalization/commits/" + World.current.currentGameVersion;
 
         private static readonly string LocalizationFolderPath = Path.Combine(Application.streamingAssetsPath, "Localization");
 
@@ -64,10 +32,7 @@ namespace ProjectPorcupine.Localization
         /// </summary>
         public static IEnumerator CheckIfCurrentLocalizationIsUpToDate(Action onLocalizationDownloadedCallback)
         {
-            yield return testing();
-            yield break;
-
-            // Check current version of localization
+            // Check current version of localization based on commit hash.
             string currentLocalizationVersion;
             try
             {
@@ -90,10 +55,8 @@ namespace ProjectPorcupine.Localization
                 yield break;
             }
 
-            // Download curr.ver file from localization repository and check
-            // if it's matching the localizationFolderPath/curr.ver file
-            string avaibleVersionLocation = "https://raw.githubusercontent.com/QuiZr/ProjectPorcupineLocalization/" + World.current.currentGameVersion + "/curr.ver";
-            WWW versionChecker = new WWW(avaibleVersionLocation);
+            // Check the latest localization version through the GitHub API.
+            WWW versionChecker = new WWW(LastCommitGithubApiLocation);
 
             yield return versionChecker;
 
@@ -104,13 +67,45 @@ namespace ProjectPorcupine.Localization
                 yield break;
             }
 
-            if (versionChecker.text != currentLocalizationVersion)
+            // Let's try to filter that response and get the latest hash from it.
+            // There is a possibility that the versionChecker.text will be corrupted
+            // (i.e. when you pull the Ethernet plug while downloading so thats why 
+            // a little try-catch block is there.
+            string latestCommitHash = string.Empty;
+            try
+            {
+                latestCommitHash = GetHashOfLastCommitFromAPIResponse(versionChecker.text);
+            }
+            catch
+            {
+                yield break;
+            }
+
+            if (latestCommitHash != currentLocalizationVersion)
             {
                 // There are still some updates available. We should probably notify
                 // user about it and offer him an option to download it right now.
                 // For now... Let's just force it >.> Beginners task!
                 Debug.Log("There is an update for localization files!");
                 yield return DownloadLocalizationFromWeb(onLocalizationDownloadedCallback);
+            }
+
+            // Create curr.ver file to keep track of the latest localization version.
+            // Could we use the Settings class for this? Beginners task!
+            try
+            {
+                string currVerPath = Path.Combine(LocalizationFolderPath, "curr.ver");
+                using (StreamWriter currVer = File.CreateText(currVerPath))
+                {
+                    currVer.Write(latestCommitHash);
+                }
+            }
+            catch (Exception e)
+            {
+                // Not a big deal:
+                // Next time the LocalizationDownloader will force an update.
+                Debug.ULogError("LocalizationDownloader", "Not critical error at writing curr.ver file" + e.Message);
+                throw;
             }
         }
 
@@ -274,6 +269,58 @@ namespace ProjectPorcupine.Localization
             }
 
             onLocalizationDownloadedCallback();
+        }
+
+        /// <summary>
+        /// This is a really wonky way of parsing JSON. I didn't want to include something like
+        /// Json.NET library purely for this functionality but if we will be using it somewhere else
+        /// this need to change. DO NOT TOUCH and this will be fine >.>
+        /// </summary>
+        /// <param name="githubApiResponse">GitHub API response</param>
+        /// <returns></returns>
+        private static string GetHashOfLastCommitFromAPIResponse(string githubApiResponse)
+        {
+            // Index of the first char of hash. 
+            int index = githubApiResponse.IndexOf("sha\":\"");
+
+            if (index == -1)
+            {
+                // Either the response was damaged or GitHub API returned an error.
+                Debug.ULogErrorChannel("LocalizationDownloader", "Error at parsing JSON");
+                throw new Exception("Error at parsing JSON");
+            }
+
+            // + 6 == "sha\":\"" length
+            index += 6;
+
+            char currentChar = githubApiResponse[index];
+
+            // Hash of the commit.
+            string hash = string.Empty;
+            hash += currentChar;
+            while (true)
+            {
+                // Check if this is the end of the commit string.
+                // I don't think that i need to escape that quote mark 
+                // but oh well - it works either way..
+                index++;
+                currentChar = githubApiResponse[index];
+
+                if (currentChar == '\"')
+                {
+                    break;
+                }
+
+                hash += currentChar;
+
+                if (index + 1 == githubApiResponse.Length - 1)
+                {
+                    Debug.ULogErrorChannel("LocalizationDownloader", "Error at parsing JSON");
+                    throw new Exception("Error at parsing JSON");
+                }
+            }
+
+            return hash;
         }
     }
 }
