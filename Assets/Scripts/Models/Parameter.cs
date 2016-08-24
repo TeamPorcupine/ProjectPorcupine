@@ -6,23 +6,28 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using UnityEngine;
 using System.Collections;
-using System.Xml;
 using System.Collections.Generic;
-using MoonSharp.Interpreter;
 using System.Linq;
+using System.Xml;
+using MoonSharp.Interpreter;
+using UnityEngine;
 
 [MoonSharpUserData]
-public class Parameter {
+public class Parameter
+{
     // Name is primarily to simplify writing to XML, and will be the same as the key used to access it in a higher up Parameter when read from XML
     private string name;
+
     // Value is stored as a string and converted as needed, this simplifies storing multiple value types.
     private string value;
+
     // If this Parameter contains other Parameters, contents will contain the actual parameters
     private Dictionary<string, Parameter> contents;
+
     // Tracks if value has been explicitly set
     private bool uninitializedValue = true;
+
     public Parameter(string name, string value) 
     {
         this.name = name;
@@ -60,6 +65,7 @@ public class Parameter {
         {
             contents = new Dictionary<string, Parameter>();
         }
+
         this.value = other.ToString();
     }
 
@@ -68,27 +74,61 @@ public class Parameter {
     {
         get
         {
-            if (contents == null || contents.ContainsKey(key) == false)
+            if (contents.ContainsKey(key) == false)
             {
                 Debug.ULogWarningChannel("Parameter", "Trying to access non-existent key: '" + key + "'. Probably a Lua problem.");
+
                 // Add a new blank key to contents, that will then be returned.
                 contents.Add(key, new Parameter(key));
             }
+
             return contents[key];
         }
+
         set
         {
             contents[key] = value;
         }
     }
 
-
-    // Provides a deep clone of the dictionary, to ensure contained Parameters aren't linked between old and new objects
-    private Dictionary<string, Parameter> GetDictionary()
+    public static Parameter ReadXml(XmlReader reader)
     {
-        return contents.ToDictionary(entry => entry.Key, 
-            entry => new Parameter((Parameter) entry.Value));
-//        return new Dictionary<string, Parameter>(contents);
+        XmlReader subReader = reader.ReadSubtree();
+        Parameter paramGroup = new Parameter(subReader.GetAttribute("name"));
+
+        // Advance to the first inner element. Two reads are needed to ensure we don't get stuck on containing Element, or an EndElement
+        subReader.Read();
+        subReader.Read();
+
+        while (subReader.ReadToNextSibling("Param"))
+        {
+            string k = subReader.GetAttribute("name");
+
+            // Sometimes the look will get stuck on a Whitespace or an EndElement and error, so continue to next loop if we encounter one
+            if (subReader.NodeType == XmlNodeType.Whitespace || subReader.NodeType == XmlNodeType.EndElement)
+            {
+                continue;
+            }
+
+            // Somewhat redundant check to make absolutely sure we're on an Element
+            if (subReader.NodeType == XmlNodeType.Element)
+            {
+                // An empty element is a singular Param such as <Param name="name" value="value />
+                if (subReader.IsEmptyElement)
+                {
+                    string v = subReader.GetAttribute("value");
+                    paramGroup[k] = new Parameter(k, v);
+                }
+                else
+                {
+                    // This must be a group element, so we recurse and dive deeper
+                    paramGroup[k] = Parameter.ReadXml(subReader);
+                }
+            }
+        }
+
+        subReader.Close();
+        return paramGroup;
     }
 
     public string ToString() 
@@ -102,6 +142,7 @@ public class Parameter {
         {
             return defaultValue;
         }
+
         return ToString();
     }
 
@@ -118,9 +159,9 @@ public class Parameter {
         {
             return defaultValue;
         }
+
         return ToFloat();
     }
-
 
     public void SetValue(string value) 
     {
@@ -137,7 +178,7 @@ public class Parameter {
     // Change value by a float, primarily here to approximate old parameter system usage
     public void ChangeFloatValue(float value)
     {
-        this.value = "" + (ToFloat() + value);
+        this.value = string.Empty + (ToFloat() + value);
         uninitializedValue = false;
     }
 
@@ -150,7 +191,7 @@ public class Parameter {
     public string[] Keys()
     {
         string[] keys = new string[contents.Keys.Count];
-        contents.Keys.CopyTo(keys, 0);;
+        contents.Keys.CopyTo(keys, 0);
         return keys;
     }
 
@@ -172,17 +213,18 @@ public class Parameter {
 
     public void WriteXmlParamGroup(XmlWriter writer)
     {
-
         writer.WriteStartElement("Param");
         writer.WriteAttributeString("name", name);
-        if (!value.Equals(""))
+        if (!value.Equals(string.Empty))
         {
             writer.WriteAttributeString("value", value);
         }
+
         foreach (string k in contents.Keys)
         {
             this["k"].WriteXml(writer);
         }
+
         writer.WriteEndElement();
     }
 
@@ -204,44 +246,13 @@ public class Parameter {
         {
             WriteXmlParam(writer);
         }
-
     }
 
-
-    public static Parameter ReadXml(XmlReader reader)
+    // Provides a deep clone of the dictionary, to ensure contained Parameters aren't linked between old and new objects
+    private Dictionary<string, Parameter> GetDictionary()
     {
-        XmlReader subReader = reader.ReadSubtree();
-        Parameter paramGroup = new Parameter(subReader.GetAttribute("name"));
-
-        // Advance to the first inner element. Two reads are needed to ensure we don't get stuck on containing Element, or an EndElement
-        subReader.Read();
-        subReader.Read();
-
-        while(subReader.ReadToNextSibling("Param"))
-        {
-            string k = subReader.GetAttribute("name");
-            // Sometimes the look will get stuck on a Whitespace or an EndElement and error, so continue to next loop if we encounter one
-            if (subReader.NodeType == XmlNodeType.Whitespace || subReader.NodeType ==  XmlNodeType.EndElement)
-                continue;
-            // Somewhat redundant check to make absolutely sure we're on an Element
-            if (subReader.NodeType == XmlNodeType.Element)
-            {
-                // An empty element is a singular Param such as <Param name="name" value="value />
-                if (subReader.IsEmptyElement)
-                {
-                    string v = subReader.GetAttribute("value");
-                    paramGroup[k] = new Parameter(k, v);
-
-                }
-                // This must be a group element, so we recurse and dive deeper
-                else
-                {
-                    paramGroup[k] = Parameter.ReadXml(subReader);
-
-                }
-            }
-        }
-        subReader.Close();
-        return paramGroup;
+        return contents.ToDictionary(
+            entry => entry.Key, 
+            entry => new Parameter((Parameter)entry.Value));
     }
 }
