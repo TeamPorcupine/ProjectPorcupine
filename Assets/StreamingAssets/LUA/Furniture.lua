@@ -11,7 +11,7 @@ ENTERABILITY_SOON = 2
 
 -------------------------------- Furniture Actions --------------------------------
 function OnUpdate_GasGenerator( furniture, deltaTime )
-    if ( furniture.HasPower() == false) then
+    if (furniture.HasPower() == false) then
         return
     end
 
@@ -19,7 +19,7 @@ function OnUpdate_GasGenerator( furniture, deltaTime )
 		return "Furniture's room was null."
 	end
 
-    keys = furniture.Parameters["gas_gen"].Keys()
+    local keys = furniture.Parameters["gas_gen"].Keys()
     for discard, key in pairs(keys) do
         if ( furniture.tile.room.GetGasPressure(key) < furniture.Parameters["gas_gen"][key]["gas_limit"].ToFloat()) then
             furniture.tile.room.ChangeGas(key, furniture.Parameters["gas_per_second"].ToFloat() * deltaTime * furniture.Parameters["gas_gen"][key]["gas_limit"].ToFloat())
@@ -192,7 +192,7 @@ function Stockpile_UpdateAction( furniture, deltaTime )
 	-- could be a lot smarter, in that even if the stockpile has some stuff in it, it
 	-- can also still be requestion different object types in its job creation.
 
-    itemsDesired = {}
+    local itemsDesired = {}
 
 	if( furniture.tile.Inventory == nil ) then
 		--ModUtils.ULog("Creating job for new stack.")
@@ -240,6 +240,8 @@ function Stockpile_JobWorked(j)
 end
 
 function MiningDroneStation_UpdateAction( furniture, deltaTime )
+    local spawnSpot = furniture.GetSpawnSpotTile()
+
     spawnSpot = furniture.GetSpawnSpotTile()
 
 
@@ -304,20 +306,21 @@ function MiningDroneStation_Change_to_Raw_Copper(furniture, character)
 end
 
 function MetalSmelter_UpdateAction(furniture, deltaTime)
-    spawnSpot = furniture.GetSpawnSpotTile()
+    local spawnSpot = furniture.GetSpawnSpotTile()
 
     if(furniture.JobCount() == 0) then
-        itemsDesired = {Inventory.__new("Raw Iron", 50, 0)}
-        jobSpot = furniture.GetJobSpotTile()
+        local itemsDesired = {Inventory.__new("Raw Iron", 50, 0)}
+        local jobSpot = furniture.GetJobSpotTile()
 
-        j = Job.__new(
-        jobSpot,
-        nil,
-        nil,
-        0.4,
-        itemsDesired,
-        Job.JobPriority.Medium,
-        false)
+        local j = Job.__new(
+            jobSpot,
+            nil,
+            nil,
+            0.4,
+            itemsDesired,
+            Job.JobPriority.Medium,
+            false
+        )
 
         j.RegisterJobCompletedCallback("MetalSmelter_JobComplete")
         j.RegisterJobWorkedCallback("MetalSmelter_JobWorked")
@@ -328,7 +331,7 @@ function MetalSmelter_UpdateAction(furniture, deltaTime)
         if(furniture.Parameters["smelttime"].ToFloat() >= furniture.Parameters["smelttime_required"].ToFloat()) then
             furniture.Parameters["smelttime"].SetValue(0)
 
-            outputSpot = World.current.GetTileAt(spawnSpot.X+2, spawnSpot.y)
+            local outputSpot = World.current.GetTileAt(spawnSpot.X+2, spawnSpot.y)
 
             if(outputSpot.Inventory == nil) then
                 World.current.inventoryManager.PlaceInventory(outputSpot, Inventory.__new("Steel Plate", 50, 5))
@@ -354,7 +357,7 @@ function MetalSmelter_JobComplete(j)
 end
 
 function MetalSmelter_JobWorked(j)
-    spawnSpot = j.tile.Furniture.GetSpawnSpotTile()
+    local spawnSpot = j.tile.Furniture.GetSpawnSpotTile()
     for k, inv in pairs(j.inventoryRequirements) do
         if(inv ~= nil and inv.stackSize > 0) then
             World.current.inventoryManager.PlaceInventory(spawnSpot, inv)
@@ -365,22 +368,22 @@ function MetalSmelter_JobWorked(j)
 end
 
 function PowerCellPress_UpdateAction(furniture, deltaTime)
-    spawnSpot = furniture.GetSpawnSpotTile()
+    local spawnSpot = furniture.GetSpawnSpotTile()
 
     if(spawnSpot.Inventory == nil) then
         if(furniture.JobCount() == 0) then
-            itemsDesired = {Inventory.__new("Steel Plate", 10, 0)}
+            local itemsDesired = {Inventory.__new("Steel Plate", 10, 0)}
+            local jobSpot = furniture.GetJobSpotTile()
 
-            jobSpot = furniture.GetJobSpotTile()
-
-            j = Job.__new(
-            jobSpot,
-            nil,
-            nil,
-            1,
-            itemsDesired,
-            Job.JobPriority.Medium,
-            false)
+            local j = Job.__new(
+                jobSpot,
+                nil,
+                nil,
+                1,
+                itemsDesired,
+                Job.JobPriority.Medium,
+                false
+            )
 
             j.RegisterJobCompletedCallback("PowerCellPress_JobComplete")
             j.JobDescription = "job_power_cell_fulling_desc"
@@ -391,7 +394,7 @@ function PowerCellPress_UpdateAction(furniture, deltaTime)
 
         if(furniture.Parameters["presstime"].ToFloat() >= furniture.Parameters["presstime_required"].ToFloat()) then
             furniture.Parameters["presstime"].SetValue(0)
-            outputSpot = World.current.GetTileAt(spawnSpot.X+2, spawnSpot.y)
+            local outputSpot = World.current.GetTileAt(spawnSpot.X+2, spawnSpot.y)
 
             if(outputSpot.Inventory == nil) then
                 World.current.inventoryManager.PlaceInventory( outputSpot, Inventory.__new("Power Cell", 5, 1) )
@@ -411,7 +414,7 @@ function PowerCellPress_UpdateAction(furniture, deltaTime)
 end
 
 function PowerCellPress_JobComplete(j)
-    spawnSpot = j.tile.Furniture.GetSpawnSpotTile()
+    local spawnSpot = j.tile.Furniture.GetSpawnSpotTile()
 
     for k, inv in pairs(j.inventoryRequirements) do
         if(inv.stackSize > 0) then
@@ -426,14 +429,15 @@ function CloningPod_UpdateAction(furniture, deltaTime)
         return
     end
 
-    j = Job.__new(
-    furniture.GetJobSpotTile(),
-    nil,
-    nil,
-    10,
-    nil,
-    Job.JobPriority.Medium,
-    false)
+    local j = Job.__new(
+        furniture.GetJobSpotTile(),
+        nil,
+        nil,
+        10,
+        nil,
+        Job.JobPriority.Medium,
+        false
+    )
 
     j.RegisterJobCompletedCallback("CloningPod_JobComplete")
 	j.JobDescription = "job_cloning_pod_cloning_desc"
@@ -448,16 +452,17 @@ end
 function PowerGenerator_UpdateAction(furniture, deltatime)
     if (furniture.JobCount() < 1 and furniture.Parameters["burnTime"].ToFloat() == 0) then
         furniture.PowerValue = 0
-        itemsDesired = {Inventory.__new("Uranium", 5, 0)}
+        local itemsDesired = {Inventory.__new("Uranium", 5, 0)}
 
-        j = Job.__new(
-        furniture.GetJobSpotTile(),
-        nil,
-        nil,
-        0.5,
-        itemsDesired,
-        Job.JobPriority.High,
-        false)
+        local j = Job.__new(
+            furniture.GetJobSpotTile(),
+            nil,
+            nil,
+            0.5,
+            itemsDesired,
+            Job.JobPriority.High,
+            false
+        )
 
         j.RegisterJobCompletedCallback("PowerGenerator_JobComplete")
         j.JobDescription = "job_power_generator_fulling_desc"
@@ -476,32 +481,31 @@ function PowerGenerator_JobComplete( j )
 end
 
 function LandingPad_Temp_UpdateAction(furniture, deltaTime)
-
     if(not furniture.tile.room.IsOutsideRoom()) then
         return
     end
 
-    spawnSpot = furniture.GetSpawnSpotTile()
-    jobSpot = furniture.GetJobSpotTile()
-    inputSpot = World.current.GetTileAt(jobSpot.X, jobSpot.y-1)
+    local spawnSpot = furniture.GetSpawnSpotTile()
+    local jobSpot = furniture.GetJobSpotTile()
+    local inputSpot = World.current.GetTileAt(jobSpot.X, jobSpot.y-1)
 
     if(inputSpot.Inventory == nil) then
         if(furniture.JobCount() == 0) then
-            itemsDesired = {Inventory.__new("Steel Plate", furniture.Parameters["tradeinamount"].ToFloat())}
+            local itemsDesired = {Inventory.__new("Steel Plate", furniture.Parameters["tradeinamount"].ToFloat())}
 
-            j = Job.__new(
-            inputSpot,
-            nil,
-            nil,
-            0.4,
-            itemsDesired,
-            Job.JobPriority.Medium,
-            false)
+            local j = Job.__new(
+                inputSpot,
+                nil,
+                nil,
+                0.4,
+                itemsDesired,
+                Job.JobPriority.Medium,
+                false
+            )
 
             j.furniture = furniture
             j.RegisterJobCompletedCallback("LandingPad_Temp_JobComplete")
 			j.JobDescription = "job_landing_pad_fulling_desc"
-
             furniture.AddJob(j)
         end
     else
@@ -509,7 +513,7 @@ function LandingPad_Temp_UpdateAction(furniture, deltaTime)
 
 		if(furniture.Parameters["tradetime"].ToFloat() >= furniture.Parameters["tradetime_required"].ToFloat()) then
 			furniture.Parameters["tradetime"].SetValue(0)
-            outputSpot = World.current.GetTileAt(spawnSpot.X+1, spawnSpot.y)
+            local outputSpot = World.current.GetTileAt(spawnSpot.X+1, spawnSpot.y)
 
             if(outputSpot.Inventory == nil) then
                 World.current.inventoryManager.PlaceInventory( outputSpot, Inventory.__new("Steel Plate", 50, furniture.Parameters["tradeoutamount"].ToFloat()))
@@ -529,8 +533,8 @@ function LandingPad_Temp_UpdateAction(furniture, deltaTime)
 end
 
 function LandingPad_Temp_JobComplete(j)
-    jobSpot = j.furniture.GetJobSpotTile()
-    inputSpot = World.current.GetTileAt(jobSpot.X, jobSpot.y-1)
+    local jobSpot = j.furniture.GetJobSpotTile()
+    local inputSpot = World.current.GetTileAt(jobSpot.X, jobSpot.y-1)
 
     for k, inv in pairs(j.inventoryRequirements) do
         if(inv.stackSize > 0) then
