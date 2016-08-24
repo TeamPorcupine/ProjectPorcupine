@@ -552,10 +552,10 @@ function Heater_OnUpdate ( furniture, deltaTime)
         pressure = 0.5
     end
     temperatureChange = 10 * (pressure / 0.5) * deltaTime
-    tile.Room.ChangeTemperature(temperatureChange)
+    --tile.Room.ChangeTemperature(temperatureChange)
     
     -- Double, for testing
-    World.current.temperature.ChangeTemperature(tile.X, tile.Y, temperatureChange * 10)
+    World.current.temperature.ChangeTemperature(tile.X, tile.Y, temperatureChange)
 
 -- Should maybe later be integrated with GasGenerator function by
 -- someone who knows how that would work in this case
