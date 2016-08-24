@@ -17,7 +17,7 @@ public class Path_RoomGraph
     // of our world.  Each tile is a node. Each WALKABLE neighbour
     // from a tile is linked via an edge connection.
 
-    public Dictionary<Tile, Path_Node<Room>> nodes;
+    public Dictionary<Room, Path_Node<Room>> nodes;
 
     public Path_RoomGraph(World world)
     {
@@ -45,24 +45,24 @@ public class Path_RoomGraph
 
         foreach (Room r in nodes.Keys)
         {
-            if (r.IsOutsideRoom == false)
+            if (r.IsOutsideRoom() == false)
             {
                 GenerateEdgesByRoom(r);
             }
         }
-        GenerateOutsideEdges(world.GetOutsideRoom)
+        GenerateEdgesOutside();
     }
 
     void GenerateEdgesByRoom(Room r)
     {
-        if (r.IsOutsideRoom)
+        if (r.IsOutsideRoom())
         {
             // We don't want to loop over all the tiles in the outside room as this would be expensive
             return;
         }
         Path_Node<Room> n = nodes[r];
-        List<Path_Edge<Tile>> edges = new List<Path_Edge<Tile>>();
-        List<Path_Edge<Tile>> outsideEdges = new List<Path_Edge<Tile>>();
+        List<Path_Edge<Room>> edges = new List<Path_Edge<Room>>();
+
 
         List<Tile> exits = r.exits;
 
@@ -82,54 +82,45 @@ public class Path_RoomGraph
                 if (t2.Room != r)
                 {
                     // We have found a different room to ourselves add an edge from us to them
-                    Path_Edge<Tile> edge = new Path_Edge<Tile>();
+                    Path_Edge<Room> edge = new Path_Edge<Room>();
                     edge.cost = 1;
-                    edge.node = t2.Room;
+                    edge.node = nodes[t2.Room];
                     edges.Add(edge);
                 }
             }
         }
-        AddOutsideEdges(outsideEdges);
 
         n.edges = edges.ToArray();
     }
 
-    void GenerateOutsideEdges(Room outside)
+    void GenerateEdgesOutside()
     {   
+        List<Path_Edge<Room>> outsideEdges = new List<Path_Edge<Room>>();
+        Room outsideRoom = null;
         foreach (Room r in nodes.Keys)
         {
-            if (r.IsOutsideRoom)
+            if (r.IsOutsideRoom())
             {
-                Path_Node<Room> outsideRoom = nodes[r];
+                outsideRoom = r;
                 continue;
             }
 
 
-            Path_Edge<Tile>[] edges = nodes[r].edges;
-            foreach (Path_Edge<Tile> edge in edges)
+            Path_Edge<Room>[] edges = nodes[r].edges;
+            foreach (Path_Edge<Room> edge in edges)
             {
-                if (edge.node.IsOutsideRoom)
+                if (edge.node.data.IsOutsideRoom())
                 {
                     // Edge connects to the outside room
-                    Path_Edge<Tile> outsieEdge = new Path_Edge<Tile>();
+                    Path_Edge<Room> outsieEdge = new Path_Edge<Room>();
                     outsieEdge.cost = 1;
-                    outsieEdge.node = r;
-                    edges.Add(outsieEdge);
+                    outsieEdge.node = nodes[r];
+                    outsideEdges.Add(outsieEdge);
                 }
             }
 
         }
-        outsideRoom.edges = edges.ToArray();
-    }
-
-    private void AddOutsideEdges(List<Path_Edge<Tile>> outsideEdges)
-    {
-        Path_Node<Room> outside = nodes[r];
-        // Current outside edges
-        // Path_Edge[] current_outside_edges = outside.edges;
-
-        int[] current_outside_edges;
-        outside.edges = outsideEdges.ToArray();
+        nodes[outsideRoom].edges = outsideEdges.ToArray();
     }
 
 
@@ -139,5 +130,6 @@ public class Path_RoomGraph
         {
             GenerateEdgesByRoom(r);
         }
+        GenerateEdgesOutside();
     }
 }

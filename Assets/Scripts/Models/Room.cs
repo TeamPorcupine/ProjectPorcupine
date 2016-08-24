@@ -335,7 +335,7 @@ public class Room : IXmlSerializable
                         else if (t2.Furniture == null || t2.Furniture.roomEnclosure == true)
                         {
                             // We have found a room enclosing tile
-                            enclosingTiles.Add(t2);
+                            newRoom.enclosingTiles.Add(t2);
                         }
                     }
                 }
@@ -366,9 +366,9 @@ public class Room : IXmlSerializable
 
     private void FindExits()
     {
-        foreach (Tile t in enclosingTiles)
+        foreach (Tile t in this.enclosingTiles)
         {
-            if (t.IsEnterable != ENTERABILITY.Never)
+            if (t.IsEnterable() != ENTERABILITY.Never)
             {
                 // Tile can be walked through so must be an exits of somekind
                 exits.Add(t);

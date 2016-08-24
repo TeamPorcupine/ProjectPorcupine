@@ -38,6 +38,7 @@ public class World : IXmlSerializable
 
     // The pathfinding graph used to navigate our world map.
     public Path_TileGraph tileGraph;
+    public Path_RoomGraph roomGraph;
 
     public Dictionary<string, Furniture> furniturePrototypes;
     public Dictionary<string, Job> furnitureJobPrototypes;
@@ -109,6 +110,10 @@ public class World : IXmlSerializable
     public void AddRoom(Room r)
     {
         rooms.Add(r);
+        if (roomGraph != null)
+        {
+            roomGraph.RegenerateGraph();
+        }
     }
 
     public void DeleteRoom(Room r)
