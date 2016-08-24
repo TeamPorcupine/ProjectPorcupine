@@ -15,16 +15,17 @@ public class Path_AStar
 {
     Queue<Tile> path;
 
+
     public Path_AStar(Queue<Tile> path)
     {
         if (path == null || !path.Any())
         {
-            Debug.LogWarning("Created path with no tiles, is this intended?");
+            Debug.ULogWarningChannel("Path_AStar", "Created path with no tiles, is this intended?");
         }
         this.path = path;
     }
 
-    public Path_AStar(World world, Tile tileStart, Tile tileEnd, string objectType = null, int desiredAmount = 0, bool canTakeFromStockpile = false)
+    public Path_AStar(World world, Tile tileStart, Tile tileEnd, string objectType = null, int desiredAmount = 0, bool canTakeFromStockpile = false, bool lookingForFurn = false)
     {
 
         // if tileEnd is null, then we are simply scanning for the nearest objectType.
@@ -43,7 +44,7 @@ public class Path_AStar
         // Make sure our start/end tiles are in the list of nodes!
         if (nodes.ContainsKey(tileStart) == false)
         {
-            Debug.LogError("Path_AStar: The starting tile isn't in the list of nodes!");
+            Debug.ULogErrorChannel("Path_AStar", "The starting tile isn't in the list of nodes!");
 
             return;
         }
@@ -58,7 +59,7 @@ public class Path_AStar
         {
             if (nodes.ContainsKey(tileEnd) == false)
             {
-                Debug.LogError("Path_AStar: The ending tile isn't in the list of nodes!");
+                Debug.ULogErrorChannel("Path_AStar", "The ending tile isn't in the list of nodes!");
                 return;
             }
 
@@ -71,8 +72,8 @@ public class Path_AStar
 
         HashSet<Path_Node<Tile>> ClosedSet = new HashSet<Path_Node<Tile>>();
 
-/*		List<Path_Node<Tile>> OpenSet = new List<Path_Node<Tile>>();
-		OpenSet.Add( start );
+/*        List<Path_Node<Tile>> OpenSet = new List<Path_Node<Tile>>();
+        OpenSet.Add( start );
 */
 
         PathfindingPriorityQueue<Path_Node<Tile>> OpenSet = new PathfindingPriorityQueue<Path_Node<Tile>>();
@@ -102,8 +103,8 @@ public class Path_AStar
             else
             {
                 // We don't have a POSITIONAL goal, we're just trying to find
-                // some king of inventory.  Have we reached it?
-                if (current.data.Inventory != null && current.data.Inventory.objectType == objectType && !current.data.Inventory.isLocked)
+                // some kind of inventory or furniture.  Have we reached it?
+                if (current.data.Inventory != null && current.data.Inventory.objectType == objectType && lookingForFurn == false && current.data.Inventory.isLocked == false)
                 {
                     // Type is correct and we are allowed to pick it up
                     if (canTakeFromStockpile || current.data.Furniture == null || current.data.Furniture.IsStockpile() == false)
@@ -112,6 +113,12 @@ public class Path_AStar
                         reconstruct_path(Came_From, current);
                         return;
                     }
+                }
+                if (current.data.Furniture != null && current.data.Furniture.objectType == objectType && lookingForFurn)
+                {
+                    // Type is correct
+                    reconstruct_path(Came_From, current);
+                    return;
                 }
             }
 
@@ -175,7 +182,7 @@ public class Path_AStar
             return 1f;
         }
 
-        // Diag neighbours have a distance of 1.41421356237	
+        // Diag neighbours have a distance of 1.41421356237
         if (Mathf.Abs(a.data.X - b.data.X) == 1 && Mathf.Abs(a.data.Y - b.data.Y) == 1)
         {
             return 1.41421356237f;
@@ -222,12 +229,12 @@ public class Path_AStar
     {
         if (path == null)
         {
-            Debug.LogError("Attempting to dequeue from an null path.");
+            Debug.ULogErrorChannel("Path_AStar", "Attempting to dequeue from an null path.");
             return null;
         }
         if (path.Count <= 0)
         {
-            Debug.LogError("what???");
+            Debug.ULogErrorChannel("Path_AStar", "Path queue is zero or less elements long.");
             return null;
         }
         return path.Dequeue();
@@ -245,7 +252,7 @@ public class Path_AStar
     {
         if (path == null || path.Count == 0)
         {
-            Debug.Log("Path is null or empty.");
+            Debug.ULogChannel("Path_AStar", "Path is null or empty.");
             return null;
         }
 
