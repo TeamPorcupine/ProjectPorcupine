@@ -41,3 +41,4 @@ sysinfo.txt
 /Assets/StreamingAssets/Localization/*
 /Assets/StreamingAssets/Localization.meta
 Assets/_SCENE_.unity
+Assets/Scripts/Controllers/WorldController.cs
