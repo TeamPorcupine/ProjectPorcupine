@@ -1,7 +1,7 @@
 <Settings>
   <worldWidth>101</worldWidth>
   <worldHeight>101</worldHeight>
-  <localization>en_US</localization>
+  <localization>de_DE</localization>
   <DialogBoxSettings_langToggle>True</DialogBoxSettings_langToggle>
   <DialogBoxSettings_fpsToggle>True</DialogBoxSettings_fpsToggle>
   <DialogBoxSettings_fullScreenToggle>True</DialogBoxSettings_fullScreenToggle>
