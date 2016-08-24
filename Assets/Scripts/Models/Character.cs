@@ -236,7 +236,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             }
             else
             {
-                Debug.ULogErrorChannel("Character", name + " found a job at x " + myJob.tile.X + " y " + myJob.tile.Y + ".");
+                Debug.ULogChannel("Character", name + " found a job at x " + myJob.tile.X + " y " + myJob.tile.Y + ".");
             }
         }
 
