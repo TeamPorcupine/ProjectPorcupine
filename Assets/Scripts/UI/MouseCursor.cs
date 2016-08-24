@@ -12,16 +12,18 @@ using UnityEngine.UI;
 
 public class MouseCursor
 {
+    public bool cursorOverride = true;
+
     private MouseController mc;
-    private BuildModeController bmc;
+    private BuildModeController bmc;    
 
     private GameObject cursorGO;
     private SpriteRenderer cursorSR;
 
-    private CursorText upperLeft;
-    private CursorText upperRight;
-    private CursorText lowerLeft;
-    private CursorText lowerRight;
+    private CursorTextBox upperLeft;
+    private CursorTextBox upperRight;
+    private CursorTextBox lowerLeft;
+    private CursorTextBox lowerRight;
 
     private Vector3 upperLeftPostion = new Vector3(-3.5f, 0.75f, 0);
     private Vector3 upperRightPostion = new Vector3(3.5f, 0.75f, 0);
@@ -46,7 +48,7 @@ public class MouseCursor
 
     #region Cursor Offsets
     private Vector3 arrowOffset = new Vector3(.5f, -.5f, 0);
-    private Vector3 pointerOffset = new Vector3(.1f, -.5f, 0);
+    private Vector3 fingerOffset = new Vector3(.1f, -.5f, 0);
     private Vector3 selectionOffset = Vector3.zero;
     #endregion
 
@@ -70,6 +72,20 @@ public class MouseCursor
 
     public void Update()
     {
+        // Hold Ctrl and press M to activate
+        if ((Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && Input.GetKeyUp(KeyCode.M))
+        {
+            // Toggle cursorOverride
+            if (cursorOverride == false)
+            {
+                cursorOverride = true;
+            }
+            else
+            {
+                cursorOverride = false;
+            }                
+        }
+
         ShowCursor();
         UpdateCursor();
         DisplayCursorInfo();
@@ -131,7 +147,7 @@ public class MouseCursor
         }
     }
 
-    public Tile GetTileUnderDrag(Vector3 gameObject_Position)
+    private Tile GetTileUnderDrag(Vector3 gameObject_Position)
     {
         return WorldController.Instance.GetTileAtWorldCoord(gameObject_Position);
     }
@@ -166,10 +182,10 @@ public class MouseCursor
 
         cursorSR.sprite = imgCursorSelect;
 
-        upperLeft = new CursorText(cursorGO, TextAnchor.MiddleRight, style, upperLeftPostion, size1);
-        upperRight = new CursorText(cursorGO, TextAnchor.MiddleLeft, style, upperRightPostion, size1);
-        lowerLeft = new CursorText(cursorGO, TextAnchor.MiddleRight, style, lowerLeftPostion, size2);
-        lowerRight = new CursorText(cursorGO, TextAnchor.MiddleLeft, style, lowerRightPostion, size2);        
+        upperLeft = new CursorTextBox(cursorGO, TextAnchor.MiddleRight, style, upperLeftPostion, size1);
+        upperRight = new CursorTextBox(cursorGO, TextAnchor.MiddleLeft, style, upperRightPostion, size1);
+        lowerLeft = new CursorTextBox(cursorGO, TextAnchor.MiddleRight, style, lowerLeftPostion, size2);
+        lowerRight = new CursorTextBox(cursorGO, TextAnchor.MiddleLeft, style, lowerRightPostion, size2);        
 
         Debug.Log("MouseCursorBuildInfo::Cursor Built");
     }    
@@ -214,7 +230,7 @@ public class MouseCursor
             {
                 cursorSR.sprite = imgCursorPointer;
                 cursorSR.color = defaultTint;
-                cursorGO.transform.position = CursorPosition(pointerOffset);
+                cursorGO.transform.position = CursorPosition(fingerOffset);
             }            
         }
     }
@@ -227,7 +243,7 @@ public class MouseCursor
 
     private void ShowCursor()
     {
-        if (EventSystem.current.IsPointerOverGameObject())
+        if (EventSystem.current.IsPointerOverGameObject() || cursorOverride == true)
         {
             Cursor.visible = true;
             cursorGO.SetActive(false);
@@ -284,13 +300,13 @@ public class MouseCursor
         lowerRight.myText.text = lowerRightString;
     }
 
-    public class CursorText
+    public class CursorTextBox
     {
         public GameObject textObject;
         public Text myText;
         public RectTransform myRectTranform;
 
-        public CursorText(GameObject parentObject, TextAnchor textAlignment, GUIStyle style, Vector3 localPosition, Vector2 textWidthHeight)
+        public CursorTextBox(GameObject parentObject, TextAnchor textAlignment, GUIStyle style, Vector3 localPosition, Vector2 textWidthHeight)
         {
             textObject = new GameObject("Cursor-Text");
             textObject.transform.SetParent(parentObject.transform);
