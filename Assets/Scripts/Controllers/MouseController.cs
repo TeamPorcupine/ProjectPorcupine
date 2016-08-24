@@ -462,8 +462,7 @@ public class MouseController
 
         // If we're over a UI element or the settings/options menu is open, then bail out from this.
         if (EventSystem.current.IsPointerOverGameObject()
-            || menuController.settingsMenu.activeSelf
-            || menuController.optionsMenu.activeSelf)
+            || WorldController.Instance.IsModal)
         {
             return;
         }
