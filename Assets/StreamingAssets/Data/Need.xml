@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Needs>
-    <Need needType="Oxygen">
-        <Name>Oxygen</Name>
+	<Need needType="Oxygen">
+		<Name>Oxygen</Name>
 		<GrowthRate>0</GrowthRate>
 		<GrowthInVacuum>0.1</GrowthInVacuum>
 		<RestoreNeedFurnitureType>Oxygen Generator</RestoreNeedFurnitureType>
@@ -11,5 +11,5 @@
 		<CompleteOnFail>false</CompleteOnFail>
 		<HighToLow>true</HighToLow>
 		<Localization>need_oxygen</Localization>
-    </Need>
+	</Need>
 </Needs>
