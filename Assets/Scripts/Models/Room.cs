@@ -21,7 +21,7 @@ public class Room : IXmlSerializable
 {
     // Dictionary with the amount of gas in room stored in preasure(in atm) multiplyed by number of tiles
     private Dictionary<string, float> atmosphericGasses; 
-    public Dictionary<string, string> deltaGas;
+    private Dictionary<string, string> deltaGas;
 
     private List<Tile> tiles;
  
@@ -108,6 +108,16 @@ public class Room : IXmlSerializable
         {
             atmosphericGasses[name] = 0;
         }
+    }
+
+    public string ChangedGases(string name)
+    {
+        if (deltaGas.ContainsKey(name))
+        {
+            return deltaGas[name];
+        }
+
+        return "=";
     }
 
     public void EqualiseGas(Room otherRoom, float leakFactor)
