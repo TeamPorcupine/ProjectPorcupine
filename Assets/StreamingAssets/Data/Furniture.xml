@@ -256,7 +256,7 @@
     <MovementCost>10</MovementCost>
     <Width>1</Width>
     <Height>1</Height>
-    <Power>4</Power>
+    <Power>-1</Power>
 
     <BuildingJob jobTime="0"></BuildingJob>
     
