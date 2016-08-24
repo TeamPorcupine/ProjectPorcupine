@@ -51,6 +51,8 @@ public class TileType : IXmlSerializable {
 
     public string UnlocalizedDescription { get; protected set; }
 
+    private static bool _isInitialized;
+
     private TileType()
     {
         // Default lua method names
@@ -67,6 +69,11 @@ public class TileType : IXmlSerializable {
 
         // Add this to the dictionary of all tileTypes
         tileTypeDictionary[name] = this;
+    }
+
+    public static bool IsInitialized
+    {
+        get{ return _isInitialized; }
     }
 
     /// <summary>
@@ -119,6 +126,8 @@ public class TileType : IXmlSerializable {
     /// </summary>
     public static void LoadTileTypes()
     {
+        _isInitialized = true;
+
         // Load lua code
         string luaPath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
         string luaFilePath = System.IO.Path.Combine(luaPath, "Tile.lua");

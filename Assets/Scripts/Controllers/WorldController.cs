@@ -32,33 +32,8 @@ public class WorldController : MonoBehaviour
     public static WorldController Instance { get; protected set; }
 
     // The world and tile data
-    private World _currentWorld;
-
     // rename to CurrentWorld
-    public World world { 
-        get
-        { 
-            return _currentWorld;
-        }
-        set
-        {
-            if (worlds.Contains(value))
-            {
-                DisableControllers();
-                _currentWorld = value;
-                World.current = _currentWorld;
-                LoadWorldControllers();
-            }
-            else
-            {
-                worlds.Add(value);
-                DisableControllers();
-                _currentWorld = value;
-                World.current = _currentWorld;
-                LoadWorldControllers();
-            }
-        }
-    }
+    public World world;
 
     private List<World> worlds;
 
@@ -97,6 +72,7 @@ public class WorldController : MonoBehaviour
             Debug.LogError("There should never be two world controllers.");
         }
         Instance = this;
+        World.cbWorldChanged += OnWorldChanged;
 
         worlds = new List<World>();
         if (loadWorldFromFile != null)
@@ -111,7 +87,24 @@ public class WorldController : MonoBehaviour
 
         LoadControllers();
     }
-        
+       
+    private void OnWorldChanged(World world)
+    {
+        if (worlds.Contains(world))
+        {
+            DisableControllers();
+            this.world = world;
+            LoadWorldControllers();
+        }
+        else
+        {
+            worlds.Add(world);
+            DisableControllers();
+            this.world = world;
+            LoadWorldControllers();
+        }
+    }
+
     private void LoadControllers()
     {
         buildModeController = new BuildModeController();
@@ -134,12 +127,12 @@ public class WorldController : MonoBehaviour
         
     private void LoadWorldControllers()
     {
-        soundController = new SoundController(_currentWorld);
-        tileSpriteController = new TileSpriteController(_currentWorld);
-        characterSpriteController = new CharacterSpriteController(_currentWorld);
-        furnitureSpriteController = new FurnitureSpriteController(_currentWorld);
-        jobSpriteController = new JobSpriteController(_currentWorld, furnitureSpriteController);
-        inventorySpriteController = new InventorySpriteController(_currentWorld, inventoryUI);
+        soundController = new SoundController(world);
+        tileSpriteController = new TileSpriteController(world);
+        characterSpriteController = new CharacterSpriteController(world);
+        furnitureSpriteController = new FurnitureSpriteController(world);
+        jobSpriteController = new JobSpriteController(world, furnitureSpriteController);
+        inventorySpriteController = new InventorySpriteController(world, inventoryUI);
 
         if (mouseController != null)
         {
@@ -178,7 +171,7 @@ public class WorldController : MonoBehaviour
 
         if(goBack)
         {
-            world = worlds[0];
+            World.ChangeWorld(worlds[0]);
             goBack = false;
         }
 

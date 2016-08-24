@@ -41,6 +41,11 @@ public class FurnitureActions
         myLuaScript.Globals["World"] = typeof(World);
     }
 
+    public static bool IsInitialized
+    {
+        get{ return _Instance != null; }
+    }
+
     public static void addScript(string rawLuaCode)
     {
         _Instance.myLuaScript.DoString(rawLuaCode);
