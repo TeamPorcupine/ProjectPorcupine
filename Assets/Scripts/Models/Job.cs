@@ -211,7 +211,7 @@ public class Job
         {
             foreach (string luaFunction in cbJobWorkedLua.ToList())
             {
-                FurnitureActions.CallFunction(luaFunction, this);
+                LuaUtilities.CallFunction(luaFunction, this);
             }
         }
 
@@ -235,7 +235,7 @@ public class Job
 
             foreach (string luaFunction in cbJobCompletedLua.ToList())
             {
-                FurnitureActions.CallFunction(luaFunction, this);
+                LuaUtilities.CallFunction(luaFunction, this);
             }
             
             if (jobRepeats == false)
