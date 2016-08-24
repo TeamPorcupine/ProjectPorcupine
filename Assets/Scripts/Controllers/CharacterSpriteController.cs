@@ -140,7 +140,6 @@ public class CharacterSpriteController
         
         SwapMaterial.shader = SwapShader;
         SwapMaterial.SetTexture("_SwapTex", colorSwapTex);
-        SwapMaterial.SetFloat("Pixel snap", 1);
         
         return SwapMaterial;
     }
@@ -154,8 +153,10 @@ public class CharacterSpriteController
 
     // Replace sprite texture with the colorized version
     private Sprite ReplaceSpriteTexture(Texture2D newTexture, Sprite sprite)
-    {        
+    {
         //Sprite s = Sprite.Create(newTexture, sprite.textureRect, new Vector2(0.5f, 0.3f), sprite.pixelsPerUnit);
+        sprite.texture.filterMode = FilterMode.Point;
+
         return sprite;
     }
     
