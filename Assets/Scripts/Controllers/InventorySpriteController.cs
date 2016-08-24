@@ -68,6 +68,12 @@ public class InventorySpriteController
 
         // FIXME: Does not consider multi-tile objects nor rotated objects
 
+        if (inv.tile == null)
+        {
+            // Character carries this inventory so do nothing
+            return;
+        }
+
         // This creates a new GameObject and adds it to our scene.
         GameObject inv_go = new GameObject();
 
@@ -75,6 +81,7 @@ public class InventorySpriteController
         inventoryGameObjectMap.Add(inv, inv_go);
 
         inv_go.name = inv.objectType;
+
         inv_go.transform.position = new Vector3(inv.tile.X, inv.tile.Y, 0);
         inv_go.transform.SetParent(inventoryParent.transform, true);
 
