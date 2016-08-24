@@ -16,64 +16,29 @@ using UnityEngine;
 public class FurnitureActions
 {
     private static FurnitureActions _Instance;
-
-    private Script myLuaScript;
-
+    
     public FurnitureActions()
     {
-        // Tell the LUA interpreter system to load all the classes
-        // that we have marked as [MoonSharpUserData]
-        UserData.RegisterAssembly();
-
-        _Instance = this;
-
-        myLuaScript = new Script();
-
-        // If we want to be able to instantiate a new object of a class
-        //   i.e. by doing    SomeClass.__new()
-        // We need to make the base type visible.
-        myLuaScript.Globals["Inventory"] = typeof(Inventory);
-        myLuaScript.Globals["Job"] = typeof(Job);
-
-        myLuaScript.Globals["ModUtils"] = typeof(ModUtils);
-
-        // Also to access statics/globals
-        myLuaScript.Globals["World"] = typeof(World);
-    }
-
-    public static void addScript(string rawLuaCode)
-    {
-        _Instance.myLuaScript.DoString(rawLuaCode);
+        // TODO: This should be moved to a more logical location
+        LuaUtilities.RegisterGlobal(typeof(Inventory));
+        LuaUtilities.RegisterGlobal(typeof(Job));
+        LuaUtilities.RegisterGlobal(typeof(ModUtils));
+        LuaUtilities.RegisterGlobal(typeof(World));
     }
 
     public static void CallFunctionsWithFurniture(string[] functionNames, Furniture furn, float deltaTime)
     {
         foreach (string fn in functionNames)
         {
-            object func = _Instance.myLuaScript.Globals[fn];
-
-            if (func == null)
-            {
-                Debug.LogError("'" + fn + "' is not a LUA function.");
-                return;
-            }
-
-            DynValue result = _Instance.myLuaScript.Call(func, furn, deltaTime);
-
+            DynValue result = LuaUtilities.CallFunction(fn, furn, deltaTime);
+            
             if (result.Type == DataType.String)
             {
                 Debug.Log(result.String);
             }
         }
     }
-
-    public static DynValue CallFunction(string functionName, params object[] args)
-    {
-        object func = _Instance.myLuaScript.Globals[functionName];
-
-        return _Instance.myLuaScript.Call(func, args);
-    }
-
+    
     public static void JobComplete_FurnitureBuilding(Job theJob)
     {
         WorldController.Instance.world.PlaceFurniture(theJob.jobObjectType, theJob.tile);
