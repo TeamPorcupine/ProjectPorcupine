@@ -9,6 +9,13 @@
 using UnityEngine;
 using System.Collections.Generic;
 
+public enum SpriteSwapRedColor
+{
+    UNIFORMCOLOR = 129,
+    UNIFORMCOLORLIGHT = 244,
+    UNIFORMCOLORDARK = 239
+}
+
 public class CharacterSpriteController
 {
 
@@ -17,11 +24,24 @@ public class CharacterSpriteController
     World world;
     GameObject characterParent;
 
+    Color[] SwapSpriteColors;
+   
     // Use this for initialization
     public CharacterSpriteController(World currentWorld)
     {
         world = currentWorld;
         characterParent = new GameObject("Characters");
+
+        // prepare swap texture for shader
+        Texture2D colorSwapTex = new Texture2D(256, 1, TextureFormat.RGBA32, false, false);
+        colorSwapTex.filterMode = FilterMode.Point;
+        for (int i = 0; i < colorSwapTex.width; ++i)
+        {
+            colorSwapTex.SetPixel(i, 0, new Color(0.0f, 0.0f, 0.0f, 0.0f));
+        }
+        colorSwapTex.Apply();
+        SwapSpriteColors = new Color[colorSwapTex.width];
+
         // Instantiate our dictionary that tracks which GameObject is rendering which Tile data.
         characterGameObjectMap = new Dictionary<Character, GameObject>();
 
@@ -34,8 +54,6 @@ public class CharacterSpriteController
         {
             OnCharacterCreated(c);
         }
-
-        //c.SetDestination( world.GetTileAt( world.Width/2 + 5, world.Height/2 ) );
     }
 
     public void OnCharacterCreated(Character c)
@@ -57,6 +75,8 @@ public class CharacterSpriteController
 
         SpriteRenderer sr = char_go.AddComponent<SpriteRenderer>();        
         sr.sortingLayerName = "Characters";
+        
+        sr.material = GetMaterial(c);
         
         c.animation = new CharacterAnimation(c, sr);
 
@@ -94,13 +114,50 @@ public class CharacterSpriteController
         c.cbCharacterChanged += OnCharacterChanged;        
     }
 
+    // Create material with color-swapping texture for the shader
+    private Material GetMaterial(Character c)
+    {
+        Texture2D colorSwapTex = new Texture2D(256, 1, TextureFormat.RGBA32, false, false);
+        // Reset texture
+        for (int i = 0; i < colorSwapTex.width; ++i)
+        {
+            colorSwapTex.SetPixel(i, 0, new Color(0.0f, 0.0f, 0.0f, 0.0f));
+        }
+        colorSwapTex.Apply();
+
+        // Define the swapping colors
+        // Only the red color value from SpriteSwapRedColor is used to compare
+        Color newColorLight = Color.Lerp(c.GetCharacterColor(), ColorFromIntRGB(255, 255, 255), 0.5f);
+        Color newColorDark = Color.Lerp(c.GetCharacterColor(), ColorFromIntRGB(0, 0, 0), 0.5f);
+        colorSwapTex = SwapColor(colorSwapTex, SpriteSwapRedColor.UNIFORMCOLOR, c.GetCharacterColor());
+        colorSwapTex = SwapColor(colorSwapTex, SpriteSwapRedColor.UNIFORMCOLORLIGHT, newColorLight);
+        colorSwapTex = SwapColor(colorSwapTex, SpriteSwapRedColor.UNIFORMCOLORDARK, newColorDark);
+        colorSwapTex.Apply();
+        
+        Material SwapMaterial = new Material(Resources.Load<Material>("Shaders/ColorSwap"));
+        Shader SwapShader = Resources.Load<Shader>("Shaders/Sprites-ColorSwap");
+        
+        SwapMaterial.shader = SwapShader;
+        SwapMaterial.SetTexture("_SwapTex", colorSwapTex);
+        
+        return SwapMaterial;
+    }
+
+    private Texture2D SwapColor(Texture2D tex, SpriteSwapRedColor index, Color color)
+    {
+        SwapSpriteColors[(int)index] = color;
+        tex.SetPixel((int)index, 0, color);
+        return tex;
+    }
+
     // Replace sprite texture with the colorized version
     private Sprite ReplaceSpriteTexture(Texture2D newTexture, Sprite sprite)
     {        
-        Sprite s = Sprite.Create(newTexture, sprite.textureRect, new Vector2(0.5f, 0.3f), sprite.pixelsPerUnit);
-        return s;
+        //Sprite s = Sprite.Create(newTexture, sprite.textureRect, new Vector2(0.5f, 0.3f), sprite.pixelsPerUnit);
+        return sprite;
     }
     
+    /*
     private Texture2D CopyTexture2D(Texture2D fromTexture, Color32 newColor)
     {
         Texture2D texture = new Texture2D(fromTexture.width, fromTexture.height);
@@ -138,6 +195,7 @@ public class CharacterSpriteController
         texture.Apply();
         return texture;
     }
+    */
 
     void OnCharacterChanged(Character c)
     {
@@ -159,26 +217,31 @@ public class CharacterSpriteController
             return;
         }
 
-        GameObject char_go = characterGameObjectMap[c];        
+        GameObject char_go = characterGameObjectMap[c];
+        //Debug.Log(furn_go);
+        //Debug.Log(furn_go.GetComponent<SpriteRenderer>());
 
-        //char_go.GetComponent<SpriteRenderer>().sprite = GetSpriteForFurniture(furn);
+        // TODO: When we have a helmetless spritesheet, use this check to switch spritesheet on the character
+        /*
         if (c.CurrTile.Room != null)
         {
-            // TODO: switch spritesheets instead of using separate go for helmet
-            /*
             if (c.CurrTile.Room.GetGasAmount ("O2") <= 0.5f && char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled == false)
             {
-                // TODO: switch spritesheet to use WITH helmet
-                //char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled = true;
+                char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled = true;
             }
             else if(c.CurrTile.Room.GetGasAmount ("O2") >= 0.5f && char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled == true)
             {
-                // TODO: switch spritesheet to use WITHOUT helmet
-                //char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled = false;
+                char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled = false;
             }
-            */
         }
-        
+        */
+
         char_go.transform.position = new Vector3(c.X, c.Y, 0);
+    }
+
+    // helper function for shader replacement colors
+    public static Color ColorFromIntRGB(int r, int g, int b)
+    {
+        return new Color((float)r / 255.0f, (float)g / 255.0f, (float)b / 255.0f, 1.0f);
     }
 }

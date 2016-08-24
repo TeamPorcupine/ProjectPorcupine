@@ -67,6 +67,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         }
     }
     Need[] needs;
+    
     /// <summary>
     /// The tile the Character is considered to still be standing in.
     /// </summary>
@@ -160,7 +161,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
     // What direction our character is looking
     public Facing CharFacing;
-
+    
     /// Use only for serialization
     public Character()
     {
