@@ -357,6 +357,7 @@ public class World : IXmlSerializable
         }
     }
 
+<<<<<<< HEAD
     public void SetUtilityJobPrototype(Job j, Utility u)
     {
         utilityJobPrototypes[u.objectType] = j;
@@ -447,6 +448,8 @@ public class World : IXmlSerializable
             Debug.LogError("Did not find a 'Utilities' element in the prototype definition file.");
         }
     }
+=======
+>>>>>>> parent of db08483... Added a base for utility objects.
 
     void LoadNeedLua(string filePath)
     {
