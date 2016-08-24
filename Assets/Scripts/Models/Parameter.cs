@@ -22,13 +22,13 @@ public class Parameter {
     // If this Parameter contains other Parameters, contents will contain the actual parameters
     private Dictionary<string, Parameter> contents;
     // Tracks if value has been explicitly set
-    private bool uninitializdeValue = true;
+    private bool uninitializedValue = true;
     public Parameter(string name, string value) 
     {
         this.name = name;
         this.value = value;
         contents = new Dictionary<string, Parameter>();
-        uninitializdeValue = false;
+        uninitializedValue = false;
     }
 
     // Constructor with object parameter allows it to easily create a Parameter with any object that has a string representation (primarily for use if that string
@@ -38,7 +38,7 @@ public class Parameter {
         this.name = name;
         this.value = value.ToString();
         contents = new Dictionary<string, Parameter>();
-        uninitializdeValue = false;
+        uninitializedValue = false;
     }
 
     // Parameter with no value assumes it is being used for Parameter with contents, and initialized the dictionary
@@ -98,7 +98,7 @@ public class Parameter {
 
     public string ToString(string defaultValue) 
     {
-        if (uninitializdeValue)
+        if (uninitializedValue)
         {
             return defaultValue;
         }
@@ -114,7 +114,7 @@ public class Parameter {
 
     public float ToFloat(float defaultValue) 
     {
-        if (uninitializdeValue)
+        if (uninitializedValue)
         {
             return defaultValue;
         }
@@ -125,20 +125,20 @@ public class Parameter {
     public void SetValue(string value) 
     {
         this.value = value;
-        uninitializdeValue = false;
+        uninitializedValue = false;
     }
 
     public void SetValue(object value)
     {
         this.value = value.ToString();
-        uninitializdeValue = false;
+        uninitializedValue = false;
     }
 
     // Change value by a float, primarily here to approximate old parameter system usage
     public void ChangeFloatValue(float value)
     {
         this.value = "" + (ToFloat() + value);
-        uninitializdeValue = false;
+        uninitializedValue = false;
     }
 
     public string GetName()
