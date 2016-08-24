@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Traders>
-  
   <Trader objectType="Wire Inc.">
     <potentialNames>
       <name>Wire Inc.</name>
@@ -11,12 +10,11 @@
     <minSaleMarginMultiplier>1.2</minSaleMarginMultiplier>
     <maxSaleMarginMultiplier>1.5</maxSaleMarginMultiplier>
     <potentialStock>
-      <Inventory objectType="Steel Plate" rarity="0.1" minQuantity="100" maxQuantity="150"/>
-      <Inventory objectType="Power Cell" rarity="0.3" minQuantity="200" maxQuantity="300"/>
-      <Inventory objectType="Copper Wire" rarity="0.8" minQuantity="20" maxQuantity="50"/>
+      <Inventory maxQuantity="150" minQuantity="100" objectType="Steel Plate" rarity="0.1"/>
+      <Inventory maxQuantity="300" minQuantity="200" objectType="Power Cell" rarity="0.3"/>
+      <Inventory maxQuantity="50" minQuantity="20" objectType="Copper Wire" rarity="0.8"/>
     </potentialStock>
   </Trader>
-
   <Trader objectType="Raw Depot">
     <potentialNames>
       <name>Raw Depot</name>
@@ -27,10 +25,9 @@
     <minSaleMarginMultiplier>1.2</minSaleMarginMultiplier>
     <maxSaleMarginMultiplier>1.3</maxSaleMarginMultiplier>
     <potentialStock>
-      <Inventory objectType="Uranium" rarity="0.1" minQuantity="100" maxQuantity="150"/>
-      <Inventory objectType="Raw Iron" rarity="0.3" minQuantity="2000" maxQuantity="3000"/>
-      <Inventory objectType="Ice" rarity="0.8" minQuantity="1000" maxQuantity="2500"/>
+      <Inventory maxQuantity="150" minQuantity="100" objectType="Uranium" rarity="0.1"/>
+      <Inventory maxQuantity="3000" minQuantity="2000" objectType="Raw Iron" rarity="0.3"/>
+      <Inventory maxQuantity="2500" minQuantity="1000" objectType="Ice" rarity="0.8"/>
     </potentialStock>
   </Trader>
-  
 </Traders>
