@@ -300,7 +300,7 @@
     <Action event="OnUninstall" functionName="Heater_UninstallAction"></Action>
 
     <Params>
-      <Param name="temperature" value="10" />
+      <Param name="heating_per_second" value="10" />
     </Params>
 
     <LocalizationCode>furn_heater</LocalizationCode>
