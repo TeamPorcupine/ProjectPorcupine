@@ -232,7 +232,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         else
         {
             if (myJob.tile == null) {
-                Debug.ULogErrorChannel("Character", name + " found a job.");
+                Debug.ULogChannel("Character", name + " found a job.");
             }
             else
             {
@@ -246,7 +246,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         // If the dest tile does not have neighbours that are walkable it's very likable that they can't be walked to
         if (DestTile.GetNeighbours().Any((tile) => { return tile.MovementCost > 0; }) == false)
         {
-            Debug.ULogErrorChannel("Character", "No neighbouring floor tiles! Abandoning job.");
+            Debug.ULogChannel("Character", "No neighbouring floor tiles! Abandoning job.");
             AbandonJob(false);
             return;
         }
@@ -266,7 +266,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         if (pathAStar != null && pathAStar.Length() == 0)
         {
-            Debug.ULogErrorChannel("Character", "Path_AStar returned no path to target job tile!");
+            Debug.ULogChannel("Character", "Path_AStar returned no path to target job tile!");
             AbandonJob(false);
             return;
         }
@@ -347,7 +347,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             if (!World.current.inventoryManager.QuickCheck (desired.objectType))
             {
                 // If not, abandon the job and return false.
-                Debug.ULogErrorChannel("Character", name + " does not have everything they need to complete their job.");
+                Debug.ULogChannel("Character", name + " does not have everything they need to complete their job.");
                 AbandonJob(true);
                 return false;
             }
