@@ -4,6 +4,11 @@ ENTERABILITY_YES  = 0
 ENTERABILITY_NO   = 1
 ENTERABILITY_SOON = 2
 
+-- HOWTO Log:
+--ModUtils.ULog("Testing ModUtils.ULogChannel")
+--ModUtils.ULogWarning("Testing ModUtils.ULogWarningChannel")
+--ModUtils.ULogError("Testing ModUtils.ULogErrorChannel") -- Note: pauses the game
+
 -------------------------------- Furniture Actions --------------------------------
 function OnUpdate_GasGenerator( furniture, deltaTime )
 	if ( furniture.HasPower() == false) then
@@ -158,10 +163,10 @@ function Stockpile_UpdateAction( furniture, deltaTime )
 	itemsDesired = {}
 
 	if( furniture.tile.Inventory == nil ) then
-		--Debug.Log("Creating job for new stack.");
+		--ModUtils.ULog("Creating job for new stack.")
 		itemsDesired = Stockpile_GetItemsFromFilter()
 	else
-		--Debug.Log("Creating job for existing stack.");
+		--ModUtils.ULog("Creating job for existing stack.")
 		desInv = furniture.tile.Inventory.Clone()
 		desInv.maxStackSize = desInv.maxStackSize - desInv.stackSize
 		desInv.stackSize = 0
@@ -550,4 +555,5 @@ function Heater_OnUpdate ( furniture, deltaTime)
     tile.Room.ChangeTemperature(temperatureChange)
 end
 
+ModUtils.ULog("Furniture.lua loaded")
 return "LUA Script Parsed!"
