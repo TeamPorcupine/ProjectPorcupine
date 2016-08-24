@@ -15,7 +15,7 @@ public class MouseController
     public SelectionInfo mySelection;
 
     private GameObject circleCursorPrefab;
-    private GameObject cursorParent;
+    public GameObject cursorParent { get; protected set; }
     private GameObject furnitureParent;
 
     // The world-position of the mouse last frame.
@@ -31,6 +31,7 @@ public class MouseController
     private FurnitureSpriteController fsc;
     private MenuController menuController;
     private ContextMenu contextMenu;
+    private MouseCursor mouseCursor;
 
     // Is dragging an area (eg. floor tiles).
     private bool isDragging = false;
@@ -50,10 +51,11 @@ public class MouseController
         contextMenu = GameObject.FindObjectOfType<ContextMenu>();
         dragPreviewGameObjects = new List<GameObject>();
         cursorParent = new GameObject("Cursor");
+        mouseCursor = new MouseCursor(this, bmc);
         furnitureParent = new GameObject("Furniture Preview Sprites");
     }
 
-    private enum MouseMode
+    public enum MouseMode
     {
         SELECT,
         BUILD,
@@ -66,6 +68,26 @@ public class MouseController
     public Vector3 GetMousePosition()
     {
         return currFramePosition;
+    }
+
+    public Vector3 GetPlacingPosition()
+    {
+        return currPlacingPosition;
+    }
+
+    public MouseMode GetCurrentMode()
+    {
+        return currentMode;
+    }
+
+    public bool GetIsDragging()
+    {
+        return isDragging;
+    }
+
+    public List<GameObject> GetDragObjects()
+    {
+        return dragPreviewGameObjects;
     }
 
     public Tile GetMouseOverTile()
@@ -98,6 +120,7 @@ public class MouseController
         CheckModeChanges();
         CheckIfContextMenuActivated();
 
+        mouseCursor.Update();
         UpdateDragging();
         UpdateCameraMovement();
         UpdateSelection();
