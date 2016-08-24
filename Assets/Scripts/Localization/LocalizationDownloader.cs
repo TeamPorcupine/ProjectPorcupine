@@ -16,6 +16,41 @@ namespace ProjectPorcupine.Localization
 {
     public static class LocalizationDownloader
     {
+        static IEnumerator testing()
+        {
+            string url = "https://api.github.com/repos/QuiZr/ProjectPorcupineLocalization/commits/Someone_will_come_up_with_a_proper_naming_scheme_later";
+
+            WWW www = new WWW(url);
+
+            yield return www;
+
+            if (www.error != null)
+            {
+                Debug.LogError(www.error);
+                yield break;
+            }
+
+            string json = www.text;
+            int index = json.IndexOf("sha\":\"") + 6;
+            Debug.ULogChannel("asf", index.ToString());
+            char currentChar = json[index];
+            string hash = string.Empty;
+            while (true)
+            {
+                if(currentChar == '\"')
+                {
+                    break;
+                }
+
+                hash += json[index];
+                currentChar = json[index];
+
+                index++;
+            }
+
+            Debug.ULogChannel("asf", hash);
+        }
+
         // TODO: Change this to the official repo before PR.
         private static readonly string LocalizationRepositoryZipLocation = "https://github.com/QuiZr/ProjectPorcupineLocalization/archive/" + World.current.currentGameVersion + ".zip";
 
@@ -29,6 +64,9 @@ namespace ProjectPorcupine.Localization
         /// </summary>
         public static IEnumerator CheckIfCurrentLocalizationIsUpToDate(Action onLocalizationDownloadedCallback)
         {
+            yield return testing();
+            yield break;
+
             // Check current version of localization
             string currentLocalizationVersion;
             try
