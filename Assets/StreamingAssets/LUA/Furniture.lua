@@ -91,7 +91,7 @@ function GetSpriteName_Door( furniture )
 
 	-- Door is closed
 	if (furniture.Parameters["openness"].ToFloat() < 0.1) then
-		return "DoorHorizontal_0"
+		return "doorHorizontal_0"
 	end
 
 	if (furniture.Parameters["openness"].ToFloat() < 0.25) then
@@ -99,35 +99,35 @@ function GetSpriteName_Door( furniture )
 	end
 
 	if (furniture.Parameters["openness"].ToFloat() < 0.5) then
-		return "DoorHorizontal_2"
+		return "doorHorizontal_2"
 	end
 
 	if (furniture.Parameters["openness"].ToFloat() < 0.75) then
-		return "DoorHorizontal_3"
+		return "doorHorizontal_3"
 	end
 
 	if (furniture.Parameters["openness"].ToFloat() < 0.9) then
-		return "DoorHorizontal_4"
+		return "doorHorizontal_4"
 	end
 	-- Door is a fully open
-	return "DoorHorizontal_5"
+	return "doorHorizontal_5"
 end
 
 function GetSpriteName_Airlock( furniture )
 	-- Door is closed
 	if (furniture.Parameters["openness"].ToFloat() < 0.1) then
-		return "Airlock"
+		return "airlock"
 	end
 	-- Door is a bit open
 	if (furniture.Parameters["openness"].ToFloat() < 0.5) then
-		return "Airlock_openness_1"
+		return "airlock_openness_1"
 	end
 	-- Door is a lot open
 	if (furniture.Parameters["openness"].ToFloat() < 0.9) then
-		return "Airlock_openness_2"
+		return "airlock_openness_2"
 	end
 	-- Door is a fully open
-	return "Airlock_openness_3"
+	return "airlock_openness_3"
 end
 
 function Stockpile_GetItemsFromFilter( furniture )
@@ -367,60 +367,14 @@ function MetalSmelter_JobWorked(j)
 end
 
 function PowerCellPress_UpdateAction(furniture, deltaTime)
-<<<<<<< 6d42db4eadcaee2c1ac85d403c9c06703997b463
-    local spawnSpot = furniture.GetSpawnSpotTile()
-
-    if(spawnSpot.Inventory == nil) then
-        if(furniture.JobCount() == 0) then
-            local itemsDesired = {Inventory.__new("Steel Plate", 10, 0)}
-            local jobSpot = furniture.GetJobSpotTile()
-
-            local j = Job.__new(
-                jobSpot,
-                nil,
-                nil,
-                1,
-                itemsDesired,
-                Job.JobPriority.Medium,
-                false
-            )
-
-            j.RegisterJobCompletedCallback("PowerCellPress_JobComplete")
-            j.JobDescription = "job_power_cell_fulling_desc"
-            furniture.AddJob(j)
-        end
-    else
-        furniture.Parameters["presstime"].ChangeFloatValue(deltaTime)
-
-        if(furniture.Parameters["presstime"].ToFloat() >= furniture.Parameters["presstime_required"].ToFloat()) then
-            furniture.Parameters["presstime"].SetValue(0)
-            local outputSpot = World.current.GetTileAt(spawnSpot.X+2, spawnSpot.y)
-
-            if(outputSpot.Inventory == nil) then
-                World.current.inventoryManager.PlaceInventory( outputSpot, Inventory.__new("Power Cell", 5, 1) )
-                spawnSpot.Inventory.stackSize = spawnSpot.Inventory.stackSize-10
-            else
-                if(outputSpot.Inventory.stackSize <= 4) then
-                    outputSpot.Inventory.stackSize = outputSpot.Inventory.stackSize+1
-                    spawnSpot.Inventory.stackSize = spawnSpot.Inventory.stackSize-10
-                end
-            end
-
-            if(spawnSpot.Inventory.stackSize <= 0) then
-                spawnSpot.Inventory = nil
-            end
-        end
-    end
-=======
 	spawnSpot = furniture.GetSpawnSpotTile()
 	
 	if(spawnSpot.Inventory == nil) then
 		if(furniture.JobCount() == 0) then
-			itemsDesired = {Inventory.__new("plate_steel", 10, 0)}
-			
-			jobSpot = furniture.GetJobSpotTile()
+			local itemsDesired = {Inventory.__new("plate_steel", 10, 0)}
+			local jobSpot = furniture.GetJobSpotTile()
 
-			j = Job.__new(
+			local j = Job.__new(
 			jobSpot,
 			nil,
 			nil,
@@ -432,7 +386,6 @@ function PowerCellPress_UpdateAction(furniture, deltaTime)
 			
 			j.RegisterJobCompletedCallback("PowerCellPress_JobComplete")
 			j.JobDescription = "job_power_cell_fulling_desc"
-			
 			furniture.AddJob(j)
 		end
 	else
@@ -440,17 +393,14 @@ function PowerCellPress_UpdateAction(furniture, deltaTime)
 		
 		if(furniture.Parameters["presstime"].ToFloat() >= furniture.Parameters["presstime_required"].ToFloat()) then
 			furniture.Parameters["presstime"].SetValue(0)
-			
-			outputSpot = World.current.GetTileAt(spawnSpot.X+2, spawnSpot.y)
+			local outputSpot = World.current.GetTileAt(spawnSpot.X+2, spawnSpot.y)
 			
 			if(outputSpot.Inventory == nil) then
 				World.current.inventoryManager.PlaceInventory( outputSpot, Inventory.__new("cell_power", 5, 1) )
-			
 				spawnSpot.Inventory.stackSize = spawnSpot.Inventory.stackSize-10
 			else
 				if(outputSpot.Inventory.stackSize <= 4) then
 					outputSpot.Inventory.stackSize = outputSpot.Inventory.stackSize+1
-				
 					spawnSpot.Inventory.stackSize = spawnSpot.Inventory.stackSize-10
 				end
 			end
@@ -460,7 +410,6 @@ function PowerCellPress_UpdateAction(furniture, deltaTime)
 			end
 		end
 	end
->>>>>>> Refactor of xml and lua files to new naming standard
 end
 
 function PowerCellPress_JobComplete(j)
