@@ -135,9 +135,9 @@ We have standardized the objectTypes of Furniture and Inventory to match `type_m
 
 * For multiword parts it will be `myType_myMaterial`.
 
-* In the Localization a line could be will be 'inv_type_material=Material Type' and `furn_type_material=Material Type`.
+* In the Localization a line could be will be `inv_type_material=Material Type` and `furn_type_material=Material Type`.
 
-* In Localization the description can be set with 'inv_type_material_desc=Some cool description.' and `furn_type_material_desc=Some awesome description`.
+* In Localization the description can be set with `inv_type_material_desc=Some cool description.` and `furn_type_material_desc=Some awesome description`.
 
 * For image files and their xml files use the objectType as the name.
 
@@ -163,7 +163,7 @@ We have standardized the objectTypes of Furniture and Inventory to match `type_m
 
 * Include screenshots demonstrating your change if applicable. All UI changes should include screenshots.
 
-* If you want to help with localization of the project you can submit your work over at [Localization Repo](https://github.com/QuiZr/ProjectPorcupineLocalization)
+* If you want to help with localization of the project you can submit your work over at [Localization Repo](https://github.com/QuiZr/ProjectPorcupineLocalization/tree/Someone_will_come_up_with_a_proper_naming_scheme_later)
 
 That's it! Following these guidelines will ensure that your additions are approved quickly and integrated into the project. Thanks for your contribution!
 

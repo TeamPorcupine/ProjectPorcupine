@@ -294,7 +294,7 @@ public class Temperature
                 temp_curr[index] = temp_old[index];
 
                 // TODO: if empty space, set temperature to 0
-                if (WorldController.Instance.GetTileAtWorldCoord(new Vector3(x, y, 0)).room == null)
+                if (WorldController.Instance.GetTileAtWorldCoord(new Vector3(x, y, 0)).Room == null)
                 {
                     temp_curr[index] = 0f;
                 }

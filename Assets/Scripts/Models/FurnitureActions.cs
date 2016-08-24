@@ -35,6 +35,8 @@ public class FurnitureActions
         myLuaScript.Globals["Inventory"] = typeof(Inventory);
         myLuaScript.Globals["Job"] = typeof(Job);
 
+        myLuaScript.Globals["ModUtils"] = typeof(ModUtils);
+
         // Also to access statics/globals
         myLuaScript.Globals["World"] = typeof(World);
     }
@@ -78,6 +80,6 @@ public class FurnitureActions
 
         // FIXME: I don't like having to manually and explicitly set
         // flags that preven conflicts. It's too easy to forget to set/clear them!
-        theJob.tile.pendingBuildJob = null;
+        theJob.tile.PendingBuildJob = null;
     }
 }

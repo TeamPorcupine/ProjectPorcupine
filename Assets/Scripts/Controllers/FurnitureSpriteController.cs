@@ -59,7 +59,7 @@ public class FurnitureSpriteController
         furn_go.transform.SetParent(furnnitureParent.transform, true);
 
         // FIXME: This hardcoding is not ideal!
-        if (furn.objectType == "Door" || furn.objectType == "Airlock")
+        if (furn.HasTypeTag("Door"))
         {
             // By default, the door graphic is meant for walls to the east & west
             // Check to see if we actually have a wall north/south, and if so
@@ -68,8 +68,8 @@ public class FurnitureSpriteController
             Tile northTile = world.GetTileAt(furn.tile.X, furn.tile.Y + 1);
             Tile southTile = world.GetTileAt(furn.tile.X, furn.tile.Y - 1);
 
-            if (northTile != null && southTile != null && northTile.furniture != null && southTile.furniture != null &&
-            northTile.furniture.objectType.Contains("Wall") && southTile.furniture.objectType.Contains("Wall"))
+            if (northTile != null && southTile != null && northTile.Furniture != null && southTile.Furniture != null &&
+                northTile.Furniture.HasTypeTag("Wall") && southTile.Furniture.HasTypeTag("Wall"))
             {
                 furn_go.transform.rotation = Quaternion.Euler(0, 0, 90);
             }
@@ -144,8 +144,7 @@ public class FurnitureSpriteController
 
         GameObject furn_go = furnitureGameObjectMap[furn];
 
-        // FIXME: This hardcoding is not ideal!
-        if (furn.objectType == "Door" || furn.objectType == "Airlock")
+        if (furn.HasTypeTag("Door"))
         {
             // By default, the door graphic is meant for walls to the east & west
             // Check to see if we actually have a wall north/south, and if so
@@ -156,13 +155,13 @@ public class FurnitureSpriteController
             Tile eastTile = world.GetTileAt(furn.tile.X + 1, furn.tile.Y);
             Tile westTile = world.GetTileAt(furn.tile.X - 1, furn.tile.Y);
 
-            if (northTile != null && southTile != null && northTile.furniture != null && southTile.furniture != null &&
-            northTile.furniture.objectType.Contains("Wall") && southTile.furniture.objectType.Contains("Wall"))
+            if (northTile != null && southTile != null && northTile.Furniture != null && southTile.Furniture != null &&
+                northTile.Furniture.HasTypeTag("Wall") && southTile.Furniture.HasTypeTag("Wall"))
             {
                 furn_go.transform.rotation = Quaternion.Euler(0, 0, 90);
             }
-            else if (eastTile != null && westTile != null && eastTile.furniture != null && westTile.furniture != null &&
-            eastTile.furniture.objectType.Contains("Wall") && westTile.furniture.objectType.Contains("Wall"))
+            else if (eastTile != null && westTile != null && eastTile.Furniture != null && westTile.Furniture != null &&
+                eastTile.Furniture.HasTypeTag("Wall") && westTile.Furniture.HasTypeTag("Wall"))
             {
                 furn_go.transform.rotation = Quaternion.Euler(0, 0, 0);
             }
@@ -197,115 +196,40 @@ public class FurnitureSpriteController
 
     public Sprite GetSpriteForFurniture(Furniture furn)
     {
-        string spriteName = furn.objectType;
+        string spriteName = furn.GetSpriteName();
 
         if (furn.linksToNeighbour == false)
         {
-
-            // If this is a DOOR, let's check OPENNESS and update the sprite.
-            // FIXME: All this hardcoding needs to be generalized later.
-            if (furn.objectType == "Door")
-            {
-                if (furn.GetParameter("openness") < 0.1f)
-                {
-                    // Door is closed
-                    spriteName = "Door";
-                }
-                else if (furn.GetParameter("openness") < 0.5f)
-                {
-                    // Door is a bit open
-                    spriteName = "Door_openness_1";
-                }
-                else if (furn.GetParameter("openness") < 0.9f)
-                {
-                    // Door is a lot open
-                    spriteName = "Door_openness_2";
-                }
-                else
-                {
-                    // Door is a fully open
-                    spriteName = "Door_openness_3";
-                }
-                //Debug.Log(spriteName);
-            }
-            if (furn.objectType == "Airlock")
-            {
-                if (furn.GetParameter("openness") < 0.1f)
-                {
-                    // Airlock is closed
-                    spriteName = "Airlock";
-                }
-                else if (furn.GetParameter("openness") < 0.5f)
-                {
-                    // Airlock is a bit open
-                    spriteName = "Airlock_openness_1";
-                }
-                else if (furn.GetParameter("openness") < 0.9f)
-                {
-                    // Airlock is a lot open
-                    spriteName = "Airlock_openness_2";
-                }
-                else
-                {
-                    // Airlock is a fully open
-                    spriteName = "Airlock_openness_3";
-                }
-                //Debug.Log(spriteName);
-            }
-
-            /*if(furnitureSprites.ContainsKey(spriteName) == false) {
-				Debug.Log("furnitureSprites has no definition for: " + spriteName);
-				return null;
-			}
-*/
-
-            return SpriteManager.current.GetSprite("Furniture", spriteName); // furnitureSprites[spriteName];
+            return SpriteManager.current.GetSprite("Furniture", spriteName);
         }
 
         // Otherwise, the sprite name is more complicated.
-
-        spriteName = furn.objectType + "_";
+        spriteName += "_";
 
         // Check for neighbours North, East, South, West
-
         int x = furn.tile.X;
         int y = furn.tile.Y;
 
-        Tile t;
-
-        t = world.GetTileAt(x, y + 1);
-        if (t != null && t.furniture != null && t.furniture.objectType == furn.objectType)
-        {
-            spriteName += "N";
-        }
-        t = world.GetTileAt(x + 1, y);
-        if (t != null && t.furniture != null && t.furniture.objectType == furn.objectType)
-        {
-            spriteName += "E";
-        }
-        t = world.GetTileAt(x, y - 1);
-        if (t != null && t.furniture != null && t.furniture.objectType == furn.objectType)
-        {
-            spriteName += "S";
-        }
-        t = world.GetTileAt(x - 1, y);
-        if (t != null && t.furniture != null && t.furniture.objectType == furn.objectType)
-        {
-            spriteName += "W";
-        }
+        spriteName += GetSuffixForNeighbour(furn, x, y + 1, "N");
+        spriteName += GetSuffixForNeighbour(furn, x + 1, y, "E");
+        spriteName += GetSuffixForNeighbour(furn, x, y - 1, "S");
+        spriteName += GetSuffixForNeighbour(furn, x - 1, y, "W");
 
         // For example, if this object has all four neighbours of
         // the same type, then the string will look like:
         //       Wall_NESW
-
-        /*		if(furnitureSprites.ContainsKey(spriteName) == false) {
-                    Debug.LogError("GetSpriteForInstalledObject -- No sprites with name: " + spriteName);
-                    return null;
-                }
-        */
-
-        return SpriteManager.current.GetSprite("Furniture", spriteName); //furnitureSprites[spriteName];
-
+        
+        return SpriteManager.current.GetSprite("Furniture", spriteName);
+    }
+    
+    private string GetSuffixForNeighbour(Furniture furn, int x, int y, string suffix)
+    {
+         Tile t = world.GetTileAt(x, y);
+         if (t != null && t.Furniture != null && t.Furniture.objectType == furn.objectType)
+         {
+             return suffix;
+         }
+         return "";
     }
 
     Sprite GetPowerStatusSprite()
