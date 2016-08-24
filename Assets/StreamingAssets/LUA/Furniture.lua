@@ -5,9 +5,9 @@ ENTERABILITY_NO = 1
 ENTERABILITY_SOON = 2
 
 -- HOWTO Log:
---ModUtils.ULog("Testing ModUtils.ULogChannel")
---ModUtils.ULogWarning("Testing ModUtils.ULogWarningChannel")
---ModUtils.ULogError("Testing ModUtils.ULogErrorChannel") -- Note: pauses the game
+-- ModUtils.ULog("Testing ModUtils.ULogChannel")
+-- ModUtils.ULogWarning("Testing ModUtils.ULogWarningChannel")
+-- ModUtils.ULogError("Testing ModUtils.ULogErrorChannel") -- Note: pauses the game
 
 -------------------------------- Furniture Actions --------------------------------
 function OnUpdate_GasGenerator( furniture, deltaTime )
@@ -308,29 +308,10 @@ end
 function MetalSmelter_UpdateAction(furniture, deltaTime)
     local spawnSpot = furniture.GetSpawnSpotTile()
 
-    if(furniture.JobCount() == 0) then
-        local itemsDesired = {Inventory.__new("Raw Iron", 50, 0)}
-        local jobSpot = furniture.GetJobSpotTile()
-
-        local j = Job.__new(
-            jobSpot,
-            nil,
-            nil,
-            0.4,
-            itemsDesired,
-            Job.JobPriority.Medium,
-            false
-        )
-
-        j.RegisterJobCompletedCallback("MetalSmelter_JobComplete")
-        j.RegisterJobWorkedCallback("MetalSmelter_JobWorked")
-        furniture.AddJob(j)
-    elseif (spawnSpot.Inventory ~= nil and spawnSpot.Inventory.stackSize >= 5) then
+    if(spawnSpot.Inventory ~= nil and spawnSpot.Inventory.stackSize >= 5) then
         furniture.Parameters["smelttime"].ChangeFloatValue(deltaTime)
-
         if(furniture.Parameters["smelttime"].ToFloat() >= furniture.Parameters["smelttime_required"].ToFloat()) then
             furniture.Parameters["smelttime"].SetValue(0)
-
             local outputSpot = World.current.GetTileAt(spawnSpot.X+2, spawnSpot.y)
 
             if(outputSpot.Inventory == nil) then
@@ -339,7 +320,6 @@ function MetalSmelter_UpdateAction(furniture, deltaTime)
             else
                 if(outputSpot.Inventory.stackSize <= 45) then
                     outputSpot.Inventory.stackSize = outputSpot.Inventory.stackSize + 5
-
                     spawnSpot.Inventory.stackSize = spawnSpot.Inventory.stackSize - 5
                 end
             end
@@ -349,14 +329,46 @@ function MetalSmelter_UpdateAction(furniture, deltaTime)
             end
         end
     end
-end
 
-function MetalSmelter_JobComplete(j)
-    j.UnregisterJobCompletedCallback("MetalSmelter_JobComplete")
-    j.UnregisterJobWorkedCallback("MetalSmelter_JobWorked")
+    if(spawnSpot.Inventory ~= nil and spawnSpot.Inventory.stackSize == spawnSpot.Inventory.maxStackSize) then
+        -- We have the max amount of resources, cancel the job.
+        -- This check exists mainly, because the job completed callback doesn't
+        -- seem to be reliable.
+        furniture.CancelJobs()
+        return
+    end
+
+    if(furniture.JobCount() > 0) then
+        return
+    end
+
+    -- Create job depending on the already available stack size.
+    local desiredStackSize = 50
+    local itemsDesired = { Inventory.__new("Raw Iron", desiredStackSize, 0) }
+    if(spawnSpot.Inventory ~= nil and spawnSpot.Inventory.stackSize < spawnSpot.Inventory.maxStackSize) then
+        desiredStackSize = spawnSpot.Inventory.maxStackSize - spawnSpot.Inventory.stackSize
+        itemsDesired.maxStackSize = desiredStackSize
+    end
+    ModUtils.ULog("MetalSmelter: Creating job for " .. desiredStackSize .. " raw iron.")
+
+    local jobSpot = furniture.GetJobSpotTile()
+    local j = Job.__new(
+        jobSpot,
+        nil,
+        nil,
+        0.4,
+        itemsDesired,
+        Job.JobPriority.Medium,
+        false
+    )
+
+    j.RegisterJobWorkedCallback("MetalSmelter_JobWorked")
+    furniture.AddJob(j)
+    return
 end
 
 function MetalSmelter_JobWorked(j)
+    j.CancelJob()
     local spawnSpot = j.tile.Furniture.GetSpawnSpotTile()
     for k, inv in pairs(j.inventoryRequirements) do
         if(inv ~= nil and inv.stackSize > 0) then
