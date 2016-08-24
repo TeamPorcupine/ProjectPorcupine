@@ -13,14 +13,10 @@ public class ContextMenuAction
         {
             if (RequiereCharacterSelected)
             {
-                if (mouseController.mySelection != null)
+                if (mouseController.IsCharacterSelected())
                 {
-                    ISelectable actualSelection =
-                        mouseController.mySelection.stuffInTile[mouseController.mySelection.subSelection];
-                    if (actualSelection is Character)
-                    {
-                        Action(this, actualSelection as Character);
-                    }
+                    ISelectable actualSelection = mouseController.mySelection.GetSelectedStuff();
+                    Action(this, actualSelection as Character);
                 }
             }
             else

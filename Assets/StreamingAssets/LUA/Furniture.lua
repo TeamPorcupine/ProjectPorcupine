@@ -4,16 +4,10 @@ ENTERABILITY_YES  = 0
 ENTERABILITY_NO   = 1
 ENTERABILITY_SOON = 2
 
---------------------------------      UTILITY      --------------------------------
-function Clamp01( value )
-	if (value > 1) then
-		return 1
-	elseif (value < 0) then
-		return 0
-	end
-
-	return value
-end
+-- HOWTO Log:
+--ModUtils.ULog("Testing ModUtils.ULogChannel")
+--ModUtils.ULogWarning("Testing ModUtils.ULogWarningChannel")
+--ModUtils.ULogError("Testing ModUtils.ULogErrorChannel") -- Note: pauses the game
 
 -------------------------------- Furniture Actions --------------------------------
 function OnUpdate_GasGenerator( furniture, deltaTime )
@@ -21,46 +15,48 @@ function OnUpdate_GasGenerator( furniture, deltaTime )
 		return
 	end
 
-	if ( furniture.tile.Room == nil ) then
+	if ( furniture.tile.room == nil ) then
 		return "Furniture's room was null."
 	end
-
-	if ( furniture.tile.Room.GetGasPressure("O2") < furniture.GetParameter("gas_limit", 0.2)) then
-		furniture.tile.Room.ChangeGas("O2", furniture.GetParameter("gas_per_second", 0.01) * deltaTime)
-	else
-		-- Do we go into a standby mode to save power?
-	end
-
+    
+    keys = furniture.Parameters["gas_gen"].Keys()
+    for discard, key in pairs(keys) do
+        if ( furniture.tile.room.GetGasPressure(key) < furniture.Parameters["gas_gen"][key]["gas_limit"].ToFloat()) then
+            furniture.tile.room.ChangeGas(key, furniture.Parameters["gas_per_second"].ToFloat() * deltaTime * furniture.Parameters["gas_gen"][key]["gas_limit"].ToFloat())
+        else
+            -- Do we go into a standby mode to save power?
+        end
+    end
 	return
 end
 
 function OnUpdate_Door( furniture, deltaTime )
-	if (furniture.GetParameter("is_opening") >= 1.0) then
-		furniture.ChangeParameter("openness", deltaTime * 4) -- FIXME: Maybe a door open speed parameter?
-		if (furniture.GetParameter("openness") >= 1)  then
-			furniture.SetParameter("is_opening", 0)
+	if (furniture.Parameters["is_opening"].ToFloat() >= 1.0) then
+		furniture.Parameters["openness"].ChangeFloatValue(deltaTime * 4) -- FIXME: Maybe a door open speed parameter?
+		if (furniture.Parameters["openness"].ToFloat() >= 1)  then
+			furniture.Parameters["is_opening"].SetValue(0)
 		end
 	else
-		furniture.ChangeParameter("openness", deltaTime * -4)
+        furniture.Parameters["openness"].ChangeFloatValue(deltaTime * -4)
 	end
 
-	furniture.SetParameter("openness", Clamp01(furniture.GetParameter("openness")) )
+	furniture.Parameters["openness"].SetValue( ModUtils.Clamp01(furniture.Parameters["openness"].ToFloat()) )
 
 	furniture.UpdateOnChanged(furniture);
 end
 
 function OnUpdate_Leak_Door( furniture, deltaTime )
-	furniture.tile.EqualiseGas(deltaTime * 10.0 * (furniture.GetParameter("openness") + 0.1))
+	furniture.tile.EqualiseGas(deltaTime * 10.0 * (furniture.Parameters["openness"].ToFloat() + 0.1))
 end
 
 function OnUpdate_Leak_Airlock( furniture, deltaTime )
-	furniture.tile.EqualiseGas(deltaTime * 10.0 * (furniture.GetParameter("openness")))
+	furniture.tile.EqualiseGas(deltaTime * 10.0 * (furniture.Parameters["openness"].ToFloat()))
 end
 
 function IsEnterable_Door( furniture )
-	furniture.SetParameter("is_opening", 1)
+	furniture.Parameters["is_opening"].SetValue(1)
 
-	if (furniture.GetParameter("openness") >= 1) then
+	if (furniture.Parameters["openness"].ToFloat() >= 1) then
 		return ENTERABILITY_YES --ENTERABILITY.Yes
 	end
 
@@ -69,15 +65,15 @@ end
 
 function GetSpriteName_Door( furniture )
 	-- Door is closed
-	if (furniture.GetParameter("openness") < 0.1) then
+	if (furniture.Parameters["openness"].ToFloat() < 0.1) then
 		return "Door"
 	end
 	-- Door is a bit open
-	if (furniture.GetParameter("openness") < 0.5) then
+	if (furniture.Parameters["openness"].ToFloat() < 0.5) then
 		return "Door_openness_1"
 	end
 	-- Door is a lot open
-	if (furniture.GetParameter("openness") < 0.9) then
+	if (furniture.Parameters["openness"].ToFloat() < 0.9) then
 		return "Door_openness_2"
 	end
 	-- Door is a fully open
@@ -86,15 +82,15 @@ end
 
 function GetSpriteName_Airlock( furniture )
 	-- Door is closed
-	if (furniture.GetParameter("openness") < 0.1) then
+	if (furniture.Parameters["openness"].ToFloat() < 0.1) then
 		return "Airlock"
 	end
 	-- Door is a bit open
-	if (furniture.GetParameter("openness") < 0.5) then
+	if (furniture.Parameters["openness"].ToFloat() < 0.5) then
 		return "Airlock_openness_1"
 	end
 	-- Door is a lot open
-	if (furniture.GetParameter("openness") < 0.9) then
+	if (furniture.Parameters["openness"].ToFloat() < 0.9) then
 		return "Airlock_openness_2"
 	end
 	-- Door is a fully open
@@ -167,10 +163,10 @@ function Stockpile_UpdateAction( furniture, deltaTime )
 	itemsDesired = {}
 
 	if( furniture.tile.Inventory == nil ) then
-		--Debug.Log("Creating job for new stack.");
+		--ModUtils.ULog("Creating job for new stack.")
 		itemsDesired = Stockpile_GetItemsFromFilter()
 	else
-		--Debug.Log("Creating job for existing stack.");
+		--ModUtils.ULog("Creating job for existing stack.")
 		desInv = furniture.tile.Inventory.Clone()
 		desInv.maxStackSize = desInv.maxStackSize - desInv.stackSize
 		desInv.stackSize = 0
@@ -187,6 +183,7 @@ function Stockpile_UpdateAction( furniture, deltaTime )
 		Job.JobPriority.Low,
 		false
 	)
+	j.JobDescription = "job_stockpile_moving_desc"
 
 	-- TODO: Later on, add stockpile priorities, so that we can take from a lower
 	-- priority stockpile for a higher priority one.
@@ -246,6 +243,7 @@ function MiningDroneStation_UpdateAction( furniture, deltaTime )
 		true	-- This job repeats until the destination tile is full.
 	)
 	j.RegisterJobCompletedCallback("MiningDroneStation_JobComplete")
+	j.JobDescription = "job_mining_drone_station_mining_desc"
 
 	furniture.AddJob( j )
 end
@@ -258,7 +256,7 @@ end
 function MetalSmelter_UpdateAction(furniture, deltaTime)
 	spawnSpot = furniture.GetSpawnSpotTile()
 
-	if(furniture.GetParameter("smelting") == 0) then
+	if(furniture.Parameters["smelting"].ToFloat() == 0) then
 		if(furniture.JobCount() == 0) then
 			itemsDesired = {Inventory.__new("Raw Iron", 50, 0)}
 
@@ -275,6 +273,7 @@ function MetalSmelter_UpdateAction(furniture, deltaTime)
 			)
 
 			j.RegisterJobCompletedCallback("MetalSmelter_JobComplete")
+			j.JobDescription = "job_metal_smelter_fulling_desc"
 
 			furniture.AddJob(j)
 		end
@@ -285,8 +284,8 @@ function MetalSmelter_UpdateAction(furniture, deltaTime)
 		end
 		furniture.ChangeParameter("smelttime", deltaTime)
 
-		if(furniture.GetParameter("smelttime") >= furniture.GetParameter("smelttime_required")) then
-			furniture.SetParameter("smelttime", 0)
+		if(furniture.Parameters["smelttime"].ToFloat >= furniture.Parameters["smelttime_required"]) then
+			furniture.Parameters["smelttime"].SetValue(0)
 
 			outputSpot = World.current.GetTileAt(spawnSpot.X+2, spawnSpot.y)
 
@@ -304,7 +303,7 @@ function MetalSmelter_UpdateAction(furniture, deltaTime)
 
 			if(spawnSpot.Inventory.stackSize <= 0) then
 				spawnSpot.Inventory = nil
-				furniture.SetParameter("smelting", 0)
+				furniture.Parameters["smelting"].SetValue(0)
 			end
 		end
 	end
@@ -347,14 +346,15 @@ function PowerCellPress_UpdateAction(furniture, deltaTime)
 			)
 			
 			j.RegisterJobCompletedCallback("PowerCellPress_JobComplete")
+			j.JobDescription = "job_power_cell_fulling_desc"
 			
 			furniture.AddJob(j)
 		end
 	else
-		furniture.ChangeParameter("presstime", deltaTime)
+		furniture.Parameters["presstime"].ChangeFloatValue(deltaTime)
 		
-		if(furniture.GetParameter("presstime") >= furniture.GetParameter("presstime_required")) then
-			furniture.SetParameter("presstime", 0)
+		if(furniture.Parameters["presstime"].ToFloat() >= furniture.Parameters["presstime_required"].ToFloat()) then
+			furniture.Parameters["presstime"].SetValue(0)
 			
 			outputSpot = World.current.GetTileAt(spawnSpot.X+2, spawnSpot.y)
 			
@@ -404,6 +404,7 @@ function CloningPod_UpdateAction(furniture, deltaTime)
 	false
 	)
 	j.RegisterJobCompletedCallback("CloningPod_JobComplete")
+	j.JobDescription = "job_cloning_pod_cloning_desc"
 	furniture.AddJob( j )
 end
 
@@ -415,7 +416,7 @@ end
 
 function PowerGenerator_UpdateAction(furniture, deltatime)
     
-    if ( furniture.JobCount() < 1 and furniture.GetParameter("burnTime") == 0 ) then
+    if ( furniture.JobCount() < 1 and furniture.Parameters["burnTime"].ToFloat() == 0 ) then
         
         furniture.PowerValue = 0
         itemsDesired = {Inventory.__new("Uranium", 5, 0)}
@@ -429,15 +430,16 @@ function PowerGenerator_UpdateAction(furniture, deltatime)
             Job.JobPriority.High,
             false
         )
+		j.JobDescription = "job_power_generator_fulling_desc"
 
         j.RegisterJobCompletedCallback("PowerGenerator_JobComplete")
         furniture.AddJob( j )
         
     else
         
-        furniture.ChangeParameter("burnTime", -deltatime)
-        if ( furniture.GetParameter("burnTime") < 0 ) then
-            furniture.SetParameter("burnTime", 0)
+        furniture.Parameters["burnTime"].ChangeFloatValue(-deltatime)
+        if ( furniture.Parameters["burnTime"].ToFloat() < 0 ) then
+            furniture.Parameters["burnTime"].SetValue(0)
         end
         
     end
@@ -445,18 +447,23 @@ function PowerGenerator_UpdateAction(furniture, deltatime)
 end
 
 function PowerGenerator_JobComplete( j )
-    j.furniture.SetParameter("burnTime", j.furniture.GetParameter("burnTimeRequired"))
+    j.furniture.Parameters["burnTime"].SetValue(j.furniture.Parameters["burnTimeRequired"].ToFloat())
     j.furniture.PowerValue = 5
 end
 
 function LandingPad_Temp_UpdateAction(furniture, deltaTime)
+    
+    if(not furniture.tile.room.IsOutsideRoom()) then
+        return
+    end
+    
 	spawnSpot = furniture.GetSpawnSpotTile()
 	jobSpot = furniture.GetJobSpotTile()
 	inputSpot = World.current.GetTileAt(jobSpot.X, jobSpot.y-1)
 
 	if(inputSpot.Inventory == nil) then
 		if(furniture.JobCount() == 0) then
-			itemsDesired = {Inventory.__new("Steel Plate", furniture.GetParameter("tradeinamount"), 0)}
+			itemsDesired = {Inventory.__new("Steel Plate", furniture.Parameters["tradeinamount"].ToFloat())}
 
 			j = Job.__new(
 			inputSpot,
@@ -471,25 +478,26 @@ function LandingPad_Temp_UpdateAction(furniture, deltaTime)
             j.furniture = furniture
 
 			j.RegisterJobCompletedCallback("LandingPad_Temp_JobComplete")
+			j.JobDescription = "job_landing_pad_fulling_desc"
 
 			furniture.AddJob(j)
 		end
 	else
-		furniture.ChangeParameter("tradetime", deltaTime)
-
-		if(furniture.GetParameter("tradetime") >= furniture.GetParameter("tradetime_required")) then
-			furniture.SetParameter("tradetime", 0)
+		furniture.Parameters["tradetime"].ChangeFloatValue(deltaTime)
+		
+		if(furniture.Parameters["tradetime"].ToFloat() >= furniture.Parameters["tradetime_required"].ToFloat()) then
+			furniture.Parameters["tradetime"].SetValue(0)
 
 		 	outputSpot = World.current.GetTileAt(spawnSpot.X+1, spawnSpot.y)
 
 			if(outputSpot.Inventory == nil) then
-				World.current.inventoryManager.PlaceInventory( outputSpot, Inventory.__new("Steel Plate", 50, furniture.GetParameter("tradeoutamount")) )
+				World.current.inventoryManager.PlaceInventory( outputSpot, Inventory.__new("Steel Plate", 50, furniture.Parameters["tradeoutamount"].ToFloat()) )
 
-				inputSpot.Inventory.stackSize = inputSpot.Inventory.stackSize-furniture.GetParameter("tradeinamount")
+				inputSpot.inventory.stackSize = inputSpot.inventory.stackSize-furniture.Parameters["tradeinamount"].ToFloat()
 			else
-				if(outputSpot.Inventory.stackSize <= 50 - outputSpot.Inventory.stackSize+furniture.GetParameter("tradeoutamount")) then
-					outputSpot.Inventory.stackSize = outputSpot.Inventory.stackSize+furniture.GetParameter("tradeoutamount")
-					inputSpot.Inventory.stackSize = inputSpot.Inventory.stackSize-furniture.GetParameter("tradeinamount")
+				if(outputSpot.inventory.stackSize <= 50 - outputSpot.inventory.stackSize+furniture.Parameters["tradeoutamount"].ToFloat()) then
+					outputSpot.inventory.stackSize = outputSpot.inventory.stackSize+furniture.Parameters["tradeoutamount"].ToFloat()
+					inputSpot.inventory.stackSize = inputSpot.inventory.stackSize-furniture.Parameters["tradeinamount"].ToFloat()
 				end
 			end
 
@@ -515,6 +523,10 @@ function LandingPad_Temp_JobComplete(j)
 	end
 end
 
+function LandingPad_Test_ContextMenuAction(furniture, character)
+   furniture.Deconstruct()
+end
+
 -- Dummy heater install function
 -- THis function gets called once, when the funriture is isntalled
 function Heater_InstallAction( furniture, deltaTime)
@@ -527,4 +539,38 @@ function Heater_UninstallAction( furniture, deltaTime)
 	-- TODO: find elegant way to unregister previous register
 end
 
+-- Should maybe later be integrated with GasGenerator function by
+-- someone who knows how that would work in this case
+function OxygenCompressor_OnUpdate(furniture, deltaTime)
+    room = furniture.tile.Room
+    pressure = room.GetGasPressure("O2")
+    gasAmount = furniture.Parameters["flow_rate"].ToFloat() * deltaTime
+    if (pressure < furniture.Parameters["give_threshold"].ToFloat()) then
+        -- Expel gas if available
+        if (furniture.Parameters["gas_content"].ToFloat() > 0) then
+            furniture.Parameters["gas_content"].ChangeFloatValue(-gasAmount)
+            room.ChangeGas("O2", gasAmount / room.GetSize())
+            furniture.UpdateOnChanged(furniture)
+        end
+    elseif (pressure > furniture.Parameters["take_threshold"].ToFloat()) then
+        -- Suck in gas if not full
+        if (furniture.Parameters["gas_content"].ToFloat() < furniture.Parameters["max_gas_content"].ToFloat()) then
+            furniture.Parameters["gas_content"].ChangeFloatValue(gasAmount)
+            room.ChangeGas("O2", -gasAmount / room.GetSize())
+            furniture.UpdateOnChanged(furniture)
+        end
+    end
+end
+
+function OxygenCompressor_GetSpriteName(furniture)
+    baseName = "Oxygen_Compressor"
+    suffix = 0
+    if (furniture.Parameters["gas_content"].ToFloat() > 0) then
+        idxAsFloat = 8 * (furniture.Parameters["gas_content"].ToFloat() / furniture.Parameters["max_gas_content"].ToFloat())
+        suffix = ModUtils.FloorToInt(idxAsFloat)
+    end
+    return baseName .. "_" .. suffix
+end
+
+ModUtils.ULog("Furniture.lua loaded")
 return "LUA Script Parsed!"
