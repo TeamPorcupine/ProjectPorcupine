@@ -36,20 +36,31 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     /// </summary>
     // protected Action<Furniture, float> updateActions;
     protected List<string> updateActions;
+
+    /// <summary>
+    /// These context menu lua action are used to build the context menu of the furniture
+    /// </summary>
+    protected List<ContextMenuLuaAction> contextMenuLuaActions; 
     
     /// <summary>
     /// These actions are called when an object is installed. They get passed the furniture and a delta
     /// time of 0
     /// </summary>
     protected List<string> installActions;
+
     /// <summary>
     /// These actions are called when an object is uninstalled. They get passed the furniture and a delta
     /// time of 0
     /// </summary>
     protected List<string> uninstallActions;
-    
-    // public Func<Furniture, ENTERABILITY> IsEnterable;
+
+    // private Func<Furniture, ENTERABILITY> IsEnterable;
     protected string isEnterableAction;
+
+    /// <summary>
+    /// This action is called to get the sprite name based on the furniture parameters
+    /// </summary>
+    protected string getSpriteNameAction;
 
     protected List<string> replaceableFurniture = new List<string>();
 
@@ -113,8 +124,19 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         return (ENTERABILITY)ret.Number;
     }
 
+    public string GetSpriteName()
+    {
+        if (getSpriteNameAction == null || getSpriteNameAction.Length == 0)
+        {
+            return objectType;
+        }
+
+        DynValue ret = FurnitureActions.CallFunction(getSpriteNameAction, this);
+        return ret.String;
+    }
+
     // If this furniture generates power then powerValue will be positive, if it consumer power then it will be negative
-   
+
     private void InvokePowerValueChanged(IPowerRelated powerRelated)
     {
         Action<IPowerRelated> handler = PowerValueChanged;
@@ -187,7 +209,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     public int Height { get; protected set; }
 
     public string localizationCode { get; protected set; }
-   
+
     public string unlocalizedDescription { get; protected set; }
 
     public Color tint = Color.white;
@@ -217,6 +239,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     public Furniture()
     {
         updateActions = new List<string>();
+        contextMenuLuaActions = new List<ContextMenuLuaAction>();
         installActions = new List<string>();
         uninstallActions = new List<string>();
         furnParameters = new Dictionary<string, float>();
@@ -253,7 +276,13 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
             this.updateActions = new List<string>(other.updateActions);
         }
 
+        if (other.contextMenuLuaActions != null)
+        {
+            this.contextMenuLuaActions = new List<ContextMenuLuaAction>(other.contextMenuLuaActions);
+        }
+
         this.isEnterableAction = other.isEnterableAction;
+        this.getSpriteNameAction = other.getSpriteNameAction;
 
         this.powerValue = other.powerValue;
 
@@ -363,6 +392,12 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         if (tooCloseToEdge)
         {
             return false;
+        }
+
+        if (HasTypeTag("OutdoorOnly"))
+        {
+            if (t.Room == null || !t.Room.IsOutsideRoom())
+                return false;
         }
 
         for (int x_off = t.X; x_off < (t.X + Width); x_off++)
@@ -519,43 +554,50 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
                     jobTime,
                     invs.ToArray(),
                     Job.JobPriority.High );
-
+                j.JobDescription = "job_build_" + objectType + "_desc";
                 World.current.SetFurnitureJobPrototype(j, this);
-
                 break;
-            case "OnUpdate":
 
+            case "OnUpdate":
                 string functionName = reader.GetAttribute("FunctionName");
                 RegisterUpdateAction(functionName);
-                    break;
+                break;
+            case "ContextMenuAction":
+                    contextMenuLuaActions.Add(new ContextMenuLuaAction
+                    {
+                        LuaFunction = reader.GetAttribute("FunctionName"),
+                        Text = reader.GetAttribute("Text"),
+                        RequiereCharacterSelected = bool.Parse(reader.GetAttribute("RequiereCharacterSelected"))
+                    });
+                break;
             case "OnInstall":
                 // Called when obj is installed
                 string functionInstallName = reader.GetAttribute("FunctionName");
                 RegisterInstallAction(functionInstallName);
-
                 break;
+
             case "OnUninstall":
                 // Called when obj is uninstalled
                 string functionUninstallName = reader.GetAttribute("FunctionName");
                 RegisterUninstallAction(functionUninstallName);
-
                 break;
+
             case "IsEnterable":
                 isEnterableAction = reader.GetAttribute("FunctionName");
-
+                break;
+            case "GetSpriteName":
+                getSpriteNameAction = reader.GetAttribute("FunctionName");
                 break;
 
             case "JobSpotOffset":
                 jobSpotOffset = new Vector2(
                     int.Parse(reader.GetAttribute("X")),
                     int.Parse(reader.GetAttribute("Y")));
-
                 break;
             case "JobSpawnSpotOffset":
                 jobSpawnSpotOffset = new Vector2(
                     int.Parse(reader.GetAttribute("X")),
                     int.Parse(reader.GetAttribute("Y")));
-
                 break;
 
             case "Power":
@@ -833,6 +875,10 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         return "18/18"; // TODO: Add a hitpoint system to...well...everything
     }
 
+    public string GetJobDescription()
+    {
+        return "";
+    }
     #endregion
 
     public IEnumerable<ContextMenuAction> GetContextMenuActions(ContextMenu contextMenu)
@@ -844,6 +890,19 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
             Action = (ca, c) => Deconstruct()
         };
 
-        //todo add a hook to LUA Action via the furniture.xml definition
+        foreach (var contextMenuLuaAction in contextMenuLuaActions)
+        {
+            yield return new ContextMenuAction
+            {
+                Text = contextMenuLuaAction.Text,
+                RequiereCharacterSelected = contextMenuLuaAction.RequiereCharacterSelected,
+                Action = (cma, c) => InvokeContextMenuLuaAction(contextMenuLuaAction.LuaFunction, c)
+            };
+        }
+    }
+
+    private void InvokeContextMenuLuaAction(string luaFunction, Character character)
+    {
+        FurnitureActions.CallFunction(luaFunction, this, character);
     }
 }

@@ -45,7 +45,7 @@ public class SelectionInfoTextField : MonoBehaviour
 
         if(actualSelection.GetType() == typeof(Character))
         {
-            txt.text = actualSelection.GetName() + "\n" + actualSelection.GetDescription() + "\n" + actualSelection.GetHitPointString(); //TODO: Change the hitpoint stuff.
+            txt.text = actualSelection.GetName() + "\n" + actualSelection.GetDescription() + "\n" + actualSelection.GetHitPointString() + "\n" + LocalizationTable.GetLocalization(actualSelection.GetJobDescription()); //TODO: Change the hitpoint stuff.
         }
         else
         {

@@ -32,7 +32,10 @@ public class MouseController
     private MenuController menuController;
     private ContextMenu contextMenu;
 
+    // Is dragging an area (eg. floor tiles).
     private bool isDragging = false;
+    // Ìs panning the camera
+    private bool isPanning = false;
 
     private MouseMode currentMode = MouseMode.SELECT;
 
@@ -139,7 +142,14 @@ public class MouseController
             {
                 if (contextMenu != null && GetMouseOverTile() != null)
                 {
-                    contextMenu.Open(GetMouseOverTile());
+                    if (isPanning)
+                    {
+                        contextMenu.Close();
+                    }
+                    else if (contextMenu != null)
+                    {
+                        contextMenu.Open(GetMouseOverTile());
+                    }
                 }
             }
         }
@@ -455,7 +465,13 @@ public class MouseController
         if (Input.GetMouseButton(1) || Input.GetMouseButton(2))
         {   // Right or Middle Mouse Button.
             Vector3 diff = lastFramePosition - currFramePosition;
-            Camera.main.transform.Translate(diff);
+
+            if (diff != Vector3.zero)
+            {
+                isPanning = true;
+                contextMenu.Close();
+                Camera.main.transform.Translate(diff);
+            }
 
             if (Input.GetMouseButton(1))
             {
@@ -463,10 +479,14 @@ public class MouseController
             }
         }
 
+        if (!Input.GetMouseButton(1) && !Input.GetMouseButton(2))
+        {
+            isPanning = false;
+        }
+
         // If we're over a UI element or the settings/options menu is open, then bail out from this.
         if (EventSystem.current.IsPointerOverGameObject()
-            || menuController.settingsMenu.activeSelf
-            || menuController.optionsMenu.activeSelf)
+            || WorldController.Instance.IsModal)
         {
             return;
         }
@@ -552,5 +572,16 @@ public class MouseController
         public Tile tile;
         public ISelectable[] stuffInTile;
         public int subSelection = 0;
+    }
+
+    public bool IsCharacterSelected()
+    {
+        if (mySelection != null && mySelection.stuffInTile != null && mySelection.stuffInTile.Length != 0)
+        {
+            ISelectable actualSelection =
+                mySelection.stuffInTile[mySelection.subSelection];
+            return actualSelection is Character;
+        }
+        return false;
     }
 }

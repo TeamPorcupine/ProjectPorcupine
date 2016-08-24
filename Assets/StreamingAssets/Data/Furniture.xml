@@ -65,6 +65,7 @@
         <OnUpdate FunctionName="OnUpdate_Leak_Door" />
 
         <IsEnterable FunctionName="IsEnterable_Door" />
+        <GetSpriteName FunctionName="GetSpriteName_Door" />
 
         <LocalizationCode>furn_door</LocalizationCode>
         <UnlocalizedDescription>furn_door_desc</UnlocalizedDescription>
@@ -101,6 +102,7 @@
         <OnUpdate FunctionName="OnUpdate_Leak_Airlock" />
 
         <IsEnterable FunctionName="IsEnterable_Door" />
+        <GetSpriteName FunctionName="GetSpriteName_Airlock" />
 
         <LocalizationCode>furn_airlock</LocalizationCode>
         <UnlocalizedDescription>furn_airlock_desc</UnlocalizedDescription>
@@ -286,9 +288,12 @@
   </Furniture>
 	
   <Furniture objectType="Small Landing Pad">
+    <TypeTag>OutdoorOnly</TypeTag>
     <Name>Small Landing Pad</Name>
     <Description>A landing pad for small spaceboats to land.</Description>
     <OnUpdate FunctionName="LandingPad_Temp_UpdateAction" />
+    <ContextMenuAction FunctionName="LandingPad_Test_ContextMenuAction" Text="Lua Test Deconstruct 1" RequiereCharacterSelected="false"/>
+    <ContextMenuAction FunctionName="LandingPad_Test_ContextMenuAction" Text="Lua Test Deconstruct 2" RequiereCharacterSelected="true" />
     <MovementCost>5</MovementCost>
     <Width>3</Width>
     <Height>3</Height>
