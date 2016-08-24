@@ -14,7 +14,7 @@ using UnityEngine;
 
 public class WorldGenerator
 {
-    public const TileType AsteroidFloorType = TileType.Floor;
+    public static TileType AsteroidFloorType = null;
 
     public static int startAreaWidth = 0;
     public static int startAreaHeight = 0;
@@ -32,6 +32,8 @@ public class WorldGenerator
 
     public static void Generate(World world, int seed)
     {
+        AsteroidFloorType = TileType.GetTileType("Floor");
+
         ReadXML();
         Random.InitState(seed);
         int width = world.Width;
@@ -39,6 +41,12 @@ public class WorldGenerator
 
         int xOffset = Random.Range(0, 10000);
         int yOffset = Random.Range(0, 10000);
+
+        int sumOfAllWeightedChances = 0;
+        foreach(Inventory resource in resources)
+        {
+            sumOfAllWeightedChances += resource.stackSize;
+        }
 
         for (int x = 0; x < startAreaWidth; x++)
         {
@@ -48,7 +56,7 @@ public class WorldGenerator
                 int worldY = (height / 2) + startAreaCenterY - y;
 
                 Tile tile = world.GetTileAt(worldX, worldY);
-                tile.Type = (TileType)startAreaTiles[x, y];
+                tile.Type = TileType.GetTileTypes()[startAreaTiles[x, y]];
             }
         }
 
@@ -82,17 +90,17 @@ public class WorldGenerator
                     {
                         if (resources.Length > 0)
                         {
-                            int currentchance = 0;
-                            int randomchance = Random.Range(0, 100);
+                            int currentweight = 0;
+                            int randomweight = Random.Range(0, sumOfAllWeightedChances);
 
                             for (int i = 0; i < resources.Length; i++)
                             {
                                 Inventory inv = resources[i];
 
-                                int chance = inv.stackSize; // In stacksize the chance was cached
-                                currentchance += chance;
+                                int weight = inv.stackSize; // In stacksize the weight was cached
+                                currentweight += weight;
 
-                                if (randomchance <= currentchance)
+                                if (randomweight <= currentweight)
                                 {
                                     int stackSize = Random.Range(resourceMin[i], resourceMax[i]);
 
@@ -111,7 +119,7 @@ public class WorldGenerator
             }
         }
     }
-
+    
     public static bool IsStartArea(int x, int y, World world)
     {
         int boundX = (world.Width / 2) - startAreaCenterX;
@@ -172,7 +180,7 @@ public class WorldGenerator
                                         res.Add(new Inventory(
                                                 res_reader.GetAttribute("objectType"),
                                                 int.Parse(res_reader.GetAttribute("maxStack")),
-                                                (int)(float.Parse(res_reader.GetAttribute("chance")) * 100)));
+                                                Mathf.CeilToInt(float.Parse(res_reader.GetAttribute("weightedChance")))));
 
                                         resMin.Add(int.Parse(res_reader.GetAttribute("min")));
                                         resMax.Add(int.Parse(res_reader.GetAttribute("max")));

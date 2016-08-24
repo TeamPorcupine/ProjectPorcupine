@@ -3627,7 +3627,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &346339346
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3643,10 +3643,10 @@ RectTransform:
   - {fileID: 1240189426}
   m_Father: {fileID: 1376947279}
   m_RootOrder: 1
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 0, y: -69.33333}
+  m_SizeDelta: {x: 150, y: 33.666664}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &346339347
 MonoBehaviour:
@@ -7405,7 +7405,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &663146203
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7495,10 +7495,10 @@ RectTransform:
   - {fileID: 1803216146}
   m_Father: {fileID: 1376947279}
   m_RootOrder: 0
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 0, y: -33.666664}
+  m_SizeDelta: {x: 150, y: 33.666664}
   m_Pivot: {x: 0, y: 0}
 --- !u!1 &678936330
 GameObject:
@@ -15791,9 +15791,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df1c5b63333a7e3408e98747c0f324ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  floorBuild: {fileID: 663146203}
-  ladderBuild: {fileID: 346339347}
-  floorRemove: {fileID: 1593422454}
+  buildFurnitureButtonPrefab: {fileID: 159176, guid: 945aa8381fd2ebc468deabb07515fe73,
+    type: 2}
 --- !u!1 &1385661825
 GameObject:
   m_ObjectHideFlags: 0
@@ -17652,7 +17651,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1593422454
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17742,10 +17741,10 @@ RectTransform:
   - {fileID: 2132312748}
   m_Father: {fileID: 1376947279}
   m_RootOrder: 2
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 0, y: -104.99999}
+  m_SizeDelta: {x: 150, y: 33.666664}
   m_Pivot: {x: 0, y: 0}
 --- !u!1 &1613538908
 GameObject:

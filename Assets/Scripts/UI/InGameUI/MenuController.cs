@@ -95,8 +95,15 @@ public class MenuController : MonoBehaviour
 
     public void OnButtonConstruction()
     {
-        DeactivateAll();
-        constructorMenu.SetActive(true);
+        if (constructorMenu.activeSelf)
+        {
+            DeactivateAll();
+        } 
+        else 
+        { 
+            DeactivateAll();
+            constructorMenu.SetActive(true);
+        }
     }
 
     public void OnButtonWork()
@@ -113,13 +120,27 @@ public class MenuController : MonoBehaviour
 
     public void OnButtonOptions()
     {
-        DeactivateAll();
-        optionsMenu.SetActive(true);
+        if (optionsMenu.activeSelf)
+        {
+            DeactivateAll();
+        }
+        else
+        {
+            DeactivateAll();
+            optionsMenu.SetActive(true);
+        }
     }
 
     public void OnButtonSettings()
     {
-        DeactivateAll();
-        settingsMenu.SetActive(true);
+        if (settingsMenu.activeSelf)
+        {
+            DeactivateAll();
+        }
+        else
+        {
+            DeactivateAll();
+            settingsMenu.SetActive(true);
+        }
     }
 }
