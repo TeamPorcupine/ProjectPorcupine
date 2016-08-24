@@ -185,7 +185,7 @@
     <Furniture objectType="Power Generator">
     <Name>Power Generator</Name>
     <TypeTag>Generator</TypeTag>
-    <MovementCost>10</MovementCost>
+    <MovementCost>1</MovementCost>
     <Width>2</Width>
     <Height>2</Height>
     <Power>5</Power>
@@ -268,7 +268,7 @@
     <OnUninstall FunctionName="Heater_UninstallAction"></OnUninstall>
       
     <Params>
-      <Param name="temperature" value="10" />
+      <Param name="heating_per_second" value="10" />
     </Params>
 
     <LocalizationCode>furn_heater</LocalizationCode>

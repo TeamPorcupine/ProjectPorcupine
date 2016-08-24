@@ -546,16 +546,11 @@ function Heater_OnUpdate ( furniture, deltaTime)
     
     tile = furniture.tile
     pressure = tile.Room.GetGasPressure()
+    efficiency = ModUtils.Clamp01(pressure / 0.5)
+    temperatureChange = furniture.Parameters["heating_per_second"].ToFloat() * efficiency * deltaTime
     
-    -- Clamp the value. There might be a better way to do this
-    if (pressure > 0.5) then
-        pressure = 0.5
-    end
-    temperatureChange = 10 * (pressure / 0.5) * deltaTime
-    --tile.Room.ChangeTemperature(temperatureChange)
-    
-    -- Double, for testing
     World.current.temperature.ChangeTemperature(tile.X, tile.Y, temperatureChange)
+end
 
 -- Should maybe later be integrated with GasGenerator function by
 -- someone who knows how that would work in this case
