@@ -354,5 +354,9 @@ public class Tile :IXmlSerializable, ISelectable
         return "";	// Do tiles have hitpoints? Can flooring be damaged? Obviously "empty" is indestructible.
     }
 
+    public string GetJobDescription()
+    {
+        return "";
+    }
     #endregion
 }

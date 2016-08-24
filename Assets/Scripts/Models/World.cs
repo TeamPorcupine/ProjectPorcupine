@@ -32,6 +32,7 @@ public class World : IXmlSerializable
     public List<Room> rooms;
     public InventoryManager inventoryManager;
     public PowerSystem powerSystem;
+    public Material skybox;
     // Store all temperature information
     public Temperature temperature;
 
@@ -87,8 +88,6 @@ public class World : IXmlSerializable
     {
 
     }
-
-
 
     public Room GetOutsideRoom()
     {
@@ -170,6 +169,52 @@ public class World : IXmlSerializable
         inventoryManager = new InventoryManager();
         powerSystem = new PowerSystem();
         temperature = new Temperature(Width, Height);
+        LoadSkybox();
+    }
+
+    private void LoadSkybox(string name = null)
+    {
+        DirectoryInfo dirInfo = new DirectoryInfo(Path.Combine(Application.dataPath, "Resources/Skyboxes"));
+        if (!dirInfo.Exists)
+            dirInfo.Create();
+
+        FileInfo[] files = dirInfo.GetFiles("*.mat", SearchOption.AllDirectories);
+
+        if (files.Length > 0)
+        {
+            string resourcePath = string.Empty;
+            FileInfo file = null;
+            if (!string.IsNullOrEmpty(name))
+            {
+                foreach (FileInfo fileInfo in files)
+                {
+                    if (name.Equals(fileInfo.Name.Remove(fileInfo.Name.LastIndexOf("."))))
+                    {
+                        file = fileInfo;
+                        break;
+                    }
+                }
+            }
+
+            // Maybe we passed in a name that doesn't exist? Pick a random skybox.
+            if (file == null)
+            {
+                // Get random file
+                file = files[(int)(UnityEngine.Random.value * files.Length)];
+            }
+
+            resourcePath = Path.Combine(file.DirectoryName.Substring(file.DirectoryName.IndexOf("Skyboxes")), file.Name);
+
+            if (resourcePath.Contains("."))
+                resourcePath = resourcePath.Remove(resourcePath.LastIndexOf("."));
+
+            skybox = Resources.Load<Material>(resourcePath);
+            RenderSettings.skybox = skybox;
+        }
+        else
+        {
+            Debug.LogWarning("No skyboxes detected! Falling back to black.");
+        }
     }
 
     public void Update(float deltaTime)
@@ -196,11 +241,9 @@ public class World : IXmlSerializable
         // Adds a random name to the Character
         string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
         filePath = System.IO.Path.Combine(filePath, "CharacterNames.txt");
-        string names = System.IO.File.ReadAllText(filePath);
 
-        string[] lines = Regex.Split( names, "\r\n" );
-        c.name = lines[UnityEngine.Random.Range(0, lines.Length-1)];
-
+        string[] names = File.ReadAllLines(filePath);
+        c.name = names[UnityEngine.Random.Range(0, names.Length-1)];
         characters.Add(c);
 
         if (cbCharacterCreated != null)
@@ -725,6 +768,8 @@ public class World : IXmlSerializable
 
         }
         writer.WriteEndElement();
+
+        writer.WriteElementString("Skybox", skybox.name);
     }
 
     public void ReadXml(XmlReader reader)
@@ -754,6 +799,9 @@ public class World : IXmlSerializable
                     break;
                 case "Characters":
                     ReadXml_Characters(reader);
+                    break;
+                case "Skybox":
+                    LoadSkybox(reader.ReadElementString("Skybox"));
                     break;
             }
         }
