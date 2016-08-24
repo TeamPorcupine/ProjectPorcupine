@@ -14,7 +14,7 @@ using UnityEngine;
 
 public class WorldGenerator
 {
-    public const TileType AsteroidFloorType = TileType.Floor;
+    public static TileType AsteroidFloorType = null;
 
     public static int startAreaWidth = 0;
     public static int startAreaHeight = 0;
@@ -32,6 +32,8 @@ public class WorldGenerator
 
     public static void Generate(World world, int seed)
     {
+        AsteroidFloorType = TileType.GetTileType("Floor");
+
         ReadXML();
         Random.InitState(seed);
         int width = world.Width;
@@ -54,7 +56,7 @@ public class WorldGenerator
                 int worldY = (height / 2) + startAreaCenterY - y;
 
                 Tile tile = world.GetTileAt(worldX, worldY);
-                tile.Type = (TileType)startAreaTiles[x, y];
+                tile.Type = TileType.GetTileTypes()[startAreaTiles[x, y]];
             }
         }
 
@@ -117,7 +119,7 @@ public class WorldGenerator
             }
         }
     }
-
+    
     public static bool IsStartArea(int x, int y, World world)
     {
         int boundX = (world.Width / 2) - startAreaCenterX;
