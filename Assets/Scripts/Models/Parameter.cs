@@ -76,7 +76,7 @@ public class Parameter {
 //        return new Dictionary<string, Parameter>(contents);
     }
 
-    public string ToString() 
+    public override string ToString() 
     {
         return value;
     }

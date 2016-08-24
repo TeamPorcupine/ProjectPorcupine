@@ -13,6 +13,11 @@ using UberLogger;
 
 public class UberLoggerEditorWindow : EditorWindow
 {
+    //Settings
+    float logDetailsWindowHeight = 100;       // Customise details window size
+    int pushStep = 50;
+    int lastItemsCount = 0;
+
     [MenuItem("Window/Show Uber Console")]
     static public void ShowLogWindow()
     {
@@ -101,7 +106,7 @@ public class UberLoggerEditorWindow : EditorWindow
 
         //Create a small gap so the resize handle isn't overwritten
         GUILayout.Space(10);
-        GUILayout.BeginVertical();
+        GUILayout.BeginVertical(GUILayout.MaxHeight(logDetailsWindowHeight));
         DrawLogDetails();
         GUILayout.EndVertical();
 
@@ -299,6 +304,11 @@ public class UberLoggerEditorWindow : EditorWindow
                     GUILayout.Space(buttonHeight);
                 }
                 buttonY += buttonHeight;
+                if (lastItemsCount != EditorLogger.LogInfo.Count)
+                {
+                    LogListScrollPosition.y += pushStep;
+                    lastItemsCount = EditorLogger.LogInfo.Count;
+                }
             }
         }
         EditorGUILayout.EndScrollView();
