@@ -27,6 +27,7 @@ public class Parameter {
     {
         this.name = name;
         this.value = value;
+        contents = new Dictionary<string, Parameter>();
         uninitializdeValue = false;
     }
 
@@ -36,6 +37,7 @@ public class Parameter {
     {
         this.name = name;
         this.value = value.ToString();
+        contents = new Dictionary<string, Parameter>();
         uninitializdeValue = false;
     }
 
@@ -54,6 +56,10 @@ public class Parameter {
         {
             this.contents = other.GetDictionary();
         }
+        else
+        {
+            contents = new Dictionary<string, Parameter>();
+        }
         this.value = other.ToString();
     }
 
@@ -65,7 +71,8 @@ public class Parameter {
             if (contents == null || contents.ContainsKey(key) == false)
             {
                 Debug.ULogWarningChannel("Parameter", "Trying to access non-existent key: '" + key + "'. Probably a Lua problem.");
-                return new Parameter(key); // return empty parameter for now
+                // Add a new blank key to contents, that will then be returned.
+                contents.Add(key, new Parameter(key));
             }
             return contents[key];
         }
