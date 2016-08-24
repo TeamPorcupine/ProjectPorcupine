@@ -54,9 +54,13 @@ public class MouseOverRoomDetails : MonoBehaviour
 
         string s = "";
 
-        foreach (string g in t.Room.GetGasNames())
+        foreach (string gasName in t.Room.GetGasNames())
         {
-            s += g + ": " + "("+ t.Room.ChangedGases(g) + ") " + MathUtilities.RoundFloat(t.Room.GetGasPressure(g), 3) + " atm" + " (" + MathUtilities.RoundFloat(t.Room.GetGasFraction(g) * 100, 2) + "%) \n";
+            s += gasName + ": " + "(" + t.Room.ChangedGases(gasName) + ") ";
+
+            //s += MathUtilities.RoundFloat(t.Room.GetGasPressure(gasName), 3) + " atm";
+            s += string.Format("{0:0.000}", t.Room.GetGasPressure(gasName)) + " atm";
+            s += " (" + string.Format("{0:0.0}", t.Room.GetGasFraction(gasName)*100) + "%)\n";
         }
         myText.text = s;
     }
