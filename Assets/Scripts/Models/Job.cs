@@ -47,6 +47,16 @@ public class Job
         get;
         protected set;
     }
+    public bool isNeed
+    {
+        get;
+        protected set;
+    }
+    public bool critical
+    {
+        get;
+        protected set;
+    }
 
     public TileType jobTileType
     {
@@ -77,20 +87,25 @@ public class Job
     public bool canTakeFromStockpile = true;
 
     public Dictionary<string, Inventory> inventoryRequirements;
+    
+    public string JobDescription { get; set; }
 
     /// <summary>
     /// If true, the work will be carried out on any adjacent tile of the target tile rather than on it.
     /// </summary>
     public bool adjacent;
 
-    public Job(Tile tile, string jobObjectType, Action<Job> cbJobComplete, float jobTime, Inventory[] inventoryRequirements, JobPriority jobPriority, bool jobRepeats = false)
+    public Job(Tile tile, string jobObjectType, Action<Job> cbJobComplete, float jobTime, Inventory[] inventoryRequirements, JobPriority jobPriority, bool jobRepeats = false, bool isNeed = false, bool critical = false)
     {
         this.tile = tile;
         this.jobObjectType = jobObjectType;
         this.cbJobCompleted += cbJobComplete;
         this.jobTimeRequired = this.jobTime = jobTime;
         this.jobRepeats = jobRepeats;
+        this.isNeed = isNeed;
+        this.critical = critical;
         this.jobPriority = jobPriority;
+        this.JobDescription = "job_error_missing_desc";
 
         cbJobWorkedLua = new List<string>();
         cbJobCompletedLua = new List<string>();
@@ -114,6 +129,7 @@ public class Job
         this.jobRepeats = jobRepeats;
         this.jobPriority = jobPriority;
         this.adjacent = adjacent;
+        this.JobDescription = "job_error_missing_desc";
 
         cbJobWorkedLua = new List<string>();
         cbJobCompletedLua = new List<string>();
@@ -136,6 +152,8 @@ public class Job
         this.cbJobCompleted = other.cbJobCompleted;
         this.jobTime = other.jobTime;
         this.jobPriority = other.jobPriority;
+        this.adjacent = other.adjacent;
+        this.JobDescription = other.JobDescription;
 
         cbJobWorkedLua = new List<string>(other.cbJobWorkedLua);
         cbJobCompletedLua = new List<string>(other.cbJobWorkedLua);
@@ -250,6 +268,8 @@ public class Job
 
     public bool HasAllMaterial()
     {
+        if (inventoryRequirements == null)
+            return true;
         foreach (Inventory inv in inventoryRequirements.Values)
         {
             if (inv.maxStackSize > inv.stackSize)

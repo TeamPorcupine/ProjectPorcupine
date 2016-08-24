@@ -56,11 +56,24 @@ public class CharacterSpriteController
         char_go.transform.position = new Vector3(c.X, c.Y, 0);
         char_go.transform.SetParent(characterParent.transform, true);
 
-        SpriteRenderer sr = char_go.AddComponent<SpriteRenderer>();
-        sr.sprite = SpriteManager.current.GetSprite("Character", "p2_front");
+        SpriteRenderer sr = char_go.AddComponent<SpriteRenderer>();        
         sr.sortingLayerName = "Characters";
         sr.color = c.GetCharacterColor();
 
+        c.animation = new CharacterAnimation(c, sr);
+        Sprite[] sprites = {
+                SpriteManager.current.GetSprite("Character", "p1_nh_idle_south"),
+                SpriteManager.current.GetSprite("Character", "p1_nh_idle_east"),
+                SpriteManager.current.GetSprite("Character", "p1_nh_idle_north"),
+                SpriteManager.current.GetSprite("Character", "p1_nh_walk_east_01"),
+                SpriteManager.current.GetSprite("Character", "p1_nh_walk_east_02"),
+                SpriteManager.current.GetSprite("Character", "p1_nh_walk_north_01"),
+                SpriteManager.current.GetSprite("Character", "p1_nh_walk_north_02"),
+                SpriteManager.current.GetSprite("Character", "p1_nh_walk_south_01"),
+                SpriteManager.current.GetSprite("Character", "p1_nh_walk_south_02")
+        };
+        c.animation.SetSprites(sprites);
+        
         // Add the inventory sprite onto the character
         GameObject inv_go = new GameObject("Inventory");
         SpriteRenderer inv_sr = inv_go.AddComponent<SpriteRenderer>();
