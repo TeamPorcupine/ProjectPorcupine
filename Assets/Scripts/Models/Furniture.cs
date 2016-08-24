@@ -543,7 +543,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
                     jobTime,
                     invs.ToArray(),
                     Job.JobPriority.High );
-
+                j.JobDescription = "job_build_" + objectType + "_desc";
                 World.current.SetFurnitureJobPrototype(j, this);
                 break;
 
@@ -857,6 +857,10 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         return "18/18"; // TODO: Add a hitpoint system to...well...everything
     }
 
+    public string GetJobDescription()
+    {
+        return "";
+    }
     #endregion
 
     public IEnumerable<ContextMenuAction> GetContextMenuActions(ContextMenu contextMenu)
