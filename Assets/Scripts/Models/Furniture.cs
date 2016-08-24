@@ -19,7 +19,7 @@ using UnityEngine;
 /// InstalledObjects are things like walls, doors, and furniture (e.g. a sofa).
 /// </summary>
 [MoonSharpUserData]
-public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
+public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, IPowerRelated
 {
     private float powerValue;
     /// <summary>
@@ -36,20 +36,26 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
     /// </summary>
     // protected Action<Furniture, float> updateActions;
     protected List<string> updateActions;
-    
+
     /// <summary>
     /// These actions are called when an object is installed. They get passed the furniture and a delta
     /// time of 0
     /// </summary>
     protected List<string> installActions;
+
     /// <summary>
     /// These actions are called when an object is uninstalled. They get passed the furniture and a delta
     /// time of 0
     /// </summary>
     protected List<string> uninstallActions;
-    
-    // public Func<Furniture, ENTERABILITY> IsEnterable;
+
+    // private Func<Furniture, ENTERABILITY> IsEnterable;
     protected string isEnterableAction;
+
+    /// <summary>
+    /// This action is called to get the sprite name based on the furniture parameters
+    /// </summary>
+    protected string getSpriteNameAction;
 
     protected List<string> replaceableFurniture = new List<string>();
 
@@ -113,8 +119,19 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
         return (ENTERABILITY)ret.Number;
     }
 
+    public string GetSpriteName()
+    {
+        if (getSpriteNameAction == null || getSpriteNameAction.Length == 0)
+        {
+            return objectType;
+        }
+
+        DynValue ret = FurnitureActions.CallFunction(getSpriteNameAction, this);
+        return ret.String;
+    }
+
     // If this furniture generates power then powerValue will be positive, if it consumer power then it will be negative
-   
+
     private void InvokePowerValueChanged(IPowerRelated powerRelated)
     {
         Action<IPowerRelated> handler = PowerValueChanged;
@@ -187,7 +204,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
     public int Height { get; protected set; }
 
     public string localizationCode { get; protected set; }
-   
+
     public string unlocalizedDescription { get; protected set; }
 
     public Color tint = Color.white;
@@ -254,6 +271,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
         }
 
         this.isEnterableAction = other.isEnterableAction;
+        this.getSpriteNameAction = other.getSpriteNameAction;
 
         this.powerValue = other.powerValue;
 
@@ -317,9 +335,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
                 for (int ypos = y - 1; ypos < (y + proto.Height + 1); ypos++)
                 {
                     t = World.current.GetTileAt(xpos, ypos);
-                    if (t != null && t.furniture != null && t.furniture.cbOnChanged != null)
+                    if (t != null && t.Furniture != null && t.Furniture.cbOnChanged != null)
                     {
-                        t.furniture.cbOnChanged(t.furniture);
+                        t.Furniture.cbOnChanged(t.Furniture);
                     }
                 }
             }
@@ -374,11 +392,11 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
                 // Check to see if there is furniture which is replaceable
                 bool isReplaceable = false;
 
-                if (t2.furniture != null)
+                if (t2.Furniture != null)
                 {
                     for (int i = 0; i < ReplaceableFurniture.Count; i++)
                     {
-                        if (t2.furniture.HasTypeTag(ReplaceableFurniture[i]))
+                        if (t2.Furniture.HasTypeTag(ReplaceableFurniture[i]))
                         {
                             isReplaceable = true;
                         }
@@ -392,7 +410,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
                 }
 
                 // Make sure tile doesn't already have furniture
-                if (t2.furniture != null && isReplaceable == false)
+                if (t2.Furniture != null && isReplaceable == false)
                 {
                     return false;
                 }
@@ -521,41 +539,41 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
                     Job.JobPriority.High );
 
                 World.current.SetFurnitureJobPrototype(j, this);
-
                 break;
-            case "OnUpdate":
 
+            case "OnUpdate":
                 string functionName = reader.GetAttribute("FunctionName");
                 RegisterUpdateAction(functionName);
-                    break;
+                break;
+
             case "OnInstall":
                 // Called when obj is installed
                 string functionInstallName = reader.GetAttribute("FunctionName");
                 RegisterInstallAction(functionInstallName);
-
                 break;
+
             case "OnUninstall":
                 // Called when obj is uninstalled
                 string functionUninstallName = reader.GetAttribute("FunctionName");
                 RegisterUninstallAction(functionUninstallName);
-
                 break;
+
             case "IsEnterable":
                 isEnterableAction = reader.GetAttribute("FunctionName");
-
+                break;
+            case "GetSpriteName":
+                getSpriteNameAction = reader.GetAttribute("FunctionName");
                 break;
 
             case "JobSpotOffset":
                 jobSpotOffset = new Vector2(
                     int.Parse(reader.GetAttribute("X")),
                     int.Parse(reader.GetAttribute("Y")));
-
                 break;
             case "JobSpawnSpotOffset":
                 jobSpawnSpotOffset = new Vector2(
                     int.Parse(reader.GetAttribute("X")),
                     int.Parse(reader.GetAttribute("Y")));
-
                 break;
 
             case "Power":
@@ -741,9 +759,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
         int fwidth = 1;
         int fheight = 1;
         bool linksToNeighbour = false;
-        if (tile.furniture != null)
+        if (tile.Furniture != null)
         {
-            Furniture f = tile.furniture;
+            Furniture f = tile.Furniture;
             fwidth = f.Width;
             fheight = f.Height;
             linksToNeighbour = f.linksToNeighbour;
@@ -787,9 +805,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
                 for (int ypos = y - 1; ypos < (y + fheight + 1); ypos++)
                 {
                     Tile t = World.current.GetTileAt(xpos, ypos);
-                    if (t != null && t.furniture != null && t.furniture.cbOnChanged != null)
+                    if (t != null && t.Furniture != null && t.Furniture.cbOnChanged != null)
                     {
-                        t.furniture.cbOnChanged(t.furniture);
+                        t.Furniture.cbOnChanged(t.Furniture);
                     }
                 }
             }
@@ -834,4 +852,16 @@ public class Furniture : IXmlSerializable, ISelectable, IPowerRelated
     }
 
     #endregion
+
+    public IEnumerable<ContextMenuAction> GetContextMenuActions(ContextMenu contextMenu)
+    {
+        yield return new ContextMenuAction
+        {
+            Text = "Deconstruct "+Name,
+            RequiereCharacterSelected = false,
+            Action = (ca, c) => Deconstruct()
+        };
+
+        //todo add a hook to LUA Action via the furniture.xml definition
+    }
 }

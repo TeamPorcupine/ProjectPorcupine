@@ -35,7 +35,7 @@ public class JobSpriteController
     void OnJobCreated(Job job)
     {
 
-        if (job.jobObjectType == null && job.jobTileType == TileType.Empty)
+        if (job.jobObjectType == null && job.jobTileType == null)
         {
             // This job doesn't really have an associated sprite with it, so no need to render.
             return;
@@ -61,7 +61,7 @@ public class JobSpriteController
         job_go.transform.SetParent(jobParent.transform, true);
 
         SpriteRenderer sr = job_go.AddComponent<SpriteRenderer>();
-        if (job.jobTileType != TileType.Empty)
+        if (job.jobTileType != null)
         {
             //This job is for building a tile
             //For now, the only tile that could be is the floor, so just show a floor sprite
@@ -89,8 +89,8 @@ public class JobSpriteController
             Tile northTile = world.GetTileAt(job.tile.X, job.tile.Y + 1);
             Tile southTile = world.GetTileAt(job.tile.X, job.tile.Y - 1);
 
-            if (northTile != null && southTile != null && northTile.furniture != null && southTile.furniture != null &&
-            northTile.furniture.objectType.Contains("Wall") && southTile.furniture.objectType.Contains("Wall"))
+            if (northTile != null && southTile != null && northTile.Furniture != null && southTile.Furniture != null &&
+            northTile.Furniture.objectType.Contains("Wall") && southTile.Furniture.objectType.Contains("Wall"))
             {
                 job_go.transform.rotation = Quaternion.Euler(0, 0, 90);
             }

@@ -6,6 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using MoonSharp.Interpreter;
 using UnityEngine;
 
 public enum BuildMode
@@ -42,29 +43,14 @@ public class BuildModeController
         return proto.Width == 1 && proto.Height == 1;
     }
 
-    public void SetMode_BuildFloor()
+    public void SetModeBuildTile(TileType type)
     {
         buildMode = BuildMode.FLOOR;
-        buildModeTile = TileType.Floor;
+        buildModeTile = type;
 
         mouseController.StartBuildMode();
     }
-
-    public void SetMode_BuildLadder()
-    {
-        buildMode = BuildMode.FLOOR;
-        buildModeTile = TileType.Ladder;
-
-        mouseController.StartBuildMode();
-    }
-
-    public void SetMode_Bulldoze()
-    {
-        buildMode = BuildMode.FLOOR;
-        buildModeTile = TileType.Empty;
-        mouseController.StartBuildMode();
-    }
-
+    
     public void SetMode_BuildFurniture(string objectType)
     {
         // Wall is not a Tile!  Wall is an "Furniture" that exists on TOP of a tile.
@@ -101,9 +87,9 @@ public class BuildModeController
 
                 // Check if there is existing furniture in this tile. If so delete it.
                 // TODO Possibly return resources. Will the Deconstruct() method handle that? If so what will happen if resources drop ontop of new non-passable structure.
-                if (t.furniture != null)
+                if (t.Furniture != null)
                 {
-                    t.furniture.Deconstruct();
+                    t.Furniture.Deconstruct();
                 }
 
                 // Create a job for it to be build
@@ -131,11 +117,11 @@ public class BuildModeController
                     {
                         // FIXME: I don't like having to manually and explicitly set
                         // flags that preven conflicts. It's too easy to forget to set/clear them!
-                        Tile offsetTile = WorldController.Instance.world.GetTileAt(x_off, y_off);
-                        offsetTile.pendingBuildJob = j;
+                        Tile offsetTile = WorldController.Instance.world.GetTileAt(x_off,y_off);
+                        offsetTile.PendingBuildJob = j;
                         j.cbJobStopped += (theJob) =>
                             {
-                                offsetTile.pendingBuildJob = null;
+                                offsetTile.PendingBuildJob = null;
                             };
                     }
                 }
@@ -160,29 +146,23 @@ public class BuildModeController
 
             if ( 
                 t.Type != tileType && 
-                t.furniture == null &&
-                t.pendingBuildJob == null &&
+                t.Furniture == null &&
+                t.PendingBuildJob == null &&
                 CanBuildTileTypeHere(t, tileType))
             {
                 // This tile position is valid tile type
 
                 // Create a job for it to be build
-                Job j = new Job(
-                    t,
-                    tileType, 
-                    Tile.ChangeTileTypeJobComplete, 
-                    0.1f, 
-                    null,
-                    Job.JobPriority.High, 
-                    false,
-                    true);
+                Job j = TileType.GetConstructionJobPrototype(tileType);
+                
+                j.tile = t;
 
                 // FIXME: I don't like having to manually and explicitly set
                 // flags that preven conflicts. It's too easy to forget to set/clear them!
-                t.pendingBuildJob = j;
+                t.PendingBuildJob = j;
                 j.cbJobStopped += (theJob) =>
                 {
-                    theJob.tile.pendingBuildJob = null;
+                    theJob.tile.PendingBuildJob = null;
                 };
 
                 // Add the job to the queue
@@ -199,13 +179,13 @@ public class BuildModeController
         else if (buildMode == BuildMode.DECONSTRUCT)
         {
             // TODO
-            if (t.furniture != null)
+            if (t.Furniture != null)
             {
-                t.furniture.Deconstruct();
+                t.Furniture.Deconstruct();
             }
-            else if (t.pendingBuildJob != null)
+            else if (t.PendingBuildJob != null)
             {
-                t.pendingBuildJob.CancelJob();
+                t.PendingBuildJob.CancelJob();
             }
         }
         else
@@ -218,15 +198,17 @@ public class BuildModeController
     // TODO Export this kind of check to an XML/LUA file for easier modding of floor types.
     private bool CanBuildTileTypeHere(Tile t, TileType tileType)
     {
-        switch(tileType) {
-            case TileType.Empty:
-                return true;
-            case TileType.Floor:
-                return true;
-            case TileType.Ladder:
-                return t.room.IsOutsideRoom();
-            default:
-                return true;
+        DynValue value = FurnitureActions.CallFunction(tileType.CanBuildHereLua, t);
+
+        if (value != null)
+        {
+            return value.Boolean;
+        }
+        else
+        {
+            Debug.ULogChannel("Lua", "Found no lua function " + tileType.CanBuildHereLua);
+
+            return false;
         }
     }
 
@@ -236,7 +218,7 @@ public class BuildModeController
         {
             for (int y_off = t.Y; y_off < (t.Y + WorldController.Instance.world.furniturePrototypes[furnitureType].Height); y_off++)
             {
-                if (WorldController.Instance.world.GetTileAt(x_off, y_off).pendingBuildJob != null)
+                if (WorldController.Instance.world.GetTileAt(x_off, y_off).PendingBuildJob != null)
                 {
                     return true;
                 }
