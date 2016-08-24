@@ -653,7 +653,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         if (cbCharacterChanged != null)
         {
-            cbCharacterChanged(this);            
+            cbCharacterChanged(this);
         }
 
         animation.Update(deltaTime);
