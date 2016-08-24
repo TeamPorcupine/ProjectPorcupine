@@ -43,7 +43,7 @@ public class FurnitureSpriteController
 
     public void OnFurnitureCreated(Furniture furn)
     {
-        //Debug.Log("OnFurnitureCreated");
+        //Debug.ULogChannel("FurnitureSpriteController","OnFurnitureCreated");
         // Create a visual GameObject linked to this data.
 
         // FIXME: Does not consider multi-tile objects nor rotated objects
@@ -117,7 +117,7 @@ public class FurnitureSpriteController
     {
         if (furnitureGameObjectMap.ContainsKey(furn) == false)
         {
-            Debug.LogError("OnFurnitureRemoved -- trying to change visuals for furniture not in our map.");
+            Debug.ULogErrorChannel("FurnitureSpriteController","OnFurnitureRemoved -- trying to change visuals for furniture not in our map.");
             return;
         }
 
@@ -133,12 +133,12 @@ public class FurnitureSpriteController
 
     void OnFurnitureChanged(Furniture furn)
     {
-        //Debug.Log("OnFurnitureChanged");
+        //Debug.ULogChannel("FurnitureSpriteController","OnFurnitureChanged");
         // Make sure the furniture's graphics are correct.
 
         if (furnitureGameObjectMap.ContainsKey(furn) == false)
         {
-            Debug.LogError("OnFurnitureChanged -- trying to change visuals for furniture not in our map.");
+            Debug.ULogErrorChannel("FurnitureSpriteController","OnFurnitureChanged -- trying to change visuals for furniture not in our map.");
             return;
         }
 

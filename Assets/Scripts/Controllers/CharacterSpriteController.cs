@@ -171,12 +171,15 @@ public class CharacterSpriteController
 
         if (characterGameObjectMap.ContainsKey(c) == false)
         {
-            Debug.LogError("OnCharacterChanged -- trying to change visuals for character not in our map.");
+            Debug.ULogErrorChannel("CharacterSpriteController","OnCharacterChanged -- trying to change visuals for character not in our map.");
             return;
         }
 
         GameObject char_go = characterGameObjectMap[c];
-        
+
+        //Debug.ULogChannel("CharacterSpriteController",char_go.ToString());
+        //Debug.ULogChannel("CharacterSpriteController",char_go.GetComponent<SpriteRenderer>().ToString());
+
         // TODO: When we have a helmetless spritesheet, use this check to switch spritesheet on the character
         /*
         if (c.CurrTile.Room != null)

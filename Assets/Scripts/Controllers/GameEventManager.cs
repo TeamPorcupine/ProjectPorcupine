@@ -88,14 +88,14 @@ public class GameEventManager : MonoBehaviour {
         }
         else
         {
-            Debug.LogError("Could not read the event file: " + filePath);
+            Debug.ULogErrorChannel("GameEventManager","Could not read the event file: " + filePath);
             return;
         }
     }
 
     void ReadEventFromXml(XmlReader reader)
     {
-        //Debug.Log("ReadSpriteFromXml");
+        //Debug.ULogChannel("GameEventManager","ReadSpriteFromXml");
         string name = reader.GetAttribute("Name");
         bool repeat = false;
         int maxRepeats = 0;
