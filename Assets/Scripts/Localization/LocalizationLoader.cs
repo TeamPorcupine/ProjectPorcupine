@@ -31,8 +31,17 @@ namespace ProjectPorcupine.Localization
             }
 
             // Update localization from the internet.
-            StartCoroutine(LocalizationDownloader.CheckIfCurrentLocalizationIsUpToDate());
+            StartCoroutine(LocalizationDownloader.CheckIfCurrentLocalizationIsUpToDate(delegate { UpdateLocalizationTable(); }));
 
+            UpdateLocalizationTable();
+        }
+
+        /// <summary>
+        /// Scans Application.streamingAssetsPath/Localization folder in search for .lang files and load's them
+        /// to the LocalizationTable.
+        /// </summary>
+        public void UpdateLocalizationTable()
+        {
             // Get the file path.
             string filePath = Path.Combine(Application.streamingAssetsPath, "Localization");
 
@@ -58,7 +67,7 @@ namespace ProjectPorcupine.Localization
             LocalizationTable.currentLanguage = lang;
 
             // Tell the LocalizationTable that it has been initialized.
-            LocalizationTable.initialized = true;
+            LocalizationTable.LoadingLanguagesFinished();
         }
     }
 }
