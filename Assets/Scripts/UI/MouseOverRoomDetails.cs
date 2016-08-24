@@ -9,6 +9,7 @@
 using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using System;
 
 public class MouseOverRoomDetails : MonoBehaviour
 {
@@ -55,9 +56,8 @@ public class MouseOverRoomDetails : MonoBehaviour
 
         foreach (string g in t.Room.GetGasNames())
         {
-            s += g + ": " + t.Room.GetGasPressure(g) + " (" + (t.Room.GetGasPercentage(g) * 100) + "%) ";
+            s += g + ": " + "("+ t.Room.deltaGas[g] + ") " + MathUtilities.RoundFloat(t.Room.GetGasPressure(g), 3) + " atm" + " (" + MathUtilities.RoundFloat(t.Room.GetGasFraction(g) * 100, 2) + "%) \n";
         }
-
         myText.text = s;
     }
 }

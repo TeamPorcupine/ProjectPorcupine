@@ -7,6 +7,7 @@
 // ====================================================
 #endregion
 using System;
+using UnityEngine;
 
 /// <summary>
 /// Different mathemathical calculations. 
@@ -59,5 +60,10 @@ public static class MathUtilities
     public static bool IsZero(this float value)
     {
         return Math.Abs(value) < double.Epsilon;
+    }
+    public static float RoundFloat(this float value, int decimalplace)
+    {
+        int dp = (int)Mathf.Pow(10, decimalplace);
+        return Mathf.Round(value * dp) / dp;
     }
 }
