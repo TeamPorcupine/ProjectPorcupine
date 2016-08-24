@@ -32,7 +32,10 @@ public class MouseController
     private MenuController menuController;
     private ContextMenu contextMenu;
 
+    // Is dragging an area (eg. floor tiles).
     private bool isDragging = false;
+    // Ìs panning the camera
+    private bool isPanning = false;
 
     private MouseMode currentMode = MouseMode.SELECT;
 
@@ -137,7 +140,11 @@ public class MouseController
             // Is the context also supposed to open on ESCAPE? That seems wrong
             if (currentMode == MouseMode.SELECT)
             {
-                if (contextMenu != null)
+                if (isPanning)
+                {
+                    contextMenu.Close();
+                }
+                else if (contextMenu != null)
                 {
                     contextMenu.Open(GetMouseOverTile());
                 }
@@ -452,12 +459,23 @@ public class MouseController
         if (Input.GetMouseButton(1) || Input.GetMouseButton(2))
         {   // Right or Middle Mouse Button.
             Vector3 diff = lastFramePosition - currFramePosition;
-            Camera.main.transform.Translate(diff);
+
+            if (diff != Vector3.zero)
+            {
+                isPanning = true;
+                contextMenu.Close();
+                Camera.main.transform.Translate(diff);
+            }
 
             if (Input.GetMouseButton(1))
             {
                 isDragging = false;
             }
+        }
+
+        if (!Input.GetMouseButton(1) && !Input.GetMouseButton(2))
+        {
+            isPanning = false;
         }
 
         // If we're over a UI element or the settings/options menu is open, then bail out from this.
