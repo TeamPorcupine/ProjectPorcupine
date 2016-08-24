@@ -227,6 +227,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 null,
                 Job.JobPriority.Low,
                 false);
+            myJob.JobDescription = "job_waiting_desc";
         }
         else
         {
@@ -787,6 +788,14 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         return characterColor;
     }
 
+    public string GetJobDescription()
+    {
+        if (myJob == null)
+        {
+            return "job_no_job_desc";
+        }
+        return myJob.JobDescription;
+    }
     #endregion
 
     Color characterColor;
