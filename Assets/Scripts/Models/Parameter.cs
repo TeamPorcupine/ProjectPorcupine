@@ -167,7 +167,7 @@ public class Parameter {
     // Primary method to differentiate an unknown Parameter between a singular Parameter and Group Parameter
     public bool HasContents() 
     {
-        return contents != null;
+        return contents.Count > 0;
     }
 
     public void WriteXmlParamGroup(XmlWriter writer)
