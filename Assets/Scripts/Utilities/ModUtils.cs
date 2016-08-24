@@ -19,6 +19,11 @@ public static class ModUtils
         return Mathf.Clamp01(value); 
     }
 
+    public static int FloorToInt(float value)
+    {
+        return Mathf.FloorToInt(value);
+    }
+
     public static void Log(object obj) 
     {
         Debug.Log(obj);

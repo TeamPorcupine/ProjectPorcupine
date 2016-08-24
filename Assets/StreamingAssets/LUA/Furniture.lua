@@ -534,4 +534,35 @@ function Heater_UninstallAction( furniture, deltaTime)
 	-- TODO: find elegant way to unregister previous register
 end
 
+-- Should maybe later be integrated with GasGenerator function by
+-- someone who knows how that would work in this case
+function OxygenCompressor_OnUpdate(furniture, deltaTime)
+    room = furniture.Tile.Room
+    pressure = room.GetGasPressure("O2")
+    gasAmount = furniture.Parameters["flow_rate"] * deltaTime
+    if (pressure < furniture.Parameters["give_threshold"]) then
+        -- Expel gas if available
+        if (furniture.Parameters["gas_content"] > 0) then
+            furniture.Parameters["gas_content"].ChangeFloatValue(-gasAmount)
+            room.ChangeGas("O2", gasAmount / room.GetSize())
+        end
+    elseif (pressure > furniture.Parameters["take_threshold"]) then
+        -- Suck in gas if not full
+        if (furniture.Parameters["gas_content"] < furniture.Parameters["max_gas_content"]) then
+            furniture.Parameters["gas_content"].ChangeFloatValue(gasAmount)
+            room.ChangeGas("O2", -gasAmount / room.GetSize())
+        end
+    end
+end
+
+function OxygenCompressor_GetSpriteName(furniture)
+    baseName = "Oxygen_Compressor"
+    suffix = 0
+    if (furniture.Parameters["gas_content"] > 0) then
+        idxAsFloat = 8 * (furniture.Parameters["gas_content"] / furniture.Parameters["max_gas_content"])
+        suffix = ModUtils.FloorToInt(idxAsFloat)
+    end
+    return baseName + "_" + suffix
+end
+
 return "LUA Script Parsed!"

@@ -323,5 +323,31 @@
     <LocalizationCode>furn_small_landing_pad</LocalizationCode>
     <UnlocalizedDescription>furn_small_landing_pad_desc</UnlocalizedDescription>
   </Furniture>
+  
+  <Furniture objectType="Oxygen Compressor">
+    <Name>Oxygen Compressor</Name>
+    <Description>Stores and releases oxygen as needed</Description>
+    
+    <MovementCost>5</MovementCost>
+    <Width>2</Width>
+    <Height>2</Height>
+    
+    <BuildingJob jobTime="2"/>
+    
+    <Params>
+        <!-- <Param name="gas_name" value="O2" /> -->
+        <Param name="max_gas_content" value="5" />
+        <Param name="gas_content" value="0" />
+        <Param name="give_threshold" value="0.1" />
+        <Param name="take_threshold" value="0.15" />
+        <Param name="flow_rate" value="0.1" />
+    </Params>
+    
+    <OnUpdate FunctionName="OxygenCompressor_OnUpdate" />
+    <GetSpriteName FunctionName="OxygenCompressor_GetSpriteName" />
+
+    <LocalizationCode>furn_oxygen_compressor</LocalizationCode>
+    <UnlocalizedDescription>furn_oxygen_compressor_desc</UnlocalizedDescription>
+  </Furniture>
 
 </Furnitures>
