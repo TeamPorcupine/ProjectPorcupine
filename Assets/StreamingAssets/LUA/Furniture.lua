@@ -4,17 +4,6 @@ ENTERABILITY_YES  = 0
 ENTERABILITY_NO   = 1
 ENTERABILITY_SOON = 2
 
---------------------------------      UTILITY      --------------------------------
-function Clamp01( value )
-	if (value > 1) then
-		return 1
-	elseif (value < 0) then
-		return 0
-	end
-
-	return value
-end
-
 -------------------------------- Furniture Actions --------------------------------
 function OnUpdate_GasGenerator( furniture, deltaTime )
 	if ( furniture.HasPower() == false) then
@@ -46,7 +35,7 @@ function OnUpdate_Door( furniture, deltaTime )
         furniture.Parameters["openness"].ChangeFloatValue(deltaTime * -4)
 	end
 
-	furniture.Parameters["openness"].SetValue( Clamp01(furniture.Parameters["openness"].ToFloat()) )
+	furniture.Parameters["openness"].SetValue( ModUtils.Clamp01(furniture.Parameters["openness"].ToFloat()) )
 
 	furniture.UpdateOnChanged(furniture);
 end
@@ -189,6 +178,7 @@ function Stockpile_UpdateAction( furniture, deltaTime )
 		Job.JobPriority.Low,
 		false
 	)
+	j.JobDescription = "job_stockpile_moving_desc"
 
 	-- TODO: Later on, add stockpile priorities, so that we can take from a lower
 	-- priority stockpile for a higher priority one.
@@ -248,6 +238,7 @@ function MiningDroneStation_UpdateAction( furniture, deltaTime )
 		true	-- This job repeats until the destination tile is full.
 	)
 	j.RegisterJobCompletedCallback("MiningDroneStation_JobComplete")
+	j.JobDescription = "job_mining_drone_station_mining_desc"
 
 	furniture.AddJob( j )
 end
@@ -277,6 +268,7 @@ function MetalSmelter_UpdateAction(furniture, deltaTime)
 			)
 
 			j.RegisterJobCompletedCallback("MetalSmelter_JobComplete")
+			j.JobDescription = "job_metal_smelter_fulling_desc"
 
 			furniture.AddJob(j)
 		end
@@ -349,6 +341,7 @@ function PowerCellPress_UpdateAction(furniture, deltaTime)
 			)
 			
 			j.RegisterJobCompletedCallback("PowerCellPress_JobComplete")
+			j.JobDescription = "job_power_cell_fulling_desc"
 			
 			furniture.AddJob(j)
 		end
@@ -406,6 +399,7 @@ function CloningPod_UpdateAction(furniture, deltaTime)
 	false
 	)
 	j.RegisterJobCompletedCallback("CloningPod_JobComplete")
+	j.JobDescription = "job_cloning_pod_cloning_desc"
 	furniture.AddJob( j )
 end
 
@@ -431,6 +425,7 @@ function PowerGenerator_UpdateAction(furniture, deltatime)
             Job.JobPriority.High,
             false
         )
+		j.JobDescription = "job_power_generator_fulling_desc"
 
         j.RegisterJobCompletedCallback("PowerGenerator_JobComplete")
         furniture.AddJob( j )
@@ -452,6 +447,11 @@ function PowerGenerator_JobComplete( j )
 end
 
 function LandingPad_Temp_UpdateAction(furniture, deltaTime)
+    
+    if(not furniture.tile.room.IsOutsideRoom()) then
+        return
+    end
+    
 	spawnSpot = furniture.GetSpawnSpotTile()
 	jobSpot = furniture.GetJobSpotTile()
 	inputSpot = World.current.GetTileAt(jobSpot.X, jobSpot.y-1)
@@ -473,6 +473,7 @@ function LandingPad_Temp_UpdateAction(furniture, deltaTime)
             j.furniture = furniture
 
 			j.RegisterJobCompletedCallback("LandingPad_Temp_JobComplete")
+			j.JobDescription = "job_landing_pad_fulling_desc"
 
 			furniture.AddJob(j)
 		end
@@ -515,6 +516,10 @@ function LandingPad_Temp_JobComplete(j)
 			return
 		end
 	end
+end
+
+function LandingPad_Test_ContextMenuAction(furniture, character)
+   furniture.Deconstruct()
 end
 
 -- Dummy heater install function
