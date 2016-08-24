@@ -7,10 +7,10 @@ Material:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: ColorSwap
-  m_Shader: {fileID: 4800000, guid: 0b5caaeae78d06846a2cbf34b3e23cec, type: 3}
+  m_Shader: {fileID: 4800000, guid: 9a2f9aea54bbce245a38e6f815f2a10f, type: 3}
   m_ShaderKeywords: PIXELSNAP_ON
   m_LightmapFlags: 5
-  m_CustomRenderQueue: 3000
+  m_CustomRenderQueue: -1
   stringTagMap: {}
   m_SavedProperties:
     serializedVersion: 2
@@ -72,7 +72,7 @@ Material:
     - first:
         name: _SwapTex
       second:
-        m_Texture: {fileID: 2800000, guid: d8648015fc4147b4cb4f8d8f559bd474, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:

@@ -11,9 +11,9 @@ using System.Collections.Generic;
 
 public enum SpriteSwapRedColor
 {
-    UNIFORMCOLOR = 129,
-    UNIFORMCOLORLIGHT = 244,
-    UNIFORMCOLORDARK = 239
+    UNIFORMCOLOR = 151,
+    UNIFORMCOLORLIGHT = 201,
+    UNIFORMCOLORDARK = 101
 }
 
 public class CharacterSpriteController
@@ -82,20 +82,20 @@ public class CharacterSpriteController
 
         // Change colors on the texture
         // Grab the first sprite, and copy the texture from that
-        Texture2D newTexture = CopyTexture2D(SpriteManager.current.GetSprite("Character", "p2_idle_south").texture, c.GetCharacterColor());
-
+        //Texture2D newTexture = CopyTexture2D(SpriteManager.current.GetSprite("Character", "p2_idle_south").texture, c.GetCharacterColor());
+        Texture2D newTexture = SpriteManager.current.GetSprite("Character", "tp2_idle_south").texture;
         // load all character sprites and replace the textures with the colorized version
         Sprite[] sprites = 
             {
-                ReplaceSpriteTexture(newTexture, SpriteManager.current.GetSprite("Character", "p2_idle_south")),
-                ReplaceSpriteTexture(newTexture, SpriteManager.current.GetSprite("Character", "p2_idle_east")),
-                ReplaceSpriteTexture(newTexture, SpriteManager.current.GetSprite("Character", "p2_idle_north")),
-                ReplaceSpriteTexture(newTexture, SpriteManager.current.GetSprite("Character", "p2_walk_east_01")),
-                ReplaceSpriteTexture(newTexture, SpriteManager.current.GetSprite("Character", "p2_walk_east_02")),
-                ReplaceSpriteTexture(newTexture, SpriteManager.current.GetSprite("Character", "p2_walk_north_01")),
-                ReplaceSpriteTexture(newTexture, SpriteManager.current.GetSprite("Character", "p2_walk_north_02")),
-                ReplaceSpriteTexture(newTexture, SpriteManager.current.GetSprite("Character", "p2_walk_south_01")),
-                ReplaceSpriteTexture(newTexture, SpriteManager.current.GetSprite("Character", "p2_walk_south_02"))
+                ReplaceSpriteTexture(newTexture, SpriteManager.current.GetSprite("Character", "tp2_idle_south")),
+                ReplaceSpriteTexture(newTexture, SpriteManager.current.GetSprite("Character", "tp2_idle_east")),
+                ReplaceSpriteTexture(newTexture, SpriteManager.current.GetSprite("Character", "tp2_idle_north")),
+                ReplaceSpriteTexture(newTexture, SpriteManager.current.GetSprite("Character", "tp2_walk_east_01")),
+                ReplaceSpriteTexture(newTexture, SpriteManager.current.GetSprite("Character", "tp2_walk_east_02")),
+                ReplaceSpriteTexture(newTexture, SpriteManager.current.GetSprite("Character", "tp2_walk_north_01")),
+                ReplaceSpriteTexture(newTexture, SpriteManager.current.GetSprite("Character", "tp2_walk_north_02")),
+                ReplaceSpriteTexture(newTexture, SpriteManager.current.GetSprite("Character", "tp2_walk_south_01")),
+                ReplaceSpriteTexture(newTexture, SpriteManager.current.GetSprite("Character", "tp2_walk_south_02"))
             };
 
         c.animation.SetSprites(sprites);
@@ -118,6 +118,7 @@ public class CharacterSpriteController
     private Material GetMaterial(Character c)
     {
         Texture2D colorSwapTex = new Texture2D(256, 1, TextureFormat.RGBA32, false, false);
+        colorSwapTex.filterMode = FilterMode.Point;
         // Reset texture
         for (int i = 0; i < colorSwapTex.width; ++i)
         {
@@ -139,6 +140,7 @@ public class CharacterSpriteController
         
         SwapMaterial.shader = SwapShader;
         SwapMaterial.SetTexture("_SwapTex", colorSwapTex);
+        SwapMaterial.SetFloat("Pixel snap", 1);
         
         return SwapMaterial;
     }
