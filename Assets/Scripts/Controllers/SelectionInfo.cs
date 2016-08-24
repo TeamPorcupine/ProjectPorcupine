@@ -63,9 +63,14 @@ public class SelectionInfo
         while (stuffInTile[selectedIndex] == null);
     }
 
-
     public ISelectable GetSelectedStuff()
     {
         return stuffInTile[selectedIndex];
+    }
+
+    public bool IsCharacterSelected()
+    {
+        ISelectable actualSelection = stuffInTile[selectedIndex];
+        return actualSelection is Character;
     }
 }

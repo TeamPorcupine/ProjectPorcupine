@@ -16,13 +16,23 @@ public class ConstructionMenu : MonoBehaviour
     // The sub menus of the build menu (furniture, floor..... later - power, security, drones).
     public GameObject furnitureMenu;
     public GameObject floorMenu;
-    public GameObject removeFurniture;
+
+    BuildModeController bmc;
 
     public Button buttonFloors;
     public Button buttonFurniture;
 
-    void OnEnable()
+    public Button buttonDeconstruction;
+
+    void Start()
     {
+        bmc = WorldController.Instance.buildModeController;
+
+        buttonDeconstruction.onClick.AddListener(delegate
+            {
+                OnClickDeconstruct();
+            });
+        
         // Add liseners here.
         buttonFloors.onClick.AddListener(delegate
             {
@@ -30,8 +40,14 @@ public class ConstructionMenu : MonoBehaviour
             });
         buttonFurniture.onClick.AddListener(delegate
             {
-                OnClickFurniture();
+                OnClickFurniture(); 
             });
+    }
+
+    public void OnClickDeconstruct()
+    {
+        DeactivateSubs();
+        bmc.SetMode_Deconstruct();
     }
 
     public void OnClickFloors()
