@@ -64,20 +64,54 @@ function IsEnterable_Door( furniture )
 end
 
 function GetSpriteName_Door( furniture )
+	if (furniture.verticalDoor == true) then
+			-- Door is closed
+		if (furniture.Parameters["openness"].ToFloat() < 0.1) then
+			return "DoorVertical_0"
+		end
+
+		if (furniture.Parameters["openness"].ToFloat() < 0.25) then
+			return "DoorVertical_1"
+		end
+
+		if (furniture.Parameters["openness"].ToFloat() < 0.5) then
+			return "DoorVertical_2"
+		end
+
+		if (furniture.Parameters["openness"].ToFloat() < 0.75) then
+			return "DoorVertical_3"
+		end
+
+		if (furniture.Parameters["openness"].ToFloat() < 0.9) then
+			return "DoorVertical_4"
+		end
+		-- Door is a fully open
+		return "DoorVertical_5"
+	end
+
+
 	-- Door is closed
 	if (furniture.Parameters["openness"].ToFloat() < 0.1) then
-		return "Door"
+		return "DoorHorizontal_0"
 	end
-	-- Door is a bit open
+	
+	if (furniture.Parameters["openness"].ToFloat() < 0.25) then
+		return "DoorHorizontal_1"
+	end
+	
 	if (furniture.Parameters["openness"].ToFloat() < 0.5) then
-		return "Door_openness_1"
+		return "DoorHorizontal_2"
 	end
-	-- Door is a lot open
+
+	if (furniture.Parameters["openness"].ToFloat() < 0.75) then
+		return "DoorHorizontal_3"
+	end
+
 	if (furniture.Parameters["openness"].ToFloat() < 0.9) then
-		return "Door_openness_2"
+		return "DoorHorizontal_4"
 	end
 	-- Door is a fully open
-	return "Door_openness_3"
+	return "DoorHorizontal_5"
 end
 
 function GetSpriteName_Airlock( furniture )

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Sprites>
+	<Sprite name="DoorVertical_0"	x="0"	y="128"	w="64"	h="64"	pixelPerUnit="64" />
+	<Sprite name="DoorVertical_1"	x="64"	y="128"	w="64"	h="64"	pixelPerUnit="64" />
+	<Sprite name="DoorVertical_2"	x="0"	y="64"	w="64"	h="64"	pixelPerUnit="64" />
+	<Sprite name="DoorVertical_3"	x="64"	y="64"	w="64"	h="64"	pixelPerUnit="64" />
+	<Sprite name="DoorVertical_4"	x="0"	y="0"	w="64"	h="64"	pixelPerUnit="64" />
+	<Sprite name="DoorVertical_5"	x="64"	y="0"	w="64"	h="64"	pixelPerUnit="64" />
+</Sprites>
