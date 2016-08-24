@@ -129,7 +129,7 @@ namespace ProjectPorcupine.Localization
             if (!missingKeysLogged.Contains(key))
             {
                 missingKeysLogged.Add(key);
-                Debug.ULogErrorChannel("LocalizationTable", string.Format("Translation for {0} in {1} language failed: Key not in dictionary.", key, language));
+                Debug.ULogChannel("LocalizationTable", string.Format("Translation for {0} in {1} language failed: Key not in dictionary.", key, language));
             }
 
             switch (fallbackMode)
