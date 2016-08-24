@@ -14,8 +14,8 @@ public class MouseController
 {
     public SelectionInfo mySelection;
 
-    private GameObject circleCursorPrefab;
-    public GameObject cursorParent { get; protected set; }
+    private GameObject cursorParent;    
+    private GameObject circleCursorPrefab;    
     private GameObject furnitureParent;
 
     // The world-position of the mouse last frame.
@@ -35,6 +35,7 @@ public class MouseController
 
     // Is dragging an area (eg. floor tiles).
     private bool isDragging = false;
+
     // Ìs panning the camera
     private bool isPanning = false;
 
@@ -95,6 +96,11 @@ public class MouseController
         return WorldController.Instance.GetTileAtWorldCoord(currFramePosition);
     }
 
+    public GameObject GetCursorParent()
+    {
+        return cursorParent;
+    }
+
     public void StartBuildMode()
     {
         currentMode = MouseMode.BUILD;
@@ -132,6 +138,16 @@ public class MouseController
         // Save the mouse position from this frame.
         // We don't use currFramePosition because we may have moved the camera.
         StoreFramePosition();
+    }
+
+    public bool IsCharacterSelected()
+    {
+        if (mySelection != null)
+        {
+            return mySelection.IsCharacterSelected();
+        }
+
+        return false;
     }
 
     private void UpdateCurrentFramePosition()
@@ -522,16 +538,7 @@ public class MouseController
         Furniture proto = World.current.furniturePrototypes[furnitureType];
 
         go.transform.position = new Vector3(t.X + ((proto.Width - 1) / 2f), t.Y + ((proto.Height - 1) / 2f), 0);
-    }
-
-    public bool IsCharacterSelected()
-    {
-        if (mySelection != null)
-        {
-            return mySelection.IsCharacterSelected();
-        }
-        return false;
-    }
+    }    
 
     public class DragParameters
     {

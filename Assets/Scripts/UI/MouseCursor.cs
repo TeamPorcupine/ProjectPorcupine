@@ -164,7 +164,7 @@ public class MouseCursor
     {
         cursorGO = new GameObject();
         cursorGO.name = "CURSOR";
-        cursorGO.transform.SetParent(mc.cursorParent.transform, true);
+        cursorGO.transform.SetParent(mc.GetCursorParent().transform, true);
 
         Canvas cursor_canvas = cursorGO.AddComponent<Canvas>();
         cursor_canvas.renderMode = RenderMode.WorldSpace;
