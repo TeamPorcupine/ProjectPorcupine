@@ -59,7 +59,7 @@ public class Parameter
         this.name = other.GetName();
         if (other.HasContents())
         {
-            this.contents = other.GetDictionary();
+            this.contents = other.DeepCloneDictionary();
         }
         else
         {
@@ -249,7 +249,7 @@ public class Parameter
     }
 
     // Provides a deep clone of the dictionary, to ensure contained Parameters aren't linked between old and new objects
-    private Dictionary<string, Parameter> GetDictionary()
+    private Dictionary<string, Parameter> DeepCloneDictionary()
     {
         return contents.ToDictionary(
             entry => entry.Key, 
