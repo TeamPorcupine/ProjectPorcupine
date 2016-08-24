@@ -29,7 +29,6 @@ public class World : IXmlSerializable
     Tile[,] tiles;
     public List<Character> characters;
     public List<Furniture> furnitures;
-    public List<Utility> utilities;
     public List<Room> rooms;
     public InventoryManager inventoryManager;
     public PowerSystem powerSystem;
@@ -42,8 +41,6 @@ public class World : IXmlSerializable
 
     public Dictionary<string, Furniture> furniturePrototypes;
     public Dictionary<string, Job> furnitureJobPrototypes;
-    public Dictionary<string, Utility> utilityPrototypes;
-    public Dictionary<string, Job> utilityJobPrototypes;
     public Dictionary<string, Need> needPrototypes;
     public Dictionary<string, InventoryCommon> inventoryPrototypes;
     public Dictionary<string, TraderPrototype> traderPrototypes;
@@ -55,7 +52,6 @@ public class World : IXmlSerializable
     public int Height { get; protected set; }
 
     public event Action<Furniture> cbFurnitureCreated;
-    public event Action<Utility> cbUtilityCreated;
     public event Action<Character> cbCharacterCreated;
     public event Action<Inventory> cbInventoryCreated;
     public event Action<Tile> cbTileChanged;
@@ -135,7 +131,6 @@ public class World : IXmlSerializable
     {
         // Setup furniture actions before any other things are loaded.
         new FurnitureActions();
-        new UtilityActions();
 
         jobQueue = new JobQueue();
         jobWaitingQueue = new JobQueue();
@@ -165,14 +160,12 @@ public class World : IXmlSerializable
         }
 
         CreateFurniturePrototypes();
-        CreateUtilityPrototypes();
-        CreateNeedPrototypes();
+        CreateNeedPrototypes ();
         CreateInventoryPrototypes();
         CreateTraderPrototypes();
 
         characters = new List<Character>();
         furnitures = new List<Furniture>();
-        utilities = new List<Utility>();
         inventoryManager = new InventoryManager();
         powerSystem = new PowerSystem();
         temperature = new Temperature(Width, Height);
@@ -363,7 +356,6 @@ public class World : IXmlSerializable
             Debug.LogError("Did not find a 'Furnitures' element in the prototype definition file.");
         }
     }
-
 
     public void SetUtilityJobPrototype(Job j, Utility u)
     {
@@ -782,54 +774,6 @@ public class World : IXmlSerializable
 
         return furn;
     }
-
-    public Utility PlaceUtility(string objectType, Tile t, bool doRoomFloodFill = true)
-    {
-        // TODO: This function assumes 1x1 tiles -- change this later!
-
-        if (utilityPrototypes.ContainsKey(objectType) == false)
-        {
-            Debug.LogError("utilityPrototypes doesn't contain a proto for key: " + objectType);
-            return null;
-        }
-
-        Utility util = Utility.PlaceInstance(utilityPrototypes[objectType], t);
-
-        if (util == null)
-        {
-            // Failed to place object -- most likely there was already something there.
-            return null;
-        }
-
-        util.cbOnRemoved += OnUtilityRemoved;
-        utilities.Add(util);
-
-        // Do we need to recalculate our rooms?
-        if (doRoomFloodFill && util.roomEnclosure)
-        {
-            Room.DoRoomFloodFill(util.tile);
-        }
-
-        if (cbUtilityCreated != null)
-        {
-            cbUtilityCreated(util);
-
-            if (util.movementCost != 1)
-            {
-                // Since tiles return movement cost as their base cost multiplied
-                // buy the furniture's movement cost, a furniture movement cost
-                // of exactly 1 doesn't impact our pathfinding system, so we can
-                // occasionally avoid invalidating pathfinding graphs
-                //InvalidateTileGraph();    // Reset the pathfinding system
-                if (tileGraph != null)
-                {
-                    tileGraph.RegenerateGraphAtTile(t);
-                }
-            }
-        }
-
-        return util;
-    }
     
     // Gets called whenever ANY tile changes
     void OnTileChanged(Tile t)
@@ -1121,10 +1065,5 @@ public class World : IXmlSerializable
     public void OnFurnitureRemoved(Furniture furn)
     {
         furnitures.Remove(furn);
-    }
-
-    public void OnUtilityRemoved(Utility util)
-    {
-        utilities.Remove(util);
     }
 }

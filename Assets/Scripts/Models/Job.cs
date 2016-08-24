@@ -69,11 +69,6 @@ public class Job
     // The piece of furniture that owns this job. Frequently will be null.
     public Furniture furniture;
 
-    public Utility utilityPrototype;
-
-    // The piece of utility that owns this job. Frequently will be null.
-    public Utility utility;
-
     public bool acceptsAnyInventoryItem = false;
 
     // We have finished the work cycle and so things should probably get built or whatever.

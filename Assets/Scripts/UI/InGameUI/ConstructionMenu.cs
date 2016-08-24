@@ -16,13 +16,11 @@ public class ConstructionMenu : MonoBehaviour
     // The sub menus of the build menu (furniture, floor..... later - power, security, drones).
     public GameObject furnitureMenu;
     public GameObject floorMenu;
-    public GameObject utilityMenu;
 
     BuildModeController bmc;
 
     public Button buttonFloors;
     public Button buttonFurniture;
-    public Button buttonUtility;
 
     public Button buttonDeconstruction;
 
@@ -44,12 +42,6 @@ public class ConstructionMenu : MonoBehaviour
             {
                 OnClickFurniture(); 
             });
-        buttonUtility.onClick.AddListener(delegate
-            {
-                OnClickUtility(); 
-            });
-
-        DeactivateSubs();
     }
 
     public void OnClickDeconstruct()
@@ -70,18 +62,11 @@ public class ConstructionMenu : MonoBehaviour
         ToggleMenu(furnitureMenu);
     }
 
-    public void OnClickUtility()
-    {
-        DeactivateSubs();
-        ToggleMenu(utilityMenu);
-    }
-
     // Deactivates any sub menu of the constrution options.
     public void DeactivateSubs()
     {
         furnitureMenu.SetActive(false);
         floorMenu.SetActive(false);
-        utilityMenu.SetActive(false);
     }
 
     // Toggles whether menu is active.

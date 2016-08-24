@@ -58,13 +58,6 @@ public class Tile :IXmlSerializable, ISelectable
         protected set;
     }
 
-    //Utility is something like a pipe or wire.
-    public Utility Utility
-    {
-        get;
-        protected set;
-    }
-
     // FIXME: This seems like a terrible way to flag if a job is pending
     // on a tile.  This is going to be prone to errors in set/clear.
     public Job PendingBuildJob { get; set; }
@@ -189,56 +182,6 @@ public class Tile :IXmlSerializable, ISelectable
         Inventory = inv.Clone();
         Inventory.tile = this;
         inv.stackSize = 0;
-
-        return true;
-    }
-
-    public bool UnplaceUtility()
-    {
-        // Just uninstalling.  FIXME:  What if we have a multi-tile furniture?
-
-        if (Utility == null)
-            return false;
-
-        Utility u = Utility;
-
-        for (int x_off = X; x_off < (X + u.Width); x_off++)
-        {
-            for (int y_off = Y; y_off < (Y + u.Height); y_off++)
-            {
-
-                Tile t = World.current.GetTileAt(x_off, y_off);
-                t.Utility = null;
-            }
-        }
-
-        return true;
-    }
-
-    public bool PlaceUtility(Utility objInstance)
-    {
-
-        if (objInstance == null)
-        {
-            return UnplaceUtility();
-        }
-
-        if (objInstance.IsValidPosition(this) == false)
-        {
-            Debug.LogError("Trying to assign a utility to a tile that isn't valid!");
-            return false;
-        }
-        
-        for (int x_off = X; x_off < (X + objInstance.Width); x_off++)
-        {
-            for (int y_off = Y; y_off < (Y + objInstance.Height); y_off++)
-            {
-
-                Tile t = World.current.GetTileAt(x_off, y_off);
-                t.Utility = objInstance;
-
-            }
-        }
 
         return true;
     }
