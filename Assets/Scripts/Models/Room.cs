@@ -23,10 +23,14 @@ public class Room : IXmlSerializable
     private Dictionary<string, float> atmosphericGasses; 
 
     private List<Tile> tiles;
+    private List<Tile> enclosingTiles;
+    public List<Tile> exits;
 
     public Room()
     {
         tiles = new List<Tile>();
+        enclosingTiles = new List<Tile>();
+        exits = new List<Tile>();
         atmosphericGasses = new Dictionary<string, float>();
     }
 
@@ -328,6 +332,11 @@ public class Room : IXmlSerializable
                         {
                             tilesToCheck.Enqueue(t2);
                         }
+                        else if (t2.Furniture == null || t2.Furniture.roomEnclosure == true)
+                        {
+                            // We have found a room enclosing tile
+                            enclosingTiles.Add(t2);
+                        }
                     }
                 }
             }
@@ -353,6 +362,18 @@ public class Room : IXmlSerializable
 
         // Tell the world that a new room has been formed.
         World.current.AddRoom(newRoom);
+    }
+
+    private void FindExits()
+    {
+        foreach (Tile t in enclosingTiles)
+        {
+            if (t.IsEnterable != ENTERABILITY.Never)
+            {
+                // Tile can be walked through so must be an exits of somekind
+                exits.Add(t);
+            }
+        }
     }
 
     private void CopyGasPreasure(Room other, int sizeOfOtherRoom)
