@@ -556,6 +556,38 @@ function Heater_OnUpdate ( furniture, deltaTime)
     
     -- Double, for testing
     World.current.temperature.ChangeTemperature(tile.X, tile.Y, temperatureChange * 10)
+
+-- Should maybe later be integrated with GasGenerator function by
+-- someone who knows how that would work in this case
+function OxygenCompressor_OnUpdate(furniture, deltaTime)
+    room = furniture.tile.Room
+    pressure = room.GetGasPressure("O2")
+    gasAmount = furniture.Parameters["flow_rate"].ToFloat() * deltaTime
+    if (pressure < furniture.Parameters["give_threshold"].ToFloat()) then
+        -- Expel gas if available
+        if (furniture.Parameters["gas_content"].ToFloat() > 0) then
+            furniture.Parameters["gas_content"].ChangeFloatValue(-gasAmount)
+            room.ChangeGas("O2", gasAmount / room.GetSize())
+            furniture.UpdateOnChanged(furniture)
+        end
+    elseif (pressure > furniture.Parameters["take_threshold"].ToFloat()) then
+        -- Suck in gas if not full
+        if (furniture.Parameters["gas_content"].ToFloat() < furniture.Parameters["max_gas_content"].ToFloat()) then
+            furniture.Parameters["gas_content"].ChangeFloatValue(gasAmount)
+            room.ChangeGas("O2", -gasAmount / room.GetSize())
+            furniture.UpdateOnChanged(furniture)
+        end
+    end
+end
+
+function OxygenCompressor_GetSpriteName(furniture)
+    baseName = "Oxygen_Compressor"
+    suffix = 0
+    if (furniture.Parameters["gas_content"].ToFloat() > 0) then
+        idxAsFloat = 8 * (furniture.Parameters["gas_content"].ToFloat() / furniture.Parameters["max_gas_content"].ToFloat())
+        suffix = ModUtils.FloorToInt(idxAsFloat)
+    end
+    return baseName .. "_" .. suffix
 end
 
 ModUtils.ULog("Furniture.lua loaded")
