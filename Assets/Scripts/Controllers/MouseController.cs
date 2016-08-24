@@ -480,7 +480,19 @@ public class MouseController
             float target = Mathf.Lerp(Camera.main.orthographicSize, zoomTarget, Settings.getSettingAsFloat("ZoomLerp", 3) * Time.deltaTime);
             Camera.main.orthographicSize = Mathf.Clamp(target, 3f, 25f);
         }
-    } 
+
+        UpdateCameraBounds();
+    }
+
+    private void UpdateCameraBounds()
+    {
+        Vector3 oldPos = Camera.main.transform.position;
+
+        oldPos.x = Mathf.Clamp(oldPos.x, 0, (float) World.current.Width - 1);
+        oldPos.y = Mathf.Clamp(oldPos.y, 0, (float) World.current.Height - 1);
+
+        Camera.main.transform.position = oldPos;
+    }
 
     private void ShowFurnitureSpriteAtTile(string furnitureType, Tile t)
     {
