@@ -534,4 +534,8 @@ function Heater_UninstallAction( furniture, deltaTime)
 	-- TODO: find elegant way to unregister previous register
 end
 
+ModUtils.ULogChannel("Furniture LUA","Testing ModUtils.ULogChannel")
+ModUtils.ULogWarningChannel("Furniture LUA","Testing ModUtils.ULogWarningChannel")
+ModUtils.ULogErrorChannel("Furniture LUA","Testing ModUtils.ULogErrorChannel")
+
 return "LUA Script Parsed!"

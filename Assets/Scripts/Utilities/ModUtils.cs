@@ -33,4 +33,19 @@ public static class ModUtils
     {
         Debug.LogError(obj);
     }
+
+    public static void ULogChannel(string channel, string message)
+    {
+        Debug.ULogChannel(channel, message);
+    }
+
+    public static void ULogWarningChannel(string channel, string message)
+    {
+        Debug.ULogWarningChannel(channel, message);
+    }
+
+    public static void ULogErrorChannel(string channel, string message)
+    {
+        Debug.ULogErrorChannel(channel, message);
+    }
 }
