@@ -138,13 +138,13 @@ public class Parameter {
 
         writer.WriteStartElement("Param");
         writer.WriteAttributeString("name", name);
-        if (!value.Equals(""))
+        if (value != null && !value.Equals(""))
         {
             writer.WriteAttributeString("value", value);
         }
         foreach (string k in contents.Keys)
         {
-            this["k"].WriteXml(writer);
+            this[k].WriteXml(writer);
         }
         writer.WriteEndElement();
     }
