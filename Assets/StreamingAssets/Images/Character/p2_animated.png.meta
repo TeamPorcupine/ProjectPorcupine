@@ -1,4 +1,5 @@
 fileFormatVersion: 2
+<<<<<<< HEAD
 <<<<<<< 02b5f6d1aa8d9a5cbba1b28f071653fb9595adf0
 guid: c9c8d135e4a674929a4ed626f62840d4
 timeCreated: 1472007141
@@ -6,6 +7,15 @@ timeCreated: 1472007141
 guid: d52fefe787bbec845a40a012874394e0
 timeCreated: 1472006316
 >>>>>>> meta file
+=======
+<<<<<<< HEAD
+guid: d52fefe787bbec845a40a012874394e0
+timeCreated: 1472006316
+=======
+guid: c9c8d135e4a674929a4ed626f62840d4
+timeCreated: 1472007141
+>>>>>>> refs/remotes/TeamPorcupine/master
+>>>>>>> origin/UI-No-Objects
 licenseType: Free
 DefaultImporter:
   userData: 

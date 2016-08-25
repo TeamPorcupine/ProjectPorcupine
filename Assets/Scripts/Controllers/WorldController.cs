@@ -113,9 +113,9 @@ public class WorldController : MonoBehaviour
         tempGoObj.name = "TempMenuHolder";
 
 
-        GameObject Controllers = GameObject.Find("Canvas");
-        GameObject tempGoObj;
 
+        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/TempMenus"), Controllers.transform.position, Controllers.transform.rotation,  Controllers.transform);
+        tempGoObj.name = "TempMenus";
 
     }
 

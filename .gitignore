@@ -41,3 +41,7 @@ sysinfo.txt
 /Assets/StreamingAssets/Localization/*
 /Assets/StreamingAssets/Localization.meta
 Assets/_SCENE_.unity
+<<<<<<< HEAD
+=======
+Assets/Scripts/Controllers/WorldController.cs
+>>>>>>> origin/UI-No-Objects
