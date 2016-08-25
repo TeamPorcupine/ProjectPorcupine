@@ -65,6 +65,19 @@ public class DialogBoxManager : MonoBehaviour
     {
         Transform layoutRoot = GameObject.Find("Dialog Boxes").transform.parent.GetComponent<Transform>();
         GameObject go = (GameObject)Instantiate(Resources.Load("UI/QuestsMainScreenBox"), layoutRoot.transform);
-        go.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, 0, 0);
+        go.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, -55, 0);
+
+        Toggle pinButton = CreatePinQuestButton();
+
+        pinButton.onValueChanged.AddListener(go.SetActive);
+    }
+
+    private Toggle CreatePinQuestButton()
+    {
+        Transform layoutRoot = GameObject.Find("Dialog Boxes").transform.parent.GetComponent<Transform>();
+        GameObject buttonQuestGameObject = (GameObject)Instantiate(Resources.Load("UI/PinToggleButton"), this.gameObject.transform);
+        buttonQuestGameObject.name = "ToggleQuestPinButton"; ;
+        buttonQuestGameObject.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, -30, 0);
+        return buttonQuestGameObject.GetComponent<Toggle>();
     }
 }
