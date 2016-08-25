@@ -215,14 +215,14 @@ public class Parameter
     {
         writer.WriteStartElement("Param");
         writer.WriteAttributeString("name", name);
-        if (!value.Equals(string.Empty))
+        if (string.IsNullOrEmpty(value) == false)
         {
             writer.WriteAttributeString("value", value);
         }
 
         foreach (string k in contents.Keys)
         {
-            this["k"].WriteXml(writer);
+            this[k].WriteXml(writer);
         }
 
         writer.WriteEndElement();
