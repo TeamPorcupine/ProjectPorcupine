@@ -141,7 +141,7 @@ function Stockpile_GetItemsFromFilter()
 	-- Since jobs copy arrays automatically, we could already have
 	-- an Inventory[] prepared and just return that (as a sort of example filter)
 
-	return { Inventory.__new("Raw Iron", 50, 0) }
+	return { Inventory.__new("Steel Plate", 50, 0) }
 end
 
 
