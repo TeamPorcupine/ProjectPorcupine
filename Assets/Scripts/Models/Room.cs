@@ -184,6 +184,18 @@ public class Room : IXmlSerializable
         return atmosphericGasses[name] / t;
     }
 
+    public float GetTotalGasPressure()
+    {
+        float t = 0;
+
+        foreach (string n in atmosphericGasses.Keys)
+        {
+            t += atmosphericGasses[n];
+        }
+
+        return t;
+    }
+
     public string[] GetGasNames()
     {
         return atmosphericGasses.Keys.ToArray();
