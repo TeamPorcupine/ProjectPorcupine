@@ -33,8 +33,6 @@ public class LuaUtilities {
         catch (ScriptRuntimeException e)
         {
             Debug.LogError( e.DecoratedMessage );
-            Debug.LogError( e.InstructionPtr.ToString() );
-            Debug.LogError( e.CallStack.ToString() );
             return null;
         }
     }
