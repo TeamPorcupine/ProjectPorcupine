@@ -88,7 +88,10 @@ public class WorldController : MonoBehaviour
         soundController = new SoundController(world);
     }
 
-    void Start() {
+    void Start()
+    {
+        //create gameobject so we can have access to a tranform thats position is Vector3.zero
+        GameObject goMat = new GameObject("VisualPath", typeof(VisualPath));
         GameObject go;
 
         tileSpriteController = new TileSpriteController(world);

@@ -536,9 +536,9 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         {
             pathAStar = null;
             IsWalking = false;
+            VisualPath.Instance.RemoveVisualPoints(name);
             return; // We're already were we want to be.
         }
-
         // currTile = The tile I am currently in (and may be in the process of leaving)
         // nextTile = The tile I am currently entering
         // destTile = Our final destination -- we never walk here directly, but instead use it for the pathfinding
@@ -559,7 +559,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 // Let's ignore the first tile, because that's the tile we're currently in.
                 NextTile = pathAStar.Dequeue();
             }
-
+            VisualPath.Instance.SetVisualPoints(name, pathAStar.GetList());
             IsWalking = true;
 
             // Grab the next waypoint from the pathing system!
