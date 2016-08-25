@@ -472,7 +472,7 @@ public class UberLoggerEditorWindow : EditorWindow
         GUI.color = SizerLineColour; 
         GUI.DrawTexture(CursorChangeRect,EditorGUIUtility.whiteTexture);
         GUI.color = oldColor;
-        EditorGUIUtility.AddCursorRect(CursorChangeRect,MouseCursor.ResizeVertical);
+        EditorGUIUtility.AddCursorRect(CursorChangeRect,UnityEditor.MouseCursor.ResizeVertical);
          
         if( Event.current.type == EventType.mouseDown && CursorChangeRect.Contains(Event.current.mousePosition))
         {
