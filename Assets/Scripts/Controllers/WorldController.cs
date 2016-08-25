@@ -28,6 +28,7 @@ public class WorldController : MonoBehaviour
     public BuildModeController buildModeController;
     public MouseController mouseController;
     public KeyboardController keyboardController;
+    public CameraController cameraController;
     public SpawnInventoryController spawnInventoryController;
     public ModsManager modsManager;
 
@@ -104,6 +105,7 @@ public class WorldController : MonoBehaviour
         }
         mouseController = new MouseController(buildModeController, furnitureSpriteController, circleCursorPrefab);
         keyboardController = new KeyboardController(buildModeController, Instance);
+        cameraController = new CameraController();
 
         //Initialising controllers
         GameObject Controllers = GameObject.Find("Controllers");
@@ -121,6 +123,7 @@ public class WorldController : MonoBehaviour
     {
         mouseController.Update(IsModal);
         keyboardController.Update(IsModal);
+        cameraController.Update(IsModal);
 
         if (IsPaused == false)
         {
