@@ -21,111 +21,6 @@ using UnityEngine;
 [MoonSharpUserData]
 public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, IPowerRelated
 {
-    /// <summary>
-    /// This class handles LUA actions take in response to events triggered within C# or LUA. For each event name (e.g. OnUpdate, ...) there
-    /// is a list of LUA function that are registered and will be called once the event with that name is fired.
-    /// </summary>
-    [MoonSharpUserData]
-    protected class EventAction
-    {
-        /// <summary>
-        /// Stores a list of LUA functions for each type of event (eventName). All will be called at once.
-        /// </summary>
-        protected Dictionary<string, List<string>> actionsList = new Dictionary<string, List<string>>();
-        
-        /// <summary>
-        /// Used to transfer registere actions to new object.
-        /// </summary>
-        /// <returns>A new object copy of this.</returns>
-        public EventAction Clone()
-        {
-            EventAction evt = new EventAction();
-
-            evt.actionsList = new Dictionary<string, List<string>>(actionsList);
-
-            return evt;
-        }
-
-        /// <summary>
-        /// Fill the values of this using an xml specification.
-        /// </summary>
-        /// <param name="reader">Reader pointing to an Action tag.</param>
-        public void ReadXml(XmlReader reader)
-        {
-            reader.Read();
-            if( reader.Name != "Action" )
-            {
-                Debug.LogError(string.Format("The element is not an Action, but a \"{0}\"", reader.Name));
-            }
-
-            string name = reader.GetAttribute("event");
-            if (name == null)
-            {
-                Debug.LogError(string.Format("The attribute \"event\" is a mandatory for an \"Action\" element."));
-            }
-
-            string functionName = reader.GetAttribute("functionName");
-            if (functionName == null)
-            {
-                Debug.LogError(string.Format("No function name was provided for the Action {0}.", name));
-            }
-
-            Register(name, functionName);
-        }
-
-        /// <summary>
-        /// Register a function named luaFunc, that gets fired in respnse to an action named actionName.
-        /// </summary>
-        /// <param name="actionName">Name of event triggering action.</param>
-        /// <param name="luaFunc">Lua function to add to list of actions.</param>
-        public void Register(string actionName, string luaFunc)
-        {
-            ////Debug.Log(string.Format("Registering the LUA function {0} to Action {1}.", luaFunc, actionName));
-            if (!actionsList.ContainsKey(actionName) || actionsList[actionName] == null)
-            {
-                actionsList[actionName] = new List<string>();
-            }
-
-            actionsList[actionName].Add(luaFunc);
-        }
-
-        /// <summary>
-        /// Deregister a function named luaFunc, from the action.
-        /// </summary>
-        /// <param name="actionName">Name of event triggering action.</param>
-        /// <param name="luaFunc">Lua function to add to list of actions.</param>
-        public void Deregister(string actionName, string luaFunc)
-        {
-            ////Debug.Log(string.Format("Registering the LUA function {0} to Action {1}.", luaFunc, actionName));
-            if (!actionsList.ContainsKey(actionName) || actionsList[actionName] == null)
-            {
-                return;
-            }
-            actionsList[actionName].Remove(luaFunc);
-        }
-
-        /// <summary>
-        /// "Fire" the event named actionName, resulting in all lua functions being called.
-        /// </summary>
-        /// <param name="actionName">Name of the action being triggered.</param>
-        /// <param name="target">Object, passed to LUA function as 1-argument (TODO: make it an object).</param>
-        /// <param name="deltaTime">Time since last Trigger of this event.</param>
-        public void Trigger(string  actionName, Furniture target, float deltaTime = 0f )
-        {
-            if (!actionsList.ContainsKey(actionName) || actionsList[actionName] == null)
-            {
-                ////Debug.LogWarning(string.Format("The action \"{0}\" is associated with no LUA function.", actionName));
-                return;
-            }
-            else
-            {
-                FurnitureActions.CallFunctionsWithFurniture(actionsList[actionName].ToArray(), target, deltaTime);
-            }
-
-        }
-
-    }
-
     private float powerValue;
     /// <summary>
     /// Custom parameter for this particular piece of furniture.  We are
@@ -202,6 +97,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
             eventActions.Trigger("OnUpdate", this, deltaTime);
         }
     }
+
+    // Flag for Lua to check if this is a vertical or horizontal door and display the correct sprite.
+    public bool verticalDoor = false;
 
     public ENTERABILITY IsEnterable()
     {
@@ -777,8 +675,33 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
 
     public bool IsStockpile()
     {
-        return objectType == "Stockpile";
+        return HasTypeTag("Storage");
     }
+
+    /// <summary>
+    /// Accepts for storage.
+    /// </summary>
+    /// <returns>A list of Inventory which the Furniture accepts for storage.</returns>
+    public Inventory[] AcceptsForStorage()
+    {
+        if (IsStockpile() == false)
+        {
+            Debug.ULogChannel("Stockpile_messages", "Someone is asking a non-stockpile to store stuff!?");
+            return null;
+        }
+
+        // TODO: read this from furniture params
+        Dictionary<string, Inventory> invsDict = new Dictionary<string, Inventory>();
+        foreach (string objectType in World.current.inventoryPrototypes.Keys)
+        {
+            invsDict[objectType] = new Inventory(objectType, World.current.inventoryPrototypes[objectType].maxStackSize, 0);
+        }
+
+        Inventory[] invs = new Inventory[invsDict.Count];
+        invsDict.Values.CopyTo(invs, 0);
+        return invs;
+    }
+
 
     public void Deconstruct()
     {

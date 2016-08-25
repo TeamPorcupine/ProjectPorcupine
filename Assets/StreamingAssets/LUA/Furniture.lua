@@ -64,20 +64,54 @@ function IsEnterable_Door( furniture )
 end
 
 function GetSpriteName_Door( furniture )
+	if (furniture.verticalDoor == true) then
+			-- Door is closed
+		if (furniture.Parameters["openness"].ToFloat() < 0.1) then
+			return "DoorVertical_0"
+		end
+
+		if (furniture.Parameters["openness"].ToFloat() < 0.25) then
+			return "DoorVertical_1"
+		end
+
+		if (furniture.Parameters["openness"].ToFloat() < 0.5) then
+			return "DoorVertical_2"
+		end
+
+		if (furniture.Parameters["openness"].ToFloat() < 0.75) then
+			return "DoorVertical_3"
+		end
+
+		if (furniture.Parameters["openness"].ToFloat() < 0.9) then
+			return "DoorVertical_4"
+		end
+		-- Door is a fully open
+		return "DoorVertical_5"
+	end
+
+
 	-- Door is closed
 	if (furniture.Parameters["openness"].ToFloat() < 0.1) then
-		return "Door"
+		return "DoorHorizontal_0"
 	end
-	-- Door is a bit open
+	
+	if (furniture.Parameters["openness"].ToFloat() < 0.25) then
+		return "DoorHorizontal_1"
+	end
+	
 	if (furniture.Parameters["openness"].ToFloat() < 0.5) then
-		return "Door_openness_1"
+		return "DoorHorizontal_2"
 	end
-	-- Door is a lot open
+
+	if (furniture.Parameters["openness"].ToFloat() < 0.75) then
+		return "DoorHorizontal_3"
+	end
+
 	if (furniture.Parameters["openness"].ToFloat() < 0.9) then
-		return "Door_openness_2"
+		return "DoorHorizontal_4"
 	end
 	-- Door is a fully open
-	return "Door_openness_3"
+	return "DoorHorizontal_5"
 end
 
 function GetSpriteName_Airlock( furniture )
@@ -97,7 +131,7 @@ function GetSpriteName_Airlock( furniture )
 	return "Airlock_openness_3"
 end
 
-function Stockpile_GetItemsFromFilter()
+function Stockpile_GetItemsFromFilter( furniture )
 	-- TODO: This should be reading from some kind of UI for this
 	-- particular stockpile
 
@@ -107,7 +141,8 @@ function Stockpile_GetItemsFromFilter()
 	-- Since jobs copy arrays automatically, we could already have
 	-- an Inventory[] prepared and just return that (as a sort of example filter)
 
-	return { Inventory.__new("Steel Plate", 50, 0) }
+	--return { Inventory.__new("Steel Plate", 50, 0) }
+	return furniture.AcceptsForStorage()
 end
 
 
@@ -164,7 +199,7 @@ function Stockpile_UpdateAction( furniture, deltaTime )
 
 	if( furniture.tile.Inventory == nil ) then
 		--ModUtils.ULog("Creating job for new stack.")
-		itemsDesired = Stockpile_GetItemsFromFilter()
+		itemsDesired = Stockpile_GetItemsFromFilter( furniture )
 	else
 		--ModUtils.ULog("Creating job for existing stack.")
 		desInv = furniture.tile.Inventory.Clone()
@@ -184,6 +219,7 @@ function Stockpile_UpdateAction( furniture, deltaTime )
 		false
 	)
 	j.JobDescription = "job_stockpile_moving_desc"
+	j.acceptsAny = true
 
 	-- TODO: Later on, add stockpile priorities, so that we can take from a lower
 	-- priority stockpile for a higher priority one.
@@ -229,6 +265,10 @@ function MiningDroneStation_UpdateAction( furniture, deltaTime )
 		return
 	end
 
+	if (furniture.GetSpawnSpotTile().Inventory != nil and furniture.GetSpawnSpotTile().Inventory.objectType != furniture.Parameters["mine_type"].ToString()) then
+		return
+	end
+
 	-- If we get here, we need to CREATE a new job.
 
 	jobSpot = furniture.GetJobSpotTile()
@@ -242,15 +282,28 @@ function MiningDroneStation_UpdateAction( furniture, deltaTime )
 		Job.JobPriority.Medium,
 		true	-- This job repeats until the destination tile is full.
 	)
+	
 	j.RegisterJobCompletedCallback("MiningDroneStation_JobComplete")
 	j.JobDescription = "job_mining_drone_station_mining_desc"
-
 	furniture.AddJob( j )
+
 end
 
 
 function MiningDroneStation_JobComplete(j)
-	World.current.inventoryManager.PlaceInventory( j.furniture.GetSpawnSpotTile(), Inventory.__new("Raw Iron", 50, 20) )
+	if (j.furniture.GetSpawnSpotTile().Inventory == nil or j.furniture.GetSpawnSpotTile().Inventory.objectType == j.furniture.Parameters["mine_type"].ToString()) then
+		World.current.inventoryManager.PlaceInventory( j.furniture.GetSpawnSpotTile(), Inventory.__new(j.furniture.Parameters["mine_type"].ToString() , 50, 20) )
+	else
+		j.CancelJob()
+	end
+end
+
+function MiningDroneStation_Change_to_Raw_Iron(furniture, character)
+	furniture.Parameters["mine_type"].SetValue("Raw Iron")
+end
+
+function MiningDroneStation_Change_to_Raw_Copper(furniture, character)
+	furniture.Parameters["mine_type"].SetValue("raw_copper")
 end
 
 function MetalSmelter_UpdateAction(furniture, deltaTime)
