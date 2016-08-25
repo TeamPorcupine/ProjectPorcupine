@@ -63,25 +63,28 @@ function IsEnterable_Door( furniture )
 end
 
 function GetSpriteName_Door( furniture )
+
+	local openness = furniture.Parameters["openness"].ToFloat()
+
 	if (furniture.verticalDoor == true) then
 			-- Door is closed
-		if (furniture.Parameters["openness"].ToFloat() < 0.1) then
+		if (openness < 0.1) then
 			return "DoorVertical_0"
 		end
 
-		if (furniture.Parameters["openness"].ToFloat() < 0.25) then
+		if (openness < 0.25) then
 			return "DoorVertical_1"
 		end
 
-		if (furniture.Parameters["openness"].ToFloat() < 0.5) then
+		if (openness < 0.5) then
 			return "DoorVertical_2"
 		end
 
-		if (furniture.Parameters["openness"].ToFloat() < 0.75) then
+		if (openness < 0.75) then
 			return "DoorVertical_3"
 		end
 
-		if (furniture.Parameters["openness"].ToFloat() < 0.9) then
+		if (openness < 0.9) then
 			return "DoorVertical_4"
 		end
 		-- Door is a fully open
@@ -90,23 +93,23 @@ function GetSpriteName_Door( furniture )
 
 
 	-- Door is closed
-	if (furniture.Parameters["openness"].ToFloat() < 0.1) then
+	if (openness < 0.1) then
 		return "DoorHorizontal_0"
 	end
 
-	if (furniture.Parameters["openness"].ToFloat() < 0.25) then
+	if (openness < 0.25) then
 		return "DoorHorizontal_1"
 	end
 
-	if (furniture.Parameters["openness"].ToFloat() < 0.5) then
+	if (openness < 0.5) then
 		return "DoorHorizontal_2"
 	end
 
-	if (furniture.Parameters["openness"].ToFloat() < 0.75) then
+	if (openness < 0.75) then
 		return "DoorHorizontal_3"
 	end
 
-	if (furniture.Parameters["openness"].ToFloat() < 0.9) then
+	if (openness < 0.9) then
 		return "DoorHorizontal_4"
 	end
 	-- Door is a fully open
@@ -114,16 +117,19 @@ function GetSpriteName_Door( furniture )
 end
 
 function GetSpriteName_Airlock( furniture )
+
+	local openness = furniture.Parameters["openness"].ToFloat()
+
 	-- Door is closed
-	if (furniture.Parameters["openness"].ToFloat() < 0.1) then
+	if (openness < 0.1) then
 		return "Airlock"
 	end
 	-- Door is a bit open
-	if (furniture.Parameters["openness"].ToFloat() < 0.5) then
+	if (openness < 0.5) then
 		return "Airlock_openness_1"
 	end
 	-- Door is a lot open
-	if (furniture.Parameters["openness"].ToFloat() < 0.9) then
+	if (openness < 0.9) then
 		return "Airlock_openness_2"
 	end
 	-- Door is a fully open
