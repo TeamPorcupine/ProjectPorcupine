@@ -258,7 +258,7 @@ public class MouseController
             {
                 if (tileUnderMouse.PendingBuildJob != null)
                 {
-                    Debug.Log("Canceling!");
+                    Debug.ULogChannel("MouseController", "Canceling!");
                     tileUnderMouse.PendingBuildJob.CancelJob();
                 }
             }

@@ -47,7 +47,7 @@ public class InventorySpriteController
 
     public void OnInventoryCreated(Inventory inv)
     {
-        //Debug.Log("OnInventoryCreated");
+        //Debug.ULogChannel("InventorySpriteController", "OnInventoryCreated");
         // Create a visual GameObject linked to this data.
 
         // FIXME: Does not consider multi-tile objects nor rotated objects
@@ -66,7 +66,7 @@ public class InventorySpriteController
         sr.sprite = SpriteManager.current.GetSprite("Inventory", inv.objectType);
         if (sr.sprite == null)
         {
-            Debug.LogError("No sprite for: " + inv.objectType);
+            Debug.ULogErrorChannel("InventorySpriteController", "No sprite for: " + inv.objectType);
         }
         sr.sortingLayerName = "Inventory";
 
@@ -91,12 +91,12 @@ public class InventorySpriteController
     void OnInventoryChanged(Inventory inv)
     {
 
-        //Debug.Log("OnFurnitureChanged");
+        //Debug.ULogChannel("InventorySpriteController", "OnFurnitureChanged");
         // Make sure the furniture's graphics are correct.
 
         if (inventoryGameObjectMap.ContainsKey(inv) == false)
         {
-            Debug.LogError("OnCharacterChanged -- trying to change visuals for inventory not in our map.");
+            Debug.ULogErrorChannel("InventorySpriteController", "OnCharacterChanged -- trying to change visuals for inventory not in our map.");
             return;
         }
 
