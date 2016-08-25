@@ -131,7 +131,7 @@ function GetSpriteName_Airlock( furniture )
 	return "Airlock_openness_3"
 end
 
-function Stockpile_GetItemsFromFilter()
+function Stockpile_GetItemsFromFilter( furniture )
 	-- TODO: This should be reading from some kind of UI for this
 	-- particular stockpile
 
@@ -141,7 +141,8 @@ function Stockpile_GetItemsFromFilter()
 	-- Since jobs copy arrays automatically, we could already have
 	-- an Inventory[] prepared and just return that (as a sort of example filter)
 
-	return { Inventory.__new("Steel Plate", 50, 0) }
+	--return { Inventory.__new("Steel Plate", 50, 0) }
+	return furniture.AcceptsForStorage()
 end
 
 
@@ -198,7 +199,7 @@ function Stockpile_UpdateAction( furniture, deltaTime )
 
 	if( furniture.tile.Inventory == nil ) then
 		--ModUtils.ULog("Creating job for new stack.")
-		itemsDesired = Stockpile_GetItemsFromFilter()
+		itemsDesired = Stockpile_GetItemsFromFilter( furniture )
 	else
 		--ModUtils.ULog("Creating job for existing stack.")
 		desInv = furniture.tile.Inventory.Clone()
@@ -218,6 +219,7 @@ function Stockpile_UpdateAction( furniture, deltaTime )
 		false
 	)
 	j.JobDescription = "job_stockpile_moving_desc"
+	j.acceptsAny = true
 
 	-- TODO: Later on, add stockpile priorities, so that we can take from a lower
 	-- priority stockpile for a higher priority one.
