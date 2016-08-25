@@ -11,6 +11,8 @@ using UnityEngine;
 
 public interface ISelectable
 {
+    bool IsSelected { get; set; }
+
     string GetName();
 
     string GetDescription();
