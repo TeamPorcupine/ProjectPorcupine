@@ -110,7 +110,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: SowQuests
+  m_Text: ShowQuests
 --- !u!114 &114000012901572064
 MonoBehaviour:
   m_ObjectHideFlags: 1
