@@ -24,6 +24,7 @@ public class LuaUtilities {
         if (func == null)
         {
             Debug.ULogChannel("Lua", "'" + functionName + "' is not a LUA function!");
+            return null;
         }
 
         try
