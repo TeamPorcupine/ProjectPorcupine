@@ -563,7 +563,7 @@ function OxygenCompressor_OnUpdate(furniture, deltaTime)
 end
 
 function OxygenCompressor_GetSpriteName(furniture)
-    baseName = "compressor_oxygen"
+    baseName = furniture.tile.objectType
     suffix = 0
     if (furniture.Parameters["gas_content"].ToFloat() > 0) then
         idxAsFloat = 8 * (furniture.Parameters["gas_content"].ToFloat() / furniture.Parameters["max_gas_content"].ToFloat())
