@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Sprites>
+    <Sprite name="compressor_oxygen"   x="0"   y="128" w="64" h="64" pixelPerUnit="32" />
+	<Sprite name="compressor_oxygen_0" x="0"   y="128" w="64" h="64" pixelPerUnit="32" />
+    <Sprite name="compressor_oxygen_1" x="64"  y="128" w="64" h="64" pixelPerUnit="32" />
+    <Sprite name="compressor_oxygen_2" x="128" y="128" w="64" h="64" pixelPerUnit="32" />
+    <Sprite name="compressor_oxygen_3" x="192" y="128" w="64" h="64" pixelPerUnit="32" />
+    <Sprite name="compressor_oxygen_4" x="0"   y="64"  w="64" h="64" pixelPerUnit="32" />
+    <Sprite name="compressor_oxygen_5" x="64"  y="64"  w="64" h="64" pixelPerUnit="32" />
+    <Sprite name="compressor_oxygen_6" x="128" y="64"  w="64" h="64" pixelPerUnit="32" />
+    <Sprite name="compressor_oxygen_7" x="192" y="64"  w="64" h="64" pixelPerUnit="32" />
+    <Sprite name="compressor_oxygen_8" x="0"   y="0"   w="64" h="64" pixelPerUnit="32" />
+</Sprites>
