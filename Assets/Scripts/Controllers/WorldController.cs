@@ -105,6 +105,12 @@ public class WorldController : MonoBehaviour
         mouseController = new MouseController(buildModeController, furnitureSpriteController, circleCursorPrefab);
         keyboardController = new KeyboardController(buildModeController, Instance);
 
+        GameObject Canvas = GameObject.Find("Canvas");
+        GameObject tempGoObj;
+
+        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/TempMenus"), Canvas.transform.position, Canvas.transform.rotation, Canvas.transform);
+        tempGoObj.name = "TempMenuHolder";
+
     }
 
     void Update()

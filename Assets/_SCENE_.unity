@@ -5277,6 +5277,7 @@ CanvasRenderer:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
+<<<<<<< 78f379ad4a51cc60dc08e4c950c55d423cd2b201
   m_GameObject: {fileID: 1723244262}
 --- !u!1 &1790036291
 GameObject:
@@ -5347,6 +5348,15 @@ CanvasRenderer:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1790036291}
 --- !u!1 &1871473882
+=======
+  m_GameObject: {fileID: 752785402}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dbd5bb9cda53d874cb0c4b093b301c01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &883689539
+>>>>>>> Added a tempUI container
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -5608,11 +5618,14 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 2020152304}
+<<<<<<< 78f379ad4a51cc60dc08e4c950c55d423cd2b201
   - {fileID: 1567433672}
   - {fileID: 1108852562}
   - {fileID: 600248677}
   - {fileID: 377221260}
   - {fileID: 1237241940}
+=======
+>>>>>>> Added a tempUI container
   - {fileID: 421907841}
   m_Father: {fileID: 0}
   m_RootOrder: 2
