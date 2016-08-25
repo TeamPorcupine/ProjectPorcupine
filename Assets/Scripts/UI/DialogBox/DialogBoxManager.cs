@@ -28,7 +28,7 @@ public class DialogBoxManager : MonoBehaviour
         GameObject Controllers = GameObject.Find("Dialog Boxes");
         GameObject tempGoObj;
 
-        mc = GameObject.Find("Dialog Boxes").GetComponent<MenuController>();
+        mc = Controllers.GetComponent<MenuController>();
 
         tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_SaveFile"), Controllers.transform.position, Controllers.transform.rotation,  Controllers.transform);
         tempGoObj.name = "Save File";
