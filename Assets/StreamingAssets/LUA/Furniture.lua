@@ -41,7 +41,6 @@ function OnUpdate_Door( furniture, deltaTime )
 	end
 
 	furniture.Parameters["openness"].SetValue( ModUtils.Clamp01(furniture.Parameters["openness"].ToFloat()) )
-
 	furniture.UpdateOnChanged(furniture);
 end
 
@@ -94,11 +93,11 @@ function GetSpriteName_Door( furniture )
 	if (furniture.Parameters["openness"].ToFloat() < 0.1) then
 		return "DoorHorizontal_0"
 	end
-	
+
 	if (furniture.Parameters["openness"].ToFloat() < 0.25) then
 		return "DoorHorizontal_1"
 	end
-	
+
 	if (furniture.Parameters["openness"].ToFloat() < 0.5) then
 		return "DoorHorizontal_2"
 	end
@@ -206,7 +205,7 @@ function Stockpile_UpdateAction( furniture, deltaTime )
         itemsDesired = { desInv }
     end
 
-	j = Job.__new(
+	local j = Job.__new(
 		furniture.tile,
 		nil,
 		nil,
@@ -242,19 +241,12 @@ end
 function MiningDroneStation_UpdateAction( furniture, deltaTime )
     local spawnSpot = furniture.GetSpawnSpotTile()
 
-    spawnSpot = furniture.GetSpawnSpotTile()
-
-
-	spawnSpot = furniture.GetSpawnSpotTile()
-
 	if( furniture.JobCount() > 0 ) then
-
 		-- Check to see if the Metal Plate destination tile is full.
 		if( spawnSpot.Inventory != nil and spawnSpot.Inventory.stackSize >= spawnSpot.Inventory.maxStackSize ) then
 			-- We should stop this job, because it's impossible to make any more items.
 			furniture.CancelJobs()
 		end
-
 		return
 	end
 
@@ -264,15 +256,13 @@ function MiningDroneStation_UpdateAction( furniture, deltaTime )
 		return
 	end
 
-	if (furniture.GetSpawnSpotTile().Inventory != nil and furniture.GetSpawnSpotTile().Inventory.objectType != furniture.Parameters["mine_type"].ToString()) then
+	if(furniture.GetSpawnSpotTile().Inventory != nil and furniture.GetSpawnSpotTile().Inventory.objectType != furniture.Parameters["mine_type"].ToString()) then
 		return
 	end
 
 	-- If we get here, we need to CREATE a new job.
-
-	jobSpot = furniture.GetJobSpotTile()
-
-	j = Job.__new(
+	local jobSpot = furniture.GetJobSpotTile()
+	local j = Job.__new(
 		jobSpot,
 		nil,
 		nil,
@@ -281,12 +271,10 @@ function MiningDroneStation_UpdateAction( furniture, deltaTime )
 		Job.JobPriority.Medium,
 		true	-- This job repeats until the destination tile is full.
 	)
-	
+
 	j.RegisterJobCompletedCallback("MiningDroneStation_JobComplete")
 	j.JobDescription = "job_mining_drone_station_mining_desc"
 	furniture.AddJob( j )
-
-end
 end
 
 function MiningDroneStation_JobComplete(j)
@@ -576,9 +564,9 @@ end
 -- Should maybe later be integrated with GasGenerator function by
 -- someone who knows how that would work in this case
 function OxygenCompressor_OnUpdate(furniture, deltaTime)
-    room = furniture.tile.Room
-    pressure = room.GetGasPressure("O2")
-    gasAmount = furniture.Parameters["flow_rate"].ToFloat() * deltaTime
+    local room = furniture.tile.Room
+    local pressure = room.GetGasPressure("O2")
+    local gasAmount = furniture.Parameters["flow_rate"].ToFloat() * deltaTime
     if (pressure < furniture.Parameters["give_threshold"].ToFloat()) then
         -- Expel gas if available
         if (furniture.Parameters["gas_content"].ToFloat() > 0) then
@@ -597,8 +585,8 @@ function OxygenCompressor_OnUpdate(furniture, deltaTime)
 end
 
 function OxygenCompressor_GetSpriteName(furniture)
-    baseName = "Oxygen_Compressor"
-    suffix = 0
+    local baseName = "Oxygen_Compressor"
+    local suffix = 0
     if (furniture.Parameters["gas_content"].ToFloat() > 0) then
         idxAsFloat = 8 * (furniture.Parameters["gas_content"].ToFloat() / furniture.Parameters["max_gas_content"].ToFloat())
         suffix = ModUtils.FloorToInt(idxAsFloat)
