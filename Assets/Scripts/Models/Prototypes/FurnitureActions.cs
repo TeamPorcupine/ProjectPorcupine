@@ -7,6 +7,7 @@
 // ====================================================
 #endregion
 using System.Collections.Generic;
+using System.IO;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Debugging;
 using MoonSharp.RemoteDebugger;
@@ -39,12 +40,41 @@ public class FurnitureActions
 
         // Also to access statics/globals
         myLuaScript.Globals["World"] = typeof(World);
+
+
+        LoadScripts();
     }
 
-    public static void addScript(string rawLuaCode)
+    public static void LoadScripts()
+    {
+        string luaFilePath = Path.Combine(Application.streamingAssetsPath, "LUA");
+        luaFilePath = Path.Combine(luaFilePath, "Furniture.lua");
+        string myLuaCode = File.ReadAllText(luaFilePath);
+
+        // Instantiate the singleton
+        AddScript(myLuaCode);
+    }
+
+    public static void LoadModsScripts(DirectoryInfo[] mods)
+    {
+        foreach (DirectoryInfo mod in mods)
+        {
+            string luaModFile = Path.Combine(mod.FullName, "Furniture.lua");
+            if (File.Exists(luaModFile))
+            {
+                string luaModCode = File.ReadAllText(luaModFile);
+                AddScript(luaModCode);
+            }
+        }
+    }
+
+    public static void AddScript(string rawLuaCode)
     {
         _Instance.myLuaScript.DoString(rawLuaCode);
     }
+
+
+
 
     public static void CallFunctionsWithFurniture(string[] functionNames, Furniture furn, float deltaTime)
     {

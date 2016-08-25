@@ -66,14 +66,18 @@ public class WorldController : MonoBehaviour
     // Use this for initialization
     void OnEnable()
     {
-        string dataPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
-        modsManager = new ModsManager(dataPath);
-
         if (Instance != null)
         {
             Debug.LogError("There should never be two world controllers.");
         }
         Instance = this;
+
+
+        new PrototypeManager();
+
+        string dataPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
+        modsManager = new ModsManager(dataPath);
+
 
         if (loadWorldFromFile != null)
         {

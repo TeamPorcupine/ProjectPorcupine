@@ -39,12 +39,6 @@ public class World : IXmlSerializable
     // The pathfinding graph used to navigate our world map.
     public Path_TileGraph tileGraph;
 
-    public Dictionary<string, Furniture> furniturePrototypes;
-    public Dictionary<string, Job> furnitureJobPrototypes;
-    public Dictionary<string, Need> needPrototypes;
-    public Dictionary<string, InventoryCommon> inventoryPrototypes;
-    public Dictionary<string, TraderPrototype> traderPrototypes;
-
     // The tile width of the world.
     public int Width { get; protected set; }
 
@@ -129,9 +123,6 @@ public class World : IXmlSerializable
 
     void SetupWorld(int width, int height)
     {
-        // Setup furniture actions before any other things are loaded.
-        new FurnitureActions();
-
         jobQueue = new JobQueue();
         jobWaitingQueue = new JobQueue();
 
@@ -158,11 +149,6 @@ public class World : IXmlSerializable
                 tiles[x, y].Room = GetOutsideRoom(); // Rooms 0 is always going to be outside, and that is our default room
             }
         }
-
-        CreateFurniturePrototypes();
-        CreateNeedPrototypes ();
-        CreateInventoryPrototypes();
-        CreateTraderPrototypes();
 
         characters = new List<Character>();
         furnitures = new List<Furniture>();
@@ -264,280 +250,7 @@ public class World : IXmlSerializable
             
         return c;
     }
-    
-    public void SetFurnitureJobPrototype(Job j, Furniture f)
-    {
-        furnitureJobPrototypes[f.objectType] = j;
-    }
 
-    void LoadFurnitureLua(string filePath)
-    {
-        string myLuaCode = System.IO.File.ReadAllText(filePath);
-
-        // Instantiate the singleton
-
-        FurnitureActions.addScript(myLuaCode);
-    }
-
-    void CreateFurniturePrototypes()
-    {
-        string luaFilePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
-        luaFilePath = System.IO.Path.Combine(luaFilePath, "Furniture.lua");
-        LoadFurnitureLua(luaFilePath);
-
-
-        furniturePrototypes = new Dictionary<string, Furniture>();
-        furnitureJobPrototypes = new Dictionary<string, Job>();
-
-        // READ FURNITURE PROTOTYPE XML FILE HERE
-        // TODO:  Probably we should be getting past a StreamIO handle or the raw
-        // text here, rather than opening the file ourselves.
-
-        string dataPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
-        string filePath = System.IO.Path.Combine(dataPath, "Furniture.xml");
-        string furnitureXmlText = System.IO.File.ReadAllText(filePath);
-        LoadFurniturePrototypesFromFile(furnitureXmlText);
-
-
-        DirectoryInfo[] mods = WorldController.Instance.modsManager.GetMods();
-        foreach (DirectoryInfo mod in mods)
-        {
-            string furnitureLuaModFile = System.IO.Path.Combine(mod.FullName, "Furniture.lua");
-            if (File.Exists(furnitureLuaModFile))
-            {
-                LoadFurnitureLua(furnitureLuaModFile);
-            }
-
-            string furnitureXmlModFile = System.IO.Path.Combine(mod.FullName, "Furniture.xml");
-            if (File.Exists(furnitureXmlModFile))
-            {
-                string furnitureXmlModText = System.IO.File.ReadAllText(furnitureXmlModFile);
-                LoadFurniturePrototypesFromFile(furnitureXmlModText);
-            }
-        }
-    }
-
-    void LoadFurniturePrototypesFromFile(string furnitureXmlText) 
-    {
-        XmlTextReader reader = new XmlTextReader(new StringReader(furnitureXmlText));
-
-        int furnCount = 0;
-        if (reader.ReadToDescendant("Furnitures"))
-        {
-            if (reader.ReadToDescendant("Furniture"))
-            {
-                do
-                {
-                    furnCount++;
-
-                    Furniture furn = new Furniture();
-                    try
-                    {
-                        furn.ReadXmlPrototype(reader);
-                    }
-                    catch (Exception e) {
-                        Debug.LogError("Error reading furniture prototype for: " + furn.objectType + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
-                    }
-
-
-                    furniturePrototypes[furn.objectType] = furn;
-
-
-
-                } while (reader.ReadToNextSibling("Furniture"));
-            }
-            else
-            {
-                Debug.LogError("The furniture prototype definition file doesn't have any 'Furniture' elements.");
-            }
-        }
-        else
-        {
-            Debug.LogError("Did not find a 'Furnitures' element in the prototype definition file.");
-        }
-    }
-
-
-
-    void CreateNeedPrototypes()
-    {
-        
-        needPrototypes = new Dictionary<string, Need>();
-
-        // READ FURNITURE PROTOTYPE XML FILE HERE
-        // TODO:  Probably we should be getting past a StreamIO handle or the raw
-        // text here, rather than opening the file ourselves.
-
-        string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
-        filePath = System.IO.Path.Combine(filePath, "Need.xml");
-        string furnitureXmlText = System.IO.File.ReadAllText(filePath);
-
-        XmlTextReader reader = new XmlTextReader(new StringReader(furnitureXmlText));
-
-        int needCount = 0;
-        if (reader.ReadToDescendant("Needs"))
-        {
-            if (reader.ReadToDescendant("Need"))
-            {
-                do
-                {
-                    needCount++;
-
-                    Need need = new Need();
-                    try
-                    {
-                        need.ReadXmlPrototype(reader);
-                    }
-                    catch {
-                        Debug.LogError("Error reading need prototype for: " + need.needType);
-                    }
-
-
-                    needPrototypes[need.needType] = need;
-
-
-
-                } while (reader.ReadToNextSibling("Need"));
-            }
-            else
-            {
-                Debug.LogError("The need prototype definition file doesn't have any 'Need' elements.");
-            }
-			Debug.Log("Need prototypes read: " + needCount.ToString());
-        }
-    }
-    void CreateInventoryPrototypes()
-    {
-        inventoryPrototypes = new Dictionary<string, InventoryCommon>();
-
-        string dataPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
-        string filePath = System.IO.Path.Combine(dataPath, "Inventory.xml");
-        string inventoryXmlText = System.IO.File.ReadAllText(filePath);
-        LoadInventoryPrototypesFromFile(inventoryXmlText);
-
-
-        DirectoryInfo[] mods = WorldController.Instance.modsManager.GetMods();
-        foreach (DirectoryInfo mod in mods)
-        {
-            string inventoryXmlModFile = System.IO.Path.Combine(mod.FullName, "Inventory.xml");
-            if (File.Exists(inventoryXmlModFile))
-            {
-                string inventoryXmlModText = System.IO.File.ReadAllText(inventoryXmlModFile);
-                LoadInventoryPrototypesFromFile(inventoryXmlModText);
-            }
-        }
-    }
-
-    void CreateTraderPrototypes()
-    {
-        traderPrototypes = new Dictionary<string, TraderPrototype>();
-
-        string dataPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
-        string filePath = System.IO.Path.Combine(dataPath, "Trader.xml");
-        string traderXmlText = System.IO.File.ReadAllText(filePath);
-        LoadTraderPrototypesFromFile(traderXmlText);
-
-
-        DirectoryInfo[] mods = WorldController.Instance.modsManager.GetMods();
-        foreach (DirectoryInfo mod in mods)
-        {
-            string traderXmlModFile = System.IO.Path.Combine(mod.FullName, "Traders.xml");
-            if (File.Exists(traderXmlModFile))
-            {
-                string traderXmlModText = System.IO.File.ReadAllText(traderXmlModFile);
-                LoadTraderPrototypesFromFile(traderXmlModText);
-            }
-        }
-    }
-
-    void LoadTraderPrototypesFromFile(string traderXmlText)
-    {
-        XmlTextReader reader = new XmlTextReader(new StringReader(traderXmlText));
-
-        int inventoryCount = 0;
-        if (reader.ReadToDescendant("Traders"))
-        {
-            if (reader.ReadToDescendant("Trader"))
-            {
-                do
-                {
-                    inventoryCount++;
-
-                    TraderPrototype trader = new TraderPrototype();
-                    try
-                    {
-                        trader.ReadXmlPrototype(reader);
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.LogError("Error reading trader prototype for: " + trader.ObjectType + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
-                    }
-
-
-                    traderPrototypes[trader.ObjectType] = trader;
-                    
-                } while (reader.ReadToNextSibling("Trader"));
-            }
-            else
-            {
-                Debug.LogError("The trader prototype definition file doesn't have any 'Trader' elements.");
-            }
-        }
-        else
-        {
-            Debug.LogError("Did not find a 'Traders' element in the prototype definition file.");
-        }
-    }
-
-    void LoadInventoryPrototypesFromFile(string inventoryXmlText)
-    {
-        XmlTextReader reader = new XmlTextReader(new StringReader(inventoryXmlText));
-
-        int inventoryCount = 0;
-        if (reader.ReadToDescendant("Inventories"))
-        {
-            if (reader.ReadToDescendant("Inventory"))
-            {
-                do
-                {
-                    inventoryCount++;
-
-                    InventoryCommon inv = new InventoryCommon();
-                    try
-                    {
-                        inv.ReadXmlPrototype(reader);
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.LogError("Error reading inventory prototype for: " + inv.objectType + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
-                    }
-
-
-                    inventoryPrototypes[inv.objectType] = inv;
-
-
-
-                } while (reader.ReadToNextSibling("Inventory"));
-            }
-            else
-            {
-                Debug.LogError("The inventory prototype definition file doesn't have any 'Inventory' elements.");
-            }
-        }
-        else
-        {
-            Debug.LogError("Did not find a 'Inventories' element in the prototype definition file.");
-        }
-
-
-
-        // This bit will come from parsing a LUA file later, but for now we still need to
-        // implement furniture behaviour directly in C# code.
-        //furniturePrototypes["Door"].RegisterUpdateAction( FurnitureActions.Door_UpdateAction );
-        //furniturePrototypes["Door"].IsEnterable = FurnitureActions.Door_IsEnterable;
-
-            //Logger.LogError("Did not find a 'Inventories' element in the prototype definition file.");
-    }
 
     /// <summary>
     /// A function for testing out the system
@@ -611,13 +324,13 @@ public class World : IXmlSerializable
     {
         // TODO: This function assumes 1x1 tiles -- change this later!
 
-        if (furniturePrototypes.ContainsKey(objectType) == false)
+        if (PrototypeManager.Furniture.HasPrototype(objectType) == false)
         {
             Debug.LogError("furniturePrototypes doesn't contain a proto for key: " + objectType);
             return null;
         }
 
-        Furniture furn = Furniture.PlaceInstance(furniturePrototypes[objectType], t);
+        Furniture furn = Furniture.PlaceInstance(PrototypeManager.Furniture.GetPrototype(objectType), t);
 
         if (furn == null)
         {
@@ -678,18 +391,11 @@ public class World : IXmlSerializable
 
     public bool IsFurniturePlacementValid(string furnitureType, Tile t)
     {
-        return furniturePrototypes[furnitureType].IsValidPosition(t);
-    }
-
-    public Furniture GetFurniturePrototype(string objectType)
-    {
-        if (furniturePrototypes.ContainsKey(objectType) == false)
+        if (PrototypeManager.Furniture.HasPrototype(furnitureType))
         {
-            Debug.LogError("No furniture with type: " + objectType);
-            return null;
+            return PrototypeManager.Furniture.GetPrototype(furnitureType).IsValidPosition(t);
         }
-
-        return furniturePrototypes[objectType];
+        return false;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////

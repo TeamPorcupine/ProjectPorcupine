@@ -247,7 +247,8 @@ public class FurnitureSpriteController
 
     public Sprite GetSpriteForFurniture(string objectType)
     {
-        Sprite s = SpriteManager.current.GetSprite("Furniture", objectType + (World.current.furniturePrototypes[objectType].linksToNeighbour ? "_" : ""));
+        Furniture proto = PrototypeManager.Furniture.GetPrototype(objectType);
+        Sprite s = SpriteManager.current.GetSprite("Furniture", objectType + (proto.linksToNeighbour ? "_" : ""));
 
         return s;
     }

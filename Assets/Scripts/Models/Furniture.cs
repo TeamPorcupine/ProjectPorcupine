@@ -561,7 +561,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
                     invs.ToArray(),
                     Job.JobPriority.High );
                 j.JobDescription = "job_build_" + objectType + "_desc";
-                World.current.SetFurnitureJobPrototype(j, this);
+                PrototypeManager.FurnitureJob.SetPrototype(objectType, j);
                 break;
 
             case "OnUpdate":

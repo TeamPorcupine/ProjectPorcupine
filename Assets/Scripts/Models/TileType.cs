@@ -120,11 +120,11 @@ public class TileType : IXmlSerializable {
     public static void LoadTileTypes()
     {
         // Load lua code
-        string luaPath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
-        string luaFilePath = System.IO.Path.Combine(luaPath, "Tile.lua");
-        string luaCode = System.IO.File.ReadAllText(luaFilePath);
+        string luaPath = Path.Combine(Application.streamingAssetsPath, "LUA");
+        string luaFilePath = Path.Combine(luaPath, "Tile.lua");
+        string luaCode = File.ReadAllText(luaFilePath);
         
-        FurnitureActions.addScript(luaCode);
+        FurnitureActions.AddScript(luaCode);
 
         // Load all mod defined lua code
         foreach (DirectoryInfo mod in WorldController.Instance.modsManager.GetMods())
@@ -133,16 +133,16 @@ public class TileType : IXmlSerializable {
             {
                 Debug.ULogChannel("TileType", "Loading mod " + mod.Name + " TileType definitions!");
 
-                luaCode = System.IO.File.ReadAllText(file.FullName);
+                luaCode = File.ReadAllText(file.FullName);
 
-                FurnitureActions.addScript(luaCode);
+                FurnitureActions.AddScript(luaCode);
             }
         }
 
         // Load TileType xml definitions
-        string dataPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
-        string xmlPath = System.IO.Path.Combine(dataPath, "Tiles.xml");
-        string xmlText = System.IO.File.ReadAllText(xmlPath);
+        string dataPath = Path.Combine(Application.streamingAssetsPath, "Data");
+        string xmlPath = Path.Combine(dataPath, "Tiles.xml");
+        string xmlText = File.ReadAllText(xmlPath);
         
         readTileTypesFromXml(xmlText);
 
