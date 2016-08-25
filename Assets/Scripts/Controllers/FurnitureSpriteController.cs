@@ -32,6 +32,7 @@ public class FurnitureSpriteController
         // Register our callback so that our GameObject gets updated whenever
         // the tile's type changes.
         world.cbFurnitureCreated += OnFurnitureCreated;
+        world.powerSystem.PowerLevelChanged += OnPowerStatusChange;
 
         // Go through any EXISTING furniture (i.e. from a save that was loaded OnEnable) and call the OnCreated event manually
         foreach (Furniture furn in world.furnitures)
@@ -39,6 +40,23 @@ public class FurnitureSpriteController
             OnFurnitureCreated(furn);
         }
             
+    }
+
+    public void Remove()
+    {
+        GameObject.Destroy(furnnitureParent);
+
+        furnitureGameObjectMap.Clear();
+        powerStatusGameObjectMap.Clear();
+
+        world.cbFurnitureCreated -= OnFurnitureCreated;
+        world.powerSystem.PowerLevelChanged -= OnPowerStatusChange;
+
+        foreach (Furniture furn in world.furnitures)
+        {
+            furn.cbOnChanged -= OnFurnitureChanged;
+            furn.cbOnRemoved -= OnFurnitureRemoved;
+        }
     }
 
     public void OnFurnitureCreated(Furniture furn)
@@ -108,7 +126,6 @@ public class FurnitureSpriteController
         // Register our callback so that our GameObject gets updated whenever
         // the object's into changes.
         furn.cbOnChanged += OnFurnitureChanged;
-        world.powerSystem.PowerLevelChanged += OnPowerStatusChange;
         furn.cbOnRemoved += OnFurnitureRemoved;
 
     }

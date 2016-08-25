@@ -8,14 +8,19 @@
 #endregion
 using System;
 using System.IO;
+using UnityEngine;
 
-public class ModsManager
+public class ModsManager : MonoBehaviour
 {
+    static public ModsManager current;
+
     private DirectoryInfo[] mods;
 
-    public ModsManager(string dataPath)
+    void OnEnable()
     {
-        // Read the Furniture.xml files from Mods directory
+        current = this;
+
+        string dataPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
         string modsPath = System.IO.Path.Combine(dataPath, "Mods");
         DirectoryInfo modsDir = new DirectoryInfo(modsPath);
         mods = modsDir.GetDirectories();

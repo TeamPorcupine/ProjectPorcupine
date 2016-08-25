@@ -24,6 +24,11 @@ public class FurnitureActions
         LuaUtilities.RegisterGlobal(typeof(World));
     }
 
+    public static bool IsInitialized
+    {
+        get{ return _Instance != null; }
+    }
+
     public static void CallFunctionsWithFurniture(string[] functionNames, Furniture furn, float deltaTime)
     {
         foreach (string fn in functionNames)

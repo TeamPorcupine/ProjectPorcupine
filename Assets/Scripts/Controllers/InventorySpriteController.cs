@@ -45,12 +45,34 @@ public class InventorySpriteController
         //c.SetDestination( world.GetTileAt( world.Width/2 + 5, world.Height/2 ) );
     }
 
+    public void Remove()
+    {
+        world.cbInventoryCreated -= OnInventoryCreated;
+
+        foreach (string objectType in world.inventoryManager.inventories.Keys)
+        {
+            foreach (Inventory inv in world.inventoryManager.inventories[objectType])
+            {
+                inv.cbInventoryChanged -= OnInventoryChanged;
+            }
+        }
+
+        inventoryGameObjectMap.Clear();
+        GameObject.Destroy(inventoryParent);
+    }
+
     public void OnInventoryCreated(Inventory inv)
     {
         //Debug.Log("OnInventoryCreated");
         // Create a visual GameObject linked to this data.
 
         // FIXME: Does not consider multi-tile objects nor rotated objects
+
+        if (inv.tile == null)
+        {
+            // Character carries this inventory so do nothing
+            return;
+        }
 
         // This creates a new GameObject and adds it to our scene.
         GameObject inv_go = new GameObject();
@@ -59,6 +81,7 @@ public class InventorySpriteController
         inventoryGameObjectMap.Add(inv, inv_go);
 
         inv_go.name = inv.objectType;
+
         inv_go.transform.position = new Vector3(inv.tile.X, inv.tile.Y, 0);
         inv_go.transform.SetParent(inventoryParent.transform, true);
 

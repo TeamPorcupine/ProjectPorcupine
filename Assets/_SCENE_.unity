@@ -520,6 +520,8 @@ MonoBehaviour:
   devMode: 0
   inventoryUI: {fileID: 191780, guid: d1e1fcd802f51614595cb99879a132a5, type: 2}
   circleCursorPrefab: {fileID: 110048, guid: 782976062f887844ca858482495fcdbd, type: 2}
+  goBack: 0
+  newWorld: 0
 --- !u!4 &179601669
 Transform:
   m_ObjectHideFlags: 0
@@ -2949,6 +2951,7 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 752785403}
+  - 114: {fileID: 752785407}
   - 114: {fileID: 752785404}
   - 114: {fileID: 752785406}
   - 114: {fileID: 752785405}
@@ -3004,6 +3007,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dbd5bb9cda53d874cb0c4b093b301c01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &752785407
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 752785402}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a77869fae6eb54bec92c893b8130ae16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &808115856

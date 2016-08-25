@@ -162,6 +162,10 @@ public class MouseController
         lastFramePosition.z = 0;
     }
 
+    public void SetFurnitureSpriteController(FurnitureSpriteController fsc){
+        this.fsc = fsc;
+    }
+
     private void CalculatePlacingPosition()
     {
         // If we are placing a multitile object we would like to modify the posiotion where the mouse grabs it.

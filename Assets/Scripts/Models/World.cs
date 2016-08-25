@@ -26,7 +26,7 @@ public class World : IXmlSerializable
     public readonly string currentGameVersion = "Someone_will_come_up_with_a_proper_naming_scheme_later";
 
     // A two-dimensional array to hold our tile data.
-    Tile[,] tiles;
+    private Tile[,] tiles;
     public List<Character> characters;
     public List<Furniture> furnitures;
     public List<Room> rooms;
@@ -63,7 +63,8 @@ public class World : IXmlSerializable
     public JobQueue jobQueue;
     public JobQueue jobWaitingQueue;
 
-    static public World current { get; protected set; }
+    static public World current { get; private set; }
+    public static event Action<World> cbWorldChanged;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="World"/> class.
@@ -87,6 +88,13 @@ public class World : IXmlSerializable
     public World()
     {
 
+    }
+
+    public static void ChangeWorld(World world)
+    {
+        current = world;
+        if (cbWorldChanged != null)
+            cbWorldChanged(world);
     }
 
     public Room GetOutsideRoom()
@@ -129,20 +137,21 @@ public class World : IXmlSerializable
 
     void SetupWorld(int width, int height)
     {
+        if(!FurnitureActions.IsInitialized)
+        {
+            new FurnitureActions();
+        }
         // Setup furniture actions before any other things are loaded.
-        new FurnitureActions();
-
         jobQueue = new JobQueue();
         jobWaitingQueue = new JobQueue();
 
-        // Set the current world to be this world.
-        // TODO: Do we need to do any cleanup of the old world?
         current = this;
 
         Width = width;
         Height = height;
         
-        TileType.LoadTileTypes();
+        if(!TileType.IsInitialized)
+            TileType.LoadTileTypes();
 
         tiles = new Tile[Width, Height];
 
@@ -158,7 +167,6 @@ public class World : IXmlSerializable
                 tiles[x, y].Room = GetOutsideRoom(); // Rooms 0 is always going to be outside, and that is our default room
             }
         }
-
         CreateFurniturePrototypes();
         CreateNeedPrototypes ();
         CreateInventoryPrototypes();
@@ -170,6 +178,7 @@ public class World : IXmlSerializable
         powerSystem = new PowerSystem();
         temperature = new Temperature(Width, Height);
         LoadSkybox();
+        ChangeWorld(this);
     }
 
     private void LoadSkybox(string name = null)
@@ -281,6 +290,11 @@ public class World : IXmlSerializable
 
     void CreateFurniturePrototypes()
     {
+        if(furniturePrototypes != null)
+        {
+            return;
+        }
+
         string luaFilePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
         luaFilePath = System.IO.Path.Combine(luaFilePath, "Furniture.lua");
         LoadFurnitureLua(luaFilePath);
@@ -298,8 +312,7 @@ public class World : IXmlSerializable
         string furnitureXmlText = System.IO.File.ReadAllText(filePath);
         LoadFurniturePrototypesFromFile(furnitureXmlText);
 
-
-        DirectoryInfo[] mods = WorldController.Instance.modsManager.GetMods();
+        DirectoryInfo[] mods = ModsManager.current.GetMods();
         foreach (DirectoryInfo mod in mods)
         {
             string furnitureLuaModFile = System.IO.Path.Combine(mod.FullName, "Furniture.lua");
@@ -373,7 +386,7 @@ public class World : IXmlSerializable
         filePath = System.IO.Path.Combine(filePath, "Need.xml");
         string needXmlText = System.IO.File.ReadAllText(filePath);
         LoadNeedPrototypesFromFile (needXmlText);
-        DirectoryInfo[] mods = WorldController.Instance.modsManager.GetMods();
+        DirectoryInfo[] mods = ModsManager.current.GetMods();
         foreach (DirectoryInfo mod in mods)
         {
             string needLuaModFile = System.IO.Path.Combine(mod.FullName, "Need.lua");
@@ -445,7 +458,7 @@ public class World : IXmlSerializable
         LoadInventoryPrototypesFromFile(inventoryXmlText);
 
 
-        DirectoryInfo[] mods = WorldController.Instance.modsManager.GetMods();
+        DirectoryInfo[] mods = ModsManager.current.GetMods();
         foreach (DirectoryInfo mod in mods)
         {
             string inventoryXmlModFile = System.IO.Path.Combine(mod.FullName, "Inventory.xml");
@@ -467,7 +480,7 @@ public class World : IXmlSerializable
         LoadTraderPrototypesFromFile(traderXmlText);
 
 
-        DirectoryInfo[] mods = WorldController.Instance.modsManager.GetMods();
+        DirectoryInfo[] mods = ModsManager.current.GetMods();
         foreach (DirectoryInfo mod in mods)
         {
             string traderXmlModFile = System.IO.Path.Combine(mod.FullName, "Traders.xml");

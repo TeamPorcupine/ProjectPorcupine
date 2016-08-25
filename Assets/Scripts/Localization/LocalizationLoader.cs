@@ -39,7 +39,7 @@ namespace ProjectPorcupine.Localization
                 Debug.ULogChannel("LocalizationLoader", "Loaded localization at path\n" + file);
             }
 
-            foreach (DirectoryInfo mod in WorldController.Instance.modsManager.GetMods())
+            foreach (DirectoryInfo mod in ModsManager.current.GetMods())
             {
                 foreach (FileInfo file in mod.GetFiles("*.lang"))
                 {

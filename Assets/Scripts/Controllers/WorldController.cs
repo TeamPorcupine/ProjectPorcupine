@@ -17,7 +17,6 @@ using System.IO;
 
 public class WorldController : MonoBehaviour
 {
-
     SoundController soundController;
     TileSpriteController tileSpriteController;
     CharacterSpriteController characterSpriteController;
@@ -29,12 +28,14 @@ public class WorldController : MonoBehaviour
     public MouseController mouseController;
     public KeyboardController keyboardController;
     public SpawnInventoryController spawnInventoryController;
-    public ModsManager modsManager;
 
     public static WorldController Instance { get; protected set; }
 
     // The world and tile data
-    public World world { get; protected set; }
+    // rename to CurrentWorld
+    public World world;
+
+    private List<World> worlds;
 
     static string loadWorldFromFile = null;
 
@@ -66,15 +67,14 @@ public class WorldController : MonoBehaviour
     // Use this for initialization
     void OnEnable()
     {
-        string dataPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
-        modsManager = new ModsManager(dataPath);
-
         if (Instance != null)
         {
             Debug.LogError("There should never be two world controllers.");
         }
         Instance = this;
+        World.cbWorldChanged += OnWorldChanged;
 
+        worlds = new List<World>();
         if (loadWorldFromFile != null)
         {
             CreateWorldFromSaveFile();
@@ -85,18 +85,28 @@ public class WorldController : MonoBehaviour
             CreateEmptyWorld();
         }
 
-        soundController = new SoundController(world);
+        LoadControllers();
+    }
+       
+    private void OnWorldChanged(World world)
+    {
+        if (worlds.Contains(world))
+        {
+            DisableControllers();
+            this.world = world;
+            LoadWorldControllers();
+        }
+        else
+        {
+            worlds.Add(world);
+            DisableControllers();
+            this.world = world;
+            LoadWorldControllers();
+        }
     }
 
-    void Start() {
-        GameObject go;
-
-        tileSpriteController = new TileSpriteController(world);
-        tileSpriteController.Render();
-        characterSpriteController = new CharacterSpriteController(world);
-        furnitureSpriteController = new FurnitureSpriteController(world);
-        jobSpriteController = new JobSpriteController(world, furnitureSpriteController);
-        inventorySpriteController = new InventorySpriteController(world, inventoryUI);
+    private void LoadControllers()
+    {
         buildModeController = new BuildModeController();
         if(Settings.getSettingAsBool("DevTools_enabled", false))
         {
@@ -109,16 +119,68 @@ public class WorldController : MonoBehaviour
         GameObject Controllers = GameObject.Find("Controllers");
         Instantiate(Resources.Load("UIController"), Controllers.transform);
 
+
         GameObject Canvas = GameObject.Find("Canvas");
-        go = Instantiate(Resources.Load("UI/ContextMenu"),Canvas.transform.position, Canvas.transform.rotation, Canvas.transform) as GameObject;
+        GameObject go = Instantiate(Resources.Load("UI/ContextMenu"),Canvas.transform.position, Canvas.transform.rotation, Canvas.transform) as GameObject;
         go.name = "ContextMenu";
-
-
-
     }
+        
+    private void LoadWorldControllers()
+    {
+        soundController = new SoundController(world);
+        tileSpriteController = new TileSpriteController(world);
+        characterSpriteController = new CharacterSpriteController(world);
+        furnitureSpriteController = new FurnitureSpriteController(world);
+        jobSpriteController = new JobSpriteController(world, furnitureSpriteController);
+        inventorySpriteController = new InventorySpriteController(world, inventoryUI);
+
+        if (mouseController != null)
+        {
+            mouseController.SetFurnitureSpriteController(furnitureSpriteController);
+        }
+    }
+
+    private void DisableControllers()
+    {
+        if(soundController != null) 
+            soundController.Remove();
+        
+        if(tileSpriteController != null) 
+            tileSpriteController.Remove();
+
+        if(characterSpriteController != null) 
+            characterSpriteController.Remove();
+
+        if(furnitureSpriteController != null) 
+            furnitureSpriteController.Remove();
+
+        if(jobSpriteController != null) 
+            jobSpriteController.Remove();
+
+        if(inventorySpriteController != null) 
+            inventorySpriteController.Remove();
+    }
+        
+    // For testing only
+    public bool goBack, newWorld;
 
     void Update()
     {
+        if (world == null)
+            return;
+
+        if(goBack)
+        {
+            World.ChangeWorld(worlds[0]);
+            goBack = false;
+        }
+
+        if(newWorld)
+        {
+            CreateEmptyWorld();
+            newWorld = false;
+        }
+            
         mouseController.Update(IsModal);
         keyboardController.Update(IsModal);
 
@@ -204,7 +266,6 @@ public class WorldController : MonoBehaviour
         Debug.Log(reader.ToString());
         world = (World)serializer.Deserialize(reader);
         reader.Close();
-
 
         // Center the Camera
         Camera.main.transform.position = new Vector3(world.Width / 2, world.Height / 2, Camera.main.transform.position.z);

@@ -30,6 +30,52 @@ public class JobSpriteController
         fsc = furnitureSpriteController;
         world.jobQueue.cbJobCreated += OnJobCreated;
         jobParent = new GameObject("Jobs");
+
+        foreach(Job job in world.jobQueue.PeekJobs())
+        {
+            OnJobCreated(job);
+        }
+
+        foreach(Job job in world.jobWaitingQueue.PeekJobs())
+        {
+            OnJobCreated(job);
+        }
+
+        foreach(Character c in world.characters)
+        {
+            if(c.myJob != null)
+            {
+                OnJobCreated(c.myJob);
+            }
+        }
+    }
+
+    public void Remove(){
+        jobGameObjectMap.Clear();
+
+        world.jobQueue.cbJobCreated -= OnJobCreated;
+        world.jobWaitingQueue.cbJobCreated -= OnJobCreated;
+
+        foreach(Job job in world.jobQueue.PeekJobs()){
+            job.cbJobCompleted -= OnJobEnded;
+            job.cbJobStopped -= OnJobEnded;
+        }
+
+        foreach(Job job in world.jobWaitingQueue.PeekJobs()){
+            job.cbJobCompleted -= OnJobEnded;
+            job.cbJobStopped -= OnJobEnded;
+        }
+
+        foreach(Character c in world.characters)
+        {
+            if(c.myJob != null)
+            {
+                c.myJob.cbJobCompleted -= OnJobEnded;
+                c.myJob.cbJobStopped -= OnJobEnded;
+            }
+        }
+
+        GameObject.Destroy(jobParent);
     }
 
     void OnJobCreated(Job job)
@@ -106,6 +152,12 @@ public class JobSpriteController
         // This executes whether a job was COMPLETED or CANCELLED
 
         // FIXME: We can only do furniture-building jobs.
+
+        if (jobGameObjectMap.ContainsKey(job) == false)
+        {
+            Debug.LogError("OnJobEnded -- trying to remove visuals for job not in our map.");
+            return;
+        }
 
         GameObject job_go = jobGameObjectMap[job];
 
