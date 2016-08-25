@@ -75,14 +75,12 @@ public class Tile :IXmlSerializable, ISelectable
             //if (Type == TileType.Empty)
             //    return 0;	// 0 is unwalkable
             
-
-
-            if (this.Furniture == null)
+            if (Type.MovementCostLua == null)
             {
-                return this.Type.BaseMovementCost;
+                return Type.BaseMovementCost * (Furniture != null ? Furniture.movementCost : 1);
             }
-
-            return this.Type.BaseMovementCost * this.Furniture.movementCost;
+            
+            return (float) LuaUtilities.CallFunction(Type.MovementCostLua, this).Number;
         }
     }
 
