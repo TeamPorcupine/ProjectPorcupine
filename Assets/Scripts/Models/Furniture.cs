@@ -741,8 +741,33 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
 
     public bool IsStockpile()
     {
-        return objectType == "Stockpile";
+        return HasTypeTag("Storage");
     }
+
+    /// <summary>
+    /// Accepts for storage.
+    /// </summary>
+    /// <returns>A list of Inventory which the Furniture accepts for storage.</returns>
+    public Inventory[] AcceptsForStorage()
+    {
+        if (IsStockpile() == false)
+        {
+            Debug.ULogChannel("Stockpile_messages", "Someone is asking a non-stockpile to store stuff!?");
+            return null;
+        }
+
+        // TODO: read this from furniture params
+        Dictionary<string, Inventory> invsDict = new Dictionary<string, Inventory>();
+        foreach (string objectType in World.current.inventoryPrototypes.Keys)
+        {
+            invsDict[objectType] = new Inventory(objectType, World.current.inventoryPrototypes[objectType].maxStackSize, 0);
+        }
+
+        Inventory[] invs = new Inventory[invsDict.Count];
+        invsDict.Values.CopyTo(invs, 0);
+        return invs;
+    }
+
 
     public void Deconstruct()
     {
