@@ -11,9 +11,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 
-public class GameEventManager : MonoBehaviour {
-
-    static public GameEventManager current;
+public class GameEventManager : MonoBehaviour
+{
+    public static GameEventManager current;
 
     Dictionary<string, GameEvent> gameEvents;
 
@@ -26,10 +26,12 @@ public class GameEventManager : MonoBehaviour {
     }
 
     /// <summary>
-    /// Needs to be moved to world
+    /// Needs to be moved to world.
     /// </summary>
-    void Update(){
-        foreach(GameEvent gameEvent in gameEvents.Values){
+    void Update()
+    {
+        foreach (GameEvent gameEvent in gameEvents.Values)
+        {
             gameEvent.Update(Time.deltaTime);
         }
     }
@@ -54,7 +56,6 @@ public class GameEventManager : MonoBehaviour {
 
     void LoadEventsFromDirectory(string filePath)
     {
-
         string[] subDirs = Directory.GetDirectories(filePath);
         foreach (string sd in subDirs)
         {
@@ -66,7 +67,6 @@ public class GameEventManager : MonoBehaviour {
         {
             LoadEvent(fn);
         }
-
     }
 
     void LoadEvent(string filePath)
@@ -84,18 +84,19 @@ public class GameEventManager : MonoBehaviour {
             do
             {
                 ReadEventFromXml(reader);
-            } while(reader.ReadToNextSibling("Event"));
+            }
+            while (reader.ReadToNextSibling("Event"));
         }
         else
         {
-            Debug.LogError("Could not read the event file: " + filePath);
+            Debug.ULogErrorChannel("GameEventManager", "Could not read the event file: " + filePath);
             return;
         }
     }
 
     void ReadEventFromXml(XmlReader reader)
     {
-        //Debug.Log("ReadSpriteFromXml");
+        ///Debug.ULogChannel("GameEventManager","ReadSpriteFromXml");
         string name = reader.GetAttribute("Name");
         bool repeat = false;
         int maxRepeats = 0;
