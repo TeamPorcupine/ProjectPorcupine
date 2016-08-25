@@ -508,8 +508,22 @@ public class MouseController
         {
             WorldController.Instance.cameraController.ChangeZoom(Input.GetAxis("Mouse ScrollWheel"));
         }
+        
+        UpdateCameraBounds();
+    }
 
-    } 
+    /// <summary>
+    /// Make the camera stay within the world boundaries.
+    /// </summary>
+    private void UpdateCameraBounds()
+    {
+        Vector3 oldPos = Camera.main.transform.position;
+
+        oldPos.x = Mathf.Clamp(oldPos.x, 0, (float) World.current.Width - 1);
+        oldPos.y = Mathf.Clamp(oldPos.y, 0, (float) World.current.Height - 1);
+
+        Camera.main.transform.position = oldPos;
+    }
 
     private void ShowFurnitureSpriteAtTile(string furnitureType, Tile t)
     {
