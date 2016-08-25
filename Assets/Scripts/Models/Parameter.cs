@@ -138,7 +138,7 @@ public class Parameter {
 
         writer.WriteStartElement("Param");
         writer.WriteAttributeString("name", name);
-        if (value != null && !value.Equals(""))
+        if (string.IsNullOrEmpty(value) == false)
         {
             writer.WriteAttributeString("value", value);
         }
