@@ -8,13 +8,14 @@
 
 
 #endregion
+
+using System.Linq;
 using UnityEngine;
 using System.Collections.Generic;
 using System;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
-using System.Text.RegularExpressions;
 using System.IO;
 using MoonSharp.Interpreter;
 
@@ -44,6 +45,7 @@ public class World : IXmlSerializable
     public Dictionary<string, Need> needPrototypes;
     public Dictionary<string, InventoryCommon> inventoryPrototypes;
     public Dictionary<string, TraderPrototype> traderPrototypes;
+    public List<Quest> Quests;
 
     // The tile width of the world.
     public int Width { get; protected set; }
@@ -111,6 +113,12 @@ public class World : IXmlSerializable
         rooms.Add(r);
     }
 
+    public int CountFurnitureType(string objectType)
+    {
+        int count = furnitures.Count(f => f.objectType == objectType);
+        return count;
+    }
+
     public void DeleteRoom(Room r)
     {
         if (r == GetOutsideRoom())
@@ -163,6 +171,7 @@ public class World : IXmlSerializable
         CreateNeedPrototypes ();
         CreateInventoryPrototypes();
         CreateTraderPrototypes();
+        CreateQuests();
 
         characters = new List<Character>();
         furnitures = new List<Furniture>();
@@ -470,7 +479,7 @@ public class World : IXmlSerializable
         DirectoryInfo[] mods = WorldController.Instance.modsManager.GetMods();
         foreach (DirectoryInfo mod in mods)
         {
-            string traderXmlModFile = System.IO.Path.Combine(mod.FullName, "Traders.xml");
+            string traderXmlModFile = System.IO.Path.Combine(mod.FullName, "Trader.xml");
             if (File.Exists(traderXmlModFile))
             {
                 string traderXmlModText = System.IO.File.ReadAllText(traderXmlModFile);
@@ -483,14 +492,14 @@ public class World : IXmlSerializable
     {
         XmlTextReader reader = new XmlTextReader(new StringReader(traderXmlText));
 
-        int inventoryCount = 0;
+        int traderCount = 0;
         if (reader.ReadToDescendant("Traders"))
         {
             if (reader.ReadToDescendant("Trader"))
             {
                 do
                 {
-                    inventoryCount++;
+                    traderCount++;
 
                     TraderPrototype trader = new TraderPrototype();
                     try
@@ -515,6 +524,66 @@ public class World : IXmlSerializable
         else
         {
             Debug.LogError("Did not find a 'Traders' element in the prototype definition file.");
+        }
+    }
+
+    void CreateQuests()
+    {
+        Quests = new List<Quest>();
+
+        string dataPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
+        string filePath = System.IO.Path.Combine(dataPath, "Quest.xml");
+        string questrXmlText = System.IO.File.ReadAllText(filePath);
+        LoadQuestsFromFile(questrXmlText);
+        
+        DirectoryInfo[] mods = WorldController.Instance.modsManager.GetMods();
+        foreach (DirectoryInfo mod in mods)
+        {
+            string traderXmlModFile = System.IO.Path.Combine(mod.FullName, "Quest.xml");
+            if (File.Exists(traderXmlModFile))
+            {
+                string questXmlModText = System.IO.File.ReadAllText(traderXmlModFile);
+                LoadQuestsFromFile(questXmlModText);
+            }
+        }
+    }
+
+    void LoadQuestsFromFile(string questXmlText)
+    {
+        XmlTextReader reader = new XmlTextReader(new StringReader(questXmlText));
+
+        int questCount = 0;
+        if (reader.ReadToDescendant("Quests"))
+        {
+            if (reader.ReadToDescendant("Quest"))
+            {
+                do
+                {
+                    questCount++;
+
+                    Quest quest = new Quest();
+                    try
+                    {
+                        quest.ReadXmlPrototype(reader);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogError("Error reading quest for: " + quest.Name + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
+                    }
+
+
+                    Quests.Add(quest);
+
+                } while (reader.ReadToNextSibling("Quest"));
+            }
+            else
+            {
+                Debug.LogError("The quest prototype definition file doesn't have any 'Quest' elements.");
+            }
+        }
+        else
+        {
+            Debug.LogError("Did not find a 'Quests' element in the prototype definition file.");
         }
     }
 
@@ -635,6 +704,58 @@ public class World : IXmlSerializable
         return tiles[x, y];
     }
 
+    public Tile GetCenterTile()
+    {
+        return GetTileAt(Width/2, Height/2);
+    }
+
+    public Tile GetFirstCenterTileWithNoInventory(int maxOffset)
+    {
+        for (int offset = 0; offset <= maxOffset; offset++)
+        {
+            int offsetX = 0;
+            int offsetY = 0;
+            Tile tile;
+
+            // searching top & bottom line of the square
+            for (offsetX = -offset; offsetX <= offset; offsetX++)
+            {
+                offsetY = offset;
+                tile = GetTileAt(Width / 2 + offsetX, Height / 2 + offsetY);
+                if (tile.Inventory == null)
+                {
+                    return tile;
+                }
+
+                offsetY = -offset;
+                tile = GetTileAt(Width / 2 + offsetX, Height / 2 + offsetY);
+                if (tile.Inventory == null)
+                {
+                    return tile;
+                }
+            }
+            
+            // searching left & rigth line of the square
+            for (offsetY = -offset; offsetY <= offset; offsetY++)
+            {
+                offsetX = offset;
+                tile = GetTileAt(Width / 2 + offsetX, Height / 2 + offsetY);
+                if (tile.Inventory == null)
+                {
+                    return tile;
+                }
+
+                offsetX = -offset;
+                tile = GetTileAt(Width / 2 + offsetX, Height / 2 + offsetY);
+                if (tile.Inventory == null)
+                {
+                    return tile;
+                }
+            }
+        }
+
+        return null;
+    }
 
     public Furniture PlaceFurniture(string objectType, Tile t, bool doRoomFloodFill = true)
     {

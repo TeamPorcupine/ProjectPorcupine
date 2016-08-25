@@ -22,6 +22,8 @@ public class Parameter
     // Value is stored as a string and converted as needed, this simplifies storing multiple value types.
     private string value;
 
+    public string Value { get { return value; } }
+
     // If this Parameter contains other Parameters, contents will contain the actual parameters
     private Dictionary<string, Parameter> contents;
 
@@ -150,6 +152,13 @@ public class Parameter
     {
         float returnValue = 0;
         float.TryParse(value, out returnValue);
+        return returnValue;
+    } 
+
+    public int ToInt()
+    {
+        int returnValue = 0;
+        int.TryParse(value, out returnValue);
         return returnValue;
     }
 
