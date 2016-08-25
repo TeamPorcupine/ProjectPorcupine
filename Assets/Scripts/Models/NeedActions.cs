@@ -34,7 +34,7 @@ public class NeedActions
         // We need to make the base type visible.
         myLuaScript.Globals["Inventory"] = typeof(Inventory);
         myLuaScript.Globals["Job"] = typeof(Job);
-
+        myLuaScript.Globals["ModUtils"] = typeof(ModUtils);
         // Also to access statics/globals
         myLuaScript.Globals["World"] = typeof(World);
     }
@@ -70,5 +70,9 @@ public class NeedActions
         object func = _Instance.myLuaScript.Globals[functionName];
 
         return _Instance.myLuaScript.Call(func, args);
+    }
+    public static void RegisterGlobal(System.Type type)
+    {
+        _Instance.myLuaScript.Globals[type.Name] = type;
     }
 }
