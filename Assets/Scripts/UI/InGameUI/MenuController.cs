@@ -63,7 +63,10 @@ public class MenuController : MonoBehaviour
                 OnButtonSettings();
             });
 
-        
+        constructorMenu = GameObject.Find("Constructor Menu");
+        furnitureMenu = constructorMenu.GetComponent<ConstructionMenu>().furnitureMenu;       
+        floorMenu = constructorMenu.GetComponent<ConstructionMenu>().floorMenu;
+
         DeactivateAll();
     }
 
