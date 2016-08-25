@@ -61,9 +61,8 @@ public class FurnitureSpriteController
         // FIXME: This hardcoding is not ideal!
         if (furn.HasTypeTag("Door"))
         {
-            // By default, the door graphic is meant for walls to the east & west
             // Check to see if we actually have a wall north/south, and if so
-            // then rotate this GO by 90 degrees
+            // set the furniture verticalDoor flag to true.
 
             Tile northTile = world.GetTileAt(furn.tile.X, furn.tile.Y + 1);
             Tile southTile = world.GetTileAt(furn.tile.X, furn.tile.Y - 1);
@@ -71,8 +70,9 @@ public class FurnitureSpriteController
             if (northTile != null && southTile != null && northTile.Furniture != null && southTile.Furniture != null &&
                 northTile.Furniture.HasTypeTag("Wall") && southTile.Furniture.HasTypeTag("Wall"))
             {
-                furn_go.transform.rotation = Quaternion.Euler(0, 0, 90);
+                furn.verticalDoor = true;
             }
+            
         }
 
 
@@ -146,9 +146,8 @@ public class FurnitureSpriteController
 
         if (furn.HasTypeTag("Door"))
         {
-            // By default, the door graphic is meant for walls to the east & west
             // Check to see if we actually have a wall north/south, and if so
-            // then rotate this GO by 90 degrees
+            // set the furniture verticalDoor flag to true.
 
             Tile northTile = world.GetTileAt(furn.tile.X, furn.tile.Y + 1);
             Tile southTile = world.GetTileAt(furn.tile.X, furn.tile.Y - 1);
@@ -158,12 +157,12 @@ public class FurnitureSpriteController
             if (northTile != null && southTile != null && northTile.Furniture != null && southTile.Furniture != null &&
                 northTile.Furniture.HasTypeTag("Wall") && southTile.Furniture.HasTypeTag("Wall"))
             {
-                furn_go.transform.rotation = Quaternion.Euler(0, 0, 90);
+                furn.verticalDoor = true;
             }
             else if (eastTile != null && westTile != null && eastTile.Furniture != null && westTile.Furniture != null &&
                 eastTile.Furniture.HasTypeTag("Wall") && westTile.Furniture.HasTypeTag("Wall"))
             {
-                furn_go.transform.rotation = Quaternion.Euler(0, 0, 0);
+                furn.verticalDoor = false;
             }
         }
 

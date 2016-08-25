@@ -20,7 +20,7 @@ public class Path_AStar
     {
         if (path == null || !path.Any())
         {
-            Debug.LogWarning("Created path with no tiles, is this intended?");
+            Debug.ULogWarningChannel("Path_AStar", "Created path with no tiles, is this intended?");
         }
         this.path = path;
     }
@@ -44,7 +44,7 @@ public class Path_AStar
         // Make sure our start/end tiles are in the list of nodes!
         if (nodes.ContainsKey(tileStart) == false)
         {
-            Debug.LogError("Path_AStar: The starting tile isn't in the list of nodes!");
+            Debug.ULogErrorChannel("Path_AStar", "The starting tile isn't in the list of nodes!");
 
             return;
         }
@@ -59,7 +59,7 @@ public class Path_AStar
         {
             if (nodes.ContainsKey(tileEnd) == false)
             {
-                Debug.LogError("Path_AStar: The ending tile isn't in the list of nodes!");
+                Debug.ULogErrorChannel("Path_AStar", "The ending tile isn't in the list of nodes!");
                 return;
             }
 
@@ -229,12 +229,12 @@ public class Path_AStar
     {
         if (path == null)
         {
-            Debug.LogError("Attempting to dequeue from an null path.");
+            Debug.ULogErrorChannel("Path_AStar", "Attempting to dequeue from an null path.");
             return null;
         }
         if (path.Count <= 0)
         {
-            Debug.LogError("what???");
+            Debug.ULogErrorChannel("Path_AStar", "Path queue is zero or less elements long.");
             return null;
         }
         return path.Dequeue();
@@ -252,7 +252,7 @@ public class Path_AStar
     {
         if (path == null || path.Count == 0)
         {
-            Debug.Log("Path is null or empty.");
+            Debug.ULogChannel("Path_AStar", "Path is null or empty.");
             return null;
         }
 
@@ -262,5 +262,10 @@ public class Path_AStar
     public IEnumerable<Tile> Reverse()
     {
         return path == null ? null : path.Reverse();
+    }
+
+    public List<Tile> GetList()
+    {
+        return path.ToList();
     }
 }

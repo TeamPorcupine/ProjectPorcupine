@@ -75,9 +75,11 @@ public class Tile :IXmlSerializable, ISelectable
             //if (Type == TileType.Empty)
             //    return 0;	// 0 is unwalkable
             
-            return (float) FurnitureActions.CallFunction(Type.MovementCostLua, this).Number;
+            return (float) LuaUtilities.CallFunction(Type.MovementCostLua, this).Number;
         }
     }
+
+    public bool IsSelected { get; set; }
 
     // The function we callback any time our tile's data changes
     public event Action<Tile> cbTileChanged;

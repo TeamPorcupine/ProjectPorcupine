@@ -24,10 +24,12 @@ public class WorldController : MonoBehaviour
     JobSpriteController jobSpriteController;
     InventorySpriteController inventorySpriteController;
     FurnitureSpriteController furnitureSpriteController;
+    QuestController questController;
 
     public BuildModeController buildModeController;
     public MouseController mouseController;
     public KeyboardController keyboardController;
+    public CameraController cameraController;
     public SpawnInventoryController spawnInventoryController;
     public ModsManager modsManager;
 
@@ -92,7 +94,10 @@ public class WorldController : MonoBehaviour
         soundController = new SoundController(world);
     }
 
-    void Start() {
+    void Start()
+    {
+        //create gameobject so we can have access to a tranform thats position is Vector3.zero
+        GameObject goMat = new GameObject("VisualPath", typeof(VisualPath));
         GameObject go;
 
         tileSpriteController = new TileSpriteController(world);
@@ -108,6 +113,8 @@ public class WorldController : MonoBehaviour
         }
         mouseController = new MouseController(buildModeController, furnitureSpriteController, circleCursorPrefab);
         keyboardController = new KeyboardController(buildModeController, Instance);
+        questController = new QuestController();
+        cameraController = new CameraController();
 
         //Initialising controllers
         GameObject Controllers = GameObject.Find("Controllers");
@@ -125,12 +132,14 @@ public class WorldController : MonoBehaviour
     {
         mouseController.Update(IsModal);
         keyboardController.Update(IsModal);
+        cameraController.Update(IsModal);
 
         if (IsPaused == false)
         {
             world.Update(Time.deltaTime * timeScale);
         }
 
+        questController.Update(Time.deltaTime);
         soundController.Update(Time.deltaTime);
     }
 

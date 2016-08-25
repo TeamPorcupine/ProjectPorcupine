@@ -48,6 +48,8 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
         }
     }
 
+    public bool IsSelected { get; set; }
+
     // The function we callback any time our tile's data changes
     public event Action<Inventory> cbInventoryChanged;
 

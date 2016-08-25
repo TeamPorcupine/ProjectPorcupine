@@ -120,11 +120,10 @@ public class TileType : IXmlSerializable {
     public static void LoadTileTypes()
     {
         // Load lua code
-        string luaPath = Path.Combine(Application.streamingAssetsPath, "LUA");
-        string luaFilePath = Path.Combine(luaPath, "Tile.lua");
-        string luaCode = File.ReadAllText(luaFilePath);
-        
-        FurnitureActions.AddScript(luaCode);
+        string luaPath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
+        string luaFilePath = System.IO.Path.Combine(luaPath, "Tile.lua");
+
+        LuaUtilities.LoadScriptFromFile(luaFilePath);
 
         // Load all mod defined lua code
         foreach (DirectoryInfo mod in WorldController.Instance.modsManager.GetMods())
@@ -133,9 +132,7 @@ public class TileType : IXmlSerializable {
             {
                 Debug.ULogChannel("TileType", "Loading mod " + mod.Name + " TileType definitions!");
 
-                luaCode = File.ReadAllText(file.FullName);
-
-                FurnitureActions.AddScript(luaCode);
+                LuaUtilities.LoadScriptFromFile(file.FullName);
             }
         }
 

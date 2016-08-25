@@ -8,13 +8,14 @@
 
 
 #endregion
+
+using System.Linq;
 using UnityEngine;
 using System.Collections.Generic;
 using System;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
-using System.Text.RegularExpressions;
 using System.IO;
 using MoonSharp.Interpreter;
 
@@ -23,7 +24,7 @@ public class World : IXmlSerializable
 {
     // TODO: Should this be also saved with the world data?
     // If so - beginner task!
-    public readonly string currentGameVersion = "Someone_will_come_up_with_a_proper_naming_scheme_later";
+    public readonly string gameVersion = "Someone_will_come_up_with_a_proper_naming_scheme_later";
 
     // A two-dimensional array to hold our tile data.
     Tile[,] tiles;
@@ -103,6 +104,12 @@ public class World : IXmlSerializable
     public void AddRoom(Room r)
     {
         rooms.Add(r);
+    }
+
+    public int CountFurnitureType(string objectType)
+    {
+        int count = furnitures.Count(f => f.objectType == objectType);
+        return count;
     }
 
     public void DeleteRoom(Room r)
@@ -250,6 +257,17 @@ public class World : IXmlSerializable
             
         return c;
     }
+    
+
+
+    void LoadNeedLua(string filePath)
+    {
+        string myLuaCode = System.IO.File.ReadAllText(filePath);
+
+        // Instantiate the singleton
+
+        NeedActions.AddScript(myLuaCode);
+    }
 
 
     /// <summary>
@@ -319,6 +337,58 @@ public class World : IXmlSerializable
         return tiles[x, y];
     }
 
+    public Tile GetCenterTile()
+    {
+        return GetTileAt(Width/2, Height/2);
+    }
+
+    public Tile GetFirstCenterTileWithNoInventory(int maxOffset)
+    {
+        for (int offset = 0; offset <= maxOffset; offset++)
+        {
+            int offsetX = 0;
+            int offsetY = 0;
+            Tile tile;
+
+            // searching top & bottom line of the square
+            for (offsetX = -offset; offsetX <= offset; offsetX++)
+            {
+                offsetY = offset;
+                tile = GetTileAt(Width / 2 + offsetX, Height / 2 + offsetY);
+                if (tile.Inventory == null)
+                {
+                    return tile;
+                }
+
+                offsetY = -offset;
+                tile = GetTileAt(Width / 2 + offsetX, Height / 2 + offsetY);
+                if (tile.Inventory == null)
+                {
+                    return tile;
+                }
+            }
+            
+            // searching left & rigth line of the square
+            for (offsetY = -offset; offsetY <= offset; offsetY++)
+            {
+                offsetX = offset;
+                tile = GetTileAt(Width / 2 + offsetX, Height / 2 + offsetY);
+                if (tile.Inventory == null)
+                {
+                    return tile;
+                }
+
+                offsetX = -offset;
+                tile = GetTileAt(Width / 2 + offsetX, Height / 2 + offsetY);
+                if (tile.Inventory == null)
+                {
+                    return tile;
+                }
+            }
+        }
+
+        return null;
+    }
 
     public Furniture PlaceFurniture(string objectType, Tile t, bool doRoomFloodFill = true)
     {

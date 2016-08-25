@@ -83,27 +83,34 @@ public class Prototypes<T>
     /// <summary>
     /// Returns the prototype Keys.
     /// </summary>
-    public Dictionary<string, T>.KeyCollection Keys()
+    public Dictionary<string, T>.KeyCollection Keys
     {
-        return prototypes.Keys;
+        get
+        {
+            return prototypes.Keys;
+        }
+    }
+
+    /// <summary>
+    /// Returns the prototype Keys.
+    /// </summary>
+    public List<T> Values
+    {
+        get
+        {
+            return prototypes.Values.ToList();
+        }
     }
 
     /// <summary>
     /// Returns the amount of prototypes.
     /// </summary>
-    public int Count()
+    public int Count
     {
-        return prototypes.Count;
-    }
-
-    /// <summary>
-    /// Copies the prototypes to the given array.
-    /// </summary>
-    /// <param name="array">Array.</param>
-    /// <param name="index">Index.</param>
-    public void CopyTo(T[] array, int index)
-    {
-        prototypes.Values.CopyTo(array, index);
+        get
+        {
+            return prototypes.Count;
+        }
     }
 
 

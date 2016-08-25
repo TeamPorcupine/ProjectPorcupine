@@ -19,6 +19,7 @@ public class PrototypeManager
     static public InventoryPrototypes Inventory { get; protected set; }
     static public NeedPrototypes Need { get; protected set; }
     static public TraderPrototypes Trader { get; protected set; }
+    static public QuestPrototypes Quest { get; protected set; }
 
 
     public PrototypeManager()
@@ -28,6 +29,7 @@ public class PrototypeManager
         Inventory = new InventoryPrototypes();
         Need = new NeedPrototypes();
         Trader = new TraderPrototypes();
+        Quest = new QuestPrototypes();
 
         new FurnitureActions();
     }

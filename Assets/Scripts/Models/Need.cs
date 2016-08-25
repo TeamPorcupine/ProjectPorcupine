@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
@@ -39,6 +40,8 @@ public class Need {
     public bool completeOnFail { get; protected set; }
     protected float addedInVacuum;
     protected float dps;
+    protected string[] luaUpdate;
+    protected bool luaOnly = false;
     // Use this for initialization
     public Need ()
     {
@@ -58,11 +61,16 @@ public class Need {
         this.completeOnFail = other.completeOnFail;
         this.addedInVacuum = other.addedInVacuum;
         this.dps = other.dps;
+        this.luaUpdate = other.luaUpdate;
+        this.luaOnly = other.luaOnly;
     }
     
     // Update is called once per frame
     public void Update (float deltaTime)
     {
+        NeedActions.CallFunctionsWithNeed (luaUpdate, this, deltaTime);
+        if (luaOnly)
+            return;
         Amount += growthRate * deltaTime;
         if (character != null && character.CurrTile.Room != null && character.CurrTile.Room.GetGasPressure ("O2") < 0.15)
         {
@@ -73,7 +81,7 @@ public class Need {
             Debug.Log (character.name + " needs " + Name);
             character.AbandonJob (false);
         }
-        if (Amount == 100 && character.myJob.critical == false)
+        if (Amount == 100 && character.myJob.critical == false && completeOnFail)
         {
             Debug.Log (character.name + " failed their " + Name + " need.");
             character.AbandonJob (false);
@@ -91,7 +99,7 @@ public class Need {
         needType = reader_parent.GetAttribute("needType");
 
         XmlReader reader = reader_parent.ReadSubtree();
-
+        List<string> luaActions = new List<string> ();
 
         while (reader.Read())
         {
@@ -137,8 +145,16 @@ public class Need {
                 reader.Read ();
                 localisationID = reader.ReadContentAsString();
                 break;
+            case "LuaProcessingOnly":
+                luaOnly = true;
+                break;
+            case "OnUpdate":
+                reader.Read ();
+                luaActions.Add(reader.ReadContentAsString());
+                break;
             }
         }
+        luaUpdate = luaActions.ToArray();
     }
 
     public void CompleteJobNorm (Job j)
