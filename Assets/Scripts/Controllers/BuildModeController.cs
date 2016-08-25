@@ -182,6 +182,33 @@ public class BuildModeController
             // TODO
             if (t.Furniture != null)
             {
+                // check if this is a WALL neighbouring a pressured and pressureless environ & if so bail
+                if (t.Furniture.HasTypeTag("Wall"))
+                {
+                    Tile[] neighbors = t.GetNeighbours(); // diagOkay??
+                    int pressuredNeighbors = 0;
+                    int vacuumNeighbors = 0;
+                    foreach (Tile neighbor in neighbors)
+                    {
+                        if (neighbor != null && neighbor.Room != null)
+                        {
+                            if ((neighbor.Room == World.current.GetOutsideRoom()) || MathUtilities.IsZero(neighbor.Room.GetTotalGasPressure()))
+                            {
+                                vacuumNeighbors++;
+                            }
+                            else
+                            {
+                                pressuredNeighbors++;
+                            }
+                        }
+                    }
+
+                    if (vacuumNeighbors > 0 && pressuredNeighbors > 0)
+                    {
+                        Debug.Log("Someone tried to deconstruct a wall between a pressurised room and vacuum!");
+                        return;
+                    }
+                }
                 t.Furniture.Deconstruct();
             }
             else if (t.PendingBuildJob != null)
