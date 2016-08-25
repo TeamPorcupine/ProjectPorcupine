@@ -62,6 +62,7 @@ public class MenuController : MonoBehaviour
             {
                 OnButtonSettings();
             });
+
         
         DeactivateAll();
     }
