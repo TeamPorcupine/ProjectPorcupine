@@ -67,6 +67,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         }
     }
     Need[] needs;
+    
     /// <summary>
     /// The tile the Character is considered to still be standing in.
     /// </summary>
@@ -158,7 +159,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     // is the character walking or idle
     public bool IsWalking;
 
-    // 0=north, 1=east, 2=south, 3=west
+    // What direction our character is looking
     public Facing CharFacing;
 
     public bool IsSelected
