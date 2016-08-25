@@ -14,22 +14,38 @@ public class PowerGrid
 {
     private readonly HashSet<PowerRelated> powerGrid;
 
-    public bool IsOperating { get; private set; }
-
     public PowerGrid()
     {
         powerGrid = new HashSet<PowerRelated>();
     }
 
+    public bool IsOperating { get; private set; }
+
+    public bool IsEmpty
+    {
+        get
+        {
+            return powerGrid.Count == 0;
+        }
+    }
+
     public bool CanPlugIn(PowerRelated powerRelated)
     {
-        if (powerRelated == null) throw new ArgumentNullException("powerRelated");
+        if (powerRelated == null)
+        {
+            throw new ArgumentNullException("powerRelated");
+        }
+
         return true;
     }
 
     public bool PlugIn(PowerRelated powerRelated)
     {
-        if (powerRelated == null) throw new ArgumentNullException("powerRelated");
+        if (powerRelated == null)
+        {
+            throw new ArgumentNullException("powerRelated");
+        }
+
         if (!CanPlugIn(powerRelated))
         {
             return false;
@@ -41,27 +57,44 @@ public class PowerGrid
 
     public bool IsPluggedIn(PowerRelated powerRelated)
     {
-        if (powerRelated == null) throw new ArgumentNullException("powerRelated");
+        if (powerRelated == null)
+        {
+            throw new ArgumentNullException("powerRelated");
+        }
+
         return powerGrid.Contains(powerRelated);
     }
 
     public void Unplug(PowerRelated powerRelated)
     {
-        if (powerRelated == null) throw new ArgumentNullException("powerRelated");
+        if (powerRelated == null)
+        {
+            throw new ArgumentNullException("powerRelated");
+        }
+
         powerGrid.Remove(powerRelated);
     }
 
     public void Update()
     {
         float currentPowerLevel = 0.0f;
-        foreach (PowerRelated powerRelated in powerGrid.Where(powerRelated => powerRelated.IsPowerProducer))
+        foreach (PowerRelated powerRelated in powerGrid)
         {
-            currentPowerLevel += powerRelated.OutputRate;
+            if (powerRelated.IsPowerProducer)
+            {
+                currentPowerLevel += powerRelated.OutputRate;
+            }
+
+            if (powerRelated.IsPowerConsumer)
+            {
+                currentPowerLevel -= powerRelated.InputRate;
+            }
         }
 
-        foreach (PowerRelated powerRelated in powerGrid.Where(powerRelated => powerRelated.IsPowerConsumer))
+        if (currentPowerLevel.IsZero())
         {
-            currentPowerLevel -= powerRelated.InputRate;
+            IsOperating = true;
+            return;
         }
 
         if (currentPowerLevel > 0.0f)
@@ -80,7 +113,11 @@ public class PowerGrid
     {
         foreach (PowerRelated powerRelated in powerGrid.Where(powerRelated => powerRelated.IsPowerAccumulator && !powerRelated.IsFull))
         {
-            if (currentPowerLevel - powerRelated.InputRate < 0.0f) break;
+            if (currentPowerLevel - powerRelated.InputRate < 0.0f)
+            {
+                continue;
+            }
+
             currentPowerLevel -= powerRelated.InputRate;
             powerRelated.AccumulatedPower += powerRelated.InputRate;
         }
@@ -88,11 +125,20 @@ public class PowerGrid
 
     private void DischargeAccumulators(ref float currentPowerLevel)
     {
+        if (currentPowerLevel + 
+            powerGrid.Where(powerRelated => powerRelated.IsPowerAccumulator && !powerRelated.IsEmpty).Sum(powerRelated => powerRelated.OutputRate) < 0)
+        {
+            return;
+        }
+
         foreach (PowerRelated powerRelated in powerGrid.Where(powerRelated => powerRelated.IsPowerAccumulator && !powerRelated.IsEmpty))
         {
             currentPowerLevel += powerRelated.OutputRate;
             powerRelated.AccumulatedPower -= powerRelated.OutputRate;
-            if (currentPowerLevel >= 0.0f) break;
+            if (currentPowerLevel >= 0.0f)
+            {
+                break;
+            }
         }
     }
 }

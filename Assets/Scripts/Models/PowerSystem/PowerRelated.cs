@@ -9,11 +9,11 @@
 
 public class PowerRelated
 {
-    public float InputRate { get; private set; }
+    public float InputRate { get; set; }
 
-    public float OutputRate { get; private set; }
+    public float OutputRate { get; set; }
 
-    public float Capacity { get; private set; }
+    public float Capacity { get; set; }
 
     public float AccumulatedPower { get; set; }
 
