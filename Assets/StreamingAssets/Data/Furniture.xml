@@ -162,7 +162,7 @@
 
     <Furniture objectType="Mining Drone Station">
         <Name>Mining Drone Station</Name>
-        <Description>Creates Steel Plates when worked by a character.</Description>
+        <Description>Creates raw materials when worked by a character.</Description>
         <TypeTag>Workstation</TypeTag>
         <MovementCost>1</MovementCost>
         <Width>3</Width>
@@ -170,12 +170,18 @@
 
         <BuildingJob jobTime="0">
         </BuildingJob>
+        <Params>
+          <Param name="mine_type" value="Raw Iron" />
+        </Params>
 
         <JobSpotOffset X="1" Y="0" />
         <JobSpawnSpotOffset X="0" Y="0" />
 
         <OnUpdate FunctionName="MiningDroneStation_UpdateAction" />
-        
+        <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Iron" Text="change to raw iron" RequiereCharacterSelected="false"/>
+        <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Copper" Text="change to raw copper" RequiereCharacterSelected="false"/>
+
+
         <LocalizationCode>furn_mining_drone_station</LocalizationCode>
         <UnlocalizedDescription>furn_mining_drone_station_desc</UnlocalizedDescription>
 
