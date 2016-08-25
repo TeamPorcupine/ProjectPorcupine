@@ -85,14 +85,18 @@ public class ParametersEditorTest
         Assert.That(param1["gas_gen"]["N2"]["gas_limit"].ToString(), Is.EqualTo("0.8"));
     }
 
-    // FIXME: This test must be rewritten if lazy evaluation is implemented as per PR #746
     [Test]
-    [ExpectedException(typeof(KeyNotFoundException))]
     public void ParameterAccessingKeyNotDefined()
     {
         Assert.That(param1.ContainsKey("bad_key"), Is.False);
 
+        // accessing it creates a new empty Parameter
         Parameter param2 = param1["bad_key"];
+        Assert.That(param1.ContainsKey("bad_key"), Is.True);
+        Assert.That(param2.ToString(), Is.Null);
+        Assert.That(param2.ToFloat(), Is.EqualTo(0));
+        Assert.That(param2.Keys(), Is.EqualTo(new string[] {}));
+        Assert.That(param2.HasContents(), Is.False);
     }
 
     [Test]
