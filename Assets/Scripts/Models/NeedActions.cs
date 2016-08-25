@@ -73,6 +73,6 @@ public class NeedActions
     }
     public static void RegisterGlobal(System.Type type)
     {
-        myLuaScript.Globals[type.Name] = type;
+        _Instance.myLuaScript.Globals[type.Name] = type;
     }
 }
