@@ -23,6 +23,9 @@
 
   <Quest Name="Fresh">
     <Description>Build 2 Oxygen Generator and the power for it</Description>
+    <PreRequiredCompletedQuests>
+      <PreRequiredCompletedQuest Name="Mining Drone Beta Test Program"/>
+    </PreRequiredCompletedQuests>
     <Goals>
       <Goal Description="Build 2 Power Generator" IsCompletedLuaFunction="Quest_Have_Furniture_Built">
         <Params>

@@ -26,7 +26,7 @@ public class DialogBoxQuests : DialogBox
 
     private void BuildInterface()
     {
-        List<Quest> quests = World.current.Quests.Where(q=>!q.IsAccepted).ToList();
+        List<Quest> quests = World.current.Quests.Where(q=>IsQuestAvailable(q)).ToList();
 
         foreach (var quest in quests)
         {
@@ -36,5 +36,22 @@ public class DialogBoxQuests : DialogBox
             var questItemBehaviour = go.GetComponent<DialogBoxQuestItem>();
             questItemBehaviour.SetupQuest(this, quest);
         }
+    }
+
+    private bool IsQuestAvailable(Quest quest)
+    {
+        if (quest.IsAccepted)
+        {
+            return false;
+        }
+
+        if (quest.PreRequiredCompletedQuest.Count == 0)
+        {
+            return true;
+        }
+
+        List<Quest> preQuests = World.current.Quests.Where(q => quest.PreRequiredCompletedQuest.Contains(q.Name)).ToList();
+
+        return preQuests.All(q => q.IsCompleted);
     }
 }

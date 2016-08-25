@@ -15,9 +15,14 @@ public class Quest
 
     public List<QuestReward> Rewards;
 
+    public List<string> PreRequiredCompletedQuest;
+
     public void ReadXmlPrototype(XmlTextReader reader_parent)
     {
         Name = reader_parent.GetAttribute("Name");
+        Goals = new List<QuestGoal>();
+        Rewards = new List<QuestReward>();   
+        PreRequiredCompletedQuest = new List<string>();
 
         XmlReader reader = reader_parent.ReadSubtree();
 
@@ -29,8 +34,18 @@ public class Quest
                     reader.Read();
                     Description = reader.ReadContentAsString();
                     break;
+                case "PreRequiredCompletedQuests":
+                    XmlReader subReader = reader.ReadSubtree();
+
+                    while (subReader.Read())
+                    {
+                        if (subReader.Name == "PreRequiredCompletedQuest")
+                        {
+                            PreRequiredCompletedQuest.Add(subReader.GetAttribute("Name"));
+                        }
+                    }
+                    break;
                 case "Goals":
-                    Goals = new List<QuestGoal>();
                     XmlReader goals_reader = reader.ReadSubtree();
                     while (goals_reader.Read())
                     {
@@ -42,8 +57,7 @@ public class Quest
                         }
                     }
                     break;
-                case "Rewards":
-                    Rewards = new List<QuestReward>();    
+                case "Rewards": 
                     XmlReader reward_reader = reader.ReadSubtree();
                     while (reward_reader.Read())
                     {
