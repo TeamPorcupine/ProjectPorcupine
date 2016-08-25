@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using MoonSharp.Interpreter;
+using System;
+using System.IO;
 
 public class LuaUtilities {
 
@@ -27,9 +29,23 @@ public class LuaUtilities {
         return luaScript.Call(func, args);
     }
     
-    public static void LoadScript(string script)
+    static void LoadScript(string script)
     {
-        luaScript.DoString(script);
+            luaScript.DoString(script);
+    }
+
+    public static void LoadScriptFromFile(string filePath)
+    {
+        string luaCode = System.IO.File.ReadAllText(filePath);
+
+        try
+        {
+        LuaUtilities.LoadScript(luaCode);
+        }
+        catch (MoonSharp.Interpreter.SyntaxErrorException e)
+        {
+            Debug.LogError( "["+ Path.GetFileName(filePath) +"] LUA Parse error: " + e.DecoratedMessage );
+        }
     }
 
     // If we want to be able to instantiate a new object of a class
