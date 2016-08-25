@@ -45,6 +45,17 @@ public class QuestController
                 CollectQuestReward(quest);
             }
         }
+
+        List<Quest> completedQuestWithUnCollectedRewards =
+            World.current.Quests.Where(q => q.IsCompleted && q.Rewards.Any(r => !r.IsCollected)).ToList();
+
+        foreach (Quest quest in completedQuestWithUnCollectedRewards)
+        {
+            if (!ongoingQuests.Contains(quest))
+            {
+                CollectQuestReward(quest);
+            }
+        }
     }
     
     private bool IsQuestCompleted(Quest quest)
@@ -63,7 +74,10 @@ public class QuestController
     {
         foreach (QuestReward reward in quest.Rewards)
         {
-            QuestActions.CallFunction(reward.OnRewardLuaFunction, reward);
+            if (!reward.IsCollected)
+            {
+                QuestActions.CallFunction(reward.OnRewardLuaFunction, reward);
+            }
         }
     }
 }

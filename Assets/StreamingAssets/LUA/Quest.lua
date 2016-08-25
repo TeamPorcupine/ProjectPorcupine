@@ -16,11 +16,16 @@ function Quest_Have_Furniture_Built(goal)
 end
 
 function Quest_Spawn_Inventory(reward)
- tile = World.current.GetCenterTile()
+ --tile = World.current.GetCenterTile()
+ tile = World.current.GetFirstCenterTileWithNoInventory(6)
+ if(tile == nil) then
+  return
+ end
  objectType = reward.Parameters["objectType"].Value
  amount = reward.Parameters["amount"].ToInt()
  inv = Inventory.__new(objectType, amount, amount)
  World.current.inventoryManager.PlaceInventory( tile, inv)
+ reward.IsCollected = true;
 end
 
 return "LUA Script Parsed!"

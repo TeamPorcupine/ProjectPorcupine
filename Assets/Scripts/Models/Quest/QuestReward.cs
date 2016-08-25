@@ -7,6 +7,7 @@ public class QuestReward
     public string Description;
     public string OnRewardLuaFunction;
     public Parameter Parameters;
+    public bool IsCollected;
 
     public void ReadXmlPrototype(XmlReader reader_parent)
     {
