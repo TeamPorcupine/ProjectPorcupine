@@ -60,9 +60,4 @@ public static class MathUtilities
     {
         return Math.Abs(value) < double.Epsilon;
     }
-    public static float RoundFloat(this float value, int decimalplace)
-    {
-        int dp = (int)Math.Pow(10, decimalplace);
-        return (float)Math.Round(value * dp) / dp;
-    }
 }
