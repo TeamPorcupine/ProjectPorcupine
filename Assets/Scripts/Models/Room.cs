@@ -21,6 +21,7 @@ public class Room : IXmlSerializable
 {
     // Dictionary with the amount of gas in room stored in preasure(in atm) multiplyed by number of tiles
     private Dictionary<string, float> atmosphericGasses; 
+    private Dictionary<string, string> deltaGas;
 
     private List<Tile> tiles;
     private List<Tile> enclosingTiles;
@@ -32,6 +33,7 @@ public class Room : IXmlSerializable
         enclosingTiles = new List<Tile>();
         exits = new List<Tile>();
         atmosphericGasses = new Dictionary<string, float>();
+        deltaGas = new Dictionary<string, string>();
     }
 
     public int ID
@@ -91,16 +93,35 @@ public class Room : IXmlSerializable
         if (atmosphericGasses.ContainsKey(name))
         {
             atmosphericGasses[name] += amount;
+            if (Mathf.Sign(amount) == 1)
+            {
+                deltaGas[name] = "+";
+            }
+            else
+            {
+                deltaGas[name] = "-";
+            }
         }
         else
         {
             atmosphericGasses[name] = amount;
+            deltaGas[name] = "=";
         }
 
         if (atmosphericGasses[name] < 0)
         {
             atmosphericGasses[name] = 0;
         }
+    }
+
+    public string ChangedGases(string name)
+    {
+        if (deltaGas.ContainsKey(name))
+        {
+            return deltaGas[name];
+        }
+
+        return "=";
     }
 
     public void EqualiseGas(Room otherRoom, float leakFactor)
@@ -167,7 +188,7 @@ public class Room : IXmlSerializable
         return 0;
     }
 
-    public float GetGasPercentage(string name)
+    public float GetGasFraction(string name)
     {
         if (atmosphericGasses.ContainsKey(name) == false)
         {
