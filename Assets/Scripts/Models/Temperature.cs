@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using MoonSharp.Interpreter;
+using System.Threading;
 
 /// <summary>
 /// A  Temperature management system. Temperature is stored at each tile and evolved using
@@ -27,13 +28,7 @@ public class Temperature
     /// <summary>
     /// All heaters and refrigerators shoul register themselves here using the public interface
     /// </summary>
-    Dictionary<Furniture, Action> sinksAndSources;
-
-    /// <summary>
-    /// All heaters and refrigerators shoul register an Action here
-    /// TODO: find elegant way to modify this through LUA
-    /// </summary>
-    Action sinksAndSourcesActions;
+    Dictionary<Furniture, Action<float>> sinksAndSources;
 
     /// <summary>
     /// Internal only variables
@@ -81,12 +76,8 @@ public class Temperature
             }
         }
 
-        sinksAndSources = new Dictionary<Furniture, Action>();
+        sinksAndSources = new Dictionary<Furniture, Action<float>>();
         
-        // TODO: remove, dummy heater at x=50, y=50, with power=1000
-        //sinksAndSources += () => { SetTemperature(50, 50, -GetTemperature(50, 50) + 300); };
-
-        sinksAndSourcesActions += () => { SetTemperature(52, 52,  300); };
         }
 
     /// <summary>
@@ -105,7 +96,7 @@ public class Temperature
 
         if (elapsed >= updateInterval)
         {
-            ProgressTemperature();
+            ProgressTemperature(Time.deltaTime);
             elapsed = 0;
         }
     }
@@ -113,16 +104,16 @@ public class Temperature
     public void RegisterSinkOrSource(Furniture provider)
     {
         // TODO: This need to be implemented
-        //sinksAndSources[provider] = () => { provider.TriggerEvent("OnUpdateTemperature"); };
-
-        sinksAndSourcesActions += sinksAndSources[provider];
+        sinksAndSources[provider] = (float deltaTime) => {
+            provider.eventActions.Trigger("OnUpdateTemperature", provider, deltaTime);
+        };
+        
     }
 
     public void DeregisterSinkOrSource(Furniture provider)
     {
         if (sinksAndSources.ContainsKey(provider))
         {
-            sinksAndSourcesActions -= sinksAndSources[provider];
             sinksAndSources.Remove(provider);
         }
     }
@@ -258,15 +249,20 @@ public class Temperature
     /// <summary>
     /// Evolve the temperature model. Loops over all tiles!
     /// </summary>
-    void ProgressTemperature()
+    void ProgressTemperature(float deltaT)
     {
         //Debug.Log("Updating temperature!");
         // TODO: Compute temperature sources
         // foreach(Tile tile in sinkAndSources)
         // GetTileAt(55, 55).temp_old = 1000;
-        if (sinksAndSourcesActions != null) sinksAndSourcesActions();
+        if (sinksAndSources != null) {
+        foreach (Action<float> act in sinksAndSources.Values) {
+                act(deltaT);
+            }
+        }
 
-        ForwardTemp();
+        Thread thread = new Thread(ForwardTemp);
+        thread.Start();
     }
 
     void ForwardTemp()

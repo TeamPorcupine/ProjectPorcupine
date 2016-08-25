@@ -50,7 +50,7 @@
         <Params>
             <Param name="openness" value="0" />
             <Param name="is_opening" value="0" />
-            <Param name="thermal_diffusivity" value="0.0" />
+            <Param name="thermal_diffusivity" value="0.001" />
         </Params>
 
         <BuildingJob jobTime="1">
@@ -88,6 +88,7 @@
         <Params>
             <Param name="openness" value="0" />
             <Param name="is_opening" value="0" />
+            <Param name="thermal_diffusivity" value="0.00001" />
         </Params>
 
         <BuildingJob jobTime="5">
