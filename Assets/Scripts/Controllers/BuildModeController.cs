@@ -43,6 +43,11 @@ public class BuildModeController
         return proto.Width == 1 && proto.Height == 1;
     }
 
+    public string GetFloorTile()
+    {
+        return buildModeTile.ToString();
+    }
+
     public void SetModeBuildTile(TileType type)
     {
         buildMode = BuildMode.FLOOR;
@@ -118,7 +123,7 @@ public class BuildModeController
                     {
                         // FIXME: I don't like having to manually and explicitly set
                         // flags that preven conflicts. It's too easy to forget to set/clear them!
-                        Tile offsetTile = WorldController.Instance.world.GetTileAt(x_off,y_off);
+                        Tile offsetTile = WorldController.Instance.world.GetTileAt(x_off, y_off);
                         offsetTile.PendingBuildJob = j;
                         j.cbJobStopped += (theJob) =>
                             {
@@ -209,6 +214,7 @@ public class BuildModeController
                         return;
                     }
                 }
+
                 t.Furniture.Deconstruct();
             }
             else if (t.PendingBuildJob != null)
@@ -219,24 +225,6 @@ public class BuildModeController
         else
         {
             Debug.LogError("UNIMPLEMENTED BUILD MODE");
-        }
-    }
-
-    // Checks whether the given floor type is allowed to be built on the tile.
-    // TODO Export this kind of check to an XML/LUA file for easier modding of floor types.
-    private bool CanBuildTileTypeHere(Tile t, TileType tileType)
-    {
-        DynValue value = LuaUtilities.CallFunction(tileType.CanBuildHereLua, t);
-
-        if (value != null)
-        {
-            return value.Boolean;
-        }
-        else
-        {
-            Debug.ULogChannel("Lua", "Found no lua function " + tileType.CanBuildHereLua);
-
-            return false;
         }
     }
 
@@ -255,6 +243,24 @@ public class BuildModeController
 
         return false;
     }
+
+    // Checks whether the given floor type is allowed to be built on the tile.
+    // TODO Export this kind of check to an XML/LUA file for easier modding of floor types.
+    private bool CanBuildTileTypeHere(Tile t, TileType tileType)
+    {
+        DynValue value = LuaUtilities.CallFunction(tileType.CanBuildHereLua, t);
+
+        if (value != null)
+        {
+            return value.Boolean;
+        }
+        else
+        {
+            Debug.ULogChannel("Lua", "Found no lua function " + tileType.CanBuildHereLua);
+
+            return false;
+        }
+    }    
 
     // Use this for initialization
     private void Start()
