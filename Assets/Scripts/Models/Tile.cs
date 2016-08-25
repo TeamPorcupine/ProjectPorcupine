@@ -66,6 +66,8 @@ public class Tile :IXmlSerializable, ISelectable
 
     public int Y { get; protected set; }
 
+    public float MovmentModifier { get; set; }
+
     public float MovementCost
     {
         get
@@ -75,12 +77,7 @@ public class Tile :IXmlSerializable, ISelectable
             //if (Type == TileType.Empty)
             //    return 0;	// 0 is unwalkable
             
-            if (Type.MovementCostLua == null)
-            {
-                return Type.BaseMovementCost * (Furniture != null ? Furniture.movementCost : 1);
-            }
-            
-            return (float) LuaUtilities.CallFunction(Type.MovementCostLua, this).Number;
+            return Type.BaseMovementCost * MovmentModifier * (Furniture != null ? Furniture.movementCost : 1);
         }
     }
 
@@ -99,6 +96,7 @@ public class Tile :IXmlSerializable, ISelectable
         this.X = x;
         this.Y = y;
         Characters = new List<Character>();
+        MovmentModifier = 1;
     }
 
     public bool UnplaceFurniture()
