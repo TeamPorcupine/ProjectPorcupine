@@ -26,7 +26,15 @@ public class LuaUtilities {
             Debug.ULogChannel("Lua", "'" + functionName + "' is not a LUA function!");
         }
 
-        return luaScript.Call(func, args);
+        try
+        {
+            return luaScript.Call(func, args);
+        }
+        catch (ScriptRuntimeException e)
+        {
+            Debug.LogError( e.DecoratedMessage );
+            return null;
+        }
     }
     
     static void LoadScript(string script)
