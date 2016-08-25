@@ -110,4 +110,19 @@ public class SpawnInventoryController {
             World.current.inventoryManager.PlaceInventory(t, inventoryChange);
         }
     }
+
+    public void HideUI() 
+    {
+        spawnUI.SetActive(false);
+    }
+
+    public void ShowUI() 
+    {
+        spawnUI.SetActive(true);
+    }
+
+    public void SetUIVisibility(bool visibility)
+    {
+        spawnUI.SetActive(visibility);
+    }
 }
