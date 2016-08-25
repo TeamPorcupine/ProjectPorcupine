@@ -6,13 +6,13 @@
 -------------------------------------------------------
 
 -------------------------------- Tile Actions --------------------------------
-	function MovementCost_Standard ( tile )
-		if (tile.Furniture == nil) then
-			return tile.Type.BaseMovementCost
-		end
-
-		return tile.Type.BaseMovementCost * tile.Furniture.movementCost
+function MovementCost_Standard ( tile )
+	if (tile.Furniture == nil) then
+		return tile.Type.BaseMovementCost
 	end
+
+	return tile.Type.BaseMovementCost * tile.Furniture.movementCost
+end
 
 --TODO: This needs to be cleaned up
 function CanBuildHere_Standard ( tile )
