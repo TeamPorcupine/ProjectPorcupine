@@ -61,7 +61,7 @@ public class KeyboardController {
         if (Input.GetKeyDown(KeyCode.Space))
         {
             wc.IsPaused = !wc.IsPaused;
-            Debug.Log("Game " + (wc.IsPaused ? "paused" : "resumed"));
+            Debug.ULogChannel("KeyboardController", "Game " + (wc.IsPaused ? "paused" : "resumed"));
         }
 
         if (Input.GetKeyDown(KeyCode.Plus) || Input.GetKeyDown(KeyCode.KeypadPlus))
