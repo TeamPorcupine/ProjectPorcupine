@@ -87,6 +87,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         }
     }
 
+    public bool IsSelected { get; set; }
+
     public void Update(float deltaTime)
     {
         // TODO: some weird thing happens

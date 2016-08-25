@@ -83,6 +83,7 @@ public class TraderPrototype
             }
         }
     }
+
     public Trader CreateTrader()
     {
         Trader t = new Trader
