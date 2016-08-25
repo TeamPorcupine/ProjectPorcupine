@@ -7,6 +7,7 @@
 // ====================================================
 #endregion
 using System.Collections.Generic;
+using System.IO;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Debugging;
 using MoonSharp.RemoteDebugger;
@@ -34,9 +35,31 @@ public class NeedActions
         // We need to make the base type visible.
         myLuaScript.Globals["Inventory"] = typeof(Inventory);
         myLuaScript.Globals["Job"] = typeof(Job);
-
+        myLuaScript.Globals["ModUtils"] = typeof(ModUtils);
         // Also to access statics/globals
         myLuaScript.Globals["World"] = typeof(World);
+    }
+
+    public static void LoadScripts()
+    {
+        string luaFilePath = Path.Combine(Application.streamingAssetsPath, "LUA");
+        luaFilePath = Path.Combine(luaFilePath, "Need.lua");
+        string myLuaCode = System.IO.File.ReadAllText(luaFilePath);
+
+        AddScript(myLuaCode);
+    }
+
+    public static void LoadModsScripts(DirectoryInfo[] mods)
+    {
+        foreach (DirectoryInfo mod in mods)
+        {
+            string luaModFile = Path.Combine(mod.FullName, "Need.lua");
+            if (File.Exists(luaModFile))
+            {
+                string luaModCode = System.IO.File.ReadAllText(luaModFile);
+                AddScript(luaModCode);
+            }
+        }
     }
 
     public static void AddScript(string rawLuaCode)
@@ -70,5 +93,9 @@ public class NeedActions
         object func = _Instance.myLuaScript.Globals[functionName];
 
         return _Instance.myLuaScript.Call(func, args);
+    }
+    public static void RegisterGlobal(System.Type type)
+    {
+        _Instance.myLuaScript.Globals[type.Name] = type;
     }
 }

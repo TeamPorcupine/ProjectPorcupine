@@ -8,8 +8,8 @@
 #endregion
 using System;
 using System.Linq;
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class FurnitureSpriteController
 {
@@ -24,6 +24,7 @@ public class FurnitureSpriteController
     public FurnitureSpriteController(World currentWorld)
     {
         world = currentWorld;
+
         // Instantiate our dictionary that tracks which GameObject is rendering which Tile data.
         furnitureGameObjectMap = new Dictionary<Furniture, GameObject>();
         powerStatusGameObjectMap = new Dictionary<Furniture, GameObject>();
@@ -38,12 +39,12 @@ public class FurnitureSpriteController
         {
             OnFurnitureCreated(furn);
         }
-            
     }
 
     public void OnFurnitureCreated(Furniture furn)
     {
-        //Debug.Log("OnFurnitureCreated");
+        ///Debug.ULogChannel("FurnitureSpriteController","OnFurnitureCreated");
+
         // Create a visual GameObject linked to this data.
 
         // FIXME: Does not consider multi-tile objects nor rotated objects
@@ -63,7 +64,6 @@ public class FurnitureSpriteController
         {
             // Check to see if we actually have a wall north/south, and if so
             // set the furniture verticalDoor flag to true.
-
             Tile northTile = world.GetTileAt(furn.tile.X, furn.tile.Y + 1);
             Tile southTile = world.GetTileAt(furn.tile.X, furn.tile.Y - 1);
 
@@ -74,8 +74,6 @@ public class FurnitureSpriteController
             }
             
         }
-
-
 
         SpriteRenderer sr = furn_go.AddComponent<SpriteRenderer>();
         sr.sprite = GetSpriteForFurniture(furn);
@@ -102,7 +100,6 @@ public class FurnitureSpriteController
             {
                 power_go.SetActive(true);
             }
-
         }
 
         // Register our callback so that our GameObject gets updated whenever
@@ -110,14 +107,13 @@ public class FurnitureSpriteController
         furn.cbOnChanged += OnFurnitureChanged;
         world.powerSystem.PowerLevelChanged += OnPowerStatusChange;
         furn.cbOnRemoved += OnFurnitureRemoved;
-
     }
 
     void OnFurnitureRemoved(Furniture furn)
     {
         if (furnitureGameObjectMap.ContainsKey(furn) == false)
         {
-            Debug.LogError("OnFurnitureRemoved -- trying to change visuals for furniture not in our map.");
+            Debug.ULogErrorChannel("FurnitureSpriteController", "OnFurnitureRemoved -- trying to change visuals for furniture not in our map.");
             return;
         }
 
@@ -126,19 +122,21 @@ public class FurnitureSpriteController
         furnitureGameObjectMap.Remove(furn);
 
         if (powerStatusGameObjectMap.ContainsKey(furn) == false)
+        {
             return;
+        }
 
         powerStatusGameObjectMap.Remove(furn);
     }
 
     void OnFurnitureChanged(Furniture furn)
     {
-        //Debug.Log("OnFurnitureChanged");
-        // Make sure the furniture's graphics are correct.
+        ///Debug.ULogChannel("FurnitureSpriteController","OnFurnitureChanged");
 
+        // Make sure the furniture's graphics are correct.
         if (furnitureGameObjectMap.ContainsKey(furn) == false)
         {
-            Debug.LogError("OnFurnitureChanged -- trying to change visuals for furniture not in our map.");
+            Debug.ULogErrorChannel("FurnitureSpriteController", "OnFurnitureChanged -- trying to change visuals for furniture not in our map.");
             return;
         }
 
@@ -148,7 +146,6 @@ public class FurnitureSpriteController
         {
             // Check to see if we actually have a wall north/south, and if so
             // set the furniture verticalDoor flag to true.
-
             Tile northTile = world.GetTileAt(furn.tile.X, furn.tile.Y + 1);
             Tile southTile = world.GetTileAt(furn.tile.X, furn.tile.Y - 1);
             Tile eastTile = world.GetTileAt(furn.tile.X + 1, furn.tile.Y);
@@ -168,15 +165,20 @@ public class FurnitureSpriteController
 
         furn_go.GetComponent<SpriteRenderer>().sprite = GetSpriteForFurniture(furn);
         furn_go.GetComponent<SpriteRenderer>().color = furn.tint;
-
     }
 
     void OnPowerStatusChange(IPowerRelated powerRelated)
     {
         Furniture furn = powerRelated as Furniture;
-        if (furn == null) return;
-        if (powerStatusGameObjectMap.ContainsKey(furn) == false)
+        if (furn == null)
+        {
             return;
+        }
+
+        if (powerStatusGameObjectMap.ContainsKey(furn) == false)
+        {
+            return;
+        }
 
         GameObject power_go = powerStatusGameObjectMap[furn];
 
@@ -191,7 +193,6 @@ public class FurnitureSpriteController
 
         power_go.GetComponent<SpriteRenderer>().color = PowerStatusColor();
     }
-
 
     public Sprite GetSpriteForFurniture(Furniture furn)
     {
@@ -217,7 +218,6 @@ public class FurnitureSpriteController
         // For example, if this object has all four neighbours of
         // the same type, then the string will look like:
         //       Wall_NESW
-        
         return SpriteManager.current.GetSprite("Furniture", spriteName);
     }
     
@@ -228,7 +228,8 @@ public class FurnitureSpriteController
          {
              return suffix;
          }
-         return "";
+
+        return string.Empty;
     }
 
     Sprite GetPowerStatusSprite()
@@ -239,9 +240,13 @@ public class FurnitureSpriteController
     Color PowerStatusColor()
     {
         if (world.powerSystem.PowerLevel > 0)
+        {
             return Color.green;
+        }
         else
+        {
             return Color.red;
+        }
     }
 
     public Sprite GetSpriteForFurniture(string objectType)

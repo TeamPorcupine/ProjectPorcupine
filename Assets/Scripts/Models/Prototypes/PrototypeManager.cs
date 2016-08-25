@@ -32,5 +32,6 @@ public class PrototypeManager
         Quest = new QuestPrototypes();
 
         new FurnitureActions();
+        new NeedActions();
     }
 }

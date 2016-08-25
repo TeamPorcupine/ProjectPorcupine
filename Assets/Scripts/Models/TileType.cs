@@ -54,7 +54,6 @@ public class TileType : IXmlSerializable {
     private TileType()
     {
         // Default lua method names
-        MovementCostLua = "MovementCost_Standard";
         CanBuildHereLua = "CanBuildHere_Standard";
     }
 

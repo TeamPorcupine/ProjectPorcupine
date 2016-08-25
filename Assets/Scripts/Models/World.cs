@@ -104,6 +104,7 @@ public class World : IXmlSerializable
     public void AddRoom(Room r)
     {
         rooms.Add(r);
+        Debug.ULogChannel("Rooms","creating room:" + r.ID);
     }
 
     public int CountFurnitureType(string objectType)
@@ -114,12 +115,12 @@ public class World : IXmlSerializable
 
     public void DeleteRoom(Room r)
     {
-        if (r == GetOutsideRoom())
+        if (r.IsOutsideRoom())
         {
             Debug.LogError("Tried to delete the outside room.");
             return;
         }
-
+        Debug.ULogChannel("Rooms","Deleting room:" + r.ID);
         // Remove this room from our rooms list.
         rooms.Remove(r);
 
@@ -156,6 +157,8 @@ public class World : IXmlSerializable
                 tiles[x, y].Room = GetOutsideRoom(); // Rooms 0 is always going to be outside, and that is our default room
             }
         }
+
+        new NeedActions ();
 
         characters = new List<Character>();
         furnitures = new List<Furniture>();
@@ -258,16 +261,6 @@ public class World : IXmlSerializable
         return c;
     }
     
-
-
-    void LoadNeedLua(string filePath)
-    {
-        string myLuaCode = System.IO.File.ReadAllText(filePath);
-
-        // Instantiate the singleton
-
-        NeedActions.AddScript(myLuaCode);
-    }
 
 
     /// <summary>
