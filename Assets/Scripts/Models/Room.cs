@@ -273,6 +273,16 @@ public class Room : IXmlSerializable
             // though this MAY not be the case any longer (i.e. the wall was 
             // probably deconstructed. So the only thing we have to try is
             // to spawn ONE new room starting from the tile in question.
+
+            // You need to delete the surrounding rooms so a new room can be created
+            // This doesn't work for the gas calculations and needs to be fixed.
+            foreach (Tile t in sourceTile.GetNeighbours())
+            {
+                if (t.Room != null && (onlyIfOutside == false || t.Room.IsOutsideRoom()))
+                {
+                    world.DeleteRoom(t.Room);
+                }
+            }
             ActualFloodFill(sourceTile, null, 0);
         }
     }
