@@ -279,20 +279,11 @@ public class World : IXmlSerializable
         furnitureJobPrototypes[f.objectType] = j;
     }
 
-    void LoadFurnitureLua(string filePath)
-    {
-        string luaCode = System.IO.File.ReadAllText(filePath);
-
-        // Instantiate the singleton
-
-        LuaUtilities.LoadScript(luaCode);
-    }
-
     void CreateFurniturePrototypes()
     {
         string luaFilePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
         luaFilePath = System.IO.Path.Combine(luaFilePath, "Furniture.lua");
-        LoadFurnitureLua(luaFilePath);
+        LuaUtilities.LoadScriptFromFile(luaFilePath);
 
 
         furniturePrototypes = new Dictionary<string, Furniture>();
@@ -314,7 +305,7 @@ public class World : IXmlSerializable
             string furnitureLuaModFile = System.IO.Path.Combine(mod.FullName, "Furniture.lua");
             if (File.Exists(furnitureLuaModFile))
             {
-                LoadFurnitureLua(furnitureLuaModFile);
+                LuaUtilities.LoadScriptFromFile(furnitureLuaModFile);
             }
 
             string furnitureXmlModFile = System.IO.Path.Combine(mod.FullName, "Furniture.xml");
