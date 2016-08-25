@@ -6,6 +6,8 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+
+using ProjectPorcupine.Localization;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
@@ -20,12 +22,13 @@ public class MenuController : MonoBehaviour
     // The sub menus of the build menu (furniture, floor..... later - power, security, drones).
     public GameObject furnitureMenu;
     public GameObject floorMenu;
-
+    
     public Button buttonConstructor;
     public Button buttonWorld;
     public Button buttonWork;
     public Button buttonOptions;
     public Button buttonSettings;
+    public Button buttonQuests;
 
     // Use this for initialization.
     void Start()
@@ -58,7 +61,24 @@ public class MenuController : MonoBehaviour
                 OnButtonSettings();
             });
 
+        buttonQuests = CreateButton("menu_quests");
+        buttonQuests.onClick.AddListener(delegate
+            {
+                OnButtonQuests();
+            });
+
         DeactivateAll();
+    }
+
+    private Button CreateButton(string text)
+    {
+        GameObject buttonQuestGameObject = (GameObject)Instantiate(Resources.Load("UI/MenuButton"), this.gameObject.transform);
+        buttonQuestGameObject.name = "Button - " + text;
+        Text buttonText = buttonQuestGameObject.transform.GetChild(0).GetComponent<Text>();
+        buttonText.text = text;
+        buttonText.GetComponent<TextLocalizer>().text = buttonText;
+        buttonText.GetComponent<TextLocalizer>().UpdateText();
+        return  buttonQuestGameObject.GetComponent<Button>();
     }
 
     // Deactivates All Menus.
@@ -116,6 +136,15 @@ public class MenuController : MonoBehaviour
             DeactivateAll();
         }
 
+    }
+
+    public void OnButtonQuests()
+    {
+        if (!WorldController.Instance.IsModal)
+        {
+            DeactivateAll();
+            dbm.dialogBoxQuests.ShowDialog();
+        }
     }
 
     public void OnButtonOptions()
