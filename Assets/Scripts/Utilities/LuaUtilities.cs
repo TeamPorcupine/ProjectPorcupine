@@ -24,6 +24,7 @@ public class LuaUtilities {
         if (func == null)
         {
             Debug.ULogChannel("Lua", "'" + functionName + "' is not a LUA function!");
+            return null;
         }
 
         try
@@ -32,7 +33,7 @@ public class LuaUtilities {
         }
         catch (ScriptRuntimeException e)
         {
-            Debug.LogError( e.DecoratedMessage );
+            Debug.ULogErrorChannel("Lua", e.DecoratedMessage );
             return null;
         }
     }
