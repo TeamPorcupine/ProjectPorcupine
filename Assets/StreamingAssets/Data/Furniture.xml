@@ -171,14 +171,16 @@
         <BuildingJob jobTime="0">
         </BuildingJob>
         <Params>
-          <Param name="Raw Iron" value="1" />
-          <Param name="Copper Wire" value="0" />
-      </Params>
+          <Param name="mine_type" value="Raw Iron" />
+        </Params>
 
         <JobSpotOffset X="1" Y="0" />
         <JobSpawnSpotOffset X="0" Y="0" />
 
         <OnUpdate FunctionName="MiningDroneStation_UpdateAction" />
+        <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Iron" Text="change to raw iron" RequiereCharacterSelected="false"/>
+        <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Copper" Text="change to raw copper" RequiereCharacterSelected="false"/>
+
 
         <LocalizationCode>furn_mining_drone_station</LocalizationCode>
         <UnlocalizedDescription>furn_mining_drone_station_desc</UnlocalizedDescription>

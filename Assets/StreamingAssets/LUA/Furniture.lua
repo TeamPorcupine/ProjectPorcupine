@@ -284,14 +284,16 @@ end
 
 
 function MiningDroneStation_JobComplete(j)
-	if (j.furniture.GetParameter("Raw Iron") == 1.0) then
-		World.current.inventoryManager.PlaceInventory( j.furniture.GetSpawnSpotTile(), Inventory.__new("Raw Iron", 50, 20) )
-		return
-	end
-	if (j.furniture.GetParameter("Copper Wire") == 1.0) then
-		World.current.inventoryManager.PlaceInventory( j.furniture.GetSpawnSpotTile(), Inventory.__new("Copper Wire", 50, 20) )
-		return
-	end
+	World.current.inventoryManager.PlaceInventory( j.furniture.GetSpawnSpotTile(), Inventory.__new(j.furniture.Parameters["mine_type"] , 50, 20) )
+	return
+end
+
+function MiningDroneStation_Change_to_Raw_Iron(furniture, character)
+	furniture.Parameters["mine_type"].SetValue("Raw Iron")
+end
+
+function MiningDroneStation_Change_to_Raw_Copper(furniture, character)
+	furniture.Parameters["mine_type"].SetValue("Raw Copper")
 end
 
 function MetalSmelter_UpdateAction(furniture, deltaTime)
