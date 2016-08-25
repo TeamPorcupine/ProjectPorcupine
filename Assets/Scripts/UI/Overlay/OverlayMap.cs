@@ -137,6 +137,7 @@ public class OverlayMap : MonoBehaviour {
         // Grab references
         meshRenderer = GetComponent<MeshRenderer>();
         meshFilter = GetComponent<MeshFilter>();
+        parentPanel = GameObject.Find("OverlayPanel");
 
         // Read xml prototypes
         overlays = OverlayDescriptor.ReadPrototypes(xmlFileName);

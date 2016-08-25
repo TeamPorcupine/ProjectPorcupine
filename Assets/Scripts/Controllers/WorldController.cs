@@ -105,16 +105,6 @@ public class WorldController : MonoBehaviour
         mouseController = new MouseController(buildModeController, furnitureSpriteController, circleCursorPrefab);
         keyboardController = new KeyboardController(buildModeController, Instance);
 
-        //Initialising controllers
-        GameObject Controllers = GameObject.Find("Controllers");
-        Instantiate(Resources.Load("UIController"), Controllers.transform);
-
-        GameObject Canvas = GameObject.Find("Canvas");
-        go = Instantiate(Resources.Load("UI/ContextMenu"),Canvas.transform.position, Canvas.transform.rotation, Canvas.transform) as GameObject;
-        go.name = "ContextMenu";
-
-
-
     }
 
     void Update()

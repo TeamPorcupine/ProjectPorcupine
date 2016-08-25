@@ -25,7 +25,7 @@ GameObject:
   - 114: {fileID: 114000012157978120}
   - 114: {fileID: 114000011470095512}
   m_Layer: 5
-  m_Name: ContextMenu
+  m_Name: MenuContext
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
