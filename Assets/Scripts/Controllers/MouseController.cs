@@ -14,8 +14,8 @@ public class MouseController
 {
     public SelectionInfo mySelection;
 
-    private GameObject circleCursorPrefab;
-    private GameObject cursorParent;
+    private GameObject cursorParent;    
+    private GameObject circleCursorPrefab;    
     private GameObject furnitureParent;
 
     // The world-position of the mouse last frame.
@@ -31,12 +31,14 @@ public class MouseController
     private FurnitureSpriteController fsc;
     private MenuController menuController;
     private ContextMenu contextMenu;
+    private MouseCursor mouseCursor;
 
     // Is dragging an area (eg. floor tiles).
     private bool isDragging = false;
+
     // Ìs panning the camera
     private bool isPanning = false;
-
+	
     private MouseMode currentMode = MouseMode.SELECT;
 
     // Use this for initialization.
@@ -50,10 +52,11 @@ public class MouseController
         contextMenu = GameObject.FindObjectOfType<ContextMenu>();
         dragPreviewGameObjects = new List<GameObject>();
         cursorParent = new GameObject("Cursor");
+        mouseCursor = new MouseCursor(this, bmc);
         furnitureParent = new GameObject("Furniture Preview Sprites");
     }
 
-    private enum MouseMode
+    public enum MouseMode
     {
         SELECT,
         BUILD,
@@ -68,9 +71,34 @@ public class MouseController
         return currFramePosition;
     }
 
+    public Vector3 GetPlacingPosition()
+    {
+        return currPlacingPosition;
+    }
+
+    public MouseMode GetCurrentMode()
+    {
+        return currentMode;
+    }
+
+    public bool GetIsDragging()
+    {
+        return isDragging;
+    }
+
+    public List<GameObject> GetDragObjects()
+    {
+        return dragPreviewGameObjects;
+    }
+
     public Tile GetMouseOverTile()
     {
         return WorldController.Instance.GetTileAtWorldCoord(currFramePosition);
+    }
+
+    public GameObject GetCursorParent()
+    {
+        return cursorParent;
     }
 
     public void StartBuildMode()
@@ -98,6 +126,7 @@ public class MouseController
         CheckModeChanges();
         CheckIfContextMenuActivated();
 
+        mouseCursor.Update();
         UpdateDragging();
         UpdateCameraMovement();
         UpdateSelection();
@@ -109,6 +138,16 @@ public class MouseController
         // Save the mouse position from this frame.
         // We don't use currFramePosition because we may have moved the camera.
         StoreFramePosition();
+    }
+
+    public bool IsCharacterSelected()
+    {
+        if (mySelection != null)
+        {
+            return mySelection.IsCharacterSelected();
+        }
+
+        return false;
     }
 
     private void UpdateCurrentFramePosition()
@@ -219,7 +258,7 @@ public class MouseController
             {
                 if (tileUnderMouse.PendingBuildJob != null)
                 {
-                    Debug.Log("Canceling!");
+                    Debug.ULogChannel("MouseController", "Canceling!");
                     tileUnderMouse.PendingBuildJob.CancelJob();
                 }
             }
@@ -459,22 +498,10 @@ public class MouseController
 
         if (Input.GetAxis("Mouse ScrollWheel") != 0)
         {
-            Vector3 oldMousePosition;
-            oldMousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            oldMousePosition.z = 0;
-
-            Camera.main.orthographicSize -= Camera.main.orthographicSize * Input.GetAxis("Mouse ScrollWheel");
-            Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize, 3f, 25f);
-
-            // Refocus game so the mouse stays in the same spot when zooming
-            Vector3 newMousePosition;
-            newMousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            newMousePosition.z = 0;
-
-            Vector3 pushedAmount = oldMousePosition - newMousePosition;
-            Camera.main.transform.Translate(pushedAmount);
+            WorldController.Instance.cameraController.ChangeZoom(Input.GetAxis("Mouse ScrollWheel"));
         }
-    }
+
+    } 
 
     private void ShowFurnitureSpriteAtTile(string furnitureType, Tile t)
     {
@@ -499,16 +526,7 @@ public class MouseController
         Furniture proto = World.current.furniturePrototypes[furnitureType];
 
         go.transform.position = new Vector3(t.X + ((proto.Width - 1) / 2f), t.Y + ((proto.Height - 1) / 2f), 0);
-    }
-
-    public bool IsCharacterSelected()
-    {
-        if (mySelection != null)
-        {
-            return mySelection.IsCharacterSelected();
-        }
-        return false;
-    }
+    }    
 
     public class DragParameters
     {

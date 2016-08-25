@@ -107,7 +107,7 @@ public class CharacterSpriteController
         inv_go.transform.SetParent(char_go.transform);
         inv_go.transform.localScale = new Vector3(0.8f, 0.8f, 0.8f); // Config needs to be added to XML
         inv_go.transform.localPosition = new Vector3(0, -0.37f, 0); // Config needs to be added to XML
-        
+
         // Register our callback so that our GameObject gets updated whenever
         // the object's into changes.
         c.cbCharacterChanged += OnCharacterChanged;        
