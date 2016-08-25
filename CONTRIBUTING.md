@@ -4,7 +4,7 @@
 [General resources](#general-resources)  
 [Style Guidelines](#style-guidelines)  
 [Adding Furniture and Inventory](#adding-furniture-and-inventory)  
-[Best Practices for Contributing](#best-practices-for-contributing)
+[Best Practices for Contributing](#best-practices-for-contributing)  
 [Image & Sound File Formats](#file-formats)  
 
 
