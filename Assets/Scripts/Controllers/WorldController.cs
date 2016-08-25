@@ -90,7 +90,10 @@ public class WorldController : MonoBehaviour
 
     void Start() {
         GameObject go;
-
+        if (world == null)
+        {
+            CreateEmptyWorld();
+        }
         tileSpriteController = new TileSpriteController(world);
         tileSpriteController.Render();
         characterSpriteController = new CharacterSpriteController(world);

@@ -53,7 +53,7 @@ public class Room : IXmlSerializable
             // Belongs to some other room
             t.Room.tiles.Remove(t);
         }
-        	
+            
         t.Room = this;
         tiles.Add(t);
     }
@@ -62,7 +62,7 @@ public class Room : IXmlSerializable
     {
         for (int i = 0; i < tiles.Count; i++)
         {
-            tiles[i].Room = World.current.GetOutsideRoom();	// Assign to outside
+            tiles[i].Room = World.current.GetOutsideRoom();    // Assign to outside
         }
 
         tiles = new List<Tile>();
