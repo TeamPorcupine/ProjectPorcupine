@@ -1,7 +1,7 @@
-﻿using UnityEngine;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System;
+using UnityEngine;
 using MoonSharp.Interpreter;
 using System.Threading;
 
@@ -21,34 +21,34 @@ public class Temperature
     /// Default value assigned to thermalDIffusivity at "empty" tile.
     /// DO NOT TOUCH UNLESS YOU KNOW WHAT YOU ARE DOING: MUST BE BETWEEN 0 and 1!
     /// </summary>
-    static public float defaultThermalDiffusivity = 1f;
+    public static float defaultThermalDiffusivity = 1f;
 
     ///// Private stuff
 
     /// <summary>
     /// All heaters and refrigerators shoul register themselves here using the public interface
     /// </summary>
-    Dictionary<Furniture, Action<float>> sinksAndSources;
+    private Dictionary<Furniture, Action<float>> sinksAndSources;
 
     /// <summary>
     /// Internal only variables
     /// </summary>
-    float[][] temperature;
-    float[] thermalDiffusivity;
+    private float[][] temperature;
+    private float[] thermalDiffusivity;
     
     // Internal stuff
     /// <summary>
     /// Size of map
     /// </summary>
-    int xSize, ySize;
+    private int xSize, ySize;
     /// <summary>
     /// Time since last update
     /// </summary>
-    float elapsed = 0f;
+    private float elapsed = 0f;
     /// <summary>
     /// We switch between two "states" of temperatrue, because we reuqire a tempoerary array containing the old value
     /// </summary>
-    int offset = 0;
+    private int offset = 0;
 
     /// <summary>
     /// Create and Initialize arrays with default values.
@@ -61,8 +61,8 @@ public class Temperature
         ySize = yS;
         temperature = new float[2][]
         {
-            new float[xSize*ySize],
-            new float[xSize*ySize],
+            new float[xSize * ySize],
+            new float[xSize * ySize],
         };
         thermalDiffusivity = new float[xSize * ySize];
 
