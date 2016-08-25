@@ -62,15 +62,15 @@ public class CharacterSpriteController
 
         c.animation = new CharacterAnimation(c, sr);
         Sprite[] sprites = {
-                SpriteManager.current.GetSprite("Character", "p1_nh_idle_south"),
-                SpriteManager.current.GetSprite("Character", "p1_nh_idle_east"),
-                SpriteManager.current.GetSprite("Character", "p1_nh_idle_north"),
-                SpriteManager.current.GetSprite("Character", "p1_nh_walk_east_01"),
-                SpriteManager.current.GetSprite("Character", "p1_nh_walk_east_02"),
-                SpriteManager.current.GetSprite("Character", "p1_nh_walk_north_01"),
-                SpriteManager.current.GetSprite("Character", "p1_nh_walk_north_02"),
-                SpriteManager.current.GetSprite("Character", "p1_nh_walk_south_01"),
-                SpriteManager.current.GetSprite("Character", "p1_nh_walk_south_02")
+                SpriteManager.current.GetSprite("Character", "p2_idle_south"),
+                SpriteManager.current.GetSprite("Character", "p2_idle_east"),
+                SpriteManager.current.GetSprite("Character", "p2_idle_north"),
+                SpriteManager.current.GetSprite("Character", "p2_walk_east_01"),
+                SpriteManager.current.GetSprite("Character", "p2_walk_east_02"),
+                SpriteManager.current.GetSprite("Character", "p2_walk_north_01"),
+                SpriteManager.current.GetSprite("Character", "p2_walk_north_02"),
+                SpriteManager.current.GetSprite("Character", "p2_walk_south_01"),
+                SpriteManager.current.GetSprite("Character", "p2_walk_south_02")
         };
         c.animation.SetSprites(sprites);
         
@@ -81,16 +81,7 @@ public class CharacterSpriteController
         inv_sr.sortingLayerName = "Characters";
         inv_go.transform.SetParent(char_go.transform);
         inv_go.transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);// Config needs to be added to XML
-        inv_go.transform.localPosition = new Vector3(0,-0.37f,0); // Config needs to be added to XML
-
-        // Add the reflection of the character's helmet
-        GameObject helmet_go = new GameObject ("HelmetGlass");
-        SpriteRenderer helmet_sr = helmet_go.AddComponent<SpriteRenderer>();
-        helmet_sr.sortingOrder = 1;
-        helmet_sr.sprite = SpriteManager.current.GetSprite("Character", "p2_helmet");
-        helmet_sr.sortingLayerName = "Characters";
-        helmet_go.transform.SetParent (char_go.transform);
-        helmet_go.transform.localPosition = new Vector3(0,0,0);
+        inv_go.transform.localPosition = new Vector3(0,-0.37f,0); // Config needs to be added to XML        
 
         // Register our callback so that our GameObject gets updated whenever
         // the object's into changes.
@@ -122,8 +113,9 @@ public class CharacterSpriteController
         GameObject char_go = characterGameObjectMap[c];
         //Debug.Log(furn_go);
         //Debug.Log(furn_go.GetComponent<SpriteRenderer>());
-
-        //char_go.GetComponent<SpriteRenderer>().sprite = GetSpriteForFurniture(furn);
+        
+        // TODO: When we have a helmetless spritesheet, use this check to switch spritesheet on the character
+        /*
         if (c.CurrTile.Room != null)
         {
             if (c.CurrTile.Room.GetGasAmount ("O2") <= 0.5f && char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled == false)
@@ -135,7 +127,7 @@ public class CharacterSpriteController
                 char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled = false;
             }
         }
-
+        */
 
         char_go.transform.position = new Vector3(c.X, c.Y, 0);
     }
