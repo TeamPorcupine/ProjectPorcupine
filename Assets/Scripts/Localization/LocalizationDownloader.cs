@@ -258,7 +258,7 @@ namespace ProjectPorcupine.Localization
                 // Remove ProjectPorcupineLocalization-*branch name*
                 Directory.Delete(dirInfo[0].FullName);
 
-                Debug.ULogErrorChannel("LocalizationDownloader", "New localization files downloaded!");
+                Debug.ULogChannel("LocalizationDownloader", "New localization files downloaded!");
             }
             catch (System.Exception e)
             {
