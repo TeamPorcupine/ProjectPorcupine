@@ -79,6 +79,8 @@ public class Tile :IXmlSerializable, ISelectable
         }
     }
 
+    public bool IsSelected { get; set; }
+
     // The function we callback any time our tile's data changes
     public event Action<Tile> cbTileChanged;
 

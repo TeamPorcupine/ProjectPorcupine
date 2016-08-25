@@ -161,6 +161,21 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     // 0=north, 1=east, 2=south, 3=west
     public Facing CharFacing;
 
+    public bool IsSelected
+    {
+        get { return _isSelected; }
+        set
+        {
+            if (value == false)
+            {
+                VisualPath.Instance.RemoveVisualPoints(name);
+            }
+            _isSelected = value;
+        }
+    }
+
+    private bool _isSelected = false;
+
     /// Use only for serialization
     public Character()
     {
@@ -559,7 +574,11 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 // Let's ignore the first tile, because that's the tile we're currently in.
                 NextTile = pathAStar.Dequeue();
             }
-            VisualPath.Instance.SetVisualPoints(name, pathAStar.GetList());
+
+            if (IsSelected)
+            {
+                VisualPath.Instance.SetVisualPoints(name, pathAStar.GetList());
+            }
             IsWalking = true;
 
             // Grab the next waypoint from the pathing system!

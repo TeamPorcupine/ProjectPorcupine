@@ -49,7 +49,7 @@ public class VisualPath : MonoBehaviour
         }
     }
 
-    private static void CreateLineMaterial()
+    private void CreateLineMaterial()
     {
         if (!lineMaterial)
         {

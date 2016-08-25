@@ -102,6 +102,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         }
     }
 
+    public bool IsSelected { get; set; }
+
     public void Update(float deltaTime)
     {
         if (updateActions != null)

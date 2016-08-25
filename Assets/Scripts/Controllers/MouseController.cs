@@ -244,8 +244,13 @@ public class MouseController
 
             if (mySelection == null || mySelection.tile != tileUnderMouse)
             {
+                if (mySelection != null)
+                {
+                    mySelection.GetSelectedStuff().IsSelected = false;
+                }
                 // We have just selected a brand new tile, reset the info.
                 mySelection = new SelectionInfo(tileUnderMouse);
+                mySelection.GetSelectedStuff().IsSelected = true;
             }
             else
             {
@@ -253,8 +258,11 @@ public class MouseController
                 // Not that the tile sub selection can NEVER be null, so we know we'll always find something.
 
                 // Rebuild the array of possible sub-selection in case characters moved in or out of the tile.
+                //[IsSelected] Set our last stuff to be not selected because were selecting the next stuff
+                mySelection.GetSelectedStuff().IsSelected = false;
                 mySelection.BuildStuffInTile();
                 mySelection.SelectNextStuff();
+                mySelection.GetSelectedStuff().IsSelected = true;
             }
         }
     }
