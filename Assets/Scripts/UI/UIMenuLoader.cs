@@ -15,7 +15,8 @@ public class UIMenuLoader : MonoBehaviour
 
         tempGoObj = (GameObject)Instantiate(Resources.Load("UI/MenuBottom"), Canvas.transform.position, Canvas.transform.rotation, Canvas.transform);
         tempGoObj.name = "Bottom Menu";
-      
+
+
         tempGoObj = (GameObject)Instantiate(Resources.Load("UI/MenuRight"),  Canvas.transform.position, Canvas.transform.rotation, Canvas.transform);
         tempGoObj.name = "Right Menu";
 
