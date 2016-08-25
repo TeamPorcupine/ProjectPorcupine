@@ -333,7 +333,7 @@
     <UnlocalizedDescription>furn_small_landing_pad_desc</UnlocalizedDescription>
   </Furniture>
   
-  <Furniture objectType="Oxygen Compressor">
+  <Furniture objectType="compressor_oxygen">
     <Name>Oxygen Compressor</Name>
     <Description>Stores and releases oxygen as needed</Description>
     
