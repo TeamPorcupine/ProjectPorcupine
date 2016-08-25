@@ -1,8 +1,8 @@
 #region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
-// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
-// and you are welcome to redistribute it under certain conditions; See 
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
@@ -88,7 +88,8 @@ public class WorldController : MonoBehaviour
         soundController = new SoundController(world);
     }
 
-    void Start() {
+    void Start()
+    {
         GameObject go;
 
         tileSpriteController = new TileSpriteController(world);
@@ -98,7 +99,7 @@ public class WorldController : MonoBehaviour
         jobSpriteController = new JobSpriteController(world, furnitureSpriteController);
         inventorySpriteController = new InventorySpriteController(world, inventoryUI);
         buildModeController = new BuildModeController();
-        if(Settings.getSettingAsBool("DevTools_enabled", false))
+        if (Settings.getSettingAsBool("DevTools_enabled", false))
         {
             spawnInventoryController = new SpawnInventoryController();
         }
@@ -112,9 +113,7 @@ public class WorldController : MonoBehaviour
         tempGoObj = (GameObject)Instantiate(Resources.Load("UI/TempMenus"), Canvas.transform.position, Canvas.transform.rotation, Canvas.transform);
         tempGoObj.name = "TempMenuHolder";
 
-
-
-        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/TempMenus"), Controllers.transform.position, Controllers.transform.rotation,  Controllers.transform);
+        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/TempMenus"), Canvas.transform.position, Canvas.transform.rotation, Canvas.transform);
         tempGoObj.name = "TempMenus";
 
     }
