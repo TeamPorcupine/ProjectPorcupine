@@ -107,6 +107,7 @@ public class BuildModeController
                 {
                     Debug.LogError("There is no furniture job prototype for '" + furnitureType + "'");
                     j = new Job(t, furnitureType, FurnitureActions.JobComplete_FurnitureBuilding, 0.1f, null, Job.JobPriority.High);
+                    j.JobDescription = "job_build_" + furnitureType + "_desc";
                 }
 
                 j.furniturePrototype = WorldController.Instance.world.furniturePrototypes[furnitureType];
@@ -198,7 +199,7 @@ public class BuildModeController
     // TODO Export this kind of check to an XML/LUA file for easier modding of floor types.
     private bool CanBuildTileTypeHere(Tile t, TileType tileType)
     {
-        DynValue value = FurnitureActions.CallFunction(tileType.CanBuildHereLua, t);
+        DynValue value = LuaUtilities.CallFunction(tileType.CanBuildHereLua, t);
 
         if (value != null)
         {

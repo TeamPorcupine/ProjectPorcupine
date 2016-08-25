@@ -24,11 +24,11 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     private float powerValue;
     /// <summary>
     /// Custom parameter for this particular piece of furniture.  We are
-    /// using a dictionary because later, custom LUA function will be
-    /// able to use whatever parameters the user/modder would like.
-    /// Basically, the LUA code will bind to this dictionary.
+    /// using a custom Parameter class because later, custom LUA function will be
+    /// able to use whatever parameters the user/modder would like, and contain strings or floats.
+    /// Basically, the LUA code will bind to this Parameter.
     /// </summary>
-    protected Dictionary<string, float> furnParameters;
+    protected Parameter furnParameters;
 
     /// <summary>
     /// These actions are called every update. They get passed the furniture
@@ -37,6 +37,11 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     // protected Action<Furniture, float> updateActions;
     protected List<string> updateActions;
 
+    /// <summary>
+    /// These context menu lua action are used to build the context menu of the furniture
+    /// </summary>
+    protected List<ContextMenuLuaAction> contextMenuLuaActions; 
+    
     /// <summary>
     /// These actions are called when an object is installed. They get passed the furniture and a delta
     /// time of 0
@@ -48,6 +53,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     /// time of 0
     /// </summary>
     protected List<string> uninstallActions;
+
 
     // private Func<Furniture, ENTERABILITY> IsEnterable;
     protected string isEnterableAction;
@@ -105,6 +111,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         }
     }
 
+    // Flag for Lua to check if this is a vertical or horizontal door and display the correct sprite.
+    public bool verticalDoor = false;
+
     public ENTERABILITY IsEnterable()
     {
         if (isEnterableAction == null || isEnterableAction.Length == 0)
@@ -114,7 +123,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
 
         //// FurnitureActions.CallFunctionsWithFurniture( isEnterableActions.ToArray(), this );
 
-        DynValue ret = FurnitureActions.CallFunction(isEnterableAction, this);
+        DynValue ret = LuaUtilities.CallFunction(isEnterableAction, this);
 
         return (ENTERABILITY)ret.Number;
     }
@@ -126,7 +135,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
             return objectType;
         }
 
-        DynValue ret = FurnitureActions.CallFunction(getSpriteNameAction, this);
+        DynValue ret = LuaUtilities.CallFunction(getSpriteNameAction, this);
         return ret.String;
     }
 
@@ -221,6 +230,18 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         protected set;
     }
 
+    public Parameter Parameters
+    {
+        get
+        {
+            return furnParameters;
+        }
+        private set
+        {
+            furnParameters = value;
+        }
+    }
+
     public event Action<Furniture> cbOnChanged;
 
     public event Action<Furniture> cbOnRemoved;
@@ -234,9 +255,10 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     public Furniture()
     {
         updateActions = new List<string>();
+        contextMenuLuaActions = new List<ContextMenuLuaAction>();
         installActions = new List<string>();
         uninstallActions = new List<string>();
-        furnParameters = new Dictionary<string, float>();
+        furnParameters = new Parameter("furnParameters");
         jobs = new List<Job>();
         typeTags = new HashSet<string>();
         this.funcPositionValidation = this.DEFAULT__IsValidPosition;
@@ -262,12 +284,17 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         this.jobSpotOffset = other.jobSpotOffset;
         this.jobSpawnSpotOffset = other.jobSpawnSpotOffset;
 
-        this.furnParameters = new Dictionary<string, float>(other.furnParameters);
+        this.furnParameters = new Parameter(other.furnParameters);
         jobs = new List<Job>();
 
         if (other.updateActions != null)
         {
             this.updateActions = new List<string>(other.updateActions);
+        }
+
+        if (other.contextMenuLuaActions != null)
+        {
+            this.contextMenuLuaActions = new List<ContextMenuLuaAction>(other.contextMenuLuaActions);
         }
 
         this.isEnterableAction = other.isEnterableAction;
@@ -345,13 +372,13 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
 
         // Call LUA install scripts
         if(obj.installActions != null )
-        FurnitureActions.CallFunctionsWithFurniture(obj.installActions.ToArray(), obj, 0);
+            FurnitureActions.CallFunctionsWithFurniture(obj.installActions.ToArray(), obj, 0);
 
         // Update thermalDiffusifity using coefficient
         float thermalDiffusivity = Temperature.defaultThermalDiffusivity;
         if(obj.furnParameters.ContainsKey("thermal_diffusivity"))
         {
-            thermalDiffusivity = obj.furnParameters["thermal_diffusivity"];
+            thermalDiffusivity = obj.furnParameters["thermal_diffusivity"].ToFloat();
         }
 
         World.current.temperature.SetThermalDiffusivity(tile.X, tile.Y, thermalDiffusivity);
@@ -455,15 +482,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         writer.WriteAttributeString("X", tile.X.ToString());
         writer.WriteAttributeString("Y", tile.Y.ToString());
         writer.WriteAttributeString("objectType", objectType);
-        // writer.WriteAttributeString( "movementCost", movementCost.ToString() );
-
-        foreach (string k in furnParameters.Keys)
-        {
-            writer.WriteStartElement("Param");
-            writer.WriteAttributeString("name", k);
-            writer.WriteAttributeString("value", furnParameters[k].ToString());
-            writer.WriteEndElement();
-        }
+        // Let the Parameters handle their own xml
+        furnParameters.WriteXml(writer);
     }
 
     public void ReadXmlPrototype(XmlReader reader_parent)
@@ -530,9 +550,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
                     {
                         // Found an inventory requirement, so add it to the list!
                         invs.Add(new Inventory(
-                                invs_reader.GetAttribute("objectType"),
-                                int.Parse(invs_reader.GetAttribute("amount")),
-                                0));
+                            invs_reader.GetAttribute("objectType"),
+                            int.Parse(invs_reader.GetAttribute("amount")),
+                            0));
                     }
                 }
 
@@ -543,7 +563,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
                     jobTime,
                     invs.ToArray(),
                     Job.JobPriority.High );
-
+                j.JobDescription = "job_build_" + objectType + "_desc";
                 World.current.SetFurnitureJobPrototype(j, this);
                 break;
 
@@ -551,7 +571,14 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
                 string functionName = reader.GetAttribute("FunctionName");
                 RegisterUpdateAction(functionName);
                 break;
-
+            case "ContextMenuAction":
+                    contextMenuLuaActions.Add(new ContextMenuLuaAction
+                    {
+                        LuaFunction = reader.GetAttribute("FunctionName"),
+                        Text = reader.GetAttribute("Text"),
+                        RequiereCharacterSelected = bool.Parse(reader.GetAttribute("RequiereCharacterSelected"))
+                    });
+                break;
             case "OnInstall":
                 // Called when obj is installed
                 string functionInstallName = reader.GetAttribute("FunctionName");
@@ -609,8 +636,6 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         // X, Y, and objectType have already been set, and we should already
         // be assigned to a tile.  So just read extra data.
 
-        ////movementCost = int.Parse( reader.GetAttribute("movementCost") );
-
         ReadXmlParams(reader);
     }
 
@@ -619,54 +644,16 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         // X, Y, and objectType have already been set, and we should already
         // be assigned to a tile.  So just read extra data.
 
-        ////movementCost = int.Parse( reader.GetAttribute("movementCost") );
-
-        if (reader.ReadToDescendant("Param"))
-        {
-            do
-            {
-                string k = reader.GetAttribute("name");
-                float v = float.Parse(reader.GetAttribute("value"));
-                furnParameters[k] = v;
-            } 
-            while (reader.ReadToNextSibling("Param"));
-        }
+        furnParameters = Parameter.ReadXml(reader);
     }
 
     /// <summary>
-    /// Gets the custom furniture parameter from a string key.
+    /// Gets the furniture's Parameter structure from a string key.
     /// </summary>
-    /// <returns>The parameter value (float).</returns>
+    /// <returns>The Parameter value..</returns>
     /// <param name="key">Key string.</param>
-    /// <param name="default_value">Default value.</param>
-    public float GetParameter(string key, float default_value)
-    {
-        if (furnParameters.ContainsKey(key) == false)
-        {
-            return default_value;
-        }
-
-        return furnParameters[key];
-    }
-
-    public float GetParameter(string key)
-    {
-        return GetParameter(key, 0);
-    }
-
-    public void SetParameter(string key, float value)
-    {
-        furnParameters[key] = value;
-    }
-
-    public void ChangeParameter(string key, float value)
-    {
-        if (furnParameters.ContainsKey(key) == false)
-        {
-            furnParameters[key] = value;
-        }
-
-        furnParameters[key] += value;
+    public Parameter GetParameters() {
+        return furnParameters;
     }
 
     /// <summary>
@@ -857,6 +844,10 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         return "18/18"; // TODO: Add a hitpoint system to...well...everything
     }
 
+    public string GetJobDescription()
+    {
+        return "";
+    }
     #endregion
 
     public IEnumerable<ContextMenuAction> GetContextMenuActions(ContextMenu contextMenu)
@@ -868,6 +859,19 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
             Action = (ca, c) => Deconstruct()
         };
 
-        //todo add a hook to LUA Action via the furniture.xml definition
+        foreach (var contextMenuLuaAction in contextMenuLuaActions)
+        {
+            yield return new ContextMenuAction
+            {
+                Text = contextMenuLuaAction.Text,
+                RequiereCharacterSelected = contextMenuLuaAction.RequiereCharacterSelected,
+                Action = (cma, c) => InvokeContextMenuLuaAction(contextMenuLuaAction.LuaFunction, c)
+            };
+        }
+    }
+
+    private void InvokeContextMenuLuaAction(string luaFunction, Character character)
+    {
+        LuaUtilities.CallFunction(luaFunction, this, character);
     }
 }

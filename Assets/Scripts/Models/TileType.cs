@@ -124,7 +124,7 @@ public class TileType : IXmlSerializable {
         string luaFilePath = System.IO.Path.Combine(luaPath, "Tile.lua");
         string luaCode = System.IO.File.ReadAllText(luaFilePath);
         
-        FurnitureActions.addScript(luaCode);
+        LuaUtilities.LoadScript(luaCode);
 
         // Load all mod defined lua code
         foreach (DirectoryInfo mod in WorldController.Instance.modsManager.GetMods())
@@ -135,7 +135,7 @@ public class TileType : IXmlSerializable {
 
                 luaCode = System.IO.File.ReadAllText(file.FullName);
 
-                FurnitureActions.addScript(luaCode);
+                LuaUtilities.LoadScript(luaCode);
             }
         }
 
@@ -260,7 +260,8 @@ public class TileType : IXmlSerializable {
                         Job.JobPriority.High,
                         false,
                         true);
-                    
+                    j.JobDescription = "job_build_floor_" + this;
+
                     tileTypeBuildJobPrototypes[this] = j;
 
                     break;
