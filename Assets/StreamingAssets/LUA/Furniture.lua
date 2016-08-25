@@ -555,16 +555,24 @@ function LandingPad_Test_ContextMenuAction(furniture, character)
    furniture.Deconstruct()
 end
 
--- Dummy heater install function
--- THis function gets called once, when the funriture is isntalled
+-- This function gets called once, when the funriture is isntalled
 function Heater_InstallAction( furniture, deltaTime)
     -- TODO: find elegant way to register heat source and sinks to Temperature
+	furniture.eventActions.Register("OnUpdateTemperature", "Heater_UpdateTemperature")
+	World.current.temperature.RegisterSinkOrSource(furniture)
+end
+
+-- This function gets called once, when the funriture is unisntalled
+function Heater_UninstallAction( furniture, deltaTime)
+    -- TODO: find elegant way to unregister previous register
+	furniture.eventActions.Deregister("OnUpdateTemperature", "Heater_UpdateTemperature")
+	World.current.temperature.DeregisterSinkOrSource(furniture)
 end
 
 -- Dummy heater uninstall function
 -- THis function gets called once, when the funriture is unisntalled
-function Heater_UninstallAction( furniture, deltaTime)
-    -- TODO: find elegant way to unregister previous register
+function Heater_UpdateTemperature( furniture, deltaTime)
+	World.current.temperature.SetTemperature(furniture.tile.X, furniture.tile.Y, 300)
 end
 
 -- Should maybe later be integrated with GasGenerator function by
