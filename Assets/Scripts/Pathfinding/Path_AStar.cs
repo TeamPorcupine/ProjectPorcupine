@@ -263,4 +263,9 @@ public class Path_AStar
     {
         return path == null ? null : path.Reverse();
     }
+
+    public List<Tile> GetList()
+    {
+        return path.ToList();
+    }
 }

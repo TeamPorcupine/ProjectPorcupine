@@ -61,8 +61,8 @@
             <Inventory objectType="Steel Plate" amount="1" />
         </DeconstructJob>
 
-        <OnUpdate FunctionName="OnUpdate_Door" />
-        <OnUpdate FunctionName="OnUpdate_Leak_Door" />
+        <Action event="OnUpdate" functionName="OnUpdate_Door" />
+        <Action event="OnUpdate" functionName="OnUpdate_Leak_Door" />
 
         <IsEnterable FunctionName="IsEnterable_Door" />
         <GetSpriteName FunctionName="GetSpriteName_Door" />
@@ -98,8 +98,8 @@
             <Inventory objectType="Steel Plate" amount="7" />
         </DeconstructJob>
 
-        <OnUpdate FunctionName="OnUpdate_Door" />
-        <OnUpdate FunctionName="OnUpdate_Leak_Airlock" />
+        <Action event="OnUpdate" functionName="OnUpdate_Door" />
+        <Action event="OnUpdate" functionName="OnUpdate_Leak_Airlock" />
 
         <IsEnterable FunctionName="IsEnterable_Door" />
         <GetSpriteName FunctionName="GetSpriteName_Airlock" />
@@ -120,7 +120,7 @@
         <BuildingJob jobTime="0">
         </BuildingJob>
 
-        <OnUpdate FunctionName="Stockpile_UpdateAction" />
+        <Action event="OnUpdate" functionName="Stockpile_UpdateAction" />
         
         <LocalizationCode>furn_stockpile</LocalizationCode>
         <UnlocalizedDescription>furn_stockpile_desc</UnlocalizedDescription>
@@ -138,7 +138,7 @@
         <BuildingJob jobTime="0">
         </BuildingJob>
 
-        <OnUpdate FunctionName="OnUpdate_GasGenerator" />
+        <Action event="OnUpdate" functionName="OnUpdate_GasGenerator" />
 
         <Params>
             <!-- <Param name="gas_name" value="O2" /> -->
@@ -162,7 +162,7 @@
 
     <Furniture objectType="Mining Drone Station">
         <Name>Mining Drone Station</Name>
-        <Description>Creates Steel Plates when worked by a character.</Description>
+        <Description>Creates raw materials when worked by a character.</Description>
         <TypeTag>Workstation</TypeTag>
         <MovementCost>1</MovementCost>
         <Width>3</Width>
@@ -170,12 +170,18 @@
 
         <BuildingJob jobTime="0">
         </BuildingJob>
+        <Params>
+          <Param name="mine_type" value="Raw Iron" />
+        </Params>
 
         <JobSpotOffset X="1" Y="0" />
         <JobSpawnSpotOffset X="0" Y="0" />
 
-        <OnUpdate FunctionName="MiningDroneStation_UpdateAction" />
+        <Action event="OnUpdate" functionName="MiningDroneStation_UpdateAction" />
         
+        <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Iron" Text="change to raw iron" RequiereCharacterSelected="false"/>
+        <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Copper" Text="change to raw copper" RequiereCharacterSelected="false"/>
+
         <LocalizationCode>furn_mining_drone_station</LocalizationCode>
         <UnlocalizedDescription>furn_mining_drone_station_desc</UnlocalizedDescription>
 
@@ -198,7 +204,7 @@
           <Param name="burnTimeRequired" value="10" />
       </Params>
       
-	  <OnUpdate FunctionName="PowerGenerator_UpdateAction" />
+	  <Action event="OnUpdate" functionName="PowerGenerator_UpdateAction" />
         
       <LocalizationCode>furn_power_generator</LocalizationCode>
       <UnlocalizedDescription>furn_power_generator_desc</UnlocalizedDescription>
@@ -221,7 +227,7 @@
         <JobSpotOffset X="0" Y="-1" />
         <JobSpawnSpotOffset X="1" Y="-1" />
 
-	<OnUpdate FunctionName="CloningPod_UpdateAction" />
+	<Action event="OnUpdate" functionName="CloningPod_UpdateAction" />
 			
 	<LocalizationCode>furn_cloning_pod</LocalizationCode>
 	<UnlocalizedDescription>furn_cloning_pod_desc</UnlocalizedDescription>
@@ -238,7 +244,7 @@
       
       <JobSpotOffset X="1" Y="0" />
 
-      <OnUpdate FunctionName="MetalSmelter_UpdateAction" />
+      <Action event="OnUpdate" functionName="MetalSmelter_UpdateAction" />
 
       <Params>
           <Param name="smelttime" value="0" />
@@ -261,9 +267,9 @@
     <BuildingJob jobTime="0"></BuildingJob>
 
     <!-- This method gets called on Install -->
-    <OnInstall FunctionName="Heater_InstallAction"></OnInstall>
+    <Action event="OnInstall" functionName="Heater_InstallAction"></Action>
     <!-- This method gets called on Uninstall -->
-    <OnUninstall FunctionName="Heater_UninstallAction"></OnUninstall>
+    <Action event="OnUninstall" functionName="Heater_UninstallAction"></Action>
       
     <Params>
       <Param name="temperature" value="10" />
@@ -288,7 +294,7 @@
 			<Param name="presstime_required" value="15" />
 		</Params>
 
-		<OnUpdate FunctionName="PowerCellPress_UpdateAction" />
+		<Action event="OnUpdate" functionName="PowerCellPress_UpdateAction" />
 
 		<LocalizationCode>furn_power_cell_press</LocalizationCode>
 		<UnlocalizedDescription>furn_power_cell_press_desc</UnlocalizedDescription>
@@ -299,9 +305,12 @@
     <TypeTag>OutdoorOnly</TypeTag>
     <Name>Small Landing Pad</Name>
     <Description>A landing pad for small spaceboats to land.</Description>
-    <OnUpdate FunctionName="LandingPad_Temp_UpdateAction" />
+    
+    <Action event="OnUpdate" functionName="LandingPad_Temp_UpdateAction" />
+  
     <ContextMenuAction FunctionName="LandingPad_Test_ContextMenuAction" Text="Lua Test Deconstruct 1" RequiereCharacterSelected="false"/>
     <ContextMenuAction FunctionName="LandingPad_Test_ContextMenuAction" Text="Lua Test Deconstruct 2" RequiereCharacterSelected="true" />
+    
     <MovementCost>5</MovementCost>
     <Width>3</Width>
     <Height>3</Height>
@@ -324,7 +333,7 @@
     <UnlocalizedDescription>furn_small_landing_pad_desc</UnlocalizedDescription>
   </Furniture>
   
-  <Furniture objectType="Oxygen Compressor">
+  <Furniture objectType="compressor_oxygen">
     <Name>Oxygen Compressor</Name>
     <Description>Stores and releases oxygen as needed</Description>
     
@@ -343,7 +352,7 @@
         <Param name="flow_rate" value="0.1" />
     </Params>
     
-    <OnUpdate FunctionName="OxygenCompressor_OnUpdate" />
+    <Action event="OnUpdate" functionName="OxygenCompressor_OnUpdate" />
     <GetSpriteName FunctionName="OxygenCompressor_GetSpriteName" />
 
     <LocalizationCode>furn_oxygen_compressor</LocalizationCode>

@@ -31,31 +31,16 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     protected Parameter furnParameters;
 
     /// <summary>
-    /// These actions are called every update. They get passed the furniture
-    /// they belong to, plus a deltaTime.
+    /// These actions are called when Trigger is called. They get passed the furniture
+    /// they belong to, plus a deltaTime (which defaults to 0).
     /// </summary>
-    // protected Action<Furniture, float> updateActions;
-    protected List<string> updateActions;
-
+    protected EventAction eventActions;
+    
     /// <summary>
     /// These context menu lua action are used to build the context menu of the furniture
     /// </summary>
     protected List<ContextMenuLuaAction> contextMenuLuaActions; 
     
-    /// <summary>
-    /// These actions are called when an object is installed. They get passed the furniture and a delta
-    /// time of 0
-    /// </summary>
-    protected List<string> installActions;
-
-    /// <summary>
-    /// These actions are called when an object is uninstalled. They get passed the furniture and a delta
-    /// time of 0
-    /// </summary>
-    protected List<string> uninstallActions;
-
-
-    // private Func<Furniture, ENTERABILITY> IsEnterable;
     protected string isEnterableAction;
 
     /// <summary>
@@ -102,12 +87,16 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         }
     }
 
+    public bool IsSelected { get; set; }
+
     public void Update(float deltaTime)
     {
-        if (updateActions != null)
+        // TODO: some weird thing happens
+        if (eventActions != null)
         {
+
             // updateActions(this, deltaTime);
-            FurnitureActions.CallFunctionsWithFurniture(updateActions.ToArray(), this, deltaTime);
+            eventActions.Trigger("OnUpdate", this, deltaTime);
         }
     }
 
@@ -254,10 +243,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     // Empty constructor is used for serialization
     public Furniture()
     {
-        updateActions = new List<string>();
+        eventActions = new EventAction();
+        
         contextMenuLuaActions = new List<ContextMenuLuaAction>();
-        installActions = new List<string>();
-        uninstallActions = new List<string>();
         furnParameters = new Parameter("furnParameters");
         jobs = new List<Job>();
         typeTags = new HashSet<string>();
@@ -287,9 +275,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         this.furnParameters = new Parameter(other.furnParameters);
         jobs = new List<Job>();
 
-        if (other.updateActions != null)
+        if (other.eventActions != null)
         {
-            this.updateActions = new List<string>(other.updateActions);
+            this.eventActions = other.eventActions.Clone();
         }
 
         if (other.contextMenuLuaActions != null)
@@ -371,8 +359,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         }
 
         // Call LUA install scripts
-        if(obj.installActions != null )
-            FurnitureActions.CallFunctionsWithFurniture(obj.installActions.ToArray(), obj, 0);
+        obj.eventActions.Trigger("OnInstall", obj);
 
         // Update thermalDiffusifity using coefficient
         float thermalDiffusivity = Temperature.defaultThermalDiffusivity;
@@ -567,9 +554,10 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
                 World.current.SetFurnitureJobPrototype(j, this);
                 break;
 
-            case "OnUpdate":
-                string functionName = reader.GetAttribute("FunctionName");
-                RegisterUpdateAction(functionName);
+            case "Action":
+                XmlReader subtree = reader.ReadSubtree();
+                eventActions.ReadXml(subtree);
+                subtree.Close();
                 break;
             case "ContextMenuAction":
                     contextMenuLuaActions.Add(new ContextMenuLuaAction
@@ -579,18 +567,6 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
                         RequiereCharacterSelected = bool.Parse(reader.GetAttribute("RequiereCharacterSelected"))
                     });
                 break;
-            case "OnInstall":
-                // Called when obj is installed
-                string functionInstallName = reader.GetAttribute("FunctionName");
-                RegisterInstallAction(functionInstallName);
-                break;
-
-            case "OnUninstall":
-                // Called when obj is uninstalled
-                string functionUninstallName = reader.GetAttribute("FunctionName");
-                RegisterUninstallAction(functionUninstallName);
-                break;
-
             case "IsEnterable":
                 isEnterableAction = reader.GetAttribute("FunctionName");
                 break;
@@ -656,46 +632,6 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         return furnParameters;
     }
 
-    /// <summary>
-    /// Registers a function that will be called every Update.
-    /// (Later this implementation might change a bit as we support LUA).
-    /// </summary>
-    public void RegisterUpdateAction(string luaFunctionName)
-    {
-        updateActions.Add(luaFunctionName);
-    }
-
-    public void UnregisterUpdateAction(string luaFunctionName)
-    {
-        updateActions.Remove(luaFunctionName);
-    }
-
-    /// <summary>
-    /// Registers a function that will be called every Install
-    /// </summary>
-    public void RegisterInstallAction(string luaFunctionName)
-    {
-        installActions.Add(luaFunctionName);
-    }
-
-    public void UnregisterInstallAction(string luaFunctionName)
-    {
-        installActions.Remove(luaFunctionName);
-    }
-
-    /// <summary>
-    /// Registers a function that will be called every UnInstall
-    /// </summary>
-    public void RegisterUninstallAction(string luaFunctionName)
-    {
-        uninstallActions.Add(luaFunctionName);
-    }
-
-    public void UnregisterUninstallAction(string luaFunctionName)
-    {
-        uninstallActions.Remove(luaFunctionName);
-    }
-
     public int JobCount()
     {
         return jobs.Count;
@@ -741,8 +677,33 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
 
     public bool IsStockpile()
     {
-        return objectType == "Stockpile";
+        return HasTypeTag("Storage");
     }
+
+    /// <summary>
+    /// Accepts for storage.
+    /// </summary>
+    /// <returns>A list of Inventory which the Furniture accepts for storage.</returns>
+    public Inventory[] AcceptsForStorage()
+    {
+        if (IsStockpile() == false)
+        {
+            Debug.ULogChannel("Stockpile_messages", "Someone is asking a non-stockpile to store stuff!?");
+            return null;
+        }
+
+        // TODO: read this from furniture params
+        Dictionary<string, Inventory> invsDict = new Dictionary<string, Inventory>();
+        foreach (string objectType in World.current.inventoryPrototypes.Keys)
+        {
+            invsDict[objectType] = new Inventory(objectType, World.current.inventoryPrototypes[objectType].maxStackSize, 0);
+        }
+
+        Inventory[] invs = new Inventory[invsDict.Count];
+        invsDict.Values.CopyTo(invs, 0);
+        return invs;
+    }
+
 
     public void Deconstruct()
     {
@@ -762,8 +723,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         }
 
         // We call lua to decostruct
-        if (uninstallActions != null)
-            FurnitureActions.CallFunctionsWithFurniture(uninstallActions.ToArray(), this, 0);
+        eventActions.Trigger("OnUninstall", this);
 
         // Update thermalDiffusifity to default value
         World.current.temperature.SetThermalDiffusivity(tile.X, tile.Y,
