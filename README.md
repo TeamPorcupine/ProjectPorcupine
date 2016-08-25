@@ -1,6 +1,10 @@
 # ProjectPorcupine
 Project Porcupine: A Base-Building Game...in Space!
 
+
+![Preview Thumbnail](http://i.imgur.com/lDJJUPZ.jpg)
+
+
 [About](#about)  
 [Copyright & Licensing](#copyright--licensing)  
 [Contributing](#contributing)  
