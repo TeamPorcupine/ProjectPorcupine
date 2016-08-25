@@ -34,6 +34,7 @@ public class GameEventActions
         // We need to make the base type visible.
         myLuaScript.Globals["Inventory"] = typeof(Inventory);
         myLuaScript.Globals["Job"] = typeof(Job);
+        myLuaScript.Globals["ModUtils"] = typeof(ModUtils);
 
         // Also to access statics/globals
         myLuaScript.Globals["World"] = typeof(World);

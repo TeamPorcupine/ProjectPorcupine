@@ -23,6 +23,7 @@ public class QuestActions
         myLuaScript.Globals["Quest"] = typeof(Quest);
         myLuaScript.Globals["QuestGoal"] = typeof(QuestGoal);
         myLuaScript.Globals["QuestReward"] = typeof(QuestReward);
+        myLuaScript.Globals["ModUtils"] = typeof(ModUtils);
 
         // Also to access statics/globals
         myLuaScript.Globals["World"] = typeof(World);
