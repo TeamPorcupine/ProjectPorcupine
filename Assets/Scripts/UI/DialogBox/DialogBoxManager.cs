@@ -8,6 +8,7 @@
 #endregion
 using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class DialogBoxManager : MonoBehaviour
 {
@@ -20,6 +21,7 @@ public class DialogBoxManager : MonoBehaviour
     public DialogBoxSettings dialogBoxSettings;
     public DialogBoxTrade dialogBoxTrade;
     public DialogBoxAreYouSure dialogBoxAreYouSure;
+    public DialogBoxQuests dialogBoxQuests;
 
     void Awake()
     {
@@ -52,5 +54,30 @@ public class DialogBoxManager : MonoBehaviour
         tempGoObj.name = "Are You Sure";
         dialogBoxAreYouSure = tempGoObj.GetComponent<DialogBoxAreYouSure>();
 
+        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_Quests"), Controllers.transform.position, Controllers.transform.rotation, Controllers.transform);
+        tempGoObj.name = "Quests";
+        dialogBoxQuests = tempGoObj.GetComponent<DialogBoxQuests>();
+        AddQuestList();
+    }
+
+    //Temporary location until we have a proper code-driven UI
+    private void AddQuestList()
+    {
+        Transform layoutRoot = GameObject.Find("Dialog Boxes").transform.parent.GetComponent<Transform>();
+        GameObject go = (GameObject)Instantiate(Resources.Load("UI/QuestsMainScreenBox"), layoutRoot.transform);
+        go.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, -55, 0);
+
+        Toggle pinButton = CreatePinQuestButton();
+
+        pinButton.onValueChanged.AddListener(go.SetActive);
+    }
+
+    private Toggle CreatePinQuestButton()
+    {
+        Transform layoutRoot = GameObject.Find("Dialog Boxes").transform.parent.GetComponent<Transform>();
+        GameObject buttonQuestGameObject = (GameObject)Instantiate(Resources.Load("UI/PinToggleButton"), this.gameObject.transform);
+        buttonQuestGameObject.name = "ToggleQuestPinButton"; ;
+        buttonQuestGameObject.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, -30, 0);
+        return buttonQuestGameObject.GetComponent<Toggle>();
     }
 }

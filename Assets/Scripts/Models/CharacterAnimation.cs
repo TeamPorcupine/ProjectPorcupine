@@ -49,6 +49,12 @@ public class CharacterAnimation
     public void SetSprites(Sprite[] s)
     {
         sprites = s;
+        
+        // make sure that every sprite has correct filtermode
+        foreach (Sprite sprite in sprites)
+        {
+            sprite.texture.filterMode = FilterMode.Point;
+        }
     }
 
     private void CallAnimation()
