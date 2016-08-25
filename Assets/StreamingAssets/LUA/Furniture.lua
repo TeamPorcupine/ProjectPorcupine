@@ -141,7 +141,7 @@ function Stockpile_GetItemsFromFilter()
 	-- Since jobs copy arrays automatically, we could already have
 	-- an Inventory[] prepared and just return that (as a sort of example filter)
 
-	return { Inventory.__new("Steel Plate", 50, 0) }
+	return { Inventory.__new("Raw Iron", 50, 0) }
 end
 
 
@@ -263,6 +263,10 @@ function MiningDroneStation_UpdateAction( furniture, deltaTime )
 		return
 	end
 
+	if (furniture.GetSpawnSpotTile().Inventory != nil and furniture.GetSpawnSpotTile().Inventory.objectType != furniture.Parameters["mine_type"].ToString()) then
+		return
+	end
+
 	-- If we get here, we need to CREATE a new job.
 
 	jobSpot = furniture.GetJobSpotTile()
@@ -276,16 +280,18 @@ function MiningDroneStation_UpdateAction( furniture, deltaTime )
 		Job.JobPriority.Medium,
 		true	-- This job repeats until the destination tile is full.
 	)
-	j.RegisterJobCompletedCallback("MiningDroneStation_JobComplete")
-	j.JobDescription = "job_mining_drone_station_mining_desc"
-
 	furniture.AddJob( j )
+	j.RegisterJobCompletedCallback("MiningDroneStation_JobComplete")
+
 end
 
 
 function MiningDroneStation_JobComplete(j)
-	World.current.inventoryManager.PlaceInventory( j.furniture.GetSpawnSpotTile(), Inventory.__new(j.furniture.Parameters["mine_type"] , 50, 20) )
-	return
+	if (j.furniture.GetSpawnSpotTile().Inventory == nil or j.furniture.GetSpawnSpotTile().Inventory.objectType == j.furniture.Parameters["mine_type"].ToString()) then
+		World.current.inventoryManager.PlaceInventory( j.furniture.GetSpawnSpotTile(), Inventory.__new(j.furniture.Parameters["mine_type"].ToString() , 50, 20) )
+	else
+		j.CancelJob()
+	end
 end
 
 function MiningDroneStation_Change_to_Raw_Iron(furniture, character)
@@ -293,7 +299,7 @@ function MiningDroneStation_Change_to_Raw_Iron(furniture, character)
 end
 
 function MiningDroneStation_Change_to_Raw_Copper(furniture, character)
-	furniture.Parameters["mine_type"].SetValue("Raw Copper")
+	furniture.Parameters["mine_type"].SetValue("raw_copper")
 end
 
 function MetalSmelter_UpdateAction(furniture, deltaTime)
