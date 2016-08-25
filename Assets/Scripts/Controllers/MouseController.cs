@@ -131,7 +131,7 @@ public class MouseController
         UpdateDragging();
         UpdateCameraMovement();
         UpdateSelection();
-        if (Settings.getSettingAsBool("DevTools_enabled", false))
+        if (Settings.getSettingAsBool("DialogBoxSettings_developerModeToggle", false))
         {
             UpdateSpawnClicking();
         }

@@ -23,6 +23,8 @@ public class DialogBoxSettings : DialogBox
 
     public Toggle fullScreenToggle;
 
+    public Toggle developerModeToggle;
+
     public Slider musicVolume;
 
     public Resolution[] myResolutions;
@@ -65,6 +67,11 @@ public class DialogBoxSettings : DialogBox
                 OnFullScreenToggle();
             });
 
+        developerModeToggle.onValueChanged.AddListener(delegate
+            {
+                OnDeveloperModeToggle();
+            });
+
         resolutionDropdown.onValueChanged.AddListener(delegate
             {
                 OnResolutionChange();
@@ -98,6 +105,10 @@ public class DialogBoxSettings : DialogBox
     public void OnLangageToggle()
     {
         langDropDown.SetActive(langToggle.isOn);
+    }
+
+    public void OnDeveloperModeToggle()
+    {
     }
 
     public void OnFPSToggle()
@@ -149,6 +160,7 @@ public class DialogBoxSettings : DialogBox
     public void OnClickSave()
     {
         this.CloseDialog();
+        WorldController.Instance.spawnInventoryController.SetUIVisibility(developerModeToggle.isOn);
         SaveSetting();
     }
 
@@ -162,6 +174,7 @@ public class DialogBoxSettings : DialogBox
         Settings.setSetting("DialogBoxSettings_langToggle", langToggle.isOn);
         Settings.setSetting("DialogBoxSettings_fpsToggle", fpsToggle.isOn);
         Settings.setSetting("DialogBoxSettings_fullScreenToggle", fullScreenToggle.isOn);
+        Settings.setSetting("DialogBoxSettings_developerModeToggle", developerModeToggle.isOn);
 
         Settings.setSetting("DialogBoxSettings_qualityDropdown", qualityDropdown.value);
         Settings.setSetting("DialogBoxSettings_vSyncDropdown", vSyncDropdown.value);
@@ -179,6 +192,7 @@ public class DialogBoxSettings : DialogBox
         langToggle.isOn = Settings.getSettingAsBool("DialogBoxSettings_langToggle", true);
         fpsToggle.isOn = Settings.getSettingAsBool("DialogBoxSettings_fpsToggle", true);
         fullScreenToggle.isOn = Settings.getSettingAsBool("DialogBoxSettings_fullScreenToggle", true);
+        developerModeToggle.isOn = Settings.getSettingAsBool("DialogBoxSettings_developerModeToggle", false);
 
         qualityDropdown.value = Settings.getSettingAsInt("DialogBoxSettings_qualityDropdown", 0);
         vSyncDropdown.value = Settings.getSettingAsInt("DialogBoxSettings_vSyncDropdown", 0);
