@@ -43,6 +43,11 @@ public class BuildModeController
         return proto.Width == 1 && proto.Height == 1;
     }
 
+    public string GetFloorTile()
+    {
+        return buildModeTile.ToString();
+    }
+
     public void SetModeBuildTile(TileType type)
     {
         buildMode = BuildMode.FLOOR;
@@ -209,6 +214,7 @@ public class BuildModeController
                         return;
                     }
                 }
+
                 t.Furniture.Deconstruct();
             }
             else if (t.PendingBuildJob != null)

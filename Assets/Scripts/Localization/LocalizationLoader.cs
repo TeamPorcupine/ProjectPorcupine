@@ -57,11 +57,11 @@ namespace ProjectPorcupine.Localization
             // TODO: Think over the extension ".lang", might change that in the future.
             foreach (string file in Directory.GetFiles(filePath, "*.lang"))
             {
-                // The file extention is .lang, load it.
+                // The file extension is .lang, load it.
                 LocalizationTable.LoadLocalizationFile(file);
 
                 // Just write a little debug info into the console.
-                Debug.ULogChannel("LocalizationLoader", "Loaded localization at path\n" + file);
+                Debug.ULogChannel("LocalizationLoader", "Loaded localization at path: " + file);
             }
         }
 
