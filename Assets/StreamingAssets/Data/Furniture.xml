@@ -57,7 +57,7 @@
         <Params>
             <Param name="openness" value="0" />
             <Param name="is_opening" value="0" />
-            <Param name="thermal_diffusivity" value="0.0" />
+            <Param name="thermal_diffusivity" value="0.0001" />
         </Params>
 
         <Action event="OnUpdate" functionName="OnUpdate_Door" />
@@ -95,6 +95,7 @@
         <Params>
             <Param name="openness" value="0" />
             <Param name="is_opening" value="0" />
+            <Param name="thermal_diffusivity" value="0.00001" />
         </Params>
 
         <Action event="OnUpdate" functionName="OnUpdate_Door" />

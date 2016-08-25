@@ -38,6 +38,9 @@ public class MouseController
 
     // Ìs panning the camera
     private bool isPanning = false;
+
+    private float panningThreshold = .015f;
+    private Vector3 panningMouseStart = Vector3.zero;
 	
     private MouseMode currentMode = MouseMode.SELECT;
 
@@ -474,14 +477,31 @@ public class MouseController
 
     private void UpdateCameraMovement()
     {
+        if (Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(2))
+        {
+            panningMouseStart = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            panningMouseStart.z = 0;
+        }
+
+        if (!isPanning)
+        {
+            Vector3 currentMousePosition;
+            currentMousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            currentMousePosition.z = 0;
+
+            if (Vector3.Distance(panningMouseStart, currentMousePosition) > panningThreshold * Camera.main.orthographicSize)
+            {
+                isPanning = true;
+            }
+        }
+
         // Handle screen panning.
-        if (Input.GetMouseButton(1) || Input.GetMouseButton(2))
+        if (isPanning && (Input.GetMouseButton(1) || Input.GetMouseButton(2)))
         {   // Right or Middle Mouse Button.
             Vector3 diff = lastFramePosition - currFramePosition;
 
             if (diff != Vector3.zero)
             {
-                isPanning = true;
                 contextMenu.Close();
                 Camera.main.transform.Translate(diff);
             }

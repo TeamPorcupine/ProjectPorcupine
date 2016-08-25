@@ -22,27 +22,27 @@ If you would like to contribute to this project by modifying/adding to the progr
  * From the command line: `git remote add upstream https://github.com/TeamPorcupine/ProjectPorcupine.git`
 5. Create a branch for your new feature.
  * From the command line: `git checkout -b my-feature-branch-name`
-6. [optional]  It is recommended that you rebase your branch on top of the latest master, to minimize excess commit messages.
- * From the command line:  
-     `git fetch upstream master`  
-     `git rebase upstream/master`  
 6. Make your changes.
  * Avoid making changes to more files than necessary for your feature (i.e. refrain from combining your "real" pull request with incidental bug fixes). This will simplify the merging process and make your changes clearer.
  * Very much avoid making changes to the Unity-specific files, like the scene and the project settings unless absolutely necessary. Changes here are very likely to cause difficult to merge conflicts. Work in code as much as possible. (We will be trying to change the UI to be more code-driven in the future.) Making changes to prefabs should generally be safe -- but create a copy of the main scene and work there instead (then delete your copy of the scene before committing).
-7. Commit your changes and push your branch to your fork.
-  * From the command line:  
-    `git add Assets/my-changed-file.cs`  
-    `git add Assets/my-other-changed-file.cs`  
-    `git commit -m "A descriptive commit message"`  
-    `git push origin my-feature-branch-name`  
-8. Make a "Pull Request" from your branch here on Github.
+7. Commit your changes. From the command line:  
+ * `git add Assets/my-changed-file.cs`  
+ * `git add Assets/my-other-changed-file.cs`  
+ * `git commit -m "A descriptive commit message"`  
+8. While you were working some other pull request might have gone in the breaks your stuff or vice versa. This can be a *merge conflict* but also conflicting game logic or code. Before you test, merge with master.
+ * `git fetch upstream`
+ * `git merge upstream/master`
+9. Test. Start the game and do something related to your feature/fix.
+10. Push the branch, uploading it to Github.
+  * `git push origin my-feature-branch-name`
+11. Make a "Pull Request" from your branch here on Github.
   * Include screenshots demonstrating your change if applicable.
-9. For a video tutorial, please see: https://www.youtube.com/watch?v=R2fl17eEpwI
+12. For a video tutorial, please see: https://www.youtube.com/watch?v=R2fl17eEpwI
 
 # Resolving Merge Conflicts
 
 Depending on the order that Pull Requests get processed, your PR may result in a conflict and become un-mergable.  To correct this, do the following from the command line:  
-  
+
 Switch to your branch: `git checkout my-feature-branch-name`  
 Pull in the lastest upstream changes: `git pull upstream master`  
 Find out what files have a conflict: `git status`  
@@ -55,11 +55,11 @@ Edit the conflicting file(s) and look for a block that looks like this:
     `>>>>>>> some-branch`  
 
 Replace all five (or more) lines with the correct version (yours, theirs, or
-a combination of the two).  ONLY the correct content should remain (none of 
+a combination of the two).  ONLY the correct content should remain (none of
 that "<<<<< HEAD" stuff.)
 
 Then re-commit and re-push the file.  
-  
+
   `git add the-changed-file.cs`  
   `git commit -m "Resolved conflict between this and PR #123"`  
   `git push origin my-feature-branch-name`  
@@ -93,31 +93,31 @@ As a TL;DR on our coding practises, adhere to the following example:
 // Fields, properties and methods should always specify their scope, aka private/protected/internal/public.
 
 // Interfaces start with an I and should use PascalCasing.
-interface IInterfaceable { } 
+interface IInterfaceable { }
 
 // Class names should use PascalCasing.
 // Braces are on a new line. ;)
-class Class 
+class Class
 {
     // Fields backing properties start with an underscore and should be private.
-    private int _memberField; 
-    
+    private int _memberField;
+
     // Properties should use PascalCasing.
-    public int MemberField { get { return _memberField; } } 
-    
+    public int MemberField { get { return _memberField; } }
+
     // Regular fields not backing a property should be camelCased.
     private string someString;
-    
+
     // Methods should use PascalCasing.
     // Method parameters should be camelCased.
-    public void SomeMethod( int functionParameter ) 
+    public void SomeMethod( int functionParameter )
     {
         // Local variables should also be camelCased.
-        int myLocalVariable = 0; 
-    } 
-    
+        int myLocalVariable = 0;
+    }
+
     // Events should use PascalCasing as well.
-    public event SomeEvent; 
+    public event SomeEvent;
 }
 ```
 
@@ -153,12 +153,12 @@ We have standardized the objectTypes of Furniture and Inventory to match `type_m
 * Pull Requests represent final code. Please ensure they are:
      * Well tested by the author. It is the author's job to ensure their code works as expected.  
      * Be free of unnecessary log calls. Logging is great for debugging, but when a PR is made, log calls should only be present when there is an actual error or to warn of an unimplemented feature.
-   
+
    If your code is untested, log heavy, or incomplete, prefix your PR with "WIP", so others know it is still being tested and shouldn't be considered for merging yet.
 
 * Small changes are preferable over large ones. The larger a change is the more likely it is to conflict with the project and thus be denied. If your addition is large, be sure to extensively discuss it in an "issue" before you submit a PR, or even start coding.
 
-* Document your changes in your PR. If you add a feature that you expect others to use, explain exactly how future code should interact with your additions. 
+* Document your changes in your PR. If you add a feature that you expect others to use, explain exactly how future code should interact with your additions.
 
 * Avoid making changes to more files than necessary for your feature (i.e. refrain from combining your "real" pull request with incidental bug fixes). This will simplify the merging process and make your changes clearer.
 
