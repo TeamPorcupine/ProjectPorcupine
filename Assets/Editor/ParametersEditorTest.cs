@@ -112,6 +112,22 @@ public class ParametersEditorTest
     }
 
     [Test]
+    public void ParameterWithValueAndContents()
+    {
+        Parameter param2 = new Parameter("Alice");
+        Assert.That(param2.ToString(), Is.Null);
+
+        param2.SetValue("test");
+        Assert.That(param2.ToString(), Is.EqualTo("test"));
+        Assert.That(param2.ContainsKey("Bob"), Is.False);
+
+        param2.AddParameter(new Parameter("Bob"));
+        Assert.That(param2.ToString(), Is.EqualTo("test"));
+        Assert.That(param2.ContainsKey("Bob"), Is.True);
+        Assert.That(param2["Bob"].GetName(), Is.EqualTo("Bob"));
+    }
+
+    [Test]
     public void ParameterCopyConstructorDoesDeepCopy()
     {
         Parameter param2 = new Parameter(param1);
