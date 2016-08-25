@@ -161,7 +161,22 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
     // What direction our character is looking
     public Facing CharFacing;
-    
+
+    public bool IsSelected
+    {
+        get { return _isSelected; }
+        set
+        {
+            if (value == false)
+            {
+                VisualPath.Instance.RemoveVisualPoints(name);
+            }
+            _isSelected = value;
+        }
+    }
+
+    private bool _isSelected = false;
+
     /// Use only for serialization
     public Character()
     {
@@ -588,9 +603,9 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         {
             pathAStar = null;
             IsWalking = false;
+            VisualPath.Instance.RemoveVisualPoints(name);
             return; // We're already were we want to be.
         }
-
         // currTile = The tile I am currently in (and may be in the process of leaving)
         // nextTile = The tile I am currently entering
         // destTile = Our final destination -- we never walk here directly, but instead use it for the pathfinding
@@ -612,6 +627,10 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 NextTile = pathAStar.Dequeue();
             }
 
+            if (IsSelected)
+            {
+                VisualPath.Instance.SetVisualPoints(name, pathAStar.GetList());
+            }
             IsWalking = true;
 
             // Grab the next waypoint from the pathing system!
