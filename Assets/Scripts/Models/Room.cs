@@ -405,9 +405,13 @@ public class Room : IXmlSerializable
 
         // Tell the world that a new room has been formed.
         World.current.AddRoom(newRoom);
+        if (newRoom.IsOutsideRoom() == false)
+        {
+            newRoom.FindExits();
+        }
     }
 
-    private void FindExits()
+    void FindExits()
     {
         foreach (Tile t in this.enclosingTiles)
         {

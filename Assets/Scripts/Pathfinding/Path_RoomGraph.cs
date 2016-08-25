@@ -51,6 +51,18 @@ public class Path_RoomGraph
             }
         }
         GenerateEdgesOutside();
+
+        foreach (Room r in nodes.Keys)
+        {
+            Debug.ULogChannel("Path_RoomGraph", "Room " + r.ID + " has edges to:");
+            Debug.ULogChannel("Path_RoomGraph", "Room " + r.ID + " has " + nodes[r].edges.Length + " edges");
+            foreach (Path_Edge<Room> edge in nodes[r].edges)
+            {
+                Debug.ULogChannel("Path_RoomGraph", "edge " + edge.node.data.ID);
+            }
+
+        }
+
     }
 
     void GenerateEdgesByRoom(Room r)
