@@ -95,7 +95,10 @@ public class WorldController : MonoBehaviour
         //create gameobject so we can have access to a tranform thats position is Vector3.zero
         GameObject goMat = new GameObject("VisualPath", typeof(VisualPath));
         GameObject go;
-
+        if (world == null)
+        {
+            CreateEmptyWorld();
+        }
         tileSpriteController = new TileSpriteController(world);
         tileSpriteController.Render();
         characterSpriteController = new CharacterSpriteController(world);

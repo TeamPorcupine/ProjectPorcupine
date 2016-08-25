@@ -207,7 +207,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     {
         CurrTile = DestTile = NextTile = tile;
         characterColor = color;
-		LoadNeeds();
+        LoadNeeds();
     }
     
     private void GetNewJob()
