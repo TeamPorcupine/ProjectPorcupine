@@ -35,7 +35,7 @@
         <CanPlaceHere FunctionName="CanBuildHere_Ladder"/>
 
         <BuildingJob jobTime="0.5">
-            <Inventory objectType="Steel Plate" amount="1" />
+            <Inventory objectType="plate_steel" amount="1" />
         </BuildingJob>
         
         <LocalizationCode>tile_Ladder</LocalizationCode>

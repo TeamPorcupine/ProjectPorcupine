@@ -22,7 +22,7 @@ using UnityEngine;
 [MoonSharpUserData]
 public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
 {
-    public string objectType = "Steel Plate";
+    public string objectType = "plate_steel";
     public int maxStackSize = 50;
     public float basePrice = 1f;
 
