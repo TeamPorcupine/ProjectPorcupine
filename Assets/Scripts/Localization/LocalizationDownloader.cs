@@ -14,13 +14,42 @@ using UnityEngine;
 
 namespace ProjectPorcupine.Localization
 {
+    /*
+                                                 ,  ,
+                                               / \/ \
+                                              (/ //_ \_
+     .-._                                      \||  .  \
+      \  '-._                            _,:__.-"/---\_ \
+ ______/___  '.    .--------------------'~-'--.)__( , )\ \
+`'--.___  _\  /    |             Here        ,'    \)|\ `\|
+     /_.-' _\ \ _:,_          Be Dragons           " ||   (
+   .'__ _.' \'-/,`-~`                                |/
+       '. ___.> /=,|  Abandon hope all ye who enter  |
+        / .-'/_ )  '---------------------------------'
+        )'  ( /(/
+             \\ "
+              '=='
+    */
+
+    /// <summary>
+    /// This class makes sure that your localization is up to date. It does that by comparing latest know commit hash
+    /// (which is stored in Application.streamingAssetsPath/Localization/curr.ver) to the latest hash available through
+    /// GitHub. If the hashes don't match, curr.ver doesn't exist, or curr.ver != GitHub hash a new zip containing
+    /// localization will be downloaded from GitHub repo. Then, the zip is stored in the memory and waits for
+    /// Application.streamingAssetsPath/Localization to be cleaned. When It's empty the zip gets unpacked and saved
+    /// to hard drive using ICSharpCode.SharpZipLib.Zip library. Every GitHub zip download has a folder with
+    /// *ProjectName*-*BranchName* so all of it's content needs to be moved to Application.streamingAssetsPath/Localization.
+    /// After that the folder get's deleted and new curr.ver file is created containing latest hash.
+    /// GitHub's branch name corresponds to World.current.gameVersion, so that the changes in localization
+    /// for version 0.2 won't affect users who haven't updated yet from version 0.1.
+    /// </summary>
     public static class LocalizationDownloader
     {
         // TODO: Change this to the official repo before PR.
-        private static readonly string LocalizationRepositoryZipLocation = "https://github.com/QuiZr/ProjectPorcupineLocalization/archive/" + World.current.currentGameVersion + ".zip";
+        private static readonly string LocalizationRepositoryZipLocation = "https://github.com/QuiZr/ProjectPorcupineLocalization/archive/" + World.current.gameVersion + ".zip";
 
         // TODO: Change this to the official repo before PR.
-        private static readonly string LastCommitGithubApiLocation = "https://api.github.com/repos/QuiZr/ProjectPorcupineLocalization/commits/" + World.current.currentGameVersion;
+        private static readonly string LastCommitGithubApiLocation = "https://api.github.com/repos/QuiZr/ProjectPorcupineLocalization/commits/" + World.current.gameVersion;
 
         private static readonly string LocalizationFolderPath = Path.Combine(Application.streamingAssetsPath, "Localization");
 
@@ -28,42 +57,23 @@ namespace ProjectPorcupine.Localization
         private static WWW www;
 
         /// <summary>
-        /// Check if there are any new updates for localization. TODO: Add a choice for a user to not update them right now.
+        /// Check if there are any new updates for localization. TODO: Add a choice for a user to not update it right now.
         /// </summary>
         public static IEnumerator CheckIfCurrentLocalizationIsUpToDate(Action onLocalizationDownloadedCallback)
         {
-            // Check current version of localization based on commit hash.
-            string currentLocalizationVersion;
-            try
-            {
-                currentLocalizationVersion = File.OpenText(Path.Combine(LocalizationFolderPath, "curr.ver")).ReadToEnd();
-            }
-            catch (FileNotFoundException e)
-            {
-                Debug.ULogWarningChannel("LocalizationDownloader", (e.Message));
-                currentLocalizationVersion = string.Empty;
-            }
-            catch (DirectoryNotFoundException e)
-            {
-                Debug.ULogWarningChannel("LocalizationDownloader", (e.Message));
-                Directory.CreateDirectory(LocalizationFolderPath);
-                currentLocalizationVersion = string.Empty;
-            }
-            catch (System.Exception e)
-            {
-                Debug.ULogErrorChannel("LocalizationDownloader", (e.ToString()));
-                yield break;
-            }
+            string currentLocalizationVersion = ReadCurrVerFile();
 
             // Check the latest localization version through the GitHub API.
             WWW versionChecker = new WWW(LastCommitGithubApiLocation);
 
+            // yield until API response is downloaded
             yield return versionChecker;
 
-            if (versionChecker.error != null)
+            if (string.IsNullOrEmpty(versionChecker.error) == false)
             {
                 // This could be a thing when for example user has no internet connection.
-                Debug.ULogErrorChannel("LocalizationDownloader", "Error while checking for available localization updates: " + www.error);
+                Debug.ULogErrorChannel("LocalizationDownloader", "Error while checking for localization updates. Are you sure that you're connected to the internet?");
+                Debug.ULogErrorChannel("LocalizationDownloader", www.error);
                 yield break;
             }
 
@@ -104,7 +114,7 @@ namespace ProjectPorcupine.Localization
             {
                 // Not a big deal:
                 // Next time the LocalizationDownloader will force an update.
-                Debug.ULogError("LocalizationDownloader", "Not critical error at writing curr.ver file" + e.Message);
+                Debug.ULogWarningChannel("LocalizationDownloader", "Writing curr.ver file failed: " + e.Message);
                 throw;
             }
         }
@@ -142,49 +152,32 @@ namespace ProjectPorcupine.Localization
             if (www.isDone == false)
             {
                 // This should never happen.
-                Debug.ULogErrorChannel("LocalizationDownloader", new System.Exception("OnDownloadLocalizationComplete got called before www finished downloading.").ToString());
+                Debug.ULogErrorChannel("LocalizationDownloader", "OnDownloadLocalizationComplete got called before www finished downloading.");
                 www.Dispose();
                 return;
             }
 
-            if (www.error != null)
+            if (string.IsNullOrEmpty(www.error) == false)
             {
                 // This could be a thing when for example user has no internet connection.
-                Debug.ULogErrorChannel("LocalizationDownloader", "Error while downloading localizations file: " + www.error);
+                Debug.ULogErrorChannel("LocalizationDownloader", "Error while downloading localizations files.");
+                Debug.ULogErrorChannel("LocalizationDownloader", www.error);
                 return;
             }
 
             try
             {
+                // Clean the Localization folder and return it's info.
+                DirectoryInfo localizationFolderInfo = ClearLocalizationDirectory();
+
                 // Turn's out that System.IO.Compression.GZipStream is not working in unity:
                 // http://forum.unity3d.com/threads/cant-use-gzipstream-from-c-behaviours.33973/
                 // So I need to use some sort of 3rd party solution.
 
-                // Clear Application.streamingAssetsPath/Localization folder
-                DirectoryInfo localizationFolderInfo = new DirectoryInfo(LocalizationFolderPath);
-                foreach (FileInfo file in localizationFolderInfo.GetFiles())
-                {
-                    // If there are files without that extension then:
-                    // a) someone made a change to localization system and didn't update this
-                    // b) We are in a wrong directory, so let's hope we didn't delete anything important.
-                    if (file.Extension != ".lang" && file.Extension != ".meta" && file.Extension != ".ver" && file.Extension != ".md")
-                    {
-                        Debug.ULogErrorChannel("LocalizationDownloader", new System.Exception("SOMETHING WENT HORRIBLY WRONG AT DOWNLOADING LOCALIZATION!").ToString());
-                        Debug.Break();
-                        return;
-                    }
-
-                    file.Delete();
-                }
-
-                foreach (DirectoryInfo dir in localizationFolderInfo.GetDirectories())
-                {
-                    dir.Delete(true);
-                }
-
                 // Convert array of downloaded bytes to stream.
                 using (ZipInputStream zipReadStream = new ZipInputStream(new MemoryStream(www.bytes)))
                 {
+                    // Unpack zip to the hard drive.
                     ZipEntry theEntry;
 
                     // While there are still files inside zip archive.
@@ -258,9 +251,9 @@ namespace ProjectPorcupine.Localization
                 // Remove ProjectPorcupineLocalization-*branch name*
                 Directory.Delete(dirInfo[0].FullName);
 
-                Debug.ULogErrorChannel("LocalizationDownloader", "New localization files downloaded!");
+                Debug.ULogChannel("LocalizationDownloader", "New localization files successfully downloaded!");
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 // Something happen in the file system. 
                 // TODO: Handle this properly, for now this is as useful as:
@@ -271,54 +264,141 @@ namespace ProjectPorcupine.Localization
             onLocalizationDownloadedCallback();
         }
 
+        private static DirectoryInfo ClearLocalizationDirectory()
+        {
+            DirectoryInfo localizationFolderInfo = new DirectoryInfo(LocalizationFolderPath);
+            foreach (FileInfo file in localizationFolderInfo.GetFiles())
+            {
+                // If there are files without that extension then:
+                // a) someone made a change to localization system and didn't update this
+                // b) We are in a wrong directory, so let's hope we didn't delete anything important.
+                if (file.Extension != ".lang" && file.Extension != ".meta" && file.Extension != ".ver" && file.Extension != ".md")
+                {
+                    Debug.ULogErrorChannel("LocalizationDownloader", "SOMETHING WENT HORRIBLY WRONG AT DOWNLOADING LOCALIZATION!");
+                    throw new Exception("SOMETHING WENT HORRIBLY WRONG AT DOWNLOADING LOCALIZATION!");
+                }
+
+                file.Delete();
+            }
+
+            foreach (DirectoryInfo dir in localizationFolderInfo.GetDirectories())
+            {
+                dir.Delete();
+            }
+
+            return localizationFolderInfo;
+        }
+
+        /// <summary>
+        /// Reads Application.streamingAssetsPath/Localization/curr.ver making sure that Localization folder exists.
+        /// </summary>
+        private static string ReadCurrVerFile()
+        {
+            string currentLocalizationVersionFilePath = Path.Combine(LocalizationFolderPath, "curr.ver");
+
+            string currentLocalizationVersion = string.Empty;
+            try
+            {
+                using (StreamReader fileReader = File.OpenText(currentLocalizationVersionFilePath))
+                {
+                    try
+                    {
+                        currentLocalizationVersion = fileReader.ReadToEnd();
+                    }
+                    catch (IOException e)
+                    {
+                        // Something happened... For now we will continue but maybe we should yield break here.
+                        Debug.ULogError("LocalizationDownloader", e.Message);
+                    }
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                // It's fine - we will create that file later.
+                Debug.ULogChannel("LocalizationDownloader", currentLocalizationVersionFilePath + " file not found, forcing an update.");
+            }
+            catch (DirectoryNotFoundException)
+            {
+                // This is probably first launch of the game.
+                Debug.ULogChannel("LocalizationDownloader", LocalizationFolderPath + " folder not found, creating...");
+
+                try
+                {
+                    Directory.CreateDirectory(LocalizationFolderPath);
+                }
+                catch (Exception e)
+                {
+                    // If any exception happen here then we don't have a Localization folder in place
+                    // so we can just throw - we won't do anything good here.
+                    throw e;
+                }
+            }
+            catch (Exception e)
+            {
+                // i.e. UnauthorizedAccessException, NotSupportedException or UnauthorizedAccessException.
+                // Those should never happen and if they do something is really fucked up so we should
+                // probably start a fire, call 911 or at least throw an exception.
+                throw e;
+            }
+
+            return currentLocalizationVersion;
+        }
+
         /// <summary>
         /// This is a really wonky way of parsing JSON. I didn't want to include something like
         /// Json.NET library purely for this functionality but if we will be using it somewhere else
-        /// this need to change. DO NOT TOUCH and this will be fine >.>
+        /// this need to change. DO NOT TOUCH and this will be fine.
         /// </summary>
-        /// <param name="githubApiResponse">GitHub API response</param>
+        /// <param name="githubApiResponse">GitHub API response.</param>
         /// <returns></returns>
         private static string GetHashOfLastCommitFromAPIResponse(string githubApiResponse)
         {
+            if (string.IsNullOrEmpty(githubApiResponse))
+            {
+                throw new ArgumentNullException("githubApiResponse");
+            }
+
+            string hashSearchPattern = "sha\":\"";
+
             // Index of the first char of hash. 
-            int index = githubApiResponse.IndexOf("sha\":\"");
+            int index = githubApiResponse.IndexOf(hashSearchPattern);
 
             if (index == -1)
             {
                 // Either the response was damaged or GitHub API returned an error.
-                Debug.ULogErrorChannel("LocalizationDownloader", "Error at parsing JSON");
-                throw new Exception("Error at parsing JSON");
+                throw new Exception("Error at parsing JSON - sha\":\" not found.");
             }
 
-            // + 6 == "sha\":\"" length
+            // hashSearchPattern length
             index += 6;
+
+            // + 1 for that while loop first run.
+            if (index + 1 >= githubApiResponse.Length - 1)
+            {
+                // Either the response was damaged or GitHub API returned an error.
+                throw new Exception("Error at parsing JSON - githubApiResponse too short.");
+            }
 
             char currentChar = githubApiResponse[index];
 
             // Hash of the commit.
             string hash = string.Empty;
-            hash += currentChar;
-            while (true)
+
+            // Get the commit hash
+            do
             {
-                // Check if this is the end of the commit string.
-                // I don't think that i need to escape that quote mark 
-                // but oh well - it works either way..
+                hash += currentChar;
                 index++;
                 currentChar = githubApiResponse[index];
 
-                if (currentChar == '\"')
-                {
-                    break;
-                }
-
-                hash += currentChar;
-
+                // Check if this is the end of the commit string.
                 if (index + 1 == githubApiResponse.Length - 1)
                 {
-                    Debug.ULogErrorChannel("LocalizationDownloader", "Error at parsing JSON");
-                    throw new Exception("Error at parsing JSON");
+                    // Either the response was damaged or GitHub API returned an error.
+                    throw new Exception("Error at parsing JSON - hash closing tag not found.");
                 }
             }
+            while (currentChar != '\"');
 
             return hash;
         }

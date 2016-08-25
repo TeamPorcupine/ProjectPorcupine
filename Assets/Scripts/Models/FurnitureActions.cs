@@ -22,6 +22,7 @@ public class FurnitureActions
         LuaUtilities.RegisterGlobal(typeof(Job));
         LuaUtilities.RegisterGlobal(typeof(ModUtils));
         LuaUtilities.RegisterGlobal(typeof(World));
+
     }
 
     public static void CallFunctionsWithFurniture<T>(string[] functionNames, T furn, float deltaTime)
