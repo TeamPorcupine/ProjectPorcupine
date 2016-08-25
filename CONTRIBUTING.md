@@ -169,4 +169,14 @@ We have standardized the objectTypes of Furniture and Inventory to match `type_m
 
 That's it! Following these guidelines will ensure that your additions are approved quickly and integrated into the project. Thanks for your contribution!
 
+## File Formats
 
+In the primary GIT repo, we will only accept files in these formats:
+
+### Images
+
+Images should be in a compressed, ready-to share format like PNG or JPEG.  The original Photoshop/GIMP/etc... files are not to be commited to the repository.  However, hosting the originals somewhere (like a public Google Drive folder) as a reference would be appreciated (but not required).
+
+### Sound Files & Music
+
+As per Issue #795, we have standardized on the open-source friendly OGG audio format, as opposed to MP3 or uncompressed WAV files.  Small sound effects that are played frequently should likely be set to "Decompress on Load" in Unity's inspector, whereas longer sounds (such as songs) should not be.  Hosting the original, uncompressed WAV files somewhere (like a public Google Drive folder) as a reference would be appreciated (but not required).
