@@ -18,7 +18,6 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
 {
 
     public GameObject dialog;
-    GameObject go;
     public bool pressedDelete;
     Component fileItem;
 

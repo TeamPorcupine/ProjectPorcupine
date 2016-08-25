@@ -81,11 +81,13 @@ public class Temperature
             }
         }
 
+        sinksAndSources = new Dictionary<Furniture, Action>();
+        
         // TODO: remove, dummy heater at x=50, y=50, with power=1000
         //sinksAndSources += () => { SetTemperature(50, 50, -GetTemperature(50, 50) + 300); };
 
         sinksAndSourcesActions += () => { SetTemperature(52, 52,  300); };
-    }
+        }
 
     /// <summary>
     /// If needed, progress physics

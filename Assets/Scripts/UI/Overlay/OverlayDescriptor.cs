@@ -63,7 +63,7 @@ public class OverlayDescriptor
                 ret.colorMap = (ColorMap) System.Enum.Parse(typeof(ColorMap), xmlReader.GetAttribute("color_map"));
             }
             catch (ArgumentException e) {
-                Debug.LogWarning("Invalid color map!");
+                Debug.ULogErrorChannel("OverlayMap", "Invalid color map!", e);
             }
         }
         xmlReader.Read();
