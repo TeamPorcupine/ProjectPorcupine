@@ -280,8 +280,10 @@ function MiningDroneStation_UpdateAction( furniture, deltaTime )
 		Job.JobPriority.Medium,
 		true	-- This job repeats until the destination tile is full.
 	)
-	furniture.AddJob( j )
+	
 	j.RegisterJobCompletedCallback("MiningDroneStation_JobComplete")
+	j.JobDescription = "job_mining_drone_station_mining_desc"
+	furniture.AddJob( j )
 
 end
 
