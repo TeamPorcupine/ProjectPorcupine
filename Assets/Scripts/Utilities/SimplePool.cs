@@ -204,7 +204,6 @@ public static class SimplePool
         PoolMember pm = obj.GetComponent<PoolMember>();
         if (pm == null)
         {
-            //Debug.Log ("Object '"+obj.name+"' wasn't spawned from a pool. Destroying it instead.");
             GameObject.Destroy(obj);
         }
         else
