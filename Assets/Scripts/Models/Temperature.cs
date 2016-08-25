@@ -231,7 +231,7 @@ public class Temperature
     /// <returns>True if thermal diff. is ok, false and a formal complaint if it's not ok</returns>
     public bool IsWithinThermalDiffusivityBounds(float thermal_diff)
     {
-        if( thermal_diff >= 0 && thermal_diff < 1)
+        if( thermal_diff >= 0 && thermal_diff <= 1)
         {
             return true;
         } else
