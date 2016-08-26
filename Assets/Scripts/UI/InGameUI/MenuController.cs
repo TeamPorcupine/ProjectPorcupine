@@ -125,8 +125,11 @@ public class MenuController : MonoBehaviour
 
     public void OnButtonWork()
     {
-        DeactivateAll();
-
+        if (!WorldController.Instance.IsModal)
+        {
+            DeactivateAll();
+            dbm.dialogBoxJobList.ShowDialog();
+        }       
     }
 
     public void OnButtonWorld()
