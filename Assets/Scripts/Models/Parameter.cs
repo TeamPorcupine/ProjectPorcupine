@@ -100,8 +100,8 @@ public class Parameter
 
     public static Parameter ReadXml(XmlReader reader)
     {
+        Parameter paramGroup = new Parameter(reader.GetAttribute("name"));
         XmlReader subReader = reader.ReadSubtree();
-        Parameter paramGroup = new Parameter(subReader.GetAttribute("name"));
 
         // Advance to the first inner element. Two reads are needed to ensure we don't get stuck on containing Element, or an EndElement
         subReader.Read();
