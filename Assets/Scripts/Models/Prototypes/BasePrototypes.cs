@@ -22,8 +22,9 @@ public class BasePrototypes<T>
     }
 
     /// <summary>
-    /// Returns the prototype Keys.
+    /// Gets the prototype keys.
     /// </summary>
+    /// <value>The prototype keys.</value>
     public Dictionary<string, T>.KeyCollection Keys
     {
         get
@@ -33,8 +34,9 @@ public class BasePrototypes<T>
     }
 
     /// <summary>
-    /// Returns the prototype Keys.
+    /// Gets the prototype Values.
     /// </summary>
+    /// <value>The prototype values.</value>
     public List<T> Values
     {
         get
@@ -44,8 +46,9 @@ public class BasePrototypes<T>
     }
 
     /// <summary>
-    /// Returns the amount of prototypes.
+    /// Gets the prototypes count.
     /// </summary>
+    /// <value>The prototypes count.</value>
     public int Count
     {
         get
