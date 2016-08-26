@@ -10,8 +10,10 @@ public class UIMenuController : MonoBehaviour
     // Use this for initialization
     void Awake()
     {
+        // Set the parent for all menu to uses.
         parent = this.gameObject.transform;
 
+        //Add the menus.
         AddMenu("MenuTop");
         AddMenu("MenuSubHolder");
         AddMenu("MenuBottom");
@@ -20,9 +22,11 @@ public class UIMenuController : MonoBehaviour
 
     void Start()
     {
+        // Add the Right Menu because of the mouse controller needed do it here.
         AddMenu("MenuRight");
     }
 
+    // Use this function to add all the menus.
     void AddMenu(string menuName)
     {
         GameObject tempGoObj;
