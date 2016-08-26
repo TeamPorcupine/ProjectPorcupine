@@ -169,14 +169,14 @@ public class Path_RoomGraph
         }
     }
 
-    public rooms[] RoomConnections(Tile t)
+    public Room[] RoomConnections(Tile t)
     {
-        List<Room> rooms = new List<Room>;
+        List<Room> rooms = new List<Room>();
         if(t == null)
         {
             return null;
         }
-        foreach(Path_Node<Room> node in this.nodes)
+        foreach(Path_Node<Room> node in nodes.Values)
         {
             foreach(Path_Edge<Room> edge in node.edges)
             {
@@ -187,6 +187,6 @@ public class Path_RoomGraph
                 }
             }
         }
-        return rooms.ToArray;
+        return rooms.ToArray();
     }
 }
