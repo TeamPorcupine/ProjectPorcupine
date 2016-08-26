@@ -141,8 +141,18 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
 
     public void WriteXml(XmlWriter writer)
     {
-        writer.WriteAttributeString("X", tile.X.ToString());
-        writer.WriteAttributeString("Y", tile.Y.ToString());
+        if (tile == null)
+        {
+            Debug.LogWarning("Saving an Inventory without tile? (Is this beeing transported?), reset position to 0,0");
+            writer.WriteAttributeString("X", "0");
+            writer.WriteAttributeString("Y", "0");
+
+        }
+        else
+        {
+            writer.WriteAttributeString("X", tile.X.ToString());
+            writer.WriteAttributeString("Y", tile.Y.ToString());
+        }
         writer.WriteAttributeString("objectType", objectType);
         writer.WriteAttributeString("maxStackSize", maxStackSize.ToString());
         writer.WriteAttributeString("stackSize", stackSize.ToString());
