@@ -143,7 +143,7 @@ public static class Settings
         catch (Exception e)
         {
             Debug.ULogWarningChannel("Settings", "Settings could not be saved to " + userSettingsFilePath);
-            Debug.ULogWarningChannel("Setting", e.Message);
+            Debug.ULogWarningChannel("Settings", e.Message);
         }
     }
 
@@ -172,7 +172,7 @@ public static class Settings
             catch (Exception e)
             {
                 Debug.ULogWarningChannel("Settings", "User settings file could not be found at '" + userSettingsFilePath + "'. Falling back to defaults.");
-                Debug.ULogWarningChannel("Setting", e.Message);
+                Debug.ULogWarningChannel("Settings", e.Message);
 
                 furnitureXmlText = defaultSettingsXMLFallback();
             }
@@ -216,7 +216,7 @@ public static class Settings
             catch (Exception e)
             {
                 Debug.ULogWarningChannel("Settings", "Default settings file could not be created at '" + defaultSettingsFilePath + "'.");
-                Debug.ULogWarningChannel("Setting", e.Message);
+                Debug.ULogWarningChannel("Settings", e.Message);
             }
         }
         else
@@ -228,7 +228,7 @@ public static class Settings
             catch (Exception e)
             {
                 Debug.ULogWarningChannel("Settings", "Settings file at '" + defaultSettingsFilePath + "' could not be read. Falling back to Settings.cs defaults.");
-                Debug.ULogWarningChannel("Setting", e.Message);
+                Debug.ULogWarningChannel("Settings", e.Message);
             }
         }
         return furnitureXmlText;
