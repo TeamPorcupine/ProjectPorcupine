@@ -13,9 +13,9 @@ public class CameraController
     private float zoomTarget;
 
     // Update is called once per frame.
-    public void Update(bool isModal)
+    public void Update(bool modal)
     {
-        if (isModal)
+        if (modal)
         {
             // A modal dialog box is open. Bail.
             return;
@@ -31,7 +31,7 @@ public class CameraController
             Camera.main.orthographicSize = Mathf.Clamp(target, 3f, 25f);
         }
 
-        // Refocus game so the mouse stays in the same spot when zooming
+        // Refocus game so the mouse stays in the same spot when zooming.
         Vector3 newMousePosition = Vector3.zero;
         newMousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         newMousePosition.z = 0;
