@@ -48,10 +48,9 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
         {
             GameObject.Destroy(powerStatusGameObjectMap[furn]);
         }
-
-        objectGameObjectMap.Clear();
+            
         powerStatusGameObjectMap.Clear();
-        GameObject.Destroy(objectParent);
+        base.RemoveAll();
     }
 
     public Sprite GetSpriteForFurniture(string objectType)

@@ -32,8 +32,7 @@ public class TileSpriteController : BaseSpriteController<Tile>
     {
         world.cbTileChanged -= OnChanged;
 
-        objectGameObjectMap.Clear();
-        GameObject.Destroy(objectParent);
+        base.RemoveAll();
     }
 
     protected override void OnCreated(Tile tile)

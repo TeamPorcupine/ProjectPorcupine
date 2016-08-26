@@ -66,8 +66,7 @@ public class JobSpriteController : BaseSpriteController<Job>
             }
         }
 
-        objectGameObjectMap.Clear();
-        GameObject.Destroy(objectParent);
+        base.RemoveAll();
     }
 
     protected override void OnCreated(Job job)

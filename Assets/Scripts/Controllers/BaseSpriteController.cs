@@ -23,7 +23,11 @@ public abstract class BaseSpriteController<T>
         objectGameObjectMap = new Dictionary<T, GameObject>();
     }
 
-    public abstract void RemoveAll();
+    public virtual void RemoveAll()
+    {
+        objectGameObjectMap.Clear();
+        GameObject.Destroy(objectParent);
+    }
 
     protected abstract void OnCreated(T obj);
 

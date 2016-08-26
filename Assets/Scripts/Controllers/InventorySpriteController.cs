@@ -45,8 +45,7 @@ public class InventorySpriteController : BaseSpriteController<Inventory>
             }
         }
 
-        objectGameObjectMap.Clear();
-        GameObject.Destroy(objectParent);
+        base.RemoveAll();
     }
 
     protected override void OnCreated(Inventory inv)

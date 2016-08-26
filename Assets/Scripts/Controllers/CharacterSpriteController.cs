@@ -63,8 +63,7 @@ public class CharacterSpriteController : BaseSpriteController<Character>
             c.cbCharacterChanged -= OnChanged; 
         }
 
-        objectGameObjectMap.Clear();
-        GameObject.Destroy(objectParent);
+        base.RemoveAll();
     }
 
     protected override void OnCreated(Character c)
