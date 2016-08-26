@@ -63,12 +63,12 @@ public class OverlayDescriptor
                 ret.colorMap = (ColorMap) System.Enum.Parse(typeof(ColorMap), xmlReader.GetAttribute("color_map"));
             }
             catch (ArgumentException e) {
-                Debug.LogWarning("Invalid color map!");
+                Debug.ULogErrorChannel("OverlayMap", "Invalid color map!", e);
             }
         }
         xmlReader.Read();
         ret.luaFunctionName = xmlReader.ReadContentAsString();
-        //Debug.Log(string.Format("Reading overlay prototype with id {0} and LUA function {1}", ret.id, ret.luaFunctionName));
+        //Debug.ULogWarningChannel("OverlayMap", string.Format("Reading overlay prototype with id {0} and LUA function {1}", ret.id, ret.luaFunctionName));
         return ret;
     }
 

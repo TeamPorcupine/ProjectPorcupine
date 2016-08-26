@@ -128,7 +128,6 @@ public class OverlayMap : MonoBehaviour {
     Texture2D texture;
 
     public GameObject parentPanel;
-    GameObject dropdownObject;
 
     /// <summary>
     /// Grabs references, sets a dummy size and evaluation function
@@ -181,8 +180,8 @@ public class OverlayMap : MonoBehaviour {
 
     void Destroy()
     {
-        dropdownObject.GetComponent<UnityEngine.UI.Dropdown>().onValueChanged.RemoveAllListeners();
-        Destroy(dropdownObject);
+        //dropdownObject.GetComponent<UnityEngine.UI.Dropdown>().onValueChanged.RemoveAllListeners();
+        //Destroy(dropdownObject);
     }
 
     /// <summary>
@@ -226,7 +225,7 @@ public class OverlayMap : MonoBehaviour {
         meshRenderer.material = mat;
         if(mat == null || meshRenderer == null || texture == null)
         {
-            Debug.LogError("Material or renderer is null. Failing.");
+            Debug.ULogErrorChannel("OverlayMap", "Material or renderer is null. Failing.");
         }
         meshRenderer.material.mainTexture = texture;
 
@@ -286,10 +285,10 @@ public class OverlayMap : MonoBehaviour {
     /// </summary>
     void GenerateTexture()
     {
-        //Debug.Log("Regenerating texture!");
+        //Debug.ULogChannel("OverlayMap", "Regenerating texture!");
 
         if (colorMapTexture == null)
-            Debug.LogError("No color map texture setted!");
+            Debug.ULogErrorChannel("OverlayMap", "No color map texture setted!");
         for (int y = 0; y < ySize; y++)
         {
             for (int x = 0; x < xSize; x++)
@@ -472,10 +471,10 @@ public class OverlayMap : MonoBehaviour {
             object handle = script.Globals[descr.luaFunctionName];
             if (handle == null)
             {
-                Debug.LogError(string.Format("Couldn't find a function named '{0}' in '{1}'", descr.luaFunctionName));
+                Debug.ULogErrorChannel("OverlayMap", string.Format("Couldn't find a function named '{0}' in '{1}'", descr.luaFunctionName));
                 return;
             }
-            //Debug.Log(string.Format("Setting LUA function for overlay to '{0}'", descr.luaFunctionName));
+            //Debug.ULogErrorChannel("OverlayMap", string.Format("Setting LUA function for overlay to '{0}'", descr.luaFunctionName));
             valueAt = (x, y) => {
                 if (WorldController.Instance == null) return 0;
                 Tile tile = WorldController.Instance.GetTileAtWorldCoord(new Vector3(x, y, 0));
@@ -485,7 +484,7 @@ public class OverlayMap : MonoBehaviour {
             Bake();
         } else
         {
-            Debug.LogWarning(string.Format("Overlay with name {0} not found in prototypes", name));
+            Debug.ULogWarningChannel("OverlayMap", string.Format("Overlay with name {0} not found in prototypes", name));
         }
     }
 
@@ -498,7 +497,7 @@ public class OverlayMap : MonoBehaviour {
         UnityEngine.UI.Dropdown dropdown = parentPanel.GetComponentInChildren<UnityEngine.UI.Dropdown>();
         if(dropdown == null)
         {
-            Debug.LogWarning("No parent panel was selected!");
+            Debug.ULogWarningChannel("OverlayMap", "No parent panel was selected!");
             return;
         }
 

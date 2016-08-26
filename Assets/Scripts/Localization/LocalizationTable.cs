@@ -92,23 +92,26 @@ namespace ProjectPorcupine.Localization
         {
             try
             {
-                localizationTable[localizationCode] = new Dictionary<string, string>();
+                if (localizationTable.ContainsKey(localizationCode) == false)
+                {
+                    localizationTable[localizationCode] = new Dictionary<string, string>();
+                }
+                
                 string[] lines = File.ReadAllLines(path);
                 foreach (string line in lines)
                 {
                     string[] keyValuePair = line.Split(new char[] { '=' }, 2);
                     if (keyValuePair.Length != 2)
                     {
-                        Debug.LogErrorFormat("Invalid format of localization string. Actual {0}", line);
+                        Debug.ULogErrorChannel("LocalizationTable", string.Format("Invalid format of localization string. Actual {0}", line));
                         continue;
                     }
-
-                    localizationTable[localizationCode].Add(keyValuePair[0], keyValuePair[1]);
+                    localizationTable[localizationCode][keyValuePair[0]] = keyValuePair[1];
                 }
             }
             catch (FileNotFoundException exception)
             {
-                Debug.LogError(new Exception(string.Format("There is no localization file for {0}", localizationCode), exception));
+                Debug.ULogErrorChannel("LocalizationTable", new Exception(string.Format("There is no localization file for {0}", localizationCode), exception).ToString());
             }
         }
 
@@ -126,7 +129,7 @@ namespace ProjectPorcupine.Localization
             if (!missingKeysLogged.Contains(key))
             {
                 missingKeysLogged.Add(key);
-                Debug.LogWarning(string.Format("Translation for {0} in {1} language failed: Key not in dictionary.", key, language));
+                Debug.ULogChannel("LocalizationTable", string.Format("Translation for {0} in {1} language failed: Key not in dictionary.", key, language));
             }
 
             switch (fallbackMode)
