@@ -61,25 +61,25 @@ public class CharacterAnimation
 
         Sprite[] sprites =
             {
-                SpriteManager.current.GetSprite("Character", "c1_idle_north"),
-                SpriteManager.current.GetSprite("Character", "c1_idle_east"),
-                SpriteManager.current.GetSprite("Character", "c1_idle_south"),
-                SpriteManager.current.GetSprite("Character", "c1_walk_north_01"),
-                SpriteManager.current.GetSprite("Character", "c1_walk_north_02"),
-                SpriteManager.current.GetSprite("Character", "c1_walk_east_01"),
-                SpriteManager.current.GetSprite("Character", "c1_walk_east_02"),
-                SpriteManager.current.GetSprite("Character", "c1_walk_south_01"),
-                SpriteManager.current.GetSprite("Character", "c1_walk_south_02"),
+                SpriteManager.current.GetSprite("Character", "IdleBack"),
+                SpriteManager.current.GetSprite("Character", "IdleSide"),
+                SpriteManager.current.GetSprite("Character", "IdleFront"),
+                SpriteManager.current.GetSprite("Character", "WalkBack1"),
+                SpriteManager.current.GetSprite("Character", "WalkBack2"),
+                SpriteManager.current.GetSprite("Character", "WalkSide1"),
+                SpriteManager.current.GetSprite("Character", "WalkSide2"),
+                SpriteManager.current.GetSprite("Character", "WalkFront1"),
+                SpriteManager.current.GetSprite("Character", "WalkFront2"),
 
-                SpriteManager.current.GetSprite("Character", "c1_nh_idle_north"),
-                SpriteManager.current.GetSprite("Character", "c1_nh_idle_east"),
-                SpriteManager.current.GetSprite("Character", "c1_nh_idle_south"),
-                SpriteManager.current.GetSprite("Character", "c1_nh_walk_north_01"),
-                SpriteManager.current.GetSprite("Character", "c1_nh_walk_north_02"),
-                SpriteManager.current.GetSprite("Character", "c1_nh_walk_east_01"),
-                SpriteManager.current.GetSprite("Character", "c1_nh_walk_east_02"),
-                SpriteManager.current.GetSprite("Character", "c1_nh_walk_south_01"),
-                SpriteManager.current.GetSprite("Character", "c1_nh_walk_south_02")
+                SpriteManager.current.GetSprite("Character", "2IdleBack"),
+                SpriteManager.current.GetSprite("Character", "2IdleSide"),
+                SpriteManager.current.GetSprite("Character", "2IdleFront"),
+                SpriteManager.current.GetSprite("Character", "2WalkBack1"),
+                SpriteManager.current.GetSprite("Character", "2WalkBack2"),
+                SpriteManager.current.GetSprite("Character", "2WalkSide1"),
+                SpriteManager.current.GetSprite("Character", "2WalkSide2"),
+                SpriteManager.current.GetSprite("Character", "2WalkFront1"),
+                SpriteManager.current.GetSprite("Character", "2WalkFront2")
             };
         SetSprites(sprites);
     }
