@@ -279,7 +279,7 @@
   </Furniture>
 
 
-  <Furniture objectType="Heater">
+  <Furniture objectType="heater">
     <Name>Heater</Name>
     <Description>Raises temperature in the room.</Description>
     <BaseType>Temperature</BaseType>
@@ -298,9 +298,11 @@
     <Action event="OnInstall" functionName="Heater_InstallAction"></Action>
     <!-- This method gets called on Uninstall -->
     <Action event="OnUninstall" functionName="Heater_UninstallAction"></Action>
+    <Action event="OnUpdateTemperature" functionName="Heater_UpdateTemperature" />
 
     <Params>
-      <Param name="heating_per_second" value="10" />
+      <Param name="base_heating" value="100" />
+      <Param name="pressure_threshold" value="0.5" />
     </Params>
 
     <LocalizationCode>furn_heater</LocalizationCode>
