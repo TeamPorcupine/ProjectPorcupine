@@ -1202,7 +1202,7 @@ public class World : IXmlSerializable
                                 case 5:
                                     if (group.Count() != 1)
                                     {
-                                        Debug.ULogErrorChannel("Path_RoomGraph", "Room 2 supposed to have two edges to Room 1.");
+                                        Debug.ULogErrorChannel("Path_RoomGraph", "Room 2 supposed to have one edge to Room 5.");
                                         errorCount++;
                                     }
                                     break;
