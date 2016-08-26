@@ -67,13 +67,13 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         }
     }
     Need[] needs;
-    
+
     /// <summary>
     /// The tile the Character is considered to still be standing in.
     /// </summary>
     public Tile CurrTile
     {
-        get 
+        get
         {
             return _currTile;
         }
@@ -98,8 +98,8 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     /// </summary>
     private Tile DestTile
     {
-        get 
-        { 
+        get
+        {
             return _destTile;
         }
 
@@ -209,7 +209,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         characterColor = color;
 		LoadNeeds();
     }
-    
+
     private void GetNewJob()
     {
         float needPercent = 0;
@@ -256,7 +256,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         // Get our destination from the job
         DestTile = myJob.tile;
-        
+
         // If the dest tile does not have neighbours that are walkable it's very likable that they can't be walked to
         if (DestTile.GetNeighbours().Any((tile) => { return tile.MovementCost > 0; }) == false)
         {
@@ -303,7 +303,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     private void Update_DoJob(float deltaTime)
     {
         // Check if I already have a job.
-        if (myJob == null) 
+        if (myJob == null)
         {
             GetNewJob();
 
@@ -318,7 +318,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         // Make sure all materials are in place.
         if (CheckForJobMaterials())
-        { 
+        {
             // If we get here, then the job has all the material that it needs.
             // Lets make sure that our destination tile is the job site tile.
             DestTile = JobTile;
@@ -498,7 +498,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     /// Fulfillable inventory requirements for job.
     /// </summary>
     /// <returns>A list of (string) objectTypes for job inventory requirements that can be met. Returns null if the job requires materials which do not exist on the map.</returns>
-    private List<string> FulfillableInventoryRequirements(Job job) 
+    private List<string> FulfillableInventoryRequirements(Job job)
     {
         List<string> fulfillableInventoryRequirements = new List<string>();
 
@@ -533,7 +533,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         return destHasInventory &&
                 !(pathAStar.EndTile().Furniture != null && (myJob.canTakeFromStockpile == false && pathAStar.EndTile().Furniture.IsStockpile() == true));
     }
-    
+
     /// <summary>
     /// This function instructs the character to null its inventory.
     /// However in the fuure it should actually look for a place to dump the materials and then do so.
@@ -657,12 +657,12 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         else if (NextTile.Y > CurrTile.Y)
         {
             CharFacing = Facing.NORTH;
-        }        
+        }
         else
         {
             CharFacing = Facing.SOUTH;
         }
-        
+
         // At this point we should have a valid nextTile to move to.
 
         // What's the total distance from point A to point B?
@@ -763,8 +763,8 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         {
             List<string> desired = FulfillableInventoryRequirements(job);
 
-            // Check if the created inventory can fulfill the waiting job
-            if (desired.Contains(inv.objectType))
+            // Check if the created inventory can fulfill the waiting job requirements.
+            if (desired != null && desired.Contains(inv.objectType))
             {
                 // If so, enqueue the job onto the (normal)
                 // job queue.

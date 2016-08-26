@@ -133,7 +133,7 @@ public class BuildModeController
                 }
 
                 // Add the job to the queue
-                if (WorldController.Instance.devMode)
+                if (Settings.getSettingAsBool("DialogBoxSettings_developerModeToggle", false))
                 {
                     WorldController.Instance.world.PlaceFurniture(j.jobObjectType, j.tile);
                 }
@@ -172,7 +172,7 @@ public class BuildModeController
                 };
 
                 // Add the job to the queue
-                if (WorldController.Instance.devMode)
+                if (Settings.getSettingAsBool("DialogBoxSettings_developerModeToggle", false))
                 {
                     j.tile.Type = j.jobTileType;
                 }
@@ -210,7 +210,7 @@ public class BuildModeController
 
                     if (vacuumNeighbors > 0 && pressuredNeighbors > 0)
                     {
-                        Debug.Log("Someone tried to deconstruct a wall between a pressurised room and vacuum!");
+                        Debug.ULogChannel("BuildModeController", "Someone tried to deconstruct a wall between a pressurised room and vacuum!");
                         return;
                     }
                 }

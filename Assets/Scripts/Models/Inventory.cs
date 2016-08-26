@@ -161,7 +161,7 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
         {
             Text = "Sample Item Context action",
             RequireCharacterSelected = true,
-            Action = (cm, c) => Debug.Log("Sample menu action")
+            Action = (cm, c) => Debug.ULogChannel("Inventory", "Sample menu action")
         };
     }
 }
