@@ -17,10 +17,13 @@ using UnityEngine;
 public static class Settings 
 {
     private static Dictionary<string, string> settingsDict;
-    private static string settingsFilePath = System.IO.Path.Combine("Settings", "Settings.xml");
+    private static string userSettingsFilePath = System.IO.Path.Combine(
+        Application.persistentDataPath, "Settings.xml");
+    private static string defaultSettingsFilePath = System.IO.Path.Combine(
+        Application.streamingAssetsPath, System.IO.Path.Combine("Settings", "Settings.xml"));
 
     // Settings.xml file that is created if none exists.
-    private const string defaultSettingsXML = @"
+    private const string fallbackSettingsXML = @"
 <Settings>
   <worldWidth>101</worldWidth>
   <worldHeight>101</worldHeight>
@@ -132,17 +135,15 @@ public static class Settings
         // apend Settings node to the document
         xDoc.AppendChild(settingsNode);
 
-        // get file path of Settings.xml 
-        string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, settingsFilePath);
-
         // save document
         try
         {
-            xDoc.Save(filePath);
+            xDoc.Save(userSettingsFilePath);
         }
         catch (Exception e)
         {
-            Debug.ULogWarningChannel("Settings", "Settings could not be saved to " + filePath);
+            Debug.ULogWarningChannel("Settings", "Settings could not be saved to " + userSettingsFilePath);
+            Debug.ULogWarningChannel("Setting", e.Message);
         }
     }
 
@@ -152,41 +153,35 @@ public static class Settings
         settingsDict = new Dictionary<string, string>();
         string furnitureXmlText;
 
-        // get file path of Settings.xml and load the text
-        string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, settingsFilePath);
-
-        if (System.IO.File.Exists(filePath) == false)
+        // load the settings XML file
+        // first try the user's private settings file in userSettingsFilePath
+        // if that doesn't work fall back to defaultSettingsFilePath
+        // if that doesn't work fall back to the hard coded furnitureXmlText above
+        if(System.IO.File.Exists(userSettingsFilePath) == false)
         {
-            Debug.ULogWarningChannel("Settings", "Settings file could not be found at '" + filePath + "'. Falling back to defaults.");
+            Debug.ULogWarningChannel("Settings", "User settings file could not be found at '" + userSettingsFilePath + "'. Falling back to defaults.");
 
-            try
-            {
-                System.IO.File.WriteAllText(filePath, defaultSettingsXML);
-            }
-            catch (Exception e)
-            {
-                Debug.ULogWarningChannel("Settings", "Settings file could not be created at '" + filePath + "'. Changes to settings will not be saved.");
-            }
-
-            furnitureXmlText = defaultSettingsXML;
+            furnitureXmlText = defaultSettingsXMLFallback();
         }
         else
         {
             try
             {
-                furnitureXmlText = System.IO.File.ReadAllText(filePath);
+                furnitureXmlText = System.IO.File.ReadAllText(userSettingsFilePath);
             }
             catch (Exception e)
             {
-                Debug.ULogWarningChannel("Settings", "Settings file at '" + filePath + "' could not be read. Falling back to defaults.");
-                furnitureXmlText = defaultSettingsXML;
+                Debug.ULogWarningChannel("Settings", "User settings file could not be found at '" + userSettingsFilePath + "'. Falling back to defaults.");
+                Debug.ULogWarningChannel("Setting", e.Message);
+
+                furnitureXmlText = defaultSettingsXMLFallback();
             }
         }
 
         // create an xml document from Settings.xml
         XmlDocument xDoc = new XmlDocument();
         xDoc.LoadXml(furnitureXmlText);
-        Debug.ULogChannel("Settings", "Loaded settings from : \t" + filePath);
+        Debug.ULogChannel("Settings", "Loaded settings");
         Debug.Log(xDoc.InnerText); // Uber Logger doesn't handle multilines.
 
         // get the Settings node , it's children are the individual settings
@@ -206,9 +201,42 @@ public static class Settings
         }
     }
 
+    private static string defaultSettingsXMLFallback()
+    {
+        string furnitureXmlText = fallbackSettingsXML;
+
+        if (System.IO.File.Exists(defaultSettingsFilePath) == false)
+        {
+            Debug.ULogWarningChannel("Settings", "Default settings file could not be found at '" + defaultSettingsFilePath + "'. Falling back to Settings.cs defaults.");
+
+            try
+            {
+                System.IO.File.WriteAllText(defaultSettingsFilePath, fallbackSettingsXML);
+            }
+            catch (Exception e)
+            {
+                Debug.ULogWarningChannel("Settings", "Default settings file could not be created at '" + defaultSettingsFilePath + "'.");
+                Debug.ULogWarningChannel("Setting", e.Message);
+            }
+        }
+        else
+        {
+            try
+            {
+                furnitureXmlText = System.IO.File.ReadAllText(defaultSettingsFilePath);
+            }
+            catch (Exception e)
+            {
+                Debug.ULogWarningChannel("Settings", "Settings file at '" + defaultSettingsFilePath + "' could not be read. Falling back to Settings.cs defaults.");
+                Debug.ULogWarningChannel("Setting", e.Message);
+            }
+        }
+        return furnitureXmlText;
+    }
+
+
     public static int getSettingAsInt(string key, int defaultValue)
     {
-
         // Atempt to get the string value from the dict
         string s = getSetting(key, defaultValue.ToString());
 
@@ -229,7 +257,6 @@ public static class Settings
 
     public static float getSettingAsFloat(string key, float defaultValue)
     {
-
         // Atempt to get the string value from the dict
         string s = getSetting(key, defaultValue.ToString());
 
@@ -250,7 +277,6 @@ public static class Settings
 
     public static bool getSettingAsBool(string key, bool defaultValue)
     {
-
         // Atempt to get the string value from the dict
         string s = getSetting(key, defaultValue.ToString());
 
