@@ -22,6 +22,7 @@ public class Room : IXmlSerializable
     // Dictionary with the amount of gas in room stored in preasure(in atm) multiplyed by number of tiles
     private Dictionary<string, float> atmosphericGasses; 
     private Dictionary<string, string> deltaGas;
+    private Dictionary<Tile, Room> roomConnections;
 
     private List<Tile> tiles;
  
@@ -30,6 +31,7 @@ public class Room : IXmlSerializable
         tiles = new List<Tile>();
         atmosphericGasses = new Dictionary<string, float>();
         deltaGas = new Dictionary<string, string>();
+        roomConnections = new Dictionary<Tile, Room>();
     }
 
     public int ID
@@ -76,6 +78,32 @@ public class Room : IXmlSerializable
     public int GetSize()
     {
         return tiles.Count();
+    }
+
+    public Room[] GetNeighbours()
+    {
+        List<Room> neighboursRooms = new List<Room>;
+        foreach (Tile t in this.exits)
+        {
+            // Loop over the exits to find a different room
+            Tile[] neighbours = t.GetNeighbours();
+            foreach (Tile t2 in neighbours)
+            {
+                if (t2 == null || t2.Room == null)
+                {
+                    continue;
+                }
+
+                // We have found a room
+
+                if (t2.Room != r)
+                {
+                    neighboursRooms.Add(t2.Room);
+                    roomConnections[t] = t2.Room;
+                }
+            }
+        }
+        return neighboursRooms.ToArray();
     }
 
     // Changes gas by an amount in preasure(in atm) multiplyed by number of tiles
