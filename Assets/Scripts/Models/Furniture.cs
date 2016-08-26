@@ -87,7 +87,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         }
     }
 
-    //TODO: public PowerRelated PowerRelated { get; private set; }
+    //TODO: public Connection Connection { get; private set; }
 
     public bool IsSelected { get; set; }
 
@@ -590,8 +590,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
             case "Power":
                 reader.Read();
                 powerValue = reader.ReadContentAsFloat();
-                //TODO: PowerRelated = new PowerRelated();
-                //TODO: PowerRelated.ReadPrototype(reader);
+                //TODO: Connection = new Connection();
+                //TODO: Connection.ReadPrototype(reader);
                 break;
 
             case "Params":
