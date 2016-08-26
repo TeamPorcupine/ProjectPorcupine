@@ -230,7 +230,7 @@ public class Parameter
             writer.WriteStartElement("Param");
             writer.WriteAttributeString("name", name);
         }
-        if ((value != null) )
+        if (value != null)
         {
             writer.WriteAttributeString("value", value);
         }
