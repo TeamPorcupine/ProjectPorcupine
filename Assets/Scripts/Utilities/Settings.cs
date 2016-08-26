@@ -19,6 +19,25 @@ public static class Settings
     private static Dictionary<string, string> settingsDict;
     private static string settingsFilePath = System.IO.Path.Combine("Settings", "Settings.xml");
 
+    // Settings.xml file that is created if none exists.
+    private const string defaultSettingsXML = @"
+<Settings>
+  <worldWidth>101</worldWidth>
+  <worldHeight>101</worldHeight>
+  <localization>en_US</localization>
+  <DialogBoxSettings_langToggle>True</DialogBoxSettings_langToggle>
+  <DialogBoxSettings_fpsToggle>True</DialogBoxSettings_fpsToggle>
+  <DialogBoxSettings_fullScreenToggle>True</DialogBoxSettings_fullScreenToggle>
+  <DialogBoxSettings_qualityDropdown>2</DialogBoxSettings_qualityDropdown>
+  <DialogBoxSettings_vSyncDropdown>0</DialogBoxSettings_vSyncDropdown>
+  <DialogBoxSettings_resolutionDropdown>0</DialogBoxSettings_resolutionDropdown>
+  <DialogBoxSettings_aliasingDropdown>2</DialogBoxSettings_aliasingDropdown>
+  <DialogBoxSettings_musicVolume>1</DialogBoxSettings_musicVolume>
+  <ZoomLerp>10</ZoomLerp>
+  <ZoomSensitivity>3</ZoomSensitivity>
+</Settings>
+";
+
     public static string getSetting(string key , string defaultValue)
     {
         // if we haven't already loaded our settings do it now
@@ -59,7 +78,9 @@ public static class Settings
 
         return value;
     }
-    public static void setSetting(string key, object obj){
+
+    public static void setSetting(string key, object obj)
+    {
         setSetting(key, obj.ToString());
     }
 
@@ -115,17 +136,52 @@ public static class Settings
         string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, settingsFilePath);
 
         // save document
-        xDoc.Save(filePath);
+        try
+        {
+            xDoc.Save(filePath);
+        }
+        catch (Exception e)
+        {
+            Debug.ULogWarningChannel("Settings", "Settings could not be saved to " + filePath);
+        }
     }
 
     private static void loadSettings()
     {
         // initilize the settings dict
         settingsDict = new Dictionary<string, string>();
+        string furnitureXmlText;
 
         // get file path of Settings.xml and load the text
         string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, settingsFilePath);
-        string furnitureXmlText = System.IO.File.ReadAllText(filePath);
+
+        if (System.IO.File.Exists(filePath) == false)
+        {
+            Debug.ULogWarningChannel("Settings", "Settings file could not be found at '" + filePath + "'. Falling back to defaults.");
+
+            try
+            {
+                System.IO.File.WriteAllText(filePath, defaultSettingsXML);
+            }
+            catch (Exception e)
+            {
+                Debug.ULogWarningChannel("Settings", "Settings file could not be created at '" + filePath + "'. Changes to settings will not be saved.");
+            }
+
+            furnitureXmlText = defaultSettingsXML;
+        }
+        else
+        {
+            try
+            {
+                furnitureXmlText = System.IO.File.ReadAllText(filePath);
+            }
+            catch (Exception e)
+            {
+                Debug.ULogWarningChannel("Settings", "Settings file at '" + filePath + "' could not be read. Falling back to defaults.");
+                furnitureXmlText = defaultSettingsXML;
+            }
+        }
 
         // create an xml document from Settings.xml
         XmlDocument xDoc = new XmlDocument();
@@ -150,7 +206,8 @@ public static class Settings
         }
     }
 
-    public static int getSettingAsInt(string key, int defaultValue){
+    public static int getSettingAsInt(string key, int defaultValue)
+    {
 
         // Atempt to get the string value from the dict
         string s = getSetting(key, defaultValue.ToString());
@@ -170,7 +227,8 @@ public static class Settings
         }
     }
 
-    public static float getSettingAsFloat(string key, float defaultValue){
+    public static float getSettingAsFloat(string key, float defaultValue)
+    {
 
         // Atempt to get the string value from the dict
         string s = getSetting(key, defaultValue.ToString());
@@ -190,7 +248,8 @@ public static class Settings
         }
     }
 
-    public static bool getSettingAsBool(string key, bool defaultValue){
+    public static bool getSettingAsBool(string key, bool defaultValue)
+    {
 
         // Atempt to get the string value from the dict
         string s = getSetting(key, defaultValue.ToString());
