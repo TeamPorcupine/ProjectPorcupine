@@ -709,6 +709,11 @@ public class World : IXmlSerializable
 
     public Tile GetFirstCenterTileWithNoInventory(int maxOffset)
     {
+        return GetFirstTileWithNoInventoryAround(maxOffset, Width/2, Height/2);
+    }
+
+    public Tile GetFirstTileWithNoInventoryAround(int maxOffset, int xCenter, int yCenter)
+    {
         for (int offset = 0; offset <= maxOffset; offset++)
         {
             int offsetX = 0;
@@ -719,32 +724,32 @@ public class World : IXmlSerializable
             for (offsetX = -offset; offsetX <= offset; offsetX++)
             {
                 offsetY = offset;
-                tile = GetTileAt(Width / 2 + offsetX, Height / 2 + offsetY);
+                tile = GetTileAt(xCenter + offsetX, yCenter + offsetY);
                 if (tile.Inventory == null)
                 {
                     return tile;
                 }
 
                 offsetY = -offset;
-                tile = GetTileAt(Width / 2 + offsetX, Height / 2 + offsetY);
+                tile = GetTileAt(xCenter + offsetX, yCenter + offsetY);
                 if (tile.Inventory == null)
                 {
                     return tile;
                 }
             }
-            
+
             // searching left & rigth line of the square
             for (offsetY = -offset; offsetY <= offset; offsetY++)
             {
                 offsetX = offset;
-                tile = GetTileAt(Width / 2 + offsetX, Height / 2 + offsetY);
+                tile = GetTileAt(xCenter + offsetX, yCenter + offsetY);
                 if (tile.Inventory == null)
                 {
                     return tile;
                 }
 
                 offsetX = -offset;
-                tile = GetTileAt(Width / 2 + offsetX, Height / 2 + offsetY);
+                tile = GetTileAt(xCenter + offsetX, yCenter + offsetY);
                 if (tile.Inventory == null)
                 {
                     return tile;

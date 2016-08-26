@@ -36,8 +36,8 @@ public class TradeItem
         get
         {
             return TradeAmount < 0
-                ? -TradeAmount * PlayerSellItemPrice
-                : -TradeAmount * TraderSellItemPrice;
+                ? -TradeAmount*PlayerSellItemPrice
+                : -TradeAmount*TraderSellItemPrice;
         }
     }
 }

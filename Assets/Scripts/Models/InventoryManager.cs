@@ -6,7 +6,10 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using MoonSharp.Interpreter;
 using UnityEngine;
 
@@ -169,6 +172,37 @@ public class InventoryManager
         }
 
         return true;
+    }
+
+    public bool QuickRemove(string objectType, int quantity, bool onlyFromStockpiles)
+    {
+        if (QuickCheck(objectType))
+        {
+            foreach (var inventory in inventories[objectType].ToList())
+            {
+                if (onlyFromStockpiles)
+                {
+                    if (inventory.tile == null || 
+                        inventory.tile.Furniture == null ||
+                        inventory.tile.Furniture.objectType != "Stockpile")
+                    {
+                        continue;
+                    }
+                }
+
+                if (quantity <= 0)
+                {
+                    break;
+                }
+
+                int removedFromStack = Math.Min(inventory.stackSize, quantity);
+                quantity -= removedFromStack;
+                inventory.stackSize -= removedFromStack;
+                CleanupInventory(inventory);
+            }
+        }
+
+        return quantity == 0;
     }
 
     public Path_AStar GetPathToClosestInventoryOfType(string objectType, Tile t, int desiredAmount, bool canTakeFromStockpile)

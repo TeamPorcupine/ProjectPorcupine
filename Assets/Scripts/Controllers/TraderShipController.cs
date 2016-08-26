@@ -60,8 +60,8 @@ public class TraderShipController : MonoBehaviour
                 DialogBoxManager dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
                 
                 //Mock trader for now
-                Trader createTraderFromPlayerSomehow = Trader;
-                Trade trade = new Trade(createTraderFromPlayerSomehow, Trader);
+                Trader playerTrader = Trader.FromPlayer();
+                Trade trade = new Trade(playerTrader, Trader);
                 dbm.dialogBoxTrade.SetupTrade(trade);
                 dbm.dialogBoxTrade.OnTradeCancelled = () => { TradeCompleted = true; };
                 dbm.dialogBoxTrade.OnTradeCompleted = () =>
@@ -76,6 +76,18 @@ public class TraderShipController : MonoBehaviour
 
     private void TrasfertTradedItems(Trade trade)
     {
-        //TODO
+        foreach (var tradeItem in trade.TradeItems)
+        {
+            if (tradeItem.TradeAmount > 0)
+            {
+                Tile tile = World.current.GetFirstTileWithNoInventoryAround(6, (int)LandingCoordinates.x, (int)LandingCoordinates.y);
+                Inventory inv = new Inventory(tradeItem.ObjectType, tradeItem.TradeAmount, tradeItem.TradeAmount);
+                World.current.inventoryManager.PlaceInventory(tile, inv);
+            }
+            else if (tradeItem.TradeAmount < 0)
+            {
+                World.current.inventoryManager.QuickRemove(tradeItem.ObjectType, -tradeItem.TradeAmount, true);
+            }
+        }
     }
 }
