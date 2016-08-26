@@ -12,4 +12,5 @@
   <DialogBoxSettings_musicVolume>1</DialogBoxSettings_musicVolume>
   <ZoomLerp>10</ZoomLerp>
   <ZoomSensitivity>3</ZoomSensitivity>
+  <DialogBoxSettings_developerModeToggle>False</DialogBoxSettings_developerModeToggle>
 </Settings>
