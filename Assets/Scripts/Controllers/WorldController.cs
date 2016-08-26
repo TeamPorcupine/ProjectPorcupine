@@ -103,7 +103,6 @@ public class WorldController : MonoBehaviour
         GameObject go;
 
         tileSpriteController = new TileSpriteController(world);
-        tileSpriteController.Render();
         characterSpriteController = new CharacterSpriteController(world);
         furnitureSpriteController = new FurnitureSpriteController(world);
         jobSpriteController = new JobSpriteController(world, furnitureSpriteController);

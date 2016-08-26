@@ -19,21 +19,13 @@ public enum SpriteSwapRedColor
     HAIRCOLORDARK = 102
 }
 
-public class CharacterSpriteController
+public class CharacterSpriteController : BaseSpriteController<Character>
 {
-    private Dictionary<Character, GameObject> characterGameObjectMap;
-
-    private World world;
-    private GameObject characterParent;
-
     private Color[] swapSpriteColors;
 
     // Use this for initialization
-    public CharacterSpriteController(World currentWorld)
+    public CharacterSpriteController(World world) : base(world, "Characters")
     {
-        world = currentWorld;
-        characterParent = new GameObject("Characters");
-
         // prepare swap texture for shader
         Texture2D colorSwapTex = new Texture2D(256, 1, TextureFormat.RGBA32, false, false);
         colorSwapTex.filterMode = FilterMode.Point;
@@ -45,17 +37,14 @@ public class CharacterSpriteController
         colorSwapTex.Apply();
         swapSpriteColors = new Color[colorSwapTex.width];
 
-        // Instantiate our dictionary that tracks which GameObject is rendering which Tile data.
-        characterGameObjectMap = new Dictionary<Character, GameObject>();
-
         // Register our callback so that our GameObject gets updated whenever
         // the tile's type changes.
-        world.cbCharacterCreated += OnCharacterCreated;
+        world.cbCharacterCreated += OnCreated;
 
         // Check for pre-existing characters, which won't do the callback.
         foreach (Character c in world.characters)
         {
-            OnCharacterCreated(c);
+            OnCreated(c);
         }
     }
 
@@ -65,17 +54,30 @@ public class CharacterSpriteController
         return new Color((float)r / 255.0f, (float)g / 255.0f, (float)b / 255.0f, 1.0f);
     }
 
-    public void OnCharacterCreated(Character c)
+    public override void RemoveAll()
+    {
+        world.cbCharacterCreated -= OnCreated;
+
+        foreach (Character c in world.characters)
+        {
+            c.cbCharacterChanged -= OnChanged; 
+        }
+
+        objectGameObjectMap.Clear();
+        GameObject.Destroy(objectParent);
+    }
+
+    protected override void OnCreated(Character c)
     {
         // This creates a new GameObject and adds it to our scene.
         GameObject char_go = new GameObject();
 
         // Add our tile/GO pair to the dictionary.
-        characterGameObjectMap.Add(c, char_go);
+        objectGameObjectMap.Add(c, char_go);
 
         char_go.name = "Character";
         char_go.transform.position = new Vector3(c.X, c.Y, 0);
-        char_go.transform.SetParent(characterParent.transform, true);
+        char_go.transform.SetParent(objectParent.transform, true);
 
         SpriteRenderer sr = char_go.AddComponent<SpriteRenderer>();        
         sr.sortingLayerName = "Characters";
@@ -110,7 +112,39 @@ public class CharacterSpriteController
 
         // Register our callback so that our GameObject gets updated whenever
         // the object's into changes.
-        c.cbCharacterChanged += OnCharacterChanged;        
+        c.cbCharacterChanged += OnChanged;        
+    }
+
+    protected override void OnChanged(Character c)
+    {
+        // Make sure the furniture's graphics are correct.
+        SpriteRenderer inv_sr = objectGameObjectMap[c].transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>();
+        if (c.inventory != null)
+        {
+            inv_sr.sprite = SpriteManager.current.GetSprite("Inventory", c.inventory.GetName());
+        }
+        else
+        {
+            inv_sr.sprite = null;
+        }
+
+        if (objectGameObjectMap.ContainsKey(c) == false)
+        {
+            Debug.ULogErrorChannel("CharacterSpriteController", "OnCharacterChanged -- trying to change visuals for character not in our map.");
+            return;
+        }
+
+        GameObject char_go = objectGameObjectMap[c];
+
+        char_go.transform.position = new Vector3(c.X, c.Y, 0);
+    }
+
+    protected override void OnRemoved(Character c)
+    {
+        c.cbCharacterChanged -= OnChanged;  
+        GameObject char_go = objectGameObjectMap[c];
+        objectGameObjectMap.Remove(c);
+        GameObject.Destroy(char_go);
     }
 
     // Add material with color replacement shader, and generate color replacement texture
@@ -155,45 +189,4 @@ public class CharacterSpriteController
         tex.SetPixel((int)index, 0, color);
         return tex;
     }    
-
-    private void OnCharacterChanged(Character c)
-    {
-        // Make sure the furniture's graphics are correct.
-        SpriteRenderer inv_sr = characterGameObjectMap[c].transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>();
-        if (c.inventory != null)
-        {
-            inv_sr.sprite = SpriteManager.current.GetSprite("Inventory", c.inventory.GetName());
-        }
-        else
-        {
-            inv_sr.sprite = null;
-        }
-
-        if (characterGameObjectMap.ContainsKey(c) == false)
-        {
-            Debug.ULogErrorChannel("CharacterSpriteController", "OnCharacterChanged -- trying to change visuals for character not in our map.");
-            return;
-        }
-
-        GameObject char_go = characterGameObjectMap[c];
-        ///Debug.ULogChannel("CharacterSpriteController",char_go.ToString());
-        ///Debug.ULogChannel("CharacterSpriteController",char_go.GetComponent<SpriteRenderer>().ToString());
-
-        // TODO: When we have a helmetless spritesheet, use this check to switch spritesheet on the character
-        /*
-        if (c.CurrTile.Room != null)
-        {
-            if (c.CurrTile.Room.GetGasAmount("O2") <= 0.5f && char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled == false)
-            {
-                char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled = true;
-            }
-            else if (c.CurrTile.Room.GetGasAmount("O2") >= 0.5f && char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled == true)
-            {
-                char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled = false;
-            }
-        }
-        */
-
-        char_go.transform.position = new Vector3(c.X, c.Y, 0);
-    }
 }
