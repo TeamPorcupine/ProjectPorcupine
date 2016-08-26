@@ -34,6 +34,7 @@ public class MouseOverFurnitureTypeText : MonoBehaviour
         }
 
         mouseController = WorldController.Instance.mouseController;
+
         if (mouseController == null)
         {
             Debug.LogError("How do we not have an instance of mouse controller?");
