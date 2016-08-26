@@ -105,18 +105,18 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     // Flag for Lua to check if this is a vertical or horizontal door and display the correct sprite.
     public bool verticalDoor = false;
 
-    public ENTERABILITY IsEnterable()
+    public Enterability IsEnterable()
     {
         if (isEnterableAction == null || isEnterableAction.Length == 0)
         {
-            return ENTERABILITY.Yes;
+            return Enterability.Yes;
         }
 
         //// FurnitureActions.CallFunctionsWithFurniture( isEnterableActions.ToArray(), this );
 
         DynValue ret = LuaUtilities.CallFunction(isEnterableAction, this);
 
-        return (ENTERABILITY)ret.Number;
+        return (Enterability)ret.Number;
     }
 
     public string GetSpriteName()
