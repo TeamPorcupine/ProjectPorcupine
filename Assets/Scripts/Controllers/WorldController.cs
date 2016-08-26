@@ -64,8 +64,6 @@ public class WorldController : MonoBehaviour
     // Multiplier of Time.deltaTime.
     private float timeScale = 1f;
 
-    public bool devMode = false;
-
     public GameObject inventoryUI;
     public GameObject circleCursorPrefab;
 
@@ -109,15 +107,14 @@ public class WorldController : MonoBehaviour
         jobSpriteController = new JobSpriteController(world, furnitureSpriteController);
         inventorySpriteController = new InventorySpriteController(world, inventoryUI);
         buildModeController = new BuildModeController();
-        if(Settings.getSettingAsBool("DevTools_enabled", false))
-        {
-            spawnInventoryController = new SpawnInventoryController();
-        }
+        spawnInventoryController = new SpawnInventoryController();
         mouseController = new MouseController(buildModeController, furnitureSpriteController, circleCursorPrefab);
         keyboardController = new KeyboardController(buildModeController, Instance);
         questController = new QuestController();
         cameraController = new CameraController();
 
+        // Hiding Dev Mode spawn inventory controller if devmode is off
+        spawnInventoryController.SetUIVisibility(Settings.getSettingAsBool("DialogBoxSettings_developerModeToggle", false));
         //Initialising controllers
         GameObject Controllers = GameObject.Find("Controllers");
         Instantiate(Resources.Load("UIController"), Controllers.transform);
