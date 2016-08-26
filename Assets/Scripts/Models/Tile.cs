@@ -75,9 +75,16 @@ public class Tile :IXmlSerializable, ISelectable
             //if (Type == TileType.Empty)
             //    return 0;	// 0 is unwalkable
             
-            return (float) FurnitureActions.CallFunction(Type.MovementCostLua, this).Number;
+            if (Type.MovementCostLua == null)
+            {
+                return Type.BaseMovementCost * (Furniture != null ? Furniture.movementCost : 1);
+            }
+            
+            return (float) LuaUtilities.CallFunction(Type.MovementCostLua, this).Number;
         }
     }
+
+    public bool IsSelected { get; set; }
 
     // The function we callback any time our tile's data changes
     public event Action<Tile> cbTileChanged;
@@ -354,5 +361,9 @@ public class Tile :IXmlSerializable, ISelectable
         return "";	// Do tiles have hitpoints? Can flooring be damaged? Obviously "empty" is indestructible.
     }
 
+    public string GetJobDescription()
+    {
+        return "";
+    }
     #endregion
 }

@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Sprites>
-	<Sprite name="p1_front"     x="0" y="0" w="66" h="92" pixelPerUnit="66" pivotY="0.3" />
-</Sprites>

@@ -22,18 +22,20 @@ namespace ProjectPorcupine.Localization
     {
         // The current language. This will be automatically be set by the LocalizationLoader.
         // Default is English.
-        public static string currentLanguage = defaultLanguage;
+        public static string currentLanguage = DefaultLanguage;
 
         // Used by the LocalizationLoader to ensure that the localization files are only loaded once.
         public static bool initialized = false;
 
-        private static readonly string defaultLanguage = "en_US";
+        private static readonly string DefaultLanguage = "en_US";
 
         // The dictionary that stores all the localization values.
         private static Dictionary<string, Dictionary<string, string>> localizationTable = new Dictionary<string, Dictionary<string, string>>();
 
         // Keeps track of what keys we've already logged are missing.
         private static HashSet<string> missingKeysLogged = new HashSet<string>();
+
+        public static event Action CBLocalizationFilesChanged;
 
         private enum FallbackMode
         {
@@ -62,6 +64,17 @@ namespace ProjectPorcupine.Localization
             return GetLocalization(key, FallbackMode.ReturnDefaultLanguage, currentLanguage, additionalValues);
         }
 
+        public static void LoadingLanguagesFinished()
+        {
+            initialized = true;
+
+            // C# 6 Support pls ;_;
+            if (CBLocalizationFilesChanged != null)
+            {
+                CBLocalizationFilesChanged();
+            }
+        }
+
         /// <summary>
         /// Gets all languages present in library.
         /// </summary>
@@ -79,23 +92,26 @@ namespace ProjectPorcupine.Localization
         {
             try
             {
-                localizationTable[localizationCode] = new Dictionary<string, string>();
+                if (localizationTable.ContainsKey(localizationCode) == false)
+                {
+                    localizationTable[localizationCode] = new Dictionary<string, string>();
+                }
+                
                 string[] lines = File.ReadAllLines(path);
                 foreach (string line in lines)
                 {
                     string[] keyValuePair = line.Split(new char[] { '=' }, 2);
                     if (keyValuePair.Length != 2)
                     {
-                        Debug.LogErrorFormat("Invalid format of localization string. Actual {0}", line);
+                        Debug.ULogErrorChannel("LocalizationTable", string.Format("Invalid format of localization string. Actual {0}", line));
                         continue;
                     }
-
-                    localizationTable[localizationCode].Add(keyValuePair[0], keyValuePair[1]);
+                    localizationTable[localizationCode][keyValuePair[0]] = keyValuePair[1];
                 }
             }
             catch (FileNotFoundException exception)
             {
-                Debug.LogError(new Exception(string.Format("There is no localization file for {0}", localizationCode), exception));
+                Debug.ULogErrorChannel("LocalizationTable", new Exception(string.Format("There is no localization file for {0}", localizationCode), exception).ToString());
             }
         }
 
@@ -113,17 +129,17 @@ namespace ProjectPorcupine.Localization
             if (!missingKeysLogged.Contains(key))
             {
                 missingKeysLogged.Add(key);
-                Debug.LogWarning(string.Format("Translation for {0} in {1} language failed: Key not in dictionary.", key, language));
+                Debug.ULogChannel("LocalizationTable", string.Format("Translation for {0} in {1} language failed: Key not in dictionary.", key, language));
             }
 
             switch (fallbackMode)
             {
-            case FallbackMode.ReturnKey:
-                return additionalValues != null && additionalValues.Length >= 1 ? key + " " + additionalValues[0] : key;
-            case FallbackMode.ReturnDefaultLanguage:
-                return GetLocalization(key, FallbackMode.ReturnKey, defaultLanguage, additionalValues);
-            default:
-                return string.Empty;
+                case FallbackMode.ReturnKey:
+                    return additionalValues != null && additionalValues.Length >= 1 ? key + " " + additionalValues[0] : key;
+                case FallbackMode.ReturnDefaultLanguage:
+                    return GetLocalization(key, FallbackMode.ReturnKey, DefaultLanguage, additionalValues);
+                default:
+                    return string.Empty;
             }
         }
     }

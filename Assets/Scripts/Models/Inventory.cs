@@ -48,6 +48,8 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
         }
     }
 
+    public bool IsSelected { get; set; }
+
     // The function we callback any time our tile's data changes
     public event Action<Inventory> cbInventoryChanged;
 
@@ -124,6 +126,10 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
         return string.Empty;  // Does inventory have hitpoints? How does it get destroyed? Maybe it's just a percentage chance based on damage.
     }
 
+    public string GetJobDescription()
+    {
+        return "";
+    }
     #endregion
 
     #region IXmlSerializable implementation

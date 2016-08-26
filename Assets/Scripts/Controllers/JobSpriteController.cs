@@ -48,7 +48,7 @@ public class JobSpriteController
 
         if (jobGameObjectMap.ContainsKey(job))
         {
-            //Debug.LogError("OnJobCreated for a jobGO that already exists -- most likely a job being RE-QUEUED, as opposed to created.");
+            //Debug.ULogErrorChannel("JobSpriteController", "OnJobCreated for a jobGO that already exists -- most likely a job being RE-QUEUED, as opposed to created.");
             return;
         }
 
@@ -68,7 +68,7 @@ public class JobSpriteController
             //until the graphics system for tiles is fleshed out further
 
             job_go.transform.position = new Vector3(job.tile.X, job.tile.Y, 0);
-            sr.sprite = SpriteManager.current.GetSprite("Tile", "Empty");
+            sr.sprite = SpriteManager.current.GetSprite("Tile", "Solid");
         }
         else
         {

@@ -11,11 +11,14 @@ using UnityEngine;
 
 public interface ISelectable
 {
+    bool IsSelected { get; set; }
+
     string GetName();
 
     string GetDescription();
 
     string GetHitPointString();
-
     // For indestructible things (if any?) this is allowed to return blank (or null maybe??)
+
+    string GetJobDescription();
 }
