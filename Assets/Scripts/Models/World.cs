@@ -116,10 +116,10 @@ public class World : IXmlSerializable
     public void AddRoom(Room r)
     {
         rooms.Add(r);
-//        if (roomGraph != null)
-//        {
-//            roomGraph.RegenerateGraph();
-//        }
+        if (roomGraph != null)
+        {
+            roomGraph = new Path_RoomGraph(this);
+        }
         Debug.ULogChannel("Rooms","creating room:" + r.ID);
     }
 
