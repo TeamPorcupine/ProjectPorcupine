@@ -629,10 +629,6 @@ public class World : IXmlSerializable
 
         // This bit will come from parsing a LUA file later, but for now we still need to
         // implement furniture behaviour directly in C# code.
-        //furniturePrototypes["Door"].RegisterUpdateAction( FurnitureActions.Door_UpdateAction );
-        //furniturePrototypes["Door"].IsEnterable = FurnitureActions.Door_IsEnterable;
-
-        //Logger.LogError("Did not find a 'Inventories' element in the prototype definition file.");
     }
 
     /// <summary>
@@ -1068,23 +1064,23 @@ public class World : IXmlSerializable
             {
                 int x = int.Parse(reader.GetAttribute("X"));
                 int y = int.Parse(reader.GetAttribute("Y"));
-                Character c;
+                Character character;
                 if(reader.GetAttribute("r") != null)
                 {
                     float r = float.Parse(reader.GetAttribute("r"));
                     float b = float.Parse(reader.GetAttribute("b"));;
                     float g = float.Parse(reader.GetAttribute("g"));;
                     Color color = new Color(r, g, b, 1.0f);
-                    c = CreateCharacter(tiles[x, y], color);
-                    c.name = reader.GetAttribute("name");
-                    c.ReadXml(reader);
+                    character = CreateCharacter(tiles[x, y], color);
+                    character.name = reader.GetAttribute("name");
+                    character.ReadXml(reader);
                 }
 
                 else
                 {
-                    c = CreateCharacter(tiles[x, y]);
-                    c.name = reader.GetAttribute("name");
-                    c.ReadXml(reader);
+                    character = CreateCharacter(tiles[x, y]);
+                    character.name = reader.GetAttribute("name");
+                    character.ReadXml(reader);
                 }
 
                 if (reader.ReadToDescendant("Inventories")) 
@@ -1098,7 +1094,7 @@ public class World : IXmlSerializable
                                 int.Parse(reader.GetAttribute("maxStackSize")),
                                 int.Parse(reader.GetAttribute("stackSize")));
 
-                            inventoryManager.PlaceInventory(c,inv);
+                            inventoryManager.PlaceInventory(character,inv);
                         } while(reader.ReadToNextSibling("Inventory"));
                     }
 
