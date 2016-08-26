@@ -1073,13 +1073,14 @@ public class World : IXmlSerializable
                     float g = float.Parse(reader.GetAttribute("g"));;
                     Color color = new Color(r, g, b, 1.0f);
                     c = CreateCharacter(tiles[x, y], color);
-                    c.name = "bob";
+                    c.name = reader.GetAttribute("name");
                     c.ReadXml(reader);
                 }
 
                 else
                 {
                     c = CreateCharacter(tiles[x, y]);
+                    c.name = reader.GetAttribute("name");
                     c.ReadXml(reader);
                 }
 
@@ -1099,7 +1100,7 @@ public class World : IXmlSerializable
                     }
 
                 }
-                
+
             } while(reader.ReadToNextSibling("Character"));
         }
 
