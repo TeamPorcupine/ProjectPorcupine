@@ -1094,7 +1094,7 @@ public class World : IXmlSerializable
                                 int.Parse(reader.GetAttribute("maxStackSize")),
                                 int.Parse(reader.GetAttribute("stackSize")));
 
-                            inventoryManager.PlaceInventory(c,inv, inv.stackSize);
+                            inventoryManager.PlaceInventory(c,inv);
                         } while(reader.ReadToNextSibling("Inventory"));
                     }
 

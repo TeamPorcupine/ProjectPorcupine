@@ -59,7 +59,14 @@ public class InventorySpriteController
         inventoryGameObjectMap.Add(inv, inv_go);
 
         inv_go.name = inv.objectType;
-        inv_go.transform.position = new Vector3(inv.tile.X, inv.tile.Y, 0);
+        if (inv.tile != null)
+        {
+            inv_go.transform.position = new Vector3(inv.tile.X, inv.tile.Y, 0);
+        }
+        else if (inv.character != null)
+        {
+            inv_go.transform.position = new Vector3(inv.character.X, inv.character.Y, 0);
+        }
         inv_go.transform.SetParent(inventoryParent.transform, true);
 
         SpriteRenderer sr = inv_go.AddComponent<SpriteRenderer>();

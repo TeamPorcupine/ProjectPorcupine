@@ -114,6 +114,7 @@ public class InventoryManager
         {
             character.inventory = sourceInventory.Clone();
             character.inventory.stackSize = 0;
+            character.inventory.character = character;
             inventories[character.inventory.objectType].Add(character.inventory);
         }
         else if (character.inventory.objectType != sourceInventory.objectType)
