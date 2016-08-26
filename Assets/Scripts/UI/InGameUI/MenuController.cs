@@ -14,6 +14,8 @@ using System.Collections;
 
 public class MenuController : MonoBehaviour
 {
+    public static MenuController Instance;
+
     DialogBoxManager dbm;
 
     // The left build menu.
@@ -33,6 +35,8 @@ public class MenuController : MonoBehaviour
     // Use this for initialization.
     void Start()
     {
+        Instance = this;
+
         dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
 
         // Add liseners here.

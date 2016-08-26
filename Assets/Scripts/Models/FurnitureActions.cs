@@ -22,6 +22,7 @@ public class FurnitureActions
         LuaUtilities.RegisterGlobal(typeof(Job));
         LuaUtilities.RegisterGlobal(typeof(ModUtils));
         LuaUtilities.RegisterGlobal(typeof(World));
+        LuaUtilities.RegisterGlobal(typeof(WorldController));
 
     }
 

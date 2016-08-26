@@ -89,8 +89,9 @@ public class TraderPrototype
         Trader t = new Trader
         {
             CurrencyBalance = Random.Range(MinCurrencyBalance, MaxCurrencyBalance),
-            Name = PotentialNames[Random.Range(PotentialNames.Count, PotentialNames.Count - 1)],
-            SaleMarginMultiplier = Random.Range(MinSaleMarginMultiplier, MaxSaleMarginMultiplier)
+            Name = PotentialNames[Random.Range(0, PotentialNames.Count - 1)],
+            SaleMarginMultiplier = Random.Range(MinSaleMarginMultiplier, MaxSaleMarginMultiplier),
+            Stock = new List<Inventory>()
         };
 
         foreach (var potentialStock in PotentialStock)

@@ -327,7 +327,6 @@
         </DeconstructJob>
 
         <JobSpotOffset X="0" Y="0" />
-        <!--<JobSpawnSpotOffset X="0" Y="-2" />-->
         <JobSpawnSpotOffset X="1" Y="-1" />
 
         <Params>
@@ -341,6 +340,7 @@
 
         <ContextMenuAction FunctionName="LandingPad_Test_ContextMenuAction" Text="Lua Test Deconstruct 1" RequiereCharacterSelected="false"/>
         <ContextMenuAction FunctionName="LandingPad_Test_ContextMenuAction" Text="Lua Test Deconstruct 2" RequiereCharacterSelected="true" />
+        <ContextMenuAction FunctionName="LandingPad_Test_CallTradeShip" Text="Call Trade Ship Test" RequiereCharacterSelected="false" />
 
         <LocalizationCode>furn_small_landing_pad</LocalizationCode>
         <UnlocalizedDescription>furn_small_landing_pad_desc</UnlocalizedDescription>

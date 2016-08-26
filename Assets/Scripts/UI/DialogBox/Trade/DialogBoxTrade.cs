@@ -6,6 +6,8 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -22,6 +24,9 @@ public class DialogBoxTrade : DialogBox
     public Transform TradeItemListPanel;
 
     public GameObject TradeItemPrefab;
+
+    public Action OnTradeCompleted;
+    public Action OnTradeCancelled;
 
     public void SetupTrade(Trade trade)
     {
@@ -76,8 +81,7 @@ public class DialogBoxTrade : DialogBox
 
         foreach (var tradeItem in _trade.TradeItems)
         {
-            var go = (GameObject)Instantiate(TradeItemPrefab);
-            go.transform.SetParent(TradeItemListPanel);
+            GameObject go = (GameObject)Instantiate(Resources.Load("Prefab/TradeItemPrefab"), TradeItemListPanel);
 
             var tradeItemBehaviour = go.GetComponent<DialogBoxTradeItem>();
             tradeItemBehaviour.OnTradeAmountChangedEvent += item => BuildInterfaceHeader();
@@ -98,6 +102,10 @@ public class DialogBoxTrade : DialogBox
         _trade = null;
         ClearInterface();
         CloseDialog();
+        if (OnTradeCompleted != null)
+        {
+            OnTradeCancelled();
+        }
     }
 
     public void AcceptTrade()
@@ -108,6 +116,10 @@ public class DialogBoxTrade : DialogBox
             _trade = null;
             ClearInterface();
             CloseDialog();
+            if (OnTradeCompleted != null)
+            {
+                OnTradeCompleted();
+            }
         }
     }
 }

@@ -8,16 +8,18 @@
 #endregion
 using System;
 using System.Linq;
+using MoonSharp.Interpreter;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using System.Xml.Serialization;
 using System.IO;
+using Random = UnityEngine.Random;
 
+[MoonSharpUserData]
 public class WorldController : MonoBehaviour
 {
-
     SoundController soundController;
     TileSpriteController tileSpriteController;
     CharacterSpriteController characterSpriteController;
@@ -59,6 +61,11 @@ public class WorldController : MonoBehaviour
 
     // Multiplier of Time.deltaTime.
     private float timeScale = 1f;
+
+    public float TimeScale
+    {
+        get { return timeScale; }
+    }
 
     public bool devMode = false;
 
@@ -217,5 +224,27 @@ public class WorldController : MonoBehaviour
 
         // Center the Camera
         Camera.main.transform.position = new Vector3(world.Width / 2, world.Height / 2, Camera.main.transform.position.z);
+    }
+
+    public void CallTradeShipTest(Furniture landingPad)
+    {
+        //Currently not using any logic to select a trader
+        TraderPrototype prototype = world.traderPrototypes[
+            world.traderPrototypes.Keys.ToList()[
+                Random.Range(0, world.traderPrototypes.Keys.Count - 1)]];
+        Trader trader = prototype.CreateTrader();
+
+        GameObject go = new GameObject(trader.Name);
+        go.transform.parent = transform;
+        TraderShipController controller = go.AddComponent<TraderShipController>();
+        controller.Trader = trader;
+        controller.Speed = 5f;
+        go.transform.position = new Vector3(-10, 50, 0);
+        controller.LandingCoordinates = new Vector3(landingPad.tile.X + 1, landingPad.tile.Y + 1, 0);
+        controller.LeavingCoordinates= new Vector3(100, 50, 0);
+        go.transform.localScale = new Vector3(1, 1, 1);
+        SpriteRenderer spriteRenderer = go.AddComponent<SpriteRenderer>();
+        spriteRenderer.sprite = SpriteManager.current.GetSprite("Trader", "BasicHaulShip");
+        spriteRenderer.sortingLayerName = "TradeShip";
     }
 }

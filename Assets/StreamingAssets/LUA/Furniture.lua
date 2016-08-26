@@ -562,6 +562,10 @@ function LandingPad_Test_ContextMenuAction(furniture, character)
    furniture.Deconstruct()
 end
 
+function LandingPad_Test_CallTradeShip(furniture, character)
+   WorldController.Instance.CallTradeShipTest(furniture)
+end
+
 -- This function gets called once, when the funriture is isntalled
 function Heater_InstallAction( furniture, deltaTime)
     -- TODO: find elegant way to register heat source and sinks to Temperature
