@@ -7,7 +7,6 @@
 // ====================================================
 #endregion
 using UnityEngine;
-using System.Collections;
 
 public class CameraController
 {
@@ -43,6 +42,6 @@ public class CameraController
 
     public void ChangeZoom(float amount)
     {
-        zoomTarget = Camera.main.orthographicSize - Settings.getSettingAsFloat("ZoomSensitivity", 3) * (Camera.main.orthographicSize * amount);
+        zoomTarget = Camera.main.orthographicSize - (Settings.getSettingAsFloat("ZoomSensitivity", 3) * (Camera.main.orthographicSize * amount));
     }
 }
