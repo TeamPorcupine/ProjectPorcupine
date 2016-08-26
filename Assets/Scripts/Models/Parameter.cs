@@ -27,9 +27,6 @@ public class Parameter
     // If this Parameter contains other Parameters, contents will contain the actual parameters
     private Dictionary<string, Parameter> contents;
 
-    // Tracks if value has been explicitly set
-//    private bool uninitializedValue = true;
-
     public Parameter(string name, string value) 
     {
         this.name = name;
@@ -233,7 +230,7 @@ public class Parameter
             writer.WriteStartElement("Param");
             writer.WriteAttributeString("name", name);
         }
-        if (!(value == null) )
+        if ((value != null) )
         {
             writer.WriteAttributeString("value", value);
         }
