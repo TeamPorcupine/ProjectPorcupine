@@ -76,6 +76,16 @@ public class JobQueue
         jobQueue.RemoveAt(jobQueue.IndexOfValue(j));
     }
 
+    public List<Job> GetJobList()
+    {
+        List<Job> _JobList = new List<Job>();
+        foreach (Job job in jobQueue.Values)
+        {
+            _JobList.Add(job);
+        }
+        return _JobList;
+    }
+
     public IEnumerable<Job> PeekJobs()
     {
         // For debugging only. For the real thing we want to return something safer (like preformatted strings.).
