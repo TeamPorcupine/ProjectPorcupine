@@ -14,7 +14,7 @@ using System.IO;
 public class PrototypeManager
 {
 
-    static public Prototypes<Job> FurnitureJob { get; protected set; }
+    static public BasePrototypes<Job> FurnitureJob { get; protected set; }
     static public FurniturePrototypes Furniture { get; protected set; }
     static public InventoryPrototypes Inventory { get; protected set; }
     static public NeedPrototypes Need { get; protected set; }
@@ -24,14 +24,11 @@ public class PrototypeManager
 
     public PrototypeManager()
     {
-        FurnitureJob = new Prototypes<Job>();
+        FurnitureJob = new BasePrototypes<Job>();
         Furniture = new FurniturePrototypes();
         Inventory = new InventoryPrototypes();
         Need = new NeedPrototypes();
         Trader = new TraderPrototypes();
         Quest = new QuestPrototypes();
-
-        new FurnitureActions();
-        new NeedActions();
     }
 }

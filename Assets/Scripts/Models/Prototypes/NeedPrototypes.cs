@@ -12,17 +12,11 @@ using System.Collections.Generic;
 using System.Xml;
 
 
-public class NeedPrototypes : Prototypes<Need>
+public class NeedPrototypes : XmlPrototypes<Need>
 {
 
-    public NeedPrototypes()
+    public NeedPrototypes() : base("Need.xml", "Needs", "Need")
     {
-        prototypes = new Dictionary<string, Need>();
-        fileName = "Need.xml";
-        listTag = "Needs";
-        elementTag = "Need";
-
-        LoadPrototypesFromFile();
     }
 
 

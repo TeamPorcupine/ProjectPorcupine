@@ -12,17 +12,11 @@ using System.Collections.Generic;
 using System.Xml;
 
 
-public class QuestPrototypes : Prototypes<Quest>
+public class QuestPrototypes : XmlPrototypes<Quest>
 {
 
-    public QuestPrototypes()
+    public QuestPrototypes() : base("Quest.xml", "Quests", "Quest")
     {
-        prototypes = new Dictionary<string, Quest>();
-        fileName = "Quest.xml";
-        listTag = "Quests";
-        elementTag = "Quest";
-
-        LoadPrototypesFromFile();
     }
 
 

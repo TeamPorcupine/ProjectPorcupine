@@ -12,17 +12,11 @@ using System.Collections.Generic;
 using System.Xml;
 
 
-public class InventoryPrototypes : Prototypes<InventoryCommon>
+public class InventoryPrototypes : XmlPrototypes<InventoryCommon>
 {
 
-    public InventoryPrototypes()
+    public InventoryPrototypes() : base("Inventory.xml", "Inventories", "Inventory")
     {
-        prototypes = new Dictionary<string, InventoryCommon>();
-        fileName = "Inventory.xml";
-        listTag = "Inventories";
-        elementTag = "Inventory";
-
-        LoadPrototypesFromFile();
     }
 
 

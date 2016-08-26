@@ -9,108 +9,27 @@
 
 using UnityEngine;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.IO;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 
 
-public class Prototypes<T>
+public class XmlPrototypes<T> : BasePrototypes<T>
 {
 
-    protected Dictionary<string, T> prototypes;
     protected string fileName;
     protected string listTag;
     protected string elementTag;
 
 
-
-    public Prototypes()
+    public XmlPrototypes(string fileName, string listTag, string elementTag) : base()
     {
-        prototypes = new Dictionary<string, T>();
-    }
+        this.fileName = fileName;
+        this.listTag = listTag;
+        this.elementTag = elementTag;
 
-
-
-    /// <summary>
-    /// Determines whether there is a prototype with the specified type.
-    /// </summary>
-    /// <returns><c>true</c> if there is a prototype with the specified type; otherwise, <c>false</c>.</returns>
-    /// <param name="type">Type.</param>
-    public bool HasPrototype(string type)
-    {
-        return prototypes.ContainsKey(type);
-    }
-
-    /// <summary>
-    /// Returns the prototype with the specified type.
-    /// </summary>
-    /// <returns>The prototype.</returns>
-    /// <param name="type">Type.</param>
-    public T GetPrototype(string type)
-    {
-        if (HasPrototype(type))
-        {
-            return prototypes[type];
-        }
-        return default(T);
-    }
-
-    /// <summary>
-    /// Returns the prototype at the specified index.
-    /// </summary>
-    /// <returns>The prototype.</returns>
-    /// <param name="index">Index.</param>
-    public T GetPrototype(int index)
-    {
-        return prototypes.ElementAt(index).Value;
-    }
-
-    /// <summary>
-    /// Adds the given prototype.
-    /// </summary>
-    /// <param name="type">Type.</param>
-    /// <param name="proto">Proto.</param>
-    public void SetPrototype(string type, T proto)
-    {
-        prototypes[type] = proto;
-    }
-
-
-
-    /// <summary>
-    /// Returns the prototype Keys.
-    /// </summary>
-    public Dictionary<string, T>.KeyCollection Keys
-    {
-        get
-        {
-            return prototypes.Keys;
-        }
-    }
-
-    /// <summary>
-    /// Returns the prototype Keys.
-    /// </summary>
-    public List<T> Values
-    {
-        get
-        {
-            return prototypes.Values.ToList();
-        }
-    }
-
-    /// <summary>
-    /// Returns the amount of prototypes.
-    /// </summary>
-    public int Count
-    {
-        get
-        {
-            return prototypes.Count;
-        }
+        LoadPrototypesFromFile();
     }
 
 
@@ -159,7 +78,7 @@ public class Prototypes<T>
                 do
                 {
                     LoadPrototype(reader);
-                
+
                 } while (reader.ReadToNextSibling(elementTag));
             }
             else
@@ -179,7 +98,7 @@ public class Prototypes<T>
     /// <param name="reader">Reader.</param>
     protected virtual void LoadPrototype(XmlTextReader reader)
     {
-        
+
     }
 
     protected void LogPrototypeError(Exception e, string type)
@@ -187,3 +106,4 @@ public class Prototypes<T>
         Debug.LogError("Error reading furniture prototype for: " + type + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
     }
 }
+

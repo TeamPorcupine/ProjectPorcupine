@@ -1,3 +1,11 @@
+#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -5,24 +13,14 @@ using UnityEngine;
 
 public class QuestController
 {
-    private float totalDeltaTime;
     private readonly float checkDelayInSeconds;
+    private float totalDeltaTime;
 
     public QuestController()
     {
         checkDelayInSeconds = 5f;
         LoadLuaScript();
     }
-
-    void LoadLuaScript()
-    {
-        string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
-        filePath = System.IO.Path.Combine(filePath, "Quest.lua");
-        string luaCode = System.IO.File.ReadAllText(filePath);
-
-        new QuestActions(luaCode);
-    }
-
 
     public void Update(float deltaTime)
     {
@@ -32,6 +30,15 @@ public class QuestController
             totalDeltaTime = 0f;
             CheckAllAcceptedQuests();
         }
+    }
+
+    private void LoadLuaScript()
+    {
+        string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
+        filePath = System.IO.Path.Combine(filePath, "Quest.lua");
+        string luaCode = System.IO.File.ReadAllText(filePath);
+
+        new QuestActions(luaCode);
     }
 
     private void CheckAllAcceptedQuests()

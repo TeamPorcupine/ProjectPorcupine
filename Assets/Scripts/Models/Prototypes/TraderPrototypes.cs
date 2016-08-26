@@ -12,17 +12,11 @@ using System.Collections.Generic;
 using System.Xml;
 
 
-public class TraderPrototypes : Prototypes<TraderPrototype>
+public class TraderPrototypes : XmlPrototypes<TraderPrototype>
 {
 
-    public TraderPrototypes()
+    public TraderPrototypes() : base("Trader.xml", "Traders", "Trader")
     {
-        prototypes = new Dictionary<string, TraderPrototype>();
-        fileName = "Trader.xml";
-        listTag = "Traders";
-        elementTag = "Trader";
-
-        LoadPrototypesFromFile();
     }
 
 

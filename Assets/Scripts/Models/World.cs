@@ -158,7 +158,6 @@ public class World : IXmlSerializable
             }
         }
 
-        new NeedActions ();
 
         characters = new List<Character>();
         furnitures = new List<Furniture>();
@@ -213,14 +212,17 @@ public class World : IXmlSerializable
         }
     }
 
-    public void Update(float deltaTime)
+    public void UpdateCharacters(float deltaTime)
     {
         //Change from a foreach due to the collection being modified while its being looped through
         for (int i = 0; i < characters.Count; i++)
         {
             characters[i].Update(deltaTime);
         }
+    }
 
+    public void Tick(float deltaTime)
+    {
         foreach (Furniture f in furnitures)
         {
             f.Update(deltaTime);
@@ -691,12 +693,14 @@ public class World : IXmlSerializable
                     float g = float.Parse(reader.GetAttribute("g"));;
                     Color color = new Color(r, g, b, 1.0f);
                     Character c = CreateCharacter(tiles[x, y], color);
+                    c.name = reader.GetAttribute("name");
                     c.ReadXml(reader);
                 }
 
                 else
                 {
                     Character c = CreateCharacter(tiles[x, y]);
+                    c.name = reader.GetAttribute("name");
                     c.ReadXml(reader);
                 }
                 

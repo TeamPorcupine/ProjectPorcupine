@@ -12,17 +12,11 @@ using System.Collections.Generic;
 using System.Xml;
 
 
-public class FurniturePrototypes : Prototypes<Furniture>
+public class FurniturePrototypes : XmlPrototypes<Furniture>
 {
 
-    public FurniturePrototypes()
+    public FurniturePrototypes() : base("Furniture.xml", "Furnitures", "Furniture")
     {
-        prototypes = new Dictionary<string, Furniture>();
-        fileName = "Furniture.xml";
-        listTag = "Furnitures";
-        elementTag = "Furniture";
-
-        LoadPrototypesFromFile();
     }
 
 
