@@ -961,6 +961,15 @@ public class World : IXmlSerializable
         }
         writer.WriteEndElement();
 
+        writer.WriteStartElement("Wallet");
+        foreach (Currency currency in Wallet.Currencies.Values)
+        {
+            writer.WriteStartElement("Currency");
+            currency.WriteXml(writer);
+            writer.WriteEndElement();
+        }
+        writer.WriteEndElement();
+
         writer.WriteElementString("Skybox", skybox.name);
     }
 
@@ -991,6 +1000,9 @@ public class World : IXmlSerializable
                     break;
                 case "Characters":
                     ReadXml_Characters(reader);
+                    break;
+                case "Wallet":
+                    ReadXml_Wallet(reader);
                     break;
                 case "Skybox":
                     LoadSkybox(reader.ReadElementString("Skybox"));
@@ -1129,6 +1141,26 @@ public class World : IXmlSerializable
         }
 
     }
+    
+    void ReadXml_Wallet(XmlReader reader)
+    {
+        if (reader.ReadToDescendant("Currency"))
+        {
+            do
+            {
+                Currency c = new Currency
+                {
+                    Name = reader.GetAttribute("Name"),
+                    ShortName = reader.GetAttribute("ShortName"),
+                    Balance = float.Parse(reader.GetAttribute("Balance"))
+                };
+                Wallet.Currencies[c.Name] = c;
+            } while (reader.ReadToNextSibling("Character"));
+        }
+
+    }
+
+
 
     public void OnInventoryCreated(Inventory inv)
     {
