@@ -19,19 +19,19 @@ public static class Settings
     private static Dictionary<string, string> settingsDict;
     private static string settingsFilePath = System.IO.Path.Combine("Settings", "Settings.xml");
 
-    public static string getSetting(string key , string defaultValue)
+    public static string GetSetting(string key, string defaultValue)
     {
         // if we haven't already loaded our settings do it now
         if (settingsDict == null) 
         {
-            loadSettings();
+            LoadSettings();
         }
 
-        string s = getSetting(key);
+        string s = GetSetting(key);
         if (s == null)
         {
             settingsDict.Add(key, defaultValue);
-            saveSettings();
+            SaveSettings();
             return defaultValue;
         }
         else
@@ -40,35 +40,77 @@ public static class Settings
         }
     }
 
-    private static string getSetting(string key )
+    public static int GetSettingAsInt(string key, int defaultValue)
+    {
+        // Atempt to get the string value from the dict
+        string s = GetSetting(key, defaultValue.ToString());
+
+        int i;
+
+        // Atempt to parse the string, if the parse failed return the default value
+        if (int.TryParse(s, out i) == false)
+        {
+            Debug.ULogWarningChannel("Settings", "Could not parse setting " + key + " of value " + s + " to type int");
+            return defaultValue;
+        }
+        else
+        {
+            // we managed to get the setting we wanted
+            return i;
+        }
+    }
+
+    public static float GetSettingAsFloat(string key, float defaultValue)
+    {
+        // Atempt to get the string value from the dict
+        string s = GetSetting(key, defaultValue.ToString());
+
+        float f;
+
+        // Atempt to parse the string, if the parse failed return the default value
+        if (float.TryParse(s, out f) == false)
+        {
+            Debug.ULogWarningChannel("Settings", "Could not parse setting " + key + " of value " + s + " to type float");
+            return defaultValue;
+        }
+        else
+        {
+            // we managed to get the setting we wanted
+            return f;
+        }
+    }
+
+    public static bool GetSettingAsBool(string key, bool defaultValue)
+    {
+        // Atempt to get the string value from the dict
+        string s = GetSetting(key, defaultValue.ToString());
+
+        bool b;
+
+        // Atempt to parse the string, if the parse failed return the default value
+        if (bool.TryParse(s, out b) == false)
+        {
+            Debug.ULogWarningChannel("Settings", "Could not parse setting " + key + " of value " + s + " to type bool");
+            return defaultValue;
+        }
+        else
+        {
+            // we managed to get the setting we wanted
+            return b;
+        }
+    }
+
+    public static void SetSetting(string key, object obj)
+    {
+        SetSetting(key, obj.ToString());
+    }
+
+    public static void SetSetting(string key, string value)
     {
         // if we haven't already loaded our settings do it now
         if (settingsDict == null) 
         {
-            loadSettings();
-        }
-
-        string value;
-
-        // attempt to get the requested setting, if it is not found log a warning and return the null string
-        if (settingsDict.TryGetValue(key, out value) == false)
-        {
-            Debug.ULogWarningChannel("Settings", "Attempted to access a setting that was not loaded from Settings.xml :\t" + key);
-            return null;
-        }
-
-        return value;
-    }
-    public static void setSetting(string key, object obj){
-        setSetting(key, obj.ToString());
-    }
-
-    public static void setSetting(string key, string value)
-    {
-        // if we haven't already loaded our settings do it now
-        if (settingsDict == null) 
-        {
-            loadSettings();
+            LoadSettings();
         }
 
         // if we already have a setting with the same name
@@ -86,39 +128,30 @@ public static class Settings
             Debug.ULogChannel("Settings", "Created new setting : " + key + " to value of " + value);
         }
 
-        saveSettings();
+        SaveSettings();
     }
 
-    private static void saveSettings()
+    private static string GetSetting(string key)
     {
-        // create an xml document
-        XmlDocument xDoc = new XmlDocument();
-
-        // create main settings node
-        XmlNode settingsNode = xDoc.CreateElement("Settings");
-
-        foreach (KeyValuePair<string, string> pair in settingsDict)
+        // if we haven't already loaded our settings do it now
+        if (settingsDict == null)
         {
-            // create a new element for each pair in the dict
-            XmlElement settingElement = xDoc.CreateElement(pair.Key);
-            settingElement.InnerText = pair.Value;
-            Debug.ULogChannel("Settings", pair.Key + " : " + pair.Value);
-
-            // add this element inside the Settings element
-            settingsNode.AppendChild(settingElement);
+            LoadSettings();
         }
 
-        // apend Settings node to the document
-        xDoc.AppendChild(settingsNode);
+        string value;
 
-        // get file path of Settings.xml 
-        string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, settingsFilePath);
+        // attempt to get the requested setting, if it is not found log a warning and return the null string
+        if (settingsDict.TryGetValue(key, out value) == false)
+        {
+            Debug.ULogWarningChannel("Settings", "Attempted to access a setting that was not loaded from Settings.xml :\t" + key);
+            return null;
+        }
 
-        // save document
-        xDoc.Save(filePath);
+        return value;
     }
 
-    private static void loadSettings()
+    private static void LoadSettings()
     {
         // initilize the settings dict
         settingsDict = new Dictionary<string, string>();
@@ -128,13 +161,13 @@ public static class Settings
         string furnitureXmlText = System.IO.File.ReadAllText(filePath);
 
         // create an xml document from Settings.xml
-        XmlDocument xDoc = new XmlDocument();
-        xDoc.LoadXml(furnitureXmlText);
+        XmlDocument xmlDoc = new XmlDocument();
+        xmlDoc.LoadXml(furnitureXmlText);
         Debug.ULogChannel("Settings", "Loaded settings from : \t" + filePath);
-        Debug.Log(xDoc.InnerText); // Uber Logger doesn't handle multilines.
+        Debug.Log(xmlDoc.InnerText); // Uber Logger doesn't handle multilines.
 
         // get the Settings node , it's children are the individual settings
-        XmlNode settingsNode = xDoc.GetElementsByTagName("Settings").Item(0);
+        XmlNode settingsNode = xmlDoc.GetElementsByTagName("Settings").Item(0);
         XmlNodeList settingNodes = settingsNode.ChildNodes;
         Debug.ULogChannel("Settings", settingNodes.Count + " settings loaded");
 
@@ -150,65 +183,34 @@ public static class Settings
         }
     }
 
-    public static int getSettingAsInt(string key, int defaultValue){
+    private static void SaveSettings()
+    {
+        // create an xml document
+        XmlDocument xmlDoc = new XmlDocument();
 
-        // Atempt to get the string value from the dict
-        string s = getSetting(key, defaultValue.ToString());
+        // create main settings node
+        XmlNode settingsNode = xmlDoc.CreateElement("Settings");
 
-        int i;
-
-        // Atempt to parse the string, if the parse failed return the default value
-        if (int.TryParse(s, out i) == false)
+        foreach (KeyValuePair<string, string> pair in settingsDict)
         {
-            Debug.ULogWarningChannel("Settings", "Could not parse setting " + key + " of value " + s + " to type int");
-            return defaultValue;
+            // create a new element for each pair in the dict
+            XmlElement settingElement = xmlDoc.CreateElement(pair.Key);
+            settingElement.InnerText = pair.Value;
+            Debug.ULogChannel("Settings", pair.Key + " : " + pair.Value);
+
+            // add this element inside the Settings element
+            settingsNode.AppendChild(settingElement);
         }
-        else
-        {
-            // we managed to get the setting we wanted
-            return i;
-        }
+
+        // apend Settings node to the document
+        xmlDoc.AppendChild(settingsNode);
+
+        // get file path of Settings.xml 
+        string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, settingsFilePath);
+
+        // save document
+        xmlDoc.Save(filePath);
     }
 
-    public static float getSettingAsFloat(string key, float defaultValue){
-
-        // Atempt to get the string value from the dict
-        string s = getSetting(key, defaultValue.ToString());
-
-        float f;
-
-        // Atempt to parse the string, if the parse failed return the default value
-        if (float.TryParse(s, out f) == false)
-        {
-            Debug.ULogWarningChannel("Settings", "Could not parse setting " + key + " of value " + s + " to type float");
-            return defaultValue;
-        }
-        else
-        {
-            // we managed to get the setting we wanted
-            return f;
-        }
-    }
-
-    public static bool getSettingAsBool(string key, bool defaultValue){
-
-        // Atempt to get the string value from the dict
-        string s = getSetting(key, defaultValue.ToString());
-
-        bool b;
-
-        // Atempt to parse the string, if the parse failed return the default value
-        if (bool.TryParse(s, out b) == false)
-        {
-            Debug.ULogWarningChannel("Settings", "Could not parse setting " + key + " of value " + s + " to type bool");
-            return defaultValue;
-        }
-        else
-        {
-            // we managed to get the setting we wanted
-            return b;
-        }
-    }
-        
-    // TODO : make generic getSettingAs that infers return type from default value
+    // TODO : make generic GetSettingAs that infers return type from default value
 }
