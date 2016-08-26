@@ -881,26 +881,27 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         };
     }
 
-    public void PrioritizeJob(Job j)
+    public void PrioritizeJob(Job job)
     {
         AbandonJob(false);
-        World.current.jobQueue.Remove(j);
-        j.IsBeingWorked = true;
-        //check if the character is carrying any materials and if they could be used for the new job,
+        World.current.jobQueue.Remove(job);
+        job.IsBeingWorked = true;
+
+        //Check if the character is carrying any materials and if they could be used for the new job,
         //if the character is carrying materials but is not used in the new job, then drop them
         //on the current tile for now.
-        if (inventory != null && !j.inventoryRequirements.ContainsKey(inventory.objectType))
+        if (inventory != null && !job.inventoryRequirements.ContainsKey(inventory.objectType))
         {
             World.current.inventoryManager.PlaceInventory(CurrTile, inventory);
             DumpExcessInventory();
         }
 
-        myJob = j;
+        myJob = job;
 
-        // Get our destination from the job
+        // Get our destination from the job.
         DestTile = myJob.tile;
 
-        // If the dest tile does not have neighbours that are walkable it's very likable that they can't be walked to
+        // If the dest tile does not have neighbours that are walkable it's very likable that they can't be walked to.
         if (DestTile.GetNeighbours().Any((tile) => { return tile.MovementCost > 0; }) == false)
         {
             Debug.ULogChannel("Character", "No neighbouring floor tiles! Abandoning job.");

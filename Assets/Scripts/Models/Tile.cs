@@ -22,7 +22,7 @@ public enum ENTERABILITY
 };
 
 [MoonSharpUserData]
-public class Tile :IXmlSerializable, ISelectable,IContextActionProvider
+public class Tile :IXmlSerializable, ISelectable, IContextActionProvider
 {
     private TileType _type = TileType.Empty;
 
@@ -377,6 +377,7 @@ public class Tile :IXmlSerializable, ISelectable,IContextActionProvider
                 RequireCharacterSelected = false,
                 Action = (cm, c) => { if (PendingBuildJob != null) PendingBuildJob.CancelJob(); }
             };
+
             if (!PendingBuildJob.IsBeingWorked)
             {
                 yield return new ContextMenuAction
@@ -386,7 +387,6 @@ public class Tile :IXmlSerializable, ISelectable,IContextActionProvider
                     Action = (cm, c) => { c.PrioritizeJob(PendingBuildJob); }
                 };
             }
-
         }
     }
 }
