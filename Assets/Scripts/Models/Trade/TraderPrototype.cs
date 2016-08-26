@@ -16,6 +16,7 @@ public class TraderPrototype
     public List<string> PotentialNames;
     public float MinCurrencyBalance;
     public float MaxCurrencyBalance;
+    public string CurrencyName;
     public float MinSaleMarginMultiplier;
     public float MaxSaleMarginMultiplier;
     public List<TraderPotentialInventory> PotentialStock;
@@ -44,6 +45,10 @@ public class TraderPrototype
                             PotentialNames.Add(names_reader.Value);
                         }
                     }
+                    break;
+                case "currencyName":
+                    reader.Read();
+                    CurrencyName = reader.ReadContentAsString();
                     break;
                 case "minCurrencyBalance":
                     reader.Read();
@@ -88,6 +93,7 @@ public class TraderPrototype
     {
         Trader t = new Trader
         {
+            CurrencyName = CurrencyName,
             CurrencyBalance = Random.Range(MinCurrencyBalance, MaxCurrencyBalance),
             Name = PotentialNames[Random.Range(PotentialNames.Count, PotentialNames.Count - 1)],
             SaleMarginMultiplier = Random.Range(MinSaleMarginMultiplier, MaxSaleMarginMultiplier)

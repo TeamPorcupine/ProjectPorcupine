@@ -46,6 +46,7 @@ public class World : IXmlSerializable
     public Dictionary<string, InventoryCommon> inventoryPrototypes;
     public Dictionary<string, TraderPrototype> traderPrototypes;
     public List<Quest> Quests;
+    public Wallet Wallet;
 
     // The tile width of the world.
     public int Width { get; protected set; }
@@ -173,6 +174,7 @@ public class World : IXmlSerializable
         CreateInventoryPrototypes();
         CreateTraderPrototypes();
         CreateQuests();
+        CreateWallet();
 
         characters = new List<Character>();
         furnitures = new List<Furniture>();
@@ -582,6 +584,48 @@ public class World : IXmlSerializable
         else
         {
             Debug.LogError("Did not find a 'Quests' element in the prototype definition file.");
+        }
+    }
+
+    void CreateWallet()
+    {
+        Wallet = new Wallet();
+        
+        string dataPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
+        string filePath = System.IO.Path.Combine(dataPath, "Currency.xml");
+        string xmlText = System.IO.File.ReadAllText(filePath);
+        LoadCurrencyFromFile(xmlText);
+
+        DirectoryInfo[] mods = WorldController.Instance.modsManager.GetMods();
+        foreach (DirectoryInfo mod in mods)
+        {
+            string xmlModFile = System.IO.Path.Combine(mod.FullName, "Currency.xml");
+            if (File.Exists(xmlModFile))
+            {
+                string xmlModText = System.IO.File.ReadAllText(xmlModFile);
+                LoadCurrencyFromFile(xmlModText);
+            }
+        }
+    }
+
+    void LoadCurrencyFromFile(string xmlText)
+    {
+        XmlTextReader reader = new XmlTextReader(new StringReader(xmlText));
+
+        if (reader.ReadToDescendant("Currencies"))
+        {
+            try
+            {
+                Wallet.ReadXmlPrototype(reader);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("Error reading Currency " + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
+            }
+        }
+        else
+        {
+            Debug.LogError("Did not find a 'Currencies' element in the prototype definition file.");
         }
     }
 
