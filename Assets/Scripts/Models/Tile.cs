@@ -369,4 +369,5 @@ public class Tile : IXmlSerializable, ISelectable
     {
         return string.Empty;
     }
+    #endregion
 }
