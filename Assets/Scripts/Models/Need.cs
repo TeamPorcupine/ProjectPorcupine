@@ -76,12 +76,12 @@ public class Need {
         {
             Amount += (addedInVacuum - (addedInVacuum * (character.CurrTile.Room.GetGasPressure ("O2") * 5))) * deltaTime;
         }
-        if (Amount > 75 && character.myJob.isNeed == false)
+        if (Amount > 75 && character.MyJob.isNeed == false)
         {
             Debug.Log (character.name + " needs " + Name);
             character.AbandonJob (false);
         }
-        if (Amount == 100 && character.myJob.critical == false && completeOnFail)
+        if (Amount == 100 && character.MyJob.critical == false && completeOnFail)
         {
             Debug.Log (character.name + " failed their " + Name + " need.");
             character.AbandonJob (false);
