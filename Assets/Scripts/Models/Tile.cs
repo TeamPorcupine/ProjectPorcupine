@@ -308,6 +308,7 @@ public class Tile :IXmlSerializable, ISelectable
 
 
     }
+		
 
     public ENTERABILITY IsEnterable()
     {
@@ -343,6 +344,36 @@ public class Tile :IXmlSerializable, ISelectable
     {
         return World.current.GetTileAt(X - 1, Y);
     }
+
+	public float GetGasPressure(string gas)
+	{
+		if (Room == null)
+		{
+			float pressure = Mathf.Infinity;
+			if (North().Room != null && North().GetGasPressure(gas) < pressure)
+			{
+				pressure = North().GetGasPressure (gas);
+			}
+			if (East().Room != null && East().GetGasPressure(gas) < pressure)
+			{
+				pressure = East().GetGasPressure (gas);
+			}
+			if (South().Room != null && South().GetGasPressure(gas) < pressure)
+			{
+				pressure = South().GetGasPressure (gas);
+			}
+			if (West().Room != null && West().GetGasPressure(gas) < pressure)
+			{
+				pressure = West().GetGasPressure (gas);
+			}
+			if (pressure == Mathf.Infinity)
+			{
+				return 0f;
+			}
+			return pressure;
+		}
+		return Room.GetGasPressure (gas);
+	}
 
     #region ISelectableInterface implementation
 
