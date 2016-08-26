@@ -11,16 +11,16 @@ using System;
 using System.Collections.Generic;
 using System.Xml;
 
-
 public class FurniturePrototypes : XmlPrototypes<Furniture>
 {
-
     public FurniturePrototypes() : base("Furniture.xml", "Furnitures", "Furniture")
     {
     }
 
-
-
+    /// <summary>
+    /// Loads the prototype.
+    /// </summary>
+    /// <param name="reader">The Xml Reader.</param>
     protected override void LoadPrototype(XmlTextReader reader)
     {
         Furniture furn = new Furniture();
@@ -28,7 +28,8 @@ public class FurniturePrototypes : XmlPrototypes<Furniture>
         {
             furn.ReadXmlPrototype(reader);
         }
-        catch (Exception e) {
+        catch (Exception e)
+        {
             LogPrototypeError(e, furn.objectType);
         }
 

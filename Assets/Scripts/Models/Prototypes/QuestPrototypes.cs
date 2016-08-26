@@ -11,16 +11,16 @@ using System;
 using System.Collections.Generic;
 using System.Xml;
 
-
 public class QuestPrototypes : XmlPrototypes<Quest>
 {
-
     public QuestPrototypes() : base("Quest.xml", "Quests", "Quest")
     {
     }
 
-
-
+    /// <summary>
+    /// Loads the prototype.
+    /// </summary>
+    /// <param name="reader">The Xml Reader.</param>
     protected override void LoadPrototype(XmlTextReader reader)
     {
         Quest quest = new Quest();

@@ -11,16 +11,16 @@ using System;
 using System.Collections.Generic;
 using System.Xml;
 
-
 public class InventoryPrototypes : XmlPrototypes<InventoryCommon>
 {
-
     public InventoryPrototypes() : base("Inventory.xml", "Inventories", "Inventory")
     {
     }
 
-
-
+    /// <summary>
+    /// Loads the prototype.
+    /// </summary>
+    /// <param name="reader">The Xml Reader.</param>
     protected override void LoadPrototype(XmlTextReader reader)
     {
         InventoryCommon inv = new InventoryCommon();

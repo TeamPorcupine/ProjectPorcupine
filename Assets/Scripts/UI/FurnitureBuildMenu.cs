@@ -46,10 +46,10 @@ public class FurnitureBuildMenu : MonoBehaviour
                 });
 
             // http://stackoverflow.com/questions/1757112/anonymous-c-sharp-delegate-within-a-loop
-            Furniture furn = proto;
+            string furn = s;
             LocalizationTable.CBLocalizationFilesChanged += delegate
             {
-                go.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(furn.localizationCode) };
+                go.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(PrototypeManager.Furniture.GetPrototype(furn).localizationCode) };
             };
         }
 

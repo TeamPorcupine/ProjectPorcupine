@@ -38,6 +38,8 @@ public class NeedActions
         myLuaScript.Globals["ModUtils"] = typeof(ModUtils);
         // Also to access statics/globals
         myLuaScript.Globals["World"] = typeof(World);
+
+        LoadScripts();
     }
 
     public static void LoadScripts()

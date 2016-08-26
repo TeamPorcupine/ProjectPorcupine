@@ -7,21 +7,11 @@
 // ====================================================
 #endregion
 
-using UnityEngine;
 using System.IO;
-
+using UnityEngine;
 
 public class PrototypeManager
 {
-
-    static public BasePrototypes<Job> FurnitureJob { get; protected set; }
-    static public FurniturePrototypes Furniture { get; protected set; }
-    static public InventoryPrototypes Inventory { get; protected set; }
-    static public NeedPrototypes Need { get; protected set; }
-    static public TraderPrototypes Trader { get; protected set; }
-    static public QuestPrototypes Quest { get; protected set; }
-
-
     public PrototypeManager()
     {
         FurnitureJob = new BasePrototypes<Job>();
@@ -30,5 +20,41 @@ public class PrototypeManager
         Need = new NeedPrototypes();
         Trader = new TraderPrototypes();
         Quest = new QuestPrototypes();
+    }
+
+    public static BasePrototypes<Job> FurnitureJob
+    {
+        get;
+        protected set;
+    }
+
+    public static FurniturePrototypes Furniture
+    {
+        get;
+        protected set;
+    }
+
+    public static InventoryPrototypes Inventory
+    {
+        get;
+        protected set;
+    }
+
+    public static NeedPrototypes Need
+    {
+        get;
+        protected set;
+    }
+
+    public static TraderPrototypes Trader
+    {
+        get;
+        protected set;
+    }
+
+    public static QuestPrototypes Quest
+    {
+        get;
+        protected set;
     }
 }

@@ -11,16 +11,16 @@ using System;
 using System.Collections.Generic;
 using System.Xml;
 
-
 public class NeedPrototypes : XmlPrototypes<Need>
 {
-
     public NeedPrototypes() : base("Need.xml", "Needs", "Need")
     {
     }
 
-
-
+    /// <summary>
+    /// Loads the prototype.
+    /// </summary>
+    /// <param name="reader">The Xml Reader.</param>
     protected override void LoadPrototype(XmlTextReader reader)
     {
         Need need = new Need();

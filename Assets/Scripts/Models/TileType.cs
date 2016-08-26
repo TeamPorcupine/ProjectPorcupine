@@ -136,9 +136,9 @@ public class TileType : IXmlSerializable {
         }
 
         // Load TileType xml definitions
-        string dataPath = Path.Combine(Application.streamingAssetsPath, "Data");
-        string xmlPath = Path.Combine(dataPath, "Tiles.xml");
-        string xmlText = File.ReadAllText(xmlPath);
+        string dataPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
+        string xmlPath = System.IO.Path.Combine(dataPath, "Tiles.xml");
+        string xmlText = System.IO.File.ReadAllText(xmlPath);
         
         readTileTypesFromXml(xmlText);
 

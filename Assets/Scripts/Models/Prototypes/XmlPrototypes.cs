@@ -7,21 +7,18 @@
 // ====================================================
 #endregion
 
-using UnityEngine;
 using System;
 using System.IO;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
-
+using UnityEngine;
 
 public class XmlPrototypes<T> : BasePrototypes<T>
 {
-
     protected string fileName;
     protected string listTag;
     protected string elementTag;
-
 
     public XmlPrototypes(string fileName, string listTag, string elementTag) : base()
     {
@@ -31,8 +28,6 @@ public class XmlPrototypes<T> : BasePrototypes<T>
 
         LoadPrototypesFromFile();
     }
-
-
 
     /// <summary>
     /// Loads the prototypes from an xml file.
@@ -49,7 +44,7 @@ public class XmlPrototypes<T> : BasePrototypes<T>
     /// <summary>
     /// Loads the mod prototypes from an xml file.
     /// </summary>
-    /// <param name="mods">Mods.</param>
+    /// <param name="mods">Mods directories.</param>
     public void LoadModPrototypesFromFile(DirectoryInfo[] mods)
     {
         foreach (DirectoryInfo mod in mods)
@@ -66,7 +61,7 @@ public class XmlPrototypes<T> : BasePrototypes<T>
     /// <summary>
     /// Loads the prototypes from a text.
     /// </summary>
-    /// <param name="xmlText">Xml text.</param>
+    /// <param name="xmlText">Xml text to parse.</param>
     public void LoadPrototypesFromText(string xmlText) 
     {
         XmlTextReader reader = new XmlTextReader(new StringReader(xmlText));
@@ -78,8 +73,8 @@ public class XmlPrototypes<T> : BasePrototypes<T>
                 do
                 {
                     LoadPrototype(reader);
-
-                } while (reader.ReadToNextSibling(elementTag));
+                }
+                while (reader.ReadToNextSibling(elementTag));
             }
             else
             {
@@ -95,15 +90,18 @@ public class XmlPrototypes<T> : BasePrototypes<T>
     /// <summary>
     /// Loads the prototype.
     /// </summary>
-    /// <param name="reader">Reader.</param>
+    /// <param name="reader">The Xml Reader.</param>
     protected virtual void LoadPrototype(XmlTextReader reader)
     {
-
     }
 
+    /// <summary>
+    /// Logs the prototype error.
+    /// </summary>
+    /// <param name="e">An Exception instance.</param>
+    /// <param name="type">The prototype type.</param>
     protected void LogPrototypeError(Exception e, string type)
     {
         Debug.LogError("Error reading furniture prototype for: " + type + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
     }
 }
-

@@ -30,6 +30,7 @@ public class ModsManager
         PrototypeManager.Trader.LoadModPrototypesFromFile(mods);
 
         FurnitureActions.LoadModsScripts(mods);
+        NeedActions.LoadModsScripts(mods);
     }
 
 
