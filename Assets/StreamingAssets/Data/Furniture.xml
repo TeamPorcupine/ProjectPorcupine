@@ -189,32 +189,6 @@
 
 
     <Furniture objectType="Power Generator">
-<<<<<<< HEAD
-    <Name>Power Generator</Name>
-    <TypeTag>Generator</TypeTag>
-    <MovementCost>1</MovementCost>
-    <Width>2</Width>
-    <Height>2</Height>
-    <Power>5</Power>
-
-      <BuildingJob jobTime="0">
-      </BuildingJob>
-      
-      <Params>
-          <Param name="burnTime" value="0" />
-          <Param name="burnTimeRequired" value="10" />
-      </Params>
-      
-	  <OnUpdate FunctionName="PowerGenerator_UpdateAction" />
-        
-      <LocalizationCode>furn_power_generator</LocalizationCode>
-      <UnlocalizedDescription>furn_power_generator_desc</UnlocalizedDescription>
-
-  </Furniture>
-  <Furniture objectType="Cloning Pod">
-	<Name>Cloning Pod</Name>
-	<Description>Creates an additional worker, then is destroyed.</Description>
-=======
         <Name>Power Generator</Name>
         <TypeTag>Generator</TypeTag>
         <MovementCost>10</MovementCost>
@@ -240,7 +214,6 @@
     <Furniture objectType="Cloning Pod">
         <Name>Cloning Pod</Name>
         <Description>Creates an additional worker, then is destroyed.</Description>
->>>>>>> 63de9675f60a5ec8906002c7688cf35d75b618f4
         <MovementCost>50</MovementCost>
         <Width>2</Width>
         <Height>2</Height>
@@ -287,24 +260,24 @@
     </Furniture>
 
 
-    <Furniture objectType="Heater">
+    <Furniture objectType="heater">
         <Name>Heater</Name>
         <Description>Raises temperature in the room.</Description>
         <BaseType>Temperature</BaseType>
         <MovementCost>10</MovementCost>
         <Width>1</Width>
         <Height>1</Height>
-        <Power>4</Power>
+        <Power>0</Power>
 
         <BuildingJob jobTime="0" />
-
-        <!-- This method gets called on Install -->
-        <Action event="OnInstall" functionName="Heater_InstallAction"></Action>
-        <!-- This method gets called on Uninstall -->
-        <Action event="OnUninstall" functionName="Heater_UninstallAction"></Action>
+        
+        <Action event="OnInstall" functionName="Heater_InstallAction" />
+        <Action event="OnUninstall" functionName="Heater_UninstallAction" />
+        <Action event="OnUpdateTemperature" functionName="Heater_UpdateTemperature" />
 
         <Params>
-            <Param name="temperature" value="10" />
+            <Param name="base_heating" value="100" />
+            <Param name="pressure_threshold" value="0.5" />
         </Params>
 
         <LocalizationCode>furn_heater</LocalizationCode>

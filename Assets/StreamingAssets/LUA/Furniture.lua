@@ -579,20 +579,18 @@ end
 -- Dummy heater uninstall function
 -- THis function gets called once, when the funriture is unisntalled
 function Heater_UpdateTemperature( furniture, deltaTime)
-	World.current.temperature.SetTemperature(furniture.tile.X, furniture.tile.Y, 300)
-end
-
-function Heater_OnUpdate ( furniture, deltaTime)
-    if (furniture.HasPower() == false) then
-        return
-    end
+    --if (furniture.HasPower() == false) then
+    --    return
+    --end
     
     tile = furniture.tile
-    pressure = tile.Room.GetGasPressure()
-    efficiency = ModUtils.Clamp01(pressure / 0.5)
-    temperatureChange = furniture.Parameters["heating_per_second"].ToFloat() * efficiency * deltaTime
+    pressure = tile.Room.GetGasPressure() / tile.Room.GetSize()
+    efficiency = ModUtils.Clamp01(pressure / furniture.Parameters["pressure_threshold"].ToFloat())
+    temperatureChangePerSecond = furniture.Parameters["base_heating"].ToFloat() * efficiency
+    temperatureChange = temperatureChangePerSecond * deltaTime
     
     World.current.temperature.ChangeTemperature(tile.X, tile.Y, temperatureChange)
+    ModUtils.ULogChannel("Temperature", "Heat change: " .. temperatureChangePerSecond .. " => " .. World.current.temperature.GetTemperature(tile.X, tile.Y))
 end
 
 -- Should maybe later be integrated with GasGenerator function by
