@@ -163,7 +163,7 @@ public class World : IXmlSerializable
             for (int y = 0; y < Height; y++)
             {
                 tiles[x, y] = new Tile(x, y);
-                tiles[x, y].cbTileChanged += OnTileChanged;
+                tiles[x, y].TileChanged += OnTileChanged;
                 tiles[x, y].Room = GetOutsideRoom(); // Rooms 0 is always going to be outside, and that is our default room
             }
         }

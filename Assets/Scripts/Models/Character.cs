@@ -671,7 +671,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                                  Mathf.Pow(CurrTile.X - NextTile.X, 2) +
                                  Mathf.Pow(CurrTile.Y - NextTile.Y, 2));
 
-        if (NextTile.IsEnterable() == ENTERABILITY.Never)
+        if (NextTile.IsEnterable() == Enterability.Never)
         {
             //// Most likely a wall got built, so we just need to reset our pathfinding information.
             //// FIXME: Ideally, when a wall gets spawned, we should invalidate our path immediately,
@@ -683,7 +683,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             pathAStar = null;   // clearly our pathfinding info is out of date.
             return;
         }
-        else if (NextTile.IsEnterable() == ENTERABILITY.Soon)
+        else if (NextTile.IsEnterable() == Enterability.Soon)
         {
             // We can't enter the NOW, but we should be able to in the
             // future. This is likely a DOOR.
