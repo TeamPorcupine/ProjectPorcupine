@@ -82,8 +82,8 @@ public class Room : IXmlSerializable
 
     public Room[] GetNeighbours()
     {
-        List<Room> neighboursRooms = new List<Room>;
-        foreach (Tile t in this.exits)
+        List<Room> neighboursRooms = new List<Room>();
+        foreach (Tile t in exits)
         {
             // Loop over the exits to find a different room
             Tile[] neighbours = t.GetNeighbours();
@@ -110,9 +110,9 @@ public class Room : IXmlSerializable
     {
         if(roomConnections.ContainsKey(t))
         {
-            return roomConnections[t]
+            return roomConnections[t];
         }
-        return null
+        return null;
     }
 
     // Changes gas by an amount in preasure(in atm) multiplyed by number of tiles
