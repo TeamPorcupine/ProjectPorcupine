@@ -10,7 +10,6 @@
   <DialogBoxSettings_resolutionDropdown>0</DialogBoxSettings_resolutionDropdown>
   <DialogBoxSettings_aliasingDropdown>2</DialogBoxSettings_aliasingDropdown>
   <DialogBoxSettings_musicVolume>1</DialogBoxSettings_musicVolume>
-  <DevTools_enabled>True</DevTools_enabled>
   <ZoomLerp>10</ZoomLerp>
   <ZoomSensitivity>3</ZoomSensitivity>
 </Settings>

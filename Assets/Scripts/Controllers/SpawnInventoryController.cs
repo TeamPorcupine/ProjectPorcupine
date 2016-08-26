@@ -22,6 +22,23 @@ public class SpawnInventoryController
 
     public string InventoryToBuild { get; protected set; }
 
+
+
+    public void HideUI() 
+    {
+        spawnUI.SetActive(false);
+    }
+
+    public void ShowUI() 
+    {
+        spawnUI.SetActive(true);
+    }
+
+    public void SetUIVisibility(bool visibility)
+    {
+        spawnUI.SetActive(visibility);
+    }
+
     public void SpawnInventory(Tile t)
     {
         Inventory inventoryChange = new Inventory(InventoryToBuild, 1);
