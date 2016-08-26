@@ -7,6 +7,8 @@
 /Assets/StreamingAssets/Data/Mods/*
 !/Assets/StreamingAssets/Data/Mods/README.md
 !/Assets/StreamingAssets/Data/Mods/README.md.meta
+/[Aa]ssets/[Ss]treaming[Aa]ssets/[Ss]ettings/[Ss]ettings.xml
+/[Aa]ssets/[Ss]treaming[Aa]ssets/[Ss]ettings/[Ss]ettings.xml.meta
 /[Pp]roject[Ss]ettings/ProjectSettings.asset
 /[Pp]roject[Ss]ettings/ProjectVersion.txt
 
