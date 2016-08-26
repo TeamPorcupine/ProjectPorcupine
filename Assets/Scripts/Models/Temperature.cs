@@ -1,73 +1,69 @@
-﻿using UnityEngine;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System;
+using System.Threading;
 using MoonSharp.Interpreter;
+using UnityEngine;
 
 /// <summary>
 /// A  Temperature management system. Temperature is stored at each tile and evolved using
-/// https://en.wikipedia.org/wiki/Heat_equation
+/// https://en.wikipedia.org/wiki/Heat_equation.
 /// </summary>
 [MoonSharpUserData]
 public class Temperature
 {
     /// <summary>
-    /// How often doe the physics update
-    /// </summary>
-    public float updateInterval = 0.1f;
-
-    /// <summary>
     /// Default value assigned to thermalDIffusivity at "empty" tile.
     /// DO NOT TOUCH UNLESS YOU KNOW WHAT YOU ARE DOING: MUST BE BETWEEN 0 and 1!
     /// </summary>
-    static public float defaultThermalDiffusivity = 1f;
+    public static float defaultThermalDiffusivity = 1f;
+
+    /// <summary>
+    /// How often doe the physics update.
+    /// </summary>
+    public float updateInterval = 0.1f;
 
     ///// Private stuff
 
     /// <summary>
-    /// All heaters and refrigerators shoul register themselves here using the public interface
+    /// All heaters and refrigerators shoul register themselves here using the public interface.
     /// </summary>
-    Dictionary<Furniture, Action> sinksAndSources;
+    private Dictionary<Furniture, Action<float>> sinksAndSources;
 
     /// <summary>
-    /// All heaters and refrigerators shoul register an Action here
-    /// TODO: find elegant way to modify this through LUA
+    /// Internal only variables.
     /// </summary>
-    Action sinksAndSourcesActions;
-
-    /// <summary>
-    /// Internal only variables
-    /// </summary>
-    float[][] temperature;
-    float[] thermalDiffusivity;
+    private float[][] temperature;
+    private float[] thermalDiffusivity;
     
-    // Internal stuff
+    ///// Internal stuff
+
     /// <summary>
-    /// Size of map
+    /// Size of map.
     /// </summary>
-    int xSize, ySize;
+    private int xSize, ySize;
     /// <summary>
-    /// Time since last update
+    /// Time since last update.
     /// </summary>
-    float elapsed = 0f;
+    private float elapsed = 0f;
     /// <summary>
-    /// We switch between two "states" of temperatrue, because we reuqire a tempoerary array containing the old value
+    /// We switch between two "states" of temperatrue, because we reuqire a tempoerary array containing the old value.
     /// </summary>
-    int offset = 0;
+    private int offset = 0;
 
     /// <summary>
     /// Create and Initialize arrays with default values.
     /// </summary>
-    /// <param name="xS">x size of world</param>
-    /// <param name="yS">y size of world</param>
+    /// <param name="xS">x size of world.</param>
+    /// <param name="yS">y size of world.</param>
     public Temperature(int xS, int yS)
     {
         xSize = xS;
         ySize = yS;
         temperature = new float[2][]
         {
-            new float[xSize*ySize],
-            new float[xSize*ySize],
+            new float[xSize * ySize],
+            new float[xSize * ySize],
         };
         thermalDiffusivity = new float[xSize * ySize];
 
@@ -81,31 +77,21 @@ public class Temperature
             }
         }
 
-        sinksAndSources = new Dictionary<Furniture, Action>();
+        sinksAndSources = new Dictionary<Furniture, Action<float>>();
         
-        // TODO: remove, dummy heater at x=50, y=50, with power=1000
-        //sinksAndSources += () => { SetTemperature(50, 50, -GetTemperature(50, 50) + 300); };
-
-        sinksAndSourcesActions += () => { SetTemperature(52, 52,  300); };
         }
 
     /// <summary>
-    /// If needed, progress physics
+    /// If needed, progress physics.
     /// </summary>
     public void Update()
     {
         // Progress physical time (should me linked to TIme.dt at some point)
         elapsed += Time.deltaTime;
 
-        // TESTING stuff, to be removed or kept depending on stuff but left for testing
-        //if(Mat == null)
-        //{
-        //    BuildMatrix();
-        //}
-
         if (elapsed >= updateInterval)
         {
-            ProgressTemperature();
+            ProgressTemperature(Time.deltaTime);
             elapsed = 0;
         }
     }
@@ -113,33 +99,33 @@ public class Temperature
     public void RegisterSinkOrSource(Furniture provider)
     {
         // TODO: This need to be implemented
-        //sinksAndSources[provider] = () => { provider.TriggerEvent("OnUpdateTemperature"); };
-
-        sinksAndSourcesActions += sinksAndSources[provider];
+        sinksAndSources[provider] = (float deltaTime) => {
+            provider.eventActions.Trigger("OnUpdateTemperature", provider, deltaTime);
+        };
+        
     }
 
     public void DeregisterSinkOrSource(Furniture provider)
     {
         if (sinksAndSources.ContainsKey(provider))
         {
-            sinksAndSourcesActions -= sinksAndSources[provider];
             sinksAndSources.Remove(provider);
         }
     }
 
     /// <summary>
-    /// Public interface to temperature model, returns temperature at x,y
+    /// Public interface to temperature model, returns temperature at x, y.
     /// </summary>
-    /// <param name="x">y coord</param>
-    /// <param name="y">y coord</param>
-    /// <returns>temperature at x,y</returns>
+    /// <param name="x">y coord.</param>
+    /// <param name="y">y coord.</param>
+    /// <returns>temperature at x,y.</returns>
     public float GetTemperature(int x, int y)
     {
         return temperature[offset][GetIndex(x, y)];
     }
 
     /// <summary>
-    /// Public interface to setting temperature, set temperature at (x,y) to temp
+    /// Public interface to setting temperature, set temperature at (x,y) to temp.
     /// </summary>
     /// <param name="x">y coord</param>
     /// <param name="y">y coord</param>
@@ -153,11 +139,11 @@ public class Temperature
     }
 
     /// <summary>
-    /// Public interface to changing the temperature, increases temperature at (x,y) by incr
+    /// Public interface to changing the temperature, increases temperature at (x,y) by incr.
     /// </summary>
-    /// <param name="x">y coord</param>
-    /// <param name="y">y coord</param>
-    /// <param name="incr">temeprature to set at x,y</param>
+    /// <param name="x">y coord.</param>
+    /// <param name="y">y coord.</param>
+    /// <param name="incr">temeprature to set at x,y.</param>
     public void ChangeTemperature(int x, int y, float incr)
     {
         if (IsWithinTemperatureBounds(temperature[offset][GetIndex(x, y)] + incr)) {
@@ -171,20 +157,20 @@ public class Temperature
     /// while a value of 1 means the temperature "moves" faster. Think of it as a kind of isolation factor.
     /// TODO: walls should set the coefficient to 0.1?
     /// </summary>
-    /// <param name="x">x coord</param>
-    /// <param name="y">y coord</param>
-    /// <returns>thermal diffusivity alpha at x,y</returns>
+    /// <param name="x">x coord.</param>
+    /// <param name="y">y coord.</param>
+    /// <returns>thermal diffusivity alpha at x,y.</returns>
     public float GetThermalDiffusivity(int x, int y)
     {
         return thermalDiffusivity[GetIndex(x, y)];
     }
 
     /// <summary>
-    /// Public interface to thermal diffusivity model. Set the value of thermal diffusivity at x,y to coeff
+    /// Public interface to thermal diffusivity model. Set the value of thermal diffusivity at x,y to coeff.
     /// </summary>
-    /// <param name="x">x coord</param>
-    /// <param name="y">y coord</param>
-    /// <param name="coeff">thermal diffusifity to set at x,y</param>
+    /// <param name="x">x coord.</param>
+    /// <param name="y">y coord.</param>
+    /// <param name="coeff">thermal diffusifity to set at x,y.</param>
     public void SetThermalDiffusivity(int x, int y, float coeff)
     {
         if (IsWithinThermalDiffusivityBounds(coeff))
@@ -194,11 +180,11 @@ public class Temperature
     }
 
     /// <summary>
-    /// Public interface to thermal diffusivity model. Change the value of thermal diffusivity at x,y by incr
+    /// Public interface to thermal diffusivity model. Change the value of thermal diffusivity at x,y by incr.
     /// </summary>
-    /// <param name="x">x coord</param>
-    /// <param name="y">y coord</param>
-    /// <param name="incr">thermal diffusifity to set at x,y</param>
+    /// <param name="x">x coord.</param>
+    /// <param name="y">y coord.</param>
+    /// <param name="incr">thermal diffusifity to set at x,y.</param>
     public void ChangeThermalDiffusivity(int x, int y, float incr)
     {
         if (IsWithinThermalDiffusivityBounds(thermalDiffusivity[GetIndex(x, y)] + incr)) {
@@ -207,10 +193,10 @@ public class Temperature
     }
 
     /// <summary>
-    /// Checks wether temperature is admissible, if not warns you and returns false
+    /// Checks wether temperature is admissible, if not warns you and returns false.
     /// </summary>
-    /// <param name="temp">Wanted temperature</param>
-    /// <returns>True if temperature is ok, false and a formal complaint if it's not ok</returns>
+    /// <param name="temp">Wanted temperature.</param>
+    /// <returns>True if temperature is ok, false and a formal complaint if it's not ok.</returns>
     public bool IsWithinTemperatureBounds(float temp)
     {
         if (temp >= 0 && temp < Mathf.Infinity)
@@ -225,13 +211,13 @@ public class Temperature
     }
 
     /// <summary>
-    /// Checks wether thermal diffusivity is admissible, if not warns you and returns false
+    /// Checks wether thermal diffusivity is admissible, if not warns you and returns false.
     /// </summary>
     /// <param name="thermal_diff">Wanted thermal diff.</param>
-    /// <returns>True if thermal diff. is ok, false and a formal complaint if it's not ok</returns>
+    /// <returns>True if thermal diff. is ok, false and a formal complaint if it's not ok.</returns>
     public bool IsWithinThermalDiffusivityBounds(float thermal_diff)
     {
-        if( thermal_diff >= 0 && thermal_diff < 1)
+        if( thermal_diff >= 0 && thermal_diff <= 1)
         {
             return true;
         } else
@@ -245,11 +231,11 @@ public class Temperature
     ///// PRIVATE STUFF
 
     /// <summary>
-    /// Internal indexing of array
+    /// Internal indexing of array.
     /// </summary>
-    /// <param name="x">x coord</param>
-    /// <param name="y">y coord</param>
-    /// <returns>Actual index for array access</returns>
+    /// <param name="x">x coord.</param>
+    /// <param name="y">y coord.</param>
+    /// <returns>Actual index for array access.</returns>
     int GetIndex(int x, int y)
     {
         return y * xSize + x;
@@ -258,17 +244,25 @@ public class Temperature
     /// <summary>
     /// Evolve the temperature model. Loops over all tiles!
     /// </summary>
-    void ProgressTemperature()
+    void ProgressTemperature(float deltaT)
     {
         //Debug.Log("Updating temperature!");
         // TODO: Compute temperature sources
         // foreach(Tile tile in sinkAndSources)
         // GetTileAt(55, 55).temp_old = 1000;
-        if (sinksAndSourcesActions != null) sinksAndSourcesActions();
+        if (sinksAndSources != null) {
+        foreach (Action<float> act in sinksAndSources.Values) {
+                act(deltaT);
+            }
+        }
 
-        ForwardTemp();
+        Thread thread = new Thread(ForwardTemp);
+        thread.Start();
     }
 
+    /// <summary>
+    /// Update temperature using a forward method.
+    /// </summary>
     void ForwardTemp()
     {
         // Store references

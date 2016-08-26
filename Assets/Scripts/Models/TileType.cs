@@ -54,7 +54,6 @@ public class TileType : IXmlSerializable {
     private TileType()
     {
         // Default lua method names
-        MovementCostLua = "MovementCost_Standard";
         CanBuildHereLua = "CanBuildHere_Standard";
     }
 
@@ -122,9 +121,8 @@ public class TileType : IXmlSerializable {
         // Load lua code
         string luaPath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
         string luaFilePath = System.IO.Path.Combine(luaPath, "Tile.lua");
-        string luaCode = System.IO.File.ReadAllText(luaFilePath);
-        
-        LuaUtilities.LoadScript(luaCode);
+
+        LuaUtilities.LoadScriptFromFile(luaFilePath);
 
         // Load all mod defined lua code
         foreach (DirectoryInfo mod in WorldController.Instance.modsManager.GetMods())
@@ -133,9 +131,7 @@ public class TileType : IXmlSerializable {
             {
                 Debug.ULogChannel("TileType", "Loading mod " + mod.Name + " TileType definitions!");
 
-                luaCode = System.IO.File.ReadAllText(file.FullName);
-
-                LuaUtilities.LoadScript(luaCode);
+                LuaUtilities.LoadScriptFromFile(file.FullName);
             }
         }
 

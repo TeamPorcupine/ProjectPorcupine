@@ -44,6 +44,11 @@ public class BuildModeController
         return proto.Width == 1 && proto.Height == 1;
     }
 
+    public string GetFloorTile()
+    {
+        return buildModeTile.ToString();
+    }
+
     public void SetModeBuildTile(TileType type)
     {
         buildMode = BuildMode.FLOOR;
@@ -113,7 +118,7 @@ public class BuildModeController
                 }
                 else
                 {
-                    Debug.LogError("There is no furniture job prototype for '" + furnitureType + "'");
+                    Debug.ULogErrorChannel("BuildModeController", "There is no furniture job prototype for '" + furnitureType + "'");
                     j = new Job(t, furnitureType, FurnitureActions.JobComplete_FurnitureBuilding, 0.1f, null, Job.JobPriority.High);
                     j.JobDescription = "job_build_" + furnitureType + "_desc";
                 }
@@ -126,7 +131,7 @@ public class BuildModeController
                     {
                         // FIXME: I don't like having to manually and explicitly set
                         // flags that preven conflicts. It's too easy to forget to set/clear them!
-                        Tile offsetTile = WorldController.Instance.world.GetTileAt(x_off,y_off);
+                        Tile offsetTile = WorldController.Instance.world.GetTileAt(x_off, y_off);
                         offsetTile.PendingBuildJob = j;
                         j.cbJobStopped += (theJob) =>
                             {
@@ -190,6 +195,34 @@ public class BuildModeController
             // TODO
             if (t.Furniture != null)
             {
+                // check if this is a WALL neighbouring a pressured and pressureless environ & if so bail
+                if (t.Furniture.HasTypeTag("Wall"))
+                {
+                    Tile[] neighbors = t.GetNeighbours(); // diagOkay??
+                    int pressuredNeighbors = 0;
+                    int vacuumNeighbors = 0;
+                    foreach (Tile neighbor in neighbors)
+                    {
+                        if (neighbor != null && neighbor.Room != null)
+                        {
+                            if ((neighbor.Room == World.current.GetOutsideRoom()) || MathUtilities.IsZero(neighbor.Room.GetTotalGasPressure()))
+                            {
+                                vacuumNeighbors++;
+                            }
+                            else
+                            {
+                                pressuredNeighbors++;
+                            }
+                        }
+                    }
+
+                    if (vacuumNeighbors > 0 && pressuredNeighbors > 0)
+                    {
+                        Debug.Log("Someone tried to deconstruct a wall between a pressurised room and vacuum!");
+                        return;
+                    }
+                }
+
                 t.Furniture.Deconstruct();
             }
             else if (t.PendingBuildJob != null)
@@ -265,8 +298,24 @@ public class BuildModeController
         }
         else
         {
-            Debug.LogError("UNIMPLEMENTED BUILD MODE");
+            Debug.ULogErrorChannel("BuildModeController", "UNIMPLEMENTED BUILD MODE");
         }
+    }
+
+    public bool DoesBuildJobOverlapExistingBuildJob(Tile t, string furnitureType)
+    {
+        for (int x_off = t.X; x_off < (t.X + WorldController.Instance.world.furniturePrototypes[furnitureType].Width); x_off++)
+        {
+            for (int y_off = t.Y; y_off < (t.Y + WorldController.Instance.world.furniturePrototypes[furnitureType].Height); y_off++)
+            {
+                if (WorldController.Instance.world.GetTileAt(x_off, y_off).PendingBuildJob != null)
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     // Checks whether the given floor type is allowed to be built on the tile.
@@ -285,22 +334,6 @@ public class BuildModeController
 
             return false;
         }
-    }
-
-    public bool DoesBuildJobOverlapExistingBuildJob(Tile t, string furnitureType)
-    {
-        for (int x_off = t.X; x_off < (t.X + WorldController.Instance.world.furniturePrototypes[furnitureType].Width); x_off++)
-        {
-            for (int y_off = t.Y; y_off < (t.Y + WorldController.Instance.world.furniturePrototypes[furnitureType].Height); y_off++)
-            {
-                if (WorldController.Instance.world.GetTileAt(x_off, y_off).PendingBuildJob != null)
-                {
-                    return true;
-                }
-            }
-        }
-
-        return false;
     }
 
     // Use this for initialization

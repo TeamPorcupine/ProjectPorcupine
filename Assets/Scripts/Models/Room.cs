@@ -21,13 +21,15 @@ public class Room : IXmlSerializable
 {
     // Dictionary with the amount of gas in room stored in preasure(in atm) multiplyed by number of tiles
     private Dictionary<string, float> atmosphericGasses; 
+    private Dictionary<string, string> deltaGas;
 
     private List<Tile> tiles;
-
+ 
     public Room()
     {
         tiles = new List<Tile>();
         atmosphericGasses = new Dictionary<string, float>();
+        deltaGas = new Dictionary<string, string>();
     }
 
     public int ID
@@ -87,16 +89,35 @@ public class Room : IXmlSerializable
         if (atmosphericGasses.ContainsKey(name))
         {
             atmosphericGasses[name] += amount;
+            if (Mathf.Sign(amount) == 1)
+            {
+                deltaGas[name] = "+";
+            }
+            else
+            {
+                deltaGas[name] = "-";
+            }
         }
         else
         {
             atmosphericGasses[name] = amount;
+            deltaGas[name] = "=";
         }
 
         if (atmosphericGasses[name] < 0)
         {
             atmosphericGasses[name] = 0;
         }
+    }
+
+    public string ChangedGases(string name)
+    {
+        if (deltaGas.ContainsKey(name))
+        {
+            return deltaGas[name];
+        }
+
+        return "=";
     }
 
     public void EqualiseGas(Room otherRoom, float leakFactor)
@@ -163,7 +184,7 @@ public class Room : IXmlSerializable
         return 0;
     }
 
-    public float GetGasPercentage(string name)
+    public float GetGasFraction(string name)
     {
         if (atmosphericGasses.ContainsKey(name) == false)
         {
@@ -178,6 +199,18 @@ public class Room : IXmlSerializable
         }
 
         return atmosphericGasses[name] / t;
+    }
+
+    public float GetTotalGasPressure()
+    {
+        float t = 0;
+
+        foreach (string n in atmosphericGasses.Keys)
+        {
+            t += atmosphericGasses[n];
+        }
+
+        return t;
     }
 
     public string[] GetGasNames()
@@ -240,6 +273,16 @@ public class Room : IXmlSerializable
             // though this MAY not be the case any longer (i.e. the wall was 
             // probably deconstructed. So the only thing we have to try is
             // to spawn ONE new room starting from the tile in question.
+
+            // You need to delete the surrounding rooms so a new room can be created
+            // This doesn't work for the gas calculations and needs to be fixed.
+            foreach (Tile t in sourceTile.GetNeighbours())
+            {
+                if (t.Room != null && (onlyIfOutside == false || t.Room.IsOutsideRoom()))
+                {
+                    world.DeleteRoom(t.Room);
+                }
+            }
             ActualFloodFill(sourceTile, null, 0);
         }
     }

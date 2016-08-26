@@ -24,12 +24,18 @@ public class WorldController : MonoBehaviour
     JobSpriteController jobSpriteController;
     InventorySpriteController inventorySpriteController;
     FurnitureSpriteController furnitureSpriteController;
+    QuestController questController;
 
     public BuildModeController buildModeController;
     public MouseController mouseController;
     public KeyboardController keyboardController;
+    public CameraController cameraController;
     public SpawnInventoryController spawnInventoryController;
     public ModsManager modsManager;
+
+    public float GameTickPerSecond = 5;
+    private float gameTickDelay;
+    private float totalDeltaTime;
 
     public static WorldController Instance { get; protected set; }
 
@@ -86,9 +92,14 @@ public class WorldController : MonoBehaviour
         }
 
         soundController = new SoundController(world);
+
+        gameTickDelay = 1f/GameTickPerSecond;
     }
 
-    void Start() {
+    void Start()
+    {
+        //create gameobject so we can have access to a tranform thats position is Vector3.zero
+        GameObject goMat = new GameObject("VisualPath", typeof(VisualPath));
         GameObject go;
 
         tileSpriteController = new TileSpriteController(world);
@@ -104,6 +115,8 @@ public class WorldController : MonoBehaviour
         }
         mouseController = new MouseController(buildModeController, furnitureSpriteController, circleCursorPrefab);
         keyboardController = new KeyboardController(buildModeController, Instance);
+        questController = new QuestController();
+        cameraController = new CameraController();
 
         //Initialising controllers
         GameObject Controllers = GameObject.Find("Controllers");
@@ -112,19 +125,26 @@ public class WorldController : MonoBehaviour
         GameObject Canvas = GameObject.Find("Canvas");
         go = Instantiate(Resources.Load("UI/ContextMenu"),Canvas.transform.position, Canvas.transform.rotation, Canvas.transform) as GameObject;
         go.name = "ContextMenu";
-
-
-
     }
 
     void Update()
     {
         mouseController.Update(IsModal);
         keyboardController.Update(IsModal);
+        cameraController.Update(IsModal);
 
-        if (IsPaused == false)
+        float deltaTime = Time.deltaTime * timeScale;
+        world.UpdateCharacters(deltaTime);
+        totalDeltaTime += deltaTime;
+
+        if (totalDeltaTime >= gameTickDelay)
         {
-            world.Update(Time.deltaTime * timeScale);
+            if (IsPaused == false)
+            {
+                world.Tick(totalDeltaTime);
+                questController.Update(totalDeltaTime);
+            }
+            totalDeltaTime = 0f;
         }
 
         soundController.Update(Time.deltaTime);

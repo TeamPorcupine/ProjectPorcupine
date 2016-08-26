@@ -74,8 +74,6 @@ public class Job
     // The piece of utility that owns this job. Frequently will be null.
     public Utility utility;
 
-    public bool acceptsAnyInventoryItem = false;
-
     // We have finished the work cycle and so things should probably get built or whatever.
     public event Action<Job> cbJobCompleted;
    
@@ -99,6 +97,14 @@ public class Job
     /// If true, the work will be carried out on any adjacent tile of the target tile rather than on it.
     /// </summary>
     public bool adjacent;
+
+    /// <summary>
+    /// If true the job is workable if ANY of the inventory requirements are met.
+    /// Otherwise ALL requirements must be met before work can start.
+    /// This is useful for stockpile/storage jobs which can accept many types of items.
+    /// Defaults to false.
+    /// </summary>
+    public bool acceptsAny;
 
     public Job(Tile tile, string jobObjectType, Action<Job> cbJobComplete, float jobTime, Inventory[] inventoryRequirements, JobPriority jobPriority, bool jobRepeats = false, bool isNeed = false, bool critical = false)
     {
@@ -159,6 +165,7 @@ public class Job
         this.jobPriority = other.jobPriority;
         this.adjacent = other.adjacent;
         this.JobDescription = other.JobDescription;
+        this.acceptsAny = other.acceptsAny;
 
         cbJobWorkedLua = new List<string>(other.cbJobWorkedLua);
         cbJobCompletedLua = new List<string>(other.cbJobWorkedLua);
@@ -222,7 +229,7 @@ public class Job
 
         // Check to make sure we actually have everything we need. 
         // If not, don't register the work time.
-        if (HasAllMaterial() == false)
+        if (MaterialNeedsMet() == false)
         {
             ////Debug.LogError("Tried to do work on a job that doesn't have all the material.");
             return;
@@ -271,10 +278,25 @@ public class Job
         World.current.jobQueue.Remove(this);
     }
 
+    public bool MaterialNeedsMet()
+    {
+        if (acceptsAny && HasAnyMaterial())
+        {
+            return true;
+        }
+        if ((acceptsAny == false) && HasAllMaterial())
+        {
+            return true;
+        }
+        return false;
+    }
+
     public bool HasAllMaterial()
     {
         if (inventoryRequirements == null)
+        {
             return true;
+        }
         foreach (Inventory inv in inventoryRequirements.Values)
         {
             if (inv.maxStackSize > inv.stackSize)
@@ -286,26 +308,39 @@ public class Job
         return true;
     }
 
-    public int DesiresInventoryType(Inventory inv)
+    public bool HasAnyMaterial()
     {
-        if (acceptsAnyInventoryItem)
+        foreach (Inventory inv in inventoryRequirements.Values)
         {
-            return inv.maxStackSize;
+            if (inv.stackSize > 0)
+            {
+                return true;
+            }
         }
 
-        if (inventoryRequirements.ContainsKey(inv.objectType) == false)
+        return false;
+    }
+
+    public int AmountDesiredOfInventoryType(string objectType)
+    {
+        if (inventoryRequirements.ContainsKey(objectType) == false)
         {
             return 0;
         }
 
-        if (inventoryRequirements[inv.objectType].stackSize >= inventoryRequirements[inv.objectType].maxStackSize)
+        if (inventoryRequirements[objectType].stackSize >= inventoryRequirements[objectType].maxStackSize)
         {
             // We already have all that we need!
             return 0;
         }
 
         // The inventory is of a type we want, and we still need more.
-        return inventoryRequirements[inv.objectType].maxStackSize - inventoryRequirements[inv.objectType].stackSize;
+        return inventoryRequirements[objectType].maxStackSize - inventoryRequirements[objectType].stackSize;
+    }
+
+    public int AmountDesiredOfInventoryType(Inventory inv)
+    {
+        return AmountDesiredOfInventoryType(inv.objectType);
     }
 
     public Inventory GetFirstDesiredInventory()
