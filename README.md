@@ -61,7 +61,7 @@ are licensed under the MIT License and can be found here:
 
 Please check the [CONTRIBUTING.md](CONTRIBUTING.md) file for contribution instructions and guidelines.
 
-Be aware that you will need [Unity 5.4] (https://unity3d.com/unity/beta) to open the project.
+Make sure that you are using [Unity 5.4] (https://unity3d.com/unity/beta).
 
 ## Vote on Proposed Features
 
