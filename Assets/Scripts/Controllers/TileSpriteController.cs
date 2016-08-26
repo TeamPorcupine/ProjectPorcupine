@@ -78,7 +78,7 @@ public class TileSpriteController
             tileGameObjectMap.Remove(tile_data);
 
             // Unregister the callback!
-            tile_data.cbTileChanged -= OnTileChanged;
+            tile_data.TileChanged -= OnTileChanged;
 
             // Destroy the visual GameObject
             GameObject.Destroy(tile_go);
