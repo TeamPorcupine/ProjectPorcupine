@@ -141,8 +141,13 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
 
     public void WriteXml(XmlWriter writer)
     {
-        writer.WriteAttributeString("X", tile.X.ToString());
-        writer.WriteAttributeString("Y", tile.Y.ToString());
+        // If we reach this point through inventories we definitely have a tile
+        // If we don't have a tile, that means we're writing a character's inventory
+        if (tile != null)
+        {
+            writer.WriteAttributeString("X", tile.X.ToString());
+            writer.WriteAttributeString("Y", tile.Y.ToString());
+        }
         writer.WriteAttributeString("objectType", objectType);
         writer.WriteAttributeString("maxStackSize", maxStackSize.ToString());
         writer.WriteAttributeString("stackSize", stackSize.ToString());

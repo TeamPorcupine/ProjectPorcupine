@@ -887,9 +887,14 @@ public class World : IXmlSerializable
         {
             foreach (Inventory inv in inventoryManager.inventories[objectType])
             {
-                writer.WriteStartElement("Inventory");
-                inv.WriteXml(writer);
-                writer.WriteEndElement();
+
+                // Only save inventory with a tile, other inventory has to be saved by whatever has it (typically a Character)
+                if (inv.tile != null)
+                {
+                    writer.WriteStartElement("Inventory");
+                    inv.WriteXml(writer);
+                    writer.WriteEndElement();
+                }
             }
         }
         writer.WriteEndElement();
@@ -1060,21 +1065,39 @@ public class World : IXmlSerializable
             {
                 int x = int.Parse(reader.GetAttribute("X"));
                 int y = int.Parse(reader.GetAttribute("Y"));
+                Character c;
                 if(reader.GetAttribute("r") != null)
                 {
                     float r = float.Parse(reader.GetAttribute("r"));
                     float b = float.Parse(reader.GetAttribute("b"));;
                     float g = float.Parse(reader.GetAttribute("g"));;
                     Color color = new Color(r, g, b, 1.0f);
-                    Character c = CreateCharacter(tiles[x, y], color);
+                    c = CreateCharacter(tiles[x, y], color);
                     c.ReadXml(reader);
                 }
 
                 else
                 {
-                    Character c = CreateCharacter(tiles[x, y]);
+                    c = CreateCharacter(tiles[x, y]);
                     c.ReadXml(reader);
                 }
+
+                if (reader.ReadToDescendant("Inventories")) 
+                {
+                    if(reader.ReadToDescendant("Inventory"))
+                    {
+                        do
+                        {
+                            //Create our inventory from the file
+                            Inventory inv = new Inventory(reader.GetAttribute("objectType"),
+                                int.Parse(reader.GetAttribute("maxStackSize")),
+                                int.Parse(reader.GetAttribute("stackSize")));
+
+                            inventoryManager.PlaceInventory(c,inv, inv.stackSize);
+                        } while(reader.ReadToNextSibling("Inventory"));
+                    }
+
+
                 
             } while(reader.ReadToNextSibling("Character"));
         }
