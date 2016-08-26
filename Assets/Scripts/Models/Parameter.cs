@@ -102,9 +102,15 @@ public class Parameter
 
         // Advance to the first inner element. Two reads are needed to ensure we don't get stuck on containing Element, or an EndElement
         subReader.Read();
+
+        // In case the reader gets passed early, we descend to Params if it's not a Params or Param
+        if (subReader.Name != "Params" && subReader.Name != "Param")
+        {
+            subReader.ReadToDescendant("Params");
+        }
         subReader.Read();
 
-        while (subReader.ReadToNextSibling("Param"))
+        do
         {
             string k = subReader.GetAttribute("name");
 
@@ -129,7 +135,7 @@ public class Parameter
                     paramGroup[k] = Parameter.ReadXml(subReader);
                 }
             }
-        }
+        } while (subReader.ReadToNextSibling("Param"));
 
         subReader.Close();
         return paramGroup;

@@ -1029,7 +1029,11 @@ public class World : IXmlSerializable
                 int y = int.Parse(reader.GetAttribute("Y"));
 
                 Furniture furn = PlaceFurniture(reader.GetAttribute("objectType"), tiles[x, y], false);
-                furn.ReadXml(reader);
+                if(!(reader.IsEmptyElement) ) 
+                {
+                    furn.ReadXml(reader);
+                }
+
             } while (reader.ReadToNextSibling("Furniture"));
         }
 
@@ -1067,6 +1071,7 @@ public class World : IXmlSerializable
                     float g = float.Parse(reader.GetAttribute("g"));;
                     Color color = new Color(r, g, b, 1.0f);
                     Character c = CreateCharacter(tiles[x, y], color);
+                    c.name = "bob";
                     c.ReadXml(reader);
                 }
 

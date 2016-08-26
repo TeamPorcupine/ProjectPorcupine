@@ -611,7 +611,6 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     {
         // X, Y, and objectType have already been set, and we should already
         // be assigned to a tile.  So just read extra data.
-
         ReadXmlParams(reader);
     }
 
