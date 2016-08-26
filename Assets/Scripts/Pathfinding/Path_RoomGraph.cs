@@ -127,6 +127,7 @@ public class Path_RoomGraph
                     // Edge connects to the outside room
                     Path_Edge<Room> outsieEdge = new Path_Edge<Room>();
                     outsideEdge.tile = edge.tile;
+                    outsideRoom.exits.Add(edge.tile);
                     outsieEdge.cost = 1;
                     outsieEdge.node = nodes[r];
                     outsideEdges.Add(outsieEdge);
