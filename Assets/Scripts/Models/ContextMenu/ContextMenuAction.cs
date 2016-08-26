@@ -2,8 +2,8 @@ using System;
 
 public class ContextMenuAction
 {
-    public bool RequireCharacterSelected { get; set; };
-    public string Text { get; set; };
+    public bool RequireCharacterSelected { get; set; }
+    public string Text { get; set; }
     
     public Action<ContextMenuAction, Character> Action;
 
