@@ -189,6 +189,7 @@ public class OverlayMap : MonoBehaviour {
     /// </summary>
     void Awake()
     {
+        parentPanel = GameObject.Find("OverlayPanel");
         Bake();
     }
 
