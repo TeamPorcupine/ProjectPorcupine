@@ -150,7 +150,7 @@ public class World : IXmlSerializable
 
         Width = width;
         Height = height;
-        
+
         TileType.LoadTileTypes();
 
         tiles = new Tile[Width, Height];
@@ -167,7 +167,7 @@ public class World : IXmlSerializable
                 tiles[x, y].Room = GetOutsideRoom(); // Rooms 0 is always going to be outside, and that is our default room
             }
         }
-        new NeedActions ();
+
         CreateFurniturePrototypes();
         CreateNeedPrototypes ();
         CreateInventoryPrototypes();
@@ -227,14 +227,17 @@ public class World : IXmlSerializable
         }
     }
 
-    public void Update(float deltaTime)
+    public void UpdateCharacters(float deltaTime)
     {
         //Change from a foreach due to the collection being modified while its being looped through
         for (int i = 0; i < characters.Count; i++)
         {
             characters[i].Update(deltaTime);
         }
+    }
 
+    public void Tick(float deltaTime)
+    {
         foreach (Furniture f in furnitures)
         {
             f.Update(deltaTime);
@@ -271,10 +274,10 @@ public class World : IXmlSerializable
 
         if (cbCharacterCreated != null)
             cbCharacterCreated(c);
-            
+
         return c;
     }
-    
+
     public void SetFurnitureJobPrototype(Job j, Furniture f)
     {
         furnitureJobPrototypes[f.objectType] = j;
@@ -397,8 +400,8 @@ public class World : IXmlSerializable
 
     void LoadNeedPrototypesFromFile(string needXmlText)
     {
-        
-        
+
+
 
         // READ FURNITURE PROTOTYPE XML FILE HERE
         // TODO:  Probably we should be getting past a StreamIO handle or the raw
@@ -508,7 +511,7 @@ public class World : IXmlSerializable
 
 
                     traderPrototypes[trader.ObjectType] = trader;
-                    
+
                 } while (reader.ReadToNextSibling("Trader"));
             }
             else
@@ -530,7 +533,7 @@ public class World : IXmlSerializable
         string filePath = System.IO.Path.Combine(dataPath, "Quest.xml");
         string questrXmlText = System.IO.File.ReadAllText(filePath);
         LoadQuestsFromFile(questrXmlText);
-        
+
         DirectoryInfo[] mods = WorldController.Instance.modsManager.GetMods();
         foreach (DirectoryInfo mod in mods)
         {
@@ -629,7 +632,7 @@ public class World : IXmlSerializable
         //furniturePrototypes["Door"].RegisterUpdateAction( FurnitureActions.Door_UpdateAction );
         //furniturePrototypes["Door"].IsEnterable = FurnitureActions.Door_IsEnterable;
 
-            //Logger.LogError("Did not find a 'Inventories' element in the prototype definition file.");
+        //Logger.LogError("Did not find a 'Inventories' element in the prototype definition file.");
     }
 
     /// <summary>
@@ -729,7 +732,7 @@ public class World : IXmlSerializable
                     return tile;
                 }
             }
-            
+
             // searching left & rigth line of the square
             for (offsetY = -offset; offsetY <= offset; offsetY++)
             {
@@ -799,7 +802,7 @@ public class World : IXmlSerializable
 
         return furn;
     }
-    
+
     // Gets called whenever ANY tile changes
     void OnTileChanged(Tile t)
     {
@@ -1018,7 +1021,7 @@ public class World : IXmlSerializable
                 Inventory inv = new Inventory(reader.GetAttribute("objectType"),
                     int.Parse(reader.GetAttribute("maxStackSize")),
                     int.Parse(reader.GetAttribute("stackSize")));
-                
+
                 inventoryManager.PlaceInventory(tiles[x,y],inv);
             } while(reader.ReadToNextSibling("Inventory"));
         }
@@ -1095,25 +1098,25 @@ public class World : IXmlSerializable
                                 int.Parse(reader.GetAttribute("maxStackSize")),
                                 int.Parse(reader.GetAttribute("stackSize")));
 
-                            inventoryManager.PlaceInventory(c,inv);
+                            inventoryManager.PlaceInventory(c,inv, inv.stackSize);
                         } while(reader.ReadToNextSibling("Inventory"));
                     }
 
-                }
 
-            } while(reader.ReadToNextSibling("Character"));
+
+                } while(reader.ReadToNextSibling("Character"));
+            }
+
         }
 
-    }
+        public void OnInventoryCreated(Inventory inv)
+        {
+            if (cbInventoryCreated != null)
+                cbInventoryCreated(inv);
+        }
 
-    public void OnInventoryCreated(Inventory inv)
-    {
-        if (cbInventoryCreated != null)
-            cbInventoryCreated(inv);
+        public void OnFurnitureRemoved(Furniture furn)
+        {
+            furnitures.Remove(furn);
+        }
     }
-
-    public void OnFurnitureRemoved(Furniture furn)
-    {
-        furnitures.Remove(furn);
-    }
-}
