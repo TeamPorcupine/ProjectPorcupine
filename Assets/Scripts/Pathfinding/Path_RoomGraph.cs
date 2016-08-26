@@ -146,4 +146,25 @@ public class Path_RoomGraph
         }
         GenerateEdgesOutside();
     }
+
+    public rooms[] RoomConnections(Tile t)
+    {
+        List<Room> rooms = new List<Room>;
+        if(t == null)
+        {
+            return null;
+        }
+        foreach(Path_Node<Room> node in this.nodes)
+        {
+            foreach(Path_Edge<Room> edge in node.edges)
+            {
+                if(edge.tile == t)
+                {
+                    rooms.Add(edge.node.data);
+
+                }
+            }
+        }
+        return rooms.ToArray;
+    }
 }
