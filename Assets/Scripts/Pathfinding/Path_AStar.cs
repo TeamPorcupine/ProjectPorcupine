@@ -6,15 +6,18 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+
+// Uncomment this line, or set it somewhere else and the pathfinder
+// will start logging the time it took to find paths.
+//#define DEBUG_PRINT_ASTAR
+
 using UnityEngine;
 using System.Collections.Generic;
-using Priority_Queue;
 using System.Linq;
 
 public class Path_AStar
 {
     Queue<Tile> path;
-
 
     public Path_AStar(Queue<Tile> path)
     {
@@ -27,6 +30,7 @@ public class Path_AStar
 
     public Path_AStar(World world, Tile tileStart, Tile tileEnd, string objectType = null, int desiredAmount = 0, bool canTakeFromStockpile = false, bool lookingForFurn = false)
     {
+        debugMarkStartTime();
 
         // if tileEnd is null, then we are simply scanning for the nearest objectType.
         // We can do this by ignoring the heuristic component of AStar, which basically
@@ -89,6 +93,8 @@ public class Path_AStar
 
         while (OpenSet.Count > 0)
         {
+            debugIncrementIteration();
+
             Path_Node<Tile> current = OpenSet.Dequeue();
 
             // If we have a POSITIONAL goal, check to see if we are there.
@@ -223,6 +229,7 @@ public class Path_AStar
 
         path = new Queue<Tile>(total_path.Reverse());
 
+        debugPrintTime();
     }
 
     public Tile Dequeue()
@@ -268,4 +275,41 @@ public class Path_AStar
     {
         return path.ToList();
     }
+
+    // This whole section is only doing anything if DEBUG_PRINT_ASTAR is defined
+
+    #region DEBUG_PRINT_ASTAR
+
+    // Performance monitoring
+    float startTime;
+    int iterationCount;
+
+    [System.Diagnostics.Conditional("DEBUG_PRINT_ASTAR")]
+    private void debugMarkStartTime()
+    {
+        startTime = Time.realtimeSinceStartup;
+        iterationCount = 0;
+    }
+
+    [System.Diagnostics.Conditional("DEBUG_PRINT_ASTAR")]
+    private void debugPrintTime()
+    {
+        float finalTime = (Time.realtimeSinceStartup - startTime) * 1000;
+        TraceLog("Found path. Took " + (int)finalTime + "ms, steps: " + path.Count + ", iterations: " + iterationCount);
+    }
+
+    [System.Diagnostics.Conditional("DEBUG_PRINT_ASTAR")]
+    private void debugIncrementIteration()
+    {
+        ++iterationCount;
+    }
+
+    [System.Diagnostics.Conditional("DEBUG_PRINT_ASTAR")]
+    // Available within the whole class, but only logs if DEBUG_PRINT_ASTAR is defined
+    private static void TraceLog(string message)
+    {
+        Debug.ULogChannel("Path_AStar", message);
+    }
+
+    #endregion
 }
