@@ -72,9 +72,9 @@ public class Need {
         if (luaOnly)
             return;
         Amount += growthRate * deltaTime;
-        if (character != null && character.CurrTile.Room != null && character.CurrTile.Room.GetGasPressure ("O2") < 0.15)
+        if (character != null && character.CurrTile.GetGasPressure ("O2") < 0.15)
         {
-            Amount += (addedInVacuum - (addedInVacuum * (character.CurrTile.Room.GetGasPressure ("O2") * 5))) * deltaTime;
+            Amount += (addedInVacuum - (addedInVacuum * (character.CurrTile.GetGasPressure ("O2") * 5))) * deltaTime;
         }
         if (Amount > 75 && character.myJob.isNeed == false)
         {
