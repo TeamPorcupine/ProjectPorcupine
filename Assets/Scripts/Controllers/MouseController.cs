@@ -133,7 +133,7 @@ public class MouseController
         UpdateDragging();
         UpdateCameraMovement();
         UpdateSelection();
-        if (Settings.getSettingAsBool("DevTools_enabled", false))
+        if (Settings.getSettingAsBool("DialogBoxSettings_developerModeToggle", false))
         {
             UpdateSpawnClicking();
         }
@@ -283,7 +283,7 @@ public class MouseController
                 return;
             }
 
-            if (mySelection == null || mySelection.tile != tileUnderMouse)
+            if (mySelection == null || mySelection.Tile != tileUnderMouse)
             {
                 if (mySelection != null)
                 {

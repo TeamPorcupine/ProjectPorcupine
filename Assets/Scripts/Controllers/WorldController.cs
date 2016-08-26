@@ -35,6 +35,10 @@ public class WorldController : MonoBehaviour
     public SpawnInventoryController spawnInventoryController;
     public ModsManager modsManager;
 
+    public float GameTickPerSecond = 5;
+    private float gameTickDelay;
+    private float totalDeltaTime;
+
     public static WorldController Instance { get; protected set; }
 
     // The world and tile data
@@ -67,8 +71,6 @@ public class WorldController : MonoBehaviour
         get { return timeScale; }
     }
 
-    public bool devMode = false;
-
     public GameObject inventoryUI;
     public GameObject circleCursorPrefab;
 
@@ -95,6 +97,8 @@ public class WorldController : MonoBehaviour
         }
 
         soundController = new SoundController(world);
+
+        gameTickDelay = 1f/GameTickPerSecond;
     }
 
     void Start()
@@ -110,15 +114,14 @@ public class WorldController : MonoBehaviour
         jobSpriteController = new JobSpriteController(world, furnitureSpriteController);
         inventorySpriteController = new InventorySpriteController(world, inventoryUI);
         buildModeController = new BuildModeController();
-        if(Settings.getSettingAsBool("DevTools_enabled", false))
-        {
-            spawnInventoryController = new SpawnInventoryController();
-        }
+        spawnInventoryController = new SpawnInventoryController();
         mouseController = new MouseController(buildModeController, furnitureSpriteController, circleCursorPrefab);
         keyboardController = new KeyboardController(buildModeController, Instance);
         questController = new QuestController();
         cameraController = new CameraController();
 
+        // Hiding Dev Mode spawn inventory controller if devmode is off
+        spawnInventoryController.SetUIVisibility(Settings.getSettingAsBool("DialogBoxSettings_developerModeToggle", false));
         //Initialising controllers
         GameObject Controllers = GameObject.Find("Controllers");
         Instantiate(Resources.Load("UIController"), Controllers.transform);
@@ -126,9 +129,6 @@ public class WorldController : MonoBehaviour
         GameObject Canvas = GameObject.Find("Canvas");
         go = Instantiate(Resources.Load("UI/ContextMenu"),Canvas.transform.position, Canvas.transform.rotation, Canvas.transform) as GameObject;
         go.name = "ContextMenu";
-
-
-
     }
 
     void Update()
@@ -137,12 +137,20 @@ public class WorldController : MonoBehaviour
         keyboardController.Update(IsModal);
         cameraController.Update(IsModal);
 
-        if (IsPaused == false)
+        float deltaTime = Time.deltaTime * timeScale;
+        world.UpdateCharacters(deltaTime);
+        totalDeltaTime += deltaTime;
+
+        if (totalDeltaTime >= gameTickDelay)
         {
-            world.Update(Time.deltaTime * timeScale);
+            if (IsPaused == false)
+            {
+                world.Tick(totalDeltaTime);
+                questController.Update(totalDeltaTime);
+            }
+            totalDeltaTime = 0f;
         }
 
-        questController.Update(Time.deltaTime);
         soundController.Update(Time.deltaTime);
     }
 

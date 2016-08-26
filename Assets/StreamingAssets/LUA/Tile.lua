@@ -6,15 +6,7 @@
 -------------------------------------------------------
 
 -------------------------------- Tile Actions --------------------------------
-function MovementCost_Standard ( tile )
-	if (tile.furniture == nil) then
-		return tile.Type.BaseMovementCost
-	end
 
-	return tile.Type.BaseMovementCost * tile.furniture.movementCost
-end
-
---TODO: This needs to be cleaned up
 function CanBuildHere_Standard ( tile )
 	return true
 end
