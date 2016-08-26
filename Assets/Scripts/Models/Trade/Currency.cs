@@ -1,4 +1,4 @@
-#region License
+﻿#region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
 // This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
@@ -6,13 +6,9 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System.Collections.Generic;
-
-public class Trader
+public class Currency
 {
     public string Name;
-    public string CurrencyName;
-    public float CurrencyBalance;
-    public float SaleMarginMultiplier;
-    public List<Inventory> Stock;
+    public string ShortName;
+    public float Balance;
 }
