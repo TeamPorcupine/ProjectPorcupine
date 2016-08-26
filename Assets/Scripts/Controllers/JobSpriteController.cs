@@ -14,10 +14,10 @@ public class JobSpriteController
     // This bare-bones controller is mostly just going to piggyback
     // on FurnitureSpriteController because we don't yet fully know
     // what our job system is going to look like in the end.
-    FurnitureSpriteController fsc;
-    Dictionary<Job, GameObject> jobGameObjectMap;
-    World world;
-    GameObject jobParent;
+    private FurnitureSpriteController fsc;
+    private Dictionary<Job, GameObject> jobGameObjectMap;
+    private World world;
+    private GameObject jobParent;
 
     // Use this for initialization
     public JobSpriteController(World currentWorld, FurnitureSpriteController furnitureSpriteController)
@@ -30,7 +30,7 @@ public class JobSpriteController
         jobParent = new GameObject("Jobs");
     }
 
-    void OnJobCreated(Job job)
+    private void OnJobCreated(Job job)
     {
         if (job.jobObjectType == null && job.jobTileType == null)
         {
@@ -61,7 +61,6 @@ public class JobSpriteController
             // This job is for building a tile
             // For now, the only tile that could be is the floor, so just show a floor sprite
             // until the graphics system for tiles is fleshed out further
-
             job_go.transform.position = new Vector3(job.tile.X, job.tile.Y, 0);
             sr.sprite = SpriteManager.current.GetSprite("Tile", "Solid");
         }
@@ -95,7 +94,7 @@ public class JobSpriteController
         job.cbJobStopped += OnJobEnded;
     }
 
-    void OnJobEnded(Job job)
+    private void OnJobEnded(Job job)
     {
         // This executes whether a job was COMPLETED or CANCELLED
 
