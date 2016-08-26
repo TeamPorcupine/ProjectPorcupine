@@ -106,6 +106,15 @@ public class Room : IXmlSerializable
         return neighboursRooms.ToArray();
     }
 
+    public Room connectedRoom(Tile t)
+    {
+        if(roomConnections.ContainsKey(t))
+        {
+            return roomConnections[t]
+        }
+        return null
+    }
+
     // Changes gas by an amount in preasure(in atm) multiplyed by number of tiles
     public void ChangeGas(string name, float amount)
     {
