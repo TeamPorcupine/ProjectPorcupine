@@ -53,6 +53,11 @@ namespace ProjectPorcupine.Localization
             // Get the file path.
             string filePath = Path.Combine(path, "Localization");
 
+            if (Directory.Exists(filePath) == false)
+            {
+                return;
+            }
+
             // Loop through all files.
             // TODO: Think over the extension ".lang", might change that in the future.
             foreach (string file in Directory.GetFiles(filePath, "*.lang"))
