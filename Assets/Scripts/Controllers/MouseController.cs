@@ -133,7 +133,7 @@ public class MouseController
         UpdateDragging();
         UpdateCameraMovement();
         UpdateSelection();
-        if (Settings.getSettingAsBool("DialogBoxSettings_developerModeToggle", false))
+        if (Settings.GetSettingAsBool("DialogBoxSettings_developerModeToggle", false))
         {
             UpdateSpawnClicking();
         }
