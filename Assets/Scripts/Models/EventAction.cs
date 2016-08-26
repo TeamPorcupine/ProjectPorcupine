@@ -1,4 +1,12 @@
-﻿using UnityEngine;
+﻿#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using MoonSharp.Interpreter;
@@ -40,19 +48,19 @@ public class EventAction : IXmlSerializable
         reader.Read();
         if (reader.Name != "Action")
         {
-            Debug.LogError(string.Format("The element is not an Action, but a \"{0}\"", reader.Name));
+            Debug.ULogErrorChannel("EventAction", string.Format("The element is not an Action, but a \"{0}\"", reader.Name));
         }
 
         string name = reader.GetAttribute("event");
         if (name == null)
         {
-            Debug.LogError(string.Format("The attribute \"event\" is a mandatory for an \"Action\" element."));
+            Debug.ULogErrorChannel("EventAction", string.Format("The attribute \"event\" is a mandatory for an \"Action\" element."));
         }
 
         string functionName = reader.GetAttribute("functionName");
         if (functionName == null)
         {
-            Debug.LogError(string.Format("No function name was provided for the Action {0}.", name));
+            Debug.ULogErrorChannel("EventAction", string.Format("No function name was provided for the Action {0}.", name));
         }
 
         Register(name, functionName);
@@ -87,7 +95,7 @@ public class EventAction : IXmlSerializable
     /// <param name="luaFunc">Lua function to add to list of actions.</param>
     public void Register(string actionName, string luaFunc)
     {
-        ////Debug.Log(string.Format("Registering the LUA function {0} to Action {1}.", luaFunc, actionName));
+        //Debug.ULogChannel("Lua", string.Format("Registering the LUA function {0} to Action {1}.", luaFunc, actionName));
         if (!actionsList.ContainsKey(actionName) || actionsList[actionName] == null)
         {
             actionsList[actionName] = new List<string>();
@@ -103,7 +111,7 @@ public class EventAction : IXmlSerializable
     /// <param name="luaFunc">Lua function to add to list of actions.</param>
     public void Deregister(string actionName, string luaFunc)
     {
-        ////Debug.Log(string.Format("Registering the LUA function {0} to Action {1}.", luaFunc, actionName));
+        //Debug.ULogChannel("Lua", string.Format("Registering the LUA function {0} to Action {1}.", luaFunc, actionName));
         if (!actionsList.ContainsKey(actionName) || actionsList[actionName] == null)
         {
             return;
@@ -121,7 +129,7 @@ public class EventAction : IXmlSerializable
     {
         if (!actionsList.ContainsKey(actionName) || actionsList[actionName] == null)
         {
-            ////Debug.LogWarning(string.Format("The action \"{0}\" is associated with no LUA function.", actionName));
+            //Debug.ULogWarningChannel("Lua", string.Format("The action \"{0}\" is associated with no LUA function.", actionName));
             return;
         }
         else

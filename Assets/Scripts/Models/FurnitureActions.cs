@@ -29,14 +29,15 @@ public class FurnitureActions
     {
         if (furn == null)
         {
-            Debug.LogError("Furn is null, cannot call LUA function (something is fishy).");
+            //These errors are about the lua code so putting themin the lua channel
+            Debug.ULogErrorChannel("Lua", "Furn is null, cannot call LUA function (something is fishy).");
         }
 
         foreach (string fn in functionNames)
         {
             if (fn == null)
             {
-                Debug.LogError("'" + fn + "' is not a LUA function.");
+                Debug.ULogErrorChannel("Lua", "'" + fn + "' is not a LUA function.");
                 return;
             }
             
@@ -44,7 +45,7 @@ public class FurnitureActions
             
             if (result.Type == DataType.String)
             {
-                Debug.Log(result.String);
+                Debug.ULogErrorChannel("Lua", result.String);
             }
         }
     }

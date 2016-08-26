@@ -17,7 +17,7 @@ public class MenuController : MonoBehaviour
     DialogBoxManager dbm;
 
     // The left build menu.
-    public GameObject constructorMenu;
+    GameObject constructorMenu;
 
     // The sub menus of the build menu (furniture, floor..... later - power, security, drones).
     public GameObject furnitureMenu;
@@ -34,6 +34,10 @@ public class MenuController : MonoBehaviour
     void Start()
     {
         dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
+
+        furnitureMenu = GameObject.Find("MenuFurniture");
+        floorMenu = GameObject.Find("MenuFloor");
+        constructorMenu = GameObject.Find("MenuConstruction");
 
         // Add liseners here.
         buttonConstructor.onClick.AddListener(delegate
