@@ -13,6 +13,7 @@ public enum BuildMode
 {
     FLOOR,
     FURNITURE,
+    UTILITY,
     DECONSTRUCT
 }
 
@@ -60,6 +61,13 @@ public class BuildModeController
     {
         // Wall is not a Tile!  Wall is an "Furniture" that exists on TOP of a tile.
         buildMode = BuildMode.FURNITURE;
+        buildModeObjectType = objectType;
+        mouseController.StartBuildMode();
+    }
+
+    public void SetMode_BuildUtility(string objectType)
+    {
+        buildMode = BuildMode.UTILITY;
         buildModeObjectType = objectType;
         mouseController.StartBuildMode();
     }
@@ -220,6 +228,72 @@ public class BuildModeController
             else if (t.PendingBuildJob != null)
             {
                 t.PendingBuildJob.CancelJob();
+            }
+        }
+        else if (buildMode == BuildMode.UTILITY)
+        {
+            // Create the Furniture and assign it to the tile
+            // Can we build the furniture in the selected tile?
+            // Run the ValidPlacement function!
+            string utilityType = buildModeObjectType;
+
+            if ( 
+                WorldController.Instance.world.IsUtilityPlacementValid(utilityType, t) &&
+                DoesBuildJobOverlapExistingBuildJob(t, utilityType) == false)
+            {
+                // This tile position is valid for this furniture
+
+                // Check if there is existing furniture in this tile. If so delete it.
+                // TODO Possibly return resources. Will the Deconstruct() method handle that? If so what will happen if resources drop ontop of new non-passable structure.
+                if (t.Utility != null)
+                {
+                    t.Utility.Deconstruct();
+                }
+
+                // Create a job for it to be build
+                Job j;
+
+                if (WorldController.Instance.world.utilityJobPrototypes.ContainsKey(utilityType))
+                {
+                    // Make a clone of the job prototype
+                    j = WorldController.Instance.world.utilityJobPrototypes[utilityType].Clone();
+
+                    // Assign the correct tile.
+                    j.tile = t;
+                }
+                else
+                {
+                    Debug.LogError("There is no utility job prototype for '" + utilityType + "'");
+                    j = new Job(t, utilityType, UtilityActions.JobComplete_UtilityBuilding, 0.1f, null, Job.JobPriority.High);
+                    j.JobDescription = "job_build_" + utilityType + "_desc";
+                }
+
+                j.utilityPrototype = WorldController.Instance.world.utilityPrototypes[utilityType];
+
+                for (int x_off = t.X; x_off < (t.X + WorldController.Instance.world.utilityPrototypes[utilityType].Width); x_off++)
+                {
+                    for (int y_off = t.Y; y_off < (t.Y + WorldController.Instance.world.utilityPrototypes[utilityType].Height); y_off++)
+                    {
+                        // FIXME: I don't like having to manually and explicitly set
+                        // flags that preven conflicts. It's too easy to forget to set/clear them!
+                        Tile offsetTile = WorldController.Instance.world.GetTileAt(x_off,y_off);
+                        offsetTile.PendingBuildJob = j;
+                        j.cbJobStopped += (theJob) =>
+                            {
+                                offsetTile.PendingBuildJob = null;
+                            };
+                    }
+                }
+
+                // Add the job to the queue
+                if (WorldController.Instance.devMode)
+                {
+                    WorldController.Instance.world.PlaceUtility(j.jobObjectType, j.tile);
+                }
+                else
+                {
+                    WorldController.Instance.world.jobQueue.Enqueue(j);
+                }
             }
         }
         else

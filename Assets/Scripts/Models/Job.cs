@@ -66,8 +66,13 @@ public class Job
 
     public Furniture furniturePrototype;
 
+    public Utility utilityPrototype;
+
     // The piece of furniture that owns this job. Frequently will be null.
     public Furniture furniture;
+
+    // The piece of utility that owns this job. Frequently will be null.
+    public Utility utility;
 
     // We have finished the work cycle and so things should probably get built or whatever.
     public event Action<Job> cbJobCompleted;
