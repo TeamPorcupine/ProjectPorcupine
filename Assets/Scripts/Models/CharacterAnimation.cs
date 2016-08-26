@@ -46,11 +46,8 @@ public class CharacterAnimation
     // current shown frame
     private int prevFrameIndex;
 
-    // frames before loop. halfway through the next frame is triggered
-    private int animationLength = 40;
-
-    // TODO: should be more flexible ....
-    private Sprite[] sprites = new Sprite[9];
+    // Holds the actual animation sprites from the spritesheet
+    private Sprite[] sprites;
 
     // Collection of animations
     private Dictionary<AnimationType, Animation> animations;
