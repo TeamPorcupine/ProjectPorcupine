@@ -21,8 +21,14 @@ namespace Power
             connections = new HashSet<Connection>();
         }
 
+        /// <summary>
+        /// Power grid has enough power for all its connections.
+        /// </summary>
         public bool IsOperating { get; private set; }
 
+        /// <summary>
+        /// No connections in this grid.
+        /// </summary>
         public bool IsEmpty
         {
             get { return connections.Count == 0; }

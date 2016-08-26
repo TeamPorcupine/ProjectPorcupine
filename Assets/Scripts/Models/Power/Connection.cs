@@ -13,6 +13,9 @@ using System.Xml.Serialization;
 
 namespace Power
 {
+    /// <summary>
+    /// Represents connection to electric grid if furniture has connection specified it uses of produce power.
+    /// </summary>
     public class Connection : IXmlSerializable
     {
         private readonly string inputRateAttributeName = "inputRate";
@@ -20,12 +23,26 @@ namespace Power
         private readonly string capacityAttributeName = "capacity";
         private readonly string accumulatedPowerAttributeName = "accumulatedPower";
 
+        /// <summary>
+        /// Amount of power consumed by this connection
+        /// Accumulator: rate of charge.
+        /// </summary>
         public float InputRate { get; set; }
 
+        /// <summary>
+        /// Amount of power produced by this connection
+        /// Accumulator: rate of discharge.
+        /// </summary>
         public float OutputRate { get; set; }
 
+        /// <summary>
+        /// Accumulator only: amount of power that could be stored.
+        /// </summary>
         public float Capacity { get; set; }
 
+        /// <summary>
+        /// Accumulator only: amount of power that is stored.
+        /// </summary>
         public float AccumulatedPower { get; set; }
 
         public bool IsEmpty
