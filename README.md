@@ -63,7 +63,6 @@ Please check the [CONTRIBUTING.md](CONTRIBUTING.md) file for contribution instru
 
 Make sure that you are using [Unity 5.4] (https://unity3d.com/unity/beta).
 
-
 ## Vote on Proposed Features
 
 You can propose features you'd like to see and vote on which ones to prioritize here:  [http://feathub.com/TeamPorcupine/ProjectPorcupine/](http://feathub.com/TeamPorcupine/ProjectPorcupine/)
