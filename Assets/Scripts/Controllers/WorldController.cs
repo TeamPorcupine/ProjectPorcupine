@@ -75,7 +75,7 @@ public class WorldController : MonoBehaviour
 
         if (Instance != null)
         {
-            Debug.LogError("There should never be two world controllers.");
+            Debug.ULogErrorChannel("WorldController", "There should never be two world controllers.");
         }
         Instance = this;
 
@@ -154,7 +154,7 @@ public class WorldController : MonoBehaviour
     public void SetTimeScale(float timeScale)
     {
         this.timeScale = timeScale;
-        Debug.Log("Game speed set to " + timeScale + "x");
+        Debug.ULogChannel("Game speed", "Game speed set to " + timeScale + "x");
     }
 
     /// <summary>
@@ -172,7 +172,7 @@ public class WorldController : MonoBehaviour
 
     public void NewWorld()
     {
-        Debug.Log("NewWorld button was clicked.");
+        Debug.ULogChannel("WorldController", "NewWorld button was clicked.");
 
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
@@ -184,7 +184,7 @@ public class WorldController : MonoBehaviour
 
     public void LoadWorld(string fileName)
     {
-        Debug.Log("LoadWorld button was clicked.");
+        Debug.ULogChannel("WorldController", "LoadWorld button was clicked.");
 
         // Reload the scene to reset all data (and purge old references)
         loadWorldFromFile = fileName;
@@ -206,7 +206,7 @@ public class WorldController : MonoBehaviour
 
     void CreateWorldFromSaveFile()
     {
-        Debug.Log("CreateWorldFromSaveFile");
+        Debug.ULogChannel("WorldController", "CreateWorldFromSaveFile");
         // Create a world from our save file data.
 
         XmlSerializer serializer = new XmlSerializer(typeof(World));
@@ -217,7 +217,7 @@ public class WorldController : MonoBehaviour
 
         TextReader reader = new StringReader(saveGameText);
 
-
+        // Leaving this for Unitys console because UberLogger mangles multiline messages.
         Debug.Log(reader.ToString());
         world = (World)serializer.Deserialize(reader);
         reader.Close();
