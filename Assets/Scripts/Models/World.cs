@@ -1072,17 +1072,15 @@ public class World : IXmlSerializable
                     float g = float.Parse(reader.GetAttribute("g"));;
                     Color color = new Color(r, g, b, 1.0f);
                     character = CreateCharacter(tiles[x, y], color);
-                    character.name = reader.GetAttribute("name");
-                    character.ReadXml(reader);
                 }
 
                 else
                 {
                     character = CreateCharacter(tiles[x, y]);
-                    character.name = reader.GetAttribute("name");
-                    character.ReadXml(reader);
                 }
 
+                character.name = reader.GetAttribute("name");
+                character.ReadXml(reader);
                 if (reader.ReadToDescendant("Inventories")) 
                 {
                     if(reader.ReadToDescendant("Inventory"))
