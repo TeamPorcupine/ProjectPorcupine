@@ -67,6 +67,11 @@ public class DialogBoxSettings : DialogBox
                 OnFullScreenToggle();
             });
 
+        developerModeToggle.onValueChanged.AddListener(delegate
+            {
+                OnDeveloperModeToggle();
+            });
+
         resolutionDropdown.onValueChanged.AddListener(delegate
             {
                 OnResolutionChange();
@@ -100,6 +105,10 @@ public class DialogBoxSettings : DialogBox
     public void OnLangageToggle()
     {
         langDropDown.SetActive(langToggle.isOn);
+    }
+
+    public void OnDeveloperModeToggle()
+    {
     }
 
     public void OnFPSToggle()
