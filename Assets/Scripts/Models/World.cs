@@ -111,6 +111,7 @@ public class World : IXmlSerializable
     public void AddRoom(Room r)
     {
         rooms.Add(r);
+        Debug.ULogChannel("Rooms","creating room:" + r.ID);
     }
 
     public int CountFurnitureType(string objectType)
@@ -121,12 +122,12 @@ public class World : IXmlSerializable
 
     public void DeleteRoom(Room r)
     {
-        if (r == GetOutsideRoom())
+        if (r.IsOutsideRoom())
         {
             Debug.LogError("Tried to delete the outside room.");
             return;
         }
-
+        Debug.ULogChannel("Rooms","Deleting room:" + r.ID);
         // Remove this room from our rooms list.
         rooms.Remove(r);
 
@@ -226,14 +227,17 @@ public class World : IXmlSerializable
         }
     }
 
-    public void Update(float deltaTime)
+    public void UpdateCharacters(float deltaTime)
     {
         //Change from a foreach due to the collection being modified while its being looped through
         for (int i = 0; i < characters.Count; i++)
         {
             characters[i].Update(deltaTime);
         }
+    }
 
+    public void Tick(float deltaTime)
+    {
         foreach (Furniture f in furnitures)
         {
             f.Update(deltaTime);
@@ -369,6 +373,9 @@ public class World : IXmlSerializable
     void CreateNeedPrototypes()
     {
         needPrototypes = new Dictionary<string, Need>();
+        string luaFilePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
+        luaFilePath = System.IO.Path.Combine(luaFilePath, "Need.lua");
+        LoadNeedLua(luaFilePath);
         string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
         filePath = System.IO.Path.Combine(filePath, "Need.xml");
         string needXmlText = System.IO.File.ReadAllText(filePath);
@@ -1063,12 +1070,14 @@ public class World : IXmlSerializable
                     float g = float.Parse(reader.GetAttribute("g"));;
                     Color color = new Color(r, g, b, 1.0f);
                     Character c = CreateCharacter(tiles[x, y], color);
+                    c.name = reader.GetAttribute("name");
                     c.ReadXml(reader);
                 }
 
                 else
                 {
                     Character c = CreateCharacter(tiles[x, y]);
+                    c.name = reader.GetAttribute("name");
                     c.ReadXml(reader);
                 }
                 

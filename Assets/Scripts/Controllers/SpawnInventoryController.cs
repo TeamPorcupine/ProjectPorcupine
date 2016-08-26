@@ -1,16 +1,58 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+﻿#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
 
-public class SpawnInventoryController {
-    public string InventoryToBuild { get; protected set; }
-
+public class SpawnInventoryController
+{
     private GameObject spawnUI;
 
     public SpawnInventoryController()
     {
         CreateSpawnUI();
         CreateInventoryButtons();
+    }
+
+    public string InventoryToBuild { get; protected set; }
+
+
+
+    public void HideUI() 
+    {
+        spawnUI.SetActive(false);
+    }
+
+    public void ShowUI() 
+    {
+        spawnUI.SetActive(true);
+    }
+
+    public void SetUIVisibility(bool visibility)
+    {
+        spawnUI.SetActive(visibility);
+    }
+
+    public void SpawnInventory(Tile t)
+    {
+        Inventory inventoryChange = new Inventory(InventoryToBuild, 1);
+
+        // You can't spawn on occupied tiles
+        if (t.Furniture != null)
+        {
+            return; 
+        }
+
+        if (t.Inventory == null || t.Inventory.objectType == InventoryToBuild)
+        {
+            World.current.inventoryManager.PlaceInventory(t, inventoryChange);
+        }
     }
 
     private void CreateSpawnUI()
@@ -26,7 +68,7 @@ public class SpawnInventoryController {
         rectTransform.pivot = new Vector2(0, 0.5f);
         rectTransform.anchorMin = new Vector2(0, 0.5f);
         rectTransform.anchorMax = new Vector2(0, 0.5f);
-        rectTransform.anchoredPosition = new Vector2(0,0);
+        rectTransform.anchoredPosition = new Vector2(0, 0);
 
         Image image = spawnUI.AddComponent<Image>();
 
@@ -42,10 +84,10 @@ public class SpawnInventoryController {
 
     private void CreateInventoryButtons()
     {
-        foreach(string iName in World.current.inventoryPrototypes.Keys)
+        foreach (string invName in World.current.inventoryPrototypes.Keys)
         {
             GameObject inventoryButton_go = new GameObject();
-            inventoryButton_go.name = "Button - " + iName;
+            inventoryButton_go.name = "Button - " + invName;
             inventoryButton_go.layer = LayerMask.NameToLayer("UI");
 
             inventoryButton_go.transform.SetParent(spawnUI.transform);
@@ -57,12 +99,11 @@ public class SpawnInventoryController {
             colorBlock.normalColor = Color.white;
             colorBlock.pressedColor = Color.blue;
             button.colors = colorBlock;
-            string localName = iName;
+            string localName = invName;
             button.onClick.AddListener(
-                () => { OnButtonClick(localName); }
-            );
+                () => { OnButtonClick(localName); });
 
-            GameObject text_go = CreateTextComponent(inventoryButton_go, iName);
+            GameObject text_go = CreateTextComponent(inventoryButton_go, invName);
 
             LayoutElement layoutElement = inventoryButton_go.AddComponent<LayoutElement>();
             layoutElement.minWidth = 120;
@@ -70,7 +111,8 @@ public class SpawnInventoryController {
         }
     }
 
-    private GameObject CreateTextComponent(GameObject go, string iName) {
+    private GameObject CreateTextComponent(GameObject go, string invName)
+    {
         GameObject text_go = new GameObject();
         text_go.name = "Text";
         text_go.layer = LayerMask.NameToLayer("UI");
@@ -83,31 +125,17 @@ public class SpawnInventoryController {
         rectTransform.offsetMax = Vector2.zero;
 
         Text text = text_go.AddComponent<Text>();
-        text.font = Font.CreateDynamicFontFromOSFont("Arial",14);
+        text.font = Font.CreateDynamicFontFromOSFont("Arial", 14);
         text.alignment = TextAnchor.MiddleLeft;
         text.color = Color.black;
-        text.text = iName;
+        text.text = invName;
 
         return text_go;
     }
 
-    private void OnButtonClick(string iName) {
-        InventoryToBuild = iName;
+    private void OnButtonClick(string invName)
+    {
+        InventoryToBuild = invName;
         WorldController.Instance.mouseController.StartSpawnMode();
-    }
-
-    public void SpawnInventory(Tile t) {
-        Inventory inventoryChange = new Inventory(InventoryToBuild, 1);
-
-        // You can't spawn on occupied tiles
-        if (t.Furniture != null)
-        {
-            return; 
-        }
-
-        if (t.Inventory == null || t.Inventory.objectType == InventoryToBuild)
-        {
-            World.current.inventoryManager.PlaceInventory(t, inventoryChange);
-        }
     }
 }

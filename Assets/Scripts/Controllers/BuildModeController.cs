@@ -110,7 +110,7 @@ public class BuildModeController
                 }
                 else
                 {
-                    Debug.LogError("There is no furniture job prototype for '" + furnitureType + "'");
+                    Debug.ULogErrorChannel("BuildModeController", "There is no furniture job prototype for '" + furnitureType + "'");
                     j = new Job(t, furnitureType, FurnitureActions.JobComplete_FurnitureBuilding, 0.1f, null, Job.JobPriority.High);
                     j.JobDescription = "job_build_" + furnitureType + "_desc";
                 }
@@ -133,7 +133,7 @@ public class BuildModeController
                 }
 
                 // Add the job to the queue
-                if (WorldController.Instance.devMode)
+                if (Settings.getSettingAsBool("DialogBoxSettings_developerModeToggle", false))
                 {
                     WorldController.Instance.world.PlaceFurniture(j.jobObjectType, j.tile);
                 }
@@ -172,7 +172,7 @@ public class BuildModeController
                 };
 
                 // Add the job to the queue
-                if (WorldController.Instance.devMode)
+                if (Settings.getSettingAsBool("DialogBoxSettings_developerModeToggle", false))
                 {
                     j.tile.Type = j.jobTileType;
                 }
@@ -210,7 +210,7 @@ public class BuildModeController
 
                     if (vacuumNeighbors > 0 && pressuredNeighbors > 0)
                     {
-                        Debug.Log("Someone tried to deconstruct a wall between a pressurised room and vacuum!");
+                        Debug.ULogChannel("BuildModeController", "Someone tried to deconstruct a wall between a pressurised room and vacuum!");
                         return;
                     }
                 }
@@ -224,7 +224,7 @@ public class BuildModeController
         }
         else
         {
-            Debug.LogError("UNIMPLEMENTED BUILD MODE");
+            Debug.ULogErrorChannel("BuildModeController", "UNIMPLEMENTED BUILD MODE");
         }
     }
 
@@ -260,7 +260,7 @@ public class BuildModeController
 
             return false;
         }
-    }    
+    }
 
     // Use this for initialization
     private void Start()
