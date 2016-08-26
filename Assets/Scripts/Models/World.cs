@@ -1074,6 +1074,7 @@ public class World : IXmlSerializable
                 else
                 {
                     Character c = CreateCharacter(tiles[x, y]);
+                    c.name = reader.GetAttribute("name");
                     c.ReadXml(reader);
                 }
                 
