@@ -83,7 +83,7 @@ public class CharacterSpriteController
         // Add material with color replacement shader, and generate color replacement texture
         sr.material = GetMaterial(c);        
         c.animation = new CharacterAnimation(c, sr);
-        
+
         // load all character sprites 
         Sprite[] sprites = 
             {
@@ -171,21 +171,23 @@ public class CharacterSpriteController
 
         if (characterGameObjectMap.ContainsKey(c) == false)
         {
-            Debug.LogError("OnCharacterChanged -- trying to change visuals for character not in our map.");
+            Debug.ULogErrorChannel("CharacterSpriteController", "OnCharacterChanged -- trying to change visuals for character not in our map.");
             return;
         }
 
         GameObject char_go = characterGameObjectMap[c];
-        
+        ///Debug.ULogChannel("CharacterSpriteController",char_go.ToString());
+        ///Debug.ULogChannel("CharacterSpriteController",char_go.GetComponent<SpriteRenderer>().ToString());
+
         // TODO: When we have a helmetless spritesheet, use this check to switch spritesheet on the character
         /*
         if (c.CurrTile.Room != null)
         {
-            if (c.CurrTile.Room.GetGasAmount ("O2") <= 0.5f && char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled == false)
+            if (c.CurrTile.Room.GetGasAmount("O2") <= 0.5f && char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled == false)
             {
                 char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled = true;
             }
-            else if(c.CurrTile.Room.GetGasAmount ("O2") >= 0.5f && char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled == true)
+            else if (c.CurrTile.Room.GetGasAmount("O2") >= 0.5f && char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled == true)
             {
                 char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled = false;
             }

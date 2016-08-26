@@ -34,7 +34,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     /// These actions are called when Trigger is called. They get passed the furniture
     /// they belong to, plus a deltaTime (which defaults to 0).
     /// </summary>
-    protected EventAction eventActions;
+    public EventAction eventActions { set; get; }
     
     /// <summary>
     /// These context menu lua action are used to build the context menu of the furniture
@@ -86,6 +86,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
             return PowerValue < 0.0f;
         }
     }
+
+    //TODO: public PowerRelated PowerRelated { get; private set; }
 
     public bool IsSelected { get; set; }
 
@@ -588,6 +590,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
             case "Power":
                 reader.Read();
                 powerValue = reader.ReadContentAsFloat();
+                //TODO: PowerRelated = new PowerRelated();
+                //TODO: PowerRelated.ReadPrototype(reader);
                 break;
 
             case "Params":
