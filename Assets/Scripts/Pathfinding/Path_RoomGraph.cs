@@ -84,7 +84,7 @@ public class Path_RoomGraph
             Tile[] neighbours = t.GetNeighbours();
             foreach (Tile t2 in neighbours)
             {
-                if (t2 != null && t2.Room != null)
+                if (t2 == null || t2.Room == null)
                 {
                     continue;
                 }
