@@ -32,7 +32,6 @@ public class Parameter
         this.name = name;
         this.value = value;
         contents = new Dictionary<string, Parameter>();
-//        uninitializedValue = false;
     }
 
     // Constructor with object parameter allows it to easily create a Parameter with any object that has a string representation (primarily for use if that string
@@ -42,7 +41,6 @@ public class Parameter
         this.name = name;
         this.value = value.ToString();
         contents = new Dictionary<string, Parameter>();
-//        uninitializedValue = false;
     }
 
     // Parameter with no value assumes it is being used for Parameter with contents, and initialized the dictionary
