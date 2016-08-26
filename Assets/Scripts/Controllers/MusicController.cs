@@ -14,7 +14,7 @@ using System.Collections;
 public class MusicController : MonoBehaviour
 {
     AudioSource backgroundMusic;
-
+// FIXME: Need to load the music file from StreamingAssets instead of Resources
     void Awake ()
     {
         backgroundMusic = GetComponent<AudioSource>();
