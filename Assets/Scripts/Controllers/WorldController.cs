@@ -33,6 +33,10 @@ public class WorldController : MonoBehaviour
     public SpawnInventoryController spawnInventoryController;
     public ModsManager modsManager;
 
+    public float GameTickPerSecond = 5;
+    private float gameTickDelay;
+    private float totalDeltaTime;
+
     public static WorldController Instance { get; protected set; }
 
     // The world and tile data
@@ -86,6 +90,8 @@ public class WorldController : MonoBehaviour
         }
 
         soundController = new SoundController(world);
+
+        gameTickDelay = 1f/GameTickPerSecond;
     }
 
     void Start()
@@ -116,9 +122,6 @@ public class WorldController : MonoBehaviour
         GameObject Canvas = GameObject.Find("Canvas");
         go = Instantiate(Resources.Load("UI/ContextMenu"),Canvas.transform.position, Canvas.transform.rotation, Canvas.transform) as GameObject;
         go.name = "ContextMenu";
-
-
-
     }
 
     void Update()
@@ -127,12 +130,20 @@ public class WorldController : MonoBehaviour
         keyboardController.Update(IsModal);
         cameraController.Update(IsModal);
 
-        if (IsPaused == false)
+        float deltaTime = Time.deltaTime * timeScale;
+        world.UpdateCharacters(deltaTime);
+        totalDeltaTime += deltaTime;
+
+        if (totalDeltaTime >= gameTickDelay)
         {
-            world.Update(Time.deltaTime * timeScale);
+            if (IsPaused == false)
+            {
+                world.Tick(totalDeltaTime);
+                questController.Update(totalDeltaTime);
+            }
+            totalDeltaTime = 0f;
         }
 
-        questController.Update(Time.deltaTime);
         soundController.Update(Time.deltaTime);
     }
 

@@ -283,7 +283,7 @@ public class MouseController
                 return;
             }
 
-            if (mySelection == null || mySelection.tile != tileUnderMouse)
+            if (mySelection == null || mySelection.Tile != tileUnderMouse)
             {
                 if (mySelection != null)
                 {
