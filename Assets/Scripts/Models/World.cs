@@ -29,6 +29,7 @@ public class World : IXmlSerializable
     Tile[,] tiles;
     public List<Character> characters;
     public List<Furniture> furnitures;
+    public List<Utility> utilities;
     public List<Room> rooms;
     public InventoryManager inventoryManager;
     public PowerSystem powerSystem;
@@ -41,6 +42,8 @@ public class World : IXmlSerializable
 
     public Dictionary<string, Furniture> furniturePrototypes;
     public Dictionary<string, Job> furnitureJobPrototypes;
+    public Dictionary<string, Utility> utilityPrototypes;
+    public Dictionary<string, Job> utilityJobPrototypes;
     public Dictionary<string, Need> needPrototypes;
     public Dictionary<string, InventoryCommon> inventoryPrototypes;
     public Dictionary<string, TraderPrototype> traderPrototypes;
@@ -52,6 +55,7 @@ public class World : IXmlSerializable
     public int Height { get; protected set; }
 
     public event Action<Furniture> cbFurnitureCreated;
+    public event Action<Utility> cbUtilityCreated;
     public event Action<Character> cbCharacterCreated;
     public event Action<Inventory> cbInventoryCreated;
     public event Action<Tile> cbTileChanged;
@@ -129,8 +133,9 @@ public class World : IXmlSerializable
 
     void SetupWorld(int width, int height)
     {
-        // Setup furniture actions before any other things are loaded.
+        // Setup furniture actions and utility actions before any other things are loaded.
         new FurnitureActions();
+        new UtilityActions();
 
         jobQueue = new JobQueue();
         jobWaitingQueue = new JobQueue();
@@ -160,12 +165,14 @@ public class World : IXmlSerializable
         }
 
         CreateFurniturePrototypes();
+        CreateUtilityPrototypes();
         CreateNeedPrototypes ();
         CreateInventoryPrototypes();
         CreateTraderPrototypes();
 
         characters = new List<Character>();
         furnitures = new List<Furniture>();
+        utilities = new List<Utility>();
         inventoryManager = new InventoryManager();
         powerSystem = new PowerSystem();
         temperature = new Temperature(Width, Height);
@@ -228,6 +235,11 @@ public class World : IXmlSerializable
         foreach (Furniture f in furnitures)
         {
             f.Update(deltaTime);
+        }
+
+        foreach (Utility u in utilities)
+        {
+            u.Update(deltaTime);
         }
 
         // Progress temperature modelling
@@ -354,6 +366,98 @@ public class World : IXmlSerializable
         else
         {
             Debug.LogError("Did not find a 'Furnitures' element in the prototype definition file.");
+        }
+    }
+
+    public void SetUtilityJobPrototype(Job j, Utility u)
+    {
+        utilityJobPrototypes[u.objectType] = j;
+    }
+
+    void LoadUtilityLua(string filePath)
+    {
+        string luaCode = System.IO.File.ReadAllText(filePath);
+
+        // Instantiate the singleton
+
+        LuaUtilities.LoadScript(luaCode);
+    }
+
+    void CreateUtilityPrototypes()
+    {
+        string luaFilePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
+        luaFilePath = System.IO.Path.Combine(luaFilePath, "Utility.lua");
+        LoadUtilityLua(luaFilePath);
+
+
+        utilityPrototypes = new Dictionary<string, Utility>();
+        utilityJobPrototypes = new Dictionary<string, Job>();
+
+        // READ UTILITY PROTOTYPE XML FILE HERE
+        // TODO:  Probably we should be getting past a StreamIO handle or the raw
+        // text here, rather than opening the file ourselves.
+
+        string dataPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
+        string filePath = System.IO.Path.Combine(dataPath, "Utility.xml");
+        string utilityXmlText = System.IO.File.ReadAllText(filePath);
+        LoadUtilityPrototypesFromFile(utilityXmlText);
+
+
+        DirectoryInfo[] mods = WorldController.Instance.modsManager.GetMods();
+        foreach (DirectoryInfo mod in mods)
+        {
+            string utilityLuaModFile = System.IO.Path.Combine(mod.FullName, "Utility.lua");
+            if (File.Exists(utilityLuaModFile))
+            {
+                LoadFurnitureLua(utilityLuaModFile);
+            }
+
+            string utilityXmlModFile = System.IO.Path.Combine(mod.FullName, "Utility.xml");
+            if (File.Exists(utilityXmlModFile))
+            {
+                string utilityXmlModText = System.IO.File.ReadAllText(utilityXmlModFile);
+                LoadUtilityPrototypesFromFile(utilityXmlModText);
+            }
+        }
+    }
+
+    void LoadUtilityPrototypesFromFile(string utilityXmlText) 
+    {
+        XmlTextReader reader = new XmlTextReader(new StringReader(utilityXmlText));
+
+        int utilCount = 0;
+        if (reader.ReadToDescendant("Utilities"))
+        {
+            if (reader.ReadToDescendant("Utility"))
+            {
+                do
+                {
+                    utilCount++;
+
+                    Utility util = new Utility();
+                    try
+                    {
+                        util.ReadXmlPrototype(reader);
+                    }
+                    catch (Exception e) {
+                        Debug.LogError("Error reading utility prototype for: " + util.objectType + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
+                    }
+
+
+                    utilityPrototypes[util.objectType] = util;
+
+
+
+                } while (reader.ReadToNextSibling("Utility"));
+            }
+            else
+            {
+                Debug.LogError("The utility prototype definition file doesn't have any 'Utility' elements.");
+            }
+        }
+        else
+        {
+            Debug.LogError("Did not find a 'Utilities' element in the prototype definition file.");
         }
     }
 
@@ -683,6 +787,54 @@ public class World : IXmlSerializable
 
         return furn;
     }
+
+    public Utility PlaceUtility(string objectType, Tile t, bool doRoomFloodFill = true)
+    {
+        // TODO: This function assumes 1x1 tiles -- change this later!
+
+        if (utilityPrototypes.ContainsKey(objectType) == false)
+        {
+            Debug.LogError("utilityPrototypes doesn't contain a proto for key: " + objectType);
+            return null;
+        }
+
+        Utility util = Utility.PlaceInstance(utilityPrototypes[objectType], t);
+
+        if (util == null)
+        {
+            // Failed to place object -- most likely there was already something there.
+            return null;
+        }
+
+        util.cbOnRemoved += OnUtilityRemoved;
+        utilities.Add(util);
+
+        // Do we need to recalculate our rooms?
+        if (doRoomFloodFill && util.roomEnclosure)
+        {
+            Room.DoRoomFloodFill(util.tile);
+        }
+
+        if (cbUtilityCreated != null)
+        {
+            cbUtilityCreated(util);
+
+            if (util.movementCost != 1)
+            {
+                // Since tiles return movement cost as their base cost multiplied
+                // buy the furniture's movement cost, a furniture movement cost
+                // of exactly 1 doesn't impact our pathfinding system, so we can
+                // occasionally avoid invalidating pathfinding graphs
+                //InvalidateTileGraph();    // Reset the pathfinding system
+                if (tileGraph != null)
+                {
+                    tileGraph.RegenerateGraphAtTile(t);
+                }
+            }
+        }
+
+        return util;
+    }
     
     // Gets called whenever ANY tile changes
     void OnTileChanged(Tile t)
@@ -974,5 +1126,10 @@ public class World : IXmlSerializable
     public void OnFurnitureRemoved(Furniture furn)
     {
         furnitures.Remove(furn);
+    }
+
+    public void OnUtilityRemoved(Utility util)
+    {
+        utilities.Remove(util);
     }
 }
