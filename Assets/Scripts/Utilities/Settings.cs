@@ -152,7 +152,7 @@ public static class Settings
 
     private static void loadSettings()
     {
-        // Initilize the settings dict.
+        // Initialize the settings dict.
         settingsDict = new Dictionary<string, string>();
         string furnitureXmlText;
 
