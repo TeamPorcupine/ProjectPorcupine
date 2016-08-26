@@ -167,7 +167,7 @@ public class World : IXmlSerializable
                 tiles[x, y].Room = GetOutsideRoom(); // Rooms 0 is always going to be outside, and that is our default room
             }
         }
-        new NeedActions ();
+
         CreateFurniturePrototypes();
         CreateNeedPrototypes ();
         CreateInventoryPrototypes();
