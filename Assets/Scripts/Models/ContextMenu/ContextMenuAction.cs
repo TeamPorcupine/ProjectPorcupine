@@ -2,7 +2,7 @@ using System;
 
 public class ContextMenuAction
 {
-    public bool RequiereCharacterSelected;
+    public bool RequireCharacterSelected;
     public string Text;
     
     public Action<ContextMenuAction, Character> Action;
@@ -11,7 +11,7 @@ public class ContextMenuAction
     {
         if (Action != null)
         {
-            if (RequiereCharacterSelected)
+            if (RequireCharacterSelected)
             {
                 if (mouseController.IsCharacterSelected())
                 {

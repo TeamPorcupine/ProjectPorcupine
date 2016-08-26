@@ -297,6 +297,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         {
             jobTile = myJob.tile;
         }
+        myJob.IsBeingWorked = true;
     }
 
     private void Update_DoJob(float deltaTime)
@@ -562,6 +563,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         {
             return;
         }
+        myJob.IsBeingWorked = false;
         if (myJob.isNeed)
         {
             myJob.cbJobStopped -= OnJobStopped;
@@ -873,8 +875,60 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         yield return new ContextMenuAction
         {
             Text = "Poke "+GetName(),
-            RequiereCharacterSelected = false,
+            RequireCharacterSelected = false,
             Action = (cm, c) => Debug.ULogChannel("Character", GetDescription())
         };
+    }
+
+    public void PrioritizeJob(Job j)
+    {
+        AbandonJob(false);
+        World.current.jobQueue.Remove(j);
+        j.IsBeingWorked = true;
+        //check if the character is carrying any materials and if they could be used for the new job,
+        //if the character is carrying materials but is not used in the new job, then drop them
+        //on the current tile for now.
+        if (inventory != null && !j.inventoryRequirements.ContainsKey(inventory.objectType))
+        {
+            World.current.inventoryManager.PlaceInventory(CurrTile, inventory);
+            DumpExcessInventory();
+        }
+
+        myJob = j;
+
+        // Get our destination from the job
+        DestTile = myJob.tile;
+
+        // If the dest tile does not have neighbours that are walkable it's very likable that they can't be walked to
+        if (DestTile.GetNeighbours().Any((tile) => { return tile.MovementCost > 0; }) == false)
+        {
+            Debug.ULogChannel("Character", "No neighbouring floor tiles! Abandoning job.");
+            AbandonJob(false);
+            return;
+        }
+
+        myJob.cbJobStopped += OnJobStopped;
+
+        pathAStar = new Path_AStar(World.current, CurrTile, DestTile);
+
+        if (pathAStar != null && pathAStar.Length() == 0)
+        {
+            Debug.ULogChannel("Character", "Path_AStar returned no path to target job tile!");
+            AbandonJob(false);
+            return;
+        }
+
+        if (myJob.adjacent)
+        {
+            IEnumerable<Tile> reversed = pathAStar.Reverse();
+            reversed = reversed.Skip(1);
+            pathAStar = new Path_AStar(new Queue<Tile>(reversed.Reverse()));
+            DestTile = pathAStar.EndTile();
+            jobTile = DestTile;
+        }
+        else
+        {
+            jobTile = myJob.tile;
+        }
     }
 }

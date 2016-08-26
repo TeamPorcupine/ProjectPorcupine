@@ -815,16 +815,25 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         yield return new ContextMenuAction
         {
             Text = "Deconstruct "+Name,
-            RequiereCharacterSelected = false,
+            RequireCharacterSelected = false,
             Action = (ca, c) => Deconstruct()
         };
+        if (jobs.Count > 0 && !jobs[0].IsBeingWorked)
+        {
+            yield return new ContextMenuAction
+            {
+                Text = "Prioritize " + Name,
+                RequireCharacterSelected = true,
+                Action = (ca, c) => { c.PrioritizeJob(jobs[0]); }
+            };
+        }
 
         foreach (var contextMenuLuaAction in contextMenuLuaActions)
         {
             yield return new ContextMenuAction
             {
                 Text = contextMenuLuaAction.Text,
-                RequiereCharacterSelected = contextMenuLuaAction.RequiereCharacterSelected,
+                RequireCharacterSelected = contextMenuLuaAction.RequiereCharacterSelected,
                 Action = (cma, c) => InvokeContextMenuLuaAction(contextMenuLuaAction.LuaFunction, c)
             };
         }

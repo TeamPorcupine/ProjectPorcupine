@@ -160,7 +160,7 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
         yield return new ContextMenuAction
         {
             Text = "Sample Item Context action",
-            RequiereCharacterSelected = true,
+            RequireCharacterSelected = true,
             Action = (cm, c) => Debug.Log("Sample menu action")
         };
     }

@@ -64,6 +64,8 @@ public class Job
         protected set;
     }
 
+    public bool IsBeingWorked { get; set; }
+
     public Furniture furniturePrototype;
 
     // The piece of furniture that owns this job. Frequently will be null.

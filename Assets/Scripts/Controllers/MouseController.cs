@@ -254,19 +254,6 @@ public class MouseController
             return;
         }
 
-        if (Input.GetMouseButtonDown(1))
-        {
-            Tile tileUnderMouse = GetMouseOverTile();
-            if (tileUnderMouse != null)
-            {
-                if (tileUnderMouse.PendingBuildJob != null)
-                {
-                    Debug.ULogChannel("MouseController", "Canceling!");
-                    tileUnderMouse.PendingBuildJob.CancelJob();
-                }
-            }
-        }
-
         if (Input.GetMouseButtonUp(0))
         {
             if (contextMenu != null)

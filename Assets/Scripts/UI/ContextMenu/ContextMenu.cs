@@ -34,8 +34,8 @@ public class ContextMenu : MonoBehaviour
 
         foreach (var contextMenuAction in contextualActions)
         {
-            if (contextMenuAction.RequiereCharacterSelected && characterSelected ||
-                !contextMenuAction.RequiereCharacterSelected)
+            if (contextMenuAction.RequireCharacterSelected && characterSelected ||
+                !contextMenuAction.RequireCharacterSelected)
             {
                 var go = (GameObject) Instantiate(ContextualMenuItemPrefab);
                 go.transform.SetParent(gameObject.transform);
@@ -51,6 +51,8 @@ public class ContextMenu : MonoBehaviour
     private List<IContextActionProvider> GetContextualActionProviderOnTile(Tile tile)
     {
         var providers = new List<IContextActionProvider>();
+
+        providers.Add(tile);
 
         if (tile.Furniture != null)
         {
