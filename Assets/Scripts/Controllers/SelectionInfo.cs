@@ -10,24 +10,22 @@ using System.Collections.Generic;
 
 public class SelectionInfo
 {
-    public Tile tile
-    {
-        get;
-        protected set;
-    }
-
     private List<ISelectable> stuffInTile;
     private int selectedIndex = 0;
 
-
     public SelectionInfo(Tile t)
     {
-        tile = t;
+        Tile = t;
 
         BuildStuffInTile();
         SelectFirstStuff();
     }
 
+    public Tile Tile
+    {
+        get;
+        protected set;
+    }
 
     public void BuildStuffInTile()
     {
@@ -35,15 +33,15 @@ public class SelectionInfo
         stuffInTile = new List<ISelectable>();
 
         // Copy the character references.
-        for (int i = 0; i < tile.Characters.Count; i++)
+        for (int i = 0; i < Tile.Characters.Count; i++)
         {
-            stuffInTile.Add(tile.Characters[i]);
+            stuffInTile.Add(Tile.Characters[i]);
         }
 
         // Now assign references to the other three sub-selections available.
-        stuffInTile.Add(tile.Furniture);
-        stuffInTile.Add(tile.Inventory);
-        stuffInTile.Add(tile);
+        stuffInTile.Add(Tile.Furniture);
+        stuffInTile.Add(Tile.Inventory);
+        stuffInTile.Add(Tile);
     }
 
     public void SelectFirstStuff()
