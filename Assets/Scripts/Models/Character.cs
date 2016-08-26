@@ -787,6 +787,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
     public void WriteXml(XmlWriter writer)
     {
+        writer.WriteAttributeString("name", name);
         writer.WriteAttributeString("X", CurrTile.X.ToString());
         writer.WriteAttributeString("Y", CurrTile.Y.ToString());
         string needString = "";

@@ -1098,25 +1098,25 @@ public class World : IXmlSerializable
                                 int.Parse(reader.GetAttribute("maxStackSize")),
                                 int.Parse(reader.GetAttribute("stackSize")));
 
-                            inventoryManager.PlaceInventory(c,inv, inv.stackSize);
+                            inventoryManager.PlaceInventory(c,inv);
                         } while(reader.ReadToNextSibling("Inventory"));
                     }
 
+                }
 
-
-                } while(reader.ReadToNextSibling("Character"));
-            }
-
+            } while(reader.ReadToNextSibling("Character"));
         }
 
-        public void OnInventoryCreated(Inventory inv)
-        {
-            if (cbInventoryCreated != null)
-                cbInventoryCreated(inv);
-        }
-
-        public void OnFurnitureRemoved(Furniture furn)
-        {
-            furnitures.Remove(furn);
-        }
     }
+
+    public void OnInventoryCreated(Inventory inv)
+    {
+        if (cbInventoryCreated != null)
+            cbInventoryCreated(inv);
+    }
+
+    public void OnFurnitureRemoved(Furniture furn)
+    {
+        furnitures.Remove(furn);
+    }
+}
