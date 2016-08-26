@@ -55,8 +55,8 @@ public class FurnitureSpriteController
         // Add our tile/GO pair to the dictionary.
         furnitureGameObjectMap.Add(furn, furn_go);
 
-        furn_go.name = furn.objectType + "_" + furn.tile.X + "_" + furn.tile.Y;
-        furn_go.transform.position = new Vector3(furn.tile.X + ((furn.Width - 1) / 2f), furn.tile.Y + ((furn.Height - 1) / 2f), 0);
+        furn_go.name = furn.ObjectType + "_" + furn.Tile.X + "_" + furn.Tile.Y;
+        furn_go.transform.position = new Vector3(furn.Tile.X + ((furn.Width - 1) / 2f), furn.Tile.Y + ((furn.Height - 1) / 2f), 0);
         furn_go.transform.SetParent(furnnitureParent.transform, true);
 
         // FIXME: This hardcoding is not ideal!
@@ -64,8 +64,8 @@ public class FurnitureSpriteController
         {
             // Check to see if we actually have a wall north/south, and if so
             // set the furniture verticalDoor flag to true.
-            Tile northTile = world.GetTileAt(furn.tile.X, furn.tile.Y + 1);
-            Tile southTile = world.GetTileAt(furn.tile.X, furn.tile.Y - 1);
+            Tile northTile = world.GetTileAt(furn.Tile.X, furn.Tile.Y + 1);
+            Tile southTile = world.GetTileAt(furn.Tile.X, furn.Tile.Y - 1);
 
             if (northTile != null && southTile != null && northTile.Furniture != null && southTile.Furniture != null &&
                 northTile.Furniture.HasTypeTag("Wall") && southTile.Furniture.HasTypeTag("Wall"))
@@ -104,9 +104,9 @@ public class FurnitureSpriteController
 
         // Register our callback so that our GameObject gets updated whenever
         // the object's into changes.
-        furn.cbOnChanged += OnFurnitureChanged;
+        furn.CbOnChanged += OnFurnitureChanged;
         world.powerSystem.PowerLevelChanged += OnPowerStatusChange;
-        furn.cbOnRemoved += OnFurnitureRemoved;
+        furn.CbOnRemoved += OnFurnitureRemoved;
     }
 
     void OnFurnitureRemoved(Furniture furn)
@@ -146,10 +146,10 @@ public class FurnitureSpriteController
         {
             // Check to see if we actually have a wall north/south, and if so
             // set the furniture verticalDoor flag to true.
-            Tile northTile = world.GetTileAt(furn.tile.X, furn.tile.Y + 1);
-            Tile southTile = world.GetTileAt(furn.tile.X, furn.tile.Y - 1);
-            Tile eastTile = world.GetTileAt(furn.tile.X + 1, furn.tile.Y);
-            Tile westTile = world.GetTileAt(furn.tile.X - 1, furn.tile.Y);
+            Tile northTile = world.GetTileAt(furn.Tile.X, furn.Tile.Y + 1);
+            Tile southTile = world.GetTileAt(furn.Tile.X, furn.Tile.Y - 1);
+            Tile eastTile = world.GetTileAt(furn.Tile.X + 1, furn.Tile.Y);
+            Tile westTile = world.GetTileAt(furn.Tile.X - 1, furn.Tile.Y);
 
             if (northTile != null && southTile != null && northTile.Furniture != null && southTile.Furniture != null &&
                 northTile.Furniture.HasTypeTag("Wall") && southTile.Furniture.HasTypeTag("Wall"))
@@ -198,7 +198,7 @@ public class FurnitureSpriteController
     {
         string spriteName = furn.GetSpriteName();
 
-        if (furn.linksToNeighbour == false)
+        if (furn.LinksToNeighbour == false)
         {
             return SpriteManager.current.GetSprite("Furniture", spriteName);
         }
@@ -207,8 +207,8 @@ public class FurnitureSpriteController
         spriteName += "_";
 
         // Check for neighbours North, East, South, West
-        int x = furn.tile.X;
-        int y = furn.tile.Y;
+        int x = furn.Tile.X;
+        int y = furn.Tile.Y;
 
         spriteName += GetSuffixForNeighbour(furn, x, y + 1, "N");
         spriteName += GetSuffixForNeighbour(furn, x + 1, y, "E");
@@ -224,7 +224,7 @@ public class FurnitureSpriteController
     private string GetSuffixForNeighbour(Furniture furn, int x, int y, string suffix)
     {
          Tile t = world.GetTileAt(x, y);
-         if (t != null && t.Furniture != null && t.Furniture.objectType == furn.objectType)
+         if (t != null && t.Furniture != null && t.Furniture.ObjectType == furn.ObjectType)
          {
              return suffix;
          }
@@ -251,7 +251,7 @@ public class FurnitureSpriteController
 
     public Sprite GetSpriteForFurniture(string objectType)
     {
-        Sprite s = SpriteManager.current.GetSprite("Furniture", objectType + (World.current.furniturePrototypes[objectType].linksToNeighbour ? "_" : ""));
+        Sprite s = SpriteManager.current.GetSprite("Furniture", objectType + (World.current.furniturePrototypes[objectType].LinksToNeighbour ? "_" : ""));
 
         return s;
     }

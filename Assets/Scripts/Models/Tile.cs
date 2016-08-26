@@ -92,7 +92,7 @@ public class Tile : IXmlSerializable, ISelectable
             // TODO: Permanent solution for handeling when a character can walk in empty tiles is required
             if (Type.MovementCostLua == null)
             {
-                return Type.BaseMovementCost * (Furniture != null ? Furniture.movementCost : 1);
+                return Type.BaseMovementCost * (Furniture != null ? Furniture.MovementCost : 1);
             }
 
             return (float)LuaUtilities.CallFunction(Type.MovementCostLua, this).Number;

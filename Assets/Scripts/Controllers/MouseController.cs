@@ -388,7 +388,7 @@ public class MouseController
                     if (bmc.buildMode == BuildMode.FURNITURE)
                     {
                         Furniture proto = World.current.furniturePrototypes[bmc.buildModeObjectType];
-                        if (IsPartOfDrag(t, dragParams, proto.dragType))
+                        if (IsPartOfDrag(t, dragParams, proto.DragType))
                         {
                             ShowFurnitureSpriteAtTile(bmc.buildModeObjectType, t);
                         }
@@ -422,7 +422,7 @@ public class MouseController
                     // Check for furniture dragType.
                     Furniture proto = World.current.furniturePrototypes[bmc.buildModeObjectType];
 
-                    if (IsPartOfDrag(t, dragParams, proto.dragType))
+                    if (IsPartOfDrag(t, dragParams, proto.DragType))
                     {
                         if (t != null)
                         {
