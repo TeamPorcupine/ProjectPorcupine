@@ -6,12 +6,12 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
 
 public class SoundController
 {
-    float soundCooldown = 0;
+    private float soundCooldown = 0;
 
     // Use this for initialization
     public SoundController(World world)
@@ -19,31 +19,21 @@ public class SoundController
         world.cbFurnitureCreated += OnFurnitureCreated;
         world.cbTileChanged += OnTileChanged;
     }
-	
+    
     // Update is called once per frame
     public void Update(float deltaTime)
     {
         soundCooldown -= deltaTime;
     }
 
-    void OnTileChanged(Tile tile_data)
-    {
-        // FIXME
-
-        if (soundCooldown > 0)
-            return;
-
-        AudioClip ac = Resources.Load<AudioClip>("Sounds/Floor_OnCreated");
-        AudioSource.PlayClipAtPoint(ac, Camera.main.transform.position);
-        soundCooldown = 0.1f;
-    }
-
     public void OnFurnitureCreated(Furniture furn)
     {
         // FIXME
         if (soundCooldown > 0)
+        {
             return;
-		
+        }
+
         AudioClip ac = Resources.Load<AudioClip>("Sounds/" + furn.objectType + "_OnCreated");
 
         if (ac == null)
@@ -54,6 +44,19 @@ public class SoundController
             ac = Resources.Load<AudioClip>("Sounds/Wall_OnCreated");
         }
 
+        AudioSource.PlayClipAtPoint(ac, Camera.main.transform.position);
+        soundCooldown = 0.1f;
+    }
+
+    private void OnTileChanged(Tile tileData)
+    {
+        // FIXME
+        if (soundCooldown > 0)
+        {
+            return;
+        }
+
+        AudioClip ac = Resources.Load<AudioClip>("Sounds/Floor_OnCreated");
         AudioSource.PlayClipAtPoint(ac, Camera.main.transform.position);
         soundCooldown = 0.1f;
     }
