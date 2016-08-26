@@ -105,18 +105,18 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     // Flag for Lua to check if this is a vertical or horizontal door and display the correct sprite.
     public bool verticalDoor = false;
 
-    public ENTERABILITY IsEnterable()
+    public Enterability IsEnterable()
     {
         if (isEnterableAction == null || isEnterableAction.Length == 0)
         {
-            return ENTERABILITY.Yes;
+            return Enterability.Yes;
         }
 
         //// FurnitureActions.CallFunctionsWithFurniture( isEnterableActions.ToArray(), this );
 
         DynValue ret = LuaUtilities.CallFunction(isEnterableAction, this);
 
-        return (ENTERABILITY)ret.Number;
+        return (Enterability)ret.Number;
     }
 
     public string GetSpriteName()
@@ -318,7 +318,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     {
         if (proto.funcPositionValidation(tile) == false)
         {
-            Debug.LogError("PlaceInstance -- Position Validity Function returned FALSE.");
+            Debug.ULogErrorChannel("Furniture", "PlaceInstance -- Position Validity Function returned FALSE.");
             return null;
         }
 
@@ -477,7 +477,6 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
 
     public void ReadXmlPrototype(XmlReader reader_parent)
     {
-        ////Debug.Log("ReadXmlPrototype");
 
         objectType = reader_parent.GetAttribute("objectType");
 
@@ -711,7 +710,6 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
 
     public void Deconstruct()
     {
-        Debug.Log("Deconstruct");
         int x = tile.X;
         int y = tile.Y;
         int fwidth = 1;
