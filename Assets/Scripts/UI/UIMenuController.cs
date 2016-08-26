@@ -1,40 +1,44 @@
-﻿using UnityEngine;
+﻿#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
 using System.Collections;
+using UnityEngine;
 
 public class UIMenuController : MonoBehaviour
 {
+    // This is the parent of the menus.
+    private Transform parent;
 
-    // This is the parent of the menus
-    Transform parent;
-
-    // Use this for initialization
-    void Awake()
+    // Use this for initialization.
+    private void Awake()
     {
         // Set the parent for all menu to uses.
         parent = this.gameObject.transform;
 
-        //Add the menus.
+        // Add the menus.
         AddMenu("MenuTop");
         AddMenu("MenuSubHolder");
         AddMenu("MenuBottom");
         AddMenu("MenuConstruction");
     }
 
-    void Start()
+    private void Start()
     {
         // Add the Right Menu because of the mouse controller needed do it here.
         AddMenu("MenuRight");
     }
 
     // Use this function to add all the menus.
-    void AddMenu(string menuName)
+    private void AddMenu(string menuName)
     {
         GameObject tempGoObj;
-
         tempGoObj = (GameObject)Instantiate(Resources.Load("UI/" + menuName));
         tempGoObj.name = menuName;
-
         tempGoObj.transform.SetParent(parent, false);
-
     }
 }
