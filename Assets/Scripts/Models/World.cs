@@ -873,6 +873,11 @@ public class World : IXmlSerializable
         return furniturePrototypes[objectType];
     }
 
+    public bool IsUtilityPlacementValid(string utilityType, Tile t)
+    {
+        return utilityPrototypes[utilityType].IsValidPosition(t);
+    }
+
     //////////////////////////////////////////////////////////////////////////////////////
     /// 
     ///                         SAVING & LOADING
