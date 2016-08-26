@@ -96,15 +96,15 @@ public class CharacterAnimation
 
         animations = new Dictionary<AnimationType, Animation>();
 
-        animations.Add(AnimationType.HELMET_IDLE_NORTH, new Animation("in", new int[] { 0 }, 0.5f, false, false));
-        animations.Add(AnimationType.HELMET_IDLE_EAST, new Animation("ie", new int[] { 1 }, 0.5f, false, false));
-        animations.Add(AnimationType.HELMET_IDLE_SOUTH, new Animation("is", new int[] { 2 }, 0.5f, false, false));
-        animations.Add(AnimationType.HELMET_IDLE_WEST, new Animation("iw", new int[] { 1 }, 0.5f, false, true));
+        animations.Add(AnimationType.HELMET_IDLE_NORTH, new Animation("in", new int[] { 0 }, 0.7f, false, false));
+        animations.Add(AnimationType.HELMET_IDLE_EAST, new Animation("ie", new int[] { 1 }, 0.7f, false, false));
+        animations.Add(AnimationType.HELMET_IDLE_SOUTH, new Animation("is", new int[] { 2 }, 0.7f, false, false));
+        animations.Add(AnimationType.HELMET_IDLE_WEST, new Animation("iw", new int[] { 1 }, 0.7f, false, true));
 
-        animations.Add(AnimationType.HELMET_WALK_NORTH, new Animation("wn", new int[] { 3, 4 }));
-        animations.Add(AnimationType.HELMET_WALK_EAST, new Animation("we", new int[] { 5, 6 }));
-        animations.Add(AnimationType.HELMET_WALK_SOUTH, new Animation("ws", new int[] { 7, 8 }));
-        animations.Add(AnimationType.HELMET_WALK_WEST, new Animation("ww", new int[] { 5, 6 }, 0.5f, true, true));
+        animations.Add(AnimationType.HELMET_WALK_NORTH, new Animation("wn", new int[] { 3, 4 }, 0.7f));
+        animations.Add(AnimationType.HELMET_WALK_EAST, new Animation("we", new int[] { 5, 6 }, 0.7f));
+        animations.Add(AnimationType.HELMET_WALK_SOUTH, new Animation("ws", new int[] { 7, 8 }, 0.7f));
+        animations.Add(AnimationType.HELMET_WALK_WEST, new Animation("ww", new int[] { 5, 6 }, 0.7f, true, true));
 
         animations.Add(AnimationType.NOHELMET_IDLE_NORTH, new Animation("in", new int[] { 9 }, 0.2f, false, false));
         animations.Add(AnimationType.NOHELMET_IDLE_EAST, new Animation("ie", new int[] { 10 }, 0.2f, false, false));
@@ -122,15 +122,7 @@ public class CharacterAnimation
     }
 
     public void Update(float deltaTime)
-    {
-        /*
-        if (currentFrame >= animationLength)
-        {
-            currentFrame = 0;
-        }
-
-        currentFrame++;
-        */
+    {        
         int newAnimation = (int)character.CharFacing;
         if (character.IsWalking)
         {
@@ -139,26 +131,28 @@ public class CharacterAnimation
         
         if (character.CurrTile.Room != null)
         {
-            if (character.CurrTile.Room.GetGasAmount("O2") > 0.005f)
+            // TODO: What is the acceptable amount of O2? A little less than .2?
+            if (character.CurrTile.Room.GetGasAmount("O2") >= 0.19f)
             {
                 newAnimation += 100; // Remove helmet
-            }           
-        }
-
-        if (newAnimation != (int)currentAnimationType)
-        {
-            currentAnimationType = (AnimationType)newAnimation;
-            currentAnimation = animations[currentAnimationType];
-            if (currentAnimation.FlipX == true && renderer.flipX == false)
-            {
-                renderer.flipX = true;
             }
-            else
+
+            // Fix for doors not having rooms - we don't change the animation if room is null
+            if (newAnimation != (int)currentAnimationType)
             {
-                renderer.flipX = false;
+                currentAnimationType = (AnimationType)newAnimation;
+                currentAnimation = animations[currentAnimationType];
+                if (currentAnimation.FlipX == true && renderer.flipX == false)
+                {
+                    renderer.flipX = true;
+                }
+                else if (currentAnimation.FlipX == false && renderer.flipX == true)
+                {
+                    renderer.flipX = false;
+                }
             }
         }
-
+        
         currentAnimation.Update(deltaTime);
 
         if (prevFrameIndex != currentAnimation.CurrentIndex)
