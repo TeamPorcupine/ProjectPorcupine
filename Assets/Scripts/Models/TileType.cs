@@ -53,8 +53,6 @@ public class TileType : IXmlSerializable {
 
     private TileType()
     {
-        // Default lua method names
-        CanBuildHereLua = "CanBuildHere_Standard";
     }
 
     // Will this even be needed?
