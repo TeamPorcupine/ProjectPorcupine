@@ -84,21 +84,6 @@ public class CharacterSpriteController
         sr.material = GetMaterial(c);        
         c.animation = new CharacterAnimation(c, sr);
         
-        // load all character sprites 
-        Sprite[] sprites = 
-            {
-                SpriteManager.current.GetSprite("Character", "tp2_idle_south"),
-                SpriteManager.current.GetSprite("Character", "tp2_idle_east"),
-                SpriteManager.current.GetSprite("Character", "tp2_idle_north"),
-                SpriteManager.current.GetSprite("Character", "tp2_walk_east_01"),
-                SpriteManager.current.GetSprite("Character", "tp2_walk_east_02"),
-                SpriteManager.current.GetSprite("Character", "tp2_walk_north_01"),
-                SpriteManager.current.GetSprite("Character", "tp2_walk_north_02"),
-                SpriteManager.current.GetSprite("Character", "tp2_walk_south_01"),
-                SpriteManager.current.GetSprite("Character", "tp2_walk_south_02")
-            };
-        c.animation.SetSprites(sprites);
-        
         // Add the inventory sprite onto the character
         GameObject inv_go = new GameObject("Inventory");
         SpriteRenderer inv_sr = inv_go.AddComponent<SpriteRenderer>();
@@ -175,23 +160,7 @@ public class CharacterSpriteController
             return;
         }
 
-        GameObject char_go = characterGameObjectMap[c];
-        
-        // TODO: When we have a helmetless spritesheet, use this check to switch spritesheet on the character
-        /*
-        if (c.CurrTile.Room != null)
-        {
-            if (c.CurrTile.Room.GetGasAmount ("O2") <= 0.5f && char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled == false)
-            {
-                char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled = true;
-            }
-            else if(c.CurrTile.Room.GetGasAmount ("O2") >= 0.5f && char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled == true)
-            {
-                char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled = false;
-            }
-        }
-        */
-
+        GameObject char_go = characterGameObjectMap[c];        
         char_go.transform.position = new Vector3(c.X, c.Y, 0);
     }
 }
