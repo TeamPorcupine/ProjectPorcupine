@@ -95,6 +95,7 @@ public class Path_RoomGraph
                 {
                     // We have found a different room to ourselves add an edge from us to them
                     Path_Edge<Room> edge = new Path_Edge<Room>();
+                    edge.tile = t;
                     edge.cost = 1;
                     edge.node = nodes[t2.Room];
                     edges.Add(edge);
@@ -125,12 +126,12 @@ public class Path_RoomGraph
                 {
                     // Edge connects to the outside room
                     Path_Edge<Room> outsieEdge = new Path_Edge<Room>();
+                    outsideEdge.tile = edge.tile;
                     outsieEdge.cost = 1;
                     outsieEdge.node = nodes[r];
                     outsideEdges.Add(outsieEdge);
                 }
             }
-
         }
         nodes[outsideRoom].edges = outsideEdges.ToArray();
     }

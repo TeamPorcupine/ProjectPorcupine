@@ -375,7 +375,7 @@ public class Room : IXmlSerializable
                         {
                             tilesToCheck.Enqueue(t2);
                         }
-                        else if (t2.Furniture == null || t2.Furniture.roomEnclosure == true)
+                        else if (t2.Furniture != null && t2.Furniture.roomEnclosure == true)
                         {
                             // We have found a room enclosing tile
                             newRoom.enclosingTiles.Add(t2);
@@ -405,14 +405,16 @@ public class Room : IXmlSerializable
 
         // Tell the world that a new room has been formed.
         World.current.AddRoom(newRoom);
-        if (newRoom.IsOutsideRoom() == false)
-        {
-            newRoom.FindExits();
-        }
+        newRoom.FindExits();	
     }
 
     void FindExits()
     {
+    	if (this.IsOutsideRoom())
+    	{
+    		// We should never find the exits for the outside room
+    		return;
+    	}
         foreach (Tile t in this.enclosingTiles)
         {
             if (t.IsEnterable() != ENTERABILITY.Never)
