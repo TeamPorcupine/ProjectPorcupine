@@ -22,17 +22,30 @@ public class FurnitureActions
         LuaUtilities.RegisterGlobal(typeof(Job));
         LuaUtilities.RegisterGlobal(typeof(ModUtils));
         LuaUtilities.RegisterGlobal(typeof(World));
+
     }
 
-    public static void CallFunctionsWithFurniture(string[] functionNames, Furniture furn, float deltaTime)
+    public static void CallFunctionsWithFurniture<T>(string[] functionNames, T furn, float deltaTime)
     {
+        if (furn == null)
+        {
+            //These errors are about the lua code so putting themin the lua channel
+            Debug.ULogErrorChannel("Lua", "Furn is null, cannot call LUA function (something is fishy).");
+        }
+
         foreach (string fn in functionNames)
         {
+            if (fn == null)
+            {
+                Debug.ULogErrorChannel("Lua", "'" + fn + "' is not a LUA function.");
+                return;
+            }
+            
             DynValue result = LuaUtilities.CallFunction(fn, furn, deltaTime);
             
             if (result.Type == DataType.String)
             {
-                Debug.Log(result.String);
+                Debug.ULogErrorChannel("Lua", result.String);
             }
         }
     }

@@ -1,6 +1,10 @@
 # ProjectPorcupine
 Project Porcupine: A Base-Building Game...in Space!
 
+
+![Preview Thumbnail](http://i.imgur.com/lDJJUPZ.jpg)
+
+
 [About](#about)  
 [Copyright & Licensing](#copyright--licensing)  
 [Contributing](#contributing)  
@@ -56,6 +60,8 @@ are licensed under the MIT License and can be found here:
 ## Contributing
 
 Please check the [CONTRIBUTING.md](CONTRIBUTING.md) file for contribution instructions and guidelines.
+
+Make sure that you are using [Unity 5.4] (https://unity3d.com/unity/beta).
 
 ## Vote on Proposed Features
 

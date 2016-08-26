@@ -48,6 +48,8 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
         }
     }
 
+    public bool IsSelected { get; set; }
+
     // The function we callback any time our tile's data changes
     public event Action<Inventory> cbInventoryChanged;
 
@@ -159,7 +161,7 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
         {
             Text = "Sample Item Context action",
             RequiereCharacterSelected = true,
-            Action = (cm, c) => Debug.Log("Sample menu action")
+            Action = (cm, c) => Debug.ULogChannel("Inventory", "Sample menu action")
         };
     }
 }

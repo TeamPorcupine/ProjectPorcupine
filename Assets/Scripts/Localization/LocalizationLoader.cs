@@ -25,30 +25,13 @@ namespace ProjectPorcupine.Localization
         /// </summary>
         public void UpdateLocalizationTable()
         {
-            // Get the file path.
-            string filePath = Path.Combine(Application.streamingAssetsPath, "Localization");
-            
-            // Loop through all files.
-            // TODO: Think over the extension ".lang", might change that in the future.
-            foreach (string file in Directory.GetFiles(filePath, "*.lang"))
-            {
-                // The file extention is .lang, load it.
-                LocalizationTable.LoadLocalizationFile(file);
+            // Load application localization files
+            LoadLocalizationInDirectory(Application.streamingAssetsPath);
 
-                // Just write a little debug info into the console.
-                Debug.ULogChannel("LocalizationLoader", "Loaded localization at path\n" + file);
-            }
-
+            // Load mods localization files
             foreach (DirectoryInfo mod in WorldController.Instance.modsManager.GetMods())
             {
-                foreach (FileInfo file in mod.GetFiles("*.lang"))
-                {
-                    // Load the mod localization.
-                    LocalizationTable.LoadLocalizationFile(file.FullName);
-
-                    // Just write a little debug info into the console.
-                    Debug.ULogChannel("LocalizationLoader", "Loaded localization at path: " + file);
-                }
+                LoadLocalizationInDirectory(mod.FullName);
             }
 
             // Attempt to get setting of currently selected language. (Will default to English).
@@ -59,6 +42,32 @@ namespace ProjectPorcupine.Localization
 
             // Tell the LocalizationTable that it has been initialized.
             LocalizationTable.LoadingLanguagesFinished();
+        }
+
+        /// <summary>
+        /// Loads the localization in directory.
+        /// </summary>
+        /// <param name="path">Arbitrary path to load Localization files from</param>
+        private void LoadLocalizationInDirectory(string path)
+        {
+            // Get the file path.
+            string filePath = Path.Combine(path, "Localization");
+
+            if (Directory.Exists(filePath) == false)
+            {
+                return;
+            }
+
+            // Loop through all files.
+            // TODO: Think over the extension ".lang", might change that in the future.
+            foreach (string file in Directory.GetFiles(filePath, "*.lang"))
+            {
+                // The file extension is .lang, load it.
+                LocalizationTable.LoadLocalizationFile(file);
+
+                // Just write a little debug info into the console.
+                Debug.ULogChannel("LocalizationLoader", "Loaded localization at path: " + file);
+            }
         }
 
         // Initialize the localization files before Unity loads the scene entirely.

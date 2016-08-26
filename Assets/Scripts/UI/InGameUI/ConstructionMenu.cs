@@ -28,6 +28,11 @@ public class ConstructionMenu : MonoBehaviour
     {
         bmc = WorldController.Instance.buildModeController;
 
+        MenuController cm = GameObject.Find("MenuBottom").GetComponent<MenuController>();
+
+        furnitureMenu = cm.furnitureMenu;
+        floorMenu = cm.floorMenu;
+
         buttonDeconstruction.onClick.AddListener(delegate
             {
                 OnClickDeconstruct();

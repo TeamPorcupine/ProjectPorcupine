@@ -34,6 +34,7 @@ public class GameEventActions
         // We need to make the base type visible.
         myLuaScript.Globals["Inventory"] = typeof(Inventory);
         myLuaScript.Globals["Job"] = typeof(Job);
+        myLuaScript.Globals["ModUtils"] = typeof(ModUtils);
 
         // Also to access statics/globals
         myLuaScript.Globals["World"] = typeof(World);
@@ -49,7 +50,8 @@ public class GameEventActions
 
             if (func == null)
             {
-                Debug.LogError("'" + fn + "' is not a LUA function.");
+                //These errors are about the lua code so putting themin the lua channel
+                Debug.ULogErrorChannel("Lua", "'" + fn + "' is not a LUA function.");
                 return;
             }
 
@@ -57,7 +59,7 @@ public class GameEventActions
 
             if (result.Type == DataType.String)
             {
-                Debug.Log(result.String);
+                Debug.ULogErrorChannel("Lua", result.String);
             }
         }
     }
