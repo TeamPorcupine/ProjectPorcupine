@@ -1032,7 +1032,7 @@ public class World : IXmlSerializable
                 int y = int.Parse(reader.GetAttribute("Y"));
 
                 Furniture furn = PlaceFurniture(reader.GetAttribute("objectType"), tiles[x, y], false);
-                if(!(reader.IsEmptyElement) ) 
+                if(!reader.IsEmptyElement)
                 {
                     furn.ReadXml(reader);
                 }
