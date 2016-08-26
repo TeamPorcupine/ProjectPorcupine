@@ -805,8 +805,8 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             writer.WriteStartElement("Inventories");
             writer.WriteStartElement("Inventory");
             inventory.WriteXml(writer);
-            writer.WriteStartElement("Inventory");
-            writer.WriteStartElement("Inventories");
+            writer.WriteEndElement();
+            writer.WriteEndElement();
         }
     }
 
