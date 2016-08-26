@@ -24,8 +24,9 @@ public class SpriteToXML : EditorWindow
 
     private Texture2D[] images;
     private Sprite[] sprites;
+    private string[] filesInDir;
 
-    [MenuItem("Window/Sprite Sheet To Xml")]
+    [MenuItem("Window/Sprite Sheet To XML")]
     public static void ShowWindow()
     {
         EditorWindow.GetWindow(typeof(SpriteToXML));
@@ -39,8 +40,7 @@ public class SpriteToXML : EditorWindow
         GUILayout.Label(Step2);
         GUILayout.Label(Step3);
         GUILayout.Label(Step4);
-        GUILayout.Label(Step5);
-        
+        GUILayout.Label(Step5);        
         
         if (GUILayout.Button("Set Output Folder"))
         {
@@ -49,11 +49,10 @@ public class SpriteToXML : EditorWindow
 
         if (GUILayout.Button("Export Sprite to XML"))
         {
-
             images = Resources.LoadAll<Texture2D>("Editor/SpriteToXML");
-            sprites = Resources.LoadAll<Sprite>("Editor/SpriteToXML");
-            LoadSpritesFromDirectory(Application.dataPath + "/Resources/Editor/SpriteToXML/");
+            sprites = Resources.LoadAll<Sprite>("Editor/SpriteToXML");          
 
+            filesInDir = Directory.GetFiles(Application.dataPath + "/Resources/Editor/SpriteToXML/");
 
             if (images.Length > 1)
             {
@@ -67,7 +66,12 @@ public class SpriteToXML : EditorWindow
 
     private void ExportSprites()
     {
-        Debug.Log("Files saved to: " + dirPath);    
+        Debug.Log("Files saved to: " + dirPath);
+
+        foreach (string fn in filesInDir)
+        {
+            Debug.Log("files in dir: " + fn);
+        }   
             
         foreach (Texture2D t in images)
         {
@@ -113,43 +117,28 @@ public class SpriteToXML : EditorWindow
 
             writer.WriteEndElement();
             writer.WriteEndDocument();
-            writer.Close();            
-
+            writer.Close();
 
             // Move the .png and meta file to the same directory as the xml.
-            FileUtil.MoveFileOrDirectory(Application.dataPath + "/Resources/Editor/SpriteToXML/" + images[i].name + ".png", dirPath + "/" + images[i].name + ".png");
-            FileUtil.MoveFileOrDirectory(Application.dataPath + "/Resources/Editor/SpriteToXML/" + images[i].name + ".meta", dirPath + "/" + images[i].name + ".meta");
+            foreach (string s in filesInDir)
+            {
+                if (s.Contains(".png"))
+                {
+                    FileUtil.MoveFileOrDirectory(Application.dataPath + "/Resources/Editor/SpriteToXML/" + images[i].name + ".png", dirPath + "/" + images[i].name + ".png");
+                }
+                else if (s.Contains(".jpg"))
+                {
+                    FileUtil.MoveFileOrDirectory(Application.dataPath + "/Resources/Editor/SpriteToXML/" + images[i].name + ".jpg", dirPath + "/" + images[i].name + ".jpg");
+                }
+                else if (s.Contains(".meta"))
+                {
+                    FileUtil.MoveFileOrDirectory(Application.dataPath + "/Resources/Editor/SpriteToXML/" + images[i].name + ".meta", dirPath + "/" + images[i].name + ".meta");
+                }
+                else
+                {
+                    continue;
+                }
+            }                       
         }
-    }
-
-    private void LoadSpritesFromDirectory(string filePath)
-    {
-        Debug.Log("LoadSpritesFromDirectory: " + filePath);
-        // First, we're going to see if we have any more sub-directories,
-        // if so -- call LoadSpritesFromDirectory on that.
-
-        string[] subDirs = Directory.GetDirectories(filePath);
-        foreach (string sd in subDirs)
-        {
-            LoadSpritesFromDirectory(sd);
-        }
-
-        string[] filesInDir = Directory.GetFiles(filePath);
-        foreach (string fn in filesInDir)
-        {
-            // Is this an image file?
-            // Unity's LoadImage seems to support only png and jpg
-            // NOTE: We **could** try to check file extensions, but why not just
-            // have Unity **attemp** to load the image, and if it doesn't work,
-            // then I guess it wasn't an image! An advantage of this, is that we
-            // don't have to worry about oddball filenames, nor do we have to worry
-            // about what happens if Unity adds support for more image format
-            // or drops support for existing ones.
-
-            string spriteCategory = new DirectoryInfo(filePath).Name;
-            Debug.Log(spriteCategory);
-            //LoadImage(spriteCategory, fn);
-        }
-
-    }
+    }    
 }
