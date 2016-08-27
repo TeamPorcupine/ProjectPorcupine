@@ -159,6 +159,22 @@ public class World : IXmlSerializable
             f.Update(deltaTime);
         }
 
+        // This portion calls the post update scripts of the furntirue
+        // It is used if the furniture needs to do something after all
+        // other furnitures are Updated, it is also the place to delete
+        // and construct furniture
+        for (int i = 0; i < furnitures.Count; i++)
+        {
+            if (furnitures[i] == null)
+            {
+                continue;
+            }
+            else if (furnitures[i].EventActions != null)
+            {
+                furnitures[i].EventActions.Trigger("OnPostUpdate", furnitures[i], deltaTime);
+            }
+        }
+
         // Progress temperature modelling
         temperature.Update();
     }
