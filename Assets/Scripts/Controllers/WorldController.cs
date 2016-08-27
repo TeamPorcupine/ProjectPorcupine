@@ -112,7 +112,7 @@ public class WorldController : MonoBehaviour
         cameraController = new CameraController();
 
         // Hiding Dev Mode spawn inventory controller if devmode is off.
-        spawnInventoryController.SetUIVisibility(Settings.getSettingAsBool("DialogBoxSettings_developerModeToggle", false));
+        spawnInventoryController.SetUIVisibility(Settings.GetSettingAsBool("DialogBoxSettings_developerModeToggle", false));
 
         // Initialising controllers.
         GameObject controllers = GameObject.Find("Controllers");
@@ -194,8 +194,8 @@ public class WorldController : MonoBehaviour
     private void CreateEmptyWorld()
     {
         // get world size from settings
-        int width = Settings.getSettingAsInt("worldWidth", 100);
-        int height = Settings.getSettingAsInt("worldHeight", 100);
+        int width = Settings.GetSettingAsInt("worldWidth", 100);
+        int height = Settings.GetSettingAsInt("worldHeight", 100);
 
         // Create a world with Empty tiles
         World = new World(width, height);
