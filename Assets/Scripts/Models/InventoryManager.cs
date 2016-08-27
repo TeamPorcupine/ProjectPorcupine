@@ -45,7 +45,7 @@ public class InventoryManager
 
             inventories[tile.Inventory.objectType].Add(tile.Inventory);
 
-            World.current.OnInventoryCreated(tile.Inventory);
+            World.Current.OnInventoryCreatedCallback(tile.Inventory);
         }
 
         return true;
@@ -174,7 +174,7 @@ public class InventoryManager
         }
 
         // We know the objects are out there, now find the closest.
-        Path_AStar path = new Path_AStar(World.current, t, null, objectType, desiredAmount, canTakeFromStockpile);
+        Path_AStar path = new Path_AStar(World.Current, t, null, objectType, desiredAmount, canTakeFromStockpile);
         return path;
     }
 

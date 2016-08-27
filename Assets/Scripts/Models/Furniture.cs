@@ -127,7 +127,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
 
         if (!powerValue.IsZero())
         {
-            World.current.powerSystem.AddToPowerGrid(this);
+            World.Current.powerSystem.AddToPowerGrid(this);
         }
 
         if (other.funcPositionValidation != null)
@@ -301,7 +301,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
             {
                 for (int ypos = y - 1; ypos < (y + proto.Height + 1); ypos++)
                 {
-                    t = World.current.GetTileAt(xpos, ypos);
+                    t = World.Current.GetTileAt(xpos, ypos);
                     if (t != null && t.Furniture != null && t.Furniture.CbOnChanged != null)
                     {
                         t.Furniture.CbOnChanged(t.Furniture);
@@ -320,7 +320,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
             thermalDiffusivity = obj.furnParameters["thermal_diffusivity"].ToFloat();
         }
 
-        World.current.temperature.SetThermalDiffusivity(tile.X, tile.Y, thermalDiffusivity);
+        World.Current.temperature.SetThermalDiffusivity(tile.X, tile.Y, thermalDiffusivity);
 
         return obj;
     }
@@ -375,12 +375,12 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
 
     public bool HasPower()
     {
-        if (World.current.powerSystem.RequestPower(this))
+        if (World.Current.powerSystem.RequestPower(this))
         {
             return true;
         }
 
-        return World.current.powerSystem.AddToPowerGrid(this);
+        return World.Current.powerSystem.AddToPowerGrid(this);
     }
 
     public XmlSchema GetSchema()
@@ -474,7 +474,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
                     invs.ToArray(),
                     Job.JobPriority.High);
                 j.JobDescription = "job_build_" + ObjectType + "_desc";
-                World.current.SetFurnitureJobPrototype(j, this);
+                World.Current.SetFurnitureJobPrototype(j, this);
                 break;
 
             case "Action":
@@ -567,7 +567,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         j.furniture = this;
         jobs.Add(j);
         j.cbJobStopped += OnJobStopped;
-        World.current.jobQueue.Enqueue(j);
+        World.Current.jobQueue.Enqueue(j);
     }
 
     public void CancelJobs()
@@ -598,9 +598,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
 
         // TODO: read this from furniture params
         Dictionary<string, Inventory> invsDict = new Dictionary<string, Inventory>();
-        foreach (string objectType in World.current.inventoryPrototypes.Keys)
+        foreach (string objectType in World.Current.inventoryPrototypes.Keys)
         {
-            invsDict[objectType] = new Inventory(objectType, World.current.inventoryPrototypes[objectType].maxStackSize, 0);
+            invsDict[objectType] = new Inventory(objectType, World.Current.inventoryPrototypes[objectType].maxStackSize, 0);
         }
 
         Inventory[] invs = new Inventory[invsDict.Count];
@@ -628,7 +628,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         EventActions.Trigger("OnUninstall", this);
 
         // Update thermalDiffusifity to default value
-        World.current.temperature.SetThermalDiffusivity(Tile.X, Tile.Y, Temperature.defaultThermalDiffusivity);
+        World.Current.temperature.SetThermalDiffusivity(Tile.X, Tile.Y, Temperature.defaultThermalDiffusivity);
 
         Tile.UnplaceFurniture();
 
@@ -645,9 +645,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
 
         ////World.current.InvalidateTileGraph();
 
-        if (World.current.tileGraph != null)
+        if (World.Current.tileGraph != null)
         {
-            World.current.tileGraph.RegenerateGraphAtTile(Tile);
+            World.Current.tileGraph.RegenerateGraphAtTile(Tile);
         }
 
         // We should inform our neighbours that they have just lost a
@@ -659,7 +659,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
             {
                 for (int ypos = y - 1; ypos < (y + fheight + 1); ypos++)
                 {
-                    Tile t = World.current.GetTileAt(xpos, ypos);
+                    Tile t = World.Current.GetTileAt(xpos, ypos);
                     if (t != null && t.Furniture != null && t.Furniture.CbOnChanged != null)
                     {
                         t.Furniture.CbOnChanged(t.Furniture);
@@ -674,12 +674,12 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
 
     public Tile GetJobSpotTile()
     {
-        return World.current.GetTileAt(Tile.X + (int)jobSpotOffset.x, Tile.Y + (int)jobSpotOffset.y);
+        return World.Current.GetTileAt(Tile.X + (int)jobSpotOffset.x, Tile.Y + (int)jobSpotOffset.y);
     }
 
     public Tile GetSpawnSpotTile()
     {
-        return World.current.GetTileAt(Tile.X + (int)jobSpawnSpotOffset.x, Tile.Y + (int)jobSpawnSpotOffset.y);
+        return World.Current.GetTileAt(Tile.X + (int)jobSpawnSpotOffset.x, Tile.Y + (int)jobSpawnSpotOffset.y);
     }
 
     // Returns true if furniture has typeTag, though simple, the intent is to separate the interaction with
@@ -743,8 +743,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         // Prevent construction too close to the world's edge
         const int MinEdgeDistance = 5;
         bool tooCloseToEdge = t.X < MinEdgeDistance || t.Y < MinEdgeDistance ||
-            (World.current.Width - t.X) <= MinEdgeDistance ||
-            (World.current.Height - t.Y) <= MinEdgeDistance;
+            (World.Current.Width - t.X) <= MinEdgeDistance ||
+            (World.Current.Height - t.Y) <= MinEdgeDistance;
 
         if (tooCloseToEdge)
         {
@@ -763,7 +763,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         {
             for (int y_off = t.Y; y_off < (t.Y + Height); y_off++)
             {
-                Tile t2 = World.current.GetTileAt(x_off, y_off);
+                Tile t2 = World.Current.GetTileAt(x_off, y_off);
 
                 // Check to see if there is furniture which is replaceable
                 bool isReplaceable = false;

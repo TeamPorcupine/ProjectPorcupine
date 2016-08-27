@@ -31,7 +31,7 @@ public class FurnitureSpriteController
 
         // Register our callback so that our GameObject gets updated whenever
         // the tile's type changes.
-        world.cbFurnitureCreated += OnFurnitureCreated;
+        world.OnFurnitureCreated += OnFurnitureCreated;
 
         // Go through any EXISTING furniture (i.e. from a save that was loaded OnEnable) and call the OnCreated event manually.
         foreach (Furniture furn in world.furnitures)
@@ -132,7 +132,7 @@ public class FurnitureSpriteController
 
     public Sprite GetSpriteForFurniture(string objectType)
     {
-        Sprite s = SpriteManager.current.GetSprite("Furniture", objectType + (World.current.furniturePrototypes[objectType].LinksToNeighbour ? "_" : string.Empty));
+        Sprite s = SpriteManager.current.GetSprite("Furniture", objectType + (World.Current.furniturePrototypes[objectType].LinksToNeighbour ? "_" : string.Empty));
 
         return s;
     }

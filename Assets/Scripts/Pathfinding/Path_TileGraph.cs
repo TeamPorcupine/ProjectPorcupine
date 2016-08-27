@@ -71,13 +71,13 @@ public class Path_TileGraph
         if (Mathf.Abs(dX) + Mathf.Abs(dY) == 2)
         {
             // We are diagonal
-            if (World.current.GetTileAt(curr.X - dX, curr.Y).MovementCost == 0)
+            if (World.Current.GetTileAt(curr.X - dX, curr.Y).MovementCost == 0)
             {
                 // East or West is unwalkable, therefore this would be a clipped movement.
                 return true;
             }
 
-            if (World.current.GetTileAt(curr.X, curr.Y - dY).MovementCost == 0)
+            if (World.Current.GetTileAt(curr.X, curr.Y - dY).MovementCost == 0)
             {
                 // North or South is unwalkable, therefore this would be a clipped movement.
                 return true;
