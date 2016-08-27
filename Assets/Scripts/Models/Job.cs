@@ -11,9 +11,10 @@ using System.Collections.Generic;
 using System.Linq;
 using MoonSharp.Interpreter;
 using UnityEngine;
+using ProjectPorcupine.Localization;
 
 [MoonSharpUserData]
-public class Job
+public class Job : ISelectable
 {
     // This class holds info for a queued up job, which can include
     // things like placing furniture, moving stored inventory,
@@ -176,6 +177,11 @@ public class Job
     {
         get;
         protected set;
+    }
+
+    public bool IsSelected
+    {
+        get; set;
     }
 
     public Inventory[] GetInventoryRequirementValues()
@@ -361,5 +367,30 @@ public class Job
     {
         // TODO: This casting to and from enums are a bit wierd. We should decide on ONE priority system.
         this.Priority = (Job.JobPriority)Mathf.Min((int)Job.JobPriority.Low, (int)Priority + 1);
+    }
+
+    public string GetName()
+    {
+        return LocalizationTable.GetLocalization(JobObjectType);
+    }
+
+    public string GetDescription()
+    {
+        string description = "Requirements:\n\t";
+        foreach (KeyValuePair<string,Inventory> inv in inventoryRequirements)
+        {
+            description += inv.Value.StackSize + "/" + inv.Value.maxStackSize + "\n\t";
+        }
+        return description;
+    }
+
+    public string GetHitPointString()
+    {
+        return "";
+    }
+
+    public string GetJobDescription()
+    {
+        return GetDescription();
     }
 }
