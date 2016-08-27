@@ -46,10 +46,10 @@ namespace ProjectPorcupine.Localization
     public static class LocalizationDownloader
     {
         // TODO: Change this to the official repo before PR.
-        private static readonly string LocalizationRepositoryZipLocation = "https://github.com/QuiZr/ProjectPorcupineLocalization/archive/" + World.current.gameVersion + ".zip";
+        private static readonly string LocalizationRepositoryZipLocation = "https://github.com/QuiZr/ProjectPorcupineLocalization/archive/" + World.Current.GameVersion + ".zip";
 
         // TODO: Change this to the official repo before PR.
-        private static readonly string LastCommitGithubApiLocation = "https://api.github.com/repos/QuiZr/ProjectPorcupineLocalization/commits/" + World.current.gameVersion;
+        private static readonly string LastCommitGithubApiLocation = "https://api.github.com/repos/QuiZr/ProjectPorcupineLocalization/commits/" + World.Current.GameVersion;
 
         private static readonly string LocalizationFolderPath = Path.Combine(Application.streamingAssetsPath, "Localization");
 
