@@ -78,7 +78,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     /// Use only for serialization
     public Character()
     {
-        needs = new Need[World.current.needPrototypes.Count];
+        needs = new Need[World.Current.needPrototypes.Count];
         LoadNeeds();
     }
 
@@ -232,9 +232,9 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             return;
         }
 
-        if (MyJob.isNeed)
+        if (MyJob.IsNeed)
         {
-            MyJob.cbJobStopped -= OnJobStopped;
+            MyJob.OnJobStopped -= OnJobStopped;
             MyJob = null;
             return;
         }
@@ -253,17 +253,17 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             // put it into the waiting queue.
             // Also create a callback for when an inventory gets created.
             // Lastly, remove the job from "MyJob".
-            World.current.jobWaitingQueue.Enqueue(MyJob);
-            World.current.cbInventoryCreated += OnInventoryCreated;
-            MyJob.cbJobStopped -= OnJobStopped;
+            World.Current.jobWaitingQueue.Enqueue(MyJob);
+            World.Current.OnInventoryCreated += OnInventoryCreated;
+            MyJob.OnJobStopped -= OnJobStopped;
             MyJob = null;
         }
         else
         {
             // If the job gets abandoned because of pathing issues or something else,
             // just put it into the normal job queue and remove the job from "MyJob".
-            World.current.jobQueue.Enqueue(MyJob);
-            MyJob.cbJobStopped -= OnJobStopped;
+            World.Current.jobQueue.Enqueue(MyJob);
+            MyJob.OnJobStopped -= OnJobStopped;
             MyJob = null;
         }
     }
@@ -388,9 +388,9 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
     private void LoadNeeds()
     {
-        needs = new Need[World.current.needPrototypes.Count];
-        World.current.needPrototypes.Values.CopyTo(needs, 0);
-        for (int i = 0; i < World.current.needPrototypes.Count; i++)
+        needs = new Need[World.Current.needPrototypes.Count];
+        World.Current.needPrototypes.Values.CopyTo(needs, 0);
+        for (int i = 0; i < World.Current.needPrototypes.Count; i++)
         {
             Need need = needs[i];
             needs[i] = need.Clone();
@@ -413,38 +413,18 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         if (needPercent > 50 && needPercent < 100 && need != null)
         {
-            MyJob = new Job(null, need.RestoreNeedFurn.ObjectType, need.CompleteJobNorm, need.RestoreNeedTime, null, Job.JobPriority.High, false, true, false);
+            MyJob = new Job(null, need.RestoreNeedFurn.ObjectType, need.CompleteJobNorm, need.RestoreNeedTime, null, JobPriority.High, false, true, false);
         }
 
         if (needPercent == 100 && need != null && need.CompleteOnFail)
         {
-            MyJob = new Job(CurrTile, null, need.CompleteJobCrit, need.RestoreNeedTime * 10, null, Job.JobPriority.High, false, true, true);
+            MyJob = new Job(CurrTile, null, need.CompleteJobCrit, need.RestoreNeedTime * 10, null, JobPriority.High, false, true, true);
         }
 
         // Get the first job on the queue.
         if (MyJob == null)
         {
-            MyJob = World.current.jobQueue.Dequeue();
-        }
-
-        if (MyJob == null)
-        {
-            Debug.ULogChannel("Character", name + " did not find a job.");
-            MyJob = new Job(
-                CurrTile,
-                "Waiting",
-                null,
-                UnityEngine.Random.Range(0.1f, 0.5f),
-                null,
-                Job.JobPriority.Low,
-                false);
-            MyJob.JobDescription = "job_waiting_desc";
-        }
-
-        // Get the first job on the queue.
-        if (MyJob == null)
-        {
-            MyJob = World.current.jobQueue.Dequeue();
+            MyJob = World.Current.jobQueue.Dequeue();
 
             // Check if we got a job from the queue.
             if (MyJob == null)
@@ -456,7 +436,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                     null,
                     UnityEngine.Random.Range(0.1f, 0.5f),
                     null,
-                    Job.JobPriority.Low,
+                    JobPriority.Low,
                     false);
                 MyJob.JobDescription = "job_waiting_desc";
             }
@@ -484,21 +464,21 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             return;
         }
 
-        MyJob.cbJobStopped += OnJobStopped;
+        MyJob.OnJobStopped += OnJobStopped;
 
         // Immediately check to see if the job tile is reachable.
         // NOTE: We might not be pathing to it right away (due to
         // requiring materials), but we still need to verify that the
         // final location can be reached.
         Profiler.BeginSample("PathGeneration");
-        if (MyJob.isNeed)
+        if (MyJob.IsNeed)
         {
             // This will calculate a path from curr to dest.
-            pathAStar = new Path_AStar(World.current, CurrTile, DestTile, need.RestoreNeedFurn.ObjectType, 0, false, true);
+            pathAStar = new Path_AStar(World.Current, CurrTile, DestTile, need.RestoreNeedFurn.ObjectType, 0, false, true);
         }
         else
         {
-            pathAStar = new Path_AStar(World.current, CurrTile, DestTile);
+            pathAStar = new Path_AStar(World.Current, CurrTile, DestTile);
         }
 
         Profiler.EndSample();
@@ -574,9 +554,9 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     {
         List<string> fulfillableInventoryRequirements = new List<string>();
 
-        if (MyJob != null && MyJob.isNeed && MyJob.critical == false)
+        if (MyJob != null && MyJob.IsNeed && MyJob.Critical == false)
         {
-            MyJob.tile = jobTile = new Path_AStar(World.current, CurrTile, null, MyJob.jobObjectType, 0, false, true).EndTile();
+            MyJob.tile = jobTile = new Path_AStar(World.Current, CurrTile, null, MyJob.JobObjectType, 0, false, true).EndTile();
         }
 
         if (MyJob == null || MyJob.MaterialNeedsMet())
@@ -608,7 +588,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 if (CurrTile == JobTile)
                 {
                     // We are at the job's site, so drop the inventory
-                    World.current.inventoryManager.PlaceInventory(MyJob, inventory);
+                    World.Current.inventoryManager.PlaceInventory(MyJob, inventory);
                     MyJob.DoWork(0); // This will call all cbJobWorked callbacks, because even though
                                      // we aren't progressing, it might want to do something with the fact
                                      // that the requirements are being met.
@@ -639,7 +619,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 (MyJob.canTakeFromStockpile || CurrTile.Furniture == null || CurrTile.Furniture.IsStockpile() == false))
             {
                 // Pick up the stuff!
-                World.current.inventoryManager.PlaceInventory(
+                World.Current.inventoryManager.PlaceInventory(
                     this,
                     CurrTile.Inventory,
                     MyJob.AmountDesiredOfInventoryType(CurrTile.Inventory));
@@ -669,7 +649,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                     foreach (string itemType in fulfillableInventoryRequirements)
                     {
                         desired = MyJob.inventoryRequirements[itemType];
-                        newPath = World.current.inventoryManager.GetPathToClosestInventoryOfType(
+                        newPath = World.Current.inventoryManager.GetPathToClosestInventoryOfType(
                                              desired.objectType,
                                              CurrTile,
                                              desired.maxStackSize - desired.StackSize,
@@ -725,7 +705,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         {
             if (job.acceptsAny == false)
             {
-                if (World.current.inventoryManager.QuickCheck(inv.objectType) == false)
+                if (World.Current.inventoryManager.QuickCheck(inv.objectType) == false)
                 {
                     // the job requires ALL inventory requirements to be met, and there is no source of a desired objectType
                     ///AbandonJob(true);
@@ -736,7 +716,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                     fulfillableInventoryRequirements.Add(inv.objectType);
                 }
             }
-            else if (World.current.inventoryManager.QuickCheck(inv.objectType))
+            else if (World.Current.inventoryManager.QuickCheck(inv.objectType))
             {
                 // there is a source for a desired objectType that the job will accept
                 fulfillableInventoryRequirements.Add(inv.objectType);
@@ -793,7 +773,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             {
                 // Generate a path to our destination.
                 // This will calculate a path from curr to dest.
-                pathAStar = new Path_AStar(World.current, CurrTile, DestTile);
+                pathAStar = new Path_AStar(World.Current, CurrTile, DestTile);
                 if (pathAStar.Length() == 0)
                 {
                     Debug.ULogErrorChannel("Character", "Path_AStar returned no path to destination!");
@@ -896,7 +876,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     private void OnJobStopped(Job j)
     {
         // Job completed (if non-repeating) or was cancelled.
-        j.cbJobStopped -= OnJobStopped;
+        j.OnJobStopped -= OnJobStopped;
 
         if (j != MyJob)
         {
@@ -910,10 +890,10 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     private void OnInventoryCreated(Inventory inv)
     {
         // First remove the callback.
-        World.current.cbInventoryCreated -= OnInventoryCreated;
+        World.Current.OnInventoryCreated -= OnInventoryCreated;
 
         // Get the relevant job and dequeue it from the waiting queue.
-        Job job = World.current.jobWaitingQueue.Dequeue();
+        Job job = World.Current.jobWaitingQueue.Dequeue();
 
         // Check if the initial job still exists.
         // It could have been deleted through the user
@@ -927,14 +907,14 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             {
                 // If so, enqueue the job onto the (normal)
                 // job queue.
-                World.current.jobQueue.Enqueue(job);
+                World.Current.jobQueue.Enqueue(job);
             }
             else
             {
                 // If not, (re)enqueue the job onto the waiting queu
                 // and also register a callback for the future.
-                World.current.jobWaitingQueue.Enqueue(job);
-                World.current.cbInventoryCreated += OnInventoryCreated;
+                World.Current.jobWaitingQueue.Enqueue(job);
+                World.Current.OnInventoryCreated += OnInventoryCreated;
             }
         }
     }

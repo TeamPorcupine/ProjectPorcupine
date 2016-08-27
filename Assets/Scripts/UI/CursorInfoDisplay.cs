@@ -69,7 +69,7 @@ public class CursorInfoDisplay
 
     public string GetCurrentBuildRequirements()
     {
-        if (World.current.furnitureJobPrototypes != null)
+        if (World.Current.furnitureJobPrototypes != null)
         {
             string temp = string.Empty;
             foreach (string itemName in WorldController.Instance.World.furnitureJobPrototypes[bmc.buildModeObjectType].inventoryRequirements.Keys)

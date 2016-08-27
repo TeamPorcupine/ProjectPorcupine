@@ -30,7 +30,7 @@ public class InventorySpriteController
 
         // Register our callback so that our GameObject gets updated whenever
         // the tile's type changes.
-        world.cbInventoryCreated += OnInventoryCreated;
+        world.OnInventoryCreated += OnInventoryCreated;
 
         // Check for pre-existing inventory, which won't do the callback.
         foreach (string objectType in world.inventoryManager.inventories.Keys)
@@ -83,7 +83,6 @@ public class InventorySpriteController
         // the object's into changes.
         // FIXME: Add on changed callbacks
         inv.OnInventoryChanged += OnInventoryChanged;
-
     }
 
     private void OnInventoryChanged(Inventory inv)
@@ -100,7 +99,7 @@ public class InventorySpriteController
         {
             Text text = inv_go.GetComponentInChildren<Text>();
 
-            // FIXME: If maxStackSize changed to/from 1, then we either need to create or destroy the text�.
+            // FIXME: If maxStackSize changed to/from 1, then we either need to create or destroy the text
             if (text != null)
             {
                 text.text = inv.StackSize.ToString();

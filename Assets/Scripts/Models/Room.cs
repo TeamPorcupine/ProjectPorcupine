@@ -35,7 +35,7 @@ public class Room : IXmlSerializable
     {
         get
         {
-            return World.current.GetRoomID(this);
+            return World.Current.GetRoomID(this);
         }
     }
 
@@ -71,7 +71,7 @@ public class Room : IXmlSerializable
         // enclosing piece to form a new room.
         // Check the NESW neighbours of the furniture's tile
         // and do flood fill from them.
-        World world = World.current;
+        World world = World.Current;
 
         Room oldRoom = sourceTile.Room;
 
@@ -157,7 +157,7 @@ public class Room : IXmlSerializable
         for (int i = 0; i < tiles.Count; i++)
         {
             // Assign to outside.
-            tiles[i].Room = World.current.GetOutsideRoom();
+            tiles[i].Room = World.Current.GetOutsideRoom();
         }
 
         tiles = new List<Tile>();
@@ -165,7 +165,7 @@ public class Room : IXmlSerializable
 
     public bool IsOutsideRoom()
     {
-        return this == World.current.GetOutsideRoom();
+        return this == World.Current.GetOutsideRoom();
     }
 
     public int GetSize()
@@ -419,7 +419,7 @@ public class Room : IXmlSerializable
         }
 
         // Tell the world that a new room has been formed.
-        World.current.AddRoom(newRoom);
+        World.Current.AddRoom(newRoom);
     }
 
     private void CopyGasPreasure(Room other, int sizeOfOtherRoom)
