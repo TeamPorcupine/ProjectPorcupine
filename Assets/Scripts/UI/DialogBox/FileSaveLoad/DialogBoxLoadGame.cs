@@ -6,20 +6,17 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using System.Collections;
+using System.IO;
+using System.Xml.Serialization;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
-using System.Xml.Serialization;
-using System.IO;
-
-
 
 public class DialogBoxLoadGame : DialogBoxLoadSaveGame
 {
-
     public GameObject dialog;
     public bool pressedDelete;
-    Component fileItem;
+    private Component fileItem;
 
     public override void ShowDialog()
     {
@@ -28,14 +25,6 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
         foreach (DialogListItem listItem in listItems)
         {
             listItem.doubleclick = OkayWasClicked;
-        }
-    }
-
-    void Update()
-    {
-        if (pressedDelete)
-        {
-            SetButtonLocation(fileItem);
         }
     }
 
@@ -52,8 +41,8 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
 
     public void OkayWasClicked()
     {
-
         string fileName = gameObject.GetComponentInChildren<InputField>().text;
+        
         // TODO: Is the filename valid?  I.E. we may want to ban path-delimiters (/ \ or :) and
         // maybe periods?      ../../some_important_file
 
@@ -61,29 +50,23 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
         // path, plus an extension!
         // In the end, we're looking for something that's going to be similar to this (depending on OS)
         //    C:\Users\Quill18\ApplicationData\MyCompanyName\MyGameName\Saves\SaveGameName123.sav
-
-        // Application.persistentDataPath == C:\Users\<username>\ApplicationData\MyCompanyName\MyGameName\
-
         string saveDirectoryPath = WorldController.Instance.FileSaveBasePath();
 
         EnsureDirectoryExists(saveDirectoryPath);
 
         string filePath = System.IO.Path.Combine(saveDirectoryPath, fileName + ".sav");
 
-        // At this point, filePath should look very much like
+        // At this point, filePath should look very much like:
         //     C:\Users\Quill18\ApplicationData\MyCompanyName\MyGameName\Saves\SaveGameName123.sav
-
         if (File.Exists(filePath) == false)
         {
             // TODO: Do file overwrite dialog box.
-
             Debug.LogError("File doesn't exist.  What?");
             CloseDialog();
             return;
         }
 
         CloseDialog();
-
         LoadWorld(filePath);
     }
 
@@ -91,23 +74,19 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
     {
         GameObject go = GameObject.FindGameObjectWithTag("DeleteButton");
         go.GetComponent<Image>().color = new Color(255, 255, 255, 0);
-        pressedDelete=false;
+        pressedDelete = false;
         base.CloseDialog();
     }
 
     public void DeleteFile()
     {
         string fileName = gameObject.GetComponentInChildren<InputField>().text;
-
         string saveDirectoryPath = WorldController.Instance.FileSaveBasePath();
-
         EnsureDirectoryExists(saveDirectoryPath);
-
         string filePath = System.IO.Path.Combine(saveDirectoryPath, fileName + ".sav");
 
         if (File.Exists(filePath) == false)
         {
-
             Debug.LogError("File doesn't exist.  What?");
             CloseDialog();
             return;
@@ -126,19 +105,23 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
 
     public void DeleteWasClicked()
     {
-
         dialog.SetActive(true);
     }
 
+    /// This function gets called when the user confirms a filename
+    /// from the load dialog box.
     public void LoadWorld(string filePath)
     {
-        // This function gets called when the user confirms a filename
-        // from the load dialog box.
-
         // Get the file name from the save file dialog box
-
         Debug.Log("LoadWorld button was clicked.");
-
         WorldController.Instance.LoadWorld(filePath);
+    }
+
+    private void Update()
+    {
+        if (pressedDelete)
+        {
+            SetButtonLocation(fileItem);
+        }
     }
 }
