@@ -6,10 +6,9 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-
-using System.Collections.Generic;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
@@ -17,67 +16,30 @@ using MoonSharp.Interpreter;
 using UnityEngine;
 
 // Inventory are things that are lying on the floor/stockpile, like a bunch of metal bars
-// or potentially a non-installed copy of furniture (e.g. a cabinet still in the box from Ikea)
-
+// or potentially a non-installed copy of furniture (e.g. a cabinet still in the box from Ikea).
 [MoonSharpUserData]
 public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
 {
     public string objectType = "Steel Plate";
     public int maxStackSize = 50;
     public float basePrice = 1f;
-
-    protected int _stackSize = 1;
-
-    public int stackSize
-    {
-        get 
-        {
-            return _stackSize; 
-        }
-
-        set
-        {
-            if (_stackSize != value)
-            {
-                _stackSize = value;
-                if (cbInventoryChanged != null)
-                {
-                    cbInventoryChanged(this);
-                }
-            }
-        }
-    }
-
-    public bool IsSelected { get; set; }
-
-    // The function we callback any time our tile's data changes
-    public event Action<Inventory> cbInventoryChanged;
-
     public Tile tile;
     public Character character;
 
     // Should this inventory be allowed to be picked up for completing a job?
-    public bool isLocked = false;
+    public bool locked = false;
+
+    protected int stackSize = 1;
 
     public Inventory()
     {
-    }
-
-    public static Inventory New(string objectType, int maxStackSize, int stackSize)
-    {
-        return new Inventory(objectType, maxStackSize, stackSize);
     }
 
     public Inventory(string objectType, int maxStackSize, int stackSize)
     {
         this.objectType = objectType;
         this.maxStackSize = maxStackSize;
-        this.stackSize = stackSize;
-    }
-
-    public static Inventory New(string objectType, int stackSize)
-    {
-        return new Inventory(objectType, stackSize);
+        this.StackSize = stackSize;
     }
 
     public Inventory(string objectType, int stackSize)
@@ -93,15 +55,54 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
             this.maxStackSize = 50;
         }
 
-        this.stackSize = stackSize;
+        this.StackSize = stackSize;
     }
 
     protected Inventory(Inventory other)
     {
         objectType = other.objectType;
         maxStackSize = other.maxStackSize;
-        stackSize = other.stackSize;
-        isLocked = other.isLocked;
+        StackSize = other.StackSize;
+        locked = other.locked;
+    }
+
+    // The function we callback any time our tile's data changes.
+    public event Action<Inventory> OnInventoryChanged;
+
+    public int StackSize
+    {
+        get 
+        {
+            return stackSize; 
+        }
+
+        set
+        {
+            if (stackSize != value)
+            {
+                stackSize = value;
+                if (OnInventoryChanged != null)
+                {
+                    OnInventoryChanged(this);
+                }
+            }
+        }
+    }
+
+    public bool IsSelected
+    {
+        get;
+        set;
+    }
+
+    public static Inventory New(string objectType, int maxStackSize, int stackSize)
+    {
+        return new Inventory(objectType, maxStackSize, stackSize);
+    }
+
+    public static Inventory New(string objectType, int stackSize)
+    {
+        return new Inventory(objectType, stackSize);
     }
 
     public virtual Inventory Clone()
@@ -128,7 +129,7 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
 
     public string GetJobDescription()
     {
-        return "";
+        return string.Empty;
     }
     #endregion
 
@@ -145,7 +146,7 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
         writer.WriteAttributeString("Y", tile.Y.ToString());
         writer.WriteAttributeString("objectType", objectType);
         writer.WriteAttributeString("maxStackSize", maxStackSize.ToString());
-        writer.WriteAttributeString("stackSize", stackSize.ToString());
+        writer.WriteAttributeString("stackSize", StackSize.ToString());
         writer.WriteAttributeString("basePrice", basePrice.ToString());
     }
 

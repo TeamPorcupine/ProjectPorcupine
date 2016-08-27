@@ -32,7 +32,11 @@ public class PowerSystem
 
         private set
         {
-            if (currentPower.Equals(value)) return;
+            if (currentPower.Equals(value))
+            {
+                return;
+            }
+
             currentPower = value;
             NotifyPowerConsumers();
         }

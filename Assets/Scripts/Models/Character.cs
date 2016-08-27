@@ -607,7 +607,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             // At this point, the job still requires inventory, but we aren't carrying it!
             // Are we standing on a tile with goods that are desired by the job?
             if (CurrTile.Inventory != null &&
-                MyJob.AmountDesiredOfInventoryType(CurrTile.Inventory) > 0 && !CurrTile.Inventory.isLocked &&
+                MyJob.AmountDesiredOfInventoryType(CurrTile.Inventory) > 0 && !CurrTile.Inventory.locked &&
                 (MyJob.canTakeFromStockpile || CurrTile.Furniture == null || CurrTile.Furniture.IsStockpile() == false))
             {
                 // Pick up the stuff!
@@ -644,7 +644,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                         newPath = World.current.inventoryManager.GetPathToClosestInventoryOfType(
                                              desired.objectType,
                                              CurrTile,
-                                             desired.maxStackSize - desired.stackSize,
+                                             desired.maxStackSize - desired.StackSize,
                                              MyJob.canTakeFromStockpile);
 
                         if (newPath == null || newPath.Length() < 1)
