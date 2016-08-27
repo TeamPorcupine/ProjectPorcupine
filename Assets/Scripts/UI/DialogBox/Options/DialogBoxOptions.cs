@@ -39,7 +39,7 @@ public class DialogBoxOptions : DialogBox
         // Allows you to quit in the editor.
         UnityEditor.EditorApplication.isPlaying = false;
         #else
-		Application.Quit();
+        Application.Quit();
         #endif
     }
 
