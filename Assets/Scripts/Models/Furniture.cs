@@ -511,9 +511,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
             case "Power":
                 reader.Read();
                 powerValue = reader.ReadContentAsFloat();
-
-                // TODO: PowerRelated = new PowerRelated();
-                // TODO: PowerRelated.ReadPrototype(reader);
+                //TODO: Connection = new Connection();
+                //TODO: Connection.ReadPrototype(reader);
                 break;
 
             case "Params":
