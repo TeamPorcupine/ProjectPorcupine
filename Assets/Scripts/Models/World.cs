@@ -333,7 +333,7 @@ public class World : IXmlSerializable
             return null;
         }
 
-        furn.CbOnRemoved += OnFurnitureRemoved;
+        furn.Removed += OnFurnitureRemoved;
         furnitures.Add(furn);
 
         // Do we need to recalculate our rooms?
