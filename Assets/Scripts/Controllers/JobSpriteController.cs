@@ -35,7 +35,7 @@ public class JobSpriteController
     void OnJobCreated(Job job)
     {
 
-        if (job.jobObjectType == null && job.jobTileType == null)
+        if (job.JobObjectType == null && job.JobTileType == null)
         {
             // This job doesn't really have an associated sprite with it, so no need to render.
             return;
@@ -57,11 +57,11 @@ public class JobSpriteController
         // Add our tile/GO pair to the dictionary.
         jobGameObjectMap.Add(job, job_go);
 
-        job_go.name = "JOB_" + job.jobObjectType + "_" + job.tile.X + "_" + job.tile.Y;
+        job_go.name = "JOB_" + job.JobObjectType + "_" + job.tile.X + "_" + job.tile.Y;
         job_go.transform.SetParent(jobParent.transform, true);
 
         SpriteRenderer sr = job_go.AddComponent<SpriteRenderer>();
-        if (job.jobTileType != null)
+        if (job.JobTileType != null)
         {
             //This job is for building a tile
             //For now, the only tile that could be is the floor, so just show a floor sprite
@@ -74,13 +74,13 @@ public class JobSpriteController
         {
             //This is a normal furniture job.
             job_go.transform.position = new Vector3(job.tile.X + ((job.furniturePrototype.Width - 1) / 2f), job.tile.Y + ((job.furniturePrototype.Height - 1) / 2f), 0);
-            sr.sprite = fsc.GetSpriteForFurniture (job.jobObjectType);
+            sr.sprite = fsc.GetSpriteForFurniture (job.JobObjectType);
         }
         sr.color = new Color(0.5f, 1f, 0.5f, 0.25f);
         sr.sortingLayerName = "Jobs";
 
         // FIXME: This hardcoding is not ideal!  <== Understatement
-        if (job.jobObjectType == "Door")
+        if (job.JobObjectType == "Door")
         {
             // By default, the door graphic is meant for walls to the east & west
             // Check to see if we actually have a wall north/south, and if so
@@ -97,8 +97,8 @@ public class JobSpriteController
         }
 
 
-        job.cbJobCompleted += OnJobEnded;
-        job.cbJobStopped += OnJobEnded;
+        job.OnJobCompleted += OnJobEnded;
+        job.OnJobStopped += OnJobEnded;
     }
 
     void OnJobEnded(Job job)
@@ -109,8 +109,8 @@ public class JobSpriteController
 
         GameObject job_go = jobGameObjectMap[job];
 
-        job.cbJobCompleted -= OnJobEnded;
-        job.cbJobStopped -= OnJobEnded;
+        job.OnJobCompleted -= OnJobEnded;
+        job.OnJobStopped -= OnJobEnded;
 
         GameObject.Destroy(job_go);
 

@@ -265,14 +265,14 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             return;
         }
 
-        myJob.cbJobStopped += OnJobStopped;
+        myJob.OnJobStopped += OnJobStopped;
 
         // Immediately check to see if the job tile is reachable.
         // NOTE: We might not be pathing to it right away (due to
         // requiring materials), but we still need to verify that the
         // final location can be reached.
         Profiler.BeginSample("PathGeneration");
-        if (myJob.isNeed)
+        if (myJob.IsNeed)
             pathAStar = new Path_AStar (World.current, CurrTile, DestTile, need.restoreNeedFurn.objectType, 0, false, true);    // This will calculate a path from curr to dest.
         else
             pathAStar = new Path_AStar (World.current, CurrTile, DestTile);
@@ -348,9 +348,9 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     {
         List<string> fulfillableInventoryRequirements = new List<string>();
 
-        if (myJob != null && myJob.isNeed && myJob.critical == false)
+        if (myJob != null && myJob.IsNeed && myJob.Critical == false)
         {
-            myJob.tile = jobTile = new Path_AStar (World.current, CurrTile, null, myJob.jobObjectType, 0, false, true).EndTile ();
+            myJob.tile = jobTile = new Path_AStar (World.current, CurrTile, null, myJob.JobObjectType, 0, false, true).EndTile ();
         }
         if (myJob == null || myJob.MaterialNeedsMet())
         {
@@ -562,9 +562,9 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         {
             return;
         }
-        if (myJob.isNeed)
+        if (myJob.IsNeed)
         {
-            myJob.cbJobStopped -= OnJobStopped;
+            myJob.OnJobStopped -= OnJobStopped;
             myJob = null;
             return;
         }
@@ -584,7 +584,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             // Lastly, remove the job from "myJob".
             World.current.jobWaitingQueue.Enqueue(myJob);
             World.current.cbInventoryCreated += OnInventoryCreated;
-            myJob.cbJobStopped -= OnJobStopped;
+            myJob.OnJobStopped -= OnJobStopped;
             myJob = null;
         }
         else
@@ -592,7 +592,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             // If the job gets abandoned because of pathing issues or something else,
             // just put it into the normal job queue and remove the job from "myJob".
             World.current.jobQueue.Enqueue(myJob);
-            myJob.cbJobStopped -= OnJobStopped;
+            myJob.OnJobStopped -= OnJobStopped;
             myJob = null;
         }
     }
@@ -735,7 +735,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     private void OnJobStopped(Job j)
     {
         // Job completed (if non-repeating) or was cancelled.
-        j.cbJobStopped -= OnJobStopped;
+        j.OnJobStopped -= OnJobStopped;
 
         if (j != myJob)
         {
