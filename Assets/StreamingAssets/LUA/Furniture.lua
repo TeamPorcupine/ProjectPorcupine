@@ -81,71 +81,72 @@ function GetSpriteName_Door( furniture )
 	if (furniture.verticalDoor == true) then
 			-- Door is closed
 		if (openness < 0.1) then
-			return "DoorVertical_0"
+			return "doorVertical_0"
 		end
 
 		if (openness < 0.25) then
-			return "DoorVertical_1"
+			return "doorVertical_1"
 		end
 
 		if (openness < 0.5) then
-			return "DoorVertical_2"
+			return "doorVertical_2"
 		end
 
 		if (openness < 0.75) then
-			return "DoorVertical_3"
+			return "doorVertical_3"
 		end
 
 		if (openness < 0.9) then
-			return "DoorVertical_4"
+			return "doorVertical_4"
 		end
 		-- Door is a fully open
-		return "DoorVertical_5"
+		return "doorVertical_5"
 	end
 
 
 	-- Door is closed
 	if (openness < 0.1) then
-		return "DoorHorizontal_0"
+		return "doorHorizontal_0"
 	end
 
 	if (openness < 0.25) then
-		return "DoorHorizontal_1"
+		return "doorHorizontal_1"
 	end
 
 	if (openness < 0.5) then
-		return "DoorHorizontal_2"
+		return "doorHorizontal_2"
 	end
 
 	if (openness < 0.75) then
-		return "DoorHorizontal_3"
+		return "doorHorizontal_3"
 	end
 
 	if (openness < 0.9) then
-		return "DoorHorizontal_4"
+		return "doorHorizontal_4"
 	end
 	-- Door is a fully open
-	return "DoorHorizontal_5"
+	return "doorHorizontal_5"
 end
 
 function GetSpriteName_Airlock( furniture )
 
 	local openness = furniture.Parameters["openness"].ToFloat()
+    local baseName = furniture.objectType
 
 	-- Door is closed
 	if (openness < 0.1) then
-		return "Airlock"
+		return baseName
 	end
 	-- Door is a bit open
 	if (openness < 0.5) then
-		return "Airlock_openness_1"
+		return baseName .. "_openness_1"
 	end
 	-- Door is a lot open
 	if (openness < 0.9) then
-		return "Airlock_openness_2"
+		return baseName .. "_openness_2"
 	end
 	-- Door is a fully open
-	return "Airlock_openness_3"
+	return baseName .. "_openness_3"
 end
 
 function Stockpile_GetItemsFromFilter( furniture )
