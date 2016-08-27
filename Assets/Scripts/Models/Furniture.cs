@@ -644,7 +644,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     {
         j.furniture = this;
         jobs.Add(j);
-        j.cbJobStopped += OnJobStopped;
+        j.OnJobStopped += OnJobStopped;
         World.current.jobQueue.Enqueue(j);
     }
 
@@ -655,7 +655,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
 
     protected void RemoveJob(Job j)
     {
-        j.cbJobStopped -= OnJobStopped;
+        j.OnJobStopped -= OnJobStopped;
         jobs.Remove(j);
         j.furniture = null;
     }

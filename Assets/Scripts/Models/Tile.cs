@@ -105,7 +105,7 @@ public class Tile : IXmlSerializable, ISelectable
     public static void ChangeTileTypeJobComplete(Job theJob)
     {
         // FIXME: For now this is hardcoded to build floor
-        theJob.tile.Type = theJob.jobTileType;
+        theJob.tile.Type = theJob.JobTileType;
 
         // FIXME: I don't like having to manually and explicitly set
         // flags that preven conflicts. It's too easy to forget to set/clear them!

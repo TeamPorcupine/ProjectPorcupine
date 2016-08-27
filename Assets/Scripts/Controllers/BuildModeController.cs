@@ -125,7 +125,7 @@ public class BuildModeController
                         // flags that preven conflicts. It's too easy to forget to set/clear them!
                         Tile offsetTile = WorldController.Instance.world.GetTileAt(x_off, y_off);
                         offsetTile.PendingBuildJob = j;
-                        j.cbJobStopped += (theJob) =>
+                        j.OnJobStopped += (theJob) =>
                             {
                                 offsetTile.PendingBuildJob = null;
                             };
@@ -135,7 +135,7 @@ public class BuildModeController
                 // Add the job to the queue
                 if (Settings.getSettingAsBool("DialogBoxSettings_developerModeToggle", false))
                 {
-                    WorldController.Instance.world.PlaceFurniture(j.jobObjectType, j.tile);
+                    WorldController.Instance.world.PlaceFurniture(j.JobObjectType, j.tile);
                 }
                 else
                 {
@@ -166,7 +166,7 @@ public class BuildModeController
                 // FIXME: I don't like having to manually and explicitly set
                 // flags that preven conflicts. It's too easy to forget to set/clear them!
                 t.PendingBuildJob = j;
-                j.cbJobStopped += (theJob) =>
+                j.OnJobStopped += (theJob) =>
                 {
                     theJob.tile.PendingBuildJob = null;
                 };
@@ -174,7 +174,7 @@ public class BuildModeController
                 // Add the job to the queue
                 if (Settings.getSettingAsBool("DialogBoxSettings_developerModeToggle", false))
                 {
-                    j.tile.Type = j.jobTileType;
+                    j.tile.Type = j.JobTileType;
                 }
                 else
                 {
