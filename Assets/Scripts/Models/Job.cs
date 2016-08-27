@@ -46,6 +46,11 @@ public class Job
 
     protected bool jobRepeats = false;
 
+    // The job has been stopped, either because it's non-repeating or was cancelled.
+    private List<string> jobCompletedLuaActions;
+
+    private List<string> jobWorkedLuaActions;
+
     public Job(Tile tile, string jobObjectType, Action<Job> cbJobComplete, float jobTime, Inventory[] inventoryRequirements, JobPriority jobPriority, bool jobRepeats = false, bool isNeed = false, bool critical = false)
     {
         this.tile = tile;
@@ -58,8 +63,8 @@ public class Job
         this.jobPriority = jobPriority;
         this.JobDescription = "job_error_missing_desc";
 
-        cbJobWorkedLua = new List<string>();
-        cbJobCompletedLua = new List<string>();
+        jobWorkedLuaActions = new List<string>();
+        jobCompletedLuaActions = new List<string>();
 
         this.inventoryRequirements = new Dictionary<string, Inventory>();
         if (inventoryRequirements != null)
@@ -82,8 +87,8 @@ public class Job
         this.adjacent = adjacent;
         this.JobDescription = "job_error_missing_desc";
 
-        cbJobWorkedLua = new List<string>();
-        cbJobCompletedLua = new List<string>();
+        jobWorkedLuaActions = new List<string>();
+        jobCompletedLuaActions = new List<string>();
 
         this.inventoryRequirements = new Dictionary<string, Inventory>();
         if (inventoryRequirements != null)
@@ -107,8 +112,8 @@ public class Job
         this.JobDescription = other.JobDescription;
         this.acceptsAny = other.acceptsAny;
 
-        cbJobWorkedLua = new List<string>(other.cbJobWorkedLua);
-        cbJobCompletedLua = new List<string>(other.cbJobWorkedLua);
+        jobWorkedLuaActions = new List<string>(other.jobWorkedLuaActions);
+        jobCompletedLuaActions = new List<string>(other.jobWorkedLuaActions);
 
         this.inventoryRequirements = new Dictionary<string, Inventory>();
         if (inventoryRequirements != null)
@@ -124,11 +129,6 @@ public class Job
     {
         High, Medium, Low 
     }
-
-    // The job has been stopped, either because it's non-repeating or was cancelled.
-    private List<string> cbJobCompletedLua;
-
-    private List<string> cbJobWorkedLua;
 
     public float jobTime { get; protected set; }
 
@@ -164,22 +164,22 @@ public class Job
     
     public void RegisterJobCompletedCallback(string cb)
     {
-        cbJobCompletedLua.Add(cb);
+        jobCompletedLuaActions.Add(cb);
     }
 
     public void UnregisterJobCompletedCallback(string cb)
     {
-        cbJobCompletedLua.Remove(cb);
+        jobCompletedLuaActions.Remove(cb);
     }
     
     public void RegisterJobWorkedCallback(string cb)
     {
-        cbJobWorkedLua.Add(cb);
+        jobWorkedLuaActions.Add(cb);
     }
 
     public void UnregisterJobWorkedCallback(string cb)
     {
-        cbJobWorkedLua.Remove(cb);
+        jobWorkedLuaActions.Remove(cb);
     }
 
     public void DoWork(float workTime)
@@ -191,9 +191,9 @@ public class Job
             cbJobWorked(this);
         }
 
-        if (cbJobWorkedLua != null)
+        if (jobWorkedLuaActions != null)
         {
-            foreach (string luaFunction in cbJobWorkedLua.ToList())
+            foreach (string luaFunction in jobWorkedLuaActions.ToList())
             {
                 LuaUtilities.CallFunction(luaFunction, this);
             }
@@ -217,7 +217,7 @@ public class Job
                 cbJobCompleted(this);
             }
 
-            foreach (string luaFunction in cbJobCompletedLua.ToList())
+            foreach (string luaFunction in jobCompletedLuaActions.ToList())
             {
                 LuaUtilities.CallFunction(luaFunction, this);
             }
