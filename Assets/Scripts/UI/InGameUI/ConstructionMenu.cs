@@ -30,13 +30,13 @@ public class ConstructionMenu : MonoBehaviour
 
     public void OnClickFloors()
     {
-        DeactivateSubs();
+        furnitureMenu.SetActive(false);
         ToggleMenu(floorMenu);
     }
 
     public void OnClickFurniture()
     {
-        DeactivateSubs();
+        floorMenu.SetActive(false);
         ToggleMenu(furnitureMenu);
     }
 
