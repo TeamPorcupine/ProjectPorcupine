@@ -23,29 +23,6 @@ public class InventoryManager
         inventories = new Dictionary<string, List<Inventory>>();
     }
 
-    private void CleanupInventory(Inventory inv)
-    {
-        if (inv.StackSize == 0)
-        {
-            if (inventories.ContainsKey(inv.objectType))
-            {
-                inventories[inv.objectType].Remove(inv);
-            }
-
-            if (inv.tile != null)
-            {
-                inv.tile.Inventory = null;
-                inv.tile = null;
-            }
-
-            if (inv.character != null)
-            {
-                inv.character.inventory = null;
-                inv.character = null;
-            }
-        }
-    }
-
     public bool PlaceInventory(Tile tile, Inventory inv)
     {
         bool tileWasEmpty = tile.Inventory == null;
@@ -203,7 +180,7 @@ public class InventoryManager
 
     private void CleanupInventory(Inventory inv)
     {
-        if (inv.stackSize == 0)
+        if (inv.StackSize == 0)
         {
             if (inventories.ContainsKey(inv.objectType))
             {
