@@ -200,7 +200,7 @@ public class World : IXmlSerializable
     
     public void SetFurnitureJobPrototype(Job j, Furniture f)
     {
-        furnitureJobPrototypes[f.objectType] = j;
+        furnitureJobPrototypes[f.ObjectType] = j;
     }
 
     /// <summary>
@@ -333,20 +333,20 @@ public class World : IXmlSerializable
             return null;
         }
 
-        furn.cbOnRemoved += OnFurnitureRemoved;
+        furn.CbOnRemoved += OnFurnitureRemoved;
         furnitures.Add(furn);
 
         // Do we need to recalculate our rooms?
-        if (doRoomFloodFill && furn.roomEnclosure)
+        if (doRoomFloodFill && furn.RoomEnclosure)
         {
-            Room.DoRoomFloodFill(furn.tile);
+            Room.DoRoomFloodFill(furn.Tile);
         }
 
         if (OnFurnitureCreated != null)
         {
             OnFurnitureCreated(furn);
 
-            if (furn.movementCost != 1)
+            if (furn.MovementCost != 1)
             {
                 // Since tiles return movement cost as their base cost multiplied
                 // buy the furniture's movement cost, a furniture movement cost

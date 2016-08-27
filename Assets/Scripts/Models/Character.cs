@@ -78,7 +78,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     /// Use only for serialization
     public Character()
     {
-        needs = new Need[World.current.needPrototypes.Count];
+        needs = new Need[World.Current.needPrototypes.Count];
         LoadNeeds();
     }
 
@@ -405,12 +405,12 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         if (needPercent > 50 && needPercent < 100 && need != null)
         {
-            MyJob = new Job(null, need.restoreNeedFurn.objectType, need.CompleteJobNorm, need.restoreNeedTime, null, Job.JobPriority.High, false, true, false);
+            MyJob = new Job(null, need.RestoreNeedFurn.ObjectType, need.CompleteJobNorm, need.RestoreNeedTime, null, Job.JobPriority.High, false, true, false);
         }
 
-        if (needPercent == 100 && need != null && need.completeOnFail)
+        if (needPercent == 100 && need != null && need.CompleteOnFail)
         {
-            MyJob = new Job(CurrTile, null, need.CompleteJobCrit, need.restoreNeedTime * 10, null, Job.JobPriority.High, false, true, true);
+            MyJob = new Job(CurrTile, null, need.CompleteJobCrit, need.RestoreNeedTime * 10, null, Job.JobPriority.High, false, true, true);
         }
 
         // Get the first job on the queue.
@@ -466,7 +466,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         if (MyJob.isNeed)
         {
             // This will calculate a path from curr to dest.
-            pathAStar = new Path_AStar(World.Current, CurrTile, DestTile, need.restoreNeedFurn.objectType, 0, false, true);
+            pathAStar = new Path_AStar(World.Current, CurrTile, DestTile, need.RestoreNeedFurn.ObjectType, 0, false, true);
         }
         else
         {
@@ -607,7 +607,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             // At this point, the job still requires inventory, but we aren't carrying it!
             // Are we standing on a tile with goods that are desired by the job?
             if (CurrTile.Inventory != null &&
-                MyJob.AmountDesiredOfInventoryType(CurrTile.Inventory) > 0 && !CurrTile.Inventory.isLocked &&
+                MyJob.AmountDesiredOfInventoryType(CurrTile.Inventory) > 0 && !CurrTile.Inventory.locked &&
                 (MyJob.canTakeFromStockpile || CurrTile.Furniture == null || CurrTile.Furniture.IsStockpile() == false))
             {
                 // Pick up the stuff!
@@ -644,7 +644,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                         newPath = World.Current.inventoryManager.GetPathToClosestInventoryOfType(
                                              desired.objectType,
                                              CurrTile,
-                                             desired.maxStackSize - desired.stackSize,
+                                             desired.maxStackSize - desired.StackSize,
                                              MyJob.canTakeFromStockpile);
 
                         if (newPath == null || newPath.Length() < 1)

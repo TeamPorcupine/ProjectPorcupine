@@ -127,7 +127,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
 
         if (!powerValue.IsZero())
         {
-            World.current.powerSystem.AddToPowerGrid(this);
+            World.Current.powerSystem.AddToPowerGrid(this);
         }
 
         if (other.funcPositionValidation != null)
@@ -628,7 +628,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         EventActions.Trigger("OnUninstall", this);
 
         // Update thermalDiffusifity to default value
-        World.current.temperature.SetThermalDiffusivity(Tile.X, Tile.Y, Temperature.defaultThermalDiffusivity);
+        World.Current.temperature.SetThermalDiffusivity(Tile.X, Tile.Y, Temperature.defaultThermalDiffusivity);
 
         Tile.UnplaceFurniture();
 
@@ -743,8 +743,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         // Prevent construction too close to the world's edge
         const int MinEdgeDistance = 5;
         bool tooCloseToEdge = t.X < MinEdgeDistance || t.Y < MinEdgeDistance ||
-            (World.current.Width - t.X) <= MinEdgeDistance ||
-            (World.current.Height - t.Y) <= MinEdgeDistance;
+            (World.Current.Width - t.X) <= MinEdgeDistance ||
+            (World.Current.Height - t.Y) <= MinEdgeDistance;
 
         if (tooCloseToEdge)
         {
@@ -763,7 +763,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         {
             for (int y_off = t.Y; y_off < (t.Y + Height); y_off++)
             {
-                Tile t2 = World.current.GetTileAt(x_off, y_off);
+                Tile t2 = World.Current.GetTileAt(x_off, y_off);
 
                 // Check to see if there is furniture which is replaceable
                 bool isReplaceable = false;

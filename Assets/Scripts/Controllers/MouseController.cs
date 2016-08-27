@@ -389,7 +389,7 @@ public class MouseController
                     if (bmc.buildMode == BuildMode.FURNITURE)
                     {
                         Furniture proto = World.Current.furniturePrototypes[bmc.buildModeObjectType];
-                        if (IsPartOfDrag(t, dragParams, proto.dragType))
+                        if (IsPartOfDrag(t, dragParams, proto.DragType))
                         {
                             ShowFurnitureSpriteAtTile(bmc.buildModeObjectType, t);
                         }
@@ -540,8 +540,8 @@ public class MouseController
     {
         Vector3 oldPos = Camera.main.transform.position;
 
-        oldPos.x = Mathf.Clamp(oldPos.x, 0, (float)World.current.Width - 1);
-        oldPos.y = Mathf.Clamp(oldPos.y, 0, (float)World.current.Height - 1);
+        oldPos.x = Mathf.Clamp(oldPos.x, 0, (float)World.Current.Width - 1);
+        oldPos.y = Mathf.Clamp(oldPos.y, 0, (float)World.Current.Height - 1);
 
         Camera.main.transform.position = oldPos;
     }
