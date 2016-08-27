@@ -99,18 +99,16 @@ interface IInterfaceable { }
 // Braces are on a new line. ;)
 class Class
 {
-    // Fields backing properties start with an underscore and should be private.
-    private int _memberField;
-
     // Properties should use PascalCasing.
-    public int MemberField { get { return _memberField; } }
+    public int MemberProperty { get; set; }
 
-    // Regular fields not backing a property should be camelCased.
-    private string someString;
+    // Private fields should be camelCased. 
+    // Use properties for any field that needs access levels other than private
+    private string someField;
 
     // Methods should use PascalCasing.
     // Method parameters should be camelCased.
-    public void SomeMethod( int functionParameter )
+    public void SomeMethod(int functionParameter)
     {
         // Local variables should also be camelCased.
         int myLocalVariable = 0;
@@ -126,7 +124,7 @@ Additionally, for the sake of simplicity, we are standardizing on what should be
 ![screen shot 2016-08-16 at 8 03 22 pm](https://cloud.githubusercontent.com/assets/777633/17719999/920fb534-63ec-11e6-8903-3725f2cd05b0.png)
 ![screen shot 2016-08-16 at 8 03 36 pm](https://cloud.githubusercontent.com/assets/777633/17719998/920cff6a-63ec-11e6-8f76-0ac7a5fa0c9d.png)
 
-It is also highly recommended that you install [StyleCop](https://github.com/TeamPorcupine/ProjectPorcupine/wiki/StyleCop), which will automatically point out any deviations from the project's style guidelines.
+It is also highly recommended that you install [StyleCop](https://github.com/TeamPorcupine/ProjectPorcupine/wiki/StyleCop), which will automatically point out any deviations from the project's style guidelines. Any deviations in your code which can be tracked by StyleCop will result in the rejection of your Pull Request.
 
 ## Adding Furniture and Inventory
 
