@@ -60,7 +60,7 @@ public class TileSpriteController
 
         // Register our callback so that our GameObject gets updated whenever
         // the tile's type changes.
-        world.cbTileChanged += OnTileChanged;
+        world.OnTileChanged += OnTileChanged;
     }
 
     // THIS IS AN EXAMPLE -- NOT CURRENTLY USED (and probably out of date)

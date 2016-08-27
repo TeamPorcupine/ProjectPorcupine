@@ -25,7 +25,7 @@ public class DialogBoxTradeItem : MonoBehaviour
 
     public void SetupTradeItem(TradeItem item)
     {
-        item = item;
+        this.item = item;
         BindInterface();
     }
 

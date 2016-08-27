@@ -278,7 +278,7 @@ public class OverlayMap : MonoBehaviour
                 }
 
                 Tile tile = WorldController.Instance.GetTileAtWorldCoord(new Vector3(x, y, 0));
-                return (int)script.Call(handle, new object[] { tile, World.current }).ToScalar().CastToNumber();
+                return (int)script.Call(handle, new object[] { tile, World.Current }).ToScalar().CastToNumber();
             };
 
             ColorMapSG = descr.colorMap;
