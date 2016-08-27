@@ -6,10 +6,10 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using UnityEngine;
+using System;
 using System.Collections.Generic;
 using Priority_Queue;
-using System;
+using UnityEngine;
 
 /// <summary>
 /// Wraps the FastPriorityQueue class so that it's both easy-to-use,
@@ -21,13 +21,13 @@ public class PathfindingPriorityQueue<T>
     /// <summary>
     /// The underlying FastPriorityQueue instance.
     /// </summary>
-    protected FastPriorityQueue<WrappedNode> _underlyingQueue;
+    protected FastPriorityQueue<WrappedNode> underlyingQueue;
 
     /// <summary>
     /// The map between data and WrappedNodes.
     /// Used to make operations like Contains and UpdatePriority more efficient.
     /// </summary>
-    protected Dictionary<T, WrappedNode> _mapDataToWrappedNode;
+    protected Dictionary<T, WrappedNode> mapDataToWrappedNode;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PathfindingPriorityQueue`1"/> class.
@@ -35,27 +35,19 @@ public class PathfindingPriorityQueue<T>
     /// <param name="startingSize">The starting size.</param>
     public PathfindingPriorityQueue(int startingSize = 10)
     {
-        _underlyingQueue = new FastPriorityQueue<WrappedNode>(startingSize);
-        _mapDataToWrappedNode = new Dictionary<T, WrappedNode>();
+        underlyingQueue = new FastPriorityQueue<WrappedNode>(startingSize);
+        mapDataToWrappedNode = new Dictionary<T, WrappedNode>();
     }
 
     /// <summary>
-    /// A version of a PriorityQueueNode that contains a reference to data.
+    /// Returns the number of items in the queue.
     /// </summary>
-    protected class WrappedNode : FastPriorityQueueNode
+    /// <value>The count.</value>
+    public int Count
     {
-        /// <summary>
-        /// The data that this WrappedNode represents in the queue.
-        /// </summary>
-        public readonly T data;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PathfindingPriorityQueue`1+WrappedNode"/> class.
-        /// </summary>
-        /// <param name="data">The data that this WrappedNode represents in the queue.</param>
-        public WrappedNode(T data)
+        get
         {
-            this.data = data;
+            return underlyingQueue.Count;
         }
     }
 
@@ -63,10 +55,10 @@ public class PathfindingPriorityQueue<T>
     /// Checks whether the PQ contains the specified data.
     /// Uses a Dictionary for lookup, so it should only take O(1).
     /// </summary>
-    /// <param name="data">Data.</param>
+    /// <param name="data">Datakey to check.</param>
     public bool Contains(T data)
     {
-        return _mapDataToWrappedNode.ContainsKey(data);
+        return mapDataToWrappedNode.ContainsKey(data);
     }
 
     /// <summary>
@@ -78,20 +70,20 @@ public class PathfindingPriorityQueue<T>
     /// <param name="priority">The priority of the data.</param>
     public void Enqueue(T data, float priority)
     {
-        if (_mapDataToWrappedNode.ContainsKey(data))
+        if (mapDataToWrappedNode.ContainsKey(data))
         {
             Debug.ULogErrorChannel("PathfindingPriorityQueue", "Priority Queue can't re-enqueue a node that's already enqueued.");
             return;
         }
 
-        if (_underlyingQueue.Count == _underlyingQueue.MaxSize)
+        if (underlyingQueue.Count == underlyingQueue.MaxSize)
         {
-            _underlyingQueue.Resize(2 * _underlyingQueue.MaxSize + 1);
+            underlyingQueue.Resize((2 * underlyingQueue.MaxSize) + 1);
         }
 
-        WrappedNode toAdd = new WrappedNode(data);
-        _underlyingQueue.Enqueue(toAdd, priority);
-        _mapDataToWrappedNode[data] = toAdd;
+        WrappedNode newNode = new WrappedNode(data);
+        underlyingQueue.Enqueue(newNode, priority);
+        mapDataToWrappedNode[data] = newNode;
     }
 
     /// <summary>
@@ -101,21 +93,25 @@ public class PathfindingPriorityQueue<T>
     /// <param name="priority">The new priority value.</param>
     public void UpdatePriority(T data, float priority)
     {
-        WrappedNode node = _mapDataToWrappedNode[data];
-        _underlyingQueue.UpdatePriority(node, priority);
+        WrappedNode node = mapDataToWrappedNode[data];
+        underlyingQueue.UpdatePriority(node, priority);
     }
 
     /// <summary>
-    /// Enqueues the or update.
+    /// Enqueues or updates data.
     /// </summary>
-    /// <param name="data">Data.</param>
-    /// <param name="priority">Priority.</param>
+    /// <param name="data">Datakey to enqueue or update..</param>
+    /// <param name="priority">New priority level.</param>
     public void EnqueueOrUpdate(T data, float priority)
     {
-        if (_mapDataToWrappedNode.ContainsKey(data))
+        if (mapDataToWrappedNode.ContainsKey(data))
+        {
             UpdatePriority(data, priority);
+        }
         else
+        {
             Enqueue(data, priority);
+        }
     }
 
     /// <summary>
@@ -123,21 +119,28 @@ public class PathfindingPriorityQueue<T>
     /// </summary>
     public T Dequeue()
     {
-        WrappedNode popped = _underlyingQueue.Dequeue();
-        _mapDataToWrappedNode.Remove(popped.data);
-        return popped.data;
+        WrappedNode popped = underlyingQueue.Dequeue();
+        mapDataToWrappedNode.Remove(popped.Data);
+        return popped.Data;
     }
 
     /// <summary>
-    /// Returns the number of items in the queue.
+    /// A version of a PriorityQueueNode that contains a reference to data.
     /// </summary>
-    /// <value>The count.</value>
-    public int Count
+    protected class WrappedNode : FastPriorityQueueNode
     {
-        get
+        /// <summary>
+        /// The data that this WrappedNode represents in the queue.
+        /// </summary>
+        public readonly T Data;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PathfindingPriorityQueue`1+WrappedNode"/> class.
+        /// </summary>
+        /// <param name="data">The data that this WrappedNode represents in the queue.</param>
+        public WrappedNode(T data)
         {
-            return _underlyingQueue.Count;
+            this.Data = data;
         }
     }
 }
-

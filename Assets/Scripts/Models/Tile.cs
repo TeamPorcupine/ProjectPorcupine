@@ -92,7 +92,7 @@ public class Tile : IXmlSerializable, ISelectable
             // TODO: Permanent solution for handeling when a character can walk in empty tiles is required
             if (Type.MovementCostLua == null)
             {
-                return Type.BaseMovementCost * (Furniture != null ? Furniture.movementCost : 1);
+                return Type.BaseMovementCost * (Furniture != null ? Furniture.MovementCost : 1);
             }
 
             return (float)LuaUtilities.CallFunction(Type.MovementCostLua, this).Number;
@@ -105,7 +105,7 @@ public class Tile : IXmlSerializable, ISelectable
     public static void ChangeTileTypeJobComplete(Job theJob)
     {
         // FIXME: For now this is hardcoded to build floor
-        theJob.tile.Type = theJob.jobTileType;
+        theJob.tile.Type = theJob.JobTileType;
 
         // FIXME: I don't like having to manually and explicitly set
         // flags that preven conflicts. It's too easy to forget to set/clear them!
@@ -125,7 +125,7 @@ public class Tile : IXmlSerializable, ISelectable
         {
             for (int y_off = Y; y_off < Y + furniture.Height; y_off++)
             {
-                Tile tile = World.current.GetTileAt(x_off, y_off);
+                Tile tile = World.Current.GetTileAt(x_off, y_off);
                 tile.Furniture = null;
             }
         }
@@ -150,7 +150,7 @@ public class Tile : IXmlSerializable, ISelectable
         {
             for (int y_off = Y; y_off < Y + objInstance.Height; y_off++)
             {
-                Tile t = World.current.GetTileAt(x_off, y_off);
+                Tile t = World.Current.GetTileAt(x_off, y_off);
                 t.Furniture = objInstance;
             }
         }
@@ -175,14 +175,14 @@ public class Tile : IXmlSerializable, ISelectable
                 return false;
             }
 
-            int numToMove = inventory.stackSize;
-            if (Inventory.stackSize + numToMove > Inventory.maxStackSize)
+            int numToMove = inventory.StackSize;
+            if (Inventory.StackSize + numToMove > Inventory.maxStackSize)
             {
-                numToMove = Inventory.maxStackSize - Inventory.stackSize;
+                numToMove = Inventory.maxStackSize - Inventory.StackSize;
             }
 
-            Inventory.stackSize += numToMove;
-            inventory.stackSize -= numToMove;
+            Inventory.StackSize += numToMove;
+            inventory.StackSize -= numToMove;
 
             return true;
         }
@@ -193,7 +193,7 @@ public class Tile : IXmlSerializable, ISelectable
         // empty and has to be removed from the previous lists.
         Inventory = inventory.Clone();
         Inventory.tile = this;
-        inventory.stackSize = 0;
+        inventory.StackSize = 0;
 
         return true;
     }
@@ -222,24 +222,24 @@ public class Tile : IXmlSerializable, ISelectable
     {
         Tile[] ns = diagOkay == false ? new Tile[4] : new Tile[8];
 
-        Tile tile = World.current.GetTileAt(X, Y + 1);
+        Tile tile = World.Current.GetTileAt(X, Y + 1);
         ns[0] = tile; // Could be null, but that's okay.
-        tile = World.current.GetTileAt(X + 1, Y);
+        tile = World.Current.GetTileAt(X + 1, Y);
         ns[1] = tile; // Could be null, but that's okay.
-        tile = World.current.GetTileAt(X, Y - 1);
+        tile = World.Current.GetTileAt(X, Y - 1);
         ns[2] = tile; // Could be null, but that's okay.
-        tile = World.current.GetTileAt(X - 1, Y);
+        tile = World.Current.GetTileAt(X - 1, Y);
         ns[3] = tile; // Could be null, but that's okay.
 
         if (diagOkay == true)
         {
-            tile = World.current.GetTileAt(X + 1, Y + 1);
+            tile = World.Current.GetTileAt(X + 1, Y + 1);
             ns[4] = tile; // Could be null, but that's okay.
-            tile = World.current.GetTileAt(X + 1, Y - 1);
+            tile = World.Current.GetTileAt(X + 1, Y - 1);
             ns[5] = tile; // Could be null, but that's okay.
-            tile = World.current.GetTileAt(X - 1, Y - 1);
+            tile = World.Current.GetTileAt(X - 1, Y - 1);
             ns[6] = tile; // Could be null, but that's okay.
-            tile = World.current.GetTileAt(X - 1, Y + 1);
+            tile = World.Current.GetTileAt(X - 1, Y + 1);
             ns[7] = tile; // Could be null, but that's okay.
         }
 
@@ -270,7 +270,7 @@ public class Tile : IXmlSerializable, ISelectable
     public void ReadXml(XmlReader reader)
     {
         // X and Y have already been read/processed
-        Room = World.current.GetRoomFromID(int.Parse(reader.GetAttribute("RoomID")));
+        Room = World.Current.GetRoomFromID(int.Parse(reader.GetAttribute("RoomID")));
         if (Room != null)
         {
             Room.AssignTile(this);
@@ -298,22 +298,22 @@ public class Tile : IXmlSerializable, ISelectable
 
     public Tile North()
     {
-        return World.current.GetTileAt(X, Y + 1);
+        return World.Current.GetTileAt(X, Y + 1);
     }
 
     public Tile South()
     {
-        return World.current.GetTileAt(X, Y - 1);
+        return World.Current.GetTileAt(X, Y - 1);
     }
 
     public Tile East()
     {
-        return World.current.GetTileAt(X + 1, Y);
+        return World.Current.GetTileAt(X + 1, Y);
     }
 
     public Tile West()
     {
-        return World.current.GetTileAt(X - 1, Y);
+        return World.Current.GetTileAt(X - 1, Y);
     }
 
     public string GetName()
