@@ -95,6 +95,39 @@ public class Need
         }
     }
 
+    // Update is called once per frame
+    public void Update(float deltaTime)
+    {
+        NeedActions.CallFunctionsWithNeed(luaUpdate, this, deltaTime);
+        if (luaOnly)
+        {
+            return;
+        }
+
+        Amount += growthRate * deltaTime;
+        if (character != null && character.CurrTile.Room != null && character.CurrTile.Room.GetGasPressure("O2") < 0.15)
+        {
+            Amount += (addedInVacuum - (addedInVacuum * (character.CurrTile.Room.GetGasPressure("O2") * 5))) * deltaTime;
+        }
+
+        if (Amount > 75 && character.myJob.isNeed == false)
+        {
+            Debug.Log(character.name + " needs " + Name);
+            character.AbandonJob(false);
+        }
+
+        if (Amount == 100 && character.myJob.critical == false && CompleteOnFail)
+        {
+            Debug.Log(character.name + " failed their " + Name + " need.");
+            character.AbandonJob(false);
+        }
+
+        if (Amount == 100)
+        {
+            // FIXME: Insert need fail damage code here.
+        }
+    }
+
     public void ReadXmlPrototype(XmlReader reader_parent)
     {
         needType = reader_parent.GetAttribute("needType");
@@ -172,38 +205,5 @@ public class Need
     public Need Clone()
     {
         return new Need(this);
-    }
-   
-    // Update is called once per frame
-    private void Update(float deltaTime)
-    {
-        NeedActions.CallFunctionsWithNeed(luaUpdate, this, deltaTime);
-        if (luaOnly)
-        {
-            return;
-        }
-
-        Amount += growthRate * deltaTime;
-        if (character != null && character.CurrTile.Room != null && character.CurrTile.Room.GetGasPressure("O2") < 0.15)
-        {
-            Amount += (addedInVacuum - (addedInVacuum * (character.CurrTile.Room.GetGasPressure("O2") * 5))) * deltaTime;
-        }
-
-        if (Amount > 75 && character.myJob.isNeed == false)
-        {
-            Debug.Log(character.name + " needs " + Name);
-            character.AbandonJob(false);
-        }
-
-        if (Amount == 100 && character.myJob.critical == false && CompleteOnFail)
-        {
-            Debug.Log(character.name + " failed their " + Name + " need.");
-            character.AbandonJob(false);
-        }
-
-        if (Amount == 100)
-        {
-            // FIXME: Insert need fail damage code here.
-        }
     }
 }
