@@ -175,14 +175,14 @@ public class Tile : IXmlSerializable, ISelectable
                 return false;
             }
 
-            int numToMove = inventory.stackSize;
-            if (Inventory.stackSize + numToMove > Inventory.maxStackSize)
+            int numToMove = inventory.StackSize;
+            if (Inventory.StackSize + numToMove > Inventory.maxStackSize)
             {
-                numToMove = Inventory.maxStackSize - Inventory.stackSize;
+                numToMove = Inventory.maxStackSize - Inventory.StackSize;
             }
 
-            Inventory.stackSize += numToMove;
-            inventory.stackSize -= numToMove;
+            Inventory.StackSize += numToMove;
+            inventory.StackSize -= numToMove;
 
             return true;
         }
@@ -193,7 +193,7 @@ public class Tile : IXmlSerializable, ISelectable
         // empty and has to be removed from the previous lists.
         Inventory = inventory.Clone();
         Inventory.tile = this;
-        inventory.stackSize = 0;
+        inventory.StackSize = 0;
 
         return true;
     }

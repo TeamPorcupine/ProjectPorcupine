@@ -28,8 +28,8 @@ public class Trade
         {
             ObjectType = g.Key,
             BaseItemPrice = g.First().basePrice,
-            PlayerStock = player.Stock.Where(s => s.objectType == g.Key).Sum(s => s.stackSize),
-            TraderStock = trader.Stock.Where(s => s.objectType == g.Key).Sum(s => s.stackSize),
+            PlayerStock = player.Stock.Where(s => s.objectType == g.Key).Sum(s => s.StackSize),
+            TraderStock = trader.Stock.Where(s => s.objectType == g.Key).Sum(s => s.StackSize),
             TradeAmount = 0,
             PlayerSellItemPrice = g.First().basePrice * player.SaleMarginMultiplier,
             TraderSellItemPrice = g.First().basePrice * trader.SaleMarginMultiplier
