@@ -12,8 +12,6 @@ using UnityEngine.UI;
 
 public class MouseCursor
 {
-    public bool cursorOverride = false;
-
     private MouseController mc;
     private BuildModeController bmc;
     private CursorInfoDisplay cid;        
@@ -43,6 +41,7 @@ public class MouseCursor
 
     public MouseCursor(MouseController mouseController, BuildModeController buildModeController)
     {
+        CursorOverride = false;
         mc = mouseController;
         bmc = buildModeController;
         cid = new CursorInfoDisplay(mc, bmc);
@@ -54,25 +53,27 @@ public class MouseCursor
         BuildCursor();
     }
 
+    public bool CursorOverride { get; set; }
+
     public void Update()
     {
         // Hold Ctrl and press M to activate.
         if ((Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && Input.GetKeyDown(KeyCode.M))
         {
-            // Toggle cursorOverride.
-            if (cursorOverride == false)
+            // Toggle CursorOverride.
+            if (CursorOverride == false)
             {
-                cursorOverride = true;
+                CursorOverride = true;
             }
             else
             {
-                cursorOverride = false;
+                CursorOverride = false;
             }                
         }
 
         ShowCursor();
 
-        if (cursorOverride == true)
+        if (CursorOverride == true)
         {
             return;
         }
@@ -127,7 +128,7 @@ public class MouseCursor
     
     private void ShowCursor()
     {
-        if (EventSystem.current.IsPointerOverGameObject() || cursorOverride == true)
+        if (EventSystem.current.IsPointerOverGameObject() || CursorOverride == true)
         {            
             cursorGO.SetActive(false);
         }
@@ -139,71 +140,73 @@ public class MouseCursor
 
     private void DisplayCursorInfo()
     {        
-        lowerLeft.text.text = upperLeft.text.text = lowerRight.text.text = upperRight.text.text = string.Empty;        
+        lowerLeft.Text.text = upperLeft.Text.text = lowerRight.Text.text = upperRight.Text.text = string.Empty;        
 
         Tile t = WorldController.Instance.GetTileAtWorldCoord(mc.GetMousePosition());        
         
         if (mc.GetCurrentMode() == MouseController.MouseMode.BUILD)
         {
             // Placing furniture object.
-            if (bmc.buildMode == BuildMode.FURNITURE)
+            if (bmc.BuildMode == BuildMode.FURNITURE)
             {
-                lowerRight.text.text = World.Current.furniturePrototypes[bmc.buildModeObjectType].Name;
+                lowerRight.Text.text = World.Current.furniturePrototypes[bmc.BuildModeObjectType].Name;
 
-                upperLeft.text.color = Color.green;
-                upperRight.text.color = Color.red;
+                upperLeft.Text.color = Color.green;
+                upperRight.Text.color = Color.red;
 
                 // Dragging and placing multiple furniture.
                 if (t != null && mc.GetIsDragging() == true && mc.GetDragObjects().Count > 1)
                 {
                     cid.GetPlacementValidationCounts();
-                    upperLeft.text.text = cid.ValidBuildPositionCount();
-                    upperRight.text.text = cid.InvalidBuildPositionCount();
-                    lowerLeft.text.text = cid.GetCurrentBuildRequirements();
+                    upperLeft.Text.text = cid.ValidBuildPositionCount();
+                    upperRight.Text.text = cid.InvalidBuildPositionCount();
+                    lowerLeft.Text.text = cid.GetCurrentBuildRequirements();
                 }
             }
-            else if (bmc.buildMode == BuildMode.FLOOR)
+            else if (bmc.BuildMode == BuildMode.FLOOR)
             {
-                lowerRight.text.text = string.Empty;
-                upperLeft.text.color = upperRight.text.color = defaultTint;
+                lowerRight.Text.text = string.Empty;
+                upperLeft.Text.color = upperRight.Text.color = defaultTint;
 
                 // Placing tiles and dragging.
                 if (t != null && mc.GetIsDragging() == true && mc.GetDragObjects().Count >= 1)
                 {
-                    upperLeft.text.text = mc.GetDragObjects().Count.ToString();
-                    lowerLeft.text.text = bmc.GetFloorTile();
+                    upperLeft.Text.text = mc.GetDragObjects().Count.ToString();
+                    lowerLeft.Text.text = bmc.GetFloorTile();
                 }                
             }
         }
         else
         {
-            lowerRight.text.text = cid.MousePosition(t);            
+            lowerRight.Text.text = cid.MousePosition(t);            
         }        
     }
 
     public class CursorTextBox
     {
-        public GameObject textObject;
-        public Text text;
-        public RectTransform rectTranform;
-
         public CursorTextBox(GameObject parentObject, TextAnchor textAlignment, GUIStyle style, Vector3 localPosition, Vector2 textWidthHeight)
         {
-            textObject = new GameObject("Cursor-Text");
-            textObject.transform.SetParent(parentObject.transform);
-            textObject.transform.localPosition = localPosition;
+            TextObject = new GameObject("Cursor-Text");
+            TextObject.transform.SetParent(parentObject.transform);
+            TextObject.transform.localPosition = localPosition;
 
-            text = textObject.AddComponent<Text>();
-            text.alignment = textAlignment;
-            text.font = style.font;
-            text.fontSize = style.fontSize;
+            Text = TextObject.AddComponent<Text>();
+            Text.alignment = textAlignment;
+            Text.font = style.font;
+            Text.fontSize = style.fontSize;
 
-            Outline outline = textObject.AddComponent<Outline>();
+            Outline outline = TextObject.AddComponent<Outline>();
             outline.effectColor = Color.black;
             outline.effectDistance = new Vector2(1.5f, 1.5f);
 
-            rectTranform = textObject.GetComponentInChildren<RectTransform>();
-            rectTranform.sizeDelta = textWidthHeight;
+            RectTranform = TextObject.GetComponentInChildren<RectTransform>();
+            RectTranform.sizeDelta = textWidthHeight;
         }
+
+        public GameObject TextObject { get; set; }
+
+        public Text Text { get; set; }
+
+        public RectTransform RectTranform { get; set; }
     }
 }

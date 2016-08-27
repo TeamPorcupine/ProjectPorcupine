@@ -18,11 +18,17 @@ public enum BuildMode
 
 public class BuildModeController
 {
-    public BuildMode buildMode = BuildMode.FLOOR;
-    public string buildModeObjectType;
-
     private MouseController mouseController;
     private TileType buildModeTile = TileType.Floor;
+
+    public BuildModeController()
+    {
+        BuildMode = BuildMode.FLOOR;
+    }
+
+    public BuildMode BuildMode { get; set; }
+
+    public string BuildModeObjectType { get; set; }
 
     // Use this for initialization
     public void SetMouseController(MouseController currentMouseController)
@@ -32,13 +38,13 @@ public class BuildModeController
 
     public bool IsObjectDraggable()
     {
-        if (buildMode == BuildMode.FLOOR || buildMode == BuildMode.DECONSTRUCT)
+        if (BuildMode == BuildMode.FLOOR || BuildMode == BuildMode.DECONSTRUCT)
         {
             // floors are draggable
             return true;
         }
 
-        Furniture proto = WorldController.Instance.World.furniturePrototypes[buildModeObjectType];
+        Furniture proto = WorldController.Instance.World.furniturePrototypes[BuildModeObjectType];
 
         return proto.Width == 1 && proto.Height == 1;
     }
@@ -50,7 +56,7 @@ public class BuildModeController
 
     public void SetModeBuildTile(TileType type)
     {
-        buildMode = BuildMode.FLOOR;
+        BuildMode = BuildMode.FLOOR;
         buildModeTile = type;
 
         mouseController.StartBuildMode();
@@ -59,14 +65,14 @@ public class BuildModeController
     public void SetMode_BuildFurniture(string objectType)
     {
         // Wall is not a Tile!  Wall is an "Furniture" that exists on TOP of a tile.
-        buildMode = BuildMode.FURNITURE;
-        buildModeObjectType = objectType;
+        BuildMode = BuildMode.FURNITURE;
+        BuildModeObjectType = objectType;
         mouseController.StartBuildMode();
     }
 
     public void SetMode_Deconstruct()
     {
-        buildMode = BuildMode.DECONSTRUCT;
+        BuildMode = BuildMode.DECONSTRUCT;
         mouseController.StartBuildMode();
     }
 
@@ -77,12 +83,12 @@ public class BuildModeController
 
     public void DoBuild(Tile t)
     {
-        if (buildMode == BuildMode.FURNITURE)
+        if (BuildMode == BuildMode.FURNITURE)
         {
             // Create the Furniture and assign it to the tile
             // Can we build the furniture in the selected tile?
             // Run the ValidPlacement function!
-            string furnitureType = buildModeObjectType;
+            string furnitureType = BuildModeObjectType;
 
             if ( 
                 WorldController.Instance.World.IsFurniturePlacementValid(furnitureType, t) &&
@@ -143,7 +149,7 @@ public class BuildModeController
                 }
             }
         }
-        else if (buildMode == BuildMode.FLOOR)
+        else if (BuildMode == BuildMode.FLOOR)
         {
             // We are in tile-changing mode.
             ////t.Type = buildModeTile;
@@ -182,7 +188,7 @@ public class BuildModeController
                 }
             }
         }
-        else if (buildMode == BuildMode.DECONSTRUCT)
+        else if (BuildMode == BuildMode.DECONSTRUCT)
         {
             // TODO
             if (t.Furniture != null)

@@ -28,7 +28,7 @@ public class SelectionInfoTextField : MonoBehaviour
     // Update is called once per frame.
     private void Update()
     {
-        if (mc.mySelection == null)
+        if (mc.MySelection == null)
         {
             canvasGroup.alpha = 0;
             canvasGroup.interactable = false;
@@ -40,7 +40,7 @@ public class SelectionInfoTextField : MonoBehaviour
         canvasGroup.interactable = true;
         canvasGroup.blocksRaycasts = true;
 
-        ISelectable actualSelection = mc.mySelection.GetSelectedStuff();
+        ISelectable actualSelection = mc.MySelection.GetSelectedStuff();
 
         if (actualSelection.GetType() == typeof(Character))
         {
