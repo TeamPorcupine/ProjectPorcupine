@@ -158,6 +158,8 @@ public class Job
         protected set;
     }
 
+    public bool IsBeingWorked { get; set; }
+
     public TileType JobTileType
     {
         get;
