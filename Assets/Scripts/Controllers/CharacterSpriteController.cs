@@ -110,7 +110,7 @@ public class CharacterSpriteController
 
         // Register our callback so that our GameObject gets updated whenever
         // the object's into changes.
-        c.cbCharacterChanged += OnCharacterChanged;        
+        c.OnCharacterChanged += OnCharacterChanged;        
     }
 
     // Add material with color replacement shader, and generate color replacement texture
