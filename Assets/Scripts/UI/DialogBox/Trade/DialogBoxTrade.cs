@@ -24,7 +24,7 @@ public class DialogBoxTrade : DialogBox
 
     public void SetupTrade(Trade trade)
     {
-        trade = trade;
+        this.trade = trade;
 
         ClearInterface();
         BuildInterface();
