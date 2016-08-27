@@ -23,7 +23,7 @@ public enum Enterability
 }
 
 [MoonSharpUserData]
-public class Tile : IXmlSerializable, ISelectable
+public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
 {
     private TileType type = TileType.Empty;
 
@@ -373,5 +373,35 @@ public class Tile : IXmlSerializable, ISelectable
     {
         return string.Empty;
     }
+
     #endregion
+
+    public IEnumerable<ContextMenuAction> GetContextMenuActions(ContextMenu contextMenu)
+    {
+        if (PendingBuildJob != null)
+        {
+            yield return new ContextMenuAction
+            {
+                Text = "Cancel Job",
+                RequireCharacterSelected = false,
+                Action = (cm, c) => 
+                {
+                    if (PendingBuildJob != null)
+                    {
+                        PendingBuildJob.CancelJob();
+                    }
+                }
+            };
+
+            if (!PendingBuildJob.IsBeingWorked)
+            {
+                yield return new ContextMenuAction
+                {
+                    Text = "Prioritize Job",
+                    RequireCharacterSelected = true,
+                    Action = (cm, c) => { c.PrioritizeJob(PendingBuildJob); }
+                };
+            }
+        }
+    }
 }

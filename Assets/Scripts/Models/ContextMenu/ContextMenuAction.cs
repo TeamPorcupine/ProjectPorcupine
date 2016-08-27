@@ -10,8 +10,8 @@ using System;
 
 public class ContextMenuAction
 {
-    public bool RequiereCharacterSelected;
-    public string Text;
+    public bool RequireCharacterSelected { get; set; }
+    public string Text { get; set; }
     
     public Action<ContextMenuAction, Character> Action;
 
@@ -19,7 +19,7 @@ public class ContextMenuAction
     {
         if (Action != null)
         {
-            if (RequiereCharacterSelected)
+            if (RequireCharacterSelected)
             {
                 if (mouseController.IsCharacterSelected())
                 {
