@@ -22,8 +22,6 @@ public class Parameter
     // Value is stored as a string and converted as needed, this simplifies storing multiple value types.
     private string value;
 
-    public string Value { get { return value; } }
-
     // If this Parameter contains other Parameters, contents will contain the actual parameters
     private Dictionary<string, Parameter> contents;
 
@@ -69,6 +67,11 @@ public class Parameter
         }
 
         this.value = other.ToString();
+    }
+
+    public string Value 
+    {
+        get { return value; } 
     }
 
     // Iterator to simplify usage, this works properly in Lua

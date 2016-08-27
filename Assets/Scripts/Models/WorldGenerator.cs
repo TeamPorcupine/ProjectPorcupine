@@ -39,13 +39,13 @@ public class WorldGenerator
         int width = world.Width;
         int height = world.Height;
 
-        int xOffset = Random.Range(0, 10000);
-        int yOffset = Random.Range(0, 10000);
+        int offsetX = Random.Range(0, 10000);
+        int offsetY = Random.Range(0, 10000);
 
         int sumOfAllWeightedChances = 0;
-        foreach(Inventory resource in resources)
+        foreach (Inventory resource in resources)
         {
-            sumOfAllWeightedChances += resource.stackSize;
+            sumOfAllWeightedChances += resource.StackSize;
         }
 
         for (int x = 0; x < startAreaWidth; x++)
@@ -80,7 +80,7 @@ public class WorldGenerator
         {
             for (int y = 0; y < height; y++)
             {
-                float noiseValue = Mathf.PerlinNoise((x + xOffset) / (width * asteroidNoiseScale), (y + yOffset) / (height * asteroidNoiseScale));
+                float noiseValue = Mathf.PerlinNoise((x + offsetX) / (width * asteroidNoiseScale), (y + offsetY) / (height * asteroidNoiseScale));
                 if (noiseValue >= asteroidNoiseThreshhold && !IsStartArea(x, y, world))
                 {
                     Tile t = world.GetTileAt(x, y);
@@ -97,7 +97,7 @@ public class WorldGenerator
                             {
                                 Inventory inv = resources[i];
 
-                                int weight = inv.stackSize; // In stacksize the weight was cached
+                                int weight = inv.StackSize; // In stacksize the weight was cached
                                 currentweight += weight;
 
                                 if (randomweight <= currentweight)

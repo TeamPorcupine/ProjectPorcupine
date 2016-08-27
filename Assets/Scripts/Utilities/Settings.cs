@@ -16,16 +16,8 @@ using UnityEngine;
 
 public static class Settings 
 {
-    private static Dictionary<string, string> settingsDict;
-
-    private static string userSettingsFilePath = System.IO.Path.Combine(
-        Application.persistentDataPath, "Settings.xml");
-    
-    private static string defaultSettingsFilePath = System.IO.Path.Combine(
-        Application.streamingAssetsPath, System.IO.Path.Combine("Settings", "Settings.xml"));
-
     // Settings.xml file that is created if none exists.
-    private const string fallbackSettingsXML = @"
+    private const string FallbackSettingsXML = @"
 <Settings>
   <worldWidth>101</worldWidth>
   <worldHeight>101</worldHeight>
@@ -42,20 +34,28 @@ public static class Settings
   <ZoomSensitivity>3</ZoomSensitivity>
 </Settings>
 ";
+    
+    private static Dictionary<string, string> settingsDict;
 
-    public static string getSetting(string key , string defaultValue)
+    private static string userSettingsFilePath = System.IO.Path.Combine(
+        Application.persistentDataPath, "Settings.xml");
+    
+    private static readonly string defaultSettingsFilePath = System.IO.Path.Combine(
+        Application.streamingAssetsPath, System.IO.Path.Combine("Settings", "Settings.xml"));
+
+    public static string GetSetting(string key, string defaultValue)
     {
         // If we haven't already loaded our settings do it now.
         if (settingsDict == null) 
         {
-            loadSettings();
+            LoadSettings();
         }
 
-        string s = getSetting(key);
+        string s = GetSetting(key);
         if (s == null)
         {
             settingsDict.Add(key, defaultValue);
-            saveSettings();
+            SaveSettings();
             return defaultValue;
         }
         else
@@ -64,38 +64,17 @@ public static class Settings
         }
     }
 
-    private static string getSetting(string key )
+    public static void SetSetting(string key, object obj)
+    {
+        SetSetting(key, obj.ToString());
+    }
+
+    public static void SetSetting(string key, string value)
     {
         // If we haven't already loaded our settings do it now.
         if (settingsDict == null) 
         {
-            loadSettings();
-        }
-
-        string value;
-
-        // Attempt to get the requested setting.
-        // If it is not found log a warning and return the null string.
-        if (settingsDict.TryGetValue(key, out value) == false)
-        {
-            Debug.ULogWarningChannel("Settings", "Attempted to access a setting that was not loaded from Settings.xml :\t" + key);
-            return null;
-        }
-
-        return value;
-    }
-
-    public static void setSetting(string key, object obj)
-    {
-        setSetting(key, obj.ToString());
-    }
-
-    public static void setSetting(string key, string value)
-    {
-        // If we haven't already loaded our settings do it now.
-        if (settingsDict == null) 
-        {
-            loadSettings();
+            LoadSettings();
         }
 
         // If we already have a setting with the same name,
@@ -113,10 +92,91 @@ public static class Settings
             Debug.ULogChannel("Settings", "Created new setting : " + key + " to value of " + value);
         }
 
-        saveSettings();
+        SaveSettings();
     }
 
-    private static void saveSettings()
+    public static int GetSettingAsInt(string key, int defaultValue)
+    {
+        // Attempt to get the string value from the dict.
+        string s = GetSetting(key, defaultValue.ToString());
+
+        int i;
+
+        // Attempt to parse the string. If the parse failed return the default value.
+        if (int.TryParse(s, out i) == false)
+        {
+            Debug.ULogWarningChannel("Settings", "Could not parse setting " + key + " of value " + s + " to type int");
+            return defaultValue;
+        }
+        else
+        {
+            // We managed to get the setting we wanted.
+            return i;
+        }
+    }
+
+    public static float GetSettingAsFloat(string key, float defaultValue)
+    {
+        // Attempt to get the string value from the dict.
+        string s = GetSetting(key, defaultValue.ToString());
+
+        float f;
+
+        // Attempt to parse the string. If the parse failed return the default value.
+        if (float.TryParse(s, out f) == false)
+        {
+            Debug.ULogWarningChannel("Settings", "Could not parse setting " + key + " of value " + s + " to type float");
+            return defaultValue;
+        }
+        else
+        {
+            // We managed to get the setting we wanted.
+            return f;
+        }
+    }
+
+    public static bool GetSettingAsBool(string key, bool defaultValue)
+    {
+        // Attempt to get the string value from the dict.
+        string s = GetSetting(key, defaultValue.ToString());
+
+        bool b;
+
+        // Attempt to parse the string. If the parse failed return the default value.
+        if (bool.TryParse(s, out b) == false)
+        {
+            Debug.ULogWarningChannel("Settings", "Could not parse setting " + key + " of value " + s + " to type bool");
+            return defaultValue;
+        }
+        else
+        {
+            // We managed to get the setting we wanted.
+            return b;
+        }
+    }
+
+    private static string GetSetting(string key)
+    {
+        // If we haven't already loaded our settings do it now.
+        if (settingsDict == null) 
+        {
+            LoadSettings();
+        }
+
+        string value;
+
+        // Attempt to get the requested setting.
+        // If it is not found log a warning and return the null string.
+        if (settingsDict.TryGetValue(key, out value) == false)
+        {
+            Debug.ULogWarningChannel("Settings", "Attempted to access a setting that was not loaded from Settings.xml:\t" + key);
+            return null;
+        }
+
+        return value;
+    }
+
+    private static void SaveSettings()
     {
         // Create an xml document.
         XmlDocument xDoc = new XmlDocument();
@@ -150,7 +210,7 @@ public static class Settings
         }
     }
 
-    private static void loadSettings()
+    private static void LoadSettings()
     {
         // Initialize the settings dict.
         settingsDict = new Dictionary<string, string>();
@@ -164,7 +224,7 @@ public static class Settings
         {
             Debug.ULogWarningChannel("Settings", "User settings file could not be found at '" + userSettingsFilePath + "'. Falling back to defaults.");
 
-            furnitureXmlText = defaultSettingsXMLFallback();
+            furnitureXmlText = DefaultSettingsXMLFallback();
         }
         else
         {
@@ -177,7 +237,7 @@ public static class Settings
                 Debug.ULogWarningChannel("Settings", "User settings file could not be found at '" + userSettingsFilePath + "'. Falling back to defaults.");
                 Debug.ULogWarningChannel("Settings", e.Message);
 
-                furnitureXmlText = defaultSettingsXMLFallback();
+                furnitureXmlText = DefaultSettingsXMLFallback();
             }
         }
 
@@ -204,9 +264,9 @@ public static class Settings
         }
     }
 
-    private static string defaultSettingsXMLFallback()
+    private static string DefaultSettingsXMLFallback()
     {
-        string furnitureXmlText = fallbackSettingsXML;
+        string furnitureXmlText = FallbackSettingsXML;
 
         if (System.IO.File.Exists(defaultSettingsFilePath) == false)
         {
@@ -214,7 +274,7 @@ public static class Settings
 
             try
             {
-                System.IO.File.WriteAllText(defaultSettingsFilePath, fallbackSettingsXML);
+                System.IO.File.WriteAllText(defaultSettingsFilePath, FallbackSettingsXML);
             }
             catch (Exception e)
             {
@@ -238,65 +298,5 @@ public static class Settings
         return furnitureXmlText;
     }
 
-    public static int getSettingAsInt(string key, int defaultValue)
-    {
-        // Attempt to get the string value from the dict.
-        string s = getSetting(key, defaultValue.ToString());
-
-        int i;
-
-        // Attempt to parse the string. If the parse failed return the default value.
-        if (int.TryParse(s, out i) == false)
-        {
-            Debug.ULogWarningChannel("Settings", "Could not parse setting " + key + " of value " + s + " to type int");
-            return defaultValue;
-        }
-        else
-        {
-            // We managed to get the setting we wanted.
-            return i;
-        }
-    }
-
-    public static float getSettingAsFloat(string key, float defaultValue)
-    {
-        // Attempt to get the string value from the dict.
-        string s = getSetting(key, defaultValue.ToString());
-
-        float f;
-
-        // Attempt to parse the string. If the parse failed return the default value.
-        if (float.TryParse(s, out f) == false)
-        {
-            Debug.ULogWarningChannel("Settings", "Could not parse setting " + key + " of value " + s + " to type float");
-            return defaultValue;
-        }
-        else
-        {
-            // We managed to get the setting we wanted.
-            return f;
-        }
-    }
-
-    public static bool getSettingAsBool(string key, bool defaultValue)
-    {
-        // Attempt to get the string value from the dict.
-        string s = getSetting(key, defaultValue.ToString());
-
-        bool b;
-
-        // Attempt to parse the string. If the parse failed return the default value.
-        if (bool.TryParse(s, out b) == false)
-        {
-            Debug.ULogWarningChannel("Settings", "Could not parse setting " + key + " of value " + s + " to type bool");
-            return defaultValue;
-        }
-        else
-        {
-            // We managed to get the setting we wanted.
-            return b;
-        }
-    }
-        
     // TODO: Make generic getSettingAs that infers return type from default value.
 }
