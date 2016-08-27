@@ -23,7 +23,7 @@ public class ContextMenu : MonoBehaviour
         gameObject.SetActive(true);
 
         List<IContextActionProvider> providers = GetContextualActionProviderOnTile(tile);
-        List<IContextActionProvider> contextActions = GetContextualMenuActionFromProviders(providers);
+        List<ContextMenuAction> contextActions = GetContextualMenuActionFromProviders(providers);
 
         ClearInterface();
         BuildInterface(contextActions);
