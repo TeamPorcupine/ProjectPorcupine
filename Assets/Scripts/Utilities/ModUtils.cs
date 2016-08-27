@@ -14,7 +14,7 @@ using UnityEngine;
 [MoonSharpUserData]
 public static class ModUtils
 {
-    static string defaultLogChannel = "Lua";
+    private static string defaultLogChannel = "Lua";
 
     public static float Clamp01(float value) 
     {

@@ -60,12 +60,12 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
         // This function gets called when the user confirms a filename
         // from the save dialog box.
 
-        // Get the file name from the save file dialog box
+        // Get the file name from the save file dialog box.
         Debug.Log("SaveWorld button was clicked.");
 
         XmlSerializer serializer = new XmlSerializer(typeof(World));
         TextWriter writer = new StringWriter();
-        serializer.Serialize(writer, WorldController.Instance.world);
+        serializer.Serialize(writer, WorldController.Instance.World);
         writer.Close();
 
         Debug.Log(writer.ToString());
