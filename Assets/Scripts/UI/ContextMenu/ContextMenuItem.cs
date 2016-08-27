@@ -11,10 +11,10 @@ using UnityEngine.UI;
 
 public class ContextMenuItem : MonoBehaviour
 {
-    private MouseController mouseController;
     public ContextMenu ContextMenu;
     public Text text;
     public ContextMenuAction Action;
+    private MouseController mouseController;
 
     public void Start()
     {
