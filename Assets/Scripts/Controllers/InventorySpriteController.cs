@@ -17,8 +17,8 @@ public class InventorySpriteController
     private Dictionary<Inventory, GameObject> inventoryGameObjectMap;
 
     private World world;
-    
-    // Use this for initialization
+
+    // Use this for initialization.
     public InventorySpriteController(World currentWorld, GameObject inventoryUI)
     {
         inventoryUIPrefab = inventoryUI;
@@ -40,17 +40,12 @@ public class InventorySpriteController
                 OnInventoryCreated(inv);
             }
         }
-
-        //// c.SetDestination( world.GetTileAt( world.Width/2 + 5, world.Height/2 ) );
     }
 
     public void OnInventoryCreated(Inventory inv)
     {
-        // Debug.ULogChannel("InventorySpriteController", "OnInventoryCreated");
         // Create a visual GameObject linked to this data.
-
-        // FIXME: Does not consider multi-tile objects nor rotated objects
-
+        // FIXME: Does not consider multi-tile objects nor rotated objects.
         // This creates a new GameObject and adds it to our scene.
         GameObject inv_go = new GameObject();
 
@@ -72,23 +67,22 @@ public class InventorySpriteController
 
         if (inv.maxStackSize > 1)
         {
-            // This is a stackable object, so let's add a InventoryUI component
-            // (Which is text that shows the current stackSize.)
+            // This is a stackable object, so let's add a InventoryUI component.
             GameObject ui_go = GameObject.Instantiate(inventoryUIPrefab);
             ui_go.transform.SetParent(inv_go.transform);
             ui_go.transform.localPosition = Vector3.zero;
-            ui_go.GetComponentInChildren<Text>().text = inv.stackSize.ToString();
+            ui_go.GetComponentInChildren<Text>().text = inv.StackSize.ToString();
         }
 
         // Register our callback so that our GameObject gets updated whenever
         // the object's into changes.
         // FIXME: Add on changed callbacks
-        inv.cbInventoryChanged += OnInventoryChanged;
+        inv.OnInventoryChanged += OnInventoryChanged;
+
     }
 
     private void OnInventoryChanged(Inventory inv)
     {
-        // Debug.ULogChannel("InventorySpriteController", "OnFurnitureChanged");
         // Make sure the furniture's graphics are correct.
         if (inventoryGameObjectMap.ContainsKey(inv) == false)
         {
@@ -97,14 +91,14 @@ public class InventorySpriteController
         }
 
         GameObject inv_go = inventoryGameObjectMap[inv];
-        if (inv.stackSize > 0)
+        if (inv.StackSize > 0)
         {
             Text text = inv_go.GetComponentInChildren<Text>();
 
             // FIXME: If maxStackSize changed to/from 1, then we either need to create or destroy the text
             if (text != null)
             {
-                text.text = inv.stackSize.ToString();
+                text.text = inv.StackSize.ToString();
             }
         }
         else
@@ -112,7 +106,7 @@ public class InventorySpriteController
             // This stack has gone to zero, so remove the sprite!
             GameObject.Destroy(inv_go);
             inventoryGameObjectMap.Remove(inv);
-            inv.cbInventoryChanged -= OnInventoryChanged;
+            inv.OnInventoryChanged -= OnInventoryChanged;
         }
     }
 }

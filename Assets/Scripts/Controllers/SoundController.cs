@@ -34,7 +34,7 @@ public class SoundController
             return;
         }
 
-        AudioClip ac = Resources.Load<AudioClip>("Sounds/" + furn.objectType + "_OnCreated");
+        AudioClip ac = Resources.Load<AudioClip>("Sounds/" + furn.ObjectType + "_OnCreated");
 
         if (ac == null)
         {

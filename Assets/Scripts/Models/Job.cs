@@ -298,7 +298,7 @@ public class Job
 
         foreach (Inventory inv in inventoryRequirements.Values)
         {
-            if (inv.maxStackSize > inv.stackSize)
+            if (inv.maxStackSize > inv.StackSize)
             {
                 return false;
             }
@@ -311,7 +311,7 @@ public class Job
     {
         foreach (Inventory inv in inventoryRequirements.Values)
         {
-            if (inv.stackSize > 0)
+            if (inv.StackSize > 0)
             {
                 return true;
             }
@@ -327,14 +327,14 @@ public class Job
             return 0;
         }
 
-        if (inventoryRequirements[objectType].stackSize >= inventoryRequirements[objectType].maxStackSize)
+        if (inventoryRequirements[objectType].StackSize >= inventoryRequirements[objectType].maxStackSize)
         {
             // We already have all that we need!
             return 0;
         }
 
         // The inventory is of a type we want, and we still need more.
-        return inventoryRequirements[objectType].maxStackSize - inventoryRequirements[objectType].stackSize;
+        return inventoryRequirements[objectType].maxStackSize - inventoryRequirements[objectType].StackSize;
     }
 
     public int AmountDesiredOfInventoryType(Inventory inv)
@@ -346,7 +346,7 @@ public class Job
     {
         foreach (Inventory inv in inventoryRequirements.Values)
         {
-            if (inv.maxStackSize > inv.stackSize)
+            if (inv.maxStackSize > inv.StackSize)
             {
                 return inv;
             }

@@ -121,7 +121,7 @@ public class World : IXmlSerializable
 
     public int CountFurnitureType(string objectType)
     {
-        int count = furnitures.Count(f => f.objectType == objectType);
+        int count = furnitures.Count(f => f.ObjectType == objectType);
         return count;
     }
 
@@ -688,10 +688,10 @@ public class World : IXmlSerializable
                     }
                     catch (Exception e)
                     {
-                        Debug.LogError("Error reading furniture prototype for: " + furn.objectType + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
+                        Debug.LogError("Error reading furniture prototype for: " + furn.ObjectType + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
                     }
 
-                    furniturePrototypes[furn.objectType] = furn;
+                    furniturePrototypes[furn.ObjectType] = furn;
                 }
                 while (reader.ReadToNextSibling("Furniture"));
             }

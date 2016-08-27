@@ -23,7 +23,7 @@ public class TileSpriteController
         world = currnetWorld;
     }
 
-    public void Render()
+    public void Render() 
     {
         GameObject tileParent = new GameObject("Tiles");
 
@@ -103,7 +103,7 @@ public class TileSpriteController
             Debug.ULogErrorChannel("TileSpriteController", "tileGameObjectMap's returned GameObject is null -- did you forget to add the tile to the dictionary? Or maybe forget to unregister a callback?");
             return;
         }
-        
+
         tile_go.GetComponent<SpriteRenderer>().sprite = SpriteManager.current.GetSprite("Tile", tile_data.Type.Name);
     }
 }

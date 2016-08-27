@@ -78,7 +78,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     /// Use only for serialization
     public Character()
     {
-        needs = new Need[World.Current.needPrototypes.Count];
+        needs = new Need[World.current.needPrototypes.Count];
         LoadNeeds();
     }
 

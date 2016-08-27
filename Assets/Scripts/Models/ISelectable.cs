@@ -17,8 +17,9 @@ public interface ISelectable
 
     string GetDescription();
 
+    // TODO: Decide whether to allow indestructible thing.
+    // For indestructible things (if any) this is allowed to return blank.
     string GetHitPointString();
-    // For indestructible things (if any?) this is allowed to return blank (or null maybe??)
 
     string GetJobDescription();
 }

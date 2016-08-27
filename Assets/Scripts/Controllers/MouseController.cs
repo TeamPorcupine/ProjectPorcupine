@@ -423,7 +423,7 @@ public class MouseController
                     // Check for furniture dragType.
                     Furniture proto = World.Current.furniturePrototypes[bmc.buildModeObjectType];
 
-                    if (IsPartOfDrag(t, dragParams, proto.dragType))
+                    if (IsPartOfDrag(t, dragParams, proto.DragType))
                     {
                         if (t != null)
                         {

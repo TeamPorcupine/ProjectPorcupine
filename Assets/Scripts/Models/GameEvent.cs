@@ -15,13 +15,8 @@ using UnityEngine;
 [MoonSharpUserData]
 public class GameEvent 
 {
-    public string Name { get; protected set; }
-
-    public bool Repeat { get; protected set; }
-
-    public int MaxRepeats { get; protected set; }
-
     protected List<string> preconditions;
+
     protected List<string> executionActions;
 
     private bool executed;
@@ -38,6 +33,16 @@ public class GameEvent
         timer = 0;
         repeats = 0;
     }
+
+    public string Name 
+    {
+        get;
+        protected set;
+    }
+
+    public bool Repeat { get; protected set; }
+
+    public int MaxRepeats { get; protected set; }
 
     public void Update(float deltaTime)
     {

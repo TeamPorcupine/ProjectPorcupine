@@ -374,7 +374,7 @@ function MetalSmelter_JobWorked(j)
     for k, inv in pairs(j.inventoryRequirements) do
         if(inv ~= nil and inv.stackSize > 0) then
             World.current.inventoryManager.PlaceInventory(spawnSpot, inv)
-            spawnSpot.Inventory.isLocked = true
+            spawnSpot.Inventory.locked = true
             return
         end
     end
@@ -552,7 +552,7 @@ function LandingPad_Temp_JobComplete(j)
     for k, inv in pairs(j.inventoryRequirements) do
         if(inv.stackSize > 0) then
             World.current.inventoryManager.PlaceInventory(inputSpot, inv)
-            inputSpot.Inventory.isLocked = true
+            inputSpot.Inventory.locked = true
             return
         end
     end
