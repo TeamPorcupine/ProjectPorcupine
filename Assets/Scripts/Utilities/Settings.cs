@@ -222,7 +222,7 @@ public static class Settings
         // If that doesn't work fall back to the hard coded furnitureXmlText above.
         if (System.IO.File.Exists(userSettingsFilePath) == false)
         {
-            Debug.ULogWarningChannel("Settings", "User settings file could not be found at '" + userSettingsFilePath + "'. Falling back to defaults.");
+            Debug.ULogChannel("Settings", "User settings file could not be found at '" + userSettingsFilePath + "'. Falling back to defaults.");
 
             furnitureXmlText = DefaultSettingsXMLFallback();
         }
