@@ -21,7 +21,7 @@ public class InventorySpriteController : BaseSpriteController<Inventory>
 
         // Register our callback so that our GameObject gets updated whenever
         // the tile's type changes.
-        world.cbInventoryCreated += OnCreated;
+        world.OnInventoryCreated += OnCreated;
 
         // Check for pre-existing inventory, which won't do the callback.
         foreach (string objectType in world.inventoryManager.inventories.Keys)
@@ -35,13 +35,13 @@ public class InventorySpriteController : BaseSpriteController<Inventory>
 
     public override void RemoveAll()
     {
-        world.cbInventoryCreated -= OnCreated;
+        world.OnInventoryCreated -= OnCreated;
 
         foreach (string objectType in world.inventoryManager.inventories.Keys)
         {
             foreach (Inventory inv in world.inventoryManager.inventories[objectType])
             {
-                inv.cbInventoryChanged -= OnChanged;
+                inv.OnInventoryChanged -= OnChanged;
             }
         }
 
@@ -77,13 +77,13 @@ public class InventorySpriteController : BaseSpriteController<Inventory>
             GameObject ui_go = GameObject.Instantiate(inventoryUIPrefab);
             ui_go.transform.SetParent(inv_go.transform);
             ui_go.transform.localPosition = Vector3.zero;
-            ui_go.GetComponentInChildren<Text>().text = inv.stackSize.ToString();
+            ui_go.GetComponentInChildren<Text>().text = inv.StackSize.ToString();
         }
 
         // Register our callback so that our GameObject gets updated whenever
         // the object's into changes.
         // FIXME: Add on changed callbacks
-        inv.cbInventoryChanged += OnChanged;
+        inv.OnInventoryChanged += OnChanged;
     }
 
     protected override void OnChanged(Inventory inv)
@@ -94,16 +94,16 @@ public class InventorySpriteController : BaseSpriteController<Inventory>
             Debug.ULogErrorChannel("InventorySpriteController", "OnCharacterChanged -- trying to change visuals for inventory not in our map.");
             return;
         }
-
+            
         GameObject inv_go = objectGameObjectMap[inv];
-        if (inv.stackSize > 0)
+        if (inv.StackSize > 0)
         {
             Text text = inv_go.GetComponentInChildren<Text>();
 
             // FIXME: If maxStackSize changed to/from 1, then we either need to create or destroy the text
             if (text != null)
             {
-                text.text = inv.stackSize.ToString();
+                text.text = inv.StackSize.ToString();
             }
         }
         else
@@ -115,7 +115,7 @@ public class InventorySpriteController : BaseSpriteController<Inventory>
 
     protected override void OnRemoved(Inventory inv)
     {
-        inv.cbInventoryChanged -= OnChanged;
+        inv.OnInventoryChanged -= OnChanged;
         GameObject inv_go = objectGameObjectMap[inv];
         objectGameObjectMap.Remove(inv);
         GameObject.Destroy(inv_go);

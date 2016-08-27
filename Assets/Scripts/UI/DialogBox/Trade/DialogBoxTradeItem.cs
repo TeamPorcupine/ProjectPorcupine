@@ -12,8 +12,6 @@ using UnityEngine.UI;
 
 public class DialogBoxTradeItem : MonoBehaviour
 {
-    private TradeItem _item;
-
     public Text ItemNameText;
     public Text PlayerStockText;
     public Text PlayerSellItemPriceText;
@@ -21,52 +19,56 @@ public class DialogBoxTradeItem : MonoBehaviour
     public Text TraderSellItemPriceText;
     public InputField TradeAmountText;
 
+    private TradeItem item;
+
     public event Action<TradeItem> OnTradeAmountChangedEvent;
 
     public void SetupTradeItem(TradeItem item)
     {
-        _item = item;
+        this.item = item;
         BindInterface();
-    }
-
-    private void BindInterface()
-    {
-        ItemNameText.text = _item.ObjectType;
-        PlayerStockText.text = _item.PlayerStock.ToString();
-        PlayerSellItemPriceText.text = _item.PlayerSellItemPrice.ToString();
-        TraderStockText.text = _item.TraderStock.ToString();
-        TraderSellItemPriceText.text = _item.TraderSellItemPrice.ToString();
-        TradeAmountText.text = _item.TradeAmount.ToString();
     }
 
     public void OnTradeAmountChanged()
     {
         BindInterface();
         if (OnTradeAmountChangedEvent != null)
-            OnTradeAmountChangedEvent(this._item);
+        {
+            OnTradeAmountChangedEvent(this.item);
+        }
     }
 
     public void PlayerBuyOneMore()
     {
-        _item.TradeAmount++;
+        item.TradeAmount++;
         OnTradeAmountChanged();
     }
 
     public void TraderBuyOneMore()
     {
-        _item.TradeAmount--;
+        item.TradeAmount--;
         OnTradeAmountChanged();
     }
 
     public void PlayerBuyAll()
     {
-        _item.TradeAmount = _item.TraderStock;
+        item.TradeAmount = item.TraderStock;
         OnTradeAmountChanged();
     }
 
     public void TraderBuyAll()
     {
-        _item.TradeAmount = -_item.PlayerStock;
+        item.TradeAmount = -item.PlayerStock;
         OnTradeAmountChanged();
+    }
+
+    private void BindInterface()
+    {
+        ItemNameText.text = item.ObjectType;
+        PlayerStockText.text = item.PlayerStock.ToString();
+        PlayerSellItemPriceText.text = item.PlayerSellItemPrice.ToString();
+        TraderStockText.text = item.TraderStock.ToString();
+        TraderSellItemPriceText.text = item.TraderSellItemPrice.ToString();
+        TradeAmountText.text = item.TradeAmount.ToString();
     }
 }

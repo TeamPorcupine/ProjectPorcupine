@@ -20,7 +20,7 @@ public class JobSpriteController : BaseSpriteController<Job>
     public JobSpriteController(World world, FurnitureSpriteController furnitureSpriteController) : base(world, "Jobs")
     {
         fsc = furnitureSpriteController;
-        world.jobQueue.cbJobCreated += OnCreated;
+        world.jobQueue.OnJobCreated += OnCreated;
 
         foreach (Job job in world.jobQueue.PeekJobs())
         {
@@ -34,35 +34,35 @@ public class JobSpriteController : BaseSpriteController<Job>
 
         foreach (Character character in world.characters)
         {
-            if (character.myJob != null)
+            if (character.MyJob != null)
             {
-                OnCreated(character.myJob);
+                OnCreated(character.MyJob);
             }
         }
     }
 
     public override void RemoveAll()
     {
-        world.jobQueue.cbJobCreated -= OnCreated;
+        world.jobQueue.OnJobCreated -= OnCreated;
 
         foreach (Job job in world.jobQueue.PeekJobs())
         {
-            job.cbJobCompleted -= OnRemoved;
-            job.cbJobStopped -= OnRemoved;
+            job.OnJobCompleted -= OnRemoved;
+            job.OnJobStopped -= OnRemoved;
         }
 
         foreach (Job job in world.jobWaitingQueue.PeekJobs())
         {
-            job.cbJobCompleted -= OnRemoved;
-            job.cbJobStopped -= OnRemoved;
+            job.OnJobCompleted -= OnRemoved;
+            job.OnJobStopped -= OnRemoved;
         }
 
         foreach (Character character in world.characters)
         {
-            if (character.myJob != null)
+            if (character.MyJob != null)
             {
-                character.myJob.cbJobCompleted -= OnRemoved;
-                character.myJob.cbJobStopped -= OnRemoved;
+                character.MyJob.OnJobCompleted -= OnRemoved;
+                character.MyJob.OnJobStopped -= OnRemoved;
             }
         }
 
@@ -71,7 +71,7 @@ public class JobSpriteController : BaseSpriteController<Job>
 
     protected override void OnCreated(Job job)
     {
-        if (job.jobObjectType == null && job.jobTileType == null)
+        if (job.JobObjectType == null && job.JobTileType == null)
         {
             // This job doesn't really have an associated sprite with it, so no need to render.
             return;
@@ -89,15 +89,15 @@ public class JobSpriteController : BaseSpriteController<Job>
         // Add our tile/GO pair to the dictionary.
         objectGameObjectMap.Add(job, job_go);
 
-        job_go.name = "JOB_" + job.jobObjectType + "_" + job.tile.X + "_" + job.tile.Y;
+        job_go.name = "JOB_" + job.JobObjectType + "_" + job.tile.X + "_" + job.tile.Y;
         job_go.transform.SetParent(objectParent.transform, true);
 
         SpriteRenderer sr = job_go.AddComponent<SpriteRenderer>();
-        if (job.jobTileType != null)
+        if (job.JobTileType != null)
         {
-            // This job is for building a tile
+            // This job is for building a tile.
             // For now, the only tile that could be is the floor, so just show a floor sprite
-            // until the graphics system for tiles is fleshed out further
+            // until the graphics system for tiles is fleshed out further.
             job_go.transform.position = new Vector3(job.tile.X, job.tile.Y, 0);
             sr.sprite = SpriteManager.current.GetSprite("Tile", "Solid");
         }
@@ -105,14 +105,14 @@ public class JobSpriteController : BaseSpriteController<Job>
         {
             // This is a normal furniture job.
             job_go.transform.position = new Vector3(job.tile.X + ((job.furniturePrototype.Width - 1) / 2f), job.tile.Y + ((job.furniturePrototype.Height - 1) / 2f), 0);
-            sr.sprite = fsc.GetSpriteForFurniture(job.jobObjectType);
+            sr.sprite = fsc.GetSpriteForFurniture(job.JobObjectType);
         }
 
         sr.color = new Color(0.5f, 1f, 0.5f, 0.25f);
         sr.sortingLayerName = "Jobs";
 
         // FIXME: This hardcoding is not ideal!  <== Understatement
-        if (job.jobObjectType == "Door")
+        if (job.JobObjectType == "Door")
         {
             // By default, the door graphic is meant for walls to the east & west
             // Check to see if we actually have a wall north/south, and if so
@@ -121,14 +121,14 @@ public class JobSpriteController : BaseSpriteController<Job>
             Tile southTile = world.GetTileAt(job.tile.X, job.tile.Y - 1);
 
             if (northTile != null && southTile != null && northTile.Furniture != null && southTile.Furniture != null &&
-            northTile.Furniture.objectType.Contains("Wall") && southTile.Furniture.objectType.Contains("Wall"))
+            northTile.Furniture.ObjectType.Contains("Wall") && southTile.Furniture.ObjectType.Contains("Wall"))
             {
                 job_go.transform.rotation = Quaternion.Euler(0, 0, 90);
             }
         }
-
-        job.cbJobCompleted += OnRemoved;
-        job.cbJobStopped += OnRemoved;
+            
+        job.OnJobCompleted += OnRemoved;
+        job.OnJobStopped += OnRemoved;
     }
 
     protected override void OnChanged(Job job) 
@@ -138,8 +138,8 @@ public class JobSpriteController : BaseSpriteController<Job>
     protected override void OnRemoved(Job job)
     {
         // This executes whether a job was COMPLETED or CANCELLED
-        job.cbJobCompleted -= OnRemoved;
-        job.cbJobStopped -= OnRemoved;
+        job.OnJobCompleted -= OnRemoved;
+        job.OnJobStopped -= OnRemoved;
 
         GameObject job_go = objectGameObjectMap[job];
         objectGameObjectMap.Remove(job);

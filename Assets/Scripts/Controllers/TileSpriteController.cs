@@ -16,7 +16,7 @@ public class TileSpriteController : BaseSpriteController<Tile>
     // Use this for initialization
     public TileSpriteController(World world) : base(world, "Tiles")
     {
-        world.cbTileChanged += OnChanged;
+        world.OnTileChanged += OnChanged;
 
         for (int x = 0; x < world.Width; x++)
         {
@@ -30,7 +30,7 @@ public class TileSpriteController : BaseSpriteController<Tile>
 
     public override void RemoveAll()
     {
-        world.cbTileChanged -= OnChanged;
+        world.OnTileChanged -= OnChanged;
 
         base.RemoveAll();
     }
