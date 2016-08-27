@@ -61,7 +61,7 @@ public class ContextMenu : MonoBehaviour
 
         foreach (ContextMenuAction contextMenuAction in contextualActions)
         {
-            if (contextMenuAction.RequireCharacterSelected && characterSelected ||
+            if ((contextMenuAction.RequireCharacterSelected && characterSelected) ||
                 !contextMenuAction.RequireCharacterSelected)
             {
                 GameObject go = (GameObject)Instantiate(ContextualMenuItemPrefab);
