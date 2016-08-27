@@ -117,9 +117,9 @@ public class BuildModeController
 
                 j.furniturePrototype = WorldController.Instance.World.furniturePrototypes[furnitureType];
 
-                for (int x_off = t.X; x_off < (t.X + WorldController.Instance.World.furniturePrototypes[furnitureType].Width); x_off++)
+                for (int x_off = t.X; x_off < (t.X + j.furniturePrototype.Width); x_off++)
                 {
-                    for (int y_off = t.Y; y_off < (t.Y + WorldController.Instance.World.furniturePrototypes[furnitureType].Height); y_off++)
+                    for (int y_off = t.Y; y_off < (t.Y + j.furniturePrototype.Height); y_off++)
                     {
                         // FIXME: I don't like having to manually and explicitly set
                         // flags that preven conflicts. It's too easy to forget to set/clear them!
@@ -230,9 +230,11 @@ public class BuildModeController
 
     public bool DoesBuildJobOverlapExistingBuildJob(Tile t, string furnitureType)
     {
-        for (int x_off = t.X; x_off < (t.X + WorldController.Instance.World.furniturePrototypes[furnitureType].Width); x_off++)
+        Furniture furniturePrototype = WorldController.Instance.World.furniturePrototypes[furnitureType];
+
+        for (int x_off = t.X; x_off < (t.X + furniturePrototype.Width); x_off++)
         {
-            for (int y_off = t.Y; y_off < (t.Y + WorldController.Instance.World.furniturePrototypes[furnitureType].Height); y_off++)
+            for (int y_off = t.Y; y_off < (t.Y + furniturePrototype.Height); y_off++)
             {
                 if (WorldController.Instance.World.GetTileAt(x_off, y_off).PendingBuildJob != null)
                 {
