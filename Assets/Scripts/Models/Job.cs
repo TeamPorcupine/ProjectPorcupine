@@ -15,78 +15,19 @@ using UnityEngine;
 [MoonSharpUserData]
 public class Job
 {
-    public enum JobPriority 
-    {
-        High, Medium, Low 
-    }
-
     // This class holds info for a queued up job, which can include
     // things like placing furniture, moving stored inventory,
     // working at a desk, and maybe even fighting enemies.
-
     public Tile tile;
-
-    public float jobTime
-    {
-        get;
-        protected set;
-    }
-
-    public JobPriority jobPriority
-    {
-        get;
-        protected set;
-    }
-
-    protected float jobTimeRequired;
-
-    protected bool jobRepeats = false;
-
-    public string jobObjectType
-    {
-        get;
-        protected set;
-    }
-    public bool isNeed
-    {
-        get;
-        protected set;
-    }
-    public bool critical
-    {
-        get;
-        protected set;
-    }
-
-    public TileType jobTileType
-    {
-        get;
-        protected set;
-    }
 
     public Furniture furniturePrototype;
 
     // The piece of furniture that owns this job. Frequently will be null.
     public Furniture furniture;
 
-    // We have finished the work cycle and so things should probably get built or whatever.
-    public event Action<Job> cbJobCompleted;
-   
-    // The job has been stopped, either because it's non-repeating or was cancelled.
-    private List<string> cbJobCompletedLua;
-
-    public event Action<Job> cbJobStopped;
-
-    // Gets called each time some work is performed -- maybe update the UI?
-    public event Action<Job> cbJobWorked;
-
-    private List<string> cbJobWorkedLua;
-
     public bool canTakeFromStockpile = true;
 
     public Dictionary<string, Inventory> inventoryRequirements;
-    
-    public string JobDescription { get; set; }
 
     /// <summary>
     /// If true, the work will be carried out on any adjacent tile of the target tile rather than on it.
@@ -100,6 +41,10 @@ public class Job
     /// Defaults to false.
     /// </summary>
     public bool acceptsAny;
+
+    protected float jobTimeRequired;
+
+    protected bool jobRepeats = false;
 
     public Job(Tile tile, string jobObjectType, Action<Job> cbJobComplete, float jobTime, Inventory[] inventoryRequirements, JobPriority jobPriority, bool jobRepeats = false, bool isNeed = false, bool critical = false)
     {
@@ -174,6 +119,38 @@ public class Job
             }
         }
     }
+
+    public enum JobPriority 
+    {
+        High, Medium, Low 
+    }
+
+    // The job has been stopped, either because it's non-repeating or was cancelled.
+    private List<string> cbJobCompletedLua;
+
+    private List<string> cbJobWorkedLua;
+
+    public float jobTime { get; protected set; }
+
+    public JobPriority jobPriority { get; protected set; }
+
+    public string jobObjectType { get; protected set; }
+
+    public bool isNeed { get; protected set; }
+
+    public bool critical { get; protected set; }
+
+    public TileType jobTileType { get; protected set; }
+
+    public string JobDescription { get; set; }
+
+    // We have finished the work cycle and so things should probably get built or whatever.
+    public event Action<Job> cbJobCompleted;
+
+    public event Action<Job> cbJobStopped;
+
+    // Gets called each time some work is performed -- maybe update the UI?
+    public event Action<Job> cbJobWorked;
 
     public Inventory[] GetInventoryRequirementValues()
     {
@@ -279,10 +256,12 @@ public class Job
         {
             return true;
         }
+
         if ((acceptsAny == false) && HasAllMaterial())
         {
             return true;
         }
+
         return false;
     }
 
@@ -292,6 +271,7 @@ public class Job
         {
             return true;
         }
+
         foreach (Inventory inv in inventoryRequirements.Values)
         {
             if (inv.maxStackSize > inv.stackSize)
