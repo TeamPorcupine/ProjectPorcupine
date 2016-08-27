@@ -382,7 +382,7 @@ public class MouseController
         {
             for (int y = dragParams.StartY; y <= dragParams.EndY; y++)
             {
-                Tile t = WorldController.Instance.world.GetTileAt(x, y);
+                Tile t = WorldController.Instance.World.GetTileAt(x, y);
                 if (t != null)
                 {
                     // Display the building hint on top of this tile position.
@@ -417,7 +417,7 @@ public class MouseController
         {
             for (int y = dragParams.StartY; y <= dragParams.EndY; y++)
             {
-                Tile t = WorldController.Instance.world.GetTileAt(x, y);
+                Tile t = WorldController.Instance.World.GetTileAt(x, y);
                 if (bmc.buildMode == BuildMode.FURNITURE)
                 {
                     // Check for furniture dragType.
@@ -540,8 +540,8 @@ public class MouseController
     {
         Vector3 oldPos = Camera.main.transform.position;
 
-        oldPos.x = Mathf.Clamp(oldPos.x, 0, (float)World.Current.Width - 1);
-        oldPos.y = Mathf.Clamp(oldPos.y, 0, (float)World.Current.Height - 1);
+        oldPos.x = Mathf.Clamp(oldPos.x, 0, (float)World.current.Width - 1);
+        oldPos.y = Mathf.Clamp(oldPos.y, 0, (float)World.current.Height - 1);
 
         Camera.main.transform.position = oldPos;
     }
@@ -556,7 +556,7 @@ public class MouseController
         sr.sortingLayerName = "Jobs";
         sr.sprite = fsc.GetSpriteForFurniture(furnitureType);
 
-        if (WorldController.Instance.world.IsFurniturePlacementValid(furnitureType, t) &&
+        if (WorldController.Instance.World.IsFurniturePlacementValid(furnitureType, t) &&
             bmc.DoesBuildJobOverlapExistingBuildJob(t, furnitureType) == false)
         {
             sr.color = new Color(0.5f, 1f, 0.5f, 0.25f);
