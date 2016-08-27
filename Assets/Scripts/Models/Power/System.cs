@@ -15,6 +15,8 @@ namespace Power
     public class Syster
     {
         private readonly HashSet<Grid> powerGrids;
+        private readonly float secondsToTick = 1.0f;
+        private float secondsPassed;
 
         public Syster()
         {
@@ -118,7 +120,19 @@ namespace Power
             return grid != null && grid.IsOperating;
         }
 
-        public void Update()
+        public void Update(float deltaTime)
+        {
+            secondsPassed += deltaTime;
+            if (secondsPassed < secondsToTick)
+            {
+                return;
+            }
+
+            secondsPassed = 0.0f;
+            Tick();
+        }
+
+        private void Tick()
         {
             if (IsEmpty)
             {
@@ -128,7 +142,7 @@ namespace Power
             powerGrids.RemoveWhere(grid => grid.IsEmpty);
             foreach (Grid powerGrid in powerGrids)
             {
-                powerGrid.Update();
+                powerGrid.Tick();
             }
         }
     }
