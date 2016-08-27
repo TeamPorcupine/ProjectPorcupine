@@ -70,6 +70,16 @@ The pull request should automatically update to reflect your changes.
 We are using Unity version 5.4 .  
 All pull requests must build in 5.4 to be a valid patch.  
 
+# Testing Pull Requests
+
+You can help by testing other pull requests before merging. 
+1. Add the fork of the author of the new pull request as a remote. 
+  * `git remote add <name of new remote> <clone URL>`
+2. Then create a new branch 
+  * `git checkout -b mypr-test-branch`
+3. And pull in the changes from the PR
+  * `git pull --ff-only <new remote> <name of the branch on that remote>`
+
 # General resources
 * [Github Tutorial by Quill18](https://www.youtube.com/watch?v=R2fl17eEpwI)
 * [GitHub Forking Overview](https://gist.github.com/Chaser324/ce0505fbed06b947d962)
