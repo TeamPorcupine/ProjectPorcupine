@@ -28,7 +28,7 @@ public class JobSpriteController
         jobGameObjectMap = new Dictionary<Job, GameObject>();
 
         fsc = furnitureSpriteController;
-        world.jobQueue.cbJobCreated += OnJobCreated;
+        world.jobQueue.OnJobCreated += OnJobCreated;
         jobParent = new GameObject("Jobs");
     }
 
