@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MoonSharp.Interpreter;
 using UnityEngine;
+using ProjectPorcupine.Localization;
 
 public enum JobPriority
 {
@@ -18,7 +19,7 @@ public enum JobPriority
 }
 
 [MoonSharpUserData]
-public class Job
+public class Job : ISelectable
 {
     // This class holds info for a queued up job, which can include
     // things like placing furniture, moving stored inventory,
@@ -52,7 +53,7 @@ public class Job
     protected bool jobRepeats = false;
 
     private List<string> jobWorkedLua;
-   
+
     // The job has been stopped, either because it's non-repeating or was cancelled.
     private List<string> jobCompletedLua;
 
@@ -178,6 +179,11 @@ public class Job
         protected set;
     }
 
+    public bool IsSelected
+    {
+        get; set;
+    }
+
     public Inventory[] GetInventoryRequirementValues()
     {
         return inventoryRequirements.Values.ToArray();
@@ -187,7 +193,7 @@ public class Job
     {
         return new Job(this);
     }
-    
+
     public void RegisterJobCompletedCallback(string cb)
     {
         jobCompletedLua.Add(cb);
@@ -197,7 +203,7 @@ public class Job
     {
         jobCompletedLua.Remove(cb);
     }
-    
+
     public void RegisterJobWorkedCallback(string cb)
     {
         jobWorkedLua.Add(cb);
@@ -234,7 +240,7 @@ public class Job
         }
 
         JobTime -= workTime;
-        
+
         if (JobTime <= 0)
         {
             // Do whatever is supposed to happen with a job cycle completes.
@@ -247,7 +253,7 @@ public class Job
             {
                 LuaUtilities.CallFunction(luaFunction, this);
             }
-            
+
             if (jobRepeats == false)
             {
                 // Let everyone know that the job is officially concluded
@@ -361,5 +367,30 @@ public class Job
     {
         // TODO: This casting to and from enums are a bit wierd. We should decide on ONE priority system.
         this.JobPriority = (JobPriority)Mathf.Min((int)JobPriority.Low, (int)JobPriority + 1);
+    }
+    public string GetName()
+    {
+        if (furniturePrototype != null)
+            return LocalizationTable.GetLocalization(furniturePrototype.GetName());
+        return JobObjectType;
+    }
+
+    public string GetDescription()
+    {
+        string result = "Requirements:\n";
+        foreach (Inventory inv in inventoryRequirements.Values)
+        {
+            result += "\t" + inv.GetName() + " " + inv.StackSize + "/" + inv.maxStackSize + "\n";
+        }
+        return result;
+    }
+    public string GetHitPointString()
+    {
+        return "";
+    }
+
+    public string GetJobDescription()
+    {
+        return this.GetDescription();
     }
 }
