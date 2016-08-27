@@ -128,33 +128,29 @@ public class CharacterAnimation
         {
             newAnimation += 10;
         }
-        
-        if (character.CurrTile.Room != null)
-        {
-            // TODO: What is the acceptable amount of O2 gas pressure? A little less than .2?
-            // for now, it's set very low, so the change is visible for testing
-            if (character.CurrTile.Room.GetGasPressure("O2") >= 0.005f)
-            {
-                newAnimation += 100; // Remove helmet
-            }
 
-            // Fix for doors not having rooms - we don't change the animation if room is null 
-            // - keep an eye on PR #833 - Tile.GetGasPressure(string gas)
-            if (newAnimation != (int)currentAnimationType)
+        // TODO: What is the acceptable amount of O2 gas pressure? A little less than .2?
+        // for now, it's set very low, so the change is visible for testing.
+        if (character.CurrTile.GetGasPressure("O2") >= 0.005f)
+        {
+            newAnimation += 100; // Remove helmet
+        }
+
+        // check if we need to switch animations
+        if (newAnimation != (int)currentAnimationType)
+        {
+            currentAnimationType = (AnimationType)newAnimation;
+            currentAnimation = animations[currentAnimationType];
+            if (currentAnimation.FlipX == true && renderer.flipX == false)
             {
-                currentAnimationType = (AnimationType)newAnimation;
-                currentAnimation = animations[currentAnimationType];
-                if (currentAnimation.FlipX == true && renderer.flipX == false)
-                {
-                    renderer.flipX = true;
-                }
-                else if (currentAnimation.FlipX == false && renderer.flipX == true)
-                {
-                    renderer.flipX = false;
-                }
+                renderer.flipX = true;
+            }
+            else if (currentAnimation.FlipX == false && renderer.flipX == true)
+            {
+                renderer.flipX = false;
             }
         }
-        
+
         currentAnimation.Update(deltaTime);
 
         if (prevFrameIndex != currentAnimation.CurrentIndex)
