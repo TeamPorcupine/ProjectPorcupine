@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Sprites>
+    <Sprite name="2IdleBack" x="140" y="192" w="70" h="96" pixelPerUnit="68" pivotX="0.5" pivotY="0.3" />
+    <Sprite name="2IdleFront" x="0" y="192" w="70" h="96" pixelPerUnit="68" pivotX="0.5" pivotY="0.3" />
+    <Sprite name="2IdleSide" x="70" y="192" w="70" h="96" pixelPerUnit="68" pivotX="0.5" pivotY="0.3" />
+    <Sprite name="2WalkBack1" x="140" y="96" w="70" h="96" pixelPerUnit="68" pivotX="0.5" pivotY="0.3" />
+    <Sprite name="2WalkBack2" x="0" y="0" w="70" h="96" pixelPerUnit="68" pivotX="0.5" pivotY="0.3" />
+    <Sprite name="2WalkFront1" x="70" y="0" w="70" h="96" pixelPerUnit="68" pivotX="0.5" pivotY="0.3" />
+    <Sprite name="2WalkFront2" x="139" y="0" w="70" h="96" pixelPerUnit="68" pivotX="0.5" pivotY="0.3" />
+    <Sprite name="2WalkSide1" x="0" y="96" w="70" h="96" pixelPerUnit="68" pivotX="0.5" pivotY="0.3" />
+    <Sprite name="2WalkSide2" x="70" y="96" w="70" h="96" pixelPerUnit="68" pivotX="0.5" pivotY="0.3" />
+    <Sprite name="IdleBack" x="140" y="480" w="70" h="96" pixelPerUnit="68" pivotX="0.5" pivotY="0.3" />
+    <Sprite name="IdleFront" x="0" y="480" w="70" h="96" pixelPerUnit="68" pivotX="0.5" pivotY="0.3" />
+    <Sprite name="IdleSide" x="70" y="480" w="70" h="96" pixelPerUnit="68" pivotX="0.5" pivotY="0.3" />
+    <Sprite name="WalkBack1" x="140" y="384" w="70" h="96" pixelPerUnit="68" pivotX="0.5" pivotY="0.3" />
+    <Sprite name="WalkBack2" x="1" y="289" w="70" h="96" pixelPerUnit="68" pivotX="0.5" pivotY="0.3" />
+    <Sprite name="WalkFront1" x="70" y="287" w="70" h="96" pixelPerUnit="68" pivotX="0.5" pivotY="0.3" />
+    <Sprite name="WalkFront2" x="140" y="287" w="70" h="96" pixelPerUnit="68" pivotX="0.5" pivotY="0.3" />
+    <Sprite name="WalkSide1" x="0" y="384" w="70" h="96" pixelPerUnit="68" pivotX="0.5" pivotY="0.3" />
+    <Sprite name="WalkSide2" x="70" y="384" w="70" h="96" pixelPerUnit="68" pivotX="0.5" pivotY="0.3" />
+</Sprites>

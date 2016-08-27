@@ -459,12 +459,12 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         if (needPercent > 50 && needPercent < 100 && need != null)
         {
-            MyJob = new Job(null, need.RestoreNeedFurn.ObjectType, need.CompleteJobNorm, need.RestoreNeedTime, null, JobPriority.High, false, true, false);
+            MyJob = new Job(null, need.RestoreNeedFurn.ObjectType, need.CompleteJobNorm, need.RestoreNeedTime, null, Job.JobPriority.High, false, true, false);
         }
 
         if (needPercent == 100 && need != null && need.CompleteOnFail)
         {
-            MyJob = new Job(CurrTile, null, need.CompleteJobCrit, need.RestoreNeedTime * 10, null, JobPriority.High, false, true, true);
+            MyJob = new Job(CurrTile, null, need.CompleteJobCrit, need.RestoreNeedTime * 10, null, Job.JobPriority.High, false, true, true);
         }
 
         // Get the first job on the queue.
@@ -482,7 +482,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                     null,
                     UnityEngine.Random.Range(0.1f, 0.5f),
                     null,
-                    JobPriority.Low,
+                    Job.JobPriority.Low,
                     false);
                 MyJob.JobDescription = "job_waiting_desc";
             }

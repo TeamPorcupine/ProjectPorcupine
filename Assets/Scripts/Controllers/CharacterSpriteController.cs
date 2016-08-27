@@ -11,12 +11,17 @@ using UnityEngine;
 
 public enum SpriteSwapRedColor
 {
-    UNIFORMCOLOR = 151,
-    UNIFORMCOLORLIGHT = 201,
-    UNIFORMCOLORDARK = 101,
+    UNIFORMCOLOR = 129,
+    UNIFORMCOLORLIGHT = 199,
+    UNIFORMCOLORDARK = 97,
+    UNIFORMSTRIPECOLOR = 151,
+    UNIFORMSTRIPECOLORLIGHT = 201,
+    UNIFORMSTRIPECOLORDARK = 101,
     HAIRCOLOR = 152,
     HAIRCOLORLIGHT = 202,
-    HAIRCOLORDARK = 102
+    HAIRCOLORDARK = 102,
+    SKINCOLOR = 244,
+    SKINCOLORDARK = 229
 }
 
 public class CharacterSpriteController
@@ -27,12 +32,24 @@ public class CharacterSpriteController
     private GameObject characterParent;
 
     private Color[] swapSpriteColors;
+    private Color[] skinColors;
 
     // Use this for initialization
     public CharacterSpriteController(World currentWorld)
     {
         world = currentWorld;
         characterParent = new GameObject("Characters");
+
+        // default skincolors to pick at random
+        skinColors = new Color[]
+        {
+            ColorFromIntRGB(245, 217, 203),
+            ColorFromIntRGB(237, 191, 167),
+            ColorFromIntRGB(211, 142, 111),
+            ColorFromIntRGB(234, 183, 138),
+            ColorFromIntRGB(197, 132, 92),
+            ColorFromIntRGB(88, 59, 43)
+        };
 
         // prepare swap texture for shader
         Texture2D colorSwapTex = new Texture2D(256, 1, TextureFormat.RGBA32, false, false);
@@ -77,28 +94,13 @@ public class CharacterSpriteController
         char_go.transform.position = new Vector3(c.X, c.Y, 0);
         char_go.transform.SetParent(characterParent.transform, true);
 
-        SpriteRenderer sr = char_go.AddComponent<SpriteRenderer>();        
+        SpriteRenderer sr = char_go.AddComponent<SpriteRenderer>();
         sr.sortingLayerName = "Characters";
-        
+
         // Add material with color replacement shader, and generate color replacement texture
-        sr.material = GetMaterial(c);        
+        sr.material = GetMaterial(c);
         c.animation = new CharacterAnimation(c, sr);
 
-        // load all character sprites 
-        Sprite[] sprites = 
-            {
-                SpriteManager.current.GetSprite("Character", "tp2_idle_south"),
-                SpriteManager.current.GetSprite("Character", "tp2_idle_east"),
-                SpriteManager.current.GetSprite("Character", "tp2_idle_north"),
-                SpriteManager.current.GetSprite("Character", "tp2_walk_east_01"),
-                SpriteManager.current.GetSprite("Character", "tp2_walk_east_02"),
-                SpriteManager.current.GetSprite("Character", "tp2_walk_north_01"),
-                SpriteManager.current.GetSprite("Character", "tp2_walk_north_02"),
-                SpriteManager.current.GetSprite("Character", "tp2_walk_south_01"),
-                SpriteManager.current.GetSprite("Character", "tp2_walk_south_02")
-            };
-        c.animation.SetSprites(sprites);
-        
         // Add the inventory sprite onto the character
         GameObject inv_go = new GameObject("Inventory");
         SpriteRenderer inv_sr = inv_go.AddComponent<SpriteRenderer>();
@@ -110,7 +112,7 @@ public class CharacterSpriteController
 
         // Register our callback so that our GameObject gets updated whenever
         // the object's into changes.
-        c.OnCharacterChanged += OnCharacterChanged;        
+        c.OnCharacterChanged += OnCharacterChanged;
     }
 
     // Add material with color replacement shader, and generate color replacement texture
@@ -120,7 +122,7 @@ public class CharacterSpriteController
         // if pixel 10 is not transparent, every color with r=10 will be replaced by the color of the pixel
         Texture2D colorSwapTex = new Texture2D(256, 1, TextureFormat.RGBA32, false, false);
         colorSwapTex.filterMode = FilterMode.Point;
-        
+
         // Reset texture
         for (int i = 0; i < colorSwapTex.width; ++i)
         {
@@ -132,20 +134,31 @@ public class CharacterSpriteController
         // Define the swapping colors. Add white to hightlights and black to shadows        
         Color newColorLight = Color.Lerp(c.GetCharacterColor(), ColorFromIntRGB(255, 255, 255), 0.5f);
         Color newColorDark = Color.Lerp(c.GetCharacterColor(), ColorFromIntRGB(0, 0, 0), 0.5f);
+        Color newSkinColor = skinColors[UnityEngine.Random.Range(0, 5)];
+        Color newSkinColorDark = Color.Lerp(newSkinColor, ColorFromIntRGB(0, 0, 0), 0.2f);
+        int uniColor = UnityEngine.Random.Range(80, 230);
+        Color newUniformColor = ColorFromIntRGB(uniColor, uniColor, uniColor);
+        Color newUniformColorLight = Color.Lerp(newUniformColor, ColorFromIntRGB(255, 255, 255), 0.5f);
+        Color newUniformColorDark = Color.Lerp(newUniformColor, ColorFromIntRGB(0, 0, 0), 0.2f);
 
         // add the colors to the texture
         // TODO: Do something similar for HAIRCOLOR, when we have a character with visible hair
-        colorSwapTex = SwapColor(colorSwapTex, SpriteSwapRedColor.UNIFORMCOLOR, c.GetCharacterColor());
-        colorSwapTex = SwapColor(colorSwapTex, SpriteSwapRedColor.UNIFORMCOLORLIGHT, newColorLight);
-        colorSwapTex = SwapColor(colorSwapTex, SpriteSwapRedColor.UNIFORMCOLORDARK, newColorDark);
+        colorSwapTex = SwapColor(colorSwapTex, SpriteSwapRedColor.UNIFORMCOLOR, newUniformColor);
+        colorSwapTex = SwapColor(colorSwapTex, SpriteSwapRedColor.UNIFORMCOLORLIGHT, newUniformColorLight);
+        colorSwapTex = SwapColor(colorSwapTex, SpriteSwapRedColor.UNIFORMCOLORDARK, newUniformColorDark);
+        colorSwapTex = SwapColor(colorSwapTex, SpriteSwapRedColor.UNIFORMSTRIPECOLOR, c.GetCharacterColor());
+        colorSwapTex = SwapColor(colorSwapTex, SpriteSwapRedColor.UNIFORMSTRIPECOLORLIGHT, newColorLight);
+        colorSwapTex = SwapColor(colorSwapTex, SpriteSwapRedColor.UNIFORMSTRIPECOLORDARK, newColorDark);
+        colorSwapTex = SwapColor(colorSwapTex, SpriteSwapRedColor.SKINCOLOR, newSkinColor);
+        colorSwapTex = SwapColor(colorSwapTex, SpriteSwapRedColor.SKINCOLORDARK, newSkinColorDark);
         colorSwapTex.Apply();
-        
+
         // load material and shader
         Material swapMaterial = new Material(Resources.Load<Material>("Shaders/ColorSwap"));
-        Shader swapShader = Resources.Load<Shader>("Shaders/Sprites-ColorSwap");        
+        Shader swapShader = Resources.Load<Shader>("Shaders/Sprites-ColorSwap");
         swapMaterial.shader = swapShader;
         swapMaterial.SetTexture("_SwapTex", colorSwapTex);
-        
+
         return swapMaterial;
     }
 
@@ -154,7 +167,7 @@ public class CharacterSpriteController
         swapSpriteColors[(int)index] = color;
         tex.SetPixel((int)index, 0, color);
         return tex;
-    }    
+    }
 
     private void OnCharacterChanged(Character c)
     {
@@ -176,24 +189,6 @@ public class CharacterSpriteController
         }
 
         GameObject char_go = characterGameObjectMap[c];
-        ///Debug.ULogChannel("CharacterSpriteController",char_go.ToString());
-        ///Debug.ULogChannel("CharacterSpriteController",char_go.GetComponent<SpriteRenderer>().ToString());
-
-        // TODO: When we have a helmetless spritesheet, use this check to switch spritesheet on the character
-        /*
-        if (c.CurrTile.Room != null)
-        {
-            if (c.CurrTile.Room.GetGasAmount("O2") <= 0.5f && char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled == false)
-            {
-                char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled = true;
-            }
-            else if (c.CurrTile.Room.GetGasAmount("O2") >= 0.5f && char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled == true)
-            {
-                char_go.transform.GetChild(1).GetComponent<SpriteRenderer>().enabled = false;
-            }
-        }
-        */
-
         char_go.transform.position = new Vector3(c.X, c.Y, 0);
     }
 }
