@@ -12,8 +12,6 @@ using UnityEngine.EventSystems;
 
 public class MouseController
 {
-    public SelectionInfo mySelection;
-
     private GameObject cursorParent;    
     private GameObject circleCursorPrefab;    
     private GameObject furnitureParent;
@@ -65,6 +63,8 @@ public class MouseController
         BUILD,
         SPAWN_INVENTORY
     }
+
+    public SelectionInfo MySelection { get; set; }
 
     /// <summary>
     /// Gets the mouse position in world space.
@@ -145,9 +145,9 @@ public class MouseController
 
     public bool IsCharacterSelected()
     {
-        if (mySelection != null)
+        if (MySelection != null)
         {
-            return mySelection.IsCharacterSelected();
+            return MySelection.IsCharacterSelected();
         }
 
         return false;
@@ -207,25 +207,25 @@ public class MouseController
     {
         // If we are placing a multitile object we would like to modify the posiotion where the mouse grabs it.
         if (currentMode == MouseMode.BUILD
-            && bmc.buildMode == BuildMode.FURNITURE
-            && World.Current.furniturePrototypes.ContainsKey(bmc.buildModeObjectType)
-            && (World.Current.furniturePrototypes[bmc.buildModeObjectType].Width > 1 ||
-            World.Current.furniturePrototypes[bmc.buildModeObjectType].Height > 1))
+            && bmc.BuildMode == BuildMode.FURNITURE
+            && World.Current.furniturePrototypes.ContainsKey(bmc.BuildModeObjectType)
+            && (World.Current.furniturePrototypes[bmc.BuildModeObjectType].Width > 1 ||
+            World.Current.furniturePrototypes[bmc.BuildModeObjectType].Height > 1))
         {
             // If the furniture has af jobSpot set we would like to use that.
-            if (World.Current.furniturePrototypes[bmc.buildModeObjectType].JobSpotOffset.Equals(Vector2.zero) == false)
+            if (World.Current.furniturePrototypes[bmc.BuildModeObjectType].JobSpotOffset.Equals(Vector2.zero) == false)
             {
                 currPlacingPosition = new Vector3(
-                    currFramePosition.x - World.Current.furniturePrototypes[bmc.buildModeObjectType].JobSpotOffset.x,
-                    currFramePosition.y - World.Current.furniturePrototypes[bmc.buildModeObjectType].JobSpotOffset.y,
+                    currFramePosition.x - World.Current.furniturePrototypes[bmc.BuildModeObjectType].JobSpotOffset.x,
+                    currFramePosition.y - World.Current.furniturePrototypes[bmc.BuildModeObjectType].JobSpotOffset.y,
                     0);
             }
             else
             {   
                 // Otherwise we use the center.
                 currPlacingPosition = new Vector3(
-                    currFramePosition.x - ((World.Current.furniturePrototypes[bmc.buildModeObjectType].Width - 1f) / 2f),
-                    currFramePosition.y - ((World.Current.furniturePrototypes[bmc.buildModeObjectType].Height - 1f) / 2f),
+                    currFramePosition.x - ((World.Current.furniturePrototypes[bmc.BuildModeObjectType].Width - 1f) / 2f),
+                    currFramePosition.y - ((World.Current.furniturePrototypes[bmc.BuildModeObjectType].Height - 1f) / 2f),
                     0);
             }
         }
@@ -240,7 +240,7 @@ public class MouseController
         // This handles us left-clicking on furniture or characters to set a selection.
         if (Input.GetKeyUp(KeyCode.Escape))
         {
-            mySelection = null;
+            MySelection = null;
         }
 
         if (currentMode != MouseMode.SELECT)
@@ -283,16 +283,16 @@ public class MouseController
                 return;
             }
 
-            if (mySelection == null || mySelection.Tile != tileUnderMouse)
+            if (MySelection == null || MySelection.Tile != tileUnderMouse)
             {
-                if (mySelection != null)
+                if (MySelection != null)
                 {
-                    mySelection.GetSelectedStuff().IsSelected = false;
+                    MySelection.GetSelectedStuff().IsSelected = false;
                 }
 
                 // We have just selected a brand new tile, reset the info.
-                mySelection = new SelectionInfo(tileUnderMouse);
-                mySelection.GetSelectedStuff().IsSelected = true;
+                MySelection = new SelectionInfo(tileUnderMouse);
+                MySelection.GetSelectedStuff().IsSelected = true;
             }
             else
             {
@@ -301,10 +301,10 @@ public class MouseController
 
                 // Rebuild the array of possible sub-selection in case characters moved in or out of the tile.
                 // [IsSelected] Set our last stuff to be not selected because were selecting the next stuff
-                mySelection.GetSelectedStuff().IsSelected = false;
-                mySelection.BuildStuffInTile();
-                mySelection.SelectNextStuff();
-                mySelection.GetSelectedStuff().IsSelected = true;
+                MySelection.GetSelectedStuff().IsSelected = false;
+                MySelection.BuildStuffInTile();
+                MySelection.SelectNextStuff();
+                MySelection.GetSelectedStuff().IsSelected = true;
             }
         }
     }
@@ -386,12 +386,12 @@ public class MouseController
                 if (t != null)
                 {
                     // Display the building hint on top of this tile position.
-                    if (bmc.buildMode == BuildMode.FURNITURE)
+                    if (bmc.BuildMode == BuildMode.FURNITURE)
                     {
-                        Furniture proto = World.Current.furniturePrototypes[bmc.buildModeObjectType];
+                        Furniture proto = World.Current.furniturePrototypes[bmc.BuildModeObjectType];
                         if (IsPartOfDrag(t, dragParams, proto.DragType))
                         {
-                            ShowFurnitureSpriteAtTile(bmc.buildModeObjectType, t);
+                            ShowFurnitureSpriteAtTile(bmc.BuildModeObjectType, t);
                         }
                     }
                     else
@@ -418,10 +418,10 @@ public class MouseController
             for (int y = dragParams.StartY; y <= dragParams.EndY; y++)
             {
                 Tile t = WorldController.Instance.World.GetTileAt(x, y);
-                if (bmc.buildMode == BuildMode.FURNITURE)
+                if (bmc.BuildMode == BuildMode.FURNITURE)
                 {
                     // Check for furniture dragType.
-                    Furniture proto = World.Current.furniturePrototypes[bmc.buildModeObjectType];
+                    Furniture proto = World.Current.furniturePrototypes[bmc.BuildModeObjectType];
 
                     if (IsPartOfDrag(t, dragParams, proto.DragType))
                     {
