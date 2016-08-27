@@ -227,7 +227,7 @@ public class TileType : IXmlSerializable
                         Tile.ChangeTileTypeJobComplete,
                         jobTime,
                         invs.ToArray(),
-                        Job.JobPriority.High,
+                        JobPriority.High,
                         false,
                         true);
                     j.JobDescription = "job_build_floor_" + this;

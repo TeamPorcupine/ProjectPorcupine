@@ -111,7 +111,7 @@ public class BuildModeController
                 else
                 {
                     Debug.ULogErrorChannel("BuildModeController", "There is no furniture job prototype for '" + furnitureType + "'");
-                    j = new Job(t, furnitureType, FurnitureActions.JobComplete_FurnitureBuilding, 0.1f, null, Job.JobPriority.High);
+                    j = new Job(t, furnitureType, FurnitureActions.JobComplete_FurnitureBuilding, 0.1f, null, JobPriority.High);
                     j.JobDescription = "job_build_" + furnitureType + "_desc";
                 }
 
@@ -125,7 +125,7 @@ public class BuildModeController
                         // flags that preven conflicts. It's too easy to forget to set/clear them!
                         Tile offsetTile = WorldController.Instance.World.GetTileAt(x_off, y_off);
                         offsetTile.PendingBuildJob = j;
-                        j.cbJobStopped += (theJob) =>
+                        j.OnJobStopped += (theJob) =>
                             {
                                 offsetTile.PendingBuildJob = null;
                             };
@@ -133,9 +133,9 @@ public class BuildModeController
                 }
 
                 // Add the job to the queue
-                if (Settings.getSettingAsBool("DialogBoxSettings_developerModeToggle", false))
+                if (Settings.GetSettingAsBool("DialogBoxSettings_developerModeToggle", false))
                 {
-                    WorldController.Instance.World.PlaceFurniture(j.jobObjectType, j.tile);
+                    WorldController.Instance.World.PlaceFurniture(j.JobObjectType, j.tile);
                 }
                 else
                 {
@@ -166,15 +166,15 @@ public class BuildModeController
                 // FIXME: I don't like having to manually and explicitly set
                 // flags that preven conflicts. It's too easy to forget to set/clear them!
                 t.PendingBuildJob = j;
-                j.cbJobStopped += (theJob) =>
+                j.OnJobStopped += (theJob) =>
                 {
                     theJob.tile.PendingBuildJob = null;
                 };
 
                 // Add the job to the queue
-                if (Settings.getSettingAsBool("DialogBoxSettings_developerModeToggle", false))
+                if (Settings.GetSettingAsBool("DialogBoxSettings_developerModeToggle", false))
                 {
-                    j.tile.Type = j.jobTileType;
+                    j.tile.Type = j.JobTileType;
                 }
                 else
                 {

@@ -54,7 +54,7 @@ public class PowerSystem
         powerRelated.PowerValueChanged += OnPowerValueChanged;
         Furniture furniture = powerRelated as Furniture;
         if (furniture != null)
-        {            
+        {
             furniture.OnRemoved += RemoveFromPowerGrid;
         }
 
