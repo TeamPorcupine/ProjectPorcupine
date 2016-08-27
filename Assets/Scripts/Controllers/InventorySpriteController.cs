@@ -71,13 +71,14 @@ public class InventorySpriteController
             GameObject ui_go = GameObject.Instantiate(inventoryUIPrefab);
             ui_go.transform.SetParent(inv_go.transform);
             ui_go.transform.localPosition = Vector3.zero;
-            ui_go.GetComponentInChildren<Text>().text = inv.stackSize.ToString();
+            ui_go.GetComponentInChildren<Text>().text = inv.StackSize.ToString();
         }
 
         // Register our callback so that our GameObject gets updated whenever
         // the object's into changes.
-        // FIXME: Add on changed callbacks.
-        inv.cbInventoryChanged += OnInventoryChanged;
+        // FIXME: Add on changed callbacks
+        inv.OnInventoryChanged += OnInventoryChanged;
+
     }
 
     private void OnInventoryChanged(Inventory inv)
@@ -90,14 +91,14 @@ public class InventorySpriteController
         }
 
         GameObject inv_go = inventoryGameObjectMap[inv];
-        if (inv.stackSize > 0)
+        if (inv.StackSize > 0)
         {
             Text text = inv_go.GetComponentInChildren<Text>();
 
-            // FIXME: If maxStackSize changed to/from 1, then we either need to create or destroy the text´.
+            // FIXME: If maxStackSize changed to/from 1, then we either need to create or destroy the textï¿½.
             if (text != null)
             {
-                text.text = inv.stackSize.ToString();
+                text.text = inv.StackSize.ToString();
             }
         }
         else
@@ -105,7 +106,7 @@ public class InventorySpriteController
             // This stack has gone to zero, so remove the sprite!
             GameObject.Destroy(inv_go);
             inventoryGameObjectMap.Remove(inv);
-            inv.cbInventoryChanged -= OnInventoryChanged;
+            inv.OnInventoryChanged -= OnInventoryChanged;
         }
     }
 }
