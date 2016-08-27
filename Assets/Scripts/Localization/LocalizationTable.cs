@@ -106,6 +106,7 @@ namespace ProjectPorcupine.Localization
                         Debug.ULogErrorChannel("LocalizationTable", string.Format("Invalid format of localization string. Actual {0}", line));
                         continue;
                     }
+
                     localizationTable[localizationCode][keyValuePair[0]] = keyValuePair[1];
                 }
             }
