@@ -133,7 +133,7 @@ public class BuildModeController
                 }
 
                 // Add the job to the queue
-                if (Settings.getSettingAsBool("DialogBoxSettings_developerModeToggle", false))
+                if (Settings.GetSettingAsBool("DialogBoxSettings_developerModeToggle", false))
                 {
                     WorldController.Instance.World.PlaceFurniture(j.JobObjectType, j.tile);
                 }
@@ -172,7 +172,7 @@ public class BuildModeController
                 };
 
                 // Add the job to the queue
-                if (Settings.getSettingAsBool("DialogBoxSettings_developerModeToggle", false))
+                if (Settings.GetSettingAsBool("DialogBoxSettings_developerModeToggle", false))
                 {
                     j.tile.Type = j.JobTileType;
                 }

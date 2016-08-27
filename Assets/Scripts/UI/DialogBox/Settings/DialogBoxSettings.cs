@@ -98,17 +98,17 @@ public class DialogBoxSettings : DialogBox
     /// </summary>
     public void SaveSetting()
     {
-        Settings.setSetting("DialogBoxSettings_musicVolume", musicVolume.normalizedValue);
+        Settings.SetSetting("DialogBoxSettings_musicVolume", musicVolume.normalizedValue);
 
-        Settings.setSetting("DialogBoxSettings_langToggle", langToggle.isOn);
-        Settings.setSetting("DialogBoxSettings_fpsToggle", fpsToggle.isOn);
-        Settings.setSetting("DialogBoxSettings_fullScreenToggle", fullScreenToggle.isOn);
-        Settings.setSetting("DialogBoxSettings_developerModeToggle", developerModeToggle.isOn);
+        Settings.SetSetting("DialogBoxSettings_langToggle", langToggle.isOn);
+        Settings.SetSetting("DialogBoxSettings_fpsToggle", fpsToggle.isOn);
+        Settings.SetSetting("DialogBoxSettings_fullScreenToggle", fullScreenToggle.isOn);
+        Settings.SetSetting("DialogBoxSettings_developerModeToggle", developerModeToggle.isOn);
 
-        Settings.setSetting("DialogBoxSettings_qualityDropdown", qualityDropdown.value);
-        Settings.setSetting("DialogBoxSettings_vSyncDropdown", vsyncDropdown.value);
-        Settings.setSetting("DialogBoxSettings_resolutionDropdown", resolutionDropdown.value);
-        Settings.setSetting("DialogBoxSettings_aliasingDropdown", aliasingDropdown.value);
+        Settings.SetSetting("DialogBoxSettings_qualityDropdown", qualityDropdown.value);
+        Settings.SetSetting("DialogBoxSettings_vSyncDropdown", vsyncDropdown.value);
+        Settings.SetSetting("DialogBoxSettings_resolutionDropdown", resolutionDropdown.value);
+        Settings.SetSetting("DialogBoxSettings_aliasingDropdown", aliasingDropdown.value);
     }
 
     private void OnEnable()
@@ -172,17 +172,17 @@ public class DialogBoxSettings : DialogBox
     /// </summary>
     private void LoadSetting()
     {
-        musicVolume.normalizedValue = Settings.getSettingAsFloat("DialogBoxSettings_musicVolume", 0.5f);
+        musicVolume.normalizedValue = Settings.GetSettingAsFloat("DialogBoxSettings_musicVolume", 0.5f);
 
-        langToggle.isOn = Settings.getSettingAsBool("DialogBoxSettings_langToggle", true);
-        fpsToggle.isOn = Settings.getSettingAsBool("DialogBoxSettings_fpsToggle", true);
-        fullScreenToggle.isOn = Settings.getSettingAsBool("DialogBoxSettings_fullScreenToggle", true);
-        developerModeToggle.isOn = Settings.getSettingAsBool("DialogBoxSettings_developerModeToggle", false);
+        langToggle.isOn = Settings.GetSettingAsBool("DialogBoxSettings_langToggle", true);
+        fpsToggle.isOn = Settings.GetSettingAsBool("DialogBoxSettings_fpsToggle", true);
+        fullScreenToggle.isOn = Settings.GetSettingAsBool("DialogBoxSettings_fullScreenToggle", true);
+        developerModeToggle.isOn = Settings.GetSettingAsBool("DialogBoxSettings_developerModeToggle", false);
 
-        qualityDropdown.value = Settings.getSettingAsInt("DialogBoxSettings_qualityDropdown", 0);
-        vsyncDropdown.value = Settings.getSettingAsInt("DialogBoxSettings_vSyncDropdown", 0);
-        resolutionDropdown.value = Settings.getSettingAsInt("DialogBoxSettings_resolutionDropdown", 0);
-        aliasingDropdown.value = Settings.getSettingAsInt("DialogBoxSettings_aliasingDropdown", 0);
+        qualityDropdown.value = Settings.GetSettingAsInt("DialogBoxSettings_qualityDropdown", 0);
+        vsyncDropdown.value = Settings.GetSettingAsInt("DialogBoxSettings_vSyncDropdown", 0);
+        resolutionDropdown.value = Settings.GetSettingAsInt("DialogBoxSettings_resolutionDropdown", 0);
+        aliasingDropdown.value = Settings.GetSettingAsInt("DialogBoxSettings_aliasingDropdown", 0);
     }
 
     private void CreateResDropDown()
