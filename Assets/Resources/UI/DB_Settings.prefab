@@ -2657,7 +2657,7 @@ MonoBehaviour:
   musicVolume: {fileID: 114000010470391822}
   resolutionDropdown: {fileID: 114000013153180724}
   aliasingDropdown: {fileID: 114000010320245446}
-  vSyncDropdown: {fileID: 114000013402641512}
+  vsyncDropdown: {fileID: 114000013402641512}
   qualityDropdown: {fileID: 114000013744627590}
   closeButton: {fileID: 114000014212207314}
   saveButton: {fileID: 114000010563584118}
