@@ -22,8 +22,6 @@ public class SpawnInventoryController
 
     public string InventoryToBuild { get; protected set; }
 
-
-
     public void HideUI() 
     {
         spawnUI.SetActive(false);

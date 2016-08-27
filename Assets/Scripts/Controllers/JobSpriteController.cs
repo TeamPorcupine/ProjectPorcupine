@@ -28,7 +28,7 @@ public class JobSpriteController
         jobGameObjectMap = new Dictionary<Job, GameObject>();
 
         fsc = furnitureSpriteController;
-        world.jobQueue.cbJobCreated += OnJobCreated;
+        world.jobQueue.OnJobCreated += OnJobCreated;
         jobParent = new GameObject("Jobs");
     }
 
@@ -90,7 +90,7 @@ public class JobSpriteController
             Tile southTile = world.GetTileAt(job.tile.X, job.tile.Y - 1);
 
             if (northTile != null && southTile != null && northTile.Furniture != null && southTile.Furniture != null &&
-            northTile.Furniture.objectType.Contains("Wall") && southTile.Furniture.objectType.Contains("Wall"))
+            northTile.Furniture.ObjectType.Contains("Wall") && southTile.Furniture.ObjectType.Contains("Wall"))
             {
                 job_go.transform.rotation = Quaternion.Euler(0, 0, 90);
             }

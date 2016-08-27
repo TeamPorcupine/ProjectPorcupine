@@ -47,7 +47,7 @@ namespace ProjectPorcupine.Localization
         /// <summary>
         /// Loads the localization in directory.
         /// </summary>
-        /// <param name="path">Arbitrary path to load Localization files from</param>
+        /// <param name="path">Arbitrary path to load Localization files from.</param>
         private void LoadLocalizationInDirectory(string path)
         {
             // Get the file path.

@@ -33,6 +33,72 @@ public enum Facing
 [MoonSharpUserData]
 public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 {
+    /// Name of the Character.
+    public string name;
+
+    /// The item we are carrying (not gear/equipment).
+    public Inventory inventory;
+
+    /// Holds all character animations.
+    public CharacterAnimation animation;
+
+    /// Is the character walking or idle.
+    public bool IsWalking;
+
+    /// What direction our character is looking.
+    public Facing CharFacing;
+
+    private Need[] needs;
+
+    /// Destination tile of the character.
+    private Tile destTile;
+
+    /// Current tile the character is standing on.
+    private Tile currTile;
+
+    /// The next tile in the pathfinding sequence (the one we are about to enter).
+    private Tile nextTile;
+
+    /// Goes from 0 to 1 as we move from CurrTile to nextTile.
+    private float movementPercentage;
+
+    /// Holds the path to reach DestTile.
+    private Path_AStar pathAStar;
+
+    /// Tiles per second.
+    private float speed = 5f;
+
+    /// Tile where job should be carried out, if different from MyJob.tile.
+    private Tile jobTile;
+
+    private bool selected = false;
+
+    private Color characterColor;
+
+    /// Use only for serialization
+    public Character()
+    {
+        needs = new Need[World.current.needPrototypes.Count];
+        LoadNeeds();
+    }
+
+    public Character(Tile tile)
+    {
+        CurrTile = DestTile = nextTile = tile;
+        LoadNeeds();
+        characterColor = new Color(UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f), 1.0f);
+    }
+
+    public Character(Tile tile, Color color)
+    {
+        CurrTile = DestTile = nextTile = tile;
+        characterColor = color;
+        LoadNeeds();
+    }
+
+    /// A callback to trigger when character information changes (notably, the position).
+    public event Action<Character> OnCharacterChanged;
+
     /// <summary>
     /// Returns a float representing the Character's X position, which can
     /// be part-way between two tiles during movement.
@@ -41,12 +107,12 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     {
         get
         {
-            if (NextTile == null)
+            if (nextTile == null)
             {
                 return CurrTile.X;
             }
 
-            return Mathf.Lerp(CurrTile.X, NextTile.X, movementPercentage);
+            return Mathf.Lerp(CurrTile.X, nextTile.X, movementPercentage);
         }
     }
 
@@ -58,15 +124,14 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     {
         get
         {
-            if (NextTile == null)
+            if (nextTile == null)
             {
                 return CurrTile.Y;
             }
 
-            return Mathf.Lerp(CurrTile.Y, NextTile.Y, movementPercentage);
+            return Mathf.Lerp(CurrTile.Y, nextTile.Y, movementPercentage);
         }
     }
-    Need[] needs;
 
     /// <summary>
     /// The tile the Character is considered to still be standing in.
@@ -75,22 +140,58 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     {
         get
         {
-            return _currTile;
+            return currTile;
         }
 
         protected set
         {
-            if (_currTile != null)
+            if (currTile != null)
             {
-                _currTile.Characters.Remove(this);
+                currTile.Characters.Remove(this);
             }
 
-            _currTile = value;
-            _currTile.Characters.Add(this);
+            currTile = value;
+            currTile.Characters.Add(this);
         }
     }
 
-    private Tile _currTile;
+    /// Tile where job should be carried out.
+    public Tile JobTile
+    {
+        get
+        {
+            if (jobTile == null && MyJob == null)
+            {
+                return null;
+            }
+
+            return jobTile ?? MyJob.tile;
+        }
+    }
+
+    /// Our job, if any.
+    public Job MyJob
+    {
+        get; protected set;
+    }
+
+    public bool IsSelected
+    {
+        get
+        {
+            return selected;
+        }
+
+        set
+        {
+            if (value == false)
+            {
+                VisualPath.Instance.RemoveVisualPoints(name);
+            }
+
+            selected = value;
+        }
+    }
 
     /// <summary>
     /// The Character's current goal tile (not necessarily the next one
@@ -100,114 +201,193 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     {
         get
         {
-            return _destTile;
+            return destTile;
         }
 
         set
         {
-            if (_destTile != value)
+            if (destTile != value)
             {
-                _destTile = value;
+                destTile = value;
                 pathAStar = null;   // If this is a new destination, then we need to invalidate pathfinding.
             }
         }
     }
 
-    /// Tile where job should be carried out.
-    public Tile JobTile
+    public IEnumerable<ContextMenuAction> GetContextMenuActions(ContextMenu contextMenu)
     {
-        get
+        yield return new ContextMenuAction
         {
-            if (jobTile == null && myJob == null)
-                return null;
-            return jobTile ?? myJob.tile;
+            Text = "Poke " + GetName(),
+            RequiereCharacterSelected = false,
+            Action = (cm, c) => Debug.ULogChannel("Character", GetDescription())
+        };
+    }
+
+    public void AbandonJob(bool intoWaitingQueue)
+    {
+        Debug.ULogChannel("Character", name + " abandoned their job.");
+        if (MyJob == null)
+        {
+            return;
+        }
+
+        if (MyJob.isNeed)
+        {
+            MyJob.cbJobStopped -= OnJobStopped;
+            MyJob = null;
+            return;
+        }
+
+        // Character does not have to move,
+        // so destination tile is the one
+        // he is standing on.
+        nextTile = DestTile = CurrTile;
+
+        // Drops the priority a level, to lowest.
+        MyJob.DropPriority();
+
+        if (intoWaitingQueue)
+        {
+            // If the job gets abandoned because of missing materials,
+            // put it into the waiting queue.
+            // Also create a callback for when an inventory gets created.
+            // Lastly, remove the job from "MyJob".
+            World.current.jobWaitingQueue.Enqueue(MyJob);
+            World.current.cbInventoryCreated += OnInventoryCreated;
+            MyJob.cbJobStopped -= OnJobStopped;
+            MyJob = null;
+        }
+        else
+        {
+            // If the job gets abandoned because of pathing issues or something else,
+            // just put it into the normal job queue and remove the job from "MyJob".
+            World.current.jobQueue.Enqueue(MyJob);
+            MyJob.cbJobStopped -= OnJobStopped;
+            MyJob = null;
         }
     }
 
-    private Tile _destTile;
-
-    /// The next tile in the pathfinding sequence (the one we are about to enter).
-    private Tile NextTile;
-
-    /// Goes from 0 to 1 as we move from CurrTile to NextTile
-    private float movementPercentage;
-
-    /// Holds the path to reach DestTile.
-    private Path_AStar pathAStar;
-
-    /// Tiles per second
-    private float speed = 5f;
-
-    /// A callback to trigger when character information changes (notably, the position)
-    public event Action<Character> cbCharacterChanged;
-
-    /// Our job, if any.
-    public Job myJob { get; protected set; }
-
-    /// Tile where job should be carried out, if different from myJob.tile
-    private Tile jobTile;
-
-    /// Name of the Character
-    public string name;
-
-    // The item we are carrying (not gear/equipment)
-    public Inventory inventory;
-
-    // holds all character animations
-    public CharacterAnimation animation;
-
-    // is the character walking or idle
-    public bool IsWalking;
-
-    // What direction our character is looking
-    public Facing CharFacing;
-
-    public bool IsSelected
+    /// Runs every "frame" while the simulation is not paused
+    public void Update(float deltaTime)
     {
-        get { return _isSelected; }
-        set
+        Update_DoJob(deltaTime);
+
+        Update_DoMovement(deltaTime);
+
+        if (OnCharacterChanged != null)
         {
-            if (value == false)
+            OnCharacterChanged(this);
+        }
+
+        animation.Update(deltaTime);
+    }
+
+    #region IXmlSerializable implementation
+
+    public XmlSchema GetSchema()
+    {
+        return null;
+    }
+
+    public void WriteXml(XmlWriter writer)
+    {
+        writer.WriteAttributeString("name", name);
+        writer.WriteAttributeString("X", CurrTile.X.ToString());
+        writer.WriteAttributeString("Y", CurrTile.Y.ToString());
+        string needString = string.Empty;
+        foreach (Need n in needs)
+        {
+            int storeAmount = (int)(n.Amount * 10);
+            needString = needString + n.needType + ";" + storeAmount.ToString() + ":";
+        }
+
+        writer.WriteAttributeString("needs", needString);
+        writer.WriteAttributeString("r", characterColor.r.ToString());
+        writer.WriteAttributeString("b", characterColor.b.ToString());
+        writer.WriteAttributeString("g", characterColor.g.ToString());
+    }
+
+    public void ReadXml(XmlReader reader)
+    {
+        if (reader.GetAttribute("needs") == null)
+        {
+            return;
+        }
+
+        string[] needListA = reader.GetAttribute("needs").Split(new char[] { ':' });
+        foreach (string s in needListA)
+        {
+            string[] needListB = s.Split(new char[] { ';' });
+            foreach (Need n in needs)
             {
-                VisualPath.Instance.RemoveVisualPoints(name);
+                if (n.needType == needListB[0])
+                {
+                    int storeAmount;
+                    if (int.TryParse(needListB[1], out storeAmount))
+                    {
+                        n.Amount = (float)storeAmount / 10;
+                    }
+                    else
+                    {
+                        Debug.ULogErrorChannel("Character", "Character.ReadXml() expected an int when deserializing needs");
+                    }
+                }
             }
-            _isSelected = value;
         }
     }
 
-    private bool _isSelected = false;
+    #endregion
 
-    /// Use only for serialization
-    public Character()
+    #region ISelectableInterface implementation
+
+    public string GetName()
     {
-        needs = new Need[World.current.needPrototypes.Count];
-        LoadNeeds ();
+        return name;
     }
 
-    public Character(Tile tile)
+    public string GetDescription()
     {
-        CurrTile = DestTile = NextTile = tile;
-        LoadNeeds ();
-        characterColor = new Color (UnityEngine.Random.Range (0f, 1f), UnityEngine.Random.Range (0f, 1f), UnityEngine.Random.Range (0f, 1f), 1.0f);
+        string needText = string.Empty;
+        foreach (Need n in needs)
+        {
+            needText += "\n" + LocalizationTable.GetLocalization(n.localisationID, n.DisplayAmount);
+        }
+
+        return "A human astronaut." + needText;
     }
 
-    void LoadNeeds()
+    public string GetHitPointString()
+    {
+        return "100/100";
+    }
+
+    public Color GetCharacterColor()
+    {
+        return characterColor;
+    }
+
+    public string GetJobDescription()
+    {
+        if (MyJob == null)
+        {
+            return "job_no_job_desc";
+        }
+
+        return MyJob.JobDescription;
+    }
+    #endregion
+
+    private void LoadNeeds()
     {
         needs = new Need[World.current.needPrototypes.Count];
-        World.current.needPrototypes.Values.CopyTo (needs, 0);
+        World.current.needPrototypes.Values.CopyTo(needs, 0);
         for (int i = 0; i < World.current.needPrototypes.Count; i++)
         {
             Need need = needs[i];
             needs[i] = need.Clone();
             needs[i].character = this;
         }
-    }
-
-    public Character(Tile tile, Color color)
-    {
-        CurrTile = DestTile = NextTile = tile;
-        characterColor = color;
-		LoadNeeds();
     }
 
     private void GetNewJob()
@@ -222,18 +402,19 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 needPercent = n.Amount;
             }
         }
-        if (needPercent > 50 && needPercent < 100 && need != null)
-            myJob = new Job (null, need.RestoreNeedFurn.objectType, need.CompleteJobNorm, need.RestoreNeedTime, null, Job.JobPriority.High, false, true, false);
-        if (needPercent == 100 && need != null && need.CompleteOnFail)
-            myJob = new Job (CurrTile, null, need.CompleteJobCrit, need.RestoreNeedTime*10, null, Job.JobPriority.High, false, true, true);
-        // Get the first job on the queue.
-        if (myJob == null)
-            myJob = World.current.jobQueue.Dequeue();
 
-        if (myJob == null)
+        if (needPercent > 50 && needPercent < 100 && need != null)
+            MyJob = new Job (null, need.RestoreNeedFurn.ObjectType, need.CompleteJobNorm, need.RestoreNeedTime, null, Job.JobPriority.High, false, true, false);
+        if (needPercent == 100 && need != null && need.CompleteOnFail)
+            MyJob = new Job (CurrTile, null, need.CompleteJobCrit, need.RestoreNeedTime*10, null, Job.JobPriority.High, false, true, true);
+        // Get the first job on the queue.
+        if (MyJob == null)
+            MyJob = World.current.jobQueue.Dequeue();
+
+        if (MyJob == null)
         {
             Debug.ULogChannel("Character", name + " did not find a job.");
-            myJob = new Job(
+            MyJob = new Job(
                 CurrTile,
                 "Waiting",
                 null,
@@ -241,21 +422,43 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 null,
                 Job.JobPriority.Low,
                 false);
-            myJob.JobDescription = "job_waiting_desc";
+            MyJob.JobDescription = "job_waiting_desc";
         }
-        else
+
+        // Get the first job on the queue.
+        if (MyJob == null)
         {
-            if (myJob.tile == null) {
-                Debug.ULogChannel("Character", name + " found a job.");
+            MyJob = World.current.jobQueue.Dequeue();
+
+            // Check if we got a job from the queue.
+            if (MyJob == null)
+            {
+                Debug.ULogChannel("Character", name + " did not find a job.");
+                MyJob = new Job(
+                    CurrTile,
+                    "Waiting",
+                    null,
+                    UnityEngine.Random.Range(0.1f, 0.5f),
+                    null,
+                    Job.JobPriority.Low,
+                    false);
+                MyJob.JobDescription = "job_waiting_desc";
             }
             else
             {
-                Debug.ULogChannel("Character", name + " found a job at x " + myJob.tile.X + " y " + myJob.tile.Y + ".");
+                if (MyJob.tile == null)
+                {
+                    Debug.ULogChannel("Character", name + " found a job.");
+                }
+                else
+                {
+                    Debug.ULogChannel("Character", name + " found a job at x " + MyJob.tile.X + " y " + MyJob.tile.Y + ".");
+                }
             }
         }
 
-        // Get our destination from the job
-        DestTile = myJob.tile;
+        // Get our destination from the job.
+        DestTile = MyJob.tile;
 
         // If the dest tile does not have neighbours that are walkable it's very likable that they can't be walked to
         if (DestTile.GetNeighbours().Any((tile) => { return tile.MovementCost > 0; }) == false)
@@ -265,17 +468,23 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             return;
         }
 
-        myJob.cbJobStopped += OnJobStopped;
+        MyJob.cbJobStopped += OnJobStopped;
 
         // Immediately check to see if the job tile is reachable.
         // NOTE: We might not be pathing to it right away (due to
         // requiring materials), but we still need to verify that the
         // final location can be reached.
         Profiler.BeginSample("PathGeneration");
-        if (myJob.isNeed)
-            pathAStar = new Path_AStar (World.current, CurrTile, DestTile, need.RestoreNeedFurn.objectType, 0, false, true);    // This will calculate a path from curr to dest.
+        if (MyJob.isNeed)
+        {
+            // This will calculate a path from curr to dest.
+            pathAStar = new Path_AStar(World.current, CurrTile, DestTile, need.RestoreNeedFurn.ObjectType, 0, false, true);
+        }
         else
-            pathAStar = new Path_AStar (World.current, CurrTile, DestTile);
+        {
+            pathAStar = new Path_AStar(World.current, CurrTile, DestTile);
+        }
+
         Profiler.EndSample();
 
         if (pathAStar != null && pathAStar.Length() == 0)
@@ -285,7 +494,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             return;
         }
 
-        if (myJob.adjacent)
+        if (MyJob.adjacent)
         {
             IEnumerable<Tile> reversed = pathAStar.Reverse();
             reversed = reversed.Skip(1);
@@ -295,21 +504,21 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         }
         else
         {
-            jobTile = myJob.tile;
+            jobTile = MyJob.tile;
         }
     }
 
     private void Update_DoJob(float deltaTime)
     {
         // Check if I already have a job.
-        if (myJob == null)
+        if (MyJob == null)
         {
             GetNewJob();
 
             // This should only be the case, if there was a pathing issue
             // or insufficent materials after getting the job.
             // In that case, just return early.
-            if (myJob == null)
+            if (MyJob == null)
             {
                 return;
             }
@@ -329,13 +538,14 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 // execute the job's "DoWork", which is mostly
                 // going to countdown jobTime and potentially
                 // call its "Job Complete" callback.
-                myJob.DoWork(deltaTime);
+                MyJob.DoWork(deltaTime);
             }
         }
-        //calculate needs
+
+        // Calculate needs.
         foreach (Need n in needs)
         {
-            n.Update (deltaTime);
+            n.Update(deltaTime);
         }
     }
 
@@ -348,22 +558,24 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     {
         List<string> fulfillableInventoryRequirements = new List<string>();
 
-        if (myJob != null && myJob.isNeed && myJob.critical == false)
+        if (MyJob != null && MyJob.isNeed && MyJob.critical == false)
         {
-            myJob.tile = jobTile = new Path_AStar (World.current, CurrTile, null, myJob.jobObjectType, 0, false, true).EndTile ();
+            MyJob.tile = jobTile = new Path_AStar(World.current, CurrTile, null, MyJob.jobObjectType, 0, false, true).EndTile();
         }
-        if (myJob == null || myJob.MaterialNeedsMet())
+
+        if (MyJob == null || MyJob.MaterialNeedsMet())
         {
-            return true; //we can return early
+            // We can return early.
+            return true;
         }
         else
         {
-            fulfillableInventoryRequirements = FulfillableInventoryRequirements(myJob);
+            fulfillableInventoryRequirements = FulfillableInventoryRequirements(MyJob);
 
-            // if we somehow get here and fulfillableInventoryRequirements is empty then there is a problem!
+            // If we somehow get here and fulfillableInventoryRequirements is empty then there is a problem!
             if (fulfillableInventoryRequirements == null || fulfillableInventoryRequirements.Count() == 0)
             {
-                Debug.ULogChannel("Character","CheckForJobMaterials: no fulfillable inventory requirements");
+                Debug.ULogChannel("Character", "CheckForJobMaterials: no fulfillable inventory requirements");
                 AbandonJob(true);
                 return false;
             }
@@ -373,15 +585,15 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         // First we check if we carry any materials the job wants by chance.
         if (inventory != null)
         {
-            if (myJob.AmountDesiredOfInventoryType(inventory) > 0)
+            if (MyJob.AmountDesiredOfInventoryType(inventory) > 0)
             {
                 // If so, deliver the goods.
                 // Walk to the job tile, then drop off the stack into the job.
                 if (CurrTile == JobTile)
                 {
                     // We are at the job's site, so drop the inventory
-                    World.current.inventoryManager.PlaceInventory(myJob, inventory);
-                    myJob.DoWork(0); // This will call all cbJobWorked callbacks, because even though
+                    World.current.inventoryManager.PlaceInventory(MyJob, inventory);
+                    MyJob.DoWork(0); // This will call all cbJobWorked callbacks, because even though
                                      // we aren't progressing, it might want to do something with the fact
                                      // that the requirements are being met.
 
@@ -405,37 +617,29 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         else
         {
             // At this point, the job still requires inventory, but we aren't carrying it!
-
             // Are we standing on a tile with goods that are desired by the job?
-            //Debug.ULogChannel("Spammy", "Standing on Tile check");
             if (CurrTile.Inventory != null &&
-                myJob.AmountDesiredOfInventoryType(CurrTile.Inventory) > 0 && !CurrTile.Inventory.isLocked &&
-                (myJob.canTakeFromStockpile || CurrTile.Furniture == null || CurrTile.Furniture.IsStockpile() == false))
+                MyJob.AmountDesiredOfInventoryType(CurrTile.Inventory) > 0 && !CurrTile.Inventory.locked &&
+                (MyJob.canTakeFromStockpile || CurrTile.Furniture == null || CurrTile.Furniture.IsStockpile() == false))
             {
                 // Pick up the stuff!
-                //Debug.ULogChannel("Spammy", "Pick up the stuff");
-
                 World.current.inventoryManager.PlaceInventory(
                     this,
                     CurrTile.Inventory,
-                    myJob.AmountDesiredOfInventoryType(CurrTile.Inventory));
+                    MyJob.AmountDesiredOfInventoryType(CurrTile.Inventory));
             }
             else
             {
                 // Walk towards a tile containing the required goods.
-                //Debug.ULogChannel("Spammy", "Walk to the stuff");
-                //Debug.ULogChannel("Spammy", myJob.canTakeFromStockpile);
-
-                if (CurrTile != NextTile)
+                if (CurrTile != nextTile)
                 {
                     // We are still moving somewhere, so just bail out.
                     return false;
                 }
 
                 // Any chance we already have a path that leads to the items we want?
-
                 // Check that we have an end tile and that it has content.
-                // Check if contains the desired objectType
+                // Check if contains the desired objectType�.
                 if (WalkingToUsableInventory() && fulfillableInventoryRequirements.Contains(pathAStar.EndTile().Inventory.objectType))
                 {
                     // We are already moving towards a tile that contains what we want!
@@ -448,17 +652,17 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                     Path_AStar newPath = null;
                     foreach (string itemType in fulfillableInventoryRequirements)
                     {
-                        desired = myJob.inventoryRequirements[itemType];
+                        desired = MyJob.inventoryRequirements[itemType];
                         newPath = World.current.inventoryManager.GetPathToClosestInventoryOfType(
                                              desired.objectType,
                                              CurrTile,
-                                             desired.maxStackSize - desired.stackSize,
-                                             myJob.canTakeFromStockpile);
+                                             desired.maxStackSize - desired.StackSize,
+                                             MyJob.canTakeFromStockpile);
 
                         if (newPath == null || newPath.Length() < 1)
                         {
                             // Try the next requirement
-                            Debug.ULogChannel("Character","No tile contains objects of type '" + desired.objectType + "' to satisfy job requirements.");
+                            Debug.ULogChannel("Character", "No tile contains objects of type '" + desired.objectType + "' to satisfy job requirements.");
                             continue;
                         }
 
@@ -469,12 +673,12 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                     if (newPath == null || newPath.Length() < 1)
                     {
                         // tried all requirements and found no path
-                        Debug.ULogChannel("Character","No reachable tile contains objects able to satisfy job requirements.");
+                        Debug.ULogChannel("Character", "No reachable tile contains objects able to satisfy job requirements.");
                         AbandonJob(true);
                         return false;
                     }
 
-                    Debug.ULogChannel("Character","pathAStar returned with length of: " + newPath.Length());
+                    Debug.ULogChannel("Character", "pathAStar returned with length of: " + newPath.Length());
 
                     DestTile = newPath.EndTile();
 
@@ -482,7 +686,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                     pathAStar = newPath;
 
                     // Ignore first tile, because that's what we're already in.
-                    NextTile = newPath.Dequeue();
+                    nextTile = newPath.Dequeue();
                 }
 
                 // One way or the other, we are now on route to an object of the right type.
@@ -530,7 +734,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     {
         bool destHasInventory = pathAStar != null && pathAStar.EndTile() != null && pathAStar.EndTile().Inventory != null;
         return destHasInventory &&
-                !(pathAStar.EndTile().Furniture != null && (myJob.canTakeFromStockpile == false && pathAStar.EndTile().Furniture.IsStockpile() == true));
+                !(pathAStar.EndTile().Furniture != null && (MyJob.canTakeFromStockpile == false && pathAStar.EndTile().Furniture.IsStockpile() == true));
     }
 
     /// <summary>
@@ -555,67 +759,25 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         inventory = null;
     }
 
-    public void AbandonJob(bool intoWaitingQueue)
-    {
-        Debug.ULogChannel("Character", name + " abandoned their job.");
-        if (myJob == null)
-        {
-            return;
-        }
-        if (myJob.isNeed)
-        {
-            myJob.cbJobStopped -= OnJobStopped;
-            myJob = null;
-            return;
-        }
-        // Character does not have to move,
-        // so destination tile is the one
-        // he is standing on.
-        NextTile = DestTile = CurrTile;
-
-        // Drops the priority a level, to lowest.
-        myJob.DropPriority();
-
-        if (intoWaitingQueue)
-        {
-            // If the job gets abandoned because of missing materials,
-            // put it into the waiting queue.
-            // Also create a callback for when an inventory gets created.
-            // Lastly, remove the job from "myJob".
-            World.current.jobWaitingQueue.Enqueue(myJob);
-            World.current.cbInventoryCreated += OnInventoryCreated;
-            myJob.cbJobStopped -= OnJobStopped;
-            myJob = null;
-        }
-        else
-        {
-            // If the job gets abandoned because of pathing issues or something else,
-            // just put it into the normal job queue and remove the job from "myJob".
-            World.current.jobQueue.Enqueue(myJob);
-            myJob.cbJobStopped -= OnJobStopped;
-            myJob = null;
-        }
-    }
-
     private void Update_DoMovement(float deltaTime)
     {
         if (CurrTile == DestTile)
         {
+            // We're already were we want to be.
             pathAStar = null;
             IsWalking = false;
             VisualPath.Instance.RemoveVisualPoints(name);
-            return; // We're already were we want to be.
+            return;
         }
-        // currTile = The tile I am currently in (and may be in the process of leaving)
-        // nextTile = The tile I am currently entering
-        // destTile = Our final destination -- we never walk here directly, but instead use it for the pathfinding
-        if (NextTile == null || NextTile == CurrTile)
+
+        if (nextTile == null || nextTile == CurrTile)
         {
             // Get the next tile from the pathfinder.
             if (pathAStar == null || pathAStar.Length() == 0)
             {
-                // Generate a path to our destination
-                pathAStar = new Path_AStar(World.current, CurrTile, DestTile);  // This will calculate a path from curr to dest.
+                // Generate a path to our destination.
+                // This will calculate a path from curr to dest.
+                pathAStar = new Path_AStar(World.current, CurrTile, DestTile);
                 if (pathAStar.Length() == 0)
                 {
                     Debug.ULogErrorChannel("Character", "Path_AStar returned no path to destination!");
@@ -624,35 +786,35 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 }
 
                 // Let's ignore the first tile, because that's the tile we're currently in.
-                NextTile = pathAStar.Dequeue();
+                nextTile = pathAStar.Dequeue();
             }
 
             if (IsSelected)
             {
                 VisualPath.Instance.SetVisualPoints(name, pathAStar.GetList());
             }
+
             IsWalking = true;
 
             // Grab the next waypoint from the pathing system!
-            NextTile = pathAStar.Dequeue();
+            nextTile = pathAStar.Dequeue();
 
-            if (NextTile == CurrTile)
+            if (nextTile == CurrTile)
             {
                 IsWalking = false;
-                // Debug.ULogErrorChannel("Character", "Update_DoMovement - nextTile is currTile?");
             }
         }
 
         // Find character facing
-        if (NextTile.X > CurrTile.X)
+        if (nextTile.X > CurrTile.X)
         {
             CharFacing = Facing.EAST;
         }
-        else if (NextTile.X < CurrTile.X)
+        else if (nextTile.X < CurrTile.X)
         {
             CharFacing = Facing.WEST;
         }
-        else if (NextTile.Y > CurrTile.Y)
+        else if (nextTile.Y > CurrTile.Y)
         {
             CharFacing = Facing.NORTH;
         }
@@ -662,16 +824,15 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         }
 
         // At this point we should have a valid nextTile to move to.
-
         // What's the total distance from point A to point B?
         // We are going to use Euclidean distance FOR NOW...
         // But when we do the pathfinding system, we'll likely
         // switch to something like Manhattan or Chebyshev distance
         float distToTravel = Mathf.Sqrt(
-                                 Mathf.Pow(CurrTile.X - NextTile.X, 2) +
-                                 Mathf.Pow(CurrTile.Y - NextTile.Y, 2));
+                                 Mathf.Pow(CurrTile.X - nextTile.X, 2) +
+                                 Mathf.Pow(CurrTile.Y - nextTile.Y, 2));
 
-        if (NextTile.IsEnterable() == Enterability.Never)
+        if (nextTile.IsEnterable() == Enterability.Never)
         {
             //// Most likely a wall got built, so we just need to reset our pathfinding information.
             //// FIXME: Ideally, when a wall gets spawned, we should invalidate our path immediately,
@@ -679,11 +840,11 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             ////            To save CPU, maybe we can only check every so often?
             ////            Or maybe we should register a callback to the OnTileChanged event?
             //// Debug.ULogErrorChannel("FIXME", "A character was trying to enter an unwalkable tile.");
-            NextTile = null;    // our next tile is a no-go
+            nextTile = null;    // our next tile is a no-go
             pathAStar = null;   // clearly our pathfinding info is out of date.
             return;
         }
-        else if (NextTile.IsEnterable() == Enterability.Soon)
+        else if (nextTile.IsEnterable() == Enterability.Soon)
         {
             // We can't enter the NOW, but we should be able to in the
             // future. This is likely a DOOR.
@@ -693,7 +854,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         }
 
         // How much distance can be travel this Update?
-        float distThisFrame = speed / NextTile.MovementCost * deltaTime;
+        float distThisFrame = speed / nextTile.MovementCost * deltaTime;
 
         // How much is that in terms of percentage to our destination?
         float percThisFrame = distThisFrame / distToTravel;
@@ -709,27 +870,11 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             ////       If there are no more tiles, then we have TRULY
             ////       reached our destination.
 
-            CurrTile = NextTile;
+            CurrTile = nextTile;
             movementPercentage = 0;
 
             // FIXME?  Do we actually want to retain any overshot movement?
         }
-    }
-
-    /// Runs every "frame" while the simulation is not paused
-    public void Update(float deltaTime)
-    {
-        Update_DoJob(deltaTime);
-
-        Update_DoMovement(deltaTime);
-
-        if (cbCharacterChanged != null)
-        {
-            cbCharacterChanged(this);
-        }
-
-        animation.Update(deltaTime);
-
     }
 
     private void OnJobStopped(Job j)
@@ -737,13 +882,13 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         // Job completed (if non-repeating) or was cancelled.
         j.cbJobStopped -= OnJobStopped;
 
-        if (j != myJob)
+        if (j != MyJob)
         {
             Debug.ULogErrorChannel("Character", "Character being told about job that isn't his. You forgot to unregister something.");
             return;
         }
 
-        myJob = null;
+        MyJob = null;
     }
 
     private void OnInventoryCreated(Inventory inv)
@@ -776,106 +921,5 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 World.current.cbInventoryCreated += OnInventoryCreated;
             }
         }
-    }
-
-    #region IXmlSerializable implementation
-
-    public XmlSchema GetSchema()
-    {
-        return null;
-    }
-
-    public void WriteXml(XmlWriter writer)
-    {
-        writer.WriteAttributeString("name", name);
-        writer.WriteAttributeString("X", CurrTile.X.ToString());
-        writer.WriteAttributeString("Y", CurrTile.Y.ToString());
-        string needString = "";
-        foreach (Need n in needs)
-        {
-            int storeAmount = (int)(n.Amount * 10);
-            needString = needString + n.needType + ";" + storeAmount.ToString() + ":";
-        }
-        writer.WriteAttributeString("needs", needString);
-        writer.WriteAttributeString("r", characterColor.r.ToString());
-        writer.WriteAttributeString("b", characterColor.b.ToString());
-        writer.WriteAttributeString("g", characterColor.g.ToString());
-    }
-
-    public void ReadXml(XmlReader reader)
-    {
-        if (reader.GetAttribute("needs") == null)
-            return;
-        string[] needListA = reader.GetAttribute("needs").Split(new Char[] {':'});
-        foreach (string s in needListA)
-        {
-            string[] needListB = s.Split(new Char[] { ';' });
-            foreach (Need n in needs)
-            {
-                if (n.needType == needListB[0])
-                {
-                    int storeAmount;
-                    if (int.TryParse(needListB[1], out storeAmount))
-                    {
-                        n.Amount = (float)storeAmount / 10;
-                    }
-                    else
-                    {
-                        Debug.ULogErrorChannel("Character", "Character.ReadXml() expected an int when deserializing needs");
-                    }
-                }
-            }
-        }
-    }
-
-    #endregion
-
-    #region ISelectableInterface implementation
-
-    public string GetName()
-    {
-        return name;
-    }
-
-    public string GetDescription()
-    {
-        string needText = "";
-        foreach (Need n in needs)
-        {
-            needText += "\n" + LocalizationTable.GetLocalization (n.localisationID, n.DisplayAmount);
-        }
-        return "A human astronaut." + needText;
-    }
-
-    public string GetHitPointString()
-    {
-        return "100/100";
-    }
-
-    public Color GetCharacterColor()
-    {
-        return characterColor;
-    }
-
-    public string GetJobDescription()
-    {
-        if (myJob == null)
-        {
-            return "job_no_job_desc";
-        }
-        return myJob.JobDescription;
-    }
-    #endregion
-
-    Color characterColor;
-
-    public IEnumerable<ContextMenuAction> GetContextMenuActions(ContextMenu contextMenu)
-    {
-        yield return new ContextMenuAction
-        {
-            Text = "Poke "+GetName(),
-            RequiereCharacterSelected = false,
-            Action = (cm, c) => Debug.ULogChannel("Character", GetDescription())
-        };
     }
 }
