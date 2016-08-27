@@ -17,7 +17,7 @@ public class ContextMenu : MonoBehaviour
     /// <summary>
     /// Open the context menu at the specified tile.
     /// </summary>
-    /// <param name="tile">Tile.</param>
+    /// <param name="tile">The Tile where the context menu is to be opened.</param>
     public void Open(Tile tile)
     {
         gameObject.SetActive(true);
@@ -64,7 +64,7 @@ public class ContextMenu : MonoBehaviour
             if (contextMenuAction.RequireCharacterSelected && characterSelected ||
                 !contextMenuAction.RequireCharacterSelected)
             {
-                GameObject go = (GameObject) Instantiate(ContextualMenuItemPrefab);
+                GameObject go = (GameObject)Instantiate(ContextualMenuItemPrefab);
                 go.transform.SetParent(gameObject.transform);
 
                 ContextMenuItem contextMenuItem = go.GetComponent<ContextMenuItem>();
@@ -79,7 +79,7 @@ public class ContextMenu : MonoBehaviour
     /// Gets the contextual action provider for the specified tile.
     /// </summary>
     /// <returns>The contextual action provider for the specified tile.</returns>
-    /// <param name="tile">Tile.</param>
+    /// <param name="tile">Tile to get a contextual action provider for.</param>
     private List<IContextActionProvider> GetContextualActionProviderOnTile(Tile tile)
     {
         List<IContextActionProvider> providers = new List<IContextActionProvider>();
