@@ -10,6 +10,30 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+// these enums should make it easy to add 10 if walking and add 100 if helmet is off
+public enum AnimationType
+{
+    HELMET_IDLE_NORTH = 0,
+    HELMET_IDLE_EAST = 1,
+    HELMET_IDLE_SOUTH = 2,
+    HELMET_IDLE_WEST = 3,
+
+    HELMET_WALK_NORTH = 10,
+    HELMET_WALK_EAST = 11,
+    HELMET_WALK_SOUTH = 12,
+    HELMET_WALK_WEST = 13,
+
+    NOHELMET_IDLE_NORTH = 100,
+    NOHELMET_IDLE_EAST = 101,
+    NOHELMET_IDLE_SOUTH = 102,
+    NOHELMET_IDLE_WEST = 103,
+
+    NOHELMET_WALK_NORTH = 110,
+    NOHELMET_WALK_EAST = 111,
+    NOHELMET_WALK_SOUTH = 112,
+    NOHELMET_WALK_WEST = 113
+}
+
 /// <summary>
 /// CharacterAnimation gets reference to character, and should be able to 
 /// figure out which animation to play, by looking at character Facing and IsMoving.
@@ -18,113 +42,126 @@ public class CharacterAnimation
 {
     private Character character;
     private SpriteRenderer renderer;
+    
+    // current shown frame
+    private int prevFrameIndex;
 
-    // currentframe is incremented each update... fix to run on time instead
-    private int currentFrame = 0;
+    // Holds the actual animation sprites from the spritesheet
+    private Sprite[] sprites;
 
-    // frames before loop. halfway through the next frame is triggered
-    private int animationLength = 40;
-
-    // TODO: should be more flexible ....
-    private Sprite[] sprites = new Sprite[9];
+    // Collection of animations
+    private Dictionary<AnimationType, Animation> animations;
+    private Animation currentAnimation;
+    private AnimationType currentAnimationType;
 
     public CharacterAnimation(Character c, SpriteRenderer r)
     {
         character = c;
         renderer = r;
-    }
 
-    public void Update(float deltaTime)
-    {
-        if (currentFrame >= animationLength)
-        {
-            currentFrame = 0;
-        }
+        Sprite[] sprites =
+            {
+                SpriteManager.current.GetSprite("Character", "IdleBack"),
+                SpriteManager.current.GetSprite("Character", "IdleSide"),
+                SpriteManager.current.GetSprite("Character", "IdleFront"),
+                SpriteManager.current.GetSprite("Character", "WalkBack1"),
+                SpriteManager.current.GetSprite("Character", "WalkBack2"),
+                SpriteManager.current.GetSprite("Character", "WalkSide1"),
+                SpriteManager.current.GetSprite("Character", "WalkSide2"),
+                SpriteManager.current.GetSprite("Character", "WalkFront1"),
+                SpriteManager.current.GetSprite("Character", "WalkFront2"),
 
-        currentFrame++;
-
-        CallAnimation();
+                SpriteManager.current.GetSprite("Character", "2IdleBack"),
+                SpriteManager.current.GetSprite("Character", "2IdleSide"),
+                SpriteManager.current.GetSprite("Character", "2IdleFront"),
+                SpriteManager.current.GetSprite("Character", "2WalkBack1"),
+                SpriteManager.current.GetSprite("Character", "2WalkBack2"),
+                SpriteManager.current.GetSprite("Character", "2WalkSide1"),
+                SpriteManager.current.GetSprite("Character", "2WalkSide2"),
+                SpriteManager.current.GetSprite("Character", "2WalkFront1"),
+                SpriteManager.current.GetSprite("Character", "2WalkFront2")
+            };
+        SetSprites(sprites);
     }
 
     public void SetSprites(Sprite[] s)
     {
         sprites = s;
-        
+
         // make sure that every sprite has correct filtermode
         foreach (Sprite sprite in sprites)
         {
             sprite.texture.filterMode = FilterMode.Point;
         }
+
+        animations = new Dictionary<AnimationType, Animation>();
+
+        animations.Add(AnimationType.HELMET_IDLE_NORTH, new Animation("in", new int[] { 0 }, 0.7f, false, false));
+        animations.Add(AnimationType.HELMET_IDLE_EAST, new Animation("ie", new int[] { 1 }, 0.7f, false, false));
+        animations.Add(AnimationType.HELMET_IDLE_SOUTH, new Animation("is", new int[] { 2 }, 0.7f, false, false));
+        animations.Add(AnimationType.HELMET_IDLE_WEST, new Animation("iw", new int[] { 1 }, 0.7f, false, true));
+
+        animations.Add(AnimationType.HELMET_WALK_NORTH, new Animation("wn", new int[] { 3, 4 }, 0.7f));
+        animations.Add(AnimationType.HELMET_WALK_EAST, new Animation("we", new int[] { 5, 6 }, 0.7f));
+        animations.Add(AnimationType.HELMET_WALK_SOUTH, new Animation("ws", new int[] { 7, 8 }, 0.7f));
+        animations.Add(AnimationType.HELMET_WALK_WEST, new Animation("ww", new int[] { 5, 6 }, 0.7f, true, true));
+
+        animations.Add(AnimationType.NOHELMET_IDLE_NORTH, new Animation("in", new int[] { 9 }, 0.2f, false, false));
+        animations.Add(AnimationType.NOHELMET_IDLE_EAST, new Animation("ie", new int[] { 10 }, 0.2f, false, false));
+        animations.Add(AnimationType.NOHELMET_IDLE_SOUTH, new Animation("is", new int[] { 11 }, 0.2f, false, false));
+        animations.Add(AnimationType.NOHELMET_IDLE_WEST, new Animation("iw", new int[] { 10 }, 0.2f, false, true));
+
+        animations.Add(AnimationType.NOHELMET_WALK_NORTH, new Animation("wn", new int[] { 12, 13 }, 0.2f));
+        animations.Add(AnimationType.NOHELMET_WALK_EAST, new Animation("we", new int[] { 14, 15 }, 0.2f));
+        animations.Add(AnimationType.NOHELMET_WALK_SOUTH, new Animation("ws", new int[] { 16, 17 }, 0.2f));
+        animations.Add(AnimationType.NOHELMET_WALK_WEST, new Animation("ww", new int[] { 14, 15 }, 0.2f, true, true));
+
+        currentAnimationType = AnimationType.HELMET_IDLE_SOUTH;
+        currentAnimation = animations[currentAnimationType];
+        prevFrameIndex = 0;
     }
 
-    private void CallAnimation()
-    {
+    public void Update(float deltaTime)
+    {        
+        int newAnimation = (int)character.CharFacing;
         if (character.IsWalking)
         {
-            // character walking
-            switch (character.CharFacing)
-            {
-                case Facing.NORTH: // walk north
-                    ToggleAnimation(5, 6);
-                    renderer.flipX = false;
-                    break;
-                case Facing.EAST: // walk east
-                    ToggleAnimation(3, 4);
-                    renderer.flipX = false;
-                    break;
-                case Facing.SOUTH: // walk south
-                    ToggleAnimation(7, 8);
-                    renderer.flipX = false;
-                    break;
-                case Facing.WEST: // walk west
-                    ToggleAnimation(3, 4); // FLIP east sprite
-                    renderer.flipX = true;
-                    break;
-                default:
-                    break;
-            }
+            newAnimation += 10;
         }
-        else
-        {
-            // character idle
-            switch (character.CharFacing)
-            {
-                case Facing.NORTH: // walk north
-                    ShowSprite(2);
-                    renderer.flipX = false;
-                    break;
-                case Facing.EAST: // walk east
-                    ShowSprite(1);
-                    renderer.flipX = false;
-                    break;
-                case Facing.SOUTH: // walk south
-                    ShowSprite(0);
-                    renderer.flipX = false;
-                    break;
-                case Facing.WEST: // walk west
-                    ShowSprite(1); // FLIP east sprite
-                    renderer.flipX = true;
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
 
-    private void ToggleAnimation(int s1, int s2)
-    {
-        if (currentFrame == 1)
+        // TODO: What is the acceptable amount of O2 gas pressure? A little less than .2?
+        // for now, it's set very low, so the change is visible for testing.
+        if (character.CurrTile.GetGasPressure("O2") >= 0.005f)
         {
-            renderer.sprite = sprites[s1];
+            newAnimation += 100; // Remove helmet
         }
-        else if (currentFrame == animationLength / 2)
+
+        // check if we need to switch animations
+        if (newAnimation != (int)currentAnimationType)
         {
-            renderer.sprite = sprites[s2];
-        }        
-    }
+            currentAnimationType = (AnimationType)newAnimation;
+            currentAnimation = animations[currentAnimationType];
+            if (currentAnimation.FlipX == true && renderer.flipX == false)
+            {
+                renderer.flipX = true;
+            }
+            else if (currentAnimation.FlipX == false && renderer.flipX == true)
+            {
+                renderer.flipX = false;
+            }
+        }
+
+        currentAnimation.Update(deltaTime);
+
+        if (prevFrameIndex != currentAnimation.CurrentIndex)
+        {
+            ShowSprite(currentAnimation.CurrentIndex);
+            prevFrameIndex = currentAnimation.CurrentIndex;
+        }
+    }    
 
     private void ShowSprite(int s)
-    {        
-        renderer.sprite = sprites[s];                       
+    {
+        renderer.sprite = sprites[s];
     }
 }
