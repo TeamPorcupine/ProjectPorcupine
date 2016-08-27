@@ -6,13 +6,13 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using MoonSharp.Interpreter;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using MoonSharp.Interpreter;
+using UnityEngine;
 
 /// <summary>
 /// This class handles LUA actions take in response to events triggered within C# or LUA. For each event name (e.g. OnUpdate, ...) there
@@ -66,7 +66,6 @@ public class EventAction : IXmlSerializable
         Register(name, functionName);
     }
 
-
     public XmlSchema GetSchema()
     {
         return null;
@@ -95,7 +94,6 @@ public class EventAction : IXmlSerializable
     /// <param name="luaFunc">Lua function to add to list of actions.</param>
     public void Register(string actionName, string luaFunc)
     {
-        //Debug.ULogChannel("Lua", string.Format("Registering the LUA function {0} to Action {1}.", luaFunc, actionName));
         if (!actionsList.ContainsKey(actionName) || actionsList[actionName] == null)
         {
             actionsList[actionName] = new List<string>();
@@ -111,16 +109,16 @@ public class EventAction : IXmlSerializable
     /// <param name="luaFunc">Lua function to add to list of actions.</param>
     public void Deregister(string actionName, string luaFunc)
     {
-        //Debug.ULogChannel("Lua", string.Format("Registering the LUA function {0} to Action {1}.", luaFunc, actionName));
         if (!actionsList.ContainsKey(actionName) || actionsList[actionName] == null)
         {
             return;
         }
+
         actionsList[actionName].Remove(luaFunc);
     }
 
     /// <summary>
-    /// "Fire" the event named actionName, resulting in all lua functions being called.
+    /// Fire the event named actionName, resulting in all lua functions being called.
     /// </summary>
     /// <param name="actionName">Name of the action being triggered.</param>
     /// <param name="target">Object, passed to LUA function as 1-argument (TODO: make it an object).</param>
@@ -129,14 +127,11 @@ public class EventAction : IXmlSerializable
     {
         if (!actionsList.ContainsKey(actionName) || actionsList[actionName] == null)
         {
-            //Debug.ULogWarningChannel("Lua", string.Format("The action \"{0}\" is associated with no LUA function.", actionName));
             return;
         }
         else
         {
             FurnitureActions.CallFunctionsWithFurniture(actionsList[actionName].ToArray(), target, deltaTime);
         }
-
     }
-
 }

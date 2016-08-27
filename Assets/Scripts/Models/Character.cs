@@ -405,7 +405,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         if (needPercent > 50 && needPercent < 100 && need != null)
         {
-            MyJob = new Job(null, need.restoreNeedFurn.objectType, need.CompleteJobNorm, need.restoreNeedTime, null, Job.JobPriority.High, false, true, false);
+            MyJob = new Job(null, need.restoreNeedFurn.ObjectType, need.CompleteJobNorm, need.restoreNeedTime, null, Job.JobPriority.High, false, true, false);
         }
 
         if (needPercent == 100 && need != null && need.completeOnFail)
@@ -582,8 +582,8 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                     // We are at the job's site, so drop the inventory
                     World.current.inventoryManager.PlaceInventory(MyJob, inventory);
                     MyJob.DoWork(0); // This will call all cbJobWorked callbacks, because even though
-                    // we aren't progressing, it might want to do something with the fact
-                    // that the requirements are being met.
+                                     // we aren't progressing, it might want to do something with the fact
+                                     // that the requirements are being met.
 
                     // at this point we should dump anything in our inventory
                     DumpExcessInventory();
@@ -642,10 +642,10 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                     {
                         desired = MyJob.inventoryRequirements[itemType];
                         newPath = World.current.inventoryManager.GetPathToClosestInventoryOfType(
-                            desired.objectType,
-                            CurrTile,
-                            desired.maxStackSize - desired.stackSize,
-                            MyJob.canTakeFromStockpile);
+                                             desired.objectType,
+                                             CurrTile,
+                                             desired.maxStackSize - desired.stackSize,
+                                             MyJob.canTakeFromStockpile);
 
                         if (newPath == null || newPath.Length() < 1)
                         {
@@ -722,7 +722,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     {
         bool destHasInventory = pathAStar != null && pathAStar.EndTile() != null && pathAStar.EndTile().Inventory != null;
         return destHasInventory &&
-            !(pathAStar.EndTile().Furniture != null && (MyJob.canTakeFromStockpile == false && pathAStar.EndTile().Furniture.IsStockpile() == true));
+                !(pathAStar.EndTile().Furniture != null && (MyJob.canTakeFromStockpile == false && pathAStar.EndTile().Furniture.IsStockpile() == true));
     }
 
     /// <summary>
@@ -817,8 +817,8 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         // But when we do the pathfinding system, we'll likely
         // switch to something like Manhattan or Chebyshev distance
         float distToTravel = Mathf.Sqrt(
-            Mathf.Pow(CurrTile.X - nextTile.X, 2) +
-            Mathf.Pow(CurrTile.Y - nextTile.Y, 2));
+                                 Mathf.Pow(CurrTile.X - nextTile.X, 2) +
+                                 Mathf.Pow(CurrTile.Y - nextTile.Y, 2));
 
         if (nextTile.IsEnterable() == Enterability.Never)
         {
