@@ -24,17 +24,17 @@ public class FurnitureBuildMenu : MonoBehaviour
 
         // For each furniture prototype in our world, create one instance
         // of the button to be clicked!
-        foreach (string s in World.current.furniturePrototypes.Keys)
+        foreach (string s in World.Current.furniturePrototypes.Keys)
         {
             GameObject go = (GameObject)Instantiate(buildFurnitureButtonPrefab);
             go.transform.SetParent(this.transform);
 
             string objectId = s;
-            string objectName = World.current.furniturePrototypes[s].Name;
+            string objectName = World.Current.furniturePrototypes[s].Name;
 
             go.name = "Button - Build " + objectId;
 
-            go.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(World.current.furniturePrototypes[s].localizationCode) };
+            go.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(World.Current.furniturePrototypes[s].LocalizationCode) };
 
             Button b = go.GetComponent<Button>();
 
@@ -48,7 +48,7 @@ public class FurnitureBuildMenu : MonoBehaviour
             string furn = s;
             LocalizationTable.CBLocalizationFilesChanged += delegate
             {
-                go.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(World.current.furniturePrototypes[furn].localizationCode) };
+                go.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(World.Current.furniturePrototypes[furn].LocalizationCode) };
             };
         }
 
@@ -65,7 +65,7 @@ public class FurnitureBuildMenu : MonoBehaviour
 
             for (int i = 0; i < localizers.Length; i++)
             {
-                localizers[i].UpdateText(LocalizationTable.GetLocalization(World.current.furniturePrototypes.ElementAt(i).Value.GetName()));
+                localizers[i].UpdateText(LocalizationTable.GetLocalization(World.Current.furniturePrototypes.ElementAt(i).Value.GetName()));
             }
         }
     }
