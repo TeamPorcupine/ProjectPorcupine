@@ -34,15 +34,15 @@ public static class Settings
   <ZoomSensitivity>3</ZoomSensitivity>
 </Settings>
 ";
+
+    private static readonly string DefaultSettingsFilePath = System.IO.Path.Combine(
+        Application.streamingAssetsPath, System.IO.Path.Combine("Settings", "Settings.xml"));
     
     private static Dictionary<string, string> settingsDict;
 
     private static string userSettingsFilePath = System.IO.Path.Combine(
         Application.persistentDataPath, "Settings.xml");
     
-    private static readonly string defaultSettingsFilePath = System.IO.Path.Combine(
-        Application.streamingAssetsPath, System.IO.Path.Combine("Settings", "Settings.xml"));
-
     public static string GetSetting(string key, string defaultValue)
     {
         // If we haven't already loaded our settings do it now.
@@ -268,17 +268,17 @@ public static class Settings
     {
         string furnitureXmlText = FallbackSettingsXML;
 
-        if (System.IO.File.Exists(defaultSettingsFilePath) == false)
+        if (System.IO.File.Exists(DefaultSettingsFilePath) == false)
         {
-            Debug.ULogWarningChannel("Settings", "Default settings file could not be found at '" + defaultSettingsFilePath + "'. Falling back to Settings.cs defaults.");
+            Debug.ULogWarningChannel("Settings", "Default settings file could not be found at '" + DefaultSettingsFilePath + "'. Falling back to Settings.cs defaults.");
 
             try
             {
-                System.IO.File.WriteAllText(defaultSettingsFilePath, FallbackSettingsXML);
+                System.IO.File.WriteAllText(DefaultSettingsFilePath, FallbackSettingsXML);
             }
             catch (Exception e)
             {
-                Debug.ULogWarningChannel("Settings", "Default settings file could not be created at '" + defaultSettingsFilePath + "'.");
+                Debug.ULogWarningChannel("Settings", "Default settings file could not be created at '" + DefaultSettingsFilePath + "'.");
                 Debug.ULogWarningChannel("Settings", e.Message);
             }
         }
@@ -286,11 +286,11 @@ public static class Settings
         {
             try
             {
-                furnitureXmlText = System.IO.File.ReadAllText(defaultSettingsFilePath);
+                furnitureXmlText = System.IO.File.ReadAllText(DefaultSettingsFilePath);
             }
             catch (Exception e)
             {
-                Debug.ULogWarningChannel("Settings", "Settings file at '" + defaultSettingsFilePath + "' could not be read. Falling back to Settings.cs defaults.");
+                Debug.ULogWarningChannel("Settings", "Settings file at '" + DefaultSettingsFilePath + "' could not be read. Falling back to Settings.cs defaults.");
                 Debug.ULogWarningChannel("Settings", e.Message);
             }
         }
