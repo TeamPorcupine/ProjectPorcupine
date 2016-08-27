@@ -7,7 +7,7 @@
 	<Sprite name="furn_SteelWall_EW"   x="64" y="320" w="64" h="64" pixelPerUnit="64" />
 	<Sprite name="furn_SteelWall_N"    x="512" y="320" w="64" h="64" pixelPerUnit="64" />
 	<Sprite name="furn_SteelWall_NE"   x="0" y="192" w="64" h="64" pixelPerUnit="64" />
-	<Sprite name="furn_SteelWall_NES"  x="256" y="127" w="64" h="64" pixelPerUnit="64" />
+	<Sprite name="furn_SteelWall_NES"  x="256" y="384" w="64" h="64" pixelPerUnit="64" />
 	<Sprite name="furn_SteelWall_NESW" x="704" y="384" w="64" h="64" pixelPerUnit="64" />
 	<Sprite name="furn_SteelWall_NEW"  x="384" y="192" w="64" h="64" pixelPerUnit="64" />
 	<Sprite name="furn_SteelWall_NS"   x="128" y="256" w="64" h="64" pixelPerUnit="64" />
