@@ -12,11 +12,11 @@ using UnityEngine;
 
 public class JobQueue
 {
-    private SortedList<Job.JobPriority, Job> jobQueue;
+    private SortedList<JobPriority, Job> jobQueue;
 
     public JobQueue()
     {
-        jobQueue = new SortedList<Job.JobPriority, Job>(new DuplicateKeyComparer<Job.JobPriority>(true));
+        jobQueue = new SortedList<JobPriority, Job>(new DuplicateKeyComparer<JobPriority>(true));
     }
 
     public event Action<Job> OnJobCreated;
@@ -35,7 +35,7 @@ public class JobQueue
 
     public void Enqueue(Job j)
     {
-        if (j.jobTime < 0)
+        if (j.JobTime < 0)
         {
             // Job has a negative job time, so it's not actually
             // supposed to be queued up.  Just insta-complete it.
@@ -43,8 +43,8 @@ public class JobQueue
             return;
         }
 
-        jobQueue.Add(j.jobPriority, j);
-        Debug.Log("Enqueued job for " + j.jobObjectType ?? string.Empty);
+        jobQueue.Add(j.JobPriority, j);
+        Debug.Log("Enqueued job for " + j.JobObjectType ?? string.Empty);
         if (OnJobCreated != null)
         {
             OnJobCreated(j);

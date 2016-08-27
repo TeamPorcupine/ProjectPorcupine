@@ -232,9 +232,9 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             return;
         }
 
-        if (MyJob.isNeed)
+        if (MyJob.IsNeed)
         {
-            MyJob.cbJobStopped -= OnJobStopped;
+            MyJob.OnJobStopped -= OnJobStopped;
             MyJob = null;
             return;
         }
@@ -255,7 +255,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             // Lastly, remove the job from "MyJob".
             World.Current.jobWaitingQueue.Enqueue(MyJob);
             World.Current.OnInventoryCreated += OnInventoryCreated;
-            MyJob.cbJobStopped -= OnJobStopped;
+            MyJob.OnJobStopped -= OnJobStopped;
             MyJob = null;
         }
         else
@@ -263,7 +263,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             // If the job gets abandoned because of pathing issues or something else,
             // just put it into the normal job queue and remove the job from "MyJob".
             World.Current.jobQueue.Enqueue(MyJob);
-            MyJob.cbJobStopped -= OnJobStopped;
+            MyJob.OnJobStopped -= OnJobStopped;
             MyJob = null;
         }
     }
@@ -405,12 +405,12 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         if (needPercent > 50 && needPercent < 100 && need != null)
         {
-            MyJob = new Job(null, need.RestoreNeedFurn.ObjectType, need.CompleteJobNorm, need.RestoreNeedTime, null, Job.JobPriority.High, false, true, false);
+            MyJob = new Job(null, need.RestoreNeedFurn.ObjectType, need.CompleteJobNorm, need.RestoreNeedTime, null, JobPriority.High, false, true, false);
         }
 
         if (needPercent == 100 && need != null && need.CompleteOnFail)
         {
-            MyJob = new Job(CurrTile, null, need.CompleteJobCrit, need.RestoreNeedTime * 10, null, Job.JobPriority.High, false, true, true);
+            MyJob = new Job(CurrTile, null, need.CompleteJobCrit, need.RestoreNeedTime * 10, null, JobPriority.High, false, true, true);
         }
 
         // Get the first job on the queue.
@@ -428,7 +428,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                     null,
                     UnityEngine.Random.Range(0.1f, 0.5f),
                     null,
-                    Job.JobPriority.Low,
+                    JobPriority.Low,
                     false);
                 MyJob.JobDescription = "job_waiting_desc";
             }
@@ -456,14 +456,14 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             return;
         }
 
-        MyJob.cbJobStopped += OnJobStopped;
+        MyJob.OnJobStopped += OnJobStopped;
 
         // Immediately check to see if the job tile is reachable.
         // NOTE: We might not be pathing to it right away (due to
         // requiring materials), but we still need to verify that the
         // final location can be reached.
         Profiler.BeginSample("PathGeneration");
-        if (MyJob.isNeed)
+        if (MyJob.IsNeed)
         {
             // This will calculate a path from curr to dest.
             pathAStar = new Path_AStar(World.Current, CurrTile, DestTile, need.RestoreNeedFurn.ObjectType, 0, false, true);
@@ -546,9 +546,9 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     {
         List<string> fulfillableInventoryRequirements = new List<string>();
 
-        if (MyJob != null && MyJob.isNeed && MyJob.critical == false)
+        if (MyJob != null && MyJob.IsNeed && MyJob.Critical == false)
         {
-            MyJob.tile = jobTile = new Path_AStar(World.Current, CurrTile, null, MyJob.jobObjectType, 0, false, true).EndTile();
+            MyJob.tile = jobTile = new Path_AStar(World.Current, CurrTile, null, MyJob.JobObjectType, 0, false, true).EndTile();
         }
 
         if (MyJob == null || MyJob.MaterialNeedsMet())
@@ -868,7 +868,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     private void OnJobStopped(Job j)
     {
         // Job completed (if non-repeating) or was cancelled.
-        j.cbJobStopped -= OnJobStopped;
+        j.OnJobStopped -= OnJobStopped;
 
         if (j != MyJob)
         {
