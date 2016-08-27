@@ -405,7 +405,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         if (needPercent > 50 && needPercent < 100 && need != null)
         {
-            MyJob = new Job(null, need.restoreNeedFurn.objectType, need.CompleteJobNorm, need.restoreNeedTime, null, Job.JobPriority.High, false, true, false);
+            MyJob = new Job(null, need.restoreNeedFurn.ObjectType, need.CompleteJobNorm, need.restoreNeedTime, null, Job.JobPriority.High, false, true, false);
         }
 
         if (needPercent == 100 && need != null && need.completeOnFail)
@@ -466,7 +466,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         if (MyJob.isNeed)
         {
             // This will calculate a path from curr to dest.
-            pathAStar = new Path_AStar(World.current, CurrTile, DestTile, need.restoreNeedFurn.objectType, 0, false, true);
+            pathAStar = new Path_AStar(World.current, CurrTile, DestTile, need.restoreNeedFurn.ObjectType, 0, false, true);
         }
         else
         {
