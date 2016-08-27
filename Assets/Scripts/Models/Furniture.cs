@@ -472,7 +472,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
                     FurnitureActions.JobComplete_FurnitureBuilding,
                     jobTime,
                     invs.ToArray(),
-                    Job.JobPriority.High);
+                    JobPriority.High);
                 j.JobDescription = "job_build_" + ObjectType + "_desc";
                 World.Current.SetFurnitureJobPrototype(j, this);
                 break;
@@ -566,7 +566,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     {
         j.furniture = this;
         jobs.Add(j);
-        j.cbJobStopped += OnJobStopped;
+        j.OnJobStopped += OnJobStopped;
         World.Current.jobQueue.Enqueue(j);
     }
 
@@ -798,7 +798,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
 
     protected void RemoveJob(Job j)
     {
-        j.cbJobStopped -= OnJobStopped;
+        j.OnJobStopped -= OnJobStopped;
         jobs.Remove(j);
         j.furniture = null;
     }

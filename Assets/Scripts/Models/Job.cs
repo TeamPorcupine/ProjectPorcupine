@@ -12,6 +12,11 @@ using System.Linq;
 using MoonSharp.Interpreter;
 using UnityEngine;
 
+public enum JobPriority
+{
+    High, Medium, Low
+}
+
 [MoonSharpUserData]
 public class Job
 {
@@ -46,25 +51,25 @@ public class Job
 
     protected bool jobRepeats = false;
 
-    private List<string> cbJobWorkedLua;
+    private List<string> jobWorkedLua;
    
     // The job has been stopped, either because it's non-repeating or was cancelled.
-    private List<string> cbJobCompletedLua;
+    private List<string> jobCompletedLua;
 
-    public Job(Tile tile, string jobObjectType, Action<Job> cbJobComplete, float jobTime, Inventory[] inventoryRequirements, JobPriority jobPriority, bool jobRepeats = false, bool isNeed = false, bool critical = false)
+    public Job(Tile tile, string jobObjectType, Action<Job> jobComplete, float jobTime, Inventory[] inventoryRequirements, JobPriority jobPriority, bool jobRepeats = false, bool isNeed = false, bool critical = false)
     {
         this.tile = tile;
-        this.jobObjectType = jobObjectType;
-        this.cbJobCompleted += cbJobComplete;
-        this.jobTimeRequired = this.jobTime = jobTime;
+        this.JobObjectType = jobObjectType;
+        this.OnJobCompleted += jobComplete;
+        this.jobTimeRequired = this.JobTime = jobTime;
         this.jobRepeats = jobRepeats;
-        this.isNeed = isNeed;
-        this.critical = critical;
-        this.jobPriority = jobPriority;
+        this.IsNeed = isNeed;
+        this.Critical = critical;
+        this.JobPriority = jobPriority;
         this.JobDescription = "job_error_missing_desc";
 
-        cbJobWorkedLua = new List<string>();
-        cbJobCompletedLua = new List<string>();
+        jobWorkedLua = new List<string>();
+        jobCompletedLua = new List<string>();
 
         this.inventoryRequirements = new Dictionary<string, Inventory>();
         if (inventoryRequirements != null)
@@ -76,19 +81,19 @@ public class Job
         }
     }
 
-    public Job(Tile tile, TileType jobTileType, Action<Job> cbJobComplete, float jobTime, Inventory[] inventoryRequirements, JobPriority jobPriority, bool jobRepeats = false, bool adjacent = false)
+    public Job(Tile tile, TileType jobTileType, Action<Job> jobCompleted, float jobTime, Inventory[] inventoryRequirements, JobPriority jobPriority, bool jobRepeats = false, bool adjacent = false)
     {
         this.tile = tile;
-        this.jobTileType = jobTileType;
-        this.cbJobCompleted += cbJobComplete;
-        this.jobTimeRequired = this.jobTime = jobTime;
+        this.JobTileType = jobTileType;
+        this.OnJobCompleted += jobCompleted;
+        this.jobTimeRequired = this.JobTime = jobTime;
         this.jobRepeats = jobRepeats;
-        this.jobPriority = jobPriority;
+        this.JobPriority = jobPriority;
         this.adjacent = adjacent;
         this.JobDescription = "job_error_missing_desc";
 
-        cbJobWorkedLua = new List<string>();
-        cbJobCompletedLua = new List<string>();
+        jobWorkedLua = new List<string>();
+        jobCompletedLua = new List<string>();
 
         this.inventoryRequirements = new Dictionary<string, Inventory>();
         if (inventoryRequirements != null)
@@ -103,17 +108,17 @@ public class Job
     protected Job(Job other)
     {
         this.tile = other.tile;
-        this.jobObjectType = other.jobObjectType;
-        this.jobTileType = other.jobTileType;
-        this.cbJobCompleted = other.cbJobCompleted;
-        this.jobTime = other.jobTime;
-        this.jobPriority = other.jobPriority;
+        this.JobObjectType = other.JobObjectType;
+        this.JobTileType = other.JobTileType;
+        this.OnJobCompleted = other.OnJobCompleted;
+        this.JobTime = other.JobTime;
+        this.JobPriority = other.JobPriority;
         this.adjacent = other.adjacent;
         this.JobDescription = other.JobDescription;
         this.acceptsAny = other.acceptsAny;
 
-        cbJobWorkedLua = new List<string>(other.cbJobWorkedLua);
-        cbJobCompletedLua = new List<string>(other.cbJobWorkedLua);
+        jobWorkedLua = new List<string>(other.jobWorkedLua);
+        jobCompletedLua = new List<string>(other.jobWorkedLua);
 
         this.inventoryRequirements = new Dictionary<string, Inventory>();
         if (inventoryRequirements != null)
@@ -126,51 +131,46 @@ public class Job
     }
 
     // We have finished the work cycle and so things should probably get built or whatever.
-    public event Action<Job> cbJobCompleted;
+    public event Action<Job> OnJobCompleted;
 
-    public event Action<Job> cbJobStopped;
+    public event Action<Job> OnJobStopped;
 
     // Gets called each time some work is performed -- maybe update the UI?
-    public event Action<Job> cbJobWorked;
-
-    public enum JobPriority
-    {
-        High, Medium, Low
-    }
+    public event Action<Job> OnJobWorked;
 
     public string JobDescription { get; set; }
 
-    public string jobObjectType
+    public string JobObjectType
     {
         get;
         protected set;
     }
 
-    public bool isNeed
+    public bool IsNeed
     {
         get;
         protected set;
     }
 
-    public bool critical
+    public bool Critical
     {
         get;
         protected set;
     }
 
-    public TileType jobTileType
+    public TileType JobTileType
     {
         get;
         protected set;
     }
 
-    public float jobTime
+    public float JobTime
     {
         get;
         protected set;
     }
 
-    public JobPriority jobPriority
+    public JobPriority JobPriority
     {
         get;
         protected set;
@@ -188,36 +188,36 @@ public class Job
     
     public void RegisterJobCompletedCallback(string cb)
     {
-        cbJobCompletedLua.Add(cb);
+        jobCompletedLua.Add(cb);
     }
 
     public void UnregisterJobCompletedCallback(string cb)
     {
-        cbJobCompletedLua.Remove(cb);
+        jobCompletedLua.Remove(cb);
     }
     
     public void RegisterJobWorkedCallback(string cb)
     {
-        cbJobWorkedLua.Add(cb);
+        jobWorkedLua.Add(cb);
     }
 
     public void UnregisterJobWorkedCallback(string cb)
     {
-        cbJobWorkedLua.Remove(cb);
+        jobWorkedLua.Remove(cb);
     }
 
     public void DoWork(float workTime)
     {
         // We don't know if the Job can actually be worked, but still call the callbacks
         // so that animations and whatnot can be updated.
-        if (cbJobWorked != null)
+        if (OnJobWorked != null)
         {
-            cbJobWorked(this);
+            OnJobWorked(this);
         }
 
-        if (cbJobWorkedLua != null)
+        if (jobWorkedLua != null)
         {
-            foreach (string luaFunction in cbJobWorkedLua.ToList())
+            foreach (string luaFunction in jobWorkedLua.ToList())
             {
                 LuaUtilities.CallFunction(luaFunction, this);
             }
@@ -231,17 +231,17 @@ public class Job
             return;
         }
 
-        jobTime -= workTime;
+        JobTime -= workTime;
         
-        if (jobTime <= 0)
+        if (JobTime <= 0)
         {
             // Do whatever is supposed to happen with a job cycle completes.
-            if (cbJobCompleted != null)
+            if (OnJobCompleted != null)
             {
-                cbJobCompleted(this);
+                OnJobCompleted(this);
             }
 
-            foreach (string luaFunction in cbJobCompletedLua.ToList())
+            foreach (string luaFunction in jobCompletedLua.ToList())
             {
                 LuaUtilities.CallFunction(luaFunction, this);
             }
@@ -249,24 +249,24 @@ public class Job
             if (jobRepeats == false)
             {
                 // Let everyone know that the job is officially concluded
-                if (cbJobStopped != null)
+                if (OnJobStopped != null)
                 {
-                    cbJobStopped(this);
+                    OnJobStopped(this);
                 }
             }
             else
             {
                 // This is a repeating job and must be reset.
-                jobTime += jobTimeRequired;
+                JobTime += jobTimeRequired;
             }
         }
     }
 
     public void CancelJob()
     {
-        if (cbJobStopped != null)
+        if (OnJobStopped != null)
         {
-            cbJobStopped(this);
+            OnJobStopped(this);
         }
 
         // Remove the job out of both job queues.
@@ -358,6 +358,6 @@ public class Job
     public void DropPriority()
     {
         // TODO: This casting to and from enums are a bit wierd. We should decide on ONE priority system.
-        jobPriority = (JobPriority)Mathf.Min((int)JobPriority.Low, (int)jobPriority + 1);
+        this.JobPriority = (JobPriority)Mathf.Min((int)JobPriority.Low, (int)JobPriority + 1);
     }
 }
