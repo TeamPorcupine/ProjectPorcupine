@@ -6,16 +6,15 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
 
 public class Path_Edge<T>
 {
-
-    public float cost;
     // Cost to traverse this edge (i.e. cost to ENTER the tile)
     public Tile tile;
-    
-    public Path_Node<T> node;
 
+    public float cost;
+
+    public Path_Node<T> node;
 }

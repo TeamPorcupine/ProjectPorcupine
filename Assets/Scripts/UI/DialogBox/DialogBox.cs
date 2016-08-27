@@ -6,22 +6,20 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
 
 public class DialogBox : MonoBehaviour
 {
-
-    virtual public void ShowDialog()
+    public virtual void ShowDialog()
     {
         WorldController.Instance.IsModal = true;
         gameObject.SetActive(true);
     }
 
-    virtual public void CloseDialog()
+    public virtual void CloseDialog()
     {
         WorldController.Instance.IsModal = false;
         gameObject.SetActive(false);
     }
-        
 }

@@ -56,7 +56,7 @@ public class Path_RoomGraph
     public void RegenerateGraph()
     {
         nodes.Clear();
-        foreach (Room r in World.current.rooms)
+        foreach (Room r in World.Current.rooms)
         {
             Path_Node<Room> n = new Path_Node<Room>();
             n.data = r;
