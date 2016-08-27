@@ -1,4 +1,12 @@
-﻿using System.Collections.Generic;
+﻿#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
+using System.Collections.Generic;
 using System.Xml;
 using MoonSharp.Interpreter;
 
@@ -44,6 +52,7 @@ public class Quest
                             PreRequiredCompletedQuest.Add(subReader.GetAttribute("Name"));
                         }
                     }
+
                     break;
                 case "Goals":
                     XmlReader goals_reader = reader.ReadSubtree();
@@ -56,6 +65,7 @@ public class Quest
                             Goals.Add(goal);
                         }
                     }
+
                     break;
                 case "Rewards": 
                     XmlReader reward_reader = reader.ReadSubtree();
@@ -68,6 +78,7 @@ public class Quest
                             Rewards.Add(reward);
                         }
                     }
+
                     break;
             }
         }

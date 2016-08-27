@@ -6,28 +6,27 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using UnityEngine;
-using UnityEngine.UI;
 using System.Collections;
 using ProjectPorcupine.Localization;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class SelectionInfoTextField : MonoBehaviour
 {
-
     public CanvasGroup canvasGroup;
 
-    MouseController mc;
-    Text txt;
+    private MouseController mc;
+    private Text txt;
 
-    // Use this for initialization
-    void Start()
+    // Use this for initialization.
+    private void Start()
     {
         mc = WorldController.Instance.mouseController;
         txt = GetComponent<Text>();
     }
-	
-    // Update is called once per frame
-    void Update()
+
+    // Update is called once per frame.
+    private void Update()
     {
         if (mc.mySelection == null)
         {
@@ -43,13 +42,15 @@ public class SelectionInfoTextField : MonoBehaviour
 
         ISelectable actualSelection = mc.mySelection.GetSelectedStuff();
 
-        if(actualSelection.GetType() == typeof(Character))
+        if (actualSelection.GetType() == typeof(Character))
         {
-            txt.text = actualSelection.GetName() + "\n" + actualSelection.GetDescription() + "\n" + actualSelection.GetHitPointString() + "\n" + LocalizationTable.GetLocalization(actualSelection.GetJobDescription()); //TODO: Change the hitpoint stuff.
+            // TODO: Change the hitpoint stuff.
+            txt.text = actualSelection.GetName() + "\n" + actualSelection.GetDescription() + "\n" + actualSelection.GetHitPointString() + "\n" + LocalizationTable.GetLocalization(actualSelection.GetJobDescription());
         }
         else
         {
-            txt.text = LocalizationTable.GetLocalization(actualSelection.GetName()) + "\n" + LocalizationTable.GetLocalization(actualSelection.GetDescription()) + "\n" + actualSelection.GetHitPointString(); //TODO: Change the hitpoint stuff.
+            // TODO: Change the hitpoint stuff.
+            txt.text = LocalizationTable.GetLocalization(actualSelection.GetName()) + "\n" + LocalizationTable.GetLocalization(actualSelection.GetDescription()) + "\n" + actualSelection.GetHitPointString();
         }
     }
 }

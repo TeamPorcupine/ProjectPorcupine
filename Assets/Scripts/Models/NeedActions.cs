@@ -6,26 +6,19 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System.Collections.Generic;
 using MoonSharp.Interpreter;
-using MoonSharp.Interpreter.Debugging;
-using MoonSharp.RemoteDebugger;
-using MoonSharp.RemoteDebugger.Network;
-using UnityEngine;
 
 public class NeedActions
 {
-    private static NeedActions _Instance;
+    private static NeedActions instance;
 
     private Script myLuaScript;
 
-    public NeedActions()
+    private NeedActions()
     {
         // Tell the LUA interpreter system to load all the classes
         // that we have marked as [MoonSharpUserData]
         UserData.RegisterAssembly();
-
-        _Instance = this;
 
         myLuaScript = new Script();
 
@@ -35,20 +28,26 @@ public class NeedActions
         myLuaScript.Globals["Inventory"] = typeof(Inventory);
         myLuaScript.Globals["Job"] = typeof(Job);
         myLuaScript.Globals["ModUtils"] = typeof(ModUtils);
+
         // Also to access statics/globals
         myLuaScript.Globals["World"] = typeof(World);
     }
 
+    public static NeedActions Instance
+    {
+        get { return instance ?? (instance = new NeedActions()); }
+    }
+
     public static void AddScript(string rawLuaCode)
     {
-        _Instance.myLuaScript.DoString(rawLuaCode);
+        Instance.myLuaScript.DoString(rawLuaCode);
     }
     
     public static void CallFunctionsWithNeed(string[] functionNames, Need need, float deltaTime)
     {
         foreach (string fn in functionNames)
         {
-            object func = _Instance.myLuaScript.Globals[fn];
+            object func = Instance.myLuaScript.Globals[fn];
 
             if (func == null)
             {
@@ -56,7 +55,7 @@ public class NeedActions
                 return;
             }
 
-            DynValue result = _Instance.myLuaScript.Call(func, need, deltaTime);
+            DynValue result = Instance.myLuaScript.Call(func, need, deltaTime);
 
             if (result.Type == DataType.String)
             {
@@ -67,12 +66,13 @@ public class NeedActions
 
     public static DynValue CallFunction(string functionName, params object[] args)
     {
-        object func = _Instance.myLuaScript.Globals[functionName];
+        object func = Instance.myLuaScript.Globals[functionName];
 
-        return _Instance.myLuaScript.Call(func, args);
+        return Instance.myLuaScript.Call(func, args);
     }
+
     public static void RegisterGlobal(System.Type type)
     {
-        _Instance.myLuaScript.Globals[type.Name] = type;
+        Instance.myLuaScript.Globals[type.Name] = type;
     }
 }

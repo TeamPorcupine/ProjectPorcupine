@@ -7,16 +7,15 @@
 // ====================================================
 #endregion
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using System.Collections.Generic;
 
 public class TileSpriteController
 {
+    private Dictionary<Tile, GameObject> tileGameObjectMap;
 
-    Dictionary<Tile, GameObject> tileGameObjectMap;
-
-    World world;
+    private World world;
 
     // Use this for initialization
     public TileSpriteController(World currnetWorld)
@@ -24,7 +23,8 @@ public class TileSpriteController
         world = currnetWorld;
     }
 
-    public void Render() {
+    public void Render() 
+    {
         GameObject tileParent = new GameObject("Tiles");
 
         // Instantiate our dictionary that tracks which GameObject is rendering which Tile data.
@@ -60,15 +60,14 @@ public class TileSpriteController
 
         // Register our callback so that our GameObject gets updated whenever
         // the tile's type changes.
-        world.cbTileChanged += OnTileChanged;
+        world.OnTileChanged += OnTileChanged;
     }
 
     // THIS IS AN EXAMPLE -- NOT CURRENTLY USED (and probably out of date)
-    void DestroyAllTileGameObjects()
+    private void DestroyAllTileGameObjects()
     {
         // This function might get called when we are changing floors/levels.
         // We need to destroy all visual **GameObjects** -- but not the actual tile data!
-
         while (tileGameObjectMap.Count > 0)
         {
             Tile tile_data = tileGameObjectMap.Keys.First();
@@ -78,7 +77,7 @@ public class TileSpriteController
             tileGameObjectMap.Remove(tile_data);
 
             // Unregister the callback!
-            tile_data.cbTileChanged -= OnTileChanged;
+            tile_data.TileChanged -= OnTileChanged;
 
             // Destroy the visual GameObject
             GameObject.Destroy(tile_go);
@@ -89,12 +88,11 @@ public class TileSpriteController
     }
 
     // This function should be called automatically whenever a tile's data gets changed.
-    void OnTileChanged(Tile tile_data)
+    private void OnTileChanged(Tile tile_data)
     {
-
         if (tileGameObjectMap.ContainsKey(tile_data) == false)
         {
-            Debug.LogError("tileGameObjectMap doesn't contain the tile_data -- did you forget to add the tile to the dictionary? Or maybe forget to unregister a callback?");
+            Debug.ULogErrorChannel("TileSpriteController", "tileGameObjectMap doesn't contain the tile_data -- did you forget to add the tile to the dictionary? Or maybe forget to unregister a callback?");
             return;
         }
 
@@ -102,11 +100,10 @@ public class TileSpriteController
 
         if (tile_go == null)
         {
-            Debug.LogError("tileGameObjectMap's returned GameObject is null -- did you forget to add the tile to the dictionary? Or maybe forget to unregister a callback?");
+            Debug.ULogErrorChannel("TileSpriteController", "tileGameObjectMap's returned GameObject is null -- did you forget to add the tile to the dictionary? Or maybe forget to unregister a callback?");
             return;
         }
-        
-        tile_go.GetComponent<SpriteRenderer>().sprite = SpriteManager.current.GetSprite("Tile", tile_data.Type.Name);
 
+        tile_go.GetComponent<SpriteRenderer>().sprite = SpriteManager.current.GetSprite("Tile", tile_data.Type.Name);
     }
 }

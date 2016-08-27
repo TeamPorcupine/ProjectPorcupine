@@ -1,8 +1,16 @@
+#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
 using MoonSharp.Interpreter;
 
 public class QuestActions
 {
-    private static QuestActions _Instance;
+    private static QuestActions instance;
 
     private Script myLuaScript;
 
@@ -12,7 +20,7 @@ public class QuestActions
         // that we have marked as [MoonSharpUserData]
         UserData.RegisterAssembly();
 
-        _Instance = this;
+        instance = this;
 
         myLuaScript = new Script();
 
@@ -30,10 +38,11 @@ public class QuestActions
 
         myLuaScript.DoString(rawLuaCode);
     }
+
     public static DynValue CallFunction(string functionName, params object[] args)
     {
-        object func = _Instance.myLuaScript.Globals[functionName];
+        object func = instance.myLuaScript.Globals[functionName];
 
-        return _Instance.myLuaScript.Call(func, args);
+        return instance.myLuaScript.Call(func, args);
     }
 }
