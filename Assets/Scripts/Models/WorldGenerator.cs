@@ -43,7 +43,7 @@ public class WorldGenerator
         int yOffset = Random.Range(0, 10000);
 
         int sumOfAllWeightedChances = 0;
-        foreach(Inventory resource in resources)
+        foreach (Inventory resource in resources)
         {
             sumOfAllWeightedChances += resource.stackSize;
         }
