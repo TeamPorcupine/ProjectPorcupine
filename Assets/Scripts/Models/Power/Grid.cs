@@ -139,12 +139,10 @@ namespace Power
 
         private void DischargeAccumulators(ref float currentPowerLevel)
         {
-            if (currentPowerLevel +
-                connections.Where(connection => connection.IsPowerAccumulator && !connection.IsEmpty)
-                .Sum(connection =>
-                connection.AccumulatedPower - connection.OutputRate < 0.0f ?
-                connection.AccumulatedPower :
-                connection.OutputRate) < 0)
+            float possibleOutput = connections.Where(connection => connection.IsPowerAccumulator && !connection.IsEmpty)
+                .Sum(connection => GetOutputRate(connection));
+
+            if (currentPowerLevel + possibleOutput < 0)
             {
                 return;
             }
@@ -152,8 +150,7 @@ namespace Power
             foreach (Connection connection in connections.Where(powerRelated => powerRelated.IsPowerAccumulator && !powerRelated.IsEmpty))
             {
                 float outputRate = connection.OutputRate > Math.Abs(currentPowerLevel) ? Math.Abs(currentPowerLevel) : connection.OutputRate;
-                outputRate = connection.AccumulatedPower - outputRate < 0.0f ?
-                    connection.AccumulatedPower : outputRate;
+                outputRate = GetOutputRate(connection, outputRate);
 
                 currentPowerLevel += outputRate;
                 connection.AccumulatedPower -= outputRate;
@@ -162,6 +159,16 @@ namespace Power
                     break;
                 }
             }
+        }
+
+        private float GetOutputRate(Connection connection, float outputRate = 0.0f)
+        {
+            if (outputRate.IsZero())
+            {
+                outputRate = connection.OutputRate;
+            }
+
+            return connection.AccumulatedPower - outputRate < 0.0f ? connection.AccumulatedPower : outputRate;
         }
     }
 }
