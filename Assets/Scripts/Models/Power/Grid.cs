@@ -80,7 +80,7 @@ namespace Power
             connections.Remove(connection);
         }
 
-        public void Update()
+        public void Tick()
         {
             float currentPowerLevel = 0.0f;
             foreach (Connection connection in connections)
@@ -118,28 +118,45 @@ namespace Power
         {
             foreach (Connection connection in connections.Where(connection => connection.IsPowerAccumulator && !connection.IsFull))
             {
-                if (currentPowerLevel - connection.InputRate < 0.0f)
+                float inputRate = connection.AccumulatedPower + connection.InputRate > connection.Capacity ?
+                    connection.Capacity - connection.AccumulatedPower :
+                    connection.InputRate;
+
+                if (currentPowerLevel - inputRate < 0.0f)
                 {
-                    continue;
+                    inputRate = currentPowerLevel;
                 }
 
-                currentPowerLevel -= connection.InputRate;
-                connection.AccumulatedPower += connection.InputRate;
+                currentPowerLevel -= inputRate;
+                connection.AccumulatedPower += inputRate;
+
+                if (currentPowerLevel.IsZero())
+                {
+                    break;
+                }
             }
         }
 
         private void DischargeAccumulators(ref float currentPowerLevel)
         {
             if (currentPowerLevel +
-                connections.Where(connection => connection.IsPowerAccumulator && !connection.IsEmpty).Sum(powerRelated => powerRelated.OutputRate) < 0)
+                connections.Where(connection => connection.IsPowerAccumulator && !connection.IsEmpty)
+                .Sum(connection =>
+                connection.AccumulatedPower - connection.OutputRate < 0.0f ?
+                connection.AccumulatedPower :
+                connection.OutputRate) < 0)
             {
                 return;
             }
 
             foreach (Connection connection in connections.Where(powerRelated => powerRelated.IsPowerAccumulator && !powerRelated.IsEmpty))
             {
-                currentPowerLevel += connection.OutputRate;
-                connection.AccumulatedPower -= connection.OutputRate;
+                float outputRate = connection.OutputRate > Math.Abs(currentPowerLevel) ? Math.Abs(currentPowerLevel) : connection.OutputRate;
+                outputRate = connection.AccumulatedPower - outputRate < 0.0f ?
+                    connection.AccumulatedPower : outputRate;
+
+                currentPowerLevel += outputRate;
+                connection.AccumulatedPower -= outputRate;
                 if (currentPowerLevel >= 0.0f)
                 {
                     break;
