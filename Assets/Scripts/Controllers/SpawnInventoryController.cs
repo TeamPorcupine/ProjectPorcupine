@@ -21,9 +21,7 @@ public class SpawnInventoryController
     }
 
     public string InventoryToBuild { get; protected set; }
-
-
-
+    
     public void HideUI() 
     {
         spawnUI.SetActive(false);
@@ -51,7 +49,7 @@ public class SpawnInventoryController
 
         if (t.Inventory == null || t.Inventory.objectType == InventoryToBuild)
         {
-            World.current.inventoryManager.PlaceInventory(t, inventoryChange);
+            World.Current.inventoryManager.PlaceInventory(t, inventoryChange);
         }
     }
 
@@ -84,7 +82,7 @@ public class SpawnInventoryController
 
     private void CreateInventoryButtons()
     {
-        foreach (string invName in World.current.inventoryPrototypes.Keys)
+        foreach (string invName in World.Current.inventoryPrototypes.Keys)
         {
             GameObject inventoryButton_go = new GameObject();
             inventoryButton_go.name = "Button - " + invName;

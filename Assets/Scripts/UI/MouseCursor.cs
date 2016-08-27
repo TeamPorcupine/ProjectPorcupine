@@ -148,7 +148,7 @@ public class MouseCursor
             // Placing furniture object
             if (bmc.buildMode == BuildMode.FURNITURE)
             {
-                lowerRight.myText.text = World.current.furniturePrototypes[bmc.buildModeObjectType].Name;
+                lowerRight.myText.text = World.Current.furniturePrototypes[bmc.buildModeObjectType].Name;
 
                 upperLeft.myText.color = Color.green;
                 upperRight.myText.color = Color.red;

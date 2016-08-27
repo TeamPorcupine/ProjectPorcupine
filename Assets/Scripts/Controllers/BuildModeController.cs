@@ -197,7 +197,7 @@ public class BuildModeController
                     {
                         if (neighbor != null && neighbor.Room != null)
                         {
-                            if ((neighbor.Room == World.current.GetOutsideRoom()) || MathUtilities.IsZero(neighbor.Room.GetTotalGasPressure()))
+                            if ((neighbor.Room == World.Current.GetOutsideRoom()) || MathUtilities.IsZero(neighbor.Room.GetTotalGasPressure()))
                             {
                                 vacuumNeighbors++;
                             }

@@ -7,18 +7,17 @@
 // ====================================================
 #endregion
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class FurnitureSpriteController
 {
+    private Dictionary<Furniture, GameObject> furnitureGameObjectMap;
+    private Dictionary<Furniture, GameObject> powerStatusGameObjectMap;
 
-    Dictionary<Furniture, GameObject> furnitureGameObjectMap;
-    Dictionary<Furniture, GameObject> powerStatusGameObjectMap;
-
-    World world;
-    GameObject furnnitureParent;
+    private World world;
+    private GameObject furnnitureParent;
 
     // Use this for initialization
     public FurnitureSpriteController(World currentWorld)
@@ -32,7 +31,7 @@ public class FurnitureSpriteController
 
         // Register our callback so that our GameObject gets updated whenever
         // the tile's type changes.
-        world.cbFurnitureCreated += OnFurnitureCreated;
+        world.OnFurnitureCreated += OnFurnitureCreated;
 
         // Go through any EXISTING furniture (i.e. from a save that was loaded OnEnable) and call the OnCreated event manually
         foreach (Furniture furn in world.furnitures)
@@ -71,8 +70,7 @@ public class FurnitureSpriteController
                 northTile.Furniture.HasTypeTag("Wall") && southTile.Furniture.HasTypeTag("Wall"))
             {
                 furn.verticalDoor = true;
-            }
-            
+            }            
         }
 
         SpriteRenderer sr = furn_go.AddComponent<SpriteRenderer>();
@@ -109,7 +107,41 @@ public class FurnitureSpriteController
         furn.cbOnRemoved += OnFurnitureRemoved;
     }
 
-    void OnFurnitureRemoved(Furniture furn)
+    public Sprite GetSpriteForFurniture(Furniture furn)
+    {
+        string spriteName = furn.GetSpriteName();
+
+        if (furn.linksToNeighbour == false)
+        {
+            return SpriteManager.current.GetSprite("Furniture", spriteName);
+        }
+
+        // Otherwise, the sprite name is more complicated.
+        spriteName += "_";
+
+        // Check for neighbours North, East, South, West
+        int x = furn.tile.X;
+        int y = furn.tile.Y;
+
+        spriteName += GetSuffixForNeighbour(furn, x, y + 1, "N");
+        spriteName += GetSuffixForNeighbour(furn, x + 1, y, "E");
+        spriteName += GetSuffixForNeighbour(furn, x, y - 1, "S");
+        spriteName += GetSuffixForNeighbour(furn, x - 1, y, "W");
+
+        // For example, if this object has all four neighbours of
+        // the same type, then the string will look like:
+        //       Wall_NESW
+        return SpriteManager.current.GetSprite("Furniture", spriteName);
+    }
+
+    public Sprite GetSpriteForFurniture(string objectType)
+    {
+        Sprite s = SpriteManager.current.GetSprite("Furniture", objectType + (World.Current.furniturePrototypes[objectType].linksToNeighbour ? "_" : string.Empty));
+
+        return s;
+    }
+
+    private void OnFurnitureRemoved(Furniture furn)
     {
         if (furnitureGameObjectMap.ContainsKey(furn) == false)
         {
@@ -129,7 +161,7 @@ public class FurnitureSpriteController
         powerStatusGameObjectMap.Remove(furn);
     }
 
-    void OnFurnitureChanged(Furniture furn)
+    private void OnFurnitureChanged(Furniture furn)
     {
         ///Debug.ULogChannel("FurnitureSpriteController","OnFurnitureChanged");
 
@@ -167,7 +199,7 @@ public class FurnitureSpriteController
         furn_go.GetComponent<SpriteRenderer>().color = furn.tint;
     }
 
-    void OnPowerStatusChange(IPowerRelated powerRelated)
+    private void OnPowerStatusChange(IPowerRelated powerRelated)
     {
         Furniture furn = powerRelated as Furniture;
         if (furn == null)
@@ -193,33 +225,6 @@ public class FurnitureSpriteController
 
         power_go.GetComponent<SpriteRenderer>().color = PowerStatusColor();
     }
-
-    public Sprite GetSpriteForFurniture(Furniture furn)
-    {
-        string spriteName = furn.GetSpriteName();
-
-        if (furn.linksToNeighbour == false)
-        {
-            return SpriteManager.current.GetSprite("Furniture", spriteName);
-        }
-
-        // Otherwise, the sprite name is more complicated.
-        spriteName += "_";
-
-        // Check for neighbours North, East, South, West
-        int x = furn.tile.X;
-        int y = furn.tile.Y;
-
-        spriteName += GetSuffixForNeighbour(furn, x, y + 1, "N");
-        spriteName += GetSuffixForNeighbour(furn, x + 1, y, "E");
-        spriteName += GetSuffixForNeighbour(furn, x, y - 1, "S");
-        spriteName += GetSuffixForNeighbour(furn, x - 1, y, "W");
-
-        // For example, if this object has all four neighbours of
-        // the same type, then the string will look like:
-        //       Wall_NESW
-        return SpriteManager.current.GetSprite("Furniture", spriteName);
-    }
     
     private string GetSuffixForNeighbour(Furniture furn, int x, int y, string suffix)
     {
@@ -232,12 +237,12 @@ public class FurnitureSpriteController
         return string.Empty;
     }
 
-    Sprite GetPowerStatusSprite()
+    private Sprite GetPowerStatusSprite()
     {
         return SpriteManager.current.GetSprite("Power", "PowerIcon");
     }
 
-    Color PowerStatusColor()
+    private Color PowerStatusColor()
     {
         if (world.powerSystem.PowerLevel > 0)
         {
@@ -247,12 +252,5 @@ public class FurnitureSpriteController
         {
             return Color.red;
         }
-    }
-
-    public Sprite GetSpriteForFurniture(string objectType)
-    {
-        Sprite s = SpriteManager.current.GetSprite("Furniture", objectType + (World.current.furniturePrototypes[objectType].linksToNeighbour ? "_" : ""));
-
-        return s;
     }
 }

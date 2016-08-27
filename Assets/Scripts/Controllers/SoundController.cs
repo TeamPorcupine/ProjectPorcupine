@@ -16,8 +16,8 @@ public class SoundController
     // Use this for initialization
     public SoundController(World world)
     {
-        world.cbFurnitureCreated += OnFurnitureCreated;
-        world.cbTileChanged += OnTileChanged;
+        world.OnFurnitureCreated += OnFurnitureCreated;
+        world.OnTileChanged += OnTileChanged;
     }
     
     // Update is called once per frame

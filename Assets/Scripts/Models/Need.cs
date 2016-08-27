@@ -111,7 +111,7 @@ public class Need {
                 break;
             case "RestoreNeedFurnitureType":
                 reader.Read();
-                restoreNeedFurn = World.current.furniturePrototypes[reader.ReadContentAsString()];
+                restoreNeedFurn = World.Current.furniturePrototypes[reader.ReadContentAsString()];
                 break;
             case "RestoreNeedTime":
                 reader.Read();

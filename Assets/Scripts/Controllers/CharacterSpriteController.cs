@@ -50,7 +50,7 @@ public class CharacterSpriteController
 
         // Register our callback so that our GameObject gets updated whenever
         // the tile's type changes.
-        world.cbCharacterCreated += OnCharacterCreated;
+        world.OnCharacterCreated += OnCharacterCreated;
 
         // Check for pre-existing characters, which won't do the callback.
         foreach (Character c in world.characters)

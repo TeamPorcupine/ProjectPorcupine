@@ -294,7 +294,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
 
         if (!powerValue.IsZero())
         {
-            World.current.powerSystem.AddToPowerGrid(this);
+            World.Current.powerSystem.AddToPowerGrid(this);
         }
 
         if (other.funcPositionValidation != null)
@@ -351,7 +351,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
             {
                 for (int ypos = y - 1; ypos < (y + proto.Height + 1); ypos++)
                 {
-                    t = World.current.GetTileAt(xpos, ypos);
+                    t = World.Current.GetTileAt(xpos, ypos);
                     if (t != null && t.Furniture != null && t.Furniture.cbOnChanged != null)
                     {
                         t.Furniture.cbOnChanged(t.Furniture);
@@ -370,7 +370,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
             thermalDiffusivity = obj.furnParameters["thermal_diffusivity"].ToFloat();
         }
 
-        World.current.temperature.SetThermalDiffusivity(tile.X, tile.Y, thermalDiffusivity);
+        World.Current.temperature.SetThermalDiffusivity(tile.X, tile.Y, thermalDiffusivity);
 
         return obj;
     }
@@ -391,8 +391,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         // Prevent construction too close to the world's edge
         const int minEdgeDistance = 5;
         bool tooCloseToEdge = t.X < minEdgeDistance || t.Y < minEdgeDistance ||
-            (World.current.Width - t.X) <= minEdgeDistance ||
-            (World.current.Height - t.Y) <= minEdgeDistance;
+            (World.Current.Width - t.X) <= minEdgeDistance ||
+            (World.Current.Height - t.Y) <= minEdgeDistance;
 
         if (tooCloseToEdge)
         {
@@ -409,7 +409,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         {
             for (int y_off = t.Y; y_off < (t.Y + Height); y_off++)
             {
-                Tile t2 = World.current.GetTileAt(x_off, y_off);
+                Tile t2 = World.Current.GetTileAt(x_off, y_off);
 
                 // Check to see if there is furniture which is replaceable
                 bool isReplaceable = false;
@@ -444,12 +444,12 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
 
     public bool HasPower()
     {
-        if (World.current.powerSystem.RequestPower(this))
+        if (World.Current.powerSystem.RequestPower(this))
         {
             return true;
         }
 
-        return World.current.powerSystem.AddToPowerGrid(this);
+        return World.Current.powerSystem.AddToPowerGrid(this);
     }
 
     [MoonSharpVisible(true)]
@@ -552,7 +552,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
                     invs.ToArray(),
                     Job.JobPriority.High );
                 j.JobDescription = "job_build_" + objectType + "_desc";
-                World.current.SetFurnitureJobPrototype(j, this);
+                World.Current.SetFurnitureJobPrototype(j, this);
                 break;
 
             case "Action":
@@ -645,7 +645,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         j.furniture = this;
         jobs.Add(j);
         j.cbJobStopped += OnJobStopped;
-        World.current.jobQueue.Enqueue(j);
+        World.Current.jobQueue.Enqueue(j);
     }
 
     void OnJobStopped(Job j)
@@ -697,9 +697,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
 
         // TODO: read this from furniture params
         Dictionary<string, Inventory> invsDict = new Dictionary<string, Inventory>();
-        foreach (string objectType in World.current.inventoryPrototypes.Keys)
+        foreach (string objectType in World.Current.inventoryPrototypes.Keys)
         {
-            invsDict[objectType] = new Inventory(objectType, World.current.inventoryPrototypes[objectType].maxStackSize, 0);
+            invsDict[objectType] = new Inventory(objectType, World.Current.inventoryPrototypes[objectType].maxStackSize, 0);
         }
 
         Inventory[] invs = new Inventory[invsDict.Count];
@@ -728,7 +728,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         eventActions.Trigger("OnUninstall", this);
 
         // Update thermalDiffusifity to default value
-        World.current.temperature.SetThermalDiffusivity(tile.X, tile.Y,
+        World.Current.temperature.SetThermalDiffusivity(tile.X, tile.Y,
             Temperature.defaultThermalDiffusivity);
 
         tile.UnplaceFurniture();
@@ -745,9 +745,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
 
         ////World.current.InvalidateTileGraph();
 
-        if (World.current.tileGraph != null)
+        if (World.Current.tileGraph != null)
         {
-            World.current.tileGraph.RegenerateGraphAtTile(tile);
+            World.Current.tileGraph.RegenerateGraphAtTile(tile);
         }
 
         // We should inform our neighbours that they have just lost a
@@ -759,7 +759,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
             {
                 for (int ypos = y - 1; ypos < (y + fheight + 1); ypos++)
                 {
-                    Tile t = World.current.GetTileAt(xpos, ypos);
+                    Tile t = World.Current.GetTileAt(xpos, ypos);
                     if (t != null && t.Furniture != null && t.Furniture.cbOnChanged != null)
                     {
                         t.Furniture.cbOnChanged(t.Furniture);
@@ -774,12 +774,12 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
 
     public Tile GetJobSpotTile()
     {
-        return World.current.GetTileAt(tile.X + (int)jobSpotOffset.x, tile.Y + (int)jobSpotOffset.y);
+        return World.Current.GetTileAt(tile.X + (int)jobSpotOffset.x, tile.Y + (int)jobSpotOffset.y);
     }
 
     public Tile GetSpawnSpotTile()
     {
-        return World.current.GetTileAt(tile.X + (int)jobSpawnSpotOffset.x, tile.Y + (int)jobSpawnSpotOffset.y);
+        return World.Current.GetTileAt(tile.X + (int)jobSpawnSpotOffset.x, tile.Y + (int)jobSpawnSpotOffset.y);
     }
 
     // Returns true if furniture has typeTag, though simple, the intent is to separate the interaction with

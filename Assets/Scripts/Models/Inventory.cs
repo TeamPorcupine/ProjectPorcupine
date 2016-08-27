@@ -84,9 +84,9 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
     {
         this.objectType = objectType;
 
-        if (World.current.inventoryPrototypes.ContainsKey(objectType))
+        if (World.Current.inventoryPrototypes.ContainsKey(objectType))
         {
-            this.maxStackSize = World.current.inventoryPrototypes[objectType].maxStackSize;
+            this.maxStackSize = World.Current.inventoryPrototypes[objectType].maxStackSize;
         }
         else
         {
