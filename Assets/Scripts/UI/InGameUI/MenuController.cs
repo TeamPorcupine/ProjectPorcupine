@@ -6,20 +6,14 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-
+using System.Collections;
 using ProjectPorcupine.Localization;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
 
 public class MenuController : MonoBehaviour
 {
     public static MenuController Instance;
-
-    DialogBoxManager dbm;
-
-    // The left build menu.
-    GameObject constructorMenu;
 
     // The sub menus of the build menu (furniture, floor..... later - power, security, drones).
     public GameObject furnitureMenu;
@@ -32,69 +26,16 @@ public class MenuController : MonoBehaviour
     public Button buttonSettings;
     public Button buttonQuests;
 
-    // Use this for initialization.
-    void Start()
-    {
-        Instance = this;
+    private DialogBoxManager dbm;
 
-        dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
-
-        furnitureMenu = GameObject.Find("MenuFurniture");
-        floorMenu = GameObject.Find("MenuFloor");
-        constructorMenu = GameObject.Find("MenuConstruction");
-
-        // Add liseners here.
-        buttonConstructor.onClick.AddListener(delegate
-            {
-                OnButtonConstruction();
-            });
-
-        buttonWorld.onClick.AddListener(delegate
-            {
-                OnButtonWorld();
-            });
-
-        buttonWork.onClick.AddListener(delegate
-            {
-                OnButtonWork();
-            });
-
-        buttonOptions.onClick.AddListener(delegate
-            {
-                OnButtonOptions();
-            });
-
-        buttonSettings.onClick.AddListener(delegate
-            {
-                OnButtonSettings();
-            });
-
-        buttonQuests = CreateButton("menu_quests");
-        buttonQuests.onClick.AddListener(delegate
-            {
-                OnButtonQuests();
-            });
-
-        DeactivateAll();
-    }
-
-    private Button CreateButton(string text)
-    {
-        GameObject buttonQuestGameObject = (GameObject)Instantiate(Resources.Load("UI/MenuButton"), this.gameObject.transform);
-        buttonQuestGameObject.name = "Button - " + text;
-        Text buttonText = buttonQuestGameObject.transform.GetChild(0).GetComponent<Text>();
-        buttonText.text = text;
-        buttonText.GetComponent<TextLocalizer>().text = buttonText;
-        buttonText.GetComponent<TextLocalizer>().UpdateText();
-        return  buttonQuestGameObject.GetComponent<Button>();
-    }
+    // The left build menu.
+    private GameObject constructorMenu;
 
     // Deactivates All Menus.
     public void DeactivateAll()
     {
         constructorMenu.SetActive(false);
         DeactivateSubs();
-
     }
 
     // Deactivates any sub menu of the constrution options.
@@ -108,14 +49,6 @@ public class MenuController : MonoBehaviour
     public void ToggleMenu(GameObject menu)
     {
         menu.SetActive(!menu.activeSelf);
-    }
-
-    void Update()
-    {
-        if (Input.GetKey(KeyCode.Escape))
-        {
-            DeactivateAll();
-        }
     }
 
     public void OnButtonConstruction()
@@ -134,7 +67,6 @@ public class MenuController : MonoBehaviour
     public void OnButtonWork()
     {
         DeactivateAll();
-
     }
 
     public void OnButtonWorld()
@@ -143,7 +75,6 @@ public class MenuController : MonoBehaviour
         {
             DeactivateAll();
         }
-
     }
 
     public void OnButtonQuests()
@@ -170,6 +101,69 @@ public class MenuController : MonoBehaviour
         {
             DeactivateAll();
             dbm.dialogBoxSettings.ShowDialog();
+        }
+    }
+
+    // Use this for initialization.
+    private void Start()
+    {
+        dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
+
+        furnitureMenu = GameObject.Find("MenuFurniture");
+        floorMenu = GameObject.Find("MenuFloor");
+        constructorMenu = GameObject.Find("MenuConstruction");
+
+        // Add liseners here.
+        buttonConstructor.onClick.AddListener(delegate
+        {
+            OnButtonConstruction();
+        });
+
+        buttonWorld.onClick.AddListener(delegate
+        {
+            OnButtonWorld();
+        });
+
+        buttonWork.onClick.AddListener(delegate
+        {
+            OnButtonWork();
+        });
+
+        buttonOptions.onClick.AddListener(delegate
+        {
+            OnButtonOptions();
+        });
+
+        buttonSettings.onClick.AddListener(delegate
+        {
+            OnButtonSettings();
+        });
+
+        buttonQuests = CreateButton("menu_quests");
+        buttonQuests.onClick.AddListener(delegate
+        {
+            OnButtonQuests();
+        });
+
+        DeactivateAll();
+    }
+
+    private Button CreateButton(string text)
+    {
+        GameObject buttonQuestGameObject = (GameObject)Instantiate(Resources.Load("UI/MenuButton"), this.gameObject.transform);
+        buttonQuestGameObject.name = "Button - " + text;
+        Text buttonText = buttonQuestGameObject.transform.GetChild(0).GetComponent<Text>();
+        buttonText.text = text;
+        buttonText.GetComponent<TextLocalizer>().text = buttonText;
+        buttonText.GetComponent<TextLocalizer>().UpdateText();
+        return buttonQuestGameObject.GetComponent<Button>();
+    }
+
+    private void Update()
+    {
+        if (Input.GetKey(KeyCode.Escape))
+        {
+            DeactivateAll();
         }
     }
 }

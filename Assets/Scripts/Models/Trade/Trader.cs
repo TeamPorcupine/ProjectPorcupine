@@ -24,7 +24,7 @@ public class Trader
         t.Stock = new List<Inventory>();
 
         List<List<Inventory>> worldInventories =
-            World.current.inventoryManager.inventories.Values.Select(i => i.ToList()).ToList();
+            WorldController.Instance.World.inventoryManager.inventories.Values.Select(i => i.ToList()).ToList();
         
         foreach (List<Inventory> worldInventory in worldInventories)
         {
@@ -32,7 +32,7 @@ public class Trader
             {
                 if (inventory.tile != null && 
                     inventory.tile.Furniture != null &&
-                    inventory.tile.Furniture.objectType == "Stockpile")
+                    inventory.tile.Furniture.ObjectType == "Stockpile")
                 {
                     t.Stock.Add(inventory);
                 }

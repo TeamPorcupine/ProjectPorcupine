@@ -36,15 +36,15 @@ public class TraderShipController : MonoBehaviour
 
         if (distance > DestinationReachedThreshold)
         {
-            //rotate the model
+            // rotate the model
             Vector3 vectorToTarget = destination - transform.position;
             float angle = (Mathf.Atan2(vectorToTarget.y, vectorToTarget.x) * Mathf.Rad2Deg) - 90;
             Quaternion q = Quaternion.AngleAxis(angle, Vector3.forward);
-            transform.rotation = Quaternion.Slerp(transform.rotation, q, Time.deltaTime * Speed *WorldController.Instance.TimeScale);
+            transform.rotation = Quaternion.Slerp(transform.rotation, q, Time.deltaTime * Speed * WorldController.Instance.TimeScale);
 
-            //Direction to the next waypoint
+            // Direction to the next waypoint
             Vector3 dir = (destination - transform.position).normalized;
-            dir *= Speed*Time.fixedDeltaTime * WorldController.Instance.TimeScale;
+            dir *= Speed * Time.fixedDeltaTime * WorldController.Instance.TimeScale;
 
             transform.position = transform.position + dir;
         }
@@ -59,7 +59,6 @@ public class TraderShipController : MonoBehaviour
             {
                 DialogBoxManager dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
                 
-                //Mock trader for now
                 Trader playerTrader = Trader.FromPlayer();
                 Trade trade = new Trade(playerTrader, Trader);
                 dbm.dialogBoxTrade.SetupTrade(trade);
@@ -80,13 +79,13 @@ public class TraderShipController : MonoBehaviour
         {
             if (tradeItem.TradeAmount > 0)
             {
-                Tile tile = World.current.GetFirstTileWithNoInventoryAround(6, (int)LandingCoordinates.x, (int)LandingCoordinates.y);
+                Tile tile = WorldController.Instance.World.GetFirstTileWithNoInventoryAround(6, (int)LandingCoordinates.x, (int)LandingCoordinates.y);
                 Inventory inv = new Inventory(tradeItem.ObjectType, tradeItem.TradeAmount, tradeItem.TradeAmount);
-                World.current.inventoryManager.PlaceInventory(tile, inv);
+                WorldController.Instance.World.inventoryManager.PlaceInventory(tile, inv);
             }
             else if (tradeItem.TradeAmount < 0)
             {
-                World.current.inventoryManager.QuickRemove(tradeItem.ObjectType, -tradeItem.TradeAmount, true);
+                WorldController.Instance.World.inventoryManager.QuickRemove(tradeItem.ObjectType, -tradeItem.TradeAmount, true);
             }
         }
     }

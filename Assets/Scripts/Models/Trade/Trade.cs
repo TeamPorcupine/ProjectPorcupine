@@ -16,11 +16,6 @@ public class Trade
     public Trader Player;
     public Trader Trader;
 
-    public float TradeCurrencyBalanceForPlayer
-    {
-        get { return TradeItems.Sum(i => i.TradeCurrencyBalanceForPlayer); }
-    }
-
     public Trade(Trader player, Trader trader)
     {
         Player = player;
@@ -33,21 +28,29 @@ public class Trade
         {
             ObjectType = g.Key,
             BaseItemPrice = g.First().basePrice,
-            PlayerStock = player.Stock.Where(s => s.objectType == g.Key).Sum(s => s.stackSize),
-            TraderStock = trader.Stock.Where(s => s.objectType == g.Key).Sum(s => s.stackSize),
+            PlayerStock = player.Stock.Where(s => s.objectType == g.Key).Sum(s => s.StackSize),
+            TraderStock = trader.Stock.Where(s => s.objectType == g.Key).Sum(s => s.StackSize),
             TradeAmount = 0,
-            PlayerSellItemPrice = g.First().basePrice*player.SaleMarginMultiplier,
-            TraderSellItemPrice = g.First().basePrice*trader.SaleMarginMultiplier
+            PlayerSellItemPrice = g.First().basePrice * player.SaleMarginMultiplier,
+            TraderSellItemPrice = g.First().basePrice * trader.SaleMarginMultiplier
         }).ToList();
+    }
+
+    public float TradeCurrencyBalanceForPlayer
+    {
+        get
+        {
+            return TradeItems.Sum(i => i.TradeCurrencyBalanceForPlayer);
+        }
     }
 
     public void Accept()
     {
-        //TODO
+        // TODO
     }
 
     public bool IsValid()
     {
-        return true; //TODO
+        return true; // TODO
     }
 }
