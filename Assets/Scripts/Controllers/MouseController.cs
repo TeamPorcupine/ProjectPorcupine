@@ -221,7 +221,7 @@ public class MouseController
                     0);
             }
             else
-            {   
+            {
                 // Otherwise we use the center.
                 currPlacingPosition = new Vector3(
                     currFramePosition.x - ((World.Current.furniturePrototypes[bmc.buildModeObjectType].Width - 1f) / 2f),
@@ -254,6 +254,16 @@ public class MouseController
             return;
         }
 
+        if (Input.GetMouseButtonDown(1))
+        {
+            Tile tileUnderMouse = GetMouseOverTile();
+            if (tileUnderMouse.PendingBuildJob != null)
+            {
+                Debug.Log("Canceling!");
+                tileUnderMouse.PendingBuildJob.CancelJob();
+            }
+        }
+
         if (Input.GetMouseButtonUp(0))
         {
             if (contextMenu != null)
@@ -270,16 +280,22 @@ public class MouseController
                 return;
             }
 
-            if (mySelection == null || mySelection.Tile != tileUnderMouse)
+            if (mySelection == null || mySelection.tile != tileUnderMouse)
             {
-                if (mySelection != null)
-                {
-                    mySelection.GetSelectedStuff().IsSelected = false;
-                }
-
                 // We have just selected a brand new tile, reset the info.
-                mySelection = new SelectionInfo(tileUnderMouse);
-                mySelection.GetSelectedStuff().IsSelected = true;
+                mySelection = new SelectionInfo();
+                mySelection.tile = tileUnderMouse;
+                RebuildSelectionStuffInTile();
+
+                // Select the first non-null entry.
+                for (int i = 0; i < mySelection.stuffInTile.Length; i++)
+                {
+                    if (mySelection.stuffInTile[i] != null)
+                    {
+                        mySelection.subSelection = i;
+                        break;
+                    }
+                }
             }
             else
             {
@@ -294,6 +310,21 @@ public class MouseController
                 mySelection.GetSelectedStuff().IsSelected = true;
             }
         }
+    }
+
+    private void RebuildSelectionStuffInTile()
+    {
+        // Copy the character references.
+        for (int i = 0; i < mySelection.tile.Characters.Count; i++)
+        {
+            mySelection.stuffInTile.Add(mySelection.tile.Characters[i]);
+        }
+
+        // Now assign references to the other three sub-selections available.
+        mySelection.stuffInTile.Add(mySelection.tile.Furniture);
+        mySelection.stuffInTile.Add(mySelection.tile.Inventory);
+        mySelection.stuffInTile.Add(mySelection.tile.PendingBuildJob);
+        mySelection.stuffInTile.Add(mySelection.tile);
     }
 
     private void UpdateDragging()
@@ -456,7 +487,7 @@ public class MouseController
             return;
         }
 
-        if (Input.GetMouseButtonUp(0)) 
+        if (Input.GetMouseButtonUp(0))
         {
             Tile t = GetMouseOverTile();
             WorldController.Instance.spawnInventoryController.SpawnInventory(t);
@@ -588,5 +619,16 @@ public class MouseController
         public int StartY { get; private set; }
 
         public int EndY { get; private set; }
+    }
+
+    public class SelectionInfo
+    {
+        public SelectionInfo()
+        {
+            stuffInTile = new List<ISelectable>();
+        }
+        public Tile tile;
+        public List<ISelectable> stuffInTile;
+        public int subSelection = 0;
     }
 }

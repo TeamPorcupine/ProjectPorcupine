@@ -21,6 +21,11 @@ public enum JobPriority
 [MoonSharpUserData]
 public class Job : ISelectable
 {
+    public enum JobPriority
+    {
+        High, Medium, Low
+    }
+
     // This class holds info for a queued up job, which can include
     // things like placing furniture, moving stored inventory,
     // working at a desk, and maybe even fighting enemies.
@@ -30,6 +35,21 @@ public class Job : ISelectable
 
     // The piece of furniture that owns this job. Frequently will be null.
     public Furniture furniture;
+
+    public bool acceptsAnyInventoryItem = false;
+
+    // We have finished the work cycle and so things should probably get built or whatever.
+    public event Action<Job> cbJobCompleted;
+
+    // The job has been stopped, either because it's non-repeating or was cancelled.
+    private List<string> cbJobCompletedLua;
+
+    public event Action<Job> cbJobStopped;
+
+    // Gets called each time some work is performed -- maybe update the UI?
+    public event Action<Job> cbJobWorked;
+
+    private List<string> cbJobWorkedLua;
 
     public bool canTakeFromStockpile = true;
 
@@ -239,7 +259,7 @@ public class Job : ISelectable
             return;
         }
 
-        JobTime -= workTime;
+        jobTime -= workTime;
 
         if (JobTime <= 0)
         {
