@@ -14,6 +14,6 @@ public class TraderPotentialInventory
     public int MinQuantity;
     public int MaxQuantity;
 
-    [Range(0,1)]
+    [Range(0, 1)]
     public float Rarity;
 }

@@ -22,21 +22,21 @@ public class FurnitureActions
         LuaUtilities.RegisterGlobal(typeof(Job));
         LuaUtilities.RegisterGlobal(typeof(ModUtils));
         LuaUtilities.RegisterGlobal(typeof(World));
-
     }
 
     public static void CallFunctionsWithFurniture<T>(string[] functionNames, T furn, float deltaTime)
     {
         if (furn == null)
         {
-            Debug.LogError("Furn is null, cannot call LUA function (something is fishy).");
+            // These errors are about the lua code so putting themin the Lua channel.
+            Debug.ULogErrorChannel("Lua", "Furn is null, cannot call LUA function (something is fishy).");
         }
 
         foreach (string fn in functionNames)
         {
             if (fn == null)
             {
-                Debug.LogError("'" + fn + "' is not a LUA function.");
+                Debug.ULogErrorChannel("Lua", "'" + fn + "' is not a LUA function.");
                 return;
             }
             
@@ -44,14 +44,14 @@ public class FurnitureActions
             
             if (result.Type == DataType.String)
             {
-                Debug.Log(result.String);
+                Debug.ULogErrorChannel("Lua", result.String);
             }
         }
     }
     
     public static void JobComplete_FurnitureBuilding(Job theJob)
     {
-        WorldController.Instance.world.PlaceFurniture(theJob.jobObjectType, theJob.tile);
+        WorldController.Instance.World.PlaceFurniture(theJob.JobObjectType, theJob.tile);
 
         // FIXME: I don't like having to manually and explicitly set
         // flags that preven conflicts. It's too easy to forget to set/clear them!

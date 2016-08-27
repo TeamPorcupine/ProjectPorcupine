@@ -6,18 +6,16 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
 
 public class SetSortingLayer : MonoBehaviour
 {
-
     public string sortingLayerName = "default";
 
     // Use this for initialization
-    void Start()
+    private void Start()
     {
         GetComponent<Renderer>().sortingLayerName = sortingLayerName;
     }
-	
 }

@@ -1,6 +1,6 @@
 ﻿#region License
 // ====================================================
-// Project Porcupine Copyright(C) 2016 Team Porcupine
+// Project Porcupine Copyright(c) 2016 Team Porcupine
 // This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
@@ -31,8 +31,6 @@ public class Temperature
     /// </summary>
     public float updateInterval = 0.1f;
 
-    ///// Private stuff
-
     /// <summary>
     /// All heaters and refrigerators shoul register themselves here using the public interface.
     /// </summary>
@@ -43,13 +41,11 @@ public class Temperature
     /// </summary>
     private float[][] temperature;
     private float[] thermalDiffusivity;
-    
-    ///// Internal stuff
 
     /// <summary>
     /// Size of map.
     /// </summary>
-    private int xSize, ySize;
+    private int sizeX, sizeY;
 
     /// <summary>
     /// Time since last update.
@@ -68,18 +64,18 @@ public class Temperature
     /// <param name="yS">Y size of world.</param>
     public Temperature(int xS, int yS)
     {
-        xSize = xS;
-        ySize = yS;
+        sizeX = xS;
+        sizeY = yS;
         temperature = new float[2][]
         {
-            new float[xSize * ySize],
-            new float[xSize * ySize],
+            new float[sizeX * sizeY],
+            new float[sizeX * sizeY],
         };
-        thermalDiffusivity = new float[xSize * ySize];
+        thermalDiffusivity = new float[sizeX * sizeY];
 
-        for (int y = 0; y < ySize; y++)
+        for (int y = 0; y < sizeY; y++)
         {
-            for (int x = 0; x < xSize; x++)
+            for (int x = 0; x < sizeX; x++)
             {
                 int index = GetIndex(x, y);
                 temperature[0][index] = 0f;
@@ -107,10 +103,10 @@ public class Temperature
 
     public void RegisterSinkOrSource(Furniture provider)
     {
-        // TODO: This need to be implemented
+        // TODO: This need to be implemented.
         sinksAndSources[provider] = (float deltaTime) =>
         {
-            provider.eventActions.Trigger("OnUpdateTemperature", provider, deltaTime);
+            provider.EventActions.Trigger("OnUpdateTemperature", provider, deltaTime);
         };
     }
 
@@ -125,8 +121,8 @@ public class Temperature
     /// <summary>
     /// Public interface to temperature model, returns temperature at x, y.
     /// </summary>
-    /// <param name="x">X coordinate.</param>
-    /// <param name="y">Y coordinate.</param>
+    /// <param name="x">X coordinates.</param>
+    /// <param name="y">Y coordinates.</param>
     /// <returns>Temperature at x,y.</returns>
     public float GetTemperature(int x, int y)
     {
@@ -238,9 +234,6 @@ public class Temperature
         }
     }
 
-    ///// END OF PUBLIC INTERFACE
-    ///// PRIVATE STUFF
-
     /// <summary>
     /// Internal indexing of array.
     /// </summary>
@@ -249,7 +242,7 @@ public class Temperature
     /// <returns>Actual index for array access.</returns>
     private int GetIndex(int x, int y)
     {
-        return (y * xSize) + x;
+        return (y * sizeX) + x;
     }
 
     /// <summary>
@@ -257,9 +250,7 @@ public class Temperature
     /// </summary>
     private void ProgressTemperature(float deltaT)
     {
-        // TODO: Compute temperature sources
-        // foreach(Tile tile in sinkAndSources)
-        // GetTileAt(55, 55).temp_old = 1000;
+        // TODO: Compute temperature sources.
         if (sinksAndSources != null)
         {
             foreach (Action<float> act in sinksAndSources.Values)
@@ -277,18 +268,18 @@ public class Temperature
     /// </summary>
     private void ForwardTemp()
     {
-        // Store references
+        // Store references.
         float[] temp_curr = temperature[1 - offset];
         float[] temp_old = temperature[offset];
         
         // Compute a constant:
-        // delta.Time * magic_coefficient * 0.5 (avg for thermalDiffusivity)
-        // Make sure C is always between 0 and 0.5*0.25 (not included) or things will blow up
-        // In your face
-        float C = 0.23f * 0.5f;
-        for (int y = 0; y < ySize; y++)
+        // delta.Time * magic_coefficient * 0.5 (avg for thermalDiffusivity).
+        // Make sure c is always between 0 and 0.5*0.25 (not included) or things will blow up
+        // in your face.
+        float c = 0.23f * 0.5f;
+        for (int y = 0; y < sizeY; y++)
         {
-            for (int x = 0; x < xSize; x++)
+            for (int x = 0; x < sizeX; x++)
             {
                 int index = GetIndex(x, y);
                 int index_up = GetIndex(x, y + 1);
@@ -297,10 +288,10 @@ public class Temperature
                 int index_right = GetIndex(x + 1, y);
 
                 // Update temperature using finite difference and forward method:
-                // U^{n+1} = U^n + dt*(\Div alpha \Grad U^n)
+                // U^{n+1} = U^n + dt*(\Div alpha \Grad U^n).
                 temp_curr[index] = temp_old[index];
 
-                // TODO: if empty space, set temperature to 0
+                // TODO: If empty space, set temperature to 0.
                 if (WorldController.Instance.GetTileAtWorldCoord(new Vector3(x, y, 0)).Room == null)
                 {
                     temp_curr[index] = 0f;
@@ -309,29 +300,29 @@ public class Temperature
                 if (x > 0)
                 {
                     temp_curr[index] +=
-                        C * Mathf.Min(thermalDiffusivity[index], thermalDiffusivity[index_left]) *
-                    (temp_old[index_left] - temp_old[index]);
+                        c * Mathf.Min(thermalDiffusivity[index], thermalDiffusivity[index_left]) *
+                        (temp_old[index_left] - temp_old[index]);
                 }
 
                 if (y > 0)
                 {
                     temp_curr[index] +=
-                        C * Mathf.Min(thermalDiffusivity[index], thermalDiffusivity[index_down]) *
-                    (temp_old[index_down] - temp_old[index]);
+                        c * Mathf.Min(thermalDiffusivity[index], thermalDiffusivity[index_down]) *
+                        (temp_old[index_down] - temp_old[index]);
                 }
 
-                if (x < xSize - 1)
+                if (x < sizeX - 1)
                 {
                     temp_curr[index] +=
-                        C * Mathf.Min(thermalDiffusivity[index], thermalDiffusivity[index_right]) *
-                    (temp_old[index_right] - temp_old[index]);
+                        c * Mathf.Min(thermalDiffusivity[index], thermalDiffusivity[index_right]) *
+                        (temp_old[index_right] - temp_old[index]);
                 }
 
-                if (y < ySize - 1)
+                if (y < sizeY - 1)
                 {
                     temp_curr[index] +=
-                        C * Mathf.Min(thermalDiffusivity[index], thermalDiffusivity[index_up]) *
-                    (temp_old[index_up] - temp_old[index]);
+                        c * Mathf.Min(thermalDiffusivity[index], thermalDiffusivity[index_up]) *
+                        (temp_old[index_up] - temp_old[index]);
                 }
             }
         }
