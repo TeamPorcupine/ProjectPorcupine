@@ -6,15 +6,13 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
 
 public class Path_Node<T>
 {
-
     public T data;
 
-    public Path_Edge<T>[] edges;
     // Nodes leading OUT from this node.
-
+    public Path_Edge<T>[] edges;
 }
