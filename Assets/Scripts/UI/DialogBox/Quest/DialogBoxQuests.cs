@@ -1,4 +1,12 @@
-﻿using System.Collections.Generic;
+﻿#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -26,7 +34,7 @@ public class DialogBoxQuests : DialogBox
 
     private void BuildInterface()
     {
-        List<Quest> quests = PrototypeManager.Quest.Values.Where(q=>IsQuestAvailable(q)).ToList();
+        List<Quest> quests = PrototypeManager.Quest.Values.Where(q => IsQuestAvailable(q)).ToList();
 
         foreach (var quest in quests)
         {

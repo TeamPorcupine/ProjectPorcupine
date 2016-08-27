@@ -6,34 +6,22 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
 
-public class KeyboardController {
+public class KeyboardController
+{
+    [Range(0, 3)]
+    public float scrollSpeed = 0.1f;
 
-    BuildModeController bmc;
-    WorldController wc;
+    private BuildModeController bmc;
+    private WorldController wc;
 
     // An array of possible time multipliers.
     private float[] possibleTimeScales = new float[6] { 0.1f, 0.5f, 1f, 2f, 4f, 8f };
+    
     // Current position in that array.
-    int currentTimeScalePosition = 2;
-
-    [Range(0, 3)]
-    public float scrollSpeed = 0.1f;
-	
-    // Update is called once per frame.
-    public void Update(bool isModal)
-    {
-        if (isModal)
-        {
-            // A modal dialog box is open. Bail.
-            return;
-        }
-        CheckCameraInput();
-        CheckTimeInput();
-
-    }
+    private int currentTimeScalePosition = 2;
 
     // Use this for initialization.
     public KeyboardController(BuildModeController buildModeController, WorldController worldController)
@@ -42,7 +30,20 @@ public class KeyboardController {
         wc = worldController;
     }
 
-    void CheckCameraInput()
+    // Update is called once per frame.
+    public void Update(bool isModal)
+    {
+        if (isModal)
+        {
+            // A modal dialog box is open. Bail.
+            return;
+        }
+
+        CheckCameraInput();
+        CheckTimeInput();
+    }
+
+    private void CheckCameraInput()
     {
         // React to hor./vert. axis (WASD or up/down/...)
         Camera.main.transform.position +=
@@ -50,8 +51,7 @@ public class KeyboardController {
             new Vector3(
                 Input.GetAxis("Horizontal"),
                 Input.GetAxis("Vertical"),
-                0
-            );
+                0);
 
         if (Input.GetKey(KeyCode.PageUp))
         {
@@ -64,7 +64,7 @@ public class KeyboardController {
         }
     }
 
-    void CheckTimeInput()
+    private void CheckTimeInput()
     {
         // TODO: Move this into centralized keyboard manager where
         // all of the buttons can be rebinded.

@@ -35,7 +35,7 @@ public class FurnitureBuildMenu : MonoBehaviour
 
             go.name = "Button - Build " + objectId;
 
-            go.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(proto.localizationCode) };
+            go.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(proto.LocalizationCode) };
 
             Button b = go.GetComponent<Button>();
 
@@ -49,7 +49,7 @@ public class FurnitureBuildMenu : MonoBehaviour
             string furn = s;
             LocalizationTable.CBLocalizationFilesChanged += delegate
             {
-                go.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(PrototypeManager.Furniture.GetPrototype(furn).localizationCode) };
+                go.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(PrototypeManager.Furniture.GetPrototype(furn).LocalizationCode) };
             };
         }
 

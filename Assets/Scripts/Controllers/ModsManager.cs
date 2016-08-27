@@ -33,8 +33,6 @@ public class ModsManager
         NeedActions.LoadModsScripts(mods);
     }
 
-
-
     public DirectoryInfo[] GetMods()
     {
         return mods;

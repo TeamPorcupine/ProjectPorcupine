@@ -16,7 +16,7 @@ public class LanguageDropdownUpdater : MonoBehaviour
     {
         string[] languages = LocalizationTable.GetLanguages();
         LocalizationTable.currentLanguage = languages[lang];
-        Settings.setSetting("localization", languages[lang]);
+        Settings.SetSetting("localization", languages[lang]);
     }
 
     private void Start()
@@ -48,7 +48,7 @@ public class LanguageDropdownUpdater : MonoBehaviour
             }
         }
 
-        // Set scroll sensitivity based on the save-item count
+        // Set scroll sensitivity based on the save-item count.
         dropdown.template.GetComponent<ScrollRect>().scrollSensitivity = dropdown.options.Count / 3;
     }
 }

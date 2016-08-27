@@ -30,9 +30,9 @@ public class FurniturePrototypes : XmlPrototypes<Furniture>
         }
         catch (Exception e)
         {
-            LogPrototypeError(e, furn.objectType);
+            LogPrototypeError(e, furn.ObjectType);
         }
 
-        SetPrototype(furn.objectType, furn);
+        SetPrototype(furn.ObjectType, furn);
     }
 }

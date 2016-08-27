@@ -1,14 +1,23 @@
-﻿using System;
+﻿#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class MainScreenQuestList : MonoBehaviour
 {
-    private float totalDeltaTime;
-    private readonly float checkDelayInSeconds;
     public Transform QuestItemListPanel;
     public GameObject QuestItemPrefab;
+
+    private readonly float checkDelayInSeconds;
+    private float totalDeltaTime;
     private List<Quest> visibleQuests;
 
     public MainScreenQuestList()
@@ -56,7 +65,7 @@ public class MainScreenQuestList : MonoBehaviour
         {
             if (!visibleQuests.Contains(quest))
             {
-                var go = (GameObject) Instantiate(QuestItemPrefab);
+                var go = (GameObject)Instantiate(QuestItemPrefab);
                 go.transform.SetParent(QuestItemListPanel);
 
                 var questItemBehaviour = go.GetComponent<DialogBoxQuestItem>();

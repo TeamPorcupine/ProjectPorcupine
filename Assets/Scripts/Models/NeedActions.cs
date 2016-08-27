@@ -13,14 +13,9 @@ using UnityEngine;
 
 public class NeedActions
 {
-    private static NeedActions _Instance;
+    private static NeedActions instance;
 
     private Script myLuaScript;
-
-    public static NeedActions Instance
-    {
-        get { return _Instance ?? (_Instance = new NeedActions()); }
-    }
 
     private NeedActions()
     {
@@ -36,10 +31,16 @@ public class NeedActions
         myLuaScript.Globals["Inventory"] = typeof(Inventory);
         myLuaScript.Globals["Job"] = typeof(Job);
         myLuaScript.Globals["ModUtils"] = typeof(ModUtils);
+
         // Also to access statics/globals
         myLuaScript.Globals["World"] = typeof(World);
 
         LoadScripts();
+    }
+
+    public static NeedActions Instance
+    {
+        get { return instance ?? (instance = new NeedActions()); }
     }
 
     public static void LoadScripts()
@@ -96,6 +97,7 @@ public class NeedActions
 
         return Instance.myLuaScript.Call(func, args);
     }
+
     public static void RegisterGlobal(System.Type type)
     {
         Instance.myLuaScript.Globals[type.Name] = type;
