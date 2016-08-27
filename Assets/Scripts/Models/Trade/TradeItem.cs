@@ -18,14 +18,18 @@ public class TradeItem
 
     public int PlayerStock;
     public int TraderStock;
-    private int _tradeAmount;
+    private int tradeAmount;
 
     public int TradeAmount
     {
-        get { return _tradeAmount; }
+        get
+        {
+            return tradeAmount;
+        }
+
         set
         {
-            _tradeAmount = value < 0
+            tradeAmount = value < 0
                 ? Math.Max(value, -PlayerStock)
                 : Math.Min(value, TraderStock);
         }
