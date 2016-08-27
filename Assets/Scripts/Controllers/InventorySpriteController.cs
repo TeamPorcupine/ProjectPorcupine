@@ -78,7 +78,6 @@ public class InventorySpriteController
         // the object's into changes.
         // FIXME: Add on changed callbacks
         inv.OnInventoryChanged += OnInventoryChanged;
-
     }
 
     private void OnInventoryChanged(Inventory inv)
