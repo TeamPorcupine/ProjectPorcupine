@@ -116,7 +116,7 @@ public class World : IXmlSerializable
 
     public int CountFurnitureType(string objectType)
     {
-        int count = furnitures.Count(f => f.objectType == objectType);
+        int count = furnitures.Count(f => f.ObjectType == objectType);
         return count;
     }
 
@@ -163,7 +163,7 @@ public class World : IXmlSerializable
             for (int y = 0; y < Height; y++)
             {
                 tiles[x, y] = new Tile(x, y);
-                tiles[x, y].cbTileChanged += OnTileChanged;
+                tiles[x, y].TileChanged += OnTileChanged;
                 tiles[x, y].Room = GetOutsideRoom(); // Rooms 0 is always going to be outside, and that is our default room
             }
         }
@@ -280,7 +280,7 @@ public class World : IXmlSerializable
 
     public void SetFurnitureJobPrototype(Job j, Furniture f)
     {
-        furnitureJobPrototypes[f.objectType] = j;
+        furnitureJobPrototypes[f.ObjectType] = j;
     }
 
     void CreateFurniturePrototypes()
@@ -340,11 +340,11 @@ public class World : IXmlSerializable
                         furn.ReadXmlPrototype(reader);
                     }
                     catch (Exception e) {
-                        Debug.LogError("Error reading furniture prototype for: " + furn.objectType + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
+                        Debug.LogError("Error reading furniture prototype for: " + furn.ObjectType + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
                     }
 
 
-                    furniturePrototypes[furn.objectType] = furn;
+                    furniturePrototypes[furn.ObjectType] = furn;
 
 
 
@@ -769,20 +769,20 @@ public class World : IXmlSerializable
             return null;
         }
 
-        furn.cbOnRemoved += OnFurnitureRemoved;
+        furn.CbOnRemoved += OnFurnitureRemoved;
         furnitures.Add(furn);
 
         // Do we need to recalculate our rooms?
-        if (doRoomFloodFill && furn.roomEnclosure)
+        if (doRoomFloodFill && furn.RoomEnclosure)
         {
-            Room.DoRoomFloodFill(furn.tile);
+            Room.DoRoomFloodFill(furn.Tile);
         }
 
         if (cbFurnitureCreated != null)
         {
             cbFurnitureCreated(furn);
 
-            if (furn.movementCost != 1)
+            if (furn.MovementCost != 1)
             {
                 // Since tiles return movement cost as their base cost multiplied
                 // buy the furniture's movement cost, a furniture movement cost

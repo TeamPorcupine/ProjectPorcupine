@@ -43,9 +43,9 @@ public class WorldGenerator
         int yOffset = Random.Range(0, 10000);
 
         int sumOfAllWeightedChances = 0;
-        foreach(Inventory resource in resources)
+        foreach (Inventory resource in resources)
         {
-            sumOfAllWeightedChances += resource.stackSize;
+            sumOfAllWeightedChances += resource.StackSize;
         }
 
         for (int x = 0; x < startAreaWidth; x++)
@@ -97,7 +97,7 @@ public class WorldGenerator
                             {
                                 Inventory inv = resources[i];
 
-                                int weight = inv.stackSize; // In stacksize the weight was cached
+                                int weight = inv.StackSize; // In stacksize the weight was cached
                                 currentweight += weight;
 
                                 if (randomweight <= currentweight)
