@@ -139,9 +139,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         this.UnlocalizedDescription = other.UnlocalizedDescription;
     }
 
-    public event Action<Furniture> CbOnChanged;
+    public event Action<Furniture> OnChanged;
 
-    public event Action<Furniture> CbOnRemoved;
+    public event Action<Furniture> OnRemoved;
 
     public event Action<IPowerRelated> PowerValueChanged;
 
@@ -302,9 +302,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
                 for (int ypos = y - 1; ypos < (y + proto.Height + 1); ypos++)
                 {
                     t = World.Current.GetTileAt(xpos, ypos);
-                    if (t != null && t.Furniture != null && t.Furniture.CbOnChanged != null)
+                    if (t != null && t.Furniture != null && t.Furniture.OnChanged != null)
                     {
-                        t.Furniture.CbOnChanged(t.Furniture);
+                        t.Furniture.OnChanged(t.Furniture);
                     }
                 }
             }
@@ -632,9 +632,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
 
         Tile.UnplaceFurniture();
 
-        if (CbOnRemoved != null)
+        if (OnRemoved != null)
         {
-            CbOnRemoved(this);
+            OnRemoved(this);
         }
 
         // Do we need to recalculate our rooms?
@@ -660,9 +660,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
                 for (int ypos = y - 1; ypos < (y + fheight + 1); ypos++)
                 {
                     Tile t = World.Current.GetTileAt(xpos, ypos);
-                    if (t != null && t.Furniture != null && t.Furniture.CbOnChanged != null)
+                    if (t != null && t.Furniture != null && t.Furniture.OnChanged != null)
                     {
-                        t.Furniture.CbOnChanged(t.Furniture);
+                        t.Furniture.OnChanged(t.Furniture);
                     }
                 }
             }
@@ -830,9 +830,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     [MoonSharpVisible(true)]
     private void UpdateOnChanged(Furniture furn)
     {
-        if (CbOnChanged != null)
+        if (OnChanged != null)
         {
-            CbOnChanged(furn);
+            OnChanged(furn);
         }
     }
 
