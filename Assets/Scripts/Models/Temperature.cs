@@ -106,7 +106,7 @@ public class Temperature
         // TODO: This need to be implemented.
         sinksAndSources[provider] = (float deltaTime) =>
         {
-            provider.eventActions.Trigger("OnUpdateTemperature", provider, deltaTime);
+            provider.EventActions.Trigger("OnUpdateTemperature", provider, deltaTime);
         };
     }
 

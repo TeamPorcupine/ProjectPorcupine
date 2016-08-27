@@ -337,7 +337,7 @@ public class Room : IXmlSerializable
             return;
         }
 
-        if (tile.Furniture != null && tile.Furniture.roomEnclosure)
+        if (tile.Furniture != null && tile.Furniture.RoomEnclosure)
         {
             // This tile has a wall/door/whatever in it, so clearly
             // we can't do a room here.
@@ -393,7 +393,7 @@ public class Room : IXmlSerializable
                         // We know t2 is not null nor is it an empty tile, so just make sure it
                         // hasn't already been processed and isn't a "wall" type tile.
                         if (
-                            t2.Room != newRoom && (t2.Furniture == null || t2.Furniture.roomEnclosure == false))
+                            t2.Room != newRoom && (t2.Furniture == null || t2.Furniture.RoomEnclosure == false))
                         {
                             tilesToCheck.Enqueue(t2);
                         }

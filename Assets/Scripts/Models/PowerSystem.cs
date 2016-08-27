@@ -55,7 +55,7 @@ public class PowerSystem
         Furniture furniture = powerRelated as Furniture;
         if (furniture != null)
         {            
-            furniture.cbOnRemoved += RemoveFromPowerGrid;
+            furniture.CbOnRemoved += RemoveFromPowerGrid;
         }
 
         return true;

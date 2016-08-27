@@ -114,7 +114,7 @@ public class Path_AStar
                     }
                 }
 
-                if (current.data.Furniture != null && current.data.Furniture.objectType == objectType && lookingForFurn)
+                if (current.data.Furniture != null && current.data.Furniture.ObjectType == objectType && lookingForFurn)
                 {
                     // Type is correct
                     Reconstruct_path(came_From, current);
