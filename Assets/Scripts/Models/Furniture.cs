@@ -452,7 +452,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
                     FurnitureActions.JobComplete_FurnitureBuilding,
                     jobTime,
                     invs.ToArray(),
-                    JobPriority.High);
+                    Job.JobPriority.High);
                 j.JobDescription = "job_build_" + ObjectType + "_desc";
                 World.Current.SetFurnitureJobPrototype(j, this);
                 break;
