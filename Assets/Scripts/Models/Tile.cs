@@ -79,18 +79,31 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
     // Furniture is something like a wall, door, or sofa.
     public Furniture Furniture { get; private set; }
 
-    public float PathfindingWeight
+    public float PathfindingCost
     {
         get
         {
             if (Furniture != null)
             {
-                return Furniture.PathfindingWeight * Type.BaseMovementCost;
+                return Furniture.PathfindingCost * Type.BaseMovementCost;
             }
             else
             {
-                return pathfindingWeight * Type.BaseMovementCost;
+                return PathfindingWeight * Type.BaseMovementCost;
             }
+        }
+    }
+
+    public float PathfindingWeight
+    {
+        get
+        {
+            return pathfindingWeight;
+        }
+
+        set
+        {
+            pathfindingWeight = value;
         }
     }
 

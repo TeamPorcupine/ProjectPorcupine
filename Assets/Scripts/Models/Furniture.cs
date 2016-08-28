@@ -147,11 +147,24 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     public event Action<IPowerRelated> PowerValueChanged;
 
     // The effective pathfinding cost of pathing over this furniture
+    public float PathfindingCost
+    {
+        get
+        {
+            return PathfindingWeight * MovementCost;
+        }
+    }
+
     public float PathfindingWeight
     {
         get
         {
-            return pathfindingWeight * MovementCost;
+            return pathfindingWeight;
+        }
+
+        set
+        {
+            pathfindingWeight = value;
         }
     }
 
