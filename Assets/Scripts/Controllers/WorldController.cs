@@ -125,18 +125,27 @@ public class WorldController : MonoBehaviour
 
     public void Update()
     {
+        // Systems that update every frame.
         mouseController.Update(IsModal);
         keyboardController.Update(IsModal);
         cameraController.Update(IsModal);
 
         float deltaTime = Time.deltaTime * timeScale;
-        World.UpdateCharacters(deltaTime);
+
+        // Systems that update every frame when not paused.
+        if (IsPaused == false)
+        {
+            World.UpdateCharacters(deltaTime);
+        }
+
         totalDeltaTime += deltaTime;
 
         if (totalDeltaTime >= gameTickDelay)
         {
+            // Systems that update at fixed frequency. 
             if (IsPaused == false)
             {
+                // Systems that update at fixed frequency when not paused.
                 World.Tick(totalDeltaTime);
                 questController.Update(totalDeltaTime);
             }

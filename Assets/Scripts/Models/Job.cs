@@ -10,15 +10,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MoonSharp.Interpreter;
+using ProjectPorcupine.Localization;
 using UnityEngine;
 
-public enum JobPriority
-{
-    High, Medium, Low
-}
-
 [MoonSharpUserData]
-public class Job
+public class Job : ISelectable
 {
     // This class holds info for a queued up job, which can include
     // things like placing furniture, moving stored inventory,
@@ -56,16 +52,16 @@ public class Job
     // The job has been stopped, either because it's non-repeating or was cancelled.
     private List<string> jobCompletedLua;
 
-    public Job(Tile tile, string jobObjectType, Action<Job> jobComplete, float jobTime, Inventory[] inventoryRequirements, JobPriority jobPriority, bool jobRepeats = false, bool isNeed = false, bool critical = false)
+    public Job(Tile tile, string jobObjectType, Action<Job> jobComplete, float jobTime, Inventory[] inventoryRequirements, Job.JobPriority jobPriority, bool jobRepeats = false, bool need = false, bool critical = false)
     {
         this.tile = tile;
         this.JobObjectType = jobObjectType;
         this.OnJobCompleted += jobComplete;
         this.jobTimeRequired = this.JobTime = jobTime;
         this.jobRepeats = jobRepeats;
-        this.IsNeed = isNeed;
+        this.IsNeed = need;
         this.Critical = critical;
-        this.JobPriority = jobPriority;
+        this.Priority = jobPriority;
         this.JobDescription = "job_error_missing_desc";
 
         jobWorkedLua = new List<string>();
@@ -81,14 +77,14 @@ public class Job
         }
     }
 
-    public Job(Tile tile, TileType jobTileType, Action<Job> jobCompleted, float jobTime, Inventory[] inventoryRequirements, JobPriority jobPriority, bool jobRepeats = false, bool adjacent = false)
+    public Job(Tile tile, TileType jobTileType, Action<Job> jobCompleted, float jobTime, Inventory[] inventoryRequirements, Job.JobPriority jobPriority, bool jobRepeats = false, bool adjacent = false)
     {
         this.tile = tile;
         this.JobTileType = jobTileType;
         this.OnJobCompleted += jobCompleted;
         this.jobTimeRequired = this.JobTime = jobTime;
         this.jobRepeats = jobRepeats;
-        this.JobPriority = jobPriority;
+        this.Priority = jobPriority;
         this.adjacent = adjacent;
         this.JobDescription = "job_error_missing_desc";
 
@@ -112,7 +108,7 @@ public class Job
         this.JobTileType = other.JobTileType;
         this.OnJobCompleted = other.OnJobCompleted;
         this.JobTime = other.JobTime;
-        this.JobPriority = other.JobPriority;
+        this.Priority = other.Priority;
         this.adjacent = other.adjacent;
         this.JobDescription = other.JobDescription;
         this.acceptsAny = other.acceptsAny;
@@ -138,6 +134,11 @@ public class Job
     // Gets called each time some work is performed -- maybe update the UI?
     public event Action<Job> OnJobWorked;
 
+    public enum JobPriority
+    {
+        High, Medium, Low
+    }
+
     public string JobDescription { get; set; }
 
     public string JobObjectType
@@ -158,6 +159,8 @@ public class Job
         protected set;
     }
 
+    public bool IsBeingWorked { get; set; }
+
     public TileType JobTileType
     {
         get;
@@ -170,10 +173,15 @@ public class Job
         protected set;
     }
 
-    public JobPriority JobPriority
+    public JobPriority Priority
     {
         get;
         protected set;
+    }
+
+    public bool IsSelected
+    {
+        get; set;
     }
 
     public Inventory[] GetInventoryRequirementValues()
@@ -227,7 +235,6 @@ public class Job
         // If not, don't register the work time.
         if (MaterialNeedsMet() == false)
         {
-            ////Debug.LogError("Tried to do work on a job that doesn't have all the material.");
             return;
         }
 
@@ -358,6 +365,32 @@ public class Job
     public void DropPriority()
     {
         // TODO: This casting to and from enums are a bit wierd. We should decide on ONE priority system.
-        this.JobPriority = (JobPriority)Mathf.Min((int)JobPriority.Low, (int)JobPriority + 1);
+        this.Priority = (Job.JobPriority)Mathf.Min((int)Job.JobPriority.Low, (int)Priority + 1);
+    }
+
+    public string GetName()
+    {
+        return LocalizationTable.GetLocalization(JobObjectType);
+    }
+
+    public string GetDescription()
+    {
+        string description = "Requirements:\n\t";
+        foreach (KeyValuePair<string, Inventory> inv in inventoryRequirements)
+        {
+            description += inv.Value.StackSize + "/" + inv.Value.maxStackSize + "\n\t";
+        }
+
+        return description;
+    }
+
+    public string GetHitPointString()
+    {
+        return string.Empty;
+    }
+
+    public string GetJobDescription()
+    {
+        return GetDescription();
     }
 }

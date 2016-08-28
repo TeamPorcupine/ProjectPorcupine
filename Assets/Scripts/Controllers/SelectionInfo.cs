@@ -41,6 +41,7 @@ public class SelectionInfo
         // Now assign references to the other three sub-selections available.
         stuffInTile.Add(Tile.Furniture);
         stuffInTile.Add(Tile.Inventory);
+        stuffInTile.Add(Tile.PendingBuildJob);
         stuffInTile.Add(Tile);
     }
 

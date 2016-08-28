@@ -227,7 +227,7 @@ public class TileType : IXmlSerializable
                         Tile.ChangeTileTypeJobComplete,
                         jobTime,
                         invs.ToArray(),
-                        JobPriority.High,
+                        Job.JobPriority.High,
                         false,
                         true);
                     j.JobDescription = "job_build_floor_" + this;
@@ -242,7 +242,7 @@ public class TileType : IXmlSerializable
                         MovementCostLua = movementCostAttribute;
                     }
 
-                    Debug.Log("MovmentCostLua: " + MovementCostLua);
+                    Debug.ULogChannel("TileType", "MovmentCostLua: " + MovementCostLua);
                     break;
                 case "CanPlaceHere":
                     string canPlaceHereAttribute = reader.GetAttribute("FunctionName");

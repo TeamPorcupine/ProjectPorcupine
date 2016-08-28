@@ -111,34 +111,34 @@ public class BuildModeController
                 else
                 {
                     Debug.ULogErrorChannel("BuildModeController", "There is no furniture job prototype for '" + furnitureType + "'");
-                    j = new Job(t, furnitureType, FurnitureActions.JobComplete_FurnitureBuilding, 0.1f, null, JobPriority.High);
+                    j = new Job(t, furnitureType, FurnitureActions.JobComplete_FurnitureBuilding, 0.1f, null, Job.JobPriority.High);
                     j.JobDescription = "job_build_" + furnitureType + "_desc";
                 }
 
                 j.furniturePrototype = WorldController.Instance.World.furniturePrototypes[furnitureType];
 
-                for (int x_off = t.X; x_off < (t.X + WorldController.Instance.World.furniturePrototypes[furnitureType].Width); x_off++)
-                {
-                    for (int y_off = t.Y; y_off < (t.Y + WorldController.Instance.World.furniturePrototypes[furnitureType].Height); y_off++)
-                    {
-                        // FIXME: I don't like having to manually and explicitly set
-                        // flags that preven conflicts. It's too easy to forget to set/clear them!
-                        Tile offsetTile = WorldController.Instance.World.GetTileAt(x_off, y_off);
-                        offsetTile.PendingBuildJob = j;
-                        j.OnJobStopped += (theJob) =>
-                            {
-                                offsetTile.PendingBuildJob = null;
-                            };
-                    }
-                }
-
-                // Add the job to the queue
+                // Add the job to the queue or build immediately if in dev mode
                 if (Settings.GetSettingAsBool("DialogBoxSettings_developerModeToggle", false))
                 {
                     WorldController.Instance.World.PlaceFurniture(j.JobObjectType, j.tile);
                 }
                 else
                 {
+                    for (int x_off = t.X; x_off < (t.X + WorldController.Instance.World.furniturePrototypes[furnitureType].Width); x_off++)
+                    {
+                        for (int y_off = t.Y; y_off < (t.Y + WorldController.Instance.World.furniturePrototypes[furnitureType].Height); y_off++)
+                        {
+                            // FIXME: I don't like having to manually and explicitly set
+                            // flags that preven conflicts. It's too easy to forget to set/clear them!
+                            Tile offsetTile = WorldController.Instance.World.GetTileAt(x_off, y_off);
+                            offsetTile.PendingBuildJob = j;
+                            j.OnJobStopped += (theJob) =>
+                                {
+                                    offsetTile.PendingBuildJob = null;
+                                };
+                        }
+                    }
+
                     WorldController.Instance.World.jobQueue.Enqueue(j);
                 }
             }
@@ -163,21 +163,21 @@ public class BuildModeController
                 
                 j.tile = t;
 
-                // FIXME: I don't like having to manually and explicitly set
-                // flags that preven conflicts. It's too easy to forget to set/clear them!
-                t.PendingBuildJob = j;
-                j.OnJobStopped += (theJob) =>
-                {
-                    theJob.tile.PendingBuildJob = null;
-                };
-
-                // Add the job to the queue
+                // Add the job to the queue or build immediately if in dev mode
                 if (Settings.GetSettingAsBool("DialogBoxSettings_developerModeToggle", false))
                 {
                     j.tile.Type = j.JobTileType;
                 }
                 else
                 {
+                    // FIXME: I don't like having to manually and explicitly set
+                    // flags that preven conflicts. It's too easy to forget to set/clear them!
+                    t.PendingBuildJob = j;
+                    j.OnJobStopped += (theJob) =>
+                        {
+                            theJob.tile.PendingBuildJob = null;
+                        };
+                    
                     WorldController.Instance.World.jobQueue.Enqueue(j);
                 }
             }

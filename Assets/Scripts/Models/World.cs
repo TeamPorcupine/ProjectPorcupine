@@ -64,7 +64,7 @@ public class World : IXmlSerializable
         SetupWorld(width, height);
         int seed = UnityEngine.Random.Range(0, int.MaxValue);
         WorldGenerator.Generate(this, seed);
-        Debug.Log("Generated World");
+        Debug.ULogChannel("World", "Generated World");
 
         // Make one character.
         CreateCharacter(GetTileAt(Width / 2, Height / 2));
@@ -129,7 +129,7 @@ public class World : IXmlSerializable
     {
         if (r.IsOutsideRoom())
         {
-            Debug.LogError("Tried to delete the outside room.");
+            Debug.ULogErrorChannel("World", "Tried to delete the outside room.");
             return;
         }
 
@@ -165,7 +165,13 @@ public class World : IXmlSerializable
 
     public Character CreateCharacter(Tile t)
     {
-        Character c = new Character(t);
+        return CreateCharacter(t, UnityEngine.Random.ColorHSV());
+    }
+
+    public Character CreateCharacter(Tile t, Color color)
+    {
+        Debug.ULogChannel("World", "CreateCharacter");
+        Character c = new Character(t, color);
 
         // Adds a random name to the Character
         string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
@@ -173,21 +179,6 @@ public class World : IXmlSerializable
 
         string[] names = File.ReadAllLines(filePath);
         c.name = names[UnityEngine.Random.Range(0, names.Length - 1)];
-        characters.Add(c);
-
-        if (OnCharacterCreated != null)
-        {
-            OnCharacterCreated(c);
-        }
-
-        return c;
-    }
-
-    public Character CreateCharacter(Tile t, Color color)
-    {
-        Debug.Log("CreateCharacter");
-        Character c = new Character(t, color); 
-
         characters.Add(c);
 
         if (OnCharacterCreated != null)
@@ -321,7 +312,7 @@ public class World : IXmlSerializable
         // TODO: This function assumes 1x1 tiles -- change this later!
         if (furniturePrototypes.ContainsKey(objectType) == false)
         {
-            Debug.LogError("furniturePrototypes doesn't contain a proto for key: " + objectType);
+            Debug.ULogErrorChannel("World", "furniturePrototypes doesn't contain a proto for key: " + objectType);
             return null;
         }
 
@@ -333,7 +324,7 @@ public class World : IXmlSerializable
             return null;
         }
 
-        furn.CbOnRemoved += OnFurnitureRemoved;
+        furn.Removed += OnFurnitureRemoved;
         furnitures.Add(furn);
 
         // Do we need to recalculate our rooms?
@@ -379,7 +370,7 @@ public class World : IXmlSerializable
     {
         if (furniturePrototypes.ContainsKey(objectType) == false)
         {
-            Debug.LogError("No furniture with type: " + objectType);
+            Debug.ULogErrorChannel("World", "No furniture with type: " + objectType);
             return null;
         }
 
@@ -583,7 +574,7 @@ public class World : IXmlSerializable
         }
         else
         {
-            Debug.LogWarning("No skyboxes detected! Falling back to black.");
+            Debug.ULogWarningChannel("World", "No skyboxes detected! Falling back to black.");
         }
     }
 
@@ -688,6 +679,7 @@ public class World : IXmlSerializable
                     }
                     catch (Exception e)
                     {
+                        // Leaving this in because UberLogger doesn't handle multiline messages well.
                         Debug.LogError("Error reading furniture prototype for: " + furn.ObjectType + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
                     }
 
@@ -697,12 +689,12 @@ public class World : IXmlSerializable
             }
             else
             {
-                Debug.LogError("The furniture prototype definition file doesn't have any 'Furniture' elements.");
+                Debug.ULogErrorChannel("World", "The furniture prototype definition file doesn't have any 'Furniture' elements.");
             }
         }
         else
         {
-            Debug.LogError("Did not find a 'Furnitures' element in the prototype definition file.");
+            Debug.ULogErrorChannel("World", "Did not find a 'Furnitures' element in the prototype definition file.");
         }
     }
 
@@ -765,7 +757,7 @@ public class World : IXmlSerializable
                     }
                     catch
                     {
-                        Debug.LogError("Error reading need prototype for: " + need.needType);
+                        Debug.ULogErrorChannel("World", "Error reading need prototype for: " + need.needType);
                     }
 
                     needPrototypes[need.needType] = need;
@@ -774,10 +766,10 @@ public class World : IXmlSerializable
             }
             else
             {
-                Debug.LogError("The need prototype definition file doesn't have any 'Need' elements.");
+                Debug.ULogErrorChannel("World", "The need prototype definition file doesn't have any 'Need' elements.");
             }
 
-            Debug.Log("Need prototypes read: " + needCount.ToString());
+            Debug.ULogChannel("World", "Need prototypes read: " + needCount.ToString());
         }
     }
 
@@ -852,12 +844,12 @@ public class World : IXmlSerializable
             }
             else
             {
-                Debug.LogError("The trader prototype definition file doesn't have any 'Trader' elements.");
+                Debug.ULogErrorChannel("World", "The trader prototype definition file doesn't have any 'Trader' elements.");
             }
         }
         else
         {
-            Debug.LogError("Did not find a 'Traders' element in the prototype definition file.");
+            Debug.ULogErrorChannel("World", "Did not find a 'Traders' element in the prototype definition file.");
         }
     }
 
@@ -911,12 +903,12 @@ public class World : IXmlSerializable
             }
             else
             {
-                Debug.LogError("The quest prototype definition file doesn't have any 'Quest' elements.");
+                Debug.ULogErrorChannel("World", "The quest prototype definition file doesn't have any 'Quest' elements.");
             }
         }
         else
         {
-            Debug.LogError("Did not find a 'Quests' element in the prototype definition file.");
+            Debug.ULogErrorChannel("World", "Did not find a 'Quests' element in the prototype definition file.");
         }
     }
 
@@ -949,12 +941,12 @@ public class World : IXmlSerializable
             }
             else
             {
-                Debug.LogError("The inventory prototype definition file doesn't have any 'Inventory' elements.");
+                Debug.ULogErrorChannel("World", "The inventory prototype definition file doesn't have any 'Inventory' elements.");
             }
         }
         else
         {
-            Debug.LogError("Did not find a 'Inventories' element in the prototype definition file.");
+            Debug.ULogErrorChannel("World", "Did not find a 'Inventories' element in the prototype definition file.");
         }
 
         // This bit will come from parsing a LUA file later, but for now we still need to
@@ -1000,7 +992,7 @@ public class World : IXmlSerializable
 
     private void ReadXml_Inventories(XmlReader reader)
     {
-        Debug.Log("ReadXml_Inventories");
+        Debug.ULogChannel("World", "ReadXml_Inventories");
 
         if (reader.ReadToDescendant("Inventory"))
         {

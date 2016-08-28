@@ -12,11 +12,11 @@ using UnityEngine;
 
 public class JobQueue
 {
-    private SortedList<JobPriority, Job> jobQueue;
+    private SortedList<Job.JobPriority, Job> jobQueue;
 
     public JobQueue()
     {
-        jobQueue = new SortedList<JobPriority, Job>(new DuplicateKeyComparer<JobPriority>(true));
+        jobQueue = new SortedList<Job.JobPriority, Job>(new DuplicateKeyComparer<Job.JobPriority>(true));
     }
 
     public event Action<Job> OnJobCreated;
@@ -43,8 +43,8 @@ public class JobQueue
             return;
         }
 
-        jobQueue.Add(j.JobPriority, j);
-        Debug.Log("Enqueued job for " + j.JobObjectType ?? string.Empty);
+        jobQueue.Add(j.Priority, j);
+        
         if (OnJobCreated != null)
         {
             OnJobCreated(j);

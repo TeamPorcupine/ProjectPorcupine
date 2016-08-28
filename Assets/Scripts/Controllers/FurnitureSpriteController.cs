@@ -65,14 +65,14 @@ public class FurnitureSpriteController
             if (northTile != null && southTile != null && northTile.Furniture != null && southTile.Furniture != null &&
                 northTile.Furniture.HasTypeTag("Wall") && southTile.Furniture.HasTypeTag("Wall"))
             {
-                furn.verticalDoor = true;
+                furn.VerticalDoor = true;
             }
         }
 
         SpriteRenderer sr = furn_go.AddComponent<SpriteRenderer>();
         sr.sprite = GetSpriteForFurniture(furn);
         sr.sortingLayerName = "Furniture";
-        sr.color = furn.tint;
+        sr.color = furn.Tint;
 
         if (furn.PowerValue < 0)
         {
@@ -98,9 +98,9 @@ public class FurnitureSpriteController
 
         // Register our callback so that our GameObject gets updated whenever
         // the object's into changes.
-        furn.CbOnChanged += OnFurnitureChanged;
+        furn.Changed += OnFurnitureChanged;
         world.powerSystem.PowerLevelChanged += OnPowerStatusChange;
-        furn.CbOnRemoved += OnFurnitureRemoved;
+        furn.Removed += OnFurnitureRemoved;
     }
 
     public Sprite GetSpriteForFurniture(Furniture furn)
@@ -180,17 +180,17 @@ public class FurnitureSpriteController
             if (northTile != null && southTile != null && northTile.Furniture != null && southTile.Furniture != null &&
                 northTile.Furniture.HasTypeTag("Wall") && southTile.Furniture.HasTypeTag("Wall"))
             {
-                furn.verticalDoor = true;
+                furn.VerticalDoor = true;
             }
             else if (eastTile != null && westTile != null && eastTile.Furniture != null && westTile.Furniture != null &&
                 eastTile.Furniture.HasTypeTag("Wall") && westTile.Furniture.HasTypeTag("Wall"))
             {
-                furn.verticalDoor = false;
+                furn.VerticalDoor = false;
             }
         }
 
         furn_go.GetComponent<SpriteRenderer>().sprite = GetSpriteForFurniture(furn);
-        furn_go.GetComponent<SpriteRenderer>().color = furn.tint;
+        furn_go.GetComponent<SpriteRenderer>().color = furn.Tint;
     }
 
     private void OnPowerStatusChange(IPowerRelated powerRelated)

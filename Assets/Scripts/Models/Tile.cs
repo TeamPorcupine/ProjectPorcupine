@@ -23,7 +23,7 @@ public enum Enterability
 }
 
 [MoonSharpUserData]
-public class Tile : IXmlSerializable, ISelectable
+public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
 {
     private TileType type = TileType.Empty;
 
@@ -142,7 +142,7 @@ public class Tile : IXmlSerializable, ISelectable
 
         if (objInstance.IsValidPosition(this) == false)
         {
-            Debug.LogError("Trying to assign a furniture to a tile that isn't valid!");
+            Debug.ULogErrorChannel("Tile", "Trying to assign a furniture to a tile that isn't valid!");
             return false;
         }
 
@@ -171,7 +171,7 @@ public class Tile : IXmlSerializable, ISelectable
             // There's already inventory here. Maybe we can combine a stack?
             if (Inventory.objectType != inventory.objectType)
             {
-                Debug.LogError("Trying to assign inventory to a tile that already has some of a different type.");
+                Debug.ULogErrorChannel("Tile", "Trying to assign inventory to a tile that already has some of a different type.");
                 return false;
             }
 
@@ -278,7 +278,7 @@ public class Tile : IXmlSerializable, ISelectable
 
         Type = TileType.GetTileType(reader.GetAttribute("Type"));
     }
-
+        
     public Enterability IsEnterable()
     {
         // This returns true if you can enter this tile right this moment.
@@ -316,6 +316,44 @@ public class Tile : IXmlSerializable, ISelectable
         return World.Current.GetTileAt(X - 1, Y);
     }
 
+    public float GetGasPressure(string gas)
+    {
+        if (Room == null)
+        {
+            float pressure = Mathf.Infinity;
+            if (North().Room != null && North().GetGasPressure(gas) < pressure)
+            {
+                pressure = North().GetGasPressure(gas);
+            }
+
+            if (East().Room != null && East().GetGasPressure(gas) < pressure)
+            {
+                pressure = East().GetGasPressure(gas);
+            }
+
+            if (South().Room != null && South().GetGasPressure(gas) < pressure)
+            {
+                pressure = South().GetGasPressure(gas);
+            }
+
+            if (West().Room != null && West().GetGasPressure(gas) < pressure)
+            {
+                pressure = West().GetGasPressure(gas);
+            }
+
+            if (pressure == Mathf.Infinity)
+            {
+                return 0f;
+            }
+
+            return pressure;
+        }
+
+        return Room.GetGasPressure(gas);
+    }
+
+    #region ISelectableInterface implementation
+
     public string GetName()
     {
         return "tile_" + type.ToString();
@@ -334,5 +372,36 @@ public class Tile : IXmlSerializable, ISelectable
     public string GetJobDescription()
     {
         return string.Empty;
+    }
+
+    #endregion
+
+    public IEnumerable<ContextMenuAction> GetContextMenuActions(ContextMenu contextMenu)
+    {
+        if (PendingBuildJob != null)
+        {
+            yield return new ContextMenuAction
+            {
+                Text = "Cancel Job",
+                RequireCharacterSelected = false,
+                Action = (cm, c) => 
+                {
+                    if (PendingBuildJob != null)
+                    {
+                        PendingBuildJob.CancelJob();
+                    }
+                }
+            };
+
+            if (!PendingBuildJob.IsBeingWorked)
+            {
+                yield return new ContextMenuAction
+                {
+                    Text = "Prioritize Job",
+                    RequireCharacterSelected = true,
+                    Action = (cm, c) => { c.PrioritizeJob(PendingBuildJob); }
+                };
+            }
+        }
     }
 }
