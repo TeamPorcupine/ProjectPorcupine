@@ -635,6 +635,17 @@ end
 
 -- Called after all Update functions: spreads fire, destroys funriture and update animation
 function Fire_OnPostUpdate( furniture, deltaTime)
+
+	-- Die off if there is no O2
+	local o2Pressure = furniture.Tile.GetGasPressure("O2")
+	furniture.Parameters["strength"].SetValue( furniture.Parameters["strength"].ToFloat() * math.min(1, o2Pressure * 500) )
+
+	-- Consume o2
+	if furniture.Tile.Room != nil then 
+	    furniture.Tile.Room.ChangeGas("O2", -0.00001)
+	    furniture.Tile.Room.ChangeGas("CO2", 0.00001)
+	end
+	
 	local spreadProbability = furniture.Parameters["spread_chance"].ToFloat() 
 	
 	-- Spreads only by chance. the lower the strength, the less the canche
@@ -683,7 +694,7 @@ end
 function Fire_GetSpriteName(furniture)
 	local animationFrame = ( math.floor( furniture.Parameters["animation_frame"].ToFloat() ) % furniture.Parameters["num_frames"].ToInt() )
 	-- Fire_a_b, where a is the animation frame and b is the strength
-    return "Fire" .. "_" .. animationFrame .. "_" .. math.floor( furniture.Parameters["strength"].ToFloat() - 0.01 )
+    return "Fire" .. "_" .. animationFrame .. "_" .. math.max( math.floor( furniture.Parameters["strength"].ToFloat() - 0.01 ), 0 )
 end
 
 ModUtils.ULog("Furniture.lua loaded")
