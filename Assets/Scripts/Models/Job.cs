@@ -10,8 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MoonSharp.Interpreter;
-using UnityEngine;
 using ProjectPorcupine.Localization;
+using UnityEngine;
 
 [MoonSharpUserData]
 public class Job : ISelectable
@@ -235,7 +235,6 @@ public class Job : ISelectable
         // If not, don't register the work time.
         if (MaterialNeedsMet() == false)
         {
-            ////Debug.LogError("Tried to do work on a job that doesn't have all the material.");
             return;
         }
 
@@ -377,16 +376,17 @@ public class Job : ISelectable
     public string GetDescription()
     {
         string description = "Requirements:\n\t";
-        foreach (KeyValuePair<string,Inventory> inv in inventoryRequirements)
+        foreach (KeyValuePair<string, Inventory> inv in inventoryRequirements)
         {
             description += inv.Value.StackSize + "/" + inv.Value.maxStackSize + "\n\t";
         }
+
         return description;
     }
 
     public string GetHitPointString()
     {
-        return "";
+        return string.Empty;
     }
 
     public string GetJobDescription()

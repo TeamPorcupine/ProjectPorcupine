@@ -112,13 +112,13 @@ public class Need
 
         if (Amount > 75 && character.MyJob.IsNeed == false)
         {
-            Debug.Log(character.name + " needs " + Name);
+            Debug.ULogChannel("Need", character.name + " needs " + Name);
             character.AbandonJob(false);
         }
 
         if (Amount == 100 && character.MyJob.Critical == false && CompleteOnFail)
         {
-            Debug.Log(character.name + " failed their " + Name + " need.");
+            Debug.ULogChannel("Need", character.name + " failed their " + Name + " need.");
             character.AbandonJob(false);
         }
 
