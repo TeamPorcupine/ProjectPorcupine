@@ -51,7 +51,7 @@ public class NeedActions
 
             if (func == null)
             {
-                Debug.LogError("'" + fn + "' is not a LUA function.");
+                Debug.ULogErrorChannel("Lua", "'" + fn + "' is not a LUA function.");
                 return;
             }
 
@@ -59,7 +59,7 @@ public class NeedActions
 
             if (result.Type == DataType.String)
             {
-                Debug.Log(result.String);
+                Debug.ULogChannel("NeedActions", "Lua response:", result.String);
             }
         }
     }

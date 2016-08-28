@@ -44,7 +44,7 @@ public class JobQueue
         }
 
         jobQueue.Add(j.Priority, j);
-        Debug.Log("Enqueued job for " + j.JobObjectType ?? string.Empty);
+        
         if (OnJobCreated != null)
         {
             OnJobCreated(j);
