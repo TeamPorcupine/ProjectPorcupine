@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Sprites>
+	<Sprite name="Large Solar Panel"     			x="0" 	y="0"  w="64" h="96" pixelPerUnit="32" />
+	<Sprite name="Medium Solar Panel"     	x="96" 	y="32" w="64" h="64" pixelPerUnit="32" />
+	<Sprite name="Small Solar Panel"     	x="128" 	y="64" w="32" h="32" pixelPerUnit="32" />
+</Sprites>
