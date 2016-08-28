@@ -26,6 +26,8 @@ public enum Enterability
 public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
 {
     private TileType type = TileType.Empty;
+
+    // Base cost of pathfinding over this furniture, movement cost and any furniture will modify the effective value
     private float pathfindingWeight = 1f;
 
     /// <summary>
@@ -83,15 +85,14 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         {
             if (Furniture != null)
             {
-                return Furniture.PathfindingWeight * MovementCost;
+                return Furniture.PathfindingWeight * Type.BaseMovementCost;
             }
             else
             {
-                return pathfindingWeight * MovementCost;
+                return pathfindingWeight * Type.BaseMovementCost;
             }
         }
     }
-
 
     // FIXME: This seems like a terrible way to flag if a job is pending
     // on a tile.  This is going to be prone to errors in set/clear.
