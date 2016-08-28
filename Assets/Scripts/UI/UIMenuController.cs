@@ -22,6 +22,7 @@ public class UIMenuController : MonoBehaviour
 
         // Add the menus.
         AddMenu("MenuTop");
+        AddMenu("MenuWorld");
         AddMenu("MenuSubHolder");
         AddMenu("MenuBottom");
         AddMenu("MenuConstruction");

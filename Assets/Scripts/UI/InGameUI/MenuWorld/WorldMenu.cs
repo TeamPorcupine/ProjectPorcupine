@@ -1,18 +1,13 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class WorldMenu : MonoBehaviour
 {
+    public Text worldName;
 
-    // Use this for initialization
-    void Start()
+    void OnEnable()
     {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
+        worldName.text = World.Current.name;
     }
 }

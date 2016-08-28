@@ -28,10 +28,12 @@ public class MenuController : MonoBehaviour
 
     // The left build menu.
     private GameObject constructorMenu;
+    private GameObject worldMenu;
 
     // Deactivates All Menus.
     public void DeactivateAll()
     {
+        worldMenu.SetActive(false);
         constructorMenu.SetActive(false);
         DeactivateSubs();
     }
@@ -69,9 +71,14 @@ public class MenuController : MonoBehaviour
 
     public void OnButtonWorld()
     {
-        if (!WorldController.Instance.IsModal)
+        if (constructorMenu.activeSelf)
         {
             DeactivateAll();
+        } 
+        else 
+        { 
+            DeactivateAll();
+            worldMenu.SetActive(true);
         }
     }
 
@@ -110,6 +117,7 @@ public class MenuController : MonoBehaviour
         furnitureMenu = GameObject.Find("MenuFurniture");
         floorMenu = GameObject.Find("MenuFloor");
         constructorMenu = GameObject.Find("MenuConstruction");
+        worldMenu = GameObject.Find("MenuWorld");
 
         // Add liseners here.
         buttonConstructor.onClick.AddListener(delegate
