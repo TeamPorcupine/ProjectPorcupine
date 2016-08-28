@@ -28,7 +28,7 @@ public static class ModUtils
 
     public static float Round(float value, int digits)
     {
-        return Round(value, digits);
+        return (float)System.Math.Round((double)value, digits);
     }
 
     public static void Log(object obj) 
