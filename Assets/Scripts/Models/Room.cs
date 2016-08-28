@@ -107,7 +107,7 @@ public class Room : IXmlSerializable
                 // to remove the room from the world's list.
                 if (oldRoom.tiles.Count > 0)
                 {
-                    Debug.LogError("'oldRoom' still has tiles assigned to it. This is clearly wrong.");
+                    Debug.ULogErrorChannel("Room", "'oldRoom' still has tiles assigned to it. This is clearly wrong.");
                 }
 
                 world.DeleteRoom(oldRoom);

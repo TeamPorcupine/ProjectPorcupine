@@ -374,5 +374,29 @@
 
     </Furniture>
 
-	
+	<Furniture objectType="solar_panel">
+        <Name>Solar Panel</Name>
+        <TypeTag>Generator</TypeTag>
+        <TypeTag>OutdoorOnly</TypeTag>
+        <MovementCost>10</MovementCost>
+        <Width>2</Width>
+        <Height>3</Height>
+        <Power>3</Power>
+
+        <BuildingJob jobTime="1" />
+        <CanBeBuiltOn tileType="Ladder" />
+
+        <Params>
+            <Param name="base_output" value="3" />
+            <Param name="efficiency" value="1" />
+        </Params>
+
+        <Action event="OnUpdate" functionName="SolarPanel_OnUpdate" />
+
+        <LocalizationCode>furn_solar_panel</LocalizationCode>
+        <UnlocalizedDescription>furn_solar_panel_desc</UnlocalizedDescription>
+
+    </Furniture>
+    
+    
 </Furnitures>
