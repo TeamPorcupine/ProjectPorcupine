@@ -502,12 +502,15 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         // Get our destination from the job.
         DestTile = MyJob.tile;
 
-        // If the dest tile does not have neighbours that are walkable it's very likable that they can't be walked to
-        if (DestTile.GetNeighbours().Any((tile) => { return tile.MovementCost > 0; }) == false)
+        // If the dest tile does not have neighbours that are walkable it's very likely that they can't be walked to
+        if (DestTile != null)
         {
-            Debug.ULogChannel("Character", "No neighbouring floor tiles! Abandoning job.");
-            AbandonJob(false);
-            return;
+            if (DestTile.GetNeighbours().Any((tile) => { return tile.MovementCost > 0; }) == false)
+            {
+                Debug.ULogChannel("Character", "No neighbouring floor tiles! Abandoning job.");
+                AbandonJob(false);
+                return;
+            }
         }
 
         MyJob.OnJobStopped += OnJobStopped;
