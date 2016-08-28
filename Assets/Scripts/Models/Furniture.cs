@@ -100,6 +100,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         typeTags = new HashSet<string>(other.typeTags);
         description = other.description;
         MovementCost = other.MovementCost;
+        PathfindingModifier = other.PathfindingModifier;
+        PathfindingWeight = other.PathfindingWeight;
         RoomEnclosure = other.RoomEnclosure;
         Width = other.Width;
         Height = other.Height;
@@ -438,10 +440,18 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
             case "Description":
                 reader.Read();
                 description = reader.ReadContentAsString();
-                break;
+                    break;
             case "MovementCost":
                 reader.Read();
                 MovementCost = reader.ReadContentAsFloat();
+                break;
+            case "PathfindingModifier":
+                reader.Read();
+                PathfindingModifier = reader.ReadContentAsFloat();
+                break;
+            case "PathfindingWeight":
+                reader.Read();
+                PathfindingWeight = reader.ReadContentAsFloat();
                 break;
             case "Width":
                 reader.Read();
