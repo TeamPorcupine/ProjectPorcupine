@@ -163,7 +163,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     public EventAction EventActions { get; private set; }
 
     /// <summary>
-    /// Connection to power system
+    /// Connection to power system.
     /// </summary>
     public Connection PowerConnection { get; private set; }
 
@@ -171,8 +171,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     {
         get
         {
-            return isOperating;
-            
+            return isOperating;            
         }
 
         private set
@@ -181,6 +180,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
             {
                 return;
             }
+
             isOperating = value;
             OnIsOperatingChanged(this);
         }
@@ -492,7 +492,6 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                 break;
 
                 case "PowerConnection":
-                //reader.Read();
                 PowerConnection = new Connection();
                 PowerConnection.ReadPrototype(reader);
                 break;
