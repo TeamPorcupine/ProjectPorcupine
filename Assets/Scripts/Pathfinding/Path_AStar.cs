@@ -133,9 +133,9 @@ public class Path_AStar
                     continue; // ignore this already completed neighbor
                 }
 
-                float movement_cost_to_neighbor = neighbor.data.MovementCost * Dist_between(current, neighbor);
+                float pathfinding_cost_to_neighbor = neighbor.data.PathfindingCost * Dist_between(current, neighbor);
 
-                float tentative_g_score = g_score[current] + movement_cost_to_neighbor;
+                float tentative_g_score = g_score[current] + pathfinding_cost_to_neighbor;
 
                 if (openSet.Contains(neighbor) && tentative_g_score >= g_score[neighbor])
                 {
