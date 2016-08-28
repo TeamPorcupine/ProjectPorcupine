@@ -47,7 +47,7 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
         if (File.Exists(filePath) == true)
         {
             // TODO: Do file overwrite dialog box.
-            Debug.LogWarning("File already exists -- overwriting the file for now.");
+            Debug.ULogErrorChannel("DialogBoxSaveGame", "File already exists -- overwriting the file for now.");
         }
 
         CloseDialog();
@@ -61,13 +61,14 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
         // from the save dialog box.
 
         // Get the file name from the save file dialog box.
-        Debug.Log("SaveWorld button was clicked.");
+        Debug.ULogErrorChannel("DialogBoxSaveGame", "SaveWorld button was clicked.");
 
         XmlSerializer serializer = new XmlSerializer(typeof(World));
         TextWriter writer = new StringWriter();
         serializer.Serialize(writer, WorldController.Instance.World);
         writer.Close();
 
+        // Leaving this unchanged as UberLogger doesn't handle multiline messages well.
         Debug.Log(writer.ToString());
 
         // PlayerPrefs.SetString("SaveGame00", writer.ToString());
