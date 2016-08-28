@@ -117,7 +117,7 @@ public class MouseCursor
         lowerLeft = new CursorTextBox(cursorGO, TextAnchor.MiddleRight, style, lowerLeftPostion, cursorTextBoxSize);
         lowerRight = new CursorTextBox(cursorGO, TextAnchor.MiddleLeft, style, lowerRightPostion, cursorTextBoxSize);        
 
-        Debug.Log("MouseCursor::Cursor Built");
+        Debug.ULogChannel("MouseCursor", "Cursor Built");
     }   
 
     private void UpdateCursor()
