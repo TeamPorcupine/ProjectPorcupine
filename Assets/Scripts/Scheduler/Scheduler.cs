@@ -72,11 +72,15 @@ namespace Scheduler
             }
         }
 
+        /// <summary>
+        /// Time to next event in seconds.
+        /// </summary>
+        /// <returns>The to next event (-1 if there are no events).</returns>
         public float TimeToNextEvent()
         {
             if (Events == null || Events.Count == 0)
             {
-                return null;
+                return -1f;
             }
 
             return Events.Min((e) => e.TimeToWait);
