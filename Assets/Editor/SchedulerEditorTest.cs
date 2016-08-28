@@ -95,7 +95,7 @@ public class SchedulerEditorTest
 
         // at times 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 respectively
         int[] expectedTally = { 0, 0, 1, 11, 12, 12, 23, 23, 24, 34, 35 };
-        for(int t = 0; t <= 10; ++t)
+        for (int t = 0; t <= 10; ++t)
         {
             Assert.That(i, Is.EqualTo(expectedTally[t]));
             scheduler.Update(1.0f);

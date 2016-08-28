@@ -58,12 +58,7 @@ namespace Scheduler
 
         public bool IsRegistered(ScheduledEvent evt)
         {
-            if (Events == null)
-            {
-                return false;
-            }
-
-            return Events.Contains(evt);
+            return Events != null && Events.Contains(evt);
         }
 
         public void DeregisterEvent(ScheduledEvent evt)
@@ -107,6 +102,10 @@ namespace Scheduler
             {
                 evt.Update(deltaTime);
             }
+
+            // TODO: this is an O(n) operation every tick.
+            // Potentially this could be optimized by delaying purging!
+            PurgeEventList();
         }
     }
 }
