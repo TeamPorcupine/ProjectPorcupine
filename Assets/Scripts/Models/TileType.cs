@@ -230,6 +230,14 @@ public class TileType : IXmlSerializable
                     reader.Read();
                     BaseMovementCost = reader.ReadContentAsFloat();
                     break;
+                case "PathfindingModifier":
+                    reader.Read();
+                    PathfindingModifier = reader.ReadContentAsFloat();
+                    break;
+                case "PathfindingWeight":
+                    reader.Read();
+                    PathfindingWeight = reader.ReadContentAsFloat();
+                    break;
                 case "LinksToNeighbours":
                     reader.Read();
                     LinksToNeighbours = reader.ReadContentAsBoolean();
