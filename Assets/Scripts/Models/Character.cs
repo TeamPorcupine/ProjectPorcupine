@@ -219,7 +219,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         yield return new ContextMenuAction
         {
             Text = "Poke " + GetName(),
-            RequiereCharacterSelected = false,
+            RequireCharacterSelected = false,
             Action = (cm, c) => Debug.ULogChannel("Character", GetDescription())
         };
     }
@@ -265,6 +265,60 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             World.Current.jobQueue.Enqueue(MyJob);
             MyJob.OnJobStopped -= OnJobStopped;
             MyJob = null;
+        }
+    }
+
+    public void PrioritizeJob(Job job)
+    {
+        AbandonJob(false);
+        World.Current.jobQueue.Remove(job);
+        job.IsBeingWorked = true;
+
+        /*Check if the character is carrying any materials and if they could be used for the new job,
+        if the character is carrying materials but is not used in the new job, then drop them
+        on the current tile for now.*/
+
+        if (inventory != null && !job.inventoryRequirements.ContainsKey(inventory.objectType))
+        {
+            World.Current.inventoryManager.PlaceInventory(CurrTile, inventory);
+            DumpExcessInventory();
+        }
+
+        MyJob = job;
+
+        // Get our destination from the job.
+        DestTile = MyJob.tile;
+
+        // If the dest tile does not have neighbours that are walkable it's very likable that they can't be walked to.
+        if (DestTile.GetNeighbours().Any((tile) => { return tile.MovementCost > 0; }) == false)
+        {
+            Debug.ULogChannel("Character", "No neighbouring floor tiles! Abandoning job.");
+            AbandonJob(false);
+            return;
+        }
+
+        MyJob.OnJobStopped += OnJobStopped;
+
+        pathAStar = new Path_AStar(World.Current, CurrTile, DestTile);
+
+        if (pathAStar != null && pathAStar.Length() == 0)
+        {
+            Debug.ULogChannel("Character", "Path_AStar returned no path to target job tile!");
+            AbandonJob(false);
+            return;
+        }
+
+        if (MyJob.adjacent)
+        {
+            IEnumerable<Tile> reversed = pathAStar.Reverse();
+            reversed = reversed.Skip(1);
+            pathAStar = new Path_AStar(new Queue<Tile>(reversed.Reverse()));
+            DestTile = pathAStar.EndTile();
+            jobTile = DestTile;
+        }
+        else
+        {
+            jobTile = MyJob.tile;
         }
     }
 
@@ -405,12 +459,12 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         if (needPercent > 50 && needPercent < 100 && need != null)
         {
-            MyJob = new Job(null, need.RestoreNeedFurn.ObjectType, need.CompleteJobNorm, need.RestoreNeedTime, null, JobPriority.High, false, true, false);
+            MyJob = new Job(null, need.RestoreNeedFurn.ObjectType, need.CompleteJobNorm, need.RestoreNeedTime, null, Job.JobPriority.High, false, true, false);
         }
 
         if (needPercent == 100 && need != null && need.CompleteOnFail)
         {
-            MyJob = new Job(CurrTile, null, need.CompleteJobCrit, need.RestoreNeedTime * 10, null, JobPriority.High, false, true, true);
+            MyJob = new Job(CurrTile, null, need.CompleteJobCrit, need.RestoreNeedTime * 10, null, Job.JobPriority.High, false, true, true);
         }
 
         // Get the first job on the queue.
@@ -428,7 +482,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                     null,
                     UnityEngine.Random.Range(0.1f, 0.5f),
                     null,
-                    JobPriority.Low,
+                    Job.JobPriority.Low,
                     false);
                 MyJob.JobDescription = "job_waiting_desc";
             }
@@ -448,12 +502,15 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         // Get our destination from the job.
         DestTile = MyJob.tile;
 
-        // If the dest tile does not have neighbours that are walkable it's very likable that they can't be walked to
-        if (DestTile.GetNeighbours().Any((tile) => { return tile.MovementCost > 0; }) == false)
+        // If the dest tile does not have neighbours that are walkable it's very likely that they can't be walked to
+        if (DestTile != null)
         {
-            Debug.ULogChannel("Character", "No neighbouring floor tiles! Abandoning job.");
-            AbandonJob(false);
-            return;
+            if (DestTile.GetNeighbours().Any((tile) => { return tile.MovementCost > 0; }) == false)
+            {
+                Debug.ULogChannel("Character", "No neighbouring floor tiles! Abandoning job.");
+                AbandonJob(false);
+                return;
+            }
         }
 
         MyJob.OnJobStopped += OnJobStopped;
@@ -494,6 +551,8 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         {
             jobTile = MyJob.tile;
         }
+
+        MyJob.IsBeingWorked = true;
     }
 
     private void Update_DoJob(float deltaTime)

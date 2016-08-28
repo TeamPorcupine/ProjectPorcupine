@@ -213,11 +213,11 @@ public class MouseController
             World.Current.furniturePrototypes[bmc.buildModeObjectType].Height > 1))
         {
             // If the furniture has af jobSpot set we would like to use that.
-            if (World.Current.furniturePrototypes[bmc.buildModeObjectType].jobSpotOffset.Equals(Vector2.zero) == false)
+            if (World.Current.furniturePrototypes[bmc.buildModeObjectType].JobSpotOffset.Equals(Vector2.zero) == false)
             {
                 currPlacingPosition = new Vector3(
-                    currFramePosition.x - World.Current.furniturePrototypes[bmc.buildModeObjectType].jobSpotOffset.x,
-                    currFramePosition.y - World.Current.furniturePrototypes[bmc.buildModeObjectType].jobSpotOffset.y,
+                    currFramePosition.x - World.Current.furniturePrototypes[bmc.buildModeObjectType].JobSpotOffset.x,
+                    currFramePosition.y - World.Current.furniturePrototypes[bmc.buildModeObjectType].JobSpotOffset.y,
                     0);
             }
             else
@@ -252,19 +252,6 @@ public class MouseController
         if (EventSystem.current.IsPointerOverGameObject())
         {
             return;
-        }
-
-        if (Input.GetMouseButtonDown(1))
-        {
-            Tile tileUnderMouse = GetMouseOverTile();
-            if (tileUnderMouse != null)
-            {
-                if (tileUnderMouse.PendingBuildJob != null)
-                {
-                    Debug.ULogChannel("MouseController", "Canceling!");
-                    tileUnderMouse.PendingBuildJob.CancelJob();
-                }
-            }
         }
 
         if (Input.GetMouseButtonUp(0))

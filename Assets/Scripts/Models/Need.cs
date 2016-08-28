@@ -105,9 +105,9 @@ public class Need
         }
 
         Amount += growthRate * deltaTime;
-        if (character != null && character.CurrTile.Room != null && character.CurrTile.Room.GetGasPressure("O2") < 0.15)
+        if (character != null && character.CurrTile.GetGasPressure("O2") < 0.15)
         {
-            Amount += (addedInVacuum - (addedInVacuum * (character.CurrTile.Room.GetGasPressure("O2") * 5))) * deltaTime;
+            Amount += (addedInVacuum - (addedInVacuum * (character.CurrTile.GetGasPressure("O2") * 5))) * deltaTime;
         }
 
         if (Amount > 75 && character.MyJob.IsNeed == false)

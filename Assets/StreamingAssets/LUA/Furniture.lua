@@ -11,11 +11,6 @@ ENTERABILITY_YES = 0
 ENTERABILITY_NO = 1
 ENTERABILITY_SOON = 2
 
--- JobPriority
-JOBPRIORITY_HIGH = 0
-JOBPRIORITY_MEDIUM = 1
-JOBPRIORITY_LOW = 2
-
 -- HOWTO Log:
 -- ModUtils.ULog("Testing ModUtils.ULogChannel")
 -- ModUtils.ULogWarning("Testing ModUtils.ULogWarningChannel")
@@ -229,7 +224,7 @@ function Stockpile_UpdateAction( furniture, deltaTime )
 		nil,
 		0,
 		itemsDesired,
-		JOBPRIORITY_LOW,
+		Job.JobPriority.Low,
 		false
 	)
 	j.JobDescription = "job_stockpile_moving_desc"
@@ -274,7 +269,7 @@ function MiningDroneStation_UpdateAction( furniture, deltaTime )
 		return
 	end
 
-	if(furniture.GetSpawnSpotTile().Inventory != nil and furniture.GetSpawnSpotTile().Inventory.ObjectType != furniture.Parameters["mine_type"].ToString()) then
+	if(furniture.GetSpawnSpotTile().Inventory != nil and furniture.GetSpawnSpotTile().Inventory.objectType != furniture.Parameters["mine_type"].ToString()) then
 		return
 	end
 
@@ -286,7 +281,7 @@ function MiningDroneStation_UpdateAction( furniture, deltaTime )
 		nil,
 		1,
 		nil,
-		JOBPRIORITY_MEDIUM,
+		Job.JobPriority.Medium,
 		true	-- This job repeats until the destination tile is full.
 	)
 
@@ -364,7 +359,7 @@ function MetalSmelter_UpdateAction(furniture, deltaTime)
         nil,
         0.4,
         itemsDesired,
-        JOBPRIORITY_MEDIUM,
+        Job.JobPriority.Medium,
         false
     )
 
@@ -399,7 +394,7 @@ function PowerCellPress_UpdateAction(furniture, deltaTime)
                 nil,
                 1,
                 itemsDesired,
-                JOBPRIORITY_MEDIUM,
+                Job.JobPriority.Medium,
                 false
             )
 
@@ -453,7 +448,7 @@ function CloningPod_UpdateAction(furniture, deltaTime)
         nil,
         10,
         nil,
-        JOBPRIORITY_MEDIUM,
+        Job.JobPriority.Medium,
         false
     )
 
@@ -478,7 +473,7 @@ function PowerGenerator_UpdateAction(furniture, deltatime)
             nil,
             0.5,
             itemsDesired,
-            JOBPRIORITY_HIGH,
+            Job.JobPriority.High,
             false
         )
 
@@ -517,7 +512,7 @@ function LandingPad_Temp_UpdateAction(furniture, deltaTime)
                 nil,
                 0.4,
                 itemsDesired,
-                JOBPRIORITY_MEDIUM,
+                Job.JobPriority.Medium,
                 false
             )
 
@@ -618,6 +613,13 @@ function OxygenCompressor_GetSpriteName(furniture)
         suffix = ModUtils.FloorToInt(idxAsFloat)
     end
     return baseName .. "_" .. suffix
+end
+
+function SolarPanel_OnUpdate(furniture, deltaTime)
+    local baseOutput = furniture.Parameters["base_output"].ToFloat()
+    local efficiency = furniture.Parameters["efficiency"].ToFloat()
+    local powerPerSecond = baseOutput * efficiency
+    furniture.PowerValue = powerPerSecond
 end
 
 ModUtils.ULog("Furniture.lua loaded")
