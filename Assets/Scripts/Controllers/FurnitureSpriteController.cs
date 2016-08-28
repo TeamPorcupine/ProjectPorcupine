@@ -40,7 +40,7 @@ public class FurnitureSpriteController
         }
     }
 
-    public void OnFurnitureCreated(Furniture furn)
+    public void OnFurnitureCreated(Furniture furniture)
     {
         // Create a visual GameObject linked to this data.
         // FIXME: Does not consider multi-tile objects nor rotated objects.
@@ -48,59 +48,59 @@ public class FurnitureSpriteController
         GameObject furn_go = new GameObject();
 
         // Add our tile/GO pair to the dictionary.
-        furnitureGameObjectMap.Add(furn, furn_go);
+        furnitureGameObjectMap.Add(furniture, furn_go);
 
-        furn_go.name = furn.ObjectType + "_" + furn.Tile.X + "_" + furn.Tile.Y;
-        furn_go.transform.position = new Vector3(furn.Tile.X + ((furn.Width - 1) / 2f), furn.Tile.Y + ((furn.Height - 1) / 2f), 0);
+        furn_go.name = furniture.ObjectType + "_" + furniture.Tile.X + "_" + furniture.Tile.Y;
+        furn_go.transform.position = new Vector3(furniture.Tile.X + ((furniture.Width - 1) / 2f), furniture.Tile.Y + ((furniture.Height - 1) / 2f), 0);
         furn_go.transform.SetParent(furnnitureParent.transform, true);
 
         // FIXME: This hardcoding is not ideal!
-        if (furn.HasTypeTag("Door"))
+        if (furniture.HasTypeTag("Door"))
         {
             // Check to see if we actually have a wall north/south, and if so
             // set the furniture verticalDoor flag to true.
-            Tile northTile = world.GetTileAt(furn.Tile.X, furn.Tile.Y + 1);
-            Tile southTile = world.GetTileAt(furn.Tile.X, furn.Tile.Y - 1);
+            Tile northTile = world.GetTileAt(furniture.Tile.X, furniture.Tile.Y + 1);
+            Tile southTile = world.GetTileAt(furniture.Tile.X, furniture.Tile.Y - 1);
 
             if (northTile != null && southTile != null && northTile.Furniture != null && southTile.Furniture != null &&
                 northTile.Furniture.HasTypeTag("Wall") && southTile.Furniture.HasTypeTag("Wall"))
             {
-                furn.VerticalDoor = true;
+                furniture.VerticalDoor = true;
             }
         }
 
         SpriteRenderer sr = furn_go.AddComponent<SpriteRenderer>();
-        sr.sprite = GetSpriteForFurniture(furn);
+        sr.sprite = GetSpriteForFurniture(furniture);
         sr.sortingLayerName = "Furniture";
-        sr.color = furn.Tint;
+        sr.color = furniture.Tint;
 
-        if (furn.PowerValue < 0)
+        if (furniture.PowerConnection != null && furniture.PowerConnection.IsPowerConsumer)
         {
-            GameObject power_go = new GameObject();
-            powerStatusGameObjectMap.Add(furn, power_go);
-            power_go.transform.parent = furn_go.transform;
-            power_go.transform.position = furn_go.transform.position;
+            GameObject powerGameObject = new GameObject();
+            powerStatusGameObjectMap.Add(furniture, powerGameObject);
+            powerGameObject.transform.parent = furn_go.transform;
+            powerGameObject.transform.position = furn_go.transform.position;
 
-            SpriteRenderer powerSR = power_go.AddComponent<SpriteRenderer>();
-            powerSR.sprite = GetPowerStatusSprite();
-            powerSR.sortingLayerName = "Power";
-            powerSR.color = PowerStatusColor();
+            SpriteRenderer powerSpriteRenderer = powerGameObject.AddComponent<SpriteRenderer>();
+            powerSpriteRenderer.sprite = GetPowerStatusSprite();
+            powerSpriteRenderer.sortingLayerName = "Power";
+            powerSpriteRenderer.color = Color.red;
 
-            if (world.powerSystem.PowerLevel > 0)
+            if (furniture.IsOperating)
             {
-                power_go.SetActive(false);
+                powerGameObject.SetActive(false);
             }
             else
             {
-                power_go.SetActive(true);
+                powerGameObject.SetActive(true);
             }
         }
 
         // Register our callback so that our GameObject gets updated whenever
         // the object's into changes.
-        furn.Changed += OnFurnitureChanged;
-        world.powerSystem.PowerLevelChanged += OnPowerStatusChange;
-        furn.Removed += OnFurnitureRemoved;
+        furniture.Changed += OnFurnitureChanged;
+        furniture.IsOperatingChanged += OnIsOperatingChanged;
+        furniture.Removed += OnFurnitureRemoved;
     }
 
     public Sprite GetSpriteForFurniture(Furniture furn)
@@ -137,24 +137,28 @@ public class FurnitureSpriteController
         return s;
     }
 
-    private void OnFurnitureRemoved(Furniture furn)
+    private void OnFurnitureRemoved(Furniture furniture)
     {
-        if (furnitureGameObjectMap.ContainsKey(furn) == false)
+        if (furnitureGameObjectMap.ContainsKey(furniture) == false)
         {
             Debug.ULogErrorChannel("FurnitureSpriteController", "OnFurnitureRemoved -- trying to change visuals for furniture not in our map.");
             return;
         }
 
-        GameObject furn_go = furnitureGameObjectMap[furn];
+        GameObject furn_go = furnitureGameObjectMap[furniture];
         GameObject.Destroy(furn_go);
-        furnitureGameObjectMap.Remove(furn);
+        furnitureGameObjectMap.Remove(furniture);
 
-        if (powerStatusGameObjectMap.ContainsKey(furn) == false)
+        if (powerStatusGameObjectMap.ContainsKey(furniture) == false)
         {
             return;
         }
 
-        powerStatusGameObjectMap.Remove(furn);
+        powerStatusGameObjectMap.Remove(furniture);
+
+        furniture.Changed -= OnFurnitureChanged;
+        furniture.IsOperatingChanged -= OnIsOperatingChanged;
+        furniture.Removed -= OnFurnitureRemoved;
     }
 
     private void OnFurnitureChanged(Furniture furn)
@@ -193,31 +197,27 @@ public class FurnitureSpriteController
         furn_go.GetComponent<SpriteRenderer>().color = furn.Tint;
     }
 
-    private void OnPowerStatusChange(IPowerRelated powerRelated)
+    private void OnIsOperatingChanged(Furniture furniture)
     {
-        Furniture furn = powerRelated as Furniture;
-        if (furn == null)
+        if (furniture == null)
         {
             return;
         }
 
-        if (powerStatusGameObjectMap.ContainsKey(furn) == false)
+        if (powerStatusGameObjectMap.ContainsKey(furniture) == false)
         {
             return;
         }
 
-        GameObject power_go = powerStatusGameObjectMap[furn];
-
-        if (world.powerSystem.PowerLevel > 0)
+        GameObject powerGameObject = powerStatusGameObjectMap[furniture];
+        if (furniture.IsOperating)
         {
-            power_go.SetActive(false);
+            powerGameObject.SetActive(false);
         }
         else
         {
-            power_go.SetActive(true);
+            powerGameObject.SetActive(true);
         }
-
-        power_go.GetComponent<SpriteRenderer>().color = PowerStatusColor();
     }
         
     private string GetSuffixForNeighbour(Furniture furn, int x, int y, string suffix)
@@ -234,17 +234,5 @@ public class FurnitureSpriteController
     private Sprite GetPowerStatusSprite()
     {
         return SpriteManager.current.GetSprite("Power", "PowerIcon");
-    }
-
-    private Color PowerStatusColor()
-    {
-        if (world.powerSystem.PowerLevel > 0)
-        {
-            return Color.green;
-        }
-        else
-        {
-            return Color.red;
-        }
     }
 }

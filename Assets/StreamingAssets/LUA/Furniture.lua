@@ -464,7 +464,7 @@ end
 
 function PowerGenerator_UpdateAction(furniture, deltatime)
     if (furniture.JobCount() < 1 and furniture.Parameters["burnTime"].ToFloat() == 0) then
-        furniture.PowerValue = 0
+        furniture.PowerConnection.OutputRate = 0
         local itemsDesired = {Inventory.__new("Uranium", 5, 0)}
 
         local j = Job.__new(
@@ -490,7 +490,7 @@ end
 
 function PowerGenerator_JobComplete( j )
     j.furniture.Parameters["burnTime"].SetValue(j.furniture.Parameters["burnTimeRequired"].ToFloat())
-    j.furniture.PowerValue = 5
+    j.furniture.PowerConnection.OutputRate = 5
 end
 
 function LandingPad_Temp_UpdateAction(furniture, deltaTime)
