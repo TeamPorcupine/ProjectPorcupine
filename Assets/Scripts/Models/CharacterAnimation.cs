@@ -131,7 +131,7 @@ public class CharacterAnimation
 
         // TODO: What is the acceptable amount of O2 gas pressure? A little less than .2?
         // for now, it's set very low, so the change is visible for testing.
-        if (character.CurrTile.GetGasPressure("O2") >= 0.005f)
+        if (character.CurrTile.GetGasPressure("O2") >= 0.15f)
         {
             newAnimation += 100; // Remove helmet
         }
