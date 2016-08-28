@@ -24,13 +24,13 @@ namespace Power
         private readonly string accumulatedPowerAttributeName = "accumulatedPower";
 
         /// <summary>
-        /// Amount of power consumed by this connection
+        /// Amount of power consumed by this connection per Tick of system
         /// Accumulator: rate of charge.
         /// </summary>
         public float InputRate { get; set; }
 
         /// <summary>
-        /// Amount of power produced by this connection
+        /// Amount of power produced by this connection per Tick of system
         /// Accumulator: rate of discharge.
         /// </summary>
         public float OutputRate { get; set; }

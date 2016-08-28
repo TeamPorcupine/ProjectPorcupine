@@ -9,17 +9,18 @@
 using System;
 
 public class ContextMenuAction
-{
-    public bool RequiereCharacterSelected;
-    public string Text;
-    
+{    
     public Action<ContextMenuAction, Character> Action;
+
+    public bool RequireCharacterSelected { get; set; }
+
+    public string Text { get; set; }
 
     public void OnClick(MouseController mouseController)
     {
         if (Action != null)
         {
-            if (RequiereCharacterSelected)
+            if (RequireCharacterSelected)
             {
                 if (mouseController.IsCharacterSelected())
                 {
