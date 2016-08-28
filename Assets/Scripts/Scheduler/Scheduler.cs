@@ -21,15 +21,25 @@ namespace Scheduler
     /// </summary>
     public class Scheduler
     {
+        private static Scheduler instance;
+
         public Scheduler()
         {
-            if (Current == null)
-            {
-                Current = this;
-            }
+            this.Events = new List<ScheduledEvent>();
         }
 
-        public Scheduler Current { get; protected set; }
+        public static Scheduler Current
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = new Scheduler();
+                }
+
+                return instance;
+            }
+        }
 
         public List<ScheduledEvent> Events { get; protected set; }
 
