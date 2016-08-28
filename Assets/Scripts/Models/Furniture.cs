@@ -62,6 +62,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
 
     private Func<Tile, bool> funcPositionValidation;
 
+    private List<Inventory> deconstructInvs;
+
     // TODO: Implement larger objects
     // TODO: Implement object rotation
 
@@ -456,7 +458,35 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
                 j.JobDescription = "job_build_" + ObjectType + "_desc";
                 World.Current.SetFurnitureJobPrototype(j, this);
                 break;
+            case "DeconstructJob":
+                float deconstructJobTime = float.Parse(reader.GetAttribute("jobTime") ?? "-1");
 
+                deconstructInvs = new List<Inventory>();
+
+                XmlReader deconstructInventoryReader = reader.ReadSubtree();
+
+                while (deconstructInventoryReader.Read())
+                {
+                    if (deconstructInventoryReader.Name == "Inventory")
+                    {
+                        // Found an inventory requirement, so add it to the list!
+                        deconstructInvs.Add(new Inventory(
+                            deconstructInventoryReader.GetAttribute("objectType"),
+                            int.Parse(deconstructInventoryReader.GetAttribute("amount")),
+                            0));
+                    }
+                }
+
+                Job dj = new Job(
+                    null,
+                    ObjectType,
+                    (Job jo) => { this.Deconstruct(); },
+                    deconstructJobTime,
+                    null,
+                    Job.JobPriority.High);
+                dj.JobDescription = "job_deconstruct_" + ObjectType + "_desc";
+                World.Current.SetFurnitureJobDeconstructPrototype(dj, this);
+                break;
             case "Action":
                 XmlReader subtree = reader.ReadSubtree();
                 EventActions.ReadXml(subtree);
@@ -620,6 +650,11 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         if (RoomEnclosure)
         {
             Room.DoRoomFloodFill(Tile);
+        }
+
+        if (deconstructInvs.Count > 0)
+        {
+            PlaceInventory(Tile);
         }
 
         ////World.current.InvalidateTileGraph();
@@ -800,6 +835,39 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         foreach (Job j in jobsArray)
         {
             RemoveJob(j);
+        }
+    }
+
+    private void PlaceInventory(Tile t)
+    {
+        if (t.Inventory == null)
+        {
+            t.PlaceInventory(deconstructInvs[0]);
+            deconstructInvs.RemoveAt(0);
+        }
+        else
+        {
+            for (int i = 0; i < deconstructInvs.Count; i++)
+            {
+                if (deconstructInvs[i].objectType == t.Inventory.objectType)
+                {
+                    t.PlaceInventory(deconstructInvs[i]);
+                    if (deconstructInvs[i].StackSize == 0)
+                    {
+                        deconstructInvs.RemoveAt(i);
+                    }
+
+                    break;
+                }
+            }
+        }
+
+        foreach (Tile ti in t.GetNeighbours())
+        {
+            if (deconstructInvs.Count > 0 && ti.Type != TileType.Empty && ti.Furniture == null)
+            {
+                PlaceInventory(ti);
+            }
         }
     }
 

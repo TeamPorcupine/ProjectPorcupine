@@ -215,7 +215,23 @@ public class BuildModeController
                     }
                 }
 
-                t.Furniture.Deconstruct();
+                Job j;
+
+                if (WorldController.Instance.World.furnitureJobDeconstructPrototypes.ContainsKey(t.Furniture.ObjectType))
+                {
+                    // Make a clone of the job prototype
+                    j = WorldController.Instance.World.furnitureJobDeconstructPrototypes[t.Furniture.ObjectType].Clone();
+
+                    // Assign the correct tile.
+                    j.tile = t;
+                }
+                else
+                {
+                    t.Furniture.Deconstruct();
+                    return;
+                }
+
+                World.Current.jobQueue.Enqueue(j);
             }
             else if (t.PendingBuildJob != null)
             {

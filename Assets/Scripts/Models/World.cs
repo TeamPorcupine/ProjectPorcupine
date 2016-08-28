@@ -38,6 +38,7 @@ public class World : IXmlSerializable
 
     public Dictionary<string, Furniture> furniturePrototypes;
     public Dictionary<string, Job> furnitureJobPrototypes;
+    public Dictionary<string, Job> furnitureJobDeconstructPrototypes;
     public Dictionary<string, Need> needPrototypes;
     public Dictionary<string, InventoryCommon> inventoryPrototypes;
     public Dictionary<string, TraderPrototype> traderPrototypes;
@@ -201,6 +202,11 @@ public class World : IXmlSerializable
     public void SetFurnitureJobPrototype(Job j, Furniture f)
     {
         furnitureJobPrototypes[f.ObjectType] = j;
+    }
+
+    public void SetFurnitureJobDeconstructPrototype(Job j, Furniture f)
+    {
+        furnitureJobDeconstructPrototypes[f.ObjectType] = j;
     }
 
     /// <summary>
@@ -641,6 +647,7 @@ public class World : IXmlSerializable
         
         furniturePrototypes = new Dictionary<string, Furniture>();
         furnitureJobPrototypes = new Dictionary<string, Job>();
+        furnitureJobDeconstructPrototypes = new Dictionary<string, Job>();
 
         // READ FURNITURE PROTOTYPE XML FILE HERE
         // TODO:  Probably we should be getting past a StreamIO handle or the raw
