@@ -229,7 +229,7 @@ public class Temperature
         {
             return true;
         }
-        else 
+        else
         {
             Debug.ULogWarningChannel("Temperature", "Trying to set a thermal diffusivity that may break the world: {0}.", thermal_diff);
             return false;
