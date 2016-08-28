@@ -15,7 +15,7 @@ using UnityEngine;
 
 public class GameEventActions
 {
-    private static GameEventActions _Instance;
+    private static GameEventActions instance;
 
     private Script myLuaScript;
 
@@ -25,7 +25,7 @@ public class GameEventActions
         // that we have marked as [MoonSharpUserData]
         UserData.RegisterAssembly();
 
-        _Instance = this;
+        instance = this;
 
         myLuaScript = new Script();
 
@@ -46,33 +46,34 @@ public class GameEventActions
     {
         foreach (string fn in functionNames)
         {
-            object func = _Instance.myLuaScript.Globals[fn];
+            object func = instance.myLuaScript.Globals[fn];
 
             if (func == null)
             {
-                Debug.LogError("'" + fn + "' is not a LUA function.");
+                // These errors are about the lua code so putting them in the Lua channel.
+                Debug.ULogErrorChannel("Lua", "'" + fn + "' is not a LUA function.");
                 return;
             }
 
-            DynValue result = _Instance.myLuaScript.Call(func, gameEvent);
+            DynValue result = instance.myLuaScript.Call(func, gameEvent);
 
             if (result.Type == DataType.String)
             {
-                Debug.Log(result.String);
+                Debug.ULogErrorChannel("Lua", result.String);
             }
         }
     }
 
     public static DynValue CallFunction(string functionName, params object[] args)
     {
-        object func = _Instance.myLuaScript.Globals[functionName];
+        object func = instance.myLuaScript.Globals[functionName];
 
-        return _Instance.myLuaScript.Call(func, args);
+        return instance.myLuaScript.Call(func, args);
     }
 
     public static void JobComplete_FurnitureBuilding(Job theJob)
     {
-        WorldController.Instance.world.PlaceFurniture(theJob.jobObjectType, theJob.tile);
+        WorldController.Instance.World.PlaceFurniture(theJob.JobObjectType, theJob.tile);
 
         // FIXME: I don't like having to manually and explicitly set
         // flags that preven conflicts. It's too easy to forget to set/clear them!
