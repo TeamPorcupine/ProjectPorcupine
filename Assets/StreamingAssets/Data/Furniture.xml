@@ -377,7 +377,7 @@
   
     <Furniture objectType="fire" skipBuildMenu="true">
         <Name>Fire</Name>
-        <Description>Stores and releases oxygen as needed</Description>
+        <Description>Warms up the otherwise cold empty space.</Description>
         <MovementCost>5</MovementCost>
         <Width>1</Width>
         <Height>1</Height>
