@@ -13,54 +13,113 @@ using UnityEngine.UI;
 
 public class WorkerInfo : MonoBehaviour
 {
-
     public Text textCharacter;
 
-    public Button buttonBuild;
+    public ButtonExtended buttonBuild;
     Text textBuild;
 
-    public Button buttonSleep;
+    public ButtonExtended buttonSleep;
     Text textSleep;
 
-    public Button buttonCraft;
+    public ButtonExtended buttonCraft;
     Text textCraft;
 
-    public Button buttonHaul;
+    public ButtonExtended buttonHaul;
     Text textHaul;
 
     int maxPriority = 4;
+    int minPriority = 1;
 
-    void OnClickBuild()
+    void OnLeftClickBuild()
     {
-        CycleThroughNumbers(textBuild, "Build");
+        CycleUpNumbers(textBuild, "Build");
     }
 
-    void OnClickSleep()
+    void OnRightClickBuild()
     {
-        CycleThroughNumbers(textSleep, "Sleep");
+        CycleDownNumbers(textBuild, "Build");
     }
 
-    void OnClickCraft()
+    void OnClickBuildSetMax()
     {
-        CycleThroughNumbers(textCraft, "Craft");
+        SetMax(textBuild, "Build");
     }
 
-    void OnClickHaul()
+    void OnClickBuildSetMin()
     {
-        CycleThroughNumbers(textHaul, "Haul");
+        SetMin(textBuild, "Build");
     }
 
-    void CycleThroughNumbers(Text buttonText, string priorityName)
+    void OnLeftClickSleep()
+    {
+        CycleUpNumbers(textSleep, "Sleep");
+    }
+
+    void OnRightClickSleep()
+    {
+        CycleDownNumbers(textSleep, "Sleep");
+    }
+
+    void OnLeftClickCraft()
+    {
+        CycleUpNumbers(textCraft, "Craft");
+    }
+
+    void OnRightClickCraft()
+    {
+        CycleDownNumbers(textCraft, "Craft");
+    }
+
+    void OnLeftClickHaul()
+    {
+        CycleUpNumbers(textHaul, "Haul");
+    }
+
+    void OnRightClickHaul()
+    {
+        CycleDownNumbers(textHaul, "Haul");
+    }
+
+    void CycleUpNumbers(Text buttonText, string priorityName)
     {
         int tempInt = Convert.ToInt32(buttonText.text);
 
         tempInt++;
 
         if (tempInt > maxPriority)
+        {
             tempInt = 1;
+        }
         
         buttonText.text = tempInt.ToString();
         CallUpdatePriority(priorityName, tempInt);
+    }
+
+    void CycleDownNumbers(Text buttonText, string priorityName)
+    {
+        int tempInt = Convert.ToInt32(buttonText.text);
+
+        tempInt--;
+
+        if (tempInt < minPriority)
+        {
+            tempInt = 4;
+        }
+
+        buttonText.text = tempInt.ToString();
+        CallUpdatePriority(priorityName, tempInt);
+    }
+
+    void SetMax(Text buttonText, string priorityName)
+    {
+        buttonText.text = maxPriority.ToString();
+        CallUpdatePriority(priorityName, maxPriority);
+    }
+
+    void SetMin(Text buttonText, string priorityName)
+    {
+        buttonText.text = minPriority.ToString();
+        CallUpdatePriority(priorityName, minPriority);
     }
 
     void CallUpdatePriority(string priorityNaame, int newValue)
@@ -70,24 +129,54 @@ public class WorkerInfo : MonoBehaviour
         
     void Start()
     {
-        buttonBuild.onClick.AddListener(delegate
+        buttonBuild.leftClick.AddListener(delegate
             {
-                OnClickBuild();
+                OnLeftClickBuild();
             });
 
-        buttonSleep.onClick.AddListener(delegate
+        buttonBuild.rightClick.AddListener(delegate
             {
-                OnClickSleep();
+                OnRightClickBuild();
             });
 
-        buttonCraft.onClick.AddListener(delegate
+        buttonBuild.controlLeftClick.AddListener(delegate
             {
-                OnClickCraft();
+                OnClickBuildSetMax();
             });
 
-        buttonHaul.onClick.AddListener(delegate
+        buttonBuild.controlRightClick.AddListener(delegate
             {
-                OnClickHaul();
+                OnClickBuildSetMin();
+            });
+        
+        buttonSleep.leftClick.AddListener(delegate
+            {
+                OnLeftClickSleep();
+            });
+
+        buttonSleep.rightClick.AddListener(delegate
+            {
+                OnRightClickSleep();
+            });
+
+        buttonCraft.leftClick.AddListener(delegate
+            {
+                OnLeftClickCraft();
+            });
+
+        buttonCraft.rightClick.AddListener(delegate
+            {
+                OnRightClickCraft();
+            });
+
+        buttonHaul.leftClick.AddListener(delegate
+            {
+                OnLeftClickHaul();
+            });
+
+        buttonHaul.rightClick.AddListener(delegate
+            {
+                OnRightClickHaul();
             });
 
         textBuild = buttonBuild.GetComponentInChildren<Text>();

@@ -39,7 +39,6 @@ GameObject:
   - 224: {fileID: 224000011654457294}
   - 222: {fileID: 222000014004451600}
   - 114: {fileID: 114000013620902490}
-  - 114: {fileID: 114000011417162834}
   - 114: {fileID: 114000014205988256}
   m_Layer: 5
   m_Name: Text
@@ -60,6 +59,7 @@ GameObject:
   - 114: {fileID: 114000012386649154}
   - 114: {fileID: 114000013906115534}
   - 114: {fileID: 114000010909539134}
+  - 114: {fileID: 114000011429557202}
   m_Layer: 5
   m_Name: CraftingButton
   m_TagString: Untagged
@@ -79,6 +79,7 @@ GameObject:
   - 114: {fileID: 114000011440887980}
   - 114: {fileID: 114000012556981296}
   - 114: {fileID: 114000010630445770}
+  - 114: {fileID: 114000011394619898}
   m_Layer: 5
   m_Name: BuildingButton
   m_TagString: Untagged
@@ -96,7 +97,6 @@ GameObject:
   - 224: {fileID: 224000011870924644}
   - 222: {fileID: 222000011354880508}
   - 114: {fileID: 114000010340916466}
-  - 114: {fileID: 114000010771498446}
   - 114: {fileID: 114000013900225866}
   m_Layer: 5
   m_Name: Text
@@ -135,6 +135,7 @@ GameObject:
   - 114: {fileID: 114000013936906694}
   - 114: {fileID: 114000010618160056}
   - 114: {fileID: 114000014197501814}
+  - 114: {fileID: 114000013005498200}
   m_Layer: 5
   m_Name: SleepButton
   m_TagString: Untagged
@@ -152,7 +153,6 @@ GameObject:
   - 224: {fileID: 224000011112699404}
   - 222: {fileID: 222000010119508832}
   - 114: {fileID: 114000012468198882}
-  - 114: {fileID: 114000013603423170}
   - 114: {fileID: 114000010391882602}
   m_Layer: 5
   m_Name: Text
@@ -171,7 +171,6 @@ GameObject:
   - 224: {fileID: 224000011166117408}
   - 222: {fileID: 222000012765380432}
   - 114: {fileID: 114000011616439216}
-  - 114: {fileID: 114000012990351294}
   - 114: {fileID: 114000013295944502}
   m_Layer: 5
   m_Name: Text
@@ -192,6 +191,7 @@ GameObject:
   - 114: {fileID: 114000012192104900}
   - 114: {fileID: 114000011119697078}
   - 114: {fileID: 114000013760880580}
+  - 114: {fileID: 114000010111862368}
   m_Layer: 5
   m_Name: HualingButton
   m_TagString: Untagged
@@ -211,10 +211,36 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   textCharacter: {fileID: 114000010561059788}
-  buttonBuild: {fileID: 114000012556981296}
-  buttonSleep: {fileID: 114000010618160056}
-  buttonCraft: {fileID: 114000013906115534}
-  buttonHaul: {fileID: 114000011119697078}
+  buttonBuild: {fileID: 114000011394619898}
+  buttonSleep: {fileID: 114000013005498200}
+  buttonCraft: {fileID: 114000011429557202}
+  buttonHaul: {fileID: 114000010111862368}
+--- !u!114 &114000010111862368
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000013937450916}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b05795da5d584b4da5feb1e9637aac9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  leftClick:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  middleClick:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  rightClick:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!114 &114000010340916466
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -352,21 +378,6 @@ MonoBehaviour:
   m_PreferredHeight: 35
   m_FlexibleWidth: 0
   m_FlexibleHeight: -1
---- !u!114 &114000010771498446
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000012423964620}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f3a8d4feb5d53f4f967aac517615a07, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  formatValues: []
-  localizeInStart: 1
-  text: {fileID: 0}
-  defaultText: 
 --- !u!114 &114000010909539134
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -427,21 +438,58 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
---- !u!114 &114000011417162834
+--- !u!114 &114000011394619898
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000010387572468}
+  m_GameObject: {fileID: 1000012283428470}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f3a8d4feb5d53f4f967aac517615a07, type: 3}
+  m_Script: {fileID: 11500000, guid: 0b05795da5d584b4da5feb1e9637aac9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  formatValues: []
-  localizeInStart: 1
-  text: {fileID: 0}
-  defaultText: 
+  leftClick:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  middleClick:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  rightClick:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+--- !u!114 &114000011429557202
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000010941226598}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b05795da5d584b4da5feb1e9637aac9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  leftClick:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  middleClick:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  rightClick:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!114 &114000011440887980
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -669,21 +717,32 @@ MonoBehaviour:
   m_Spacing: 8
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 0
---- !u!114 &114000012990351294
+--- !u!114 &114000013005498200
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000013676209016}
+  m_GameObject: {fileID: 1000012728889454}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f3a8d4feb5d53f4f967aac517615a07, type: 3}
+  m_Script: {fileID: 11500000, guid: 0b05795da5d584b4da5feb1e9637aac9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  formatValues: []
-  localizeInStart: 1
-  text: {fileID: 0}
-  defaultText: 
+  leftClick:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  middleClick:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  rightClick:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!114 &114000013295944502
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -695,21 +754,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ee54e7c6b4b8f94f85d98db0baff35e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &114000013603423170
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000013608295556}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f3a8d4feb5d53f4f967aac517615a07, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  formatValues: []
-  localizeInStart: 1
-  text: {fileID: 0}
-  defaultText: 
 --- !u!114 &114000013620902490
 MonoBehaviour:
   m_ObjectHideFlags: 1
