@@ -39,6 +39,12 @@ public class SpawnInventoryController
 
     public void SpawnInventory(Tile t)
     {
+        // If the user clicks outside the game area t may be null.
+        if (t == null)
+        {
+            return;
+        }
+
         Inventory inventoryChange = new Inventory(InventoryToBuild, 1);
 
         // You can't spawn on occupied tiles
