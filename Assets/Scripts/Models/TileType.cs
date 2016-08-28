@@ -68,7 +68,6 @@ public class TileType : IXmlSerializable
 
     public float BaseMovementCost { get; protected set; }
 
-
     public float PathfindingWeight
     {
         get
