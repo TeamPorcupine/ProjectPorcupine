@@ -24,6 +24,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     // Prevent construction too close to the world's edge
     private const int MinEdgeDistance = 5;
 
+    // Base cost of pathfinding over this furniture, movement cost will modify the effective value
+    private float pathfindingWeight = 1f;
+
     // If the job causes some kind of object to be spawned, where will it appear?
     private Vector2 jobSpawnSpotOffset = Vector2.zero;
 
@@ -142,6 +145,15 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     public event Action<Furniture> Removed;
 
     public event Action<IPowerRelated> PowerValueChanged;
+
+    // The effective pathfinding cost of pathing over this furniture
+    public float PathfindingWeight
+    {
+        get
+        {
+            return pathfindingWeight * MovementCost;
+        }
+    }
 
     public Color Tint { get; private set; }
 

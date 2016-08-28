@@ -26,6 +26,7 @@ public enum Enterability
 public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
 {
     private TileType type = TileType.Empty;
+    private float pathfindingWeight = 1f;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Tile"/> class.
@@ -75,6 +76,22 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
 
     // Furniture is something like a wall, door, or sofa.
     public Furniture Furniture { get; private set; }
+
+    public float PathfindingWeight
+    {
+        get
+        {
+            if (Furniture != null)
+            {
+                return Furniture.PathfindingWeight * MovementCost;
+            }
+            else
+            {
+                return pathfindingWeight * MovementCost;
+            }
+        }
+    }
+
 
     // FIXME: This seems like a terrible way to flag if a job is pending
     // on a tile.  This is going to be prone to errors in set/clear.
