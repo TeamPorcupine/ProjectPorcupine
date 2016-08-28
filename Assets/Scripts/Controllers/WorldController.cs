@@ -99,11 +99,11 @@ public class WorldController : MonoBehaviour
         GameObject go;
 
         tileSpriteController = new TileSpriteController(World);
-        tileSpriteController.Render();
         characterSpriteController = new CharacterSpriteController(World);
         furnitureSpriteController = new FurnitureSpriteController(World);
         jobSpriteController = new JobSpriteController(World, furnitureSpriteController);
         inventorySpriteController = new InventorySpriteController(World, inventoryUI);
+
         buildModeController = new BuildModeController();
         spawnInventoryController = new SpawnInventoryController();
         mouseController = new MouseController(buildModeController, furnitureSpriteController, circleCursorPrefab);
