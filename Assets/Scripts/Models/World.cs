@@ -43,6 +43,7 @@ public class World : IXmlSerializable
     public Dictionary<string, InventoryCommon> inventoryPrototypes;
     public Dictionary<string, TraderPrototype> traderPrototypes;
     public List<Quest> Quests;
+    public Wallet Wallet;
 
     // TODO: Most likely this will be replaced with a dedicated
     // class for managing job queues (plural!) that might also
@@ -166,7 +167,13 @@ public class World : IXmlSerializable
 
     public Character CreateCharacter(Tile t)
     {
-        Character c = new Character(t);
+        return CreateCharacter(t, UnityEngine.Random.ColorHSV());
+    }
+
+    public Character CreateCharacter(Tile t, Color color)
+    {
+        Debug.ULogChannel("World", "CreateCharacter");
+        Character c = new Character(t, color);
 
         // Adds a random name to the Character
         string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
@@ -174,21 +181,6 @@ public class World : IXmlSerializable
 
         string[] names = File.ReadAllLines(filePath);
         c.name = names[UnityEngine.Random.Range(0, names.Length - 1)];
-        characters.Add(c);
-
-        if (OnCharacterCreated != null)
-        {
-            OnCharacterCreated(c);
-        }
-
-        return c;
-    }
-
-    public Character CreateCharacter(Tile t, Color color)
-    {
-        Debug.ULogChannel("World", "CreateCharacter");
-        Character c = new Character(t, color); 
-
         characters.Add(c);
 
         if (OnCharacterCreated != null)
@@ -469,6 +461,16 @@ public class World : IXmlSerializable
         writer.WriteEndElement();
 
         writer.WriteElementString("Skybox", skybox.name);
+        
+        writer.WriteStartElement("Wallet");
+        foreach (Currency currency in Wallet.Currencies.Values)
+        {
+            writer.WriteStartElement("Currency");
+            currency.WriteXml(writer);
+            writer.WriteEndElement();
+        }
+
+        writer.WriteEndElement();
     }
 
     public void ReadXml(XmlReader reader)
@@ -500,6 +502,9 @@ public class World : IXmlSerializable
                     break;
                 case "Skybox":
                     LoadSkybox(reader.ReadElementString("Skybox"));
+                    break;
+                case "Wallet":
+                    ReadXml_Wallet(reader);
                     break;
             }
         }
@@ -630,6 +635,7 @@ public class World : IXmlSerializable
         CreateNeedPrototypes();
         CreateTraderPrototypes();
         CreateQuests();
+        CreateWallet();
 
         characters = new List<Character>();
         furnitures = new List<Furniture>();
@@ -928,6 +934,48 @@ public class World : IXmlSerializable
         }
     }
 
+    private void CreateWallet()
+    {
+        Wallet = new Wallet();
+        
+        string dataPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
+        string filePath = System.IO.Path.Combine(dataPath, "Currency.xml");
+        string xmlText = System.IO.File.ReadAllText(filePath);
+        LoadCurrencyFromFile(xmlText);
+
+        DirectoryInfo[] mods = WorldController.Instance.modsManager.GetMods();
+        foreach (DirectoryInfo mod in mods)
+        {
+            string xmlModFile = System.IO.Path.Combine(mod.FullName, "Currency.xml");
+            if (File.Exists(xmlModFile))
+            {
+                string xmlModText = System.IO.File.ReadAllText(xmlModFile);
+                LoadCurrencyFromFile(xmlModText);
+            }
+        }
+    }
+
+    private void LoadCurrencyFromFile(string xmlText)
+    {
+        XmlTextReader reader = new XmlTextReader(new StringReader(xmlText));
+
+        if (reader.ReadToDescendant("Currencies"))
+        {
+            try
+            {
+                Wallet.ReadXmlPrototype(reader);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("Error reading Currency " + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
+            }
+        }
+        else
+        {
+            Debug.LogError("Did not find a 'Currencies' element in the prototype definition file.");
+        }
+    }
+
     private void LoadInventoryPrototypesFromFile(string inventoryXmlText)
     {
         XmlTextReader reader = new XmlTextReader(new StringReader(inventoryXmlText));
@@ -1085,6 +1133,23 @@ public class World : IXmlSerializable
                 }
             }
             while (reader.ReadToNextSibling("Character"));
+        }
+    }
+    
+    public void ReadXml_Wallet(XmlReader reader)
+    {
+        if (reader.ReadToDescendant("Currency"))
+        {
+            do
+            {
+                Currency c = new Currency
+                {
+                    Name = reader.GetAttribute("Name"),
+                    ShortName = reader.GetAttribute("ShortName"),
+                    Balance = float.Parse(reader.GetAttribute("Balance"))
+                };
+                Wallet.Currencies[c.Name] = c;
+            } while (reader.ReadToNextSibling("Character"));
         }
     }
 }

@@ -142,7 +142,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
 
         if (objInstance.IsValidPosition(this) == false)
         {
-            Debug.LogError("Trying to assign a furniture to a tile that isn't valid!");
+            Debug.ULogErrorChannel("Tile", "Trying to assign a furniture to a tile that isn't valid!");
             return false;
         }
 
@@ -171,7 +171,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
             // There's already inventory here. Maybe we can combine a stack?
             if (Inventory.objectType != inventory.objectType)
             {
-                Debug.LogError("Trying to assign inventory to a tile that already has some of a different type.");
+                Debug.ULogErrorChannel("Tile", "Trying to assign inventory to a tile that already has some of a different type.");
                 return false;
             }
 
