@@ -12,17 +12,19 @@ using System.Linq;
 public class Trader
 {
     public string Name;
-    public string CurrencyName;
-    public float CurrencyBalance;
+    public Currency Currency;
     public float SaleMarginMultiplier;
     public List<Inventory> Stock;
 
-    public static Trader FromPlayer()
+    public static Trader FromPlayer(Currency currency)
     {
-        Trader t = new Trader();
-        t.Name = "Player";
-        t.SaleMarginMultiplier = 0.8f;
-        t.Stock = new List<Inventory>();
+        Trader t = new Trader
+        {
+            Name = "Player",
+            SaleMarginMultiplier = 0.8f,
+            Stock = new List<Inventory>(),
+            Currency = currency
+        };
 
         List<List<Inventory>> worldInventories =
             WorldController.Instance.World.inventoryManager.inventories.Values.Select(i => i.ToList()).ToList();

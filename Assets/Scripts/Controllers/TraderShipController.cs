@@ -20,6 +20,11 @@ public class TraderShipController : MonoBehaviour
 
     public void FixedUpdate()
     {
+        if (WorldController.Instance.IsPaused)
+        {
+            return;
+        }
+
         Vector3 destination = LandingCoordinates;
 
         if (DestinationReached && !TradeCompleted)
@@ -58,8 +63,8 @@ public class TraderShipController : MonoBehaviour
             else
             {
                 DialogBoxManager dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
-                
-                Trader playerTrader = Trader.FromPlayer();
+
+                Trader playerTrader = Trader.FromPlayer(World.Current.Wallet.Currencies[Trader.Currency.Name]);
                 Trade trade = new Trade(playerTrader, Trader);
                 dbm.dialogBoxTrade.SetupTrade(trade);
                 dbm.dialogBoxTrade.OnTradeCancelled = () => { TradeCompleted = true; };
@@ -75,6 +80,8 @@ public class TraderShipController : MonoBehaviour
 
     private void TrasfertTradedItems(Trade trade)
     {
+        trade.Player.Currency.Balance += trade.TradeCurrencyBalanceForPlayer;
+
         foreach (var tradeItem in trade.TradeItems)
         {
             if (tradeItem.TradeAmount > 0)

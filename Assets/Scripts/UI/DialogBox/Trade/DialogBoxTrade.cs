@@ -40,7 +40,12 @@ public class DialogBoxTrade : DialogBox
     {
         Trader mockPlayer = new Trader
         {
-            CurrencyBalance = 500,
+            Currency = new Currency
+            {
+                Balance = 1000f,
+                Name = "Test Currency",
+                ShortName = "TC"
+            },
             Name = "Player",
             SaleMarginMultiplier = 1f,
             Stock = new List<Inventory>
@@ -52,7 +57,12 @@ public class DialogBoxTrade : DialogBox
 
         Trader mockTrader = new Trader
         {
-            CurrencyBalance = 1500,
+            Currency = new Currency
+            {
+                Balance = 1000f,
+                Name = "Test Currency",
+                ShortName = "TC"
+            },
             Name = "Trader",
             SaleMarginMultiplier = 1.23f,
             Stock = new List<Inventory>
@@ -80,7 +90,6 @@ public class DialogBoxTrade : DialogBox
     {
         if (trade.IsValid())
         {
-            trade.Accept();
             trade = null;
             ClearInterface();
             CloseDialog();
@@ -94,7 +103,7 @@ public class DialogBoxTrade : DialogBox
     private void ClearInterface()
     {
         var childrens = TradeItemListPanel.Cast<Transform>().ToList();
-        foreach (var child in childrens)
+        foreach (Transform child in childrens)
         {
             Destroy(child.gameObject);
         }
@@ -105,7 +114,7 @@ public class DialogBoxTrade : DialogBox
         TraderNameText.text = trade.Trader.Name;
         BuildInterfaceHeader();
 
-        foreach (var tradeItem in trade.TradeItems)
+        foreach (TradeItem tradeItem in trade.TradeItems)
         {
             GameObject go = (GameObject)Instantiate(Resources.Load("Prefab/TradeItemPrefab"), TradeItemListPanel);
 
@@ -118,8 +127,8 @@ public class DialogBoxTrade : DialogBox
     private void BuildInterfaceHeader()
     {
         float tradeAmount = trade.TradeCurrencyBalanceForPlayer;
-        PlayerCurrencyBalanceText.text = (trade.Player.CurrencyBalance + tradeAmount).ToString();
-        TraderCurrencyBalanceText.text = (trade.Trader.CurrencyBalance - tradeAmount).ToString();
+        PlayerCurrencyBalanceText.text = string.Format("{0} {1}", Math.Round(trade.Player.Currency.Balance + tradeAmount, 2), trade.Player.Currency.ShortName);
+        TraderCurrencyBalanceText.text = string.Format("{0} {1}", Math.Round(trade.Trader.Currency.Balance - tradeAmount, 2), trade.Trader.Currency.ShortName);
         TradeCurrencyBalanceText.text = tradeAmount.ToString();
     }
 }

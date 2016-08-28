@@ -44,13 +44,8 @@ public class Trade
         }
     }
 
-    public void Accept()
-    {
-        // TODO
-    }
-
     public bool IsValid()
     {
-        return true; // TODO
+        return Player.Currency.Balance > TradeCurrencyBalanceForPlayer;
     }
 }
