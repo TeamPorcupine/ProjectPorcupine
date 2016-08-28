@@ -165,7 +165,12 @@ public class World : IXmlSerializable
 
     public Character CreateCharacter(Tile t)
     {
-        Character c = new Character(t);
+        return CreateCharacter(t, UnityEngine.Random.ColorHSV());
+    }
+
+    public Character CreateCharacter(Tile t, Color color)
+    {
+        Character c = new Character(t, color);
 
         // Adds a random name to the Character
         string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
@@ -173,21 +178,6 @@ public class World : IXmlSerializable
 
         string[] names = File.ReadAllLines(filePath);
         c.name = names[UnityEngine.Random.Range(0, names.Length - 1)];
-        characters.Add(c);
-
-        if (OnCharacterCreated != null)
-        {
-            OnCharacterCreated(c);
-        }
-
-        return c;
-    }
-
-    public Character CreateCharacter(Tile t, Color color)
-    {
-        Debug.Log("CreateCharacter");
-        Character c = new Character(t, color); 
-
         characters.Add(c);
 
         if (OnCharacterCreated != null)
