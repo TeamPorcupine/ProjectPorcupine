@@ -42,7 +42,7 @@
         <MovementCost>1</MovementCost>
         <!-- PathfindingModifer is additive, so a PathfindingModifier of 1 will basically respond to Pathfinding as though it takes 1 extra tile of movement -->
         <!-- Default value of PathfindingModifier is 0 -->
-        <PathfindingModifier>1</PathfindingModifier>
+        <PathfindingModifier>1.5</PathfindingModifier>
         <!-- PathfindingWeight is multiplicative, so a PathfindingWeight of 2 would basically respond to Pathfinding as though it takes double the tiles of movement -->
         <!-- Default value of PathfindingWeight is 1 -->
         <PathfindingWeight>1</PathfindingWeight>
