@@ -203,7 +203,7 @@ public class WorldGenerator
             }
             else
             {
-                Debug.ULogErrorChannel("World", "Did not find a 'Asteroid' element in the WorldGenerator definition file.");
+                Debug.ULogErrorChannel("WorldGenerator", "Did not find a 'Asteroid' element in the WorldGenerator definition file.");
             }
 
             if (reader.ReadToNextSibling("StartArea"))
@@ -230,7 +230,7 @@ public class WorldGenerator
 
                                 if (splittedString.Length < startAreaWidth * startAreaHeight)
                                 {
-                                    Debug.ULogErrorChannel("World", "Error reading 'Tiles' array to short: " + splittedString.Length + " !");
+                                    Debug.ULogErrorChannel("WorldGenerator", "Error reading 'Tiles' array to short: " + splittedString.Length + " !");
                                     break;
                                 }
 
@@ -269,12 +269,12 @@ public class WorldGenerator
             }
             else
             {
-                Debug.ULogErrorChannel("World", "Did not find a 'StartArea' element in the WorldGenerator definition file.");
+                Debug.ULogErrorChannel("WorldGenerator", "Did not find a 'StartArea' element in the WorldGenerator definition file.");
             }
         }
         else
         {
-            Debug.ULogErrorChannel("World", "Did not find a 'WorldGenerator' element in the WorldGenerator definition file.");
+            Debug.ULogErrorChannel("WorldGenerator", "Did not find a 'WorldGenerator' element in the WorldGenerator definition file.");
         }
     }
 }
