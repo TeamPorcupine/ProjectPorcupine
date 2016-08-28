@@ -149,6 +149,7 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
             writer.WriteAttributeString("X", tile.X.ToString());
             writer.WriteAttributeString("Y", tile.Y.ToString());
         }
+
         writer.WriteAttributeString("objectType", objectType);
         writer.WriteAttributeString("maxStackSize", maxStackSize.ToString());
         writer.WriteAttributeString("stackSize", StackSize.ToString());
