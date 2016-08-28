@@ -20,7 +20,7 @@ public class Path_RoomGraph
         // Loop through all rooms of the world
         // For each room, create a node
         nodes = new Dictionary<Room, Path_Node<Room>>();
-
+        Debug.ULogChannel("Path_RoomGraph", "There are " + world.rooms.Count + " Rooms");
         foreach (Room room in world.rooms)
         {
             Path_Node<Room> n = new Path_Node<Room>();
@@ -44,37 +44,11 @@ public class Path_RoomGraph
 
         foreach (Room room in nodes.Keys)
         {
-            Debug.ULogChannel("Path_RoomGraph", "Room " + room.ID + " has edges to:");
-            Debug.ULogChannel("Path_RoomGraph", "\tRoom " + room.ID + " has " + nodes[room].edges.Length + " edges");
-            foreach (Path_Edge<Room> edge in nodes[room].edges)
+            Debug.ULogChannel("Path_RoomGraph", "Room " + room.ID + " has " + room.GetSize() + " number of tiles");
+            if (nodes[room].edges.GetLength(0) == 0)
             {
-                Debug.ULogChannel("Path_RoomGraph", "\t\tEdge connects to " + edge.node.data.ID);
+                continue;
             }
-        }
-    }
-
-    public void RegenerateGraph()
-    {
-        nodes.Clear();
-        foreach (Room room in World.Current.rooms)
-        {
-            Path_Node<Room> n = new Path_Node<Room>();
-            n.data = room;
-            nodes.Add(room, n);
-        }
-
-        foreach (Room room in nodes.Keys)
-        {
-            if (room.IsOutsideRoom() == false)
-            {
-                GenerateEdgesByRoom(room);
-            }
-        }
-
-        GenerateEdgesOutside();
-
-        foreach (Room room in nodes.Keys)
-        {
             Debug.ULogChannel("Path_RoomGraph", "Room " + room.ID + " has edges to:");
             Debug.ULogChannel("Path_RoomGraph", "\tRoom " + room.ID + " has " + nodes[room].edges.Length + " edges");
             foreach (Path_Edge<Room> edge in nodes[room].edges)

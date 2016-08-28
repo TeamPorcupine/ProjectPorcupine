@@ -428,13 +428,15 @@ public class Room : IXmlSerializable
             newRoom.CopyGasPreasure(oldRoom, sizeOfOldRoom);
         }
 
+        newRoom.FindExits();
         // Tell the world that a new room has been formed.
         World.Current.AddRoom(newRoom);
-        newRoom.FindExits();
+
     }
 
-    private void FindExits()
+    public void FindExits()
     {
+        exits = new List<Tile>();
         if (this.IsOutsideRoom())
         {
             // We should never find the exits for the outside room

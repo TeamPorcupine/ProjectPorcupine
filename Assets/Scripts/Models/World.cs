@@ -123,12 +123,8 @@ public class World : IXmlSerializable
     public void AddRoom(Room r)
     {
         rooms.Add(r);
-        if (roomGraph != null)
-        {
-            roomGraph = new Path_RoomGraph(this);
-        }
+        roomGraph = null;
 
-        Debug.ULogChannel("Rooms", "creating room:" + r.ID);
         Debug.ULogChannel("Rooms", "creating room:" + r.ID);
     }
 
@@ -148,12 +144,16 @@ public class World : IXmlSerializable
 
         Debug.ULogChannel("Rooms", "Deleting room:" + r.ID);
 
+
+        roomGraph = null;
+
         // Remove this room from our rooms list.
         rooms.Remove(r);
 
         // All tiles that belonged to this room should be re-assigned to
         // the outside.
         r.ReturnTilesToOutsideRoom();
+
     }
     
     public void UpdateCharacters(float deltaTime)
