@@ -61,6 +61,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
     private Func<Tile, bool> funcPositionValidation;
 
+    private HashSet<TileType> tileTypeBuildPermissions;
+
     private bool isOperating;
 
     // TODO: Implement larger objects
@@ -79,6 +81,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         jobs = new List<Job>();
         typeTags = new HashSet<string>();
         funcPositionValidation = DefaultIsValidPosition;
+        tileTypeBuildPermissions = new HashSet<TileType>();
         Height = 1;
         Width = 1;
     }
@@ -128,6 +131,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         {
             funcPositionValidation = (Func<Tile, bool>)other.funcPositionValidation.Clone();
         }
+
+        tileTypeBuildPermissions = other.tileTypeBuildPermissions;
 
         LocalizationCode = other.LocalizationCode;
         UnlocalizedDescription = other.UnlocalizedDescription;
@@ -450,7 +455,12 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                 World.Current.SetFurnitureJobPrototype(j, this);
                 break;
 
-                case "Action":
+                case "CanBeBuiltOn":
+                    TileType tileType = TileType.GetTileType(reader.GetAttribute("tileType"));
+                    tileTypeBuildPermissions.Add(tileType);
+                    break;
+
+            case "Action":
                 XmlReader subtree = reader.ReadSubtree();
                 EventActions.ReadXml(subtree);
                 subtree.Close();
@@ -767,7 +777,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                 }
 
                 // Make sure tile is FLOOR
-                if (t2.Type != TileType.Floor)
+                if (t2.Type != TileType.Floor && tileTypeBuildPermissions.Contains(t2.Type) == false)
                 {
                     return false;
                 }
