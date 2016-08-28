@@ -36,6 +36,8 @@ public class World : IXmlSerializable
     // The pathfinding graph used to navigate our world map.
     public Path_TileGraph tileGraph;
 
+    public Wallet Wallet;
+
     // TODO: Most likely this will be replaced with a dedicated
     // class for managing job queues (plural!) that might also
     // be semi-static or self initializing or some damn thing.
@@ -57,7 +59,7 @@ public class World : IXmlSerializable
         SetupWorld(width, height);
         int seed = UnityEngine.Random.Range(0, int.MaxValue);
         WorldGenerator.Generate(this, seed);
-        Debug.Log("Generated World");
+        Debug.ULogChannel("World", "Generated World");
 
         // Make one character.
         CreateCharacter(GetTileAt(Width / 2, Height / 2));
@@ -122,7 +124,7 @@ public class World : IXmlSerializable
     {
         if (r.IsOutsideRoom())
         {
-            Debug.LogError("Tried to delete the outside room.");
+            Debug.ULogErrorChannel("World", "Tried to delete the outside room.");
             return;
         }
 
@@ -158,7 +160,13 @@ public class World : IXmlSerializable
 
     public Character CreateCharacter(Tile t)
     {
-        Character c = new Character(t);
+        return CreateCharacter(t, UnityEngine.Random.ColorHSV());
+    }
+
+    public Character CreateCharacter(Tile t, Color color)
+    {
+        Debug.ULogChannel("World", "CreateCharacter");
+        Character c = new Character(t, color);
 
         // Adds a random name to the Character
         string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
@@ -172,22 +180,7 @@ public class World : IXmlSerializable
         {
             OnCharacterCreated(c);
         }
-
-        return c;
-    }
-
-    public Character CreateCharacter(Tile t, Color color)
-    {
-        Debug.Log("CreateCharacter");
-        Character c = new Character(t, color); 
-
-        characters.Add(c);
-
-        if (OnCharacterCreated != null)
-        {
-            OnCharacterCreated(c);
-        }
-
+            
         return c;
     }
 
@@ -309,7 +302,7 @@ public class World : IXmlSerializable
         // TODO: This function assumes 1x1 tiles -- change this later!
         if (PrototypeManager.Furniture.HasPrototype(objectType) == false)
         {
-            Debug.LogError("furniturePrototypes doesn't contain a proto for key: " + objectType);
+            Debug.ULogErrorChannel("World", "furniturePrototypes doesn't contain a proto for key: " + objectType);
             return null;
         }
 
@@ -440,6 +433,16 @@ public class World : IXmlSerializable
         writer.WriteEndElement();
 
         writer.WriteElementString("Skybox", skybox.name);
+        
+        writer.WriteStartElement("Wallet");
+        foreach (Currency currency in Wallet.Currencies.Values)
+        {
+            writer.WriteStartElement("Currency");
+            currency.WriteXml(writer);
+            writer.WriteEndElement();
+        }
+
+        writer.WriteEndElement();
     }
 
     public void ReadXml(XmlReader reader)
@@ -471,6 +474,9 @@ public class World : IXmlSerializable
                     break;
                 case "Skybox":
                     LoadSkybox(reader.ReadElementString("Skybox"));
+                    break;
+                case "Wallet":
+                    ReadXml_Wallet(reader);
                     break;
             }
         }
@@ -560,7 +566,7 @@ public class World : IXmlSerializable
         }
         else
         {
-            Debug.LogWarning("No skyboxes detected! Falling back to black.");
+            Debug.ULogWarningChannel("World", "No skyboxes detected! Falling back to black.");
         }
     }
 
@@ -596,12 +602,56 @@ public class World : IXmlSerializable
             }
         }
 
+        CreateWallet();
+
         characters = new List<Character>();
         furnitures = new List<Furniture>();
         inventoryManager = new InventoryManager();
         powerSystem = new PowerSystem();
         temperature = new Temperature(Width, Height);
         LoadSkybox();
+    }
+
+    private void CreateWallet()
+    {
+        Wallet = new Wallet();
+        
+        string dataPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
+        string filePath = System.IO.Path.Combine(dataPath, "Currency.xml");
+        string xmlText = System.IO.File.ReadAllText(filePath);
+        LoadCurrencyFromFile(xmlText);
+
+        DirectoryInfo[] mods = WorldController.Instance.modsManager.GetMods();
+        foreach (DirectoryInfo mod in mods)
+        {
+            string xmlModFile = System.IO.Path.Combine(mod.FullName, "Currency.xml");
+            if (File.Exists(xmlModFile))
+            {
+                string xmlModText = System.IO.File.ReadAllText(xmlModFile);
+                LoadCurrencyFromFile(xmlModText);
+            }
+        }
+    }
+
+    private void LoadCurrencyFromFile(string xmlText)
+    {
+        XmlTextReader reader = new XmlTextReader(new StringReader(xmlText));
+
+        if (reader.ReadToDescendant("Currencies"))
+        {
+            try
+            {
+                Wallet.ReadXmlPrototype(reader);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("Error reading Currency " + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
+            }
+        }
+        else
+        {
+            Debug.LogError("Did not find a 'Currencies' element in the prototype definition file.");
+        }
     }
 
     // Gets called whenever ANY tile changes
@@ -640,7 +690,7 @@ public class World : IXmlSerializable
 
     private void ReadXml_Inventories(XmlReader reader)
     {
-        Debug.Log("ReadXml_Inventories");
+        Debug.ULogChannel("World", "ReadXml_Inventories");
 
         if (reader.ReadToDescendant("Inventory"))
         {
@@ -717,6 +767,23 @@ public class World : IXmlSerializable
                 }
             }
             while (reader.ReadToNextSibling("Character"));
+        }
+    }
+    
+    public void ReadXml_Wallet(XmlReader reader)
+    {
+        if (reader.ReadToDescendant("Currency"))
+        {
+            do
+            {
+                Currency c = new Currency
+                {
+                    Name = reader.GetAttribute("Name"),
+                    ShortName = reader.GetAttribute("ShortName"),
+                    Balance = float.Parse(reader.GetAttribute("Balance"))
+                };
+                Wallet.Currencies[c.Name] = c;
+            } while (reader.ReadToNextSibling("Character"));
         }
     }
 }
