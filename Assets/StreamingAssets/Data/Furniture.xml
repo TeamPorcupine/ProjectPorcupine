@@ -329,17 +329,6 @@
         <JobSpotOffset X="0" Y="0" />
         <JobSpawnSpotOffset X="1" Y="-1" />
 
-        <Params>
-            <Param name="tradetime" value="0" />
-            <Param name="tradetime_required" value="15" />
-            <Param name="tradeinamount" value="10" />
-            <Param name="tradeoutamount" value="15" />
-        </Params>
-
-        <Action event="OnUpdate" functionName="LandingPad_Temp_UpdateAction" />
-
-        <ContextMenuAction FunctionName="LandingPad_Test_ContextMenuAction" Text="Lua Test Deconstruct 1" RequiereCharacterSelected="false"/>
-        <ContextMenuAction FunctionName="LandingPad_Test_ContextMenuAction" Text="Lua Test Deconstruct 2" RequiereCharacterSelected="true" />
         <ContextMenuAction FunctionName="LandingPad_Test_CallTradeShip" Text="Call Trade Ship Test" RequiereCharacterSelected="false" />
 
         <LocalizationCode>furn_small_landing_pad</LocalizationCode>
