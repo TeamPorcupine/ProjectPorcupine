@@ -325,7 +325,7 @@ public class World : IXmlSerializable
             return null;
         }
 
-        furn.Removed += OnFurnitureRemoved;
+        furn.OnRemoved += OnFurnitureRemoved;
         furnitures.Add(furn);
 
         // Do we need to recalculate our rooms?
@@ -1080,8 +1080,12 @@ public class World : IXmlSerializable
                 int y = int.Parse(reader.GetAttribute("Y"));
 
                 Furniture furn = PlaceFurniture(reader.GetAttribute("objectType"), tiles[x, y], false);
-                furn.ReadXml(reader);
-            }
+                if(!reader.IsEmptyElement)
+                {
+                    furn.ReadXml(reader);
+                }
+
+            } 
             while (reader.ReadToNextSibling("Furniture"));
         }
     }

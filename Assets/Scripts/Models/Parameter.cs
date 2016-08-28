@@ -25,15 +25,11 @@ public class Parameter
     // If this Parameter contains other Parameters, contents will contain the actual parameters
     private Dictionary<string, Parameter> contents;
 
-    // Tracks if value has been explicitly set
-    private bool uninitializedValue = true;
-
     public Parameter(string name, string value) 
     {
         this.name = name;
         this.value = value;
         contents = new Dictionary<string, Parameter>();
-        uninitializedValue = false;
     }
 
     // Constructor with object parameter allows it to easily create a Parameter with any object that has a string representation (primarily for use if that string
@@ -43,7 +39,6 @@ public class Parameter
         this.name = name;
         this.value = value.ToString();
         contents = new Dictionary<string, Parameter>();
-        uninitializedValue = false;
     }
 
     // Parameter with no value assumes it is being used for Parameter with contents, and initialized the dictionary
@@ -53,6 +48,11 @@ public class Parameter
         contents = new Dictionary<string, Parameter>();
     }
 
+    // Constructor for top-level Parameter (e.g. furnParameters in Furniture.css
+    public Parameter() 
+    {
+        contents = new Dictionary<string, Parameter>();
+    }
     // Copy constructur, should properly handle copying both types of Parameters (singular and group)
     public Parameter(Parameter other)
     {
@@ -98,14 +98,20 @@ public class Parameter
 
     public static Parameter ReadXml(XmlReader reader)
     {
+        Parameter paramGroup = new Parameter(reader.GetAttribute("name"));
         XmlReader subReader = reader.ReadSubtree();
-        Parameter paramGroup = new Parameter(subReader.GetAttribute("name"));
 
         // Advance to the first inner element. Two reads are needed to ensure we don't get stuck on containing Element, or an EndElement
         subReader.Read();
+
+        // In case the reader gets passed early, we descend to Params if it's not a Params or Param
+        if (subReader.Name != "Params" && subReader.Name != "Param")
+        {
+            subReader.ReadToDescendant("Params");
+        }
         subReader.Read();
 
-        while (subReader.ReadToNextSibling("Param"))
+        do
         {
             string k = subReader.GetAttribute("name");
 
@@ -130,7 +136,7 @@ public class Parameter
                     paramGroup[k] = Parameter.ReadXml(subReader);
                 }
             }
-        }
+        } while (subReader.ReadToNextSibling("Param"));
 
         subReader.Close();
         return paramGroup;
@@ -143,7 +149,7 @@ public class Parameter
 
     public string ToString(string defaultValue) 
     {
-        if (uninitializedValue)
+        if (value == null)
         {
             return defaultValue;
         }
@@ -167,7 +173,7 @@ public class Parameter
 
     public float ToFloat(float defaultValue) 
     {
-        if (uninitializedValue)
+        if (value == null)
         {
             return defaultValue;
         }
@@ -178,20 +184,17 @@ public class Parameter
     public void SetValue(string value) 
     {
         this.value = value;
-        uninitializedValue = false;
     }
 
     public void SetValue(object value)
     {
         this.value = value.ToString();
-        uninitializedValue = false;
     }
 
     // Change value by a float, primarily here to approximate old parameter system usage
     public void ChangeFloatValue(float value)
     {
         this.value = string.Empty + (ToFloat() + value);
-        uninitializedValue = false;
     }
 
     public string GetName()
@@ -225,9 +228,16 @@ public class Parameter
 
     public void WriteXmlParamGroup(XmlWriter writer)
     {
-        writer.WriteStartElement("Param");
-        writer.WriteAttributeString("name", name);
-        if (string.IsNullOrEmpty(value) == false)
+        if (string.IsNullOrEmpty(name))
+        {
+            writer.WriteStartElement("Params");
+        }
+        else
+        {
+            writer.WriteStartElement("Param");
+            writer.WriteAttributeString("name", name);
+        }
+        if (value != null)
         {
             writer.WriteAttributeString("value", value);
         }
@@ -241,11 +251,14 @@ public class Parameter
     }
 
     public void WriteXmlParam(XmlWriter writer)
-    {       
-        writer.WriteStartElement("Param");
-        writer.WriteAttributeString("name", name);
-        writer.WriteAttributeString("value", value);
-        writer.WriteEndElement();
+    {
+        if (string.IsNullOrEmpty(name) == false)
+        {
+            writer.WriteStartElement("Param");
+            writer.WriteAttributeString("name", name);
+            writer.WriteAttributeString("value", value);
+            writer.WriteEndElement();
+        }
     }
 
     public void WriteXml(XmlWriter writer)

@@ -76,7 +76,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         EventActions = new EventAction();
 
         contextMenuLuaActions = new List<ContextMenuLuaAction>();
-        furnParameters = new Parameter("furnParameters");
+        furnParameters = new Parameter();
         jobs = new List<Job>();
         typeTags = new HashSet<string>();
         funcPositionValidation = DefaultIsValidPosition;
@@ -137,9 +137,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         UnlocalizedDescription = other.UnlocalizedDescription;
     }
 
-    public event Action<Furniture> Changed;
+    public event Action<Furniture> OnChanged;
 
-    public event Action<Furniture> Removed;
+    public event Action<Furniture> OnRemoved;
 
     public event Action<IPowerRelated> PowerValueChanged;
 
@@ -295,9 +295,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
                 for (int ypos = y - 1; ypos < y + proto.Height + 1; ypos++)
                 {
                     Tile tileAt = World.Current.GetTileAt(xpos, ypos);
-                    if (tileAt != null && tileAt.Furniture != null && tileAt.Furniture.Changed != null)
+                    if (tileAt != null && tileAt.Furniture != null && tileAt.Furniture.OnChanged != null)
                     {
-                        tileAt.Furniture.Changed(tileAt.Furniture);
+                        tileAt.Furniture.OnChanged(tileAt.Furniture);
                     }
                 }
             }
@@ -621,9 +621,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
 
         Tile.UnplaceFurniture();
 
-        if (Removed != null)
+        if (OnRemoved != null)
         {
-            Removed(this);
+            OnRemoved(this);
         }
 
         // Do we need to recalculate our rooms?
@@ -632,7 +632,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
             Room.DoRoomFloodFill(Tile);
         }
 
-        ////World.current.InvalidateTileGraph();
+        ////World.Current.InvalidateTileGraph();
 
         if (World.Current.tileGraph != null)
         {
@@ -649,9 +649,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
                 for (int ypos = y - 1; ypos < y + fheight + 1; ypos++)
                 {
                     Tile t = World.Current.GetTileAt(xpos, ypos);
-                    if (t != null && t.Furniture != null && t.Furniture.Changed != null)
+                    if (t != null && t.Furniture != null && t.Furniture.OnChanged != null)
                     {
-                        t.Furniture.Changed(t.Furniture);
+                        t.Furniture.OnChanged(t.Furniture);
                     }
                 }
             }
@@ -831,9 +831,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     [MoonSharpVisible(true)]
     private void UpdateOnChanged(Furniture furn)
     {
-        if (Changed != null)
+        if (OnChanged != null)
         {
-            Changed(furn);
+            OnChanged(furn);
         }
     }
 

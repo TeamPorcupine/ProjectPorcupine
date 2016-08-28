@@ -98,9 +98,9 @@ public class FurnitureSpriteController
 
         // Register our callback so that our GameObject gets updated whenever
         // the object's into changes.
-        furn.Changed += OnFurnitureChanged;
+        furn.OnChanged += OnFurnitureChanged;
         world.powerSystem.PowerLevelChanged += OnPowerStatusChange;
-        furn.Removed += OnFurnitureRemoved;
+        furn.OnRemoved += OnFurnitureRemoved;
     }
 
     public Sprite GetSpriteForFurniture(Furniture furn)
