@@ -235,7 +235,6 @@ public class Job : ISelectable
         // If not, don't register the work time.
         if (MaterialNeedsMet() == false)
         {
-            ////Debug.LogError("Tried to do work on a job that doesn't have all the material.");
             return;
         }
 
