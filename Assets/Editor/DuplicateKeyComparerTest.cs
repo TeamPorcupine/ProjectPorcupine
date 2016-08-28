@@ -14,7 +14,7 @@ public class DuplicateKeyComparerTest
     /* 
      * ==================================
      * Compare an object against it's self
-     * Objects should be considered duplicates
+     * Objects should be considered duplicates and so return value will be based of equalValueAtEnd
      * ==================================
      */
 
@@ -25,7 +25,7 @@ public class DuplicateKeyComparerTest
         int test_int = 1;
 
         DuplicateKeyComparer<int> dkc_int = new DuplicateKeyComparer<int>();
-        Assert.AreEqual(1, dkc_int.Compare(test_int, test_int));
+        Assert.Greater(dkc_int.Compare(test_int, test_int), 0);
     }
 
     [Test]
@@ -35,7 +35,7 @@ public class DuplicateKeyComparerTest
         int test_int = 1;
 
         DuplicateKeyComparer<int> dkc_int = new DuplicateKeyComparer<int>(false);
-        Assert.AreEqual(1, dkc_int.Compare(test_int, test_int));
+        Assert.Greater(dkc_int.Compare(test_int, test_int), 0);
     }
 
     [Test]
@@ -45,13 +45,13 @@ public class DuplicateKeyComparerTest
         int test_int = 1;
 
         DuplicateKeyComparer<int> dkc_int = new DuplicateKeyComparer<int>(true);
-        Assert.AreEqual(-1, dkc_int.Compare(test_int, test_int));
+        Assert.Less(dkc_int.Compare(test_int, test_int), 0);
     }
 
     /*
      * ==================================
      * Compare an object against a copy of it's self
-     * Objects should be considered duplicates
+     * Objects should be considered duplicates and so return value will be based of equalValueAtEnd
      * ==================================
      */
 
@@ -63,7 +63,7 @@ public class DuplicateKeyComparerTest
         int test_int_b = test_int_a;
 
         DuplicateKeyComparer<int> dkc_int = new DuplicateKeyComparer<int>();
-        Assert.AreEqual(1, dkc_int.Compare(test_int_a, test_int_b));
+        Assert.Greater(dkc_int.Compare(test_int_a, test_int_b), 0);
     }
 
     [Test]
@@ -74,7 +74,7 @@ public class DuplicateKeyComparerTest
         int test_int_b = test_int_a;
 
         DuplicateKeyComparer<int> dkc_int = new DuplicateKeyComparer<int>(false);
-        Assert.AreEqual(1, dkc_int.Compare(test_int_a, test_int_b));
+        Assert.Greater(dkc_int.Compare(test_int_a, test_int_b), 0);
     }
 
     [Test]
@@ -85,13 +85,13 @@ public class DuplicateKeyComparerTest
         int test_int_b = test_int_a;
 
         DuplicateKeyComparer<int> dkc_int = new DuplicateKeyComparer<int>(true);
-        Assert.AreEqual(-1, dkc_int.Compare(test_int_a, test_int_b));
+        Assert.Less(dkc_int.Compare(test_int_a, test_int_b), 0);
     }
 
     /*
      * ==================================
      * Compare an object against another object with the same value
-     * Objects should be considered duplicates
+     * Objects should be considered duplicates and so return value will be based of equalValueAtEnd
      * ==================================
      */
 
@@ -103,7 +103,7 @@ public class DuplicateKeyComparerTest
         int test_int_b = 1;
 
         DuplicateKeyComparer<int> dkc_int = new DuplicateKeyComparer<int>();
-        Assert.AreEqual(1, dkc_int.Compare(test_int_a, test_int_b));
+        Assert.Greater(dkc_int.Compare(test_int_a, test_int_b), 0);
     }
 
     [Test]
@@ -114,7 +114,7 @@ public class DuplicateKeyComparerTest
         int test_int_b = 1;
 
         DuplicateKeyComparer<int> dkc_int = new DuplicateKeyComparer<int>(false);
-        Assert.AreEqual(1, dkc_int.Compare(test_int_a, test_int_b));
+        Assert.Greater(dkc_int.Compare(test_int_a, test_int_b), 0);
     }
 
     [Test]
@@ -125,13 +125,13 @@ public class DuplicateKeyComparerTest
         int test_int_b = 1;
 
         DuplicateKeyComparer<int> dkc_int = new DuplicateKeyComparer<int>(true);
-        Assert.AreEqual(-1, dkc_int.Compare(test_int_a, test_int_b));
+        Assert.Less(dkc_int.Compare(test_int_a, test_int_b), 0);
     }
 
     /*
      * ==================================
      * Compare an object against another object with a larger value
-     * Objects should --NOT-- be considered duplicates
+     * Objects should --NOT-- be considered duplicates and so return value should be based on which is larger
      * ==================================
      */
 
@@ -142,9 +142,8 @@ public class DuplicateKeyComparerTest
         int test_int_a = 1;
         int test_int_b = 2;
 
-        Debug.Log("a = " + 1 + "\t b = " + 2);
         DuplicateKeyComparer<int> dkc_int = new DuplicateKeyComparer<int>();
-        Assert.AreNotEqual(1, dkc_int.Compare(test_int_a, test_int_b));
+        Assert.Less(dkc_int.Compare(test_int_a, test_int_b), 0);
     }
 
     [Test]
@@ -154,9 +153,8 @@ public class DuplicateKeyComparerTest
         int test_int_a = 1;
         int test_int_b = 2;
 
-        Debug.Log("a = " + 1 + "\t b = " + 2);
         DuplicateKeyComparer<int> dkc_int = new DuplicateKeyComparer<int>(false);
-        Assert.AreNotEqual(1, dkc_int.Compare(test_int_a, test_int_b));
+        Assert.Less(dkc_int.Compare(test_int_a, test_int_b), 0);
     }
 
     [Test]
@@ -166,15 +164,14 @@ public class DuplicateKeyComparerTest
         int test_int_a = 1;
         int test_int_b = 2;
 
-        Debug.Log("a = " + 1 + "\t b = " + 2);
         DuplicateKeyComparer<int> dkc_int = new DuplicateKeyComparer<int>(true);
-        Assert.AreNotEqual(-1, dkc_int.Compare(test_int_a, test_int_b));
+        Assert.Less(dkc_int.Compare(test_int_a, test_int_b), 0);
     }
 
     /*
      * ==================================
      * Compare an object against another object with a smaller value
-     * Objects should --NOT-- be considered duplicates
+     * Objects should --NOT-- be considered duplicates and so return value should be based on which is larger
      * ==================================
      */
 
@@ -185,9 +182,8 @@ public class DuplicateKeyComparerTest
         int test_int_a = 2;
         int test_int_b = 1;
 
-        Debug.Log("a = " + 2 + "\t b = " + 1);
         DuplicateKeyComparer<int> dkc_int = new DuplicateKeyComparer<int>();
-        Assert.AreNotEqual(1, dkc_int.Compare(test_int_a, test_int_b));
+        Assert.Greater(dkc_int.Compare(test_int_a, test_int_b), 0);
     }
 
     [Test]
@@ -197,9 +193,8 @@ public class DuplicateKeyComparerTest
         int test_int_a = 2;
         int test_int_b = 1;
 
-        Debug.Log("a = " + 2 + "\t b = " + 1);
         DuplicateKeyComparer<int> dkc_int = new DuplicateKeyComparer<int>(false);
-        Assert.AreNotEqual(1, dkc_int.Compare(test_int_a, test_int_b));
+        Assert.Greater(dkc_int.Compare(test_int_a, test_int_b), 0);
     }
 
     [Test]
@@ -209,8 +204,87 @@ public class DuplicateKeyComparerTest
         int test_int_a = 2;
         int test_int_b = 1;
 
-        Debug.Log("a = " + 2 + "\t b = " + 1);
         DuplicateKeyComparer<int> dkc_int = new DuplicateKeyComparer<int>(true);
-        Assert.AreNotEqual(-1, dkc_int.Compare(test_int_a, test_int_b));
+        Assert.Greater(dkc_int.Compare(test_int_a, test_int_b), 0);
+    }
+
+    /*
+     * ==================================
+     * null against null
+     * Expect a null refrence exeption
+     * ==================================
+     */
+
+    [Test]
+    [ExpectedException(typeof(NullReferenceException))]
+    public void Compare_NullAgainstNull()
+    {
+        DuplicateKeyComparer<string> dkc_int = new DuplicateKeyComparer<string>();
+        dkc_int.Compare(null, null);
+    }
+
+    /*
+     * ==================================
+     * value against null
+     * value should be considered grater than null so result should be positive
+     * ==================================
+     */
+
+    [Test]
+    public void Compare_ValueAgainstNull()
+    {
+        string test_string = "test";
+        DuplicateKeyComparer<string> dkc_int = new DuplicateKeyComparer<string>();
+        Assert.Greater(dkc_int.Compare(test_string, null), 0);
+    }
+
+    [Test]
+    public void Compare_ValueAgainstNull_equalValueAtEnd_False()
+    {
+        string test_string = "test";
+        DuplicateKeyComparer<string> dkc_int = new DuplicateKeyComparer<string>(false);
+        Assert.Greater(dkc_int.Compare(test_string, null), 0);
+    }
+
+    [Test]
+    public void Compare_ValueAgainstNull_equalValueAtEnd_True()
+    {
+        string test_string = "test";
+        DuplicateKeyComparer<string> dkc_int = new DuplicateKeyComparer<string>(true);
+        Assert.Greater(dkc_int.Compare(test_string, null), 0);
+    }
+
+    /*
+     * ==================================
+     * null against value
+     * Expect null refrence exeptions
+     * ==================================
+     */
+
+    [Test]
+    [ExpectedException(typeof(NullReferenceException))]
+    public void Compare_NullAgainstValue()
+    {
+        string test_string = "test";
+        DuplicateKeyComparer<string> dkc_int = new DuplicateKeyComparer<string>();
+        dkc_int.Compare(null, test_string);
+    }
+
+    [Test]
+    [ExpectedException(typeof(NullReferenceException))]
+    public void Compare_NullAgainstValue_equalValueAtEnd_False()
+    {
+        string test_string = "test";
+        DuplicateKeyComparer<string> dkc_int = new DuplicateKeyComparer<string>(false);
+        dkc_int.Compare(null, test_string);
+    }
+
+    [Test]
+    [ExpectedException(typeof(NullReferenceException))]
+    public void Compare_NullAgainstValue_equalValueAtEnd_True()
+    {
+        string test_string = "test";
+        DuplicateKeyComparer<string> dkc_int = new DuplicateKeyComparer<string>(true);
+        dkc_int.Compare(null, test_string);
     }
 }
