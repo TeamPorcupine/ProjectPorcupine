@@ -61,6 +61,8 @@ are licensed under the MIT License and can be found here:
 
 Please check the [CONTRIBUTING.md](CONTRIBUTING.md) file for contribution instructions and guidelines.
 
+For further information, such as Roadmaps, explanations of systems and features, Standards and Conventions, and all your Git needs and troubleshooting see the [Wiki](https://github.com/TeamPorcupine/ProjectPorcupine/wiki)
+
 Make sure that you are using [Unity 5.4] (https://unity3d.com/unity/beta).
 
 ## Vote on Proposed Features
