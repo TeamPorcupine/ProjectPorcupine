@@ -57,7 +57,7 @@ public class Animation
     {
         if (frame > frameCount)
         {
-            Debug.LogError("Animation SetFrame frame " + frame + " int is larger than array length " + frameCount + ".");
+            Debug.ULogErrorChannel("Animation", "SetFrame frame " + frame + " int is larger than array length " + frameCount + ".");
         }
 
         finished = false;

@@ -615,5 +615,12 @@ function OxygenCompressor_GetSpriteName(furniture)
     return baseName .. "_" .. suffix
 end
 
+function SolarPanel_OnUpdate(furniture, deltaTime)
+    local baseOutput = furniture.Parameters["base_output"].ToFloat()
+    local efficiency = furniture.Parameters["efficiency"].ToFloat()
+    local powerPerSecond = baseOutput * efficiency
+    furniture.PowerValue = powerPerSecond
+end
+
 ModUtils.ULog("Furniture.lua loaded")
 return "LUA Script Parsed!"
