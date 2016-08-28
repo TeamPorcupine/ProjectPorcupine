@@ -6,6 +6,7 @@
       <name>Wire Inc.</name>
       <name>Connectron Corp.</name>
     </potentialNames>
+    <currencyName>Quill Corp Bucks</currencyName>
     <minCurrencyBalance>1000</minCurrencyBalance>
     <maxCurrencyBalance>5000</maxCurrencyBalance>
     <minSaleMarginMultiplier>1.2</minSaleMarginMultiplier>
@@ -22,6 +23,7 @@
       <name>Raw Depot</name>
       <name>Miners Delight</name>
     </potentialNames>
+    <currencyName>Inter-Galactic Credits</currencyName>
     <minCurrencyBalance>200</minCurrencyBalance>
     <maxCurrencyBalance>1500</maxCurrencyBalance>
     <minSaleMarginMultiplier>1.2</minSaleMarginMultiplier>
