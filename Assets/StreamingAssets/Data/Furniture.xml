@@ -15,7 +15,7 @@
             <Inventory objectType="Steel Plate" amount="5" />
         </BuildingJob>
 
-        <DeconstructJob>
+        <DeconstructJob jobTime="1">
             <Inventory objectType="Steel Plate" amount="3" />
         </DeconstructJob>
 
@@ -50,7 +50,7 @@
             <Inventory objectType="Steel Plate" amount="2" />
         </BuildingJob>
 
-        <DeconstructJob>
+        <DeconstructJob jobTime="1">
             <Inventory objectType="Steel Plate" amount="1" />
         </DeconstructJob>
 
@@ -88,7 +88,7 @@
             <Inventory objectType="Steel Plate" amount="10" />
         </BuildingJob>
 
-        <DeconstructJob>
+        <DeconstructJob jobTime="5">
             <Inventory objectType="Steel Plate" amount="7" />
         </DeconstructJob>
 
@@ -118,6 +118,7 @@
         <LinksToNeighbours>true</LinksToNeighbours>
 
         <BuildingJob jobTime="0" />
+		<DeconstructJob jobTime="0" />
 
         <Action event="OnUpdate" functionName="Stockpile_UpdateAction" />
 
@@ -137,6 +138,7 @@
         <Power>-1</Power>
 
         <BuildingJob jobTime="0" />
+		<DeconstructJob jobTime="0" />
 
         <Params>
             <!-- <Param name="gas_name" value="O2" /> -->
@@ -169,6 +171,7 @@
         <Height>3</Height>
 
         <BuildingJob jobTime="0" />
+		<DeconstructJob jobTime="0" />
 
         <Params>
             <Param name="mine_type" value="Raw Iron" />
@@ -197,6 +200,7 @@
         <Power>5</Power>
 
         <BuildingJob jobTime="0" />
+		<DeconstructJob jobTime="0" />
 
         <Params>
             <Param name="burnTime" value="0" />
@@ -222,7 +226,7 @@
             <Inventory objectType="Steel Plate" amount="50" />
         </BuildingJob>
 
-        <DeconstructJob>
+        <DeconstructJob jobTime="10">
             <Inventory objectType="Steel Plate" amount="15" />
         </DeconstructJob>
 
@@ -246,6 +250,7 @@
         <Height>3</Height>
 
         <BuildingJob jobTime="0" />
+		<DeconstructJob jobTime="0" />
 
         <JobSpotOffset X="1" Y="0" />
 
@@ -272,6 +277,7 @@
         <Power>4</Power>
 
         <BuildingJob jobTime="0" />
+		<DeconstructJob jobTime="0" />
 
         <!-- This method gets called on Install -->
         <Action event="OnInstall" functionName="Heater_InstallAction"></Action>
@@ -296,6 +302,7 @@
         <Height>2</Height>
 
         <BuildingJob jobTime="1" />
+		<DeconstructJob jobTime="1" />
 
         <Params>
             <Param name="presstime" value="0" />
@@ -322,7 +329,7 @@
             <Inventory objectType="Steel Plate" amount="20" />
         </BuildingJob>
 
-        <DeconstructJob>
+        <DeconstructJob jobTime="5">
             <Inventory objectType="Steel Plate" amount="10" />
         </DeconstructJob>
 
@@ -356,6 +363,7 @@
         <Height>2</Height>
 
         <BuildingJob jobTime="2" />
+		<DeconstructJob jobTime="2" />
 
         <Params>
             <!-- <Param name="gas_name" value="O2" /> -->
@@ -384,6 +392,7 @@
         <Power>3</Power>
 
         <BuildingJob jobTime="1" />
+		<DeconstructJob jobTime="1" />
         <CanBeBuiltOn tileType="Ladder" />
 
         <Params>

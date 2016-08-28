@@ -901,7 +901,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         }
 
         // How much distance can be travel this Update?
-        float distThisFrame = speed / nextTile.MovementCost * deltaTime;
+        float distThisFrame = speed / Mathf.Clamp(nextTile.MovementCost, 0, 20) * deltaTime;
 
         // How much is that in terms of percentage to our destination?
         float percThisFrame = distThisFrame / distToTravel;

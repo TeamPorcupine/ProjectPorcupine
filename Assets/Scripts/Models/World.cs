@@ -625,9 +625,9 @@ public class World : IXmlSerializable
             }
         }
 
+        CreateInventoryPrototypes();
         CreateFurniturePrototypes();
         CreateNeedPrototypes();
-        CreateInventoryPrototypes();
         CreateTraderPrototypes();
         CreateQuests();
 

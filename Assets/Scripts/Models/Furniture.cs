@@ -64,6 +64,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
 
     private List<Inventory> deconstructInvs;
     private HashSet<TileType> tileTypeBuildPermissions;
+    private float deconstructJobTime;
 
     // TODO: Implement larger objects
     // TODO: Implement object rotation
@@ -75,7 +76,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         JobSpotOffset = Vector2.zero;
         VerticalDoor = false;
         EventActions = new EventAction();
-
+        deconstructInvs = new List<Inventory>();
         contextMenuLuaActions = new List<ContextMenuLuaAction>();
         furnParameters = new Parameter("furnParameters");
         jobs = new List<Job>();
@@ -100,7 +101,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         Height = other.Height;
         Tint = other.Tint;
         LinksToNeighbour = other.LinksToNeighbour;
-
+        deconstructInvs = other.deconstructInvs;
         JobSpotOffset = other.JobSpotOffset;
         jobSpawnSpotOffset = other.jobSpawnSpotOffset;
 
@@ -145,6 +146,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     public event Action<IPowerRelated> PowerValueChanged;
 
     public Color Tint { get; private set; }
+
+    public bool AwaitingDeconstruction { get; set; }
 
     // If this furniture gets worked by a person,
     // where is the correct spot for them to stand,
@@ -304,6 +307,19 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
             }
         }
 
+        Job dj = new Job(
+            null,
+            null,
+            null,
+            obj.deconstructJobTime,
+            null,
+            Job.JobPriority.High,
+            false,
+            false,
+            false);
+        dj.JobDescription = "job_deconstruct_" + obj.ObjectType + "_desc";
+        World.Current.SetFurnitureJobDeconstructPrototype(dj, obj);
+
         // Call LUA install scripts
         obj.EventActions.Trigger("OnInstall", obj);
 
@@ -409,6 +425,11 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
             case "MovementCost":
                 reader.Read();
                 MovementCost = reader.ReadContentAsFloat();
+                if (MovementCost == 0)
+                {
+                    MovementCost = 1000000;
+                }
+
                 break;
             case "Width":
                 reader.Read();
@@ -463,9 +484,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
                 World.Current.SetFurnitureJobPrototype(j, this);
                 break;
             case "DeconstructJob":
-                float deconstructJobTime = float.Parse(reader.GetAttribute("jobTime") ?? "-1");
-
-                deconstructInvs = new List<Inventory>();
+                deconstructJobTime = float.Parse(reader.GetAttribute("jobTime") ?? "-1");
 
                 XmlReader deconstructInventoryReader = reader.ReadSubtree();
 
@@ -476,25 +495,16 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
                         // Found an inventory requirement, so add it to the list!
                         deconstructInvs.Add(new Inventory(
                             deconstructInventoryReader.GetAttribute("objectType"),
-                            int.Parse(deconstructInventoryReader.GetAttribute("amount")),
-                            0));
+                            World.Current.inventoryPrototypes[deconstructInventoryReader.GetAttribute("objectType")].maxStackSize,
+                            int.Parse(deconstructInventoryReader.GetAttribute("amount"))));
                     }
                 }
 
-                Job dj = new Job(
-                    null,
-                    ObjectType,
-                    (Job jo) => { this.Deconstruct(); },
-                    deconstructJobTime,
-                    null,
-                    Job.JobPriority.High);
-                dj.JobDescription = "job_deconstruct_" + ObjectType + "_desc";
-                World.Current.SetFurnitureJobDeconstructPrototype(dj, this);
                 break;
-                case "CanBeBuiltOn":
-                    TileType tileType = TileType.GetTileType(reader.GetAttribute("tileType"));
-                    tileTypeBuildPermissions.Add(tileType);
-                    break;
+            case "CanBeBuiltOn":
+                TileType tileType = TileType.GetTileType(reader.GetAttribute("tileType"));
+                tileTypeBuildPermissions.Add(tileType);
+                break;
 
             case "Action":
                 XmlReader subtree = reader.ReadSubtree();
@@ -738,7 +748,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         {
             Text = "Deconstruct " + Name,
             RequireCharacterSelected = false,
-            Action = (ca, c) => Deconstruct()
+            Action = (ca, c) => WorldController.Instance.buildModeController.DeconstructFurnitureAt(Tile)
         };
         if (jobs.Count > 0 && !jobs[0].IsBeingWorked)
         {
@@ -851,7 +861,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     {
         if (t.Inventory == null)
         {
-            t.PlaceInventory(deconstructInvs[0]);
+            World.Current.inventoryManager.PlaceInventory(t, deconstructInvs[0]);
             deconstructInvs.RemoveAt(0);
         }
         else
@@ -860,7 +870,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
             {
                 if (deconstructInvs[i].objectType == t.Inventory.objectType)
                 {
-                    t.PlaceInventory(deconstructInvs[i]);
+                    World.Current.inventoryManager.PlaceInventory(t, deconstructInvs[i]);
                     if (deconstructInvs[i].StackSize == 0)
                     {
                         deconstructInvs.RemoveAt(i);
