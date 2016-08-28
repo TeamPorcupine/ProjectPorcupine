@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Sprites>
-	<Sprite name="Oxygen Generator"     		x="0" 	y="0"   w="64" h="64" pixelPerUnit="32" />
-	<Sprite name="Oxygen_Generator_Running1"    x="0" 	y="64"  w="64" h="64" pixelPerUnit="32" />
-	<Sprite name="Oxygen_Generator_Running2"    x="64" 	y="64" 	w="64" h="64" pixelPerUnit="32" />
-	<Sprite name="Oxygen_Generator_Running3"    x="128" y="64" 	w="64" h="64" pixelPerUnit="32" />
+	<Sprite name="Oxygen Generator"     		x="0" 	y="0"   w="2" h="2" pixelPerUnit="32" />
+	<Sprite name="Oxygen_Generator_Running1"    x="0" 	y="2"  w="2" h="2" pixelPerUnit="32" />
+	<Sprite name="Oxygen_Generator_Running2"    x="2" 	y="2" 	w="2" h="2" pixelPerUnit="32" />
+	<Sprite name="Oxygen_Generator_Running3"    x="4" y="2" 	w="2" h="2" pixelPerUnit="32" />
 </Sprites>

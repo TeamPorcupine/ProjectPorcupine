@@ -6,9 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class FurnitureSpriteController
@@ -17,7 +15,7 @@ public class FurnitureSpriteController
     private Dictionary<Furniture, GameObject> powerStatusGameObjectMap;
 
     private World world;
-    private GameObject furnnitureParent;
+    private GameObject furnitureParent;
 
     // Use this for initialization.
     public FurnitureSpriteController(World currentWorld)
@@ -27,7 +25,7 @@ public class FurnitureSpriteController
         // Instantiate our dictionary that tracks which GameObject is rendering which Tile data.
         furnitureGameObjectMap = new Dictionary<Furniture, GameObject>();
         powerStatusGameObjectMap = new Dictionary<Furniture, GameObject>();
-        furnnitureParent = new GameObject("Furniture");
+        furnitureParent = new GameObject("Furniture");
 
         // Register our callback so that our GameObject gets updated whenever
         // the tile's type changes.
@@ -52,7 +50,7 @@ public class FurnitureSpriteController
 
         furn_go.name = furn.ObjectType + "_" + furn.Tile.X + "_" + furn.Tile.Y;
         furn_go.transform.position = new Vector3(furn.Tile.X + ((furn.Width - 1) / 2f), furn.Tile.Y + ((furn.Height - 1) / 2f), 0);
-        furn_go.transform.SetParent(furnnitureParent.transform, true);
+        furn_go.transform.SetParent(furnitureParent.transform, true);
 
         // FIXME: This hardcoding is not ideal!
         if (furn.HasTypeTag("Door"))
@@ -115,19 +113,40 @@ public class FurnitureSpriteController
         // Otherwise, the sprite name is more complicated.
         spriteName += "_";
 
-        // Check for neighbours North, East, South, West.
+        // Check for neighbours North, Northeast, East, Southeast, South, Southwest, West, Northwest.
         int x = furn.Tile.X;
         int y = furn.Tile.Y;
 
-        spriteName += GetSuffixForNeighbour(furn, x, y + 1, "N");
-        spriteName += GetSuffixForNeighbour(furn, x + 1, y, "E");
-        spriteName += GetSuffixForNeighbour(furn, x, y - 1, "S");
-        spriteName += GetSuffixForNeighbour(furn, x - 1, y, "W");
+        string suffix = string.Empty;
 
-        // For example, if this object has all four neighbours of
+        suffix += GetSuffixForNeighbour(furn, x, y + 1, "N");
+        suffix += GetSuffixForNeighbour(furn, x + 1, y, "E");
+        suffix += GetSuffixForNeighbour(furn, x, y - 1, "S");
+        suffix += GetSuffixForNeighbour(furn, x - 1, y, "W");
+        if (suffix.Contains("N") && suffix.Contains("E"))
+        {
+            suffix += GetSuffixForNeighbour(furn, x + 1, y + 1, "ne");
+        }
+
+        if (suffix.Contains("E") && suffix.Contains("S"))
+        {
+            suffix += GetSuffixForNeighbour(furn, x + 1, y - 1, "se");
+        }
+
+        if (suffix.Contains("S") && suffix.Contains("W"))
+        {
+            suffix += GetSuffixForNeighbour(furn, x - 1, y - 1, "sw");
+        }
+
+        if (suffix.Contains("N") && suffix.Contains("W"))
+        {
+            suffix += GetSuffixForNeighbour(furn, x - 1, y + 1, "nw");
+        }
+
+        // For example, if this object has all eight neighbours of
         // the same type, then the string will look like:
-        //       Wall_NESW
-        return SpriteManager.current.GetSprite("Furniture", spriteName);
+        //       Wall_NneEseSswWnw
+        return SpriteManager.current.GetSprite("Furniture", spriteName + suffix);
     }
 
     public Sprite GetSpriteForFurniture(string objectType)
