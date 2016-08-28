@@ -27,6 +27,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     // Base cost of pathfinding over this furniture, movement cost will modify the effective value
     private float pathfindingWeight = 1f;
 
+    // Additional cost of pathfinding over this furniture, will be added to pathfindingWeight * MovementCost
+    private float pathfindingModifier = 0f;
+
     // If the job causes some kind of object to be spawned, where will it appear?
     private Vector2 jobSpawnSpotOffset = Vector2.zero;
 
@@ -146,15 +149,21 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
 
     public event Action<IPowerRelated> PowerValueChanged;
 
-    // The effective pathfinding cost of pathing over this furniture
-    public float PathfindingCost
+    // PathfindingModifier is added to PathfindingCost to get the final amount
+    public float PathfindingModifier
     {
         get
         {
-            return PathfindingWeight * MovementCost;
+            return pathfindingWeight;
+        }
+
+        set
+        {
+            pathfindingWeight = value;
         }
     }
 
+    // PathfindingWeight is multiplied by movement cost to get total PathfindingCost
     public float PathfindingWeight
     {
         get

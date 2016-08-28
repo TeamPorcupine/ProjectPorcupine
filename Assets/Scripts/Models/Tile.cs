@@ -27,8 +27,11 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
 {
     private TileType type = TileType.Empty;
 
-    // Base cost of pathfinding over this furniture, movement cost and any furniture will modify the effective value
+    // Base cost of pathfinding over this tile, movement cost and any furniture will modify the effective value
     private float pathfindingWeight = 1f;
+
+    // Additional cost of pathfinding over this tile, will be added to pathfindingWeight * MovementCost
+    private float pathfindingModifier = 0f;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Tile"/> class.
@@ -83,13 +86,20 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
     {
         get
         {
+            // If Tile's BaseMovementCost or Furniture's MovementCost = 0 (i.e. impassable) we should always return 0 (stay impassable)
+            if (Type.BaseMovementCost == 0 || (Furniture != null && Furniture.MovementCost == 0))
+            {
+                return 0f;
+            }
+
             if (Furniture != null)
             {
-                return Furniture.PathfindingCost * Type.BaseMovementCost;
+                return (Furniture.PathfindingWeight * Furniture.MovementCost * PathfindingWeight * Type.BaseMovementCost) + 
+                    Furniture.PathfindingModifier + PathfindingModifier;
             }
             else
             {
-                return PathfindingWeight * Type.BaseMovementCost;
+                return (PathfindingWeight * Type.BaseMovementCost) + PathfindingModifier;
             }
         }
     }
@@ -104,6 +114,19 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         set
         {
             pathfindingWeight = value;
+        }
+    }
+
+    public float PathfindingModifier
+    {
+        get
+        {
+            return pathfindingModifier;
+        }
+
+        set
+        {
+            pathfindingModifier = value;
         }
     }
 
