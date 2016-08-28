@@ -6,7 +6,6 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -63,7 +62,8 @@ public class PowerSystemTest
         Assert.AreEqual(1, powerGrids.Count);
         syster.Unplug(connection);
         Assert.AreEqual(1, powerGrids.Count);
-        syster.Update();
+
+        syster.Update(1.0f);
         Assert.AreEqual(0, powerGrids.Count);
     }
 
@@ -75,7 +75,8 @@ public class PowerSystemTest
         syster.PlugIn(powerProducer);
         syster.PlugIn(firstPowerConsumer);
         Assert.AreEqual(1, powerGrids.Count);
-        syster.Update();
+
+        syster.Update(1.0f);
         Assert.IsTrue(syster.HasPower(powerProducer));
         Assert.IsTrue(syster.HasPower(firstPowerConsumer));
     }
@@ -90,9 +91,34 @@ public class PowerSystemTest
         syster.PlugIn(firstPowerConsumer);
         syster.PlugIn(secondPowerConsumer);
         Assert.AreEqual(1, powerGrids.Count);
-        syster.Update();
+
+        syster.Update(1.0f);
         Assert.IsFalse(syster.HasPower(powerProducer));
         Assert.IsFalse(syster.HasPower(firstPowerConsumer));
         Assert.IsFalse(syster.HasPower(secondPowerConsumer));
+    }
+
+    [Test]
+    public void UpdateIntervalTest()
+    {
+        Connection powerProducer = new Connection { OutputRate = 50.0f };
+        Connection firstPowerConsumer = new Connection { InputRate = 30.0f };
+        syster.PlugIn(powerProducer);
+        syster.PlugIn(firstPowerConsumer);
+        Assert.AreEqual(1, powerGrids.Count);
+
+        syster.Update(0.2f);
+        Assert.IsFalse(syster.HasPower(powerProducer));
+        Assert.IsFalse(syster.HasPower(firstPowerConsumer));
+
+        syster.Update(0.2f);
+        Assert.IsFalse(syster.HasPower(powerProducer));
+        Assert.IsFalse(syster.HasPower(firstPowerConsumer));
+
+        syster.Update(0.2f);
+        syster.Update(0.2f);
+        syster.Update(0.2f);
+        Assert.IsTrue(syster.HasPower(powerProducer));
+        Assert.IsTrue(syster.HasPower(firstPowerConsumer));
     }
 }

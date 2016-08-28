@@ -16,9 +16,33 @@ using UnityEngine;
 
 public static class Settings 
 {
-    private static Dictionary<string, string> settingsDict;
-    private static string settingsFilePath = System.IO.Path.Combine("Settings", "Settings.xml");
+    // Settings.xml file that is created if none exists.
+    private const string FallbackSettingsXML = @"
+<Settings>
+  <worldWidth>101</worldWidth>
+  <worldHeight>101</worldHeight>
+  <localization>en_US</localization>
+  <DialogBoxSettings_langToggle>True</DialogBoxSettings_langToggle>
+  <DialogBoxSettings_fpsToggle>True</DialogBoxSettings_fpsToggle>
+  <DialogBoxSettings_fullScreenToggle>True</DialogBoxSettings_fullScreenToggle>
+  <DialogBoxSettings_qualityDropdown>2</DialogBoxSettings_qualityDropdown>
+  <DialogBoxSettings_vSyncDropdown>0</DialogBoxSettings_vSyncDropdown>
+  <DialogBoxSettings_resolutionDropdown>0</DialogBoxSettings_resolutionDropdown>
+  <DialogBoxSettings_aliasingDropdown>2</DialogBoxSettings_aliasingDropdown>
+  <DialogBoxSettings_musicVolume>1</DialogBoxSettings_musicVolume>
+  <ZoomLerp>10</ZoomLerp>
+  <ZoomSensitivity>3</ZoomSensitivity>
+</Settings>
+";
 
+    private static readonly string DefaultSettingsFilePath = System.IO.Path.Combine(
+        Application.streamingAssetsPath, System.IO.Path.Combine("Settings", "Settings.xml"));
+    
+    private static Dictionary<string, string> settingsDict;
+
+    private static string userSettingsFilePath = System.IO.Path.Combine(
+        Application.persistentDataPath, "Settings.xml");
+    
     public static string GetSetting(string key, string defaultValue)
     {
         // If we haven't already loaded our settings do it now.
@@ -47,23 +71,23 @@ public static class Settings
 
     public static void SetSetting(string key, string value)
     {
-        // if we haven't already loaded our settings do it now
+        // If we haven't already loaded our settings do it now.
         if (settingsDict == null) 
         {
             LoadSettings();
         }
 
-        // If we already have a setting with the same name.
+        // If we already have a setting with the same name,
         if (settingsDict.ContainsKey(key))
         {
-            // Update the setting.
+            // update the setting.
             settingsDict.Remove(key); 
             settingsDict.Add(key, value);
             Debug.ULogChannel("Settings", "Updated setting : " + key + " to value of " + value);
         }
         else 
         {
-            // Add a new setting to the dict.
+            // add a new setting to the dict.
             settingsDict.Add(key, value);
             Debug.ULogChannel("Settings", "Created new setting : " + key + " to value of " + value);
         }
@@ -78,7 +102,7 @@ public static class Settings
 
         int i;
 
-        // Attempt to parse the string, if the parse failed return the default value.
+        // Attempt to parse the string. If the parse failed return the default value.
         if (int.TryParse(s, out i) == false)
         {
             Debug.ULogWarningChannel("Settings", "Could not parse setting " + key + " of value " + s + " to type int");
@@ -95,9 +119,10 @@ public static class Settings
     {
         // Attempt to get the string value from the dict.
         string s = GetSetting(key, defaultValue.ToString());
+
         float f;
 
-        // Attempt to parse the string, if the parse failed return the default value.
+        // Attempt to parse the string. If the parse failed return the default value.
         if (float.TryParse(s, out f) == false)
         {
             Debug.ULogWarningChannel("Settings", "Could not parse setting " + key + " of value " + s + " to type float");
@@ -117,7 +142,7 @@ public static class Settings
 
         bool b;
 
-        // Attempt to parse the string, if the parse failed return the default value.
+        // Attempt to parse the string. If the parse failed return the default value.
         if (bool.TryParse(s, out b) == false)
         {
             Debug.ULogWarningChannel("Settings", "Could not parse setting " + key + " of value " + s + " to type bool");
@@ -133,17 +158,18 @@ public static class Settings
     private static string GetSetting(string key)
     {
         // If we haven't already loaded our settings do it now.
-        if (settingsDict == null)
+        if (settingsDict == null) 
         {
             LoadSettings();
         }
 
         string value;
 
-        // Attempt to get the requested setting, if it is not found log a warning and return the null string.
+        // Attempt to get the requested setting.
+        // If it is not found log a warning and return the null string.
         if (settingsDict.TryGetValue(key, out value) == false)
         {
-            Debug.ULogWarningChannel("Settings", "Attempted to access a setting that was not loaded from Settings.xml :\t" + key);
+            Debug.ULogWarningChannel("Settings", "Attempted to access a setting that was not loaded from Settings.xml:\t" + key);
             return null;
         }
 
@@ -153,15 +179,15 @@ public static class Settings
     private static void SaveSettings()
     {
         // Create an xml document.
-        XmlDocument xmlDocument = new XmlDocument();
+        XmlDocument xDoc = new XmlDocument();
 
         // Create main settings node.
-        XmlNode settingsNode = xmlDocument.CreateElement("Settings");
+        XmlNode settingsNode = xDoc.CreateElement("Settings");
 
         foreach (KeyValuePair<string, string> pair in settingsDict)
         {
             // Create a new element for each pair in the dict.
-            XmlElement settingElement = xmlDocument.CreateElement(pair.Key);
+            XmlElement settingElement = xDoc.CreateElement(pair.Key);
             settingElement.InnerText = pair.Value;
             Debug.ULogChannel("Settings", pair.Key + " : " + pair.Value);
 
@@ -169,49 +195,108 @@ public static class Settings
             settingsNode.AppendChild(settingElement);
         }
 
-        // Append Settings node to the document.
-        xmlDocument.AppendChild(settingsNode);
+        // Apend Settings node to the document.
+        xDoc.AppendChild(settingsNode);
 
-        // Get file path of Settings.xml .
-        string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, settingsFilePath);
-
-        // Save document.
-        xmlDocument.Save(filePath);
+        // Save the document.
+        try
+        {
+            xDoc.Save(userSettingsFilePath);
+        }
+        catch (Exception e)
+        {
+            Debug.ULogWarningChannel("Settings", "Settings could not be saved to " + userSettingsFilePath);
+            Debug.ULogWarningChannel("Settings", e.Message);
+        }
     }
 
     private static void LoadSettings()
     {
-        // Initilize the settings dict.
+        // Initialize the settings dict.
         settingsDict = new Dictionary<string, string>();
+        string furnitureXmlText;
 
-        // Get file path of Settings.xml and load the text.
-        string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, settingsFilePath);
-        string furnitureXmlText = System.IO.File.ReadAllText(filePath);
+        // Load the settings XML file.
+        // First try the user's private settings file in userSettingsFilePath.
+        // If that doesn't work fall back to defaultSettingsFilePath.
+        // If that doesn't work fall back to the hard coded furnitureXmlText above.
+        if (System.IO.File.Exists(userSettingsFilePath) == false)
+        {
+            Debug.ULogChannel("Settings", "User settings file could not be found at '" + userSettingsFilePath + "'. Falling back to defaults.");
 
-        // Create an xml document from Settings.xml.
-        XmlDocument xmlDocument = new XmlDocument();
-        xmlDocument.LoadXml(furnitureXmlText);
-        Debug.ULogChannel("Settings", "Loaded settings from : \t" + filePath);
+            furnitureXmlText = DefaultSettingsXMLFallback();
+        }
+        else
+        {
+            try
+            {
+                furnitureXmlText = System.IO.File.ReadAllText(userSettingsFilePath);
+            }
+            catch (Exception e)
+            {
+                Debug.ULogWarningChannel("Settings", "User settings file could not be found at '" + userSettingsFilePath + "'. Falling back to defaults.");
+                Debug.ULogWarningChannel("Settings", e.Message);
 
-        // Uber Logger doesn't handle multilines.
-        Debug.Log(xmlDocument.InnerText);
+                furnitureXmlText = DefaultSettingsXMLFallback();
+            }
+        }
 
-        // Get the Settings node , it's children are the individual settings.
-        XmlNode settingsNode = xmlDocument.GetElementsByTagName("Settings").Item(0);
+        // Create an xml document from the loaded string.
+        XmlDocument xDoc = new XmlDocument();
+        xDoc.LoadXml(furnitureXmlText);
+        Debug.ULogChannel("Settings", "Loaded settings");
+        Debug.Log(xDoc.InnerText); // Uber Logger doesn't handle multilines.
+
+        // Get the Settings node. Its children are the individual settings.
+        XmlNode settingsNode = xDoc.GetElementsByTagName("Settings").Item(0);
         XmlNodeList settingNodes = settingsNode.ChildNodes;
         Debug.ULogChannel("Settings", settingNodes.Count + " settings loaded");
 
-        // Loop for each setting.
+        // Loop for each setting
         foreach (XmlNode node in settingNodes)
         {
             if (node != null)
             {
-                // add setting to the settings dict
+                // and add setting to the settings dict.
                 settingsDict.Add(node.Name, node.InnerText);
                 Debug.ULogChannel("Settings", node.Name + " : " + node.InnerText);
             }
         }
     }
 
-    // TODO : make generic getSettingAs that infers return type from default value
+    private static string DefaultSettingsXMLFallback()
+    {
+        string furnitureXmlText = FallbackSettingsXML;
+
+        if (System.IO.File.Exists(DefaultSettingsFilePath) == false)
+        {
+            Debug.ULogWarningChannel("Settings", "Default settings file could not be found at '" + DefaultSettingsFilePath + "'. Falling back to Settings.cs defaults.");
+
+            try
+            {
+                System.IO.File.WriteAllText(DefaultSettingsFilePath, FallbackSettingsXML);
+            }
+            catch (Exception e)
+            {
+                Debug.ULogWarningChannel("Settings", "Default settings file could not be created at '" + DefaultSettingsFilePath + "'.");
+                Debug.ULogWarningChannel("Settings", e.Message);
+            }
+        }
+        else
+        {
+            try
+            {
+                furnitureXmlText = System.IO.File.ReadAllText(DefaultSettingsFilePath);
+            }
+            catch (Exception e)
+            {
+                Debug.ULogWarningChannel("Settings", "Settings file at '" + DefaultSettingsFilePath + "' could not be read. Falling back to Settings.cs defaults.");
+                Debug.ULogWarningChannel("Settings", e.Message);
+            }
+        }
+
+        return furnitureXmlText;
+    }
+
+    // TODO: Make generic getSettingAs that infers return type from default value.
 }
