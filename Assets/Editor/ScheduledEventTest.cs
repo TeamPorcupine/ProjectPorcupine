@@ -152,4 +152,31 @@ public class ScheduledEventTest
         Assert.That(evt.Finished, Is.False);
         Assert.That(didRun, Is.True);
     }
+
+    [Test]
+    public void StopEventRunTest()
+    {
+        ScheduledEvent evt = new ScheduledEvent(
+            "test5",
+            callback,
+            3.0f,
+            true,
+            1);
+
+        // doesn't run until the cooldown is reached
+        didRun = false;
+        evt.Update(5.0f);
+        Assert.That(evt.LastShot, Is.False);
+        Assert.That(evt.Finished, Is.False);
+        Assert.That(didRun, Is.True);
+
+        evt.Stop();
+
+        // and now it should not run
+        Assert.That(evt.LastShot, Is.False);
+        Assert.That(evt.Finished, Is.True);
+        didRun = false;
+        evt.Update(5.0f);
+        Assert.That(didRun, Is.False);
+    }
 }

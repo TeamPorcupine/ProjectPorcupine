@@ -98,9 +98,9 @@ namespace Scheduler
 
         public void Fire()
         {
-            if (RepeatsLeft < 1 && RepeatsForever == false)
+            if (Finished)
             {
-                Debug.ULogChannel("ScheduledEvent", "Scheduled event '" + Name + "' finished last repeat.");
+                Debug.ULogChannel("ScheduledEvent", "Scheduled event '" + Name + "' finished last repeat already -- not firing again.");
                 return;
             }
 
