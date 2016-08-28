@@ -211,7 +211,7 @@
     </Furniture>
 
 
-    <Furniture objectType="Cloning Pod">
+    <Furniture objectType="cloning_pod">
         <Name>Cloning Pod</Name>
         <Description>Creates an additional worker, then is destroyed.</Description>
         <MovementCost>50</MovementCost>
@@ -226,10 +226,15 @@
             <Inventory objectType="Steel Plate" amount="15" />
         </DeconstructJob>
 
+        <Params>
+            <Param name="animationTimer" value="1" />
+        </Params>
+
         <JobSpotOffset X="0" Y="-1" />
         <JobSpawnSpotOffset X="1" Y="-1" />
 
         <Action event="OnUpdate" functionName="CloningPod_UpdateAction" />
+        <GetSpriteName FunctionName="CloningPod_GetSpriteName" />
 
         <LocalizationCode>furn_cloning_pod</LocalizationCode>
         <UnlocalizedDescription>furn_cloning_pod_desc</UnlocalizedDescription>

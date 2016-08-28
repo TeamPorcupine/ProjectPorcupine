@@ -462,6 +462,16 @@ function CloningPod_JobComplete(j)
     j.furniture.Deconstruct()
 end
 
+function CloningPod_GetSpriteName(j)
+    local baseName = "cloning_pod"
+    local suffix = 0
+    if (j.IsBeingWorked) then
+        suffix = furniture.job.JobTime * 1
+    end
+    return baseName .. "_" .. suffix
+end
+
+
 function PowerGenerator_UpdateAction(furniture, deltatime)
     if (furniture.JobCount() < 1 and furniture.Parameters["burnTime"].ToFloat() == 0) then
         furniture.PowerValue = 0
