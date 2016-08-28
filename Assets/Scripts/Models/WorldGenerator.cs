@@ -197,12 +197,13 @@ public class WorldGenerator
                 }
                 catch (System.Exception e)
                 {
+                    // Leaving this in because UberLogger doesn't handle multiline messages  
                     Debug.LogError("Error reading WorldGenerator/Asteroid" + System.Environment.NewLine + "Exception: " + e.Message + System.Environment.NewLine + "StackTrace: " + e.StackTrace);
                 }
             }
             else
             {
-                Debug.LogError("Did not find a 'Asteroid' element in the WorldGenerator definition file.");
+                Debug.ULogErrorChannel("WorldGenerator", "Did not find a 'Asteroid' element in the WorldGenerator definition file.");
             }
 
             if (reader.ReadToNextSibling("StartArea"))
@@ -229,7 +230,7 @@ public class WorldGenerator
 
                                 if (splittedString.Length < startAreaWidth * startAreaHeight)
                                 {
-                                    Debug.LogError("Error reading 'Tiles' array to short: " + splittedString.Length + " !");
+                                    Debug.ULogErrorChannel("WorldGenerator", "Error reading 'Tiles' array to short: " + splittedString.Length + " !");
                                     break;
                                 }
 
@@ -268,12 +269,12 @@ public class WorldGenerator
             }
             else
             {
-                Debug.LogError("Did not find a 'StartArea' element in the WorldGenerator definition file.");
+                Debug.ULogErrorChannel("WorldGenerator", "Did not find a 'StartArea' element in the WorldGenerator definition file.");
             }
         }
         else
         {
-            Debug.LogError("Did not find a 'WorldGenerator' element in the WorldGenerator definition file.");
+            Debug.ULogErrorChannel("WorldGenerator", "Did not find a 'WorldGenerator' element in the WorldGenerator definition file.");
         }
     }
 }
