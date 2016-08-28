@@ -12,7 +12,7 @@ function CanBuildHere_Standard ( tile )
 end
 
 function CanBuildHere_Ladder ( tile )
-	return tile.room.IsOutsideRoom()
+	return tile.Room.IsOutsideRoom()
 end
 
 ModUtils.ULog("Tile.lua loaded")

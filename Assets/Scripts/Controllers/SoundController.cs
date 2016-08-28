@@ -16,8 +16,8 @@ public class SoundController
     // Use this for initialization
     public SoundController(World world)
     {
-        world.cbFurnitureCreated += OnFurnitureCreated;
-        world.cbTileChanged += OnTileChanged;
+        world.OnFurnitureCreated += OnFurnitureCreated;
+        world.OnTileChanged += OnTileChanged;
     }
     
     // Update is called once per frame
@@ -34,7 +34,7 @@ public class SoundController
             return;
         }
 
-        AudioClip ac = Resources.Load<AudioClip>("Sounds/" + furn.objectType + "_OnCreated");
+        AudioClip ac = Resources.Load<AudioClip>("Sounds/" + furn.ObjectType + "_OnCreated");
 
         if (ac == null)
         {
