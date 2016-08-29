@@ -617,7 +617,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         }
         else
         {
-            fulfillableInventoryRequirements = FulfillableInventoryRequirements(MyJob);
+            fulfillableInventoryRequirements = MyJob.FulfillableInventoryRequirements();
 
             // If we somehow get here and fulfillableInventoryRequirements is empty then there is a problem!
             if (fulfillableInventoryRequirements == null || fulfillableInventoryRequirements.Count() == 0)
@@ -742,39 +742,6 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         }
 
         return false; // We can't continue until all materials are satisfied.
-    }
-
-    /// <summary>
-    /// Fulfillable inventory requirements for job.
-    /// </summary>
-    /// <returns>A list of (string) objectTypes for job inventory requirements that can be met. Returns null if the job requires materials which do not exist on the map.</returns>
-    private List<string> FulfillableInventoryRequirements(Job job)
-    {
-        List<string> fulfillableInventoryRequirements = new List<string>();
-
-        foreach (Inventory inv in job.GetInventoryRequirementValues())
-        {
-            if (job.acceptsAny == false)
-            {
-                if (World.Current.inventoryManager.QuickCheck(inv.objectType) == false)
-                {
-                    // the job requires ALL inventory requirements to be met, and there is no source of a desired objectType
-                    ///AbandonJob(true);
-                    return null;
-                }
-                else
-                {
-                    fulfillableInventoryRequirements.Add(inv.objectType);
-                }
-            }
-            else if (World.Current.inventoryManager.QuickCheck(inv.objectType))
-            {
-                // there is a source for a desired objectType that the job will accept
-                fulfillableInventoryRequirements.Add(inv.objectType);
-            }
-        }
-
-        return fulfillableInventoryRequirements;
     }
 
     private bool WalkingToUsableInventory()
@@ -951,7 +918,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         // cancelling the job manually.
         if (job != null)
         {
-            List<string> desired = FulfillableInventoryRequirements(job);
+            List<string> desired = job.FulfillableInventoryRequirements();
 
             // Check if the created inventory can fulfill the waiting job requirements.
             if (desired != null && desired.Contains(inv.objectType))
