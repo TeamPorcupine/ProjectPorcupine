@@ -142,6 +142,8 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
 
     public void WriteXml(XmlWriter writer)
     {
+        // If we reach this point through inventories we definitely have a tile
+        // If we don't have a tile, that means we're writing a character's inventory
         if (tile != null)
         {
             writer.WriteAttributeString("X", tile.X.ToString());
