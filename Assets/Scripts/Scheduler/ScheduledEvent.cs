@@ -8,7 +8,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
@@ -93,16 +92,17 @@ namespace Scheduler
 
         /// <summary>
         /// Advance the event clock by the specified deltaTime, and if it drops less that or equal to zero fire the event, resetting the clock to Cooldown.
+        /// Note: This fires the event multiple times if deltaTime is >= 2 * cooldown.
         /// </summary>
         /// <param name="deltaTime">Delta time in seconds (note: game time, not real time).</param>
         public void Update(float deltaTime)
         {
             this.TimeToWait -= deltaTime;
 
-            if (this.TimeToWait <= 0)
+            while (this.TimeToWait <= 0)
             {
                 Fire();
-                this.TimeToWait = this.Cooldown;
+                this.TimeToWait += this.Cooldown;
             }
         }
 
@@ -154,6 +154,7 @@ namespace Scheduler
             {
                 writer.WriteAttributeString("repeatsLeft", this.RepeatsLeft.ToString());
             }
+
             writer.WriteEndElement();
         }
 

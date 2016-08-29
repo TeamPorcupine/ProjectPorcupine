@@ -12,8 +12,6 @@ using System.Text;
 using System.Xml;
 using NUnit.Framework;
 using Scheduler;
-using UnityEditor;
-using UnityEngine;
 
 public class ScheduledEventTest
 {
@@ -96,7 +94,7 @@ public class ScheduledEventTest
         // event that repeats twice
         didRun = false;
         ScheduledEvent evt = new ScheduledEvent(
-            "test3",
+            "test",
             callback,
             3.0f,
             false,
@@ -125,7 +123,7 @@ public class ScheduledEventTest
     public void CooldownEventRunTest()
     {
         ScheduledEvent evt = new ScheduledEvent(
-            "test4",
+            "test",
             callback,
             3.0f,
             true,
@@ -170,10 +168,33 @@ public class ScheduledEventTest
     }
 
     [Test]
+    public void LargeDeltaTimeEventRunTest()
+    {
+        int tally = 0;
+
+        ScheduledEvent evt = new ScheduledEvent(
+            "test",
+            (e) => { tally++; Debug.ULogChannel("ScheduledEventTest", "Event {0} fired", e.Name); },
+            3.0f,
+            true,
+            0);
+
+        // event should fire three times in 10 seconds
+        evt.Update(10f);
+        Assert.That(tally, Is.EqualTo(3));
+
+        // timer should be 4 * 3 - 10 = 2 seconds
+        Assert.That(evt.TimeToWait, Is.EqualTo(2));
+
+        Assert.That(evt.LastShot, Is.False);
+        Assert.That(evt.Finished, Is.False);
+    }
+
+    [Test]
     public void StopEventRunTest()
     {
         ScheduledEvent evt = new ScheduledEvent(
-            "test5",
+            "test",
             callback,
             3.0f,
             true,
@@ -210,7 +231,6 @@ public class ScheduledEventTest
         XmlWriter writer = new XmlTextWriter(new StringWriter(sb));
         evt.WriteXml(writer);
 
-        Debug.ULogChannel("ScheduledEventTest", sb.ToString());
         Assert.That(sb.ToString(), Is.EqualTo("<Event name=\"test\" cooldown=\"3\" timeToWait=\"3\" repeatsForever=\"True\" />"));
 
         evt = new ScheduledEvent(

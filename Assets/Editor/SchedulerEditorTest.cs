@@ -9,8 +9,6 @@
 using System;
 using NUnit.Framework;
 using Scheduler;
-using UnityEditor;
-using UnityEngine;
 
 public class SchedulerEditorTest
 {
@@ -74,18 +72,18 @@ public class SchedulerEditorTest
     public void SchedulerRunTest()
     {
         // a tally value which counts event firings
-        int i = 0;
+        int tally = 0;
         Assert.That(scheduler.Events.Count, Is.EqualTo(0));
 
         ScheduledEvent evt1 = new ScheduledEvent(
             "test - increment i by 1",
-            (e) => { i++; callback(e); },
+            (e) => { tally++; callback(e); },
             2.0f,
             true,
             1);
         ScheduledEvent evt2 = new ScheduledEvent(
             "test - increment i by 10",
-            (e) => { i += 10; callback(e); },
+            (e) => { tally += 10; callback(e); },
             3.0f,
             true,
             1);
@@ -97,7 +95,7 @@ public class SchedulerEditorTest
         int[] expectedTally = { 0, 0, 1, 11, 12, 12, 23, 23, 24, 34, 35 };
         for (int t = 0; t <= 10; ++t)
         {
-            Assert.That(i, Is.EqualTo(expectedTally[t]));
+            Assert.That(tally, Is.EqualTo(expectedTally[t]));
             scheduler.Update(1.0f);
         }
     }

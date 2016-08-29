@@ -9,8 +9,6 @@
 using System;
 using NUnit.Framework;
 using Scheduler;
-using UnityEditor;
-using UnityEngine;
 
 public class EventPrototypeEditorTest
 {
