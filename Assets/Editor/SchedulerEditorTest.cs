@@ -7,6 +7,9 @@
 // ====================================================
 #endregion
 using System;
+using System.IO;
+using System.Text;
+using System.Xml;
 using NUnit.Framework;
 using Scheduler;
 
@@ -207,5 +210,19 @@ public class SchedulerEditorTest
 
         // but Update() correctly purges at the end of each call
         Assert.That(scheduler.Events.Count, Is.EqualTo(0));
+    }
+
+    [Test]
+    public void SchedulerWriteXmlTest()
+    {
+        scheduler.ScheduleEvent("ping_log", 1f, true, 0);
+        scheduler.ScheduleEvent("ping_log_lua", 2f, false, 3);
+
+        StringBuilder sb = new StringBuilder();
+        XmlWriter writer = new XmlTextWriter(new StringWriter(sb));
+        scheduler.WriteXml(writer);
+
+        string expectedXml = "<Scheduler><Event name=\"ping_log\" cooldown=\"1\" timeToWait=\"1\" repeatsForever=\"True\" /><Event name=\"ping_log_lua\" cooldown=\"2\" timeToWait=\"2\" repeatsLeft=\"3\" /></Scheduler>";
+        Assert.That(sb.ToString(), Is.EqualTo(expectedXml));
     }
 }

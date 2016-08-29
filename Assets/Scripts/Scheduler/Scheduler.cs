@@ -186,7 +186,13 @@ namespace Scheduler
 
         public void WriteXml(XmlWriter writer)
         {
-            throw new NotImplementedException();
+            writer.WriteStartElement("Scheduler");
+            foreach (ScheduledEvent evt in Events)
+            {
+                evt.WriteXml(writer);
+            }
+
+            writer.WriteEndElement();
         }
 
         #endregion
