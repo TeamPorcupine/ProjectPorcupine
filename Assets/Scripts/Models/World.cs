@@ -1134,7 +1134,7 @@ public class World : IXmlSerializable
         }
     }
     
-    public void ReadXml_Wallet(XmlReader reader)
+    private void ReadXml_Wallet(XmlReader reader)
     {
         if (reader.ReadToDescendant("Currency"))
         {
@@ -1146,8 +1146,10 @@ public class World : IXmlSerializable
                     ShortName = reader.GetAttribute("ShortName"),
                     Balance = float.Parse(reader.GetAttribute("Balance"))
                 };
+
                 Wallet.Currencies[c.Name] = c;
-            } while (reader.ReadToNextSibling("Character"));
+            } 
+            while (reader.ReadToNextSibling("Character"));
         }
     }
 }
