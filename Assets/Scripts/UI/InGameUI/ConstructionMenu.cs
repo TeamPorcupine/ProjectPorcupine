@@ -22,15 +22,22 @@ public class ConstructionMenu : MonoBehaviour
 
     private BuildModeController bmc;
 
-    private GameObject[] FurnitureSubs 
+    private GameObject[] furnitureSubs;
+
+    private GameObject[] FurnitureSubs
     {
-        get 
+        get
         {
-            return new GameObject[] 
+            if (furnitureSubs == null)
             {
-                // add every furniture submenu here
-                furnitureMenu, floorMenu
-            };
+                furnitureSubs = new GameObject[]
+                {
+                    // add every furniture submenu here
+                    furnitureMenu, floorMenu
+                };
+            }
+
+            return furnitureSubs;
         }
     }
 
