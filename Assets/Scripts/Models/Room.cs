@@ -173,7 +173,23 @@ public class Room : IXmlSerializable
         return tiles.Count();
     }
 
-    // Changes gas by an amount in preasure(in atm) multiplyed by number of tiles.
+    // Changes gas by amount in pressure (atm) per tile, evenly distributed over all gases present
+    public void ChangeGas(float amount)
+    {
+        if (IsOutsideRoom())
+        {
+            return;
+        }
+
+        List<string> names = new List<string>(atmosphericGasses.Keys);
+        foreach(string name in names)
+        {
+            float fraction = GetGasFraction(name);
+            ChangeGas(name, amount * fraction);
+        }
+    }
+
+    // Changes gas by an amount in pressure(in atm) per tile
     public void ChangeGas(string name, float amount)
     {
         if (IsOutsideRoom())

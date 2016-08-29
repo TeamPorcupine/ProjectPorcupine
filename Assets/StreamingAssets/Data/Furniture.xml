@@ -434,5 +434,28 @@
 
     </Furniture>
     
-    
+    <Furniture objectType="pump_air">
+        <Name>Air Pump</Name>
+        <MovementCost>0</MovementCost>
+        <PathfindingWeight>2</PathfindingWeight>
+        <Width>1</Width>
+        <Height>1</Height>
+        <EnclosesRooms>true</EnclosesRooms>
+        <Power>1</Power>
+
+        <BuildingJob jobTime="1" />
+        <CanReplaceFurniture typeTag="Wall" />
+
+        <Params>
+            <Param name="gas_throughput" value="1" />
+            <Param name="flow_direction_up" value="1" />
+        </Params>
+
+        <Action event="OnUpdate" functionName="AirPump_OnUpdate" />
+        <GetSpriteName functionName="AirPump_GetSpriteName" />
+        <ContextMenuAction FunctionName="AirPump_FlipDirection" Text="Flip Direction" RequiereCharacterSelected="false"/>
+
+        <LocalizationCode>furn_pump_air</LocalizationCode>
+        <UnlocalizedDescription>furn_pump_air_desc</UnlocalizedDescription>
+    </Furniture>
 </Furnitures>

@@ -678,5 +678,70 @@ function SolarPanel_OnUpdate(furniture, deltaTime)
     furniture.PowerValue = powerPerSecond
 end
 
+function AirPump_OnUpdate(furniture, deltaTime)
+    if (furniture.HasPower() == false) then
+        return
+    end
+
+    local t = furniture.Tile
+    local north = World.current.GetTileAt(t.X, t.Y + 1)
+    local south = World.current.GetTileAt(t.X, t.Y - 1)
+    local west = World.current.GetTileAt(t.X - 1, t.Y)
+    local east = World.current.GetTileAt(t.X + 1, t.Y)
+    
+    local flow = furniture.Parameters["gas_throughput"].ToFloat() * deltaTime
+    
+    if (north.Room != nil and south.Room != nil) then
+        if (furniture.Parameters["flow_direction_up"].ToFloat() > 0) then
+           south.Room.ChangeGas(-flow)
+           north.Room.ChangeGas(flow)
+        else
+           north.Room.ChangeGas(-flow)
+           south.Room.ChangeGas(flow) 
+        end
+    elseif (west.Room != nil and east.Room != nil) then
+        if (furniture.Parameters["flow_direction_up"].ToFloat() > 0) then
+            west.Room.ChangeGas(-flow)
+            east.Room.ChangeGas(flow)
+        else
+            east.Room.ChangeGas(-flow)
+            west.Room.ChangeGas(flow)
+        end
+    end
+end
+
+function AirPump_GetSpriteName(furniture)
+    local t = furniture.Tile
+    local north = World.current.GetTileAt(t.X, t.Y + 1)
+    local south = World.current.GetTileAt(t.X, t.Y - 1)
+    local west = World.current.GetTileAt(t.X - 1, t.Y)
+    local east = World.current.GetTileAt(t.X + 1, t.Y)
+    
+    suffix = ""
+    if (north.Room != nil and south.Room != nil) then
+        if (furniture.Parameters["flow_direction_up"].ToFloat() > 0) then
+           suffix = "_SN"
+        else
+           suffix = "_NS"
+        end
+    elseif (west.Room != nil and east.Room != nil) then
+        if (furniture.Parameters["flow_direction_up"].ToFloat() > 0) then
+            suffix = "_WE"
+        else
+            suffix = "_EW"
+        end
+    end
+    
+    return furniture.ObjectType .. suffix
+end
+
+function AirPump_FlipDirection(furniture, character)
+    if (furniture.Parameters["flow_direction_up"].ToFloat() > 0) then
+        furniture.Parameters["flow_direction_up"].SetValue(0)
+    else
+        furniture.Parameters["flow_direction_up"].SetValue(1)
+    end
+end
+
 ModUtils.ULog("Furniture.lua loaded")
 return "LUA Script Parsed!"
