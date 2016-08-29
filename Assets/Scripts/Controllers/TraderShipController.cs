@@ -37,7 +37,7 @@ public class TraderShipController : MonoBehaviour
             destination = LeavingCoordinates;
         }
 
-        var distance = Vector3.Distance(transform.position, destination);
+        float distance = Vector3.Distance(transform.position, destination);
 
         if (distance > DestinationReachedThreshold)
         {
@@ -82,7 +82,7 @@ public class TraderShipController : MonoBehaviour
     {
         trade.Player.Currency.Balance += trade.TradeCurrencyBalanceForPlayer;
 
-        foreach (var tradeItem in trade.TradeItems)
+        foreach (TradeItem tradeItem in trade.TradeItems)
         {
             if (tradeItem.TradeAmount > 0)
             {

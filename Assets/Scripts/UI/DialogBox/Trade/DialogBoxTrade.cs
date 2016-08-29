@@ -102,7 +102,7 @@ public class DialogBoxTrade : DialogBox
 
     private void ClearInterface()
     {
-        var childrens = TradeItemListPanel.Cast<Transform>().ToList();
+        List<Transform> childrens = TradeItemListPanel.Cast<Transform>().ToList();
         foreach (Transform child in childrens)
         {
             Destroy(child.gameObject);

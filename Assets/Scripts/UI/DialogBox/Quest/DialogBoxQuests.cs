@@ -25,8 +25,8 @@ public class DialogBoxQuests : DialogBox
 
     private void ClearInterface()
     {
-        var childrens = QuestItemListPanel.Cast<Transform>().ToList();
-        foreach (var child in childrens)
+        List<Transform> childrens = QuestItemListPanel.Cast<Transform>().ToList();
+        foreach (Transform child in childrens)
         {
             Destroy(child.gameObject);
         }
@@ -36,12 +36,12 @@ public class DialogBoxQuests : DialogBox
     {
         List<Quest> quests = PrototypeManager.Quest.Values.Where(q => IsQuestAvailable(q)).ToList();
 
-        foreach (var quest in quests)
+        foreach (Quest quest in quests)
         {
-            var go = (GameObject)Instantiate(QuestItemPrefab);
+            GameObject go = (GameObject)Instantiate(QuestItemPrefab);
             go.transform.SetParent(QuestItemListPanel);
 
-            var questItemBehaviour = go.GetComponent<DialogBoxQuestItem>();
+            DialogBoxQuestItem questItemBehaviour = go.GetComponent<DialogBoxQuestItem>();
             questItemBehaviour.SetupQuest(this, quest);
         }
     }

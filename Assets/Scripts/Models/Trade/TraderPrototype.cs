@@ -107,9 +107,9 @@ public class TraderPrototype
             Stock = new List<Inventory>()
         };
 
-        foreach (var potentialStock in PotentialStock)
+        foreach (TraderPotentialInventory potentialStock in PotentialStock)
         {
-            var itemIsInStock = Random.Range(0f, 1f) > potentialStock.Rarity;
+            bool itemIsInStock = Random.Range(0f, 1f) > potentialStock.Rarity;
 
             if (itemIsInStock)
             {
