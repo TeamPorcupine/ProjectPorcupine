@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Sprites>
-	<Sprite name="raw_copper"     x="0" y="0" w="64" h="64" pixelPerUnit="64" />
+	<Sprite name="raw_copper"     x="0" y="0" w="1" h="1" pixelPerUnit="64" />
 </Sprites>

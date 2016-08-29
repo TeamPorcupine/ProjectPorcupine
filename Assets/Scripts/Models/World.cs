@@ -526,19 +526,19 @@ public class World : IXmlSerializable
     {
         furnitures.Remove(furn);
     }
-
-    public void ReadXml_Wallet(XmlReader reader)
+    
+    private void ReadXml_Wallet(XmlReader reader)
     {
         if (reader.ReadToDescendant("Currency"))
         {
             do
             {
                 Currency c = new Currency
-                    {
-                        Name = reader.GetAttribute("Name"),
-                        ShortName = reader.GetAttribute("ShortName"),
-                        Balance = float.Parse(reader.GetAttribute("Balance"))
-                    };
+                {
+                    Name = reader.GetAttribute("Name"),
+                    ShortName = reader.GetAttribute("ShortName"),
+                    Balance = float.Parse(reader.GetAttribute("Balance"))
+                };
                 Wallet.Currencies[c.Name] = c;
             }
             while (reader.ReadToNextSibling("Character"));
