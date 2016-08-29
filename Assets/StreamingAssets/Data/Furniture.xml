@@ -31,26 +31,25 @@
 
     <LocalizationCode>furn_steel_wall</LocalizationCode>
     <UnlocalizedDescription>furn_steel_wall_desc</UnlocalizedDescription>
-
   </Furniture>
 
 
-    <Furniture objectType="Door">
-        <Name>Door</Name>
-        <Description>A door that characters can walk through.</Description>
-        <TypeTag>Door</TypeTag>
-        <MovementCost>1</MovementCost>
-        <!-- PathfindingModifer is additive, so a PathfindingModifier of 1 will basically respond to Pathfinding as though it takes 1 extra tile of movement -->
-        <!-- Default value of PathfindingModifier is 0 -->
-        <PathfindingModifier>1.5</PathfindingModifier>
-        <!-- PathfindingWeight is multiplicative, so a PathfindingWeight of 2 would basically respond to Pathfinding as though it takes double the tiles of movement -->
-        <!-- Default value of PathfindingWeight is 1 -->
-        <PathfindingWeight>1</PathfindingWeight>
-        <Width>1</Width>
-        <Height>1</Height>
-        <LinksToNeighbours>false</LinksToNeighbours>
-        <EnclosesRooms>true</EnclosesRooms>
-        <CanReplaceFurniture typeTag="Wall" />
+  <Furniture objectType="Door">
+    <Name>Door</Name>
+    <Description>A door that characters can walk through.</Description>
+    <TypeTag>Door</TypeTag>
+    <MovementCost>1</MovementCost>
+    <!-- PathfindingModifer is additive, so a PathfindingModifier of 1 will basically respond to Pathfinding as though it takes 1 extra tile of movement -->
+    <!-- Default value of PathfindingModifier is 0 -->
+    <PathfindingModifier>1.5</PathfindingModifier>
+    <!-- PathfindingWeight is multiplicative, so a PathfindingWeight of 2 would basically respond to Pathfinding as though it takes double the tiles of movement -->
+    <!-- Default value of PathfindingWeight is 1 -->
+    <PathfindingWeight>1</PathfindingWeight>
+    <Width>1</Width>
+    <Height>1</Height>
+    <LinksToNeighbours>false</LinksToNeighbours>
+    <EnclosesRooms>true</EnclosesRooms>
+    <CanReplaceFurniture typeTag="Wall" />
 
     <BuildingJob jobTime="1">
       <Inventory objectType="Steel Plate" amount="2" />
@@ -74,23 +73,22 @@
 
     <LocalizationCode>furn_door</LocalizationCode>
     <UnlocalizedDescription>furn_door_desc</UnlocalizedDescription>
-
   </Furniture>
 
 
-    <Furniture objectType="Airlock">
-        <Name>Door</Name>
-        <Description>An Airlock prevents air from leaving the base</Description>
-        <TypeTag>Door</TypeTag>
-        <MovementCost>1</MovementCost>
-        <PathfindingModifier>3</PathfindingModifier>
-        <PathfindingWeight>1</PathfindingWeight>
-        <Width>1</Width>
-        <Height>1</Height>
-        <LinksToNeighbours>false</LinksToNeighbours>
-        <EnclosesRooms>true</EnclosesRooms>
-        <CanReplaceFurniture typeTag="Wall" />
-        <CanReplaceFurniture typeTag="Door" />
+  <Furniture objectType="Airlock">
+    <Name>Door</Name>
+    <Description>An Airlock prevents air from leaving the base</Description>
+    <TypeTag>Door</TypeTag>
+    <MovementCost>1</MovementCost>
+    <PathfindingModifier>3</PathfindingModifier>
+    <PathfindingWeight>1</PathfindingWeight>
+    <Width>1</Width>
+    <Height>1</Height>
+    <LinksToNeighbours>false</LinksToNeighbours>
+    <EnclosesRooms>true</EnclosesRooms>
+    <CanReplaceFurniture typeTag="Wall" />
+    <CanReplaceFurniture typeTag="Door" />
 
     <BuildingJob jobTime="5">
       <Inventory objectType="Steel Plate" amount="10" />
@@ -106,17 +104,16 @@
       <Param name="thermal_diffusivity" value="0.00001" />
     </Params>
 
-        <Action event="OnUpdate" functionName="OnUpdate_AirlockDoor" />
-        <Action event="OnUpdate" functionName="OnUpdate_Leak_Airlock" />
-        
-        <ContextMenuAction FunctionName="AirlockDoor_Toggle_Pressure_Lock" Text="Toggle Pressure Lock" RequiereCharacterSelected="false"/>
+    <Action event="OnUpdate" functionName="OnUpdate_AirlockDoor" />
+    <Action event="OnUpdate" functionName="OnUpdate_Leak_Airlock" />
 
-        <IsEnterable FunctionName="IsEnterable_Door" />
-        <GetSpriteName FunctionName="GetSpriteName_Airlock" />
-        
-        <LocalizationCode>furn_airlock</LocalizationCode>
-        <UnlocalizedDescription>furn_airlock_desc</UnlocalizedDescription>
+    <ContextMenuAction FunctionName="AirlockDoor_Toggle_Pressure_Lock" Text="Toggle Pressure Lock" RequiereCharacterSelected="false"/>
 
+    <IsEnterable FunctionName="IsEnterable_Door" />
+    <GetSpriteName FunctionName="GetSpriteName_Airlock" />
+
+    <LocalizationCode>furn_airlock</LocalizationCode>
+    <UnlocalizedDescription>furn_airlock_desc</UnlocalizedDescription>
   </Furniture>
 
 
@@ -133,20 +130,19 @@
 
     <LocalizationCode>furn_stockpile</LocalizationCode>
     <UnlocalizedDescription>furn_stockpile_desc</UnlocalizedDescription>
-
   </Furniture>
 
 
-    <Furniture objectType="Oxygen Generator">
-        <Name>Oxygen Generator</Name>
-        <Description>Create O2 in the room in which it is built.</Description>
-        <TypeTag>Generator</TypeTag>
-        <MovementCost>2</MovementCost>
-        <PathfindingModifier>0</PathfindingModifier>
-        <PathfindingWeight>2</PathfindingWeight>
-        <Width>2</Width>
-        <Height>2</Height>
-      <PowerConnection inputRate="1" outputRate="" capacity=""/>
+  <Furniture objectType="Oxygen Generator">
+    <Name>Oxygen Generator</Name>
+    <Description>Create O2 in the room in which it is built.</Description>
+    <TypeTag>Generator</TypeTag>
+    <MovementCost>2</MovementCost>
+    <PathfindingModifier>0</PathfindingModifier>
+    <PathfindingWeight>2</PathfindingWeight>
+    <Width>2</Width>
+    <Height>2</Height>
+    <PowerConnection inputRate="1" outputRate="" capacity=""/>
 
     <BuildingJob jobTime="0" />
 
@@ -168,19 +164,18 @@
 
     <LocalizationCode>furn_oxygen_generator</LocalizationCode>
     <UnlocalizedDescription>furn_oxygen_generator_desc</UnlocalizedDescription>
-
   </Furniture>
 
 
-    <Furniture objectType="Mining Drone Station">
-        <Name>Mining Drone Station</Name>
-        <Description>Creates raw materials when worked by a character.</Description>
-        <TypeTag>Workstation</TypeTag>
-        <MovementCost>1</MovementCost>
-        <PathfindingModifier>0</PathfindingModifier>
-        <PathfindingWeight>2</PathfindingWeight>
-        <Width>3</Width>
-        <Height>3</Height>
+  <Furniture objectType="Mining Drone Station">
+    <Name>Mining Drone Station</Name>
+    <Description>Creates raw materials when worked by a character.</Description>
+    <TypeTag>Workstation</TypeTag>
+    <MovementCost>1</MovementCost>
+    <PathfindingModifier>0</PathfindingModifier>
+    <PathfindingWeight>2</PathfindingWeight>
+    <Width>3</Width>
+    <Height>3</Height>
 
     <BuildingJob jobTime="0" />
 
@@ -198,19 +193,18 @@
 
     <LocalizationCode>furn_mining_drone_station</LocalizationCode>
     <UnlocalizedDescription>furn_mining_drone_station_desc</UnlocalizedDescription>
-
   </Furniture>
 
 
-    <Furniture objectType="Power Generator">
-        <Name>Power Generator</Name>
-        <TypeTag>Generator</TypeTag>
-        <MovementCost>2</MovementCost>
-        <PathfindingModifier>0</PathfindingModifier>
-        <PathfindingWeight>2</PathfindingWeight>
-        <Width>2</Width>
-        <Height>2</Height>
-      <PowerConnection inputRate="" outputRate="5" capacity=""/>
+  <Furniture objectType="Power Generator">
+    <Name>Power Generator</Name>
+    <TypeTag>Generator</TypeTag>
+    <MovementCost>2</MovementCost>
+    <PathfindingModifier>0</PathfindingModifier>
+    <PathfindingWeight>2</PathfindingWeight>
+    <Width>2</Width>
+    <Height>2</Height>
+    <PowerConnection inputRate="" outputRate="5" capacity=""/>
 
     <BuildingJob jobTime="0" />
 
@@ -223,18 +217,17 @@
 
     <LocalizationCode>furn_power_generator</LocalizationCode>
     <UnlocalizedDescription>furn_power_generator_desc</UnlocalizedDescription>
-
   </Furniture>
 
 
-    <Furniture objectType="cloning_pod">
-        <Name>Cloning Pod</Name>
-        <Description>Creates an additional worker, then is destroyed.</Description>
-        <MovementCost>2</MovementCost>
-        <PathfindingModifier>0</PathfindingModifier>
-        <PathfindingWeight>2</PathfindingWeight>
-        <Width>2</Width>
-        <Height>2</Height>
+  <Furniture objectType="cloning_pod">
+    <Name>Cloning Pod</Name>
+    <Description>Creates an additional worker, then is destroyed.</Description>
+    <MovementCost>2</MovementCost>
+    <PathfindingModifier>0</PathfindingModifier>
+    <PathfindingWeight>2</PathfindingWeight>
+    <Width>2</Width>
+    <Height>2</Height>
 
     <BuildingJob jobTime="10">
       <Inventory objectType="Steel Plate" amount="50" />
@@ -244,32 +237,31 @@
       <Inventory objectType="Steel Plate" amount="15" />
     </DeconstructJob>
 
-        <Params>
-            <Param name="animationTimer" value="1" />
-            <Param name="animationStep" value="0" />
-        </Params>
+    <Params>
+      <Param name="animationTimer" value="1" />
+      <Param name="animationStep" value="0" />
+    </Params>
 
-        <JobSpotOffset X="0" Y="-1" />
-        <JobSpawnSpotOffset X="1" Y="-1" />
+    <JobSpotOffset X="0" Y="-1" />
+    <JobSpawnSpotOffset X="1" Y="-1" />
 
-        <Action event="OnUpdate" functionName="CloningPod_UpdateAction" />
-        <GetSpriteName FunctionName="CloningPod_GetSpriteName" />
+    <Action event="OnUpdate" functionName="CloningPod_UpdateAction" />
+    <GetSpriteName FunctionName="CloningPod_GetSpriteName" />
 
     <LocalizationCode>furn_cloning_pod</LocalizationCode>
     <UnlocalizedDescription>furn_cloning_pod_desc</UnlocalizedDescription>
-
   </Furniture>
 
 
-    <Furniture objectType="Metal Smelter">
-        <Name>Metal Smelter</Name>
-        <Description>Smelts your raw iron into metal.</Description>
-        <TypeTag>Processor</TypeTag>
-        <MovementCost>1</MovementCost>
-        <PathfindingModifier>1.5</PathfindingModifier>
-        <PathfindingWeight>2</PathfindingWeight>
-        <Width>3</Width>
-        <Height>3</Height>
+  <Furniture objectType="Metal Smelter">
+    <Name>Metal Smelter</Name>
+    <Description>Smelts your raw iron into metal.</Description>
+    <TypeTag>Processor</TypeTag>
+    <MovementCost>1</MovementCost>
+    <PathfindingModifier>1.5</PathfindingModifier>
+    <PathfindingWeight>2</PathfindingWeight>
+    <Width>3</Width>
+    <Height>3</Height>
 
     <BuildingJob jobTime="0" />
 
@@ -284,20 +276,19 @@
 
     <LocalizationCode>furn_metal_smelter</LocalizationCode>
     <UnlocalizedDescription>furn_metal_smelter_desc</UnlocalizedDescription>
-
   </Furniture>
 
 
-    <Furniture objectType="Heater">
-        <Name>Heater</Name>
-        <Description>Raises temperature in the room.</Description>
-        <BaseType>Temperature</BaseType>
-        <MovementCost>2</MovementCost>
-        <PathfindingModifier>0</PathfindingModifier>
-        <PathfindingWeight>2</PathfindingWeight>
-        <Width>1</Width>
-        <Height>1</Height>
-      <PowerConnection inputRate="4" outputRate="" capacity=""/>
+  <Furniture objectType="Heater">
+    <Name>Heater</Name>
+    <Description>Raises temperature in the room.</Description>
+    <BaseType>Temperature</BaseType>
+    <MovementCost>2</MovementCost>
+    <PathfindingModifier>0</PathfindingModifier>
+    <PathfindingWeight>2</PathfindingWeight>
+    <Width>1</Width>
+    <Height>1</Height>
+    <PowerConnection inputRate="4" outputRate="" capacity=""/>
 
     <BuildingJob jobTime="0" />
 
@@ -312,18 +303,17 @@
 
     <LocalizationCode>furn_heater</LocalizationCode>
     <UnlocalizedDescription>furn_heater_desc</UnlocalizedDescription>
-
   </Furniture>
 
 
-    <Furniture objectType="Power Cell Press">
-        <Name>Power Cell Press</Name>
-        <Description>A press that converts steel plate and something into power cells.</Description>
-        <MovementCost>1</MovementCost>
-        <PathfindingModifier>1.5</PathfindingModifier>
-        <PathfindingWeight>2</PathfindingWeight>
-        <Width>2</Width>
-        <Height>2</Height>
+  <Furniture objectType="Power Cell Press">
+    <Name>Power Cell Press</Name>
+    <Description>A press that converts steel plate and something into power cells.</Description>
+    <MovementCost>1</MovementCost>
+    <PathfindingModifier>1.5</PathfindingModifier>
+    <PathfindingWeight>2</PathfindingWeight>
+    <Width>2</Width>
+    <Height>2</Height>
 
     <BuildingJob jobTime="1" />
 
@@ -336,19 +326,18 @@
 
     <LocalizationCode>furn_power_cell_press</LocalizationCode>
     <UnlocalizedDescription>furn_power_cell_press_desc</UnlocalizedDescription>
-
   </Furniture>
 
 
-    <Furniture objectType="Small Landing Pad">
-        <Name>Small Landing Pad</Name>
-        <Description>A landing pad for small spaceboats to land.</Description>
-        <TypeTag>OutdoorOnly</TypeTag>
-        <MovementCost>2</MovementCost>
-        <PathfindingModifier>0</PathfindingModifier>
-        <PathfindingWeight>2</PathfindingWeight>
-        <Width>3</Width>
-        <Height>3</Height>
+  <Furniture objectType="Small Landing Pad">
+    <Name>Small Landing Pad</Name>
+    <Description>A landing pad for small spaceboats to land.</Description>
+    <TypeTag>OutdoorOnly</TypeTag>
+    <MovementCost>2</MovementCost>
+    <PathfindingModifier>0</PathfindingModifier>
+    <PathfindingWeight>2</PathfindingWeight>
+    <Width>3</Width>
+    <Height>3</Height>
 
     <BuildingJob jobTime="5">
       <Inventory objectType="Steel Plate" amount="20" />
@@ -376,18 +365,17 @@
 
     <LocalizationCode>furn_small_landing_pad</LocalizationCode>
     <UnlocalizedDescription>furn_small_landing_pad_desc</UnlocalizedDescription>
-
   </Furniture>
 
 
-    <Furniture objectType="compressor_oxygen">
-        <Name>Oxygen Compressor</Name>
-        <Description>Stores and releases oxygen as needed</Description>
-        <MovementCost>2</MovementCost>
-        <PathfindingModifier>0</PathfindingModifier>
-        <PathfindingWeight>2</PathfindingWeight>
-        <Width>2</Width>
-        <Height>2</Height>
+  <Furniture objectType="compressor_oxygen">
+    <Name>Oxygen Compressor</Name>
+    <Description>Stores and releases oxygen as needed</Description>
+    <MovementCost>2</MovementCost>
+    <PathfindingModifier>0</PathfindingModifier>
+    <PathfindingWeight>2</PathfindingWeight>
+    <Width>2</Width>
+    <Height>2</Height>
 
     <BuildingJob jobTime="2" />
 
@@ -405,18 +393,18 @@
 
     <LocalizationCode>furn_oxygen_compressor</LocalizationCode>
     <UnlocalizedDescription>furn_oxygen_compressor_desc</UnlocalizedDescription>
-
   </Furniture>
 
-	<Furniture objectType="solar_panel">
-        <Name>Solar Panel</Name>
-        <TypeTag>Generator</TypeTag>
-        <TypeTag>OutdoorOnly</TypeTag>
-        <MovementCost>2</MovementCost>
-        <PathfindingModifier>1.5</PathfindingModifier>
-        <PathfindingWeight>2</PathfindingWeight>
-        <Width>2</Width>
-        <Height>3</Height>
+  
+  <Furniture objectType="solar_panel">
+    <Name>Solar Panel</Name>
+    <TypeTag>Generator</TypeTag>
+    <TypeTag>OutdoorOnly</TypeTag>
+    <MovementCost>2</MovementCost>
+    <PathfindingModifier>1.5</PathfindingModifier>
+    <PathfindingWeight>2</PathfindingWeight>
+    <Width>2</Width>
+    <Height>3</Height>
     <PowerConnection inputRate="" outputRate="3" capacity=""/>
 
     <BuildingJob jobTime="1" />
@@ -431,8 +419,5 @@
 
     <LocalizationCode>furn_solar_panel</LocalizationCode>
     <UnlocalizedDescription>furn_solar_panel_desc</UnlocalizedDescription>
-
   </Furniture>
-
-
 </Furnitures>
