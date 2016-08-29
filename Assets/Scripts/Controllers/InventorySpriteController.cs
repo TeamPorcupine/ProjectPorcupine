@@ -6,61 +6,66 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UI;
 
-public class InventorySpriteController
+public class InventorySpriteController : BaseSpriteController<Inventory>
 {
-
-    GameObject inventoryUIPrefab;
-    GameObject inventoryParent;
-    Dictionary<Inventory, GameObject> inventoryGameObjectMap;
-
-    World world;
-
+    private GameObject inventoryUIPrefab;
 
     // Use this for initialization
-    public InventorySpriteController(World currentWorld, GameObject inventoryUI)
+    public InventorySpriteController(World world, GameObject inventoryUI) : base(world, "Inventory")
     {
         inventoryUIPrefab = inventoryUI;
-        world = currentWorld;
-        inventoryParent = new GameObject("Inventory");
-        // Instantiate our dictionary that tracks which GameObject is rendering which Tile data.
-        inventoryGameObjectMap = new Dictionary<Inventory, GameObject>();
 
         // Register our callback so that our GameObject gets updated whenever
         // the tile's type changes.
-        world.cbInventoryCreated += OnInventoryCreated;
+        world.OnInventoryCreated += OnCreated;
 
         // Check for pre-existing inventory, which won't do the callback.
         foreach (string objectType in world.inventoryManager.inventories.Keys)
         {
             foreach (Inventory inv in world.inventoryManager.inventories[objectType])
             {
-                OnInventoryCreated(inv);
+                OnCreated(inv);
+            }
+        }
+    }
+
+    public override void RemoveAll()
+    {
+        world.OnInventoryCreated -= OnCreated;
+
+        foreach (string objectType in world.inventoryManager.inventories.Keys)
+        {
+            foreach (Inventory inv in world.inventoryManager.inventories[objectType])
+            {
+                inv.OnInventoryChanged -= OnChanged;
             }
         }
 
-        //c.SetDestination( world.GetTileAt( world.Width/2 + 5, world.Height/2 ) );
+        base.RemoveAll();
     }
 
-    public void OnInventoryCreated(Inventory inv)
+    protected override void OnCreated(Inventory inv)
     {
-        //Debug.ULogChannel("InventorySpriteController", "OnInventoryCreated");
-        // Create a visual GameObject linked to this data.
-
         // FIXME: Does not consider multi-tile objects nor rotated objects
-
         // This creates a new GameObject and adds it to our scene.
         GameObject inv_go = new GameObject();
 
         // Add our tile/GO pair to the dictionary.
-        inventoryGameObjectMap.Add(inv, inv_go);
+        objectGameObjectMap.Add(inv, inv_go);
 
         inv_go.name = inv.objectType;
-        inv_go.transform.position = new Vector3(inv.tile.X, inv.tile.Y, 0);
-        inv_go.transform.SetParent(inventoryParent.transform, true);
+
+        // Only create a Game Object if inventory was created on tile, anything else will handle its own game object
+        if (inv.tile != null)
+        {
+            inv_go.transform.position = new Vector3(inv.tile.X, inv.tile.Y, 0);
+        }
+
+        inv_go.transform.SetParent(objectParent.transform, true);
 
         SpriteRenderer sr = inv_go.AddComponent<SpriteRenderer>();
         sr.sprite = SpriteManager.current.GetSprite("Inventory", inv.objectType);
@@ -68,58 +73,57 @@ public class InventorySpriteController
         {
             Debug.ULogErrorChannel("InventorySpriteController", "No sprite for: " + inv.objectType);
         }
+
         sr.sortingLayerName = "Inventory";
 
         if (inv.maxStackSize > 1)
         {
             // This is a stackable object, so let's add a InventoryUI component
             // (Which is text that shows the current stackSize.)
-
             GameObject ui_go = GameObject.Instantiate(inventoryUIPrefab);
             ui_go.transform.SetParent(inv_go.transform);
             ui_go.transform.localPosition = Vector3.zero;
-            ui_go.GetComponentInChildren<Text>().text = inv.stackSize.ToString();
+            ui_go.GetComponentInChildren<Text>().text = inv.StackSize.ToString();
         }
 
         // Register our callback so that our GameObject gets updated whenever
         // the object's into changes.
         // FIXME: Add on changed callbacks
-        inv.cbInventoryChanged += OnInventoryChanged;
-
+        inv.OnInventoryChanged += OnChanged;
     }
 
-    void OnInventoryChanged(Inventory inv)
+    protected override void OnChanged(Inventory inv)
     {
-
-        //Debug.ULogChannel("InventorySpriteController", "OnFurnitureChanged");
         // Make sure the furniture's graphics are correct.
-
-        if (inventoryGameObjectMap.ContainsKey(inv) == false)
+        if (objectGameObjectMap.ContainsKey(inv) == false)
         {
             Debug.ULogErrorChannel("InventorySpriteController", "OnCharacterChanged -- trying to change visuals for inventory not in our map.");
             return;
         }
-
-        GameObject inv_go = inventoryGameObjectMap[inv];
-        if (inv.stackSize > 0)
+            
+        GameObject inv_go = objectGameObjectMap[inv];
+        if (inv.StackSize > 0)
         {
             Text text = inv_go.GetComponentInChildren<Text>();
+
             // FIXME: If maxStackSize changed to/from 1, then we either need to create or destroy the text
             if (text != null)
             {
-                text.text = inv.stackSize.ToString();
+                text.text = inv.StackSize.ToString();
             }
         }
         else
         {
             // This stack has gone to zero, so remove the sprite!
-            GameObject.Destroy(inv_go);
-            inventoryGameObjectMap.Remove(inv);
-            inv.cbInventoryChanged -= OnInventoryChanged;
+            OnRemoved(inv);
         }
-
     }
 
-
-	
+    protected override void OnRemoved(Inventory inv)
+    {
+        inv.OnInventoryChanged -= OnChanged;
+        GameObject inv_go = objectGameObjectMap[inv];
+        objectGameObjectMap.Remove(inv);
+        GameObject.Destroy(inv_go);
+    }
 }

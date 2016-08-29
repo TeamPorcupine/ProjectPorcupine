@@ -7,55 +7,29 @@
 // ====================================================
 #endregion
 
-using UnityEngine;
-using System.Collections.Generic;
 using System;
-using MoonSharp.Interpreter;
-using System.Xml;
+using System.Collections.Generic;
 using System.IO;
-using System.Xml.Serialization;
-using System.Xml.Schema;
 using System.Linq;
+using System.Xml;
+using System.Xml.Schema;
+using System.Xml.Serialization;
+using MoonSharp.Interpreter;
+using UnityEngine;
 
 [MoonSharpUserData]
-public class TileType : IXmlSerializable {
-
-    // Just two util functions to not break every link to TileType.(Empty | Floor)
-    // TODO: Maybe cache the empty and floor tiletypes.
-    public static TileType Empty { get { return tileTypeDictionary["Empty"]; } }
-
-    public static TileType Floor { get { return tileTypeDictionary["Floor"]; } }
-
+public class TileType : IXmlSerializable
+{
     // A private dictionary for storing all TileTypes
     private static Dictionary<string, TileType> tileTypeDictionary = new Dictionary<string, TileType>();
 
     private static Dictionary<TileType, Job> tileTypeBuildJobPrototypes = new Dictionary<TileType, Job>();
 
-    public string Type { get; protected set; }
+    // Base cost of pathfinding over this tile, movement cost and any furniture will modify the effective value
+    private float pathfindingWeight = 1f;
 
-    public string Name { get; protected set; }
-
-    public string Description { get; protected set; }
-    
-    public float BaseMovementCost { get; protected set; }
-
-    // TODO!
-    public bool LinksToNeighbours { get; protected set; }
-
-    // Standard movement cost calculation (lua function).
-    public string MovementCostLua { get; protected set; }
-    
-    public string CanBuildHereLua { get; protected set; }
-    
-    public string LocalizationCode { get; protected set; }
-
-    public string UnlocalizedDescription { get; protected set; }
-
-    private TileType()
-    {
-        // Default lua method names
-        CanBuildHereLua = "CanBuildHere_Standard";
-    }
+    // Additional cost of pathfinding over this tile, will be added to pathfindingWeight * MovementCost
+    private float pathfindingModifier = 0f;
 
     // Will this even be needed?
     private TileType(string name, string description, float baseMovementCost)
@@ -68,8 +42,64 @@ public class TileType : IXmlSerializable {
         tileTypeDictionary[name] = this;
     }
 
+    private TileType()
+    {
+        // Default lua method names
+        CanBuildHereLua = "CanBuildHere_Standard";
+    }
+
+    // Just two util functions to not break every link to TileType.(Empty | Floor)
+    // TODO: Maybe cache the empty and floor tiletypes.
+    public static TileType Empty 
+    {
+        get { return tileTypeDictionary["Empty"]; } 
+    }
+
+    public static TileType Floor 
+    {
+        get { return tileTypeDictionary["Floor"]; } 
+    }
+
+    public string Type { get; protected set; }
+
+    public string Name { get; protected set; }
+
+    public string Description { get; protected set; }
+
+    public float BaseMovementCost { get; protected set; }
+
     /// <summary>
-    /// Gets the TileType with the type, null if not found!
+    /// Gets or sets the TileType's pathfinding weight which is multiplied into the Tile's final PathfindingCost.
+    /// </summary>
+    public float PathfindingWeight
+    {
+        get { return pathfindingWeight; }
+        set { pathfindingWeight = value; }
+    }
+
+    /// <summary>
+    /// Gets or sets the TileType's pathfinding modifier which is added into the Tile's final PathfindingCost.
+    /// </summary>
+    public float PathfindingModifier
+    {
+        get { return pathfindingModifier; }
+        set { pathfindingModifier = value; }
+    }
+
+    // TODO!
+    public bool LinksToNeighbours { get; protected set; }
+
+    // Standard movement cost calculation (lua function).
+    public string MovementCostLua { get; protected set; }
+
+    public string CanBuildHereLua { get; protected set; }
+
+    public string LocalizationCode { get; protected set; }
+
+    public string UnlocalizedDescription { get; protected set; }
+
+    /// <summary>
+    /// Gets the TileType with the type, null if not found.
     /// </summary>
     /// <param name="name"></param>
     /// <returns></returns>
@@ -112,9 +142,9 @@ public class TileType : IXmlSerializable {
 
         return null;
     }
-    
+
     /// <summary>
-    /// Loads all TileType definitions in Data\ and Data\Mods
+    /// Loads all TileType definitions in Data\ and Data\Mods.
     /// </summary>
     public static void LoadTileTypes()
     {
@@ -139,8 +169,8 @@ public class TileType : IXmlSerializable {
         string dataPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
         string xmlPath = System.IO.Path.Combine(dataPath, "Tiles.xml");
         string xmlText = System.IO.File.ReadAllText(xmlPath);
-        
-        readTileTypesFromXml(xmlText);
+
+        ReadTileTypesFromXml(xmlText);
 
         // Load all mod defined TileType definitions
         foreach (DirectoryInfo mod in WorldController.Instance.modsManager.GetMods())
@@ -151,7 +181,7 @@ public class TileType : IXmlSerializable {
 
                 xmlText = System.IO.File.ReadAllText(file.FullName);
 
-                readTileTypesFromXml(xmlText);
+                ReadTileTypesFromXml(xmlText);
             }
         }
     }
@@ -162,38 +192,6 @@ public class TileType : IXmlSerializable {
         return Type;
     }
 
-    private static void readTileTypesFromXml(string xmlText)
-    {
-        XmlTextReader reader = new XmlTextReader(new StringReader(xmlText));
-
-        if (reader.ReadToDescendant("Tiles"))
-        {
-            if (reader.ReadToDescendant("Tile"))
-            {
-                do
-                {
-
-                    TileType type = new TileType();
-                    
-                    type.ReadXml(reader);
-
-                    tileTypeDictionary[type.Type] = type;
-
-                    Debug.ULogChannel("TileType", "Read tileType: " + type.Name + "!");
-
-                } while (reader.ReadToNextSibling("Tile"));
-            }
-            else
-            {
-                Debug.ULogErrorChannel("TileType", "The tiletypes definition file doesn't have any 'Tile' elements.");
-            }
-        }
-        else
-        {
-            Debug.ULogErrorChannel("TileType", "Did not find a 'Tiles' element in the prototype definition file.");
-        }
-    }
-    
     #region IXmlSerializable implementation 
 
     public XmlSchema GetSchema()
@@ -223,6 +221,14 @@ public class TileType : IXmlSerializable {
                     reader.Read();
                     BaseMovementCost = reader.ReadContentAsFloat();
                     break;
+                case "PathfindingModifier":
+                    reader.Read();
+                    PathfindingModifier = reader.ReadContentAsFloat();
+                    break;
+                case "PathfindingWeight":
+                    reader.Read();
+                    PathfindingWeight = reader.ReadContentAsFloat();
+                    break;
                 case "LinksToNeighbours":
                     reader.Read();
                     LinksToNeighbours = reader.ReadContentAsBoolean();
@@ -241,12 +247,12 @@ public class TileType : IXmlSerializable {
                         {
                             // Found an inventory requirement, so add it to the list!
                             invs.Add(new Inventory(
-                                    invs_reader.GetAttribute("objectType"),
-                                    int.Parse(invs_reader.GetAttribute("amount")),
-                                    0));
+                                invs_reader.GetAttribute("objectType"),
+                                int.Parse(invs_reader.GetAttribute("amount")),
+                                0));
                         }
                     }
-                    
+
                     Job j = new Job(
                         null,
                         this,
@@ -267,7 +273,8 @@ public class TileType : IXmlSerializable {
                     {
                         MovementCostLua = movementCostAttribute;
                     }
-                    Debug.Log("MovmentCostLua: " + MovementCostLua);
+
+                    Debug.ULogChannel("TileType", "MovmentCostLua: " + MovementCostLua);
                     break;
                 case "CanPlaceHere":
                     string canPlaceHereAttribute = reader.GetAttribute("FunctionName");
@@ -275,6 +282,7 @@ public class TileType : IXmlSerializable {
                     {
                         CanBuildHereLua = canPlaceHereAttribute;
                     }
+
                     break;
                 case "LocalizationCode":
                     reader.Read();
@@ -294,4 +302,34 @@ public class TileType : IXmlSerializable {
     }
 
     #endregion
+    private static void ReadTileTypesFromXml(string xmlText)
+    {
+        XmlTextReader reader = new XmlTextReader(new StringReader(xmlText));
+
+        if (reader.ReadToDescendant("Tiles"))
+        {
+            if (reader.ReadToDescendant("Tile"))
+            {
+                do
+                {
+                    TileType type = new TileType();
+
+                    type.ReadXml(reader);
+
+                    tileTypeDictionary[type.Type] = type;
+
+                    Debug.ULogChannel("TileType", "Read tileType: " + type.Name + "!");
+                }
+                while (reader.ReadToNextSibling("Tile"));
+            }
+            else
+            {
+                Debug.ULogErrorChannel("TileType", "The tiletypes definition file doesn't have any 'Tile' elements.");
+            }
+        }
+        else
+        {
+            Debug.ULogErrorChannel("TileType", "Did not find a 'Tiles' element in the prototype definition file.");
+        }
+    }
 }

@@ -15,11 +15,11 @@ public class DuplicateKeyComparer<TKey>
 {
     #region IComparer<TKey> Members
 
-    int equalReturn;
+    private int equalReturn;
 
-    public DuplicateKeyComparer(bool EqualValueAtEnd=false)
+    public DuplicateKeyComparer(bool equalValueAtEnd = false)
     {
-        this.equalReturn=EqualValueAtEnd?-1:1;
+        this.equalReturn = equalValueAtEnd ? -1 : 1;
     }
 
     public int Compare(TKey x, TKey y)
@@ -27,9 +27,13 @@ public class DuplicateKeyComparer<TKey>
         int result = x.CompareTo(y);
 
         if (result == 0)
-            return equalReturn;   // Handle equality as beeing greater
+        {
+            return equalReturn; // Handle equality as beeing greater
+        }
         else
+        {
             return result;
+        }
     }
 
     #endregion

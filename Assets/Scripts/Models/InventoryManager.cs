@@ -23,29 +23,6 @@ public class InventoryManager
         inventories = new Dictionary<string, List<Inventory>>();
     }
 
-    private void CleanupInventory(Inventory inv)
-    {
-        if (inv.stackSize == 0)
-        {
-            if (inventories.ContainsKey(inv.objectType))
-            {
-                inventories[inv.objectType].Remove(inv);
-            }
-
-            if (inv.tile != null)
-            {
-                inv.tile.Inventory = null;
-                inv.tile = null;
-            }
-
-            if (inv.character != null)
-            {
-                inv.character.inventory = null;
-                inv.character = null;
-            }
-        }
-    }
-
     public bool PlaceInventory(Tile tile, Inventory inv)
     {
         bool tileWasEmpty = tile.Inventory == null;
@@ -68,7 +45,7 @@ public class InventoryManager
 
             inventories[tile.Inventory.objectType].Add(tile.Inventory);
 
-            World.current.OnInventoryCreated(tile.Inventory);
+            World.Current.OnInventoryCreatedCallback(tile.Inventory);
         }
 
         return true;
@@ -78,20 +55,20 @@ public class InventoryManager
     {
         if (job.inventoryRequirements.ContainsKey(inv.objectType) == false)
         {
-            Debug.LogError("Trying to add inventory to a job that it doesn't want.");
+            Debug.ULogErrorChannel("InventoryManager", "Trying to add inventory to a job that it doesn't want.");
             return false;
         }
 
-        job.inventoryRequirements[inv.objectType].stackSize += inv.stackSize;
+        job.inventoryRequirements[inv.objectType].StackSize += inv.StackSize;
 
-        if (job.inventoryRequirements[inv.objectType].maxStackSize < job.inventoryRequirements[inv.objectType].stackSize)
+        if (job.inventoryRequirements[inv.objectType].maxStackSize < job.inventoryRequirements[inv.objectType].StackSize)
         {
-            inv.stackSize = job.inventoryRequirements[inv.objectType].stackSize - job.inventoryRequirements[inv.objectType].maxStackSize;
-            job.inventoryRequirements[inv.objectType].stackSize = job.inventoryRequirements[inv.objectType].maxStackSize;
+            inv.StackSize = job.inventoryRequirements[inv.objectType].StackSize - job.inventoryRequirements[inv.objectType].maxStackSize;
+            job.inventoryRequirements[inv.objectType].StackSize = job.inventoryRequirements[inv.objectType].maxStackSize;
         }
         else
         {
-            inv.stackSize = 0;
+            inv.StackSize = 0;
         }
 
         CleanupInventory(inv);
@@ -103,35 +80,36 @@ public class InventoryManager
     {
         if (amount < 0)
         {
-            amount = sourceInventory.stackSize;
+            amount = sourceInventory.StackSize;
         }
         else
         {
-            amount = Mathf.Min(amount, sourceInventory.stackSize);
+            amount = Mathf.Min(amount, sourceInventory.StackSize);
         }
 
         if (character.inventory == null)
         {
             character.inventory = sourceInventory.Clone();
-            character.inventory.stackSize = 0;
+            character.inventory.StackSize = 0;
+            character.inventory.character = character;
             inventories[character.inventory.objectType].Add(character.inventory);
         }
         else if (character.inventory.objectType != sourceInventory.objectType)
         {
-            Debug.LogError("Character is trying to pick up a mismatched inventory object type.");
+            Debug.ULogErrorChannel("InventoryManager", "Character is trying to pick up a mismatched inventory object type.");
             return false;
         }
 
-        character.inventory.stackSize += amount;
+        character.inventory.StackSize += amount;
 
-        if (character.inventory.maxStackSize < character.inventory.stackSize)
+        if (character.inventory.maxStackSize < character.inventory.StackSize)
         {
-            sourceInventory.stackSize = character.inventory.stackSize - character.inventory.maxStackSize;
-            character.inventory.stackSize = character.inventory.maxStackSize;
+            sourceInventory.StackSize = character.inventory.StackSize - character.inventory.maxStackSize;
+            character.inventory.StackSize = character.inventory.maxStackSize;
         }
         else
         {
-            sourceInventory.stackSize -= amount;
+            sourceInventory.StackSize -= amount;
         }
 
         CleanupInventory(sourceInventory);
@@ -184,7 +162,7 @@ public class InventoryManager
         }
 
         // We shouldn't search if all inventories are locked.
-        if (inventories[objectType].TrueForAll(i => i.tile != null && i.tile.Furniture != null && i.tile.Inventory.isLocked))
+        if (inventories[objectType].TrueForAll(i => i.tile != null && i.tile.Furniture != null && i.tile.Inventory != null && i.tile.Inventory.locked))
         {
             return null;
         }
@@ -197,7 +175,30 @@ public class InventoryManager
         }
 
         // We know the objects are out there, now find the closest.
-        Path_AStar path = new Path_AStar(World.current, t, null, objectType, desiredAmount, canTakeFromStockpile);
+        Path_AStar path = new Path_AStar(World.Current, t, null, objectType, desiredAmount, canTakeFromStockpile);
         return path;
+    }
+
+    private void CleanupInventory(Inventory inv)
+    {
+        if (inv.StackSize == 0)
+        {
+            if (inventories.ContainsKey(inv.objectType))
+            {
+                inventories[inv.objectType].Remove(inv);
+            }
+
+            if (inv.tile != null)
+            {
+                inv.tile.Inventory = null;
+                inv.tile = null;
+            }
+
+            if (inv.character != null)
+            {
+                inv.character.inventory = null;
+                inv.character = null;
+            }
+        }
     }
 }

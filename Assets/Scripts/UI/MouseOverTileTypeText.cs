@@ -6,28 +6,26 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
 using UnityEngine.UI;
 
+/// Every frame, this script checks to see which tile
+/// is under the mouse and then updates the GetComponent<Text>.text
+/// parameter of the object it is attached to.
 public class MouseOverTileTypeText : MonoBehaviour
 {
+    private Text text;
+    private MouseController mouseController;
 
-    // Every frame, this script checks to see which tile
-    // is under the mouse and then updates the GetComponent<Text>.text
-    // parameter of the object it is attached to.
-
-    Text myText;
-    MouseController mouseController;
-
-    // Use this for initialization
-    void Start()
+    // Use this for initialization.
+    private void Start()
     {
-        myText = GetComponent<Text>();
+        text = GetComponent<Text>();
 
-        if (myText == null)
+        if (text == null)
         {
-            Debug.LogError("MouseOverTileTypeText: No 'Text' UI component on this object.");
+            Debug.ULogErrorChannel("MouseOver", "No 'Text' UI component on this object.");
             this.enabled = false;
             return;
         }
@@ -35,13 +33,13 @@ public class MouseOverTileTypeText : MonoBehaviour
         mouseController = WorldController.Instance.mouseController;
         if (mouseController == null)
         {
-            Debug.LogError("How do we not have an instance of mouse controller?");
+            Debug.ULogErrorChannel("MouseOver", "How do we not have an instance of mouse controller?");
             return;
         }
     }
-	
-    // Update is called once per frame
-    void Update()
+
+    // Update is called once per frame.
+    private void Update()
     {
         Tile t = mouseController.GetMouseOverTile();
         string tileType = "Unknown";
@@ -51,6 +49,6 @@ public class MouseOverTileTypeText : MonoBehaviour
             tileType = t.Type.ToString();
         }
 
-        myText.text = "Tile Type: " + tileType;
+        text.text = "Tile Type: " + tileType;
     }
 }

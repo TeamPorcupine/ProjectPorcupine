@@ -39,13 +39,13 @@ public class WorldGenerator
         int width = world.Width;
         int height = world.Height;
 
-        int xOffset = Random.Range(0, 10000);
-        int yOffset = Random.Range(0, 10000);
+        int offsetX = Random.Range(0, 10000);
+        int offsetY = Random.Range(0, 10000);
 
         int sumOfAllWeightedChances = 0;
-        foreach(Inventory resource in resources)
+        foreach (Inventory resource in resources)
         {
-            sumOfAllWeightedChances += resource.stackSize;
+            sumOfAllWeightedChances += resource.StackSize;
         }
 
         for (int x = 0; x < startAreaWidth; x++)
@@ -80,7 +80,7 @@ public class WorldGenerator
         {
             for (int y = 0; y < height; y++)
             {
-                float noiseValue = Mathf.PerlinNoise((x + xOffset) / (width * asteroidNoiseScale), (y + yOffset) / (height * asteroidNoiseScale));
+                float noiseValue = Mathf.PerlinNoise((x + offsetX) / (width * asteroidNoiseScale), (y + offsetY) / (height * asteroidNoiseScale));
                 if (noiseValue >= asteroidNoiseThreshhold && !IsStartArea(x, y, world))
                 {
                     Tile t = world.GetTileAt(x, y);
@@ -97,7 +97,7 @@ public class WorldGenerator
                             {
                                 Inventory inv = resources[i];
 
-                                int weight = inv.stackSize; // In stacksize the weight was cached
+                                int weight = inv.StackSize; // In stacksize the weight was cached
                                 currentweight += weight;
 
                                 if (randomweight <= currentweight)
@@ -197,12 +197,13 @@ public class WorldGenerator
                 }
                 catch (System.Exception e)
                 {
+                    // Leaving this in because UberLogger doesn't handle multiline messages  
                     Debug.LogError("Error reading WorldGenerator/Asteroid" + System.Environment.NewLine + "Exception: " + e.Message + System.Environment.NewLine + "StackTrace: " + e.StackTrace);
                 }
             }
             else
             {
-                Debug.LogError("Did not find a 'Asteroid' element in the WorldGenerator definition file.");
+                Debug.ULogErrorChannel("WorldGenerator", "Did not find a 'Asteroid' element in the WorldGenerator definition file.");
             }
 
             if (reader.ReadToNextSibling("StartArea"))
@@ -229,7 +230,7 @@ public class WorldGenerator
 
                                 if (splittedString.Length < startAreaWidth * startAreaHeight)
                                 {
-                                    Debug.LogError("Error reading 'Tiles' array to short: " + splittedString.Length + " !");
+                                    Debug.ULogErrorChannel("WorldGenerator", "Error reading 'Tiles' array to short: " + splittedString.Length + " !");
                                     break;
                                 }
 
@@ -268,12 +269,12 @@ public class WorldGenerator
             }
             else
             {
-                Debug.LogError("Did not find a 'StartArea' element in the WorldGenerator definition file.");
+                Debug.ULogErrorChannel("WorldGenerator", "Did not find a 'StartArea' element in the WorldGenerator definition file.");
             }
         }
         else
         {
-            Debug.LogError("Did not find a 'WorldGenerator' element in the WorldGenerator definition file.");
+            Debug.ULogErrorChannel("WorldGenerator", "Did not find a 'WorldGenerator' element in the WorldGenerator definition file.");
         }
     }
 }
