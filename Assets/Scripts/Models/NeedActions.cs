@@ -13,6 +13,20 @@ using UnityEngine;
 
 public class NeedActions
 {
+    static NeedActions()
+    {
+        LoadScript();
+        LoadModsScripts(WorldController.Instance.modsManager.GetMods());
+    }
+
+    public static void LoadScript()
+    {
+        string luaFilePath = Path.Combine(Application.streamingAssetsPath, "LUA");
+        luaFilePath = Path.Combine(luaFilePath, "Need.lua");
+
+        LuaUtilities.LoadScriptFromFile(luaFilePath);
+    }
+
     public static void LoadModsScripts(DirectoryInfo[] mods)
     {
         foreach (DirectoryInfo mod in mods)
