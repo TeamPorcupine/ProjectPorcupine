@@ -6,7 +6,6 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,6 +14,7 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
+using Power;
 using UnityEngine;
 
 [MoonSharpUserData]
@@ -27,7 +27,6 @@ public class World : IXmlSerializable
     public List<Furniture> furnitures;
     public List<Room> rooms;
     public InventoryManager inventoryManager;
-    public PowerSystem powerSystem;
     public Material skybox;
 
     // Store all temperature information
@@ -61,6 +60,16 @@ public class World : IXmlSerializable
         WorldGenerator.Generate(this, seed);
         Debug.ULogChannel("World", "Generated World");
 
+        // adding air to enclosed rooms
+        foreach (Room room in this.rooms)
+        {
+            if (room.ID > 0)
+            {
+                room.ChangeGas("O2", 0.2f * room.GetSize());
+                room.ChangeGas("N2", 0.8f * room.GetSize());
+            }
+        }
+        
         // Make one character.
         CreateCharacter(GetTileAt(Width / 2, Height / 2));
     }
@@ -87,6 +96,8 @@ public class World : IXmlSerializable
 
     // The tile height of the world
     public int Height { get; protected set; }
+
+    public Syster PowerSystem { get; private set; }
 
     public Room GetOutsideRoom()
     {
@@ -156,6 +167,7 @@ public class World : IXmlSerializable
 
         // Progress temperature modelling
         temperature.Update();
+        PowerSystem.Update(deltaTime);
     }
 
     public Character CreateCharacter(Tile t)
@@ -631,7 +643,7 @@ public class World : IXmlSerializable
         characters = new List<Character>();
         furnitures = new List<Furniture>();
         inventoryManager = new InventoryManager();
-        powerSystem = new PowerSystem();
+        PowerSystem = new Syster();
         temperature = new Temperature(Width, Height);
         LoadSkybox();
     }
