@@ -4,7 +4,8 @@
     <Name>Steel Wall</Name>
     <Description>This is a steel wall.</Description>
     <TypeTag>Wall</TypeTag>
-    <MovementCost>0</MovementCost>
+    <MovementCost>5</MovementCost>
+	<PathfindingModifier>1000000</PathfindingModifier>
     <Width>1</Width>
     <Height>1</Height>
     <LinksToNeighbours>true</LinksToNeighbours>
