@@ -26,6 +26,7 @@ public class World : IXmlSerializable
     public List<Character> characters;
     public List<Furniture> furnitures;
     public List<Room> rooms;
+    List<HeadlineGenerator> headlineGenerators = new List<HeadlineGenerator>();
     public InventoryManager inventoryManager;
     public Material skybox;
 
@@ -149,7 +150,7 @@ public class World : IXmlSerializable
         r.ReturnTilesToOutsideRoom();
     }
 
-    public void UpdateCharacters(float deltaTime)
+    public void TickEveryFrame(float deltaTime)
     {
         // Change from a foreach due to the collection being modified while its being looped through
         for (int i = 0; i < characters.Count; i++)
@@ -158,16 +159,30 @@ public class World : IXmlSerializable
         }
     }
 
-    public void Tick(float deltaTime)
+    public void TickFixedFrequency(float deltaTime)
     {
         foreach (Furniture f in furnitures)
         {
             f.Update(deltaTime);
         }
 
+        //Update HeadlineGenerator
+        foreach (HeadlineGenerator h in headlineGenerators)
+        {
+            h.Update(deltaTime);
+        }
+
         // Progress temperature modelling
         temperature.Update();
         PowerSystem.Update(deltaTime);
+    }
+
+
+    public HeadlineGenerator CreateHeadlineGenerator(XmlNode node)
+    {
+        HeadlineGenerator newGenerator = new HeadlineGenerator(node);
+        headlineGenerators.Add(newGenerator);
+        return newGenerator;
     }
 
     public Character CreateCharacter(Tile t)

@@ -138,7 +138,7 @@ public class WorldController : MonoBehaviour
         // Systems that update every frame when not paused.
         if (IsPaused == false)
         {
-            World.UpdateCharacters(deltaTime);
+            World.TickEveryFrame(deltaTime);
         }
 
         totalDeltaTime += deltaTime;
@@ -149,7 +149,7 @@ public class WorldController : MonoBehaviour
             if (IsPaused == false)
             {
                 // Systems that update at fixed frequency when not paused.
-                World.Tick(totalDeltaTime);
+                World.TickFixedFrequency(totalDeltaTime);
                 questController.Update(totalDeltaTime);
             }
 
