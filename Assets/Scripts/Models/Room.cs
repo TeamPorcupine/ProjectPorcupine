@@ -293,7 +293,7 @@ public class Room : IXmlSerializable
 
         foreach (string n in atmosphericGasses.Keys)
         {
-            t += atmosphericGasses[n];
+            t += atmosphericGasses[n] / GetSize();
         }
 
         return t;

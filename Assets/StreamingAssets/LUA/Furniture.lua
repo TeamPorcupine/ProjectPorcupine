@@ -689,23 +689,31 @@ function AirPump_OnUpdate(furniture, deltaTime)
     local west = World.current.GetTileAt(t.X - 1, t.Y)
     local east = World.current.GetTileAt(t.X + 1, t.Y)
     
+    local targetPressure = furniture.Parameters["target_pressure"].ToFloat()
     local flow = furniture.Parameters["gas_throughput"].ToFloat() * deltaTime
-    
     if (north.Room != nil and south.Room != nil) then
         if (furniture.Parameters["flow_direction_up"].ToFloat() > 0) then
-           south.Room.ChangeGas(-flow)
-           north.Room.ChangeGas(flow)
+            if (south.Room.GetTotalGasPressure() > targetPressure) then
+                south.Room.ChangeGas(-flow)
+                north.Room.ChangeGas(flow)
+            end
         else
-           north.Room.ChangeGas(-flow)
-           south.Room.ChangeGas(flow) 
+            if (north.Room.GetTotalGasPressure() > targetPressure) then
+                north.Room.ChangeGas(-flow)
+                south.Room.ChangeGas(flow)
+            end
         end
     elseif (west.Room != nil and east.Room != nil) then
         if (furniture.Parameters["flow_direction_up"].ToFloat() > 0) then
-            west.Room.ChangeGas(-flow)
-            east.Room.ChangeGas(flow)
+            if (west.Room.GetTotalGasPressure() > targetPressure) then
+                west.Room.ChangeGas(-flow)
+                east.Room.ChangeGas(flow)
+            end
         else
-            east.Room.ChangeGas(-flow)
-            west.Room.ChangeGas(flow)
+            if (east.Room.GetTotalGasPressure() > targetPressure) then
+                east.Room.ChangeGas(-flow)
+                west.Room.ChangeGas(flow)
+            end
         end
     end
 end
@@ -732,7 +740,6 @@ function AirPump_GetSpriteName(furniture)
         end
     end
     
-    ModUtils.ULogChannel("Furniture", "Sprite name: " .. furniture.ObjectType .. suffix)
     return furniture.ObjectType .. suffix
 end
 

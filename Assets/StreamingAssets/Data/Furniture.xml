@@ -426,12 +426,14 @@
       <Width>1</Width>
       <Height>1</Height>
       <EnclosesRooms>true</EnclosesRooms>
+      <PowerConnection inputRate="1" outputRate="" capacity=""/>
 
       <BuildingJob jobTime="1" />
       <CanReplaceFurniture typeTag="Wall" />
 
       <Params>
-          <Param name="gas_throughput" value="1" />
+          <Param name="gas_throughput" value="0.25" />
+          <Param name="target_pressure" value="0" />
           <Param name="flow_direction_up" value="1" />
       </Params>
 
