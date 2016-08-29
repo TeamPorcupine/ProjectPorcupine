@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Traders>
+  
+  <Trader objectType="Wire Inc.">
+    <potentialNames>
+      <name>Wire Inc.</name>
+      <name>Connectron Corp.</name>
+    </potentialNames>
+    <currencyName>Quill Corp Bucks</currencyName>
+    <minCurrencyBalance>1000</minCurrencyBalance>
+    <maxCurrencyBalance>5000</maxCurrencyBalance>
+    <minSaleMarginMultiplier>1.2</minSaleMarginMultiplier>
+    <maxSaleMarginMultiplier>1.5</maxSaleMarginMultiplier>
+    <potentialStock>
+      <Inventory objectType="Steel Plate" rarity="0.1" minQuantity="100" maxQuantity="150"/>
+      <Inventory objectType="Power Cell" rarity="0.3" minQuantity="200" maxQuantity="300"/>
+      <Inventory objectType="Copper Wire" rarity="0.8" minQuantity="20" maxQuantity="50"/>
+    </potentialStock>
+  </Trader>
+
+  <Trader objectType="Raw Depot">
+    <potentialNames>
+      <name>Raw Depot</name>
+      <name>Miners Delight</name>
+    </potentialNames>
+    <currencyName>Inter-Galactic Credits</currencyName>
+    <minCurrencyBalance>200</minCurrencyBalance>
+    <maxCurrencyBalance>1500</maxCurrencyBalance>
+    <minSaleMarginMultiplier>1.2</minSaleMarginMultiplier>
+    <maxSaleMarginMultiplier>1.3</maxSaleMarginMultiplier>
+    <potentialStock>
+      <Inventory objectType="Uranium" rarity="0.1" minQuantity="100" maxQuantity="150"/>
+      <Inventory objectType="Raw Iron" rarity="0.3" minQuantity="2000" maxQuantity="3000"/>
+      <Inventory objectType="Ice" rarity="0.8" minQuantity="1000" maxQuantity="2500"/>
+    </potentialStock>
+  </Trader>
+  
+</Traders>

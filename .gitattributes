@@ -1,0 +1,13 @@
+# https://help.github.com/articles/dealing-with-line-endings/
+
+# Text files should have their native EOL set on checkout (e.g. LF on Mac/Linux, CRLF on Windows)
+* text=auto
+
+# Make sure Git knows that these are text files
+*.cs text
+*.xml text
+*.lua text
+*.txt text
+*.lang text
+*.md text
+*.ver text
