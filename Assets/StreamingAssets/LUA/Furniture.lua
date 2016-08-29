@@ -453,20 +453,14 @@ function CloningPod_UpdateAction(furniture, deltaTime)
     )
 
     j.RegisterJobWorkedCallback("CloningPod_JobRunning")
-    --j.UnregisterJobWorkedCallback("CloningPod_GetSpriteName")
     j.RegisterJobCompletedCallback("CloningPod_JobComplete")
 	j.JobDescription = "job_cloning_pod_cloning_desc"
     furniture.AddJob(j)
 end
 
-function CloningPod_OnUpdate(j)
-    CloningPod_GetSpriteName(j.furniture)
-end
-
 function CloningPod_JobRunning(job)
     CloningPod_GetSpriteName(job.furniture)
     job.furniture.UpdateOnChanged(job.furniture)
-
 end
 
 function CloningPod_JobComplete(j)
