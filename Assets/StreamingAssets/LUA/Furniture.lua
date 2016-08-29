@@ -481,7 +481,7 @@ function CloningPod_GetSpriteName(furniture)
         return baseName
     end
 
-    if (furniture.GetJob(0).JobTime % 1 == 0) then
+    if (math.floor(math.abs(furniture.GetJob(0).JobTime)) % 2 == 0) then
         if (suffix == 0) then
             suffix = 1
         else
