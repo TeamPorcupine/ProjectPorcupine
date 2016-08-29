@@ -25,7 +25,7 @@ public class MouseOverRoomIndexText : MonoBehaviour
 
         if (text == null)
         {
-            Debug.LogError("MouseOverTileTypeText: No 'Text' UI component on this object.");
+            Debug.ULogErrorChannel("MouseOverRoomIndexText", "MouseOverTileTypeText: No 'Text' UI component on this object.");
             this.enabled = false;
             return;
         }
@@ -33,7 +33,7 @@ public class MouseOverRoomIndexText : MonoBehaviour
         mouseController = WorldController.Instance.mouseController;
         if (mouseController == null)
         {
-            Debug.LogError("How do we not have an instance of mouse controller?");
+            Debug.ULogErrorChannel("MouseOverRoomIndexText", "How do we not have an instance of mouse controller?");
             return;
         }
     }
