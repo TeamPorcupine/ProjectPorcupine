@@ -108,7 +108,7 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
         // For example, if this object has all eight neighbours of
         // the same type, then the string will look like:
         //       Wall_NESWneseswnw
-        return SpriteManager.current.GetSprite("Furniture", spriteName);
+        return SpriteManager.current.GetSprite("Furniture", spriteName + suffix);
     }
 
     protected override void OnCreated(Furniture furn)
