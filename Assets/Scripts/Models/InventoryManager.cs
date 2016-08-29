@@ -156,7 +156,7 @@ public class InventoryManager
     {
         if (QuickCheck(objectType))
         {
-            foreach (var inventory in inventories[objectType].ToList())
+            foreach (Inventory inventory in inventories[objectType].ToList())
             {
                 if (onlyFromStockpiles)
                 {

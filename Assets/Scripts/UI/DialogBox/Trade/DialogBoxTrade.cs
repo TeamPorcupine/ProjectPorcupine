@@ -118,7 +118,7 @@ public class DialogBoxTrade : DialogBox
         {
             GameObject go = (GameObject)Instantiate(Resources.Load("Prefab/TradeItemPrefab"), TradeItemListPanel);
 
-            var tradeItemBehaviour = go.GetComponent<DialogBoxTradeItem>();
+            DialogBoxTradeItem tradeItemBehaviour = go.GetComponent<DialogBoxTradeItem>();
             tradeItemBehaviour.OnTradeAmountChangedEvent += item => BuildInterfaceHeader();
             tradeItemBehaviour.SetupTradeItem(tradeItem);
         }

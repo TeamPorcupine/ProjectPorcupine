@@ -750,7 +750,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
             };
         }
 
-        foreach (var contextMenuLuaAction in contextMenuLuaActions)
+        foreach (ContextMenuLuaAction contextMenuLuaAction in contextMenuLuaActions)
         {
             yield return new ContextMenuAction
             {
