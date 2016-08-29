@@ -6,6 +6,8 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.Xml;
 using System.Xml.Schema;
@@ -18,12 +20,52 @@ namespace Power
     /// Represents connection to electric grid if furniture has connection specified it uses of produce power.
     /// </summary>
     [MoonSharpUserData]
-    public class Connection : IXmlSerializable
+    [DebuggerDisplay("ConnectionKey = {ConnectionKey}")]
+    public class Connection : IXmlSerializable, IEquatable<Connection>
     {
         private readonly string inputRateAttributeName = "inputRate";
         private readonly string outputRateAttributeName = "outputRate";
         private readonly string capacityAttributeName = "capacity";
         private readonly string accumulatedPowerAttributeName = "accumulatedPower";
+        private readonly string powerGeneratorKey = "PowerGenerator";
+        private readonly string powerConsumerKey = "PowerConsumer";
+        private readonly string accumulatorKey = "Accumulator";
+        private readonly string uniqueConnectionKey;
+        private readonly string baseConnectionKey;
+        private string connectionKey;
+
+        public Connection()
+        {
+            uniqueConnectionKey = string.Format("{0:yyyyMMddHHmmssfffff}", DateTime.Now);
+        }
+
+        public Connection(string baseConnectionKey)
+        {
+            this.baseConnectionKey = baseConnectionKey;
+            uniqueConnectionKey = null;
+        }
+
+        public Connection(Connection connection) : this()
+        {
+            InputRate = connection.InputRate;
+            OutputRate = connection.OutputRate;
+            Capacity = connection.Capacity;
+            baseConnectionKey = GetBaseConnectionKey();
+        }
+
+        private string ConnectionKey
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(connectionKey))
+                {
+                    connectionKey = string.IsNullOrEmpty(uniqueConnectionKey) ? baseConnectionKey :
+                        string.Format("{0}_{1}", baseConnectionKey, uniqueConnectionKey);
+                }
+
+                return connectionKey;
+            }
+        }
 
         /// <summary>
         /// Amount of power consumed by this connection per Tick of system
@@ -100,6 +142,36 @@ namespace Power
             writer.WriteAttributeString(accumulatedPowerAttributeName, AccumulatedPower.ToString(CultureInfo.InvariantCulture));
         }
 
+        public bool Equals(Connection other)
+        {
+            if (other == null)
+            {
+                return false;
+            }
+
+            return ConnectionKey != null && ConnectionKey.Equals(other.connectionKey) &&
+                   InputRate.AreEqual(other.InputRate) &&
+                   OutputRate.AreEqual(other.OutputRate) &&
+                   Capacity.AreEqual(other.Capacity);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as Connection);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hashCode = ConnectionKey != null ? ConnectionKey.GetHashCode() : 0;
+                hashCode = (hashCode * 397) ^ InputRate.GetHashCode();
+                hashCode = (hashCode * 397) ^ OutputRate.GetHashCode();
+                hashCode = (hashCode * 397) ^ Capacity.GetHashCode();
+                return hashCode;
+            }
+        }
+
         private static float RaedFloatNullAsZero(string value)
         {
             float result;
@@ -109,6 +181,16 @@ namespace Power
             }
 
             return float.TryParse(value, out result) ? result : 0.0f;
+        }
+
+        private string GetBaseConnectionKey()
+        {
+            if (IsPowerAccumulator)
+            {
+                return accumulatorKey;
+            }
+
+            return IsPowerProducer ? powerGeneratorKey : powerConsumerKey;
         }
     }
 }
