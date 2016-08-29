@@ -24,6 +24,8 @@ public class FurnitureActions
         LuaUtilities.RegisterGlobal(typeof(ModUtils));
         LuaUtilities.RegisterGlobal(typeof(World));
         LuaUtilities.RegisterGlobal(typeof(WorldController));
+        LuaUtilities.RegisterGlobal(typeof(Power.Connection));
+
         LoadScripts();
     }
 

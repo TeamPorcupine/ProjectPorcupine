@@ -10,12 +10,14 @@ using System.Globalization;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using MoonSharp.Interpreter;
 
 namespace Power
 {
     /// <summary>
     /// Represents connection to electric grid if furniture has connection specified it uses of produce power.
     /// </summary>
+    [MoonSharpUserData]
     public class Connection : IXmlSerializable
     {
         private readonly string inputRateAttributeName = "inputRate";
@@ -77,17 +79,17 @@ namespace Power
 
         public void ReadXml(XmlReader reader)
         {
-            InputRate = float.Parse(reader.GetAttribute(inputRateAttributeName));
-            OutputRate = float.Parse(reader.GetAttribute(outputRateAttributeName));
-            Capacity = float.Parse(reader.GetAttribute(capacityAttributeName));
-            AccumulatedPower = float.Parse(reader.GetAttribute(accumulatedPowerAttributeName));
+            InputRate = RaedFloatNullAsZero(reader.GetAttribute(inputRateAttributeName));
+            OutputRate = RaedFloatNullAsZero(reader.GetAttribute(outputRateAttributeName));
+            Capacity = RaedFloatNullAsZero(reader.GetAttribute(capacityAttributeName));
+            AccumulatedPower = RaedFloatNullAsZero(reader.GetAttribute(accumulatedPowerAttributeName));
         }
 
         public void ReadPrototype(XmlReader reader)
         {
-            InputRate = float.Parse(reader.GetAttribute(inputRateAttributeName));
-            OutputRate = float.Parse(reader.GetAttribute(outputRateAttributeName));
-            Capacity = float.Parse(reader.GetAttribute(capacityAttributeName));
+            InputRate = RaedFloatNullAsZero(reader.GetAttribute(inputRateAttributeName));
+            OutputRate = RaedFloatNullAsZero(reader.GetAttribute(outputRateAttributeName));
+            Capacity = RaedFloatNullAsZero(reader.GetAttribute(capacityAttributeName));
         }
 
         public void WriteXml(XmlWriter writer)
@@ -96,6 +98,17 @@ namespace Power
             writer.WriteAttributeString(outputRateAttributeName, OutputRate.ToString(CultureInfo.InvariantCulture));
             writer.WriteAttributeString(capacityAttributeName, Capacity.ToString(CultureInfo.InvariantCulture));
             writer.WriteAttributeString(accumulatedPowerAttributeName, AccumulatedPower.ToString(CultureInfo.InvariantCulture));
+        }
+
+        private static float RaedFloatNullAsZero(string value)
+        {
+            float result;
+            if (string.IsNullOrEmpty(value))
+            {
+                return 0.0f;
+            }
+
+            return float.TryParse(value, out result) ? result : 0.0f;
         }
     }
 }
