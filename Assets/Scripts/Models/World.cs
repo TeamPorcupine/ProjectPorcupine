@@ -29,6 +29,7 @@ public class World : IXmlSerializable
     public InventoryManager inventoryManager;
     public PowerSystem powerSystem;
     public Material skybox;
+    public string name;
 
     // Store all temperature information
     public Temperature temperature;
@@ -60,6 +61,9 @@ public class World : IXmlSerializable
         int seed = UnityEngine.Random.Range(0, int.MaxValue);
         WorldGenerator.Generate(this, seed);
         Debug.ULogChannel("World", "Generated World");
+
+        // This will name the world.
+        name = "Space " + UnityEngine.Random.Range(0, 100);
 
         // Make one character.
         CreateCharacter(GetTileAt(Width / 2, Height / 2));
