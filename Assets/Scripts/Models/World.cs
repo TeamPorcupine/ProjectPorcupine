@@ -61,6 +61,16 @@ public class World : IXmlSerializable
         WorldGenerator.Generate(this, seed);
         Debug.ULogChannel("World", "Generated World");
 
+        // adding air to enclosed rooms
+        foreach (Room room in this.rooms)
+        {
+            if (room.ID > 0)
+            {
+                room.ChangeGas("O2", 0.2f * room.GetSize());
+                room.ChangeGas("N2", 0.8f * room.GetSize());
+            }
+        }
+        
         // Make one character.
         CreateCharacter(GetTileAt(Width / 2, Height / 2));
     }

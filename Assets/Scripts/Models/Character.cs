@@ -52,6 +52,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
     /// Destination tile of the character.
     private Tile destTile;
+    private bool recentPath;
 
     /// Current tile the character is standing on.
     private Tile currTile;
@@ -807,6 +808,8 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                     return;
                 }
 
+                recentPath = true;
+
                 // Let's ignore the first tile, because that's the tile we're currently in.
                 nextTile = pathAStar.Dequeue();
             }
@@ -854,7 +857,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                                  Mathf.Pow(CurrTile.X - nextTile.X, 2) +
                                  Mathf.Pow(CurrTile.Y - nextTile.Y, 2));
 
-        if (nextTile.IsEnterable() == Enterability.Never)
+        if (nextTile.IsEnterable() == Enterability.Never && nextTile != DestTile)
         {
             //// Most likely a wall got built, so we just need to reset our pathfinding information.
             //// FIXME: Ideally, when a wall gets spawned, we should invalidate our path immediately,
@@ -864,6 +867,11 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             //// Debug.ULogErrorChannel("FIXME", "A character was trying to enter an unwalkable tile.");
             nextTile = null;    // our next tile is a no-go
             pathAStar = null;   // clearly our pathfinding info is out of date.
+            if (recentPath)
+            {
+                AbandonJob(false);
+            }
+
             return;
         }
         else if (nextTile.IsEnterable() == Enterability.Soon)
@@ -875,8 +883,10 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             return;
         }
 
+        recentPath = false;
+
         // How much distance can be travel this Update?
-        float distThisFrame = speed / Mathf.Clamp(nextTile.MovementCost, 0, 20) * deltaTime;
+        float distThisFrame = speed / nextTile.MovementCost * deltaTime;
 
         // How much is that in terms of percentage to our destination?
         float percThisFrame = distThisFrame / distToTravel;

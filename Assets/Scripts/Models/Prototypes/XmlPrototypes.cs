@@ -78,12 +78,12 @@ public class XmlPrototypes<T> : BasePrototypes<T>
             }
             else
             {
-                Debug.LogError("The furniture prototype definition file doesn't have any '" + elementTag + "' elements.");
+                Debug.ULogErrorChannel("XmlPrototypes", "The furniture prototype definition file doesn't have any '" + elementTag + "' elements.");
             }
         }
         else
         {
-            Debug.LogError("Did not find a '" + listTag + "' element in the prototype definition file.");
+            Debug.ULogErrorChannel("XmlPrototypes", "Did not find a '" + listTag + "' element in the prototype definition file.");
         }
     }
 
@@ -102,6 +102,7 @@ public class XmlPrototypes<T> : BasePrototypes<T>
     /// <param name="type">The prototype type.</param>
     protected void LogPrototypeError(Exception e, string type)
     {
+        // Leaving this for Unitys console because UberLogger doesn't show multiline messages correctly.
         Debug.LogError("Error reading furniture prototype for: " + type + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
     }
 }
