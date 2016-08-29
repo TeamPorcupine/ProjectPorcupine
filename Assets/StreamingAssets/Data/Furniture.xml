@@ -229,7 +229,7 @@
         </DeconstructJob>
 
         <Params>
-            <Param name="animationTimer" value="2" />
+            <Param name="animationTimer" value="1" />
             <Param name="animationStep" value="0" />
         </Params>
 
