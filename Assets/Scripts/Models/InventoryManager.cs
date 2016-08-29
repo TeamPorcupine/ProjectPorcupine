@@ -162,7 +162,7 @@ public class InventoryManager
         }
 
         // We shouldn't search if all inventories are locked.
-        if (inventories[objectType].TrueForAll(i => i.tile != null && i.tile.Furniture != null && i.tile.Inventory.locked))
+        if (inventories[objectType].TrueForAll(i => i.tile != null && i.tile.Furniture != null && i.tile.Inventory != null && i.tile.Inventory.locked))
         {
             return null;
         }

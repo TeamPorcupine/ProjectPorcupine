@@ -56,7 +56,7 @@ public class LuaUtilities
         }
         catch (MoonSharp.Interpreter.SyntaxErrorException e)
         {
-            Debug.LogError("[" + Path.GetFileName(filePath) + "] LUA Parse error: " + e.DecoratedMessage);
+            Debug.ULogErrorChannel("Lua", "[" + Path.GetFileName(filePath) + "] LUA Parse error: " + e.DecoratedMessage);
         }
     }
 

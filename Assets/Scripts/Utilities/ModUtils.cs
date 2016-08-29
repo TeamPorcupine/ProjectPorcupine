@@ -26,6 +26,11 @@ public static class ModUtils
         return Mathf.FloorToInt(value);
     }
 
+    public static float Round(float value, int digits)
+    {
+        return (float)System.Math.Round((double)value, digits);
+    }
+
     public static void Log(object obj) 
     {
         Debug.Log(obj);
