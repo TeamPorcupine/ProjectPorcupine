@@ -318,7 +318,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
             false,
             false);
         dj.JobDescription = "job_deconstruct_" + obj.ObjectType + "_desc";
-        World.Current.SetFurnitureJobDeconstructPrototype(dj, obj);
+        PrototypeManager.FurnitureJobDeconstruct.SetPrototype(obj.ObjectType, dj);
 
         // Call LUA install scripts
         obj.EventActions.Trigger("OnInstall", obj);
@@ -481,7 +481,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
                     invs.ToArray(),
                     Job.JobPriority.High);
                 j.JobDescription = "job_build_" + ObjectType + "_desc";
-                World.Current.SetFurnitureJobPrototype(j, this);
+                    PrototypeManager.FurnitureJob.SetPrototype(ObjectType, j);
                 break;
             case "DeconstructJob":
                 deconstructJobTime = float.Parse(reader.GetAttribute("jobTime") ?? "-1");
@@ -495,7 +495,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
                         // Found an inventory requirement, so add it to the list!
                         deconstructInvs.Add(new Inventory(
                             deconstructInventoryReader.GetAttribute("objectType"),
-                            World.Current.inventoryPrototypes[deconstructInventoryReader.GetAttribute("objectType")].maxStackSize,
+                            PrototypeManager.Inventory.GetPrototype(deconstructInventoryReader.GetAttribute("objectType")).maxStackSize,
                             int.Parse(deconstructInventoryReader.GetAttribute("amount"))));
                     }
                 }
@@ -626,9 +626,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
 
         // TODO: read this from furniture params
         Dictionary<string, Inventory> invsDict = new Dictionary<string, Inventory>();
-        foreach (string objectType in World.Current.inventoryPrototypes.Keys)
+        foreach (string objectType in PrototypeManager.Inventory.Keys)
         {
-            invsDict[objectType] = new Inventory(objectType, World.Current.inventoryPrototypes[objectType].maxStackSize, 0);
+            invsDict[objectType] = new Inventory(objectType, PrototypeManager.Inventory.GetPrototype(objectType).maxStackSize, 0);
         }
 
         Inventory[] invs = new Inventory[invsDict.Count];

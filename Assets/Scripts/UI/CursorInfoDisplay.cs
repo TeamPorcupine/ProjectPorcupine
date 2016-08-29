@@ -69,20 +69,17 @@ public class CursorInfoDisplay
 
     public string GetCurrentBuildRequirements()
     {
-        if (World.Current.furnitureJobPrototypes != null)
+        string temp = string.Empty;
+        foreach (string itemName in PrototypeManager.FurnitureJob.GetPrototype(bmc.buildModeObjectType).inventoryRequirements.Keys)
         {
-            string temp = string.Empty;
-            foreach (string itemName in WorldController.Instance.World.furnitureJobPrototypes[bmc.buildModeObjectType].inventoryRequirements.Keys)
+            string requiredMaterialCount = (PrototypeManager.FurnitureJob.GetPrototype(bmc.buildModeObjectType).inventoryRequirements[itemName].maxStackSize * validPostionCount).ToString();
+            if (PrototypeManager.FurnitureJob.GetPrototype(bmc.buildModeObjectType).inventoryRequirements.Count > 1)
             {
-                string requiredMaterialCount = (WorldController.Instance.World.furnitureJobPrototypes[bmc.buildModeObjectType].inventoryRequirements[itemName].maxStackSize * validPostionCount).ToString();
-                if (WorldController.Instance.World.furnitureJobPrototypes[bmc.buildModeObjectType].inventoryRequirements.Count > 1)
-                {
-                    return temp += requiredMaterialCount + " " + itemName + "\n";
-                }
-                else
-                {
-                    return temp += requiredMaterialCount + " " + itemName;
-                }
+                return temp += requiredMaterialCount + " " + itemName + "\n";
+            }
+            else
+            {
+                return temp += requiredMaterialCount + " " + itemName;
             }
         }
 

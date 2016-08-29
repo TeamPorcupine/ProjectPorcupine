@@ -51,6 +51,42 @@ function OnUpdate_Door( furniture, deltaTime )
 	furniture.UpdateOnChanged(furniture);
 end
 
+
+function OnUpdate_AirlockDoor( furniture, deltaTime )
+    if (furniture.Parameters["pressure_locked"].ToFloat() >= 1.0) then
+        local neighbors = furniture.Tile.GetNeighbours(false)
+        local adjacentRooms = {}
+        local pressureEqual = true;
+        local count = 0
+        for k, tile in pairs(neighbors) do
+            if (tile.Room != nil) then
+                count = count + 1
+                adjacentRooms[count] = tile.Room
+            end
+        end
+        if(ModUtils.Round(adjacentRooms[1].GetTotalGasPressure(),3) == ModUtils.Round(adjacentRooms[2].GetTotalGasPressure(),3)) then
+            OnUpdate_Door(furniture, deltaTime)
+        end
+    else
+        OnUpdate_Door(furniture, deltaTime)
+    end
+end
+        
+    
+function AirlockDoor_Toggle_Pressure_Lock(furniture, character)
+
+    ModUtils.ULog("Toggling Pressure Lock")
+    
+	if (furniture.Parameters["pressure_locked"].ToFloat() == 1) then
+        furniture.Parameters["pressure_locked"].SetValue(0)
+    else
+        furniture.Parameters["pressure_locked"].SetValue(1)
+    end
+    
+    ModUtils.ULog(furniture.Parameters["pressure_locked"].ToFloat())
+end
+
+
 function OnUpdate_Leak_Door( furniture, deltaTime )
 	furniture.Tile.EqualiseGas(deltaTime * 10.0 * (furniture.Parameters["openness"].ToFloat() + 0.1))
 end
