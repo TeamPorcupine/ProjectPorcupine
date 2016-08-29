@@ -9,10 +9,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using UnityEngine;
 
 namespace Scheduler
 {
@@ -45,6 +47,29 @@ namespace Scheduler
         public List<ScheduledEvent> Events { get; protected set; }
 
         public Dictionary<string, EventPrototype> EventPrototypes { get; protected set; }
+
+        #region LuaHandling
+
+        public static void LoadScripts()
+        {
+            string luaFilePath = Path.Combine(Application.streamingAssetsPath, "LUA");
+            luaFilePath = Path.Combine(luaFilePath, "Events.lua");
+            LuaUtilities.LoadScriptFromFile(luaFilePath);
+        }
+
+        public static void LoadModsScripts(DirectoryInfo[] mods)
+        {
+            foreach (DirectoryInfo mod in mods)
+            {
+                string luaModFile = Path.Combine(mod.FullName, "Events.lua");
+                if (File.Exists(luaModFile))
+                {
+                    LuaUtilities.LoadScriptFromFile(luaModFile);
+                }
+            }
+        }
+
+        #endregion
 
         public void RegisterEvent(ScheduledEvent evt)
         {
@@ -139,7 +164,33 @@ namespace Scheduler
                 "ping_log",
                 new EventPrototype(
                     "ping_log",
-                    (evt) => Debug.ULogChannel("ScheduledEventTest", "Event {0} fired", evt.Name)));
+                    (evt) => Debug.ULogChannel("ScheduledEventTest", "Event {0} fired", evt.Name),
+                    EventType.CSharp));
+
+            // The config file is an xml file called Events.xml that looks like this
+            // <?xml version="1.0" encoding="utf-8" ?>
+            // <Events>
+            //     <Event name="eventName1" onFire="luaFunctionName1" />
+            //         ...
+            //     <Event name="eventNameN" onFire="luaFunctionNameN" />
+            // </Events>
+            // The corresponding Lua functions are located in Events.lua
+
+            // FIXME: Are these actually needed here?
+            LuaUtilities.RegisterGlobal(typeof(Inventory));
+            LuaUtilities.RegisterGlobal(typeof(Job));
+            LuaUtilities.RegisterGlobal(typeof(ModUtils));
+            LuaUtilities.RegisterGlobal(typeof(World));
+            LoadScripts();
+
+            // For testing hard code an event.
+            prototypes.Add(
+                "ping_log_lua",
+                new EventPrototype(
+                    "ping_log_lua",
+                    (evt) => LuaUtilities.CallFunction("ping_log_lua", evt),
+                    EventType.Lua));
+
             return prototypes;
         }
     }

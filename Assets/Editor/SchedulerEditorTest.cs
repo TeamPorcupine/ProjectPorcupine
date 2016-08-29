@@ -155,4 +155,14 @@ public class SchedulerEditorTest
         scheduler.PurgeEventList();
         Assert.That(scheduler.IsRegistered(evt1), Is.False);
     }
+
+    [Test]
+    public void SchedulerLuaEventTest()
+    {
+        ScheduledEvent evt = new ScheduledEvent(scheduler.EventPrototypes["ping_log_lua"], 1.0f, 1.0f, false, 1);
+
+        scheduler.RegisterEvent(evt);
+
+        scheduler.Update(1);
+    }
 }

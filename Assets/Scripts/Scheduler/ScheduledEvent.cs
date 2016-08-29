@@ -11,21 +11,28 @@ using System;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using MoonSharp.Interpreter;
 
 namespace Scheduler
 {
     /// <summary>
-    /// The <see cref="Scheduler.ScheduledEvent"/> class represents an individual event which is handled by the Scheduler.
+    /// The <see cref="Scheduler.ScheduledEvent"/> class represents an individual
+    /// event which is handled by the Scheduler.
     /// May "fire" either a C# or Lua function.
+    /// ScheduledEvent is actually blind to the type of function backing the event.
+    /// It knows through the EventType property, but this has no impact on the functioning
+    /// of the class itself.
+    /// The scheduler is solely responsible for wrapping Lua functions in delegates
+    /// for handling by the events.
     /// </summary>
+    [MoonSharpUserData]
     public class ScheduledEvent : IXmlSerializable
     {
-        // TODO: Lua event handling!
         // TODO: Serialization!
-        private string luaFunctionName; // not used for anything yet
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Scheduler.ScheduledEvent"/> class.
+        /// This form of the constructor assumes the ScheduledEvent is of the EventType.CSharp type.
         /// </summary>
         /// <param name="name">Name of the event (for serialization etc.).</param>
         /// <param name="onFire">Callback to call when the event fires.</param>
@@ -40,6 +47,7 @@ namespace Scheduler
             this.TimeToWait = cooldown;
             this.RepeatsForever = repeatsForever;
             this.RepeatsLeft = repeats;
+            this.EventType = EventType.CSharp;
         }
 
         public ScheduledEvent(ScheduledEvent other)
@@ -50,6 +58,7 @@ namespace Scheduler
             this.TimeToWait = other.Cooldown;
             this.RepeatsForever = other.RepeatsForever;
             this.RepeatsLeft = other.RepeatsLeft;
+            this.EventType = other.EventType;
         }
 
         public ScheduledEvent(EventPrototype eventPrototype, float cooldown, float timeToWait, bool repeatsForever = false, int repeats = 1)
@@ -60,11 +69,14 @@ namespace Scheduler
             this.TimeToWait = timeToWait;
             this.RepeatsForever = repeatsForever;
             this.RepeatsLeft = repeats;
+            this.EventType = eventPrototype.EventType;
         }
 
         private event Action<ScheduledEvent> OnFire;
 
         public string Name { get; protected set; }
+
+        public EventType EventType { get; protected set; }
 
         public int RepeatsLeft { get; protected set; }
 
