@@ -24,6 +24,12 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     // Prevent construction too close to the world's edge
     private const int MinEdgeDistance = 5;
 
+    // Base cost of pathfinding over this furniture, movement cost will modify the effective value
+    private float pathfindingWeight = 1f;
+
+    // Additional cost of pathfinding over this furniture, will be added to pathfindingWeight * MovementCost
+    private float pathfindingModifier = 0f;
+
     // If the job causes some kind of object to be spawned, where will it appear?
     private Vector2 jobSpawnSpotOffset = Vector2.zero;
 
@@ -94,6 +100,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         typeTags = new HashSet<string>(other.typeTags);
         description = other.description;
         MovementCost = other.MovementCost;
+        PathfindingModifier = other.PathfindingModifier;
+        PathfindingWeight = other.PathfindingWeight;
         RoomEnclosure = other.RoomEnclosure;
         Width = other.Width;
         Height = other.Height;
@@ -142,6 +150,24 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     public event Action<Furniture> Removed;
 
     public event Action<IPowerRelated> PowerValueChanged;
+
+    /// <summary>
+    /// Gets or sets the Furniture's pathfinding modifier which is added into the Tile's final PathfindingCost.
+    /// </summary>
+    public float PathfindingModifier
+    {
+        get { return pathfindingWeight; }
+        set { pathfindingWeight = value; }
+    }
+
+    /// <summary>
+    /// Gets or sets the Furniture's pathfinding weight which is multiplied into the Tile's final PathfindingCost.
+    /// </summary>
+    public float PathfindingWeight
+    {
+        get { return pathfindingWeight; }
+        set { pathfindingWeight = value; }
+    }
 
     public Color Tint { get; private set; }
 
@@ -408,6 +434,14 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
             case "MovementCost":
                 reader.Read();
                 MovementCost = reader.ReadContentAsFloat();
+                break;
+            case "PathfindingModifier":
+                reader.Read();
+                PathfindingModifier = reader.ReadContentAsFloat();
+                break;
+            case "PathfindingWeight":
+                reader.Read();
+                PathfindingWeight = reader.ReadContentAsFloat();
                 break;
             case "Width":
                 reader.Read();
