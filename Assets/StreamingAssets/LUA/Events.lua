@@ -6,6 +6,6 @@
 -------------------------------------------------------
 
 function ping_log_lua (event)
-    ModUtils.ULog("Scheduled Lua event '" .. event.Name .. "'")
+    ModUtils.ULogChannel("Scheduler", "Scheduled Lua event '" .. event.Name .. "'")
     return
 end

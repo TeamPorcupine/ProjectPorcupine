@@ -71,6 +71,27 @@ namespace Scheduler
 
         #endregion
 
+        /// <summary>
+        /// Schedules an event from a prototype.
+        /// </summary>
+        /// <param name="name">Name of the event (for serialization etc.).</param>
+        /// <param name="cooldown">Cooldown in seconds.</param>
+        /// <param name="repeatsForever">Whether the event repeats forever (defaults false). If true repeats is ignored.</param>
+        /// <param name="repeats">Number of repeats (default 1). Ignored if repeatsForever=true.</param>
+        public void ScheduleEvent(string name, float cooldown, bool repeatsForever = false, int repeats = 1)
+        {
+            if (EventPrototypes.ContainsKey(name) == false)
+            {
+                Debug.ULogWarningChannel("Scheduler", "Tried to schedule an event from a prototype '{0}' which does not exist. Bailing.", name);
+                return;
+            }
+
+            EventPrototype ep = EventPrototypes[name];
+            ScheduledEvent evt = new ScheduledEvent(ep, cooldown, cooldown, repeatsForever, repeats);
+
+            RegisterEvent(evt);
+        }
+
         public void RegisterEvent(ScheduledEvent evt)
         {
             if (evt != null)
@@ -136,6 +157,11 @@ namespace Scheduler
             PurgeEventList();
         }
 
+        public void RegisterEventPrototype(string name, EventPrototype eventPrototype)
+        {
+            EventPrototypes.Add(name, eventPrototype);
+        }
+
         #region IXmlSerializable implementation
 
         public XmlSchema GetSchema()
@@ -157,6 +183,8 @@ namespace Scheduler
 
         private static Dictionary<string, EventPrototype> GenerateEventPrototypes()
         {
+            Debug.ULogChannel("Scheduler", "Generating Event Prototypes");
+
             // FIXME: Just adding in a simple log pinging event in lieu of 
             // properly reading prototypes from config files.
             Dictionary<string, EventPrototype> prototypes = new Dictionary<string, EventPrototype>();
@@ -164,7 +192,7 @@ namespace Scheduler
                 "ping_log",
                 new EventPrototype(
                     "ping_log",
-                    (evt) => Debug.ULogChannel("ScheduledEventTest", "Event {0} fired", evt.Name),
+                    (evt) => Debug.ULogChannel("Scheduler", "Event {0} fired", evt.Name),
                     EventType.CSharp));
 
             // The config file is an xml file called Events.xml that looks like this

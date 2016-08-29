@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
+using Scheduler;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -33,6 +34,7 @@ public class WorldController : MonoBehaviour
     public float GameTickPerSecond = 5;
     public GameObject inventoryUI;
     public GameObject circleCursorPrefab;
+    public Scheduler.Scheduler scheduler;
 
     // If true, a modal dialog box is open so normal inputs should be ignored.
     public bool IsModal;
@@ -124,6 +126,14 @@ public class WorldController : MonoBehaviour
         GameObject canvas = GameObject.Find("Canvas");
         go = Instantiate(Resources.Load("UI/ContextMenu"), canvas.transform.position, canvas.transform.rotation, canvas.transform) as GameObject;
         go.name = "ContextMenu";
+
+        scheduler = Scheduler.Scheduler.Current;
+
+        // FIXME: Get rid of this when done testing the scheduler!!!
+        // This is a Lua event which outputs a log message every two seconds on an infinite loop.
+        scheduler.ScheduleEvent("ping_log_lua", 2.0f, true, 0);
+        // This is a C# event which outputs a log message every five seconds for ten times.
+        scheduler.ScheduleEvent("ping_log", 5.0f, false, 10);
     }
 
     public void Update()
@@ -139,6 +149,7 @@ public class WorldController : MonoBehaviour
         if (IsPaused == false)
         {
             World.UpdateCharacters(deltaTime);
+            scheduler.Update(deltaTime);
         }
 
         totalDeltaTime += deltaTime;
