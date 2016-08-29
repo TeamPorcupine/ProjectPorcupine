@@ -732,6 +732,7 @@ function AirPump_GetSpriteName(furniture)
         end
     end
     
+    ModUtils.ULogChannel("Furniture", "Sprite name: " .. furniture.ObjectType .. suffix)
     return furniture.ObjectType .. suffix
 end
 
@@ -741,6 +742,7 @@ function AirPump_FlipDirection(furniture, character)
     else
         furniture.Parameters["flow_direction_up"].SetValue(1)
     end
+    furniture.UpdateOnChanged(furniture)
 end
 
 ModUtils.ULog("Furniture.lua loaded")

@@ -452,7 +452,7 @@
         </Params>
 
         <Action event="OnUpdate" functionName="AirPump_OnUpdate" />
-        <GetSpriteName functionName="AirPump_GetSpriteName" />
+        <GetSpriteName FunctionName="AirPump_GetSpriteName" />
         <ContextMenuAction FunctionName="AirPump_FlipDirection" Text="Flip Direction" RequiereCharacterSelected="false"/>
 
         <LocalizationCode>furn_pump_air</LocalizationCode>
