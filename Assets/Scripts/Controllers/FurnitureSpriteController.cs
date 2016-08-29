@@ -6,9 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class FurnitureSpriteController : BaseSpriteController<Furniture>
@@ -72,19 +70,27 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
         // Otherwise, the sprite name is more complicated.
         spriteName += "_";
 
-        // Check for neighbours North, East, South, West
+        // Check for neighbours North, East, South, West, Northeast, Southeast, Southwest, Northwest
         int x = furn.Tile.X;
         int y = furn.Tile.Y;
+        string suffix = string.Empty;
 
-        spriteName += GetSuffixForNeighbour(furn, x, y + 1, "N");
-        spriteName += GetSuffixForNeighbour(furn, x + 1, y, "E");
-        spriteName += GetSuffixForNeighbour(furn, x, y - 1, "S");
-        spriteName += GetSuffixForNeighbour(furn, x - 1, y, "W");
+        suffix += GetSuffixForNeighbour(furn, x, y + 1, "N");
+        suffix += GetSuffixForNeighbour(furn, x + 1, y, "E");
+        suffix += GetSuffixForNeighbour(furn, x, y - 1, "S");
+        suffix += GetSuffixForNeighbour(furn, x - 1, y, "W");
 
-        // For example, if this object has all four neighbours of
+        // Now we check if we have the neighbours in the cardinal directions next to the respective diagonals
+        // because pure diagonal checking would leave us with diagonal walls and stockpiles, which make no sense.
+        suffix += GetSuffixForDiagonalNeighbour(suffix, "N", "E", furn, x + 1, y + 1);
+        suffix += GetSuffixForDiagonalNeighbour(suffix, "S", "E", furn, x + 1, y - 1);
+        suffix += GetSuffixForDiagonalNeighbour(suffix, "S", "W", furn, x - 1, y - 1);
+        suffix += GetSuffixForDiagonalNeighbour(suffix, "N", "W", furn, x - 1, y + 1);
+
+        // For example, if this object has all eight neighbours of
         // the same type, then the string will look like:
-        //       Wall_NESW
-        return SpriteManager.current.GetSprite("Furniture", spriteName);
+        //       Wall_NESWneseswnw
+        return SpriteManager.current.GetSprite("Furniture", spriteName + suffix);
     }
 
     protected override void OnCreated(Furniture furniture)
@@ -237,6 +243,16 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
          {
              return suffix;
          }
+
+        return string.Empty;
+    }
+
+    private string GetSuffixForDiagonalNeighbour(string suffix, string coord1, string coord2, Furniture furn, int x, int y)
+    {
+        if (suffix.Contains(coord1) && suffix.Contains(coord2))
+        {
+            return GetSuffixForNeighbour(furn, x, y, coord1.ToLower() + coord2.ToLower());
+        }
 
         return string.Empty;
     }
