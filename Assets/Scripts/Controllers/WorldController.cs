@@ -132,6 +132,7 @@ public class WorldController : MonoBehaviour
         // FIXME: Get rid of this when done testing the scheduler!!!
         // This is a Lua event which outputs a log message every two seconds on an infinite loop.
         scheduler.ScheduleEvent("ping_log_lua", 2.0f, true, 0);
+
         // This is a C# event which outputs a log message every five seconds for ten times.
         scheduler.ScheduleEvent("ping_log", 5.0f, false, 10);
     }

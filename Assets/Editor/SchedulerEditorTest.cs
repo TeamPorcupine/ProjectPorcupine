@@ -165,4 +165,47 @@ public class SchedulerEditorTest
 
         scheduler.Update(1);
     }
+
+    [Test]
+    public void SchedulerEventsDoNotModifyEventsListDuringUpdateTest()
+    {
+        Assert.That(scheduler.Events.Count, Is.EqualTo(0));
+
+        int numEventsInList = 0;
+
+        // generic event that expires at time 2s
+        ScheduledEvent evt1 = new ScheduledEvent(
+            "test",
+            callback,
+            2.0f,
+            false,
+            1);
+
+        // event which tries to purge the event list at 5s
+        ScheduledEvent evt2 = new ScheduledEvent(
+            "test",
+            (evt) => scheduler.PurgeEventList(),
+            5.0f,
+            false,
+            1);
+
+        // event which counts the events in the list at 7s
+        ScheduledEvent evt3 = new ScheduledEvent(
+            "test",
+            (evt) => (numEventsInList = scheduler.Events.Count),
+            7.0f,
+            false,
+            1);
+
+        scheduler.RegisterEvent(evt1);
+        scheduler.RegisterEvent(evt2);
+        scheduler.RegisterEvent(evt3);
+        scheduler.Update(10f);
+
+        // evt2 does not purge the list during the loop
+        Assert.That(numEventsInList, Is.EqualTo(2));
+
+        // but Update() correctly purges at the end of each call
+        Assert.That(scheduler.Events.Count, Is.EqualTo(0));
+    }
 }

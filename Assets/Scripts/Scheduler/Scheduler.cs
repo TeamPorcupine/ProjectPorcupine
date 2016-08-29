@@ -112,10 +112,10 @@ namespace Scheduler
 
         /// <summary>
         /// Deregisters the event.
-        /// NOTE: To stop a continuing event from running call Stop() on the event.
-        /// Then it will be removed on the next purge. Do not try to deregister it with this!
+        /// NOTE: To stop a continuing event from running do not try to deregister it with this!
+        /// Instead call Stop() on the event. Then it will be removed on the next purge.
         /// </summary>
-        /// <param name="evt">Evt.</param>
+        /// <param name="evt">Event to deregister.</param>
         public void DeregisterEvent(ScheduledEvent evt)
         {
             if (Events != null)
