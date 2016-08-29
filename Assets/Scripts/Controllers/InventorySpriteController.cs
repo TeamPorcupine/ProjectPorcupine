@@ -58,7 +58,13 @@ public class InventorySpriteController : BaseSpriteController<Inventory>
         objectGameObjectMap.Add(inv, inv_go);
 
         inv_go.name = inv.objectType;
-        inv_go.transform.position = new Vector3(inv.tile.X, inv.tile.Y, 0);
+
+        // Only create a Game Object if inventory was created on tile, anything else will handle its own game object
+        if (inv.tile != null)
+        {
+            inv_go.transform.position = new Vector3(inv.tile.X, inv.tile.Y, 0);
+        }
+
         inv_go.transform.SetParent(objectParent.transform, true);
 
         SpriteRenderer sr = inv_go.AddComponent<SpriteRenderer>();
