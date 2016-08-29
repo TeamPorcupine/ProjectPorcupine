@@ -6,43 +6,21 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
 
 public class ConstructionMenu : MonoBehaviour
 {
-
     // The sub menus of the build menu (furniture, floor..... later - power, security, drones).
     public GameObject furnitureMenu;
     public GameObject floorMenu;
 
-    BuildModeController bmc;
-
     public Button buttonFloors;
     public Button buttonFurniture;
-
     public Button buttonDeconstruction;
 
-    void Start()
-    {
-        bmc = WorldController.Instance.buildModeController;
-
-        buttonDeconstruction.onClick.AddListener(delegate
-            {
-                OnClickDeconstruct();
-            });
-        
-        // Add liseners here.
-        buttonFloors.onClick.AddListener(delegate
-            {
-                OnClickFloors();
-            });
-        buttonFurniture.onClick.AddListener(delegate
-            {
-                OnClickFurniture(); 
-            });
-    }
+    private BuildModeController bmc;
 
     public void OnClickDeconstruct()
     {
@@ -52,13 +30,13 @@ public class ConstructionMenu : MonoBehaviour
 
     public void OnClickFloors()
     {
-        DeactivateSubs();
+        furnitureMenu.SetActive(false);
         ToggleMenu(floorMenu);
     }
 
     public void OnClickFurniture()
     {
-        DeactivateSubs();
+        floorMenu.SetActive(false);
         ToggleMenu(furnitureMenu);
     }
 
@@ -73,5 +51,30 @@ public class ConstructionMenu : MonoBehaviour
     public void ToggleMenu(GameObject menu)
     {
         menu.SetActive(!menu.activeSelf);
+    }
+
+    private void Start()
+    {
+        bmc = WorldController.Instance.buildModeController;
+
+        MenuController cm = GameObject.Find("MenuBottom").GetComponent<MenuController>();
+
+        furnitureMenu = cm.furnitureMenu;
+        floorMenu = cm.floorMenu;
+
+        buttonDeconstruction.onClick.AddListener(delegate
+        {
+            OnClickDeconstruct();
+        });
+
+        // Add liseners here.
+        buttonFloors.onClick.AddListener(delegate
+        {
+            OnClickFloors();
+        });
+        buttonFurniture.onClick.AddListener(delegate
+        {
+            OnClickFurniture();
+        });
     }
 }

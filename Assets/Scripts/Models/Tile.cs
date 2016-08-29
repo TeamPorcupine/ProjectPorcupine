@@ -6,40 +6,62 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using UnityEngine;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
+using UnityEngine;
 
-public enum ENTERABILITY
+public enum Enterability
 {
     Yes,
     Never,
     Soon
-};
+}
 
 [MoonSharpUserData]
-public class Tile :IXmlSerializable, ISelectable
+public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
 {
-    private TileType _type = TileType.Empty;
+    private TileType type = TileType.Empty;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Tile"/> class.
+    /// </summary>
+    /// <param name="x">The x coordinate.</param>
+    /// <param name="y">The y coordinate.</param>
+    public Tile(int x, int y)
+    {
+        X = x;
+        Y = y;
+        Characters = new List<Character>();
+    }
+
+    // The function we callback any time our tile's data changes
+    public event Action<Tile> TileChanged;
 
     public TileType Type
     {
-        get { return _type; }
+        get
+        {
+            return type;
+        }
+
         set
         {
-            if(_type != value)
+            if (type == value)
             {
-                _type = value;
+                return;
+            }
 
-                // Call the callback and let things know we've changed.
-                if (cbTileChanged != null)
-                {
-                    cbTileChanged(this);
-                }
+            type = value;
+
+            // Call the callback and let things know we've changed.
+            if (TileChanged != null)
+            {
+                TileChanged(this);
             }
         }
     }
@@ -52,19 +74,42 @@ public class Tile :IXmlSerializable, ISelectable
     public List<Character> Characters { get; set; }
 
     // Furniture is something like a wall, door, or sofa.
-    public Furniture Furniture
+    public Furniture Furniture { get; private set; }
+
+    /// <summary>
+    /// The total pathfinding cost of entering this tile.
+    /// The final cost is equal to the Tile's BaseMovementCost * Tile's PathfindingWeight * Furniture's PathfindingWeight * Furniture's MovementCost +
+    /// Tile's PathfindingModifier + Furniture's PathfindingModifier.
+    /// </summary>
+    public float PathfindingCost
     {
-        get;
-        protected set;
+        get
+        {
+            // If Tile's BaseMovementCost or Furniture's MovementCost = 0 (i.e. impassable) we should always return 0 (stay impassable)
+            if (Type.BaseMovementCost == 0 || (Furniture != null && Furniture.MovementCost == 0))
+            {
+                return 0f;
+            }
+
+            if (Furniture != null)
+            {
+                return (Furniture.PathfindingWeight * Furniture.MovementCost * Type.PathfindingWeight * Type.BaseMovementCost) + 
+                    Furniture.PathfindingModifier + Type.PathfindingModifier;
+            }
+            else
+            {
+                return (Type.PathfindingWeight * Type.BaseMovementCost) + Type.PathfindingModifier;
+            }
+        }
     }
 
     // FIXME: This seems like a terrible way to flag if a job is pending
     // on a tile.  This is going to be prone to errors in set/clear.
     public Job PendingBuildJob { get; set; }
 
-    public int X { get; protected set; }
+    public int X { get; private set; }
 
-    public int Y { get; protected set; }
+    public int Y { get; private set; }
 
     public float MovementCost
     {
@@ -72,51 +117,43 @@ public class Tile :IXmlSerializable, ISelectable
         {
             // This prevented the character from walking in empty tiles. It has been diasbled to allow the character to construct floor tiles.
             // TODO: Permanent solution for handeling when a character can walk in empty tiles is required
-            //if (Type == TileType.Empty)
-            //    return 0;	// 0 is unwalkable
-            
             if (Type.MovementCostLua == null)
             {
-                return Type.BaseMovementCost * (Furniture != null ? Furniture.movementCost : 1);
+                return Type.BaseMovementCost * (Furniture != null ? Furniture.MovementCost : 1);
             }
-            
-            return (float) LuaUtilities.CallFunction(Type.MovementCostLua, this).Number;
+
+            return (float)LuaUtilities.CallFunction(Type.MovementCostLua, this).Number;
         }
     }
 
     public bool IsSelected { get; set; }
 
-    // The function we callback any time our tile's data changes
-    public event Action<Tile> cbTileChanged;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Tile"/> class.
-    /// </summary>
-    /// <param name="x">The x coordinate.</param>
-    /// <param name="y">The y coordinate.</param>
-    public Tile(int x, int y)
+    // Called when the character has completed the job to change tile type
+    public static void ChangeTileTypeJobComplete(Job theJob)
     {
-        this.X = x;
-        this.Y = y;
-        Characters = new List<Character>();
+        // FIXME: For now this is hardcoded to build floor
+        theJob.tile.Type = theJob.JobTileType;
+
+        // FIXME: I don't like having to manually and explicitly set
+        // flags that preven conflicts. It's too easy to forget to set/clear them!
+        theJob.tile.PendingBuildJob = null;
     }
 
     public bool UnplaceFurniture()
     {
         // Just uninstalling.  FIXME:  What if we have a multi-tile furniture?
-
         if (Furniture == null)
-            return false;
-
-        Furniture f = Furniture;
-
-        for (int x_off = X; x_off < (X + f.Width); x_off++)
         {
-            for (int y_off = Y; y_off < (Y + f.Height); y_off++)
-            {
+            return false;
+        }
 
-                Tile t = World.current.GetTileAt(x_off, y_off);
-                t.Furniture = null;
+        Furniture furniture = Furniture;
+        for (int x_off = X; x_off < X + furniture.Width; x_off++)
+        {
+            for (int y_off = Y; y_off < Y + furniture.Height; y_off++)
+            {
+                Tile tile = World.Current.GetTileAt(x_off, y_off);
+                tile.Furniture = null;
             }
         }
 
@@ -125,7 +162,6 @@ public class Tile :IXmlSerializable, ISelectable
 
     public bool PlaceFurniture(Furniture objInstance)
     {
-
         if (objInstance == null)
         {
             return UnplaceFurniture();
@@ -133,27 +169,25 @@ public class Tile :IXmlSerializable, ISelectable
 
         if (objInstance.IsValidPosition(this) == false)
         {
-            Debug.LogError("Trying to assign a furniture to a tile that isn't valid!");
+            Debug.ULogErrorChannel("Tile", "Trying to assign a furniture to a tile that isn't valid!");
             return false;
         }
-		
-        for (int x_off = X; x_off < (X + objInstance.Width); x_off++)
+
+        for (int x_off = X; x_off < X + objInstance.Width; x_off++)
         {
-            for (int y_off = Y; y_off < (Y + objInstance.Height); y_off++)
+            for (int y_off = Y; y_off < Y + objInstance.Height; y_off++)
             {
-
-                Tile t = World.current.GetTileAt(x_off, y_off);
+                Tile t = World.Current.GetTileAt(x_off, y_off);
                 t.Furniture = objInstance;
-
             }
         }
 
         return true;
     }
 
-    public bool PlaceInventory(Inventory inv)
+    public bool PlaceInventory(Inventory inventory)
     {
-        if (inv == null)
+        if (inventory == null)
         {
             Inventory = null;
             return true;
@@ -162,21 +196,20 @@ public class Tile :IXmlSerializable, ISelectable
         if (Inventory != null)
         {
             // There's already inventory here. Maybe we can combine a stack?
-
-            if (Inventory.objectType != inv.objectType)
+            if (Inventory.objectType != inventory.objectType)
             {
-                Debug.LogError("Trying to assign inventory to a tile that already has some of a different type.");
+                Debug.ULogErrorChannel("Tile", "Trying to assign inventory to a tile that already has some of a different type.");
                 return false;
             }
 
-            int numToMove = inv.stackSize;
-            if (Inventory.stackSize + numToMove > Inventory.maxStackSize)
+            int numToMove = inventory.StackSize;
+            if (Inventory.StackSize + numToMove > Inventory.maxStackSize)
             {
-                numToMove = Inventory.maxStackSize - Inventory.stackSize;
+                numToMove = Inventory.maxStackSize - Inventory.StackSize;
             }
 
-            Inventory.stackSize += numToMove;
-            inv.stackSize -= numToMove;
+            Inventory.StackSize += numToMove;
+            inventory.StackSize -= numToMove;
 
             return true;
         }
@@ -185,23 +218,11 @@ public class Tile :IXmlSerializable, ISelectable
         // null.  Now we can't just do a direct assignment, because
         // the inventory manager needs to know that the old stack is now
         // empty and has to be removed from the previous lists.
-
-        Inventory = inv.Clone();
+        Inventory = inventory.Clone();
         Inventory.tile = this;
-        inv.stackSize = 0;
+        inventory.StackSize = 0;
 
         return true;
-    }
-
-    // Called when the character has completed the job to change tile type
-    public static void ChangeTileTypeJobComplete(Job theJob)
-    {
-        // FIXME: For now this is hardcoded to build floor
-        theJob.tile.Type = theJob.jobTileType;
-
-        // FIXME: I don't like having to manually and explicitly set
-        // flags that preven conflicts. It's too easy to forget to set/clear them!
-        theJob.tile.PendingBuildJob = null;
     }
 
     public void EqualiseGas(float leakFactor)
@@ -209,15 +230,14 @@ public class Tile :IXmlSerializable, ISelectable
         Room.EqualiseGasByTile(this, leakFactor);
     }
 
-
     // Tells us if two tiles are adjacent.
     public bool IsNeighbour(Tile tile, bool diagOkay = false)
     {
         // Check to see if we have a difference of exactly ONE between the two
         // tile coordinates.  Is so, then we are vertical or horizontal neighbours.
-        return 
-			Mathf.Abs(this.X - tile.X) + Mathf.Abs(this.Y - tile.Y) == 1 || // Check hori/vert adjacency
-        (diagOkay && (Mathf.Abs(this.X - tile.X) == 1 && Mathf.Abs(this.Y - tile.Y) == 1)); // Check diag adjacency
+        return
+            Math.Abs(X - tile.X) + Math.Abs(Y - tile.Y) == 1 || // Check hori/vert adjacency
+        (diagOkay && Math.Abs(X - tile.X) == 1 && Math.Abs(Y - tile.Y) == 1); // Check diag adjacency
     }
 
     /// <summary>
@@ -227,38 +247,27 @@ public class Tile :IXmlSerializable, ISelectable
     /// <param name="diagOkay">Is diagonal movement okay?.</param>
     public Tile[] GetNeighbours(bool diagOkay = false)
     {
-        Tile[] ns;
+        Tile[] ns = diagOkay == false ? new Tile[4] : new Tile[8];
 
-        if (diagOkay == false)
-        {
-            ns = new Tile[4];	// Tile order: N E S W
-        }
-        else
-        {
-            ns = new Tile[8];	// Tile order : N E S W NE SE SW NW
-        }
-
-        Tile n;
-
-        n = World.current.GetTileAt(X, Y + 1);
-        ns[0] = n;	// Could be null, but that's okay.
-        n = World.current.GetTileAt(X + 1, Y);
-        ns[1] = n;	// Could be null, but that's okay.
-        n = World.current.GetTileAt(X, Y - 1);
-        ns[2] = n;	// Could be null, but that's okay.
-        n = World.current.GetTileAt(X - 1, Y);
-        ns[3] = n;	// Could be null, but that's okay.
+        Tile tile = World.Current.GetTileAt(X, Y + 1);
+        ns[0] = tile; // Could be null, but that's okay.
+        tile = World.Current.GetTileAt(X + 1, Y);
+        ns[1] = tile; // Could be null, but that's okay.
+        tile = World.Current.GetTileAt(X, Y - 1);
+        ns[2] = tile; // Could be null, but that's okay.
+        tile = World.Current.GetTileAt(X - 1, Y);
+        ns[3] = tile; // Could be null, but that's okay.
 
         if (diagOkay == true)
         {
-            n = World.current.GetTileAt(X + 1, Y + 1);
-            ns[4] = n;	// Could be null, but that's okay.
-            n = World.current.GetTileAt(X + 1, Y - 1);
-            ns[5] = n;	// Could be null, but that's okay.
-            n = World.current.GetTileAt(X - 1, Y - 1);
-            ns[6] = n;	// Could be null, but that's okay.
-            n = World.current.GetTileAt(X - 1, Y + 1);
-            ns[7] = n;	// Could be null, but that's okay.
+            tile = World.Current.GetTileAt(X + 1, Y + 1);
+            ns[4] = tile; // Could be null, but that's okay.
+            tile = World.Current.GetTileAt(X + 1, Y - 1);
+            ns[5] = tile; // Could be null, but that's okay.
+            tile = World.Current.GetTileAt(X - 1, Y - 1);
+            ns[6] = tile; // Could be null, but that's okay.
+            tile = World.Current.GetTileAt(X - 1, Y + 1);
+            ns[7] = tile; // Could be null, but that's okay.
         }
 
         return ns;
@@ -267,18 +276,9 @@ public class Tile :IXmlSerializable, ISelectable
     /// <summary>
     /// If one of the 8 neighbouring tiles is of TileType type then this returns true.
     /// </summary>
-    /// <param name="type"></param>
-    /// <returns></returns>
-    public bool HasNeighboursOfType(TileType type)
+    public bool HasNeighboursOfType(TileType tileType)
     {
-        foreach (Tile tile in GetNeighbours(true))
-        {
-            if (tile.Type == type)
-            {
-                return true;
-            }
-        }
-        return false;
+        return GetNeighbours(true).Any(tile => tile.Type == tileType);
     }
 
     public XmlSchema GetSchema()
@@ -297,23 +297,22 @@ public class Tile :IXmlSerializable, ISelectable
     public void ReadXml(XmlReader reader)
     {
         // X and Y have already been read/processed
-
-        Room = World.current.GetRoomFromID(int.Parse(reader.GetAttribute("RoomID")));
+        Room = World.Current.GetRoomFromID(int.Parse(reader.GetAttribute("RoomID")));
         if (Room != null)
         {
             Room.AssignTile(this);
         }
 
         Type = TileType.GetTileType(reader.GetAttribute("Type"));
-
-
     }
-
-    public ENTERABILITY IsEnterable()
+        
+    public Enterability IsEnterable()
     {
         // This returns true if you can enter this tile right this moment.
-        if (MovementCost == 0)
-            return ENTERABILITY.Never;
+        if (MovementCost.IsZero())
+        {
+            return Enterability.Never;
+        }
 
         // Check out furniture to see if it has a special block on enterability
         if (Furniture != null)
@@ -321,49 +320,115 @@ public class Tile :IXmlSerializable, ISelectable
             return Furniture.IsEnterable();
         }
 
-        return ENTERABILITY.Yes;
+        return Enterability.Yes;
     }
 
     public Tile North()
     {
-        return World.current.GetTileAt(X, Y + 1);
+        return World.Current.GetTileAt(X, Y + 1);
     }
 
     public Tile South()
     {
-        return World.current.GetTileAt(X, Y - 1);
+        return World.Current.GetTileAt(X, Y - 1);
     }
 
     public Tile East()
     {
-        return World.current.GetTileAt(X + 1, Y);
+        return World.Current.GetTileAt(X + 1, Y);
     }
 
     public Tile West()
     {
-        return World.current.GetTileAt(X - 1, Y);
+        return World.Current.GetTileAt(X - 1, Y);
+    }
+
+    public float GetGasPressure(string gas)
+    {
+        if (Room == null)
+        {
+            float pressure = Mathf.Infinity;
+            if (North().Room != null && North().GetGasPressure(gas) < pressure)
+            {
+                pressure = North().GetGasPressure(gas);
+            }
+
+            if (East().Room != null && East().GetGasPressure(gas) < pressure)
+            {
+                pressure = East().GetGasPressure(gas);
+            }
+
+            if (South().Room != null && South().GetGasPressure(gas) < pressure)
+            {
+                pressure = South().GetGasPressure(gas);
+            }
+
+            if (West().Room != null && West().GetGasPressure(gas) < pressure)
+            {
+                pressure = West().GetGasPressure(gas);
+            }
+
+            if (pressure == Mathf.Infinity)
+            {
+                return 0f;
+            }
+
+            return pressure;
+        }
+
+        return Room.GetGasPressure(gas);
     }
 
     #region ISelectableInterface implementation
 
     public string GetName()
     {
-        return "tile_"+this._type.ToString();
+        return "tile_" + type.ToString();
     }
 
     public string GetDescription()
     {
-        return "tile_"+this._type.ToString()+"_desc";
+        return "tile_" + type.ToString() + "_desc";
     }
 
     public string GetHitPointString()
     {
-        return "";	// Do tiles have hitpoints? Can flooring be damaged? Obviously "empty" is indestructible.
+        return string.Empty; // Do tiles have hitpoints? Can flooring be damaged? Obviously "empty" is indestructible.
     }
 
     public string GetJobDescription()
     {
-        return "";
+        return string.Empty;
     }
+
     #endregion
+
+    public IEnumerable<ContextMenuAction> GetContextMenuActions(ContextMenu contextMenu)
+    {
+        if (PendingBuildJob != null)
+        {
+            yield return new ContextMenuAction
+            {
+                Text = "Cancel Job",
+                RequireCharacterSelected = false,
+                Action = (cm, c) => 
+                {
+                    if (PendingBuildJob != null)
+                    {
+                        PendingBuildJob.CancelJob();
+                    }
+                }
+            };
+
+            if (!PendingBuildJob.IsBeingWorked)
+            {
+                yield return new ContextMenuAction
+                {
+                    Text = "Prioritize Job",
+                    RequireCharacterSelected = true,
+                    Action = (cm, c) => { c.PrioritizeJob(PendingBuildJob); }
+                };
+            }
+        }
+    }
 }

@@ -6,58 +6,66 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using UnityEngine;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
+using UnityEngine;
 
 public class SpriteManager : MonoBehaviour
 {
-
     // Sprite Manager isn't responsible for actually creating GameObjects.
     // That is going to be the job of the individual ________SpriteController scripts.
     // Our job is simply to load all sprites from disk and keep the organized.
-
-    static public SpriteManager current;
+    public static SpriteManager current;
 
     public static Texture2D noRescourceTexture;
 
-    Dictionary<string, Sprite> sprites;
+    private Dictionary<string, Sprite> sprites;
 
-    void Awake()
+    public void Awake()
     {
         if (noRescourceTexture == null)
         {
-            //Generate a 32x32 magenta image
+            // Generate a 32x32 magenta image
             noRescourceTexture = new Texture2D(32, 32, TextureFormat.ARGB32, false);
             Color32[] pixels = noRescourceTexture.GetPixels32();
             for (int i = 0; i < pixels.Length; i++)
             {
                 pixels[i] = new Color32(255, 0, 255, 255);
             }
+
             noRescourceTexture.SetPixels32(pixels);
             noRescourceTexture.Apply();
         }
     }
 
     // Use this for initialization
-    void OnEnable()
+    public void OnEnable()
     {
         current = this;
 
         LoadSprites();
     }
 
-    void LoadSprites()
+    public Sprite GetSprite(string categoryName, string spriteName)
+    {
+        spriteName = categoryName + "/" + spriteName;
+
+        if (sprites.ContainsKey(spriteName) == false)
+        {
+            // Return a magenta image
+            return Sprite.Create(noRescourceTexture, new Rect(Vector2.zero, new Vector3(32, 32)), new Vector2(0.5f, 0.5f), 32);
+        }
+
+        return sprites[spriteName];
+    }
+
+    private void LoadSprites()
     {
         sprites = new Dictionary<string, Sprite>();
 
-        string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "Images");
-        string modsPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Mods");
-        //filePath = System.IO.Path.Combine( Application.streamingAssetsPath, "CursorCircle.png" );
-
-        //LoadSprite("CursorCircle", filePath);
-
+        string filePath = Path.Combine(Application.streamingAssetsPath, "Images");
+        string modsPath = Path.Combine(Application.streamingAssetsPath, "Mods");
         LoadSpritesFromDirectory(filePath);
 
         DirectoryInfo[] mods = WorldController.Instance.modsManager.GetMods();
@@ -71,12 +79,12 @@ public class SpriteManager : MonoBehaviour
         }
     }
 
-    void LoadSpritesFromDirectory(string filePath)
+    private void LoadSpritesFromDirectory(string filePath)
     {
-        Debug.Log("LoadSpritesFromDirectory: " + filePath);
+        Debug.ULogChannel("SpriteManager", "LoadSpritesFromDirectory: " + filePath);
+
         // First, we're going to see if we have any more sub-directories,
         // if so -- call LoadSpritesFromDirectory on that.
-
         string[] subDirs = Directory.GetDirectories(filePath);
         foreach (string sd in subDirs)
         {
@@ -94,50 +102,45 @@ public class SpriteManager : MonoBehaviour
             // don't have to worry about oddball filenames, nor do we have to worry
             // about what happens if Unity adds support for more image format
             // or drops support for existing ones.
-
             string spriteCategory = new DirectoryInfo(filePath).Name;
 
             LoadImage(spriteCategory, fn);
         }
-
     }
 
-    void LoadImage(string spriteCategory, string filePath)
+    private void LoadImage(string spriteCategory, string filePath)
     {
-        //Debug.Log("LoadImage: " + filePath);
-
         // TODO:  LoadImage is returning TRUE for things like .meta and .xml files.  What??!
-        //		So as a temporary fix, let's just bail if we have something we KNOW should not
-        //  	be an image.
+        //      So as a temporary fix, let's just bail if we have something we KNOW should not
+        //      be an image.
         if (filePath.Contains(".xml") || filePath.Contains(".meta") || filePath.Contains(".db"))
         {
             return;
         }
 
         // Load the file into a texture
-        byte[] imageBytes = System.IO.File.ReadAllBytes(filePath);
+        byte[] imageBytes = File.ReadAllBytes(filePath);
 
-        Texture2D imageTexture = new Texture2D(2, 2);	// Create some kind of dummy instance of Texture2D
+        // Create some kind of dummy instance of Texture2D
+        Texture2D imageTexture = new Texture2D(2, 2);
+
         // LoadImage will correctly resize the texture based on the image file
-
-
         if (imageTexture.LoadImage(imageBytes))
         {
-
             // Image was successfully loaded.
             // So let's see if there's a matching XML file for this image.
             string baseSpriteName = Path.GetFileNameWithoutExtension(filePath);
             string basePath = Path.GetDirectoryName(filePath);
 
             // NOTE: The extension must be in lower case!
-            string xmlPath = System.IO.Path.Combine(basePath, baseSpriteName + ".xml");
+            string xmlPath = Path.Combine(basePath, baseSpriteName + ".xml");
 
-            if (System.IO.File.Exists(xmlPath))
+            if (File.Exists(xmlPath))
             {
-                string xmlText = System.IO.File.ReadAllText(xmlPath);
+                string xmlText = File.ReadAllText(xmlPath);
+
                 // TODO: Loop through the xml file finding all the <sprite> tags
                 // and calling LoadSprite once for each of them.
-                
                 XmlTextReader reader = new XmlTextReader(new StringReader(xmlText));
 
                 // Set our cursor on the first Sprite we find.
@@ -146,93 +149,71 @@ public class SpriteManager : MonoBehaviour
                     do
                     {
                         ReadSpriteFromXml(spriteCategory, reader, imageTexture);
-                    } while(reader.ReadToNextSibling("Sprite"));
+                    } 
+                    while (reader.ReadToNextSibling("Sprite"));
                 }
                 else
                 {
-                    Debug.LogError("Could not find a <Sprites> tag.");
+                    Debug.ULogErrorChannel("SpriteManager", "Could not find a <Sprites> tag.");
                     return;
                 }
-
             }
             else
             {
                 // File couldn't be read, probably because it doesn't exist
                 // so we'll just assume the whole image is one sprite with pixelPerUnit = 32
                 LoadSprite(spriteCategory, baseSpriteName, imageTexture, new Rect(0, 0, imageTexture.width, imageTexture.height), 32, new Vector2(0.5f, 0.5f));
-
             }
 
             // Attempt to load/parse the XML file to get information on the sprite(s)
-
         }
-			
-        // else, the file wasn't actually a image file, so just move on.
 
+        // else, the file wasn't actually a image file, so just move on.
     }
 
-    void ReadSpriteFromXml(string spriteCategory, XmlReader reader, Texture2D imageTexture)
+    private void ReadSpriteFromXml(string spriteCategory, XmlReader reader, Texture2D imageTexture)
     {
-        //Debug.Log("ReadSpriteFromXml");
         string name = reader.GetAttribute("name");
         int x = int.Parse(reader.GetAttribute("x"));
         int y = int.Parse(reader.GetAttribute("y"));
         int w = int.Parse(reader.GetAttribute("w"));
         int h = int.Parse(reader.GetAttribute("h"));
 
-        //Try read the pivot point
+        // Try read the pivot point
         string pivotXAttribute = reader.GetAttribute("pivotX");
         float pivotX;
         if (float.TryParse(pivotXAttribute, out pivotX) == false)
         {
-            //If pivot point didn't exist default to 0.5f
+            // If pivot point didn't exist default to 0.5f
             pivotX = 0.5f;
         }
 
-        //Clamp pivot between 0..1
+        // Clamp pivot between 0..1
         pivotX = Mathf.Clamp01(pivotX);
 
-        //Try read the pivot point
+        // Try read the pivot point
         string pivotYAttribute = reader.GetAttribute("pivotY");
         float pivotY;
         if (float.TryParse(pivotYAttribute, out pivotY) == false)
         {
-            //If pivot point didn't exist default to 0.5f
+            // If pivot point didn't exist default to 0.5f
             pivotY = 0.5f;
         }
 
-        //Clamp pivot between 0..1
+        // Clamp pivot between 0..1
         pivotY = Mathf.Clamp01(pivotY);
-        
+
         int pixelPerUnit = int.Parse(reader.GetAttribute("pixelPerUnit"));
 
-        LoadSprite(spriteCategory, name, imageTexture, new Rect(x, y, w, h), pixelPerUnit, new Vector2(pivotX, pivotY));
+        LoadSprite(spriteCategory, name, imageTexture, new Rect(x * pixelPerUnit, y * pixelPerUnit, w * pixelPerUnit, h * pixelPerUnit), pixelPerUnit, new Vector2(pivotX, pivotY));
     }
 
-    void LoadSprite(string spriteCategory, string spriteName, Texture2D imageTexture, Rect spriteCoordinates, int pixelsPerUnit, Vector2 pivotPoint)
+    private void LoadSprite(string spriteCategory, string spriteName, Texture2D imageTexture, Rect spriteCoordinates, int pixelsPerUnit, Vector2 pivotPoint)
     {
         spriteName = spriteCategory + "/" + spriteName;
-        //Debug.Log("LoadSprite: " + spriteName);
 
         Sprite s = Sprite.Create(imageTexture, spriteCoordinates, pivotPoint, pixelsPerUnit);
 
         sprites[spriteName] = s;
-    }
-
-    public Sprite GetSprite(string categoryName, string spriteName)
-    {
-        //Debug.Log(spriteName);
-
-        spriteName = categoryName + "/" + spriteName;
-
-        if (sprites.ContainsKey(spriteName) == false)
-        {
-            //Debug.LogError("No sprite with name: " + spriteName);
-            
-            //Return a magenta image
-            return Sprite.Create(noRescourceTexture, new Rect(Vector2.zero, new Vector3(32, 32)), new Vector2(0.5f, 0.5f), 32);
-        }
-
-        return sprites[spriteName];
     }
 }
