@@ -34,7 +34,7 @@ public class DialogBoxQuests : DialogBox
 
     private void BuildInterface()
     {
-        List<Quest> quests = World.Current.Quests.Where(q => IsQuestAvailable(q)).ToList();
+        List<Quest> quests = PrototypeManager.Quest.Values.Where(q => IsQuestAvailable(q)).ToList();
 
         foreach (var quest in quests)
         {
@@ -58,7 +58,7 @@ public class DialogBoxQuests : DialogBox
             return true;
         }
 
-        List<Quest> preQuests = World.Current.Quests.Where(q => quest.PreRequiredCompletedQuest.Contains(q.Name)).ToList();
+        List<Quest> preQuests = PrototypeManager.Quest.Values.Where(q => quest.PreRequiredCompletedQuest.Contains(q.Name)).ToList();
 
         return preQuests.All(q => q.IsCompleted);
     }

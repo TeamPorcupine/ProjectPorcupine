@@ -88,7 +88,7 @@ public class SpawnInventoryController
 
     private void CreateInventoryButtons()
     {
-        foreach (string invName in World.Current.inventoryPrototypes.Keys)
+        foreach (string invName in PrototypeManager.Inventory.Keys)
         {
             GameObject inventoryButton_go = new GameObject();
             inventoryButton_go.name = "Button - " + invName;
