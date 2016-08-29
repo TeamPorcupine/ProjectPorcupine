@@ -237,7 +237,7 @@ public class BuildModeController
         {
             for (int y_off = t.Y; y_off < (t.Y + proto.Height); y_off++)
             {
-                var pendingBuildJob = WorldController.Instance.World.GetTileAt(x_off, y_off).PendingBuildJob;
+                Job pendingBuildJob = WorldController.Instance.World.GetTileAt(x_off, y_off).PendingBuildJob;
                 if (pendingBuildJob != null)
                 {
                     // if the existing buildJobs furniture is replaceable by the current furnitureType,
