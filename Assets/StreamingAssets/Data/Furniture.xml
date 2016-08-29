@@ -40,6 +40,12 @@
         <Description>A door that characters can walk through.</Description>
         <TypeTag>Door</TypeTag>
         <MovementCost>1</MovementCost>
+        <!-- PathfindingModifer is additive, so a PathfindingModifier of 1 will basically respond to Pathfinding as though it takes 1 extra tile of movement -->
+        <!-- Default value of PathfindingModifier is 0 -->
+        <PathfindingModifier>1.5</PathfindingModifier>
+        <!-- PathfindingWeight is multiplicative, so a PathfindingWeight of 2 would basically respond to Pathfinding as though it takes double the tiles of movement -->
+        <!-- Default value of PathfindingWeight is 1 -->
+        <PathfindingWeight>1</PathfindingWeight>
         <Width>1</Width>
         <Height>1</Height>
         <LinksToNeighbours>false</LinksToNeighbours>
@@ -77,6 +83,8 @@
         <Description>An Airlock prevents air from leaving the base</Description>
         <TypeTag>Door</TypeTag>
         <MovementCost>1</MovementCost>
+        <PathfindingModifier>3</PathfindingModifier>
+        <PathfindingWeight>1</PathfindingWeight>
         <Width>1</Width>
         <Height>1</Height>
         <LinksToNeighbours>false</LinksToNeighbours>
@@ -133,7 +141,9 @@
         <Name>Oxygen Generator</Name>
         <Description>Create O2 in the room in which it is built.</Description>
         <TypeTag>Generator</TypeTag>
-        <MovementCost>10</MovementCost>
+        <MovementCost>2</MovementCost>
+        <PathfindingModifier>0</PathfindingModifier>
+        <PathfindingWeight>2</PathfindingWeight>
         <Width>2</Width>
         <Height>2</Height>
         <Power>-1</Power>
@@ -167,6 +177,8 @@
         <Description>Creates raw materials when worked by a character.</Description>
         <TypeTag>Workstation</TypeTag>
         <MovementCost>1</MovementCost>
+        <PathfindingModifier>0</PathfindingModifier>
+        <PathfindingWeight>2</PathfindingWeight>
         <Width>3</Width>
         <Height>3</Height>
 
@@ -193,7 +205,9 @@
     <Furniture objectType="Power Generator">
         <Name>Power Generator</Name>
         <TypeTag>Generator</TypeTag>
-        <MovementCost>10</MovementCost>
+        <MovementCost>2</MovementCost>
+        <PathfindingModifier>0</PathfindingModifier>
+        <PathfindingWeight>2</PathfindingWeight>
         <Width>2</Width>
         <Height>2</Height>
         <Power>5</Power>
@@ -213,10 +227,12 @@
     </Furniture>
 
 
-    <Furniture objectType="Cloning Pod">
+    <Furniture objectType="cloning_pod">
         <Name>Cloning Pod</Name>
         <Description>Creates an additional worker, then is destroyed.</Description>
-        <MovementCost>50</MovementCost>
+        <MovementCost>2</MovementCost>
+        <PathfindingModifier>0</PathfindingModifier>
+        <PathfindingWeight>2</PathfindingWeight>
         <Width>2</Width>
         <Height>2</Height>
 
@@ -228,10 +244,16 @@
             <Inventory objectType="Steel Plate" amount="15" />
         </DeconstructJob>
 
+        <Params>
+            <Param name="animationTimer" value="1" />
+            <Param name="animationStep" value="0" />
+        </Params>
+
         <JobSpotOffset X="0" Y="-1" />
         <JobSpawnSpotOffset X="1" Y="-1" />
 
         <Action event="OnUpdate" functionName="CloningPod_UpdateAction" />
+        <GetSpriteName FunctionName="CloningPod_GetSpriteName" />
 
         <LocalizationCode>furn_cloning_pod</LocalizationCode>
         <UnlocalizedDescription>furn_cloning_pod_desc</UnlocalizedDescription>
@@ -244,6 +266,8 @@
         <Description>Smelts your raw iron into metal.</Description>
         <TypeTag>Processor</TypeTag>
         <MovementCost>1</MovementCost>
+        <PathfindingModifier>1.5</PathfindingModifier>
+        <PathfindingWeight>2</PathfindingWeight>
         <Width>3</Width>
         <Height>3</Height>
 
@@ -268,7 +292,9 @@
         <Name>Heater</Name>
         <Description>Raises temperature in the room.</Description>
         <BaseType>Temperature</BaseType>
-        <MovementCost>10</MovementCost>
+        <MovementCost>2</MovementCost>
+        <PathfindingModifier>0</PathfindingModifier>
+        <PathfindingWeight>2</PathfindingWeight>
         <Width>1</Width>
         <Height>1</Height>
         <Power>4</Power>
@@ -294,6 +320,8 @@
         <Name>Power Cell Press</Name>
         <Description>A press that converts steel plate and something into power cells.</Description>
         <MovementCost>1</MovementCost>
+        <PathfindingModifier>1.5</PathfindingModifier>
+        <PathfindingWeight>2</PathfindingWeight>
         <Width>2</Width>
         <Height>2</Height>
 
@@ -316,7 +344,9 @@
         <Name>Small Landing Pad</Name>
         <Description>A landing pad for small spaceboats to land.</Description>
         <TypeTag>OutdoorOnly</TypeTag>
-        <MovementCost>5</MovementCost>
+        <MovementCost>2</MovementCost>
+        <PathfindingModifier>0</PathfindingModifier>
+        <PathfindingWeight>2</PathfindingWeight>
         <Width>3</Width>
         <Height>3</Height>
 
@@ -353,7 +383,9 @@
     <Furniture objectType="compressor_oxygen">
         <Name>Oxygen Compressor</Name>
         <Description>Stores and releases oxygen as needed</Description>
-        <MovementCost>5</MovementCost>
+        <MovementCost>2</MovementCost>
+        <PathfindingModifier>0</PathfindingModifier>
+        <PathfindingWeight>2</PathfindingWeight>
         <Width>2</Width>
         <Height>2</Height>
 
@@ -380,7 +412,9 @@
         <Name>Solar Panel</Name>
         <TypeTag>Generator</TypeTag>
         <TypeTag>OutdoorOnly</TypeTag>
-        <MovementCost>10</MovementCost>
+        <MovementCost>2</MovementCost>
+        <PathfindingModifier>1.5</PathfindingModifier>
+        <PathfindingWeight>2</PathfindingWeight>
         <Width>2</Width>
         <Height>3</Height>
         <Power>3</Power>

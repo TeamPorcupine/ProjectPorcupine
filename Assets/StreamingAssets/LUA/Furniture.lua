@@ -488,9 +488,29 @@ function CloningPod_UpdateAction(furniture, deltaTime)
         false
     )
 
+    j.RegisterJobWorkedCallback("CloningPod_JobRunning")
     j.RegisterJobCompletedCallback("CloningPod_JobComplete")
 	j.JobDescription = "job_cloning_pod_cloning_desc"
     furniture.AddJob(j)
+end
+
+function CloningPod_JobRunning(j)
+    local step = 0
+    if (math.floor(math.abs(j.JobTime * j.furniture.Parameters["animationTimer"].ToFloat())) % 2 == 0) then
+        step = 1
+    end
+    if (j.furniture.Parameters["animationStep"].ToFloat() != step) then
+         j.furniture.Parameters["animationStep"].SetValue(step)
+         j.furniture.UpdateOnChanged(j.furniture)
+    end
+end
+
+function CloningPod_GetSpriteName(furniture)
+    local baseName = "cloning_pod"
+    if (furniture.JobCount() < 1) then
+        return baseName
+    end
+    return baseName .. "_" .. furniture.Parameters["animationStep"].ToFloat()
 end
 
 function CloningPod_JobComplete(j)
