@@ -245,7 +245,7 @@ public static class Settings
         XmlDocument xDoc = new XmlDocument();
         xDoc.LoadXml(furnitureXmlText);
         Debug.ULogChannel("Settings", "Loaded settings");
-        Debug.Log(xDoc.InnerText); // Uber Logger doesn't handle multilines.
+        Debug.ULogChannel("Settings", xDoc.InnerText); 
 
         // Get the Settings node. Its children are the individual settings.
         XmlNode settingsNode = xDoc.GetElementsByTagName("Settings").Item(0);
