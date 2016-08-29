@@ -464,7 +464,9 @@ function CloningPod_OnUpdate(j)
 end
 
 function CloningPod_JobRunning(job)
+    CloningPod_GetSpriteName(job.furniture)
     job.furniture.UpdateOnChanged(job.furniture)
+
 end
 
 function CloningPod_JobComplete(j)
@@ -475,16 +477,17 @@ end
 function CloningPod_GetSpriteName(furniture)
     local baseName = "cloning_pod"
     local suffix = 0
-    if (furniture.JobCount != 1) then
+    if (furniture.JobCount() == 0) then
         return baseName
     end
-    if (furniture.GetJob(0).JobTime % 2 == 0) then
-        if (suffix == 0) then 
-            suffix = 1 
+
+    if (furniture.GetJob(0).JobTime % 1 == 0) then
+        if (suffix == 0) then
+            suffix = 1
         else
-            suffix = 0 
-        end
-    end
+            suffix = 0
+        end            
+     end
     return baseName .. "_" .. suffix
 end
 
