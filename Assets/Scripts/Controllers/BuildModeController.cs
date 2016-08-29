@@ -213,7 +213,7 @@ public class BuildModeController
                         }
                     }
 
-                    if (vacuumNeighbors > 0 && pressurjoedNeighbors > 0)
+                    if (vacuumNeighbors > 0 && pressuredNeighbors > 0)
                     {
                         Debug.ULogChannel("BuildModeController", "Someone tried to deconstruct a wall between a pressurised room and vacuum!");
                         return;
