@@ -26,7 +26,7 @@ public class World : IXmlSerializable
     public List<Character> characters;
     public List<Furniture> furnitures;
     public List<Room> rooms;
-    List<HeadlineGenerator> headlineGenerators = new List<HeadlineGenerator>();
+    public List<HeadlineGenerator> headlineGenerators = new List<HeadlineGenerator>();
     public InventoryManager inventoryManager;
     public Material skybox;
 
@@ -161,12 +161,13 @@ public class World : IXmlSerializable
 
     public void TickFixedFrequency(float deltaTime)
     {
+        // Update Furniture
         foreach (Furniture f in furnitures)
         {
             f.Update(deltaTime);
         }
 
-        //Update HeadlineGenerator
+        // Update HeadlineGenerator
         foreach (HeadlineGenerator h in headlineGenerators)
         {
             h.Update(deltaTime);
@@ -176,7 +177,6 @@ public class World : IXmlSerializable
         temperature.Update();
         PowerSystem.Update(deltaTime);
     }
-
 
     public HeadlineGenerator CreateHeadlineGenerator(XmlNode node)
     {

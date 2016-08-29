@@ -6,17 +6,15 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System;
-using System.Collections.Generic;
-using System.Reflection;
-using NUnit.Framework;
-using Power;
-using System.Xml;
 using System.IO;
+using System.Xml;
+using NUnit.Framework;
 
 public class HeadlineGeneratorTest
 {
-    HeadlineGenerator gen;
+    private HeadlineGenerator gen;
+    private bool stringPrinted;
+
     [SetUp]
     public void SetUp()
     {
@@ -27,11 +25,11 @@ public class HeadlineGeneratorTest
         doc.Load(new StringReader(furnitureXmlText));
         gen = new HeadlineGenerator(doc.SelectSingleNode("Headlines"));
         gen.RegisterUpdateHeadline(StringPrinted);
+        stringPrinted = false;
     }
 
-    bool stringPrinted = false;
-
-    private void StringPrinted(string headline) {
+    public void StringPrinted(string headline)
+    {
         Debug.Log(headline);
         stringPrinted = true;
     }
@@ -51,5 +49,4 @@ public class HeadlineGeneratorTest
         gen.Update(10);
         Assert.AreEqual(true, stringPrinted);
     }
-
 }
