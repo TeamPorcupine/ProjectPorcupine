@@ -110,6 +110,12 @@ namespace Scheduler
             return Events != null && Events.Contains(evt);
         }
 
+        /// <summary>
+        /// Deregisters the event.
+        /// NOTE: To stop a continuing event from running call Stop() on the event.
+        /// Then it will be removed on the next purge. Do not try to deregister it with this!
+        /// </summary>
+        /// <param name="evt">Evt.</param>
         public void DeregisterEvent(ScheduledEvent evt)
         {
             if (Events != null)
@@ -147,10 +153,14 @@ namespace Scheduler
                 return;
             }
 
-            foreach (ScheduledEvent evt in Events)
+            // Events may try to modify the event list, so cannot use a foreach on Events!
+            ScheduledEvent[] eventArray = Events.ToArray();
+            foreach (ScheduledEvent evt in eventArray)
             {
                 evt.Update(deltaTime);
             }
+
+            Events = eventArray.ToList();
 
             // TODO: this is an O(n) operation every tick.
             // Potentially this could be optimized by delaying purging!
