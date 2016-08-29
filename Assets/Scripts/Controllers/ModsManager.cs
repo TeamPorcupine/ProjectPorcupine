@@ -15,10 +15,22 @@ public class ModsManager
 
     public ModsManager(string dataPath)
     {
-        // Read the Furniture.xml files from Mods directory
         string modsPath = System.IO.Path.Combine(dataPath, "Mods");
         DirectoryInfo modsDir = new DirectoryInfo(modsPath);
         mods = modsDir.GetDirectories();
+
+        LoadPrototypes();
+    }
+
+    public void LoadPrototypes()
+    {
+        PrototypeManager.Furniture.LoadModPrototypesFromFile(mods);
+        PrototypeManager.Inventory.LoadModPrototypesFromFile(mods);
+        PrototypeManager.Need.LoadModPrototypesFromFile(mods);
+        PrototypeManager.Trader.LoadModPrototypesFromFile(mods);
+
+        FurnitureActions.LoadModsScripts(mods);
+        NeedActions.LoadModsScripts(mods);
     }
 
     public DirectoryInfo[] GetMods()

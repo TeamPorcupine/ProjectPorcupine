@@ -6,7 +6,10 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using System.Collections.Generic;
+using System.IO;
 using MoonSharp.Interpreter;
+using UnityEngine;
 
 public class NeedActions
 {
@@ -31,11 +34,35 @@ public class NeedActions
 
         // Also to access statics/globals
         myLuaScript.Globals["World"] = typeof(World);
+
+        LoadScripts();
     }
 
     public static NeedActions Instance
     {
         get { return instance ?? (instance = new NeedActions()); }
+    }
+
+    public static void LoadScripts()
+    {
+        string luaFilePath = Path.Combine(Application.streamingAssetsPath, "LUA");
+        luaFilePath = Path.Combine(luaFilePath, "Need.lua");
+        string myLuaCode = System.IO.File.ReadAllText(luaFilePath);
+
+        AddScript(myLuaCode);
+    }
+
+    public static void LoadModsScripts(DirectoryInfo[] mods)
+    {
+        foreach (DirectoryInfo mod in mods)
+        {
+            string luaModFile = Path.Combine(mod.FullName, "Need.lua");
+            if (File.Exists(luaModFile))
+            {
+                string luaModCode = System.IO.File.ReadAllText(luaModFile);
+                AddScript(luaModCode);
+            }
+        }
     }
 
     public static void AddScript(string rawLuaCode)

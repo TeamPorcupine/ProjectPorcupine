@@ -208,24 +208,26 @@ public class MouseController
         // If we are placing a multitile object we would like to modify the posiotion where the mouse grabs it.
         if (currentMode == MouseMode.BUILD
             && bmc.buildMode == BuildMode.FURNITURE
-            && World.Current.furniturePrototypes.ContainsKey(bmc.buildModeObjectType)
-            && (World.Current.furniturePrototypes[bmc.buildModeObjectType].Width > 1 ||
-            World.Current.furniturePrototypes[bmc.buildModeObjectType].Height > 1))
+            && PrototypeManager.Furniture.HasPrototype(bmc.buildModeObjectType)
+            && (PrototypeManager.Furniture.GetPrototype(bmc.buildModeObjectType).Width > 1
+                || PrototypeManager.Furniture.GetPrototype(bmc.buildModeObjectType).Height > 1))
         {
+            Furniture proto = PrototypeManager.Furniture.GetPrototype(bmc.buildModeObjectType);
+
             // If the furniture has af jobSpot set we would like to use that.
-            if (World.Current.furniturePrototypes[bmc.buildModeObjectType].JobSpotOffset.Equals(Vector2.zero) == false)
+            if (proto.JobSpotOffset.Equals(Vector2.zero) == false)
             {
                 currPlacingPosition = new Vector3(
-                    currFramePosition.x - World.Current.furniturePrototypes[bmc.buildModeObjectType].JobSpotOffset.x,
-                    currFramePosition.y - World.Current.furniturePrototypes[bmc.buildModeObjectType].JobSpotOffset.y,
+                    currFramePosition.x - proto.JobSpotOffset.x,
+                    currFramePosition.y - proto.JobSpotOffset.y,
                     0);
             }
             else
             {   
                 // Otherwise we use the center.
                 currPlacingPosition = new Vector3(
-                    currFramePosition.x - ((World.Current.furniturePrototypes[bmc.buildModeObjectType].Width - 1f) / 2f),
-                    currFramePosition.y - ((World.Current.furniturePrototypes[bmc.buildModeObjectType].Height - 1f) / 2f),
+                    currFramePosition.x - ((proto.Width - 1f) / 2f),
+                    currFramePosition.y - ((proto.Height - 1f) / 2f),
                     0);
             }
         }
@@ -375,7 +377,7 @@ public class MouseController
                     // Display the building hint on top of this tile position.
                     if (bmc.buildMode == BuildMode.FURNITURE)
                     {
-                        Furniture proto = World.Current.furniturePrototypes[bmc.buildModeObjectType];
+                        Furniture proto = PrototypeManager.Furniture.GetPrototype(bmc.buildModeObjectType);
                         if (IsPartOfDrag(t, dragParams, proto.DragType))
                         {
                             ShowFurnitureSpriteAtTile(bmc.buildModeObjectType, t);
@@ -408,7 +410,7 @@ public class MouseController
                 if (bmc.buildMode == BuildMode.FURNITURE)
                 {
                     // Check for furniture dragType.
-                    Furniture proto = World.Current.furniturePrototypes[bmc.buildModeObjectType];
+                    Furniture proto = PrototypeManager.Furniture.GetPrototype(bmc.buildModeObjectType);
 
                     if (IsPartOfDrag(t, dragParams, proto.DragType))
                     {
@@ -553,7 +555,7 @@ public class MouseController
             sr.color = new Color(1f, 0.5f, 0.5f, 0.25f);
         }
 
-        Furniture proto = World.Current.furniturePrototypes[furnitureType];
+        Furniture proto = PrototypeManager.Furniture.GetPrototype(furnitureType);
 
         go.transform.position = new Vector3(t.X + ((proto.Width - 1) / 2f), t.Y + ((proto.Height - 1) / 2f), 0);
     }    

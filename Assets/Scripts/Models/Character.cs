@@ -78,7 +78,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     /// Use only for serialization
     public Character()
     {
-        needs = new Need[World.Current.needPrototypes.Count];
+        needs = new Need[PrototypeManager.Need.Count];
         LoadNeeds();
     }
 
@@ -434,9 +434,9 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
     private void LoadNeeds()
     {
-        needs = new Need[World.Current.needPrototypes.Count];
-        World.Current.needPrototypes.Values.CopyTo(needs, 0);
-        for (int i = 0; i < World.Current.needPrototypes.Count; i++)
+        needs = new Need[PrototypeManager.Need.Count];
+        PrototypeManager.Need.Values.CopyTo(needs, 0);
+        for (int i = 0; i < PrototypeManager.Need.Count; i++)
         {
             Need need = needs[i];
             needs[i] = need.Clone();
