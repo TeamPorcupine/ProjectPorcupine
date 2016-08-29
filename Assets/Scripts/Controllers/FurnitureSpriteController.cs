@@ -71,18 +71,43 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
         // Otherwise, the sprite name is more complicated.
         spriteName += "_";
 
-        // Check for neighbours North, East, South, West
+        // Check for neighbours North, East, South, West, Northeast, Southeast, Southwest, Northwest
         int x = furn.Tile.X;
         int y = furn.Tile.Y;
+        string suffix = string.Empty;
 
-        spriteName += GetSuffixForNeighbour(furn, x, y + 1, "N");
-        spriteName += GetSuffixForNeighbour(furn, x + 1, y, "E");
-        spriteName += GetSuffixForNeighbour(furn, x, y - 1, "S");
-        spriteName += GetSuffixForNeighbour(furn, x - 1, y, "W");
+        suffix += GetSuffixForNeighbour(furn, x, y + 1, "N");
+        suffix += GetSuffixForNeighbour(furn, x + 1, y, "E");
+        suffix += GetSuffixForNeighbour(furn, x, y - 1, "S");
+        suffix += GetSuffixForNeighbour(furn, x - 1, y, "W");
 
-        // For example, if this object has all four neighbours of
+        // Now we check if we have the neighbours in the cardinal directions next to the respective diagonals
+        // because pure diagonal checking would leave us with diagonal walls and stockpiles, which make no sense.
+        if (suffix.Contains("N") && suffix.Contains("E"))
+        {
+            // And if we are sure that our direct neighbours exist, we can check if the neighbour in the respective diagonal 
+            // exists as well.
+            suffix += GetSuffixForNeighbour(furn, x + 1, y + 1, "ne");
+        }
+
+        if (suffix.Contains("E") && suffix.Contains("S"))
+        {
+            suffix += GetSuffixForNeighbour(furn, x + 1, y - 1, "se");
+        }
+
+        if (suffix.Contains("S") && suffix.Contains("W"))
+        {
+            suffix += GetSuffixForNeighbour(furn, x - 1, y - 1, "sw");
+        }
+
+        if (suffix.Contains("N") && suffix.Contains("W"))
+        {
+            suffix += GetSuffixForNeighbour(furn, x - 1, y + 1, "nw");
+        }
+
+        // For example, if this object has all eight neighbours of
         // the same type, then the string will look like:
-        //       Wall_NESW
+        //       Wall_NESWneseswnw
         return SpriteManager.current.GetSprite("Furniture", spriteName);
     }
 
