@@ -69,12 +69,10 @@ public class ConstructionMenu : MonoBehaviour
     {
         foreach (GameObject g in FurnitureSubs)
         {
-            if (g == menu)
+            if (g != menu)
             {
-                continue;
+                g.SetActive(false);
             }
-
-            g.SetActive(false);
         }
     }
 
