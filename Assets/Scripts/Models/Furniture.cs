@@ -151,32 +151,22 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
 
     public event Action<IPowerRelated> PowerValueChanged;
 
-    // PathfindingModifier is added to PathfindingCost to get the final amount
+    /// <summary>
+    /// Gets or sets the Furniture's pathfinding modifier which is added into the Tile's final PathfindingCost.
+    /// </summary>
     public float PathfindingModifier
     {
-        get
-        {
-            return pathfindingWeight;
-        }
-
-        set
-        {
-            pathfindingWeight = value;
-        }
+        get { return pathfindingWeight; }
+        set { pathfindingWeight = value; }
     }
 
-    // PathfindingWeight is multiplied by movement cost to get total PathfindingCost
+    /// <summary>
+    /// Gets or sets the Furniture's pathfinding weight which is multiplied into the Tile's final PathfindingCost.
+    /// </summary>
     public float PathfindingWeight
     {
-        get
-        {
-            return pathfindingWeight;
-        }
-
-        set
-        {
-            pathfindingWeight = value;
-        }
+        get { return pathfindingWeight; }
+        set { pathfindingWeight = value; }
     }
 
     public Color Tint { get; private set; }
@@ -440,7 +430,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
             case "Description":
                 reader.Read();
                 description = reader.ReadContentAsString();
-                    break;
+                break;
             case "MovementCost":
                 reader.Read();
                 MovementCost = reader.ReadContentAsFloat();

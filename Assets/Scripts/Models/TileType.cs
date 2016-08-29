@@ -68,30 +68,22 @@ public class TileType : IXmlSerializable
 
     public float BaseMovementCost { get; protected set; }
 
+    /// <summary>
+    /// Gets or sets the TileType's pathfinding weight which is multiplied into the Tile's final PathfindingCost.
+    /// </summary>
     public float PathfindingWeight
     {
-        get
-        {
-            return pathfindingWeight;
-        }
-
-        set
-        {
-            pathfindingWeight = value;
-        }
+        get { return pathfindingWeight; }
+        set { pathfindingWeight = value; }
     }
 
+    /// <summary>
+    /// Gets or sets the TileType's pathfinding modifier which is added into the Tile's final PathfindingCost.
+    /// </summary>
     public float PathfindingModifier
     {
-        get
-        {
-            return pathfindingModifier;
-        }
-
-        set
-        {
-            pathfindingModifier = value;
-        }
+        get { return pathfindingModifier; }
+        set { pathfindingModifier = value; }
     }
 
     // TODO!

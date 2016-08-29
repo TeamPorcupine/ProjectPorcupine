@@ -76,6 +76,11 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
     // Furniture is something like a wall, door, or sofa.
     public Furniture Furniture { get; private set; }
 
+    /// <summary>
+    /// The total pathfinding cost of entering this tile.
+    /// The final cost is equal to the Tile's BaseMovementCost * Tile's PathfindingWeight * Furniture's PathfindingWeight * Furniture's MovementCost +
+    /// Tile's PathfindingModifier + Furniture's PathfindingModifier.
+    /// </summary>
     public float PathfindingCost
     {
         get
