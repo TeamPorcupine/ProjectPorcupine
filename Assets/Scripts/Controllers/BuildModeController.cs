@@ -103,7 +103,7 @@ public class BuildModeController
                 if (PrototypeManager.FurnitureJob.HasPrototype(furnitureType))
                 {
                     // Make a clone of the job prototype
-                    j = PrototypeManager.FurnitureJob.GetPrototype(furnitureType);
+                    j = PrototypeManager.FurnitureJob.GetPrototype(furnitureType).Clone();
 
                     // Assign the correct tile.
                     j.tile = t;
