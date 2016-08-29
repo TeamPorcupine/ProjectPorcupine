@@ -102,6 +102,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         Tint = other.Tint;
         LinksToNeighbour = other.LinksToNeighbour;
         deconstructInvs = other.deconstructInvs;
+        deconstructJobTime = other.deconstructJobTime;
         JobSpotOffset = other.JobSpotOffset;
         jobSpawnSpotOffset = other.jobSpawnSpotOffset;
 

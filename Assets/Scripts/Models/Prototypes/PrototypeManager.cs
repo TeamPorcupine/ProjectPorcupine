@@ -16,8 +16,8 @@ public class PrototypeManager
     {
         FurnitureJob = new BasePrototypes<Job>();
         FurnitureJobDeconstruct = new BasePrototypes<Job>();
-        Furniture = new FurniturePrototypes();
         Inventory = new InventoryPrototypes();
+        Furniture = new FurniturePrototypes();
         Need = new NeedPrototypes();
         Trader = new TraderPrototypes();
         Quest = new QuestPrototypes();
