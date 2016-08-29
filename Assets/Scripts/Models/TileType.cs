@@ -242,7 +242,7 @@ public class TileType : IXmlSerializable
                         MovementCostLua = movementCostAttribute;
                     }
 
-                    Debug.Log("MovmentCostLua: " + MovementCostLua);
+                    Debug.ULogChannel("TileType", "MovmentCostLua: " + MovementCostLua);
                     break;
                 case "CanPlaceHere":
                     string canPlaceHereAttribute = reader.GetAttribute("FunctionName");
