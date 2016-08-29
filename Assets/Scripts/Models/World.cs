@@ -180,7 +180,7 @@ public class World : IXmlSerializable
         {
             OnCharacterCreated(c);
         }
-            
+
         return c;
     }
 
@@ -404,9 +404,15 @@ public class World : IXmlSerializable
         {
             foreach (Inventory inv in inventoryManager.inventories[objectType])
             {
-                writer.WriteStartElement("Inventory");
-                inv.WriteXml(writer);
-                writer.WriteEndElement();
+                // If we don't have a tile, that means this is in a character's inventory (or some other non-tile location
+                //      which means we shouldn't save that Inventory here, the character will take care of saving and loading
+                //      the inventory properly.
+                if (inv.tile != null)
+                {
+                    writer.WriteStartElement("Inventory");
+                    inv.WriteXml(writer);
+                    writer.WriteEndElement();
+                }
             }
         }
 
@@ -519,6 +525,24 @@ public class World : IXmlSerializable
     public void OnFurnitureRemoved(Furniture furn)
     {
         furnitures.Remove(furn);
+    }
+
+    public void ReadXml_Wallet(XmlReader reader)
+    {
+        if (reader.ReadToDescendant("Currency"))
+        {
+            do
+            {
+                Currency c = new Currency
+                    {
+                        Name = reader.GetAttribute("Name"),
+                        ShortName = reader.GetAttribute("ShortName"),
+                        Balance = float.Parse(reader.GetAttribute("Balance"))
+                    };
+                Wallet.Currencies[c.Name] = c;
+            }
+            while (reader.ReadToNextSibling("Character"));
+        }
     }
 
     private void LoadSkybox(string name = null)
@@ -747,6 +771,8 @@ public class World : IXmlSerializable
         {
             do
             {
+                Character character;
+
                 int x = int.Parse(reader.GetAttribute("X"));
                 int y = int.Parse(reader.GetAttribute("Y"));
                 if (reader.GetAttribute("r") != null)
@@ -755,35 +781,37 @@ public class World : IXmlSerializable
                     float b = float.Parse(reader.GetAttribute("b"));
                     float g = float.Parse(reader.GetAttribute("g"));
                     Color color = new Color(r, g, b, 1.0f);
-                    Character c = CreateCharacter(tiles[x, y], color);
-                    c.name = reader.GetAttribute("name");
-                    c.ReadXml(reader);
+                    character = CreateCharacter(tiles[x, y], color);
                 }
                 else
                 {
-                    Character c = CreateCharacter(tiles[x, y]);
-                    c.name = reader.GetAttribute("name");
-                    c.ReadXml(reader);
+                    character = CreateCharacter(tiles[x, y]);
+                }
+
+                character.name = reader.GetAttribute("name");
+                character.ReadXml(reader);
+                if (reader.ReadToDescendant("Inventories")) 
+                {
+                    if (reader.ReadToDescendant("Inventory"))
+                    {
+                        do
+                        {
+                            // Create our inventory from the file
+                            Inventory inv = new Inventory(
+                                reader.GetAttribute("objectType"),
+                                int.Parse(reader.GetAttribute("maxStackSize")),
+                                int.Parse(reader.GetAttribute("stackSize")));
+
+                            inventoryManager.PlaceInventory(character, inv);
+                        }
+                        while (reader.ReadToNextSibling("Inventory"));
+
+                        // One more read to step out of Inventories, so ReadToNextSibling will find sibling Character
+                        reader.Read();
+                    }
                 }
             }
             while (reader.ReadToNextSibling("Character"));
-        }
-    }
-    
-    public void ReadXml_Wallet(XmlReader reader)
-    {
-        if (reader.ReadToDescendant("Currency"))
-        {
-            do
-            {
-                Currency c = new Currency
-                {
-                    Name = reader.GetAttribute("Name"),
-                    ShortName = reader.GetAttribute("ShortName"),
-                    Balance = float.Parse(reader.GetAttribute("Balance"))
-                };
-                Wallet.Currencies[c.Name] = c;
-            } while (reader.ReadToNextSibling("Character"));
         }
     }
 }
