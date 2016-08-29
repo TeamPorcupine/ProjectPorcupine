@@ -46,9 +46,9 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
     {
         this.objectType = objectType;
 
-        if (World.Current.inventoryPrototypes.ContainsKey(objectType))
+        if (PrototypeManager.Inventory.HasPrototype(objectType))
         {
-            this.maxStackSize = World.Current.inventoryPrototypes[objectType].maxStackSize;
+            this.maxStackSize = PrototypeManager.Inventory.GetPrototype(objectType).maxStackSize;
         }
         else
         {
@@ -142,8 +142,11 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
 
     public void WriteXml(XmlWriter writer)
     {
-        writer.WriteAttributeString("X", tile.X.ToString());
-        writer.WriteAttributeString("Y", tile.Y.ToString());
+        if (tile != null)
+        {
+            writer.WriteAttributeString("X", tile.X.ToString());
+            writer.WriteAttributeString("Y", tile.Y.ToString());
+        }
         writer.WriteAttributeString("objectType", objectType);
         writer.WriteAttributeString("maxStackSize", maxStackSize.ToString());
         writer.WriteAttributeString("stackSize", StackSize.ToString());
