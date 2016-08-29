@@ -423,11 +423,9 @@
   <Furniture objectType="pump_air">
       <Name>Air Pump</Name>
       <MovementCost>0</MovementCost>
-      <PathfindingWeight>2</PathfindingWeight>
       <Width>1</Width>
       <Height>1</Height>
       <EnclosesRooms>true</EnclosesRooms>
-      <PowerConnection inputRate="1" outputRate="" capacity=""/>
 
       <BuildingJob jobTime="1" />
       <CanReplaceFurniture typeTag="Wall" />
@@ -439,7 +437,7 @@
 
       <Action event="OnUpdate" functionName="AirPump_OnUpdate" />
       <GetSpriteName FunctionName="AirPump_GetSpriteName" />
-      <ContextMenuAction FunctionName="AirPump_FlipDirection" Text="Flip Direction" requiereCharacterSelected="false"/>
+      <ContextMenuAction FunctionName="AirPump_FlipDirection" Text="Flip Direction" RequiereCharacterSelected="false" />
 
       <LocalizationCode>furn_pump_air</LocalizationCode>
       <UnlocalizedDescription>furn_pump_air_desc</UnlocalizedDescription>

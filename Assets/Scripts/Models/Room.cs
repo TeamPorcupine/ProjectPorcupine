@@ -248,7 +248,7 @@ public class Room : IXmlSerializable
         }
     }
 
-    // Gets absolute gas amount in preasure(in atm) multiplyed by number of tiles.
+    // Gets absolute gas amount in pressure(in atm) multiplied by number of tiles.
     public float GetGasAmount(string name)
     {
         if (atmosphericGasses.ContainsKey(name))
@@ -259,7 +259,7 @@ public class Room : IXmlSerializable
         return 0;
     }
 
-    // Gets gas amount in preasure(in atm).
+    // Gets gas amount in pressure(in atm).
     public float GetGasPressure(string name)
     {
         if (atmosphericGasses.ContainsKey(name))
@@ -284,7 +284,7 @@ public class Room : IXmlSerializable
             t += atmosphericGasses[n];
         }
 
-        return atmosphericGasses[name] / t;
+        return t == 0 ? 0 : atmosphericGasses[name] / t;
     }
 
     public float GetTotalGasPressure()
