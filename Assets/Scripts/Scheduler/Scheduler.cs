@@ -19,13 +19,14 @@ namespace Scheduler
     /// <summary>
     /// Generic scheduler class for tracking and dispatching ScheduledEvents.
     /// </summary>
-    public class Scheduler
+    public class Scheduler : IXmlSerializable
     {
         private static Scheduler instance;
 
         public Scheduler()
         {
             this.Events = new List<ScheduledEvent>();
+            this.EventPrototypes = GenerateEventPrototypes();
         }
 
         public static Scheduler Current
@@ -42,6 +43,8 @@ namespace Scheduler
         }
 
         public List<ScheduledEvent> Events { get; protected set; }
+
+        public Dictionary<string, EventPrototype> EventPrototypes { get; protected set; }
 
         public void RegisterEvent(ScheduledEvent evt)
         {
@@ -106,6 +109,38 @@ namespace Scheduler
             // TODO: this is an O(n) operation every tick.
             // Potentially this could be optimized by delaying purging!
             PurgeEventList();
+        }
+
+        #region IXmlSerializable implementation
+
+        public XmlSchema GetSchema()
+        {
+            return null;
+        }
+
+        public void ReadXml(XmlReader reader)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void WriteXml(XmlWriter writer)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        private static Dictionary<string, EventPrototype> GenerateEventPrototypes()
+        {
+            // FIXME: Just adding in a simple log pinging event in lieu of 
+            // properly reading prototypes from config files.
+            Dictionary<string, EventPrototype> prototypes = new Dictionary<string, EventPrototype>();
+            prototypes.Add(
+                "ping_log",
+                new EventPrototype(
+                    "ping_log",
+                    (evt) => Debug.ULogChannel("ScheduledEventTest", "Event {0} fired", evt.Name)));
+            return prototypes;
         }
     }
 }

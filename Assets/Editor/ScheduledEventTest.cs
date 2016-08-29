@@ -7,6 +7,9 @@
 // ====================================================
 #endregion
 using System;
+using System.IO;
+using System.Text;
+using System.Xml;
 using NUnit.Framework;
 using Scheduler;
 using UnityEditor;
@@ -42,6 +45,19 @@ public class ScheduledEventTest
         Assert.That(evt.Name, Is.EqualTo("test"));
         Assert.That(evt2.Name, Is.EqualTo("test"));
         Assert.That(evt, Is.Not.EqualTo(evt2));
+
+        ScheduledEvent evt3 = new ScheduledEvent(
+            new EventPrototype("test", (e) => Debug.ULogChannel("ScheduledEventTest", "Event {0} fired", e.Name)),
+            1.0f,
+            0.5f,
+            false,
+            3);
+
+        Assert.That(evt3.Name, Is.EqualTo("test"));
+        Assert.That(evt3.Cooldown, Is.EqualTo(1));
+        Assert.That(evt3.TimeToWait, Is.EqualTo(0.5f));
+        Assert.That(evt3.RepeatsForever, Is.False);
+        Assert.That(evt3.RepeatsLeft, Is.EqualTo(3));
     }
 
     [Test]
@@ -178,5 +194,36 @@ public class ScheduledEventTest
         didRun = false;
         evt.Update(5.0f);
         Assert.That(didRun, Is.False);
+    }
+
+    [Test]
+    public void WriteXMLTest()
+    {
+        ScheduledEvent evt = new ScheduledEvent(
+            "test",
+            (e) => Debug.ULogChannel("ScheduledEventTest", "Event {0} fired", e.Name),
+            3.0f,
+            true,
+            1);
+
+        StringBuilder sb = new StringBuilder();
+        XmlWriter writer = new XmlTextWriter(new StringWriter(sb));
+        evt.WriteXml(writer);
+
+        Debug.ULogChannel("ScheduledEventTest", sb.ToString());
+        Assert.That(sb.ToString(), Is.EqualTo("<Event name=\"test\" cooldown=\"3\" timeToWait=\"3\" repeatsForever=\"True\" />"));
+
+        evt = new ScheduledEvent(
+            "test",
+            callback,
+            3.0f,
+            false,
+            2);
+
+        sb = new StringBuilder();
+        writer = new XmlTextWriter(new StringWriter(sb));
+        evt.WriteXml(writer);
+
+        Assert.That(sb.ToString(), Is.EqualTo("<Event name=\"test\" cooldown=\"3\" timeToWait=\"3\" repeatsLeft=\"2\" />"));
     }
 }

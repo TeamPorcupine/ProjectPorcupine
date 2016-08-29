@@ -53,6 +53,16 @@ namespace Scheduler
             this.RepeatsLeft = other.RepeatsLeft;
         }
 
+        public ScheduledEvent(EventPrototype eventPrototype, float cooldown, float timeToWait, bool repeatsForever = false, int repeats = 1)
+        {
+            this.Name = eventPrototype.Name;
+            this.OnFire = eventPrototype.OnFireCallback();
+            this.Cooldown = cooldown;
+            this.TimeToWait = timeToWait;
+            this.RepeatsForever = repeatsForever;
+            this.RepeatsLeft = repeats;
+        }
+
         private event Action<ScheduledEvent> OnFire;
 
         public string Name { get; protected set; }
@@ -132,7 +142,19 @@ namespace Scheduler
 
         public void WriteXml(XmlWriter writer)
         {
-            throw new NotImplementedException();
+            writer.WriteStartElement("Event");
+            writer.WriteAttributeString("name", this.Name);
+            writer.WriteAttributeString("cooldown", this.Cooldown.ToString());
+            writer.WriteAttributeString("timeToWait", this.TimeToWait.ToString());
+            if (this.RepeatsForever)
+            {
+                writer.WriteAttributeString("repeatsForever", this.RepeatsForever.ToString());
+            }
+            else
+            {
+                writer.WriteAttributeString("repeatsLeft", this.RepeatsLeft.ToString());
+            }
+            writer.WriteEndElement();
         }
 
         #endregion
