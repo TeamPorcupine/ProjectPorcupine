@@ -21,11 +21,16 @@ public class ConstructionMenu : MonoBehaviour
     public Button buttonDeconstruction;
 
     private BuildModeController bmc;
-    private GameObject[] furnitureSubs {
-        get { 
-            
-            // add every submenu here
-            return new GameObject[] {furnitureMenu, floorMenu};
+
+    private GameObject[] FurnitureSubs 
+    {
+        get 
+        {
+            return new GameObject[] 
+            {
+                // add every furniture submenu here
+                furnitureMenu, floorMenu
+            };
         }
     }
 
@@ -62,12 +67,13 @@ public class ConstructionMenu : MonoBehaviour
 
     public void DeactivateSubsExcept(GameObject menu)
     {
-        foreach (GameObject g in furnitureSubs)
+        foreach (GameObject g in FurnitureSubs)
         {
             if (g == menu)
             {
                 continue;
             }
+
             g.SetActive(false);
         }
     }
