@@ -452,9 +452,19 @@ function CloningPod_UpdateAction(furniture, deltaTime)
         false
     )
 
+    j.RegisterJobWorkedCallback("CloningPod_JobRunning")
+    --j.UnregisterJobWorkedCallback("CloningPod_GetSpriteName")
     j.RegisterJobCompletedCallback("CloningPod_JobComplete")
 	j.JobDescription = "job_cloning_pod_cloning_desc"
     furniture.AddJob(j)
+end
+
+function CloningPod_OnUpdate(j)
+    CloningPod_GetSpriteName(j.furniture)
+end
+
+function CloningPod_JobRunning(job)
+    job.furniture.UpdateOnChanged(job.furniture)
 end
 
 function CloningPod_JobComplete(j)
@@ -462,11 +472,18 @@ function CloningPod_JobComplete(j)
     j.furniture.Deconstruct()
 end
 
-function CloningPod_GetSpriteName(j)
+function CloningPod_GetSpriteName(furniture)
     local baseName = "cloning_pod"
     local suffix = 0
-    if (j.IsBeingWorked) then
-        suffix = furniture.job.JobTime * 1
+    if (furniture.JobCount != 1) then
+        return baseName
+    end
+    if (furniture.GetJob(0).JobTime % 2 == 0) then
+        if (suffix == 0) then 
+            suffix = 1 
+        else
+            suffix = 0 
+        end
     end
     return baseName .. "_" .. suffix
 end

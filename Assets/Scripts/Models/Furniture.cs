@@ -145,6 +145,11 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
 
     public Color Tint { get; private set; }
 
+    public Job GetJob(int index)
+    {
+        return this.jobs[index];
+    }
+
     // If this furniture gets worked by a person,
     // where is the correct spot for them to stand,
     // relative to the bottom-left tile of the sprite.
