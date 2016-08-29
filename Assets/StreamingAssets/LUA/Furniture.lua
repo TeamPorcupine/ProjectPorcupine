@@ -460,7 +460,7 @@ end
 
 function CloningPod_JobRunning(j)
     local step = 0
-    if (math.floor(math.abs(j.JobTime * 2)) % j.furniture.Parameters["animationTimer"] == 0) then
+    if (math.floor(math.abs(j.JobTime * j.furniture.Parameters["animationTimer"].ToFloat())) % 2 == 0) then
         step = 1
     end
     if (j.furniture.Parameters["animationStep"].ToFloat() != step) then
