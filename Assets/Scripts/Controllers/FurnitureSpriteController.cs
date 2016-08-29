@@ -83,27 +83,10 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
 
         // Now we check if we have the neighbours in the cardinal directions next to the respective diagonals
         // because pure diagonal checking would leave us with diagonal walls and stockpiles, which make no sense.
-        if (suffix.Contains("N") && suffix.Contains("E"))
-        {
-            // And if we are sure that our direct neighbours exist, we can check if the neighbour in the respective diagonal 
-            // exists as well.
-            suffix += GetSuffixForNeighbour(furn, x + 1, y + 1, "ne");
-        }
-
-        if (suffix.Contains("E") && suffix.Contains("S"))
-        {
-            suffix += GetSuffixForNeighbour(furn, x + 1, y - 1, "se");
-        }
-
-        if (suffix.Contains("S") && suffix.Contains("W"))
-        {
-            suffix += GetSuffixForNeighbour(furn, x - 1, y - 1, "sw");
-        }
-
-        if (suffix.Contains("N") && suffix.Contains("W"))
-        {
-            suffix += GetSuffixForNeighbour(furn, x - 1, y + 1, "nw");
-        }
+        suffix += GetSuffixForDiagonalNeighbour(suffix, "N", "E", furn, x + 1, y + 1);
+        suffix += GetSuffixForDiagonalNeighbour(suffix, "S", "E", furn, x + 1, y - 1);
+        suffix += GetSuffixForDiagonalNeighbour(suffix, "S", "W", furn, x - 1, y - 1);
+        suffix += GetSuffixForDiagonalNeighbour(suffix, "N", "W", furn, x - 1, y + 1);
 
         // For example, if this object has all eight neighbours of
         // the same type, then the string will look like:
@@ -263,6 +246,16 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
          {
              return suffix;
          }
+
+        return string.Empty;
+    }
+
+    private string GetSuffixForDiagonalNeighbour(string suffix, string coord1, string coord2, Furniture furn, int x, int y)
+    {
+        if (suffix.Contains(coord1) && suffix.Contains(coord2))
+        {
+            return GetSuffixForNeighbour(furn, x, y, coord1.ToLower() + coord2.ToLower());
+        }
 
         return string.Empty;
     }
