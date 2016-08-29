@@ -46,9 +46,9 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
     {
         this.objectType = objectType;
 
-        if (World.Current.inventoryPrototypes.ContainsKey(objectType))
+        if (PrototypeManager.Inventory.HasPrototype(objectType))
         {
-            this.maxStackSize = World.Current.inventoryPrototypes[objectType].maxStackSize;
+            this.maxStackSize = PrototypeManager.Inventory.GetPrototype(objectType).maxStackSize;
         }
         else
         {
@@ -142,6 +142,8 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
 
     public void WriteXml(XmlWriter writer)
     {
+        // If we reach this point through inventories we definitely have a tile
+        // If we don't have a tile, that means we're writing a character's inventory
         if (tile != null)
         {
             writer.WriteAttributeString("X", tile.X.ToString());

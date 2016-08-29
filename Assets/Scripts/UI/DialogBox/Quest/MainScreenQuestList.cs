@@ -44,7 +44,7 @@ public class MainScreenQuestList : MonoBehaviour
     
     private void ClearInterface()
     {
-        List<Quest> quests = World.Current.Quests.Where(q => q.IsAccepted && !q.IsCompleted).ToList();
+        List<Quest> quests = PrototypeManager.Quest.Values.Where(q => q.IsAccepted && !q.IsCompleted).ToList();
         var childrens = QuestItemListPanel.Cast<Transform>().ToList();
         foreach (var child in childrens)
         {
@@ -59,7 +59,7 @@ public class MainScreenQuestList : MonoBehaviour
 
     private void BuildInterface()
     {
-        List<Quest> quests = World.Current.Quests.Where(q => q.IsAccepted && !q.IsCompleted).ToList();
+        List<Quest> quests = PrototypeManager.Quest.Values.Where(q => q.IsAccepted && !q.IsCompleted).ToList();
 
         foreach (var quest in quests)
         {

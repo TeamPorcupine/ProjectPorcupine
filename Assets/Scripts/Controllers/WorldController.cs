@@ -77,15 +77,18 @@ public class WorldController : MonoBehaviour
     // Use this for initialization.
     public void OnEnable()
     {
-        string dataPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
-        modsManager = new ModsManager(dataPath);
-
         if (Instance != null)
         {
             Debug.ULogErrorChannel("WorldController", "There should never be two world controllers.");
         }
 
         Instance = this;
+
+        new FurnitureActions();
+        new PrototypeManager();
+
+        string dataPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
+        modsManager = new ModsManager(dataPath);
 
         if (loadWorldFromFile != null)
         {
@@ -109,11 +112,11 @@ public class WorldController : MonoBehaviour
         GameObject go;
 
         tileSpriteController = new TileSpriteController(World);
-        tileSpriteController.Render();
         characterSpriteController = new CharacterSpriteController(World);
         furnitureSpriteController = new FurnitureSpriteController(World);
         jobSpriteController = new JobSpriteController(World, furnitureSpriteController);
         inventorySpriteController = new InventorySpriteController(World, inventoryUI);
+
         buildModeController = new BuildModeController();
         spawnInventoryController = new SpawnInventoryController();
         mouseController = new MouseController(buildModeController, furnitureSpriteController, circleCursorPrefab);
@@ -213,7 +216,7 @@ public class WorldController : MonoBehaviour
     public void CallTradeShipTest(Furniture landingPad)
     {
         // Currently not using any logic to select a trader
-        TraderPrototype prototype = World.traderPrototypes[World.traderPrototypes.Keys.ToList()[Random.Range(0, World.traderPrototypes.Keys.Count - 1)]];
+        TraderPrototype prototype = PrototypeManager.Trader.GetPrototype(Random.Range(0, PrototypeManager.Trader.Count - 1));
         Trader trader = prototype.CreateTrader();
 
         GameObject go = new GameObject(trader.Name);
