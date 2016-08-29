@@ -434,7 +434,7 @@ namespace UberLogger
                             return;
                         }
 
-                        var logInfo = new LogInfo(source, channel, severity, callstack, message, par);
+                        var logInfo = new LogInfo(source, channel, severity, callstack, SquashToOneLine(message), par);
 
                         //Add this message to our history
                         RecentMessages.AddLast(logInfo);
@@ -458,6 +458,18 @@ namespace UberLogger
                     }
                 }
             }
+        }
+        /// <summary>
+        /// Helperfunction to reduce multiline messages to one line.
+        /// </summary>
+        /// <param name="message">Message make one line only</param>
+        /// <returns>Message free of linebreaks</returns>
+        private static object SquashToOneLine(object message)
+        {
+            message = message.ToString().Replace("\r\n", " ");
+            message = message.ToString().Replace("\n", " ");
+
+            return (object)message;
         }
 
         /// <summary>
