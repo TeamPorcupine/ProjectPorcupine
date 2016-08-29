@@ -98,12 +98,14 @@
             <Param name="thermal_diffusivity" value="0.00001" />
         </Params>
 
-        <Action event="OnUpdate" functionName="OnUpdate_Door" />
+        <Action event="OnUpdate" functionName="OnUpdate_AirlockDoor" />
         <Action event="OnUpdate" functionName="OnUpdate_Leak_Airlock" />
+        
+        <ContextMenuAction FunctionName="AirlockDoor_Toggle_Pressure_Lock" Text="Toggle Pressure Lock" RequiereCharacterSelected="false"/>
 
         <IsEnterable FunctionName="IsEnterable_Door" />
         <GetSpriteName FunctionName="GetSpriteName_Airlock" />
-
+        
         <LocalizationCode>furn_airlock</LocalizationCode>
         <UnlocalizedDescription>furn_airlock_desc</UnlocalizedDescription>
 
