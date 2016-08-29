@@ -24,7 +24,6 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
         // Register our callback so that our GameObject gets updated whenever
         // the tile's type changes.
         world.OnFurnitureCreated += OnCreated;
-        world.powerSystem.PowerLevelChanged += OnPowerStatusChange;
 
         // Go through any EXISTING furniture (i.e. from a save that was loaded OnEnable) and call the OnCreated event manually.
         foreach (Furniture furn in world.furnitures)
@@ -36,12 +35,12 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
     public override void RemoveAll()
     {
         world.OnFurnitureCreated -= OnCreated;
-        world.powerSystem.PowerLevelChanged -= OnPowerStatusChange;
 
         foreach (Furniture furn in world.furnitures)
         {
             furn.Changed -= OnChanged;
             furn.Removed -= OnRemoved;
+            furn.IsOperatingChanged -= OnIsOperatingChanged;
         }
 
         foreach (Furniture furn in powerStatusGameObjectMap.Keys)
@@ -88,16 +87,16 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
         return SpriteManager.current.GetSprite("Furniture", spriteName);
     }
 
-    protected override void OnCreated(Furniture furn)
+    protected override void OnCreated(Furniture furniture)
     {
         // FIXME: Does not consider multi-tile objects nor rotated objects
         GameObject furn_go = new GameObject();
 
         // Add our tile/GO pair to the dictionary.
-        objectGameObjectMap.Add(furn, furn_go);
+        objectGameObjectMap.Add(furniture, furn_go);
 
-        furn_go.name = furn.ObjectType + "_" + furn.Tile.X + "_" + furn.Tile.Y;
-        furn_go.transform.position = new Vector3(furn.Tile.X + ((furn.Width - 1) / 2f), furn.Tile.Y + ((furn.Height - 1) / 2f), 0);
+        furn_go.name = furniture.ObjectType + "_" + furniture.Tile.X + "_" + furniture.Tile.Y;
+        furn_go.transform.position = new Vector3(furniture.Tile.X + ((furniture.Width - 1) / 2f), furniture.Tile.Y + ((furniture.Height - 1) / 2f), 0);
         furn_go.transform.SetParent(objectParent.transform, true);
 
         // FIXME: This hardcoding is not ideal!
@@ -144,8 +143,9 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
 
         // Register our callback so that our GameObject gets updated whenever
         // the object's into changes.
-        furn.Changed += OnChanged;
-        furn.Removed += OnRemoved;
+        furniture.Changed += OnChanged;
+        furniture.Removed += OnRemoved;
+        furniture.IsOperatingChanged += OnIsOperatingChanged;
     }
 
     protected override void OnChanged(Furniture furn)
@@ -194,6 +194,7 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
 
         furn.Changed -= OnChanged;
         furn.Removed -= OnRemoved;
+        furn.IsOperatingChanged -= OnIsOperatingChanged;
         GameObject furn_go = objectGameObjectMap[furn];
         objectGameObjectMap.Remove(furn);
         GameObject.Destroy(furn_go);
@@ -206,7 +207,7 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
         powerStatusGameObjectMap.Remove(furn);
     }
         
-    private void OnPowerStatusChange(IPowerRelated powerRelated)
+    private void OnIsOperatingChanged(Furniture furniture)
     {
         if (furniture == null)
         {
