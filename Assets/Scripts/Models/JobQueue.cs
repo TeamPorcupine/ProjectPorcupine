@@ -14,12 +14,12 @@ public class JobQueue
 {
     private SortedList<Job.JobPriority, Job> jobQueue;
 
-    public event Action<Job> cbJobCreated;
-
     public JobQueue()
     {
         jobQueue = new SortedList<Job.JobPriority, Job>(new DuplicateKeyComparer<Job.JobPriority>(true));
     }
+
+    public event Action<Job> OnJobCreated;
 
     public bool IsEmpty()
     {
@@ -27,7 +27,7 @@ public class JobQueue
     }
 
     // Returns the job count in the queue.
-    // (Necessary, since jobQueue is private.)
+    // (Necessary, since jobQueue is private).
     public int GetCount()
     {
         return jobQueue.Count;
@@ -35,8 +35,7 @@ public class JobQueue
 
     public void Enqueue(Job j)
     {
-        ////Debug.Log("Adding job to queue. Existing queue size: " + jobQueue.Count);
-        if (j.jobTime < 0)
+        if (j.JobTime < 0)
         {
             // Job has a negative job time, so it's not actually
             // supposed to be queued up.  Just insta-complete it.
@@ -44,11 +43,11 @@ public class JobQueue
             return;
         }
 
-        jobQueue.Add(j.jobPriority,j);
-        Debug.Log ("Enqueued job for " + j.jobObjectType ?? "");
-        if (cbJobCreated != null)
+        jobQueue.Add(j.Priority, j);
+        
+        if (OnJobCreated != null)
         {
-            cbJobCreated(j);
+            OnJobCreated(j);
         }
     }
 
@@ -68,7 +67,6 @@ public class JobQueue
     {
         if (jobQueue.ContainsValue(j) == false)
         {
-            ////Debug.LogError("Trying to remove a job that doesn't exist on the queue.");
             // Most likely, this job wasn't on the queue because a character was working it!
             return;
         }

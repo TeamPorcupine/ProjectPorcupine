@@ -1,37 +1,43 @@
+#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
 using System;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace UnityStandardAssets.Utility
 {
-    [RequireComponent(typeof (Text))]
+    [RequireComponent(typeof(Text))]
     public class FPSCounter : MonoBehaviour
     {
-        const float fpsMeasurePeriod = 0.5f;
-        private int m_FpsAccumulator = 0;
-        private float m_FpsNextPeriod = 0;
-        private int m_CurrentFps;
-        const string display = "{0} FPS";
-        private Text m_Text;
-
+        private const float FPSMeasurePeriod = 0.5f;
+        private const string Display = "{0} FPS";
+        private int fpsAccumulator = 0;
+        private float fpsNextPeriod = 0;
+        private int currentFps;
+        private Text text;
 
         private void Start()
         {
-            m_FpsNextPeriod = Time.realtimeSinceStartup + fpsMeasurePeriod;
-            m_Text = GetComponent<Text>();
+            fpsNextPeriod = Time.realtimeSinceStartup + FPSMeasurePeriod;
+            text = GetComponent<Text>();
         }
-
-
+        
         private void Update()
         {
             // measure average frames per second
-            m_FpsAccumulator++;
-            if (Time.realtimeSinceStartup > m_FpsNextPeriod)
+            fpsAccumulator++;
+            if (Time.realtimeSinceStartup > fpsNextPeriod)
             {
-                m_CurrentFps = (int) (m_FpsAccumulator/fpsMeasurePeriod);
-                m_FpsAccumulator = 0;
-                m_FpsNextPeriod += fpsMeasurePeriod;
-                m_Text.text = string.Format(display, m_CurrentFps);
+                currentFps = (int)(fpsAccumulator / FPSMeasurePeriod);
+                fpsAccumulator = 0;
+                fpsNextPeriod += FPSMeasurePeriod;
+                text.text = string.Format(Display, currentFps);
             }
         }
     }

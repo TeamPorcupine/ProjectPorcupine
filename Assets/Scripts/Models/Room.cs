@@ -6,7 +6,6 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +18,7 @@ using UnityEngine;
 [MoonSharpUserData]
 public class Room : IXmlSerializable
 {
-    // Dictionary with the amount of gas in room stored in preasure(in atm) multiplyed by number of tiles
+    // Dictionary with the amount of gas in room stored in preasure(in atm) multiplyed by number of tiles.
     private Dictionary<string, float> atmosphericGasses; 
     private Dictionary<string, string> deltaGas;
 
@@ -36,7 +35,102 @@ public class Room : IXmlSerializable
     {
         get
         {
-            return World.current.GetRoomID(this);
+            return World.Current.GetRoomID(this);
+        }
+    }
+
+    public static void EqualiseGasByTile(Tile tile, float leakFactor)
+    {
+        List<Room> roomsDone = new List<Room>();
+        foreach (Tile t in tile.GetNeighbours())
+        {
+            // Skip tiles with a null room (i.e. outside).
+            // TODO: Verify that gas still leaks to the outside
+            // somehow.
+            if (t.Room == null)
+            {
+                continue;
+            }
+
+            if (roomsDone.Contains(t.Room) == false)
+            {
+                foreach (Room r in roomsDone)
+                {
+                    t.Room.EqualiseGas(r, leakFactor);
+                }
+
+                roomsDone.Add(t.Room);
+            }
+        }
+    }
+
+    public static void DoRoomFloodFill(Tile sourceTile, bool onlyIfOutside = false)
+    {
+        // SourceFurniture is the piece of furniture that may be
+        // splitting two existing rooms, or may be the final 
+        // enclosing piece to form a new room.
+        // Check the NESW neighbours of the furniture's tile
+        // and do flood fill from them.
+        World world = World.Current;
+
+        Room oldRoom = sourceTile.Room;
+
+        if (oldRoom != null)
+        {
+            // Save the size of old room before we start removing tiles.
+            // Needed for gas calculations.
+            int sizeOfOldRoom = oldRoom.GetSize();
+
+            // The source tile had a room, so this must be a new piece of furniture
+            // that is potentially dividing this old room into as many as four new rooms.
+
+            // Try building new rooms for each of our NESW directions.
+            foreach (Tile t in sourceTile.GetNeighbours())
+            {
+                if (t.Room != null && (onlyIfOutside == false || t.Room.IsOutsideRoom()))
+                {
+                    ActualFloodFill(t, oldRoom, sizeOfOldRoom);
+                }
+            }
+
+            sourceTile.Room = null;
+
+            oldRoom.tiles.Remove(sourceTile);
+
+            // If this piece of furniture was added to an existing room
+            // (which should always be true assuming with consider "outside" to be a big room)
+            // delete that room and assign all tiles within to be "outside" for now.
+            if (oldRoom.IsOutsideRoom() == false)
+            {
+                // At this point, oldRoom shouldn't have any more tiles left in it,
+                // so in practice this "DeleteRoom" should mostly only need
+                // to remove the room from the world's list.
+                if (oldRoom.tiles.Count > 0)
+                {
+                    Debug.ULogErrorChannel("Room", "'oldRoom' still has tiles assigned to it. This is clearly wrong.");
+                }
+
+                world.DeleteRoom(oldRoom);
+            }
+        }
+        else
+        {
+            // oldRoom is null, which means the source tile was probably a wall,
+            // though this MAY not be the case any longer (i.e. the wall was 
+            // probably deconstructed. So the only thing we have to try is
+            // to spawn ONE new room starting from the tile in question.
+
+            // You need to delete the surrounding rooms so a new room can be created
+            // This doesn't work for the gas calculations and needs to be fixed.
+            foreach (Tile t in sourceTile.GetNeighbours())
+            {
+                if (t.Room != null && (onlyIfOutside == false || t.Room.IsOutsideRoom()))
+                {
+                    world.DeleteRoom(t.Room);
+                }
+            }
+
+            ActualFloodFill(sourceTile, null, 0);
         }
     }
 
@@ -50,10 +144,10 @@ public class Room : IXmlSerializable
 
         if (t.Room != null)
         {
-            // Belongs to some other room
+            // Belongs to some other room.
             t.Room.tiles.Remove(t);
         }
-        	
+
         t.Room = this;
         tiles.Add(t);
     }
@@ -62,7 +156,8 @@ public class Room : IXmlSerializable
     {
         for (int i = 0; i < tiles.Count; i++)
         {
-            tiles[i].Room = World.current.GetOutsideRoom();	// Assign to outside
+            // Assign to outside.
+            tiles[i].Room = World.Current.GetOutsideRoom();
         }
 
         tiles = new List<Tile>();
@@ -70,7 +165,7 @@ public class Room : IXmlSerializable
 
     public bool IsOutsideRoom()
     {
-        return this == World.current.GetOutsideRoom();
+        return this == World.Current.GetOutsideRoom();
     }
 
     public int GetSize()
@@ -78,7 +173,7 @@ public class Room : IXmlSerializable
         return tiles.Count();
     }
 
-    // Changes gas by an amount in preasure(in atm) multiplyed by number of tiles
+    // Changes gas by an amount in preasure(in atm) multiplyed by number of tiles.
     public void ChangeGas(string name, float amount)
     {
         if (IsOutsideRoom())
@@ -137,32 +232,7 @@ public class Room : IXmlSerializable
         }
     }
 
-    public static void EqualiseGasByTile(Tile tile, float leakFactor)
-    {
-        List<Room> roomsDone = new List<Room>();
-        foreach (Tile t in tile.GetNeighbours())
-        {
-            // Skip tiles with a null room (i.e. outside)
-            // TODO: Verify that gas still leaks to the outside
-            // somehow
-            if (t.Room == null)
-            {
-                continue;
-            }
-
-            if (roomsDone.Contains(t.Room) == false)
-            {
-                foreach (Room r in roomsDone) 
-                {
-                    t.Room.EqualiseGas(r, leakFactor);
-                }
-
-                roomsDone.Add(t.Room);
-            }
-        }
-    }
-
-    // Gets absolute gas amount in preasure(in atm) multiplyed by number of tiles
+    // Gets absolute gas amount in preasure(in atm) multiplyed by number of tiles.
     public float GetGasAmount(string name)
     {
         if (atmosphericGasses.ContainsKey(name))
@@ -173,7 +243,7 @@ public class Room : IXmlSerializable
         return 0;
     }
 
-    // Gets gas amount in preasure(in atm)
+    // Gets gas amount in preasure(in atm).
     public float GetGasPressure(string name)
     {
         if (atmosphericGasses.ContainsKey(name))
@@ -218,79 +288,40 @@ public class Room : IXmlSerializable
         return atmosphericGasses.Keys.ToArray();
     }
 
-    public static void DoRoomFloodFill(Tile sourceTile, bool onlyIfOutside = false)
+    public XmlSchema GetSchema()
     {
-        // sourceFurniture is the piece of furniture that may be
-        // splitting two existing rooms, or may be the final 
-        // enclosing piece to form a new room.
-        // Check the NESW neighbours of the furniture's tile
-        // and do flood fill from them
-        World world = World.current;
+        return null;
+    }
 
-        Room oldRoom = sourceTile.Room;
-
-        if (oldRoom != null)
+    public void WriteXml(XmlWriter writer)
+    {
+        // Write out gas info.
+        foreach (string k in atmosphericGasses.Keys)
         {
-            // Save the size of old room before we start removing tiles
-            // Needed for gas calculations
-            int sizeOfOldRoom = oldRoom.GetSize();
-
-            // The source tile had a room, so this must be a new piece of furniture
-            // that is potentially dividing this old room into as many as four new rooms.
-
-            // Try building new rooms for each of our NESW directions
-            foreach (Tile t in sourceTile.GetNeighbours())
-            {
-                if (t.Room != null && (onlyIfOutside == false || t.Room.IsOutsideRoom()))
-                {
-                    ActualFloodFill(t, oldRoom, sizeOfOldRoom);
-                }
-            }
-
-            sourceTile.Room = null;
-
-            oldRoom.tiles.Remove(sourceTile);
-
-            // If this piece of furniture was added to an existing room
-            // (which should always be true assuming with consider "outside" to be a big room)
-            // delete that room and assign all tiles within to be "outside" for now
-            if (oldRoom.IsOutsideRoom() == false)
-            {
-                // At this point, oldRoom shouldn't have any more tiles left in it,
-                // so in practice this "DeleteRoom" should mostly only need
-                // to remove the room from the world's list.
-                if (oldRoom.tiles.Count > 0)
-                {
-                    Debug.LogError("'oldRoom' still has tiles assigned to it. This is clearly wrong.");
-                }
-
-                world.DeleteRoom(oldRoom);
-            }
+            writer.WriteStartElement("Param");
+            writer.WriteAttributeString("name", k);
+            writer.WriteAttributeString("value", atmosphericGasses[k].ToString());
+            writer.WriteEndElement();
         }
-        else
-        {
-            // oldRoom is null, which means the source tile was probably a wall,
-            // though this MAY not be the case any longer (i.e. the wall was 
-            // probably deconstructed. So the only thing we have to try is
-            // to spawn ONE new room starting from the tile in question.
+    }
 
-            // You need to delete the surrounding rooms so a new room can be created
-            // This doesn't work for the gas calculations and needs to be fixed.
-            foreach (Tile t in sourceTile.GetNeighbours())
+    public void ReadXml(XmlReader reader)
+    {
+        // Read gas info.
+        if (reader.ReadToDescendant("Param"))
+        {
+            do
             {
-                if (t.Room != null && (onlyIfOutside == false || t.Room.IsOutsideRoom()))
-                {
-                    world.DeleteRoom(t.Room);
-                }
+                string k = reader.GetAttribute("name");
+                float v = float.Parse(reader.GetAttribute("value"));
+                atmosphericGasses[k] = v;
             }
-            ActualFloodFill(sourceTile, null, 0);
+            while (reader.ReadToNextSibling("Param"));
         }
     }
 
     protected static void ActualFloodFill(Tile tile, Room oldRoom, int sizeOfOldRoom)
     {
-        ////Debug.Log("ActualFloodFill");
-
         if (tile == null)
         {
             // We are trying to flood fill off the map, so just return
@@ -306,7 +337,7 @@ public class Room : IXmlSerializable
             return;
         }
 
-        if (tile.Furniture != null && tile.Furniture.roomEnclosure)
+        if (tile.Furniture != null && tile.Furniture.RoomEnclosure)
         {
             // This tile has a wall/door/whatever in it, so clearly
             // we can't do a room here.
@@ -326,7 +357,7 @@ public class Room : IXmlSerializable
         Queue<Tile> tilesToCheck = new Queue<Tile>();
         tilesToCheck.Enqueue(tile);
 
-        bool isConnectedToSpace = false;
+        bool connectedToSpace = false;
         int processedTiles = 0;
 
         while (tilesToCheck.Count > 0)
@@ -355,19 +386,14 @@ public class Room : IXmlSerializable
                         // Therefore, we can immediately end the flood fill (which otherwise would take ages)
                         // and more importantly, we need to delete this "newRoom" and re-assign
                         // all the tiles to Outside.
-                        isConnectedToSpace = true;
-
-                        /*if(oldRoom != null)   {
-                            newRoom.ReturnTilesToOutsideRoom();
-                            return;
-                        }*/
+                        connectedToSpace = true;
                     }
                     else
                     {
                         // We know t2 is not null nor is it an empty tile, so just make sure it
                         // hasn't already been processed and isn't a "wall" type tile.
                         if (
-                            t2.Room != newRoom && (t2.Furniture == null || t2.Furniture.roomEnclosure == false))
+                            t2.Room != newRoom && (t2.Furniture == null || t2.Furniture.RoomEnclosure == false))
                         {
                             tilesToCheck.Enqueue(t2);
                         }
@@ -376,12 +402,10 @@ public class Room : IXmlSerializable
             }
         }
 
-        ////Debug.Log("ActualFloodFill -- Processed Tiles: " + processedTiles);
-
-        if (isConnectedToSpace)
+        if (connectedToSpace)
         {
             // All tiles that were found by this flood fill should
-            // actually be "assigned" to outside
+            // actually be "assigned" to outside.
             newRoom.ReturnTilesToOutsideRoom();
             return;
         }
@@ -395,7 +419,7 @@ public class Room : IXmlSerializable
         }
 
         // Tell the world that a new room has been formed.
-        World.current.AddRoom(newRoom);
+        World.Current.AddRoom(newRoom);
     }
 
     private void CopyGasPreasure(Room other, int sizeOfOtherRoom)
@@ -411,38 +435,6 @@ public class Room : IXmlSerializable
         foreach (string n in other.atmosphericGasses.Keys)
         {
             this.ChangeGas(n, other.atmosphericGasses[n]);
-        }
-    }
-
-    public XmlSchema GetSchema()
-    {
-        return null;
-    }
-
-    public void WriteXml(XmlWriter writer)
-    {
-        // Write out gas info
-        foreach (string k in atmosphericGasses.Keys)
-        {
-            writer.WriteStartElement("Param");
-            writer.WriteAttributeString("name", k);
-            writer.WriteAttributeString("value", atmosphericGasses[k].ToString());
-            writer.WriteEndElement();
-        }
-    }
-
-    public void ReadXml(XmlReader reader)
-    {
-        // Read gas info
-        if (reader.ReadToDescendant("Param"))
-        {
-            do
-            {
-                string k = reader.GetAttribute("name");
-                float v = float.Parse(reader.GetAttribute("value"));
-                atmosphericGasses[k] = v;
-            } 
-            while (reader.ReadToNextSibling("Param"));
         }
     }
 }
