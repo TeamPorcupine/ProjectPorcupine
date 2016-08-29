@@ -213,7 +213,7 @@ public class BuildModeController
                         }
                     }
 
-                    if (vacuumNeighbors > 0 && pressuredNeighbors > 0)
+                    if (vacuumNeighbors > 0 && pressurjoedNeighbors > 0)
                     {
                         Debug.ULogChannel("BuildModeController", "Someone tried to deconstruct a wall between a pressurised room and vacuum!");
                         return;
@@ -251,43 +251,43 @@ public class BuildModeController
         return false;
     }
 
-    public void DeconstructFurnitureAt(Tile t, string nextBuild = null)
+    public void DeconstructFurnitureAt(Tile tile, string nextBuild = null)
     {
-        Job j;
+        Job job;
 
-        if (PrototypeManager.FurnitureJobDeconstruct.HasPrototype(t.Furniture.ObjectType))
+        if (PrototypeManager.FurnitureJobDeconstruct.HasPrototype(tile.Furniture.ObjectType))
         {
             // Make a clone of the job prototype
-            j = PrototypeManager.FurnitureJobDeconstruct.GetPrototype(t.Furniture.ObjectType).Clone();
+            job = PrototypeManager.FurnitureJobDeconstruct.GetPrototype(tile.Furniture.ObjectType).Clone();
 
             // Assign the correct tile.
-            j.tile = t;
-            j.OnJobCompleted += (Job jo) =>
+            job.tile = tile;
+            job.OnJobCompleted += (Job jo) =>
             {
-                t.Furniture.Deconstruct();
+                tile.Furniture.Deconstruct();
             };
         }
         else
         {
-            t.Furniture.Deconstruct();
+            tile.Furniture.Deconstruct();
             return;
         }
 
-        if (t.Furniture.MovementCost >= 1000000) 
+        if (tile.Furniture.MovementCost >= 1000000) 
         {
-            j.adjacent = true;
+            job.adjacent = true;
         }
 
         if (nextBuild != null)
         {
-            j.OnJobCompleted += (Job job) =>
+            job.OnJobCompleted += (Job jo) =>
             {
-                this.QueueBuild(t, nextBuild);
+                this.QueueBuild(tile, nextBuild);
             };
         }
 
-        t.Furniture.AwaitingDeconstruction = true;
-        World.Current.jobQueue.Enqueue(j);
+        tile.Furniture.AwaitingDeconstruction = true;
+        World.Current.jobQueue.Enqueue(job.Clone());
     }
 
     public void QueueBuild(Tile t, string objectType)
