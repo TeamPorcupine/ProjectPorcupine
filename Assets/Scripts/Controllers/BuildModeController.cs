@@ -6,6 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using System.Linq;
 using MoonSharp.Interpreter;
 using UnityEngine;
 
@@ -236,9 +237,12 @@ public class BuildModeController
         {
             for (int y_off = t.Y; y_off < (t.Y + proto.Height); y_off++)
             {
-                if (WorldController.Instance.World.GetTileAt(x_off, y_off).PendingBuildJob != null)
+                var pendingBuildJob = WorldController.Instance.World.GetTileAt(x_off, y_off).PendingBuildJob;
+                if (pendingBuildJob != null)
                 {
-                    return true;
+                    // if the existing buildJobs furniture is replaceable by the current furnitureType,
+                    // we can pretend it does not overlap with the new build
+                    return !proto.ReplaceableFurniture.Any(pendingBuildJob.furniturePrototype.HasTypeTag);
                 }
             }
         }
