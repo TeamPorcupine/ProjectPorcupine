@@ -772,6 +772,7 @@ public class World : IXmlSerializable
             do
             {
                 Character character;
+
                 int x = int.Parse(reader.GetAttribute("X"));
                 int y = int.Parse(reader.GetAttribute("Y"));
                 if (reader.GetAttribute("r") != null)
@@ -804,6 +805,9 @@ public class World : IXmlSerializable
                             inventoryManager.PlaceInventory(character, inv);
                         }
                         while (reader.ReadToNextSibling("Inventory"));
+
+                        // One more read to step out of Inventories, so ReadToNextSibling will find sibling Character
+                        reader.Read();
                     }
                 }
             }
