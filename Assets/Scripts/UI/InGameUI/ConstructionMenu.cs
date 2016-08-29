@@ -74,11 +74,11 @@ public class ConstructionMenu : MonoBehaviour
 
     public void DeactivateSubsExcept(GameObject menu)
     {
-        foreach (GameObject g in FurnitureSubs)
+        foreach (GameObject subMenu in FurnitureSubs)
         {
-            if (g != menu)
+            if (subMenu != menu)
             {
-                g.SetActive(false);
+                subMenu.SetActive(false);
             }
         }
     }
