@@ -37,7 +37,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         X = x;
         Y = y;
         Characters = new List<Character>();
-        MovmentModifier = 1;
+        MovementModifier = 1;
     }
 
     // The function we callback any time our tile's data changes
@@ -112,7 +112,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
 
     public int Y { get; private set; }
 
-    public float MovmentModifier { get; set; }
+    public float MovementModifier { get; set; }
 
     public float MovementCost
     {
@@ -121,7 +121,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
             // This prevented the character from walking in empty tiles. It has been diasbled to allow the character to construct floor tiles.
             // TODO: Permanent solution for handeling when a character can walk in empty tiles is required
 
-            return Type.BaseMovementCost * MovmentModifier * (Furniture != null ? Furniture.MovementCost : 1);
+            return Type.BaseMovementCost * MovementModifier * (Furniture != null ? Furniture.MovementCost : 1);
         }
     }
 
