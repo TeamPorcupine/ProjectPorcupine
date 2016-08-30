@@ -250,6 +250,11 @@ public class BuildModeController
     // TODO Export this kind of check to an XML/LUA file for easier modding of floor types.
     private bool CanBuildTileTypeHere(Tile t, TileType tileType)
     {
+        if (tileType.CanBuildHereLua == null)
+        {
+            return true;
+        }
+
         DynValue value = LuaUtilities.CallFunction(tileType.CanBuildHereLua, t);
 
         if (value != null)
