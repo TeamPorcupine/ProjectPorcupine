@@ -13,6 +13,8 @@ using UnityEngine.UI;
 
 public class MenuController : MonoBehaviour
 {
+    public static MenuController Instance;
+
     // The sub menus of the build menu (furniture, floor..... later - power, security, drones).
     public GameObject furnitureMenu;
     public GameObject floorMenu;

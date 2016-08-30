@@ -132,8 +132,8 @@ public class Temperature
     /// <summary>
     /// Public interface to setting temperature, set temperature at (x,y) to temp.
     /// </summary>
-    /// <param name="x">X coordinate.</param>
-    /// <param name="y">Y coordinate.</param>
+    /// <param name="x">X coordinates.</param>
+    /// <param name="y">Y coordinates.</param>
     /// <param name="temp">Temperature to set at x,y.</param>
     public void SetTemperature(int x, int y, float temp)
     {
@@ -146,9 +146,9 @@ public class Temperature
     /// <summary>
     /// Public interface to changing the temperature, increases temperature at (x,y) by incr.
     /// </summary>
-    /// <param name="x">X coordinate.</param>
-    /// <param name="y">Y coordinate.</param>
-    /// <param name="incr">Temperature to set at x,y.</param>
+    /// <param name="x">X coordinates.</param>
+    /// <param name="y">Y coordinates.</param>
+    /// <param name="incr">Temperature to increase at x,y.</param>
     public void ChangeTemperature(int x, int y, float incr)
     {
         if (IsWithinTemperatureBounds(temperature[offset][GetIndex(x, y)] + incr))
@@ -211,7 +211,8 @@ public class Temperature
         }
         else
         {
-            Debug.LogWarning(string.Format("Yep, something is wrong with your temperature: {0}.", temp));
+            // string.format not needed with UberLogger.
+            Debug.ULogWarningChannel("Temperature", "Yep, something is wrong with your temperature: {0}.", temp);
             return false;
         }
     }
@@ -229,7 +230,7 @@ public class Temperature
         }
         else
         {
-            Debug.LogWarning(string.Format("Trying to set a thermal diffusivity that may break the world: {0}.", thermal_diff));
+            Debug.ULogWarningChannel("Temperature", "Trying to set a thermal diffusivity that may break the world: {0}.", thermal_diff);
             return false;
         }
     }

@@ -179,15 +179,15 @@ public static class Settings
     private static void SaveSettings()
     {
         // Create an xml document.
-        XmlDocument xDoc = new XmlDocument();
+        XmlDocument doc = new XmlDocument();
 
         // Create main settings node.
-        XmlNode settingsNode = xDoc.CreateElement("Settings");
+        XmlNode settingsNode = doc.CreateElement("Settings");
 
         foreach (KeyValuePair<string, string> pair in settingsDict)
         {
             // Create a new element for each pair in the dict.
-            XmlElement settingElement = xDoc.CreateElement(pair.Key);
+            XmlElement settingElement = doc.CreateElement(pair.Key);
             settingElement.InnerText = pair.Value;
             Debug.ULogChannel("Settings", pair.Key + " : " + pair.Value);
 
@@ -196,12 +196,12 @@ public static class Settings
         }
 
         // Apend Settings node to the document.
-        xDoc.AppendChild(settingsNode);
+        doc.AppendChild(settingsNode);
 
         // Save the document.
         try
         {
-            xDoc.Save(userSettingsFilePath);
+            doc.Save(userSettingsFilePath);
         }
         catch (Exception e)
         {
@@ -242,13 +242,13 @@ public static class Settings
         }
 
         // Create an xml document from the loaded string.
-        XmlDocument xDoc = new XmlDocument();
-        xDoc.LoadXml(furnitureXmlText);
+        XmlDocument doc = new XmlDocument();
+        doc.LoadXml(furnitureXmlText);
         Debug.ULogChannel("Settings", "Loaded settings");
-        Debug.Log(xDoc.InnerText); // Uber Logger doesn't handle multilines.
+        Debug.ULogChannel("Settings", doc.InnerText); 
 
         // Get the Settings node. Its children are the individual settings.
-        XmlNode settingsNode = xDoc.GetElementsByTagName("Settings").Item(0);
+        XmlNode settingsNode = doc.GetElementsByTagName("Settings").Item(0);
         XmlNodeList settingNodes = settingsNode.ChildNodes;
         Debug.ULogChannel("Settings", settingNodes.Count + " settings loaded");
 

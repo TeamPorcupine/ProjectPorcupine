@@ -32,7 +32,7 @@
         <BaseMovementCost>1.5</BaseMovementCost>
         <LinksToNeighbours>false</LinksToNeighbours>
 
-        <CanPlaceHere FunctionName="CanBuildHere_Ladder"/>
+        <CanPlaceHere functionName="CanBuildHere_Ladder"/>
 
         <BuildingJob jobTime="0.5">
             <Inventory objectType="Steel Plate" amount="1" />

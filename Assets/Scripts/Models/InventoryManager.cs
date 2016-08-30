@@ -6,7 +6,10 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using MoonSharp.Interpreter;
 using UnityEngine;
 
@@ -91,6 +94,7 @@ public class InventoryManager
         {
             character.inventory = sourceInventory.Clone();
             character.inventory.StackSize = 0;
+            character.inventory.character = character;
             inventories[character.inventory.objectType].Add(character.inventory);
         }
         else if (character.inventory.objectType != sourceInventory.objectType)
@@ -148,6 +152,37 @@ public class InventoryManager
         return true;
     }
 
+    public bool QuickRemove(string objectType, int quantity, bool onlyFromStockpiles)
+    {
+        if (QuickCheck(objectType))
+        {
+            foreach (Inventory inventory in inventories[objectType].ToList())
+            {
+                if (onlyFromStockpiles)
+                {
+                    if (inventory.tile == null || 
+                        inventory.tile.Furniture == null ||
+                        inventory.tile.Furniture.ObjectType != "Stockpile")
+                    {
+                        continue;
+                    }
+                }
+
+                if (quantity <= 0)
+                {
+                    break;
+                }
+
+                int removedFromStack = Math.Min(inventory.StackSize, quantity);
+                quantity -= removedFromStack;
+                inventory.StackSize -= removedFromStack;
+                CleanupInventory(inventory);
+            }
+        }
+
+        return quantity == 0;
+    }
+
     public Path_AStar GetPathToClosestInventoryOfType(string objectType, Tile t, int desiredAmount, bool canTakeFromStockpile)
     {
         QuickCheck(objectType);
@@ -161,7 +196,7 @@ public class InventoryManager
         }
 
         // We shouldn't search if all inventories are locked.
-        if (inventories[objectType].TrueForAll(i => i.tile != null && i.tile.Furniture != null && i.tile.Inventory.locked))
+        if (inventories[objectType].TrueForAll(i => i.tile != null && i.tile.Furniture != null && i.tile.Inventory != null && i.tile.Inventory.locked))
         {
             return null;
         }

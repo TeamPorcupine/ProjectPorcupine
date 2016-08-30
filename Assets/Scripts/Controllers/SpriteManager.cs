@@ -64,8 +64,8 @@ public class SpriteManager : MonoBehaviour
     {
         sprites = new Dictionary<string, Sprite>();
 
-        string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "Images");
-        string modsPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Mods");
+        string filePath = Path.Combine(Application.streamingAssetsPath, "Images");
+        string modsPath = Path.Combine(Application.streamingAssetsPath, "Mods");
         LoadSpritesFromDirectory(filePath);
 
         DirectoryInfo[] mods = WorldController.Instance.modsManager.GetMods();
@@ -119,7 +119,7 @@ public class SpriteManager : MonoBehaviour
         }
 
         // Load the file into a texture
-        byte[] imageBytes = System.IO.File.ReadAllBytes(filePath);
+        byte[] imageBytes = File.ReadAllBytes(filePath);
 
         // Create some kind of dummy instance of Texture2D
         Texture2D imageTexture = new Texture2D(2, 2);
@@ -133,11 +133,11 @@ public class SpriteManager : MonoBehaviour
             string basePath = Path.GetDirectoryName(filePath);
 
             // NOTE: The extension must be in lower case!
-            string xmlPath = System.IO.Path.Combine(basePath, baseSpriteName + ".xml");
+            string xmlPath = Path.Combine(basePath, baseSpriteName + ".xml");
 
-            if (System.IO.File.Exists(xmlPath))
+            if (File.Exists(xmlPath))
             {
-                string xmlText = System.IO.File.ReadAllText(xmlPath);
+                string xmlText = File.ReadAllText(xmlPath);
 
                 // TODO: Loop through the xml file finding all the <sprite> tags
                 // and calling LoadSprite once for each of them.
@@ -205,7 +205,7 @@ public class SpriteManager : MonoBehaviour
 
         int pixelPerUnit = int.Parse(reader.GetAttribute("pixelPerUnit"));
 
-        LoadSprite(spriteCategory, name, imageTexture, new Rect(x, y, w, h), pixelPerUnit, new Vector2(pivotX, pivotY));
+        LoadSprite(spriteCategory, name, imageTexture, new Rect(x * pixelPerUnit, y * pixelPerUnit, w * pixelPerUnit, h * pixelPerUnit), pixelPerUnit, new Vector2(pivotX, pivotY));
     }
 
     private void LoadSprite(string spriteCategory, string spriteName, Texture2D imageTexture, Rect spriteCoordinates, int pixelsPerUnit, Vector2 pivotPoint)
