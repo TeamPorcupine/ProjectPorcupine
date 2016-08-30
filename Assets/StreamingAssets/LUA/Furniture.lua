@@ -614,7 +614,6 @@ function SolarPanel_OnUpdate(furniture, deltaTime)
 end
 
 function Mine_MineOre(furniture, character)
-    ModUtils.ULog("Mine_MineOre has been called!")
 
     local j = Job.__new(
 		furniture.Tile,
@@ -627,18 +626,17 @@ function Mine_MineOre(furniture, character)
 	)
 
     j.RegisterJobWorkedCallback("Mine_OreMined")
-
-    ModUtils.ULog("And a job has been created")
-
     furniture.AddJob(j)
-    ModUtils.ULog("And added!")
+    ModUtils.ULog("Ore Mine - Mining Job Created")
 end
 
 function Mine_OreMined(job)
+    local inventory = Inventory.__new("Raw Iron", 50, 10)
+
+    World.Current.inventoryManager.PlaceInventory(job.tile, inventory)
+
+    job.furniture.Deconstruct()
     job.CancelJob()
-
-    ModUtils.ULog("Object should now have been mined")
-
 end
 
 ModUtils.ULog("Furniture.lua loaded")
