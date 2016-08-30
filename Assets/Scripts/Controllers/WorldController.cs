@@ -39,6 +39,15 @@ public class WorldController : MonoBehaviour
     // If true, a modal dialog box is open so normal inputs should be ignored.
     public bool IsModal;
 
+    private static string loadWorldFromFile = null;
+
+    private float gameTickDelay;
+    private float totalDeltaTime;
+    private bool isPaused = false;
+
+    // Multiplier of Time.deltaTime.
+    private float timeScale = 1f;
+
     public static WorldController Instance { get; protected set; }
 
     // The world and tile data.
@@ -64,16 +73,7 @@ public class WorldController : MonoBehaviour
             return timeScale;
         }
     }
-
-    private static string loadWorldFromFile = null;
-
-    private float gameTickDelay;
-    private float totalDeltaTime;
-    private bool isPaused = false;
-
-    // Multiplier of Time.deltaTime.
-    private float timeScale = 1f;
-
+    
     // Use this for initialization.
     public void OnEnable()
     {
