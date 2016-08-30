@@ -16,7 +16,7 @@ public class MenuController : MonoBehaviour
     // The sub menus of the build menu (furniture, floor..... later - power, security, drones).
     public GameObject furnitureMenu;
     public GameObject floorMenu;
-    
+
     public Button buttonConstructor;
     public Button buttonWorld;
     public Button buttonWork;
@@ -24,7 +24,7 @@ public class MenuController : MonoBehaviour
     public Button buttonSettings;
     public Button buttonQuests;
 
-    private DialogBoxManager dbm;
+    private DialogBoxManager dialogManager;
 
     // The left build menu.
     private GameObject constructorMenu;
@@ -54,9 +54,9 @@ public class MenuController : MonoBehaviour
         if (constructorMenu.activeSelf)
         {
             DeactivateAll();
-        } 
-        else 
-        { 
+        }
+        else
+        {
             DeactivateAll();
             constructorMenu.SetActive(true);
         }
@@ -80,17 +80,18 @@ public class MenuController : MonoBehaviour
         if (!WorldController.Instance.IsModal)
         {
             DeactivateAll();
-            dbm.dialogBoxQuests.ShowDialog();
+            dialogManager.dialogBoxQuests.ShowDialog();
         }
     }
 
     public void OnButtonOptions()
     {
-        if (!WorldController.Instance.IsModal)
+        DeactivateAll();
+        if (dialogManager.dialogBoxSettings.isActiveAndEnabled)
         {
-            DeactivateAll();
-            dbm.dialogBoxOptions.ShowDialog();
+            dialogManager.dialogBoxSettings.CloseDialog();
         }
+        dialogManager.dialogBoxOptions.ToggleDialog();
     }
 
     public void OnButtonSettings()
@@ -98,14 +99,14 @@ public class MenuController : MonoBehaviour
         if (!WorldController.Instance.IsModal)
         {
             DeactivateAll();
-            dbm.dialogBoxSettings.ShowDialog();
+            dialogManager.dialogBoxSettings.ShowDialog();
         }
     }
 
     // Use this for initialization.
     private void Start()
     {
-        dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
+        dialogManager = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
 
         furnitureMenu = GameObject.Find("MenuFurniture");
         floorMenu = GameObject.Find("MenuFloor");
@@ -132,10 +133,13 @@ public class MenuController : MonoBehaviour
             OnButtonOptions();
         });
 
-        buttonSettings.onClick.AddListener(delegate
+        if (buttonSettings != null)
         {
-            OnButtonSettings();
-        });
+            buttonSettings.onClick.AddListener(delegate
+            {
+                OnButtonSettings();
+            });
+        }
 
         buttonQuests = CreateButton("menu_quests");
         buttonQuests.onClick.AddListener(delegate

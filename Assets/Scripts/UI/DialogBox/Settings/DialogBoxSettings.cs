@@ -36,7 +36,9 @@ public class DialogBoxSettings : DialogBox
     public Button closeButton;
     public Button saveButton;
 
-    public void OnLangageToggle()
+    private DialogBoxManager dialogManager;
+
+    public void OnLanguageToggle()
     {
         langDropDown.SetActive(langToggle.isOn);
     }
@@ -84,6 +86,7 @@ public class DialogBoxSettings : DialogBox
     public void OnClickClose()
     {
         this.CloseDialog();
+        dialogManager.dialogBoxOptions.ShowDialog();
     }
 
     public void OnClickSave()
@@ -91,6 +94,7 @@ public class DialogBoxSettings : DialogBox
         this.CloseDialog();
         WorldController.Instance.spawnInventoryController.SetUIVisibility(developerModeToggle.isOn);
         SaveSetting();
+        dialogManager.dialogBoxOptions.ShowDialog();
     }
 
     /// <summary>
@@ -109,6 +113,11 @@ public class DialogBoxSettings : DialogBox
         Settings.SetSetting("DialogBoxSettings_vSyncDropdown", vsyncDropdown.value);
         Settings.SetSetting("DialogBoxSettings_resolutionDropdown", resolutionDropdown.value);
         Settings.SetSetting("DialogBoxSettings_aliasingDropdown", aliasingDropdown.value);
+    }
+
+    private void Start()
+    {
+        dialogManager = GameObject.FindObjectOfType<DialogBoxManager>();
     }
 
     private void OnEnable()
@@ -132,7 +141,7 @@ public class DialogBoxSettings : DialogBox
         });
         langToggle.onValueChanged.AddListener(delegate
         {
-            OnLangageToggle();
+            OnLanguageToggle();
         });
         fullScreenToggle.onValueChanged.AddListener(delegate
         {

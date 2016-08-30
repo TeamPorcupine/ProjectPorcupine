@@ -22,4 +22,16 @@ public class DialogBox : MonoBehaviour
         WorldController.Instance.IsModal = false;
         gameObject.SetActive(false);
     }
+
+    public virtual void ToggleDialog()
+    {
+        if (this.isActiveAndEnabled)
+        {
+            this.CloseDialog();
+        }
+        else
+        {
+            this.ShowDialog();
+        }
+    }
 }
