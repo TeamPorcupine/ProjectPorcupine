@@ -63,7 +63,7 @@ public class MouseOverRoomDetails : MonoBehaviour
 
         foreach (Room room in neighbours)
         {
-            s += "Room " + t.Room.ID.ToString() + " neighbours room " + room.ID.ToString();
+            s += "Room " + t.Room.ID.ToString() + " -> room " + room.ID.ToString() + '\n';
         }
 
         text.text = s;
