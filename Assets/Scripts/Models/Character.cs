@@ -466,9 +466,9 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
     private void LoadStats()
     {
-        stats = new Stat[World.Current.statPrototypes.Count];
-        World.Current.statPrototypes.Values.CopyTo(stats, 0);
-        for (int i = 0; i < World.Current.statPrototypes.Count; i++)
+        stats = new Stat[PrototypeManager.Stat.Count];
+        PrototypeManager.Stat.Values.CopyTo(stats, 0);
+        for (int i = 0; i < PrototypeManager.Stat.Count; i++)
         {
             Stat stat = stats[i];
             stats[i] = stat.Clone();

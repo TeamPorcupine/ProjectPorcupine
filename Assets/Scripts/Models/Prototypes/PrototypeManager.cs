@@ -20,6 +20,7 @@ public class PrototypeManager
         Need = new NeedPrototypes();
         Trader = new TraderPrototypes();
         Quest = new QuestPrototypes();
+        Stat = new StatPrototypes();
     }
 
     public static BasePrototypes<Job> FurnitureJob
@@ -53,6 +54,12 @@ public class PrototypeManager
     }
 
     public static QuestPrototypes Quest
+    {
+        get;
+        protected set;
+    }
+
+    public static StatPrototypes Stat
     {
         get;
         protected set;
