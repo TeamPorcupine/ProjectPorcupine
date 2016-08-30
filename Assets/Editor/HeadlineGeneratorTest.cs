@@ -18,13 +18,13 @@ public class HeadlineGeneratorTest
     [SetUp]
     public void SetUp()
     {
-        string filePath = System.IO.Path.Combine(UnityEngine.Application.streamingAssetsPath, "Data");
+        string filePath = System.IO.Path.Combine(UnityEngine.Application.streamingAssetsPath, "TestCase");
         filePath = System.IO.Path.Combine(filePath, "Headlines.xml");
         string furnitureXmlText = System.IO.File.ReadAllText(filePath);
         XmlDocument doc = new XmlDocument();
         doc.Load(new StringReader(furnitureXmlText));
         gen = new HeadlineGenerator(doc.SelectSingleNode("Headlines"));
-        gen.updatedHeadline+=StringPrinted;
+        gen.UpdatedHeadline += StringPrinted;
         stringPrinted = false;
     }
 
@@ -48,5 +48,21 @@ public class HeadlineGeneratorTest
         stringPrinted = false;
         gen.Update(10);
         Assert.AreEqual(true, stringPrinted);
+    }
+
+    [Test]
+    public void T03_Add_Instant_Generated()
+    {
+        stringPrinted = false;
+        gen.AddHeadline("This is a test", true);
+        Assert.AreEqual(true, stringPrinted);
+    }
+
+    [Test]
+    public void T04_Add_Headline_False()
+    {
+        stringPrinted = false;
+        gen.AddHeadline("This is a test", false);
+        Assert.AreEqual(false, stringPrinted);
     }
 }

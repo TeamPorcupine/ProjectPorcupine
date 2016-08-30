@@ -13,8 +13,6 @@ using System.Xml;
 
 public class HeadlineGenerator 
 {
-    public event Action<string> updatedHeadline;
-
     private List<string> headlines = new List<string>();
     private float time, nextTime, minInterval, maxInterval;
 
@@ -32,14 +30,16 @@ public class HeadlineGenerator
         time = 0f;
     }
 
+    public event Action<string> UpdatedHeadline;
+
     public void Update(float deltaTime)
     {
         time += deltaTime;
         if (time > nextTime)
         {
-            if (updatedHeadline != null)
+            if (UpdatedHeadline != null)
             {
-                updatedHeadline(headlines[UnityEngine.Random.Range(0, headlines.Count)]);
+                UpdatedHeadline(headlines[UnityEngine.Random.Range(0, headlines.Count)]);
             }
 
             time -= nextTime;
@@ -47,9 +47,17 @@ public class HeadlineGenerator
         }
     }
 
-    public void Headline(string headline)
+    public void AddHeadline(string headline, bool displayImmediately = true, bool keepInQueue = true)
     {
-        headlines.Add(headline);
+        if (keepInQueue)
+        {
+            headlines.Add(headline);
+        }
+
+        if (displayImmediately)
+        {
+            UpdatedHeadline(headline);
+        }
     }
 
     private void ResetNextTime()

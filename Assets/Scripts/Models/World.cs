@@ -168,9 +168,9 @@ public class World : IXmlSerializable
         }
 
         // Update HeadlineGenerator
-        foreach (HeadlineGenerator h in headlineGenerators)
+        foreach (HeadlineGenerator hg in headlineGenerators)
         {
-            h.Update(deltaTime);
+            hg.Update(deltaTime);
         }
 
         // Progress temperature modelling
