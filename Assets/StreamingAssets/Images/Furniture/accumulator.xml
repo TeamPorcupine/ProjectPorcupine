@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Sprites>
+	<Sprite name="accumulator"     	x="0" 	y="0"   	w="128" h="64" pixelPerUnit="64" />
+	<Sprite name="accumulator_25"   y="0" 	x="128"  	w="128" h="64" pixelPerUnit="64" />
+	<Sprite name="accumulator_50"   y="0" 	x="256" 	w="128" h="64" pixelPerUnit="64" />
+	<Sprite name="accumulator_75"   y="0" 	x="384" 	w="128" h="64" pixelPerUnit="64" />
+	<Sprite name="accumulator_10"   y="0" 	x="512" 	w="128" h="64" pixelPerUnit="64" />
+</Sprites>
