@@ -7,6 +7,7 @@
 // ====================================================
 #endregion
 using System.Collections.Generic;
+using System.IO;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Debugging;
 using MoonSharp.RemoteDebugger;
@@ -22,6 +23,28 @@ public class FurnitureActions
         LuaUtilities.RegisterGlobal(typeof(Job));
         LuaUtilities.RegisterGlobal(typeof(ModUtils));
         LuaUtilities.RegisterGlobal(typeof(World));
+        LuaUtilities.RegisterGlobal(typeof(Power.Connection));
+
+        LoadScripts();
+    }
+
+    public static void LoadScripts()
+    {
+        string luaFilePath = Path.Combine(Application.streamingAssetsPath, "LUA");
+        luaFilePath = Path.Combine(luaFilePath, "Furniture.lua");
+        LuaUtilities.LoadScriptFromFile(luaFilePath);
+    }
+
+    public static void LoadModsScripts(DirectoryInfo[] mods)
+    {
+        foreach (DirectoryInfo mod in mods)
+        {
+            string luaModFile = Path.Combine(mod.FullName, "Furniture.lua");
+            if (File.Exists(luaModFile))
+            {
+                LuaUtilities.LoadScriptFromFile(luaModFile);
+            }
+        }
     }
 
     public static void CallFunctionsWithFurniture<T>(string[] functionNames, T furn, float deltaTime)

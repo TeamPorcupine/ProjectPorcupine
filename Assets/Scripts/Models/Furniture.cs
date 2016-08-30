@@ -13,16 +13,23 @@ using System.Xml.Schema;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
+using Power;
 using UnityEngine;
 
 /// <summary>
 /// InstalledObjects are things like walls, doors, and furniture (e.g. a sofa).
 /// </summary>
 [MoonSharpUserData]
-public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, IPowerRelated
+public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 {
     // Prevent construction too close to the world's edge
     private const int MinEdgeDistance = 5;
+
+    // Base cost of pathfinding over this furniture, movement cost will modify the effective value
+    private float pathfindingWeight = 1f;
+
+    // Additional cost of pathfinding over this furniture, will be added to pathfindingWeight * MovementCost
+    private float pathfindingModifier = 0f;
 
     // If the job causes some kind of object to be spawned, where will it appear?
     private Vector2 jobSpawnSpotOffset = Vector2.zero;
@@ -49,8 +56,6 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     /// </summary>
     private Parameter furnParameters;
 
-    private float powerValue;
-
     private List<Job> jobs;
 
     // This is the generic type of object this is, allowing things to interact with it based on it's generic type
@@ -63,6 +68,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     private Func<Tile, bool> funcPositionValidation;
 
     private HashSet<TileType> tileTypeBuildPermissions;
+
+    private bool isOperating;
 
     // TODO: Implement larger objects
     // TODO: Implement object rotation
@@ -94,6 +101,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         typeTags = new HashSet<string>(other.typeTags);
         description = other.description;
         MovementCost = other.MovementCost;
+        PathfindingModifier = other.PathfindingModifier;
+        PathfindingWeight = other.PathfindingWeight;
         RoomEnclosure = other.RoomEnclosure;
         Width = other.Width;
         Height = other.Height;
@@ -119,11 +128,11 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         isEnterableAction = other.isEnterableAction;
         getSpriteNameAction = other.getSpriteNameAction;
 
-        powerValue = other.powerValue;
+        PowerConnection = other.PowerConnection;
 
-        if (!powerValue.IsZero())
+        if (PowerConnection != null)
         {
-            World.Current.powerSystem.AddToPowerGrid(this);
+            World.Current.PowerSystem.PlugIn(PowerConnection);
         }
 
         if (other.funcPositionValidation != null)
@@ -141,7 +150,25 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
 
     public event Action<Furniture> Removed;
 
-    public event Action<IPowerRelated> PowerValueChanged;
+    public event Action<Furniture> IsOperatingChanged;
+
+    /// <summary>
+    /// Gets or sets the Furniture's pathfinding modifier which is added into the Tile's final PathfindingCost.
+    /// </summary>
+    public float PathfindingModifier
+    {
+        get { return pathfindingWeight; }
+        set { pathfindingWeight = value; }
+    }
+
+    /// <summary>
+    /// Gets or sets the Furniture's pathfinding weight which is multiplied into the Tile's final PathfindingCost.
+    /// </summary>
+    public float PathfindingWeight
+    {
+        get { return pathfindingWeight; }
+        set { pathfindingWeight = value; }
+    }
 
     public Color Tint { get; private set; }
 
@@ -161,34 +188,30 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     /// </summary>
     public EventAction EventActions { get; private set; }
 
-    public float PowerValue
+    /// <summary>
+    /// Connection to power system.
+    /// </summary>
+    public Connection PowerConnection { get; private set; }
+
+    public bool IsOperating
     {
         get
         {
-            return powerValue;
+            return isOperating;            
         }
 
-        set
+        private set
         {
-            if (powerValue.AreEqual(value))
+            if (isOperating == value)
             {
                 return;
             }
 
-            powerValue = value;
-            InvokePowerValueChanged(this);
+            isOperating = value;
+            OnIsOperatingChanged(this);
         }
     }
 
-    public bool IsPowerConsumer
-    {
-        get
-        {
-            return PowerValue < 0.0f;
-        }
-    }
-
-    // TODO: public PowerRelated PowerRelated { get; private set; }
     public bool IsSelected { get; set; }
 
     // This represents the BASE tile of the object -- but in practice, large objects may actually occupy
@@ -360,12 +383,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
 
     public bool HasPower()
     {
-        if (World.Current.powerSystem.RequestPower(this))
-        {
-            return true;
-        }
-
-        return World.Current.powerSystem.AddToPowerGrid(this);
+        IsOperating = PowerConnection == null || World.Current.PowerSystem.HasPower(PowerConnection);
+        return IsOperating;
     }
 
     public XmlSchema GetSchema()
@@ -393,46 +412,54 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         {
             switch (reader.Name)
             {
-            case "Name":
+                case "Name":
                 reader.Read();
                 Name = reader.ReadContentAsString();
                 break;
-            case "TypeTag":
+                case "TypeTag":
                 reader.Read();
                 typeTags.Add(reader.ReadContentAsString());
                 break;
-            case "Description":
+                case "Description":
                 reader.Read();
                 description = reader.ReadContentAsString();
                 break;
-            case "MovementCost":
+                case "MovementCost":
                 reader.Read();
                 MovementCost = reader.ReadContentAsFloat();
+                break;
+            case "PathfindingModifier":
+                reader.Read();
+                PathfindingModifier = reader.ReadContentAsFloat();
+                break;
+            case "PathfindingWeight":
+                reader.Read();
+                PathfindingWeight = reader.ReadContentAsFloat();
                 break;
             case "Width":
                 reader.Read();
                 Width = reader.ReadContentAsInt();
                 break;
-            case "Height":
+                case "Height":
                 reader.Read();
                 Height = reader.ReadContentAsInt();
                 break;
-            case "LinksToNeighbours":
+                case "LinksToNeighbours":
                 reader.Read();
                 LinksToNeighbour = reader.ReadContentAsBoolean();
                 break;
-            case "EnclosesRooms":
+                case "EnclosesRooms":
                 reader.Read();
                 RoomEnclosure = reader.ReadContentAsBoolean();
                 break;
-            case "CanReplaceFurniture":
+                case "CanReplaceFurniture":
                 replaceableFurniture.Add(reader.GetAttribute("typeTag").ToString());
                 break;
-            case "DragType":
+                case "DragType":
                 reader.Read();
                 DragType = reader.ReadContentAsString();
                 break;
-            case "BuildingJob":
+                case "BuildingJob":
                 float jobTime = float.Parse(reader.GetAttribute("jobTime"));
 
                 List<Inventory> invs = new List<Inventory>();
@@ -459,7 +486,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
                     invs.ToArray(),
                     Job.JobPriority.High);
                 j.JobDescription = "job_build_" + ObjectType + "_desc";
-                World.Current.SetFurnitureJobPrototype(j, this);
+                    PrototypeManager.FurnitureJob.SetPrototype(ObjectType, j);
                 break;
 
                 case "CanBeBuiltOn":
@@ -472,7 +499,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
                 EventActions.ReadXml(subtree);
                 subtree.Close();
                 break;
-            case "ContextMenuAction":
+                case "ContextMenuAction":
                 contextMenuLuaActions.Add(new ContextMenuLuaAction
                 {
                     LuaFunction = reader.GetAttribute("FunctionName"),
@@ -480,42 +507,39 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
                     RequiereCharacterSelected = bool.Parse(reader.GetAttribute("RequiereCharacterSelected"))
                 });
                 break;
-            case "IsEnterable":
+                case "IsEnterable":
                 isEnterableAction = reader.GetAttribute("FunctionName");
                 break;
-            case "GetSpriteName":
+                case "GetSpriteName":
                 getSpriteNameAction = reader.GetAttribute("FunctionName");
                 break;
 
-            case "JobSpotOffset":
+                case "JobSpotOffset":
                 JobSpotOffset = new Vector2(
                     int.Parse(reader.GetAttribute("X")),
                     int.Parse(reader.GetAttribute("Y")));
                 break;
-            case "JobSpawnSpotOffset":
+                case "JobSpawnSpotOffset":
                 jobSpawnSpotOffset = new Vector2(
                     int.Parse(reader.GetAttribute("X")),
                     int.Parse(reader.GetAttribute("Y")));
                 break;
 
-            case "Power":
-                reader.Read();
-                powerValue = reader.ReadContentAsFloat();
-
-                // TODO: Connection = new Connection();
-                // TODO: Connection.ReadPrototype(reader);
+                case "PowerConnection":
+                PowerConnection = new Connection();
+                PowerConnection.ReadPrototype(reader);
                 break;
 
-            case "Params":
+                case "Params":
                 ReadXmlParams(reader);  // Read in the Param tag
                 break;
 
-            case "LocalizationCode":
+                case "LocalizationCode":
                 reader.Read();
                 LocalizationCode = reader.ReadContentAsString();
                 break;
 
-            case "UnlocalizedDescription":
+                case "UnlocalizedDescription":
                 reader.Read();
                 UnlocalizedDescription = reader.ReadContentAsString();
                 break;
@@ -587,9 +611,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
 
         // TODO: read this from furniture params
         Dictionary<string, Inventory> invsDict = new Dictionary<string, Inventory>();
-        foreach (string objectType in World.Current.inventoryPrototypes.Keys)
+        foreach (string objectType in PrototypeManager.Inventory.Keys)
         {
-            invsDict[objectType] = new Inventory(objectType, World.Current.inventoryPrototypes[objectType].maxStackSize, 0);
+            invsDict[objectType] = new Inventory(objectType, PrototypeManager.Inventory.GetPrototype(objectType).maxStackSize, 0);
         }
 
         Inventory[] invs = new Inventory[invsDict.Count];
@@ -620,6 +644,11 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         World.Current.temperature.SetThermalDiffusivity(Tile.X, Tile.Y, Temperature.defaultThermalDiffusivity);
 
         Tile.UnplaceFurniture();
+
+        if (PowerConnection != null)
+        {
+            World.Current.PowerSystem.Unplug(PowerConnection);
+        }
 
         if (Removed != null)
         {
@@ -706,17 +735,23 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
             RequireCharacterSelected = false,
             Action = (ca, c) => Deconstruct()
         };
-        if (jobs.Count > 0 && !jobs[0].IsBeingWorked)
+        if (jobs.Count > 0)
         {
-            yield return new ContextMenuAction
+            for (int i = 0; i < jobs.Count; i++)
             {
-                Text = "Prioritize " + Name,
-                RequireCharacterSelected = true,
-                Action = (ca, c) => { c.PrioritizeJob(jobs[0]); }
-            };
+                if (!jobs[i].IsBeingWorked)
+                {
+                    yield return new ContextMenuAction
+                    {
+                        Text = "Prioritize " + Name,
+                        RequireCharacterSelected = true,
+                        Action = (ca, c) => { c.PrioritizeJob(jobs[0]); }
+                    };
+                }
+            }
         }
 
-        foreach (var contextMenuLuaAction in contextMenuLuaActions)
+        foreach (ContextMenuLuaAction contextMenuLuaAction in contextMenuLuaActions)
         {
             yield return new ContextMenuAction
             {
@@ -818,16 +853,6 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
         LuaUtilities.CallFunction(luaFunction, this, character);
     }
 
-    // If this furniture generates power then powerValue will be positive, if it consumer power then it will be negative
-    private void InvokePowerValueChanged(IPowerRelated powerRelated)
-    {
-        Action<IPowerRelated> handler = PowerValueChanged;
-        if (handler != null)
-        {
-            handler(powerRelated);
-        }
-    }
-
     [MoonSharpVisible(true)]
     private void UpdateOnChanged(Furniture furn)
     {
@@ -840,5 +865,14 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, 
     private void OnJobStopped(Job j)
     {
         RemoveJob(j);
+    }
+
+    private void OnIsOperatingChanged(Furniture furniture)
+    {
+        Action<Furniture> handler = IsOperatingChanged;
+        if (handler != null)
+        {
+            handler(furniture);
+        }
     }
 }

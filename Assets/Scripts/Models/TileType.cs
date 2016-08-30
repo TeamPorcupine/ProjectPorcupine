@@ -25,6 +25,12 @@ public class TileType : IXmlSerializable
 
     private static Dictionary<TileType, Job> tileTypeBuildJobPrototypes = new Dictionary<TileType, Job>();
 
+    // Base cost of pathfinding over this tile, movement cost and any furniture will modify the effective value
+    private float pathfindingWeight = 1f;
+
+    // Additional cost of pathfinding over this tile, will be added to pathfindingWeight * MovementCost
+    private float pathfindingModifier = 0f;
+
     // Will this even be needed?
     private TileType(string name, string description, float baseMovementCost)
     {
@@ -61,6 +67,24 @@ public class TileType : IXmlSerializable
     public string Description { get; protected set; }
 
     public float BaseMovementCost { get; protected set; }
+
+    /// <summary>
+    /// Gets or sets the TileType's pathfinding weight which is multiplied into the Tile's final PathfindingCost.
+    /// </summary>
+    public float PathfindingWeight
+    {
+        get { return pathfindingWeight; }
+        set { pathfindingWeight = value; }
+    }
+
+    /// <summary>
+    /// Gets or sets the TileType's pathfinding modifier which is added into the Tile's final PathfindingCost.
+    /// </summary>
+    public float PathfindingModifier
+    {
+        get { return pathfindingModifier; }
+        set { pathfindingModifier = value; }
+    }
 
     // TODO!
     public bool LinksToNeighbours { get; protected set; }
@@ -196,6 +220,14 @@ public class TileType : IXmlSerializable
                 case "BaseMovementCost":
                     reader.Read();
                     BaseMovementCost = reader.ReadContentAsFloat();
+                    break;
+                case "PathfindingModifier":
+                    reader.Read();
+                    PathfindingModifier = reader.ReadContentAsFloat();
+                    break;
+                case "PathfindingWeight":
+                    reader.Read();
+                    PathfindingWeight = reader.ReadContentAsFloat();
                     break;
                 case "LinksToNeighbours":
                     reader.Read();

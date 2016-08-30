@@ -51,6 +51,42 @@ function OnUpdate_Door( furniture, deltaTime )
 	furniture.UpdateOnChanged(furniture);
 end
 
+
+function OnUpdate_AirlockDoor( furniture, deltaTime )
+    if (furniture.Parameters["pressure_locked"].ToFloat() >= 1.0) then
+        local neighbors = furniture.Tile.GetNeighbours(false)
+        local adjacentRooms = {}
+        local pressureEqual = true;
+        local count = 0
+        for k, tile in pairs(neighbors) do
+            if (tile.Room != nil) then
+                count = count + 1
+                adjacentRooms[count] = tile.Room
+            end
+        end
+        if(ModUtils.Round(adjacentRooms[1].GetTotalGasPressure(),3) == ModUtils.Round(adjacentRooms[2].GetTotalGasPressure(),3)) then
+            OnUpdate_Door(furniture, deltaTime)
+        end
+    else
+        OnUpdate_Door(furniture, deltaTime)
+    end
+end
+        
+    
+function AirlockDoor_Toggle_Pressure_Lock(furniture, character)
+
+    ModUtils.ULog("Toggling Pressure Lock")
+    
+	if (furniture.Parameters["pressure_locked"].ToFloat() == 1) then
+        furniture.Parameters["pressure_locked"].SetValue(0)
+    else
+        furniture.Parameters["pressure_locked"].SetValue(1)
+    end
+    
+    ModUtils.ULog(furniture.Parameters["pressure_locked"].ToFloat())
+end
+
+
 function OnUpdate_Leak_Door( furniture, deltaTime )
 	furniture.Tile.EqualiseGas(deltaTime * 10.0 * (furniture.Parameters["openness"].ToFloat() + 0.1))
 end
@@ -452,9 +488,29 @@ function CloningPod_UpdateAction(furniture, deltaTime)
         false
     )
 
+    j.RegisterJobWorkedCallback("CloningPod_JobRunning")
     j.RegisterJobCompletedCallback("CloningPod_JobComplete")
 	j.JobDescription = "job_cloning_pod_cloning_desc"
     furniture.AddJob(j)
+end
+
+function CloningPod_JobRunning(j)
+    local step = 0
+    if (math.floor(math.abs(j.JobTime * j.furniture.Parameters["animationTimer"].ToFloat())) % 2 == 0) then
+        step = 1
+    end
+    if (j.furniture.Parameters["animationStep"].ToFloat() != step) then
+         j.furniture.Parameters["animationStep"].SetValue(step)
+         j.furniture.UpdateOnChanged(j.furniture)
+    end
+end
+
+function CloningPod_GetSpriteName(furniture)
+    local baseName = "cloning_pod"
+    if (furniture.JobCount() < 1) then
+        return baseName
+    end
+    return baseName .. "_" .. furniture.Parameters["animationStep"].ToFloat()
 end
 
 function CloningPod_JobComplete(j)
@@ -464,7 +520,7 @@ end
 
 function PowerGenerator_UpdateAction(furniture, deltatime)
     if (furniture.JobCount() < 1 and furniture.Parameters["burnTime"].ToFloat() == 0) then
-        furniture.PowerValue = 0
+        furniture.PowerConnection.OutputRate = 0
         local itemsDesired = {Inventory.__new("Uranium", 5, 0)}
 
         local j = Job.__new(
@@ -490,7 +546,7 @@ end
 
 function PowerGenerator_JobComplete( j )
     j.furniture.Parameters["burnTime"].SetValue(j.furniture.Parameters["burnTimeRequired"].ToFloat())
-    j.furniture.PowerValue = 5
+    j.furniture.PowerConnection.OutputRate = 5
 end
 
 function LandingPad_Temp_UpdateAction(furniture, deltaTime)
@@ -619,7 +675,7 @@ function SolarPanel_OnUpdate(furniture, deltaTime)
     local baseOutput = furniture.Parameters["base_output"].ToFloat()
     local efficiency = furniture.Parameters["efficiency"].ToFloat()
     local powerPerSecond = baseOutput * efficiency
-    furniture.PowerValue = powerPerSecond
+	furniture.PowerConnection.OutputRate = powerPerSecond
 end
 
 ModUtils.ULog("Furniture.lua loaded")
