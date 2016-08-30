@@ -14,7 +14,7 @@ using UnityEngine;
 [MoonSharpUserData]
 public static class ModUtils
 {
-    static string defaultLogChannel = "Lua";
+    private static string defaultLogChannel = "Lua";
 
     public static float Clamp01(float value) 
     {
@@ -24,6 +24,11 @@ public static class ModUtils
     public static int FloorToInt(float value)
     {
         return Mathf.FloorToInt(value);
+    }
+
+    public static float Round(float value, int digits)
+    {
+        return (float)System.Math.Round((double)value, digits);
     }
 
     public static void Log(object obj) 

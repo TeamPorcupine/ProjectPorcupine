@@ -6,20 +6,17 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using System.Collections;
+using System.IO;
+using System.Xml.Serialization;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
-using System.Xml.Serialization;
-using System.IO;
-
-
 
 public class DialogBoxLoadGame : DialogBoxLoadSaveGame
 {
-
     public GameObject dialog;
     public bool pressedDelete;
-    Component fileItem;
+    private Component fileItem;
 
     public override void ShowDialog()
     {
@@ -28,14 +25,6 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
         foreach (DialogListItem listItem in listItems)
         {
             listItem.doubleclick = OkayWasClicked;
-        }
-    }
-
-    void Update()
-    {
-        if (pressedDelete)
-        {
-            SetButtonLocation(fileItem);
         }
     }
 
@@ -52,8 +41,8 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
 
     public void OkayWasClicked()
     {
-
         string fileName = gameObject.GetComponentInChildren<InputField>().text;
+
         // TODO: Is the filename valid?  I.E. we may want to ban path-delimiters (/ \ or :) and
         // maybe periods?      ../../some_important_file
 
@@ -63,7 +52,6 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
         //    C:\Users\Quill18\ApplicationData\MyCompanyName\MyGameName\Saves\SaveGameName123.sav
 
         // Application.persistentDataPath == C:\Users\<username>\ApplicationData\MyCompanyName\MyGameName\
-
         string saveDirectoryPath = WorldController.Instance.FileSaveBasePath();
 
         EnsureDirectoryExists(saveDirectoryPath);
@@ -72,12 +60,10 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
 
         // At this point, filePath should look very much like
         //     C:\Users\Quill18\ApplicationData\MyCompanyName\MyGameName\Saves\SaveGameName123.sav
-
         if (File.Exists(filePath) == false)
         {
             // TODO: Do file overwrite dialog box.
-
-            Debug.LogError("File doesn't exist.  What?");
+            Debug.ULogErrorChannel("DialogBoxLoadGame", "File doesn't exist.  What?");
             CloseDialog();
             return;
         }
@@ -91,7 +77,7 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
     {
         GameObject go = GameObject.FindGameObjectWithTag("DeleteButton");
         go.GetComponent<Image>().color = new Color(255, 255, 255, 0);
-        pressedDelete=false;
+        pressedDelete = false;
         base.CloseDialog();
     }
 
@@ -107,8 +93,7 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
 
         if (File.Exists(filePath) == false)
         {
-
-            Debug.LogError("File doesn't exist.  What?");
+            Debug.ULogErrorChannel("DialogBoxLoadGame", "File doesn't exist.  What?");
             CloseDialog();
             return;
         }
@@ -126,7 +111,6 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
 
     public void DeleteWasClicked()
     {
-
         dialog.SetActive(true);
     }
 
@@ -135,10 +119,17 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
         // This function gets called when the user confirms a filename
         // from the load dialog box.
 
-        // Get the file name from the save file dialog box
-
-        Debug.Log("LoadWorld button was clicked.");
+        // Get the file name from the save file dialog box.
+        Debug.ULogChannel("DialogBoxLoadGame", "LoadWorld button was clicked.");
 
         WorldController.Instance.LoadWorld(filePath);
+    }
+
+    private void Update()
+    {
+        if (pressedDelete)
+        {
+            SetButtonLocation(fileItem);
+        }
     }
 }

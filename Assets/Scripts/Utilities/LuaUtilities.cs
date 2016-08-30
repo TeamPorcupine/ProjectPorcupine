@@ -1,11 +1,19 @@
-﻿using UnityEngine;
-using System.Collections;
-using MoonSharp.Interpreter;
+﻿#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
 using System;
+using System.Collections;
 using System.IO;
+using MoonSharp.Interpreter;
+using UnityEngine;
 
-public class LuaUtilities {
-
+public class LuaUtilities 
+{
     private static Script luaScript;
 
     static LuaUtilities()
@@ -24,6 +32,7 @@ public class LuaUtilities {
         if (func == null)
         {
             Debug.ULogChannel("Lua", "'" + functionName + "' is not a LUA function!");
+            return null;
         }
 
         try
@@ -32,14 +41,9 @@ public class LuaUtilities {
         }
         catch (ScriptRuntimeException e)
         {
-            Debug.LogError( e.DecoratedMessage );
+            Debug.ULogErrorChannel("Lua", e.DecoratedMessage);
             return null;
         }
-    }
-    
-    static void LoadScript(string script)
-    {
-            luaScript.DoString(script);
     }
 
     public static void LoadScriptFromFile(string filePath)
@@ -52,7 +56,7 @@ public class LuaUtilities {
         }
         catch (MoonSharp.Interpreter.SyntaxErrorException e)
         {
-            Debug.LogError( "["+ Path.GetFileName(filePath) +"] LUA Parse error: " + e.DecoratedMessage );
+            Debug.ULogErrorChannel("Lua", "[" + Path.GetFileName(filePath) + "] LUA Parse error: " + e.DecoratedMessage);
         }
     }
 
@@ -61,7 +65,11 @@ public class LuaUtilities {
     // We need to make the base type visible.
     public static void RegisterGlobal(System.Type type)
     {
-        
         luaScript.Globals[type.Name] = type;
+    }
+
+    private static void LoadScript(string script)
+    {
+        luaScript.DoString(script);
     }
 }

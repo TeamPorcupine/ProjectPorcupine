@@ -7,25 +7,21 @@
 // ====================================================
 #endregion
 using System.Collections.Generic;
+using System.IO;
 using MoonSharp.Interpreter;
-using MoonSharp.Interpreter.Debugging;
-using MoonSharp.RemoteDebugger;
-using MoonSharp.RemoteDebugger.Network;
 using UnityEngine;
 
 public class NeedActions
 {
-    private static NeedActions _Instance;
+    private static NeedActions instance;
 
     private Script myLuaScript;
 
-    public NeedActions()
+    private NeedActions()
     {
         // Tell the LUA interpreter system to load all the classes
         // that we have marked as [MoonSharpUserData]
         UserData.RegisterAssembly();
-
-        _Instance = this;
 
         myLuaScript = new Script();
 
@@ -34,41 +30,76 @@ public class NeedActions
         // We need to make the base type visible.
         myLuaScript.Globals["Inventory"] = typeof(Inventory);
         myLuaScript.Globals["Job"] = typeof(Job);
+        myLuaScript.Globals["ModUtils"] = typeof(ModUtils);
 
         // Also to access statics/globals
         myLuaScript.Globals["World"] = typeof(World);
+
+        LoadScripts();
+    }
+
+    public static NeedActions Instance
+    {
+        get { return instance ?? (instance = new NeedActions()); }
+    }
+
+    public static void LoadScripts()
+    {
+        string luaFilePath = Path.Combine(Application.streamingAssetsPath, "LUA");
+        luaFilePath = Path.Combine(luaFilePath, "Need.lua");
+        string myLuaCode = System.IO.File.ReadAllText(luaFilePath);
+
+        AddScript(myLuaCode);
+    }
+
+    public static void LoadModsScripts(DirectoryInfo[] mods)
+    {
+        foreach (DirectoryInfo mod in mods)
+        {
+            string luaModFile = Path.Combine(mod.FullName, "Need.lua");
+            if (File.Exists(luaModFile))
+            {
+                string luaModCode = System.IO.File.ReadAllText(luaModFile);
+                AddScript(luaModCode);
+            }
+        }
     }
 
     public static void AddScript(string rawLuaCode)
     {
-        _Instance.myLuaScript.DoString(rawLuaCode);
+        Instance.myLuaScript.DoString(rawLuaCode);
     }
     
     public static void CallFunctionsWithNeed(string[] functionNames, Need need, float deltaTime)
     {
         foreach (string fn in functionNames)
         {
-            object func = _Instance.myLuaScript.Globals[fn];
+            object func = Instance.myLuaScript.Globals[fn];
 
             if (func == null)
             {
-                Debug.LogError("'" + fn + "' is not a LUA function.");
+                Debug.ULogErrorChannel("Lua", "'" + fn + "' is not a LUA function.");
                 return;
             }
 
-            DynValue result = _Instance.myLuaScript.Call(func, need, deltaTime);
+            DynValue result = Instance.myLuaScript.Call(func, need, deltaTime);
 
             if (result.Type == DataType.String)
             {
-                Debug.Log(result.String);
+                Debug.ULogChannel("NeedActions", "Lua response:", result.String);
             }
         }
     }
 
     public static DynValue CallFunction(string functionName, params object[] args)
     {
-        object func = _Instance.myLuaScript.Globals[functionName];
+        object func = Instance.myLuaScript.Globals[functionName];
 
-        return _Instance.myLuaScript.Call(func, args);
+        return Instance.myLuaScript.Call(func, args);
+    }
+
+    public static void RegisterGlobal(System.Type type)
+    {
+        Instance.myLuaScript.Globals[type.Name] = type;
     }
 }

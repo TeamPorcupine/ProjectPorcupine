@@ -6,35 +6,36 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using UnityEngine;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
+using UnityEngine;
 
-public class GameEventManager : MonoBehaviour {
+public class GameEventManager : MonoBehaviour
+{
+    public static GameEventManager current;
 
-    static public GameEventManager current;
+    private Dictionary<string, GameEvent> gameEvents;
 
-    Dictionary<string, GameEvent> gameEvents;
-
-    void OnEnable()
+    private void OnEnable()
     {
         current = this;
-
         LoadLuaScript();
         LoadEvents();
     }
 
     /// <summary>
-    /// Needs to be moved to world
+    /// Needs to be moved to world.
     /// </summary>
-    void Update(){
-        foreach(GameEvent gameEvent in gameEvents.Values){
+    private void Update()
+    {
+        foreach (GameEvent gameEvent in gameEvents.Values)
+        {
             gameEvent.Update(Time.deltaTime);
         }
     }
 
-    void LoadEvents()
+    private void LoadEvents()
     {
         gameEvents = new Dictionary<string, GameEvent>();
 
@@ -43,7 +44,7 @@ public class GameEventManager : MonoBehaviour {
         LoadEventsFromDirectory(filePath);
     }
 
-    void LoadLuaScript()
+    private void LoadLuaScript()
     {
         string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
         filePath = System.IO.Path.Combine(filePath, "GameEvent.lua");
@@ -52,9 +53,8 @@ public class GameEventManager : MonoBehaviour {
         new GameEventActions(luaCode);
     }
 
-    void LoadEventsFromDirectory(string filePath)
+    private void LoadEventsFromDirectory(string filePath)
     {
-
         string[] subDirs = Directory.GetDirectories(filePath);
         foreach (string sd in subDirs)
         {
@@ -66,10 +66,9 @@ public class GameEventManager : MonoBehaviour {
         {
             LoadEvent(fn);
         }
-
     }
 
-    void LoadEvent(string filePath)
+    private void LoadEvent(string filePath)
     {
         if (!filePath.Contains(".xml") || filePath.Contains(".meta"))
         {
@@ -84,24 +83,24 @@ public class GameEventManager : MonoBehaviour {
             do
             {
                 ReadEventFromXml(reader);
-            } while(reader.ReadToNextSibling("Event"));
+            }
+            while (reader.ReadToNextSibling("Event"));
         }
         else
         {
-            Debug.LogError("Could not read the event file: " + filePath);
+            Debug.ULogErrorChannel("GameEventManager", "Could not read the event file: " + filePath);
             return;
         }
     }
 
-    void ReadEventFromXml(XmlReader reader)
+    private void ReadEventFromXml(XmlReader reader)
     {
-        //Debug.Log("ReadSpriteFromXml");
         string name = reader.GetAttribute("Name");
         bool repeat = false;
         int maxRepeats = 0;
 
         List<string> preconditionNames = new List<string>();
-        List<string> onExecuteNames = new List<string>();
+        List<string> executeNames = new List<string>();
 
         while (reader.Read())
         {
@@ -117,8 +116,8 @@ public class GameEventManager : MonoBehaviour {
 
                     break;
                 case "OnExecute":
-                    string onExecuteName = reader.GetAttribute("FunctionName");
-                    onExecuteNames.Add(onExecuteName);
+                    string executeName = reader.GetAttribute("FunctionName");
+                    executeNames.Add(executeName);
 
                     break;
             }
@@ -126,17 +125,15 @@ public class GameEventManager : MonoBehaviour {
 
         if (name.Length >= 1)
         {
-            CreateEvent(name, repeat, maxRepeats, preconditionNames.ToArray(), onExecuteNames.ToArray());
+            CreateEvent(name, repeat, maxRepeats, preconditionNames.ToArray(), executeNames.ToArray());
         }
     }
 
-    void CreateEvent(string eventName, bool repeat, int maxRepeats, string[] preconditionNames, string[] onExecuteNames)
+    private void CreateEvent(string eventName, bool repeat, int maxRepeats, string[] preconditionNames, string[] executeNames)
     {
         GameEvent gameEvent = new GameEvent(eventName, repeat, maxRepeats);
-
         gameEvent.RegisterPreconditions(preconditionNames);
-        gameEvent.RegisterExecutionActions(onExecuteNames);
-
+        gameEvent.RegisterExecutionActions(executeNames);
         gameEvents[eventName] = gameEvent;
     }
 }
