@@ -6,6 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using System.Linq;
 using MoonSharp.Interpreter;
 using UnityEngine;
 
@@ -108,7 +109,7 @@ public class BuildModeController
                 if (PrototypeManager.FurnitureJob.HasPrototype(furnitureType))
                 {
                     // Make a clone of the job prototype
-                    j = PrototypeManager.FurnitureJob.GetPrototype(furnitureType);
+                    j = PrototypeManager.FurnitureJob.GetPrototype(furnitureType).Clone();
 
                     // Assign the correct tile.
                     j.tile = t;
@@ -241,9 +242,12 @@ public class BuildModeController
         {
             for (int y_off = t.Y; y_off < (t.Y + proto.Height); y_off++)
             {
-                if (WorldController.Instance.World.GetTileAt(x_off, y_off).PendingBuildJob != null)
+                Job pendingBuildJob = WorldController.Instance.World.GetTileAt(x_off, y_off).PendingBuildJob;
+                if (pendingBuildJob != null)
                 {
-                    return true;
+                    // if the existing buildJobs furniture is replaceable by the current furnitureType,
+                    // we can pretend it does not overlap with the new build
+                    return !proto.ReplaceableFurniture.Any(pendingBuildJob.furniturePrototype.HasTypeTag);
                 }
             }
         }
@@ -305,6 +309,11 @@ public class BuildModeController
     // TODO Export this kind of check to an XML/LUA file for easier modding of floor types.
     private bool CanBuildTileTypeHere(Tile t, TileType tileType)
     {
+        if (tileType.CanBuildHereLua == null)
+        {
+            return true;
+        }
+
         DynValue value = LuaUtilities.CallFunction(tileType.CanBuildHereLua, t);
 
         if (value != null)
