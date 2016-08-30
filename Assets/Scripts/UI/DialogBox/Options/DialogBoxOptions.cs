@@ -16,7 +16,9 @@ public class DialogBoxOptions : DialogBox
     public Button buttonNewWorld;
     public Button buttonSave;
     public Button buttonLoad;
+    public Button buttonSettings;
     public Button buttonQuit;
+
     private DialogBoxManager dialogManager;
 
     public void OnButtonSaveGame()
@@ -35,12 +37,18 @@ public class DialogBoxOptions : DialogBox
     public void OnButtonQuitGame()
     {
         // Maybe ask the user if he want to save or is sure they want to quit??
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
         // Allows you to quit in the editor.
         UnityEditor.EditorApplication.isPlaying = false;
-        #else
+#else
         Application.Quit();
-        #endif
+#endif
+    }
+
+    public void OnButtonSettiongs()
+    {
+        this.CloseDialog();
+        dialogManager.dialogBoxSettings.ShowDialog();
     }
 
     private void Start()
@@ -70,6 +78,14 @@ public class DialogBoxOptions : DialogBox
         {
             OnButtonLoadGame();
         });
+
+        if (buttonSettings != null)
+        {
+            buttonSettings.onClick.AddListener(delegate
+            {
+                OnButtonSettiongs();
+            });
+        }
     }
 
     private void Update()
