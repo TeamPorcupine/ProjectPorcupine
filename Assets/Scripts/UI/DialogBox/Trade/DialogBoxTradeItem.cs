@@ -66,9 +66,9 @@ public class DialogBoxTradeItem : MonoBehaviour
     {
         ItemNameText.text = item.ObjectType;
         PlayerStockText.text = item.PlayerStock.ToString();
-        PlayerSellItemPriceText.text = item.PlayerSellItemPrice.ToString();
+        PlayerSellItemPriceText.text = Math.Round(item.PlayerSellItemPrice, 2).ToString();
         TraderStockText.text = item.TraderStock.ToString();
-        TraderSellItemPriceText.text = item.TraderSellItemPrice.ToString();
+        TraderSellItemPriceText.text = Math.Round(item.TraderSellItemPrice, 2).ToString();
         TradeAmountText.text = item.TradeAmount.ToString();
     }
 }

@@ -18,6 +18,8 @@ public class MenuController : MonoBehaviour
 
     // The left build menu.
     GameObject constructorMenu;
+    public static MenuController Instance;
+
 
     // The sub menus of the build menu (furniture, floor..... later - power, security, drones).
     public GameObject furnitureMenu;
