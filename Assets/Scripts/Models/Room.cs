@@ -23,7 +23,7 @@ public class Room : IXmlSerializable
     private Dictionary<string, string> deltaGas;
 
     private List<Tile> tiles;
- 
+
     public Room()
     {
         tiles = new List<Tile>();
@@ -173,7 +173,57 @@ public class Room : IXmlSerializable
         return tiles.Count();
     }
 
-    // Changes gas by an amount in preasure(in atm) multiplyed by number of tiles.
+    public Tile[] FindExits()
+    {
+        List<Tile> exits = new List<Tile>();
+        foreach (Tile tile in tiles)
+        {
+            Tile[] neighbours = tile.GetNeighbours();
+            foreach (Tile tile2 in neighbours)
+            {
+                if (tile2 != null && tile2.Furniture != null)
+                {
+                    if (tile2.Furniture.IsExit())
+                    {
+                        // We have found an exit
+                        exits.Add(tile2);
+                    }
+                }      
+            }
+        }
+
+        return exits.ToArray();
+    }
+        
+    public Dictionary<Tile, Room> GetNeighbours()
+    {
+        Dictionary<Tile, Room> neighboursRooms = new Dictionary<Tile, Room>();
+
+        Tile[] exits = this.FindExits();
+
+        foreach (Tile t in exits)
+        {
+            // Loop over the exits to find a different room
+            Tile[] neighbours = t.GetNeighbours();
+            foreach (Tile tile2 in neighbours)
+            {
+                if (tile2 == null || tile2.Room == null)
+                {
+                    continue;
+                }
+
+                // We have found a room
+                if (tile2.Room != this)
+                {
+                    neighboursRooms[tile2] = tile2.Room;
+                }
+            }
+        }
+
+        return neighboursRooms;
+    }
+
+    // Changes gas by an amount in preasure(in atm) multiplyed by number of tiles
     public void ChangeGas(string name, float amount)
     {
         if (IsOutsideRoom())
@@ -417,6 +467,8 @@ public class Room : IXmlSerializable
             // so we can just copy the old gas ratios.
             newRoom.CopyGasPreasure(oldRoom, sizeOfOldRoom);
         }
+
+        newRoom.FindExits();
 
         // Tell the world that a new room has been formed.
         World.Current.AddRoom(newRoom);
