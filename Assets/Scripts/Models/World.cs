@@ -39,6 +39,7 @@ public class World : IXmlSerializable
     public Dictionary<string, Furniture> furniturePrototypes;
     public Dictionary<string, Job> furnitureJobPrototypes;
     public Dictionary<string, Need> needPrototypes;
+    public Dictionary<string, Stat> statPrototypes;
     public Dictionary<string, InventoryCommon> inventoryPrototypes;
     public Dictionary<string, TraderPrototype> traderPrototypes;
     public List<Quest> Quests;
@@ -626,6 +627,7 @@ public class World : IXmlSerializable
 
         CreateFurniturePrototypes();
         CreateNeedPrototypes();
+        CreateStatPrototypes();
         CreateInventoryPrototypes();
         CreateTraderPrototypes();
         CreateQuests();
@@ -785,6 +787,73 @@ public class World : IXmlSerializable
             }
 
             Debug.ULogChannel("World", "Need prototypes read: " + needCount.ToString());
+        }
+    }
+
+    private void CreateStatPrototypes()
+    {
+        // TODO: Should move the logic for getting the data stream to a utility class.
+        statPrototypes = new Dictionary<string, Stat>();
+        string luaFilePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
+        luaFilePath = System.IO.Path.Combine(luaFilePath, "Stats.lua");
+        LoadNeedLua(luaFilePath);
+        string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
+        filePath = System.IO.Path.Combine(filePath, "Stats.xml");
+        string needXmlText = System.IO.File.ReadAllText(filePath);
+        LoadStatPrototypesFromFile(needXmlText);
+        DirectoryInfo[] mods = WorldController.Instance.modsManager.GetMods();
+        foreach (DirectoryInfo mod in mods)
+        {
+            string needLuaModFile = System.IO.Path.Combine(mod.FullName, "Stats.lua");
+            if (File.Exists(needLuaModFile))
+            {
+                LoadNeedLua(needLuaModFile);
+            }
+
+            string needXmlModFile = System.IO.Path.Combine(mod.FullName, "Stats.xml");
+            if (File.Exists(needXmlModFile))
+            {
+                string needXmlModText = System.IO.File.ReadAllText(needXmlModFile);
+                LoadNeedPrototypesFromFile(needXmlModText);
+            }
+        }
+    }
+
+    private void LoadStatPrototypesFromFile(string needXmlText)
+    {
+        // TODO: I'm seeing the same logic duplicated for all of these types of methods.  This should really be
+        // extracted out to a utility, or done via generics.
+        XmlTextReader reader = new XmlTextReader(new StringReader(needXmlText));
+
+        int needCount = 0;
+        if (reader.ReadToDescendant("Stats"))
+        {
+            if (reader.ReadToDescendant("Stat"))
+            {
+                do
+                {
+                    needCount++;
+
+                    Stat stat = new Stat();
+                    try
+                    {
+                        stat.ReadXmlPrototype(reader);
+                    }
+                    catch
+                    {
+                        Debug.ULogErrorChannel("World", "Error reading stat prototype for: " + stat.statType);
+                    }
+
+                    statPrototypes[stat.statType] = stat;
+                }
+                while (reader.ReadToNextSibling("Stat"));
+            }
+            else
+            {
+                Debug.ULogErrorChannel("World", "The stat prototype definition file doesn't have any 'Stat' elements.");
+            }
+
+            Debug.ULogChannel("World", "Stat prototypes read: " + needCount.ToString());
         }
     }
 

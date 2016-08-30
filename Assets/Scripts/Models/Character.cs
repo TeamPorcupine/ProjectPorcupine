@@ -15,6 +15,7 @@ using System.Xml.Serialization;
 using MoonSharp.Interpreter;
 using ProjectPorcupine.Localization;
 using UnityEngine;
+using System.Text;
 
 public enum Facing
 {
@@ -49,6 +50,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     public Facing CharFacing;
 
     private Need[] needs;
+    private Stat[] stats;
 
     /// Destination tile of the character.
     private Tile destTile;
@@ -80,12 +82,14 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     {
         needs = new Need[World.Current.needPrototypes.Count];
         LoadNeeds();
+        LoadStats();
     }
 
     public Character(Tile tile)
     {
         CurrTile = DestTile = nextTile = tile;
         LoadNeeds();
+        LoadStats();
         characterColor = new Color(UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f), 1.0f);
     }
 
@@ -94,6 +98,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         CurrTile = DestTile = nextTile = tile;
         characterColor = color;
         LoadNeeds();
+        LoadStats();
     }
 
     /// A callback to trigger when character information changes (notably, the position).
@@ -408,7 +413,14 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             needText += "\n" + LocalizationTable.GetLocalization(n.localisationID, n.DisplayAmount);
         }
 
-        return "A human astronaut." + needText;
+        StringBuilder statText = new StringBuilder();
+        foreach (Stat s in stats)
+        {
+            // TODO: Localization
+            statText.Append("\n").Append(s.Name).Append(": ").Append(s.Value);
+        }
+
+        return "A human astronaut." + needText + statText;
     }
 
     public string GetHitPointString()
@@ -442,6 +454,22 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             needs[i] = need.Clone();
             needs[i].character = this;
         }
+    }
+
+    private void LoadStats()
+    {
+        stats = new Stat[World.Current.statPrototypes.Count];
+        World.Current.statPrototypes.Values.CopyTo(stats, 0);
+        for (int i = 0; i < World.Current.statPrototypes.Count; i++)
+        {
+            Stat stat = stats[i];
+            stats[i] = stat.Clone();
+            stats[i].character = this;
+            // Gets a random value within the min and max range of the stat.
+            // TODO: Should there be any bias or any other algorithm applied here to make stats more interesting?
+            stats[i].Value = UnityEngine.Random.Range(stats[i].MinValue, stats[i].MaxValue);
+        }
+        Debug.ULogChannel("Character", "Initialized " + stats.Length + " Stats.");
     }
 
     private void GetNewJob()
