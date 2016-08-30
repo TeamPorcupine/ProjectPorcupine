@@ -9,6 +9,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Xml;
@@ -24,10 +25,11 @@ namespace Scheduler
     public class Scheduler : IXmlSerializable
     {
         private static Scheduler instance;
+        private List<ScheduledEvent> events;
 
         public Scheduler()
         {
-            this.Events = new List<ScheduledEvent>();
+            this.events = new List<ScheduledEvent>();
             this.EventPrototypes = GenerateEventPrototypes();
         }
 
@@ -44,7 +46,18 @@ namespace Scheduler
             }
         }
 
-        public List<ScheduledEvent> Events { get; protected set; }
+        public ReadOnlyCollection<ScheduledEvent> Events
+        {
+            get
+            {
+                return new ReadOnlyCollection<ScheduledEvent>(events);
+            }
+
+            protected set
+            {
+                events = value.ToList();
+            }
+        }
 
         public Dictionary<string, EventPrototype> EventPrototypes { get; protected set; }
 
@@ -101,13 +114,13 @@ namespace Scheduler
                     Debug.ULogChannel("Scheduler", "Event '{0}' registered more than once.", evt.Name);
                 }
 
-                Events.Add(evt);
+                events.Add(evt);
             }
         }
 
         public bool IsRegistered(ScheduledEvent evt)
         {
-            return Events != null && Events.Contains(evt);
+            return events != null && events.Contains(evt);
         }
 
         /// <summary>
@@ -118,17 +131,17 @@ namespace Scheduler
         /// <param name="evt">Event to deregister.</param>
         public void DeregisterEvent(ScheduledEvent evt)
         {
-            if (Events != null)
+            if (events != null)
             {
-                Events.Remove(evt);
+                events.Remove(evt);
             }
         }
 
         public void PurgeEventList()
         {
-            if (Events != null)
+            if (events != null)
             {
-                Events.RemoveAll((e) => e.Finished);
+                events.RemoveAll((e) => e.Finished);
             }
         }
 
@@ -138,29 +151,26 @@ namespace Scheduler
         /// <returns>The to next event (-1 if there are no events).</returns>
         public float TimeToNextEvent()
         {
-            if (Events == null || Events.Count == 0)
+            if (events == null || events.Count == 0)
             {
                 return -1f;
             }
 
-            return Events.Min((e) => e.TimeToWait);
+            return events.Min((e) => e.TimeToWait);
         }
 
         public void Update(float deltaTime)
         {
-            if (Events == null || Events.Count == 0)
+            if (events == null || events.Count == 0)
             {
                 return;
             }
 
-            // Events may try to modify the event list, so cannot use a foreach on Events!
-            ScheduledEvent[] eventArray = Events.ToArray();
-            foreach (ScheduledEvent evt in eventArray)
+            // Events may try to modify the event list, so iterate over a copy
+            foreach (ScheduledEvent evt in events.ToArray())
             {
                 evt.Update(deltaTime);
             }
-
-            Events = eventArray.ToList();
 
             // TODO: this is an O(n) operation every tick.
             // Potentially this could be optimized by delaying purging!

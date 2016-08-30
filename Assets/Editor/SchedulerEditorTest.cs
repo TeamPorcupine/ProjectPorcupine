@@ -7,6 +7,8 @@
 // ====================================================
 #endregion
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
 using System.Xml;
@@ -210,6 +212,14 @@ public class SchedulerEditorTest
 
         // but Update() correctly purges at the end of each call
         Assert.That(scheduler.Events.Count, Is.EqualTo(0));
+    }
+
+    [Test]
+    public void SchedulerEventsListIsReadOnlyTest()
+    {
+        Assert.That(scheduler.Events.Count, Is.EqualTo(0));
+
+        Assert.That(scheduler.Events, Is.TypeOf(typeof(ReadOnlyCollection<ScheduledEvent>)));
     }
 
     [Test]
