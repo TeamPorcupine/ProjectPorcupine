@@ -35,7 +35,7 @@ public class JobQueue
 
     public void Enqueue(Job j)
     {
-        Debug.Log("Enqued Job" + (j.tile == null ? "." : (" at (" + j.tile.X + ", " + j.tile.Y + ").")));
+        Debug.ULogChannel("JobQueue", "Enqueued Job" + (j.tile == null ? "." : (" at (" + j.tile.X + ", " + j.tile.Y + ").")));
         if (j.JobTime < 0)
         {
             // Job has a negative job time, so it's not actually
