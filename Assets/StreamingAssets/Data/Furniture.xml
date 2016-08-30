@@ -409,4 +409,29 @@
     <LocalizationCode>furn_solar_panel</LocalizationCode>
     <UnlocalizedDescription>furn_solar_panel_desc</UnlocalizedDescription>
   </Furniture>
+
+  
+  <Furniture objectType="mine_iron">
+    <Name>Iron Mining Spot</Name>
+    <Description>A spot for mining iron ore</Description>
+    <TypeTag>Ore</TypeTag>
+    <TypeTag>OutdoorOnly</TypeTag>
+    <MovementCost>2</MovementCost>
+    <PathfindingModifier>1.5</PathfindingModifier>
+    <PathfindingWeight>2</PathfindingWeight>
+    <Width>1</Width>
+    <Height>1</Height>
+
+    <BuildingJob jobTime="1" />
+
+    <DeconstructJob>
+      <Inventory objectType="Raw Iron" amount="10" />
+    </DeconstructJob>
+    
+    <ContextMenuAction FunctionName="Mine_MineOre" Text="Mine Ore" RequiereCharacterSelected="false" />
+
+    <LocalizationCode>furn_mine_iron</LocalizationCode>
+    <UnlocalizedDescription>furn_mine_iron_desc</UnlocalizedDescription>
+  </Furniture>
+
 </Furnitures>

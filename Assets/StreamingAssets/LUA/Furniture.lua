@@ -613,5 +613,33 @@ function SolarPanel_OnUpdate(furniture, deltaTime)
 	furniture.PowerConnection.OutputRate = powerPerSecond
 end
 
+function Mine_MineOre(furniture, character)
+    ModUtils.ULog("Mine_MineOre has been called!")
+
+    local j = Job.__new(
+		furniture.Tile,
+		nil,
+		nil,
+		0,
+		nil,
+		Job.JobPriority.High,
+		false
+	)
+
+    j.RegisterJobWorkedCallback("Mine_OreMined")
+
+    ModUtils.ULog("And a job has been created")
+
+    furniture.AddJob(j)
+    ModUtils.ULog("And added!")
+end
+
+function Mine_OreMined(job)
+    job.CancelJob()
+
+    ModUtils.ULog("Object should now have been mined")
+
+end
+
 ModUtils.ULog("Furniture.lua loaded")
 return "LUA Script Parsed!"
