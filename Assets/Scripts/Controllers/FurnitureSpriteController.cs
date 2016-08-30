@@ -147,6 +147,11 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
             }
         }
 
+        if (furniture.Animation != null)
+        { 
+            furniture.Animation.Renderer = sr;
+        }
+
         // Register our callback so that our GameObject gets updated whenever
         // the object's into changes.
         furniture.Changed += OnChanged;

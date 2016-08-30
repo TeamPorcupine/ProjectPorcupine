@@ -206,6 +206,10 @@
     <Height>2</Height>
     <PowerConnection inputRate="" outputRate="5" capacity=""/>
 
+    <Animations>
+      <Animation name="running" spriteBase="Power Generator anim-" frame="01,02" looping="false"></Animation>
+    </Animations>
+    
     <BuildingJob jobTime="0" />
 
     <Params>
