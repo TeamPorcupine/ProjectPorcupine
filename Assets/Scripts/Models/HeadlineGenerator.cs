@@ -13,7 +13,7 @@ using System.Xml;
 
 public class HeadlineGenerator 
 {
-    protected Action<string> updatedHeadline;
+    public event Action<string> updatedHeadline;
 
     private List<string> headlines = new List<string>();
     private float time, nextTime, minInterval, maxInterval;
@@ -50,16 +50,6 @@ public class HeadlineGenerator
     public void Headline(string headline)
     {
         headlines.Add(headline);
-    }
-
-    public void RegisterUpdateHeadline(Action<string> action)
-    {
-        updatedHeadline += action;
-    }
-
-    public void UnregisterUpdateHeadline(Action<string> action)
-    {
-        updatedHeadline -= action;
     }
 
     private void ResetNextTime()
