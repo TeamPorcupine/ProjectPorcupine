@@ -57,6 +57,15 @@ public class MouseOverRoomDetails : MonoBehaviour
             s += string.Format("{0}: ({1}) {2:0.000} atm ({3:0.0}%)\n", gasName, t.Room.ChangedGases(gasName), t.Room.GetGasPressure(gasName), t.Room.GetGasFraction(gasName) * 100);
         }
 
+
+        // For testing purposes
+        Room[] neighbours = t.Room.GetNeighbours();
+
+        foreach (Room room in neighbours)
+        {
+            s += "Room " + t.Room.ID.ToString() + " neighbours room " + room.ID.ToString();
+        }
+
         text.text = s;
     }
 }

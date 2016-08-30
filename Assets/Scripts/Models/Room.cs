@@ -174,26 +174,49 @@ public class Room : IXmlSerializable
     {
         return tiles.Count();
     }
+
+    public Tile[] FindExits()
+    {
+        List<Tile> Exits = new List<Tile>();
+        foreach (Tile tile in tiles)
+        {
+            Tile[] neighbours = tile.GetNeighbours();
+            foreach (Tile tile2 in neighbours)
+            {
+                if (tile2 != null && tile2.Furniture != null)
+                {
+                    if (tile2.Furniture.IsExit())
+                    {
+                        // We have found an exit
+                        Exits.Add(tile2);
+                    }
+                }      
+            }
+        }
+        return Exits.ToArray();
+    }
         
     public Room[] GetNeighbours()
     {
         List<Room> neighboursRooms = new List<Room>();
-        foreach (Tile t in exits)
+        Tile[] Exits = this.FindExits();
+
+        foreach (Tile t in Exits)
         {
             // Loop over the exits to find a different room
             Tile[] neighbours = t.GetNeighbours();
-            foreach (Tile t2 in neighbours)
+            foreach (Tile tile2 in neighbours)
             {
-                if (t2 == null || t2.Room == null)
+                if (tile2 == null || tile2.Room == null)
                 {
                     continue;
                 }
 
                 // We have found a room
-                if (t2.Room != r)
+                if (tile2.Room != this)
                 {
-                    neighboursRooms.Add(t2.Room);
-                    roomConnections[t] = t2.Room;
+                    neighboursRooms.Add(tile2.Room);
+                    roomConnections[t] = tile2.Room;
                 }
             }
         }

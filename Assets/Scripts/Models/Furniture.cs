@@ -351,6 +351,15 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         }
     }
 
+    public bool IsExit()
+    {
+        if (RoomEnclosure && MovementCost > 0f)
+        {
+            return true;
+        }
+        return false;
+    }
+
     public Enterability IsEnterable()
     {
         if (string.IsNullOrEmpty(isEnterableAction))
