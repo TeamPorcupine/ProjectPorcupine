@@ -446,7 +446,7 @@ function PowerCellPress_UpdateAction(furniture, deltaTime)
             local outputSpot = World.Current.GetTileAt(spawnSpot.X+2, spawnSpot.y)
 
             if(outputSpot.Inventory == nil) then
-                World.Current.inventoryManager.PlaceInventory( outputSpot, Inventory.__new("Power Cell", 5, 1) )
+                World.Current.inventoryManager.PlaceInventory( outputSpot, Inventory.__new("Power Cell", 1) )
                 spawnSpot.Inventory.StackSize = spawnSpot.Inventory.StackSize-10
             else
                 if(outputSpot.Inventory.StackSize <= 4) then
