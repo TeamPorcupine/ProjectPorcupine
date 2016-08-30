@@ -44,40 +44,12 @@ public class Path_RoomGraph
 
         foreach (Room room in nodes.Keys)
         {
-            Debug.ULogChannel("Path_RoomGraph", "Room " + room.ID + " has " + room.GetSize() + " number of tiles");
-            if (nodes[room].edges.GetLength(0) == 0)
-            {
-                continue;
-            }
             Debug.ULogChannel("Path_RoomGraph", "Room " + room.ID + " has edges to:");
-            Debug.ULogChannel("Path_RoomGraph", "\tRoom " + room.ID + " has " + nodes[room].edges.Length + " edges");
             foreach (Path_Edge<Room> edge in nodes[room].edges)
             {
-                Debug.ULogChannel("Path_RoomGraph", "\t\tEdge connects to " + edge.node.data.ID);
+                Debug.ULogChannel("Path_RoomGraph", "\tEdge connects to " + edge.node.data.ID);
             }
         }
-    }
-
-    public Room[] RoomConnections(Tile tile)
-    {
-        List<Room> rooms = new List<Room>();
-        if (tile == null)
-        {
-            return null;
-        }
-
-        foreach (Path_Node<Room> node in nodes.Values)
-        {
-            foreach (Path_Edge<Room> edge in node.edges)
-            {
-                if (edge.tile == tile)
-                {
-                    rooms.Add(edge.node.data);
-                }
-            }
-        }
-
-        return rooms.ToArray();
     }
 
     private void GenerateEdgesByRoom(Room room)
@@ -91,30 +63,16 @@ public class Path_RoomGraph
         Path_Node<Room> node = nodes[room];
         List<Path_Edge<Room>> edges = new List<Path_Edge<Room>>();
 
-        List<Tile> exits = room.exits;
+        Dictionary<Tile, Room> neighbours = room.GetNeighbours();
 
-        foreach (Tile tile in exits)
+        foreach (Tile tile in neighbours.Keys)
         {
-            // Loop over the exits to find a different room
-            Tile[] neighbours = tile.GetNeighbours();
-            foreach (Tile tileNeigbour in neighbours)
-            {
-                if (tileNeigbour == null || tileNeigbour.Room == null)
-                {
-                    continue;
-                }
-
-                // We have found a room
-                if (tileNeigbour.Room != room)
-                {
-                    // We have found a different room to ourselves add an edge from us to them
-                    Path_Edge<Room> edge = new Path_Edge<Room>();
-                    edge.tile = tile;
-                    edge.cost = 1;
-                    edge.node = nodes[tileNeigbour.Room];
-                    edges.Add(edge);
-                }
-            }
+            // We have found a different room to ourselves add an edge from us to them
+            Path_Edge<Room> edge = new Path_Edge<Room>();
+            edge.cost = 1;
+            edge.tile = tile;
+            edge.node = nodes[neighbours[tile]];
+            edges.Add(edge);
         }
 
         node.edges = edges.ToArray();
@@ -123,12 +81,11 @@ public class Path_RoomGraph
     private void GenerateEdgesOutside()
     {   
         List<Path_Edge<Room>> outsideEdges = new List<Path_Edge<Room>>();
-        Room outsideRoom = null;
+        Room outsideRoom = World.Current.GetOutsideRoom();
         foreach (Room room in nodes.Keys)
         {
             if (room.IsOutsideRoom())
             {
-                outsideRoom = room;
                 continue;
             }
 
@@ -139,9 +96,10 @@ public class Path_RoomGraph
                 {
                     // Edge connects to the outside room
                     Path_Edge<Room> outsideEdge = new Path_Edge<Room>();
+
+                    // The cost of going outside should be high as to avoid needlessly leaving the base
                     outsideEdge.tile = edge.tile;
-                    outsideRoom.exits.Add(edge.tile);
-                    outsideEdge.cost = 1;
+                    outsideEdge.cost = 10f;
                     outsideEdge.node = nodes[room];
                     outsideEdges.Add(outsideEdge);
                 }

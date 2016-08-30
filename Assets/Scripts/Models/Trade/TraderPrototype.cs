@@ -16,6 +16,7 @@ public class TraderPrototype
     public List<string> PotentialNames;
     public float MinCurrencyBalance;
     public float MaxCurrencyBalance;
+    public string CurrencyName;
     public float MinSaleMarginMultiplier;
     public float MaxSaleMarginMultiplier;
     public List<TraderPotentialInventory> PotentialStock;
@@ -46,7 +47,10 @@ public class TraderPrototype
                     }
 
                     break;
-                
+                case "currencyName":
+                    reader.Read();
+                    CurrencyName = reader.ReadContentAsString();
+                    break;
                 case "minCurrencyBalance":
                     reader.Read();
                     MinCurrencyBalance = reader.ReadContentAsInt();
@@ -92,14 +96,20 @@ public class TraderPrototype
     {
         Trader t = new Trader
         {
-            CurrencyBalance = Random.Range(MinCurrencyBalance, MaxCurrencyBalance),
-            Name = PotentialNames[Random.Range(PotentialNames.Count, PotentialNames.Count - 1)],
-            SaleMarginMultiplier = Random.Range(MinSaleMarginMultiplier, MaxSaleMarginMultiplier)
+            Currency = new Currency
+            {
+                Name = CurrencyName,
+                Balance = Random.Range(MinCurrencyBalance, MaxCurrencyBalance),   
+                ShortName = World.Current.Wallet.Currencies[CurrencyName].ShortName
+            },
+            Name = PotentialNames[Random.Range(0, PotentialNames.Count - 1)],
+            SaleMarginMultiplier = Random.Range(MinSaleMarginMultiplier, MaxSaleMarginMultiplier),
+            Stock = new List<Inventory>()
         };
 
-        foreach (var potentialStock in PotentialStock)
+        foreach (TraderPotentialInventory potentialStock in PotentialStock)
         {
-            var itemIsInStock = Random.Range(0f, 1f) > potentialStock.Rarity;
+            bool itemIsInStock = Random.Range(0f, 1f) > potentialStock.Rarity;
 
             if (itemIsInStock)
             {

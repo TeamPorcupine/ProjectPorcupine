@@ -18,20 +18,15 @@ using UnityEngine;
 [MoonSharpUserData]
 public class Room : IXmlSerializable
 {
-    public List<Tile> exits;
-
     // Dictionary with the amount of gas in room stored in preasure(in atm) multiplyed by number of tiles.
     private Dictionary<string, float> atmosphericGasses; 
     private Dictionary<string, string> deltaGas;
 
     private List<Tile> tiles;
-    private List<Tile> enclosingTiles;
 
     public Room()
     {
         tiles = new List<Tile>();
-        enclosingTiles = new List<Tile>();
-        exits = new List<Tile>();
         atmosphericGasses = new Dictionary<string, float>();
         deltaGas = new Dictionary<string, string>();
     }
@@ -112,7 +107,7 @@ public class Room : IXmlSerializable
                 // to remove the room from the world's list.
                 if (oldRoom.tiles.Count > 0)
                 {
-                    Debug.LogError("'oldRoom' still has tiles assigned to it. This is clearly wrong.");
+                    Debug.ULogErrorChannel("Room", "'oldRoom' still has tiles assigned to it. This is clearly wrong.");
                 }
 
                 world.DeleteRoom(oldRoom);
@@ -178,7 +173,57 @@ public class Room : IXmlSerializable
         return tiles.Count();
     }
 
-    // Changes gas by an amount in preasure(in atm) multiplyed by number of tiles.
+    public Tile[] FindExits()
+    {
+        List<Tile> exits = new List<Tile>();
+        foreach (Tile tile in tiles)
+        {
+            Tile[] neighbours = tile.GetNeighbours();
+            foreach (Tile tile2 in neighbours)
+            {
+                if (tile2 != null && tile2.Furniture != null)
+                {
+                    if (tile2.Furniture.IsExit())
+                    {
+                        // We have found an exit
+                        exits.Add(tile2);
+                    }
+                }      
+            }
+        }
+
+        return exits.ToArray();
+    }
+        
+    public Dictionary<Tile, Room> GetNeighbours()
+    {
+        Dictionary<Tile, Room> neighboursRooms = new Dictionary<Tile, Room>();
+
+        Tile[] exits = this.FindExits();
+
+        foreach (Tile t in exits)
+        {
+            // Loop over the exits to find a different room
+            Tile[] neighbours = t.GetNeighbours();
+            foreach (Tile tile2 in neighbours)
+            {
+                if (tile2 == null || tile2.Room == null)
+                {
+                    continue;
+                }
+
+                // We have found a room
+                if (tile2.Room != this)
+                {
+                    neighboursRooms[tile2] = tile2.Room;
+                }
+            }
+        }
+
+        return neighboursRooms;
+    }
+
+    // Changes gas by an amount in preasure(in atm) multiplyed by number of tiles
     public void ChangeGas(string name, float amount)
     {
         if (IsOutsideRoom())
@@ -402,11 +447,6 @@ public class Room : IXmlSerializable
                         {
                             tilesToCheck.Enqueue(t2);
                         }
-                        else if (t2.Furniture != null && t2.Furniture.RoomEnclosure == true)
-                        {
-                            // We have found a room enclosing tile
-                            newRoom.enclosingTiles.Add(t2);
-                        }
                     }
                 }
             }
@@ -429,28 +469,9 @@ public class Room : IXmlSerializable
         }
 
         newRoom.FindExits();
+
         // Tell the world that a new room has been formed.
         World.Current.AddRoom(newRoom);
-
-    }
-
-    public void FindExits()
-    {
-        exits = new List<Tile>();
-        if (this.IsOutsideRoom())
-        {
-            // We should never find the exits for the outside room
-            return;
-        }
-
-        foreach (Tile t in this.enclosingTiles)
-        {
-            if (t.IsEnterable() != Enterability.Never)
-            {
-                // Tile can be walked through so must be an exits of somekind
-                exits.Add(t);
-            }
-        }
     }
 
     private void CopyGasPreasure(Room other, int sizeOfOtherRoom)
