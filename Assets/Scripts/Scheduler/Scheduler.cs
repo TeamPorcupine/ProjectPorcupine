@@ -26,10 +26,12 @@ namespace Scheduler
     {
         private static Scheduler instance;
         private List<ScheduledEvent> events;
+        private List<ScheduledEvent> eventsToAddNextTick;
 
         public Scheduler()
         {
             this.events = new List<ScheduledEvent>();
+            this.eventsToAddNextTick = new List<ScheduledEvent>();
             this.EventPrototypes = GenerateEventPrototypes();
         }
 
@@ -51,11 +53,6 @@ namespace Scheduler
             get
             {
                 return new ReadOnlyCollection<ScheduledEvent>(events);
-            }
-
-            protected set
-            {
-                events = value.ToList();
             }
         }
 
@@ -114,34 +111,26 @@ namespace Scheduler
                     Debug.ULogChannel("Scheduler", "Event '{0}' registered more than once.", evt.Name);
                 }
 
-                events.Add(evt);
+                eventsToAddNextTick.Add(evt);
             }
         }
 
         public bool IsRegistered(ScheduledEvent evt)
         {
-            return events != null && events.Contains(evt);
+            return events != null && (events.Contains(evt) || eventsToAddNextTick.Contains(evt));
         }
 
         /// <summary>
         /// Deregisters the event.
-        /// NOTE: To stop a continuing event from running do not try to deregister it with this!
-        /// Instead call Stop() on the event. Then it will be removed on the next purge.
+        /// NOTE: This actually calls Stop() on the event so that it will no longer be run.
+        /// It will be removed on the next call of ClearFinishedEvents().
         /// </summary>
         /// <param name="evt">Event to deregister.</param>
         public void DeregisterEvent(ScheduledEvent evt)
         {
-            if (events != null)
+            if (evt != null)
             {
-                events.Remove(evt);
-            }
-        }
-
-        public void PurgeEventList()
-        {
-            if (events != null)
-            {
-                events.RemoveAll((e) => e.Finished);
+                evt.Stop();
             }
         }
 
@@ -161,20 +150,24 @@ namespace Scheduler
 
         public void Update(float deltaTime)
         {
-            if (events == null || events.Count == 0)
+            if ((events == null || events.Count == 0) && (eventsToAddNextTick == null || eventsToAddNextTick.Count == 0))
             {
+                // no events in the queue
                 return;
             }
 
-            // Events may try to modify the event list, so iterate over a copy
-            foreach (ScheduledEvent evt in events.ToArray())
+            // additions to the event list which were queued up last tick
+            events.AddRange(eventsToAddNextTick);
+            eventsToAddNextTick.Clear();
+
+            foreach (ScheduledEvent evt in events)
             {
                 evt.Update(deltaTime);
             }
 
             // TODO: this is an O(n) operation every tick.
             // Potentially this could be optimized by delaying purging!
-            PurgeEventList();
+            ClearFinishedEvents();
         }
 
         public void RegisterEventPrototype(string name, EventPrototype eventPrototype)
@@ -246,6 +239,14 @@ namespace Scheduler
                     EventType.Lua));
 
             return prototypes;
+        }
+
+        private void ClearFinishedEvents()
+        {
+            if (events != null)
+            {
+                events.RemoveAll((evt) => evt.Finished);
+            }
         }
     }
 }

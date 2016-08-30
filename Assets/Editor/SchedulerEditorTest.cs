@@ -27,7 +27,7 @@ public class SchedulerEditorTest
         ///scheduler = Scheduler.Scheduler.Current;
         scheduler = new Scheduler.Scheduler();
 
-        callback = (e) => Debug.ULogChannel("SchedulerTest", "Event {0} fired", e.Name);
+        callback = (evt) => Debug.ULogChannel("SchedulerTest", "Event {0} fired", evt.Name);
     }
 
     [Test]
@@ -43,10 +43,14 @@ public class SchedulerEditorTest
             1);
 
         Assert.That(scheduler.IsRegistered(evt), Is.False);
+
         scheduler.RegisterEvent(evt);
+        scheduler.Update(0); // updates the event list
         Assert.That(scheduler.IsRegistered(evt), Is.True);
         Assert.That(scheduler.Events.Count, Is.EqualTo(1));
+
         scheduler.RegisterEvent(evt);
+        scheduler.Update(0); // updates the event list
         Assert.That(scheduler.IsRegistered(evt), Is.True);
         Assert.That(scheduler.Events.Count, Is.EqualTo(2));
     }
@@ -65,10 +69,12 @@ public class SchedulerEditorTest
 
         Assert.That(scheduler.IsRegistered(evt), Is.False);
         scheduler.RegisterEvent(evt);
+        scheduler.Update(0); // updates the event list
         Assert.That(scheduler.IsRegistered(evt), Is.True);
         Assert.That(scheduler.Events.Count, Is.EqualTo(1));
 
         scheduler.DeregisterEvent(evt);
+        scheduler.Update(0); // updates the event list
         Assert.That(scheduler.IsRegistered(evt), Is.False);
         Assert.That(scheduler.Events.Count, Is.EqualTo(0));
     }
@@ -82,19 +88,20 @@ public class SchedulerEditorTest
 
         ScheduledEvent evt1 = new ScheduledEvent(
             "test - increment i by 1",
-            (e) => { tally++; callback(e); },
+            (evt) => { tally++; callback(evt); },
             2.0f,
             true,
             1);
         ScheduledEvent evt2 = new ScheduledEvent(
             "test - increment i by 10",
-            (e) => { tally += 10; callback(e); },
+            (evt) => { tally += 10; callback(evt); },
             3.0f,
             true,
             1);
 
         scheduler.RegisterEvent(evt1);
         scheduler.RegisterEvent(evt2);
+        scheduler.Update(0); // updates the event list
 
         // at times 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 respectively
         int[] expectedTally = { 0, 0, 1, 11, 12, 12, 23, 23, 24, 34, 35 };
@@ -124,13 +131,15 @@ public class SchedulerEditorTest
             1);
 
         scheduler.RegisterEvent(evt2);
+        scheduler.Update(0); // updates the event list
         Assert.That(scheduler.TimeToNextEvent(), Is.EqualTo(3));
         scheduler.RegisterEvent(evt1);
+        scheduler.Update(0); // updates the event list
         Assert.That(scheduler.TimeToNextEvent(), Is.EqualTo(2));
     }
 
     [Test]
-    public void SchedulerPurgeTest()
+    public void SchedulerClearFinishedEventsTest()
     {
         Assert.That(scheduler.Events.Count, Is.EqualTo(0));
 
@@ -149,15 +158,16 @@ public class SchedulerEditorTest
 
         scheduler.RegisterEvent(evt1);
         scheduler.RegisterEvent(evt2);
+        scheduler.Update(0); // updates the event list
 
         evt2.Stop();
         Assert.That(scheduler.IsRegistered(evt2), Is.True);
-        scheduler.PurgeEventList();
+        scheduler.Update(0); // updates the event list
         Assert.That(scheduler.IsRegistered(evt2), Is.False);
 
         evt1.Stop();
         Assert.That(scheduler.IsRegistered(evt1), Is.True);
-        scheduler.PurgeEventList();
+        scheduler.Update(0); // updates the event list
         Assert.That(scheduler.IsRegistered(evt1), Is.False);
     }
 
@@ -189,7 +199,7 @@ public class SchedulerEditorTest
         // event which tries to purge the event list at 5s
         ScheduledEvent evt2 = new ScheduledEvent(
             "test",
-            (evt) => scheduler.PurgeEventList(),
+            (evt) => scheduler.DeregisterEvent(evt1),
             5.0f,
             false,
             1);
@@ -207,8 +217,8 @@ public class SchedulerEditorTest
         scheduler.RegisterEvent(evt3);
         scheduler.Update(10f);
 
-        // evt2 does not purge the list during the loop
-        Assert.That(numEventsInList, Is.EqualTo(2));
+        // evt2 does not remove evt1 from the list during the loop
+        Assert.That(numEventsInList, Is.EqualTo(3));
 
         // but Update() correctly purges at the end of each call
         Assert.That(scheduler.Events.Count, Is.EqualTo(0));
@@ -227,6 +237,7 @@ public class SchedulerEditorTest
     {
         scheduler.ScheduleEvent("ping_log", 1f, true, 0);
         scheduler.ScheduleEvent("ping_log_lua", 2f, false, 3);
+        scheduler.Update(0); // updates the event list
 
         StringBuilder sb = new StringBuilder();
         XmlWriter writer = new XmlTextWriter(new StringWriter(sb));

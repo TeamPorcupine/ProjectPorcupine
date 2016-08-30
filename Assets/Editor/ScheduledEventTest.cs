@@ -21,9 +21,9 @@ public class ScheduledEventTest
     [SetUp]
     public void Init()
     {
-        callback = (e) =>
+        callback = (evt) =>
             {
-                Debug.ULogChannel("ScheduledEventTest", "Event {0} fired", e.Name);
+                Debug.ULogChannel("ScheduledEventTest", "Event {0} fired", evt.Name);
                 didRun = true;
             };
     }
@@ -33,7 +33,7 @@ public class ScheduledEventTest
     {
         ScheduledEvent evt = new ScheduledEvent(
             "test",
-            (e) => Debug.ULogChannel("ScheduledEventTest", "Event {0} fired", e.Name),
+            (ev) => Debug.ULogChannel("ScheduledEventTest", "Event {0} fired", ev.Name),
             3.0f,
             true,
             1);
@@ -45,7 +45,7 @@ public class ScheduledEventTest
         Assert.That(evt, Is.Not.EqualTo(evt2));
 
         ScheduledEvent evt3 = new ScheduledEvent(
-            new EventPrototype("test", (e) => Debug.ULogChannel("ScheduledEventTest", "Event {0} fired", e.Name), EventType.CSharp),
+            new EventPrototype("test", (ev) => Debug.ULogChannel("ScheduledEventTest", "Event {0} fired", ev.Name), EventType.CSharp),
             1.0f,
             0.5f,
             false,
@@ -174,7 +174,7 @@ public class ScheduledEventTest
 
         ScheduledEvent evt = new ScheduledEvent(
             "test",
-            (e) => { tally++; Debug.ULogChannel("ScheduledEventTest", "Event {0} fired", e.Name); },
+            (ev) => { tally++; Debug.ULogChannel("ScheduledEventTest", "Event {0} fired", ev.Name); },
             3.0f,
             true,
             0);
@@ -222,7 +222,7 @@ public class ScheduledEventTest
     {
         ScheduledEvent evt = new ScheduledEvent(
             "test",
-            (e) => Debug.ULogChannel("ScheduledEventTest", "Event {0} fired", e.Name),
+            (ev) => Debug.ULogChannel("ScheduledEventTest", "Event {0} fired", ev.Name),
             3.0f,
             true,
             1);
