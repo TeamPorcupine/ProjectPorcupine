@@ -128,10 +128,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         isEnterableAction = other.isEnterableAction;
         getSpriteNameAction = other.getSpriteNameAction;
 
-        PowerConnection = other.PowerConnection;
-
-        if (PowerConnection != null)
+        if (other.PowerConnection != null)
         {
+            PowerConnection = new Connection(other.PowerConnection);
             World.Current.PowerSystem.PlugIn(PowerConnection);
         }
 
@@ -526,7 +525,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                 break;
 
                 case "PowerConnection":
-                PowerConnection = new Connection();
+                PowerConnection = new Connection(string.Format("{0}_{1}", "Prototype", ObjectType));
                 PowerConnection.ReadPrototype(reader);
                 break;
 
