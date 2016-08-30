@@ -29,7 +29,7 @@ public class SpriteToXML : EditorWindow
     [MenuItem("Window/Sprite Sheet To XML")]
     public static void ShowWindow()
     {
-        EditorWindow.GetWindow(typeof(SpriteToXML));
+        GetWindow(typeof(SpriteToXML));
     }
 
     private void OnGUI()
@@ -41,7 +41,6 @@ public class SpriteToXML : EditorWindow
         GUILayout.Label(Step3);
         GUILayout.Label(Step4);
         GUILayout.Label(Step5);        
-
 
         if (GUILayout.Button("Set Output Folder"))
         {
@@ -63,15 +62,13 @@ public class SpriteToXML : EditorWindow
 
             ExportSprites();
         }
-
-     
-        GUILayout.Label("Current Path: " + dirPath +  "");
+             
+        GUILayout.Label("Current Path: " + dirPath + string.Empty);
 
         if (GUILayout.Button("Open Output Folder"))
         {
             EditorUtility.RevealInFinder(dirPath);
         }
-
     }    
 
     private void ExportSprites()
@@ -110,10 +107,10 @@ public class SpriteToXML : EditorWindow
             {
                 writer.WriteStartElement("Sprite");
                 writer.WriteAttributeString("Name", s.name);
-                writer.WriteAttributeString("x", s.rect.x.ToString());
-                writer.WriteAttributeString("y", s.rect.y.ToString());
-                writer.WriteAttributeString("w", s.rect.width.ToString());
-                writer.WriteAttributeString("h", s.rect.height.ToString());
+                writer.WriteAttributeString("x", (s.rect.x / s.pixelsPerUnit).ToString());
+                writer.WriteAttributeString("y", (s.rect.y / s.pixelsPerUnit).ToString());
+                writer.WriteAttributeString("w", (s.rect.width / s.pixelsPerUnit).ToString());
+                writer.WriteAttributeString("h", (s.rect.height / s.pixelsPerUnit).ToString());
                 writer.WriteAttributeString("pixelPerUnit", s.pixelsPerUnit.ToString());
 
                 float pivotX = s.pivot.x / s.rect.width;
