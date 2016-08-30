@@ -21,7 +21,6 @@ public class MenuController : MonoBehaviour
     public Button buttonWorld;
     public Button buttonWork;
     public Button buttonOptions;
-    public Button buttonSettings;
     public Button buttonQuests;
 
     private DialogBoxManager dialogManager;
@@ -132,14 +131,6 @@ public class MenuController : MonoBehaviour
         {
             OnButtonOptions();
         });
-
-        if (buttonSettings != null)
-        {
-            buttonSettings.onClick.AddListener(delegate
-            {
-                OnButtonSettings();
-            });
-        }
 
         buttonQuests = CreateButton("menu_quests");
         buttonQuests.onClick.AddListener(delegate
