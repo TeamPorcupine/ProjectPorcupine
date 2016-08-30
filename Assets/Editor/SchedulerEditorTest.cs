@@ -246,4 +246,35 @@ public class SchedulerEditorTest
         string expectedXml = "<Scheduler><Event name=\"ping_log\" cooldown=\"1\" timeToWait=\"1\" repeatsForever=\"True\" /><Event name=\"ping_log_lua\" cooldown=\"2\" timeToWait=\"2\" repeatsLeft=\"3\" /></Scheduler>";
         Assert.That(sb.ToString(), Is.EqualTo(expectedXml));
     }
+
+    [Test]
+    public void SchedulerReadXmlTest()
+    {
+        // prepare a scheduler instance to serialize
+        scheduler.ScheduleEvent("ping_log", 1f, true, 0);
+        scheduler.ScheduleEvent("ping_log_lua", 2f, false, 3);
+        scheduler.Update(0.5f);
+
+        // serialize it
+        StringBuilder sb = new StringBuilder();
+        XmlWriter writer = new XmlTextWriter(new StringWriter(sb));
+        scheduler.WriteXml(writer);
+
+        // now recover it
+        XmlReader reader = new XmlTextReader(new StringReader(sb.ToString()));
+        scheduler = new Scheduler.Scheduler();
+        scheduler.ReadXml(reader);
+
+        Assert.That(scheduler.Events.Count, Is.EqualTo(2));
+        Assert.That(scheduler.Events[0].Name, Is.EqualTo("ping_log"));
+        Assert.That(scheduler.Events[0].Cooldown, Is.EqualTo(1));
+        Assert.That(scheduler.Events[0].TimeToWait, Is.EqualTo(0.5f));
+        Assert.That(scheduler.Events[0].RepeatsForever, Is.True);
+        Assert.That(scheduler.Events[0].RepeatsLeft, Is.EqualTo(0));
+        Assert.That(scheduler.Events[1].Name, Is.EqualTo("ping_log_lua"));
+        Assert.That(scheduler.Events[1].Cooldown, Is.EqualTo(2));
+        Assert.That(scheduler.Events[1].TimeToWait, Is.EqualTo(1.5f));
+        Assert.That(scheduler.Events[1].RepeatsForever, Is.False);
+        Assert.That(scheduler.Events[1].RepeatsLeft, Is.EqualTo(3));
+    }
 }
