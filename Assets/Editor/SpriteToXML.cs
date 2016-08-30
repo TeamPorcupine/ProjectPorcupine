@@ -50,7 +50,7 @@ public class SpriteToXML : EditorWindow
     [MenuItem("Window/Sprite Sheet To XML")]
     public static void ShowWindow()
     {
-        EditorWindow.GetWindow(typeof(SpriteToXML));
+        GetWindow(typeof(SpriteToXML));
     }
 
     private int PixelsPerUnit()
@@ -168,10 +168,10 @@ public class SpriteToXML : EditorWindow
             {
                 writer.WriteStartElement("Sprite");
                 writer.WriteAttributeString("name", s.name);
-                writer.WriteAttributeString("x", s.rect.x.ToString());
-                writer.WriteAttributeString("y", s.rect.y.ToString());
-                writer.WriteAttributeString("w", s.rect.width.ToString());
-                writer.WriteAttributeString("h", s.rect.height.ToString());
+                writer.WriteAttributeString("x", (s.rect.x / s.pixelsPerUnit).ToString());
+                writer.WriteAttributeString("y", (s.rect.y / s.pixelsPerUnit).ToString());
+                writer.WriteAttributeString("w", (s.rect.width / s.pixelsPerUnit).ToString());
+                writer.WriteAttributeString("h", (s.rect.height / s.pixelsPerUnit).ToString());
                 writer.WriteAttributeString("pixelPerUnit", s.pixelsPerUnit.ToString());
 
                 float pivotX = s.pivot.x / s.rect.width;
