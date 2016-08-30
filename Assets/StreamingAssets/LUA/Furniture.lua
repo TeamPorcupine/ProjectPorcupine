@@ -624,32 +624,38 @@ function AirPump_OnUpdate(furniture, deltaTime)
     local west = World.current.GetTileAt(t.X - 1, t.Y)
     local east = World.current.GetTileAt(t.X + 1, t.Y)
     
-    local targetPressure = furniture.Parameters["target_pressure"].ToFloat()
-    local flow = furniture.Parameters["gas_throughput"].ToFloat() * deltaTime
+    -- Find the correct rooms for source and target
+    -- Maybe in future this could be cached. it only changes when the direction changes
+    local sourceRoom = nil
+    local targetRoom = nil
     if (north.Room != nil and south.Room != nil) then
         if (furniture.Parameters["flow_direction_up"].ToFloat() > 0) then
-            if (south.Room.GetTotalGasPressure() > targetPressure) then
-                south.Room.ChangeGas(-flow)
-                north.Room.ChangeGas(flow)
-            end
+            sourceRoom = south.Room
+            targetRoom = north.Room
         else
-            if (north.Room.GetTotalGasPressure() > targetPressure) then
-                north.Room.ChangeGas(-flow)
-                south.Room.ChangeGas(flow)
-            end
+            sourceRoom = north.Room
+            targetRoom = south.Room
         end
     elseif (west.Room != nil and east.Room != nil) then
         if (furniture.Parameters["flow_direction_up"].ToFloat() > 0) then
-            if (west.Room.GetTotalGasPressure() > targetPressure) then
-                west.Room.ChangeGas(-flow)
-                east.Room.ChangeGas(flow)
-            end
+            sourceRoom = west.Room
+            targetRoom = east.Room
         else
-            if (east.Room.GetTotalGasPressure() > targetPressure) then
-                east.Room.ChangeGas(-flow)
-                west.Room.ChangeGas(flow)
-            end
+            sourceRoom = east.Room
+            targetRoom = west.Room
         end
+    else
+        ModUtils.UChannelLogWarning("Furniture", "Air Pump blocked. Direction unclear")
+        return
+    end
+    
+    local sourcePressureLimit = furniture.Parameters["source_pressure_limit"].ToFloat()
+    local targetPressureLimit = furniture.Parameters["target_pressure_limit"].ToFloat()
+    local flow = furniture.Parameters["gas_throughput"].ToFloat() * deltaTime
+    
+    -- Only transfer gas if the pressures are within the defined bounds
+    if (sourceRoom.GetTotalGasPressure() > sourcePressureLimit and targetRoom.GetTotalGasPressure() < targetPressureLimit) then
+        sourceRoom.MoveGasTo(targetRoom, flow)
     end
 end
 

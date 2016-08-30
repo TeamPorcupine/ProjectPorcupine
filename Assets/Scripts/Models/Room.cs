@@ -174,6 +174,7 @@ public class Room : IXmlSerializable
     }
 
     // Changes gas by amount in pressure (atm) per tile, evenly distributed over all gases present
+    // Possibly deprecated. Use MoveGasTo(room, amount)
     public void ChangeGas(float amount)
     {
         if (IsOutsideRoom())
@@ -297,6 +298,22 @@ public class Room : IXmlSerializable
         }
 
         return t;
+    }
+
+    public void MoveGasTo(Room room, float amount)
+    {
+        List<string> names = new List<string>(atmosphericGasses.Keys);
+        foreach(string name in names)
+        {
+            MoveGasTo(room, name, amount * GetGasFraction(name));
+        }
+    }
+
+    public void MoveGasTo(Room room, string name, float amount)
+    {
+        float amountMoved = Mathf.Min(amount, GetGasAmount(name));
+        this.ChangeGas(name, -amountMoved);
+        room.ChangeGas(name, amountMoved);
     }
 
     public string[] GetGasNames()
