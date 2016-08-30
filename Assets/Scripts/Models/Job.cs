@@ -10,8 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MoonSharp.Interpreter;
-using UnityEngine;
 using ProjectPorcupine.Localization;
+using UnityEngine;
 
 [MoonSharpUserData]
 public class Job : ISelectable
@@ -235,7 +235,6 @@ public class Job : ISelectable
         // If not, don't register the work time.
         if (MaterialNeedsMet() == false)
         {
-            ////Debug.LogError("Tried to do work on a job that doesn't have all the material.");
             return;
         }
 
@@ -350,6 +349,38 @@ public class Job : ISelectable
         return AmountDesiredOfInventoryType(inv.objectType);
     }
 
+    /// <summary>
+    /// Fulfillable inventory requirements for job.
+    /// </summary>
+    /// <returns>A list of (string) objectTypes for job inventory requirements that can be met. Returns null if the job requires materials which do not exist on the map.</returns>
+    public List<string> FulfillableInventoryRequirements()
+    {
+        List<string> fulfillableInventoryRequirements = new List<string>();
+
+        foreach (Inventory inv in this.GetInventoryRequirementValues())
+        {
+            if (this.acceptsAny == false)
+            {
+                if (World.Current.inventoryManager.QuickCheck(inv.objectType) == false)
+                {
+                    // the job requires ALL inventory requirements to be met, and there is no source of a desired objectType
+                    return null;
+                }
+                else
+                {
+                    fulfillableInventoryRequirements.Add(inv.objectType);
+                }
+            }
+            else if (World.Current.inventoryManager.QuickCheck(inv.objectType))
+            {
+                // there is a source for a desired objectType that the job will accept
+                fulfillableInventoryRequirements.Add(inv.objectType);
+            }
+        }
+
+        return fulfillableInventoryRequirements;
+    }
+
     public Inventory GetFirstDesiredInventory()
     {
         foreach (Inventory inv in inventoryRequirements.Values)
@@ -377,16 +408,17 @@ public class Job : ISelectable
     public string GetDescription()
     {
         string description = "Requirements:\n\t";
-        foreach (KeyValuePair<string,Inventory> inv in inventoryRequirements)
+        foreach (KeyValuePair<string, Inventory> inv in inventoryRequirements)
         {
             description += inv.Value.StackSize + "/" + inv.Value.maxStackSize + "\n\t";
         }
+
         return description;
     }
 
     public string GetHitPointString()
     {
-        return "";
+        return string.Empty;
     }
 
     public string GetJobDescription()

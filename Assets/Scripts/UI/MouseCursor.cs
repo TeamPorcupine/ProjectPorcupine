@@ -117,7 +117,7 @@ public class MouseCursor
         lowerLeft = new CursorTextBox(cursorGO, TextAnchor.MiddleRight, style, lowerLeftPostion, cursorTextBoxSize);
         lowerRight = new CursorTextBox(cursorGO, TextAnchor.MiddleLeft, style, lowerRightPostion, cursorTextBoxSize);        
 
-        Debug.Log("MouseCursor::Cursor Built");
+        Debug.ULogChannel("MouseCursor", "Cursor Built");
     }   
 
     private void UpdateCursor()
@@ -148,7 +148,7 @@ public class MouseCursor
             // Placing furniture object.
             if (bmc.buildMode == BuildMode.FURNITURE)
             {
-                lowerRight.text.text = World.Current.furniturePrototypes[bmc.buildModeObjectType].Name;
+                lowerRight.text.text = PrototypeManager.Furniture.GetPrototype(bmc.buildModeObjectType).Name;
 
                 upperLeft.text.color = Color.green;
                 upperRight.text.color = Color.red;

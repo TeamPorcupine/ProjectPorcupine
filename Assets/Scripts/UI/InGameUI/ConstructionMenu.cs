@@ -22,6 +22,25 @@ public class ConstructionMenu : MonoBehaviour
 
     private BuildModeController bmc;
 
+    private GameObject[] furnitureSubs;
+
+    private GameObject[] FurnitureSubs
+    {
+        get
+        {
+            if (furnitureSubs == null)
+            {
+                furnitureSubs = new GameObject[]
+                {
+                    // add every furniture submenu here
+                    furnitureMenu, floorMenu
+                };
+            }
+
+            return furnitureSubs;
+        }
+    }
+
     public void OnClickDeconstruct()
     {
         DeactivateSubs();
@@ -30,13 +49,13 @@ public class ConstructionMenu : MonoBehaviour
 
     public void OnClickFloors()
     {
-        furnitureMenu.SetActive(false);
+        DeactivateSubsExcept(floorMenu);
         ToggleMenu(floorMenu);
     }
 
     public void OnClickFurniture()
     {
-        floorMenu.SetActive(false);
+        DeactivateSubsExcept(furnitureMenu);
         ToggleMenu(furnitureMenu);
     }
 
@@ -53,6 +72,17 @@ public class ConstructionMenu : MonoBehaviour
         menu.SetActive(!menu.activeSelf);
     }
 
+    public void DeactivateSubsExcept(GameObject menu)
+    {
+        foreach (GameObject subMenu in FurnitureSubs)
+        {
+            if (subMenu != menu)
+            {
+                subMenu.SetActive(false);
+            }
+        }
+    }
+
     private void Start()
     {
         bmc = WorldController.Instance.buildModeController;
@@ -62,12 +92,12 @@ public class ConstructionMenu : MonoBehaviour
         furnitureMenu = cm.furnitureMenu;
         floorMenu = cm.floorMenu;
 
+        // Add liseners here.
         buttonDeconstruction.onClick.AddListener(delegate
         {
             OnClickDeconstruct();
         });
 
-        // Add liseners here.
         buttonFloors.onClick.AddListener(delegate
         {
             OnClickFloors();
