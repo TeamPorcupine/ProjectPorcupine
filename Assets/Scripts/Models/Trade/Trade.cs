@@ -21,7 +21,7 @@ public class Trade
         Player = player;
         Trader = trader;
 
-        var totalStock = new List<Inventory>();
+        List<Inventory> totalStock = new List<Inventory>();
         totalStock.AddRange(player.Stock);
         totalStock.AddRange(trader.Stock);
         TradeItems = totalStock.GroupBy(s => s.objectType).Select(g => new TradeItem
@@ -44,13 +44,8 @@ public class Trade
         }
     }
 
-    public void Accept()
-    {
-        // TODO
-    }
-
     public bool IsValid()
     {
-        return true; // TODO
+        return Player.Currency.Balance > TradeCurrencyBalanceForPlayer;
     }
 }

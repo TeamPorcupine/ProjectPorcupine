@@ -76,6 +76,33 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
     // Furniture is something like a wall, door, or sofa.
     public Furniture Furniture { get; private set; }
 
+    /// <summary>
+    /// The total pathfinding cost of entering this tile.
+    /// The final cost is equal to the Tile's BaseMovementCost * Tile's PathfindingWeight * Furniture's PathfindingWeight * Furniture's MovementCost +
+    /// Tile's PathfindingModifier + Furniture's PathfindingModifier.
+    /// </summary>
+    public float PathfindingCost
+    {
+        get
+        {
+            // If Tile's BaseMovementCost or Furniture's MovementCost = 0 (i.e. impassable) we should always return 0 (stay impassable)
+            if (Type.BaseMovementCost == 0 || (Furniture != null && Furniture.MovementCost == 0))
+            {
+                return 0f;
+            }
+
+            if (Furniture != null)
+            {
+                return (Furniture.PathfindingWeight * Furniture.MovementCost * Type.PathfindingWeight * Type.BaseMovementCost) + 
+                    Furniture.PathfindingModifier + Type.PathfindingModifier;
+            }
+            else
+            {
+                return (Type.PathfindingWeight * Type.BaseMovementCost) + Type.PathfindingModifier;
+            }
+        }
+    }
+
     // FIXME: This seems like a terrible way to flag if a job is pending
     // on a tile.  This is going to be prone to errors in set/clear.
     public Job PendingBuildJob { get; set; }
@@ -397,7 +424,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
             {
                 yield return new ContextMenuAction
                 {
-                    Text = "Prioritize Job",
+                    Text = "Prioritize " + PendingBuildJob.GetName(),
                     RequireCharacterSelected = true,
                     Action = (cm, c) => { c.PrioritizeJob(PendingBuildJob); }
                 };
