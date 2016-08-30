@@ -62,12 +62,12 @@ public class SpriteToXML : EditorWindow
     {
         GUILayout.BeginHorizontal();
 
-        if (GUILayout.Button("Version 0.1"))
+        if (GUILayout.Button("Unity Based"))
         {
             version = Version.v1;            
         }
 
-        if (GUILayout.Button("Version 0.2"))
+        if (GUILayout.Button("Settings Based"))
         {
             version = Version.v2;
         }
@@ -94,13 +94,15 @@ public class SpriteToXML : EditorWindow
 
         if (showInstructions)
         {
+            EditorGUILayout.BeginVertical("Box");
             GUILayout.Label("Instructions", EditorStyles.boldLabel);            
             GUILayout.Label("1. Sprite must be in 'Resources/Editor/SpriteToXML'.");
             GUILayout.Label("2. Edit your sprite in Unity's sprite editor as normal.");
             GUILayout.Label("3. Select the folder to output the sprite and XML.");
             GUILayout.Label("4. Press 'Export' button");
             GUILayout.Label("5. XML will be generated moved along with the sprite to the specified folder");
-            EditorGUILayout.Space();
+            EditorGUILayout.EndVertical();
+            EditorGUILayout.Space();            
         }
 
         if (GUILayout.Button("Set Output Folder"))
@@ -125,25 +127,27 @@ public class SpriteToXML : EditorWindow
         }
 
         EditorGUILayout.Space();
+        EditorGUILayout.BeginVertical("Box");
         GUILayout.Label("Current Path: " + outputDirPath);
         if (GUILayout.Button("Open Output Folder"))
         {
             EditorUtility.RevealInFinder(outputDirPath);
         }
+        EditorGUILayout.EndVertical();
     }
 
     private void ExportSprites()
     {
-        Debug.Log("Files saved to: " + outputDirPath);
+        Debug.ULogChannel("SpriteToXML","Files saved to: " + outputDirPath);
 
         foreach (string fn in filesInDir)
         {
-            Debug.Log("files in dir: " + fn);
+            Debug.ULogChannel("SpriteToXML", "files in dir: " + fn);
         }   
             
         foreach (Texture2D t in images)
         {
-            Debug.Log("Filename: " + t.name);            
+            Debug.ULogChannel("SpriteToXML", "Filename: " + t.name);            
         }
 
         WriteXml();        
@@ -153,13 +157,20 @@ public class SpriteToXML : EditorWindow
     {
         if (outputDirPath == string.Empty)
         {
-            Debug.LogError("SpriteToXML :: Please select a folder");
+            Debug.ULogErrorChannel("SpriteToXML","Please select a folder");
             return;
         }
         
         for (int i = 0; i < images.Length; i++)
         {
-            XmlWriter writer = XmlWriter.Create(Path.Combine(outputDirPath, images[i].name + ".xml"));
+            XmlWriterSettings xmlWriterSettings = new XmlWriterSettings()
+            {
+                Indent = true,
+                IndentChars = "\t",
+                NewLineOnAttributes = false
+            };
+
+            XmlWriter writer = XmlWriter.Create(Path.Combine(outputDirPath, images[i].name + ".xml"), xmlWriterSettings);
 
             writer.WriteStartDocument();
             writer.WriteStartElement("Sprites");
@@ -193,14 +204,12 @@ public class SpriteToXML : EditorWindow
                 if (s.Contains(".png"))
                 {
                     FileUtil.MoveFileOrDirectory(Application.dataPath + "/Resources/Editor/SpriteToXML/" + images[i].name + ".png", outputDirPath + "/" + images[i].name + ".png");
+                    FileUtil.MoveFileOrDirectory(Application.dataPath + "/Resources/Editor/SpriteToXML/" + images[i].name + ".png.meta", outputDirPath + "/" + images[i].name + ".meta");
                 }
                 else if (s.Contains(".jpg"))
                 {
                     FileUtil.MoveFileOrDirectory(Application.dataPath + "/Resources/Editor/SpriteToXML/" + images[i].name + ".jpg", outputDirPath + "/" + images[i].name + ".jpg");
-                }
-                else if (s.Contains(".meta"))
-                {
-                    FileUtil.MoveFileOrDirectory(Application.dataPath + "/Resources/Editor/SpriteToXML/" + images[i].name + ".meta", outputDirPath + "/" + images[i].name + ".meta");
+                    FileUtil.MoveFileOrDirectory(Application.dataPath + "/Resources/Editor/SpriteToXML/" + images[i].name + ".jpg.meta", outputDirPath + "/" + images[i].name + ".meta");
                 }
                 else
                 {
@@ -217,12 +226,14 @@ public class SpriteToXML : EditorWindow
 
         if (showInstructions)
         {
+            EditorGUILayout.BeginVertical("Box");
             GUILayout.Label("Instructions", EditorStyles.boldLabel);
             GUILayout.Label("1. Select the image you want an XML for ");
             GUILayout.Label("2. Specify the rows and columns of the image ");
             GUILayout.Label("3. Select the folder to output the sprite and xml");
             GUILayout.Label("4. Press 'Export' button");
             GUILayout.Label("5. XML will generate and sprite will be moved to the specified folder");
+            EditorGUILayout.EndVertical();
             EditorGUILayout.Space();
         }
 
@@ -240,12 +251,15 @@ public class SpriteToXML : EditorWindow
 
         GUILayout.EndHorizontal();
         EditorGUILayout.Space();
+        EditorGUILayout.BeginVertical("Box");
+        GUILayout.Label("Settings:", EditorStyles.boldLabel);
         GUILayout.BeginHorizontal();
 
         GUILayout.Label("Pixels Per Unit:", EditorStyles.boldLabel);
         index = EditorGUILayout.Popup(index, pixelPerUnitOptions);
 
         GUILayout.EndHorizontal();
+        EditorGUILayout.Space();
         GUILayout.BeginHorizontal();
 
         isMultipleSprite = EditorGUILayout.ToggleLeft("Is this a Multiple Sprite image?", isMultipleSprite);
@@ -253,26 +267,38 @@ public class SpriteToXML : EditorWindow
 
         GUILayout.EndHorizontal();
         EditorGUILayout.Space();
-
+        
         if (isMultipleSprite)
         {
+            GUILayout.BeginHorizontal("Box");
             GUILayout.BeginHorizontal();
+
             GUILayout.Label("Rows:", EditorStyles.boldLabel);
             rowIndex = EditorGUILayout.Popup(rowIndex, columnRowOptions);
+
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
+
             GUILayout.Label("Columns:", EditorStyles.boldLabel);
             columnIndex = EditorGUILayout.Popup(columnIndex, columnRowOptions);
+
             GUILayout.EndHorizontal();
+            GUILayout.EndHorizontal();
+
             EditorGUILayout.Space();
             EditorGUILayout.Space();
         }
-
+        
         if (useCustomPivot)
         {
+            EditorGUILayout.BeginHorizontal("Box");
             pivotX = EditorGUILayout.FloatField("Pivot X", pivotX);
             pivotY = EditorGUILayout.FloatField("Pivot Y", pivotY);
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Space();
         }
+        
+        EditorGUILayout.EndVertical();
 
         if (inputDirPath != string.Empty && outputDirPath != string.Empty)
         {
@@ -302,11 +328,13 @@ public class SpriteToXML : EditorWindow
         if (outputDirPath != string.Empty)
         {
             EditorGUILayout.Space();
+            EditorGUILayout.BeginVertical("Box");
             GUILayout.Label("Current Path: " + outputDirPath);
             if (GUILayout.Button("Open Output Folder"))
             {
                 EditorUtility.RevealInFinder(outputDirPath);
             }
+            EditorGUILayout.EndVertical();
         }
     }
 
@@ -324,9 +352,16 @@ public class SpriteToXML : EditorWindow
         // Image was successfully loaded.
         if (imageTexture.LoadImage(imageBytes))
         {
-            imageName = Path.GetFileNameWithoutExtension(filePath);            
+            imageName = Path.GetFileNameWithoutExtension(filePath);
 
-            XmlWriter writer = XmlWriter.Create(Path.Combine(outputDirPath, imageName + ".xml"));
+            XmlWriterSettings xmlWriterSettings = new XmlWriterSettings()
+            {
+                Indent = true,
+                IndentChars = "\t",
+                NewLineOnAttributes = false
+            };
+
+            XmlWriter writer = XmlWriter.Create(Path.Combine(outputDirPath, imageName + ".xml"), xmlWriterSettings);
 
             writer.WriteStartDocument();
             writer.WriteStartElement("Sprites");
@@ -351,11 +386,9 @@ public class SpriteToXML : EditorWindow
     }
 
     private void SingleSpriteXML(XmlWriter writer, Texture2D imageTexture)
-    {
-        foreach (Sprite s in sprites)
-        {
+    {        
             writer.WriteStartElement("Sprite");
-            writer.WriteAttributeString("name", s.name);
+            writer.WriteAttributeString("name", imageName);
             writer.WriteAttributeString("x", "0");
             writer.WriteAttributeString("y", "0");
             writer.WriteAttributeString("w", (imageTexture.width / PixelsPerUnit()).ToString());
@@ -368,8 +401,7 @@ public class SpriteToXML : EditorWindow
                 writer.WriteAttributeString("pivotY", pivotY.ToString());
             }
 
-            writer.WriteEndElement();
-        }
+            writer.WriteEndElement();        
     }
 
     private void MultiSpriteXML(XmlWriter writer, Texture2D imageTexture)
