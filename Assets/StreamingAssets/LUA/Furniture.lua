@@ -549,73 +549,8 @@ function PowerGenerator_JobComplete( j )
     j.furniture.PowerConnection.OutputRate = 5
 end
 
-function LandingPad_Temp_UpdateAction(furniture, deltaTime)
-    if(not furniture.Tile.Room.IsOutsideRoom()) then
-        return
-    end
-
-    local spawnSpot = furniture.GetSpawnSpotTile()
-    local jobSpot = furniture.GetJobSpotTile()
-    local inputSpot = World.Current.GetTileAt(jobSpot.X, jobSpot.y-1)
-
-    if(inputSpot.Inventory == nil) then
-        if(furniture.JobCount() == 0) then
-            local itemsDesired = {Inventory.__new("Steel Plate", furniture.Parameters["tradeinamount"].ToFloat())}
-
-            local j = Job.__new(
-                inputSpot,
-                nil,
-                nil,
-                0.4,
-                itemsDesired,
-                Job.JobPriority.Medium,
-                false
-            )
-
-            j.furniture = furniture
-            j.RegisterJobCompletedCallback("LandingPad_Temp_JobComplete")
-			j.JobDescription = "job_landing_pad_fulling_desc"
-            furniture.AddJob(j)
-        end
-    else
-        furniture.Parameters["tradetime"].ChangeFloatValue(deltaTime)
-
-		if(furniture.Parameters["tradetime"].ToFloat() >= furniture.Parameters["tradetime_required"].ToFloat()) then
-			furniture.Parameters["tradetime"].SetValue(0)
-            local outputSpot = World.Current.GetTileAt(spawnSpot.X+1, spawnSpot.y)
-
-            if(outputSpot.Inventory == nil) then
-                World.Current.inventoryManager.PlaceInventory( outputSpot, Inventory.__new("Steel Plate", 50, furniture.Parameters["tradeoutamount"].ToFloat()))
-                inputSpot.Inventory.StackSize = inputSpot.Inventory.StackSize-furniture.Parameters["tradeinamount"].ToFloat()
-            else
-                if(outputSpot.Inventory.StackSize <= 50 - outputSpot.Inventory.StackSize + furniture.Parameters["tradeoutamount"].ToFloat()) then
-                    outputSpot.Inventory.StackSize = outputSpot.Inventory.StackSize + furniture.Parameters["tradeoutamount"].ToFloat()
-                    inputSpot.Inventory.StackSize = inputSpot.Inventory.StackSize - furniture.Parameters["tradeoutamount"].ToFloat()
-                end
-            end
-
-            if(inputSpot.Inventory.StackSize <= 0) then
-                inputSpot.Inventory = nil
-            end
-        end
-    end
-end
-
-function LandingPad_Temp_JobComplete(j)
-    local jobSpot = j.furniture.GetJobSpotTile()
-    local inputSpot = World.Current.GetTileAt(jobSpot.X, jobSpot.y-1)
-
-    for k, inv in pairs(j.inventoryRequirements) do
-        if(inv.StackSize > 0) then
-            World.Current.inventoryManager.PlaceInventory(inputSpot, inv)
-            inputSpot.Inventory.locked = true
-            return
-        end
-    end
-end
-
-function LandingPad_Test_ContextMenuAction(furniture, character)
-   furniture.Deconstruct()
+function LandingPad_Test_CallTradeShip(furniture, character)
+   WorldController.Instance.CallTradeShipTest(furniture)
 end
 
 -- This function gets called once, when the funriture is isntalled

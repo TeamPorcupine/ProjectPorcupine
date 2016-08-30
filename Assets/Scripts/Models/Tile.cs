@@ -424,7 +424,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
             {
                 yield return new ContextMenuAction
                 {
-                    Text = "Prioritize Job",
+                    Text = "Prioritize " + PendingBuildJob.GetName(),
                     RequireCharacterSelected = true,
                     Action = (cm, c) => { c.PrioritizeJob(PendingBuildJob); }
                 };
