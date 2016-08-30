@@ -139,7 +139,7 @@ namespace Scheduler
 
         public bool IsRegistered(ScheduledEvent evt)
         {
-            return events != null && (events.Contains(evt) || eventsToAddNextTick.Contains(evt));
+            return (events != null && events.Contains(evt)) || (eventsToAddNextTick != null && eventsToAddNextTick.Contains(evt));
         }
 
         /// <summary>
@@ -206,10 +206,11 @@ namespace Scheduler
 
         public void ReadXml(XmlReader reader)
         {
-            this.events = new List<ScheduledEvent>();
-            this.eventsToAddNextTick = new List<ScheduledEvent>();
+            Debug.ULogChannel("Scheduler", "Reading save file... {0} events already in queue.", Events.Count);
+            CleanUp();
+            Debug.ULogChannel("Scheduler", "Cleaned up ready to load... now {0} events currently in queue.", Events.Count);
 
-            reader.Read();
+            //reader.Read();
             if (reader.ReadToDescendant("Event"))
             {
                 do
@@ -237,6 +238,8 @@ namespace Scheduler
             }
 
             this.Update(0); // update the event list
+            Debug.ULogChannel("Scheduler", "Save file loaded. Event queue contains {0} events.", Events.Count);
+            Debug.ULogChannel("Scheduler", "Scheduler.Current contains {0} events.", Scheduler.Current.Events.Count);
         }
 
         public void WriteXml(XmlWriter writer)
@@ -299,6 +302,28 @@ namespace Scheduler
             {
                 events.RemoveAll((evt) => evt.Finished);
             }
+        }
+
+        private void CleanUp()
+        {
+            if (events != null)
+            {
+                foreach (ScheduledEvent evt in events)
+                {
+                    evt.Stop();
+                }
+            }
+
+            if (eventsToAddNextTick != null)
+            {
+                foreach (ScheduledEvent evt in eventsToAddNextTick)
+                {
+                    evt.Stop();
+                }
+            }
+
+            events = new List<ScheduledEvent>();
+            eventsToAddNextTick = new List<ScheduledEvent>();
         }
     }
 }

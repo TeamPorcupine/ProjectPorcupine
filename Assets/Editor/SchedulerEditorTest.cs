@@ -259,10 +259,31 @@ public class SchedulerEditorTest
         StringBuilder sb = new StringBuilder();
         XmlWriter writer = new XmlTextWriter(new StringWriter(sb));
         scheduler.WriteXml(writer);
-
-        // now recover it
         XmlReader reader = new XmlTextReader(new StringReader(sb.ToString()));
+
+        // Tt is not actually necessary to replace the scheduler: it will properly clear the old one.
+        // This just proves that it does work to recreate the scheduler from nothing.
         scheduler = new Scheduler.Scheduler();
+        scheduler.ReadXml(reader);
+
+        Assert.That(scheduler.Events.Count, Is.EqualTo(2));
+        Assert.That(scheduler.Events[0].Name, Is.EqualTo("ping_log"));
+        Assert.That(scheduler.Events[0].Cooldown, Is.EqualTo(1));
+        Assert.That(scheduler.Events[0].TimeToWait, Is.EqualTo(0.5f));
+        Assert.That(scheduler.Events[0].RepeatsForever, Is.True);
+        Assert.That(scheduler.Events[0].RepeatsLeft, Is.EqualTo(0));
+        Assert.That(scheduler.Events[1].Name, Is.EqualTo("ping_log_lua"));
+        Assert.That(scheduler.Events[1].Cooldown, Is.EqualTo(2));
+        Assert.That(scheduler.Events[1].TimeToWait, Is.EqualTo(1.5f));
+        Assert.That(scheduler.Events[1].RepeatsForever, Is.False);
+        Assert.That(scheduler.Events[1].RepeatsLeft, Is.EqualTo(3));
+
+        // Prove that it works even without creating a new scheduler instance.
+        // First add an event so that the Asserts will fail if ReadXml does nothing.
+        scheduler.ScheduleEvent("ping_log_lua", 5f, false, 20);
+        scheduler.Update(0);
+
+        reader = new XmlTextReader(new StringReader(sb.ToString()));
         scheduler.ReadXml(reader);
 
         Assert.That(scheduler.Events.Count, Is.EqualTo(2));
