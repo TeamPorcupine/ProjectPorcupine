@@ -32,7 +32,7 @@ namespace Scheduler
         {
             this.events = new List<ScheduledEvent>();
             this.eventsToAddNextTick = new List<ScheduledEvent>();
-            this.EventPrototypes = GenerateEventPrototypes();
+            this.GenerateEventPrototypes();
         }
 
         public static Scheduler Current
@@ -210,7 +210,6 @@ namespace Scheduler
             CleanUp();
             Debug.ULogChannel("Scheduler", "Cleaned up ready to load... now {0} events currently in queue.", Events.Count);
 
-            //reader.Read();
             if (reader.ReadToDescendant("Event"))
             {
                 do
@@ -255,20 +254,33 @@ namespace Scheduler
 
         #endregion
 
-        private static Dictionary<string, EventPrototype> GenerateEventPrototypes()
+        private void GenerateEventPrototypes()
         {
             Debug.ULogChannel("Scheduler", "Generating Event Prototypes");
 
             // FIXME: Just adding in a simple log pinging event in lieu of 
             // properly reading prototypes from config files.
-            Dictionary<string, EventPrototype> prototypes = new Dictionary<string, EventPrototype>();
-            prototypes.Add(
+            this.EventPrototypes = new Dictionary<string, EventPrototype>();
+            this.EventPrototypes.Add(
                 "ping_log",
                 new EventPrototype(
                     "ping_log",
                     (evt) => Debug.ULogChannel("Scheduler", "Event {0} fired", evt.Name),
                     EventType.CSharp));
 
+            // FIXME: Are these actually needed here?
+            LuaUtilities.RegisterGlobal(typeof(Inventory));
+            LuaUtilities.RegisterGlobal(typeof(Job));
+            LuaUtilities.RegisterGlobal(typeof(ModUtils));
+            LuaUtilities.RegisterGlobal(typeof(World));
+            LoadScripts();
+            LoadLuaEventPrototypes();
+        }
+
+        // FIXME: Does not read from mod directories!!!
+        // FIXME: Should be integrated with the PrototypeManager??
+        private void LoadLuaEventPrototypes()
+        {
             // The config file is an xml file called Events.xml that looks like this
             // <?xml version="1.0" encoding="utf-8" ?>
             // <Events>
@@ -277,23 +289,33 @@ namespace Scheduler
             //     <Event name="eventNameN" onFire="luaFunctionNameN" />
             // </Events>
             // The corresponding Lua functions are located in Events.lua
+            string filePath = Path.Combine(Application.streamingAssetsPath, "Data");
+            filePath = Path.Combine(filePath, "Events.xml");
+            string xmlText  = File.ReadAllText(filePath);
+            XmlTextReader reader = new XmlTextReader(new StringReader(xmlText));
 
-            // FIXME: Are these actually needed here?
-            LuaUtilities.RegisterGlobal(typeof(Inventory));
-            LuaUtilities.RegisterGlobal(typeof(Job));
-            LuaUtilities.RegisterGlobal(typeof(ModUtils));
-            LuaUtilities.RegisterGlobal(typeof(World));
-            LoadScripts();
-
-            // For testing hard code an event.
-            prototypes.Add(
-                "ping_log_lua",
-                new EventPrototype(
-                    "ping_log_lua",
-                    (evt) => LuaUtilities.CallFunction("ping_log_lua", evt),
-                    EventType.Lua));
-
-            return prototypes;
+            if (reader.ReadToDescendant("Events"))
+            {
+                if (reader.ReadToDescendant("Event"))
+                {
+                    do
+                    {
+                        string name = reader.GetAttribute("name");
+                        string luaFuncName = reader.GetAttribute("onFire");
+                        Action<ScheduledEvent> onFire = (evt) => LuaUtilities.CallFunction(name, evt);
+                        this.EventPrototypes.Add(name, new EventPrototype(name, onFire, EventType.Lua));
+                    }
+                    while (reader.ReadToNextSibling("Event"));
+                }
+                else
+                {
+                    Debug.ULogErrorChannel("Scheduler", "The event prototype definition file doesn't have any 'Event' elements.");
+                }
+            }
+            else
+            {
+                Debug.ULogErrorChannel("Scheduler", "Did not find a 'Events' element in the prototype definition file.");
+            }
         }
 
         private void ClearFinishedEvents()
