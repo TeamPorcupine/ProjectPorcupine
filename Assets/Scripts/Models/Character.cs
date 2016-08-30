@@ -40,7 +40,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     public Inventory inventory;
 
     /// Holds all character animations.
-    public CharacterAnimation animation;
+    public Animation.CharacterAnimation animation;
 
     /// Is the character walking or idle.
     public bool IsWalking;

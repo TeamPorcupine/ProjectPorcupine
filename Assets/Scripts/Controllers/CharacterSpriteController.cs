@@ -100,7 +100,7 @@ public class CharacterSpriteController : BaseSpriteController<Character>
 
         // Add material with color replacement shader, and generate color replacement texture
         sr.material = GetMaterial(c);
-        c.animation = new CharacterAnimation(c, sr);
+        c.animation = new Animation.CharacterAnimation(c, sr);
 
         // Add the inventory sprite onto the character
         GameObject inv_go = new GameObject("Inventory");
