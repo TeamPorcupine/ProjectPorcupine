@@ -44,8 +44,6 @@ public class TileType : IXmlSerializable
 
     private TileType()
     {
-        // Default lua method names
-        CanBuildHereLua = "CanBuildHere_Standard";
     }
 
     // Just two util functions to not break every link to TileType.(Empty | Floor)
