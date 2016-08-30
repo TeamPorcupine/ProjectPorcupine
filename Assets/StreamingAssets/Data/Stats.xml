@@ -1,22 +1,32 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Stats>
-  <Stat statType="Mining">
-    <Name>Mining</Name>
+  <Stat statType="Strength">
+    <Name>Strength</Name>
     <MinValue>1</MinValue>
     <MaxValue>20</MaxValue>
   </Stat>
-  <Stat statType="Hauling">
-    <Name>Hauling</Name>
+  <Stat statType="Dexterity">
+    <Name>Dexterity</Name>
     <MinValue>1</MinValue>
     <MaxValue>20</MaxValue>
   </Stat>
-  <Stat statType="Construction">
-    <Name>Construction</Name>
+  <Stat statType="Constitution">
+    <Name>Constitution</Name>
     <MinValue>1</MinValue>
     <MaxValue>20</MaxValue>
   </Stat>
-  <Stat statType="Research">
-    <Name>Research</Name>
+  <Stat statType="Intelligence">
+    <Name>Intelligence</Name>
+    <MinValue>1</MinValue>
+    <MaxValue>20</MaxValue>
+  </Stat>
+  <Stat statType="Wisdom">
+    <Name>Wisdom</Name>
+    <MinValue>1</MinValue>
+    <MaxValue>20</MaxValue>
+  </Stat>
+  <Stat statType="Charisma">
+    <Name>Charisma</Name>
     <MinValue>1</MinValue>
     <MaxValue>20</MaxValue>
   </Stat>
