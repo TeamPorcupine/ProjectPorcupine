@@ -41,7 +41,8 @@ public class SpriteToXML : EditorWindow
         GUILayout.Label(Step3);
         GUILayout.Label(Step4);
         GUILayout.Label(Step5);        
-        
+
+
         if (GUILayout.Button("Set Output Folder"))
         {
             dirPath = EditorUtility.OpenFolderPanel("Select folder to save XML", dirPath, string.Empty);
@@ -62,6 +63,15 @@ public class SpriteToXML : EditorWindow
 
             ExportSprites();
         }
+
+     
+        GUILayout.Label("Current Path: " + dirPath +  "");
+
+        if (GUILayout.Button("Open Output Folder"))
+        {
+            EditorUtility.RevealInFinder(dirPath);
+        }
+
     }    
 
     private void ExportSprites()
