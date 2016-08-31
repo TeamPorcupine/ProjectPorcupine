@@ -18,17 +18,6 @@ public class SchedulerEventPrototypes : XmlPrototypes<ScheduledEvent>
     {
     }
 
-    public void Add(string name, ScheduledEvent eventPrototype)
-    {
-        if (this.HasPrototype(name))
-        {
-            Debug.ULogWarningChannel("EventPrototypes", "Trying to register an event with the same name '{0}' as one that has already been registered. Overwriting the old one. (May ignore if unit testing.)", name);
-            prototypes[name] = eventPrototype;
-        }
-
-        prototypes.Add(name, eventPrototype);
-    }
-
     /// <summary>
     /// Loads the prototype.
     /// </summary>
