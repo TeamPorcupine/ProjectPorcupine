@@ -421,7 +421,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             foreach (string statString in statsStringArray)
             {
                 string[] keyValue = statString.Split(';');
-                Stat s = getStat(keyValue[0]);
+                Stat s = GetStat(keyValue[0]);
                 if (s != null)
                 {
                     if (!int.TryParse(keyValue[1], out s.Value))
@@ -509,7 +509,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         Debug.ULogChannel("Character", "Initialized " + stats.Count + " Stats.");
     }
 
-    public Stat getStat(string statType)
+    public Stat GetStat(string statType)
     {
         Stat s = null;
         stats.TryGetValue(statType, out s);
