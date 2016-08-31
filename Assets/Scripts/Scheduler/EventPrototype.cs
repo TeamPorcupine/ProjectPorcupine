@@ -27,20 +27,34 @@ namespace Scheduler
     public class EventPrototype
     {
         /// <summary>
-        /// Initializes a new instance of <see cref="Scheduler.EventPrototype"/>.
+        /// Initializes a new instance of <see cref="Scheduler.EventPrototype"/> backed by a C# function.
         /// </summary>
         /// <param name="name">Name (for serialization).</param>
         /// <param name="onFire">On fire event.</param>
-        public EventPrototype(string name, Action<ScheduledEvent> onFire, EventType eventType)
+        public EventPrototype(string name, Action<ScheduledEvent> onFire)
         {
             this.Name = name;
             this.OnFire = onFire;
-            this.EventType = eventType;
+            this.EventType = EventType.CSharp;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of <see cref="Scheduler.EventPrototype"/> backed by a Lua function.
+        /// </summary>
+        /// <param name="name">Name (for serialization).</param>
+        /// <param name="luaFunctionName">Name of the Lua function for the event.</param>
+        public EventPrototype(string name, string luaFunctionName)
+        {
+            this.Name = name;
+            this.LuaFunctionName = luaFunctionName;
+            this.EventType = EventType.Lua;
         }
 
         private event Action<ScheduledEvent> OnFire;
 
         public string Name { get; protected set; }
+
+        public string LuaFunctionName { get; protected set; }
 
         public EventType EventType { get; protected set; }
 

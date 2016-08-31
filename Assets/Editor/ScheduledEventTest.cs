@@ -45,7 +45,7 @@ public class ScheduledEventTest
         Assert.That(evt, Is.Not.EqualTo(evt2));
 
         ScheduledEvent evt3 = new ScheduledEvent(
-            new EventPrototype("test", (ev) => Debug.ULogChannel("ScheduledEventTest", "Event {0} fired", ev.Name), EventType.CSharp),
+            new EventPrototype("test", (ev) => Debug.ULogChannel("ScheduledEventTest", "Event {0} fired", ev.Name)),
             1.0f,
             0.5f,
             false,

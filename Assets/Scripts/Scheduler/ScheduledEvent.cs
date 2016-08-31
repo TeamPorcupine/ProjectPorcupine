@@ -64,7 +64,15 @@ namespace Scheduler
         public ScheduledEvent(EventPrototype eventPrototype, float cooldown, float timeToWait, bool repeatsForever = false, int repeats = 1)
         {
             this.Name = eventPrototype.Name;
-            this.OnFire = eventPrototype.OnFireCallback();
+            if (eventPrototype.EventType == EventType.CSharp)
+            {
+                this.OnFire = eventPrototype.OnFireCallback();
+            }
+            else
+            {
+                this.OnFire = (evt) => LuaUtilities.CallFunction(eventPrototype.LuaFunctionName, evt);
+            }
+
             this.Cooldown = cooldown;
             this.TimeToWait = timeToWait;
             this.RepeatsForever = repeatsForever;

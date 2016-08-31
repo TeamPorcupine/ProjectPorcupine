@@ -265,8 +265,7 @@ namespace Scheduler
                 "ping_log",
                 new EventPrototype(
                     "ping_log",
-                    (evt) => Debug.ULogChannel("Scheduler", "Event {0} fired", evt.Name),
-                    EventType.CSharp));
+                    (evt) => Debug.ULogChannel("Scheduler", "Event {0} fired", evt.Name)));
 
             // FIXME: Are these actually needed here?
             LuaUtilities.RegisterGlobal(typeof(Inventory));
@@ -302,8 +301,7 @@ namespace Scheduler
                     {
                         string name = reader.GetAttribute("name");
                         string luaFuncName = reader.GetAttribute("onFire");
-                        Action<ScheduledEvent> onFire = (evt) => LuaUtilities.CallFunction(name, evt);
-                        this.EventPrototypes.Add(name, new EventPrototype(name, onFire, EventType.Lua));
+                        this.EventPrototypes.Add(name, new EventPrototype(name, luaFuncName));
                     }
                     while (reader.ReadToNextSibling("Event"));
                 }
