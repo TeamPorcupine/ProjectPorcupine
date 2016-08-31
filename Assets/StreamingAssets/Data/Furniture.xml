@@ -423,6 +423,10 @@
     <Height>1</Height>
 
     <BuildingJob jobTime="1" />
+
+    <Params>
+     <Param name="ore_type" value="Raw Iron" />
+    </Params>
     
     <ContextMenuAction FunctionName="OreMine_CreateMiningJob" Text="Mine Ore" RequiereCharacterSelected="false" />
 
@@ -443,6 +447,10 @@
     <Height>1</Height>
 
     <BuildingJob jobTime="1" />
+
+    <Params>
+     <Param name="ore_type" value="Uranium" />
+    </Params>
     
     <ContextMenuAction FunctionName="OreMine_CreateMiningJob" Text="Mine Ore" RequiereCharacterSelected="false" />
 

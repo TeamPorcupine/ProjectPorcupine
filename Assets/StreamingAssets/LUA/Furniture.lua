@@ -632,8 +632,7 @@ end
 
 function OreMine_OreMined(job)
     -- Defines the ore to be spawned by the mine
-    -- Currently this is fixed but it "should" be able to check what ore has just been mined somehow
-    local inventory = Inventory.__new("Raw Iron", 50, 10)
+    local inventory = Inventory.__new(job.furniture.Parameters["ore_type"], 50, 10)
 
     -- Place the "mined" ore on the tile
     World.Current.inventoryManager.PlaceInventory(job.tile, inventory)
