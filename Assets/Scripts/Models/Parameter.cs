@@ -109,6 +109,7 @@ public class Parameter
         {
             subReader.ReadToDescendant("Params");
         }
+
         subReader.Read();
 
         do
@@ -136,11 +137,11 @@ public class Parameter
                     paramGroup[k] = Parameter.ReadXml(subReader);
                 }
             }
-        } while (subReader.ReadToNextSibling("Param"));
+        }
+        while (subReader.ReadToNextSibling("Param"));
 
         subReader.Close();
         return paramGroup;
-
     }
 
     public override string ToString() 
@@ -241,6 +242,7 @@ public class Parameter
             writer.WriteStartElement("Param");
             writer.WriteAttributeString("name", name);
         }
+
         if (value != null)
         {
             writer.WriteAttributeString("value", value);
