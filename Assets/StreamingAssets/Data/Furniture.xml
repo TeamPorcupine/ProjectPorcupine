@@ -430,4 +430,24 @@
     <UnlocalizedDescription>furn_mine_iron_desc</UnlocalizedDescription>
   </Furniture>
 
+
+  <Furniture objectType="mine_uranium">
+    <Name>Uranium Mining Spot</Name>
+    <Description>A spot for mining Uranium ore</Description>
+    <TypeTag>Ore</TypeTag>
+    <TypeTag>OutdoorOnly</TypeTag>
+    <MovementCost>2</MovementCost>
+    <PathfindingModifier>1.5</PathfindingModifier>
+    <PathfindingWeight>2</PathfindingWeight>
+    <Width>1</Width>
+    <Height>1</Height>
+
+    <BuildingJob jobTime="1" />
+    
+    <ContextMenuAction FunctionName="OreMine_CreateMiningJob" Text="Mine Ore" RequiereCharacterSelected="false" />
+
+    <LocalizationCode>furn_mine_uranium</LocalizationCode>
+    <UnlocalizedDescription>furn_mine_uranium_desc</UnlocalizedDescription>
+  </Furniture>
+
 </Furnitures>
