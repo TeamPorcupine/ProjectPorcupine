@@ -1,20 +1,40 @@
-﻿/// Simple pooling for Unity.
-///   Author: Benjamin Ward (ward.programm3r@gmail.com)
-///   Latest Version: https://gist.github.com/WardBenjamin/991dfa64e94892924b67efe569e35050
-///   License: CC0 (http://creativecommons.org/publicdomain/zero/1.0/)
-///   UPDATES:
-///     N/A
-
+#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
 using System;
 using System.Collections;
 using System.Collections.Generic;
 
+/// Simple pooling for Unity.
+/// Author: Benjamin Ward (ward.programm3r@gmail.com)
+/// Latest Version: https://gist.github.com/WardBenjamin/991dfa64e94892924b67efe569e35050
+/// License: CC0 (http://creativecommons.org/publicdomain/zero/1.0/)
+/// UPDATES: N/A
+/// 8/31/16 - Fixed according to ProjectPorcupine StyleCop settings
 public class MinHeap<T> : IEnumerable<T> where T : class, IComparable<T>
 {
     #region Fields
 
-    private IComparer<T> Comparer;
-    private List<T> Items = new List<T>();
+    private IComparer<T> comparer;
+    private List<T> items = new List<T>();
+
+    #endregion
+
+    #region Constructors
+
+    public MinHeap() : this(Comparer<T>.Default)
+    {
+    }
+
+    public MinHeap(IComparer<T> comp)
+    {
+        comparer = comp;
+    }
 
     #endregion
 
@@ -22,20 +42,7 @@ public class MinHeap<T> : IEnumerable<T> where T : class, IComparable<T>
 
     public int Count
     {
-        get { return Items.Count; }
-    }
-
-    #endregion
-
-    #region Constructors
-
-    public MinHeap()
-        : this(Comparer<T>.Default)
-    {
-    }
-    public MinHeap(IComparer<T> comp)
-    {
-        Comparer = comp;
+        get { return items.Count; }
     }
 
     #endregion
@@ -47,7 +54,7 @@ public class MinHeap<T> : IEnumerable<T> where T : class, IComparable<T>
     /// </summary>
     public void Clear()
     {
-        Items.Clear();
+        items.Clear();
     }
 
     /// <summary>
@@ -59,7 +66,7 @@ public class MinHeap<T> : IEnumerable<T> where T : class, IComparable<T>
     /// </remarks>
     public void TrimExcess()
     {
-        Items.TrimExcess();
+        items.TrimExcess();
     }
 
     /// <summary>
@@ -69,13 +76,15 @@ public class MinHeap<T> : IEnumerable<T> where T : class, IComparable<T>
     public void Insert(T newItem)
     {
         int i = Count;
-        Items.Add(newItem);
-        while (i > 0 && Comparer.Compare(Items[(i - 1) / 2], newItem) > 0)
+        items.Add(newItem);
+
+        while (i > 0 && comparer.Compare(items[(i - 1) / 2], newItem) > 0)
         {
-            Items[i] = Items[(i - 1) / 2];
+            items[i] = items[(i - 1) / 2];
             i = (i - 1) / 2;
         }
-        Items[i] = newItem;
+
+        items[i] = newItem;
     }
 
     /// <summary>
@@ -84,11 +93,12 @@ public class MinHeap<T> : IEnumerable<T> where T : class, IComparable<T>
     /// <returns>Returns the item at the root of the heap.</returns>
     public T Peek()
     {
-        if (Items.Count == 0)
+        if (items.Count == 0)
         {
             throw new InvalidOperationException("The heap is empty.");
         }
-        return Items[0];
+
+        return items[0];
     }
 
     /// <summary>
@@ -97,34 +107,41 @@ public class MinHeap<T> : IEnumerable<T> where T : class, IComparable<T>
     /// <returns>Returns the item at the root of the heap.</returns>
     public T RemoveRoot()
     {
-        if (Items.Count == 0)
+        if (items.Count == 0)
         {
             throw new InvalidOperationException("The heap is empty.");
         }
+
         // Get the first item
-        T rslt = Items[0];
+        T rslt = items[0];
+
         // Get the last item and bubble it down.
-        T tmp = Items[Items.Count - 1];
-        Items.RemoveAt(Items.Count - 1);
-        if (Items.Count > 0)
+        T tmp = items[items.Count - 1];
+        items.RemoveAt(items.Count - 1);
+
+        if (items.Count > 0)
         {
             int i = 0;
-            while (i < Items.Count / 2)
+            while (i < items.Count / 2)
             {
                 int j = (2 * i) + 1;
-                if ((j < Items.Count - 1) && (Comparer.Compare(Items[j], Items[j + 1]) > 0))
+                if ((j < items.Count - 1) && (comparer.Compare(items[j], items[j + 1]) > 0))
                 {
                     ++j;
                 }
-                if (Comparer.Compare(Items[j], tmp) >= 0)
+
+                if (comparer.Compare(items[j], tmp) >= 0)
                 {
                     break;
                 }
-                Items[i] = Items[j];
+
+                items[i] = items[j];
                 i = j;
             }
-            Items[i] = tmp;
+
+            items[i] = tmp;
         }
+
         return rslt;
     }
 
@@ -134,7 +151,7 @@ public class MinHeap<T> : IEnumerable<T> where T : class, IComparable<T>
 
     IEnumerator<T> IEnumerable<T>.GetEnumerator()
     {
-        foreach (var i in Items)
+        foreach (var i in items)
         {
             yield return i;
         }
@@ -142,7 +159,7 @@ public class MinHeap<T> : IEnumerable<T> where T : class, IComparable<T>
 
     public IEnumerator GetEnumerator()
     {
-        return Items.GetEnumerator();
+        return items.GetEnumerator();
     }
 
     #endregion
