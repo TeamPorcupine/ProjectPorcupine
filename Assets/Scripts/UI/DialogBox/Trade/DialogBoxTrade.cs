@@ -126,9 +126,9 @@ public class DialogBoxTrade : DialogBox
 
     private void BuildInterfaceHeader()
     {
-        float tradeAmount = trade.TradeCurrencyBalanceForPlayer;
+        float tradeAmount =  trade.TradeCurrencyBalanceForPlayer;
         PlayerCurrencyBalanceText.text = string.Format("{0} {1}", Math.Round(trade.Player.Currency.Balance + tradeAmount, 2), trade.Player.Currency.ShortName);
         TraderCurrencyBalanceText.text = string.Format("{0} {1}", Math.Round(trade.Trader.Currency.Balance - tradeAmount, 2), trade.Trader.Currency.ShortName);
-        TradeCurrencyBalanceText.text = tradeAmount.ToString();
+        TradeCurrencyBalanceText.text = Math.Round(tradeAmount, 2).ToString();
     }
 }
