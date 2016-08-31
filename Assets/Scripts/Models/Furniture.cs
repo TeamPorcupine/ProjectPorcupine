@@ -83,7 +83,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         EventActions = new EventAction();
 
         contextMenuLuaActions = new List<ContextMenuLuaAction>();
-        furnParameters = new Parameter("furnParameters");
+        furnParameters = new Parameter();
         jobs = new List<Job>();
         typeTags = new HashSet<string>();
         funcPositionValidation = DefaultIsValidPosition;
