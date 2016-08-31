@@ -98,14 +98,20 @@ public class Parameter
 
     public static Parameter ReadXml(XmlReader reader)
     {
+        Parameter paramGroup = new Parameter(reader.GetAttribute("name"));
         XmlReader subReader = reader.ReadSubtree();
-        Parameter paramGroup = new Parameter(subReader.GetAttribute("name"));
 
         // Advance to the first inner element. Two reads are needed to ensure we don't get stuck on containing Element, or an EndElement
         subReader.Read();
+
+        // In case the reader gets passed early, we descend to Params if it's not a Params or Param
+        if (subReader.Name != "Params" && subReader.Name != "Param")
+        {
+            subReader.ReadToDescendant("Params");
+        }
         subReader.Read();
 
-        while (subReader.ReadToNextSibling("Param"))
+        do
         {
             string k = subReader.GetAttribute("name");
 
@@ -130,10 +136,11 @@ public class Parameter
                     paramGroup[k] = Parameter.ReadXml(subReader);
                 }
             }
-        }
+        } while (subReader.ReadToNextSibling("Param"));
 
         subReader.Close();
         return paramGroup;
+
     }
 
     public override string ToString() 
@@ -225,9 +232,16 @@ public class Parameter
 
     public void WriteXmlParamGroup(XmlWriter writer)
     {
-        writer.WriteStartElement("Param");
-        writer.WriteAttributeString("name", name);
-        if (string.IsNullOrEmpty(value) == false)
+        if (string.IsNullOrEmpty(name))
+        {
+            writer.WriteStartElement("Params");
+        }
+        else
+        {
+            writer.WriteStartElement("Param");
+            writer.WriteAttributeString("name", name);
+        }
+        if (value != null)
         {
             writer.WriteAttributeString("value", value);
         }
@@ -241,11 +255,14 @@ public class Parameter
     }
 
     public void WriteXmlParam(XmlWriter writer)
-    {       
-        writer.WriteStartElement("Param");
-        writer.WriteAttributeString("name", name);
-        writer.WriteAttributeString("value", value);
-        writer.WriteEndElement();
+    {
+        if (string.IsNullOrEmpty(name) == false)
+        {
+            writer.WriteStartElement("Param");
+            writer.WriteAttributeString("name", name);
+            writer.WriteAttributeString("value", value);
+            writer.WriteEndElement();
+        }
     }
 
     public void WriteXml(XmlWriter writer)

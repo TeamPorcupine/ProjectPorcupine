@@ -560,8 +560,11 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     public void ReadXml(XmlReader reader)
     {
         // X, Y, and objectType have already been set, and we should already
-        // be assigned to a tile.  So just read extra data.
-        ReadXmlParams(reader);
+        // be assigned to a tile.  So just read extra data if we have any.
+        if (!reader.IsEmptyElement)
+        {
+            ReadXmlParams(reader);
+        }
     }
 
     public void ReadXmlParams(XmlReader reader)
