@@ -351,6 +351,16 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         }
     }
 
+    public bool IsExit()
+    {
+        if (RoomEnclosure && MovementCost > 0f)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     public Enterability IsEnterable()
     {
         if (string.IsNullOrEmpty(isEnterableAction))
@@ -806,13 +816,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
                 if (t2.Furniture != null)
                 {
-                    for (int i = 0; i < ReplaceableFurniture.Count; i++)
-                    {
-                        if (t2.Furniture.HasTypeTag(ReplaceableFurniture[i]))
-                        {
-                            isReplaceable = true;
-                        }
-                    }
+                    // Furniture can be replaced, if its typeTags share elements with ReplaceableFurniture
+                    isReplaceable = t2.Furniture.typeTags.Overlaps(ReplaceableFurniture);
                 }
 
                 // Make sure tile is FLOOR

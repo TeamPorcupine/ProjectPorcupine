@@ -37,6 +37,12 @@ public class Path_AStar
             world.tileGraph = new Path_TileGraph(world);
         }
 
+        // Check to see if we have a valid tile graph
+        if (world.roomGraph == null)
+        {
+            world.roomGraph = new Path_RoomGraph(world);
+        }
+
         // A dictionary of all valid, walkable nodes.
         Dictionary<Tile, Path_Node<Tile>> nodes = world.tileGraph.nodes;
 
