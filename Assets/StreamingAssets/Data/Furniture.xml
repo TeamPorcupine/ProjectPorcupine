@@ -423,12 +423,8 @@
     <Height>1</Height>
 
     <BuildingJob jobTime="1" />
-
-    <DeconstructJob>
-      <Inventory objectType="Raw Iron" amount="10" />
-    </DeconstructJob>
     
-    <ContextMenuAction FunctionName="Mine_MineOre" Text="Mine Ore" RequiereCharacterSelected="false" />
+    <ContextMenuAction FunctionName="OreMine_CreateMiningJob" Text="Mine Ore" RequiereCharacterSelected="false" />
 
     <LocalizationCode>furn_mine_iron</LocalizationCode>
     <UnlocalizedDescription>furn_mine_iron_desc</UnlocalizedDescription>

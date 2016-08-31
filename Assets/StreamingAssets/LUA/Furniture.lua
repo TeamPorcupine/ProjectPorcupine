@@ -613,8 +613,8 @@ function SolarPanel_OnUpdate(furniture, deltaTime)
 	furniture.PowerConnection.OutputRate = powerPerSecond
 end
 
-function Mine_MineOre(furniture, character)
-
+function OreMine_CreateMiningJob(furniture, character)
+    -- Creates job for a character to go and "mine" the Ore
     local j = Job.__new(
 		furniture.Tile,
 		nil,
@@ -625,16 +625,20 @@ function Mine_MineOre(furniture, character)
 		false
 	)
 
-    j.RegisterJobWorkedCallback("Mine_OreMined")
+    j.RegisterJobWorkedCallback("OreMine_OreMined")
     furniture.AddJob(j)
     ModUtils.ULog("Ore Mine - Mining Job Created")
 end
 
-function Mine_OreMined(job)
+function OreMine_OreMined(job)
+    -- Defines the ore to be spawned by the mine
+    -- Currently this is fixed but it "should" be able to check what ore has just been mined somehow
     local inventory = Inventory.__new("Raw Iron", 50, 10)
 
+    -- Place the "mined" ore on the tile
     World.Current.inventoryManager.PlaceInventory(job.tile, inventory)
 
+    -- Deconstruct the ore mine
     job.furniture.Deconstruct()
     job.CancelJob()
 end
