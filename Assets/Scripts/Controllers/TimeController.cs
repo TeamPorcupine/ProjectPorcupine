@@ -11,6 +11,8 @@ using UnityEngine;
 
 public class TimeController
 {
+    private static float gameTickPerSecond = 5;
+
     // Current position in that array.
     private int timeScalePosition = 2;
 
@@ -22,21 +24,20 @@ public class TimeController
 
     private float deltaTime = 0f;
     private float totalDeltaTime = 0f;
-    private static float gameTickPerSecond = 5;
-
-    public float DeltaTime
-    {
-        get
-        {
-            return deltaTime;
-        }
-    }
 
     public static float GameTickDelay
     {
         get
         {
             return 1f / gameTickPerSecond;
+        }
+    }
+
+    public float DeltaTime
+    {
+        get
+        {
+            return deltaTime;
         }
     }
 
