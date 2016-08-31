@@ -16,11 +16,10 @@
   
   <Need needType="Sleep">
     <Name>Sleep</Name>
-    <RestoreNeedFurnitureType>Bed</RestoreNeedFurnitureType>
-    <GrowthRate>0</GrowthRate>
-    <RestoreNeedTime>10</RestoreNeedTime>
+    <RestoreNeedFurnitureType>simple_bed</RestoreNeedFurnitureType>
+    <GrowthRate>0.3</GrowthRate>
+    <RestoreNeedTime>30</RestoreNeedTime>
     <RestoreNeedAmount>100</RestoreNeedAmount>
-    <Damage>5</Damage>
     <Localization>need_sleep</Localization>
   </Need>
     
