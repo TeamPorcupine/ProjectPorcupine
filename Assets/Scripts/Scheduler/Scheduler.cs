@@ -32,7 +32,15 @@ namespace Scheduler
         {
             this.events = new List<ScheduledEvent>();
             this.eventsToAddNextTick = new List<ScheduledEvent>();
-            this.GenerateEventPrototypes();
+
+            Debug.ULogChannel("Scheduler", "Loading Lua stripts");
+
+            // FIXME: Are these actually needed here?
+            LuaUtilities.RegisterGlobal(typeof(Inventory));
+            LuaUtilities.RegisterGlobal(typeof(Job));
+            LuaUtilities.RegisterGlobal(typeof(ModUtils));
+            LuaUtilities.RegisterGlobal(typeof(World));
+            LoadScripts();
         }
 
         public static Scheduler Current
@@ -55,8 +63,6 @@ namespace Scheduler
                 return new ReadOnlyCollection<ScheduledEvent>(events);
             }
         }
-
-        public Dictionary<string, EventPrototype> EventPrototypes { get; protected set; }
 
         #region LuaHandling
 
@@ -90,13 +96,13 @@ namespace Scheduler
         /// <param name="repeats">Number of repeats (default 1). Ignored if repeatsForever=true.</param>
         public void ScheduleEvent(string name, float cooldown, bool repeatsForever = false, int repeats = 1)
         {
-            if (EventPrototypes.ContainsKey(name) == false)
+            if (PrototypeManager.Event.HasPrototype(name) == false)
             {
                 Debug.ULogWarningChannel("Scheduler", "Tried to schedule an event from a prototype '{0}' which does not exist. Bailing.", name);
                 return;
             }
 
-            EventPrototype ep = EventPrototypes[name];
+            EventPrototype ep = PrototypeManager.Event.GetPrototype(name);
             ScheduledEvent evt = new ScheduledEvent(ep, cooldown, cooldown, repeatsForever, repeats);
 
             RegisterEvent(evt);
@@ -112,13 +118,13 @@ namespace Scheduler
         /// <param name="repeats">Number of repeats (default 1). Ignored if repeatsForever=true.</param>
         public void ScheduleEvent(string name, float cooldown, float timeToWait, bool repeatsForever = false, int repeats = 1)
         {
-            if (EventPrototypes.ContainsKey(name) == false)
+            if (PrototypeManager.Event.HasPrototype(name) == false)
             {
                 Debug.ULogWarningChannel("Scheduler", "Tried to schedule an event from a prototype '{0}' which does not exist. Bailing.", name);
                 return;
             }
 
-            EventPrototype ep = EventPrototypes[name];
+            EventPrototype ep = PrototypeManager.Event.GetPrototype(name);
             ScheduledEvent evt = new ScheduledEvent(ep, cooldown, timeToWait, repeatsForever, repeats);
 
             RegisterEvent(evt);
@@ -194,7 +200,7 @@ namespace Scheduler
 
         public void RegisterEventPrototype(string name, EventPrototype eventPrototype)
         {
-            EventPrototypes.Add(name, eventPrototype);
+            PrototypeManager.Event.Add(name, eventPrototype);
         }
 
         #region IXmlSerializable implementation
@@ -233,7 +239,7 @@ namespace Scheduler
             }
             else
             {
-                Debug.ULogErrorChannel("Scheduler", "Malformed 'Scheduler' serialization: does not have any 'Event' elements.");
+                Debug.ULogWarningChannel("Scheduler", "Malformed 'Scheduler' serialization: does not have any 'Event' elements.");
             }
 
             this.Update(0); // update the event list
@@ -253,68 +259,6 @@ namespace Scheduler
         }
 
         #endregion
-
-        private void GenerateEventPrototypes()
-        {
-            Debug.ULogChannel("Scheduler", "Generating Event Prototypes");
-
-            // FIXME: Just adding in a simple log pinging event in lieu of 
-            // properly reading prototypes from config files.
-            this.EventPrototypes = new Dictionary<string, EventPrototype>();
-            this.EventPrototypes.Add(
-                "ping_log",
-                new EventPrototype(
-                    "ping_log",
-                    (evt) => Debug.ULogChannel("Scheduler", "Event {0} fired", evt.Name)));
-
-            // FIXME: Are these actually needed here?
-            LuaUtilities.RegisterGlobal(typeof(Inventory));
-            LuaUtilities.RegisterGlobal(typeof(Job));
-            LuaUtilities.RegisterGlobal(typeof(ModUtils));
-            LuaUtilities.RegisterGlobal(typeof(World));
-            LoadScripts();
-            LoadLuaEventPrototypes();
-        }
-
-        // FIXME: Does not read from mod directories!!!
-        // FIXME: Should be integrated with the PrototypeManager??
-        private void LoadLuaEventPrototypes()
-        {
-            // The config file is an xml file called Events.xml that looks like this
-            // <?xml version="1.0" encoding="utf-8" ?>
-            // <Events>
-            //     <Event name="eventName1" onFire="luaFunctionName1" />
-            //         ...
-            //     <Event name="eventNameN" onFire="luaFunctionNameN" />
-            // </Events>
-            // The corresponding Lua functions are located in Events.lua
-            string filePath = Path.Combine(Application.streamingAssetsPath, "Data");
-            filePath = Path.Combine(filePath, "Events.xml");
-            string xmlText  = File.ReadAllText(filePath);
-            XmlTextReader reader = new XmlTextReader(new StringReader(xmlText));
-
-            if (reader.ReadToDescendant("Events"))
-            {
-                if (reader.ReadToDescendant("Event"))
-                {
-                    do
-                    {
-                        string name = reader.GetAttribute("name");
-                        string luaFuncName = reader.GetAttribute("onFire");
-                        this.EventPrototypes.Add(name, new EventPrototype(name, luaFuncName));
-                    }
-                    while (reader.ReadToNextSibling("Event"));
-                }
-                else
-                {
-                    Debug.ULogErrorChannel("Scheduler", "The event prototype definition file doesn't have any 'Event' elements.");
-                }
-            }
-            else
-            {
-                Debug.ULogErrorChannel("Scheduler", "Did not find a 'Events' element in the prototype definition file.");
-            }
-        }
 
         private void ClearFinishedEvents()
         {

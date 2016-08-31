@@ -9,3 +9,6 @@ function ping_log_lua (event)
     ModUtils.ULogChannel("Scheduler", "Scheduled Lua event '" .. event.Name .. "'")
     return
 end
+
+ModUtils.ULog("Events.lua loaded")
+return "LUA Script Parsed!"

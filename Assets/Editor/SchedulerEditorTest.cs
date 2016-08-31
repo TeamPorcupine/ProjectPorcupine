@@ -23,6 +23,16 @@ public class SchedulerEditorTest
     [SetUp]
     public void Init()
     {
+        if (PrototypeManager.Event == null)
+        {
+            new PrototypeManager();
+            PrototypeManager.Event.Add(
+                "ping_log",
+                new EventPrototype(
+                    "ping_log",
+                    (evt) => Debug.ULogChannel("Scheduler", "Event {0} fired", evt.Name)));
+        }
+
         // The problem with unit testing singletons
         ///scheduler = Scheduler.Scheduler.Current;
         scheduler = new Scheduler.Scheduler();
@@ -174,7 +184,7 @@ public class SchedulerEditorTest
     [Test]
     public void SchedulerLuaEventTest()
     {
-        ScheduledEvent evt = new ScheduledEvent(scheduler.EventPrototypes["ping_log_lua"], 1.0f, 1.0f, false, 1);
+        ScheduledEvent evt = new ScheduledEvent(PrototypeManager.Event.GetPrototype("ping_log_lua"), 1.0f, 1.0f, false, 1);
 
         scheduler.RegisterEvent(evt);
 
