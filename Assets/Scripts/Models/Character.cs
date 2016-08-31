@@ -354,6 +354,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         writer.WriteAttributeString("name", name);
         writer.WriteAttributeString("X", CurrTile.X.ToString());
         writer.WriteAttributeString("Y", CurrTile.Y.ToString());
+        // TODO: It is more verbose, but easier to parse if these are represented as key-value elements rather than a string with delimeters.
         string needString = string.Empty;
         foreach (Need n in needs)
         {
@@ -362,6 +363,13 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         }
 
         writer.WriteAttributeString("needs", needString);
+
+        StringBuilder statsString = new StringBuilder();
+        foreach (Stat stat in stats)
+        {
+            statsString.Append(stat.statType).Append(";").Append(stat.Value).Append(":");
+        }
+        writer.WriteAttributeString("stats", statsString.ToString());
         writer.WriteAttributeString("r", characterColor.r.ToString());
         writer.WriteAttributeString("b", characterColor.b.ToString());
         writer.WriteAttributeString("g", characterColor.g.ToString());
@@ -398,6 +406,29 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                     else
                     {
                         Debug.ULogErrorChannel("Character", "Character.ReadXml() expected an int when deserializing needs");
+                    }
+                }
+            }
+        }
+
+        if (reader.GetAttribute("stats") == null)
+        {
+            Debug.ULogWarningChannel("Character", "Did not find stats for character, will keep randomized values.");
+        }
+        else
+        {
+            string[] statsStringArray = reader.GetAttribute("stats").Split(':');
+            foreach (string statString in statsStringArray)
+            {
+                string[] keyValue = statString.Split(';');
+                foreach (Stat stat in stats)
+                {
+                    if (stat.statType == keyValue[0])
+                    {
+                        if (!int.TryParse(keyValue[1], out stat.Value))
+                        {
+                            Debug.ULogErrorChannel("Character", "Character.ReadXml() expected an int when deserializing stats");
+                        }
                     }
                 }
             }
