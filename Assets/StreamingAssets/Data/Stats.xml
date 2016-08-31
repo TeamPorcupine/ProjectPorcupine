@@ -2,32 +2,20 @@
 <Stats>
   <Stat statType="Strength">
     <Name>Strength</Name>
-    <MinValue>1</MinValue>
-    <MaxValue>20</MaxValue>
   </Stat>
   <Stat statType="Dexterity">
     <Name>Dexterity</Name>
-    <MinValue>1</MinValue>
-    <MaxValue>20</MaxValue>
   </Stat>
   <Stat statType="Constitution">
     <Name>Constitution</Name>
-    <MinValue>1</MinValue>
-    <MaxValue>20</MaxValue>
   </Stat>
   <Stat statType="Intelligence">
     <Name>Intelligence</Name>
-    <MinValue>1</MinValue>
-    <MaxValue>20</MaxValue>
   </Stat>
   <Stat statType="Wisdom">
     <Name>Wisdom</Name>
-    <MinValue>1</MinValue>
-    <MaxValue>20</MaxValue>
   </Stat>
   <Stat statType="Charisma">
     <Name>Charisma</Name>
-    <MinValue>1</MinValue>
-    <MaxValue>20</MaxValue>
   </Stat>
 </Stats>

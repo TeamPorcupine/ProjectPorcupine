@@ -24,8 +24,6 @@ public class Stat
     {
         this.statType = other.statType;
         this.Name = other.Name;
-        this.MinValue = other.MinValue;
-        this.MaxValue = other.MaxValue;
     }
 
     public void ReadXmlPrototype(XmlReader reader_parent)
@@ -43,14 +41,6 @@ public class Stat
                     reader.Read();
                     Name = reader.ReadContentAsString();
                     break;
-                case "MinValue":
-                    reader.Read();
-                    MinValue = reader.ReadContentAsInt();
-                    break;
-                case "MaxValue":
-                    reader.Read();
-                    MaxValue = reader.ReadContentAsInt();
-                    break;
             }
         }
     }
@@ -58,5 +48,11 @@ public class Stat
     public Stat Clone()
     {
         return new Stat(this);
+    }
+
+    
+    public override string ToString()
+    {
+        return statType + ": " + Value;
     }
 }

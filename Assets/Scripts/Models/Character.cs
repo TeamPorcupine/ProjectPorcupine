@@ -50,7 +50,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     public Facing CharFacing;
 
     private Need[] needs;
-    private Stat[] stats;
+    private Dictionary<string, Stat> stats;
 
     /// Destination tile of the character.
     private Tile destTile;
@@ -365,9 +365,9 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         writer.WriteAttributeString("needs", needString);
 
         StringBuilder statsString = new StringBuilder();
-        foreach (Stat stat in stats)
+        foreach (KeyValuePair<string, Stat> stat in stats)
         {
-            statsString.Append(stat.statType).Append(";").Append(stat.Value).Append(":");
+            statsString.Append(stat.Value.statType).Append(";").Append(stat.Value.Value).Append(":");
         }
         writer.WriteAttributeString("stats", statsString.ToString());
         writer.WriteAttributeString("r", characterColor.r.ToString());
@@ -421,14 +421,12 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             foreach (string statString in statsStringArray)
             {
                 string[] keyValue = statString.Split(';');
-                foreach (Stat stat in stats)
+                Stat s = getStat(keyValue[0]);
+                if (s != null)
                 {
-                    if (stat.statType == keyValue[0])
+                    if (!int.TryParse(keyValue[1], out s.Value))
                     {
-                        if (!int.TryParse(keyValue[1], out stat.Value))
-                        {
-                            Debug.ULogErrorChannel("Character", "Character.ReadXml() expected an int when deserializing stats");
-                        }
+                        Debug.ULogErrorChannel("Character", "Character.ReadXml() expected an int when deserializing stats");
                     }
                 }
             }
@@ -453,10 +451,10 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         }
 
         StringBuilder statText = new StringBuilder();
-        foreach (Stat s in stats)
+        foreach (KeyValuePair<string, Stat> s in stats)
         {
             // TODO: Localization
-            statText.Append("\n").Append(s.Name).Append(": ").Append(s.Value);
+            statText.Append("\n").Append(s.Value.Name).Append(": ").Append(s.Value.Value);
         }
 
         return "A human astronaut." + needText + statText;
@@ -497,18 +495,25 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
     private void LoadStats()
     {
-        stats = new Stat[PrototypeManager.Stat.Count];
-        PrototypeManager.Stat.Values.CopyTo(stats, 0);
+        stats = new Dictionary<string, Stat>(PrototypeManager.Stat.Count);
         for (int i = 0; i < PrototypeManager.Stat.Count; i++)
         {
-            Stat stat = stats[i];
-            stats[i] = stat.Clone();
-            stats[i].character = this;
+            Stat prototypeStat = PrototypeManager.Stat.Values[i];
+            Stat newStat = prototypeStat.Clone();
+            newStat.character = this;
             // Gets a random value within the min and max range of the stat.
             // TODO: Should there be any bias or any other algorithm applied here to make stats more interesting?
-            stats[i].Value = UnityEngine.Random.Range(stats[i].MinValue, stats[i].MaxValue);
+            newStat.Value = UnityEngine.Random.Range(1, 20);
+            stats.Add(newStat.statType, newStat);
         }
-        Debug.ULogChannel("Character", "Initialized " + stats.Length + " Stats.");
+        Debug.ULogChannel("Character", "Initialized " + stats.Count + " Stats.");
+    }
+
+    public Stat getStat(string statType)
+    {
+        Stat s = null;
+        stats.TryGetValue(statType, out s);
+        return s;
     }
 
     private void GetNewJob()
