@@ -409,4 +409,30 @@
     <LocalizationCode>furn_solar_panel</LocalizationCode>
     <UnlocalizedDescription>furn_solar_panel_desc</UnlocalizedDescription>
   </Furniture>
+
+  <Furniture objectType="simple_bed">
+    <Name>Simple Bed</Name>
+    <Description>A simple bed</Description>
+    <TypeTag>Bed</TypeTag>
+    <MovementCost>2</MovementCost>
+    <Width>1</Width>
+    <Height>2</Height>
+    <PathfindingModifier>1</PathfindingModifier>
+    <PathfindingWeight>1</PathfindingWeight>
+
+    <BuildingJob jobTime="1">
+      <Inventory objectType="Steel Plate" amount="2" />
+    </BuildingJob>
+
+    <DeconstructJob>
+      <Inventory objectType="Steel Plate" amount="1" />
+    </DeconstructJob>
+
+    <Params>
+      <Param name="confort" value="0.5" />
+    </Params>
+    <LocalizationCode>furn_simple_bed</LocalizationCode>
+    <UnlocalizedDescription>furn_simple_bed_desc</UnlocalizedDescription>
+  </Furniture>
+
 </Furnitures>
