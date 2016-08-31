@@ -22,7 +22,7 @@ public class TimeController
 
     private float deltaTime = 0f;
     private float totalDeltaTime = 0f;
-    private float gameTickPerSecond = 5;
+    private static float gameTickPerSecond = 5;
 
     public float DeltaTime
     {
@@ -32,7 +32,7 @@ public class TimeController
         }
     }
 
-    public float GameTickDelay
+    public static float GameTickDelay
     {
         get
         {

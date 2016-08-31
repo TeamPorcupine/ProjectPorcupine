@@ -98,7 +98,7 @@ public class WorldController : MonoBehaviour
 
         soundController = new SoundController(World);
 
-        gameTickDelay = timeController.GameTickDelay;
+        gameTickDelay = TimeController.GameTickDelay;
     }
 
     public void Start()
