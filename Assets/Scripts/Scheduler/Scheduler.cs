@@ -96,13 +96,13 @@ namespace Scheduler
         /// <param name="repeats">Number of repeats (default 1). Ignored if repeatsForever=true.</param>
         public void ScheduleEvent(string name, float cooldown, bool repeatsForever = false, int repeats = 1)
         {
-            if (PrototypeManager.Event.HasPrototype(name) == false)
+            if (PrototypeManager.SchedulerEvent.HasPrototype(name) == false)
             {
                 Debug.ULogWarningChannel("Scheduler", "Tried to schedule an event from a prototype '{0}' which does not exist. Bailing.", name);
                 return;
             }
 
-            ScheduledEvent ep = PrototypeManager.Event.GetPrototype(name);
+            ScheduledEvent ep = PrototypeManager.SchedulerEvent.GetPrototype(name);
             ScheduledEvent evt = new ScheduledEvent(ep, cooldown, cooldown, repeatsForever, repeats);
 
             RegisterEvent(evt);
@@ -118,13 +118,13 @@ namespace Scheduler
         /// <param name="repeats">Number of repeats (default 1). Ignored if repeatsForever=true.</param>
         public void ScheduleEvent(string name, float cooldown, float timeToWait, bool repeatsForever = false, int repeats = 1)
         {
-            if (PrototypeManager.Event.HasPrototype(name) == false)
+            if (PrototypeManager.SchedulerEvent.HasPrototype(name) == false)
             {
                 Debug.ULogWarningChannel("Scheduler", "Tried to schedule an event from a prototype '{0}' which does not exist. Bailing.", name);
                 return;
             }
 
-            ScheduledEvent ep = PrototypeManager.Event.GetPrototype(name);
+            ScheduledEvent ep = PrototypeManager.SchedulerEvent.GetPrototype(name);
             ScheduledEvent evt = new ScheduledEvent(ep, cooldown, timeToWait, repeatsForever, repeats);
 
             RegisterEvent(evt);
@@ -200,7 +200,7 @@ namespace Scheduler
 
         public void RegisterEventPrototype(string name, ScheduledEvent eventPrototype)
         {
-            PrototypeManager.Event.Add(name, eventPrototype);
+            PrototypeManager.SchedulerEvent.Add(name, eventPrototype);
         }
 
         #region IXmlSerializable implementation

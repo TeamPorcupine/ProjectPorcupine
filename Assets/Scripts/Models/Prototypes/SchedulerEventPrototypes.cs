@@ -12,9 +12,9 @@ using System.Collections.Generic;
 using System.Xml;
 using Scheduler;
 
-public class EventPrototypes : XmlPrototypes<ScheduledEvent>
+public class SchedulerEventPrototypes : XmlPrototypes<ScheduledEvent>
 {
-    public EventPrototypes() : base("Events.xml", "Events", "Event")
+    public SchedulerEventPrototypes() : base("Events.xml", "Events", "Event")
     {
     }
 

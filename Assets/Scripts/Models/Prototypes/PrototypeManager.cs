@@ -21,7 +21,7 @@ public class PrototypeManager
         Need = new NeedPrototypes();
         Trader = new TraderPrototypes();
         Quest = new QuestPrototypes();
-        Event = new EventPrototypes();
+        SchedulerEvent = new SchedulerEventPrototypes();
     }
 
     public static BasePrototypes<Job> FurnitureJob
@@ -60,7 +60,7 @@ public class PrototypeManager
         protected set;
     }
 
-    public static EventPrototypes Event
+    public static SchedulerEventPrototypes SchedulerEvent
     {
         get;
         protected set;
