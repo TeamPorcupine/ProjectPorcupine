@@ -102,7 +102,7 @@ namespace Scheduler
                 return;
             }
 
-            EventPrototype ep = PrototypeManager.Event.GetPrototype(name);
+            ScheduledEvent ep = PrototypeManager.Event.GetPrototype(name);
             ScheduledEvent evt = new ScheduledEvent(ep, cooldown, cooldown, repeatsForever, repeats);
 
             RegisterEvent(evt);
@@ -124,7 +124,7 @@ namespace Scheduler
                 return;
             }
 
-            EventPrototype ep = PrototypeManager.Event.GetPrototype(name);
+            ScheduledEvent ep = PrototypeManager.Event.GetPrototype(name);
             ScheduledEvent evt = new ScheduledEvent(ep, cooldown, timeToWait, repeatsForever, repeats);
 
             RegisterEvent(evt);
@@ -198,7 +198,7 @@ namespace Scheduler
             ClearFinishedEvents();
         }
 
-        public void RegisterEventPrototype(string name, EventPrototype eventPrototype)
+        public void RegisterEventPrototype(string name, ScheduledEvent eventPrototype)
         {
             PrototypeManager.Event.Add(name, eventPrototype);
         }

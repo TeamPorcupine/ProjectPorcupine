@@ -28,7 +28,7 @@ public class SchedulerEditorTest
             new PrototypeManager();
             PrototypeManager.Event.Add(
                 "ping_log",
-                new EventPrototype(
+                new ScheduledEvent(
                     "ping_log",
                     (evt) => Debug.ULogChannel("Scheduler", "Event {0} fired", evt.Name)));
         }

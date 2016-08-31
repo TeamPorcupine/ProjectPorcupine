@@ -12,13 +12,13 @@ using System.Collections.Generic;
 using System.Xml;
 using Scheduler;
 
-public class EventPrototypes : XmlPrototypes<EventPrototype>
+public class EventPrototypes : XmlPrototypes<ScheduledEvent>
 {
     public EventPrototypes() : base("Events.xml", "Events", "Event")
     {
     }
 
-    public void Add(string name, EventPrototype eventPrototype)
+    public void Add(string name, ScheduledEvent eventPrototype)
     {
         if (this.HasPrototype(name))
         {
@@ -37,7 +37,7 @@ public class EventPrototypes : XmlPrototypes<EventPrototype>
     {
         string name = reader.GetAttribute("name");
         string luaFuncName = reader.GetAttribute("onFire");
-        EventPrototype ep = new EventPrototype(name, luaFuncName);
-        SetPrototype(name, ep);
+        ScheduledEvent eventPrototype = new ScheduledEvent(name, luaFuncName);
+        SetPrototype(name, eventPrototype);
     }
 }

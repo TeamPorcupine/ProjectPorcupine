@@ -91,7 +91,7 @@ public class WorldController : MonoBehaviour
         // FIXME: Do something real here. This is just to show how to register a C# event prototype for the Scheduler.
         PrototypeManager.Event.Add(
             "ping_log",
-            new EventPrototype(
+            new ScheduledEvent(
                 "ping_log",
                 (evt) => Debug.ULogChannel("Scheduler", "Event {0} fired", evt.Name)));
 

@@ -15,6 +15,12 @@ using MoonSharp.Interpreter;
 
 namespace Scheduler
 {
+    public enum EventType
+    {
+        CSharp,
+        Lua
+    }
+
     /// <summary>
     /// The <see cref="Scheduler.ScheduledEvent"/> class represents an individual
     /// event which is handled by the Scheduler.
@@ -28,8 +34,6 @@ namespace Scheduler
     [MoonSharpUserData]
     public class ScheduledEvent : IXmlSerializable
     {
-        // TODO: Serialization!
-
         /// <summary>
         /// Initializes a new instance of the <see cref="Scheduler.ScheduledEvent"/> class.
         /// This form of the constructor assumes the ScheduledEvent is of the EventType.CSharp type.
@@ -61,12 +65,12 @@ namespace Scheduler
             this.EventType = other.EventType;
         }
 
-        public ScheduledEvent(EventPrototype eventPrototype, float cooldown, float timeToWait, bool repeatsForever = false, int repeats = 1)
+        public ScheduledEvent(ScheduledEvent eventPrototype, float cooldown, float timeToWait, bool repeatsForever = false, int repeats = 1)
         {
             this.Name = eventPrototype.Name;
             if (eventPrototype.EventType == EventType.CSharp)
             {
-                this.OnFire = eventPrototype.OnFireCallback();
+                this.OnFire = eventPrototype.OnFire;
             }
             else
             {
@@ -80,11 +84,27 @@ namespace Scheduler
             this.EventType = eventPrototype.EventType;
         }
 
+        public ScheduledEvent(string name, Action<ScheduledEvent> onFire)
+        {
+            this.Name = name;
+            this.OnFire = onFire;
+            this.EventType = EventType.CSharp;
+        }
+
+        public ScheduledEvent(string name, string luaFuctionName)
+        {
+            this.Name = name;
+            this.LuaFunctionName = luaFuctionName;
+            this.EventType = EventType.Lua;
+        }
+
         private event Action<ScheduledEvent> OnFire;
 
         public string Name { get; protected set; }
 
         public EventType EventType { get; protected set; }
+
+        public string LuaFunctionName { get; protected set; }
 
         public int RepeatsLeft { get; protected set; }
 
