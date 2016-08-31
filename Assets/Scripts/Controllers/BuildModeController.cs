@@ -6,6 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using System.Linq;
 using MoonSharp.Interpreter;
 using UnityEngine;
 
@@ -38,7 +39,7 @@ public class BuildModeController
             return true;
         }
 
-        Furniture proto = WorldController.Instance.World.furniturePrototypes[buildModeObjectType];
+        Furniture proto = PrototypeManager.Furniture.GetPrototype(buildModeObjectType);
 
         return proto.Width == 1 && proto.Height == 1;
     }
@@ -100,10 +101,10 @@ public class BuildModeController
                 // Create a job for it to be build
                 Job j;
 
-                if (WorldController.Instance.World.furnitureJobPrototypes.ContainsKey(furnitureType))
+                if (PrototypeManager.FurnitureJob.HasPrototype(furnitureType))
                 {
                     // Make a clone of the job prototype
-                    j = WorldController.Instance.World.furnitureJobPrototypes[furnitureType].Clone();
+                    j = PrototypeManager.FurnitureJob.GetPrototype(furnitureType).Clone();
 
                     // Assign the correct tile.
                     j.tile = t;
@@ -115,7 +116,7 @@ public class BuildModeController
                     j.JobDescription = "job_build_" + furnitureType + "_desc";
                 }
 
-                j.furniturePrototype = WorldController.Instance.World.furniturePrototypes[furnitureType];
+                j.furniturePrototype = PrototypeManager.Furniture.GetPrototype(furnitureType);
 
                 // Add the job to the queue or build immediately if in dev mode
                 if (Settings.GetSettingAsBool("DialogBoxSettings_developerModeToggle", false))
@@ -124,9 +125,9 @@ public class BuildModeController
                 }
                 else
                 {
-                    for (int x_off = t.X; x_off < (t.X + WorldController.Instance.World.furniturePrototypes[furnitureType].Width); x_off++)
+                    for (int x_off = t.X; x_off < (t.X + j.furniturePrototype.Width); x_off++)
                     {
-                        for (int y_off = t.Y; y_off < (t.Y + WorldController.Instance.World.furniturePrototypes[furnitureType].Height); y_off++)
+                        for (int y_off = t.Y; y_off < (t.Y + j.furniturePrototype.Height); y_off++)
                         {
                             // FIXME: I don't like having to manually and explicitly set
                             // flags that preven conflicts. It's too easy to forget to set/clear them!
@@ -230,13 +231,18 @@ public class BuildModeController
 
     public bool DoesBuildJobOverlapExistingBuildJob(Tile t, string furnitureType)
     {
-        for (int x_off = t.X; x_off < (t.X + WorldController.Instance.World.furniturePrototypes[furnitureType].Width); x_off++)
+        Furniture proto = PrototypeManager.Furniture.GetPrototype(furnitureType);
+
+        for (int x_off = t.X; x_off < (t.X + proto.Width); x_off++)
         {
-            for (int y_off = t.Y; y_off < (t.Y + WorldController.Instance.World.furniturePrototypes[furnitureType].Height); y_off++)
+            for (int y_off = t.Y; y_off < (t.Y + proto.Height); y_off++)
             {
-                if (WorldController.Instance.World.GetTileAt(x_off, y_off).PendingBuildJob != null)
+                Job pendingBuildJob = WorldController.Instance.World.GetTileAt(x_off, y_off).PendingBuildJob;
+                if (pendingBuildJob != null)
                 {
-                    return true;
+                    // if the existing buildJobs furniture is replaceable by the current furnitureType,
+                    // we can pretend it does not overlap with the new build
+                    return !proto.ReplaceableFurniture.Any(pendingBuildJob.furniturePrototype.HasTypeTag);
                 }
             }
         }
@@ -248,6 +254,11 @@ public class BuildModeController
     // TODO Export this kind of check to an XML/LUA file for easier modding of floor types.
     private bool CanBuildTileTypeHere(Tile t, TileType tileType)
     {
+        if (tileType.CanBuildHereLua == null)
+        {
+            return true;
+        }
+
         DynValue value = LuaUtilities.CallFunction(tileType.CanBuildHereLua, t);
 
         if (value != null)
