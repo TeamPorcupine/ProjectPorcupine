@@ -371,7 +371,7 @@ public class MouseController
         {
             for (int y = dragParams.StartY; y <= dragParams.EndY; y++)
             {
-                Tile t = WorldController.Instance.World.GetTileAt(x, y);
+                Tile t = WorldController.Instance.World.GetTileAt(x, y, 0);
                 if (t != null)
                 {
                     // Display the building hint on top of this tile position.
@@ -406,7 +406,7 @@ public class MouseController
         {
             for (int y = dragParams.StartY; y <= dragParams.EndY; y++)
             {
-                Tile t = WorldController.Instance.World.GetTileAt(x, y);
+                Tile t = WorldController.Instance.World.GetTileAt(x, y, 0);
                 if (bmc.buildMode == BuildMode.FURNITURE)
                 {
                     // Check for furniture dragType.

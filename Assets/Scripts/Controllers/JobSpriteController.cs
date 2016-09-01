@@ -117,8 +117,8 @@ public class JobSpriteController : BaseSpriteController<Job>
             // By default, the door graphic is meant for walls to the east & west
             // Check to see if we actually have a wall north/south, and if so
             // then rotate this GO by 90 degrees
-            Tile northTile = world.GetTileAt(job.tile.X, job.tile.Y + 1);
-            Tile southTile = world.GetTileAt(job.tile.X, job.tile.Y - 1);
+            Tile northTile = world.GetTileAt(job.tile.X, job.tile.Y + 1, job.tile.Z);
+            Tile southTile = world.GetTileAt(job.tile.X, job.tile.Y - 1, job.tile.Z);
 
             if (northTile != null && southTile != null && northTile.Furniture != null && southTile.Furniture != null &&
             northTile.Furniture.ObjectType.Contains("Wall") && southTile.Furniture.ObjectType.Contains("Wall"))

@@ -32,10 +32,11 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
     /// </summary>
     /// <param name="x">The x coordinate.</param>
     /// <param name="y">The y coordinate.</param>
-    public Tile(int x, int y)
+    public Tile(int x, int y, int z)
     {
         X = x;
         Y = y;
+        Z = z;
         Characters = new List<Character>();
     }
 
@@ -111,6 +112,8 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
 
     public int Y { get; private set; }
 
+    public int Z { get; private set; }
+
     public float MovementCost
     {
         get
@@ -152,7 +155,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         {
             for (int y_off = Y; y_off < Y + furniture.Height; y_off++)
             {
-                Tile tile = World.Current.GetTileAt(x_off, y_off);
+                Tile tile = World.Current.GetTileAt(x_off, y_off, Z);
                 tile.Furniture = null;
             }
         }
@@ -177,7 +180,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         {
             for (int y_off = Y; y_off < Y + objInstance.Height; y_off++)
             {
-                Tile t = World.Current.GetTileAt(x_off, y_off);
+                Tile t = World.Current.GetTileAt(x_off, y_off, Z);
                 t.Furniture = objInstance;
             }
         }
@@ -235,6 +238,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
     {
         // Check to see if we have a difference of exactly ONE between the two
         // tile coordinates.  Is so, then we are vertical or horizontal neighbours.
+        // Note: We do not care about vertical adjacency, only horizontal (X and Y)
         return
             Math.Abs(X - tile.X) + Math.Abs(Y - tile.Y) == 1 || // Check hori/vert adjacency
         (diagOkay && Math.Abs(X - tile.X) == 1 && Math.Abs(Y - tile.Y) == 1); // Check diag adjacency
@@ -249,24 +253,24 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
     {
         Tile[] ns = diagOkay == false ? new Tile[4] : new Tile[8];
 
-        Tile tile = World.Current.GetTileAt(X, Y + 1);
+        Tile tile = World.Current.GetTileAt(X, Y + 1, Z);
         ns[0] = tile; // Could be null, but that's okay.
-        tile = World.Current.GetTileAt(X + 1, Y);
+        tile = World.Current.GetTileAt(X + 1, Y, Z);
         ns[1] = tile; // Could be null, but that's okay.
-        tile = World.Current.GetTileAt(X, Y - 1);
+        tile = World.Current.GetTileAt(X, Y - 1, Z);
         ns[2] = tile; // Could be null, but that's okay.
-        tile = World.Current.GetTileAt(X - 1, Y);
+        tile = World.Current.GetTileAt(X - 1, Y, Z);
         ns[3] = tile; // Could be null, but that's okay.
 
         if (diagOkay == true)
         {
-            tile = World.Current.GetTileAt(X + 1, Y + 1);
+            tile = World.Current.GetTileAt(X + 1, Y + 1, Z);
             ns[4] = tile; // Could be null, but that's okay.
-            tile = World.Current.GetTileAt(X + 1, Y - 1);
+            tile = World.Current.GetTileAt(X + 1, Y - 1, Z);
             ns[5] = tile; // Could be null, but that's okay.
-            tile = World.Current.GetTileAt(X - 1, Y - 1);
+            tile = World.Current.GetTileAt(X - 1, Y - 1, Z);
             ns[6] = tile; // Could be null, but that's okay.
-            tile = World.Current.GetTileAt(X - 1, Y + 1);
+            tile = World.Current.GetTileAt(X - 1, Y + 1, Z);
             ns[7] = tile; // Could be null, but that's okay.
         }
 
@@ -290,6 +294,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
     {
         writer.WriteAttributeString("X", X.ToString());
         writer.WriteAttributeString("Y", Y.ToString());
+        writer.WriteAttributeString("Z", Z.ToString());
         writer.WriteAttributeString("RoomID", Room == null ? "-1" : Room.ID.ToString());
         writer.WriteAttributeString("Type", Type.Type);
     }
@@ -325,22 +330,22 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
 
     public Tile North()
     {
-        return World.Current.GetTileAt(X, Y + 1);
+        return World.Current.GetTileAt(X, Y + 1, Z);
     }
 
     public Tile South()
     {
-        return World.Current.GetTileAt(X, Y - 1);
+        return World.Current.GetTileAt(X, Y - 1, Z);
     }
 
     public Tile East()
     {
-        return World.Current.GetTileAt(X + 1, Y);
+        return World.Current.GetTileAt(X + 1, Y, Z);
     }
 
     public Tile West()
     {
-        return World.Current.GetTileAt(X - 1, Y);
+        return World.Current.GetTileAt(X - 1, Y, Z);
     }
 
     public float GetGasPressure(string gas)

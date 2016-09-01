@@ -22,8 +22,11 @@ public class TileSpriteController : BaseSpriteController<Tile>
         {
             for (int y = 0; y < world.Height; y++)
             {
-                Tile tile = world.GetTileAt(x, y);
-                OnCreated(tile);
+                for (int z = 0; z < world.Depth; z++)
+                {
+                    Tile tile = world.GetTileAt(x, y, z);
+                    OnCreated(tile);
+                }
             }
         }
     }
@@ -43,8 +46,8 @@ public class TileSpriteController : BaseSpriteController<Tile>
         // Add our tile/GO pair to the dictionary.
         objectGameObjectMap.Add(tile, tile_go);
 
-        tile_go.name = "Tile_" + tile.X + "_" + tile.Y;
-        tile_go.transform.position = new Vector3(tile.X, tile.Y, 0);
+        tile_go.name = "Tile_" + tile.X + "_" + tile.Y + "_" + tile.Z;
+        tile_go.transform.position = new Vector3(tile.X, tile.Y, tile.Z);
         tile_go.transform.SetParent(objectParent.transform, true);
 
         // Add a Sprite Renderer
