@@ -34,12 +34,20 @@ public class SpriteToXML : EditorWindow
     private bool isMultipleSprite = false;
     private bool showInstructions = false;
     private bool useCustomPivot = false;
+    private bool textureLoaded = false;
 
     private float pivotX = 0.5f;
     private float pivotY = 0.5f;
 
-    private string imageName;
-    private int spriteCount = 0;
+    private string imageName = string.Empty;
+    private string imageExt = string.Empty;
+
+    private int spriteCount = 0;    
+
+    private Texture2D myTexture = null;
+
+    private Vector2 scrollPosition;
+    private EditorWindow window;
 
     private enum Version
     {
@@ -47,7 +55,7 @@ public class SpriteToXML : EditorWindow
         v2
     }
 
-    [MenuItem("Window/Sprite Sheet To XML")]
+    [MenuItem("Window/Sprite To XML")]
     public static void ShowWindow()
     {
         GetWindow(typeof(SpriteToXML));
@@ -58,19 +66,44 @@ public class SpriteToXML : EditorWindow
         return int.Parse(pixelPerUnitOptions[index]);
     }
 
+    private void Awake()
+    {
+        window = GetWindow(typeof(SpriteToXML));
+        window.minSize = new Vector2(460, 680);
+    }
+
     private void OnGUI()
     {
-        GUILayout.BeginHorizontal();
+        GUILayout.BeginHorizontal("Box");
 
-        if (GUILayout.Button("Unity Based"))
+        switch (version)
         {
-            version = Version.v1;            
-        }
+            case Version.v1:
+                if (GUILayout.Button("Unity Based"))
+                {
+                    version = Version.v1;
+                }
 
-        if (GUILayout.Button("Settings Based"))
-        {
-            version = Version.v2;
-        }
+                if (GUILayout.Button("Settings Based", EditorStyles.miniButton))
+                {
+                    version = Version.v2;
+                }
+
+                break;
+
+            case Version.v2:
+                if (GUILayout.Button("Unity Based", EditorStyles.miniButton))
+                {
+                    version = Version.v1;
+                }
+
+                if (GUILayout.Button("Settings Based"))
+                {
+                    version = Version.v2;
+                }
+
+                break;
+        }        
 
         GUILayout.EndHorizontal();
         showInstructions = EditorGUILayout.ToggleLeft("Instructions", showInstructions);
@@ -119,7 +152,7 @@ public class SpriteToXML : EditorWindow
 
             if (images.Length > 1)
             {
-                Debug.LogError("Place only one sprite in 'Resources/Editor/SpriteToXML'");
+                Debug.ULogErrorChannel("SpriteToXML", "Place only one sprite in 'Resources/Editor/SpriteToXML'");
                 return;
             }
 
@@ -133,12 +166,13 @@ public class SpriteToXML : EditorWindow
         {
             EditorUtility.RevealInFinder(outputDirPath);
         }
+
         EditorGUILayout.EndVertical();
     }
 
     private void ExportSprites()
     {
-        Debug.ULogChannel("SpriteToXML","Files saved to: " + outputDirPath);
+        Debug.ULogChannel("SpriteToXML", "Files saved to: " + outputDirPath);
 
         foreach (string fn in filesInDir)
         {
@@ -157,7 +191,7 @@ public class SpriteToXML : EditorWindow
     {
         if (outputDirPath == string.Empty)
         {
-            Debug.ULogErrorChannel("SpriteToXML","Please select a folder");
+            Debug.ULogErrorChannel("SpriteToXML", "Please select a folder");
             return;
         }
         
@@ -241,7 +275,11 @@ public class SpriteToXML : EditorWindow
 
         if (GUILayout.Button("Select Image"))
         {
-            inputDirPath = EditorUtility.OpenFilePanel("Select file to generate a XML for", inputDirPath, string.Empty);
+            inputDirPath = EditorUtility.OpenFilePanelWithFilters("Select file to generate a XML for", inputDirPath, new string[] { "Image files", "png,jpg,jpeg" });
+            if (File.Exists(inputDirPath))
+            {
+                LoadImage(inputDirPath);
+            }
         }
 
         if (GUILayout.Button("Set Output Folder"))
@@ -250,27 +288,30 @@ public class SpriteToXML : EditorWindow
         }
 
         GUILayout.EndHorizontal();
-        EditorGUILayout.Space();
-        EditorGUILayout.BeginVertical("Box");
+        EditorGUILayout.Space();        
+
         GUILayout.Label("Settings:", EditorStyles.boldLabel);
+        EditorGUILayout.BeginVertical("Box");        
         GUILayout.BeginHorizontal();
 
         GUILayout.Label("Pixels Per Unit:", EditorStyles.boldLabel);
         index = EditorGUILayout.Popup(index, pixelPerUnitOptions);
 
         GUILayout.EndHorizontal();
-        EditorGUILayout.Space();
+        EditorGUILayout.Space();       
         GUILayout.BeginHorizontal();
 
         isMultipleSprite = EditorGUILayout.ToggleLeft("Is this a Multiple Sprite image?", isMultipleSprite);
         useCustomPivot = EditorGUILayout.ToggleLeft("Use a custom pivot?", useCustomPivot);
 
         GUILayout.EndHorizontal();
-        EditorGUILayout.Space();
-        
+        EditorGUILayout.Space();        
+
         if (isMultipleSprite)
         {
-            GUILayout.BeginHorizontal("Box");
+            GUILayout.BeginVertical("Box");
+            GUILayout.Label("Select Rows/Columns:", EditorStyles.boldLabel);
+            GUILayout.BeginHorizontal();
             GUILayout.BeginHorizontal();
 
             GUILayout.Label("Rows:", EditorStyles.boldLabel);
@@ -284,43 +325,56 @@ public class SpriteToXML : EditorWindow
 
             GUILayout.EndHorizontal();
             GUILayout.EndHorizontal();
-
-            EditorGUILayout.Space();
-            EditorGUILayout.Space();
+            GUILayout.EndVertical();
+            EditorGUILayout.Space();            
         }
         
         if (useCustomPivot)
         {
+            EditorGUILayout.BeginVertical("Box");
+            GUILayout.Label("Custom Pivot Settings:", EditorStyles.boldLabel);
             EditorGUILayout.BeginHorizontal("Box");
-            pivotX = EditorGUILayout.FloatField("Pivot X", pivotX);
-            pivotY = EditorGUILayout.FloatField("Pivot Y", pivotY);
+            pivotX = Mathf.Clamp01(EditorGUILayout.FloatField("Pivot X", pivotX));
+            pivotY = Mathf.Clamp01(EditorGUILayout.FloatField("Pivot Y", pivotY));
             EditorGUILayout.EndHorizontal();
+            EditorGUILayout.EndVertical();
             EditorGUILayout.Space();
         }
         
         EditorGUILayout.EndVertical();
+        EditorGUILayout.Space();
 
-        if (inputDirPath != string.Empty && outputDirPath != string.Empty)
+        if (textureLoaded == true)
+        {            
+            GUILayout.Label(imageName + " Preview:", EditorStyles.boldLabel);
+        }
+        else
+        {            
+            GUILayout.Label("Preview:", EditorStyles.boldLabel);
+        }
+
+        EditorGUILayout.BeginVertical("Box");
+
+        scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition, GUILayout.Width(446), GUILayout.Height(210));
+        GUILayout.Label(myTexture);
+
+        EditorGUILayout.EndScrollView();        
+        EditorGUILayout.EndVertical();        
+
+        if (textureLoaded == true && outputDirPath != string.Empty)
         {
-            if (GUILayout.Button("Export Sprite to XML"))
+            EditorGUILayout.Space();
+            
+            if (GUILayout.Button("Export " + imageName + ".xml"))
             {
-                Debug.ULogChannel("SpriteToXML", "File Loaded: " + inputDirPath);
-
-                if (inputDirPath.Contains(".png") || inputDirPath.Contains(".jpg") || inputDirPath.Contains(".jpeg"))
+                if ((columnIndex == 0 && rowIndex == 0) && isMultipleSprite == true)
                 {
-                    if (columnIndex == 0 && rowIndex == 0 && isMultipleSprite == true)
-                    {
-                        Debug.ULogErrorChannel("SpriteToXML", "Please select more than 1 Row/Column");
-                    }
-                    else
-                    {
-                        LoadImage(inputDirPath);
-                    }
+                    EditorUtility.DisplayDialog("Select proper Row/Column count", "Please select more than 1 Row/Column!", "OK");
+                    Debug.ULogErrorChannel("SpriteToXML", "Please select more than 1 Row/Column");
                 }
                 else
                 {
-                    EditorUtility.DisplayDialog("Select proper filetype", "You must select a PNG or JPG image!", "OK");
-                    Debug.ULogErrorChannel("SpriteToXML", "Please select a PNG or JPG image");
+                    GenerateXML(inputDirPath, myTexture);
                 }
             }
         }
@@ -330,59 +384,69 @@ public class SpriteToXML : EditorWindow
             EditorGUILayout.Space();
             EditorGUILayout.BeginVertical("Box");
             GUILayout.Label("Current Path: " + outputDirPath);
+
             if (GUILayout.Button("Open Output Folder"))
             {
                 EditorUtility.RevealInFinder(outputDirPath);
             }
+
             EditorGUILayout.EndVertical();
         }
     }
 
     private void LoadImage(string filePath)
-    {
-        ////Debug.Log("LoadImage: " + filePath);
-
+    {        
         // Load the file into a texture.
         byte[] imageBytes = System.IO.File.ReadAllBytes(filePath);
 
         // Create some kind of dummy instance of Texture2D.
         // LoadImage will correctly resize the texture based on the image file.
         Texture2D imageTexture = new Texture2D(2, 2);
+        myTexture = new Texture2D(2, 2);
 
         // Image was successfully loaded.
         if (imageTexture.LoadImage(imageBytes))
         {
+            myTexture = imageTexture;
             imageName = Path.GetFileNameWithoutExtension(filePath);
-
-            XmlWriterSettings xmlWriterSettings = new XmlWriterSettings()
-            {
-                Indent = true,
-                IndentChars = "\t",
-                NewLineOnAttributes = false
-            };
-
-            XmlWriter writer = XmlWriter.Create(Path.Combine(outputDirPath, imageName + ".xml"), xmlWriterSettings);
-
-            writer.WriteStartDocument();
-            writer.WriteStartElement("Sprites");
-
-            switch (isMultipleSprite)
-            {
-                case false:
-                    SingleSpriteXML(writer, imageTexture);
-                    break;
-                case true:
-                    MultiSpriteXML(writer, imageTexture);
-                    break;
-            }
-
-            writer.WriteEndElement();
-            writer.WriteEndDocument();
-            writer.Close();
-
-            spriteCount = 0;
-            inputDirPath = string.Empty;
+            imageExt = Path.GetExtension(filePath);
+            Debug.ULogChannel("SpriteToXML", imageName + " Loaded");
+            textureLoaded = true;
+            ////GenerateXML(filePath, imageTexture);
         }        
+    }
+
+    private void GenerateXML(string filePath, Texture2D imageTexture)
+    {
+        XmlWriterSettings xmlWriterSettings = new XmlWriterSettings()
+        {
+            Indent = true,
+            IndentChars = "\t",
+            NewLineOnAttributes = false
+        };
+
+        XmlWriter writer = XmlWriter.Create(Path.Combine(outputDirPath, imageName + ".xml"), xmlWriterSettings);
+
+        writer.WriteStartDocument();
+        writer.WriteStartElement("Sprites");
+
+        switch (isMultipleSprite)
+        {
+            case false:
+                SingleSpriteXML(writer, imageTexture);
+                break;
+            case true:
+                MultiSpriteXML(writer, imageTexture);
+                break;
+        }
+
+        writer.WriteEndElement();
+        writer.WriteEndDocument();
+        writer.Close();
+
+        MoveImage(filePath);
+
+        ResetForm();        
     }
 
     private void SingleSpriteXML(XmlWriter writer, Texture2D imageTexture)
@@ -429,6 +493,39 @@ public class SpriteToXML : EditorWindow
                 spriteCount++;
             }
         }        
+    }
+
+    private void MoveImage(string filePath)
+    {
+        string destPath = Path.Combine(outputDirPath, imageName + imageExt);
+            
+        if (File.Exists(destPath))
+        {                
+            File.Replace(filePath, destPath, destPath + ".bak");            
+            Debug.ULogWarningChannel("SpriteToXML", "Image already exsists, backing old one up to: " + destPath + ".bak");
+        }
+        else
+        {
+            File.Move(filePath, destPath);            
+            Debug.ULogChannel("SpriteToXML", "Image moved to: " + destPath);
+        }
+
+        if (File.Exists(filePath + ".meta") && File.Exists(destPath + ".meta"))
+        {
+            File.Replace(filePath + ".meta", destPath + ".meta", destPath + ".meta.bak");
+        }
+        else
+        {
+            File.Move(filePath + ".meta", destPath + ".meta");
+        }
+    }
+
+    private void ResetForm()
+    {
+        textureLoaded = false;
+        spriteCount = 0;
+        inputDirPath = imageExt = imageName = string.Empty;
+        myTexture = null;
     }
 
     private bool IsPowerOfTwo(int x)
