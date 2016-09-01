@@ -88,11 +88,11 @@ end
 
 
 function OnUpdate_Leak_Door( furniture, deltaTime )
-	furniture.Tile.EqualiseGas(deltaTime * 10.0 * (furniture.Parameters["openness"].ToFloat() + 0.1))
+	
 end
 
 function OnUpdate_Leak_Airlock( furniture, deltaTime )
-	furniture.Tile.EqualiseGas(deltaTime * 10.0 * (furniture.Parameters["openness"].ToFloat()))
+	
 end
 
 function IsEnterable_Door( furniture )
@@ -488,6 +488,9 @@ function CloningPod_UpdateAction(furniture, deltaTime)
         false
     )
 
+    if (furniture.JobCount() < 1) then
+        furniture.SetAnimationState("idle")
+    end
     j.RegisterJobWorkedCallback("CloningPod_JobRunning")
     j.RegisterJobCompletedCallback("CloningPod_JobComplete")
 	j.JobDescription = "job_cloning_pod_cloning_desc"
@@ -495,22 +498,7 @@ function CloningPod_UpdateAction(furniture, deltaTime)
 end
 
 function CloningPod_JobRunning(j)
-    local step = 0
-    if (math.floor(math.abs(j.JobTime * j.furniture.Parameters["animationTimer"].ToFloat())) % 2 == 0) then
-        step = 1
-    end
-    if (j.furniture.Parameters["animationStep"].ToFloat() != step) then
-         j.furniture.Parameters["animationStep"].SetValue(step)
-         j.furniture.UpdateOnChanged(j.furniture)
-    end
-end
-
-function CloningPod_GetSpriteName(furniture)
-    local baseName = "cloning_pod"
-    if (furniture.JobCount() < 1) then
-        return baseName
-    end
-    return baseName .. "_" .. furniture.Parameters["animationStep"].ToFloat()
+    j.furniture.SetAnimationState("running")
 end
 
 function CloningPod_JobComplete(j)
@@ -535,12 +523,17 @@ function PowerGenerator_UpdateAction(furniture, deltatime)
 
         j.RegisterJobCompletedCallback("PowerGenerator_JobComplete")
         j.JobDescription = "job_power_generator_fulling_desc"
-        furniture.AddJob( j )
+        furniture.AddJob( j )        
     else
         furniture.Parameters["burnTime"].ChangeFloatValue(-deltatime)
         if ( furniture.Parameters["burnTime"].ToFloat() < 0 ) then
             furniture.Parameters["burnTime"].SetValue(0)
-        end
+        end        
+    end
+    if (furniture.Parameters["burnTime"].ToFloat() == 0) then
+        furniture.SetAnimationState("idle")
+    else
+        furniture.SetAnimationState("running")
     end
 end
 

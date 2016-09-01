@@ -17,37 +17,41 @@ namespace Animation
     /// </summary>
     public class SpritenameAnimation
     {
-        // index in spritesheet
-        public string CurrentFrameName;
-        public bool FlipX;
-
-        // frame of animation. 0 to frames.length
-        public int CurrentFrame;
         private int frameCount;
 
         // delay between frames in seconds
         private float delay;
         private bool finished;
         private bool loops;
-
-        // easier to debug with a name. Can be removed
-        private string name;
         private string[] frames;
         private float timer = 0;
-
-        public SpritenameAnimation(string name, string[] frames, float delay = .5f, bool loops = true, bool flipX = false)
+        
+        public SpritenameAnimation(string state, string[] frames, float delay = .5f, bool loops = true)
         {
-            this.name = name;
+            this.State = state;
             this.frames = frames;
             this.delay = delay;
             this.loops = loops;
-            this.FlipX = flipX;
 
             frameCount = this.frames.Length;
             CurrentFrame = 0;
             CurrentFrameName = this.frames[CurrentFrame];
         }
 
+        // current frames value
+        public string CurrentFrameName { get; set; }
+
+        // frame of animation. 0 to frames.length
+        public int CurrentFrame { get; set; }
+
+        public string State { get; set; }
+
+        public SpritenameAnimation Clone()
+        {
+            SpritenameAnimation returnFA = new SpritenameAnimation(State, frames, delay, loops);
+            return returnFA;
+        }
+        
         public void Play()
         {
             finished = false;

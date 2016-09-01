@@ -11,11 +11,11 @@ using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using Animation;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
 using Power;
 using UnityEngine;
-using Animation;
 
 /// <summary>
 /// InstalledObjects are things like walls, doors, and furniture (e.g. a sofa).
@@ -109,13 +109,17 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         Height = other.Height;
         Tint = other.Tint;
         LinksToNeighbour = other.LinksToNeighbour;
-        Animation = other.Animation;
-
+        
         JobSpotOffset = other.JobSpotOffset;
         jobSpawnSpotOffset = other.jobSpawnSpotOffset;
 
         furnParameters = new Parameter(other.furnParameters);
         jobs = new List<Job>();
+
+        if (other.Animation != null)
+        {
+            Animation = other.Animation.Clone();
+        }        
 
         if (other.EventActions != null)
         {
@@ -352,7 +356,12 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         {
             // updateActions(this, deltaTime);
             EventActions.Trigger("OnUpdate", this, deltaTime);
-        }        
+        }
+
+        if (Animation != null)
+        {
+            Animation.Update(deltaTime);
+        }
     }
 
     public Enterability IsEnterable()
@@ -502,21 +511,19 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                     Animation = new FurnitureAnimation();
                     while (animationReader.Read())
                     {
+                        string n = animationReader.Name;
                         if (animationReader.Name == "Animation")
                         {
-                            string aniname = animationReader.GetAttribute("name");
+                            string state = animationReader.GetAttribute("state");
                             string spriteBase = animationReader.GetAttribute("spriteBase");
                             string frames = animationReader.GetAttribute("frames");
+                            float fps = float.Parse(animationReader.GetAttribute("fps"));
                             bool looping = bool.Parse(animationReader.GetAttribute("looping"));
-                            //string conditionParam = animationReader.GetAttribute("conditionParam");
-                            //float conditionValue = float.Parse(animationReader.GetAttribute("conditionValue"));
-                            //string progressParam = animationReader.GetAttribute("progressParam");
-                            //float progressMin = float.Parse(animationReader.GetAttribute("progressMin"));
-                            //float progressMax = float.Parse(animationReader.GetAttribute("progressMax"));
-                            //Animation.AddAnimation(aniname, spriteBase, frames, looping, conditionParam, conditionValue, progressParam, progressMin, progressMax);
-                            Animation.AddAnimation(aniname, spriteBase, frames, looping);
+
+                            Animation.AddAnimation(state, spriteBase, frames, fps, looping);                            
                         }
                     }
+
                     break;
                 case "Action":
                     XmlReader subtree = reader.ReadSubtree();
@@ -749,6 +756,14 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     public string GetJobDescription()
     {
         return string.Empty;
+    }
+
+    public void SetAnimationState(string stateName)
+    {
+        if (Animation != null)
+        {
+            Animation.SetState(stateName);
+        }
     }
 
     public IEnumerable<ContextMenuAction> GetContextMenuActions(ContextMenu contextMenu)

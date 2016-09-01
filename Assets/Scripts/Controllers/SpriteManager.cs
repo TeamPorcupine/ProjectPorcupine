@@ -134,7 +134,7 @@ public class SpriteManager : MonoBehaviour
 
             // NOTE: The extension must be in lower case!
             string xmlPath = Path.Combine(basePath, baseSpriteName + ".xml");
-
+            
             if (File.Exists(xmlPath))
             {
                 string xmlText = File.ReadAllText(xmlPath);

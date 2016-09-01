@@ -130,7 +130,7 @@ namespace Animation
             {
                 newAnimation += 10;
             }
-
+            
             // TODO: What is the acceptable amount of O2 gas pressure? 
             // Using .15 from Need.cs for now.        
             if (character.CurrTile.GetGasPressure("O2") >= 0.15f)

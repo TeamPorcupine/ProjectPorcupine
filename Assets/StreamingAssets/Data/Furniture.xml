@@ -206,8 +206,28 @@
     <Height>2</Height>
     <PowerConnection inputRate="" outputRate="5" capacity=""/>
 
+<!-- 
+Maybe do animation frames like this in the future. 
+Might be harder to read if we have many animations
+        
     <Animations>
-      <Animation name="running" spriteBase="Power Generator anim-" frame="01,02" looping="false"></Animation>
+      <Animation state="idle" looping="false">
+        <Frames>
+            <Frame name="Power-Generator-anim-04" time="0.5" />
+        </Frames>
+      </Animation>
+      <Animation state="running" looping="true">   
+        <Frames>
+            <Frame name="Power-Generator-anim-01" time="0.5" />
+            <Frame name="Power-Generator-anim-02" time="0.5" />
+            <Frame name="Power-Generator-anim-03" time="0.5" />
+        </Frames>      
+      </Animation>       
+    </Animations>
+-->
+    <Animations>
+      <Animation state="idle" spriteBase="Power-Generator-anim-" frames="04" fps="2" looping="false" />
+      <Animation state="running" spriteBase="Power-Generator-anim-" frames="01,02,03" fps="2" looping="true" />          
     </Animations>
     
     <BuildingJob jobTime="0" />
@@ -241,6 +261,11 @@
       <Inventory objectType="Steel Plate" amount="15" />
     </DeconstructJob>
 
+    <Animations>
+      <Animation state="idle" spriteBase="cloning_" frames="pod" fps="1" looping="false" />
+      <Animation state="running" spriteBase="cloning_pod_" frames="0,1" fps="1" looping="true" />          
+    </Animations>
+
     <Params>
       <Param name="animationTimer" value="1" />
       <Param name="animationStep" value="0" />
@@ -250,8 +275,7 @@
     <JobSpawnSpotOffset X="1" Y="-1" />
 
     <Action event="OnUpdate" functionName="CloningPod_UpdateAction" />
-    <GetSpriteName FunctionName="CloningPod_GetSpriteName" />
-
+    
     <LocalizationCode>furn_cloning_pod</LocalizationCode>
     <UnlocalizedDescription>furn_cloning_pod_desc</UnlocalizedDescription>
   </Furniture>
