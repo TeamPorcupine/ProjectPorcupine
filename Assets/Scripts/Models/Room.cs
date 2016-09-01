@@ -293,6 +293,17 @@ public class Room : IXmlSerializable
         return 0;
     }
 
+    public float GetGasPressure()
+    {
+        float pressure = 0;
+        foreach (float p in atmosphericGasses.Values)
+        {
+            pressure += p;
+        }
+
+        return pressure;
+    }
+
     // Gets gas amount in preasure(in atm).
     public float GetGasPressure(string name)
     {

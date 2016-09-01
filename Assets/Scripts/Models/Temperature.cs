@@ -161,10 +161,9 @@ public class Temperature
     /// Public interface to thermal diffusivity model. Each tile has a value (say alpha) that
     /// tells  how the heat flows into that tile. Lower value means heat flows much slower (like trough a wall)
     /// while a value of 1 means the temperature "moves" faster. Think of it as a kind of isolation factor.
-    /// TODO: Walls should set the coefficient to 0.1.
     /// </summary>
-    /// <param name="x">X coordinates.</param>
-    /// <param name="y">Y coordinates.</param>
+    /// <param name="x">X coordinate.</param>
+    /// <param name="y">Y coordinate.</param>
     /// <returns>Thermal diffusivity alpha at x,y.</returns>
     public float GetThermalDiffusivity(int x, int y)
     {
@@ -174,9 +173,9 @@ public class Temperature
     /// <summary>
     /// Public interface to thermal diffusivity model. Set the value of thermal diffusivity at x,y to coeff.
     /// </summary>
-    /// <param name="x">X coordinates.</param>
-    /// <param name="y">Y coordinates.</param>
-    /// <param name="coeff">Thermal diffusifity to set at x,y.</param>
+    /// <param name="x">X coordinate.</param>
+    /// <param name="y">Y coordinate.</param>
+    /// <param name="coeff">Thermal diffusivity to set at x,y.</param>
     public void SetThermalDiffusivity(int x, int y, float coeff)
     {
         if (IsWithinThermalDiffusivityBounds(coeff))
@@ -188,9 +187,9 @@ public class Temperature
     /// <summary>
     /// Public interface to thermal diffusivity model. Change the value of thermal diffusivity at x,y by incr.
     /// </summary>
-    /// <param name="x">X coordinates.</param>
-    /// <param name="y">Y coordinates.</param>
-    /// <param name="incr">Thermal diffusifity to increase at x,y.</param>
+    /// <param name="x">X coordinate.</param>
+    /// <param name="y">Y coordinate.</param>
+    /// <param name="incr">Thermal diffusivity to set at x,y.</param>
     public void ChangeThermalDiffusivity(int x, int y, float incr)
     {
         if (IsWithinThermalDiffusivityBounds(thermalDiffusivity[GetIndex(x, y)] + incr))
@@ -239,8 +238,8 @@ public class Temperature
     /// <summary>
     /// Internal indexing of array.
     /// </summary>
-    /// <param name="x">X coordinates.</param>
-    /// <param name="y">Y coordinates.</param>
+    /// <param name="x">X coordinate.</param>
+    /// <param name="y">Y coordinate.</param>
     /// <returns>Actual index for array access.</returns>
     private int GetIndex(int x, int y)
     {

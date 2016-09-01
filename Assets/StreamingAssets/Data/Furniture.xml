@@ -278,34 +278,6 @@
     <UnlocalizedDescription>furn_metal_smelter_desc</UnlocalizedDescription>
   </Furniture>
 
-
-  <Furniture objectType="Heater">
-    <Name>Heater</Name>
-    <Description>Raises temperature in the room.</Description>
-    <BaseType>Temperature</BaseType>
-    <MovementCost>2</MovementCost>
-    <PathfindingModifier>0</PathfindingModifier>
-    <PathfindingWeight>2</PathfindingWeight>
-    <Width>1</Width>
-    <Height>1</Height>
-    <PowerConnection inputRate="4" outputRate="" capacity=""/>
-
-    <BuildingJob jobTime="0" />
-
-    <!-- This method gets called on Install -->
-    <Action event="OnInstall" functionName="Heater_InstallAction"></Action>
-    <!-- This method gets called on Uninstall -->
-    <Action event="OnUninstall" functionName="Heater_UninstallAction"></Action>
-
-    <Params>
-      <Param name="temperature" value="10" />
-    </Params>
-
-    <LocalizationCode>furn_heater</LocalizationCode>
-    <UnlocalizedDescription>furn_heater_desc</UnlocalizedDescription>
-  </Furniture>
-
-
   <Furniture objectType="Power Cell Press">
     <Name>Power Cell Press</Name>
     <Description>A press that converts steel plate and something into power cells.</Description>
@@ -409,4 +381,28 @@
     <LocalizationCode>furn_solar_panel</LocalizationCode>
     <UnlocalizedDescription>furn_solar_panel_desc</UnlocalizedDescription>
   </Furniture>
+  
+  <Furniture objectType="heater">
+        <Name>Heater</Name>
+        <Description>Raises temperature in the room.</Description>
+        <BaseType>Temperature</BaseType>
+        <MovementCost>10</MovementCost>
+        <Width>1</Width>
+        <Height>1</Height>
+
+        <BuildingJob jobTime="0" />
+        
+        <Action event="OnInstall" functionName="Heater_InstallAction" />
+        <Action event="OnUninstall" functionName="Heater_UninstallAction" />
+        <Action event="OnUpdateTemperature" functionName="Heater_UpdateTemperature" />
+
+        <Params>
+            <Param name="base_heating" value="100" />
+            <Param name="pressure_threshold" value="0.5" />
+        </Params>
+
+        <LocalizationCode>furn_heater</LocalizationCode>
+        <UnlocalizedDescription>furn_heater_desc</UnlocalizedDescription>
+
+    </Furniture>
 </Furnitures>
