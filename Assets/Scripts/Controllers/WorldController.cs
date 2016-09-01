@@ -253,13 +253,6 @@ public class WorldController : MonoBehaviour
 
         // Center the Camera
         Camera.main.transform.position = new Vector3(World.Width / 2, World.Height / 2, Camera.main.transform.position.z);
-
-        // FIXME: Get rid of this when done testing the scheduler!!!
-        // This is a Lua event which outputs a log message every two seconds on an infinite loop.
-        Scheduler.Scheduler.Current.ScheduleEvent("ping_log_lua", 2.0f, true, 0);
-
-        // This is a C# event which outputs a log message every five seconds for ten times.
-        Scheduler.Scheduler.Current.ScheduleEvent("ping_log", 5f, false, 10);
     }
 
     private void CreateWorldFromSaveFile()
