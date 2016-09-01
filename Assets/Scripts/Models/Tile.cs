@@ -112,7 +112,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
 
     public int Y { get; private set; }
 
-    public float MovementModifier { get; set; }
+    public float MovementModifier;
 
     public float MovementCost
     {
