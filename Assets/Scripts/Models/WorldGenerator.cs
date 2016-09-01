@@ -102,17 +102,15 @@ public class WorldGenerator
 
                                 if (randomweight <= currentweight)
                                 {
-                                    if (inv.objectType == "Raw Iron")
+                                    
+                                    if (inv.objectType == "Raw Iron" || inv.objectType == "Uranium")
                                     {
-                                        world.PlaceFurniture("mine_iron", t, false);
+                                        Furniture mine = PrototypeManager.Furniture.GetPrototype("mine");
+                                        mine.Parameters["ore_type"].SetValue(inv.objectType.ToString());
+                                        world.PlaceFurniture("mine", t, false);                             
                                         break;
                                     }
-
-                                    if (inv.objectType == "Uranium")
-                                    {
-                                        world.PlaceFurniture("mine_uranium", t, false);
-                                        break;
-                                    }
+                                    
 
                                     int stackSize = Random.Range(resourceMin[i], resourceMax[i]);
 

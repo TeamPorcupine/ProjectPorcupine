@@ -411,9 +411,9 @@
   </Furniture>
 
   
-  <Furniture objectType="mine_iron">
-    <Name>Iron Mining Spot</Name>
-    <Description>A spot for mining iron ore</Description>
+  <Furniture objectType="mine">
+    <Name>A Mining Spot</Name>
+    <Description>A spot for mining ore</Description>
     <TypeTag>Ore</TypeTag>
     <TypeTag>OutdoorOnly</TypeTag>
     <MovementCost>2</MovementCost>
@@ -429,33 +429,11 @@
     </Params>
     
     <ContextMenuAction FunctionName="OreMine_CreateMiningJob" Text="Mine Ore" RequiereCharacterSelected="false" />
+    <GetSpriteName FunctionName="OreMine_GetSpriteName" />
 
-    <LocalizationCode>furn_mine_iron</LocalizationCode>
-    <UnlocalizedDescription>furn_mine_iron_desc</UnlocalizedDescription>
+    <LocalizationCode>furn_mine</LocalizationCode>
+    <UnlocalizedDescription>furn_mine_desc</UnlocalizedDescription>
   </Furniture>
 
-
-  <Furniture objectType="mine_uranium">
-    <Name>Uranium Mining Spot</Name>
-    <Description>A spot for mining Uranium ore</Description>
-    <TypeTag>Ore</TypeTag>
-    <TypeTag>OutdoorOnly</TypeTag>
-    <MovementCost>2</MovementCost>
-    <PathfindingModifier>1.5</PathfindingModifier>
-    <PathfindingWeight>2</PathfindingWeight>
-    <Width>1</Width>
-    <Height>1</Height>
-
-    <BuildingJob jobTime="1" />
-
-    <Params>
-     <Param name="ore_type" value="Uranium" />
-    </Params>
-    
-    <ContextMenuAction FunctionName="OreMine_CreateMiningJob" Text="Mine Ore" RequiereCharacterSelected="false" />
-
-    <LocalizationCode>furn_mine_uranium</LocalizationCode>
-    <UnlocalizedDescription>furn_mine_uranium_desc</UnlocalizedDescription>
-  </Furniture>
 
 </Furnitures>

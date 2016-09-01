@@ -642,5 +642,9 @@ function OreMine_OreMined(job)
     job.CancelJob()
 end
 
+function OreMine_GetSpriteName(furniture)
+    return "mine_" .. furniture.Parameters["ore_type"].ToString()
+end
+
 ModUtils.ULog("Furniture.lua loaded")
 return "LUA Script Parsed!"
