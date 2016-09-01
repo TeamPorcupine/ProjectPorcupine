@@ -18,5 +18,8 @@ echo "Attempting to build $project for OS X"
 echo 'Logs from build'
 cat $(pwd)/unity.log
 
+echo 'Unit Tests'
+/Applications/Unity/Unity.app/Contents/MacOS/Unity -batchmode -runEditorTests -quit -projectPath $(pwd)
+
 #can't do windows and linux builds because unity by default installs only with build module
 #for the platform your on. 
