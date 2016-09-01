@@ -6,6 +6,8 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+
+using System;
 using System.Globalization;
 using System.Xml;
 using System.Xml.Schema;
@@ -18,12 +20,24 @@ namespace Power
     /// Represents connection to electric grid if furniture has connection specified it uses of produce power.
     /// </summary>
     [MoonSharpUserData]
-    public class Connection : IXmlSerializable
+    public class Connection : IXmlSerializable, ICloneable
     {
         private readonly string inputRateAttributeName = "inputRate";
         private readonly string outputRateAttributeName = "outputRate";
         private readonly string capacityAttributeName = "capacity";
         private readonly string accumulatedPowerAttributeName = "accumulatedPower";
+
+        public Connection()
+        {            
+        }
+
+        private Connection(Connection connection)
+        {
+            InputRate = connection.InputRate;
+            OutputRate = connection.OutputRate;
+            Capacity = connection.Capacity;
+            AccumulatedPower = connection.AccumulatedPower;
+        }
 
         /// <summary>
         /// Amount of power consumed by this connection per Tick of system
@@ -98,6 +112,11 @@ namespace Power
             writer.WriteAttributeString(outputRateAttributeName, OutputRate.ToString(CultureInfo.InvariantCulture));
             writer.WriteAttributeString(capacityAttributeName, Capacity.ToString(CultureInfo.InvariantCulture));
             writer.WriteAttributeString(accumulatedPowerAttributeName, AccumulatedPower.ToString(CultureInfo.InvariantCulture));
+        }
+
+        public object Clone()
+        {
+            return new Connection(this);
         }
 
         private static float RaedFloatNullAsZero(string value)
