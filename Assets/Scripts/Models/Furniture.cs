@@ -128,10 +128,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         isEnterableAction = other.isEnterableAction;
         getSpriteNameAction = other.getSpriteNameAction;
 
-        PowerConnection = other.PowerConnection;
-
-        if (PowerConnection != null)
+        if (other.PowerConnection != null)
         {
+            PowerConnection = other.PowerConnection.Clone() as Connection;
             World.Current.PowerSystem.PlugIn(PowerConnection);
         }
 
