@@ -5,13 +5,9 @@
 # Change this the name of your project. This will be the name of the final executables as well.
 
 echo "Attempting Unit Tests"
-/Applications/Unity/Unity.app/Contents/MacOS/Unity \
-  -batchmode \
-  -runEditorTests \
-  -projectPath $(pwd) \
-  -editorTestsVerboseLog \
-  -quit
 
+/Applications/Unity/Unity.app/Contents/MacOS/Unity -batchmode -runEditorTests -projectPath $(pwd) -logFile unity.log 
+cat $(pwd)/unity.log
 
 echo 'Results from Tests'
 cat $(pwd)/EditorTestResults.xml
