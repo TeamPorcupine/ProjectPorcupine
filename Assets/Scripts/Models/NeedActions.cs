@@ -16,7 +16,6 @@ public class NeedActions
     static NeedActions()
     {
         LoadScript();
-        LoadModsScripts(WorldController.Instance.modsManager.GetMods());
     }
 
     public static void LoadScript()
