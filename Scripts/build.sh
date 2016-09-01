@@ -5,7 +5,7 @@
 # Change this the name of your project. This will be the name of the final executables as well.
 project="project-porcupine"
 
-echo "Attempting to build $project for OS X"
+echo " to build $project for OS X"
 /Applications/Unity/Unity.app/Contents/MacOS/Unity \
   -batchmode \
   -nographics \
@@ -18,12 +18,16 @@ echo "Attempting to build $project for OS X"
 echo 'Logs from build'
 cat $(pwd)/unity.log
 
-echo "Unit Tests"
+echo "Attempting Unit Tests"
 /Applications/Unity/Unity.app/Contents/MacOS/Unity \
   -batchmode \
   -runEditorTests \
+  -logFile $(pwd)/unity.log \
   -projectPath $(pwd) \
   -quit
 
+
+echo 'Logs from Tests'
+cat $(pwd)/unity.log
 #can't do windows and linux builds because unity by default installs only with build module
 #for the platform your on. 
