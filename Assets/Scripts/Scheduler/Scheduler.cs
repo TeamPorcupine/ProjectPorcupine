@@ -96,16 +96,7 @@ namespace Scheduler
         /// <param name="repeats">Number of repeats (default 1). Ignored if repeatsForever=true.</param>
         public void ScheduleEvent(string name, float cooldown, bool repeatsForever = false, int repeats = 1)
         {
-            if (PrototypeManager.SchedulerEvent.HasPrototype(name) == false)
-            {
-                Debug.ULogWarningChannel("Scheduler", "Tried to schedule an event from a prototype '{0}' which does not exist. Bailing.", name);
-                return;
-            }
-
-            ScheduledEvent ep = PrototypeManager.SchedulerEvent.GetPrototype(name);
-            ScheduledEvent evt = new ScheduledEvent(ep, cooldown, cooldown, repeatsForever, repeats);
-
-            RegisterEvent(evt);
+            ScheduleEvent(name, cooldown, cooldown, repeatsForever, repeats);
         }
 
         /// <summary>
@@ -168,10 +159,14 @@ namespace Scheduler
         /// <returns>The to next event (-1 if there are no events).</returns>
         public float TimeToNextEvent()
         {
-            if (events == null || events.Count == 0)
+            if ((events == null || events.Count == 0) && (eventsToAddNextTick == null || eventsToAddNextTick.Count == 0))
             {
                 return -1f;
             }
+
+            // additions to the event list which were queued up last tick
+            events.AddRange(eventsToAddNextTick);
+            eventsToAddNextTick.Clear();
 
             return events.Min((e) => e.TimeToWait);
         }
@@ -212,9 +207,8 @@ namespace Scheduler
 
         public void ReadXml(XmlReader reader)
         {
-            Debug.ULogChannel("Scheduler", "Reading save file... {0} events already in queue.", Events.Count);
+            Debug.ULogChannel("Scheduler", "Reading save file...", Events.Count);
             CleanUp();
-            Debug.ULogChannel("Scheduler", "Cleaned up ready to load... now {0} events currently in queue.", Events.Count);
 
             if (reader.ReadToDescendant("Event"))
             {
@@ -244,7 +238,6 @@ namespace Scheduler
 
             this.Update(0); // update the event list
             Debug.ULogChannel("Scheduler", "Save file loaded. Event queue contains {0} events.", Events.Count);
-            Debug.ULogChannel("Scheduler", "Scheduler.Current contains {0} events.", Scheduler.Current.Events.Count);
         }
 
         public void WriteXml(XmlWriter writer)
@@ -265,6 +258,11 @@ namespace Scheduler
             if (events != null)
             {
                 events.RemoveAll((evt) => evt.Finished);
+            }
+
+            if (eventsToAddNextTick != null)
+            {
+                eventsToAddNextTick.RemoveAll((evt) => evt.Finished);
             }
         }
 
