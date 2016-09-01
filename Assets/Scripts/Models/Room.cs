@@ -87,7 +87,7 @@ public class Room : IXmlSerializable
             // Try building new rooms for each of our NESW directions.
             foreach (Tile t in sourceTile.GetNeighbours())
             {
-                if (t.Room != null && (onlyIfOutside == false || t.Room.IsOutsideRoom()))
+                if (t != null && t.Room != null && (onlyIfOutside == false || t.Room.IsOutsideRoom()))
                 {
                     ActualFloodFill(t, oldRoom, sizeOfOldRoom);
                 }
@@ -124,7 +124,7 @@ public class Room : IXmlSerializable
             // This doesn't work for the gas calculations and needs to be fixed.
             foreach (Tile t in sourceTile.GetNeighbours())
             {
-                if (t.Room != null && (onlyIfOutside == false || t.Room.IsOutsideRoom()))
+                if (t != null && t.Room != null && (onlyIfOutside == false || t.Room.IsOutsideRoom()))
                 {
                     world.DeleteRoom(t.Room);
                 }

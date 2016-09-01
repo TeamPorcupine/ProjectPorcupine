@@ -278,7 +278,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
     /// </summary>
     public bool HasNeighboursOfType(TileType tileType)
     {
-        return GetNeighbours(true).Any(tile => tile.Type == tileType);
+        return GetNeighbours(true).Any(tile => (tile != null && tile.Type == tileType));
     }
 
     public XmlSchema GetSchema()
