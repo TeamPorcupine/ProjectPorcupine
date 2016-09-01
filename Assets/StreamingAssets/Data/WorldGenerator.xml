@@ -74,6 +74,7 @@
         <Furniture x="17" y="6" name="furn_SteelWall" />
 
         <Furniture x="0" y="7" name="furn_SteelWall" />
+        <Furniture x="2" y="7" name="simple_bed" />
         <Furniture x="6" y="7" name="Door" />
         <Furniture x="10" y="7" name="Door" />
         <Furniture x="15" y="7" name="Stockpile" />
