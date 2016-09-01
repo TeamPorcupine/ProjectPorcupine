@@ -8,12 +8,13 @@ echo "Attempting Unit Tests"
 /Applications/Unity/Unity.app/Contents/MacOS/Unity \
   -batchmode \
   -runEditorTests \
-  -editorTestsResultFile $(pwd)/unity.log \
+  -editorTestsResultFile $(pwd)/results.xml \
   -projectPath $(pwd) \
+  -editorTestsVerboseLog \
   -quit
 
 
 echo 'Results from Tests'
-cat $(pwd)/unity.log
+cat $(pwd)/results.xml
 #can't do windows and linux builds because unity by default installs only with build module
 #for the platform your on. 
