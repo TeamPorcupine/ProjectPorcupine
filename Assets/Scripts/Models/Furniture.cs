@@ -128,10 +128,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         isEnterableAction = other.isEnterableAction;
         getSpriteNameAction = other.getSpriteNameAction;
 
-        PowerConnection = other.PowerConnection;
-
-        if (PowerConnection != null)
+        if (other.PowerConnection != null)
         {
+            PowerConnection = other.PowerConnection.Clone() as Connection;
             World.Current.PowerSystem.PlugIn(PowerConnection);
         }
 
@@ -349,6 +348,16 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
             // updateActions(this, deltaTime);
             EventActions.Trigger("OnUpdate", this, deltaTime);
         }
+    }
+
+    public bool IsExit()
+    {
+        if (RoomEnclosure && MovementCost > 0f)
+        {
+            return true;
+        }
+
+        return false;
     }
 
     public Enterability IsEnterable()
@@ -735,17 +744,23 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
             RequireCharacterSelected = false,
             Action = (ca, c) => Deconstruct()
         };
-        if (jobs.Count > 0 && !jobs[0].IsBeingWorked)
+        if (jobs.Count > 0)
         {
-            yield return new ContextMenuAction
+            for (int i = 0; i < jobs.Count; i++)
             {
-                Text = "Prioritize " + Name,
-                RequireCharacterSelected = true,
-                Action = (ca, c) => { c.PrioritizeJob(jobs[0]); }
-            };
+                if (!jobs[i].IsBeingWorked)
+                {
+                    yield return new ContextMenuAction
+                    {
+                        Text = "Prioritize " + Name,
+                        RequireCharacterSelected = true,
+                        Action = (ca, c) => { c.PrioritizeJob(jobs[0]); }
+                    };
+                }
+            }
         }
 
-        foreach (var contextMenuLuaAction in contextMenuLuaActions)
+        foreach (ContextMenuLuaAction contextMenuLuaAction in contextMenuLuaActions)
         {
             yield return new ContextMenuAction
             {
@@ -800,13 +815,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
                 if (t2.Furniture != null)
                 {
-                    for (int i = 0; i < ReplaceableFurniture.Count; i++)
-                    {
-                        if (t2.Furniture.HasTypeTag(ReplaceableFurniture[i]))
-                        {
-                            isReplaceable = true;
-                        }
-                    }
+                    // Furniture can be replaced, if its typeTags share elements with ReplaceableFurniture
+                    isReplaceable = t2.Furniture.typeTags.Overlaps(ReplaceableFurniture);
                 }
 
                 // Make sure tile is FLOOR
