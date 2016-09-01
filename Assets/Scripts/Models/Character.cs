@@ -81,15 +81,13 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     public Character()
     {
         needs = new Need[PrototypeManager.Need.Count];
-        LoadNeeds();
-        LoadStats();
+        InitializeCharacterValues();
     }
 
     public Character(Tile tile)
     {
         CurrTile = DestTile = nextTile = tile;
-        LoadNeeds();
-        LoadStats();
+        InitializeCharacterValues();
         characterColor = new Color(UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f), 1.0f);
     }
 
@@ -97,6 +95,11 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     {
         CurrTile = DestTile = nextTile = tile;
         characterColor = color;
+        InitializeCharacterValues();
+    }
+
+    private void InitializeCharacterValues()
+    {
         LoadNeeds();
         LoadStats();
     }
@@ -421,10 +424,10 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             foreach (string statString in statsStringArray)
             {
                 string[] keyValue = statString.Split(';');
-                Stat s = GetStat(keyValue[0]);
-                if (s != null)
+                Stat stat = GetStat(keyValue[0]);
+                if (stat != null)
                 {
-                    if (!int.TryParse(keyValue[1], out s.Value))
+                    if (!int.TryParse(keyValue[1], out stat.Value))
                     {
                         Debug.ULogErrorChannel("Character", "Character.ReadXml() expected an int when deserializing stats");
                     }
@@ -444,20 +447,19 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
     public string GetDescription()
     {
-        string needText = string.Empty;
+        StringBuilder description = new StringBuilder();
+        description.Append("A human astronaut.");
         foreach (Need n in needs)
         {
-            needText += "\n" + LocalizationTable.GetLocalization(n.localisationID, n.DisplayAmount);
+            description.Append("\n").Append(LocalizationTable.GetLocalization(n.localisationID, n.DisplayAmount));
         }
 
-        StringBuilder statText = new StringBuilder();
         foreach (KeyValuePair<string, Stat> s in stats)
         {
             // TODO: Localization
-            statText.Append("\n").Append(s.Value.Name).Append(": ").Append(s.Value.Value);
+            description.Append("\n").Append(s.Value.Name).Append(": ").Append(s.Value.Value);
         }
-
-        return "A human astronaut." + needText + statText;
+        return description.ToString();
     }
 
     public string GetHitPointString()
@@ -500,7 +502,6 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         {
             Stat prototypeStat = PrototypeManager.Stat.Values[i];
             Stat newStat = prototypeStat.Clone();
-            newStat.character = this;
             // Gets a random value within the min and max range of the stat.
             // TODO: Should there be any bias or any other algorithm applied here to make stats more interesting?
             newStat.Value = UnityEngine.Random.Range(1, 20);
@@ -511,9 +512,9 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
     public Stat GetStat(string statType)
     {
-        Stat s = null;
-        stats.TryGetValue(statType, out s);
-        return s;
+        Stat stat = null;
+        stats.TryGetValue(statType, out stat);
+        return stat;
     }
 
     private void GetNewJob()
