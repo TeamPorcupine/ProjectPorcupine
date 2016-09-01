@@ -9,7 +9,9 @@ rvm:
 before_install:
  - chmod +x ./Scripts/install.sh
  - chmod +x ./Scripts/build.sh
+ - chmod +x ./Scripts/test.sh
 install:
 - ./Scripts/install.sh
 script:
 - ./Scripts/build.sh
+- ./Scripts/test.sh
