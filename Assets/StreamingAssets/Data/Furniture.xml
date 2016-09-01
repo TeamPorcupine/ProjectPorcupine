@@ -429,7 +429,7 @@
     </DeconstructJob>
 
     <Params>
-      <Param name="confort" value="0.5" />
+      <Param name="comfort" value="0.5" />
     </Params>
     <LocalizationCode>furn_simple_bed</LocalizationCode>
     <UnlocalizedDescription>furn_simple_bed_desc</UnlocalizedDescription>

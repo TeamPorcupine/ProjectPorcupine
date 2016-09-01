@@ -465,8 +465,9 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             }
         }
 
-        if (needPercent > 50 && needPercent < 100 && need != null)
+        if (needPercent > 50 && needPercent < 100 && need.RestoreNeedFurn != null)
         {
+            //TODO : Fix a bug when there is no Furniture available to satify the need
             MyJob = new Job(null, need.RestoreNeedFurn.ObjectType, need.CompleteJobNorm, need.RestoreNeedTime, null, Job.JobPriority.High, false, true, false);
         }
 
