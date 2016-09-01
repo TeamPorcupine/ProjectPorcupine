@@ -58,6 +58,7 @@ namespace Scheduler
         {
             this.Name = other.Name;
             this.OnFire = other.OnFire;
+            this.LuaFunctionName = other.LuaFunctionName;
             this.Cooldown = other.Cooldown;
             this.TimeToWait = other.Cooldown;
             this.RepeatsForever = other.RepeatsForever;
