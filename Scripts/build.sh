@@ -17,5 +17,35 @@ echo "Attempting to build $project for OS X"
 
 echo 'Logs from build'
 cat $(pwd)/unity.log
+rm $(pwd)/unity.log
+
+echo "Attempting to build $project for Windows 32-bit"
+/Applications/Unity/Unity.app/Contents/MacOS/Unity \
+  -batchmode \
+  -nographics \
+  -silent-crashes \
+  -logFile $(pwd)/unity.log \
+  -projectPath $(pwd) \
+  -buildWindowsPlayer "$(pwd)/Build/windows/32-bit/$project.exe" \
+  -quit
+
+echo 'Logs from build'
+cat $(pwd)/unity.log
+rm $(pwd)/unity.log
+
+
+echo "Attempting to build $project for Windows 64-bit"
+/Applications/Unity/Unity.app/Contents/MacOS/Unity \
+  -batchmode \
+  -nographics \
+  -silent-crashes \
+  -logFile $(pwd)/unity.log \
+  -projectPath $(pwd) \
+  -buildWindows64Player "$(pwd)/Build/windows/64-bit/$project.exe" \
+  -quit
+
+echo 'Logs from build'
+cat $(pwd)/unity.log
+
 
 #removed windows and linux builds. Perhaps they can be fixed
