@@ -384,7 +384,7 @@ function MetalSmelter_UpdateAction(furniture, deltaTime)
     local itemsDesired = { Inventory.__new("Raw Iron", desiredStackSize, 0) }
     if(spawnSpot.Inventory ~= nil and spawnSpot.Inventory.StackSize < spawnSpot.Inventory.maxStackSize) then
         desiredStackSize = spawnSpot.Inventory.maxStackSize - spawnSpot.Inventory.StackSize
-        itemsDesired.maxStackSize = desiredStackSize
+        itemsDesired[1].maxStackSize = desiredStackSize
     end
     ModUtils.ULog("MetalSmelter: Creating job for " .. desiredStackSize .. " raw iron.")
 

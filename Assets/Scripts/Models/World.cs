@@ -519,32 +519,6 @@ public class World : IXmlSerializable
                     break;
             }
         }
-
-        // DEBUGGING ONLY!  REMOVE ME LATER!
-        // Create an Inventory Item
-        Inventory inv = new Inventory("Steel Plate", 50, 50);
-        Tile t = GetTileAt(Width / 2, Height / 2);
-        inventoryManager.PlaceInventory(t, inv);
-        if (OnInventoryCreated != null)
-        {
-            OnInventoryCreated(t.Inventory);
-        }
-
-        inv = new Inventory("Steel Plate", 50, 4);
-        t = GetTileAt((Width / 2) + 2, Height / 2);
-        inventoryManager.PlaceInventory(t, inv);
-        if (OnInventoryCreated != null)
-        {
-            OnInventoryCreated(t.Inventory);
-        }
-
-        inv = new Inventory("Copper Wire", 50, 3);
-        t = GetTileAt((Width / 2) + 1, (Height / 2) + 2);
-        inventoryManager.PlaceInventory(t, inv);
-        if (OnInventoryCreated != null)
-        {
-            OnInventoryCreated(t.Inventory);
-        }
     }
 
     public void OnInventoryCreatedCallback(Inventory inv)
