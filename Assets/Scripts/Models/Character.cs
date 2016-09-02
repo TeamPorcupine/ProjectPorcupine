@@ -424,7 +424,6 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         while (reader.Read())
         {
             // Read until the end of the character.
-            Debug.ULogWarningChannel("Character", reader.Name);
             if (reader.NodeType == XmlNodeType.EndElement)
             {
                 break;
