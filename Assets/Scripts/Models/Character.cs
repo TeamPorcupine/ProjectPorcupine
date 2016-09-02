@@ -133,6 +133,24 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         }
     }
 
+
+    /// <summary>
+    /// Returns a float representing the Character's Z position, which can
+    /// be part-way between two tiles during movement.
+    /// </summary>
+    public float Z
+    {
+        get
+        {
+            if (nextTile == null)
+            {
+                return CurrTile.Z;
+            }
+
+            return Mathf.Lerp(CurrTile.Z, nextTile.Z, movementPercentage);
+        }
+    }
+
     /// <summary>
     /// The tile the Character is considered to still be standing in.
     /// </summary>

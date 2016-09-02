@@ -102,7 +102,7 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
         objectGameObjectMap.Add(furniture, furn_go);
 
         furn_go.name = furniture.ObjectType + "_" + furniture.Tile.X + "_" + furniture.Tile.Y;
-        furn_go.transform.position = new Vector3(furniture.Tile.X + ((furniture.Width - 1) / 2f), furniture.Tile.Y + ((furniture.Height - 1) / 2f), 0);
+        furn_go.transform.position = new Vector3(furniture.Tile.X + ((furniture.Width - 1) / 2f), furniture.Tile.Y + ((furniture.Height - 1) / 2f), furniture.Tile.Z);
         furn_go.transform.SetParent(objectParent.transform, true);
 
         // FIXME: This hardcoding is not ideal!

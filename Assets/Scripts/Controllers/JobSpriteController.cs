@@ -89,7 +89,7 @@ public class JobSpriteController : BaseSpriteController<Job>
         // Add our tile/GO pair to the dictionary.
         objectGameObjectMap.Add(job, job_go);
 
-        job_go.name = "JOB_" + job.JobObjectType + "_" + job.tile.X + "_" + job.tile.Y;
+        job_go.name = "JOB_" + job.JobObjectType + "_" + job.tile.X + "_" + job.tile.Y + "_" + job.tile.Z;
         job_go.transform.SetParent(objectParent.transform, true);
 
         SpriteRenderer sr = job_go.AddComponent<SpriteRenderer>();
@@ -98,13 +98,13 @@ public class JobSpriteController : BaseSpriteController<Job>
             // This job is for building a tile.
             // For now, the only tile that could be is the floor, so just show a floor sprite
             // until the graphics system for tiles is fleshed out further.
-            job_go.transform.position = new Vector3(job.tile.X, job.tile.Y, 0);
+            job_go.transform.position = new Vector3(job.tile.X, job.tile.Y, job.tile.Z);
             sr.sprite = SpriteManager.current.GetSprite("Tile", "Solid");
         }
         else
         {
             // This is a normal furniture job.
-            job_go.transform.position = new Vector3(job.tile.X + ((job.furniturePrototype.Width - 1) / 2f), job.tile.Y + ((job.furniturePrototype.Height - 1) / 2f), 0);
+            job_go.transform.position = new Vector3(job.tile.X + ((job.furniturePrototype.Width - 1) / 2f), job.tile.Y + ((job.furniturePrototype.Height - 1) / 2f), job.tile.Z);
             sr.sprite = fsc.GetSpriteForFurniture(job.JobObjectType);
         }
 
