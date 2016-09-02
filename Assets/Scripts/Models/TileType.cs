@@ -50,7 +50,6 @@ public class TileType : IXmlSerializable
     }
 
     // Just two util functions to not break every link to TileType.(Empty | Floor)
-    // TODO: Maybe cache the empty and floor tiletypes.
     public static TileType Empty 
     {
         get { return empty ?? (empty = tileTypeDictionary["Empty"]); } 
