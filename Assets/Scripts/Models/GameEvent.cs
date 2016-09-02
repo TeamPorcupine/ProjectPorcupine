@@ -50,7 +50,7 @@ public class GameEvent
         foreach (string precondition in preconditions)
         {
             // Call lua precondition it should return 1 if met otherwise 0
-            conditionsMet += (int)GameEventActions.CallFunction(precondition, this, deltaTime).Number;
+            conditionsMet += (int)LuaUtilities.CallFunction(precondition, this, deltaTime).Number;
         }
 
         if (conditionsMet >= preconditions.Count && executed == false && (MaxRepeats <= 0 || repeats < MaxRepeats))
