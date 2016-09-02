@@ -20,6 +20,10 @@ public class SpriteManager : MonoBehaviour
 
     public static Texture2D noRescourceTexture;
 
+    // A sprite image with a ‘ph_’ as a prefix will be loaded as a placeholder if the normal spite image is missing.
+    // This is used to easily identity spires that needs improvement.
+    private const string PlaceHolderPrefix = "ph_";
+
     private Dictionary<string, Sprite> sprites;
 
     public void Awake()
@@ -49,15 +53,25 @@ public class SpriteManager : MonoBehaviour
 
     public Sprite GetSprite(string categoryName, string spriteName)
     {
+        Sprite sprite = new Sprite();
+
+        string spriteNamePlaceHolder = categoryName + "/" + PlaceHolderPrefix + spriteName;
         spriteName = categoryName + "/" + spriteName;
 
-        if (sprites.ContainsKey(spriteName) == false)
+        if (sprites.ContainsKey(spriteName))
         {
-            // Return a magenta image
-            return Sprite.Create(noRescourceTexture, new Rect(Vector2.zero, new Vector3(32, 32)), new Vector2(0.5f, 0.5f), 32);
+            sprite = sprites[spriteName];
+        }
+        else if (sprites.ContainsKey(spriteNamePlaceHolder))
+        {
+            sprite = sprites[spriteNamePlaceHolder];
+        }
+        else
+        {
+            sprite = Sprite.Create(noRescourceTexture, new Rect(Vector2.zero, new Vector3(32, 32)), new Vector2(0.5f, 0.5f), 32);
         }
 
-        return sprites[spriteName];
+        return sprite;
     }
 
     private void LoadSprites()
