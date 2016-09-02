@@ -89,13 +89,6 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     public Character(Tile tile, Color color, Color uniformColor, Color skinColor)
     {
         CurrTile = DestTile = nextTile = tile;
-        InitializeCharacterValues();
-        characterColor = new Color(UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f), 1.0f);
-    }
-
-    public Character(Tile tile, Color color)
-    {
-        CurrTile = DestTile = nextTile = tile;
         characterColor = color;
         characterUniformColor = uniformColor;
         characterSkinColor = skinColor;
