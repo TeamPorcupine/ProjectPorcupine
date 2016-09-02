@@ -14,8 +14,8 @@ using System.Xml.Schema;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
 using ProjectPorcupine.Localization;
-using UnityEngine;
 using System.Text;
+using UnityEngine;
 
 public enum Facing
 {
@@ -357,6 +357,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         writer.WriteAttributeString("name", name);
         writer.WriteAttributeString("X", CurrTile.X.ToString());
         writer.WriteAttributeString("Y", CurrTile.Y.ToString());
+
         // TODO: It is more verbose, but easier to parse if these are represented as key-value elements rather than a string with delimeters.
         string needString = string.Empty;
         foreach (Need n in needs)
@@ -367,15 +368,19 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         writer.WriteAttributeString("needs", needString);
 
-        StringBuilder statsString = new StringBuilder();
-        foreach (KeyValuePair<string, Stat> stat in stats)
-        {
-            statsString.Append(stat.Value.statType).Append(";").Append(stat.Value.Value).Append(":");
-        }
-        writer.WriteAttributeString("stats", statsString.ToString());
         writer.WriteAttributeString("r", characterColor.r.ToString());
         writer.WriteAttributeString("b", characterColor.b.ToString());
         writer.WriteAttributeString("g", characterColor.g.ToString());
+        
+        writer.WriteStartElement("Stats");
+        foreach (Stat stat in stats.Values)
+        {
+            writer.WriteStartElement("Stat");
+            stat.WriteXml(writer);
+            writer.WriteEndElement();
+        }
+
+        writer.WriteEndElement();
         if (inventory != null)
         {
             writer.WriteStartElement("Inventories");
@@ -414,24 +419,22 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             }
         }
 
-        if (reader.GetAttribute("stats") == null)
+        // Read the children elements.
+        // TODO: This should either not be XML, or use XmlSerializer.
+        while (reader.Read())
         {
-            Debug.ULogWarningChannel("Character", "Did not find stats for character, will keep randomized values.");
-        }
-        else
-        {
-            string[] statsStringArray = reader.GetAttribute("stats").Split(':');
-            foreach (string statString in statsStringArray)
+            // Read until the end of the character.
+            Debug.ULogWarningChannel("Character", reader.Name);
+            if (reader.NodeType == XmlNodeType.EndElement)
             {
-                string[] keyValue = statString.Split(';');
-                Stat stat = GetStat(keyValue[0]);
-                if (stat != null)
-                {
-                    if (!int.TryParse(keyValue[1], out stat.Value))
-                    {
-                        Debug.ULogErrorChannel("Character", "Character.ReadXml() expected an int when deserializing stats");
-                    }
-                }
+                break;
+            }
+
+            switch (reader.Name)
+            {
+                case "Stats":
+                    ReadStatsFromSave(reader);
+                    break;
             }
         }
     }
@@ -448,17 +451,18 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     public string GetDescription()
     {
         StringBuilder description = new StringBuilder();
-        description.Append("A human astronaut.");
+        description.AppendLine("A human astronaut.");
         foreach (Need n in needs)
         {
-            description.Append("\n").Append(LocalizationTable.GetLocalization(n.localisationID, n.DisplayAmount));
+            description.AppendLine(LocalizationTable.GetLocalization(n.localisationID, n.DisplayAmount));
         }
 
-        foreach (KeyValuePair<string, Stat> s in stats)
+        foreach (Stat stat in stats.Values)
         {
             // TODO: Localization
-            description.Append("\n").Append(s.Value.Name).Append(": ").Append(s.Value.Value);
+            description.AppendLine(string.Format("{0}: {1}", stat.statType, stat.Value));
         }
+
         return description.ToString();
     }
 
@@ -483,6 +487,13 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     }
     #endregion
 
+    public Stat GetStat(string statType)
+    {
+        Stat stat = null;
+        stats.TryGetValue(statType, out stat);
+        return stat;
+    }
+
     private void LoadNeeds()
     {
         needs = new Need[PrototypeManager.Need.Count];
@@ -502,19 +513,35 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         {
             Stat prototypeStat = PrototypeManager.Stat.Values[i];
             Stat newStat = prototypeStat.Clone();
+
             // Gets a random value within the min and max range of the stat.
             // TODO: Should there be any bias or any other algorithm applied here to make stats more interesting?
             newStat.Value = UnityEngine.Random.Range(1, 20);
             stats.Add(newStat.statType, newStat);
         }
+
         Debug.ULogChannel("Character", "Initialized " + stats.Count + " Stats.");
     }
 
-    public Stat GetStat(string statType)
+    private void ReadStatsFromSave(XmlReader reader)
     {
-        Stat stat = null;
-        stats.TryGetValue(statType, out stat);
-        return stat;
+        while (reader.Read())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement)
+            {
+                break;
+            }
+
+            string statType = reader.GetAttribute("statType");
+            Stat stat = GetStat(statType);
+            if (stat != null)
+            {
+                if (!int.TryParse(reader.GetAttribute("value"), out stat.Value))
+                {
+                    Debug.ULogErrorChannel("Character", "Stat element did not have a value!");
+                }
+            }
+        }
     }
 
     private void GetNewJob()
