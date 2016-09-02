@@ -1,4 +1,12 @@
-﻿using System.Collections.Generic;
+﻿#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -17,8 +25,8 @@ public class DialogBoxQuests : DialogBox
 
     private void ClearInterface()
     {
-        var childrens = QuestItemListPanel.Cast<Transform>().ToList();
-        foreach (var child in childrens)
+        List<Transform> childrens = QuestItemListPanel.Cast<Transform>().ToList();
+        foreach (Transform child in childrens)
         {
             Destroy(child.gameObject);
         }
@@ -26,14 +34,14 @@ public class DialogBoxQuests : DialogBox
 
     private void BuildInterface()
     {
-        List<Quest> quests = World.current.Quests.Where(q=>IsQuestAvailable(q)).ToList();
+        List<Quest> quests = PrototypeManager.Quest.Values.Where(q => IsQuestAvailable(q)).ToList();
 
-        foreach (var quest in quests)
+        foreach (Quest quest in quests)
         {
-            var go = (GameObject)Instantiate(QuestItemPrefab);
+            GameObject go = (GameObject)Instantiate(QuestItemPrefab);
             go.transform.SetParent(QuestItemListPanel);
 
-            var questItemBehaviour = go.GetComponent<DialogBoxQuestItem>();
+            DialogBoxQuestItem questItemBehaviour = go.GetComponent<DialogBoxQuestItem>();
             questItemBehaviour.SetupQuest(this, quest);
         }
     }
@@ -50,7 +58,7 @@ public class DialogBoxQuests : DialogBox
             return true;
         }
 
-        List<Quest> preQuests = World.current.Quests.Where(q => quest.PreRequiredCompletedQuest.Contains(q.Name)).ToList();
+        List<Quest> preQuests = PrototypeManager.Quest.Values.Where(q => quest.PreRequiredCompletedQuest.Contains(q.Name)).ToList();
 
         return preQuests.All(q => q.IsCompleted);
     }

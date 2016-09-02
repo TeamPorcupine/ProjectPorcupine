@@ -56,10 +56,10 @@ public class MouseCursor
 
     public void Update()
     {
-        // Hold Ctrl and press M to activate
+        // Hold Ctrl and press M to activate.
         if ((Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && Input.GetKeyDown(KeyCode.M))
         {
-            // Toggle cursorOverride
+            // Toggle cursorOverride.
             if (cursorOverride == false)
             {
                 cursorOverride = true;
@@ -117,7 +117,7 @@ public class MouseCursor
         lowerLeft = new CursorTextBox(cursorGO, TextAnchor.MiddleRight, style, lowerLeftPostion, cursorTextBoxSize);
         lowerRight = new CursorTextBox(cursorGO, TextAnchor.MiddleLeft, style, lowerRightPostion, cursorTextBoxSize);        
 
-        Debug.Log("MouseCursor::Cursor Built");
+        Debug.ULogChannel("MouseCursor", "Cursor Built");
     }   
 
     private void UpdateCursor()
@@ -139,53 +139,53 @@ public class MouseCursor
 
     private void DisplayCursorInfo()
     {        
-        lowerLeft.myText.text = upperLeft.myText.text = lowerRight.myText.text = upperRight.myText.text = string.Empty;        
+        lowerLeft.text.text = upperLeft.text.text = lowerRight.text.text = upperRight.text.text = string.Empty;        
 
         Tile t = WorldController.Instance.GetTileAtWorldCoord(mc.GetMousePosition());        
         
         if (mc.GetCurrentMode() == MouseController.MouseMode.BUILD)
         {
-            // Placing furniture object
+            // Placing furniture object.
             if (bmc.buildMode == BuildMode.FURNITURE)
             {
-                lowerRight.myText.text = World.current.furniturePrototypes[bmc.buildModeObjectType].Name;
+                lowerRight.text.text = PrototypeManager.Furniture.GetPrototype(bmc.buildModeObjectType).Name;
 
-                upperLeft.myText.color = Color.green;
-                upperRight.myText.color = Color.red;
+                upperLeft.text.color = Color.green;
+                upperRight.text.color = Color.red;
 
-                // Dragging and placing multiple furniture
+                // Dragging and placing multiple furniture.
                 if (t != null && mc.GetIsDragging() == true && mc.GetDragObjects().Count > 1)
                 {
                     cid.GetPlacementValidationCounts();
-                    upperLeft.myText.text = cid.ValidBuildPositionCount();
-                    upperRight.myText.text = cid.InvalidBuildPositionCount();
-                    lowerLeft.myText.text = cid.GetCurrentBuildRequirements();
+                    upperLeft.text.text = cid.ValidBuildPositionCount();
+                    upperRight.text.text = cid.InvalidBuildPositionCount();
+                    lowerLeft.text.text = cid.GetCurrentBuildRequirements();
                 }
             }
             else if (bmc.buildMode == BuildMode.FLOOR)
             {
-                lowerRight.myText.text = string.Empty;
-                upperLeft.myText.color = upperRight.myText.color = defaultTint;
+                lowerRight.text.text = string.Empty;
+                upperLeft.text.color = upperRight.text.color = defaultTint;
 
-                // Placing tiles and dragging
+                // Placing tiles and dragging.
                 if (t != null && mc.GetIsDragging() == true && mc.GetDragObjects().Count >= 1)
                 {
-                    upperLeft.myText.text = mc.GetDragObjects().Count.ToString();
-                    lowerLeft.myText.text = bmc.GetFloorTile();
+                    upperLeft.text.text = mc.GetDragObjects().Count.ToString();
+                    lowerLeft.text.text = bmc.GetFloorTile();
                 }                
             }
         }
         else
         {
-            lowerRight.myText.text = cid.MousePosition(t);            
+            lowerRight.text.text = cid.MousePosition(t);            
         }        
     }
 
     public class CursorTextBox
     {
         public GameObject textObject;
-        public Text myText;
-        public RectTransform myRectTranform;
+        public Text text;
+        public RectTransform rectTranform;
 
         public CursorTextBox(GameObject parentObject, TextAnchor textAlignment, GUIStyle style, Vector3 localPosition, Vector2 textWidthHeight)
         {
@@ -193,17 +193,17 @@ public class MouseCursor
             textObject.transform.SetParent(parentObject.transform);
             textObject.transform.localPosition = localPosition;
 
-            myText = textObject.AddComponent<Text>();
-            myText.alignment = textAlignment;
-            myText.font = style.font;
-            myText.fontSize = style.fontSize;
+            text = textObject.AddComponent<Text>();
+            text.alignment = textAlignment;
+            text.font = style.font;
+            text.fontSize = style.fontSize;
 
             Outline outline = textObject.AddComponent<Outline>();
             outline.effectColor = Color.black;
             outline.effectDistance = new Vector2(1.5f, 1.5f);
 
-            myRectTranform = textObject.GetComponentInChildren<RectTransform>();
-            myRectTranform.sizeDelta = textWidthHeight;
+            rectTranform = textObject.GetComponentInChildren<RectTransform>();
+            rectTranform.sizeDelta = textWidthHeight;
         }
     }
 }

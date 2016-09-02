@@ -6,71 +6,48 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using System.Collections.Generic;
+using System.IO;
 using MoonSharp.Interpreter;
+using UnityEngine;
 
 public class NeedActions
 {
-    private static NeedActions _Instance;
-
-    private Script myLuaScript;
-
-    public static NeedActions Instance
+    static NeedActions()
     {
-        get { return _Instance ?? (_Instance = new NeedActions()); }
+        LoadScript();
     }
 
-    private NeedActions()
+    public static void LoadScript()
     {
-        // Tell the LUA interpreter system to load all the classes
-        // that we have marked as [MoonSharpUserData]
-        UserData.RegisterAssembly();
+        string luaFilePath = Path.Combine(Application.streamingAssetsPath, "LUA");
+        luaFilePath = Path.Combine(luaFilePath, "Need.lua");
 
-        myLuaScript = new Script();
-
-        // If we want to be able to instantiate a new object of a class
-        //   i.e. by doing    SomeClass.__new()
-        // We need to make the base type visible.
-        myLuaScript.Globals["Inventory"] = typeof(Inventory);
-        myLuaScript.Globals["Job"] = typeof(Job);
-        myLuaScript.Globals["ModUtils"] = typeof(ModUtils);
-        // Also to access statics/globals
-        myLuaScript.Globals["World"] = typeof(World);
+        LuaUtilities.LoadScriptFromFile(luaFilePath);
     }
 
-    public static void AddScript(string rawLuaCode)
+    public static void LoadModsScripts(DirectoryInfo[] mods)
     {
-        Instance.myLuaScript.DoString(rawLuaCode);
-    }
-    
-    public static void CallFunctionsWithNeed(string[] functionNames, Need need, float deltaTime)
-    {
-        foreach (string fn in functionNames)
+        foreach (DirectoryInfo mod in mods)
         {
-            object func = Instance.myLuaScript.Globals[fn];
-
-            if (func == null)
+            string luaModFile = Path.Combine(mod.FullName, "Need.lua");
+            if (File.Exists(luaModFile))
             {
-                Debug.LogError("'" + fn + "' is not a LUA function.");
-                return;
-            }
-
-            DynValue result = Instance.myLuaScript.Call(func, need, deltaTime);
-
-            if (result.Type == DataType.String)
-            {
-                Debug.Log(result.String);
+                LuaUtilities.LoadScriptFromFile(luaModFile);
             }
         }
     }
 
-    public static DynValue CallFunction(string functionName, params object[] args)
+    public static void CallFunctionsWithNeed(string[] functionNames, Need need, float deltaTime)
     {
-        object func = Instance.myLuaScript.Globals[functionName];
+        foreach (string fn in functionNames)
+        {
+            DynValue result = LuaUtilities.CallFunction(fn, need, deltaTime);
 
-        return Instance.myLuaScript.Call(func, args);
-    }
-    public static void RegisterGlobal(System.Type type)
-    {
-        Instance.myLuaScript.Globals[type.Name] = type;
+            if (result.Type == DataType.String)
+            {
+                Debug.ULogChannel("NeedActions", "Lua response:", result.String);
+            }
+        }
     }
 }

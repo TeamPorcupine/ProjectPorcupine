@@ -6,15 +6,16 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class DialogBoxTrade : DialogBox
 {
-    private Trade _trade;
-
     public Text TraderNameText;
     public Text PlayerCurrencyBalanceText;
     public Text TraderCurrencyBalanceText;
@@ -23,63 +24,102 @@ public class DialogBoxTrade : DialogBox
 
     public GameObject TradeItemPrefab;
 
+    public Action OnTradeCompleted;
+    public Action OnTradeCancelled;
+
+    private Trade trade;
+
     public void SetupTrade(Trade trade)
     {
-        _trade = trade;
+        this.trade = trade;
 
         ClearInterface();
         BuildInterface();
-    }
-
-    private void ClearInterface()
-    {
-        var childrens = TradeItemListPanel.Cast<Transform>().ToList();
-        foreach (var child in childrens)
-        {
-            Destroy(child.gameObject);
-        }
     }
 
     public void DoTradingTestWithMockTraders()
     {
         Trader mockPlayer = new Trader
         {
-            CurrencyBalance = 500,
+            Currency = new Currency
+            {
+                Balance = 1000f,
+                Name = "Test Currency",
+                ShortName = "TC"
+            },
             Name = "Player",
             SaleMarginMultiplier = 1f,
             Stock = new List<Inventory>
             {
-                new Inventory("Steel Plate",50,10){ basePrice = 3f},
-                new Inventory("Raw Iron",100,90){ basePrice = 0.2f},
+                new Inventory("Steel Plate", 50, 10) { basePrice = 3f },
+                new Inventory("Raw Iron", 100, 90) { basePrice = 0.2f },
             }
         };
 
         Trader mockTrader = new Trader
         {
-            CurrencyBalance = 1500,
+            Currency = new Currency
+            {
+                Balance = 1000f,
+                Name = "Test Currency",
+                ShortName = "TC"
+            },
             Name = "Trader",
             SaleMarginMultiplier = 1.23f,
             Stock = new List<Inventory>
             {
-                new Inventory("Steel Plate",50,40){ basePrice = 3f},
-                new Inventory("Steel Plate",50,40){ basePrice = 3f},
-                new Inventory("Oxygen Bottle",10,10){ basePrice = 50f},
+                new Inventory("Steel Plate", 50, 40) { basePrice = 3f },
+                new Inventory("Steel Plate", 50, 40) { basePrice = 3f },
+                new Inventory("Oxygen Bottle", 10, 10) { basePrice = 50f },
             }
         };
-        SetupTrade(new Trade(mockPlayer,mockTrader));
+        SetupTrade(new Trade(mockPlayer, mockTrader));
+    }
+
+    public void CancelTrade()
+    {
+        trade = null;
+        ClearInterface();
+        CloseDialog();
+        if (OnTradeCompleted != null)
+        {
+            OnTradeCancelled();
+        }
+    }
+
+    public void AcceptTrade()
+    {
+        if (trade.IsValid())
+        {
+            trade = null;
+            ClearInterface();
+            CloseDialog();
+            if (OnTradeCompleted != null)
+            {
+                OnTradeCompleted();
+            }
+        }
+    }
+
+    private void ClearInterface()
+    {
+        List<Transform> childrens = TradeItemListPanel.Cast<Transform>().ToList();
+        foreach (Transform child in childrens)
+        {
+            Destroy(child.gameObject);
+        }
     }
 
     private void BuildInterface()
     {
-        TraderNameText.text = _trade.Trader.Name;
+        TraderNameText.text = trade.Trader.Name;
         BuildInterfaceHeader();
 
-        foreach (var tradeItem in _trade.TradeItems)
+        foreach (TradeItem tradeItem in trade.TradeItems)
         {
-            var go = (GameObject)Instantiate(TradeItemPrefab);
-            go.transform.SetParent(TradeItemListPanel);
+            GameObject go = (GameObject)Instantiate(Resources.Load("Prefab/TradeItemPrefab"), TradeItemListPanel);
 
-            var tradeItemBehaviour = go.GetComponent<DialogBoxTradeItem>();
+            DialogBoxTradeItem tradeItemBehaviour = go.GetComponent<DialogBoxTradeItem>();
             tradeItemBehaviour.OnTradeAmountChangedEvent += item => BuildInterfaceHeader();
             tradeItemBehaviour.SetupTradeItem(tradeItem);
         }
@@ -87,27 +127,15 @@ public class DialogBoxTrade : DialogBox
 
     private void BuildInterfaceHeader()
     {
-        float tradeAmount = _trade.TradeCurrencyBalanceForPlayer;
-        PlayerCurrencyBalanceText.text = (_trade.Player.CurrencyBalance + tradeAmount).ToString();
-        TraderCurrencyBalanceText.text = (_trade.Trader.CurrencyBalance - tradeAmount).ToString();
-        TradeCurrencyBalanceText.text = tradeAmount.ToString();
-    }
-
-    public void CancelTrade()
-    {
-        _trade = null;
-        ClearInterface();
-        CloseDialog();
-    }
-
-    public void AcceptTrade()
-    {
-        if (_trade.IsValid())
-        {
-            _trade.Accept();
-            _trade = null;
-            ClearInterface();
-            CloseDialog();
-        }
+        float tradeAmount = trade.TradeCurrencyBalanceForPlayer;
+        PlayerCurrencyBalanceText.text = string.Format(
+            "{0:N2} {1}", 
+            trade.Player.Currency.Balance + trade.TradeCurrencyBalanceForPlayer, 
+            trade.Player.Currency.ShortName);
+        TraderCurrencyBalanceText.text = string.Format(
+            "{0:N2} {1}", 
+            trade.Trader.Currency.Balance - trade.TradeCurrencyBalanceForPlayer, 
+            trade.Trader.Currency.ShortName);
+        TradeCurrencyBalanceText.text = tradeAmount.ToString("N2");
     }
 }

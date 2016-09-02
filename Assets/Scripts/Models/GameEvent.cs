@@ -15,13 +15,8 @@ using UnityEngine;
 [MoonSharpUserData]
 public class GameEvent 
 {
-    public string Name { get; protected set; }
-
-    public bool Repeat { get; protected set; }
-
-    public int MaxRepeats { get; protected set; }
-
     protected List<string> preconditions;
+
     protected List<string> executionActions;
 
     private bool executed;
@@ -39,13 +34,23 @@ public class GameEvent
         repeats = 0;
     }
 
+    public string Name 
+    {
+        get;
+        protected set;
+    }
+
+    public bool Repeat { get; protected set; }
+
+    public int MaxRepeats { get; protected set; }
+
     public void Update(float deltaTime)
     {
         int conditionsMet = 0;
         foreach (string precondition in preconditions)
         {
             // Call lua precondition it should return 1 if met otherwise 0
-            conditionsMet += (int)GameEventActions.CallFunction(precondition, this, deltaTime).Number;
+            conditionsMet += (int)LuaUtilities.CallFunction(precondition, this, deltaTime).Number;
         }
 
         if (conditionsMet >= preconditions.Count && executed == false && (MaxRepeats <= 0 || repeats < MaxRepeats))
