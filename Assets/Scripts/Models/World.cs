@@ -477,6 +477,8 @@ public class World : IXmlSerializable
         }
 
         writer.WriteEndElement();
+
+        Scheduler.Scheduler.Current.WriteXml(writer);
     }
 
     public void ReadXml(XmlReader reader)
@@ -511,6 +513,9 @@ public class World : IXmlSerializable
                     break;
                 case "Wallet":
                     ReadXml_Wallet(reader);
+                    break;
+                case "Scheduler":
+                    Scheduler.Scheduler.Current.ReadXml(reader);
                     break;
             }
         }
