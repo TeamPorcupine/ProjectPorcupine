@@ -41,7 +41,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     public Inventory inventory;
 
     /// Holds all character animations.
-    public CharacterAnimation animation;
+    public Animation.CharacterAnimation animation;
 
     /// Is the character walking or idle.
     public bool IsWalking;
@@ -76,7 +76,9 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     private bool selected = false;
 
     private Color characterColor;
-
+    private Color characterUniformColor;
+    private Color characterSkinColor;
+    
     /// Use only for serialization
     public Character()
     {
@@ -84,7 +86,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         InitializeCharacterValues();
     }
 
-    public Character(Tile tile)
+    public Character(Tile tile, Color color, Color uniformColor, Color skinColor)
     {
         CurrTile = DestTile = nextTile = tile;
         InitializeCharacterValues();
@@ -95,6 +97,8 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     {
         CurrTile = DestTile = nextTile = tile;
         characterColor = color;
+        characterUniformColor = uniformColor;
+        characterSkinColor = skinColor;
         InitializeCharacterValues();
     }
 
@@ -371,6 +375,12 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         writer.WriteAttributeString("r", characterColor.r.ToString());
         writer.WriteAttributeString("b", characterColor.b.ToString());
         writer.WriteAttributeString("g", characterColor.g.ToString());
+        writer.WriteAttributeString("rUni", characterUniformColor.r.ToString());
+        writer.WriteAttributeString("bUni", characterUniformColor.b.ToString());
+        writer.WriteAttributeString("gUni", characterUniformColor.g.ToString());
+        writer.WriteAttributeString("rSkin", characterSkinColor.r.ToString());
+        writer.WriteAttributeString("bSkin", characterSkinColor.b.ToString());
+        writer.WriteAttributeString("gSkin", characterSkinColor.g.ToString());
         
         writer.WriteStartElement("Stats");
         foreach (Stat stat in stats.Values)
@@ -473,6 +483,16 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     public Color GetCharacterColor()
     {
         return characterColor;
+    }
+
+    public Color GetCharacterSkinColor()
+    {
+        return characterSkinColor;
+    }
+
+    public Color GetCharacterUniformColor()
+    {
+        return characterUniformColor;
     }
 
     public string GetJobDescription()

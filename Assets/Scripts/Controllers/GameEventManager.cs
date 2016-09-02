@@ -48,9 +48,8 @@ public class GameEventManager : MonoBehaviour
     {
         string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
         filePath = System.IO.Path.Combine(filePath, "GameEvent.lua");
-        string luaCode = System.IO.File.ReadAllText(filePath);
 
-        new GameEventActions(luaCode);
+        LuaUtilities.LoadScriptFromFile(filePath);
     }
 
     private void LoadEventsFromDirectory(string filePath)
