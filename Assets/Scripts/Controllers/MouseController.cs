@@ -14,8 +14,8 @@ public class MouseController
 {
     public SelectionInfo mySelection;
 
-    private GameObject cursorParent;    
-    private GameObject circleCursorPrefab;    
+    private GameObject cursorParent;
+    private GameObject circleCursorPrefab;
     private GameObject furnitureParent;
 
     // The world-position of the mouse last frame.
@@ -208,7 +208,7 @@ public class MouseController
             && bmc.buildMode == BuildMode.FURNITURE
             && PrototypeManager.Furniture.HasPrototype(bmc.buildModeObjectType)
             && (PrototypeManager.Furniture.GetPrototype(bmc.buildModeObjectType).Width > 1
-                || PrototypeManager.Furniture.GetPrototype(bmc.buildModeObjectType).Height > 1))
+            || PrototypeManager.Furniture.GetPrototype(bmc.buildModeObjectType).Height > 1))
         {
             Furniture proto = PrototypeManager.Furniture.GetPrototype(bmc.buildModeObjectType);
 
@@ -456,7 +456,7 @@ public class MouseController
             return;
         }
 
-        if (Input.GetMouseButtonUp(0)) 
+        if (Input.GetMouseButtonUp(0))
         {
             Tile t = GetMouseOverTile();
             WorldController.Instance.spawnInventoryController.SpawnInventory(t);
@@ -556,7 +556,7 @@ public class MouseController
         Furniture proto = PrototypeManager.Furniture.GetPrototype(furnitureType);
 
         go.transform.position = new Vector3(t.X + ((proto.Width - 1) / 2f), t.Y + ((proto.Height - 1) / 2f), 0);
-    }    
+    }
 
     public class DragParameters
     {

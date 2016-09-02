@@ -44,12 +44,8 @@ public class KeyboardController
     private void CheckCameraInput()
     {
         // React to hor./vert. axis (WASD or up/down/...)
-        Camera.main.transform.position +=
-            Camera.main.orthographicSize * scrollSpeed *
-            new Vector3(
-                Input.GetAxis("Horizontal"),
-                Input.GetAxis("Vertical"),
-                0);
+        Vector3 inputAxis = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0);
+        Camera.main.transform.position += Camera.main.orthographicSize * scrollSpeed * inputAxis;
 
         if (Input.GetKey(KeyCode.PageUp))
         {

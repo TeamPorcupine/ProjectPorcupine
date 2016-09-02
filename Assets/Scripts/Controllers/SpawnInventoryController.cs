@@ -22,12 +22,12 @@ public class SpawnInventoryController
 
     public string InventoryToBuild { get; protected set; }
 
-    public void HideUI() 
+    public void HideUI()
     {
         spawnUI.SetActive(false);
     }
 
-    public void ShowUI() 
+    public void ShowUI()
     {
         spawnUI.SetActive(true);
     }
@@ -105,7 +105,7 @@ public class SpawnInventoryController
             button.colors = colorBlock;
             string localName = invName;
             button.onClick.AddListener(
-                () => { OnButtonClick(localName); });
+                () => OnButtonClick(localName));
 
             CreateTextComponent(inventoryButton_go, invName);
 
