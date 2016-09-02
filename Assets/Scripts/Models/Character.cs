@@ -40,7 +40,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     public Inventory inventory;
 
     /// Holds all character animations.
-    public CharacterAnimation animation;
+    public Animation.CharacterAnimation animation;
 
     /// Is the character walking or idle.
     public bool IsWalking;
@@ -74,7 +74,9 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     private bool selected = false;
 
     private Color characterColor;
-
+    private Color characterUniformColor;
+    private Color characterSkinColor;
+    
     /// Use only for serialization
     public Character()
     {
@@ -82,17 +84,12 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         LoadNeeds();
     }
 
-    public Character(Tile tile)
-    {
-        CurrTile = DestTile = nextTile = tile;
-        LoadNeeds();
-        characterColor = new Color(UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f), 1.0f);
-    }
-
-    public Character(Tile tile, Color color)
+    public Character(Tile tile, Color color, Color uniformColor, Color skinColor)
     {
         CurrTile = DestTile = nextTile = tile;
         characterColor = color;
+        characterUniformColor = uniformColor;
+        characterSkinColor = skinColor;
         LoadNeeds();
     }
 
@@ -360,6 +357,12 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         writer.WriteAttributeString("r", characterColor.r.ToString());
         writer.WriteAttributeString("b", characterColor.b.ToString());
         writer.WriteAttributeString("g", characterColor.g.ToString());
+        writer.WriteAttributeString("rUni", characterUniformColor.r.ToString());
+        writer.WriteAttributeString("bUni", characterUniformColor.b.ToString());
+        writer.WriteAttributeString("gUni", characterUniformColor.g.ToString());
+        writer.WriteAttributeString("rSkin", characterSkinColor.r.ToString());
+        writer.WriteAttributeString("bSkin", characterSkinColor.b.ToString());
+        writer.WriteAttributeString("gSkin", characterSkinColor.g.ToString());
         if (inventory != null)
         {
             writer.WriteStartElement("Inventories");
@@ -427,6 +430,16 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     public Color GetCharacterColor()
     {
         return characterColor;
+    }
+
+    public Color GetCharacterSkinColor()
+    {
+        return characterSkinColor;
+    }
+
+    public Color GetCharacterUniformColor()
+    {
+        return characterUniformColor;
     }
 
     public string GetJobDescription()
