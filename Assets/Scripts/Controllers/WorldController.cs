@@ -32,6 +32,7 @@ public class WorldController : MonoBehaviour
     public KeyboardController keyboardController;
     public CameraController cameraController;
     public SpawnInventoryController spawnInventoryController;
+    public TradeController TradeController;
     public ModsManager modsManager;
     public float GameTickPerSecond = 5;
     public GameObject inventoryUI;
@@ -131,6 +132,7 @@ public class WorldController : MonoBehaviour
         keyboardController = new KeyboardController(buildModeController, Instance);
         questController = new QuestController();
         cameraController = new CameraController();
+        TradeController = new TradeController();
 
         // Hiding Dev Mode spawn inventory controller if devmode is off.
         spawnInventoryController.SetUIVisibility(Settings.GetSettingAsBool("DialogBoxSettings_developerModeToggle", false));
@@ -220,26 +222,6 @@ public class WorldController : MonoBehaviour
         // Reload the scene to reset all data (and purge old references)
         loadWorldFromFile = fileName;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
-
-    public void CallTradeShipTest(Furniture landingPad)
-    {
-        // Currently not using any logic to select a trader
-        TraderPrototype prototype = PrototypeManager.Trader.GetPrototype(Random.Range(0, PrototypeManager.Trader.Count - 1));
-        Trader trader = prototype.CreateTrader();
-
-        GameObject go = new GameObject(trader.Name);
-        go.transform.parent = transform;
-        TraderShipController controller = go.AddComponent<TraderShipController>();
-        controller.Trader = trader;
-        controller.Speed = 5f;
-        go.transform.position = new Vector3(-10, 50, 0);
-        controller.LandingCoordinates = new Vector3(landingPad.Tile.X + 1, landingPad.Tile.Y + 1, 0);
-        controller.LeavingCoordinates = new Vector3(100, 50, 0);
-        go.transform.localScale = new Vector3(1, 1, 1);
-        SpriteRenderer spriteRenderer = go.AddComponent<SpriteRenderer>();
-        spriteRenderer.sprite = SpriteManager.current.GetSprite("Trader", "BasicHaulShip");
-        spriteRenderer.sortingLayerName = "TradeShip";
     }
 
     private void CreateEmptyWorld()

@@ -107,7 +107,7 @@
     <Action event="OnUpdate" functionName="OnUpdate_AirlockDoor" />
     <Action event="OnUpdate" functionName="OnUpdate_Leak_Airlock" />
 
-    <ContextMenuAction FunctionName="AirlockDoor_Toggle_Pressure_Lock" Text="Toggle Pressure Lock" RequiereCharacterSelected="false"/>
+    <ContextMenuAction FunctionName="AirlockDoor_Toggle_Pressure_Lock" Text="Toggle Pressure Lock" RequiereCharacterSelected="false" DevModeOnly="false"/>
 
     <IsEnterable FunctionName="IsEnterable_Door" />
     <GetSpriteName FunctionName="GetSpriteName_Airlock" />
@@ -188,8 +188,8 @@
 
     <Action event="OnUpdate" functionName="MiningDroneStation_UpdateAction" />
 
-    <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Iron" Text="change to raw iron" RequiereCharacterSelected="false"/>
-    <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Copper" Text="change to raw copper" RequiereCharacterSelected="false"/>
+    <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Iron" Text="change to raw iron" RequiereCharacterSelected="false" DevModeOnly="false"/>
+    <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Copper" Text="change to raw copper" RequiereCharacterSelected="false" DevModeOnly="false"/>
 
     <LocalizationCode>furn_mining_drone_station</LocalizationCode>
     <UnlocalizedDescription>furn_mining_drone_station_desc</UnlocalizedDescription>
@@ -333,6 +333,7 @@
     <Name>Small Landing Pad</Name>
     <Description>A landing pad for small spaceboats to land.</Description>
     <TypeTag>OutdoorOnly</TypeTag>
+    <TypeTag>LandingPad</TypeTag>
     <MovementCost>2</MovementCost>
     <PathfindingModifier>0</PathfindingModifier>
     <PathfindingWeight>2</PathfindingWeight>
@@ -350,7 +351,10 @@
     <JobSpotOffset X="0" Y="0" />
     <JobSpawnSpotOffset X="1" Y="-1" />
 
-    <ContextMenuAction FunctionName="LandingPad_Test_CallTradeShip" Text="Call Trade Ship Test" RequiereCharacterSelected="false" />
+    <ContextMenuAction FunctionName="LandingPad_Test_CallTradeShip" 
+                       Text="Call Trade Ship Test" 
+                       RequiereCharacterSelected="false" 
+                       DevModeOnly="true"/>
 
     <LocalizationCode>furn_small_landing_pad</LocalizationCode>
     <UnlocalizedDescription>furn_small_landing_pad_desc</UnlocalizedDescription>
