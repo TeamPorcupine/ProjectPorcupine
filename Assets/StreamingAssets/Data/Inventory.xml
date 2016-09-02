@@ -3,6 +3,9 @@
   <Inventory objectType="Raw Iron">
     <maxStackSize>50</maxStackSize>
   </Inventory>
+  <Inventory objectType="Raw Copper">
+	<maxStackSize>50</maxStackSize>
+  </Inventory>
   <Inventory objectType="Ice">
     <maxStackSize>10</maxStackSize>
   </Inventory>

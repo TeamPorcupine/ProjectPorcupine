@@ -20,7 +20,7 @@ using UnityEngine;
 /// InstalledObjects are things like walls, doors, and furniture (e.g. a sofa).
 /// </summary>
 [MoonSharpUserData]
-public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
+public partial class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 {
     // Prevent construction too close to the world's edge
     private const int MinEdgeDistance = 5;
@@ -73,7 +73,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
     // TODO: Implement larger objects
     // TODO: Implement object rotation
-
+    
     // Empty constructor is used for serialization
     public Furniture()
     {
@@ -82,6 +82,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         VerticalDoor = false;
         EventActions = new EventAction();
 
+        factoryMenuActions = new List<FactoryContextMenu>();
         contextMenuLuaActions = new List<ContextMenuLuaAction>();
         furnParameters = new Parameter("furnParameters");
         jobs = new List<Job>();
@@ -111,6 +112,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
         JobSpotOffset = other.JobSpotOffset;
         jobSpawnSpotOffset = other.jobSpawnSpotOffset;
+        factoryData = other.factoryData; // don't need to clone here, as all are prototype things (not changing)
 
         furnParameters = new Parameter(other.furnParameters);
         jobs = new List<Job>();
@@ -118,6 +120,11 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         if (other.EventActions != null)
         {
             EventActions = other.EventActions.Clone();
+        }
+
+        if (other.factoryMenuActions != null)
+        {
+            factoryMenuActions = new List<FactoryContextMenu>(other.factoryMenuActions);
         }
 
         if (other.contextMenuLuaActions != null)
@@ -178,6 +185,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     // NOTE: This could even be something outside of the actual
     // furniture tile itself!  (In fact, this will probably be common).
     public Vector2 JobSpotOffset { get; private set; }
+
+    public bool IsFactory { get { return factoryData != null; } }
 
     // Flag for Lua to check if this is a vertical or horizontal door and display the correct sprite.
     public bool VerticalDoor { get; set; }
@@ -349,8 +358,10 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
             // updateActions(this, deltaTime);
             EventActions.Trigger("OnUpdate", this, deltaTime);
         }
+        if (IsFactory)
+            UpdateFactory(deltaTime);
     }
-
+    
     public bool IsExit()
     {
         if (RoomEnclosure && MovementCost > 0f)
@@ -553,6 +564,39 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                 reader.Read();
                 UnlocalizedDescription = reader.ReadContentAsString();
                 break;
+
+                case "FactoryInfo":
+                    // deserialize FActoryINfo into factoryData
+                    XmlSerializer serializer = new XmlSerializer(typeof(FactoryInfo));
+                    factoryData = (FactoryInfo)serializer.Deserialize(reader);
+                    // check if context menu is needed
+                    if(factoryData.PossibleProductions.Count > 1)
+                    {
+                        furnParameters.AddParameter(new Parameter(CUR_PRODUCTION_CHAIN_PARAM_NAME, null));
+                        foreach (var chain in factoryData.PossibleProductions)
+                        {
+                            factoryMenuActions.Add(new FactoryContextMenu()
+                            {
+                                Text = chain.Name,
+                                Function = () => { furnParameters[CUR_PRODUCTION_CHAIN_PARAM_NAME].SetValue(chain.Name); }
+                            });
+                        }
+                    }
+                    else
+                    {
+                        if (factoryData.PossibleProductions.Count == 1)
+                            furnParameters.AddParameter(new Parameter(CUR_PRODUCTION_CHAIN_PARAM_NAME,
+                                factoryData.PossibleProductions[0].Name));
+                        else
+                            Debug.ULogWarning("Furniture {0} is marked as factory, but has no production chain", name);
+                    }                  
+
+                    // add dynamic params here
+                    furnParameters.AddParameter(new Parameter(CUR_PROCESSING_TIME_PARAM_NAME, 0f));
+                    furnParameters.AddParameter(new Parameter(MAX_PROCESSING_TIME_PARAM_NAME, 0f));
+                    furnParameters.AddParameter(new Parameter(CUR_PROCESSED_INV_PARAM_NAME, 0));
+        
+                    break;
             }
         }
     }
@@ -758,6 +802,20 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                         Action = (ca, c) => { c.PrioritizeJob(jobs[0]); }
                     };
                 }
+            }
+        }
+
+        // context menu if it's factory and has multiple production chains
+        if (IsFactory && factoryMenuActions != null)
+        {
+            foreach (FactoryContextMenu factoryContextMenuAction in factoryMenuActions)
+            {
+                yield return new ContextMenuAction
+                {
+                    Text = factoryContextMenuAction.Text,
+                    RequireCharacterSelected = false,
+                    Action = (cma, c) => factoryContextMenuAction.Function()
+                };
             }
         }
 

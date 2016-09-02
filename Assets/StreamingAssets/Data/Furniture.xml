@@ -277,6 +277,45 @@
     <LocalizationCode>furn_metal_smelter</LocalizationCode>
     <UnlocalizedDescription>furn_metal_smelter_desc</UnlocalizedDescription>
   </Furniture>
+	
+<Furniture objectType="Metal Furnace">
+    <Name>Metal Furnace</Name>
+    <Description>Smelts your raw ores into metal.</Description>
+    <TypeTag>Processor</TypeTag>
+    <MovementCost>1</MovementCost>
+    <PathfindingModifier>1.5</PathfindingModifier>
+    <PathfindingWeight>2</PathfindingWeight>
+    <Width>3</Width>
+    <Height>3</Height>
+
+    <BuildingJob jobTime="0" />
+
+    <JobSpotOffset X="1" Y="0" />
+
+	<FactoryInfo>
+		<PossibleProductions>
+			<ProductionChain name="Iron smelting" processingTime="4">
+				<Input>
+					<Item objectType="Raw Iron" amount="3" slotPosX="0" slotPosY="0" />
+				</Input>
+				<Output>
+					<Item objectType="Steel Plate" amount="3" slotPosX="2" slotPosY="0" />
+				</Output>
+			</ProductionChain>
+			<ProductionChain name="Copper smelting" processingTime="3">
+				<Input>
+					<Item objectType="Raw Copper" amount="3" slotPosX="0" slotPosY="0" />
+				</Input>
+				<Output>
+					<Item objectType="Copper Wire" amount="6" slotPosX="2" slotPosY="0" />
+				</Output>
+			</ProductionChain>
+		</PossibleProductions>
+	</FactoryInfo>
+
+    <LocalizationCode>furn_metal_furnace</LocalizationCode>
+    <UnlocalizedDescription>furn_metal_furnace_desc</UnlocalizedDescription>
+  </Furniture>
 
 
   <Furniture objectType="Heater">
