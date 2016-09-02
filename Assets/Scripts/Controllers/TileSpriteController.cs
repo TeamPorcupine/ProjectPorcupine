@@ -77,6 +77,14 @@ public class TileSpriteController : BaseSpriteController<Tile>
         }
         
         tile_go.GetComponent<SpriteRenderer>().sprite = SpriteManager.current.GetSprite("Tile", tile.Type.Name);
+        if (tile.Type == TileType.Empty)
+        {
+            tile_go.SetActive(false);
+        }
+        else
+        {
+            tile_go.SetActive(true);
+        }
     }
 
     protected override void OnRemoved(Tile tile)
