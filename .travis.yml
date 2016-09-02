@@ -1,7 +1,7 @@
-# Example Travis config. See the entire example: https://github.com/JonathanPorta/ci-build
+# adapted from: https://github.com/JonathanPorta/ci-build
 
 # Using objective-c since windows build images are not available
-# The chmodding is uneccesary if I would have checed in from linux instead of windows. Can be cleaned up.
+# The chmod-ing may be uneccesary 
 language: objective-c
 osx_image: xcode61
 rvm:
