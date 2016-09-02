@@ -6,7 +6,7 @@
 
 echo "Attempting Unit Tests"
 
-/Applications/Unity/Unity.app/Contents/MacOS/Unity -batchmode -runEditorTests -nographics -projectPath $(pwd) -logFile unity.log 
+/Applications/Unity/Unity.app/Contents/MacOS/Unity -batchmode -runEditorTests -nographics -EditorTestResultFile $(pwd)/EditorTestResults.xml -projectPath $(pwd) -logFile unity.log 
 cat $(pwd)/unity.log
 
 echo "Unit tests have been run, now EditorTestResults.xml should exist in cd"
