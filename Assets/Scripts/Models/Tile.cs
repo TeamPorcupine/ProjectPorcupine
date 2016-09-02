@@ -112,7 +112,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
 
     public int Y { get; private set; }
 
-    public float MovementModifier { get; private set; }
+    public float MovementModifier { get; set; }
 
     public float MovementCost
     {
@@ -277,6 +277,15 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
     public bool HasNeighboursOfType(TileType tileType)
     {
         return GetNeighbours(true).Any(tile => tile.Type == tileType);
+    }
+
+    /// <summary>
+    /// Returns true if any of the neighours is walkable
+    /// </summary>
+    /// <param name="checkDiagonals">Show we check diagonals as well?</param>
+    public bool HasWalkableNeighbours(bool checkDiagonals = false)
+    {
+        return GetNeighbours(checkDiagonals).Any(tile => tile.MovementCost > 0);
     }
 
     public XmlSchema GetSchema()

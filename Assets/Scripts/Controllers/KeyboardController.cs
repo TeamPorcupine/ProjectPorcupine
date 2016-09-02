@@ -23,7 +23,7 @@ public class KeyboardController
     private int currentTimeScalePosition = 2;
 
     // Use this for initialization.
-    public KeyboardController(BuildModeController buildModeController, WorldController worldController)
+    public KeyboardController(WorldController worldController)
     {
         wc = worldController;
     }

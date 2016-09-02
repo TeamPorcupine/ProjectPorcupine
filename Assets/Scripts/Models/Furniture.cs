@@ -791,11 +791,11 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     // LUA files that will be customizable for each piece of furniture.
     // For example, a door might specific that it needs two walls to
     // connect to.
-    private bool DefaultIsValidPosition(Tile t)
+    private bool DefaultIsValidPosition(Tile tile)
     {
-        bool tooCloseToEdge = t.X < MinEdgeDistance || t.Y < MinEdgeDistance ||
-                              World.Current.Width - t.X <= MinEdgeDistance ||
-                              World.Current.Height - t.Y <= MinEdgeDistance;
+        bool tooCloseToEdge = tile.X < MinEdgeDistance || tile.Y < MinEdgeDistance ||
+                              World.Current.Width - tile.X <= MinEdgeDistance ||
+                              World.Current.Height - tile.Y <= MinEdgeDistance;
 
         if (tooCloseToEdge)
         {
@@ -804,15 +804,15 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
         if (HasTypeTag("OutdoorOnly"))
         {
-            if (t.Room == null || !t.Room.IsOutsideRoom())
+            if (tile.Room == null || !tile.Room.IsOutsideRoom())
             {
                 return false;
             }
         }
 
-        for (int x_off = t.X; x_off < t.X + Width; x_off++)
+        for (int x_off = tile.X; x_off < tile.X + Width; x_off++)
         {
-            for (int y_off = t.Y; y_off < t.Y + Height; y_off++)
+            for (int y_off = tile.Y; y_off < tile.Y + Height; y_off++)
             {
                 Tile t2 = World.Current.GetTileAt(x_off, y_off);
 

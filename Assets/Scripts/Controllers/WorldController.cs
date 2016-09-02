@@ -128,7 +128,7 @@ public class WorldController : MonoBehaviour
         buildModeController = new BuildModeController();
         spawnInventoryController = new SpawnInventoryController();
         mouseController = new MouseController(buildModeController, furnitureSpriteController, circleCursorPrefab);
-        keyboardController = new KeyboardController(buildModeController, Instance);
+        keyboardController = new KeyboardController(Instance);
         questController = new QuestController();
         cameraController = new CameraController();
 
