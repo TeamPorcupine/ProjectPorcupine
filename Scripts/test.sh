@@ -6,12 +6,12 @@
 
 echo "Attempting Unit Tests"
 
-travis_fold:start:compile
+echo 'travis_fold:start:compile'
 
 /Applications/Unity/Unity.app/Contents/MacOS/Unity -batchmode -runEditorTests -nographics -EditorTestResultFile $(pwd)/EditorTestResults.xml -projectPath $(pwd) -logFile unity.log 
 cat $(pwd)/unity.log
 
-travis_fold:end:compile
+echo 'travis_fold:end:compile'
 
 echo 'Show Results from Tests'
 
