@@ -101,4 +101,20 @@ public class BasePrototypes<T>
     {
         prototypes[type] = proto;
     }
+
+    /// <summary>
+    /// Add the given prototype. If a prototype of the given type is already registered, overwrite the old one while logging a warning.
+    /// </summary>
+    /// <param name="type">The prototype type.</param>
+    /// <param name="proto">The prototype instance.</param>
+    public void Add(string type, T proto)
+    {
+        if (HasPrototype(type))
+        {
+            Debug.ULogWarningChannel("BasePrototypes<T>.Add", "Trying to register a prototype of type '{0}' which already exists. Overwriting.", type);
+            SetPrototype(type, proto);
+        }
+
+        prototypes.Add(type, proto);
+    }
 }
