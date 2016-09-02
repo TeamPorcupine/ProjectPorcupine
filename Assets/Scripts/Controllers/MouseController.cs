@@ -29,7 +29,6 @@ public class MouseController
     private List<GameObject> dragPreviewGameObjects;
     private BuildModeController bmc;
     private FurnitureSpriteController fsc;
-    private MenuController menuController;
     private ContextMenu contextMenu;
     private MouseCursor mouseCursor;
 
@@ -51,7 +50,6 @@ public class MouseController
         bmc.SetMouseController(this);
         circleCursorPrefab = cursorObject;
         fsc = furnitureSpriteController;
-        menuController = GameObject.FindObjectOfType<MenuController>();
         contextMenu = GameObject.FindObjectOfType<ContextMenu>();
         dragPreviewGameObjects = new List<GameObject>();
         cursorParent = new GameObject("Cursor");

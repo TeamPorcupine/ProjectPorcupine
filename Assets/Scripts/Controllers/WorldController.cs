@@ -116,7 +116,7 @@ public class WorldController : MonoBehaviour
     public void Start()
     {
         // Create gameobject so we can have access to a tranform thats position is "Vector3.zero".
-        GameObject mat = new GameObject("VisualPath", typeof(VisualPath));
+        new GameObject("VisualPath", typeof(VisualPath));
         GameObject go;
 
         tileSpriteController = new TileSpriteController(World);

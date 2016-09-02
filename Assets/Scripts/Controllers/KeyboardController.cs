@@ -14,7 +14,6 @@ public class KeyboardController
     [Range(0, 3)]
     public float scrollSpeed = 0.1f;
 
-    private BuildModeController bmc;
     private WorldController wc;
 
     // An array of possible time multipliers.
@@ -26,7 +25,6 @@ public class KeyboardController
     // Use this for initialization.
     public KeyboardController(BuildModeController buildModeController, WorldController worldController)
     {
-        bmc = buildModeController;
         wc = worldController;
     }
 

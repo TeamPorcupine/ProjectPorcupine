@@ -103,5 +103,10 @@ namespace Animation
 
             // TODO: if we need a callback after finished animation - put it here
         }
+
+        public override string ToString()
+        {
+            return string.Format("[FrameAnimation {0}]", name != null ? name : GetHashCode().ToString());
+        }
     }
 }
