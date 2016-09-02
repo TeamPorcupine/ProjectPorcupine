@@ -54,11 +54,12 @@ public class DialogBoxManager : MonoBehaviour
         tempGoObj.name = "Are You Sure";
         dialogBoxAreYouSure = tempGoObj.GetComponent<DialogBoxAreYouSure>();
 
-        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_JobList"), Controllers.transform.position, Controllers.transform.rotation, Controllers.transform);
+        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_JobList"), controllers.transform.position, controllers.transform.rotation, controllers.transform);
         tempGoObj.name = "Job List";
         dialogBoxJobList = tempGoObj.GetComponent<DialogBoxJobList>();
 
-        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_Quests"), Controllers.transform.position, Controllers.transform.rotation, Controllers.transform);
+        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_Quests"), controllers.transform.position, controllers.transform.rotation, controllers.transform);
+
         tempGoObj.name = "Quests";
         dialogBoxQuests = tempGoObj.GetComponent<DialogBoxQuests>();
         AddQuestList();
