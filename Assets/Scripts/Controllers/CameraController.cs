@@ -100,8 +100,8 @@ public class CameraController
         {
             for (int i = 0; i < layerCameras.Length; i++)
             {
-                // layerCameras[i].orthographicSize = Camera.main.orthographicSize - (.2f * (currentLayer-i));
-                layerCameras[i].orthographicSize = Camera.main.orthographicSize;
+                layerCameras[i].orthographicSize = Camera.main.orthographicSize - (.2f * (currentLayer-i));
+//                layerCameras[i].orthographicSize = Camera.main.orthographicSize;
             }
         }
     }

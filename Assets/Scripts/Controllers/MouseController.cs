@@ -156,7 +156,7 @@ public class MouseController
     private void UpdateCurrentFramePosition()
     {
         currFramePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        currFramePosition.z = 0;
+        currFramePosition.z = WorldController.Instance.cameraController.CurrentLayer;
     }
 
     private void CheckModeChanges()
@@ -200,7 +200,7 @@ public class MouseController
     private void StoreFramePosition()
     {
         lastFramePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        lastFramePosition.z = 0;
+        lastFramePosition.z = WorldController.Instance.cameraController.CurrentLayer;
     }
 
     private void CalculatePlacingPosition()
@@ -220,7 +220,7 @@ public class MouseController
                 currPlacingPosition = new Vector3(
                     currFramePosition.x - proto.JobSpotOffset.x,
                     currFramePosition.y - proto.JobSpotOffset.y,
-                    0);
+                    WorldController.Instance.cameraController.CurrentLayer);
             }
             else
             {   
@@ -228,7 +228,7 @@ public class MouseController
                 currPlacingPosition = new Vector3(
                     currFramePosition.x - ((proto.Width - 1f) / 2f),
                     currFramePosition.y - ((proto.Height - 1f) / 2f),
-                    0);
+                    WorldController.Instance.cameraController.CurrentLayer);
             }
         }
         else
@@ -371,7 +371,7 @@ public class MouseController
         {
             for (int y = dragParams.StartY; y <= dragParams.EndY; y++)
             {
-                Tile t = WorldController.Instance.World.GetTileAt(x, y, 0);
+                Tile t = WorldController.Instance.World.GetTileAt(x, y, WorldController.Instance.cameraController.CurrentLayer);
                 if (t != null)
                 {
                     // Display the building hint on top of this tile position.
@@ -394,7 +394,7 @@ public class MouseController
 
     private void ShowGenericVisuals(int x, int y)
     {
-        GameObject go = SimplePool.Spawn(circleCursorPrefab, new Vector3(x, y, 0), Quaternion.identity);
+        GameObject go = SimplePool.Spawn(circleCursorPrefab, new Vector3(x, y, WorldController.Instance.cameraController.CurrentLayer), Quaternion.identity);
         go.transform.SetParent(cursorParent.transform, true);
         go.GetComponent<SpriteRenderer>().sprite = SpriteManager.current.GetSprite("UI", "CursorCircle");
         dragPreviewGameObjects.Add(go);
@@ -406,7 +406,7 @@ public class MouseController
         {
             for (int y = dragParams.StartY; y <= dragParams.EndY; y++)
             {
-                Tile t = WorldController.Instance.World.GetTileAt(x, y, 0);
+                Tile t = WorldController.Instance.World.GetTileAt(x, y, WorldController.Instance.cameraController.CurrentLayer);
                 if (bmc.buildMode == BuildMode.FURNITURE)
                 {
                     // Check for furniture dragType.
@@ -557,7 +557,7 @@ public class MouseController
 
         Furniture proto = PrototypeManager.Furniture.GetPrototype(furnitureType);
 
-        go.transform.position = new Vector3(t.X + ((proto.Width - 1) / 2f), t.Y + ((proto.Height - 1) / 2f), 0);
+        go.transform.position = new Vector3(t.X + ((proto.Width - 1) / 2f), t.Y + ((proto.Height - 1) / 2f), WorldController.Instance.cameraController.CurrentLayer);
     }    
 
     public class DragParameters

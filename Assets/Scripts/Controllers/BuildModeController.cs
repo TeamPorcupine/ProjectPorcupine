@@ -131,7 +131,7 @@ public class BuildModeController
                         {
                             // FIXME: I don't like having to manually and explicitly set
                             // flags that preven conflicts. It's too easy to forget to set/clear them!
-                            Tile offsetTile = WorldController.Instance.World.GetTileAt(x_off, y_off, 0);
+                            Tile offsetTile = WorldController.Instance.World.GetTileAt(x_off, y_off, t.Z);
                             offsetTile.PendingBuildJob = j;
                             j.OnJobStopped += (theJob) =>
                                 {
@@ -237,7 +237,7 @@ public class BuildModeController
         {
             for (int y_off = t.Y; y_off < (t.Y + proto.Height); y_off++)
             {
-                Job pendingBuildJob = WorldController.Instance.World.GetTileAt(x_off, y_off, 0).PendingBuildJob;
+                Job pendingBuildJob = WorldController.Instance.World.GetTileAt(x_off, y_off, t.Z).PendingBuildJob;
                 if (pendingBuildJob != null)
                 {
                     // if the existing buildJobs furniture is replaceable by the current furnitureType,
