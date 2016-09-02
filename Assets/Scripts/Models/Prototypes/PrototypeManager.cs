@@ -21,6 +21,7 @@ public class PrototypeManager
         Need = new NeedPrototypes();
         Trader = new TraderPrototypes();
         Quest = new QuestPrototypes();
+        Stat = new StatPrototypes();
         SchedulerEvent = new SchedulerEventPrototypes();
     }
 
@@ -55,6 +56,12 @@ public class PrototypeManager
     }
 
     public static QuestPrototypes Quest
+    {
+        get;
+        protected set;
+    }
+
+    public static StatPrototypes Stat
     {
         get;
         protected set;
