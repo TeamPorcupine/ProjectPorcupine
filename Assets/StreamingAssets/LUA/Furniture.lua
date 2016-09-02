@@ -18,11 +18,7 @@ ENTERABILITY_SOON = 2
 
 -------------------------------- Furniture Actions --------------------------------
 function OnUpdate_GasGenerator( furniture, deltaTime )
-    if (furniture.HasPower() == false) then
-        return
-    end
-
-	if ( furniture.Tile.Room == nil ) then
+    if ( furniture.Tile.Room == nil ) then
 		return "Furniture's room was null."
 	end
 
@@ -288,16 +284,7 @@ function Stockpile_JobWorked(j)
 end
 
 function MiningDroneStation_UpdateAction( furniture, deltaTime )
-    local spawnSpot = furniture.GetSpawnSpotTile()
-
-	if (furniture.HasPower() == false) then
-		if( furniture.JobCount() == 0 ) then
-			return
-		end	
-
-		furniture.CancelJobs()
-        return
-    end
+    local spawnSpot = furniture.GetSpawnSpotTile()	
 
 	if( furniture.JobCount() > 0 ) then
 		-- Check to see if the Metal Plate destination tile is full.
@@ -353,11 +340,7 @@ end
 
 function MetalSmelter_UpdateAction(furniture, deltaTime)
     local spawnSpot = furniture.GetSpawnSpotTile()
-
-	if (furniture.HasPower() == false) then
-        return
-    end
-
+	
     if(spawnSpot.Inventory ~= nil and spawnSpot.Inventory.StackSize >= 5) then
         furniture.Parameters["smelttime"].ChangeFloatValue(deltaTime)
         if(furniture.Parameters["smelttime"].ToFloat() >= furniture.Parameters["smelttime_required"].ToFloat()) then
@@ -430,16 +413,7 @@ function MetalSmelter_JobWorked(j)
 end
 
 function PowerCellPress_UpdateAction(furniture, deltaTime)
-    local spawnSpot = furniture.GetSpawnSpotTile()
-
-	if (furniture.HasPower() == false) then
-		if( furniture.JobCount() == 0 ) then
-			return
-		end
-
-		furniture.CancelJobs()
-        return
-    end
+    local spawnSpot = furniture.GetSpawnSpotTile()	
 
     if(spawnSpot.Inventory == nil) then
         if(furniture.JobCount() == 0) then
@@ -496,15 +470,7 @@ function PowerCellPress_JobComplete(j)
 end
 
 function CloningPod_UpdateAction(furniture, deltaTime)
-	if (furniture.HasPower() == false) then
-		if( furniture.JobCount() == 0 ) then
-			return
-		end
-
-		funriture.CancelJobs()
-        return
-    end
-
+	
     if( furniture.JobCount() > 0 ) then
         return
     end	
@@ -601,10 +567,6 @@ end
 -- Dummy heater uninstall function
 -- THis function gets called once, when the funriture is unisntalled
 function Heater_UpdateTemperature( furniture, deltaTime)
-	if (furniture.HasPower() == false) then
-        return
-    end
-
 	World.Current.temperature.SetTemperature(furniture.Tile.X, furniture.Tile.Y, 300)
 end
 
@@ -615,11 +577,7 @@ function OxygenCompressor_OnUpdate(furniture, deltaTime)
     local pressure = room.GetGasPressure("O2")
     local gasAmount = furniture.Parameters["flow_rate"].ToFloat() * deltaTime
 
-	if (furniture.HasPower() == false) then
-        return
-    end
-
-    if (pressure < furniture.Parameters["give_threshold"].ToFloat()) then
+	if (pressure < furniture.Parameters["give_threshold"].ToFloat()) then
         -- Expel gas if available
         if (furniture.Parameters["gas_content"].ToFloat() > 0) then
             furniture.Parameters["gas_content"].ChangeFloatValue(-gasAmount)
