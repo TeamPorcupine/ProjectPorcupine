@@ -27,7 +27,7 @@ public class CameraController
 
         if (Camera.main.orthographicSize != zoomTarget)
         {
-            float target = Mathf.Lerp(Camera.main.orthographicSize, zoomTarget, Settings.GetSettingAsFloat("ZoomLerp", 3) * Time.deltaTime);
+            float target = Mathf.Lerp(Camera.main.orthographicSize, zoomTarget, Settings.GetSetting("ZoomLerp", 3) * Time.deltaTime);
             Camera.main.orthographicSize = Mathf.Clamp(target, 3f, 25f);
         }
 
@@ -42,6 +42,6 @@ public class CameraController
 
     public void ChangeZoom(float amount)
     {
-        zoomTarget = Camera.main.orthographicSize - (Settings.GetSettingAsFloat("ZoomSensitivity", 3) * (Camera.main.orthographicSize * amount));
+        zoomTarget = Camera.main.orthographicSize - Settings.GetSetting("ZoomSensitivity", 3) * (Camera.main.orthographicSize * amount);
     }
 }

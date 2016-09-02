@@ -217,7 +217,7 @@ public class SchedulerEditorTest
         // event which counts the events in the list at 7s
         ScheduledEvent evt3 = new ScheduledEvent(
             "test",
-            (evt) => (numEventsInList = scheduler.Events.Count),
+            (evt) => numEventsInList = scheduler.Events.Count,
             7.0f,
             false,
             1);

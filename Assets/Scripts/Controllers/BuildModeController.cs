@@ -119,7 +119,7 @@ public class BuildModeController
                 j.furniturePrototype = PrototypeManager.Furniture.GetPrototype(furnitureType);
 
                 // Add the job to the queue or build immediately if in dev mode
-                if (Settings.GetSettingAsBool("DialogBoxSettings_developerModeToggle", false))
+                if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
                 {
                     WorldController.Instance.World.PlaceFurniture(j.JobObjectType, j.tile);
                 }
@@ -165,7 +165,7 @@ public class BuildModeController
                 j.tile = t;
 
                 // Add the job to the queue or build immediately if in dev mode
-                if (Settings.GetSettingAsBool("DialogBoxSettings_developerModeToggle", false))
+                if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
                 {
                     j.tile.Type = j.JobTileType;
                 }
