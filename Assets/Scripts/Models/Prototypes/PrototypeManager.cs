@@ -8,6 +8,7 @@
 #endregion
 
 using System.IO;
+using Scheduler;
 using UnityEngine;
 
 public class PrototypeManager
@@ -20,6 +21,7 @@ public class PrototypeManager
         Need = new NeedPrototypes();
         Trader = new TraderPrototypes();
         Quest = new QuestPrototypes();
+        SchedulerEvent = new SchedulerEventPrototypes();
     }
 
     public static BasePrototypes<Job> FurnitureJob
@@ -53,6 +55,12 @@ public class PrototypeManager
     }
 
     public static QuestPrototypes Quest
+    {
+        get;
+        protected set;
+    }
+
+    public static SchedulerEventPrototypes SchedulerEvent
     {
         get;
         protected set;
