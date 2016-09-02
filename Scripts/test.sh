@@ -5,15 +5,19 @@
 # Change this the name of your project. This will be the name of the final executables as well.
 
 echo "Attempting Unit Tests"
+travis_fold:start:unity-log
 
 /Applications/Unity/Unity.app/Contents/MacOS/Unity -batchmode -runEditorTests -nographics -EditorTestResultFile $(pwd)/EditorTestResults.xml -projectPath $(pwd) -logFile unity.log 
 cat $(pwd)/unity.log
 
-echo "Unit tests have been run, now EditorTestResults.xml should exist in cd"
-
-ls
+travis_fold:end:unity-log
 
 echo 'Show Results from Tests'
+
+travis_fold:start:tests
+
 cat $(pwd)/EditorTestResults.xml
+
+travis_fold:end:tests
 #can't do windows and linux builds because unity by default installs only with build module
 #for the platform your on. 
