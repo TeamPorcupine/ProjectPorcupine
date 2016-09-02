@@ -115,6 +115,11 @@ class Class
     }
 
     // Events should use PascalCasing as well.
+    // ✓ DO name events with a verb or a verb phrase.
+    // Examples include Clicked, Painting, DroppedDown, and so on.
+    // ✓ DO give events names with a concept of before and after, using the present and past tenses.
+    // For example, a close event that is raised before a window is closed would be called Closing, and one that is raised 
+    // after the window is closed would be called Closed.
     public event SomeEvent;
 }
 ```
