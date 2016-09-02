@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
+using Scheduler;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
@@ -87,6 +88,13 @@ public class WorldController : MonoBehaviour
         new FurnitureActions();
         new PrototypeManager();
 
+        // FIXME: Do something real here. This is just to show how to register a C# event prototype for the Scheduler.
+        PrototypeManager.SchedulerEvent.Add(
+            "ping_log",
+            new ScheduledEvent(
+                "ping_log",
+                (evt) => Debug.ULogChannel("Scheduler", "Event {0} fired", evt.Name)));
+
         string dataPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
         modsManager = new ModsManager(dataPath);
 
@@ -149,6 +157,7 @@ public class WorldController : MonoBehaviour
         if (IsPaused == false)
         {
             World.TickEveryFrame(deltaTime);
+            Scheduler.Scheduler.Current.Update(deltaTime);
         }
 
         totalDeltaTime += deltaTime;
