@@ -183,13 +183,13 @@ public class World : IXmlSerializable
 
     public Character CreateCharacter(Tile t)
     {
-        return CreateCharacter(t, UnityEngine.Random.ColorHSV());
+        return CreateCharacter(t, ColorUtilities.RandomColor(), ColorUtilities.RandomGrayColor(), ColorUtilities.RandomSkinColor());
     }
 
-    public Character CreateCharacter(Tile t, Color color)
+    public Character CreateCharacter(Tile t, Color color, Color uniformColor, Color skinColor)
     {
         Debug.ULogChannel("World", "CreateCharacter");
-        Character c = new Character(t, color);
+        Character c = new Character(t, color, uniformColor, skinColor);
 
         // Adds a random name to the Character
         string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
@@ -477,6 +477,8 @@ public class World : IXmlSerializable
         }
 
         writer.WriteEndElement();
+
+        Scheduler.Scheduler.Current.WriteXml(writer);
     }
 
     public void ReadXml(XmlReader reader)
@@ -512,33 +514,10 @@ public class World : IXmlSerializable
                 case "Wallet":
                     ReadXml_Wallet(reader);
                     break;
+                case "Scheduler":
+                    Scheduler.Scheduler.Current.ReadXml(reader);
+                    break;
             }
-        }
-
-        // DEBUGGING ONLY!  REMOVE ME LATER!
-        // Create an Inventory Item
-        Inventory inv = new Inventory("Steel Plate", 50, 50);
-        Tile t = GetTileAt(Width / 2, Height / 2);
-        inventoryManager.PlaceInventory(t, inv);
-        if (OnInventoryCreated != null)
-        {
-            OnInventoryCreated(t.Inventory);
-        }
-
-        inv = new Inventory("Steel Plate", 50, 4);
-        t = GetTileAt((Width / 2) + 2, Height / 2);
-        inventoryManager.PlaceInventory(t, inv);
-        if (OnInventoryCreated != null)
-        {
-            OnInventoryCreated(t.Inventory);
-        }
-
-        inv = new Inventory("Copper Wire", 50, 3);
-        t = GetTileAt((Width / 2) + 1, (Height / 2) + 2);
-        inventoryManager.PlaceInventory(t, inv);
-        if (OnInventoryCreated != null)
-        {
-            OnInventoryCreated(t.Inventory);
         }
     }
 
@@ -806,11 +785,10 @@ public class World : IXmlSerializable
                 int y = int.Parse(reader.GetAttribute("Y"));
                 if (reader.GetAttribute("r") != null)
                 {
-                    float r = float.Parse(reader.GetAttribute("r"));
-                    float b = float.Parse(reader.GetAttribute("b"));
-                    float g = float.Parse(reader.GetAttribute("g"));
-                    Color color = new Color(r, g, b, 1.0f);
-                    character = CreateCharacter(tiles[x, y], color);
+                    Color color = ColorUtilities.ParseColorFromString(reader.GetAttribute("r"), reader.GetAttribute("g"), reader.GetAttribute("b"));
+                    Color colorUni = ColorUtilities.ParseColorFromString(reader.GetAttribute("rUni"), reader.GetAttribute("gUni"), reader.GetAttribute("bUni"));
+                    Color colorSkin = ColorUtilities.ParseColorFromString(reader.GetAttribute("rSkin"), reader.GetAttribute("gSkin"), reader.GetAttribute("bSkin"));
+                    character = CreateCharacter(tiles[x, y], color, colorUni, colorSkin);
                 }
                 else
                 {

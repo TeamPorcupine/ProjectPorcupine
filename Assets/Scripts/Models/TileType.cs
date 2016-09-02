@@ -87,9 +87,6 @@ public class TileType : IXmlSerializable
     // TODO!
     public bool LinksToNeighbours { get; protected set; }
 
-    // Standard movement cost calculation (lua function).
-    public string MovementCostLua { get; protected set; }
-
     public string CanBuildHereLua { get; protected set; }
 
     public string LocalizationCode { get; protected set; }
@@ -264,15 +261,6 @@ public class TileType : IXmlSerializable
 
                     tileTypeBuildJobPrototypes[this] = j;
 
-                    break;
-                case "MovementCost":
-                    string movementCostAttribute = reader.GetAttribute("FunctionName");
-                    if (movementCostAttribute != null)
-                    {
-                        MovementCostLua = movementCostAttribute;
-                    }
-
-                    Debug.ULogChannel("TileType", "MovmentCostLua: " + MovementCostLua);
                     break;
                 case "CanPlaceHere":
                     string canPlaceHereAttribute = reader.GetAttribute("FunctionName");
