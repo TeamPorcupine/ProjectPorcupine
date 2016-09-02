@@ -31,7 +31,7 @@ public class WorldController : MonoBehaviour
     public KeyboardController keyboardController;
     public CameraController cameraController;
     public SpawnInventoryController spawnInventoryController;
-    public TimeController timeController;
+    public TimeManager timeManager;
     public ModsManager modsManager;
     public GameObject inventoryUI;
     public GameObject circleCursorPrefab;
@@ -66,7 +66,7 @@ public class WorldController : MonoBehaviour
     {
         get
         {
-            return timeController.TimeScale;
+            return timeManager.TimeScale;
         }
     }
     
@@ -98,7 +98,7 @@ public class WorldController : MonoBehaviour
 
         soundController = new SoundController(World);
 
-        gameTickDelay = TimeController.GameTickDelay;
+        gameTickDelay = TimeManager.GameTickDelay;
     }
 
     public void Start()
@@ -119,7 +119,7 @@ public class WorldController : MonoBehaviour
         keyboardController = new KeyboardController(buildModeController, Instance);
         questController = new QuestController();
         cameraController = new CameraController();
-        timeController = new TimeController();
+        timeManager = new TimeManager();
 
         // Hiding Dev Mode spawn inventory controller if devmode is off.
         spawnInventoryController.SetUIVisibility(Settings.GetSettingAsBool("DialogBoxSettings_developerModeToggle", false));
@@ -139,25 +139,25 @@ public class WorldController : MonoBehaviour
         mouseController.Update(IsModal);
         keyboardController.Update(IsModal);
         cameraController.Update(IsModal);
-        timeController.Update();
+        timeManager.Update();
 
         // Systems that update every frame when not paused.
         if (IsPaused == false)
         {
-            World.UpdateCharacters(timeController.DeltaTime);
+            World.UpdateCharacters(timeManager.DeltaTime);
         }
 
-        if (timeController.TotalDeltaTime >= gameTickDelay)
+        if (timeManager.TotalDeltaTime >= gameTickDelay)
         {
             // Systems that update at fixed frequency. 
             if (IsPaused == false)
             {
                 // Systems that update at fixed frequency when not paused.
-                World.Tick(timeController.TotalDeltaTime);
-                questController.Update(timeController.TotalDeltaTime);
+                World.Tick(timeManager.TotalDeltaTime);
+                questController.Update(timeManager.TotalDeltaTime);
             }
 
-            timeController.ResetTotalDeltaTime();
+            timeManager.ResetTotalDeltaTime();
         }
 
         soundController.Update(Time.deltaTime);

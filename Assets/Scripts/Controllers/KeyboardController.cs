@@ -70,23 +70,23 @@ public class KeyboardController
 
         if (Input.GetKeyDown(KeyCode.Plus) || Input.GetKeyDown(KeyCode.KeypadPlus))
         {
-            wc.timeController.IncreaseTimeScale();
+            wc.timeManager.IncreaseTimeScale();
         }
         else if (Input.GetKeyDown(KeyCode.Minus) || Input.GetKeyDown(KeyCode.KeypadMinus))
         {
-            wc.timeController.DecreaseTimeScale();
+            wc.timeManager.DecreaseTimeScale();
         }
         else if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Keypad1))
         {
-            wc.timeController.SetTimeScalePosition(2);
+            wc.timeManager.SetTimeScalePosition(2);
         }
         else if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Keypad2))
         {
-            wc.timeController.SetTimeScalePosition(3);
+            wc.timeManager.SetTimeScalePosition(3);
         }
         else if (Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Keypad3))
         {
-            wc.timeController.SetTimeScalePosition(4);
+            wc.timeManager.SetTimeScalePosition(4);
         }
     }
 }

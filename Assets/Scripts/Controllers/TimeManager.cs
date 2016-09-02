@@ -9,7 +9,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class TimeController
+public class TimeManager
 {
     private static float gameTickPerSecond = 5;
 
