@@ -25,6 +25,9 @@ public class TileType : IXmlSerializable
 
     private static Dictionary<TileType, Job> tileTypeBuildJobPrototypes = new Dictionary<TileType, Job>();
 
+    private static TileType empty;
+    private static TileType floor;
+
     // Base cost of pathfinding over this tile, movement cost and any furniture will modify the effective value
     private float pathfindingWeight = 1f;
 
@@ -50,12 +53,12 @@ public class TileType : IXmlSerializable
     // TODO: Maybe cache the empty and floor tiletypes.
     public static TileType Empty 
     {
-        get { return tileTypeDictionary["Empty"]; } 
+        get { return empty ?? (empty = tileTypeDictionary["Empty"]); } 
     }
 
     public static TileType Floor 
     {
-        get { return tileTypeDictionary["Floor"]; } 
+        get { return floor ?? (floor = tileTypeDictionary["Floor"]); }
     }
 
     public string Type { get; protected set; }
