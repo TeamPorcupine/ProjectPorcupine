@@ -567,12 +567,10 @@ function Heater_UninstallAction( furniture, deltaTime)
 	-- TODO: find elegant way to unregister previous register
 end
 
--- Dummy heater uninstall function
--- THis function gets called once, when the funriture is unisntalled
 function Heater_UpdateTemperature( furniture, deltaTime)
-    --if (furniture.HasPower() == false) then
-    --    return
-    --end
+    if (furniture.HasPower() == false) then
+        return
+    end
     
     tile = furniture.tile
     pressure = tile.Room.GetGasPressure() / tile.Room.GetSize()
@@ -628,25 +626,6 @@ function Accumulator_GetSpriteName(furniture)
 	local baseName = furniture.ObjectType
 	local suffix = furniture.PowerConnection.CurrentThreshold 
 	return baseName .. "_" .. suffix
-end
-
-function Heater_OnUpdate ( furniture, deltaTime)
-    if (furniture.HasPower() == false) then
-        return
-    end
-    
-    tile = furniture.tile
-    pressure = tile.Room.GetGasPressure()
-    
-    -- Clamp the value. There might be a better way to do this
-    if (pressure > 0.5) then
-        pressure = 0.5
-    end
-    temperatureChange = 10 * (pressure / 0.5) * deltaTime
-    tile.Room.ChangeTemperature(temperatureChange)
-    
-    -- Double, for testing
-    World.current.temperature.ChangeTemperature(tile.X, tile.Y, temperatureChange * 10)
 end
 
 ModUtils.ULog("Furniture.lua loaded")

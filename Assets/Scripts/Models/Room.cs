@@ -20,6 +20,7 @@ public class Room : IXmlSerializable
 {
     // Dictionary with the amount of gas in room stored in preasure(in atm) multiplyed by number of tiles.
     private Dictionary<string, float> atmosphericGasses;
+    private Dictionary<string, string> deltaGas;
 
     private List<Tile> tiles;
     private float temperature;
@@ -28,6 +29,7 @@ public class Room : IXmlSerializable
     {
         tiles = new List<Tile>();
         atmosphericGasses = new Dictionary<string, float>();
+        deltaGas = new Dictionary<string, string>();
     }
 
     public int ID
