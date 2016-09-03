@@ -57,12 +57,12 @@ public class KeyboardController
             wc.cameraController.ChangeZoom(-0.1f);
         }
 
-        if (Input.GetKey(KeyCode.Home))
+        if (Input.GetKeyUp(KeyCode.Home))
         {
             wc.cameraController.ChangeLayerUp();
         }
 
-        if (Input.GetKey(KeyCode.End))
+        if (Input.GetKeyUp(KeyCode.End))
         {
             wc.cameraController.ChangeLayerDown();
         }
