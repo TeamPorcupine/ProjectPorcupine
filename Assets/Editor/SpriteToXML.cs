@@ -6,6 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using System;
 using System.IO;
 using System.Xml;
 using UnityEditor;
@@ -445,7 +446,6 @@ public class SpriteToXML : EditorWindow
         writer.Close();
 
         MoveImage(filePath);
-
         ResetForm();        
     }
 
@@ -500,9 +500,17 @@ public class SpriteToXML : EditorWindow
         string destPath = Path.Combine(outputDirPath, imageName + imageExt);
             
         if (File.Exists(destPath))
-        {                
-            File.Replace(filePath, destPath, destPath + ".bak");            
-            Debug.ULogWarningChannel("SpriteToXML", "Image already exsists, backing old one up to: " + destPath + ".bak");
+        {
+            try
+            {
+                File.Replace(filePath, destPath, destPath + ".bak");
+                Debug.ULogWarningChannel("SpriteToXML", "Image already exsists, backing old one up to: " + destPath + ".bak");
+            }
+            catch (Exception ex)
+            {
+                Debug.ULogWarningChannel("SpriteToXML", ex.Message + " - " + imageName + imageExt + " not moved.");
+                EditorUtility.DisplayDialog(imageName + imageExt + " not moved.", "The original and output directories cannot be the same!" + "\n\n" + "XML was still generated.", "OK");
+            }
         }
         else
         {
@@ -512,7 +520,14 @@ public class SpriteToXML : EditorWindow
 
         if (File.Exists(filePath + ".meta") && File.Exists(destPath + ".meta"))
         {
-            File.Replace(filePath + ".meta", destPath + ".meta", destPath + ".meta.bak");
+            try
+            {
+                File.Replace(filePath + ".meta", destPath + ".meta", destPath + ".meta.bak");
+            }
+            catch (Exception ex)
+            {
+                Debug.ULogWarningChannel("SpriteToXML", ex.Message + " - " + imageName + imageExt + ".meta not moved.");
+            }            
         }
         else
         {
