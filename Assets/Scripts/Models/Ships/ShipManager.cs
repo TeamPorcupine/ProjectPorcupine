@@ -39,7 +39,6 @@ public class ShipManager
     {
         Ship ship = new Ship(this, PrototypeManager.Ship.Get(type));
         ship.Position = new Vector2(x, y);
-
         shipsInWorld.Add(ship);
 
         if (ShipCreated != null)
