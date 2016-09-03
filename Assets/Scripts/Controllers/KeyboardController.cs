@@ -17,12 +17,6 @@ public class KeyboardController
     private BuildModeController bmc;
     private WorldController wc;
 
-    // An array of possible time multipliers.
-    private float[] possibleTimeScales = new float[6] { 0.1f, 0.5f, 1f, 2f, 4f, 8f };
-    
-    // Current position in that array.
-    private int currentTimeScalePosition = 2;
-
     // Use this for initialization.
     public KeyboardController(BuildModeController buildModeController, WorldController worldController)
     {
@@ -88,40 +82,23 @@ public class KeyboardController
 
         if (Input.GetKeyDown(KeyCode.Plus) || Input.GetKeyDown(KeyCode.KeypadPlus))
         {
-            if (currentTimeScalePosition == possibleTimeScales.Length - 1)
-            {
-                // We are on the top of possibleTimeScales so just bail out.
-                return;
-            }
-
-            currentTimeScalePosition++;
-            wc.SetTimeScale(possibleTimeScales[currentTimeScalePosition]);
+            wc.timeManager.IncreaseTimeScale();
         }
         else if (Input.GetKeyDown(KeyCode.Minus) || Input.GetKeyDown(KeyCode.KeypadMinus))
         {
-            if (currentTimeScalePosition == 0)
-            {
-                // We are on the bottom of possibleTimeScales so just bail out.
-                return;
-            }
-
-            currentTimeScalePosition--;
-            wc.SetTimeScale(possibleTimeScales[currentTimeScalePosition]);
+            wc.timeManager.DecreaseTimeScale();
         }
         else if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Keypad1))
         {
-            wc.SetTimeScale(1f);
-            currentTimeScalePosition = 2;
+            wc.timeManager.SetTimeScalePosition(2);
         }
         else if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Keypad2))
         {
-            wc.SetTimeScale(2f);
-            currentTimeScalePosition = 3;
+            wc.timeManager.SetTimeScalePosition(3);
         }
         else if (Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Keypad3))
         {
-            wc.SetTimeScale(4f);
-            currentTimeScalePosition = 4;
+            wc.timeManager.SetTimeScalePosition(4);
         }
     }
 }

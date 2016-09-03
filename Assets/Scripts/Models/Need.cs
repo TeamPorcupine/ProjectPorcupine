@@ -105,21 +105,10 @@ public class Need
         }
 
         Amount += growthRate * deltaTime;
+
         if (character != null && character.CurrTile.GetGasPressure("O2") < 0.15)
         {
             Amount += (addedInVacuum - (addedInVacuum * (character.CurrTile.GetGasPressure("O2") * 5))) * deltaTime;
-        }
-
-        if (Amount > 75 && character.MyJob.IsNeed == false)
-        {
-            Debug.ULogChannel("Need", character.name + " needs " + Name);
-            character.AbandonJob(false);
-        }
-
-        if (Amount == 100 && character.MyJob.Critical == false && CompleteOnFail)
-        {
-            Debug.ULogChannel("Need", character.name + " failed their " + Name + " need.");
-            character.AbandonJob(false);
         }
 
         if (Amount == 100)
