@@ -26,6 +26,7 @@ public class World : IXmlSerializable
     public List<Furniture> furnitures;
     public List<Room> rooms;
     public InventoryManager inventoryManager;
+    public ShipManager shipManager;
     public Material skybox;
 
     // Store all temperature information
@@ -653,6 +654,7 @@ public class World : IXmlSerializable
         furnitures = new List<Furniture>();
         inventoryManager = new InventoryManager();
         PowerNetwork = new ProjectPorcupine.PowerNetwork.PowerNetwork();
+        shipManager = new ShipManager();
         temperature = new Temperature(Width, Height);
         LoadSkybox();
     }

@@ -25,6 +25,8 @@ public enum ShipState
 
 public class Ship
 {
+    public event ShipManager.ShipEventHandler ShipChanged;
+
     private List<ShipStorage> storages;
     private string[,] tileTypes;
     private string[,] furnitureTypes;
@@ -65,6 +67,8 @@ public class Ship
                 furnitureTypes[x, y] = proto.furnitureTypes[x, y];
             }
         }
+
+        State = ShipState.TRANSIT;
     }
 
     public string ShipType { get; private set; }
@@ -78,6 +82,26 @@ public class Ship
     public int BerthPointY { get; private set; }
 
     public BerthDirection BerthDirection { get; private set; }
+
+    private ShipState _State;
+    public ShipState State
+    {
+        get
+        {
+            return _State;
+        }
+        set
+        {
+            if (_State != value)
+            {
+                _State = value;
+                if (ShipChanged != null)
+                {
+                    ShipChanged(this);
+                }
+            }
+        }
+    }
 
     public void ReadXmlPrototype(XmlReader parentReader)
     {
