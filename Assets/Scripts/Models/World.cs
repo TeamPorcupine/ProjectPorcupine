@@ -28,6 +28,7 @@ public class World : IXmlSerializable
     public List<Furniture> furnitures;
     public List<Room> rooms;
     public InventoryManager inventoryManager;
+    public ShipManager shipManager;
     public Material skybox;
 
     // Store all temperature information
@@ -653,6 +654,7 @@ public class World : IXmlSerializable
         characters = new List<Character>();
         furnitures = new List<Furniture>();
         inventoryManager = new InventoryManager();
+        shipManager = new ShipManager();
         PowerSystem = new Syster();
         temperature = new Temperature(Width, Height);
         LoadSkybox();

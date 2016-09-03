@@ -23,6 +23,7 @@ public class PrototypeManager
         Quest = new QuestPrototypes();
         Stat = new StatPrototypes();
         SchedulerEvent = new SchedulerEventPrototypes();
+        Ship = new ShipPrototypes();
     }
 
     public static BasePrototypes<Job> FurnitureJob
@@ -68,6 +69,12 @@ public class PrototypeManager
     }
 
     public static SchedulerEventPrototypes SchedulerEvent
+    {
+        get;
+        protected set;
+    }
+
+    public static ShipPrototypes Ship
     {
         get;
         protected set;
