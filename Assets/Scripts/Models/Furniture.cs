@@ -858,7 +858,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
         if (requiredAtmosphere != null && requiredAtmosphere.Values.Count > 0)
         {
-            Room containingRoom = World.Current.GetRoomFromTile(t);
+            Room containingRoom = World.Current.GetRoomFromTile(tile);
             foreach (Gas gas in requiredAtmosphere.Values)
             {
                 if (gas.hasValue == true && containingRoom.GetGasAmount(gas.name) <= 0f)
