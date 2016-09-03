@@ -14,5 +14,14 @@ if [ ! -f $(pwd)/EditorTestResults.xml ]; then
 fi
 cat $(pwd)/EditorTestResults.xml
 echo 'travis_fold:end:tests'
+
+#TERRIBLE error check logic - Please fix ASAP
+errorCount=$(grep "failures" EditorTestResults.xml | awk -F"\"" '{print $8}') #find line with 'failures' and returns characters between quotation mark 8 and 9
+
+if [ "$errorCount" != "0" ]; then
+	echo $errorCount ' unit tests failed!'
+	exit 1
+fi
+
 #can't do windows and linux builds because unity by default installs only with build module
 #for the platform your on. 
