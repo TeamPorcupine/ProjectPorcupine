@@ -369,7 +369,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         writer.WriteAttributeString("rSkin", characterSkinColor.r.ToString());
         writer.WriteAttributeString("bSkin", characterSkinColor.b.ToString());
         writer.WriteAttributeString("gSkin", characterSkinColor.g.ToString());
-        
+
         writer.WriteStartElement("Stats");
         foreach (Stat stat in stats.Values)
         {
@@ -573,8 +573,10 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         if (needPercent > 50 && needPercent < 100 && need.RestoreNeedFurn != null)
         {
-            // TODO : Fix a bug when there is no Furniture available to satify the need
-            MyJob = new Job(null, need.RestoreNeedFurn.ObjectType, need.CompleteJobNorm, need.RestoreNeedTime, null, Job.JobPriority.High, false, true, false);
+            if(World.Current.CountFurnitureType(need.RestoreNeedFurn.ObjectType) > 0)
+            {
+                MyJob = new Job(null, need.RestoreNeedFurn.ObjectType, need.CompleteJobNorm, need.RestoreNeedTime, null, Job.JobPriority.High, false, true, false);
+            }
         }
 
         if (needPercent == 100 && need != null && need.CompleteOnFail)

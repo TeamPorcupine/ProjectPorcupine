@@ -1,8 +1,8 @@
 #region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
-// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
-// and you are welcome to redistribute it under certain conditions; See 
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
@@ -245,30 +245,21 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
     /// <param name="diagOkay">Is diagonal movement okay?.</param>
     public Tile[] GetNeighbours(bool diagOkay = false)
     {
-        Tile[] ns = diagOkay == false ? new Tile[4] : new Tile[8];
-
-        Tile tile = World.Current.GetTileAt(X, Y + 1);
-        ns[0] = tile; // Could be null, but that's okay.
-        tile = World.Current.GetTileAt(X + 1, Y);
-        ns[1] = tile; // Could be null, but that's okay.
-        tile = World.Current.GetTileAt(X, Y - 1);
-        ns[2] = tile; // Could be null, but that's okay.
-        tile = World.Current.GetTileAt(X - 1, Y);
-        ns[3] = tile; // Could be null, but that's okay.
+        Tile[] tiles = diagOkay == false ? new Tile[4] : new Tile[8];
+        tiles[0] = World.Current.GetTileAt(X, Y + 1);
+        tiles[1] = World.Current.GetTileAt(X + 1, Y);
+        tiles[2] = World.Current.GetTileAt(X, Y - 1);
+        tiles[3] = World.Current.GetTileAt(X - 1, Y);
 
         if (diagOkay == true)
         {
-            tile = World.Current.GetTileAt(X + 1, Y + 1);
-            ns[4] = tile; // Could be null, but that's okay.
-            tile = World.Current.GetTileAt(X + 1, Y - 1);
-            ns[5] = tile; // Could be null, but that's okay.
-            tile = World.Current.GetTileAt(X - 1, Y - 1);
-            ns[6] = tile; // Could be null, but that's okay.
-            tile = World.Current.GetTileAt(X - 1, Y + 1);
-            ns[7] = tile; // Could be null, but that's okay.
+            tiles[4] = World.Current.GetTileAt(X + 1, Y + 1);
+            tiles[5] = World.Current.GetTileAt(X + 1, Y - 1);
+            tiles[6] = World.Current.GetTileAt(X - 1, Y - 1);
+            tiles[7] = World.Current.GetTileAt(X - 1, Y + 1);
         }
 
-        return ns;
+        return tiles.Where(tile => tile != null).ToArray();
     }
 
     /// <summary>
@@ -276,7 +267,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
     /// </summary>
     public bool HasNeighboursOfType(TileType tileType)
     {
-        return GetNeighbours(true).Any(tile => tile.Type == tileType);
+        return GetNeighbours(true).Any(tile => (tile != null && tile.Type == tileType));
     }
 
     /// <summary>
@@ -285,7 +276,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
     /// <param name="checkDiagonals">Show we check diagonals as well?</param>
     public bool HasWalkableNeighbours(bool checkDiagonals = false)
     {
-        return GetNeighbours(checkDiagonals).Any(tile => tile.MovementCost > 0);
+        return GetNeighbours(checkDiagonals).Any(tile => tile != null && tile.MovementCost > 0);
     }
 
     public XmlSchema GetSchema()

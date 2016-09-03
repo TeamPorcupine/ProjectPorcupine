@@ -56,6 +56,10 @@ namespace Animation
         private FrameAnimation currentAnimation;
         private AnimationType currentAnimationType;
 
+        private float lastCharYPosition = 0;
+
+        public int CurrentSortingOrder { get; private set; }
+
         public CharacterAnimation(Character c, SpriteRenderer r)
         {
             character = c;
@@ -160,6 +164,15 @@ namespace Animation
                 ShowSprite(currentAnimation.CurrentIndex);
                 prevFrameIndex = currentAnimation.CurrentIndex;
             }
+
+            // if there was change in Y position, update the sorting order
+            if (lastCharYPosition - character.Y != 0f)
+            {
+                CurrentSortingOrder = Mathf.RoundToInt(character.Y * 100f) * -1;
+                renderer.sortingOrder = CurrentSortingOrder;
+            }
+
+            lastCharYPosition = character.Y;
         }
 
         private void ShowSprite(int s)
