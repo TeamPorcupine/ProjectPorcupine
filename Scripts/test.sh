@@ -23,5 +23,25 @@ if [ "$errorCount" != "0" ]; then
 	exit 1
 fi
 
-#can't do windows and linux builds because unity by default installs only with build module
-#for the platform your on. 
+errorCount=$(grep "failures" EditorTestResults.xml | awk -F"\"" '{print $6}') #now for errors
+
+if [ "$errorCount" != "0" ]; then
+	echo $errorCount ' unit tests threw errors!'
+	exit 1
+fi
+
+errorCount=$(grep "failures" EditorTestResults.xml | awk -F"\"" '{print $12}') #inconlusive tests
+
+if [ "$errorCount" != "0" ]; then
+	echo $errorCount ' unit tests were inconlusive!'
+	exit 1
+fi
+
+
+errorCount=$(grep "failures" EditorTestResults.xml | awk -F"\"" '{print $18}') #finally for invalid tests
+
+if [ "$errorCount" != "0" ]; then
+	echo $errorCount ' unit tests were invalid!'
+	exit 1
+fi
+#end of unit test checks. at this point the test have suceeded or exited with an error code.
