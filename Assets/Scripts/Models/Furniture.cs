@@ -132,6 +132,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         {
             PowerConnection = other.PowerConnection.Clone() as Connection;
             World.Current.PowerSystem.PlugIn(PowerConnection);
+            PowerConnection.NewThresholdReached += OnNewThresholdReached;
         }
 
         if (other.funcPositionValidation != null)
@@ -660,6 +661,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         if (PowerConnection != null)
         {
             World.Current.PowerSystem.Unplug(PowerConnection);
+            PowerConnection.NewThresholdReached -= OnNewThresholdReached;
         }
 
         if (Removed != null)
@@ -881,5 +883,10 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         {
             handler(furniture);
         }
+    }
+
+    private void OnNewThresholdReached(Connection connection)
+    {
+        UpdateOnChanged(this);
     }
 }
