@@ -6,6 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+
 using System.Collections;
 using ProjectPorcupine.Localization;
 using UnityEngine;
@@ -13,7 +14,12 @@ using UnityEngine.UI;
 
 public class MenuController : MonoBehaviour
 {
+    DialogBoxManager dbm;
+
+    // The left build menu.
+    GameObject constructorMenu;
     public static MenuController Instance;
+
 
     // The sub menus of the build menu (furniture, floor..... later - power, security, drones).
     public GameObject furnitureMenu;
@@ -26,10 +32,16 @@ public class MenuController : MonoBehaviour
     public Button buttonSettings;
     public Button buttonQuests;
 
-    private DialogBoxManager dbm;
-
-    // The left build menu.
-    private GameObject constructorMenu;
+    private Button CreateButton(string text)
+    {
+        GameObject buttonQuestGameObject = (GameObject)Instantiate(Resources.Load("UI/MenuButton"), this.gameObject.transform);
+        buttonQuestGameObject.name = "Button - " + text;
+        Text buttonText = buttonQuestGameObject.transform.GetChild(0).GetComponent<Text>();
+        buttonText.text = text;
+        buttonText.GetComponent<TextLocalizer>().text = buttonText;
+        buttonText.GetComponent<TextLocalizer>().UpdateText();
+        return  buttonQuestGameObject.GetComponent<Button>();
+    }
 
     // Deactivates All Menus.
     public void DeactivateAll()
@@ -66,7 +78,11 @@ public class MenuController : MonoBehaviour
 
     public void OnButtonWork()
     {
-        DeactivateAll();
+        if (!WorldController.Instance.IsModal)
+        {
+            DeactivateAll();
+            dbm.dialogBoxJobList.ShowDialog();
+        }       
     }
 
     public void OnButtonWorld()
@@ -74,6 +90,15 @@ public class MenuController : MonoBehaviour
         if (!WorldController.Instance.IsModal)
         {
             DeactivateAll();
+        }
+    }
+
+    public void OnButtonQuests()
+    {
+        if (!WorldController.Instance.IsModal)
+        {
+            DeactivateAll();
+            dbm.dialogBoxQuests.ShowDialog();
         }
     }
 
