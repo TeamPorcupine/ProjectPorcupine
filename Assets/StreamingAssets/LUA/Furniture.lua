@@ -613,5 +613,11 @@ function SolarPanel_OnUpdate(furniture, deltaTime)
 	furniture.PowerConnection.OutputRate = powerPerSecond
 end
 
+function Accumulator_GetSpriteName(furniture)
+	local baseName = furniture.ObjectType
+	local suffix = furniture.PowerConnection.CurrentThreshold 
+	return baseName .. "_" .. suffix
+end
+
 ModUtils.ULog("Furniture.lua loaded")
 return "LUA Script Parsed!"
