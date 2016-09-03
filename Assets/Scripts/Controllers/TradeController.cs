@@ -62,12 +62,12 @@ public class TradeController
         Trader playerTrader = Trader.FromPlayer(World.Current.Wallet.Currencies[tradeShip.Trader.Currency.Name]);
         Trade trade = new Trade(playerTrader, tradeShip.Trader);
         dbm.dialogBoxTrade.SetupTrade(trade);
-        dbm.dialogBoxTrade.OnTradeCancelled = () =>
+        dbm.dialogBoxTrade.TradeCancelled = () =>
         {
             tradeShip.TradeCompleted = true;
             TradeShips.Remove(tradeShip);
         };
-        dbm.dialogBoxTrade.OnTradeCompleted = () =>
+        dbm.dialogBoxTrade.TradeCompleted = () =>
         {
             tradeShip.TradeCompleted = true;
             TrasfertTradedItems(trade, tradeShip.LandingCoordinates);

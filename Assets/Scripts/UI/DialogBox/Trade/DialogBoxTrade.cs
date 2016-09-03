@@ -9,7 +9,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -24,8 +23,10 @@ public class DialogBoxTrade : DialogBox
 
     public GameObject TradeItemPrefab;
 
-    public Action OnTradeCompleted;
-    public Action OnTradeCancelled;
+    public Action TradeCompleted;
+    public Action TradeCancelled;
+
+    public Button AcceptButton;
 
     private Trade trade;
 
@@ -81,9 +82,9 @@ public class DialogBoxTrade : DialogBox
         trade = null;
         ClearInterface();
         CloseDialog();
-        if (OnTradeCompleted != null)
+        if (TradeCompleted != null)
         {
-            OnTradeCancelled();
+            TradeCancelled();
         }
     }
 
@@ -94,9 +95,9 @@ public class DialogBoxTrade : DialogBox
             trade = null;
             ClearInterface();
             CloseDialog();
-            if (OnTradeCompleted != null)
+            if (TradeCompleted != null)
             {
-                OnTradeCompleted();
+                TradeCompleted();
             }
         }
     }
@@ -137,5 +138,7 @@ public class DialogBoxTrade : DialogBox
             trade.Trader.Currency.Balance - trade.TradeCurrencyBalanceForPlayer, 
             trade.Trader.Currency.ShortName);
         TradeCurrencyBalanceText.text = tradeAmount.ToString("N2");
+
+        AcceptButton.interactable = trade.IsValid();
     }
 }
