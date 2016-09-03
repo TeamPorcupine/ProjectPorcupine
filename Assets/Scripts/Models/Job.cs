@@ -238,6 +238,13 @@ public class Job : ISelectable
             return;
         }
 
+        // Don't do the work if this is a furniture job and that piece of furniture does
+        // not have the proper atmosphere to operate.
+        if (furniture != null && furniture.HasCorrectAtmosphere() == false)
+        {
+            return;
+        }
+
         JobTime -= workTime;
         
         if (JobTime <= 0)

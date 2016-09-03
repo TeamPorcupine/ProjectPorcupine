@@ -129,9 +129,6 @@
 
     <LocalizationCode>furn_stockpile</LocalizationCode>
     <UnlocalizedDescription>furn_stockpile_desc</UnlocalizedDescription>
-    <RequiredAtmosphere>
-      <Gas hasValue="true" name="O2" />
-    </RequiredAtmosphere>
   </Furniture>
 
 
@@ -222,9 +219,6 @@
 
     <LocalizationCode>furn_power_generator</LocalizationCode>
     <UnlocalizedDescription>furn_power_generator_desc</UnlocalizedDescription>
-    <RequiredAtmosphere>
-      <Gas hasValue="true" name="O2" />
-    </RequiredAtmosphere>
   </Furniture>
 
 

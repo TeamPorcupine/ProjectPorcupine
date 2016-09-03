@@ -630,6 +630,16 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             }
         }
 
+        if (MyJob.furniture != null)
+        {
+            if (MyJob.furniture.HasCorrectAtmosphere() == false)
+            {
+                Debug.ULogChannel("Character", "Furniture job does not have the correct atmosphere! Abandoning job.");
+                AbandonJob(false);
+                return;
+            }
+        }
+
         MyJob.OnJobStopped += OnJobStopped;
 
         // Immediately check to see if the job tile is reachable.

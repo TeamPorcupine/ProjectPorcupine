@@ -401,6 +401,26 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         return IsOperating;
     }
 
+    public bool HasCorrectAtmosphere()
+    {
+        if (requiredAtmosphere != null && requiredAtmosphere.Values.Count > 0)
+        {
+            Room containingRoom = World.Current.GetRoomFromTile(this.Tile);
+            foreach (Gas gas in requiredAtmosphere.Values)
+            {
+                if (gas.hasValue == true && containingRoom.GetGasAmount(gas.name) <= 0f)
+                {
+                    return false;
+                }
+                else if (gas.hasValue == false && containingRoom.GetGasAmount(gas.name) > 0f)
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     public XmlSchema GetSchema()
     {
         return null;
@@ -742,7 +762,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
     public string GetDescription()
     {
-        return UnlocalizedDescription;
+
+        return UnlocalizedDescription + "\nValid Environment?: " + HasCorrectAtmosphere();
     }
 
     public string GetHitPointString()
@@ -849,22 +870,6 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
                 // Make sure tile doesn't already have furniture
                 if (t2.Furniture != null && isReplaceable == false)
-                {
-                    return false;
-                }
-            }
-        }
-
-        if (requiredAtmosphere != null && requiredAtmosphere.Values.Count > 0)
-        {
-            Room containingRoom = World.Current.GetRoomFromTile(tile);
-            foreach (Gas gas in requiredAtmosphere.Values)
-            {
-                if (gas.hasValue == true && containingRoom.GetGasAmount(gas.name) <= 0f)
-                {
-                    return false;
-                }
-                else if (gas.hasValue == false && containingRoom.GetGasAmount(gas.name) > 0f)
                 {
                     return false;
                 }
