@@ -430,6 +430,9 @@
 
     <IsUsable FunctionName="IsUsable_Bed" />
 
+    <Action event="OnUse" functionName="OnUse_Bed" />
+    <Action event="OnRelease" functionName="OnRelease_Bed" />
+
     <Params>
       <Param name="slots_in_use" value="0" />
       <Param name="slots" value="1" />

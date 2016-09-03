@@ -52,9 +52,16 @@ public class Need
         this.luaOnly = other.luaOnly;
     }
 
-    public float Amount 
-    { 
-        get 
+    public Furniture Furniture;
+    public void SetFurniture(Furniture furniture)
+    {
+        Furniture = furniture;
+        Furniture.EventActions.Trigger("OnUse", Furniture);
+    }
+
+    public float Amount
+    {
+        get
         {
             return amount;
         }
@@ -183,6 +190,11 @@ public class Need
 
     public void CompleteJobNorm(Job j)
     {
+        if (Furniture != null)
+        {
+            Furniture.EventActions.Trigger("OnRelease", Furniture);
+        }
+
         Amount -= restoreNeedAmount;
     }
 

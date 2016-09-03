@@ -573,9 +573,12 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         if (needPercent > 50 && needPercent < 100 && need.RestoreNeedFurn != null)
         {
-            if (World.Current.furnitures.Where(furniture => furniture.ObjectType == need.RestoreNeedFurn.ObjectType && furniture.IsUsable() == true).Count() > 0)
+            IEnumerable<Furniture> furnitures = World.Current.furnitures.Where(furniture => furniture.ObjectType == need.RestoreNeedFurn.ObjectType && furniture.IsUsable() == true);
+            if (furnitures.Count() > 0)
             {
-                MyJob = new Job(null, need.RestoreNeedFurn.ObjectType, need.CompleteJobNorm, need.RestoreNeedTime, null, Job.JobPriority.High, false, true, false);
+                Furniture destFurniture = GetClosestFurniture(furnitures);
+                need.SetFurniture(destFurniture);
+                MyJob = new Job(destFurniture.Tile, destFurniture.ObjectType, need.CompleteJobNorm, need.RestoreNeedTime, null, Job.JobPriority.High, false, true, false);
             }
         }
 
@@ -637,15 +640,8 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         // requiring materials), but we still need to verify that the
         // final location can be reached.
         Profiler.BeginSample("PathGeneration");
-        if (MyJob.IsNeed)
-        {
-            // This will calculate a path from curr to dest.
-            pathAStar = new Path_AStar(World.Current, CurrTile, DestTile, need.RestoreNeedFurn.ObjectType, 0, false, true);
-        }
-        else
-        {
-            pathAStar = new Path_AStar(World.Current, CurrTile, DestTile);
-        }
+
+        pathAStar = new Path_AStar(World.Current, CurrTile, DestTile);
 
         Profiler.EndSample();
 
@@ -1052,5 +1048,23 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 World.Current.OnInventoryCreated += OnInventoryCreated;
             }
         }
+    }
+
+    private Furniture GetClosestFurniture(IEnumerable<Furniture> furnitures)
+    {
+        int bestLength = 0; ;
+        Furniture destFurniture = new Furniture();
+
+        foreach (Furniture furniture in furnitures)
+        {
+            Path_AStar path = new Path_AStar(World.Current, currTile, furniture.Tile);
+            if (bestLength == 0 || path.Length() < bestLength)
+            {
+                bestLength = path.Length();
+                destFurniture = furniture;
+            }
+        }
+
+        return destFurniture;
     }
 }
