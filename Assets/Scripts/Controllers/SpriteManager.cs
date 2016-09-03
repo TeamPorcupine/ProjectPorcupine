@@ -20,7 +20,7 @@ public class SpriteManager : MonoBehaviour
 
     public static Texture2D noRescourceTexture;
 
-    // A sprite image with a ‘ph_’ as a prefix will be loaded as a placeholder if the normal spite image is missing.
+    // A sprite image with a "ph_" as a prefix will be loaded as a placeholder if the normal spite image is missing.
     // This is used to easily identity spires that needs improvement.
     private const string PlaceHolderPrefix = "ph_";
 
@@ -79,7 +79,6 @@ public class SpriteManager : MonoBehaviour
         sprites = new Dictionary<string, Sprite>();
 
         string filePath = Path.Combine(Application.streamingAssetsPath, "Images");
-        string modsPath = Path.Combine(Application.streamingAssetsPath, "Mods");
         LoadSpritesFromDirectory(filePath);
 
         DirectoryInfo[] mods = WorldController.Instance.modsManager.GetMods();
@@ -163,7 +162,7 @@ public class SpriteManager : MonoBehaviour
                     do
                     {
                         ReadSpriteFromXml(spriteCategory, reader, imageTexture);
-                    } 
+                    }
                     while (reader.ReadToNextSibling("Sprite"));
                 }
                 else
