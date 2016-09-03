@@ -14,17 +14,17 @@ using Power;
 
 public class PowerSystemTest
 {
-    private Syster syster;
+    private Power.System system;
     private HashSet<Grid> powerGrids;
 
     [SetUp]
     public void Init()
     {
-        syster = new Syster();
-        Type livePowerSystemType = typeof(Syster);
+        system = new Power.System();
+        Type livePowerSystemType = typeof(Power.System);
         FieldInfo field = livePowerSystemType.GetField("powerGrids", BindingFlags.NonPublic | BindingFlags.Instance);
         Assert.IsNotNull(field);
-        powerGrids = field.GetValue(syster) as HashSet<Grid>;
+        powerGrids = field.GetValue(system) as HashSet<Grid>;
         Assert.IsNotNull(powerGrids);
         Assert.AreEqual(0, powerGrids.Count);
     }
@@ -33,13 +33,13 @@ public class PowerSystemTest
     [ExpectedException(typeof(ArgumentNullException))]
     public void PlugInArgumentNullException()
     {
-        syster.PlugIn(null);
+        system.PlugIn(null);
     }
 
     [Test]
     public void PlugInTest()
     {
-        Assert.IsTrue(syster.PlugIn(new Connection()));
+        Assert.IsTrue(system.PlugIn(new Connection()));
         Assert.AreEqual(1, powerGrids.Count);
     }
 
@@ -47,10 +47,10 @@ public class PowerSystemTest
     public void IsPluggedInTest()
     {
         Connection connection = new Connection();
-        Assert.IsTrue(syster.PlugIn(connection));
+        Assert.IsTrue(system.PlugIn(connection));
         Assert.AreEqual(1, powerGrids.Count);
         Grid grid;
-        Assert.IsTrue(syster.IsPluggedIn(connection, out grid));
+        Assert.IsTrue(system.IsPluggedIn(connection, out grid));
         Assert.IsNotNull(grid);
     }
 
@@ -58,12 +58,12 @@ public class PowerSystemTest
     public void UnplugTest()
     {
         Connection connection = new Connection();
-        Assert.IsTrue(syster.PlugIn(connection));
+        Assert.IsTrue(system.PlugIn(connection));
         Assert.AreEqual(1, powerGrids.Count);
-        syster.Unplug(connection);
+        system.Unplug(connection);
         Assert.AreEqual(1, powerGrids.Count);
 
-        syster.Update(1.0f);
+        system.Update(1.0f);
         Assert.AreEqual(0, powerGrids.Count);
     }
 
@@ -72,13 +72,13 @@ public class PowerSystemTest
     {
         Connection powerProducer = new Connection { OutputRate = 50.0f };
         Connection firstPowerConsumer = new Connection { InputRate = 30.0f };
-        syster.PlugIn(powerProducer);
-        syster.PlugIn(firstPowerConsumer);
+        system.PlugIn(powerProducer);
+        system.PlugIn(firstPowerConsumer);
         Assert.AreEqual(1, powerGrids.Count);
 
-        syster.Update(1.0f);
-        Assert.IsTrue(syster.HasPower(powerProducer));
-        Assert.IsTrue(syster.HasPower(firstPowerConsumer));
+        system.Update(1.0f);
+        Assert.IsTrue(system.HasPower(powerProducer));
+        Assert.IsTrue(system.HasPower(firstPowerConsumer));
     }
 
     [Test]
@@ -87,15 +87,15 @@ public class PowerSystemTest
         Connection powerProducer = new Connection { OutputRate = 50.0f };
         Connection firstPowerConsumer = new Connection { InputRate = 30.0f };
         Connection secondPowerConsumer = new Connection { InputRate = 30.0f };
-        syster.PlugIn(powerProducer);
-        syster.PlugIn(firstPowerConsumer);
-        syster.PlugIn(secondPowerConsumer);
+        system.PlugIn(powerProducer);
+        system.PlugIn(firstPowerConsumer);
+        system.PlugIn(secondPowerConsumer);
         Assert.AreEqual(1, powerGrids.Count);
 
-        syster.Update(1.0f);
-        Assert.IsFalse(syster.HasPower(powerProducer));
-        Assert.IsFalse(syster.HasPower(firstPowerConsumer));
-        Assert.IsFalse(syster.HasPower(secondPowerConsumer));
+        system.Update(1.0f);
+        Assert.IsFalse(system.HasPower(powerProducer));
+        Assert.IsFalse(system.HasPower(firstPowerConsumer));
+        Assert.IsFalse(system.HasPower(secondPowerConsumer));
     }
 
     [Test]
@@ -103,22 +103,22 @@ public class PowerSystemTest
     {
         Connection powerProducer = new Connection { OutputRate = 50.0f };
         Connection firstPowerConsumer = new Connection { InputRate = 30.0f };
-        syster.PlugIn(powerProducer);
-        syster.PlugIn(firstPowerConsumer);
+        system.PlugIn(powerProducer);
+        system.PlugIn(firstPowerConsumer);
         Assert.AreEqual(1, powerGrids.Count);
 
-        syster.Update(0.2f);
-        Assert.IsFalse(syster.HasPower(powerProducer));
-        Assert.IsFalse(syster.HasPower(firstPowerConsumer));
+        system.Update(0.2f);
+        Assert.IsFalse(system.HasPower(powerProducer));
+        Assert.IsFalse(system.HasPower(firstPowerConsumer));
 
-        syster.Update(0.2f);
-        Assert.IsFalse(syster.HasPower(powerProducer));
-        Assert.IsFalse(syster.HasPower(firstPowerConsumer));
+        system.Update(0.2f);
+        Assert.IsFalse(system.HasPower(powerProducer));
+        Assert.IsFalse(system.HasPower(firstPowerConsumer));
 
-        syster.Update(0.2f);
-        syster.Update(0.2f);
-        syster.Update(0.2f);
-        Assert.IsTrue(syster.HasPower(powerProducer));
-        Assert.IsTrue(syster.HasPower(firstPowerConsumer));
+        system.Update(0.2f);
+        system.Update(0.2f);
+        system.Update(0.2f);
+        Assert.IsTrue(system.HasPower(powerProducer));
+        Assert.IsTrue(system.HasPower(firstPowerConsumer));
     }
 }

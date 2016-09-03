@@ -12,13 +12,13 @@ using System.Linq;
 
 namespace Power
 {
-    public class Syster
+    public class System
     {
         private readonly HashSet<Grid> powerGrids;
         private readonly float secondsToTick = 1.0f;
         private float secondsPassed;
 
-        public Syster()
+        public System()
         {
             powerGrids = new HashSet<Grid>();
         }

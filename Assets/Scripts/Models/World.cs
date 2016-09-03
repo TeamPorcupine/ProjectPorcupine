@@ -104,7 +104,7 @@ public class World : IXmlSerializable
     // The tile height of the world
     public int Height { get; protected set; }
 
-    public Syster PowerSystem { get; private set; }
+    public Power.System PowerSystem { get; private set; }
 
     public Room GetOutsideRoom()
     {
@@ -639,7 +639,7 @@ public class World : IXmlSerializable
         characters = new List<Character>();
         furnitures = new List<Furniture>();
         inventoryManager = new InventoryManager();
-        PowerSystem = new Syster();
+        PowerSystem = new Power.System();
         temperature = new Temperature(Width, Height);
         LoadSkybox();
     }
