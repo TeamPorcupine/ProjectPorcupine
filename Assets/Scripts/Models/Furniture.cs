@@ -71,10 +71,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
     private bool isOperating;
 
-    // TODO: Implement larger objects
-    // TODO: Implement object rotation
-
-    // Empty constructor is used for serialization
+    /// TODO: Implement object rotation
     public Furniture()
     {
         Tint = Color.white;
@@ -294,7 +291,6 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         Furniture obj = proto.Clone();
         obj.Tile = tile;
 
-        // FIXME: This assumes we are 1x1!
         if (tile.PlaceFurniture(obj) == false)
         {
             // For some reason, we weren't able to place our object in this tile.

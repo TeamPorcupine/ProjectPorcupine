@@ -327,7 +327,6 @@ public class World : IXmlSerializable
 
     public Furniture PlaceFurniture(string objectType, Tile t, bool doRoomFloodFill = true)
     {
-        // TODO: This function assumes 1x1 tiles -- change this later!
         if (PrototypeManager.Furniture.HasPrototype(objectType) == false)
         {
             Debug.ULogErrorChannel("World", "furniturePrototypes doesn't contain a proto for key: " + objectType);
