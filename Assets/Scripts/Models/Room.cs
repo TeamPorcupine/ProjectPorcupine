@@ -305,10 +305,11 @@ public class Room : IXmlSerializable
     public float GetGasPressure()
     {
         float pressure = 0;
-        foreach(float p in atmosphericGasses.Values)
+        foreach (float p in atmosphericGasses.Values)
         {
             pressure += p;
         }
+
         return pressure;
     }
 
