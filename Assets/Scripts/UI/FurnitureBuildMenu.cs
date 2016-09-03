@@ -31,7 +31,6 @@ public class FurnitureBuildMenu : MonoBehaviour
 
             Furniture proto = PrototypeManager.Furniture.GetPrototype(s);
             string objectId = s;
-            string objectName = proto.Name;
 
             go.name = "Button - Build " + objectId;
 

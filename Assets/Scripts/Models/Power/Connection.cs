@@ -6,7 +6,6 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-
 using System;
 using System.Globalization;
 using System.Xml;
@@ -20,24 +19,19 @@ namespace Power
     /// Represents connection to electric grid if furniture has connection specified it uses of produce power.
     /// </summary>
     [MoonSharpUserData]
-    public class Connection : IXmlSerializable, ICloneable
+    public class Connection : IXmlSerializable
     {
-        private readonly string inputRateAttributeName = "inputRate";
-        private readonly string outputRateAttributeName = "outputRate";
-        private readonly string capacityAttributeName = "capacity";
-        private readonly string accumulatedPowerAttributeName = "accumulatedPower";
+        private static readonly string InputRateAttributeName = "inputRate";
+        private static readonly string OutputRateAttributeName = "outputRate";
+        private static readonly string CapacityAttributeName = "capacity";
+        private static readonly string AccumulatedPowerAttributeName = "accumulatedPower";
 
-        public Connection()
-        {            
-        }
+        private readonly double[] capacityThresholds = new[] { 0.0, 0.25, 0.5, 0.75, 1.0 };
 
-        private Connection(Connection connection)
-        {
-            InputRate = connection.InputRate;
-            OutputRate = connection.OutputRate;
-            Capacity = connection.Capacity;
-            AccumulatedPower = connection.AccumulatedPower;
-        }
+        private int currentThresholdIndex = 0;
+        private float accumulatedPower;
+
+        public event Action<Connection> NewThresholdReached;
 
         /// <summary>
         /// Amount of power consumed by this connection per Tick of system
@@ -59,7 +53,33 @@ namespace Power
         /// <summary>
         /// Accumulator only: amount of power that is stored.
         /// </summary>
-        public float AccumulatedPower { get; set; }
+        public float AccumulatedPower
+        {
+            get
+            {
+                return accumulatedPower;
+            }
+
+            set
+            {
+                if (accumulatedPower.AreEqual(value))
+                {
+                    return;
+                }
+
+                float oldAccumulatedPower = accumulatedPower;
+                accumulatedPower = value;
+                if (IsNewThresholdReached(oldAccumulatedPower))
+                {
+                    OnNewThresholdReached(this);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Currently reached capacity threshold in %.
+        /// </summary>
+        public int CurrentThreshold { get; set; }
 
         public bool IsEmpty
         {
@@ -93,30 +113,36 @@ namespace Power
 
         public void ReadXml(XmlReader reader)
         {
-            InputRate = RaedFloatNullAsZero(reader.GetAttribute(inputRateAttributeName));
-            OutputRate = RaedFloatNullAsZero(reader.GetAttribute(outputRateAttributeName));
-            Capacity = RaedFloatNullAsZero(reader.GetAttribute(capacityAttributeName));
-            AccumulatedPower = RaedFloatNullAsZero(reader.GetAttribute(accumulatedPowerAttributeName));
+            InputRate = RaedFloatNullAsZero(reader.GetAttribute(InputRateAttributeName));
+            OutputRate = RaedFloatNullAsZero(reader.GetAttribute(OutputRateAttributeName));
+            Capacity = RaedFloatNullAsZero(reader.GetAttribute(CapacityAttributeName));
+            AccumulatedPower = RaedFloatNullAsZero(reader.GetAttribute(AccumulatedPowerAttributeName));
         }
 
         public void ReadPrototype(XmlReader reader)
         {
-            InputRate = RaedFloatNullAsZero(reader.GetAttribute(inputRateAttributeName));
-            OutputRate = RaedFloatNullAsZero(reader.GetAttribute(outputRateAttributeName));
-            Capacity = RaedFloatNullAsZero(reader.GetAttribute(capacityAttributeName));
+            InputRate = RaedFloatNullAsZero(reader.GetAttribute(InputRateAttributeName));
+            OutputRate = RaedFloatNullAsZero(reader.GetAttribute(OutputRateAttributeName));
+            Capacity = RaedFloatNullAsZero(reader.GetAttribute(CapacityAttributeName));
         }
 
         public void WriteXml(XmlWriter writer)
         {
-            writer.WriteAttributeString(inputRateAttributeName, InputRate.ToString(CultureInfo.InvariantCulture));
-            writer.WriteAttributeString(outputRateAttributeName, OutputRate.ToString(CultureInfo.InvariantCulture));
-            writer.WriteAttributeString(capacityAttributeName, Capacity.ToString(CultureInfo.InvariantCulture));
-            writer.WriteAttributeString(accumulatedPowerAttributeName, AccumulatedPower.ToString(CultureInfo.InvariantCulture));
+            writer.WriteAttributeString(InputRateAttributeName, InputRate.ToString(CultureInfo.InvariantCulture));
+            writer.WriteAttributeString(OutputRateAttributeName, OutputRate.ToString(CultureInfo.InvariantCulture));
+            writer.WriteAttributeString(CapacityAttributeName, Capacity.ToString(CultureInfo.InvariantCulture));
+            writer.WriteAttributeString(AccumulatedPowerAttributeName, AccumulatedPower.ToString(CultureInfo.InvariantCulture));
         }
 
-        public object Clone()
+        public Connection Clone()
         {
-            return new Connection(this);
+            return new Connection
+            {
+                InputRate = InputRate,
+                OutputRate = OutputRate,
+                Capacity = Capacity,
+                AccumulatedPower = AccumulatedPower
+            };
         }
 
         private static float RaedFloatNullAsZero(string value)
@@ -128,6 +154,32 @@ namespace Power
             }
 
             return float.TryParse(value, out result) ? result : 0.0f;
+        }
+
+        private bool IsNewThresholdReached(float oldAccumulatedPower)
+        {
+            int thresholdMovingDirection = oldAccumulatedPower < accumulatedPower ? 1 : -1;
+            int nextThesholdIndex = (currentThresholdIndex + thresholdMovingDirection).Clamp(0, capacityThresholds.Length);
+            double nextThreshold = capacityThresholds[nextThesholdIndex];
+
+            if ((thresholdMovingDirection > 0 && accumulatedPower >= nextThreshold * Capacity) ||
+                (thresholdMovingDirection < 0 && accumulatedPower <= nextThreshold * Capacity))
+            {
+                currentThresholdIndex = nextThesholdIndex;
+                CurrentThreshold = (int)(nextThreshold * 100);
+                return true;
+            }
+
+            return false;
+        }
+
+        private void OnNewThresholdReached(Connection connection)
+        {
+            Action<Connection> handler = NewThresholdReached;
+            if (handler != null)
+            {
+                handler(connection);
+            }
         }
     }
 }

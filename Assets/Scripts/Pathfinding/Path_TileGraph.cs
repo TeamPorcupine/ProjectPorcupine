@@ -92,6 +92,11 @@ public class Path_TileGraph
 
     private void GenerateEdgesByTile(Tile t)
     {
+        if (t == null)
+        {
+            return;
+        }
+
         Path_Node<Tile> n = nodes[t];
         List<Path_Edge<Tile>> edges = new List<Path_Edge<Tile>>();
 
