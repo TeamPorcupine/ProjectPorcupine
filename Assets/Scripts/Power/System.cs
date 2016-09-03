@@ -10,7 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Power
+namespace ProjectPorcupine.Power
 {
     public class System
     {

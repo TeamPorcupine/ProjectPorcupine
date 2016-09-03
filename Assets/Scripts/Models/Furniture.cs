@@ -13,7 +13,7 @@ using System.Xml.Schema;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
-using Power;
+using ProjectPorcupine.Power;
 using UnityEngine;
 
 /// <summary>

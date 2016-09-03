@@ -10,18 +10,18 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using NUnit.Framework;
-using Power;
+using ProjectPorcupine.Power;
 
 public class PowerSystemTest
 {
-    private Power.System system;
+    private ProjectPorcupine.Power.System system;
     private HashSet<Grid> powerGrids;
 
     [SetUp]
     public void Init()
     {
-        system = new Power.System();
-        Type livePowerSystemType = typeof(Power.System);
+        system = new ProjectPorcupine.Power.System();
+        Type livePowerSystemType = typeof(ProjectPorcupine.Power.System);
         FieldInfo field = livePowerSystemType.GetField("powerGrids", BindingFlags.NonPublic | BindingFlags.Instance);
         Assert.IsNotNull(field);
         powerGrids = field.GetValue(system) as HashSet<Grid>;

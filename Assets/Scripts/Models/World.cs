@@ -7,7 +7,6 @@
 // ====================================================
 #endregion
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -15,7 +14,6 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
-using Power;
 using UnityEngine;
 
 [MoonSharpUserData]
@@ -104,7 +102,7 @@ public class World : IXmlSerializable
     // The tile height of the world
     public int Height { get; protected set; }
 
-    public Power.System PowerSystem { get; private set; }
+    public ProjectPorcupine.Power.System PowerSystem { get; private set; }
 
     public Room GetOutsideRoom()
     {
@@ -639,7 +637,7 @@ public class World : IXmlSerializable
         characters = new List<Character>();
         furnitures = new List<Furniture>();
         inventoryManager = new InventoryManager();
-        PowerSystem = new Power.System();
+        PowerSystem = new ProjectPorcupine.Power.System();
         temperature = new Temperature(Width, Height);
         LoadSkybox();
     }

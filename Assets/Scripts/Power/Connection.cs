@@ -13,7 +13,7 @@ using System.Xml.Schema;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
 
-namespace Power
+namespace ProjectPorcupine.Power
 {
     /// <summary>
     /// Represents connection to electric grid if furniture has connection specified it uses of produce power.

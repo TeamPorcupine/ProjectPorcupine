@@ -10,7 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using NUnit.Framework;
-using Power;
+using ProjectPorcupine.Power;
 
 public class PowerGridTest
 {
