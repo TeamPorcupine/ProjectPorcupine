@@ -12,19 +12,36 @@ using UnityEngine;
 
 public class ShipManager
 {
-    private Dictionary<string, Ship> shipPrototypes;
+    public delegate void ShipEventHandler(Ship ship);
+    public event ShipEventHandler ShipCreated, ShipRemoved;
+
     private List<Ship> shipsInWorld;
 
     public ShipManager()
     {
-        shipPrototypes = new Dictionary<string, Ship>();
         shipsInWorld = new List<Ship>();
     }
 
     public Ship AddShip(string type, Vector2 position)
     {
-        Ship ship = new Ship(shipPrototypes[type]);
+        Ship ship = new Ship(PrototypeManager.Ship.GetPrototype(type));
         shipsInWorld.Add(ship);
+
+        if (ShipCreated != null)
+        {
+            ShipCreated(ship);
+        }
+
         return ship;
+    }
+
+    public void RemoveShip(Ship ship)
+    {
+        shipsInWorld.Remove(ship);
+
+        if (ShipRemoved != null)
+        {
+            ShipRemoved(ship);
+        }
     }
 }
