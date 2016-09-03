@@ -519,12 +519,6 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         return stat;
     }
 
-    private void InitializeCharacterValues()
-    {
-        LoadNeeds();
-        LoadStats();
-    }
-
     private void LoadNeeds()
     {
         needs = new Need[PrototypeManager.Need.Count];

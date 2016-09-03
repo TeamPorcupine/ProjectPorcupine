@@ -816,7 +816,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         {
             for (int y_off = tile.Y; y_off < tile.Y + Height; y_off++)
             {
-                Tile t2 = World.Current.GetTileAt(x_off, y_off, t.Z);
+                Tile t2 = World.Current.GetTileAt(x_off, y_off, tile.Z);
 
                 // Check to see if there is furniture which is replaceable
                 bool isReplaceable = false;
