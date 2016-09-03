@@ -70,7 +70,7 @@ public class TimeManager
     /// <param name="newTimeScalePosition">New time scale position.</param>
     public void SetTimeScalePosition(int newTimeScalePosition)
     {
-        if (newTimeScalePosition <= possibleTimeScales.Length && newTimeScalePosition >= 0 && newTimeScalePosition != timeScalePosition)
+        if (newTimeScalePosition <= possibleTimeScales.Length-1 && newTimeScalePosition >= 0 && newTimeScalePosition != timeScalePosition)
         {
             timeScalePosition = newTimeScalePosition;
             timeScale = possibleTimeScales[newTimeScalePosition];
