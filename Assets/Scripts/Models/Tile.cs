@@ -115,7 +115,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
 
     public int Z { get; private set; }
 
-    public float MovementModifier;
+    public float MovementModifier { get; set; }
 
     public float MovementCost
     {
@@ -123,7 +123,6 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         {
             // This prevented the character from walking in empty tiles. It has been diasbled to allow the character to construct floor tiles.
             // TODO: Permanent solution for handeling when a character can walk in empty tiles is required
-
             return Type.BaseMovementCost * MovementModifier * (Furniture != null ? Furniture.MovementCost : 1);
         }
     }

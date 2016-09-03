@@ -66,8 +66,6 @@ public class KeyboardController
         {
             wc.cameraController.ChangeLayerDown();
         }
-
-
     }
 
     private void CheckTimeInput()

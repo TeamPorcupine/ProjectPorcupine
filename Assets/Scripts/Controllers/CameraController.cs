@@ -18,7 +18,6 @@ public class CameraController
     {
         // Main camera handles UI only
         Camera.main.farClipPlane = 9;
-
     }
 
     public int CurrentLayer
@@ -32,7 +31,6 @@ public class CameraController
     // Update is called once per frame.
     public void Update(bool modal)
     {
-
         CreateLayerCameras();
         if (modal)
         {
@@ -65,8 +63,9 @@ public class CameraController
         zoomTarget = Camera.main.orthographicSize - (Settings.GetSettingAsFloat("ZoomSensitivity", 3) * (Camera.main.orthographicSize * amount));
     }
 
-    public void ChangeLayer(int newLayer) {
-        if (layerCameras != null && newLayer >=0 && newLayer < layerCameras.Length)
+    public void ChangeLayer(int newLayer) 
+    {
+        if (layerCameras != null && newLayer >= 0 && newLayer < layerCameras.Length)
         {
             currentLayer = newLayer;
             for (int i = 0; i < layerCameras.Length; i++)
@@ -83,7 +82,6 @@ public class CameraController
 
             SyncCameras();
         }
-
     }
 
     public void ChangeLayerUp()
@@ -102,8 +100,7 @@ public class CameraController
         {
             for (int i = 0; i < layerCameras.Length; i++)
             {
-                layerCameras[i].orthographicSize = Camera.main.orthographicSize + (.2f * (i-currentLayer));
-//                layerCameras[i].orthographicSize = Camera.main.orthographicSize;
+                layerCameras[i].orthographicSize = Camera.main.orthographicSize + (.2f * (i - currentLayer));
             }
         }
     }
@@ -114,8 +111,6 @@ public class CameraController
         {
             return;
         }
-//        int layerCount = WorldController.Instance.World.Depth;
-//        Camera[] children = Camera.main.GetComponentsInChildren<Camera>();
 
         // We don't have the right number of cameras for our layers
         if (layerCameras == null || layerCameras.Length != WorldController.Instance.World.Depth)

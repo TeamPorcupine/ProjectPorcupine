@@ -76,55 +76,51 @@ public class WorldGenerator
             }
         }
 
-
         for (int z = 0; z < depth; z++)
         {
-            float zScale = Mathf.Lerp(1f,.5f,(Mathf.Abs((depth / 2f) - z))/depth);
-            Debug.ULogChannel("Wppt","zScale: " + zScale);
-            //                    zScale = 1f;
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < height; y++)
+            float zScale = Mathf.Lerp(1f, .5f, Mathf.Abs((depth / 2f) - z) / depth);
+            for (int x = 0; x < width; x++)
             {
-
-                    float noiseValue = Mathf.PerlinNoise((x + offsetX) / (width * asteroidNoiseScale * zScale), (y + offsetY) / (height * asteroidNoiseScale * zScale));
-                    if (noiseValue >= asteroidNoiseThreshhold && !IsStartArea(x, y, world))
-                    {
-                        Tile t = world.GetTileAt(x, y, z);
-                        t.Type = AsteroidFloorType;
-
-                        if (Random.value <= asteroidResourceChance && t.Furniture == null)
+                for (int y = 0; y < height; y++)
+                {
+                        float noiseValue = Mathf.PerlinNoise((x + offsetX) / (width * asteroidNoiseScale * zScale), (y + offsetY) / (height * asteroidNoiseScale * zScale));
+                        if (noiseValue >= asteroidNoiseThreshhold && !IsStartArea(x, y, world))
                         {
-                            if (resources.Length > 0)
+                            Tile t = world.GetTileAt(x, y, z);
+                            t.Type = AsteroidFloorType;
+
+                            if (Random.value <= asteroidResourceChance && t.Furniture == null)
                             {
-                                int currentweight = 0;
-                                int randomweight = Random.Range(0, sumOfAllWeightedChances);
-
-                                for (int i = 0; i < resources.Length; i++)
+                                if (resources.Length > 0)
                                 {
-                                    Inventory inv = resources[i];
+                                    int currentweight = 0;
+                                    int randomweight = Random.Range(0, sumOfAllWeightedChances);
 
-                                    int weight = inv.StackSize; // In stacksize the weight was cached
-                                    currentweight += weight;
-
-                                    if (randomweight <= currentweight)
+                                    for (int i = 0; i < resources.Length; i++)
                                     {
-                                        int stackSize = Random.Range(resourceMin[i], resourceMax[i]);
+                                        Inventory inv = resources[i];
 
-                                        if (stackSize > inv.maxStackSize)
+                                        int weight = inv.StackSize; // In stacksize the weight was cached
+                                        currentweight += weight;
+
+                                        if (randomweight <= currentweight)
                                         {
-                                            stackSize = inv.maxStackSize;
-                                        }
+                                            int stackSize = Random.Range(resourceMin[i], resourceMax[i]);
 
-                                        world.inventoryManager.PlaceInventory(t, new Inventory(inv.objectType, inv.maxStackSize, stackSize));
-                                        break;
+                                            if (stackSize > inv.maxStackSize)
+                                            {
+                                                stackSize = inv.maxStackSize;
+                                            }
+
+                                            world.inventoryManager.PlaceInventory(t, new Inventory(inv.objectType, inv.maxStackSize, stackSize));
+                                            break;
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 }
-            }
         }
     }
     

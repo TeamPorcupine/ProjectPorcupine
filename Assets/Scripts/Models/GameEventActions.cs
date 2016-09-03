@@ -19,11 +19,11 @@ public class GameEventActions
 
     private Script myLuaScript;
 
-    public GameEventActions(string LuaFile)
+    public GameEventActions(string luaFile)
     {
         // Tell the LUA interpreter system to load all the classes
         // that we have marked as [MoonSharpUserData]
-        LuaUtilities.LoadScriptFromFile(LuaFile);
+        LuaUtilities.LoadScriptFromFile(luaFile);
     }
     
     public static void CallFunctionsWithEvent(string[] functionNames, GameEvent gameEvent)

@@ -231,8 +231,10 @@ public class WorldController : MonoBehaviour
         // get world size from settings
         int width = Settings.GetSettingAsInt("worldWidth", 100);
         int height = Settings.GetSettingAsInt("worldHeight", 100);
+
         // FIXME: Need to read this from settings.
         int depth = 5;
+
         // Create a world with Empty tiles
         World = new World(width, height, depth);
 

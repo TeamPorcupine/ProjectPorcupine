@@ -9,12 +9,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
 using ProjectPorcupine.Localization;
-using System.Text;
 using UnityEngine;
 
 public enum Facing
@@ -95,12 +95,6 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         InitializeCharacterValues();
     }
 
-    private void InitializeCharacterValues()
-    {
-        LoadNeeds();
-        LoadStats();
-    }
-
     /// A callback to trigger when character information changes (notably, the position).
     public event Action<Character> OnCharacterChanged;
 
@@ -137,7 +131,6 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             return Mathf.Lerp(CurrTile.Y, nextTile.Y, movementPercentage);
         }
     }
-
 
     /// <summary>
     /// Returns a float representing the Character's Z position, which can
@@ -589,7 +582,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         if (needPercent > 50 && needPercent < 100 && need.RestoreNeedFurn != null)
         {
-            if(World.Current.CountFurnitureType(need.RestoreNeedFurn.ObjectType) > 0)
+            if (World.Current.CountFurnitureType(need.RestoreNeedFurn.ObjectType) > 0)
             {
                 MyJob = new Job(null, need.RestoreNeedFurn.ObjectType, need.CompleteJobNorm, need.RestoreNeedTime, null, Job.JobPriority.High, false, true, false);
             }
@@ -1068,5 +1061,11 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 World.Current.OnInventoryCreated += OnInventoryCreated;
             }
         }
+    }
+
+    private void InitializeCharacterValues()
+    {
+        LoadNeeds();
+        LoadStats();
     }
 }

@@ -77,7 +77,7 @@ public class Path_TileGraph
                 return true;
             }
 
-            if (World.Current.GetTileAt(curr.X, curr.Y - dY,curr.Z).PathfindingCost == 0)
+            if (World.Current.GetTileAt(curr.X, curr.Y - dY, curr.Z).PathfindingCost == 0)
             {
                 // North or South is unwalkable, therefore this would be a clipped movement.
                 return true;
