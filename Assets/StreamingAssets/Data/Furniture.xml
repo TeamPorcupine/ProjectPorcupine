@@ -384,7 +384,7 @@
     <UnlocalizedDescription>furn_oxygen_compressor_desc</UnlocalizedDescription>
   </Furniture>
 
-  
+
   <Furniture objectType="solar_panel">
     <Name>Solar Panel</Name>
     <TypeTag>Generator</TypeTag>
@@ -435,6 +435,24 @@
     <UnlocalizedDescription>furn_simple_bed_desc</UnlocalizedDescription>
   </Furniture>
 
+
+  <Furniture objectType="accumulator">
+    <Name>Accumulator</Name>
+    <Description>Accumulator</Description>
+    <MovementCost>2</MovementCost>
+    <PathfindingModifier>0</PathfindingModifier>
+    <PathfindingWeight>2</PathfindingWeight>
+    <Width>2</Width>
+    <Height>1</Height>
+    <PowerConnection inputRate="5" outputRate="10" capacity="50"/>
+
+    <BuildingJob jobTime="2" />
+
+    <GetSpriteName FunctionName="Accumulator_GetSpriteName" />
+
+    <LocalizationCode>furn_accumulator</LocalizationCode>
+    <UnlocalizedDescription>furn_accumulator_desc</UnlocalizedDescription>
+  </Furniture>
 
   
   <Furniture objectType="mine">

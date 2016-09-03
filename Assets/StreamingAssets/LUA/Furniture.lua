@@ -613,6 +613,12 @@ function SolarPanel_OnUpdate(furniture, deltaTime)
 	furniture.PowerConnection.OutputRate = powerPerSecond
 end
 
+function Accumulator_GetSpriteName(furniture)
+	local baseName = furniture.ObjectType
+	local suffix = furniture.PowerConnection.CurrentThreshold 
+	return baseName .. "_" .. suffix
+end
+
 function OreMine_CreateMiningJob(furniture, character)
     -- Creates job for a character to go and "mine" the Ore
     local j = Job.__new(
