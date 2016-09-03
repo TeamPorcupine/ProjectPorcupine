@@ -135,6 +135,7 @@ public class World : IXmlSerializable
                 return r;
             }
         }
+
         return GetOutsideRoom();
     }
 

@@ -15,7 +15,6 @@ using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
 using Power;
 using UnityEngine;
-using System.Text;
 
 /// <summary>
 /// InstalledObjects are things like walls, doors, and furniture (e.g. a sofa).

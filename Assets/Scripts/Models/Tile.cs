@@ -439,10 +439,12 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         {
             return false;
         }
+
         if (obj is Tile == false)
         {
             return false;
         }
+
         Tile otherTile = (Tile)obj;
         return this.X.Equals(otherTile.X) && this.Y.Equals(otherTile.Y);
     }
