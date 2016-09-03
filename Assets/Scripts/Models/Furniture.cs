@@ -83,7 +83,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         EventActions = new EventAction();
 
         contextMenuLuaActions = new List<ContextMenuLuaAction>();
-        furnParameters = new Parameter("furnParameters");
+        furnParameters = new Parameter();
         jobs = new List<Job>();
         typeTags = new HashSet<string>();
         funcPositionValidation = DefaultIsValidPosition;
@@ -132,6 +132,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         {
             PowerConnection = other.PowerConnection.Clone() as Connection;
             World.Current.PowerSystem.PlugIn(PowerConnection);
+            PowerConnection.NewThresholdReached += OnNewThresholdReached;
         }
 
         if (other.funcPositionValidation != null)
@@ -559,8 +560,11 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     public void ReadXml(XmlReader reader)
     {
         // X, Y, and objectType have already been set, and we should already
-        // be assigned to a tile.  So just read extra data.
-        ReadXmlParams(reader);
+        // be assigned to a tile.  So just read extra data if we have any.
+        if (!reader.IsEmptyElement)
+        {
+            ReadXmlParams(reader);
+        }
     }
 
     public void ReadXmlParams(XmlReader reader)
@@ -657,6 +661,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         if (PowerConnection != null)
         {
             World.Current.PowerSystem.Unplug(PowerConnection);
+            PowerConnection.NewThresholdReached -= OnNewThresholdReached;
         }
 
         if (Removed != null)
@@ -878,5 +883,10 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         {
             handler(furniture);
         }
+    }
+
+    private void OnNewThresholdReached(Connection connection)
+    {
+        UpdateOnChanged(this);
     }
 }

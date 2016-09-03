@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
+using Scheduler;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
@@ -31,8 +32,8 @@ public class WorldController : MonoBehaviour
     public KeyboardController keyboardController;
     public CameraController cameraController;
     public SpawnInventoryController spawnInventoryController;
+    public TimeManager timeManager;
     public ModsManager modsManager;
-    public float GameTickPerSecond = 5;
     public GameObject inventoryUI;
     public GameObject circleCursorPrefab;
 
@@ -42,11 +43,7 @@ public class WorldController : MonoBehaviour
     private static string loadWorldFromFile = null;
 
     private float gameTickDelay;
-    private float totalDeltaTime;
     private bool isPaused = false;
-
-    // Multiplier of Time.deltaTime.
-    private float timeScale = 1f;
 
     public static WorldController Instance { get; protected set; }
 
@@ -70,7 +67,7 @@ public class WorldController : MonoBehaviour
     {
         get
         {
-            return timeScale;
+            return timeManager.TimeScale;
         }
     }
     
@@ -87,6 +84,13 @@ public class WorldController : MonoBehaviour
         new FurnitureActions();
         new PrototypeManager();
 
+        // FIXME: Do something real here. This is just to show how to register a C# event prototype for the Scheduler.
+        PrototypeManager.SchedulerEvent.Add(
+            "ping_log",
+            new ScheduledEvent(
+                "ping_log",
+                (evt) => Debug.ULogChannel("Scheduler", "Event {0} fired", evt.Name)));
+
         string dataPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
         modsManager = new ModsManager(dataPath);
 
@@ -102,7 +106,7 @@ public class WorldController : MonoBehaviour
 
         soundController = new SoundController(World);
 
-        gameTickDelay = 1f / GameTickPerSecond;
+        gameTickDelay = TimeManager.GameTickDelay;
     }
 
     public void Start()
@@ -123,6 +127,7 @@ public class WorldController : MonoBehaviour
         keyboardController = new KeyboardController(buildModeController, Instance);
         questController = new QuestController();
         cameraController = new CameraController();
+        timeManager = new TimeManager();
 
         // Hiding Dev Mode spawn inventory controller if devmode is off.
         spawnInventoryController.SetUIVisibility(Settings.GetSettingAsBool("DialogBoxSettings_developerModeToggle", false));
@@ -142,41 +147,29 @@ public class WorldController : MonoBehaviour
         mouseController.Update(IsModal);
         keyboardController.Update(IsModal);
         cameraController.Update(IsModal);
-
-        float deltaTime = Time.deltaTime * timeScale;
+        timeManager.Update();
 
         // Systems that update every frame when not paused.
         if (IsPaused == false)
         {
-            World.UpdateCharacters(deltaTime);
+            World.UpdateCharacters(timeManager.DeltaTime);
+            Scheduler.Scheduler.Current.Update(timeManager.DeltaTime);
         }
 
-        totalDeltaTime += deltaTime;
-
-        if (totalDeltaTime >= gameTickDelay)
+        if (timeManager.TotalDeltaTime >= gameTickDelay)
         {
             // Systems that update at fixed frequency. 
             if (IsPaused == false)
             {
                 // Systems that update at fixed frequency when not paused.
-                World.Tick(totalDeltaTime);
-                questController.Update(totalDeltaTime);
+                World.Tick(timeManager.TotalDeltaTime);
+                questController.Update(timeManager.TotalDeltaTime);
             }
 
-            totalDeltaTime = 0f;
+            timeManager.ResetTotalDeltaTime();
         }
 
         soundController.Update(Time.deltaTime);
-    }
-
-    /// <summary>
-    /// Set's game speed (it's a multiplier so 1 == normal game speed).
-    /// </summary>
-    /// <param name="timeScale">Desired time scale.</param>
-    public void SetTimeScale(float timeScale)
-    {
-        this.timeScale = timeScale;
-        Debug.ULogChannel("Game speed", "Game speed set to " + timeScale + "x");
     }
 
     /// <summary>

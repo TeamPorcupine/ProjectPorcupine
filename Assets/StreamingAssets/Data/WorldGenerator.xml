@@ -64,6 +64,7 @@
         <Furniture x="6" y="5" name="furn_SteelWall" />
         <Furniture x="10" y="5" name="furn_SteelWall" />
         <Furniture x="11" y="5" name="Oxygen Generator" />
+        <Furniture x="15" y="5" name="simple_bed" />
         <Furniture x="17" y="5" name="furn_SteelWall" />
 
         <Furniture x="1" y="6" name="furn_SteelWall" />

@@ -384,7 +384,7 @@
     <UnlocalizedDescription>furn_oxygen_compressor_desc</UnlocalizedDescription>
   </Furniture>
 
-  
+
   <Furniture objectType="solar_panel">
     <Name>Solar Panel</Name>
     <TypeTag>Generator</TypeTag>
@@ -408,5 +408,49 @@
 
     <LocalizationCode>furn_solar_panel</LocalizationCode>
     <UnlocalizedDescription>furn_solar_panel_desc</UnlocalizedDescription>
+  </Furniture>
+
+  <Furniture objectType="simple_bed">
+    <Name>Simple Bed</Name>
+    <Description>A simple bed</Description>
+    <TypeTag>Bed</TypeTag>
+    <MovementCost>2</MovementCost>
+    <Width>1</Width>
+    <Height>2</Height>
+    <PathfindingModifier>1</PathfindingModifier>
+    <PathfindingWeight>1</PathfindingWeight>
+
+    <BuildingJob jobTime="1">
+      <Inventory objectType="Steel Plate" amount="2" />
+    </BuildingJob>
+
+    <DeconstructJob>
+      <Inventory objectType="Steel Plate" amount="1" />
+    </DeconstructJob>
+
+    <Params>
+      <Param name="comfort" value="0.5" />
+    </Params>
+    <LocalizationCode>furn_simple_bed</LocalizationCode>
+    <UnlocalizedDescription>furn_simple_bed_desc</UnlocalizedDescription>
+  </Furniture>
+
+
+  <Furniture objectType="accumulator">
+    <Name>Accumulator</Name>
+    <Description>Accumulator</Description>
+    <MovementCost>2</MovementCost>
+    <PathfindingModifier>0</PathfindingModifier>
+    <PathfindingWeight>2</PathfindingWeight>
+    <Width>2</Width>
+    <Height>1</Height>
+    <PowerConnection inputRate="5" outputRate="10" capacity="50"/>
+
+    <BuildingJob jobTime="2" />
+
+    <GetSpriteName FunctionName="Accumulator_GetSpriteName" />
+
+    <LocalizationCode>furn_accumulator</LocalizationCode>
+    <UnlocalizedDescription>furn_accumulator_desc</UnlocalizedDescription>
   </Furniture>
 </Furnitures>
