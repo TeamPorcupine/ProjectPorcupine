@@ -12,6 +12,8 @@ public class InventoryCommon
 {
     public string objectType;
     public int maxStackSize;
+    public float basePrice = 1f;
+    public string category;
 
     public void ReadXmlPrototype(XmlReader reader_parent)
     {
@@ -26,6 +28,14 @@ public class InventoryCommon
                 case "maxStackSize":
                     reader.Read();
                     maxStackSize = reader.ReadContentAsInt();
+                    break;
+                case "basePrice":
+                    reader.Read();
+                    basePrice = reader.ReadContentAsFloat();
+                    break;
+                case "category":
+                    reader.Read();
+                    category = reader.ReadContentAsString();
                     break;
             }
         }
