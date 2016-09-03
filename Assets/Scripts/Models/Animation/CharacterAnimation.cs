@@ -58,8 +58,6 @@ namespace Animation
 
         private float lastCharYPosition = 0;
 
-        public int CurrentSortingOrder { get; private set; }
-
         public CharacterAnimation(Character c, SpriteRenderer r)
         {
             character = c;
@@ -89,6 +87,8 @@ namespace Animation
             };
             SetSprites(sprites);
         }
+
+        public int CurrentSortingOrder { get; private set; }
 
         public void SetSprites(Sprite[] s)
         {
