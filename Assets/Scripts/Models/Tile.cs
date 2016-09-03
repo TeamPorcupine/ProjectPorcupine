@@ -271,9 +271,9 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
     }
 
     /// <summary>
-    /// Returns true if any of the neighours is walkable
+    /// Returns true if any of the neighours is walkable.
     /// </summary>
-    /// <param name="checkDiagonals">Show we check diagonals as well?</param>
+    /// <param name="checkDiagonals">Will test diagonals as well if true.</param>
     public bool HasWalkableNeighbours(bool checkDiagonals = false)
     {
         return GetNeighbours(checkDiagonals).Any(tile => tile != null && tile.MovementCost > 0);
