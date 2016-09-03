@@ -25,7 +25,7 @@ public class GameEventActions
         // that we have marked as [MoonSharpUserData]
         LuaUtilities.LoadScriptFromFile(luaFile);
     }
-    
+
     public static void CallFunctionsWithEvent(string[] functionNames, GameEvent gameEvent)
     {
         foreach (string fn in functionNames)
@@ -38,7 +38,7 @@ public class GameEventActions
             }
         }
     }
-    
+
     public static void JobComplete_FurnitureBuilding(Job theJob)
     {
         WorldController.Instance.World.PlaceFurniture(theJob.JobObjectType, theJob.tile);

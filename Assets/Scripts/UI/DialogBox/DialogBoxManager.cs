@@ -29,27 +29,27 @@ public class DialogBoxManager : MonoBehaviour
 
         mc = GameObject.Find("Dialog Boxes").GetComponent<MenuController>();
 
-        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_SaveFile"), controllers.transform.position, controllers.transform.rotation,  controllers.transform);
+        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_SaveFile"), controllers.transform.position, controllers.transform.rotation, controllers.transform);
         tempGoObj.name = "Save File";
         dialogBoxSaveGame = tempGoObj.GetComponent<DialogBoxSaveGame>();
 
-        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_LoadFile"), controllers.transform.position, controllers.transform.rotation,  controllers.transform);
+        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_LoadFile"), controllers.transform.position, controllers.transform.rotation, controllers.transform);
         tempGoObj.name = "Load File";
         dialogBoxLoadGame = tempGoObj.GetComponent<DialogBoxLoadGame>();
 
-        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_Options"), controllers.transform.position, controllers.transform.rotation,  controllers.transform);
+        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_Options"), controllers.transform.position, controllers.transform.rotation, controllers.transform);
         tempGoObj.name = "Options";
         dialogBoxOptions = tempGoObj.GetComponent<DialogBoxOptions>();
 
-        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_Settings"), controllers.transform.position, controllers.transform.rotation,  controllers.transform);
+        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_Settings"), controllers.transform.position, controllers.transform.rotation, controllers.transform);
         tempGoObj.name = "Settings";
         dialogBoxSettings = tempGoObj.GetComponent<DialogBoxSettings>();
 
-        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_Trade"), controllers.transform.position, controllers.transform.rotation,  controllers.transform);
+        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_Trade"), controllers.transform.position, controllers.transform.rotation, controllers.transform);
         tempGoObj.name = "Trade";
         dialogBoxTrade = tempGoObj.GetComponent<DialogBoxTrade>();
 
-        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_AreYouSure"), controllers.transform.position, controllers.transform.rotation,  controllers.transform);
+        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_AreYouSure"), controllers.transform.position, controllers.transform.rotation, controllers.transform);
         tempGoObj.name = "Are You Sure";
         dialogBoxAreYouSure = tempGoObj.GetComponent<DialogBoxAreYouSure>();
 
@@ -73,7 +73,6 @@ public class DialogBoxManager : MonoBehaviour
 
     private Toggle CreatePinQuestButton()
     {
-        Transform layoutRoot = GameObject.Find("Dialog Boxes").transform.parent.GetComponent<Transform>();
         GameObject buttonQuestGameObject = (GameObject)Instantiate(Resources.Load("UI/PinToggleButton"), this.gameObject.transform);
         buttonQuestGameObject.name = "ToggleQuestPinButton";
         buttonQuestGameObject.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, -30, 0);

@@ -1,8 +1,8 @@
 #region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
-// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
-// and you are welcome to redistribute it under certain conditions; See 
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
@@ -95,8 +95,8 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
 
             if (Furniture != null)
             {
-                return (Furniture.PathfindingWeight * Furniture.MovementCost * Type.PathfindingWeight * Type.BaseMovementCost) + 
-                    Furniture.PathfindingModifier + Type.PathfindingModifier;
+                return (Furniture.PathfindingWeight * Furniture.MovementCost * Type.PathfindingWeight * Type.BaseMovementCost) +
+                Furniture.PathfindingModifier + Type.PathfindingModifier;
             }
             else
             {
@@ -113,8 +113,11 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
 
     public int Y { get; private set; }
 
+<<<<<<< HEAD
     public int Z { get; private set; }
 
+=======
+>>>>>>> 6a7054969f62d8b1c5e7c04257514713af3154d0
     public float MovementModifier { get; set; }
 
     public float MovementCost
@@ -274,6 +277,15 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         return GetNeighbours(true).Any(tile => (tile != null && tile.Type == tileType));
     }
 
+    /// <summary>
+    /// Returns true if any of the neighours is walkable.
+    /// </summary>
+    /// <param name="checkDiagonals">Will test diagonals as well if true.</param>
+    public bool HasWalkableNeighbours(bool checkDiagonals = false)
+    {
+        return GetNeighbours(checkDiagonals).Any(tile => tile != null && tile.MovementCost > 0);
+    }
+
     public XmlSchema GetSchema()
     {
         return null;
@@ -299,7 +311,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
 
         Type = TileType.GetTileType(reader.GetAttribute("Type"));
     }
-        
+
     public Enterability IsEnterable()
     {
         // This returns true if you can enter this tile right this moment.
@@ -405,7 +417,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
             {
                 Text = "Cancel Job",
                 RequireCharacterSelected = false,
-                Action = (cm, c) => 
+                Action = (cm, c) =>
                 {
                     if (PendingBuildJob != null)
                     {
@@ -420,7 +432,10 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
                 {
                     Text = "Prioritize " + PendingBuildJob.GetName(),
                     RequireCharacterSelected = true,
-                    Action = (cm, c) => { c.PrioritizeJob(PendingBuildJob); }
+                    Action = (cm, c) =>
+                    {
+                        c.PrioritizeJob(PendingBuildJob);
+                    }
                 };
             }
         }
