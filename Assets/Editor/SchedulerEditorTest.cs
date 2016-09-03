@@ -7,7 +7,6 @@
 // ====================================================
 #endregion
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
@@ -30,14 +29,14 @@ public class SchedulerEditorTest
                 "ping_log",
                 new ScheduledEvent(
                     "ping_log",
-                    (evt) => Debug.ULogChannel("Scheduler", "Event {0} fired", evt.Name)));
+                    evt => Debug.ULogChannel("Scheduler", "Event {0} fired", evt.Name)));
         }
 
         // The problem with unit testing singletons
         ///scheduler = Scheduler.Scheduler.Current;
         scheduler = new Scheduler.Scheduler();
 
-        callback = (evt) => Debug.ULogChannel("SchedulerTest", "Event {0} fired", evt.Name);
+        callback = evt => Debug.ULogChannel("SchedulerTest", "Event {0} fired", evt.Name);
     }
 
     [Test]
@@ -98,13 +97,13 @@ public class SchedulerEditorTest
 
         ScheduledEvent evt1 = new ScheduledEvent(
             "test - increment i by 1",
-            (evt) => { tally++; callback(evt); },
+            evt => { tally++; callback(evt); },
             2.0f,
             true,
             1);
         ScheduledEvent evt2 = new ScheduledEvent(
             "test - increment i by 10",
-            (evt) => { tally += 10; callback(evt); },
+            evt => { tally += 10; callback(evt); },
             3.0f,
             true,
             1);
@@ -209,7 +208,7 @@ public class SchedulerEditorTest
         // event which tries to purge the event list at 5s
         ScheduledEvent evt2 = new ScheduledEvent(
             "test",
-            (evt) => scheduler.DeregisterEvent(evt1),
+            evt => scheduler.DeregisterEvent(evt1),
             5.0f,
             false,
             1);
@@ -217,7 +216,7 @@ public class SchedulerEditorTest
         // event which counts the events in the list at 7s
         ScheduledEvent evt3 = new ScheduledEvent(
             "test",
-            (evt) => (numEventsInList = scheduler.Events.Count),
+            evt => numEventsInList = scheduler.Events.Count,
             7.0f,
             false,
             1);
