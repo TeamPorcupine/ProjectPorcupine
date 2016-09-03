@@ -1052,7 +1052,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
     private Furniture GetClosestFurniture(IEnumerable<Furniture> furnitures)
     {
-        int bestLength = 0; ;
+        int bestLength = 0;
         Furniture destFurniture = new Furniture();
 
         foreach (Furniture furniture in furnitures)

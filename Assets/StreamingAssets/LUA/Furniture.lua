@@ -627,7 +627,6 @@ function IsUsable_Bed( furniture )
 end
 
 function OnUse_Bed( furniture )
-    ModUtils.ULog(furniture.Parameters["slots_in_use"])
     furniture.Parameters["slots_in_use"].SetValue(furniture.Parameters["slots_in_use"].ToFloat() + 1)
 end
 
