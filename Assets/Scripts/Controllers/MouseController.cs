@@ -404,7 +404,12 @@ public class MouseController
     {
         for (int x = dragParams.StartX; x <= dragParams.EndX; x++)
         {
-            for (int y = dragParams.StartY; y <= dragParams.EndY; y++)
+            // Variables for the for-loop over the y-coordinates
+            int begin = (x - dragParams.StartX) % 2 == 0 ? dragParams.StartY : dragParams.EndY;
+            int stop = (x - dragParams.StartX) % 2 == 0 ? dragParams.EndY + 1 : dragParams.StartY - 1;
+            int increment = (x - dragParams.StartX) % 2 == 0 ? 1 : -1;
+
+            for (int y = begin; y != stop; y += increment)
             {
                 Tile t = WorldController.Instance.World.GetTileAt(x, y);
                 if (bmc.buildMode == BuildMode.FURNITURE)
