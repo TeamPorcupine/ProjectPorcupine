@@ -15,6 +15,7 @@ using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
 using Power;
 using UnityEngine;
+using System.Text;
 
 /// <summary>
 /// InstalledObjects are things like walls, doors, and furniture (e.g. a sofa).
@@ -71,6 +72,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
     private bool isOperating;
 
+    private Dictionary<string, Gas> requiredAtmosphere;
+
     // TODO: Implement larger objects
     // TODO: Implement object rotation
 
@@ -88,6 +91,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         typeTags = new HashSet<string>();
         funcPositionValidation = DefaultIsValidPosition;
         tileTypeBuildPermissions = new HashSet<TileType>();
+        requiredAtmosphere = new Dictionary<string, Gas>();
         Height = 1;
         Width = 1;
     }
@@ -143,6 +147,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
         LocalizationCode = other.LocalizationCode;
         UnlocalizedDescription = other.UnlocalizedDescription;
+        requiredAtmosphere = other.requiredAtmosphere;
     }
 
     public event Action<Furniture> Changed;
@@ -453,22 +458,22 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                 reader.Read();
                 Height = reader.ReadContentAsInt();
                 break;
-                case "LinksToNeighbours":
+            case "LinksToNeighbours":
                 reader.Read();
                 LinksToNeighbour = reader.ReadContentAsBoolean();
                 break;
-                case "EnclosesRooms":
+            case "EnclosesRooms":
                 reader.Read();
                 RoomEnclosure = reader.ReadContentAsBoolean();
                 break;
-                case "CanReplaceFurniture":
+            case "CanReplaceFurniture":
                 replaceableFurniture.Add(reader.GetAttribute("typeTag").ToString());
                 break;
-                case "DragType":
+            case "DragType":
                 reader.Read();
                 DragType = reader.ReadContentAsString();
                 break;
-                case "BuildingJob":
+            case "BuildingJob":
                 float jobTime = float.Parse(reader.GetAttribute("jobTime"));
 
                 List<Inventory> invs = new List<Inventory>();
@@ -498,7 +503,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                     PrototypeManager.FurnitureJob.SetPrototype(ObjectType, j);
                 break;
 
-                case "CanBeBuiltOn":
+            case "CanBeBuiltOn":
                     TileType tileType = TileType.GetTileType(reader.GetAttribute("tileType"));
                     tileTypeBuildPermissions.Add(tileType);
                     break;
@@ -508,7 +513,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                 EventActions.ReadXml(subtree);
                 subtree.Close();
                 break;
-                case "ContextMenuAction":
+            case "ContextMenuAction":
                 contextMenuLuaActions.Add(new ContextMenuLuaAction
                 {
                     LuaFunction = reader.GetAttribute("FunctionName"),
@@ -516,41 +521,45 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                     RequiereCharacterSelected = bool.Parse(reader.GetAttribute("RequiereCharacterSelected"))
                 });
                 break;
-                case "IsEnterable":
+            case "IsEnterable":
                 isEnterableAction = reader.GetAttribute("FunctionName");
                 break;
-                case "GetSpriteName":
+            case "GetSpriteName":
                 getSpriteNameAction = reader.GetAttribute("FunctionName");
                 break;
 
-                case "JobSpotOffset":
+            case "JobSpotOffset":
                 JobSpotOffset = new Vector2(
                     int.Parse(reader.GetAttribute("X")),
                     int.Parse(reader.GetAttribute("Y")));
                 break;
-                case "JobSpawnSpotOffset":
+            case "JobSpawnSpotOffset":
                 jobSpawnSpotOffset = new Vector2(
                     int.Parse(reader.GetAttribute("X")),
                     int.Parse(reader.GetAttribute("Y")));
                 break;
 
-                case "PowerConnection":
+            case "PowerConnection":
                 PowerConnection = new Connection();
                 PowerConnection.ReadPrototype(reader);
                 break;
 
-                case "Params":
+            case "Params":
                 ReadXmlParams(reader);  // Read in the Param tag
                 break;
 
-                case "LocalizationCode":
+            case "LocalizationCode":
                 reader.Read();
                 LocalizationCode = reader.ReadContentAsString();
                 break;
 
-                case "UnlocalizedDescription":
+            case "UnlocalizedDescription":
                 reader.Read();
                 UnlocalizedDescription = reader.ReadContentAsString();
+                break;
+
+            case "RequiredAtmosphere":
+                ReadXmlRequiredAtmosphere(reader);  // Read in the Param tag
                 break;
             }
         }
@@ -571,6 +580,16 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         // X, Y, and objectType have already been set, and we should already
         // be assigned to a tile.  So just read extra data.
         furnParameters = Parameter.ReadXml(reader);
+    }
+
+    public void ReadXmlRequiredAtmosphere(XmlReader reader)
+    {
+        Dictionary<string, Gas> gases = Gas.ReadXml(reader);
+        requiredAtmosphere = gases;
+        foreach (Gas gas in requiredAtmosphere.Values)
+        {
+            Debug.ULogChannel("Furniture", gas.ToString());
+        }
     }
 
     /// <summary>

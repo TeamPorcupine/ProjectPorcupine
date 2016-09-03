@@ -126,6 +126,19 @@ public class World : IXmlSerializable
         return rooms[i];
     }
 
+    public Room GetRoomFromTile(Tile tile)
+    {
+        foreach (Room r in rooms)
+        {
+            if (r.HasTile(tile))
+            {
+                return r;
+            }
+        }
+        Debug.ULogErrorChannel("Rooms", "Unable to find room with tile:" + tile);
+        return null;
+    }
+
     public void AddRoom(Room r)
     {
         rooms.Add(r);

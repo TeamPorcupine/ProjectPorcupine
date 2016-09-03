@@ -430,4 +430,28 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
             }
         }
     }
+
+    public override bool Equals(object obj)
+    {
+        if (obj == null)
+        {
+            return false;
+        }
+        if (obj is Tile == false)
+        {
+            return false;
+        }
+        Tile otherTile = (Tile)obj;
+        return this.X.Equals(otherTile.X) && this.Y.Equals(otherTile.Y);
+    }
+
+    public override int GetHashCode()
+    {
+        return this.X.GetHashCode() + this.Y.GetHashCode();
+    }
+
+    public override string ToString()
+    {
+        return string.Format("X: {0}, Y: {1}", this.X, this.Y);
+    }
 }
