@@ -286,9 +286,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         }
     }
 
-    public static Furniture PlaceInstance(Furniture proto, Tile tile)
+    public static Furniture PlaceInstance(Furniture proto, Tile tile, bool doPositionValidaton = true)
     {
-        if (proto.funcPositionValidation(tile) == false)
+        if (doPositionValidaton && proto.funcPositionValidation(tile) == false)
         {
             Debug.ULogErrorChannel("Furniture", "PlaceInstance -- Position Validity Function returned FALSE.");
             return null;
@@ -299,7 +299,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         obj.Tile = tile;
 
         // FIXME: This assumes we are 1x1!
-        if (tile.PlaceFurniture(obj) == false)
+        if (tile.PlaceFurniture(obj, doPositionValidaton) == false)
         {
             // For some reason, we weren't able to place our object in this tile.
             // (Probably it was already occupied.)
@@ -586,10 +586,6 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     {
         Dictionary<string, Gas> gases = Gas.ReadXml(reader);
         requiredAtmosphere = gases;
-        foreach (Gas gas in requiredAtmosphere.Values)
-        {
-            Debug.ULogChannel("Furniture", gas.ToString());
-        }
     }
 
     /// <summary>
@@ -849,6 +845,22 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
                 // Make sure tile doesn't already have furniture
                 if (t2.Furniture != null && isReplaceable == false)
+                {
+                    return false;
+                }
+            }
+        }
+
+        if (requiredAtmosphere != null && requiredAtmosphere.Values.Count > 0)
+        {
+            Room containingRoom = World.Current.GetRoomFromTile(t);
+            foreach (Gas gas in requiredAtmosphere.Values)
+            {
+                if (gas.hasValue == true && containingRoom.GetGasAmount(gas.name) <= 0f)
+                {
+                    return false;
+                }
+                else if (gas.hasValue == false && containingRoom.GetGasAmount(gas.name) > 0f)
                 {
                     return false;
                 }

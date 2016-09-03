@@ -159,14 +159,14 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         return true;
     }
 
-    public bool PlaceFurniture(Furniture objInstance)
+    public bool PlaceFurniture(Furniture objInstance, bool doPlacementValidation = true)
     {
         if (objInstance == null)
         {
             return UnplaceFurniture();
         }
 
-        if (objInstance.IsValidPosition(this) == false)
+        if (doPlacementValidation && objInstance.IsValidPosition(this) == false)
         {
             Debug.ULogErrorChannel("Tile", "Trying to assign a furniture to a tile that isn't valid!");
             return false;

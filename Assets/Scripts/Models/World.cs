@@ -135,8 +135,7 @@ public class World : IXmlSerializable
                 return r;
             }
         }
-        Debug.ULogErrorChannel("Rooms", "Unable to find room with tile:" + tile);
-        return null;
+        return GetOutsideRoom();
     }
 
     public void AddRoom(Room r)
@@ -338,7 +337,7 @@ public class World : IXmlSerializable
         return null;
     }
 
-    public Furniture PlaceFurniture(string objectType, Tile t, bool doRoomFloodFill = true)
+    public Furniture PlaceFurniture(string objectType, Tile t, bool doRoomFloodFill = true, bool doPositionValidaton = true)
     {
         // TODO: This function assumes 1x1 tiles -- change this later!
         if (PrototypeManager.Furniture.HasPrototype(objectType) == false)
@@ -347,7 +346,7 @@ public class World : IXmlSerializable
             return null;
         }
 
-        Furniture furn = Furniture.PlaceInstance(PrototypeManager.Furniture.GetPrototype(objectType), t);
+        Furniture furn = Furniture.PlaceInstance(PrototypeManager.Furniture.GetPrototype(objectType), t, doPositionValidaton);
 
         if (furn == null)
         {
@@ -765,7 +764,7 @@ public class World : IXmlSerializable
                 int x = int.Parse(reader.GetAttribute("X"));
                 int y = int.Parse(reader.GetAttribute("Y"));
 
-                Furniture furn = PlaceFurniture(reader.GetAttribute("objectType"), tiles[x, y], false);
+                Furniture furn = PlaceFurniture(reader.GetAttribute("objectType"), tiles[x, y], false, false);
                 furn.ReadXml(reader);
             }
             while (reader.ReadToNextSibling("Furniture"));
