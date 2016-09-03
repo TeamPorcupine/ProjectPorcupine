@@ -573,7 +573,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         if (needPercent > 50 && needPercent < 100 && need.RestoreNeedFurn != null)
         {
-            if (World.Current.CountFurnitureType(need.RestoreNeedFurn.ObjectType) > 0)
+            if (World.Current.furnitures.Where(furniture => furniture.ObjectType == need.RestoreNeedFurn.ObjectType && furniture.IsUsable() == true).Count() > 0)
             {
                 MyJob = new Job(null, need.RestoreNeedFurn.ObjectType, need.CompleteJobNorm, need.RestoreNeedTime, null, Job.JobPriority.High, false, true, false);
             }

@@ -428,9 +428,14 @@
       <Inventory objectType="Steel Plate" amount="1" />
     </DeconstructJob>
 
+    <IsUsable FunctionName="IsUsable_Bed" />
+
     <Params>
-      <Param name="comfort" value="0.5" />
+      <Param name="slots_in_use" value="0" />
+      <Param name="slots" value="1" />
+      <Param name="comfort" value="0.5f" />
     </Params>
+
     <LocalizationCode>furn_simple_bed</LocalizationCode>
     <UnlocalizedDescription>furn_simple_bed_desc</UnlocalizedDescription>
   </Furniture>

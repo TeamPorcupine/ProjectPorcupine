@@ -619,5 +619,12 @@ function Accumulator_GetSpriteName(furniture)
 	return baseName .. "_" .. suffix
 end
 
+function IsUsable_Bed(furniture)
+    if (furniture.Parameters["slots_in_use"].ToFloat() < furniture.Parameters["slots"].ToFloat()) then
+       return true
+    end
+    return false
+end
+
 ModUtils.ULog("Furniture.lua loaded")
 return "LUA Script Parsed!"
