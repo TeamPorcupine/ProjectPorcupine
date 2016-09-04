@@ -8,8 +8,10 @@
 #endregion
 
 using System.Collections.Generic;
+using MoonSharp.Interpreter;
 using UnityEngine;
 
+[MoonSharpUserData]
 public class ShipManager
 {
     private List<Ship> shipsInWorld;
