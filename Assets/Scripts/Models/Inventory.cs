@@ -148,6 +148,7 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
         {
             writer.WriteAttributeString("X", tile.X.ToString());
             writer.WriteAttributeString("Y", tile.Y.ToString());
+            writer.WriteAttributeString("Z", tile.Z.ToString());
         }
 
         writer.WriteAttributeString("objectType", objectType);
