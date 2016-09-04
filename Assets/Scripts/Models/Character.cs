@@ -691,12 +691,12 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         MyJob.IsBeingWorked = true;
     }
 
-    private void OnJobStopped(Job j)
+    private void OnJobStopped(Job job)
     {
         // Job completed (if non-repeating) or was cancelled.
-        j.OnJobStopped -= OnJobStopped;
+        job.OnJobStopped -= OnJobStopped;
 
-        if (j != MyJob)
+        if (job != MyJob)
         {
             Debug.ULogErrorChannel("Character", "Character being told about job that isn't his. You forgot to unregister something.");
             return;
@@ -743,9 +743,9 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     private void Update_Needs(float deltaTime)
     {
         // Calculate needs.
-        foreach (Need n in needs)
+        foreach (Need need in needs)
         {
-            n.Update(deltaTime);
+            need.Update(deltaTime);
         }
     }
         
@@ -816,7 +816,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             return;
         }
 
-        Update_CharacterFacing();
+        CharacterFacing();
 
         // At this point we should have a valid nextTile to move to.
         // What's the total distance from point A to point B?
@@ -851,7 +851,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         }
     }
 
-    private void Update_CharacterFacing()
+    private void CharacterFacing()
     {
         // Find character facing
         if (nextTile.X > CurrTile.X)
