@@ -65,26 +65,26 @@ namespace Animation
 
             Sprite[] sprites =
                 {
-                SpriteManager.current.GetSprite("Character", "IdleBack"),
-                SpriteManager.current.GetSprite("Character", "IdleSide"),
-                SpriteManager.current.GetSprite("Character", "IdleFront"),
-                SpriteManager.current.GetSprite("Character", "WalkBack1"),
-                SpriteManager.current.GetSprite("Character", "WalkBack2"),
-                SpriteManager.current.GetSprite("Character", "WalkSide1"),
-                SpriteManager.current.GetSprite("Character", "WalkSide2"),
-                SpriteManager.current.GetSprite("Character", "WalkFront1"),
-                SpriteManager.current.GetSprite("Character", "WalkFront2"),
+                    SpriteManager.current.GetSprite("Character", "IdleBack"),
+                    SpriteManager.current.GetSprite("Character", "IdleSide"),
+                    SpriteManager.current.GetSprite("Character", "IdleFront"),
+                    SpriteManager.current.GetSprite("Character", "WalkBack1"),
+                    SpriteManager.current.GetSprite("Character", "WalkBack2"),
+                    SpriteManager.current.GetSprite("Character", "WalkSide1"),
+                    SpriteManager.current.GetSprite("Character", "WalkSide2"),
+                    SpriteManager.current.GetSprite("Character", "WalkFront1"),
+                    SpriteManager.current.GetSprite("Character", "WalkFront2"),
 
-                SpriteManager.current.GetSprite("Character", "2IdleBack"),
-                SpriteManager.current.GetSprite("Character", "2IdleSide"),
-                SpriteManager.current.GetSprite("Character", "2IdleFront"),
-                SpriteManager.current.GetSprite("Character", "2WalkBack1"),
-                SpriteManager.current.GetSprite("Character", "2WalkBack2"),
-                SpriteManager.current.GetSprite("Character", "2WalkSide1"),
-                SpriteManager.current.GetSprite("Character", "2WalkSide2"),
-                SpriteManager.current.GetSprite("Character", "2WalkFront1"),
-                SpriteManager.current.GetSprite("Character", "2WalkFront2")
-            };
+                    SpriteManager.current.GetSprite("Character", "2IdleBack"),
+                    SpriteManager.current.GetSprite("Character", "2IdleSide"),
+                    SpriteManager.current.GetSprite("Character", "2IdleFront"),
+                    SpriteManager.current.GetSprite("Character", "2WalkBack1"),
+                    SpriteManager.current.GetSprite("Character", "2WalkBack2"),
+                    SpriteManager.current.GetSprite("Character", "2WalkSide1"),
+                    SpriteManager.current.GetSprite("Character", "2WalkSide2"),
+                    SpriteManager.current.GetSprite("Character", "2WalkFront1"),
+                    SpriteManager.current.GetSprite("Character", "2WalkFront2")
+                };
             SetSprites(sprites);
         }
 

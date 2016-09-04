@@ -15,7 +15,7 @@ function Precondition_Event_NewCrewMember( gameEvent, deltaTime )
 end
 
 function Execute_Event_NewCrewMember( gameEvent )
-	local tile = World.Current.GetTileAt(World.Current.Width / 2, World.Current.Height / 2)
+	local tile = World.Current.GetTileAt(World.Current.Width / 2, World.Current.Height / 2, 0)
 	c = World.Current.CreateCharacter(tile)
 	ModUtils.ULog("GameEvent: New Crew Member spawned named '" .. c.GetName() .. "'.")
 end

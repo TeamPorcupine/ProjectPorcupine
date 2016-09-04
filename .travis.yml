@@ -1,0 +1,17 @@
+# adapted from: https://github.com/JonathanPorta/ci-build
+
+# Using objective-c since windows build images are not available
+# The chmod-ing may be uneccesary 
+language: objective-c
+osx_image: xcode61
+rvm:
+- 2.1.2
+before_install:
+ - chmod +x ./Scripts/install.sh
+ - chmod +x ./Scripts/test.sh
+install:
+- ./Scripts/install.sh
+script:
+- ./Scripts/test.sh
+notifications:
+  email: false
