@@ -34,7 +34,7 @@
         </Tiles>
         
         <Furnitures>
-            <Furniture x="1" y="4" type="furn_SteelWall" />
+            <Furniture x="1" y="0" type="furn_SteelWall" />
         </Furnitures>
     </Ship>
 </Ships>
