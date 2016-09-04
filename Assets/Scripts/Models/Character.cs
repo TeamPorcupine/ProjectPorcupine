@@ -582,7 +582,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             }
         }
 
-        if (needPercent > 50 && needPercent < 100 && need.RestoreNeedFurn != null)
+        if (needPercent > 50 && needPercent <= 100 && need.RestoreNeedFurn != null)
         {
             IEnumerable<Furniture> furnitures = World.Current.furnitures.Where(furniture => furniture.ObjectType == need.RestoreNeedFurn.ObjectType && furniture.IsUsable() == true);
             if (furnitures.Count() > 0)
