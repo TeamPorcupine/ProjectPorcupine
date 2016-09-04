@@ -24,6 +24,7 @@ public class SchedulerEditorTest
     {
         if (PrototypeManager.SchedulerEvent == null)
         {
+            new ActionsManager();
             new PrototypeManager();
             PrototypeManager.SchedulerEvent.Add(
                 "ping_log",
