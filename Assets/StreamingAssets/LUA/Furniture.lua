@@ -619,17 +619,29 @@ function Accumulator_GetSpriteName(furniture)
 	return baseName .. "_" .. suffix
 end
 
-function Berth_SummonShip(furniture, character)
-    if (furniture.Parameters["occupied"].ToFloat() > 0) then
-        return
+function Berth_TestSummoning(furniture, deltaTime)
+    if (furniture.Parameters["occupied"].ToFloat() <= 0) then
+        Berth_SummonShip(furniture, nil)
+        furniture.Parameters["occupied"].SetValue(1)
+    elseif (World.Current.shipManager.IsOccupied(furniture)) then
+        Berth_DismissShip(furniture, nil)
+        furniture.Parameters["occupied"].SetValue(0)
     end
-    
-    ship = World.Current.shipManager.AddShip("essentia", 0, 0)
+end
+
+function Berth_SummonShip(furniture, character)
+    --ModUtils.ULogChannel("Ships", "Summoning ship")
+    local ship = World.Current.shipManager.AddShip("essentia", 0, 0)
     ship.SetDestination(furniture)
 end
 
 function Berth_DismissShip(furniture, character)
-    
+    local shipManager = World.Current.shipManager
+    if (shipManager.IsOccupied(furniture)) then
+        local ship = shipManager.GetBerthedShip(furniture)
+        shipManager.DeberthShip(furniture)
+        ship.SetDestination(0, 0)
+    end
 end
 
 ModUtils.ULog("Furniture.lua loaded")
