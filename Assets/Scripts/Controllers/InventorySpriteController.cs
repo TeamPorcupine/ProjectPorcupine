@@ -50,7 +50,7 @@ public class InventorySpriteController : BaseSpriteController<Inventory>
 
     protected override void OnCreated(Inventory inv)
     {
-        // FIXME: Does not consider multi-tile objects nor rotated objects
+        // FIXME: Does not consider rotated objects
         // This creates a new GameObject and adds it to our scene.
         GameObject inv_go = new GameObject();
 
