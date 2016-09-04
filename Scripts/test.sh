@@ -10,6 +10,14 @@ echo 'Show Results from Tests'
 echo 'travis_fold:start:tests'
 if [ ! -f $(pwd)/EditorTestResults.xml ]; then
     echo "Results file not found!"
+    # at this point we know that the build has failed due to compilation errors
+    # lets try to parse them out of unity.log and display them
+    if [ -f $(pwd)/unity.log ]; then
+        if [ grep "-----CompilerOutput:" unity.log ]; then
+            awk '/"-----CompilerOutput:/,/-----EndCompilerOutput/' compileError.txt
+            cat compileError.txt
+        fi
+    fi
 	exit 1
 fi
 cat $(pwd)/EditorTestResults.xml
