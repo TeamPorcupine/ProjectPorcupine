@@ -43,7 +43,7 @@ public class TileType : IXmlSerializable, IEquatable<TileType>
 
     public static TileType Floor
     {
-        get { return floor ?? (floor = tileTypeDictionary["Floor"]); } 
+        get { return floor ?? (floor = TileTypes["Floor"]); } 
     }
 
     /// <summary>
