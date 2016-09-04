@@ -52,12 +52,12 @@ public class TileType : IXmlSerializable
     // Just two util functions to not break every link to TileType.(Empty | Floor)
     public static TileType Empty 
     {
-        get { return tileTypeDictionary["Empty"]; } 
+        get { return empty ?? (empty = tileTypeDictionary["Empty"]); } 
     }
 
     public static TileType Floor 
     {
-        get { return tileTypeDictionary["Floor"]; } 
+        get { return floor ?? (floor = tileTypeDictionary["Floor"]); }
     }
 
     public string Type { get; protected set; }

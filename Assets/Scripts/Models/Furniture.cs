@@ -825,8 +825,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                 }
 
                 // Make sure tile is FLOOR
-                if (t2.Type != TileType.Floor && tileTypeBuildPermissions.Contains(t2.Type) == false)
+                if (t2.Type.Equals(TileType.Floor) == false && tileTypeBuildPermissions.Contains(t2.Type) == false)
                 {
+                    Debug.Log("No Floor *" + t2.Type.ToString() +"*" + TileType.Floor.ToString() + (t2.Type.Equals(TileType.Floor) == false));
                     return false;
                 }
 
