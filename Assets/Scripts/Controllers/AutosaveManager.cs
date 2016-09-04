@@ -11,7 +11,7 @@ using System.IO;
 using System.Xml.Serialization;
 using Scheduler;
 
-public class AutosaveController
+public class AutosaveManager
 {
     private const string AutosaveBaseName = "Autosave";
 
@@ -22,11 +22,11 @@ public class AutosaveController
     private ScheduledEvent autosaveEvent;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="AutosaveController"/> class.
+    /// Initializes a new instance of the <see cref="AutosaveManager"/> class.
     /// This class schedules autosave events which save the game at regular intervals
     /// of <see cref="AutosaveInterval"/> minutes with the default filename "Autosave###.sav".
     /// </summary>
-    public AutosaveController()
+    public AutosaveManager()
     {
         if (scheduler == null)
         {
@@ -96,10 +96,10 @@ public class AutosaveController
         string fileName = AutosaveBaseName + autosaveCounter.ToString();
         string filePath = System.IO.Path.Combine(WorldController.Instance.FileSaveBasePath(), fileName + ".sav");
 
-        Debug.ULogChannel("AutosaveController", "Autosaving to '{0}'.", filePath);
+        Debug.ULogChannel("AutosaveManager", "Autosaving to '{0}'.", filePath);
         if (File.Exists(filePath) == true)
         {
-            Debug.ULogErrorChannel("AutosaveController", "File already exists -- overwriting the file for now.");
+            Debug.ULogErrorChannel("AutosaveManager", "File already exists -- overwriting the file for now.");
         }
 
         SaveWorld(filePath);
@@ -125,7 +125,7 @@ public class AutosaveController
         }
         catch (Exception e)
         {
-            Debug.ULogErrorChannel("AutosaveController", "Could not create autosave file. Error: '{0}'.", e.ToString());
+            Debug.ULogErrorChannel("AutosaveManager", "Could not create autosave file. Error: '{0}'.", e.ToString());
         }
     }
 }
