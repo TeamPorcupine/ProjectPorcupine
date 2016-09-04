@@ -12,7 +12,10 @@ using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+<<<<<<< e30f26f35030da7da4de9f989234db5f678a27e3
 using MoonSharp.Interpreter;
+=======
+>>>>>>> Style cop
 using UnityEngine;
 
 public enum BerthDirection
@@ -31,6 +34,8 @@ public class Ship
     private List<ShipStorage> storages;
     private string[,] tileTypes;
     private string[,] furnitureTypes;
+    private ShipState state;
+    private Vector2 position;
 
     private ShipManager shipManager;
     private ShipState state;
@@ -106,6 +111,29 @@ public class Ship
             if (state != value)
             {
                 state = value;
+<<<<<<< e30f26f35030da7da4de9f989234db5f678a27e3
+=======
+                if (ShipChanged != null)
+                {
+                    ShipChanged(this);
+                }
+            }
+        }
+    }
+
+    public Vector2 Position
+    {
+        get
+        {
+            return position;
+        }
+
+        set
+        {
+            if (position != value)
+            {
+                position = value;
+>>>>>>> Style cop
                 if (ShipChanged != null)
                 {
                     ShipChanged(this);
