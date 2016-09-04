@@ -15,6 +15,7 @@ public class ModUtilsTest
      * ModUtils.Clamp01
      */
 
+    // tests passing in a value between zero and one
     [Test]
     public void Test_Clamp01_InRange() 
     {
@@ -23,8 +24,15 @@ public class ModUtilsTest
 
         float value_2 = 0.9999f;
         Assert.AreEqual(value_2, ModUtils.Clamp01(value_2));
+
+        float value_3 = float.Epsilon;
+        Assert.AreEqual(value_3, ModUtils.Clamp01(value_3));
+
+        float value_4 = 1f - float.Epsilon;
+        Assert.AreEqual(value_4, ModUtils.Clamp01(value_4));
     }
 
+    // tests passing in values that are out of range
     [Test]
     public void Test_Clamp01_OutOfRange() 
     {
@@ -35,7 +43,7 @@ public class ModUtilsTest
         Assert.GreaterOrEqual(ans_1, 0f);
         Assert.LessOrEqual(ans_1, 1f);
 
-        float value_2 = 1.0001f;
+        float value_2 = -0.0001f;
         float ans_2 = ModUtils.Clamp01(value_2);
 
         Assert.AreNotEqual(value_2, ans_2);
