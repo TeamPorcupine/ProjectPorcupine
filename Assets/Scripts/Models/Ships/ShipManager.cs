@@ -25,6 +25,14 @@ public class ShipManager
 
     public event ShipEventHandler ShipCreated, ShipRemoved;
 
+    public void Update(float deltaTime)
+    {
+        foreach (Ship s in shipsInWorld)
+        {
+            s.Update(deltaTime);
+        }
+    }
+
     public Ship AddShip(string type, float x, float y)
     {
         Ship ship = new Ship(PrototypeManager.Ship.GetPrototype(type));
