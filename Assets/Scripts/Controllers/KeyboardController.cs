@@ -50,6 +50,16 @@ public class KeyboardController
         {
             wc.cameraController.ChangeZoom(-0.1f);
         }
+
+        if (Input.GetKeyUp(KeyCode.Home))
+        {
+            wc.cameraController.ChangeLayerUp();
+        }
+
+        if (Input.GetKeyUp(KeyCode.End))
+        {
+            wc.cameraController.ChangeLayerDown();
+        }
     }
 
     private void CheckTimeInput()
