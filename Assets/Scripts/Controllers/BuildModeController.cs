@@ -160,26 +160,26 @@ public class BuildModeController
                 // This tile position is valid tile type
 
                 // Create a job for it to be build
-                Job j = TileType.GetConstructionJobPrototype(tileType);
+                Job buildingJob = tileType.BuildingJob;
                 
-                j.tile = t;
+                buildingJob.tile = t;
 
                 // Add the job to the queue or build immediately if in dev mode
                 if (Settings.GetSettingAsBool("DialogBoxSettings_developerModeToggle", false))
                 {
-                    j.tile.Type = j.JobTileType;
+                    buildingJob.tile.Type = buildingJob.JobTileType;
                 }
                 else
                 {
                     // FIXME: I don't like having to manually and explicitly set
                     // flags that preven conflicts. It's too easy to forget to set/clear them!
-                    t.PendingBuildJob = j;
-                    j.OnJobStopped += (theJob) =>
+                    t.PendingBuildJob = buildingJob;
+                    buildingJob.OnJobStopped += (theJob) =>
                         {
                             theJob.tile.PendingBuildJob = null;
                         };
                     
-                    WorldController.Instance.World.jobQueue.Enqueue(j);
+                    WorldController.Instance.World.jobQueue.Enqueue(buildingJob);
                 }
             }
         }
