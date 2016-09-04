@@ -35,22 +35,10 @@ public class ShipManager
         }
     }
 
-<<<<<<< e30f26f35030da7da4de9f989234db5f678a27e3
     public Ship AddShip(string type, float x, float y)
     {
         Ship ship = new Ship(this, PrototypeManager.Ship.Get(type));
         ship.Position = new Vector2(x, y);
-=======
-    public delegate void ShipEventHandler(Ship ship);
-
-    public event ShipEventHandler ShipCreated, ShipRemoved;
-
-    public Ship AddShip(string type, Vector2 position)
-    {
-        Ship ship = new Ship(PrototypeManager.Ship.GetPrototype(type));
-        ship.Position = position;
-
->>>>>>> Style cop
         shipsInWorld.Add(ship);
 
         if (ShipCreated != null)
