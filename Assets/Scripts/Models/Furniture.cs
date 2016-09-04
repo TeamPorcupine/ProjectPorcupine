@@ -798,7 +798,6 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
         if (tooCloseToEdge)
         {
-            Debug.Log("Too Close to Edge");
             return false;
         }
 
@@ -806,7 +805,6 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         {
             if (tile.Room == null || !tile.Room.IsOutsideRoom())
             {
-                Debug.Log("OutdoorOnly");
                 return false;
             }
         }
@@ -829,14 +827,12 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                 // Make sure tile is FLOOR
                 if (t2.Type != TileType.Floor && tileTypeBuildPermissions.Contains(t2.Type) == false)
                 {
-                    Debug.Log("No Floor *" + t2.Type.ToString() +"*" + TileType.Floor.ToString() + (t2.Type != TileType.Floor));
                     return false;
                 }
 
                 // Make sure tile doesn't already have furniture
                 if (t2.Furniture != null && isReplaceable == false)
                 {
-                    Debug.Log("Already Has Furniture");
                     return false;
                 }
             }
