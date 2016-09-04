@@ -283,7 +283,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     {
         if (proto.funcPositionValidation(tile) == false)
         {
-            Debug.ULogErrorChannel("Furniture", "PlaceInstance -- Position Validity Function returned FALSE.");
+            Debug.ULogErrorChannel("Furniture", "PlaceInstance -- Position Validity Function returned FALSE. " + proto.Name + " " + tile.X + ", " + tile.Y + ", " + tile.Z);
             return null;
         }
 
@@ -402,6 +402,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     {
         writer.WriteAttributeString("X", Tile.X.ToString());
         writer.WriteAttributeString("Y", Tile.Y.ToString());
+        writer.WriteAttributeString("Z", Tile.Z.ToString());
         writer.WriteAttributeString("objectType", ObjectType);
 
         // Let the Parameters handle their own xml
