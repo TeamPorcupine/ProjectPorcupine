@@ -16,7 +16,7 @@ using MoonSharp.Interpreter;
 using UnityEngine;
 
 [MoonSharpUserData]
-public class TileType : IXmlSerializable
+public class TileType : IXmlSerializable, IEquatable<TileType>
 {
     private static readonly string ULogChanelName = "TileType";
     private static readonly string TilesDescriptionFileName = "Tiles.xml";
@@ -43,7 +43,7 @@ public class TileType : IXmlSerializable
 
     public static TileType Floor
     {
-        get { return floor ?? (floor = TileTypes["Floor"]); }
+        get { return floor ?? (floor = tileTypeDictionary["Floor"]); } 
     }
 
     /// <summary>
@@ -146,6 +146,31 @@ public class TileType : IXmlSerializable
                 ReadTileTypesFromXml(xmlText);
             }
         }
+    }
+
+    public static bool operator ==(TileType left, TileType right)
+    {
+        return Equals(left, right);
+    }
+
+    public static bool operator !=(TileType left, TileType right)
+    {
+        return !Equals(left, right);
+    }
+
+    public bool Equals(TileType other)
+    {
+        return string.Equals(Type, other.Type);
+    }
+
+    public override bool Equals(object obj)
+    {
+        return Equals((TileType)obj);
+    }
+
+    public override int GetHashCode()
+    {
+        return Type != null ? Type.GetHashCode() : 0;
     }
 
     public override string ToString()
