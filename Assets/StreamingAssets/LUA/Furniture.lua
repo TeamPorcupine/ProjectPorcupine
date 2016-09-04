@@ -619,5 +619,17 @@ function Accumulator_GetSpriteName(furniture)
 	return baseName .. "_" .. suffix
 end
 
+function Berth_SummonShip(furniture, character)
+    if (furniture.Parameters["occupied"].ToFloat() > 0) then
+        return
+    end
+    
+    ship = World.Current.shipManager.AddShip("essentia", 0, 0)
+end
+
+function Berth_DismissShip(furniture, character)
+    
+end
+
 ModUtils.ULog("Furniture.lua loaded")
 return "LUA Script Parsed!"

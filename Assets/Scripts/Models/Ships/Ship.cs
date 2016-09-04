@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using MoonSharp.Interpreter;
 using UnityEngine;
 
 public enum BerthDirection
@@ -24,6 +25,7 @@ public enum ShipState
     TRANSIT, BERTHED
 }
 
+[MoonSharpUserData]
 public class Ship
 {
     private List<ShipStorage> storages;
