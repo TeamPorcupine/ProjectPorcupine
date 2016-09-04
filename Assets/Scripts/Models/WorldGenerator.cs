@@ -38,7 +38,7 @@ public class WorldGenerator
         Random.InitState(seed);
         int width = world.Width;
         int height = world.Height;
-
+        int depth = world.Depth;
         int offsetX = Random.Range(0, 10000);
         int offsetY = Random.Range(0, 10000);
 
@@ -55,7 +55,7 @@ public class WorldGenerator
                 int worldX = (width / 2) - startAreaCenterX + x;
                 int worldY = (height / 2) + startAreaCenterY - y;
 
-                Tile tile = world.GetTileAt(worldX, worldY);
+                Tile tile = world.GetTileAt(worldX, worldY, 0);
                 tile.Type = TileType.GetTileTypes()[startAreaTiles[x, y]];
             }
         }
@@ -67,7 +67,7 @@ public class WorldGenerator
                 int worldX = (width / 2) - startAreaCenterX + x;
                 int worldY = (height / 2) + startAreaCenterY - y;
 
-                Tile tile = world.GetTileAt(worldX, worldY);
+                Tile tile = world.GetTileAt(worldX, worldY, 0);
 
                 if (startAreaFurnitures[x, y] != null && startAreaFurnitures[x, y] != string.Empty)
                 {
@@ -76,32 +76,32 @@ public class WorldGenerator
             }
         }
 
-        for (int x = 0; x < width; x++)
+        for (int z = 0; z < depth; z++)
         {
-            for (int y = 0; y < height; y++)
+            float zScale = Mathf.Lerp(1f, .5f, Mathf.Abs((depth / 2f) - z) / depth);
+            for (int x = 0; x < width; x++)
             {
-                float noiseValue = Mathf.PerlinNoise((x + offsetX) / (width * asteroidNoiseScale), (y + offsetY) / (height * asteroidNoiseScale));
-                if (noiseValue >= asteroidNoiseThreshhold && !IsStartArea(x, y, world))
+                for (int y = 0; y < height; y++)
                 {
-                    Tile t = world.GetTileAt(x, y);
-                    t.Type = AsteroidFloorType;
-
-                    if (Random.value <= asteroidResourceChance && t.Furniture == null)
-                    {
-                        if (resources.Length > 0)
+                        float noiseValue = Mathf.PerlinNoise((x + offsetX) / (width * asteroidNoiseScale * zScale), (y + offsetY) / (height * asteroidNoiseScale * zScale));
+                        if (noiseValue >= asteroidNoiseThreshhold && !IsStartArea(x, y, world))
                         {
-                            int currentweight = 0;
-                            int randomweight = Random.Range(0, sumOfAllWeightedChances);
+                            Tile t = world.GetTileAt(x, y, z);
+                            t.Type = AsteroidFloorType;
 
-                            for (int i = 0; i < resources.Length; i++)
+                            if (Random.value <= asteroidResourceChance && t.Furniture == null)
                             {
-                                Inventory inv = resources[i];
-
-                                int weight = inv.StackSize; // In stacksize the weight was cached
-                                currentweight += weight;
-
-                                if (randomweight <= currentweight)
+                                if (resources.Length > 0)
                                 {
+                                    int currentweight = 0;
+                                    int randomweight = Random.Range(0, sumOfAllWeightedChances);
+
+                                    for (int i = 0; i < resources.Length; i++)
+                                    {
+                                        Inventory inv = resources[i];
+
+                                        int weight = inv.StackSize; // In stacksize the weight was cached
+                                        currentweight += weight;
                                     if (inv.objectType == "Raw Iron" || inv.objectType == "Uranium")
                                     {
                                         Furniture mine = PrototypeManager.Furniture.GetPrototype("mine").Clone();
@@ -109,22 +109,25 @@ public class WorldGenerator
                                         world.PlaceFurniture(mine, t, false);                           
                                         break;
                                     }
-                                    
-                                    int stackSize = Random.Range(resourceMin[i], resourceMax[i]);
 
-                                    if (stackSize > inv.maxStackSize)
-                                    {
-                                        stackSize = inv.maxStackSize;
+                                        if (randomweight <= currentweight)
+                                        {
+                                            int stackSize = Random.Range(resourceMin[i], resourceMax[i]);
+
+                                            if (stackSize > inv.maxStackSize)
+                                            {
+                                                stackSize = inv.maxStackSize;
+                                            }
+
+                                            world.inventoryManager.PlaceInventory(t, new Inventory(inv.objectType, inv.maxStackSize, stackSize));
+                                            break;
+                                        }
                                     }
-
-                                    world.inventoryManager.PlaceInventory(t, new Inventory(inv.objectType, inv.maxStackSize, stackSize));
-                                    break;
                                 }
                             }
                         }
                     }
                 }
-            }
         }
     }
     

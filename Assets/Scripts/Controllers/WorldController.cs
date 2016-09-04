@@ -182,7 +182,7 @@ public class WorldController : MonoBehaviour
         int x = Mathf.FloorToInt(coord.x + 0.5f);
         int y = Mathf.FloorToInt(coord.y + 0.5f);
 
-        return World.GetTileAt(x, y);
+        return World.GetTileAt(x, y, (int)coord.z);
     }
 
     public void NewWorld()
@@ -232,8 +232,11 @@ public class WorldController : MonoBehaviour
         int width = Settings.GetSettingAsInt("worldWidth", 100);
         int height = Settings.GetSettingAsInt("worldHeight", 100);
 
+        // FIXME: Need to read this from settings.
+        int depth = 5;
+
         // Create a world with Empty tiles
-        World = new World(width, height);
+        World = new World(width, height, depth);
 
         // Center the Camera
         Camera.main.transform.position = new Vector3(World.Width / 2, World.Height / 2, Camera.main.transform.position.z);

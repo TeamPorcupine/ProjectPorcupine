@@ -442,7 +442,7 @@
     <MovementCost>2</MovementCost>
     <PathfindingModifier>0</PathfindingModifier>
     <PathfindingWeight>2</PathfindingWeight>
-    <Width>2</Width>
+    <Width>1</Width>
     <Height>1</Height>
     <PowerConnection inputRate="5" outputRate="10" capacity="50"/>
 
