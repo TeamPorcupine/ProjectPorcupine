@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
+using Scheduler;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
@@ -31,8 +32,8 @@ public class WorldController : MonoBehaviour
     public KeyboardController keyboardController;
     public CameraController cameraController;
     public SpawnInventoryController spawnInventoryController;
+    public TimeManager timeManager;
     public ModsManager modsManager;
-    public float GameTickPerSecond = 5;
     public GameObject inventoryUI;
     public GameObject circleCursorPrefab;
 
@@ -42,11 +43,7 @@ public class WorldController : MonoBehaviour
     private static string loadWorldFromFile = null;
 
     private float gameTickDelay;
-    private float totalDeltaTime;
     private bool isPaused = false;
-
-    // Multiplier of Time.deltaTime.
-    private float timeScale = 1f;
 
     public static WorldController Instance { get; protected set; }
 
@@ -70,7 +67,7 @@ public class WorldController : MonoBehaviour
     {
         get
         {
-            return timeScale;
+            return timeManager.TimeScale;
         }
     }
     
@@ -87,6 +84,13 @@ public class WorldController : MonoBehaviour
         new FurnitureActions();
         new PrototypeManager();
 
+        // FIXME: Do something real here. This is just to show how to register a C# event prototype for the Scheduler.
+        PrototypeManager.SchedulerEvent.Add(
+            "ping_log",
+            new ScheduledEvent(
+                "ping_log",
+                (evt) => Debug.ULogChannel("Scheduler", "Event {0} fired", evt.Name)));
+
         string dataPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
         modsManager = new ModsManager(dataPath);
 
@@ -102,13 +106,13 @@ public class WorldController : MonoBehaviour
 
         soundController = new SoundController(World);
 
-        gameTickDelay = 1f / GameTickPerSecond;
+        gameTickDelay = TimeManager.GameTickDelay;
     }
 
     public void Start()
     {
         // Create gameobject so we can have access to a tranform thats position is "Vector3.zero".
-        GameObject mat = new GameObject("VisualPath", typeof(VisualPath));
+        new GameObject("VisualPath", typeof(VisualPath));
         GameObject go;
 
         tileSpriteController = new TileSpriteController(World);
@@ -120,9 +124,10 @@ public class WorldController : MonoBehaviour
         buildModeController = new BuildModeController();
         spawnInventoryController = new SpawnInventoryController();
         mouseController = new MouseController(buildModeController, furnitureSpriteController, circleCursorPrefab);
-        keyboardController = new KeyboardController(buildModeController, Instance);
+        keyboardController = new KeyboardController(Instance);
         questController = new QuestController();
         cameraController = new CameraController();
+        timeManager = new TimeManager();
 
         // Hiding Dev Mode spawn inventory controller if devmode is off.
         spawnInventoryController.SetUIVisibility(Settings.GetSettingAsBool("DialogBoxSettings_developerModeToggle", false));
@@ -142,41 +147,29 @@ public class WorldController : MonoBehaviour
         mouseController.Update(IsModal);
         keyboardController.Update(IsModal);
         cameraController.Update(IsModal);
-
-        float deltaTime = Time.deltaTime * timeScale;
+        timeManager.Update();
 
         // Systems that update every frame when not paused.
         if (IsPaused == false)
         {
-            World.UpdateCharacters(deltaTime);
+            World.UpdateCharacters(timeManager.DeltaTime);
+            Scheduler.Scheduler.Current.Update(timeManager.DeltaTime);
         }
 
-        totalDeltaTime += deltaTime;
-
-        if (totalDeltaTime >= gameTickDelay)
+        if (timeManager.TotalDeltaTime >= gameTickDelay)
         {
             // Systems that update at fixed frequency. 
             if (IsPaused == false)
             {
                 // Systems that update at fixed frequency when not paused.
-                World.Tick(totalDeltaTime);
-                questController.Update(totalDeltaTime);
+                World.Tick(timeManager.TotalDeltaTime);
+                questController.Update(timeManager.TotalDeltaTime);
             }
 
-            totalDeltaTime = 0f;
+            timeManager.ResetTotalDeltaTime();
         }
 
         soundController.Update(Time.deltaTime);
-    }
-
-    /// <summary>
-    /// Set's game speed (it's a multiplier so 1 == normal game speed).
-    /// </summary>
-    /// <param name="timeScale">Desired time scale.</param>
-    public void SetTimeScale(float timeScale)
-    {
-        this.timeScale = timeScale;
-        Debug.ULogChannel("Game speed", "Game speed set to " + timeScale + "x");
     }
 
     /// <summary>
@@ -189,7 +182,7 @@ public class WorldController : MonoBehaviour
         int x = Mathf.FloorToInt(coord.x + 0.5f);
         int y = Mathf.FloorToInt(coord.y + 0.5f);
 
-        return World.GetTileAt(x, y);
+        return World.GetTileAt(x, y, (int)coord.z);
     }
 
     public void NewWorld()
@@ -239,8 +232,11 @@ public class WorldController : MonoBehaviour
         int width = Settings.GetSettingAsInt("worldWidth", 100);
         int height = Settings.GetSettingAsInt("worldHeight", 100);
 
+        // FIXME: Need to read this from settings.
+        int depth = 5;
+
         // Create a world with Empty tiles
-        World = new World(width, height);
+        World = new World(width, height, depth);
 
         // Center the Camera
         Camera.main.transform.position = new Vector3(World.Width / 2, World.Height / 2, Camera.main.transform.position.z);

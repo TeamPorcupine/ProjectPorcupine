@@ -86,7 +86,7 @@ public class TraderShipController : MonoBehaviour
         {
             if (tradeItem.TradeAmount > 0)
             {
-                Tile tile = WorldController.Instance.World.GetFirstTileWithNoInventoryAround(6, (int)LandingCoordinates.x, (int)LandingCoordinates.y);
+                Tile tile = WorldController.Instance.World.GetFirstTileWithNoInventoryAround(6, (int)LandingCoordinates.x, (int)LandingCoordinates.y, (int)LandingCoordinates.z);
                 Inventory inv = new Inventory(tradeItem.ObjectType, tradeItem.TradeAmount, tradeItem.TradeAmount);
                 WorldController.Instance.World.inventoryManager.PlaceInventory(tile, inv);
             }

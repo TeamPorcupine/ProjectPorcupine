@@ -14,8 +14,8 @@ public class MouseController
 {
     public SelectionInfo mySelection;
 
-    private GameObject cursorParent;    
-    private GameObject circleCursorPrefab;    
+    private GameObject cursorParent;
+    private GameObject circleCursorPrefab;
     private GameObject furnitureParent;
 
     // The world-position of the mouse last frame.
@@ -29,7 +29,6 @@ public class MouseController
     private List<GameObject> dragPreviewGameObjects;
     private BuildModeController bmc;
     private FurnitureSpriteController fsc;
-    private MenuController menuController;
     private ContextMenu contextMenu;
     private MouseCursor mouseCursor;
 
@@ -51,7 +50,6 @@ public class MouseController
         bmc.SetMouseController(this);
         circleCursorPrefab = cursorObject;
         fsc = furnitureSpriteController;
-        menuController = GameObject.FindObjectOfType<MenuController>();
         contextMenu = GameObject.FindObjectOfType<ContextMenu>();
         dragPreviewGameObjects = new List<GameObject>();
         cursorParent = new GameObject("Cursor");
@@ -156,7 +154,7 @@ public class MouseController
     private void UpdateCurrentFramePosition()
     {
         currFramePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        currFramePosition.z = 0;
+        currFramePosition.z = WorldController.Instance.cameraController.CurrentLayer;
     }
 
     private void CheckModeChanges()
@@ -200,7 +198,7 @@ public class MouseController
     private void StoreFramePosition()
     {
         lastFramePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        lastFramePosition.z = 0;
+        lastFramePosition.z = WorldController.Instance.cameraController.CurrentLayer;
     }
 
     private void CalculatePlacingPosition()
@@ -210,7 +208,7 @@ public class MouseController
             && bmc.buildMode == BuildMode.FURNITURE
             && PrototypeManager.Furniture.HasPrototype(bmc.buildModeObjectType)
             && (PrototypeManager.Furniture.GetPrototype(bmc.buildModeObjectType).Width > 1
-                || PrototypeManager.Furniture.GetPrototype(bmc.buildModeObjectType).Height > 1))
+            || PrototypeManager.Furniture.GetPrototype(bmc.buildModeObjectType).Height > 1))
         {
             Furniture proto = PrototypeManager.Furniture.GetPrototype(bmc.buildModeObjectType);
 
@@ -220,7 +218,7 @@ public class MouseController
                 currPlacingPosition = new Vector3(
                     currFramePosition.x - proto.JobSpotOffset.x,
                     currFramePosition.y - proto.JobSpotOffset.y,
-                    0);
+                    WorldController.Instance.cameraController.CurrentLayer);
             }
             else
             {   
@@ -228,7 +226,7 @@ public class MouseController
                 currPlacingPosition = new Vector3(
                     currFramePosition.x - ((proto.Width - 1f) / 2f),
                     currFramePosition.y - ((proto.Height - 1f) / 2f),
-                    0);
+                    WorldController.Instance.cameraController.CurrentLayer);
             }
         }
         else
@@ -371,7 +369,7 @@ public class MouseController
         {
             for (int y = dragParams.StartY; y <= dragParams.EndY; y++)
             {
-                Tile t = WorldController.Instance.World.GetTileAt(x, y);
+                Tile t = WorldController.Instance.World.GetTileAt(x, y, WorldController.Instance.cameraController.CurrentLayer);
                 if (t != null)
                 {
                     // Display the building hint on top of this tile position.
@@ -394,7 +392,7 @@ public class MouseController
 
     private void ShowGenericVisuals(int x, int y)
     {
-        GameObject go = SimplePool.Spawn(circleCursorPrefab, new Vector3(x, y, 0), Quaternion.identity);
+        GameObject go = SimplePool.Spawn(circleCursorPrefab, new Vector3(x, y, WorldController.Instance.cameraController.CurrentLayer), Quaternion.identity);
         go.transform.SetParent(cursorParent.transform, true);
         go.GetComponent<SpriteRenderer>().sprite = SpriteManager.current.GetSprite("UI", "CursorCircle");
         dragPreviewGameObjects.Add(go);
@@ -404,9 +402,16 @@ public class MouseController
     {
         for (int x = dragParams.StartX; x <= dragParams.EndX; x++)
         {
-            for (int y = dragParams.StartY; y <= dragParams.EndY; y++)
+            // Variables for the for-loop over the y-coordinates.
+            // These are used to determine whether the loop should run from highest to lowest values or viceversa.
+            // The tiles are thus added in a snake or zig-zag pattern, which makes building more efficient.
+            int begin = (x - dragParams.StartX) % 2 == 0 ? dragParams.StartY : dragParams.EndY;
+            int stop = (x - dragParams.StartX) % 2 == 0 ? dragParams.EndY + 1 : dragParams.StartY - 1;
+            int increment = (x - dragParams.StartX) % 2 == 0 ? 1 : -1;
+
+            for (int y = begin; y != stop; y += increment)
             {
-                Tile t = WorldController.Instance.World.GetTileAt(x, y);
+                Tile t = WorldController.Instance.World.GetTileAt(x, y, WorldController.Instance.cameraController.CurrentLayer);
                 if (bmc.buildMode == BuildMode.FURNITURE)
                 {
                     // Check for furniture dragType.
@@ -458,7 +463,7 @@ public class MouseController
             return;
         }
 
-        if (Input.GetMouseButtonUp(0)) 
+        if (Input.GetMouseButtonUp(0))
         {
             Tile t = GetMouseOverTile();
             WorldController.Instance.spawnInventoryController.SpawnInventory(t);
@@ -557,8 +562,8 @@ public class MouseController
 
         Furniture proto = PrototypeManager.Furniture.GetPrototype(furnitureType);
 
-        go.transform.position = new Vector3(t.X + ((proto.Width - 1) / 2f), t.Y + ((proto.Height - 1) / 2f), 0);
-    }    
+        go.transform.position = new Vector3(t.X + ((proto.Width - 1) / 2f), t.Y + ((proto.Height - 1) / 2f), WorldController.Instance.cameraController.CurrentLayer);
+    }
 
     public class DragParameters
     {
