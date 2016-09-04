@@ -32,6 +32,7 @@ public class WorldController : MonoBehaviour
     public KeyboardController keyboardController;
     public CameraController cameraController;
     public SpawnInventoryController spawnInventoryController;
+    public AutosaveController autosaveController;
     public TimeManager timeManager;
     public ModsManager modsManager;
     public GameObject inventoryUI;
@@ -128,6 +129,7 @@ public class WorldController : MonoBehaviour
         questController = new QuestController();
         cameraController = new CameraController();
         timeManager = new TimeManager();
+        autosaveController = new AutosaveController();
 
         // Hiding Dev Mode spawn inventory controller if devmode is off.
         spawnInventoryController.SetUIVisibility(Settings.GetSettingAsBool("DialogBoxSettings_developerModeToggle", false));
