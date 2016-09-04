@@ -18,7 +18,7 @@ using MoonSharp.Interpreter;
 using UnityEngine;
 
 [MoonSharpUserData]
-public class TileType : IXmlSerializable
+public class TileType : IXmlSerializable, IEquatable<TileType>
 {
     // A private dictionary for storing all TileTypes
     private static Dictionary<string, TileType> tileTypeDictionary = new Dictionary<string, TileType>();
@@ -52,12 +52,12 @@ public class TileType : IXmlSerializable
     // Just two util functions to not break every link to TileType.(Empty | Floor)
     public static TileType Empty 
     {
-        get { return tileTypeDictionary["Empty"]; } 
+        get { return empty ?? (empty = tileTypeDictionary["Empty"]); } 
     }
 
     public static TileType Floor 
     {
-        get { return tileTypeDictionary["Floor"]; } 
+        get { return floor ?? (floor = tileTypeDictionary["Floor"]); } 
     }
 
     public string Type { get; protected set; }
@@ -183,6 +183,31 @@ public class TileType : IXmlSerializable
         }
     }
 
+    public static bool operator ==(TileType left, TileType right)
+    {
+        return Equals(left, right);
+    }
+
+    public static bool operator !=(TileType left, TileType right)
+    {
+        return !Equals(left, right);
+    }
+
+    public bool Equals(TileType other)
+    {
+        return string.Equals(Type, other.Type);
+    }
+
+    public override bool Equals(object obj)
+    {
+        return Equals((TileType)obj);
+    }
+
+    public override int GetHashCode()
+    {
+        return Type != null ? Type.GetHashCode() : 0;
+    }
+    
     // Overrides ToString() to be able to do localizaton in character
     public override string ToString()
     {
