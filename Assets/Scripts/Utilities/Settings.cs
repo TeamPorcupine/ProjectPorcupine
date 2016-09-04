@@ -54,7 +54,7 @@ public static class Settings
         }
 
         string setting = GetSetting(key, defaultValue);
-        if (setting != null && setting != defaultValue)
+        if (setting != null)
         {
             return setting;
         }
