@@ -44,7 +44,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     private List<string> replaceableFurniture = new List<string>();
 
     /// <summary>
-    /// These context menu lua action are used to build the context menu of the furniture.
+    /// These context menu Lua action are used to build the context menu of the furniture.
     /// </summary>
     private List<ContextMenuLuaAction> contextMenuLuaActions;
 
@@ -72,12 +72,15 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     private bool isOperating;
 
     /// TODO: Implement object rotation
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Furniture"/> class.
+    /// </summary>
     public Furniture()
     {
         Tint = Color.white;
         JobSpotOffset = Vector2.zero;
         VerticalDoor = false;
-        EventActions = new EventAction();
+        EventActions = new EventActions();
 
         contextMenuLuaActions = new List<ContextMenuLuaAction>();
         furnParameters = new Parameter();
@@ -152,6 +155,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     /// <summary>
     /// Gets or sets the Furniture's pathfinding modifier which is added into the Tile's final PathfindingCost.
     /// </summary>
+    /// <value>A float that modifies the pathfinding of the tile the furniture occupies.</value>
     public float PathfindingModifier
     {
         get { return pathfindingModifier; }
@@ -161,6 +165,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     /// <summary>
     /// Gets or sets the Furniture's pathfinding weight which is multiplied into the Tile's final PathfindingCost.
     /// </summary>
+    /// <value>A float that represents the weight of the pathfinding of the tile the furniture occupies.</value>
     public float PathfindingWeight
     {
         get { return pathfindingWeight; }
@@ -180,16 +185,15 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     public bool VerticalDoor { get; set; }
 
     /// <summary>
-    /// Gets the EventAction of the current furniture
-    /// These actions are called when Trigger is called. They get passed the furniture
-    /// they belong to, plus a deltaTime (which defaults to 0).
+    /// Gets the EventActions of the current furniture.
     /// </summary>
-    /// <value>The EventAction tied to the furniture</value>
+    /// <value>The EventActions tied to the furniture.</value>
     public EventActions EventActions { get; private set; }
 
     /// <summary>
     /// Gets the Connection to the Power System.
     /// </summary>
+    /// <value>The Connection to the power system.</value>
     public Connection PowerConnection { get; private set; }
 
     public bool IsOperating
