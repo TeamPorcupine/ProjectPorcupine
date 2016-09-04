@@ -36,10 +36,15 @@ public class ShipSpriteController : BaseSpriteController<Ship>
     }
 
     protected override void OnChanged(Ship ship)
-    { 
+    {
+        GameObject ship_go = objectGameObjectMap[ship];
+        ship_go.transform.position = new Vector3(ship.Position.x, ship.Position.y, 0);
     }
 
     protected override void OnRemoved(Ship ship)
-    {   
+    {
+        GameObject ship_go = objectGameObjectMap[ship];
+        GameObject.Destroy(ship_go);
+        objectGameObjectMap.Remove(ship);
     }
 }
