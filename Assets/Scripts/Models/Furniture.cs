@@ -180,13 +180,15 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     public bool VerticalDoor { get; set; }
 
     /// <summary>
+    /// Gets the EventAction of the current furniture
     /// These actions are called when Trigger is called. They get passed the furniture
     /// they belong to, plus a deltaTime (which defaults to 0).
     /// </summary>
-    public EventAction EventActions { get; private set; }
+    /// <value>The EventAction tied to the furniture</value>
+    public EventActions EventActions { get; private set; }
 
     /// <summary>
-    /// Connection to power system.
+    /// Gets the Connection to the Power System.
     /// </summary>
     public Connection PowerConnection { get; private set; }
 
