@@ -25,10 +25,10 @@ public class ShipManager
 
     public event ShipEventHandler ShipCreated, ShipRemoved;
 
-    public Ship AddShip(string type, Vector2 position)
+    public Ship AddShip(string type, float x, float y)
     {
         Ship ship = new Ship(PrototypeManager.Ship.GetPrototype(type));
-        ship.Position = position;
+        ship.Position = new Vector2(x, y);
 
         shipsInWorld.Add(ship);
 

@@ -15,10 +15,14 @@ public class ShipSpriteController : BaseSpriteController<Ship>
 {
     public ShipSpriteController(World world) : base(world, "Ships")
     {
+        world.shipManager.ShipCreated += OnCreated;
+        world.shipManager.ShipRemoved += OnRemoved;
     }
 
     protected override void OnCreated(Ship ship)
     {
+        Debug.ULogChannel("Ships", "Ship created: " + ship.ShipType);
+
         GameObject ship_go = new GameObject();
 
         // Add our tile/GO pair to the dictionary.
