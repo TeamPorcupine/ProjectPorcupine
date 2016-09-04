@@ -200,6 +200,11 @@ namespace UberLogger
 
         static Logger()
         {
+            if (UnitTestDetector.IsRunningFromUnitTest)
+            {
+                return;
+            }
+
             // Register with Unity's logging system
 #if UNITY_5
             Application.logMessageReceived += UnityLogHandler;
@@ -420,7 +425,12 @@ namespace UberLogger
         [StackTraceIgnore()]
         static public void Log(string channel, UnityEngine.Object source, LogSeverity severity, object message, params object[] par)
         {
-            lock(Loggers)
+            if (UnitTestDetector.IsRunningFromUnitTest)
+            {
+                return;
+            }
+
+            lock (Loggers)
             {
                 if(!AlreadyLogging)
                 {
