@@ -631,7 +631,22 @@ function OnUse_Bed( furniture, character )
 end
 
 function OnRelease_Bed( furniture, character )
+    -- one more slot is available
     furniture.Parameters["slots_in_use"].SetValue(furniture.Parameters["slots_in_use"].ToFloat() - 1)
+
+    -- Jump from bed
+    local destTile = World.Current.GetTileAt(furniture.Tile.X - 1, furniture.Tile.Y, furniture.Tile.Z)
+
+    local jump = Job.__new(
+            destTile,
+            nil,
+            nil,
+            0.5,
+            nil,
+            Job.JobPriority.High,
+            false
+        )
+    character.PrioritizeJob(jump)
 end
 
 ModUtils.ULog("Furniture.lua loaded")
