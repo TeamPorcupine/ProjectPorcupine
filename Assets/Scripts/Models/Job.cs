@@ -227,7 +227,7 @@ public class Job : ISelectable
         {
             foreach (string luaFunction in jobWorkedLua.ToList())
             {
-                LuaUtilities.CallFunction(luaFunction, this);
+                ActionsManager.Furniture.Call(luaFunction, this);
             }
         }
 
@@ -250,7 +250,7 @@ public class Job : ISelectable
 
             foreach (string luaFunction in jobCompletedLua.ToList())
             {
-                LuaUtilities.CallFunction(luaFunction, this);
+                ActionsManager.Furniture.Call(luaFunction, this);
             }
             
             if (jobRepeats == false)

@@ -81,7 +81,7 @@ public class WorldController : MonoBehaviour
 
         Instance = this;
 
-        new FurnitureActions();
+        new ActionsManager();
         new PrototypeManager();
 
         // FIXME: Do something real here. This is just to show how to register a C# event prototype for the Scheduler.

@@ -145,23 +145,6 @@ public class TileType : IXmlSerializable
     /// </summary>
     public static void LoadTileTypes()
     {
-        // Load lua code
-        string luaPath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
-        string luaFilePath = System.IO.Path.Combine(luaPath, "Tile.lua");
-
-        LuaUtilities.LoadScriptFromFile(luaFilePath);
-
-        // Load all mod defined lua code
-        foreach (DirectoryInfo mod in WorldController.Instance.modsManager.GetMods())
-        {
-            foreach (FileInfo file in mod.GetFiles("Tiles.lua"))
-            {
-                Debug.ULogChannel("TileType", "Loading mod " + mod.Name + " TileType definitions!");
-
-                LuaUtilities.LoadScriptFromFile(file.FullName);
-            }
-        }
-
         // Load TileType xml definitions
         string dataPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
         string xmlPath = System.IO.Path.Combine(dataPath, "Tiles.xml");
@@ -187,6 +170,28 @@ public class TileType : IXmlSerializable
     public override string ToString()
     {
         return Type;
+    }
+
+    // Checks whether the given floor type is allowed to be built on the tile.
+    public bool CanBuildHere(Tile t)
+    {
+        if (CanBuildHereLua == null)
+        {
+            return true;
+        }
+
+        DynValue value = ActionsManager.TileType.Call(CanBuildHereLua, t);
+
+        if (value != null)
+        {
+            return value.Boolean;
+        }
+        else
+        {
+            Debug.ULogChannel("Lua", "Found no lua function " + CanBuildHereLua);
+
+            return false;
+        }
     }
 
     #region IXmlSerializable implementation 
