@@ -102,16 +102,17 @@ public class WorldGenerator
 
                                         int weight = inv.StackSize; // In stacksize the weight was cached
                                         currentweight += weight;
-                                    if (inv.objectType == "Raw Iron" || inv.objectType == "Uranium")
-                                    {
-                                        Furniture mine = PrototypeManager.Furniture.GetPrototype("mine").Clone();
-                                        mine.Parameters["ore_type"].SetValue(inv.objectType.ToString());
-                                        world.PlaceFurniture(mine, t, false);                           
-                                        break;
-                                    }
 
                                         if (randomweight <= currentweight)
                                         {
+                                            if (inv.objectType == "Raw Iron" || inv.objectType == "Uranium")
+                                            {
+                                                Furniture mine = PrototypeManager.Furniture.GetPrototype("mine").Clone();
+                                                mine.Parameters["ore_type"].SetValue(inv.objectType.ToString());
+                                                world.PlaceFurniture(mine, t, false);
+                                                break;
+                                            }
+
                                             int stackSize = Random.Range(resourceMin[i], resourceMax[i]);
 
                                             if (stackSize > inv.maxStackSize)
