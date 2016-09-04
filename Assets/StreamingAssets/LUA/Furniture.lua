@@ -284,7 +284,7 @@ function Stockpile_JobWorked(j)
 end
 
 function MiningDroneStation_UpdateAction( furniture, deltaTime )
-    local spawnSpot = furniture.GetSpawnSpotTile()	
+    local spawnSpot = furniture.GetSpawnSpotTile()
 
 	if( furniture.JobCount() > 0 ) then
 		-- Check to see if the Metal Plate destination tile is full.
@@ -340,7 +340,7 @@ end
 
 function MetalSmelter_UpdateAction(furniture, deltaTime)
     local spawnSpot = furniture.GetSpawnSpotTile()
-	
+
     if(spawnSpot.Inventory ~= nil and spawnSpot.Inventory.StackSize >= 5) then
         furniture.Parameters["smelttime"].ChangeFloatValue(deltaTime)
         if(furniture.Parameters["smelttime"].ToFloat() >= furniture.Parameters["smelttime_required"].ToFloat()) then
@@ -413,7 +413,7 @@ function MetalSmelter_JobWorked(j)
 end
 
 function PowerCellPress_UpdateAction(furniture, deltaTime)
-    local spawnSpot = furniture.GetSpawnSpotTile()	
+    local spawnSpot = furniture.GetSpawnSpotTile()
 
     if(spawnSpot.Inventory == nil) then
         if(furniture.JobCount() == 0) then
@@ -473,7 +473,7 @@ function CloningPod_UpdateAction(furniture, deltaTime)
 	
     if( furniture.JobCount() > 0 ) then
         return
-    end	
+    end
 
     local j = Job.__new(
         furniture.GetJobSpotTile(),
