@@ -76,7 +76,7 @@ public class TradeController
         dbm.dialogBoxTrade.ShowDialog();
     }
 
-    private void TrasfertTradedItems(Trade trade, Vector2 tradingCoordinates)
+    private void TrasfertTradedItems(Trade trade, Vector3 tradingCoordinates)
     {
         trade.Player.Currency.Balance += trade.TradeCurrencyBalanceForPlayer;
 
@@ -84,7 +84,7 @@ public class TradeController
         {
             if (tradeItem.TradeAmount > 0)
             {
-                Tile tile = WorldController.Instance.World.GetFirstTileWithNoInventoryAround(6, (int)tradingCoordinates.x, (int)tradingCoordinates.y);
+                Tile tile = WorldController.Instance.World.GetFirstTileWithNoInventoryAround(6, (int)tradingCoordinates.x, (int)tradingCoordinates.y, (int)tradingCoordinates.z);
                 Inventory inv = new Inventory(tradeItem.ObjectType, tradeItem.TradeAmount, tradeItem.TradeAmount);
                 WorldController.Instance.World.inventoryManager.PlaceInventory(tile, inv);
             }

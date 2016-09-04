@@ -50,7 +50,7 @@ public class InventorySpriteController : BaseSpriteController<Inventory>
 
     protected override void OnCreated(Inventory inv)
     {
-        // FIXME: Does not consider multi-tile objects nor rotated objects
+        // FIXME: Does not consider rotated objects
         // This creates a new GameObject and adds it to our scene.
         GameObject inv_go = new GameObject();
 
@@ -62,7 +62,7 @@ public class InventorySpriteController : BaseSpriteController<Inventory>
         // Only create a Game Object if inventory was created on tile, anything else will handle its own game object
         if (inv.tile != null)
         {
-            inv_go.transform.position = new Vector3(inv.tile.X, inv.tile.Y, 0);
+            inv_go.transform.position = new Vector3(inv.tile.X, inv.tile.Y, inv.tile.Z);
         }
 
         inv_go.transform.SetParent(objectParent.transform, true);

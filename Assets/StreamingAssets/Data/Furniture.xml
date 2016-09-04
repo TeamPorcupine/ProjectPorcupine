@@ -107,7 +107,7 @@
     <Action event="OnUpdate" functionName="OnUpdate_AirlockDoor" />
     <Action event="OnUpdate" functionName="OnUpdate_Leak_Airlock" />
 
-    <ContextMenuAction FunctionName="AirlockDoor_Toggle_Pressure_Lock" Text="Toggle Pressure Lock" RequiereCharacterSelected="false" DevModeOnly="false"/>
+    <ContextMenuAction FunctionName="AirlockDoor_Toggle_Pressure_Lock" Text="Toggle Pressure Lock" RequiereCharacterSelected="false"/>
 
     <IsEnterable FunctionName="IsEnterable_Door" />
     <GetSpriteName FunctionName="GetSpriteName_Airlock" />
@@ -188,8 +188,8 @@
 
     <Action event="OnUpdate" functionName="MiningDroneStation_UpdateAction" />
 
-    <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Iron" Text="change to raw iron" RequiereCharacterSelected="false" DevModeOnly="false"/>
-    <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Copper" Text="change to raw copper" RequiereCharacterSelected="false" DevModeOnly="false"/>
+    <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Iron" Text="change to raw iron" RequiereCharacterSelected="false"/>
+    <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Copper" Text="change to raw copper" RequiereCharacterSelected="false"/>
 
     <LocalizationCode>furn_mining_drone_station</LocalizationCode>
     <UnlocalizedDescription>furn_mining_drone_station_desc</UnlocalizedDescription>
@@ -446,7 +446,7 @@
     <MovementCost>2</MovementCost>
     <PathfindingModifier>0</PathfindingModifier>
     <PathfindingWeight>2</PathfindingWeight>
-    <Width>2</Width>
+    <Width>1</Width>
     <Height>1</Height>
     <PowerConnection inputRate="5" outputRate="10" capacity="50"/>
 
