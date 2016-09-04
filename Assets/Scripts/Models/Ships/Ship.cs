@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using UnityEngine;
 
 public enum BerthDirection
 {
@@ -28,6 +29,8 @@ public class Ship
     private List<ShipStorage> storages;
     private string[,] tileTypes;
     private string[,] furnitureTypes;
+    private ShipState state;
+    private Vector2 position;
 
     public Ship()
     {
@@ -67,6 +70,7 @@ public class Ship
         }
 
         State = ShipState.TRANSIT;
+        Position = Vector2.zero;
     }
 
     public event ShipManager.ShipEventHandler ShipChanged;
@@ -83,19 +87,38 @@ public class Ship
 
     public BerthDirection BerthDirection { get; private set; }
 
-    private ShipState _State;
     public ShipState State
     {
         get
         {
-            return _State;
+            return state;
         }
 
         set
         {
-            if (_State != value)
+            if (state != value)
             {
-                _State = value;
+                state = value;
+                if (ShipChanged != null)
+                {
+                    ShipChanged(this);
+                }
+            }
+        }
+    }
+
+    public Vector2 Position
+    {
+        get
+        {
+            return position;
+        }
+
+        set
+        {
+            if (position != value)
+            {
+                position = value;
                 if (ShipChanged != null)
                 {
                     ShipChanged(this);
