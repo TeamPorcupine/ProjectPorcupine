@@ -25,8 +25,6 @@ public enum ShipState
 
 public class Ship
 {
-    public event ShipManager.ShipEventHandler ShipChanged;
-
     private List<ShipStorage> storages;
     private string[,] tileTypes;
     private string[,] furnitureTypes;
@@ -71,6 +69,8 @@ public class Ship
         State = ShipState.TRANSIT;
     }
 
+    public event ShipManager.ShipEventHandler ShipChanged;
+
     public string ShipType { get; private set; }
 
     public int Width { get; private set; }
@@ -90,6 +90,7 @@ public class Ship
         {
             return _State;
         }
+
         set
         {
             if (_State != value)

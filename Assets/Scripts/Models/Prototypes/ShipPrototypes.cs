@@ -30,5 +30,7 @@ public class ShipPrototypes : XmlPrototypes<Ship>
         }
 
         SetPrototype(ship.ShipType, ship);
+
+        Debug.ULogChannel("Ships", "Ship type registered: " + ship.ShipType);
     }
 }
