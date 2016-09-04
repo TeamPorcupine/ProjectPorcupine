@@ -32,10 +32,11 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
     /// </summary>
     /// <param name="x">The x coordinate.</param>
     /// <param name="y">The y coordinate.</param>
-    public Tile(int x, int y)
+    public Tile(int x, int y, int z)
     {
         X = x;
         Y = y;
+        Z = z;
         Characters = new List<Character>();
         MovementModifier = 1;
     }
@@ -112,6 +113,8 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
 
     public int Y { get; private set; }
 
+    public int Z { get; private set; }
+
     public float MovementModifier { get; set; }
 
     public float MovementCost
@@ -150,7 +153,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         {
             for (int y_off = Y; y_off < Y + furniture.Height; y_off++)
             {
-                Tile tile = World.Current.GetTileAt(x_off, y_off);
+                Tile tile = World.Current.GetTileAt(x_off, y_off, Z);
                 tile.Furniture = null;
             }
         }
@@ -175,7 +178,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         {
             for (int y_off = Y; y_off < Y + objInstance.Height; y_off++)
             {
-                Tile t = World.Current.GetTileAt(x_off, y_off);
+                Tile t = World.Current.GetTileAt(x_off, y_off, Z);
                 t.Furniture = objInstance;
             }
         }
@@ -233,6 +236,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
     {
         // Check to see if we have a difference of exactly ONE between the two
         // tile coordinates.  Is so, then we are vertical or horizontal neighbours.
+        // Note: We do not care about vertical adjacency, only horizontal (X and Y)
         return
             Math.Abs(X - tile.X) + Math.Abs(Y - tile.Y) == 1 || // Check hori/vert adjacency
         (diagOkay && Math.Abs(X - tile.X) == 1 && Math.Abs(Y - tile.Y) == 1); // Check diag adjacency
@@ -246,17 +250,17 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
     public Tile[] GetNeighbours(bool diagOkay = false)
     {
         Tile[] tiles = diagOkay == false ? new Tile[4] : new Tile[8];
-        tiles[0] = World.Current.GetTileAt(X, Y + 1);
-        tiles[1] = World.Current.GetTileAt(X + 1, Y);
-        tiles[2] = World.Current.GetTileAt(X, Y - 1);
-        tiles[3] = World.Current.GetTileAt(X - 1, Y);
+        tiles[0] = World.Current.GetTileAt(X, Y + 1, Z);
+        tiles[1] = World.Current.GetTileAt(X + 1, Y, Z);
+        tiles[2] = World.Current.GetTileAt(X, Y - 1, Z);
+        tiles[3] = World.Current.GetTileAt(X - 1, Y, Z);
 
         if (diagOkay == true)
         {
-            tiles[4] = World.Current.GetTileAt(X + 1, Y + 1);
-            tiles[5] = World.Current.GetTileAt(X + 1, Y - 1);
-            tiles[6] = World.Current.GetTileAt(X - 1, Y - 1);
-            tiles[7] = World.Current.GetTileAt(X - 1, Y + 1);
+            tiles[4] = World.Current.GetTileAt(X + 1, Y + 1, Z);
+            tiles[5] = World.Current.GetTileAt(X + 1, Y - 1, Z);
+            tiles[6] = World.Current.GetTileAt(X - 1, Y - 1, Z);
+            tiles[7] = World.Current.GetTileAt(X - 1, Y + 1, Z);
         }
 
         return tiles.Where(tile => tile != null).ToArray();
@@ -288,6 +292,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
     {
         writer.WriteAttributeString("X", X.ToString());
         writer.WriteAttributeString("Y", Y.ToString());
+        writer.WriteAttributeString("Z", Z.ToString());
         writer.WriteAttributeString("RoomID", Room == null ? "-1" : Room.ID.ToString());
         writer.WriteAttributeString("Type", Type.Type);
     }
@@ -323,22 +328,22 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
 
     public Tile North()
     {
-        return World.Current.GetTileAt(X, Y + 1);
+        return World.Current.GetTileAt(X, Y + 1, Z);
     }
 
     public Tile South()
     {
-        return World.Current.GetTileAt(X, Y - 1);
+        return World.Current.GetTileAt(X, Y - 1, Z);
     }
 
     public Tile East()
     {
-        return World.Current.GetTileAt(X + 1, Y);
+        return World.Current.GetTileAt(X + 1, Y, Z);
     }
 
     public Tile West()
     {
-        return World.Current.GetTileAt(X - 1, Y);
+        return World.Current.GetTileAt(X - 1, Y, Z);
     }
 
     public float GetGasPressure(string gas)

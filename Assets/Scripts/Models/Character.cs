@@ -133,6 +133,23 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     }
 
     /// <summary>
+    /// Returns a float representing the Character's Z position, which can
+    /// be part-way between two tiles during movement.
+    /// </summary>
+    public float Z
+    {
+        get
+        {
+            if (nextTile == null)
+            {
+                return CurrTile.Z;
+            }
+
+            return Mathf.Lerp(CurrTile.Z, nextTile.Z, movementPercentage);
+        }
+    }
+
+    /// <summary>
     /// The tile the Character is considered to still be standing in.
     /// </summary>
     public Tile CurrTile
@@ -349,6 +366,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         writer.WriteAttributeString("name", name);
         writer.WriteAttributeString("X", CurrTile.X.ToString());
         writer.WriteAttributeString("Y", CurrTile.Y.ToString());
+        writer.WriteAttributeString("Z", CurrTile.Z.ToString());
 
         // TODO: It is more verbose, but easier to parse if these are represented as key-value elements rather than a string with delimeters.
         string needString = string.Empty;
@@ -500,12 +518,6 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         Stat stat = null;
         stats.TryGetValue(statType, out stat);
         return stat;
-    }
-
-    private void InitializeCharacterValues()
-    {
-        LoadNeeds();
-        LoadStats();
     }
 
     private void LoadNeeds()
@@ -1062,5 +1074,11 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 World.Current.OnInventoryCreated += OnInventoryCreated;
             }
         }
+    }
+
+    private void InitializeCharacterValues()
+    {
+        LoadNeeds();
+        LoadStats();
     }
 }
