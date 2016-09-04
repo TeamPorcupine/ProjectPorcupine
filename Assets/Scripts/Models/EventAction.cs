@@ -121,9 +121,8 @@ public class EventAction : IXmlSerializable
     /// Fire the event named actionName, resulting in all lua functions being called.
     /// </summary>
     /// <param name="actionName">Name of the action being triggered.</param>
-    /// <param name="target">Object, passed to LUA function as 1-argument (TODO: make it an object).</param>
-    /// <param name="deltaTime">Time since last Trigger of this event.</param>
-    public void Trigger(string actionName, Furniture target, float deltaTime = 0f)
+    /// <param name="args">Arguments</param>
+    public void Trigger(string actionName, params object[] args)
     {
         if (!actionsList.ContainsKey(actionName) || actionsList[actionName] == null)
         {
@@ -131,7 +130,7 @@ public class EventAction : IXmlSerializable
         }
         else
         {
-            FurnitureActions.CallFunctionsWithFurniture(actionsList[actionName].ToArray(), target, deltaTime);
+            FurnitureActions.CallFunctionsWithFurniture<Furniture>(actionsList[actionName].ToArray(), args);
         }
     }
 }
