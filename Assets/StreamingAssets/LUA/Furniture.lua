@@ -679,5 +679,17 @@ function Rtg_UpdateTemperature( furniture, deltaTime)
     --ModUtils.ULogChannel("Temperature", "Heat change: " .. temperatureChangePerSecond .. " => " .. World.current.temperature.GetTemperature(tile.X, tile.Y))
 end
 
+function Berth_SummonShip(furniture, character)
+    if (furniture.Parameters["occupied"].ToFloat() > 0) then
+        return
+    end
+    
+    ship = World.Current.shipManager.AddShip("essentia", 0, 0)
+end
+
+function Berth_DismissShip(furniture, character)
+    
+end
+
 ModUtils.ULog("Furniture.lua loaded")
 return "LUA Script Parsed!"
