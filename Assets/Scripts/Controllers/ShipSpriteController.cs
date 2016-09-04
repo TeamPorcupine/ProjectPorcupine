@@ -34,7 +34,7 @@ public class ShipSpriteController : BaseSpriteController<Ship>
 
         SpriteRenderer sr = ship_go.AddComponent<SpriteRenderer>();
         sr.sortingLayerName = "Characters";
-        sr.sprite = SpriteManager.current.GetSprite("Ships", ship.ShipType);
+        sr.sprite = SpriteManager.current.GetSprite("Ship", ship.ShipType);
 
         ship.ShipChanged += OnChanged;
     }
