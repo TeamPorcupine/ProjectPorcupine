@@ -1,8 +1,8 @@
 #region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
-// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
-// and you are welcome to redistribute it under certain conditions; See 
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
@@ -15,7 +15,10 @@ using MoonSharp.Interpreter;
 using ProjectPorcupine.Localization;
 using UnityEngine;
 
+// TODO: Job system needs to handle needs much better. Probably have beds provide `sleep` and create a job that needs it, then perform the job.
+
 [MoonSharpUserData]
+[System.Diagnostics.DebuggerDisplay("Job {JobObjectType}")]
 public class Job : ISelectable, IPrototypable
 {
     // This class holds info for a queued up job, which can include
@@ -50,7 +53,7 @@ public class Job : ISelectable, IPrototypable
     protected bool jobRepeats = false;
 
     private List<string> jobWorkedLua;
-   
+
     // The job has been stopped, either because it's non-repeating or was canceled.
     private List<string> jobCompletedLua;
 
@@ -88,6 +91,7 @@ public class Job : ISelectable, IPrototypable
     {
         this.tile = tile;
         this.JobTileType = jobTileType;
+        this.JobObjectType = "tile_" + jobTileType.Name;
         this.OnJobCompleted += jobCompleted;
         this.jobTimeRequired = this.JobTime = jobTime;
         this.jobRepeats = jobRepeats;
@@ -143,7 +147,9 @@ public class Job : ISelectable, IPrototypable
 
     public enum JobPriority
     {
-        High, Medium, Low
+        High,
+        Medium,
+        Low
     }
 
     public string JobDescription { get; set; }
@@ -193,7 +199,8 @@ public class Job : ISelectable, IPrototypable
 
     public bool IsSelected
     {
-        get; set;
+        get;
+        set;
     }
 
     public Inventory[] GetInventoryRequirementValues()
@@ -205,7 +212,7 @@ public class Job : ISelectable, IPrototypable
     {
         return new Job(this);
     }
-    
+
     public void RegisterJobCompletedCallback(string cb)
     {
         jobCompletedLua.Add(cb);
@@ -215,7 +222,7 @@ public class Job : ISelectable, IPrototypable
     {
         jobCompletedLua.Remove(cb);
     }
-    
+
     public void RegisterJobWorkedCallback(string cb)
     {
         jobWorkedLua.Add(cb);
@@ -240,7 +247,7 @@ public class Job : ISelectable, IPrototypable
             FunctionsManager.Furniture.Call(luaFunction, this);
         }
 
-        // Check to make sure we actually have everything we need. 
+        // Check to make sure we actually have everything we need.
         // If not, don't register the work time.
         if (MaterialNeedsMet() == false)
         {
@@ -248,7 +255,7 @@ public class Job : ISelectable, IPrototypable
         }
 
         JobTime -= workTime;
-        
+
         if (JobTime <= 0)
         {
             foreach (string luaFunction in jobCompletedLua.ToList())
@@ -286,8 +293,32 @@ public class Job : ISelectable, IPrototypable
         }
 
         // Remove the job out of both job queues.
-        World.Current.jobWaitingQueue.Remove(this);
         World.Current.jobQueue.Remove(this);
+    }
+
+    public ProjectPorcupine.Pathfinding.GoalEvaluator IsTileAtJobSite
+    {
+        get
+        {
+            // TODO: This doesn't handle multi-tile furniture
+
+            if (tile == null)
+            {
+                return null;
+            }
+
+            if (adjacent)
+            {
+                return otherTile => (
+                    tile.Z == otherTile.Z &&
+                    (tile.X - 1) >= otherTile.X && (tile.X + 1) <= otherTile.X &&
+                    (tile.Y - 1) >= otherTile.Y && (tile.Y + 1) <= otherTile.Y);
+            }
+            else
+            {
+                return otherTile => this.tile.CompareTo(otherTile) == 0;
+            }
+        }
     }
 
     public bool MaterialNeedsMet()
@@ -358,6 +389,28 @@ public class Job : ISelectable, IPrototypable
         return AmountDesiredOfInventoryType(inv.Type);
     }
 
+    public bool IsRequiredInventoriesAvailable()
+    {
+        return FulfillableInventoryRequirements() != null;
+    }
+
+    /// <summary>
+    /// Returns the first fulfillable requirement of this job
+    /// </summary>
+    /// <returns>The fulfillable inventory requirement.</returns>
+    public Inventory GetFirstFulfillableInventoryRequirement()
+    {
+        foreach (Inventory inv in GetInventoryRequirementValues())
+        {
+            if (World.Current.inventoryManager.HasInventoryOfType(inv.Type))
+            {
+                return inv;
+            }
+        }
+
+        return null;
+    }
+
     /// <summary>
     /// Fulfillable inventory requirements for job.
     /// </summary>
@@ -424,7 +477,7 @@ public class Job : ISelectable, IPrototypable
 
         return description;
     }
-    
+
     public string GetJobDescription()
     {
         return GetDescription();

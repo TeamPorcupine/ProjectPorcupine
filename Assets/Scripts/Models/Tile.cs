@@ -24,7 +24,8 @@ public enum Enterability
 }
 
 [MoonSharpUserData]
-public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
+[System.Diagnostics.DebuggerDisplay("Tile {X},{Y},{Z}")]
+public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComparable, IEquatable<Tile>
 {
     private TileType type = TileType.Empty;
 
@@ -512,5 +513,58 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         }
 
         ForceTileUpdate = false;
+    }
+
+    #region IComparable
+
+    public int CompareTo(object other)
+    {
+        if (other == null)
+        {
+            return 1;
+        }
+
+        Tile otherTile = other as Tile;
+        if (otherTile != null)
+        {
+            int result = this.Z.CompareTo(otherTile.Z);
+            if (result != 0)
+            {
+                return result;
+            }
+
+            result = this.Y.CompareTo(otherTile.Y);
+            if (result != 0)
+            {
+                return result;
+            }
+
+            return this.X.CompareTo(otherTile.X);
+        }
+        else
+        {
+            throw new ArgumentException("Object is not a Tile");
+        }
+    }
+
+    #endregion
+
+    #region IEquatable<T>
+
+    public bool Equals(Tile otherTile)
+    {
+        if (otherTile == null)
+        {
+            return false;
+        }
+
+        return X == otherTile.X && Y == otherTile.Y && Z == otherTile.Z;
+    }
+
+    #endregion
+
+    public override string ToString()
+    {
+        return string.Format("[{0} {1}, {2}, {3}]", Type, X, Y, Z);
     }
 }

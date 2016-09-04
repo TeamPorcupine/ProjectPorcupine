@@ -13,10 +13,14 @@ using UnityEngine;
 public class JobQueue
 {
     private SortedList<Job.JobPriority, Job> jobQueue;
+    private Dictionary<string, List<Job>> jobsWaitingForInventory;
 
     public JobQueue()
     {
         jobQueue = new SortedList<Job.JobPriority, Job>(new DuplicateKeyComparer<Job.JobPriority>(true));
+        jobsWaitingForInventory = new Dictionary<string, List<Job>>();
+
+        World.Current.inventoryManager.InventoryCreated += ReevaluateWaitingQueue;
     }
 
     public event Action<Job> OnJobCreated;
@@ -33,21 +37,39 @@ public class JobQueue
         return jobQueue.Count;
     }
 
-    public void Enqueue(Job j)
+    public void Enqueue(Job job)
     {
-        if (j.JobTime < 0)
+        Debug.ULogChannel("FSM", "Enqueue({0})", job.JobObjectType);
+        if (job.JobTime < 0)
         {
             // Job has a negative job time, so it's not actually
             // supposed to be queued up.  Just insta-complete it.
-            j.DoWork(0);
+            job.DoWork(0);
             return;
         }
 
-        jobQueue.Add(j.Priority, j);
-        
+        // TODO: We really should check `job.tile.HasWalkableNeighbours(true)` here, but we aren't registered for events on neighboring tiles.
+        if (job.IsRequiredInventoriesAvailable() == false)
+        {
+            string missing = job.acceptsAny ? "*" : job.GetFirstDesiredInventory().Type;
+            Debug.ULogChannel("FSM", " - missingInventory {0}", missing);
+            if (jobsWaitingForInventory.ContainsKey(missing) == false)
+            {
+                jobsWaitingForInventory[missing] = new List<Job>();
+            }
+
+            jobsWaitingForInventory[missing].Add(job);
+        }
+        else
+        {
+            Debug.ULogChannel("FSM", " - job ok");
+            jobQueue.Add(job.Priority, job);
+        }
+
+
         if (OnJobCreated != null)
         {
-            OnJobCreated(j);
+            OnJobCreated(job);
         }
     }
 
@@ -63,23 +85,100 @@ public class JobQueue
         return job;
     }
 
-    public void Remove(Job j)
+    /// <summary>
+    /// Search for a job that can be performed by the specified character. Tests that the job can be reached and there is enough inventory to complete it, somewhere.
+    /// </summary>
+    public Job GetJob(Character character)
     {
-        if (jobQueue.ContainsValue(j) == false)
+        Debug.ULogChannel("FSM", "GetJob() (Queue size: {0})", jobQueue.Count);
+        if (jobQueue.Count == 0)
         {
-            // Most likely, this job wasn't on the queue because a character was working it!
-            return;
+            return null;
         }
 
-        jobQueue.RemoveAt(jobQueue.IndexOfValue(j));
+        // This makes a large assumption that we are the only one accessing the queue right now
+        for (int i = 0; i < jobQueue.Count; i++)
+        {
+            Job job = jobQueue.Values[i];
+
+            // TODO: This is a simplistic version and needs to be expanded.
+            // If we can get all material and we can walk to the tile, the job is workable.
+            if (job.IsRequiredInventoriesAvailable() && job.tile.HasWalkableNeighbours())
+            {
+                jobQueue.RemoveAt(i);
+                return job;
+            }
+
+            Debug.ULogChannel("FSM", " - job failed requirements, test the next.");
+        }
+
+        return null;
     }
 
-    public IEnumerable<Job> PeekJobs()
+    public void Remove(Job job)
     {
-        // For debugging only. For the real thing we want to return something safer (like preformatted strings.).
+        if (jobQueue.ContainsValue(job))
+        {
+            jobQueue.RemoveAt(jobQueue.IndexOfValue(job));
+        }
+        else
+        {
+            foreach (string inventoryType in jobsWaitingForInventory.Keys)
+            {
+                if (jobsWaitingForInventory[inventoryType].Contains(job))
+                {
+                    jobsWaitingForInventory[inventoryType].Remove(job);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Returns an IEnumerable for every job, including jobs that are in the waiting state.
+    /// </summary>
+    public IEnumerable<Job> PeekAllJobs()
+    {
         foreach (Job job in jobQueue.Values)
         {
             yield return job;
+        }
+
+        foreach (string inventoryType in jobsWaitingForInventory.Keys)
+        {
+            foreach (Job job in jobsWaitingForInventory[inventoryType])
+            {
+                yield return job;
+            }
+        }
+    }
+
+    private void ReevaluateWaitingQueue(Inventory inv)
+    {
+        Debug.ULogChannel("FSM", "ReevaluateWaitingQueue() new resource: {0}, count: {1}", inv.Type, inv.StackSize);
+        // In case we are alerted about something we don't care about
+        if (jobsWaitingForInventory.ContainsKey(inv.Type) == false || jobsWaitingForInventory[inv.Type].Count == 0)
+        {
+            return;
+        }
+
+        // Get the current list of jbos
+        List<Job> jobs = jobsWaitingForInventory[inv.Type];
+        // Replace it with an empty list
+        jobsWaitingForInventory[inv.Type] = new List<Job>();
+
+        foreach (Job job in jobs)
+        {
+            // Enqueue will put them in the new waiting list we created if they still have unmet needs
+            Enqueue(job);
+        }
+
+        // Do the same thing for the AnyMaterial jobs
+        jobs = jobsWaitingForInventory["*"];
+        jobsWaitingForInventory["*"] = new List<Job>();
+
+        foreach (Job job in jobs)
+        {
+            Enqueue(job);
         }
     }
 }

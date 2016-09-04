@@ -116,8 +116,8 @@ public class InventoryManager
     /// <returns>The closest inventory of type.</returns>
     public Inventory GetClosestInventoryOfType(string type, Tile startTile, int desiredAmount, bool canTakeFromStockpile)
     {
-        Path_AStar path = GetPathToClosestInventoryOfType(type, startTile, desiredAmount, canTakeFromStockpile);
-        return path.EndTile().Inventory;
+        List<Tile> path = GetPathToClosestInventoryOfType(type, startTile, desiredAmount, canTakeFromStockpile);
+        return path != null ? path.Last().Inventory : null;
     }
 
     public bool HasInventoryOfType(string type)
@@ -159,9 +159,12 @@ public class InventoryManager
         return quantity == 0;
     }
 
-    public Path_AStar GetPathToClosestInventoryOfType(string type, Tile tile, int desiredAmount, bool canTakeFromStockpile)
+    public List<Tile> GetPathToClosestInventoryOfType(string type, Tile tile, int desiredAmount, bool canTakeFromStockpile)
     {
-        HasInventoryOfType(type);
+        if (HasInventoryOfType(type) == false)
+        {
+            return null;
+        }
 
         // We can also avoid going through the A* construction if we know
         // that all available inventories are stockpiles and we are not allowed
@@ -185,8 +188,7 @@ public class InventoryManager
         }
 
         // We know the objects are out there, now find the closest.
-        Path_AStar path = new Path_AStar(World.Current, tile, null, type, desiredAmount, canTakeFromStockpile);
-        return path;
+        return ProjectPorcupine.Pathfinding.FindPathToInventory(tile, type, canTakeFromStockpile);
     }
 
     private void CleanupInventory(Inventory inventory)

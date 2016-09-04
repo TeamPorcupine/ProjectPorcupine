@@ -27,7 +27,7 @@ public class JobListEvents : MonoBehaviour
     {
         string charName = GetNameFromItem();
         
-        World.Current.GetCharacterFromName(charName).AbandonJob(true);
+        World.Current.GetCharacterFromName(charName).InterruptState();
         JobListItem.SetParent(null);
         GameObject.Destroy(JobListItem.gameObject);
     }
