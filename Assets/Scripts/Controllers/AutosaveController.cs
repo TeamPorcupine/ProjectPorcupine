@@ -21,6 +21,11 @@ public class AutosaveController
 
     private ScheduledEvent autosaveEvent;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AutosaveController"/> class.
+    /// This class schedules autosave events which save the game at regular intervals
+    /// of <see cref="AutosaveInterval"/> minutes with the default filename "Autosave###.sav".
+    /// </summary>
     public AutosaveController()
     {
         if (scheduler == null)
@@ -30,10 +35,16 @@ public class AutosaveController
 
         AutosaveInterval = Settings.GetSettingAsInt("AutosaveInterval", 2); // in minutes
 
+        // autosaves disabled if AutosaveInterval <= 0
+        if (AutosaveInterval <= 0)
+        {
+            return;
+        }
+
         autosaveEvent = new ScheduledEvent("autosave", DoAutosave, AutosaveInterval * 60.0f, true, 0);
         scheduler.RegisterEvent(autosaveEvent);
 
-        // set autosaveCounter > maximum index of existing autosaves (so as not to clobber autosaves from previous games)
+        // set autosaveCounter = maximum index of existing autosaves (so as not to clobber autosaves from previous games)
         if (Directory.Exists(WorldController.Instance.FileSaveBasePath()))
         {
             string[] autosaveFileNames = Directory.GetFiles(WorldController.Instance.FileSaveBasePath(), AutosaveBaseName + "*.sav");
@@ -61,7 +72,12 @@ public class AutosaveController
         }
     }
 
-    public int AutosaveInterval { get; private set; } // in minutes
+    /// <summary>
+    /// Gets the autosave interval in minutes.
+    /// If less than or equal to zero autosaves are disabled.
+    /// </summary>
+    /// <value>The autosave interval in minutes.</value>
+    public int AutosaveInterval { get; private set; }
 
     /// <summary>
     /// Callback for the autosave event. Called automatically by the Scheduler when the cooldown expires.
@@ -69,6 +85,12 @@ public class AutosaveController
     /// <param name="evt">The ScheduledEvent object which triggered the autosave.</param>
     public void DoAutosave(ScheduledEvent evt)
     {
+        // autosaves disabled if AutosaveInterval <= 0
+        if (AutosaveInterval <= 0)
+        {
+            return;
+        }
+
         autosaveCounter += 1;
 
         string fileName = AutosaveBaseName + autosaveCounter.ToString();
@@ -91,9 +113,6 @@ public class AutosaveController
         TextWriter writer = new StringWriter();
         serializer.Serialize(writer, WorldController.Instance.World);
         writer.Close();
-
-        // Leaving this unchanged as UberLogger doesn't handle multiline messages well.
-        Debug.Log(writer.ToString());
 
         try
         {
