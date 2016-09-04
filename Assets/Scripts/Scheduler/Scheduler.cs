@@ -27,8 +27,13 @@ namespace Scheduler
         private static Scheduler instance;
         private List<ScheduledEvent> events;
         private List<ScheduledEvent> eventsToAddNextTick;
+        private Dictionary<string, ScheduledEvent> prototypes;
 
-        public Scheduler()
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Scheduler.Scheduler"/> class.
+        /// </summary>
+        /// <param name="prototypes">ScheduledEvent prototypes to use for the scheduler. If null, PrototypeManager is used to load prototypes instead.</param>
+        public Scheduler(Dictionary<string, ScheduledEvent> prototypes)
         {
             this.events = new List<ScheduledEvent>();
             this.eventsToAddNextTick = new List<ScheduledEvent>();
@@ -41,6 +46,8 @@ namespace Scheduler
             LuaUtilities.RegisterGlobal(typeof(ModUtils));
             LuaUtilities.RegisterGlobal(typeof(World));
             LoadScripts();
+
+            this.prototypes = prototypes;
         }
 
         public static Scheduler Current
@@ -49,7 +56,7 @@ namespace Scheduler
             {
                 if (instance == null)
                 {
-                    instance = new Scheduler();
+                    instance = new Scheduler(null);
                 }
 
                 return instance;
@@ -109,13 +116,29 @@ namespace Scheduler
         /// <param name="repeats">Number of repeats (default 1). Ignored if repeatsForever=true.</param>
         public void ScheduleEvent(string name, float cooldown, float timeToWait, bool repeatsForever = false, int repeats = 1)
         {
-            if (PrototypeManager.SchedulerEvent.HasPrototype(name) == false)
+            ScheduledEvent ep;
+
+            if (prototypes == null)
             {
-                Debug.ULogWarningChannel("Scheduler", "Tried to schedule an event from a prototype '{0}' which does not exist. Bailing.", name);
-                return;
+                if (PrototypeManager.SchedulerEvent.HasPrototype(name) == false)
+                {
+                    Debug.ULogWarningChannel("Scheduler", "Tried to schedule an event from a prototype '{0}' which does not exist. Bailing.", name);
+                    return;
+                }
+
+                ep = PrototypeManager.SchedulerEvent.GetPrototype(name);
+            }
+            else
+            {
+                if (prototypes.ContainsKey(name) == false)
+                {
+                    Debug.ULogWarningChannel("Scheduler", "Tried to schedule an event from a prototype '{0}' which does not exist. Bailing.", name);
+                    return;
+                }
+
+                ep = prototypes[name];
             }
 
-            ScheduledEvent ep = PrototypeManager.SchedulerEvent.GetPrototype(name);
             ScheduledEvent evt = new ScheduledEvent(ep, cooldown, timeToWait, repeatsForever, repeats);
 
             RegisterEvent(evt);
@@ -195,7 +218,14 @@ namespace Scheduler
 
         public void RegisterEventPrototype(string name, ScheduledEvent eventPrototype)
         {
-            PrototypeManager.SchedulerEvent.Add(name, eventPrototype);
+            if (prototypes == null)
+            {
+                PrototypeManager.SchedulerEvent.Add(name, eventPrototype);
+            }
+            else
+            {
+                prototypes.Add(name, eventPrototype);
+            }
         }
 
         #region IXmlSerializable implementation
