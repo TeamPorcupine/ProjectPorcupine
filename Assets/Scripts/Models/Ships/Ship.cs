@@ -22,7 +22,7 @@ public enum BerthDirection
 
 public enum ShipState
 {
-    TRANSIT_IN, TRANSIT_OUT, BERTHED
+    TRANSIT, BERTHED
 }
 
 [MoonSharpUserData]
@@ -32,6 +32,7 @@ public class Ship
     private string[,] tileTypes;
     private string[,] furnitureTypes;
 
+    private ShipManager shipManager;
     private ShipState state;
     private Vector2 position;
     private Vector2 destination;
@@ -50,8 +51,9 @@ public class Ship
         furnitureTypes = null;
     }
 
-    public Ship(Ship proto)
+    public Ship(ShipManager shipManager, Ship proto)
     {
+        this.shipManager = shipManager;
         ShipType = proto.ShipType;
         Width = proto.Width;
         Height = proto.Height;
@@ -74,7 +76,7 @@ public class Ship
             }
         }
 
-        State = ShipState.TRANSIT_IN;
+        State = ShipState.TRANSIT;
         Position = Vector2.zero;
     }
 
@@ -171,61 +173,50 @@ public class Ship
 
     public void SetDestination(float x, float y)
     {
-        berth = null;
-        Destination = new Vector2(x,y);
+        Berth = null;
+        Destination = new Vector2(x, y);
     }
+
     public void SetDestination(Furniture goalBerth)
     {
-        berth = goalBerth;
+        Berth = goalBerth;
         Destination = new Vector2(goalBerth.Tile.X, goalBerth.Tile.Y);
     }
 
     public void Update(float deltaTime)
     {
-        switch(State)
+        switch (State)
         {
             case ShipState.BERTHED:
                 break;
-            case ShipState.TRANSIT_IN:
+            case ShipState.TRANSIT:
                 Move(deltaTime);
-                if (Vector2.Distance(Position, Destination) < 0.1f)
+                if (Berth == null)
                 {
-                    State = ShipState.BERTHED;
-                    UnwrapAtBerth();
+                    if (Vector2.Distance(Position, Destination) < 0.1f)
+                    {
+                        shipManager.RemoveShip(this);
+                    }
+                }
+                else
+                {
+                    if (Vector2.Distance(Position, Destination) < 0.1f)
+                    {
+                        shipManager.BerthShip(Berth, this);
+                    }
                 }
 
                 break;
-            case ShipState.TRANSIT_OUT:
-                Move(deltaTime);
-                if (Vector2.Distance(Position, Destination) < 0.1f)
-                {
-                    World.Current.shipManager.RemoveShip(this);
-                }
-
-                break;
-
         }
     }
 
-    private void Move(float deltaTime)
-    {
-        Vector2 direction = destination - position;
-        float distance = 5f * deltaTime;
-        Position += Vector2.ClampMagnitude(direction, distance);
-    }
-
-    private void UnwrapAtBerth()
+    public void UnwrapAtBerth()
     {
         for (int x = 0; x < Width; x++)
         {
             for (int y = 0; y < Height; y++)
             {
-                int relative_x = x - BerthPointX;
-                int relative_y = y - BerthPointY;
-                int worldX, worldY;
-                GetWorldCoordinates(x, y, out worldX, out worldY);
-
-                Tile tile = World.Current.GetTileAt(worldX, worldY, 0);
+                Tile tile = GetTile(World.Current, x, y, 0);
 
                 // Change tile to defined contents
                 if (tile.Type.Equals(TileType.Empty) == false || tile.Furniture != null)
@@ -242,60 +233,23 @@ public class Ship
         }
     }
 
-    private void Wrap()
+    public void Wrap()
     {
         for (int x = 0; x < Width; x++)
         {
             for (int y = 0; y < Height; y++)
             {
-                int relative_x = x - BerthPointX;
-                int relative_y = y - BerthPointY;
-                int worldX, worldY;
-                GetWorldCoordinates(x, y, out worldX, out worldY);
-
-                Tile tile = World.Current.GetTileAt(worldX, worldY, 0);
+                Tile tile = GetTile(World.Current, x, y, 0);
 
                 // Change tile to empty
                 // Order reversed in case furniture on an empty tile leads to problems
                 if (furnitureTypes[x, y] != null)
                 {
-                    tile.UnplaceFurniture();
+                    tile.Furniture.Deconstruct();
                 }
 
                 tile.Type = TileType.Empty;
             }
-        }
-    }
-
-    private void GetWorldCoordinates(int x, int y, out int worldX, out int worldY)
-    {
-        int relative_x = x - BerthPointX;
-        int relative_y = y - BerthPointY;
-        int berth_x = Berth.Tile.X + 1;
-        int berth_y = Berth.Tile.Y;
-        switch(BerthDirection)
-        {
-            case BerthDirection.NORTH:
-                worldX = berth_x - relative_x;
-                worldY = berth_y - relative_y;
-                break;
-            case BerthDirection.SOUTH:
-                worldX = berth_x + relative_x;
-                worldY = berth_y + relative_y;
-                break;
-            case BerthDirection.WEST:
-                worldX = berth_x + relative_y;
-                worldY = berth_y - relative_x;
-                break;
-            case BerthDirection.EAST:
-                worldX = berth_x - relative_y;
-                worldY = berth_y + relative_x;
-                break;
-            default:
-                worldX = 0;
-                worldY = 0;
-                Debug.ULogErrorChannel("Ships", "Invalid berthing direction: " + BerthDirection);
-                break;
         }
     }
 
@@ -329,6 +283,49 @@ public class Ship
                     break;
             }
         }
+    }
+
+    private void Move(float deltaTime)
+    {
+        Vector2 direction = destination - position;
+        float distance = 5f * deltaTime;
+        Position += Vector2.ClampMagnitude(direction, distance);
+    }
+
+    // Gets tile in world that corresponds to the relative coordinates in the ship definition
+    // counted from the berth
+    private Tile GetTile(World world, int x, int y, int z)
+    {
+        int relative_x = x - BerthPointX;
+        int relative_y = y - BerthPointY;
+        int berth_x = Berth.Tile.X + 1;
+        int berth_y = Berth.Tile.Y;
+        int worldX, worldY;
+        switch (BerthDirection)
+        {
+            case BerthDirection.NORTH:
+                worldX = berth_x - relative_x;
+                worldY = berth_y - relative_y;
+                break;
+            case BerthDirection.SOUTH:
+                worldX = berth_x + relative_x;
+                worldY = berth_y + relative_y;
+                break;
+            case BerthDirection.WEST:
+                worldX = berth_x + relative_y;
+                worldY = berth_y - relative_x;
+                break;
+            case BerthDirection.EAST:
+                worldX = berth_x - relative_y;
+                worldY = berth_y + relative_x;
+                break;
+            default:
+                worldX = 0;
+                worldY = 0;
+                Debug.ULogErrorChannel("Ships", "Invalid berthing direction: " + BerthDirection);
+                break;
+        }
+        return world.GetTileAt(worldX, worldY, z);
     }
 
     private void ReadXmlStorages(XmlReader reader)
