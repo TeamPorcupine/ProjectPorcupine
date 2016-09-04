@@ -402,7 +402,14 @@ public class MouseController
     {
         for (int x = dragParams.StartX; x <= dragParams.EndX; x++)
         {
-            for (int y = dragParams.StartY; y <= dragParams.EndY; y++)
+            // Variables for the for-loop over the y-coordinates.
+            // These are used to determine whether the loop should run from highest to lowest values or viceversa.
+            // The tiles are thus added in a snake or zig-zag pattern, which makes building more efficient.
+            int begin = (x - dragParams.StartX) % 2 == 0 ? dragParams.StartY : dragParams.EndY;
+            int stop = (x - dragParams.StartX) % 2 == 0 ? dragParams.EndY + 1 : dragParams.StartY - 1;
+            int increment = (x - dragParams.StartX) % 2 == 0 ? 1 : -1;
+
+            for (int y = begin; y != stop; y += increment)
             {
                 Tile t = WorldController.Instance.World.GetTileAt(x, y, WorldController.Instance.cameraController.CurrentLayer);
                 if (bmc.buildMode == BuildMode.FURNITURE)
