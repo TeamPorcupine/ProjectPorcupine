@@ -400,6 +400,7 @@ public class World : IXmlSerializable
         // Save info here
         writer.WriteAttributeString("Width", Width.ToString());
         writer.WriteAttributeString("Height", Height.ToString());
+        writer.WriteAttributeString("Depth", Depth.ToString());
 
         writer.WriteStartElement("Rooms");
         foreach (Room r in rooms)
