@@ -20,7 +20,7 @@ public class FurnitureActions
         LuaUtilities.RegisterGlobal(typeof(ModUtils));
         LuaUtilities.RegisterGlobal(typeof(World));
         LuaUtilities.RegisterGlobal(typeof(WorldController));
-        LuaUtilities.RegisterGlobal(typeof(ProjectPorcupine.Power.Connection));
+        LuaUtilities.RegisterGlobal(typeof(ProjectPorcupine.PowerNetwork.Connection));
 
         LoadScripts();
     }

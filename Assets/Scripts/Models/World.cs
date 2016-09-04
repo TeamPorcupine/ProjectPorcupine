@@ -105,7 +105,7 @@ public class World : IXmlSerializable
     // The tile depth of the world
     public int Depth { get; protected set; }
 
-    public ProjectPorcupine.Power.System PowerSystem { get; private set; }
+    public ProjectPorcupine.PowerNetwork.PowerNetwork PowerNetwork { get; private set; }
 
     public Room GetOutsideRoom()
     {
@@ -179,7 +179,7 @@ public class World : IXmlSerializable
 
         // Progress temperature modelling
         temperature.Update();
-        PowerSystem.Update(deltaTime);
+        PowerNetwork.Update(deltaTime);
     }
 
     public Character CreateCharacter(Tile t)
@@ -651,7 +651,7 @@ public class World : IXmlSerializable
         characters = new List<Character>();
         furnitures = new List<Furniture>();
         inventoryManager = new InventoryManager();
-        PowerSystem = new ProjectPorcupine.Power.System();
+        PowerNetwork = new ProjectPorcupine.PowerNetwork.PowerNetwork();
         temperature = new Temperature(Width, Height);
         LoadSkybox();
     }
