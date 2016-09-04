@@ -121,7 +121,7 @@ public class Need
     public void SetFurniture(Furniture furniture)
     {
         Furniture = furniture;
-        Furniture.EventActions.Trigger("OnUse", Furniture);
+        Furniture.EventActions.Trigger("OnUse", Furniture, character);
     }
 
     public void ReadXmlPrototype(XmlReader reader_parent)

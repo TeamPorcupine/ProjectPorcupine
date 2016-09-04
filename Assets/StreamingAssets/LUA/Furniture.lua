@@ -626,7 +626,7 @@ function IsUsable_Bed( furniture )
     return false
 end
 
-function OnUse_Bed( furniture )
+function OnUse_Bed( furniture, character )
     furniture.Parameters["slots_in_use"].SetValue(furniture.Parameters["slots_in_use"].ToFloat() + 1)
 end
 
