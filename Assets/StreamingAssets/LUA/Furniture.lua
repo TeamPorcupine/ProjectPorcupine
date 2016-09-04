@@ -630,7 +630,7 @@ function OnUse_Bed( furniture )
     furniture.Parameters["slots_in_use"].SetValue(furniture.Parameters["slots_in_use"].ToFloat() + 1)
 end
 
-function OnRelease_Bed( furniture )
+function OnRelease_Bed( furniture, character )
     furniture.Parameters["slots_in_use"].SetValue(furniture.Parameters["slots_in_use"].ToFloat() - 1)
 end
 

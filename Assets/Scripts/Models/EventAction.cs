@@ -121,7 +121,7 @@ public class EventAction : IXmlSerializable
     /// Fire the event named actionName, resulting in all lua functions being called.
     /// </summary>
     /// <param name="actionName">Name of the action being triggered.</param>
-    /// <param name="args">Arguments</param>
+    /// <param name="args">Arguments for LUA.</param>
     public void Trigger(string actionName, params object[] args)
     {
         if (!actionsList.ContainsKey(actionName) || actionsList[actionName] == null)

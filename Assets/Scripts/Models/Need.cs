@@ -192,7 +192,7 @@ public class Need
     {
         if (Furniture != null)
         {
-            Furniture.EventActions.Trigger("OnRelease", Furniture);
+            Furniture.EventActions.Trigger("OnRelease", Furniture, character);
         }
 
         Amount -= restoreNeedAmount;
