@@ -31,8 +31,10 @@ public class Ship
     private List<ShipStorage> storages;
     private string[,] tileTypes;
     private string[,] furnitureTypes;
+
     private ShipState state;
     private Vector2 position;
+    private Vector2 destination;
 
     public Ship()
     {
@@ -127,6 +129,38 @@ public class Ship
                 }
             }
         }
+    }
+
+    public Vector2 Destination
+    {
+        get
+        {
+            return destination;
+        }
+
+        set
+        {
+            if (destination != value)
+            {
+                destination = value;
+                if (ShipChanged != null)
+                {
+                    ShipChanged(this);
+                }
+            }
+        }
+    }
+
+    public void SetDestination(float x, float y)
+    {
+        Destination = new Vector2(x,y);
+    }
+
+    public void Update(float deltaTime)
+    {
+        Vector2 direction = destination - position;
+        float distance = 1f * deltaTime;
+        Position += Vector2.ClampMagnitude(direction, distance);
     }
 
     public void ReadXmlPrototype(XmlReader parentReader)

@@ -685,6 +685,7 @@ function Berth_SummonShip(furniture, character)
     end
     
     ship = World.Current.shipManager.AddShip("essentia", 0, 0)
+    ship.SetDestination(furniture.Tile.X, furniture.Tile.Y)
 end
 
 function Berth_DismissShip(furniture, character)

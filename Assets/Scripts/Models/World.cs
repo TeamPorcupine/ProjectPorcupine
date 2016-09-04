@@ -182,6 +182,7 @@ public class World : IXmlSerializable
         // Progress temperature modelling
         temperature.Update();
         PowerNetwork.Update(deltaTime);
+        shipManager.Update(deltaTime);
     }
 
     public Character CreateCharacter(Tile t)
