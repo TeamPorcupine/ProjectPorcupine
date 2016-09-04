@@ -29,7 +29,6 @@ public class ShipSpriteController : BaseSpriteController<Ship>
         objectGameObjectMap.Add(ship, ship_go);
 
         ship_go.name = "Ship";
-        //// ship_go.transform.position = new Vector3(c.X, c.Y, c.Z);
         ship_go.transform.SetParent(objectParent.transform, true);
 
         SpriteRenderer sr = ship_go.AddComponent<SpriteRenderer>();
