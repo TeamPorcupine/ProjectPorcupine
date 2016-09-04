@@ -19,7 +19,7 @@ using UnityEngine;
 /// is a list of LUA function that are registered and will be called once the event with that name is fired.
 /// </summary>
 [MoonSharpUserData]
-public class EventAction : IXmlSerializable
+public class EventActions : IXmlSerializable
 {
     /// <summary>
     /// Stores a list of LUA functions for each type of event (eventName). All will be called at once.
@@ -30,9 +30,9 @@ public class EventAction : IXmlSerializable
     /// Used to transfer registere actions to new object.
     /// </summary>
     /// <returns>A new object copy of this.</returns>
-    public EventAction Clone()
+    public EventActions Clone()
     {
-        EventAction evt = new EventAction();
+        EventActions evt = new EventActions();
 
         evt.actionsList = new Dictionary<string, List<string>>(actionsList);
 
