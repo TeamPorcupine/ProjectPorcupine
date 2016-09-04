@@ -18,26 +18,8 @@ public class InventoryCommon
     public void ReadXmlPrototype(XmlReader reader_parent)
     {
         objectType = reader_parent.GetAttribute("objectType");
-
-        XmlReader reader = reader_parent.ReadSubtree();
-
-        while (reader.Read())
-        {
-            switch (reader.Name)
-            {
-                case "maxStackSize":
-                    reader.Read();
-                    maxStackSize = reader.ReadContentAsInt();
-                    break;
-                case "basePrice":
-                    reader.Read();
-                    basePrice = reader.ReadContentAsFloat();
-                    break;
-                case "category":
-                    reader.Read();
-                    category = reader.ReadContentAsString();
-                    break;
-            }
-        }
+        maxStackSize = int.Parse(reader_parent.GetAttribute("maxStackSize") ?? "50");
+        basePrice = float.Parse(reader_parent.GetAttribute("basePrice") ?? "1");
+        category = reader_parent.GetAttribute("category");
     }
 }
