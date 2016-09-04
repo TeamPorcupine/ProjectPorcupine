@@ -83,7 +83,7 @@ public class AutosaveController
         SaveWorld(filePath);
     }
 
-    // FIXME: This is mostly just copied from DiologBoxSaveGame.cs
+    // FIXME: This is mostly just copied from DialogBoxSaveGame.cs
     // Both functions could probably be mostly refactored onto World???
     private void SaveWorld(string filePath)
     {
