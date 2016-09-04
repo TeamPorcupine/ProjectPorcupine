@@ -12,9 +12,6 @@ using UnityEngine;
 
 public class ShipManager
 {
-    public delegate void ShipEventHandler(Ship ship);
-    public event ShipEventHandler ShipCreated, ShipRemoved;
-
     private List<Ship> shipsInWorld;
 
     public ShipManager()
@@ -22,9 +19,15 @@ public class ShipManager
         shipsInWorld = new List<Ship>();
     }
 
+    public delegate void ShipEventHandler(Ship ship);
+
+    public event ShipEventHandler ShipCreated, ShipRemoved;
+
     public Ship AddShip(string type, Vector2 position)
     {
         Ship ship = new Ship(PrototypeManager.Ship.GetPrototype(type));
+        ship.Position = position;
+
         shipsInWorld.Add(ship);
 
         if (ShipCreated != null)
