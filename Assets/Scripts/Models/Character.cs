@@ -366,6 +366,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         writer.WriteAttributeString("name", name);
         writer.WriteAttributeString("X", CurrTile.X.ToString());
         writer.WriteAttributeString("Y", CurrTile.Y.ToString());
+        writer.WriteAttributeString("Z", CurrTile.Z.ToString());
 
         // TODO: It is more verbose, but easier to parse if these are represented as key-value elements rather than a string with delimeters.
         string needString = string.Empty;
