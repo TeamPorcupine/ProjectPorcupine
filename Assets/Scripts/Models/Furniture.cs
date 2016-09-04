@@ -313,7 +313,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
             {
                 for (int ypos = y - 1; ypos < y + proto.Height + 1; ypos++)
                 {
-                    Tile tileAt = World.Current.GetTileAt(xpos, ypos);
+                    Tile tileAt = World.Current.GetTileAt(xpos, ypos, tile.Z);
                     if (tileAt != null && tileAt.Furniture != null && tileAt.Furniture.Changed != null)
                     {
                         tileAt.Furniture.Changed(tileAt.Furniture);
@@ -687,7 +687,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
             {
                 for (int ypos = y - 1; ypos < y + fheight + 1; ypos++)
                 {
-                    Tile t = World.Current.GetTileAt(xpos, ypos);
+                    Tile t = World.Current.GetTileAt(xpos, ypos, Tile.Z);
                     if (t != null && t.Furniture != null && t.Furniture.Changed != null)
                     {
                         t.Furniture.Changed(t.Furniture);
@@ -702,12 +702,12 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
     public Tile GetJobSpotTile()
     {
-        return World.Current.GetTileAt(Tile.X + (int)JobSpotOffset.x, Tile.Y + (int)JobSpotOffset.y);
+        return World.Current.GetTileAt(Tile.X + (int)JobSpotOffset.x, Tile.Y + (int)JobSpotOffset.y, Tile.Z);
     }
 
     public Tile GetSpawnSpotTile()
     {
-        return World.Current.GetTileAt(Tile.X + (int)jobSpawnSpotOffset.x, Tile.Y + (int)jobSpawnSpotOffset.y);
+        return World.Current.GetTileAt(Tile.X + (int)jobSpawnSpotOffset.x, Tile.Y + (int)jobSpawnSpotOffset.y, Tile.Z);
     }
 
     // Returns true if furniture has typeTag, though simple, the intent is to separate the interaction with
@@ -812,7 +812,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         {
             for (int y_off = tile.Y; y_off < tile.Y + Height; y_off++)
             {
-                Tile t2 = World.Current.GetTileAt(x_off, y_off);
+                Tile t2 = World.Current.GetTileAt(x_off, y_off, tile.Z);
 
                 // Check to see if there is furniture which is replaceable
                 bool isReplaceable = false;
