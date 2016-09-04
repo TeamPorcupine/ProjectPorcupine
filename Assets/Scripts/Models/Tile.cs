@@ -139,7 +139,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
 
     public bool UnplaceFurniture()
     {
-        // Just uninstalling.  FIXME:  What if we have a multi-tile furniture?
+        // Just uninstalling.
         if (Furniture == null)
         {
             return false;
