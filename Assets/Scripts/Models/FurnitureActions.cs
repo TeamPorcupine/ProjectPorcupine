@@ -48,7 +48,7 @@ public class FurnitureActions
         }
     }
 
-    public static void CallFunctionsWithFurniture<T>(string[] functionNames, params object[] args)
+    public static void CallFunctionsWithFurniture(string[] functionNames, params object[] args)
     {
         foreach (string fn in functionNames)
         {           

@@ -130,7 +130,7 @@ public class EventAction : IXmlSerializable
         }
         else
         {
-            FurnitureActions.CallFunctionsWithFurniture<Furniture>(actionsList[actionName].ToArray(), args);
+            FurnitureActions.CallFunctionsWithFurniture(actionsList[actionName].ToArray(), args);
         }
     }
 }
