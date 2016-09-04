@@ -32,6 +32,7 @@ public class Ship
     private List<ShipStorage> storages;
     private string[,] tileTypes;
     private string[,] furnitureTypes;
+
     private ShipState state;
     private Vector2 position;
     private Vector2 destination;
