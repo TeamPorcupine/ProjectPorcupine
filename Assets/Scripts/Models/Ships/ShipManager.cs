@@ -15,10 +15,12 @@ using UnityEngine;
 public class ShipManager
 {
     private List<Ship> shipsInWorld;
+    private Dictionary<Furniture, Ship> berthShipMap;
 
     public ShipManager()
     {
         shipsInWorld = new List<Ship>();
+        berthShipMap = new Dictionary<Furniture, Ship>();
     }
 
     public delegate void ShipEventHandler(Ship ship);
@@ -35,7 +37,7 @@ public class ShipManager
 
     public Ship AddShip(string type, float x, float y)
     {
-        Ship ship = new Ship(PrototypeManager.Ship.GetPrototype(type));
+        Ship ship = new Ship(this, PrototypeManager.Ship.GetPrototype(type));
         ship.Position = new Vector2(x, y);
 
         shipsInWorld.Add(ship);
@@ -56,5 +58,37 @@ public class ShipManager
         {
             ShipRemoved(ship);
         }
+    }
+
+    public bool IsOccupied(Furniture berth)
+    {
+        return berthShipMap.ContainsKey(berth) && berthShipMap[berth] != null;
+    }
+
+    public Ship GetBerthedShip(Furniture berth)
+    {
+        return berthShipMap.ContainsKey(berth) ? berthShipMap[berth] : null;
+    }
+
+    public void BerthShip(Furniture berth, Ship ship)
+    {
+        ship.UnwrapAtBerth();
+        ship.State = ShipState.BERTHED;
+        berthShipMap[berth] = ship;
+        //// berth.EventActions.Trigger("OnBerth", berth);
+    }
+
+    public void DeberthShip(Furniture berth)
+    {
+        if (berthShipMap.ContainsKey(berth) == false || berthShipMap[berth] == null)
+        {
+            Debug.ULogErrorChannel("Ships", "No ship berthed here: " + berth.Tile.ToString());
+            return;
+        }
+
+        berthShipMap[berth].State = ShipState.TRANSIT;
+        berthShipMap[berth].Wrap();
+        berthShipMap[berth] = null;
+        //// berth.EventActions.Trigger("OnDeberth", berth);
     }
 }

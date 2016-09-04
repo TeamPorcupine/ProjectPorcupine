@@ -524,7 +524,7 @@
       <Param name="occupied" value="0" />
     </Params>
     
-    <ContextMenuAction FunctionName="Berth_SummonShip" Text="Summon Ship" RequiereCharacterSelected="false" />
+    <Action event="OnUpdate" functionName="Berth_TestSummoning" />
 
     <LocalizationCode>furn_berth</LocalizationCode>
     <UnlocalizedDescription>furn_berth_desc</UnlocalizedDescription>

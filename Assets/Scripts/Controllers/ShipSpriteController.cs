@@ -43,6 +43,15 @@ public class ShipSpriteController : BaseSpriteController<Ship>
     {
         GameObject ship_go = objectGameObjectMap[ship];
         ship_go.transform.position = new Vector3(ship.Position.x, ship.Position.y, 0);
+
+        if (ship.State == ShipState.BERTHED)
+        {
+            ship_go.GetComponent<SpriteRenderer>().enabled = false;
+        }
+        else
+        {
+            ship_go.GetComponent<SpriteRenderer>().enabled = true;
+        }
     }
 
     protected override void OnRemoved(Ship ship)
