@@ -9,12 +9,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
 using ProjectPorcupine.Localization;
-using System.Text;
 using UnityEngine;
 
 public enum Facing
@@ -78,7 +78,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     private Color characterColor;
     private Color characterUniformColor;
     private Color characterSkinColor;
-    
+
     /// Use only for serialization
     public Character()
     {
@@ -93,12 +93,6 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         characterUniformColor = uniformColor;
         characterSkinColor = skinColor;
         InitializeCharacterValues();
-    }
-
-    private void InitializeCharacterValues()
-    {
-        LoadNeeds();
-        LoadStats();
     }
 
     /// A callback to trigger when character information changes (notably, the position).
@@ -135,6 +129,23 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             }
 
             return Mathf.Lerp(CurrTile.Y, nextTile.Y, movementPercentage);
+        }
+    }
+
+    /// <summary>
+    /// Returns a float representing the Character's Z position, which can
+    /// be part-way between two tiles during movement.
+    /// </summary>
+    public float Z
+    {
+        get
+        {
+            if (nextTile == null)
+            {
+                return CurrTile.Z;
+            }
+
+            return Mathf.Lerp(CurrTile.Z, nextTile.Z, movementPercentage);
         }
     }
 
@@ -177,7 +188,8 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     /// Our job, if any.
     public Job MyJob
     {
-        get; protected set;
+        get;
+        protected set;
     }
 
     public bool IsSelected
@@ -295,7 +307,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         DestTile = MyJob.tile;
 
         // If the dest tile does not have neighbours that are walkable it's very likable that they can't be walked to.
-        if (DestTile.GetNeighbours().Any((tile) => { return tile.MovementCost > 0; }) == false)
+        if (DestTile.HasWalkableNeighbours() == false)
         {
             Debug.ULogChannel("Character", "No neighbouring floor tiles! Abandoning job.");
             AbandonJob(false);
@@ -354,6 +366,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         writer.WriteAttributeString("name", name);
         writer.WriteAttributeString("X", CurrTile.X.ToString());
         writer.WriteAttributeString("Y", CurrTile.Y.ToString());
+        writer.WriteAttributeString("Z", CurrTile.Z.ToString());
 
         // TODO: It is more verbose, but easier to parse if these are represented as key-value elements rather than a string with delimeters.
         string needString = string.Empty;
@@ -374,7 +387,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         writer.WriteAttributeString("rSkin", characterSkinColor.r.ToString());
         writer.WriteAttributeString("bSkin", characterSkinColor.b.ToString());
         writer.WriteAttributeString("gSkin", characterSkinColor.g.ToString());
-        
+
         writer.WriteStartElement("Stats");
         foreach (Stat stat in stats.Values)
         {
@@ -497,6 +510,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         return MyJob.JobDescription;
     }
+
     #endregion
 
     public Stat GetStat(string statType)
@@ -571,7 +585,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         if (needPercent > 50 && needPercent < 100 && need.RestoreNeedFurn != null)
         {
-            if(World.Current.CountFurnitureType(need.RestoreNeedFurn.ObjectType) > 0)
+            if (World.Current.CountFurnitureType(need.RestoreNeedFurn.ObjectType) > 0)
             {
                 MyJob = new Job(null, need.RestoreNeedFurn.ObjectType, need.CompleteJobNorm, need.RestoreNeedTime, null, Job.JobPriority.High, false, true, false);
             }
@@ -620,7 +634,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         // If the dest tile does not have neighbours that are walkable it's very likely that they can't be walked to
         if (DestTile != null)
         {
-            if (DestTile.GetNeighbours().Any((tile) => { return tile.MovementCost > 0; }) == false)
+            if (DestTile.HasWalkableNeighbours() == false)
             {
                 Debug.ULogChannel("Character", "No neighbouring floor tiles! Abandoning job.");
                 AbandonJob(false);
@@ -756,8 +770,8 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                     // We are at the job's site, so drop the inventory
                     World.Current.inventoryManager.PlaceInventory(MyJob, inventory);
                     MyJob.DoWork(0); // This will call all cbJobWorked callbacks, because even though
-                                     // we aren't progressing, it might want to do something with the fact
-                                     // that the requirements are being met.
+                    // we aren't progressing, it might want to do something with the fact
+                    // that the requirements are being met.
 
                     // at this point we should dump anything in our inventory
                     DumpExcessInventory();
@@ -816,10 +830,10 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                     {
                         desired = MyJob.inventoryRequirements[itemType];
                         newPath = World.Current.inventoryManager.GetPathToClosestInventoryOfType(
-                                             desired.objectType,
-                                             CurrTile,
-                                             desired.maxStackSize - desired.StackSize,
-                                             MyJob.canTakeFromStockpile);
+                            desired.objectType,
+                            CurrTile,
+                            desired.maxStackSize - desired.StackSize,
+                            MyJob.canTakeFromStockpile);
 
                         if (newPath == null || newPath.Length() < 1)
                         {
@@ -863,7 +877,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     {
         bool destHasInventory = pathAStar != null && pathAStar.EndTile() != null && pathAStar.EndTile().Inventory != null;
         return destHasInventory &&
-                !(pathAStar.EndTile().Furniture != null && (MyJob.canTakeFromStockpile == false && pathAStar.EndTile().Furniture.IsStockpile() == true));
+        !(pathAStar.EndTile().Furniture != null && (MyJob.canTakeFromStockpile == false && pathAStar.EndTile().Furniture.IsStockpile() == true));
     }
 
     /// <summary>
@@ -1050,5 +1064,11 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 World.Current.OnInventoryCreated += OnInventoryCreated;
             }
         }
+    }
+
+    private void InitializeCharacterValues()
+    {
+        LoadNeeds();
+        LoadStats();
     }
 }

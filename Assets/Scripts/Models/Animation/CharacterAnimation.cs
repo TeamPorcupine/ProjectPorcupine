@@ -56,6 +56,8 @@ namespace Animation
         private FrameAnimation currentAnimation;
         private AnimationType currentAnimationType;
 
+        private float lastCharYPosition = 0;
+
         public CharacterAnimation(Character c, SpriteRenderer r)
         {
             character = c;
@@ -63,28 +65,30 @@ namespace Animation
 
             Sprite[] sprites =
                 {
-                SpriteManager.current.GetSprite("Character", "IdleBack"),
-                SpriteManager.current.GetSprite("Character", "IdleSide"),
-                SpriteManager.current.GetSprite("Character", "IdleFront"),
-                SpriteManager.current.GetSprite("Character", "WalkBack1"),
-                SpriteManager.current.GetSprite("Character", "WalkBack2"),
-                SpriteManager.current.GetSprite("Character", "WalkSide1"),
-                SpriteManager.current.GetSprite("Character", "WalkSide2"),
-                SpriteManager.current.GetSprite("Character", "WalkFront1"),
-                SpriteManager.current.GetSprite("Character", "WalkFront2"),
+                    SpriteManager.current.GetSprite("Character", "IdleBack"),
+                    SpriteManager.current.GetSprite("Character", "IdleSide"),
+                    SpriteManager.current.GetSprite("Character", "IdleFront"),
+                    SpriteManager.current.GetSprite("Character", "WalkBack1"),
+                    SpriteManager.current.GetSprite("Character", "WalkBack2"),
+                    SpriteManager.current.GetSprite("Character", "WalkSide1"),
+                    SpriteManager.current.GetSprite("Character", "WalkSide2"),
+                    SpriteManager.current.GetSprite("Character", "WalkFront1"),
+                    SpriteManager.current.GetSprite("Character", "WalkFront2"),
 
-                SpriteManager.current.GetSprite("Character", "2IdleBack"),
-                SpriteManager.current.GetSprite("Character", "2IdleSide"),
-                SpriteManager.current.GetSprite("Character", "2IdleFront"),
-                SpriteManager.current.GetSprite("Character", "2WalkBack1"),
-                SpriteManager.current.GetSprite("Character", "2WalkBack2"),
-                SpriteManager.current.GetSprite("Character", "2WalkSide1"),
-                SpriteManager.current.GetSprite("Character", "2WalkSide2"),
-                SpriteManager.current.GetSprite("Character", "2WalkFront1"),
-                SpriteManager.current.GetSprite("Character", "2WalkFront2")
-            };
+                    SpriteManager.current.GetSprite("Character", "2IdleBack"),
+                    SpriteManager.current.GetSprite("Character", "2IdleSide"),
+                    SpriteManager.current.GetSprite("Character", "2IdleFront"),
+                    SpriteManager.current.GetSprite("Character", "2WalkBack1"),
+                    SpriteManager.current.GetSprite("Character", "2WalkBack2"),
+                    SpriteManager.current.GetSprite("Character", "2WalkSide1"),
+                    SpriteManager.current.GetSprite("Character", "2WalkSide2"),
+                    SpriteManager.current.GetSprite("Character", "2WalkFront1"),
+                    SpriteManager.current.GetSprite("Character", "2WalkFront2")
+                };
             SetSprites(sprites);
         }
+
+        public int CurrentSortingOrder { get; private set; }
 
         public void SetSprites(Sprite[] s)
         {
@@ -160,6 +164,15 @@ namespace Animation
                 ShowSprite(currentAnimation.CurrentIndex);
                 prevFrameIndex = currentAnimation.CurrentIndex;
             }
+
+            // if there was change in Y position, update the sorting order
+            if (lastCharYPosition - character.Y != 0f)
+            {
+                CurrentSortingOrder = Mathf.RoundToInt(character.Y * 100f) * -1;
+                renderer.sortingOrder = CurrentSortingOrder;
+            }
+
+            lastCharYPosition = character.Y;
         }
 
         private void ShowSprite(int s)
