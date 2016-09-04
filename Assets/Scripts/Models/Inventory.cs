@@ -18,15 +18,15 @@ using MoonSharp.Interpreter;
 [MoonSharpUserData]
 public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
 {
-    public string objectType = "Steel Plate";
-    public int maxStackSize = 50;
-    public float basePrice = 1f;
-    public string category = "inv_cat_none";
-    public Tile tile;
-    public Character character;
+    public string objectType { get; set; }
+    public int maxStackSize  { get; set; }
+    public float basePrice { get; set; }
+    public string category { get; set; }
+    public Tile tile { get; set; }
+    public Character character { get; set; }
 
     // Should this inventory be allowed to be picked up for completing a job?
-    public bool locked = false;
+    public bool locked { get; set; }
 
     protected int stackSize = 1;
 
