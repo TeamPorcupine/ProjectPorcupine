@@ -10,9 +10,9 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using NUnit.Framework;
+using ProjectPorcupine.PowerNetwork;
 
-namespace ProjectPorcupine.PowerNetwork.Test
-{
+
     public class PowerGridTest
     {
         private Grid grid;
@@ -293,4 +293,3 @@ namespace ProjectPorcupine.PowerNetwork.Test
             Assert.IsTrue(accumulator2.AccumulatedPower.AreEqual(5.0f), string.Format("Expected {0} Actual {1}", 5.0f, accumulator2.AccumulatedPower));
         }
     }
-}

@@ -10,9 +10,9 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using NUnit.Framework;
+using ProjectPorcupine.PowerNetwork;
 
-namespace ProjectPorcupine.PowerNetwork.Test
-{
+
     public class PowerNetworkTest
     {
         private PowerNetwork powerNetwork;
@@ -123,4 +123,4 @@ namespace ProjectPorcupine.PowerNetwork.Test
             Assert.IsTrue(powerNetwork.HasPower(firstPowerConsumer));
         }
     }
-}
+
