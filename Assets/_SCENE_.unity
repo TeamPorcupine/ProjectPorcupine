@@ -130,7 +130,7 @@ Camera:
   m_Depth: -100
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 0
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -181,9 +181,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GameTickPerSecond: 5
-  IsModal: 0
   inventoryUI: {fileID: 191780, guid: d1e1fcd802f51614595cb99879a132a5, type: 2}
   circleCursorPrefab: {fileID: 110048, guid: 782976062f887844ca858482495fcdbd, type: 2}
+  IsModal: 0
 --- !u!4 &179601669
 Transform:
   m_ObjectHideFlags: 0
@@ -1396,10 +1396,10 @@ MonoBehaviour:
   leftBottomCorner: {x: -0.5, y: -0.5, z: 1}
   transparency: 0.8
   updateInterval: 5
-  xPixelsPerTile: 20
-  yPixelsPerTile: 20
-  xSize: 10
-  ySize: 10
+  pixelsPerTileX: 20
+  pixelsPerTileY: 20
+  sizeX: 10
+  sizeY: 10
   currentOverlay: 
   xmlFileName: overlay_prototypes.xml
   LUAFileName: overlay_functions.lua
