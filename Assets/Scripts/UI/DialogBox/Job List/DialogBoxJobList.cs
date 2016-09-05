@@ -16,6 +16,10 @@ using UnityEngine.UI;
 
 public class DialogBoxJobList : DialogBox
 {
+    public GameObject JobListItemPrefab;
+
+    public Transform JobList;
+
     // These are used as an update period to keep the list updated, and avoid spam
     // (We already have a lot of FPS issues...)
     // Also, it seems that if this "sleep" period isn't here, you wouldn't be able to
@@ -24,10 +28,6 @@ public class DialogBoxJobList : DialogBox
     private int waitPeriod = 5;
 
     private int currentWait = 0;
-
-    public GameObject JobListItemPrefab { get; set; }
-
-    public Transform JobList { get; set; }
 
     public override void ShowDialog()
     {

@@ -398,8 +398,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 197f01a6bec442e46b01f3106926a68f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jobListItemPrefab: {fileID: 117544, guid: 020e4103387f30647b8047c6a75b5477, type: 2}
-  jobList: {fileID: 224000014081008800}
+  JobListItemPrefab: {fileID: 117544, guid: 020e4103387f30647b8047c6a75b5477, type: 2}
+  JobList: {fileID: 224000014081008800}
 --- !u!114 &114000012429409044
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -25,13 +25,38 @@ public class JobListEvents : MonoBehaviour
     /// </summary>
     public void DeleteSelf()
     {
+        string charName = GetNameFromItem();
+        
+        World.Current.GetCharacterFromName(charName).AbandonJob(true);
+        JobListItem.SetParent(null);
+        GameObject.Destroy(JobListItem.gameObject);
+    }
+
+    /// <summary>
+    /// When the item is clicked, it will center the character that is doing
+    /// the job.
+    /// </summary>
+    public void CenterCharacter()
+    {
+        string charName = GetNameFromItem();
+        Vector3 charPosition;
+        Character currentCharacter = World.Current.GetCharacterFromName(charName);
+
+        charPosition = new Vector3(currentCharacter.X, currentCharacter.Y, -10); 
+        GameObject.Find("Main Camera").transform.position = charPosition;
+    }
+
+    /// <summary>
+    /// Util function to return the name of the character that's in the item.
+    /// </summary>
+    /// <returns>The character's name.</returns>
+    private string GetNameFromItem()
+    {
         string[] separators = new string[1];
         separators[0] = " - ";
 
         // TODO: Find a better selector.
         string[] charName = jobText.text.Split(separators, 0);
-        World.Current.GetCharacterFromName(charName[0]).AbandonJob(true);
-        JobListItem.SetParent(null);
-        GameObject.Destroy(JobListItem.gameObject);
+        return charName[0];
     }
 }
