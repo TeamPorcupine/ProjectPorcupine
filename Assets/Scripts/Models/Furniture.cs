@@ -342,9 +342,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
     public void Update(float deltaTime)
     {
-        if (PowerConnection.IsPowerConsumer && HasPower() == false)
+        if (PowerConnection != null && PowerConnection.IsPowerConsumer && HasPower() == false)
         {
-            if ( JobCount() > 0)
+            if (JobCount() > 0)
             {
                 CancelJobs();
             }
