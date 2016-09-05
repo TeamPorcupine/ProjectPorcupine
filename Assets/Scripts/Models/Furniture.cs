@@ -8,6 +8,7 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
@@ -15,7 +16,6 @@ using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
 using Power;
 using UnityEngine;
-using System.Text;
 
 /// <summary>
 /// InstalledObjects are things like walls, doors, and furniture (e.g. a sofa).
@@ -426,6 +426,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                 }
             }
         }
+
         return true;
     }
 
@@ -777,6 +778,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         {
             atmosphere.AppendLine(string.Format("Gas: {0}, Needs Value? {1}, Minimum: {2}", gas.name, gas.hasValue, gas.min));
         }
+
         return UnlocalizedDescription + atmosphere.ToString();
     }
 

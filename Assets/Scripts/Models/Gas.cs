@@ -40,6 +40,7 @@ public class Gas
                 {
                     gas.hasValue = false;
                 }
+
                 if (float.TryParse(reader.GetAttribute("min"), out gas.min) == false)
                 {
                     gas.min = 0f;
