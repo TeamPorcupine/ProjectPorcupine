@@ -42,6 +42,8 @@ public class WorldGenerator
         int offsetX = Random.Range(0, 10000);
         int offsetY = Random.Range(0, 10000);
 
+        int minEdgeDistance = 5;
+
         int sumOfAllWeightedChances = 0;
         foreach (Inventory resource in resources)
         {
@@ -83,52 +85,60 @@ public class WorldGenerator
             {
                 for (int y = 0; y < height; y++)
                 {
-                        float noiseValue = Mathf.PerlinNoise((x + offsetX) / (width * asteroidNoiseScale * zScale), (y + offsetY) / (height * asteroidNoiseScale * zScale));
-                        if (noiseValue >= asteroidNoiseThreshhold && !IsStartArea(x, y, world))
+                    float noiseValue = Mathf.PerlinNoise((x + offsetX) / (width * asteroidNoiseScale * zScale), (y + offsetY) / (height * asteroidNoiseScale * zScale));
+                    if (noiseValue >= asteroidNoiseThreshhold && !IsStartArea(x, y, world))
+                    {
+                        Tile t = world.GetTileAt(x, y, z);
+
+                        if (t.X < minEdgeDistance || t.Y < minEdgeDistance ||
+                              World.Current.Width - t.X <= minEdgeDistance ||
+                              World.Current.Height - t.Y <= minEdgeDistance )
                         {
-                            Tile t = world.GetTileAt(x, y, z);
-                            t.Type = AsteroidFloorType;
+                            continue;
+                        }
 
-                            if (Random.value <= asteroidResourceChance && t.Furniture == null)
+                        t.Type = AsteroidFloorType;
+
+                        if (Random.value <= asteroidResourceChance && t.Furniture == null)
+                        {
+                            if (resources.Length > 0)
                             {
-                                if (resources.Length > 0)
+                                int currentweight = 0;
+                                int randomweight = Random.Range(0, sumOfAllWeightedChances);
+
+                                for (int i = 0; i < resources.Length; i++)
                                 {
-                                    int currentweight = 0;
-                                    int randomweight = Random.Range(0, sumOfAllWeightedChances);
+                                    Inventory inv = resources[i];
 
-                                    for (int i = 0; i < resources.Length; i++)
+                                    int weight = inv.StackSize; // In stacksize the weight was cached
+                                    currentweight += weight;
+
+                                    if (randomweight <= currentweight)
                                     {
-                                        Inventory inv = resources[i];
-
-                                        int weight = inv.StackSize; // In stacksize the weight was cached
-                                        currentweight += weight;
-
-                                        if (randomweight <= currentweight)
+                                        if (inv.objectType == "Raw Iron" || inv.objectType == "Uranium")
                                         {
-                                            if (inv.objectType == "Raw Iron" || inv.objectType == "Uranium")
-                                            {
-                                                Furniture mine = PrototypeManager.Furniture.GetPrototype("mine").Clone();
-                                                mine.Parameters["ore_type"].SetValue(inv.objectType.ToString());
-                                                world.PlaceFurniture(mine, t, false);
-                                                break;
-                                            }
-
-                                            int stackSize = Random.Range(resourceMin[i], resourceMax[i]);
-
-                                            if (stackSize > inv.maxStackSize)
-                                            {
-                                                stackSize = inv.maxStackSize;
-                                            }
-
-                                            world.inventoryManager.PlaceInventory(t, new Inventory(inv.objectType, inv.maxStackSize, stackSize));
+                                            Furniture mine = PrototypeManager.Furniture.GetPrototype("mine").Clone();
+                                            mine.Parameters["ore_type"].SetValue(inv.objectType.ToString());
+                                            world.PlaceFurniture(mine, t, false);
                                             break;
                                         }
+
+                                        int stackSize = Random.Range(resourceMin[i], resourceMax[i]);
+
+                                        if (stackSize > inv.maxStackSize)
+                                        {
+                                            stackSize = inv.maxStackSize;
+                                        }
+
+                                        world.inventoryManager.PlaceInventory(t, new Inventory(inv.objectType, inv.maxStackSize, stackSize));
+                                        break;
                                     }
                                 }
                             }
                         }
                     }
                 }
+            }
         }
     }
     
