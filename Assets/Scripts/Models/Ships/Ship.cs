@@ -22,7 +22,7 @@ public enum BerthDirection
 
 public enum ShipState
 {
-    TRANSIT, BERTHED
+    WRAPPED, UNWRAPPED
 }
 
 [MoonSharpUserData]
@@ -38,6 +38,10 @@ public class Ship
     private Vector2 destination;
     private Furniture berth;
 
+    /// <summary>
+    /// Constructs a blank prototype object of the <see cref="Ship"/> class.
+    /// Only type-defning variables are initialised. Other variables are not safe to use
+    /// </summary>
     public Ship()
     {
         ShipType = null;
@@ -51,6 +55,13 @@ public class Ship
         furnitureTypes = null;
     }
 
+    /// <summary>
+    /// Constructs a <see cref="Ship"/> from a prototype. All type-defining variables are copied over.
+    /// The prototype and the instance share no references to objects.
+    /// In-game changing variables are initialised to default values.
+    /// </summary>
+    /// <param name="shipManager">The ship manager that will serve as interface for the ship.</param>
+    /// <param name="proto">The template prototype that this ship is based on.</param>
     public Ship(ShipManager shipManager, Ship proto)
     {
         this.shipManager = shipManager;
@@ -76,24 +87,54 @@ public class Ship
             }
         }
 
-        State = ShipState.TRANSIT;
+        State = ShipState.WRAPPED;
         Position = Vector2.zero;
     }
 
+    /// <summary>
+    /// Called when a change is made to the ship's instance variables
+    /// </summary>
     public event ShipManager.ShipEventHandler ShipChanged;
 
+    /// <summary>
+    /// The type of the ship. All ships with the same type share their type-specific variables.
+    /// </summary>
     public string ShipType { get; private set; }
 
+    /// <summary>
+    /// The width of the ship in tiles when unwrapped.
+    /// </summary>
     public int Width { get; private set; }
 
+    /// <summary>
+    /// The height of the ship in tiles when unwrapped.
+    /// </summary>
     public int Height { get; private set; }
 
+    /// <summary>
+    /// The X coordinate of the berth point. The berth point will overlap with the
+    /// center of the berth furniture when the ship is berthed, so it will usually be
+    /// outside the ship's tile space.
+    /// </summary>
     public int BerthPointX { get; private set; }
 
+    /// <summary>
+    /// The Y coordinate of the berth point. The berth point will overlap with the
+    /// center of the berth furniture when the ship is berthed, so it will usually be
+    /// outside the ship's tile space.
+    /// </summary>
     public int BerthPointY { get; private set; }
 
+    /// <summary>
+    /// The direction the ship is berthed in. This is one of the 4 cardinal directions.
+    /// Keep in mind the ship will be positioned opposite to this direction.
+    /// </summary>
     public BerthDirection BerthDirection { get; private set; }
 
+    /// <summary>
+    /// The state the ship is in. This is either WRAPPED, meaning the ship is in its sprite form, or
+    /// UNWRAPPED, meaning it exists as a collection of tiles in the world.
+    /// </summary>
     public ShipState State
     {
         get
@@ -114,6 +155,9 @@ public class Ship
         }
     }
 
+    /// <summary>
+    /// The world position of the ship.
+    /// </summary>
     public Vector2 Position
     {
         get
@@ -134,6 +178,9 @@ public class Ship
         }
     }
 
+    /// <summary>
+    /// The destination in world space of the ship.
+    /// </summary>
     public Vector2 Destination
     {
         get
@@ -154,6 +201,10 @@ public class Ship
         }
     }
 
+    /// <summary>
+    /// The destination berth of the ship. A value of null indicates the ship has a destination somewhere else
+    /// in the world and shouldn't berth.
+    /// </summary>
     public Furniture Berth
     {
         get
@@ -171,25 +222,45 @@ public class Ship
         }
     }
 
+    /// <summary>
+    /// Sets the destination to an arbitrary world space location
+    /// </summary>
     public void SetDestination(float x, float y)
     {
         Berth = null;
         Destination = new Vector2(x, y);
     }
 
+    /// <summary>
+    /// Sets the destination to a berth. Should not be called with null value.
+    /// If cancelling intention to berth, use `ship.Berth = null` directly.
+    /// </summary>
+    /// <param name="goalBerth">Goal berth.</param>
     public void SetDestination(Furniture goalBerth)
     {
+        if (goalBerth == null)
+        {
+            Debug.ULogError("Ships", "Destination berth should not be set to null this way. Use Berth property or SetDestination(x,y) instead.");
+            return;
+        }
         Berth = goalBerth;
         Destination = new Vector2(goalBerth.Tile.X, goalBerth.Tile.Y);
     }
 
+    /// <summary>
+    /// If unwrapped, the ship does nothing. If wrapped it will move to its
+    /// destination with a fixed speed of 5 tiles per seoond. If it reaches its destination
+    /// it is removed if it an arbitrary position (assumed to be the edge of the map) or berth
+    /// if it was heading to a berth.
+    /// </summary>
+    /// <param name="deltaTime">The time in seconds elapsed since the last update.</param>
     public void Update(float deltaTime)
     {
         switch (State)
         {
-            case ShipState.BERTHED:
+            case ShipState.UNWRAPPED:
                 break;
-            case ShipState.TRANSIT:
+            case ShipState.WRAPPED:
                 Move(deltaTime);
                 if (Berth == null)
                 {
@@ -210,6 +281,12 @@ public class Ship
         }
     }
 
+    /// <summary>
+    /// Unwraps the ship into a collection of tiles according to the types defined in the tile and furniture arrays.
+    /// Tiles are counted from the Berth, so this function should only be called when a destination berth is defined.
+    /// Assumes that these tiles were empty before. The state of the ship is not changed.
+    /// That is handled by <see cref="ShipManager"/>.
+    /// </summary>
     public void UnwrapAtBerth()
     {
         for (int x = 0; x < Width; x++)
@@ -233,6 +310,10 @@ public class Ship
         }
     }
 
+    /// <summary>
+    /// Wraps the ship by turning the affected tiles back into empty tiles.
+    /// Tiles are counted from the Berth, so this function should only be called when a destination berth is defined.
+    /// </summary>
     public void Wrap()
     {
         for (int x = 0; x < Width; x++)
@@ -253,6 +334,10 @@ public class Ship
         }
     }
 
+    /// <summary>
+    /// Reads the xml definition for a <see cref="Ship"/> prototype.
+    /// </summary>
+    /// <param name="parentReader">The parent reader that reads the bigger file.</param>
     public void ReadXmlPrototype(XmlReader parentReader)
     {
         ShipType = parentReader.GetAttribute("type");
@@ -285,15 +370,18 @@ public class Ship
         }
     }
 
+    // Moves the ship by a fixed 5 tiles per second towards its destination, or to its destination if it is within reach.
     private void Move(float deltaTime)
     {
         Vector2 direction = destination - position;
         float distance = 5f * deltaTime;
         Position += Vector2.ClampMagnitude(direction, distance);
     }
-
-    // Gets tile in world that corresponds to the relative coordinates in the ship definition
-    // counted from the berth
+        
+    /// <summary>
+    /// Gets tile in world that corresponds to the relative coordinates in the ship definition
+    /// counted from the berth.
+    /// </summary>
     private Tile GetTile(World world, int x, int y, int z)
     {
         int relative_x = x - BerthPointX;
@@ -325,14 +413,19 @@ public class Ship
                 Debug.ULogErrorChannel("Ships", "Invalid berthing direction: " + BerthDirection);
                 break;
         }
+
         return world.GetTileAt(worldX, worldY, z);
     }
 
+    // 
+    /// <summary>
+    /// Reads storage locations from XML and stores them in the prototype.
+    /// </summary>
+    /// <param name="reader">The XML reader.</param>
     private void ReadXmlStorages(XmlReader reader)
     {
         if (reader.ReadToDescendant("Storage"))
         {
-            // We have at least one tile, so do something with it.
             do
             {
                 int x = int.Parse(reader.GetAttribute("x"));
@@ -344,11 +437,15 @@ public class Ship
         }
     }
 
+    /// <summary>
+    /// Reads Tiles XML tag that defines what tiles the ship occupies when unwrapped 
+    /// and writes them to the tile type array.
+    /// </summary>
+    /// <param name="reader">The XML reader.</param>
     private void ReadXmlTiles(XmlReader reader)
     {
         if (reader.ReadToDescendant("Tile"))
         {
-            // We have at least one tile, so do something with it.
             do
             {
                 int x = int.Parse(reader.GetAttribute("x"));
@@ -359,11 +456,15 @@ public class Ship
         }
     }
 
+    /// <summary>
+    /// Reads furniture types that the ship contains while unwrapped and
+    /// writes them to the furniture type array.
+    /// </summary>
+    /// <param name="reader">The XML reader.</param>
     private void ReadXmlFurnitures(XmlReader reader)
     {
         if (reader.ReadToDescendant("Furniture"))
         {
-            // We have at least one tile, so do something with it.
             do
             {
                 int x = int.Parse(reader.GetAttribute("x"));
@@ -374,6 +475,9 @@ public class Ship
         }
     }
 
+    /// <summary>
+    /// Instantiates the tile and furniture type arrays and populates them with null values by default
+    /// </summary>
     private void InstantiateTiles()
     {
         tileTypes = new string[Width, Height];
