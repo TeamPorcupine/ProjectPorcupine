@@ -88,18 +88,18 @@ public class WorldGenerator
                     float noiseValue = Mathf.PerlinNoise((x + offsetX) / (width * asteroidNoiseScale * zScale), (y + offsetY) / (height * asteroidNoiseScale * zScale));
                     if (noiseValue >= asteroidNoiseThreshhold && !IsStartArea(x, y, world))
                     {
-                        Tile t = world.GetTileAt(x, y, z);
+                        Tile tile = world.GetTileAt(x, y, z);
 
-                        if (t.X < minEdgeDistance || t.Y < minEdgeDistance ||
-                              World.Current.Width - t.X <= minEdgeDistance ||
-                              World.Current.Height - t.Y <= minEdgeDistance )
+                        if (tile.X < minEdgeDistance || tile.Y < minEdgeDistance ||
+                              World.Current.Width - tile.X <= minEdgeDistance ||
+                              World.Current.Height - tile.Y <= minEdgeDistance)
                         {
                             continue;
                         }
 
-                        t.Type = AsteroidFloorType;
+                        tile.Type = AsteroidFloorType;
 
-                        if (Random.value <= asteroidResourceChance && t.Furniture == null)
+                        if (Random.value <= asteroidResourceChance && tile.Furniture == null)
                         {
                             if (resources.Length > 0)
                             {
@@ -117,9 +117,9 @@ public class WorldGenerator
                                     {
                                         if (inv.objectType == "Raw Iron" || inv.objectType == "Uranium")
                                         {
-                                            Furniture mine = PrototypeManager.Furniture.GetPrototype("mine").Clone();
+                                            Furniture mine = PrototypeManager.Furniture.Get("mine").Clone();
                                             mine.Parameters["ore_type"].SetValue(inv.objectType.ToString());
-                                            world.PlaceFurniture(mine, t, false);
+                                            world.PlaceFurniture(mine, tile, false);
                                             break;
                                         }
 
@@ -130,7 +130,7 @@ public class WorldGenerator
                                             stackSize = inv.maxStackSize;
                                         }
 
-                                        world.inventoryManager.PlaceInventory(t, new Inventory(inv.objectType, inv.maxStackSize, stackSize));
+                                        world.inventoryManager.PlaceInventory(tile, new Inventory(inv.objectType, inv.maxStackSize, stackSize));
                                         break;
                                     }
                                 }

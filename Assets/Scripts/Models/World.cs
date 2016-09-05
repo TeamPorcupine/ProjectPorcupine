@@ -338,7 +338,7 @@ public class World : IXmlSerializable
             return null;
         }
 
-        Furniture furn = PrototypeManager.Furniture.GetPrototype(objectType);
+        Furniture furn = PrototypeManager.Furniture.Get(objectType);
 
         return PlaceFurniture(furn, t, doRoomFloodFill);
     }
