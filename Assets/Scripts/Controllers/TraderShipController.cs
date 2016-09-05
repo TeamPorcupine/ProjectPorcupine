@@ -71,16 +71,17 @@ public class TraderShipController : MonoBehaviour
                 dbm.dialogBoxTrade.OnTradeCompleted = () =>
                 {
                     TradeCompleted = true;
-                    TrasfertTradedItems(trade);
+                    TransferTradedItems(trade);
                 };
                 dbm.dialogBoxTrade.ShowDialog();
             }
         }
     }
 
-    private void TrasfertTradedItems(Trade trade)
+    private void TransferTradedItems(Trade trade)
     {
-        trade.Player.Currency.Balance += trade.TradeCurrencyBalanceForPlayer;
+    	
+    	trade.Player.Currency.ChangeBalance (trade.TradeCurrencyBalanceForPlayer);
 
         foreach (TradeItem tradeItem in trade.TradeItems)
         {

@@ -17,7 +17,9 @@ public class Wallet
     {
         XmlReader reader = reader_parent.ReadSubtree();
         Currencies = new Dictionary<string, Currency>();
-
+		
+        
+        
         while (reader.Read())
         {
             switch (reader.Name)

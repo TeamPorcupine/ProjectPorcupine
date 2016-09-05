@@ -99,7 +99,7 @@ public class TraderPrototype
             Currency = new Currency
             {
                 Name = CurrencyName,
-                Balance = Random.Range(MinCurrencyBalance, MaxCurrencyBalance),   
+                
                 ShortName = World.Current.Wallet.Currencies[CurrencyName].ShortName
             },
             Name = PotentialNames[Random.Range(0, PotentialNames.Count - 1)],
