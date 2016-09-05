@@ -12,7 +12,6 @@ using System.Reflection;
 using NUnit.Framework;
 using ProjectPorcupine.PowerNetwork;
 
-
 public class PowerGridTest
 {
     private Grid grid;

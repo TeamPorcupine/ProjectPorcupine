@@ -12,7 +12,6 @@ using System.Reflection;
 using NUnit.Framework;
 using ProjectPorcupine.PowerNetwork;
 
-
 public class PowerNetworkTest
 {
     private PowerNetwork powerNetwork;
@@ -123,4 +122,3 @@ public class PowerNetworkTest
         Assert.IsTrue(powerNetwork.HasPower(firstPowerConsumer));
     }
 }
-
