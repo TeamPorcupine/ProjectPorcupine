@@ -1,21 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Inventories>
-  <Inventory objectType="Raw Iron">
-    <maxStackSize>50</maxStackSize>
-  </Inventory>
-  <Inventory objectType="Ice">
-    <maxStackSize>10</maxStackSize>
-  </Inventory>
-  <Inventory objectType="Uranium">
-    <maxStackSize>20</maxStackSize>
-  </Inventory>
-  <Inventory objectType="Steel Plate">
-    <maxStackSize>50</maxStackSize>
-  </Inventory>
-  <Inventory objectType="Power Cell">
-    <maxStackSize>5</maxStackSize>
-  </Inventory>
-  <Inventory objectType="Copper Wire">
-    <maxStackSize>50</maxStackSize>
-  </Inventory>
+  <Inventory objectType="Raw Iron" maxStackSize="50" basePrice="0.8" category="inv_cat_raw"/>
+  <Inventory objectType="Ice" maxStackSize="10" basePrice="1.2" category="inv_cat_raw"/>
+  <Inventory objectType="Uranium" maxStackSize="20" basePrice="3" category="inv_cat_raw"/>
+  <Inventory objectType="Steel Plate" maxStackSize="50" basePrice="1.5" category="inv_cat_refined"/>
+  <Inventory objectType="Power Cell" maxStackSize="5" basePrice="5" category="inv_cat_crafted"/>
+  <Inventory objectType="Copper Wire" maxStackSize="50" basePrice="2.7" category="inv_cat_crafted"/>
 </Inventories>

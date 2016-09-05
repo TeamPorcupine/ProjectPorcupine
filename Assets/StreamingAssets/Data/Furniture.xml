@@ -176,6 +176,7 @@
     <PathfindingWeight>2</PathfindingWeight>
     <Width>3</Width>
     <Height>3</Height>
+    <PowerConnection inputRate="1" outputRate="" capacity=""/>
 
     <BuildingJob jobTime="0" />
 
@@ -228,6 +229,7 @@
     <PathfindingWeight>2</PathfindingWeight>
     <Width>2</Width>
     <Height>2</Height>
+    <PowerConnection inputRate="1" outputRate="" capacity=""/>
 
     <BuildingJob jobTime="10">
       <Inventory objectType="Steel Plate" amount="50" />
@@ -262,6 +264,7 @@
     <PathfindingWeight>2</PathfindingWeight>
     <Width>3</Width>
     <Height>3</Height>
+    <PowerConnection inputRate="5" outputRate="" capacity=""/>
 
     <BuildingJob jobTime="0" />
 
@@ -314,6 +317,7 @@
     <PathfindingWeight>2</PathfindingWeight>
     <Width>2</Width>
     <Height>2</Height>
+    <PowerConnection inputRate="1" outputRate="" capacity=""/>
 
     <BuildingJob jobTime="1" />
 
@@ -333,6 +337,7 @@
     <Name>Small Landing Pad</Name>
     <Description>A landing pad for small spaceboats to land.</Description>
     <TypeTag>OutdoorOnly</TypeTag>
+    <TypeTag>LandingPad</TypeTag>
     <MovementCost>2</MovementCost>
     <PathfindingModifier>0</PathfindingModifier>
     <PathfindingWeight>2</PathfindingWeight>
@@ -350,7 +355,10 @@
     <JobSpotOffset X="0" Y="0" />
     <JobSpawnSpotOffset X="1" Y="-1" />
 
-    <ContextMenuAction FunctionName="LandingPad_Test_CallTradeShip" Text="Call Trade Ship Test" RequiereCharacterSelected="false" />
+    <ContextMenuAction FunctionName="LandingPad_Test_CallTradeShip" 
+                       Text="Call Trade Ship Test" 
+                       RequiereCharacterSelected="false" 
+                       DevModeOnly="true"/>
 
     <LocalizationCode>furn_small_landing_pad</LocalizationCode>
     <UnlocalizedDescription>furn_small_landing_pad_desc</UnlocalizedDescription>
@@ -365,6 +373,7 @@
     <PathfindingWeight>2</PathfindingWeight>
     <Width>2</Width>
     <Height>2</Height>
+    <PowerConnection inputRate="1" outputRate="" capacity=""/>
 
     <BuildingJob jobTime="2" />
 

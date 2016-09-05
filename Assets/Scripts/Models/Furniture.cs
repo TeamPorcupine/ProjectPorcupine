@@ -283,7 +283,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     {
         if (proto.funcPositionValidation(tile) == false)
         {
-            Debug.ULogErrorChannel("Furniture", "PlaceInstance -- Position Validity Function returned FALSE.");
+            Debug.ULogErrorChannel("Furniture", "PlaceInstance -- Position Validity Function returned FALSE. " + proto.Name + " " + tile.X + ", " + tile.Y + ", " + tile.Z);
             return null;
         }
 
@@ -339,6 +339,16 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
     public void Update(float deltaTime)
     {
+        if (PowerConnection != null && PowerConnection.IsPowerConsumer && HasPower() == false)
+        {
+            if (JobCount() > 0)
+            {
+                CancelJobs();
+            }
+
+            return;
+        }
+
         // TODO: some weird thing happens
         if (EventActions != null)
         {
@@ -402,6 +412,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     {
         writer.WriteAttributeString("X", Tile.X.ToString());
         writer.WriteAttributeString("Y", Tile.Y.ToString());
+        writer.WriteAttributeString("Z", Tile.Z.ToString());
         writer.WriteAttributeString("objectType", ObjectType);
 
         // Let the Parameters handle their own xml
@@ -507,11 +518,12 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                     break;
                 case "ContextMenuAction":
                     contextMenuLuaActions.Add(new ContextMenuLuaAction
-                        {
-                            LuaFunction = reader.GetAttribute("FunctionName"),
-                            Text = reader.GetAttribute("Text"),
-                            RequiereCharacterSelected = bool.Parse(reader.GetAttribute("RequiereCharacterSelected"))
-                        });
+                    {
+                        LuaFunction = reader.GetAttribute("FunctionName"),
+                        Text = reader.GetAttribute("Text"),
+                        RequiereCharacterSelected = bool.Parse(reader.GetAttribute("RequiereCharacterSelected")),
+                        DevModeOnly = bool.Parse(reader.GetAttribute("DevModeOnly") ?? "false")
+                    });
                     break;
                 case "IsEnterable":
                     isEnterableAction = reader.GetAttribute("FunctionName");
@@ -766,12 +778,16 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
         foreach (ContextMenuLuaAction contextMenuLuaAction in contextMenuLuaActions)
         {
-            yield return new ContextMenuAction
+            if (!contextMenuLuaAction.DevModeOnly ||
+                Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
             {
-                Text = contextMenuLuaAction.Text,
-                RequireCharacterSelected = contextMenuLuaAction.RequiereCharacterSelected,
-                Action = (cma, c) => InvokeContextMenuLuaAction(contextMenuLuaAction.LuaFunction, c)
-            };
+                yield return new ContextMenuAction
+                {
+                    Text = contextMenuLuaAction.Text,
+                    RequireCharacterSelected = contextMenuLuaAction.RequiereCharacterSelected,
+                    Action = (cma, c) => InvokeContextMenuLuaAction(contextMenuLuaAction.LuaFunction, c)
+                };
+            }
         }
     }
 

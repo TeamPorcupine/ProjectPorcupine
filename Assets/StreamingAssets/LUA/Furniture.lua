@@ -18,11 +18,7 @@ ENTERABILITY_SOON = 2
 
 -------------------------------- Furniture Actions --------------------------------
 function OnUpdate_GasGenerator( furniture, deltaTime )
-    if (furniture.HasPower() == false) then
-        return
-    end
-
-	if ( furniture.Tile.Room == nil ) then
+    if ( furniture.Tile.Room == nil ) then
 		return "Furniture's room was null."
 	end
 
@@ -328,7 +324,7 @@ end
 
 function MiningDroneStation_JobComplete(j)
 	if (j.furniture.GetSpawnSpotTile().Inventory == nil or j.furniture.GetSpawnSpotTile().Inventory.objectType == j.furniture.Parameters["mine_type"].ToString()) then
-		World.Current.inventoryManager.PlaceInventory( j.furniture.GetSpawnSpotTile(), Inventory.__new(j.furniture.Parameters["mine_type"].ToString() , 50, 20) )
+		World.Current.inventoryManager.PlaceInventory( j.furniture.GetSpawnSpotTile(), Inventory.__new(j.furniture.Parameters["mine_type"].ToString() , 50, 2) )
 	else
 		j.CancelJob()
 	end
@@ -349,7 +345,7 @@ function MetalSmelter_UpdateAction(furniture, deltaTime)
         furniture.Parameters["smelttime"].ChangeFloatValue(deltaTime)
         if(furniture.Parameters["smelttime"].ToFloat() >= furniture.Parameters["smelttime_required"].ToFloat()) then
             furniture.Parameters["smelttime"].SetValue(0)
-            local outputSpot = World.Current.GetTileAt(spawnSpot.X+2, spawnSpot.y, spawnSpot.Zs)
+            local outputSpot = World.Current.GetTileAt(spawnSpot.X+2, spawnSpot.Y, spawnSpot.Z)
 
             if(outputSpot.Inventory == nil) then
                 World.Current.inventoryManager.PlaceInventory(outputSpot, Inventory.__new("Steel Plate", 50, 5))
@@ -474,6 +470,7 @@ function PowerCellPress_JobComplete(j)
 end
 
 function CloningPod_UpdateAction(furniture, deltaTime)
+	
     if( furniture.JobCount() > 0 ) then
         return
     end
@@ -550,7 +547,7 @@ function PowerGenerator_JobComplete( j )
 end
 
 function LandingPad_Test_CallTradeShip(furniture, character)
-   WorldController.Instance.CallTradeShipTest(furniture)
+   WorldController.Instance.TradeController.CallTradeShipTest(furniture)
 end
 
 -- This function gets called once, when the funriture is isntalled
@@ -579,6 +576,7 @@ function OxygenCompressor_OnUpdate(furniture, deltaTime)
     local room = furniture.Tile.Room
     local pressure = room.GetGasPressure("O2")
     local gasAmount = furniture.Parameters["flow_rate"].ToFloat() * deltaTime
+    
     if (pressure < furniture.Parameters["give_threshold"].ToFloat()) then
         -- Expel gas if available
         if (furniture.Parameters["gas_content"].ToFloat() > 0) then
