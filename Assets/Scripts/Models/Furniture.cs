@@ -779,7 +779,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         foreach (ContextMenuLuaAction contextMenuLuaAction in contextMenuLuaActions)
         {
             if (!contextMenuLuaAction.DevModeOnly ||
-                Settings.GetSettingAsBool("DialogBoxSettings_developerModeToggle", false))
+                Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
             {
                 yield return new ContextMenuAction
                 {
