@@ -107,12 +107,12 @@ public class WorldGenerator
                                         {
                                             int stackSize = Random.Range(resourceMin[i], resourceMax[i]);
 
-                                            if (stackSize > inv.maxStackSize)
+                                            if (stackSize > inv.MaxStackSize)
                                             {
-                                                stackSize = inv.maxStackSize;
+                                                stackSize = inv.MaxStackSize;
                                             }
 
-                                            world.inventoryManager.PlaceInventory(t, new Inventory(inv.objectType, inv.maxStackSize, stackSize));
+                                            world.inventoryManager.PlaceInventory(t, new Inventory(inv.ObjectType, inv.MaxStackSize, stackSize));
                                             break;
                                         }
                                     }

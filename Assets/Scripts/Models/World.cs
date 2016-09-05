@@ -448,7 +448,7 @@ public class World : IXmlSerializable
                 // If we don't have a tile, that means this is in a character's inventory (or some other non-tile location
                 //      which means we shouldn't save that Inventory here, the character will take care of saving and loading
                 //      the inventory properly.
-                if (inv.tile != null)
+                if (inv.Tile != null)
                 {
                     writer.WriteStartElement("Inventory");
                     inv.WriteXml(writer);

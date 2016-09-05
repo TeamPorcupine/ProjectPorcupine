@@ -204,7 +204,7 @@ function Stockpile_UpdateAction( furniture, deltaTime )
     -- -- A good gets picked up (at which point we reset the job)
     -- -- The UI's filter of allowed items gets changed
 
-    if( furniture.Tile.Inventory != nil and furniture.Tile.Inventory.StackSize >= furniture.Tile.Inventory.maxStackSize ) then
+    if( furniture.Tile.Inventory != nil and furniture.Tile.Inventory.StackSize >= furniture.Tile.Inventory.MaxStackSize ) then
         -- We are full!
         furniture.CancelJobs()
         return
@@ -244,7 +244,7 @@ function Stockpile_UpdateAction( furniture, deltaTime )
 	else
 		--ModUtils.ULog("Creating job for existing stack.")
 		desInv = furniture.Tile.Inventory.Clone()
-		desInv.maxStackSize = desInv.maxStackSize - desInv.StackSize
+		desInv.MaxStackSize = desInv.MaxStackSize - desInv.StackSize
 		desInv.StackSize = 0
 
         itemsDesired = { desInv }
@@ -288,7 +288,7 @@ function MiningDroneStation_UpdateAction( furniture, deltaTime )
 
 	if( furniture.JobCount() > 0 ) then
 		-- Check to see if the Metal Plate destination tile is full.
-		if( spawnSpot.Inventory != nil and spawnSpot.Inventory.StackSize >= spawnSpot.Inventory.maxStackSize ) then
+		if( spawnSpot.Inventory != nil and spawnSpot.Inventory.StackSize >= spawnSpot.Inventory.MaxStackSize ) then
 			-- We should stop this job, because it's impossible to make any more items.
 			furniture.CancelJobs()
 		end
@@ -296,12 +296,12 @@ function MiningDroneStation_UpdateAction( furniture, deltaTime )
 	end
 
 	-- If we get here, then we have no Current job. Check to see if our destination is full.
-	if( spawnSpot.Inventory != nil and spawnSpot.Inventory.StackSize >= spawnSpot.Inventory.maxStackSize ) then
+	if( spawnSpot.Inventory != nil and spawnSpot.Inventory.StackSize >= spawnSpot.Inventory.MaxStackSize ) then
 		-- We are full! Don't make a job!
 		return
 	end
 
-	if(furniture.GetSpawnSpotTile().Inventory != nil and furniture.GetSpawnSpotTile().Inventory.objectType != furniture.Parameters["mine_type"].ToString()) then
+	if(furniture.GetSpawnSpotTile().Inventory != nil and furniture.GetSpawnSpotTile().Inventory.ObjectType != furniture.Parameters["mine_type"].ToString()) then
 		return
 	end
 
@@ -323,7 +323,7 @@ function MiningDroneStation_UpdateAction( furniture, deltaTime )
 end
 
 function MiningDroneStation_JobComplete(j)
-	if (j.furniture.GetSpawnSpotTile().Inventory == nil or j.furniture.GetSpawnSpotTile().Inventory.objectType == j.furniture.Parameters["mine_type"].ToString()) then
+	if (j.furniture.GetSpawnSpotTile().Inventory == nil or j.furniture.GetSpawnSpotTile().Inventory.ObjectType == j.furniture.Parameters["mine_type"].ToString()) then
 		World.Current.inventoryManager.PlaceInventory( j.furniture.GetSpawnSpotTile(), Inventory.__new(j.furniture.Parameters["mine_type"].ToString() , 50, 2) )
 	else
 		j.CancelJob()
@@ -363,7 +363,7 @@ function MetalSmelter_UpdateAction(furniture, deltaTime)
         end
     end
 
-    if(spawnSpot.Inventory ~= nil and spawnSpot.Inventory.StackSize == spawnSpot.Inventory.maxStackSize) then
+    if(spawnSpot.Inventory ~= nil and spawnSpot.Inventory.StackSize == spawnSpot.Inventory.MaxStackSize) then
         -- We have the max amount of resources, cancel the job.
         -- This check exists mainly, because the job completed callback doesn't
         -- seem to be reliable.
@@ -378,9 +378,9 @@ function MetalSmelter_UpdateAction(furniture, deltaTime)
     -- Create job depending on the already available stack size.
     local desiredStackSize = 50
     local itemsDesired = { Inventory.__new("Raw Iron", desiredStackSize, 0) }
-    if(spawnSpot.Inventory ~= nil and spawnSpot.Inventory.StackSize < spawnSpot.Inventory.maxStackSize) then
-        desiredStackSize = spawnSpot.Inventory.maxStackSize - spawnSpot.Inventory.StackSize
-        itemsDesired[1].maxStackSize = desiredStackSize
+    if(spawnSpot.Inventory ~= nil and spawnSpot.Inventory.StackSize < spawnSpot.Inventory.MaxStackSize) then
+        desiredStackSize = spawnSpot.Inventory.MaxStackSize - spawnSpot.Inventory.StackSize
+        itemsDesired[1].MaxStackSize = desiredStackSize
     end
     ModUtils.ULog("MetalSmelter: Creating job for " .. desiredStackSize .. " raw iron.")
 
@@ -406,7 +406,7 @@ function MetalSmelter_JobWorked(j)
     for k, inv in pairs(j.inventoryRequirements) do
         if(inv ~= nil and inv.StackSize > 0) then
             World.Current.inventoryManager.PlaceInventory(spawnSpot, inv)
-            spawnSpot.Inventory.locked = true
+            spawnSpot.Inventory.Locked = true
             return
         end
     end
