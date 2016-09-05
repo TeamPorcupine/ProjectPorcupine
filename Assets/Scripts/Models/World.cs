@@ -332,13 +332,13 @@ public class World : IXmlSerializable
 
     public Furniture PlaceFurniture(string objectType, Tile t, bool doRoomFloodFill = true)
     {
-        if (PrototypeManager.Furniture.HasPrototype(objectType) == false)
+        if (PrototypeManager.Furniture.Has(objectType) == false)
         {
             Debug.ULogErrorChannel("World", "furniturePrototypes doesn't contain a proto for key: " + objectType);
             return null;
         }
 
-        Furniture furn = Furniture.PlaceInstance(PrototypeManager.Furniture.GetPrototype(objectType), t);
+        Furniture furn = Furniture.PlaceInstance(PrototypeManager.Furniture.Get(objectType), t);
 
         if (furn == null)
         {
@@ -385,7 +385,7 @@ public class World : IXmlSerializable
 
     public bool IsFurniturePlacementValid(string furnitureType, Tile t)
     {
-        return PrototypeManager.Furniture.GetPrototype(furnitureType).IsValidPosition(t);
+        return PrototypeManager.Furniture.Get(furnitureType).IsValidPosition(t);
     }
 
     public XmlSchema GetSchema()

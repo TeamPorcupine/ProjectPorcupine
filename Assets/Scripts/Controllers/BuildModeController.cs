@@ -39,7 +39,7 @@ public class BuildModeController
             return true;
         }
 
-        Furniture proto = PrototypeManager.Furniture.GetPrototype(buildModeObjectType);
+        Furniture proto = PrototypeManager.Furniture.Get(buildModeObjectType);
 
         return proto.Width == 1 && proto.Height == 1;
     }
@@ -101,10 +101,10 @@ public class BuildModeController
                 // Create a job for it to be build
                 Job j;
 
-                if (PrototypeManager.FurnitureJob.HasPrototype(furnitureType))
+                if (PrototypeManager.FurnitureJob.Has(furnitureType))
                 {
                     // Make a clone of the job prototype
-                    j = PrototypeManager.FurnitureJob.GetPrototype(furnitureType).Clone();
+                    j = PrototypeManager.FurnitureJob.Get(furnitureType).Clone();
 
                     // Assign the correct tile.
                     j.tile = t;
@@ -116,7 +116,7 @@ public class BuildModeController
                     j.JobDescription = "job_build_" + furnitureType + "_desc";
                 }
 
-                j.furniturePrototype = PrototypeManager.Furniture.GetPrototype(furnitureType);
+                j.furniturePrototype = PrototypeManager.Furniture.Get(furnitureType);
 
                 // Add the job to the queue or build immediately if in dev mode
                 if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
@@ -231,7 +231,7 @@ public class BuildModeController
 
     public bool DoesBuildJobOverlapExistingBuildJob(Tile t, string furnitureType)
     {
-        Furniture proto = PrototypeManager.Furniture.GetPrototype(furnitureType);
+        Furniture proto = PrototypeManager.Furniture.Get(furnitureType);
 
         for (int x_off = t.X; x_off < (t.X + proto.Width); x_off++)
         {
