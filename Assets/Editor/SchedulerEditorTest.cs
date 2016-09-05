@@ -16,6 +16,11 @@ using Scheduler;
 
 public class SchedulerEditorTest
 {
+    private const string XmlPrototypeString = @"
+<Events>
+    <Event name=""ping_log_lua"" onFire=""ping_log_lua""/>
+</Events>";
+
     private Scheduler.Scheduler scheduler;
     private Action<ScheduledEvent> callback;
 
@@ -30,6 +35,7 @@ public class SchedulerEditorTest
                 new ScheduledEvent(
                     "ping_log",
                     evt => Debug.ULogChannel("Scheduler", "Event {0} fired", evt.Name)));
+            PrototypeManager.SchedulerEvent.LoadPrototypesFromText(XmlPrototypeString);
         }
 
         // The problem with unit testing singletons

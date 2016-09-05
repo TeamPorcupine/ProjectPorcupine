@@ -28,6 +28,7 @@ public class ModsManager
         PrototypeManager.Inventory.LoadPrototypes(mods);
         PrototypeManager.Need.LoadPrototypes(mods);
         PrototypeManager.Trader.LoadPrototypes(mods);
+        PrototypeManager.SchedulerEvent.LoadPrototypes(mods);
 
         FurnitureActions.LoadModsScripts(mods);
         NeedActions.LoadModsScripts(mods);
