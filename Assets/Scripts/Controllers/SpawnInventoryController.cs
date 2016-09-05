@@ -53,7 +53,7 @@ public class SpawnInventoryController
             return; 
         }
 
-        if (t.Inventory == null || t.Inventory.objectType == InventoryToBuild)
+        if (t.Inventory == null || t.Inventory.ObjectType == InventoryToBuild)
         {
             World.Current.inventoryManager.PlaceInventory(t, inventoryChange);
         }

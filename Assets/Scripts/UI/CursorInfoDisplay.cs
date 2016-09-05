@@ -72,7 +72,7 @@ public class CursorInfoDisplay
         string temp = string.Empty;
         foreach (string itemName in PrototypeManager.FurnitureJob.Get(bmc.buildModeObjectType).inventoryRequirements.Keys)
         {
-            string requiredMaterialCount = (PrototypeManager.FurnitureJob.Get(bmc.buildModeObjectType).inventoryRequirements[itemName].maxStackSize * validPostionCount).ToString();
+            string requiredMaterialCount = (PrototypeManager.FurnitureJob.Get(bmc.buildModeObjectType).inventoryRequirements[itemName].MaxStackSize * validPostionCount).ToString();
             if (PrototypeManager.FurnitureJob.Get(bmc.buildModeObjectType).inventoryRequirements.Count > 1)
             {
                 return temp += requiredMaterialCount + " " + itemName + "\n";
