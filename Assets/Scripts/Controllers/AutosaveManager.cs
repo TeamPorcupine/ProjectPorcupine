@@ -33,7 +33,7 @@ public class AutosaveManager
             scheduler = Scheduler.Scheduler.Current;
         }
 
-        AutosaveInterval = Settings.GetSettingAsInt("AutosaveInterval", 2); // in minutes
+        AutosaveInterval = Settings.GetSetting<int>("AutosaveInterval", 2); // in minutes
 
         // autosaves disabled if AutosaveInterval <= 0
         if (AutosaveInterval <= 0)
