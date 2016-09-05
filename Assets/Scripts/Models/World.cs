@@ -7,7 +7,6 @@
 // ====================================================
 #endregion
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -15,7 +14,6 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
-using Power;
 using UnityEngine;
 
 [MoonSharpUserData]
@@ -107,7 +105,7 @@ public class World : IXmlSerializable
     // The tile depth of the world
     public int Depth { get; protected set; }
 
-    public Syster PowerSystem { get; private set; }
+    public ProjectPorcupine.PowerNetwork.PowerNetwork PowerNetwork { get; private set; }
 
     public Room GetOutsideRoom()
     {
@@ -181,7 +179,7 @@ public class World : IXmlSerializable
 
         // Progress temperature modelling
         temperature.Update();
-        PowerSystem.Update(deltaTime);
+        PowerNetwork.Update(deltaTime);
     }
 
     public Character CreateCharacter(Tile t)
@@ -334,13 +332,13 @@ public class World : IXmlSerializable
 
     public Furniture PlaceFurniture(string objectType, Tile t, bool doRoomFloodFill = true)
     {
-        if (PrototypeManager.Furniture.HasPrototype(objectType) == false)
+        if (PrototypeManager.Furniture.Has(objectType) == false)
         {
             Debug.ULogErrorChannel("World", "furniturePrototypes doesn't contain a proto for key: " + objectType);
             return null;
         }
 
-        Furniture furn = Furniture.PlaceInstance(PrototypeManager.Furniture.GetPrototype(objectType), t);
+        Furniture furn = Furniture.PlaceInstance(PrototypeManager.Furniture.Get(objectType), t);
 
         if (furn == null)
         {
@@ -387,7 +385,7 @@ public class World : IXmlSerializable
 
     public bool IsFurniturePlacementValid(string furnitureType, Tile t)
     {
-        return PrototypeManager.Furniture.GetPrototype(furnitureType).IsValidPosition(t);
+        return PrototypeManager.Furniture.Get(furnitureType).IsValidPosition(t);
     }
 
     public XmlSchema GetSchema()
@@ -654,7 +652,7 @@ public class World : IXmlSerializable
         characters = new List<Character>();
         furnitures = new List<Furniture>();
         inventoryManager = new InventoryManager();
-        PowerSystem = new Syster();
+        PowerNetwork = new ProjectPorcupine.PowerNetwork.PowerNetwork();
         temperature = new Temperature(Width, Height);
         LoadSkybox();
     }

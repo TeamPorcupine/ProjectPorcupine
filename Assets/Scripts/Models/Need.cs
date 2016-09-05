@@ -134,7 +134,7 @@ public class Need
                 break;
             case "RestoreNeedFurnitureType":
                 reader.Read();
-                RestoreNeedFurn = PrototypeManager.Furniture.GetPrototype(reader.ReadContentAsString());
+                RestoreNeedFurn = PrototypeManager.Furniture.Get(reader.ReadContentAsString());
                 break;
             case "RestoreNeedTime":
                 reader.Read();

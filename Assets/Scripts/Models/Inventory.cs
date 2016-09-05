@@ -168,9 +168,9 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
 
     private void ImportPrototypeSettings(int defaulMaxStackSize, float defaultBasePrice, string defaultCategory)
     {
-        if (PrototypeManager.Inventory.HasPrototype(objectType))
+        if (PrototypeManager.Inventory.Has(objectType))
         {
-            InventoryCommon prototype = PrototypeManager.Inventory.GetPrototype(objectType);
+            InventoryCommon prototype = PrototypeManager.Inventory.Get(objectType);
             maxStackSize = prototype.maxStackSize;
             basePrice = prototype.basePrice;
             category = prototype.category;
