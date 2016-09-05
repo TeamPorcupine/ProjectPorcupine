@@ -571,6 +571,9 @@ function Heater_UpdateTemperature( furniture, deltaTime)
     if (furniture.HasPower() == false) then
         return
     end
+    if (furniture.tile.Room.IsOutsideRoom() == true) then
+        return
+    end
     
     tile = furniture.tile
     pressure = tile.Room.GetGasPressure() / tile.Room.GetSize()
