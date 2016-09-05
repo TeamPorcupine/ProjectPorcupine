@@ -75,17 +75,17 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
         int y = furn.Tile.Y;
         string suffix = string.Empty;
 
-        suffix += GetSuffixForNeighbour(furn, x, y + 1, "N");
-        suffix += GetSuffixForNeighbour(furn, x + 1, y, "E");
-        suffix += GetSuffixForNeighbour(furn, x, y - 1, "S");
-        suffix += GetSuffixForNeighbour(furn, x - 1, y, "W");
+        suffix += GetSuffixForNeighbour(furn, x, y + 1, furn.Tile.Z, "N");
+        suffix += GetSuffixForNeighbour(furn, x + 1, y, furn.Tile.Z, "E");
+        suffix += GetSuffixForNeighbour(furn, x, y - 1, furn.Tile.Z, "S");
+        suffix += GetSuffixForNeighbour(furn, x - 1, y, furn.Tile.Z, "W");
 
         // Now we check if we have the neighbours in the cardinal directions next to the respective diagonals
         // because pure diagonal checking would leave us with diagonal walls and stockpiles, which make no sense.
-        suffix += GetSuffixForDiagonalNeighbour(suffix, "N", "E", furn, x + 1, y + 1);
-        suffix += GetSuffixForDiagonalNeighbour(suffix, "S", "E", furn, x + 1, y - 1);
-        suffix += GetSuffixForDiagonalNeighbour(suffix, "S", "W", furn, x - 1, y - 1);
-        suffix += GetSuffixForDiagonalNeighbour(suffix, "N", "W", furn, x - 1, y + 1);
+        suffix += GetSuffixForDiagonalNeighbour(suffix, "N", "E", furn, x + 1, y + 1, furn.Tile.Z);
+        suffix += GetSuffixForDiagonalNeighbour(suffix, "S", "E", furn, x + 1, y - 1, furn.Tile.Z);
+        suffix += GetSuffixForDiagonalNeighbour(suffix, "S", "W", furn, x - 1, y - 1, furn.Tile.Z);
+        suffix += GetSuffixForDiagonalNeighbour(suffix, "N", "W", furn, x - 1, y + 1, furn.Tile.Z);
 
         // For example, if this object has all eight neighbours of
         // the same type, then the string will look like:
@@ -102,7 +102,7 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
         objectGameObjectMap.Add(furniture, furn_go);
 
         furn_go.name = furniture.ObjectType + "_" + furniture.Tile.X + "_" + furniture.Tile.Y;
-        furn_go.transform.position = new Vector3(furniture.Tile.X + ((furniture.Width - 1) / 2f), furniture.Tile.Y + ((furniture.Height - 1) / 2f), 0);
+        furn_go.transform.position = new Vector3(furniture.Tile.X + ((furniture.Width - 1) / 2f), furniture.Tile.Y + ((furniture.Height - 1) / 2f), furniture.Tile.Z);
         furn_go.transform.SetParent(objectParent.transform, true);
 
         // FIXME: This hardcoding is not ideal!
@@ -110,8 +110,8 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
         {
             // Check to see if we actually have a wall north/south, and if so
             // set the furniture verticalDoor flag to true.
-            Tile northTile = world.GetTileAt(furniture.Tile.X, furniture.Tile.Y + 1);
-            Tile southTile = world.GetTileAt(furniture.Tile.X, furniture.Tile.Y - 1);
+            Tile northTile = world.GetTileAt(furniture.Tile.X, furniture.Tile.Y + 1, furniture.Tile.Z);
+            Tile southTile = world.GetTileAt(furniture.Tile.X, furniture.Tile.Y - 1, furniture.Tile.Z);
 
             if (northTile != null && southTile != null && northTile.Furniture != null && southTile.Furniture != null &&
                 northTile.Furniture.HasTypeTag("Wall") && southTile.Furniture.HasTypeTag("Wall"))
@@ -169,10 +169,10 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
         {
             // Check to see if we actually have a wall north/south, and if so
             // set the furniture verticalDoor flag to true.
-            Tile northTile = world.GetTileAt(furn.Tile.X, furn.Tile.Y + 1);
-            Tile southTile = world.GetTileAt(furn.Tile.X, furn.Tile.Y - 1);
-            Tile eastTile = world.GetTileAt(furn.Tile.X + 1, furn.Tile.Y);
-            Tile westTile = world.GetTileAt(furn.Tile.X - 1, furn.Tile.Y);
+            Tile northTile = world.GetTileAt(furn.Tile.X, furn.Tile.Y + 1, furn.Tile.Z);
+            Tile southTile = world.GetTileAt(furn.Tile.X, furn.Tile.Y - 1, furn.Tile.Z);
+            Tile eastTile = world.GetTileAt(furn.Tile.X + 1, furn.Tile.Y, furn.Tile.Z);
+            Tile westTile = world.GetTileAt(furn.Tile.X - 1, furn.Tile.Y, furn.Tile.Z);
 
             if (northTile != null && southTile != null && northTile.Furniture != null && southTile.Furniture != null &&
                 northTile.Furniture.HasTypeTag("Wall") && southTile.Furniture.HasTypeTag("Wall"))
@@ -236,9 +236,9 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
         }
     }
 
-    private string GetSuffixForNeighbour(Furniture furn, int x, int y, string suffix)
+    private string GetSuffixForNeighbour(Furniture furn, int x, int y, int z, string suffix)
     {
-         Tile t = world.GetTileAt(x, y);
+         Tile t = world.GetTileAt(x, y, z);
          if (t != null && t.Furniture != null && t.Furniture.ObjectType == furn.ObjectType)
          {
              return suffix;
@@ -247,11 +247,11 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
         return string.Empty;
     }
 
-    private string GetSuffixForDiagonalNeighbour(string suffix, string coord1, string coord2, Furniture furn, int x, int y)
+    private string GetSuffixForDiagonalNeighbour(string suffix, string coord1, string coord2, Furniture furn, int x, int y, int z)
     {
         if (suffix.Contains(coord1) && suffix.Contains(coord2))
         {
-            return GetSuffixForNeighbour(furn, x, y, coord1.ToLower() + coord2.ToLower());
+            return GetSuffixForNeighbour(furn, x, y, z, coord1.ToLower() + coord2.ToLower());
         }
 
         return string.Empty;
