@@ -25,35 +25,26 @@ public class XmlPrototypes<T> : BasePrototypes<T>
         this.fileName = fileName;
         this.listTag = listTag;
         this.elementTag = elementTag;
-
-        LoadPrototypesFromFile();
     }
 
     /// <summary>
-    /// Loads the prototypes from an xml file.
+    /// Loads the base and mod prototypes from an xml file.
     /// </summary>
-    public void LoadPrototypesFromFile()
+    /// <param name="mods">Mods directories.</param>
+    public void LoadPrototypes(DirectoryInfo[] mods)
     {
         string dataPath = Path.Combine(Application.streamingAssetsPath, "Data");
         string filePath = Path.Combine(dataPath, fileName);
         string xmlText  = File.ReadAllText(filePath);
-
         LoadPrototypesFromText(xmlText);
-    }
 
-    /// <summary>
-    /// Loads the mod prototypes from an xml file.
-    /// </summary>
-    /// <param name="mods">Mods directories.</param>
-    public void LoadModPrototypesFromFile(DirectoryInfo[] mods)
-    {
         foreach (DirectoryInfo mod in mods)
         {
-            string xmlModFile = Path.Combine(mod.FullName, fileName);
-            if (File.Exists(xmlModFile))
+            filePath = Path.Combine(mod.FullName, fileName);
+            if (File.Exists(filePath))
             {
-                string xmlModText = File.ReadAllText(xmlModFile);
-                LoadPrototypesFromText(xmlModText);
+                xmlText = File.ReadAllText(filePath);
+                LoadPrototypesFromText(xmlText);
             }
         }
     }

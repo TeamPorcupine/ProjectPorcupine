@@ -141,6 +141,8 @@ public class SpriteManager : MonoBehaviour
         if (imageTexture.LoadImage(imageBytes))
         {
             // Image was successfully loaded.
+            imageTexture.filterMode = FilterMode.Point;
+
             // So let's see if there's a matching XML file for this image.
             string baseSpriteName = Path.GetFileNameWithoutExtension(filePath);
             string basePath = Path.GetDirectoryName(filePath);
@@ -181,7 +183,7 @@ public class SpriteManager : MonoBehaviour
             // Attempt to load/parse the XML file to get information on the sprite(s)
         }
 
-        // else, the file wasn't actually a image file, so just move on.
+        // Else, the file wasn't actually a image file, so just move on.
     }
 
     private void ReadSpriteFromXml(string spriteCategory, XmlReader reader, Texture2D imageTexture)

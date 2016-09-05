@@ -31,6 +31,6 @@ public class StatPrototypes : XmlPrototypes<Stat>
             LogPrototypeError(e, stat.statType);
         }
 
-        SetPrototype(stat.statType, stat);
+        Set(stat.statType, stat);
     }
 }
