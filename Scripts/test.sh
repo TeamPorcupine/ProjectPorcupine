@@ -40,7 +40,7 @@ if [ "$errorCount" != "0" ]; then
     echo $errorCount ' unit tests failed!'
      
      #show the exact unit test failure
-    echo 'The following unit tests failed:'
+    echo '\nThe following unit tests failed:'
     echo | grep 'success="False"' EditorTestResults.xml | grep 'test-case'
    
     exit 1
