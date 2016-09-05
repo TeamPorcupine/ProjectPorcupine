@@ -213,17 +213,18 @@ public class World : IXmlSerializable
     /// <summary>
     /// A function to return the Character object from the character's name.
     /// </summary>
-    /// <param name="name">The name of the character</param>
-    /// <returns>Character</returns>
+    /// <param name="name">The name of the character.</param>
+    /// <returns>The character with that name.</returns>
     public Character GetCharacterFromName(string name)
     {
         foreach (Character character in characters)
         {
-            if(character.name == name)
+            if (character.name == name)
             {
                 return character;
             }
         }
+
         return null;
     }
 
