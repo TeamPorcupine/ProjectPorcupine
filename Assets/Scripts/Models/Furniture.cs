@@ -15,6 +15,7 @@ using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
 using Power;
 using UnityEngine;
+using System.Text;
 
 /// <summary>
 /// InstalledObjects are things like walls, doors, and furniture (e.g. a sofa).
@@ -343,7 +344,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
     public void Update(float deltaTime)
     {
-        if (PowerConnection != null && PowerConnection.IsPowerConsumer && HasPower() == false)
+        if ((PowerConnection != null && PowerConnection.IsPowerConsumer && HasPower() == false) || HasCorrectAtmosphere() == false)
         {
             if (JobCount() > 0)
             {
@@ -414,7 +415,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
             Room containingRoom = World.Current.GetRoomFromTile(this.Tile);
             foreach (Gas gas in requiredAtmosphere.Values)
             {
-                if (gas.hasValue == true && containingRoom.GetGasAmount(gas.name) <= 0f)
+                float gasAmount = containingRoom.GetGasAmount(gas.name);
+                if (gas.hasValue == true && gasAmount < gas.min)
                 {
                     return false;
                 }
@@ -769,8 +771,13 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
     public string GetDescription()
     {
-
-        return UnlocalizedDescription + "\nValid Environment?: " + HasCorrectAtmosphere();
+        StringBuilder atmosphere = new StringBuilder();
+        atmosphere.AppendLine(string.Format("\nValid Atmosphere?: {0}", HasCorrectAtmosphere()));
+        foreach (Gas gas in requiredAtmosphere.Values)
+        {
+            atmosphere.AppendLine(string.Format("Gas: {0}, Needs Value? {1}, Minimum: {2}", gas.name, gas.hasValue, gas.min));
+        }
+        return UnlocalizedDescription + atmosphere.ToString();
     }
 
     public string GetHitPointString()

@@ -315,7 +315,7 @@
     <LocalizationCode>furn_heater</LocalizationCode>
     <UnlocalizedDescription>furn_heater_desc</UnlocalizedDescription>
     <RequiredAtmosphere>
-      <Gas hasValue="true" name="O2" />
+      <Gas hasValue="true" name="O2" min="3" />
     </RequiredAtmosphere>
   </Furniture>
 

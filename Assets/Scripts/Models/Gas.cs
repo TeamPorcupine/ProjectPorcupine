@@ -16,6 +16,7 @@ public class Gas
 {
     public bool hasValue;
     public string name;
+    public float min;
 
     public Gas(string dataName)
     {
@@ -38,6 +39,10 @@ public class Gas
                 else
                 {
                     gas.hasValue = false;
+                }
+                if (float.TryParse(reader.GetAttribute("min"), out gas.min) == false)
+                {
+                    gas.min = 0f;
                 }
 
                 gases.Add(gas.name, gas);
