@@ -33,9 +33,9 @@ public class Trader
         {
             foreach (Inventory inventory in worldInventory)
             {
-                if (inventory.tile != null && 
-                    inventory.tile.Furniture != null &&
-                    inventory.tile.Furniture.ObjectType == "Stockpile")
+                if (inventory.Tile != null && 
+                    inventory.Tile.Furniture != null &&
+                    inventory.Tile.Furniture.ObjectType == "Stockpile")
                 {
                     t.Stock.Add(inventory);
                 }
