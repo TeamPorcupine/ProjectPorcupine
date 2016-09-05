@@ -364,8 +364,6 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
             return Enterability.Yes;
         }
 
-        //// FurnitureActions.CallFunctionsWithFurniture( isEnterableActions.ToArray(), this );
-
         DynValue ret = ActionsManager.Furniture.Call(isEnterableAction, this);
 
         return (Enterability)ret.Number;

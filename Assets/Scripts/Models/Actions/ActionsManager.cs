@@ -6,54 +6,90 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using Scheduler;
+using System.Collections.Generic;
 
 public class ActionsManager
 {
+    private static Dictionary<string, Actions> actions;
+
     public ActionsManager()
     {
-        Furniture = new Actions<Furniture>("Furniture.lua");
-        Need = new Actions<Need>("Need.lua");
-        GameEvent = new Actions<GameEvent>("GameEvent.lua");
-        TileType = new Actions<TileType>("Tile.lua");
-        Quest = new Actions<Quest>("Quest.lua");
-        ScheduledEvent = new Actions<ScheduledEvent>("ScheduledEvent.lua");
+        actions = new Dictionary<string, Actions>();
+
+        actions.Add("Furniture", new Actions("Furniture.lua"));
+        actions.Add("Need", new Actions("Need.lua"));
+        actions.Add("GameEvent", new Actions("GameEvent.lua"));
+        actions.Add("TileType", new Actions("Tile.lua"));
+        actions.Add("Quest", new Actions("Quest.lua"));
+        actions.Add("ScheduledEvent", new Actions("ScheduledEvent.lua"));
     }
 
-    public static Actions<Furniture> Furniture
+    /// <summary>
+    /// Gets the furniture actions.
+    /// </summary>
+    /// <value>The furniture actions.</value>
+    public static Actions Furniture
     {
-        get;
-        protected set;
+        get { return actions["Furniture"]; }
     }
 
-    public static Actions<Need> Need
+    /// <summary>
+    /// Gets the need actions.
+    /// </summary>
+    /// <value>The need actions.</value>
+    public static Actions Need
     {
-        get;
-        protected set;
+        get { return actions["Need"]; }
     }
 
-    public static Actions<GameEvent> GameEvent
+    /// <summary>
+    /// Gets the game event actions.
+    /// </summary>
+    /// <value>The game event actions.</value>
+    public static Actions GameEvent
     {
-        get;
-        protected set;
+        get { return actions["GameEvent"]; }
     }
 
-    public static Actions<TileType> TileType
+    /// <summary>
+    /// Gets the tile type actions.
+    /// </summary>
+    /// <value>The tile type actions.</value>
+    public static Actions TileType
     {
-        get;
-        protected set;
+        get { return actions["TileType"]; }
     }
 
-    public static Actions<Quest> Quest
+    /// <summary>
+    /// Gets the quest actions.
+    /// </summary>
+    /// <value>The quest actions.</value>
+    public static Actions Quest
     {
-        get;
-        protected set;
+        get { return actions["Quest"]; }
     }
 
-    public static Actions<ScheduledEvent> ScheduledEvent
+    /// <summary>
+    /// Gets the scheduled event actions.
+    /// </summary>
+    /// <value>The scheduled event actions.</value>
+    public static Actions ScheduledEvent
     {
-        get;
-        protected set;
+        get { return actions["ScheduledEvent"]; }
+    }
+
+    /// <summary>
+    /// Get the Actions with the specified name.
+    /// </summary>
+    /// <param name="name">The actions key.</param>
+    public static Actions Get(string name)
+    {
+        if (actions.ContainsKey(name))
+        {
+            return actions[name];
+        }
+
+        return null;
     }
 
     // TODO: Move this function to a better place

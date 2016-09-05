@@ -11,7 +11,7 @@ using System.IO;
 using MoonSharp.Interpreter;
 using UnityEngine;
 
-public class Actions<T>
+public class Actions
 {
     protected string fileName;
     protected Script script;
@@ -118,7 +118,7 @@ public class Actions<T>
     /// <param name="functionNames">Function names.</param>
     /// <param name="instance">An instance of the actions type.</param>
     /// <param name="deltaTime">Delta time.</param>
-    public void CallWithInstance(string[] functionNames, T instance, float deltaTime = 0f)
+    public void CallWithInstance(string[] functionNames, object instance, float deltaTime = 0f)
     {
         if (instance == null)
         {
