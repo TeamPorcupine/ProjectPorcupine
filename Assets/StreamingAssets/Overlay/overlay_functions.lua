@@ -24,17 +24,18 @@ function roomNumberValueAt ( tile )
 end
 
 -- Returns a magic value if furniture in tile is a power gen
-function powerValueAt(tile)
+function powerValueAt (tile)
+	zero = 153 -- This is middle between 0 and 256
 	if (tile == nil or tile.furniture == nil or tile.furniture.PowerConnection == nill) then
-		return 0
+		return zero
 	end
 	if (tile.furniture.PowerConnection.IsPowerConsumer) then
-		return tile.furniture.PowerConnection.InputRate * -1
+		zero = zero - tile.furniture.PowerConnection.InputRate
 	end
 	if (tile.furniture.PowerConnection.IsPowerProducer) then
-		return tile.furniture.PowerConnection.OutputRate
+		zero = zero + tile.furniture.PowerConnection.OutputRate
 	end
-	return tile.furniture.PowerConnection.AccumulatedPower
+	return ModUtils.Clamp(zero, 0, 256)
 end
 
 -- Return temperature (in K) in current tile
