@@ -115,7 +115,9 @@ public class TraderPrototype
             requestChanceModifier = RequestChanceModifier
         };
 
+
         t.RefreshInventory();
+
 
         return t;
     }
