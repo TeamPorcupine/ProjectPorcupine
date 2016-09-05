@@ -2,14 +2,14 @@
 
 endTestsFold=0 #stores whether the travis_fold:end:tests has been echoed yet
 
-echo "Attempting Unit Tests"
 echo 'travis_fold:start:compile'
+echo "Attempting Unit Tests"
 /Applications/Unity/Unity.app/Contents/MacOS/Unity -batchmode -runEditorTests -nographics -EditorTestResultFile $(pwd)/EditorTestResults.xml -projectPath $(pwd) -logFile unity.log 
 cat $(pwd)/unity.log
 echo 'travis_fold:end:compile'
 
-echo 'Show Results from Tests'
 echo 'travis_fold:start:tests'
+echo 'Show Results from Tests'
 if [ ! -f $(pwd)/EditorTestResults.xml ]; then
     echo "Results file not found!"
     echo "travis_fold:end:tests"
