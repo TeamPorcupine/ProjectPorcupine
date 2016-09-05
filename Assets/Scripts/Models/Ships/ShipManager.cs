@@ -14,9 +14,16 @@ using UnityEngine;
 [MoonSharpUserData]
 public class ShipManager
 {
+    // The list of ships currently present in the world.
     private List<Ship> shipsInWorld;
+
+    // Maps a berth furniture to the ship that is currently berthed at it.
+    // A non-existent key or value of null means the berth is unoccupied.
     private Dictionary<Furniture, Ship> berthShipMap;
 
+    /// <summary>
+    /// Creates a ShipManager with no ships or berths registered
+    /// </summary>
     public ShipManager()
     {
         shipsInWorld = new List<Ship>();
@@ -25,8 +32,20 @@ public class ShipManager
 
     public delegate void ShipEventHandler(Ship ship);
 
-    public event ShipEventHandler ShipCreated, ShipRemoved;
+    /// <summary>
+    /// Called when a ship is added to the world through this manager.
+    /// </summary>
+    public event ShipEventHandler ShipCreated;
 
+    /// <summary>
+    /// Called when a ship is removed from the world through this manager.
+    /// </summary>
+    public event ShipEventHandler ShipRemoved;
+
+    /// <summary>
+    /// Updates all ships according to the elapsed time
+    /// </summary>
+    /// <param name="deltaTime">The time in seconds since the last call of this function.</param>
     public void Update(float deltaTime)
     {
         foreach (Ship s in shipsInWorld)
@@ -35,6 +54,14 @@ public class ShipManager
         }
     }
 
+    /// <summary>
+    /// Adds a ship to the world and puts its position at (x,y).
+    /// Calls the ShipCreated event.
+    /// </summary>
+    /// <returns>The ship.</returns>
+    /// <param name="type">The ship type to spawn.</param>
+    /// <param name="x">The x coordinate where the ship should appear.</param>
+    /// <param name="y">The y coordinate where the ship should appear.</param>
     public Ship AddShip(string type, float x, float y)
     {
         Ship ship = new Ship(this, PrototypeManager.Ship.GetPrototype(type));
@@ -50,6 +77,10 @@ public class ShipManager
         return ship;
     }
 
+    /// <summary>
+    /// Removes this ship from the world and calls the ShipRemoved event.
+    /// </summary>
+    /// <param name="ship">Ship.</param>
     public void RemoveShip(Ship ship)
     {
         shipsInWorld.Remove(ship);
@@ -60,24 +91,45 @@ public class ShipManager
         }
     }
 
+    /// <summary>
+    /// Returns true if this berth is currently holding a ship. Returns false if the furniture is not a berth.
+    /// </summary>
+    /// <param name="berth">The berth furniture object.</param>
     public bool IsOccupied(Furniture berth)
     {
         return berthShipMap.ContainsKey(berth) && berthShipMap[berth] != null;
     }
 
+    /// <summary>
+    /// Gets the ship currently at this berth. Returns null if berth is unoccupied.
+    /// </summary>
+    /// <param name="berth">The berth furniture object.</param>
     public Ship GetBerthedShip(Furniture berth)
     {
         return berthShipMap.ContainsKey(berth) ? berthShipMap[berth] : null;
     }
 
+    /// <summary>
+    /// Berths the ship at this berth. Cahgnes state of ship. Ship berthing should always be handled
+    /// through this function to make sure the states are properly updated on both sides.
+    /// </summary>
+    /// <param name="berth">The berth furniture object.</param>
+    /// <param name="ship">The ship to berth.</param>
     public void BerthShip(Furniture berth, Ship ship)
     {
         ship.UnwrapAtBerth();
-        ship.State = ShipState.BERTHED;
+        ship.State = ShipState.UNWRAPPED;
         berthShipMap[berth] = ship;
-        //// berth.EventActions.Trigger("OnBerth", berth);
+
+        berth.EventActions.Trigger("OnBerth", berth);
     }
 
+    /// <summary>
+    /// Deberths the ship from this berth. Throws an error if no ship was berthed here.
+    /// Changes the ship state to WRAPPED.
+    /// Deberthing should always be handled through this function to make sure states are properly updated on both ends.
+    /// </summary>
+    /// <param name="berth">The berth furniture object.</param>
     public void DeberthShip(Furniture berth)
     {
         if (berthShipMap.ContainsKey(berth) == false || berthShipMap[berth] == null)
@@ -86,9 +138,10 @@ public class ShipManager
             return;
         }
 
-        berthShipMap[berth].State = ShipState.TRANSIT;
+        berthShipMap[berth].State = ShipState.WRAPPED;
         berthShipMap[berth].Wrap();
         berthShipMap[berth] = null;
-        //// berth.EventActions.Trigger("OnDeberth", berth);
+
+        berth.EventActions.Trigger("OnDeberth", berth);
     }
 }
