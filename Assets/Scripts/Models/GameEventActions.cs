@@ -19,56 +19,24 @@ public class GameEventActions
 
     private Script myLuaScript;
 
-    public GameEventActions(string rawLuaCode)
+    public GameEventActions(string luaFile)
     {
         // Tell the LUA interpreter system to load all the classes
         // that we have marked as [MoonSharpUserData]
-        UserData.RegisterAssembly();
-
-        instance = this;
-
-        myLuaScript = new Script();
-
-        // If we want to be able to instantiate a new object of a class
-        //   i.e. by doing    SomeClass.__new()
-        // We need to make the base type visible.
-        myLuaScript.Globals["Inventory"] = typeof(Inventory);
-        myLuaScript.Globals["Job"] = typeof(Job);
-        myLuaScript.Globals["ModUtils"] = typeof(ModUtils);
-
-        // Also to access statics/globals
-        myLuaScript.Globals["World"] = typeof(World);
-
-        myLuaScript.DoString(rawLuaCode);
+        LuaUtilities.LoadScriptFromFile(luaFile);
     }
 
     public static void CallFunctionsWithEvent(string[] functionNames, GameEvent gameEvent)
     {
         foreach (string fn in functionNames)
         {
-            object func = instance.myLuaScript.Globals[fn];
-
-            if (func == null)
-            {
-                // These errors are about the lua code so putting them in the Lua channel.
-                Debug.ULogErrorChannel("Lua", "'" + fn + "' is not a LUA function.");
-                return;
-            }
-
-            DynValue result = instance.myLuaScript.Call(func, gameEvent);
-
+            DynValue result = LuaUtilities.CallFunction(fn, gameEvent);
+            
             if (result.Type == DataType.String)
             {
                 Debug.ULogErrorChannel("Lua", result.String);
             }
         }
-    }
-
-    public static DynValue CallFunction(string functionName, params object[] args)
-    {
-        object func = instance.myLuaScript.Globals[functionName];
-
-        return instance.myLuaScript.Call(func, args);
     }
 
     public static void JobComplete_FurnitureBuilding(Job theJob)

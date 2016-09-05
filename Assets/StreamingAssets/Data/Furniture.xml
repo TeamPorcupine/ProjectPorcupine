@@ -176,6 +176,7 @@
     <PathfindingWeight>2</PathfindingWeight>
     <Width>3</Width>
     <Height>3</Height>
+    <PowerConnection inputRate="1" outputRate="" capacity=""/>
 
     <BuildingJob jobTime="0" />
 
@@ -252,6 +253,7 @@ Might be harder to read if we have many animations
     <PathfindingWeight>2</PathfindingWeight>
     <Width>2</Width>
     <Height>2</Height>
+    <PowerConnection inputRate="1" outputRate="" capacity=""/>
 
     <BuildingJob jobTime="10">
       <Inventory objectType="Steel Plate" amount="50" />
@@ -290,6 +292,7 @@ Might be harder to read if we have many animations
     <PathfindingWeight>2</PathfindingWeight>
     <Width>3</Width>
     <Height>3</Height>
+    <PowerConnection inputRate="5" outputRate="" capacity=""/>
 
     <BuildingJob jobTime="0" />
 
@@ -307,7 +310,7 @@ Might be harder to read if we have many animations
   </Furniture>
 
 
-  <Furniture objectType="Heater">
+  <Furniture objectType="heater">
     <Name>Heater</Name>
     <Description>Raises temperature in the room.</Description>
     <BaseType>Temperature</BaseType>
@@ -324,9 +327,11 @@ Might be harder to read if we have many animations
     <Action event="OnInstall" functionName="Heater_InstallAction"></Action>
     <!-- This method gets called on Uninstall -->
     <Action event="OnUninstall" functionName="Heater_UninstallAction"></Action>
+    <Action event="OnUpdateTemperature" functionName="Heater_UpdateTemperature" />
 
     <Params>
-      <Param name="temperature" value="10" />
+      <Param name="base_heating" value="100" />
+      <Param name="pressure_threshold" value="0.5" />
     </Params>
 
     <LocalizationCode>furn_heater</LocalizationCode>
@@ -342,6 +347,7 @@ Might be harder to read if we have many animations
     <PathfindingWeight>2</PathfindingWeight>
     <Width>2</Width>
     <Height>2</Height>
+    <PowerConnection inputRate="1" outputRate="" capacity=""/>
 
     <BuildingJob jobTime="1" />
 
@@ -361,6 +367,7 @@ Might be harder to read if we have many animations
     <Name>Small Landing Pad</Name>
     <Description>A landing pad for small spaceboats to land.</Description>
     <TypeTag>OutdoorOnly</TypeTag>
+    <TypeTag>LandingPad</TypeTag>
     <MovementCost>2</MovementCost>
     <PathfindingModifier>0</PathfindingModifier>
     <PathfindingWeight>2</PathfindingWeight>
@@ -378,7 +385,10 @@ Might be harder to read if we have many animations
     <JobSpotOffset X="0" Y="0" />
     <JobSpawnSpotOffset X="1" Y="-1" />
 
-    <ContextMenuAction FunctionName="LandingPad_Test_CallTradeShip" Text="Call Trade Ship Test" RequiereCharacterSelected="false" />
+    <ContextMenuAction FunctionName="LandingPad_Test_CallTradeShip" 
+                       Text="Call Trade Ship Test" 
+                       RequiereCharacterSelected="false" 
+                       DevModeOnly="true"/>
 
     <LocalizationCode>furn_small_landing_pad</LocalizationCode>
     <UnlocalizedDescription>furn_small_landing_pad_desc</UnlocalizedDescription>
@@ -393,6 +403,7 @@ Might be harder to read if we have many animations
     <PathfindingWeight>2</PathfindingWeight>
     <Width>2</Width>
     <Height>2</Height>
+    <PowerConnection inputRate="1" outputRate="" capacity=""/>
 
     <BuildingJob jobTime="2" />
 
@@ -412,7 +423,7 @@ Might be harder to read if we have many animations
     <UnlocalizedDescription>furn_oxygen_compressor_desc</UnlocalizedDescription>
   </Furniture>
 
-  
+
   <Furniture objectType="solar_panel">
     <Name>Solar Panel</Name>
     <TypeTag>Generator</TypeTag>
@@ -436,5 +447,49 @@ Might be harder to read if we have many animations
 
     <LocalizationCode>furn_solar_panel</LocalizationCode>
     <UnlocalizedDescription>furn_solar_panel_desc</UnlocalizedDescription>
+  </Furniture>
+
+  <Furniture objectType="simple_bed">
+    <Name>Simple Bed</Name>
+    <Description>A simple bed</Description>
+    <TypeTag>Bed</TypeTag>
+    <MovementCost>2</MovementCost>
+    <Width>1</Width>
+    <Height>2</Height>
+    <PathfindingModifier>1</PathfindingModifier>
+    <PathfindingWeight>1</PathfindingWeight>
+
+    <BuildingJob jobTime="1">
+      <Inventory objectType="Steel Plate" amount="2" />
+    </BuildingJob>
+
+    <DeconstructJob>
+      <Inventory objectType="Steel Plate" amount="1" />
+    </DeconstructJob>
+
+    <Params>
+      <Param name="comfort" value="0.5" />
+    </Params>
+    <LocalizationCode>furn_simple_bed</LocalizationCode>
+    <UnlocalizedDescription>furn_simple_bed_desc</UnlocalizedDescription>
+  </Furniture>
+
+
+  <Furniture objectType="accumulator">
+    <Name>Accumulator</Name>
+    <Description>Accumulator</Description>
+    <MovementCost>2</MovementCost>
+    <PathfindingModifier>0</PathfindingModifier>
+    <PathfindingWeight>2</PathfindingWeight>
+    <Width>1</Width>
+    <Height>1</Height>
+    <PowerConnection inputRate="5" outputRate="10" capacity="50"/>
+
+    <BuildingJob jobTime="2" />
+
+    <GetSpriteName FunctionName="Accumulator_GetSpriteName" />
+
+    <LocalizationCode>furn_accumulator</LocalizationCode>
+    <UnlocalizedDescription>furn_accumulator_desc</UnlocalizedDescription>
   </Furniture>
 </Furnitures>

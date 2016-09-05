@@ -6,7 +6,6 @@
 -------------------------------------------------------
 
 -------------------------------- Tile Actions --------------------------------
-
 function CanBuildHere_Ladder ( tile )
 	return tile.Room.IsOutsideRoom()
 end

@@ -14,7 +14,7 @@ using System.Xml.Serialization;
 using Animation;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
-using Power;
+using ProjectPorcupine.PowerNetwork;
 using UnityEngine;
 
 /// <summary>
@@ -72,10 +72,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
     private bool isOperating;
 
-    // TODO: Implement larger objects
-    // TODO: Implement object rotation
-
-    // Empty constructor is used for serialization
+    /// TODO: Implement object rotation
     public Furniture()
     {
         Tint = Color.white;
@@ -84,7 +81,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         EventActions = new EventAction();
 
         contextMenuLuaActions = new List<ContextMenuLuaAction>();
-        furnParameters = new Parameter("furnParameters");
+        furnParameters = new Parameter();
         jobs = new List<Job>();
         typeTags = new HashSet<string>();
         funcPositionValidation = DefaultIsValidPosition;
@@ -137,7 +134,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         if (other.PowerConnection != null)
         {
             PowerConnection = other.PowerConnection.Clone() as Connection;
-            World.Current.PowerSystem.PlugIn(PowerConnection);
+            World.Current.PowerNetwork.PlugIn(PowerConnection);
+            PowerConnection.NewThresholdReached += OnNewThresholdReached;
         }
 
         if (other.funcPositionValidation != null)
@@ -162,8 +160,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     /// </summary>
     public float PathfindingModifier
     {
-        get { return pathfindingWeight; }
-        set { pathfindingWeight = value; }
+        get { return pathfindingModifier; }
+        set { pathfindingModifier = value; }
     }
 
     /// <summary>
@@ -194,7 +192,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     public EventAction EventActions { get; private set; }
 
     /// <summary>
-    /// Connection to power system.
+    /// Connection to PowerNetwork.
     /// </summary>
     public Connection PowerConnection { get; private set; }
 
@@ -293,7 +291,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     {
         if (proto.funcPositionValidation(tile) == false)
         {
-            Debug.ULogErrorChannel("Furniture", "PlaceInstance -- Position Validity Function returned FALSE.");
+            Debug.ULogErrorChannel("Furniture", "PlaceInstance -- Position Validity Function returned FALSE. " + proto.Name + " " + tile.X + ", " + tile.Y + ", " + tile.Z);
             return null;
         }
 
@@ -301,7 +299,6 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         Furniture obj = proto.Clone();
         obj.Tile = tile;
 
-        // FIXME: This assumes we are 1x1!
         if (tile.PlaceFurniture(obj) == false)
         {
             // For some reason, we weren't able to place our object in this tile.
@@ -324,7 +321,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
             {
                 for (int ypos = y - 1; ypos < y + proto.Height + 1; ypos++)
                 {
-                    Tile tileAt = World.Current.GetTileAt(xpos, ypos);
+                    Tile tileAt = World.Current.GetTileAt(xpos, ypos, tile.Z);
                     if (tileAt != null && tileAt.Furniture != null && tileAt.Furniture.Changed != null)
                     {
                         tileAt.Furniture.Changed(tileAt.Furniture);
@@ -350,6 +347,16 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
     public void Update(float deltaTime)
     {
+        if (PowerConnection != null && PowerConnection.IsPowerConsumer && HasPower() == false)
+        {
+            if (JobCount() > 0)
+            {
+                CancelJobs();
+            }
+
+            return;
+        }
+
         // TODO: some weird thing happens
         if (EventActions != null)
         {
@@ -405,7 +412,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
     public bool HasPower()
     {
-        IsOperating = PowerConnection == null || World.Current.PowerSystem.HasPower(PowerConnection);
+        IsOperating = PowerConnection == null || World.Current.PowerNetwork.HasPower(PowerConnection);
         return IsOperating;
     }
 
@@ -418,6 +425,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     {
         writer.WriteAttributeString("X", Tile.X.ToString());
         writer.WriteAttributeString("Y", Tile.Y.ToString());
+        writer.WriteAttributeString("Z", Tile.Z.ToString());
         writer.WriteAttributeString("objectType", ObjectType);
 
         // Let the Parameters handle their own xml
@@ -494,19 +502,19 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                         {
                             // Found an inventory requirement, so add it to the list!
                             invs.Add(new Inventory(
-                                inventoryReader.GetAttribute("objectType"),
-                                int.Parse(inventoryReader.GetAttribute("amount")),
-                                0));
+                                    inventoryReader.GetAttribute("objectType"),
+                                    int.Parse(inventoryReader.GetAttribute("amount")),
+                                    0));
                         }
                     }
 
                     Job j = new Job(
-                        null,
-                        ObjectType,
-                        FurnitureActions.JobComplete_FurnitureBuilding,
-                        jobTime,
-                        invs.ToArray(),
-                        Job.JobPriority.High);
+                                null,
+                                ObjectType,
+                                FurnitureActions.JobComplete_FurnitureBuilding,
+                                jobTime,
+                                invs.ToArray(),
+                                Job.JobPriority.High);
                     j.JobDescription = "job_build_" + ObjectType + "_desc";
                     PrototypeManager.FurnitureJob.SetPrototype(ObjectType, j);
                     break;
@@ -532,7 +540,6 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                             Animation.AddAnimation(state, spriteBase, frames, fps, looping);                            
                         }
                     }
-
                     break;
                 case "Action":
                     XmlReader subtree = reader.ReadSubtree();
@@ -544,7 +551,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                     {
                         LuaFunction = reader.GetAttribute("FunctionName"),
                         Text = reader.GetAttribute("Text"),
-                        RequiereCharacterSelected = bool.Parse(reader.GetAttribute("RequiereCharacterSelected"))
+                        RequiereCharacterSelected = bool.Parse(reader.GetAttribute("RequiereCharacterSelected")),
+                        DevModeOnly = bool.Parse(reader.GetAttribute("DevModeOnly") ?? "false")
                     });
                     break;
                 case "IsEnterable":
@@ -590,8 +598,11 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     public void ReadXml(XmlReader reader)
     {
         // X, Y, and objectType have already been set, and we should already
-        // be assigned to a tile.  So just read extra data.
-        ReadXmlParams(reader);
+        // be assigned to a tile.  So just read extra data if we have any.
+        if (!reader.IsEmptyElement)
+        {
+            ReadXmlParams(reader);
+        }
     }
 
     public void ReadXmlParams(XmlReader reader)
@@ -687,7 +698,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
         if (PowerConnection != null)
         {
-            World.Current.PowerSystem.Unplug(PowerConnection);
+            World.Current.PowerNetwork.Unplug(PowerConnection);
+            PowerConnection.NewThresholdReached -= OnNewThresholdReached;
         }
 
         if (Removed != null)
@@ -717,7 +729,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
             {
                 for (int ypos = y - 1; ypos < y + fheight + 1; ypos++)
                 {
-                    Tile t = World.Current.GetTileAt(xpos, ypos);
+                    Tile t = World.Current.GetTileAt(xpos, ypos, Tile.Z);
                     if (t != null && t.Furniture != null && t.Furniture.Changed != null)
                     {
                         t.Furniture.Changed(t.Furniture);
@@ -732,12 +744,12 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
     public Tile GetJobSpotTile()
     {
-        return World.Current.GetTileAt(Tile.X + (int)JobSpotOffset.x, Tile.Y + (int)JobSpotOffset.y);
+        return World.Current.GetTileAt(Tile.X + (int)JobSpotOffset.x, Tile.Y + (int)JobSpotOffset.y, Tile.Z);
     }
 
     public Tile GetSpawnSpotTile()
     {
-        return World.Current.GetTileAt(Tile.X + (int)jobSpawnSpotOffset.x, Tile.Y + (int)jobSpawnSpotOffset.y);
+        return World.Current.GetTileAt(Tile.X + (int)jobSpawnSpotOffset.x, Tile.Y + (int)jobSpawnSpotOffset.y, Tile.Z);
     }
 
     // Returns true if furniture has typeTag, though simple, the intent is to separate the interaction with
@@ -793,7 +805,10 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                     {
                         Text = "Prioritize " + Name,
                         RequireCharacterSelected = true,
-                        Action = (ca, c) => { c.PrioritizeJob(jobs[0]); }
+                        Action = (ca, c) =>
+                        {
+                            c.PrioritizeJob(jobs[0]);
+                        }
                     };
                 }
             }
@@ -801,12 +816,16 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
         foreach (ContextMenuLuaAction contextMenuLuaAction in contextMenuLuaActions)
         {
-            yield return new ContextMenuAction
+            if (!contextMenuLuaAction.DevModeOnly ||
+                Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
             {
-                Text = contextMenuLuaAction.Text,
-                RequireCharacterSelected = contextMenuLuaAction.RequiereCharacterSelected,
-                Action = (cma, c) => InvokeContextMenuLuaAction(contextMenuLuaAction.LuaFunction, c)
-            };
+                yield return new ContextMenuAction
+                {
+                    Text = contextMenuLuaAction.Text,
+                    RequireCharacterSelected = contextMenuLuaAction.RequiereCharacterSelected,
+                    Action = (cma, c) => InvokeContextMenuLuaAction(contextMenuLuaAction.LuaFunction, c)
+                };
+            }
         }
     }
 
@@ -824,11 +843,11 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     // LUA files that will be customizable for each piece of furniture.
     // For example, a door might specific that it needs two walls to
     // connect to.
-    private bool DefaultIsValidPosition(Tile t)
+    private bool DefaultIsValidPosition(Tile tile)
     {
-        bool tooCloseToEdge = t.X < MinEdgeDistance || t.Y < MinEdgeDistance ||
-            World.Current.Width - t.X <= MinEdgeDistance ||
-            World.Current.Height - t.Y <= MinEdgeDistance;
+        bool tooCloseToEdge = tile.X < MinEdgeDistance || tile.Y < MinEdgeDistance ||
+                              World.Current.Width - tile.X <= MinEdgeDistance ||
+                              World.Current.Height - tile.Y <= MinEdgeDistance;
 
         if (tooCloseToEdge)
         {
@@ -837,17 +856,17 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
         if (HasTypeTag("OutdoorOnly"))
         {
-            if (t.Room == null || !t.Room.IsOutsideRoom())
+            if (tile.Room == null || !tile.Room.IsOutsideRoom())
             {
                 return false;
             }
         }
 
-        for (int x_off = t.X; x_off < t.X + Width; x_off++)
+        for (int x_off = tile.X; x_off < tile.X + Width; x_off++)
         {
-            for (int y_off = t.Y; y_off < t.Y + Height; y_off++)
+            for (int y_off = tile.Y; y_off < tile.Y + Height; y_off++)
             {
-                Tile t2 = World.Current.GetTileAt(x_off, y_off);
+                Tile t2 = World.Current.GetTileAt(x_off, y_off, tile.Z);
 
                 // Check to see if there is furniture which is replaceable
                 bool isReplaceable = false;
@@ -917,5 +936,10 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         {
             handler(furniture);
         }
+    }
+
+    private void OnNewThresholdReached(Connection connection)
+    {
+        UpdateOnChanged(this);
     }
 }

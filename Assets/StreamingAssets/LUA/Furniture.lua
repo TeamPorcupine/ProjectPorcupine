@@ -18,11 +18,7 @@ ENTERABILITY_SOON = 2
 
 -------------------------------- Furniture Actions --------------------------------
 function OnUpdate_GasGenerator( furniture, deltaTime )
-    if (furniture.HasPower() == false) then
-        return
-    end
-
-	if ( furniture.Tile.Room == nil ) then
+    if ( furniture.Tile.Room == nil ) then
 		return "Furniture's room was null."
 	end
 
@@ -328,7 +324,7 @@ end
 
 function MiningDroneStation_JobComplete(j)
 	if (j.furniture.GetSpawnSpotTile().Inventory == nil or j.furniture.GetSpawnSpotTile().Inventory.objectType == j.furniture.Parameters["mine_type"].ToString()) then
-		World.Current.inventoryManager.PlaceInventory( j.furniture.GetSpawnSpotTile(), Inventory.__new(j.furniture.Parameters["mine_type"].ToString() , 50, 20) )
+		World.Current.inventoryManager.PlaceInventory( j.furniture.GetSpawnSpotTile(), Inventory.__new(j.furniture.Parameters["mine_type"].ToString() , 50, 2) )
 	else
 		j.CancelJob()
 	end
@@ -349,7 +345,7 @@ function MetalSmelter_UpdateAction(furniture, deltaTime)
         furniture.Parameters["smelttime"].ChangeFloatValue(deltaTime)
         if(furniture.Parameters["smelttime"].ToFloat() >= furniture.Parameters["smelttime_required"].ToFloat()) then
             furniture.Parameters["smelttime"].SetValue(0)
-            local outputSpot = World.Current.GetTileAt(spawnSpot.X+2, spawnSpot.y)
+            local outputSpot = World.Current.GetTileAt(spawnSpot.X+2, spawnSpot.Y, spawnSpot.Z)
 
             if(outputSpot.Inventory == nil) then
                 World.Current.inventoryManager.PlaceInventory(outputSpot, Inventory.__new("Steel Plate", 50, 5))
@@ -443,7 +439,7 @@ function PowerCellPress_UpdateAction(furniture, deltaTime)
 
         if(furniture.Parameters["presstime"].ToFloat() >= furniture.Parameters["presstime_required"].ToFloat()) then
             furniture.Parameters["presstime"].SetValue(0)
-            local outputSpot = World.Current.GetTileAt(spawnSpot.X+2, spawnSpot.y)
+            local outputSpot = World.Current.GetTileAt(spawnSpot.X+2, spawnSpot.y, spawnSpot.Z)
 
             if(outputSpot.Inventory == nil) then
                 World.Current.inventoryManager.PlaceInventory( outputSpot, Inventory.__new("Power Cell", 5, 1) )
@@ -474,6 +470,7 @@ function PowerCellPress_JobComplete(j)
 end
 
 function CloningPod_UpdateAction(furniture, deltaTime)
+	
     if( furniture.JobCount() > 0 ) then
         return
     end
@@ -543,7 +540,7 @@ function PowerGenerator_JobComplete( j )
 end
 
 function LandingPad_Test_CallTradeShip(furniture, character)
-   WorldController.Instance.CallTradeShipTest(furniture)
+   WorldController.Instance.TradeController.CallTradeShipTest(furniture)
 end
 
 -- This function gets called once, when the funriture is isntalled
@@ -555,15 +552,27 @@ end
 
 -- This function gets called once, when the funriture is unisntalled
 function Heater_UninstallAction( furniture, deltaTime)
-    -- TODO: find elegant way to unregister previous register
-	furniture.EventActions.Deregister("OnUpdateTemperature", "Heater_UpdateTemperature")
+    furniture.EventActions.Deregister("OnUpdateTemperature", "Heater_UpdateTemperature")
 	World.Current.temperature.DeregisterSinkOrSource(furniture)
+	-- TODO: find elegant way to unregister previous register
 end
 
--- Dummy heater uninstall function
--- THis function gets called once, when the funriture is unisntalled
 function Heater_UpdateTemperature( furniture, deltaTime)
-	World.Current.temperature.SetTemperature(furniture.Tile.X, furniture.Tile.Y, 300)
+    if (furniture.HasPower() == false) then
+        return
+    end
+    if (furniture.tile.Room.IsOutsideRoom() == true) then
+        return
+    end
+    
+    tile = furniture.tile
+    pressure = tile.Room.GetGasPressure() / tile.Room.GetSize()
+    efficiency = ModUtils.Clamp01(pressure / furniture.Parameters["pressure_threshold"].ToFloat())
+    temperatureChangePerSecond = furniture.Parameters["base_heating"].ToFloat() * efficiency
+    temperatureChange = temperatureChangePerSecond * deltaTime
+    
+    World.Current.temperature.ChangeTemperature(tile.X, tile.Y, temperatureChange)
+    --ModUtils.ULogChannel("Temperature", "Heat change: " .. temperatureChangePerSecond .. " => " .. World.current.temperature.GetTemperature(tile.X, tile.Y))
 end
 
 -- Should maybe later be integrated with GasGenerator function by
@@ -572,6 +581,7 @@ function OxygenCompressor_OnUpdate(furniture, deltaTime)
     local room = furniture.Tile.Room
     local pressure = room.GetGasPressure("O2")
     local gasAmount = furniture.Parameters["flow_rate"].ToFloat() * deltaTime
+    
     if (pressure < furniture.Parameters["give_threshold"].ToFloat()) then
         -- Expel gas if available
         if (furniture.Parameters["gas_content"].ToFloat() > 0) then
@@ -604,6 +614,12 @@ function SolarPanel_OnUpdate(furniture, deltaTime)
     local efficiency = furniture.Parameters["efficiency"].ToFloat()
     local powerPerSecond = baseOutput * efficiency
 	furniture.PowerConnection.OutputRate = powerPerSecond
+end
+
+function Accumulator_GetSpriteName(furniture)
+	local baseName = furniture.ObjectType
+	local suffix = furniture.PowerConnection.CurrentThreshold 
+	return baseName .. "_" .. suffix
 end
 
 ModUtils.ULog("Furniture.lua loaded")

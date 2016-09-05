@@ -20,6 +20,10 @@ public class SpriteManager : MonoBehaviour
 
     public static Texture2D noRescourceTexture;
 
+    // A sprite image with a "ph_" as a prefix will be loaded as a placeholder if the normal spite image is missing.
+    // This is used to easily identity spires that needs improvement.
+    private const string PlaceHolderPrefix = "ph_";
+
     private Dictionary<string, Sprite> sprites;
 
     public void Awake()
@@ -49,15 +53,25 @@ public class SpriteManager : MonoBehaviour
 
     public Sprite GetSprite(string categoryName, string spriteName)
     {
+        Sprite sprite = new Sprite();
+
+        string spriteNamePlaceHolder = categoryName + "/" + PlaceHolderPrefix + spriteName;
         spriteName = categoryName + "/" + spriteName;
 
-        if (sprites.ContainsKey(spriteName) == false)
+        if (sprites.ContainsKey(spriteName))
         {
-            // Return a magenta image
-            return Sprite.Create(noRescourceTexture, new Rect(Vector2.zero, new Vector3(32, 32)), new Vector2(0.5f, 0.5f), 32);
+            sprite = sprites[spriteName];
+        }
+        else if (sprites.ContainsKey(spriteNamePlaceHolder))
+        {
+            sprite = sprites[spriteNamePlaceHolder];
+        }
+        else
+        {
+            sprite = Sprite.Create(noRescourceTexture, new Rect(Vector2.zero, new Vector3(32, 32)), new Vector2(0.5f, 0.5f), 32);
         }
 
-        return sprites[spriteName];
+        return sprite;
     }
 
     private void LoadSprites()
@@ -65,7 +79,6 @@ public class SpriteManager : MonoBehaviour
         sprites = new Dictionary<string, Sprite>();
 
         string filePath = Path.Combine(Application.streamingAssetsPath, "Images");
-        string modsPath = Path.Combine(Application.streamingAssetsPath, "Mods");
         LoadSpritesFromDirectory(filePath);
 
         DirectoryInfo[] mods = WorldController.Instance.modsManager.GetMods();
@@ -128,6 +141,8 @@ public class SpriteManager : MonoBehaviour
         if (imageTexture.LoadImage(imageBytes))
         {
             // Image was successfully loaded.
+            imageTexture.filterMode = FilterMode.Point;
+
             // So let's see if there's a matching XML file for this image.
             string baseSpriteName = Path.GetFileNameWithoutExtension(filePath);
             string basePath = Path.GetDirectoryName(filePath);
@@ -149,7 +164,7 @@ public class SpriteManager : MonoBehaviour
                     do
                     {
                         ReadSpriteFromXml(spriteCategory, reader, imageTexture);
-                    } 
+                    }
                     while (reader.ReadToNextSibling("Sprite"));
                 }
                 else
@@ -168,7 +183,7 @@ public class SpriteManager : MonoBehaviour
             // Attempt to load/parse the XML file to get information on the sprite(s)
         }
 
-        // else, the file wasn't actually a image file, so just move on.
+        // Else, the file wasn't actually a image file, so just move on.
     }
 
     private void ReadSpriteFromXml(string spriteCategory, XmlReader reader, Texture2D imageTexture)

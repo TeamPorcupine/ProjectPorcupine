@@ -7,7 +7,6 @@
 // ====================================================
 #endregion
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -15,7 +14,6 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
-using Power;
 using UnityEngine;
 
 [MoonSharpUserData]
@@ -47,17 +45,17 @@ public class World : IXmlSerializable
     public JobQueue jobWaitingQueue;
 
     // A two-dimensional array to hold our tile data.
-    private Tile[,] tiles;
+    private Tile[,,] tiles;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="World"/> class.
     /// </summary>
     /// <param name="width">Width in tiles.</param>
     /// <param name="height">Height in tiles.</param>
-    public World(int width, int height)
+    public World(int width, int height, int depth)
     {
         // Creates an empty world.
-        SetupWorld(width, height);
+        SetupWorld(width, height, depth);
         int seed = UnityEngine.Random.Range(0, int.MaxValue);
         WorldGenerator.Generate(this, seed);
         Debug.ULogChannel("World", "Generated World");
@@ -76,7 +74,7 @@ public class World : IXmlSerializable
         }
 
         // Make one character.
-        CreateCharacter(GetTileAt(Width / 2, Height / 2));
+        CreateCharacter(GetTileAt(Width / 2, Height / 2, 0));
 
         TestRoomGraphGeneration(this);
     }
@@ -104,7 +102,10 @@ public class World : IXmlSerializable
     // The tile height of the world
     public int Height { get; protected set; }
 
-    public Syster PowerSystem { get; private set; }
+    // The tile depth of the world
+    public int Depth { get; protected set; }
+
+    public ProjectPorcupine.PowerNetwork.PowerNetwork PowerNetwork { get; private set; }
 
     public Room GetOutsideRoom()
     {
@@ -178,7 +179,7 @@ public class World : IXmlSerializable
 
         // Progress temperature modelling
         temperature.Update();
-        PowerSystem.Update(deltaTime);
+        PowerNetwork.Update(deltaTime);
     }
 
     public Character CreateCharacter(Tile t)
@@ -216,13 +217,16 @@ public class World : IXmlSerializable
         {
             for (int y = 0; y < Height; y++)
             {
-                if (UnityEngine.Random.Range(0, 2) == 0)
+                for (int z = 0; z < Depth; z++)
                 {
-                    tiles[x, y].Type = TileType.Empty;
-                }
-                else
-                {
-                    tiles[x, y].Type = TileType.Floor;
+                    if (UnityEngine.Random.Range(0, 2) == 0)
+                    {
+                        tiles[x, y, z].Type = TileType.Empty;
+                    }
+                    else
+                    {
+                        tiles[x, y, z].Type = TileType.Floor;
+                    }
                 }
             }
         }
@@ -238,13 +242,13 @@ public class World : IXmlSerializable
         {
             for (int y = b - 5; y < b + 15; y++)
             {
-                tiles[x, y].Type = TileType.Floor;
+                tiles[x, y, 0].Type = TileType.Floor;
 
                 if (x == l || x == (l + 9) || y == b || y == (b + 9))
                 {
                     if (x != (l + 9) && y != (b + 4))
                     {
-                        PlaceFurniture("furn_SteelWall", tiles[x, y]);
+                        PlaceFurniture("furn_SteelWall", tiles[x, y, 0]);
                     }
                 }
             }
@@ -257,27 +261,28 @@ public class World : IXmlSerializable
     /// <returns>The <see cref="Tile"/> or null if called with invalid arguments.</returns>
     /// <param name="x">The x coordinate.</param>
     /// <param name="y">The y coordinate.</param>
-    public Tile GetTileAt(int x, int y)
+    public Tile GetTileAt(int x, int y, int z)
     {
-        if (x >= Width || x < 0 || y >= Height || y < 0)
+        if (x >= Width || x < 0 || y >= Height || y < 0 || z >= Depth || z < 0)
         {
             return null;
         }
 
-        return tiles[x, y];
+        return tiles[x, y, z];
     }
 
+    // Currently Hardcoded to have center tile at highest layer, to play nice with pathfinding.
     public Tile GetCenterTile()
     {
-        return GetTileAt(Width / 2, Height / 2);
+        return GetTileAt(Width / 2, Height / 2, 0);
     }
 
     public Tile GetFirstCenterTileWithNoInventory(int maxOffset)
     {
-        return GetFirstTileWithNoInventoryAround(maxOffset, Width / 2, Height / 2);
+        return GetFirstTileWithNoInventoryAround(maxOffset, Width / 2, Height / 2, 0);
     }
 
-    public Tile GetFirstTileWithNoInventoryAround(int maxOffset, int centerX, int centerY)
+    public Tile GetFirstTileWithNoInventoryAround(int maxOffset, int centerX, int centerY, int centerZ)
     {
         for (int offset = 0; offset <= maxOffset; offset++)
         {
@@ -289,14 +294,14 @@ public class World : IXmlSerializable
             for (offsetX = -offset; offsetX <= offset; offsetX++)
             {
                 offsetY = offset;
-                tile = GetTileAt(centerX + offsetX, centerY + offsetY);
+                tile = GetTileAt(centerX + offsetX, centerY + offsetY, centerZ);
                 if (tile.Inventory == null)
                 {
                     return tile;
                 }
 
                 offsetY = -offset;
-                tile = GetTileAt(centerX + offsetX, centerY + offsetY);
+                tile = GetTileAt(centerX + offsetX, centerY + offsetY, centerZ);
                 if (tile.Inventory == null)
                 {
                     return tile;
@@ -307,14 +312,14 @@ public class World : IXmlSerializable
             for (offsetY = -offset; offsetY <= offset; offsetY++)
             {
                 offsetX = offset;
-                tile = GetTileAt(centerX + offsetX, centerY + offsetY);
+                tile = GetTileAt(centerX + offsetX, centerY + offsetY,  centerZ);
                 if (tile.Inventory == null)
                 {
                     return tile;
                 }
 
                 offsetX = -offset;
-                tile = GetTileAt(centerX + offsetX, centerY + offsetY);
+                tile = GetTileAt(centerX + offsetX, centerY + offsetY,  centerZ);
                 if (tile.Inventory == null)
                 {
                     return tile;
@@ -327,7 +332,6 @@ public class World : IXmlSerializable
 
     public Furniture PlaceFurniture(string objectType, Tile t, bool doRoomFloodFill = true)
     {
-        // TODO: This function assumes 1x1 tiles -- change this later!
         if (PrototypeManager.Furniture.HasPrototype(objectType) == false)
         {
             Debug.ULogErrorChannel("World", "furniturePrototypes doesn't contain a proto for key: " + objectType);
@@ -394,6 +398,7 @@ public class World : IXmlSerializable
         // Save info here
         writer.WriteAttributeString("Width", Width.ToString());
         writer.WriteAttributeString("Height", Height.ToString());
+        writer.WriteAttributeString("Depth", Depth.ToString());
 
         writer.WriteStartElement("Rooms");
         foreach (Room r in rooms)
@@ -416,11 +421,14 @@ public class World : IXmlSerializable
         {
             for (int y = 0; y < Height; y++)
             {
-                if (tiles[x, y].Type != TileType.Empty)
+                for (int z = 0; z < Depth; z++)
                 {
-                    writer.WriteStartElement("Tile");
-                    tiles[x, y].WriteXml(writer);
-                    writer.WriteEndElement();
+                    if (tiles[x, y, z].Type != TileType.Empty)
+                    {
+                        writer.WriteStartElement("Tile");
+                        tiles[x, y, z].WriteXml(writer);
+                        writer.WriteEndElement();
+                    }
                 }
             }
         }
@@ -477,6 +485,8 @@ public class World : IXmlSerializable
         }
 
         writer.WriteEndElement();
+
+        Scheduler.Scheduler.Current.WriteXml(writer);
     }
 
     public void ReadXml(XmlReader reader)
@@ -484,8 +494,9 @@ public class World : IXmlSerializable
         // Load info here
         Width = int.Parse(reader.GetAttribute("Width"));
         Height = int.Parse(reader.GetAttribute("Height"));
+        Depth = int.Parse(reader.GetAttribute("Depth"));
 
-        SetupWorld(Width, Height);
+        SetupWorld(Width, Height, Depth);
 
         while (reader.Read())
         {
@@ -511,6 +522,9 @@ public class World : IXmlSerializable
                     break;
                 case "Wallet":
                     ReadXml_Wallet(reader);
+                    break;
+                case "Scheduler":
+                    Scheduler.Scheduler.Current.ReadXml(reader);
                     break;
             }
         }
@@ -597,7 +611,7 @@ public class World : IXmlSerializable
         }
     }
 
-    private void SetupWorld(int width, int height)
+    private void SetupWorld(int width, int height, int depth)
     {
         // Setup furniture actions before any other things are loaded.
         new FurnitureActions();
@@ -611,10 +625,11 @@ public class World : IXmlSerializable
 
         Width = width;
         Height = height;
+        Depth = depth;
 
         TileType.LoadTileTypes();
 
-        tiles = new Tile[Width, Height];
+        tiles = new Tile[Width, Height, Depth];
 
         rooms = new List<Room>();
         rooms.Add(new Room()); // Create the outside?
@@ -623,9 +638,12 @@ public class World : IXmlSerializable
         {
             for (int y = 0; y < Height; y++)
             {
-                tiles[x, y] = new Tile(x, y);
-                tiles[x, y].TileChanged += OnTileChangedCallback;
-                tiles[x, y].Room = GetOutsideRoom(); // Rooms 0 is always going to be outside, and that is our default room
+                for (int z = 0; z < Depth; z++)
+                {
+                    tiles[x, y, z] = new Tile(x, y, z);
+                    tiles[x, y, z].TileChanged += OnTileChangedCallback;
+                    tiles[x, y, z].Room = GetOutsideRoom(); // Rooms 0 is always going to be outside, and that is our default room
+                }
             }
         }
 
@@ -634,7 +652,7 @@ public class World : IXmlSerializable
         characters = new List<Character>();
         furnitures = new List<Furniture>();
         inventoryManager = new InventoryManager();
-        PowerSystem = new Syster();
+        PowerNetwork = new ProjectPorcupine.PowerNetwork.PowerNetwork();
         temperature = new Temperature(Width, Height);
         LoadSkybox();
     }
@@ -709,7 +727,8 @@ public class World : IXmlSerializable
             {
                 int x = int.Parse(reader.GetAttribute("X"));
                 int y = int.Parse(reader.GetAttribute("Y"));
-                tiles[x, y].ReadXml(reader);
+                int z = int.Parse(reader.GetAttribute("Z"));
+                tiles[x, y, z].ReadXml(reader);
             }
             while (reader.ReadToNextSibling("Tile"));
         }
@@ -725,6 +744,7 @@ public class World : IXmlSerializable
             {
                 int x = int.Parse(reader.GetAttribute("X"));
                 int y = int.Parse(reader.GetAttribute("Y"));
+                int z = int.Parse(reader.GetAttribute("Z"));
 
                 // Create our inventory from the file
                 Inventory inv = new Inventory(
@@ -732,7 +752,7 @@ public class World : IXmlSerializable
                     int.Parse(reader.GetAttribute("maxStackSize")),
                     int.Parse(reader.GetAttribute("stackSize")));
 
-                inventoryManager.PlaceInventory(tiles[x, y], inv);
+                inventoryManager.PlaceInventory(tiles[x, y, z], inv);
             }
             while (reader.ReadToNextSibling("Inventory"));
         }
@@ -746,8 +766,9 @@ public class World : IXmlSerializable
             {
                 int x = int.Parse(reader.GetAttribute("X"));
                 int y = int.Parse(reader.GetAttribute("Y"));
+                int z = int.Parse(reader.GetAttribute("Z"));
 
-                Furniture furn = PlaceFurniture(reader.GetAttribute("objectType"), tiles[x, y], false);
+                Furniture furn = PlaceFurniture(reader.GetAttribute("objectType"), tiles[x, y, z], false);
                 furn.ReadXml(reader);
             }
             while (reader.ReadToNextSibling("Furniture"));
@@ -778,16 +799,19 @@ public class World : IXmlSerializable
 
                 int x = int.Parse(reader.GetAttribute("X"));
                 int y = int.Parse(reader.GetAttribute("Y"));
+                int z = int.Parse(reader.GetAttribute("Z"));
                 if (reader.GetAttribute("r") != null)
                 {
                     Color color = ColorUtilities.ParseColorFromString(reader.GetAttribute("r"), reader.GetAttribute("g"), reader.GetAttribute("b"));
                     Color colorUni = ColorUtilities.ParseColorFromString(reader.GetAttribute("rUni"), reader.GetAttribute("gUni"), reader.GetAttribute("bUni"));
                     Color colorSkin = ColorUtilities.ParseColorFromString(reader.GetAttribute("rSkin"), reader.GetAttribute("gSkin"), reader.GetAttribute("bSkin"));
-                    character = CreateCharacter(tiles[x, y], color, colorUni, colorSkin);
+
+                    character = CreateCharacter(tiles[x, y, z], color, colorUni, colorSkin);
+
                 }
                 else
                 {
-                    character = CreateCharacter(tiles[x, y]);
+                    character = CreateCharacter(tiles[x, y, z]);
                 }
 
                 character.name = reader.GetAttribute("name");

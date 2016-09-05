@@ -6,6 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+
 using UnityEngine;
 
 public class TraderShipController : MonoBehaviour
@@ -39,7 +40,7 @@ public class TraderShipController : MonoBehaviour
 
         float distance = Vector3.Distance(transform.position, destination);
 
-        if (distance > DestinationReachedThreshold)
+        if (distance > DestinationReachedThreshold * WorldController.Instance.TimeScale)
         {
             // rotate the model
             Vector3 vectorToTarget = destination - transform.position;
@@ -62,37 +63,7 @@ public class TraderShipController : MonoBehaviour
             }
             else
             {
-                DialogBoxManager dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
-
-                Trader playerTrader = Trader.FromPlayer(World.Current.Wallet.Currencies[Trader.Currency.Name]);
-                Trade trade = new Trade(playerTrader, Trader);
-                dbm.dialogBoxTrade.SetupTrade(trade);
-                dbm.dialogBoxTrade.OnTradeCancelled = () => { TradeCompleted = true; };
-                dbm.dialogBoxTrade.OnTradeCompleted = () =>
-                {
-                    TradeCompleted = true;
-                    TrasfertTradedItems(trade);
-                };
-                dbm.dialogBoxTrade.ShowDialog();
-            }
-        }
-    }
-
-    private void TrasfertTradedItems(Trade trade)
-    {
-        trade.Player.Currency.Balance += trade.TradeCurrencyBalanceForPlayer;
-
-        foreach (TradeItem tradeItem in trade.TradeItems)
-        {
-            if (tradeItem.TradeAmount > 0)
-            {
-                Tile tile = WorldController.Instance.World.GetFirstTileWithNoInventoryAround(6, (int)LandingCoordinates.x, (int)LandingCoordinates.y);
-                Inventory inv = new Inventory(tradeItem.ObjectType, tradeItem.TradeAmount, tradeItem.TradeAmount);
-                WorldController.Instance.World.inventoryManager.PlaceInventory(tile, inv);
-            }
-            else if (tradeItem.TradeAmount < 0)
-            {
-                WorldController.Instance.World.inventoryManager.QuickRemove(tradeItem.ObjectType, -tradeItem.TradeAmount, true);
+                WorldController.Instance.TradeController.ShowTradeDialogBox(this);
             }
         }
     }

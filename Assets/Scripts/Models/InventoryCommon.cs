@@ -12,22 +12,14 @@ public class InventoryCommon
 {
     public string objectType;
     public int maxStackSize;
+    public float basePrice = 1f;
+    public string category;
 
     public void ReadXmlPrototype(XmlReader reader_parent)
     {
         objectType = reader_parent.GetAttribute("objectType");
-
-        XmlReader reader = reader_parent.ReadSubtree();
-
-        while (reader.Read())
-        {
-            switch (reader.Name)
-            {
-                case "maxStackSize":
-                    reader.Read();
-                    maxStackSize = reader.ReadContentAsInt();
-                    break;
-            }
-        }
+        maxStackSize = int.Parse(reader_parent.GetAttribute("maxStackSize") ?? "50");
+        basePrice = float.Parse(reader_parent.GetAttribute("basePrice") ?? "1");
+        category = reader_parent.GetAttribute("category");
     }
 }

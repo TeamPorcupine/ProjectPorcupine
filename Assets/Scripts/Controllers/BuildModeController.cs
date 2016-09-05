@@ -119,7 +119,7 @@ public class BuildModeController
                 j.furniturePrototype = PrototypeManager.Furniture.GetPrototype(furnitureType);
 
                 // Add the job to the queue or build immediately if in dev mode
-                if (Settings.GetSettingAsBool("DialogBoxSettings_developerModeToggle", false))
+                if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
                 {
                     WorldController.Instance.World.PlaceFurniture(j.JobObjectType, j.tile);
                 }
@@ -131,7 +131,7 @@ public class BuildModeController
                         {
                             // FIXME: I don't like having to manually and explicitly set
                             // flags that preven conflicts. It's too easy to forget to set/clear them!
-                            Tile offsetTile = WorldController.Instance.World.GetTileAt(x_off, y_off);
+                            Tile offsetTile = WorldController.Instance.World.GetTileAt(x_off, y_off, t.Z);
                             offsetTile.PendingBuildJob = j;
                             j.OnJobStopped += (theJob) =>
                                 {
@@ -165,7 +165,7 @@ public class BuildModeController
                 j.tile = t;
 
                 // Add the job to the queue or build immediately if in dev mode
-                if (Settings.GetSettingAsBool("DialogBoxSettings_developerModeToggle", false))
+                if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
                 {
                     j.tile.Type = j.JobTileType;
                 }
@@ -237,7 +237,7 @@ public class BuildModeController
         {
             for (int y_off = t.Y; y_off < (t.Y + proto.Height); y_off++)
             {
-                Job pendingBuildJob = WorldController.Instance.World.GetTileAt(x_off, y_off).PendingBuildJob;
+                Job pendingBuildJob = WorldController.Instance.World.GetTileAt(x_off, y_off, t.Z).PendingBuildJob;
                 if (pendingBuildJob != null)
                 {
                     // if the existing buildJobs furniture is replaceable by the current furnitureType,

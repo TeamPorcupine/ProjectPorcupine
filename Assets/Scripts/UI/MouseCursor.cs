@@ -16,7 +16,7 @@ public class MouseCursor
 
     private MouseController mc;
     private BuildModeController bmc;
-    private CursorInfoDisplay cid;        
+    private CursorInfoDisplay cid;
 
     private GameObject cursorGO;
     private SpriteRenderer cursorSR;
@@ -33,12 +33,10 @@ public class MouseCursor
 
     private Vector2 cursorTextBoxSize = new Vector2(120, 50);
 
-    private Texture2D cursorTexture;    
+    private Texture2D cursorTexture;
 
     private GUIStyle style = new GUIStyle();
 
-    private Color characterTint = new Color(1, .7f, 0);
-    private Color furnitureTint = new Color(.1f, .7f, .3f);
     private Color defaultTint = Color.white;
 
     public MouseCursor(MouseController mouseController, BuildModeController buildModeController)
@@ -79,7 +77,7 @@ public class MouseCursor
 
         UpdateCursor();
         DisplayCursorInfo();        
-    }    
+    }
 
     private void LoadCursorTexture()
     {
@@ -118,13 +116,13 @@ public class MouseCursor
         lowerRight = new CursorTextBox(cursorGO, TextAnchor.MiddleLeft, style, lowerRightPostion, cursorTextBoxSize);        
 
         Debug.ULogChannel("MouseCursor", "Cursor Built");
-    }   
+    }
 
     private void UpdateCursor()
     {
         cursorGO.transform.position = Input.mousePosition;       
     }
-    
+
     private void ShowCursor()
     {
         if (EventSystem.current.IsPointerOverGameObject() || cursorOverride == true)

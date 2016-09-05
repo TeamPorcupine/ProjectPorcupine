@@ -75,7 +75,7 @@ public class CharacterSpriteController : BaseSpriteController<Character>
         objectGameObjectMap.Add(c, char_go);
 
         char_go.name = "Character";
-        char_go.transform.position = new Vector3(c.X, c.Y, 0);
+        char_go.transform.position = new Vector3(c.X, c.Y, c.Z);
         char_go.transform.SetParent(objectParent.transform, true);
 
         SpriteRenderer sr = char_go.AddComponent<SpriteRenderer>();
@@ -106,6 +106,7 @@ public class CharacterSpriteController : BaseSpriteController<Character>
         if (c.inventory != null)
         {
             inv_sr.sprite = SpriteManager.current.GetSprite("Inventory", c.inventory.GetName());
+            inv_sr.sortingOrder = c.animation.CurrentSortingOrder + 1;
         }
         else
         {
