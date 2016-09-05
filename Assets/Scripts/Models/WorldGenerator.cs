@@ -130,8 +130,14 @@ public class WorldGenerator
                                             stackSize = inv.maxStackSize;
                                         }
 
-                                        world.inventoryManager.PlaceInventory(tile, new Inventory(inv.objectType, inv.maxStackSize, stackSize));
-                                        break;
+                                            if (stackSize > inv.MaxStackSize)
+                                            {
+                                                stackSize = inv.MaxStackSize;
+                                            }
+
+                                            world.inventoryManager.PlaceInventory(t, new Inventory(inv.ObjectType, inv.MaxStackSize, stackSize));
+                                            break;
+                                        }
                                     }
                                 }
                             }
