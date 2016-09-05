@@ -12,7 +12,7 @@ using System.Linq;
 using System.Xml.Serialization;
 using UnityEngine;
 using UnityEngine.UI;
-
+using ProjectPorcupine.Localization;
 
 public class DialogBoxJobList : DialogBox
 {
@@ -46,10 +46,14 @@ public class DialogBoxJobList : DialogBox
                 Destroy(c.gameObject);
             }
 
+            //Localization
+            string[] formatValues;
+            formatValues = new string[0];
             foreach (Character c in World.Current.characters)
             {
+
                 GameObject go = (GameObject)Instantiate(jobListItemPrefab, jobList);
-                go.GetComponentInChildren<Text>().text = c.GetName() + " - " + c.GetJobDescription();
+                go.GetComponentInChildren<Text>().text = c.GetName() + " - " + LocalizationTable.GetLocalization(c.GetJobDescription(), formatValues);
 
             }
 
