@@ -18,8 +18,8 @@ if [ ! -f $(pwd)/EditorTestResults.xml ]; then
     # at this point we know that the build has failed due to compilation errors
     # lets try to parse them out of unity.log and display them
     if [ -f $(pwd)/unity.log ]; then
-        count=$(grep "CompilerOutput" unity.log)
-        if [ "$count" != "0" ]; then
+        out=$(grep "CompilerOutput" unity.log)
+        if [ "$out" != "" ]; then
 
             result=$(cat unity.log | sed -n '/CompilerOutput:/,/EndCompilerOutput/p')
             echo 'Build Failed! \nThe compiler generated the following messages:'
