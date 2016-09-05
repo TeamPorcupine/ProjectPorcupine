@@ -84,11 +84,11 @@ end
 
 
 function OnUpdate_Leak_Door( furniture, deltaTime )
-	
+	furniture.Tile.EqualiseGas(deltaTime * 10.0 * (furniture.Parameters["openness"].ToFloat() + 0.1))
 end
 
 function OnUpdate_Leak_Airlock( furniture, deltaTime )
-	
+	furniture.Tile.EqualiseGas(deltaTime * 10.0 * (furniture.Parameters["openness"].ToFloat()))
 end
 
 function IsEnterable_Door( furniture )
@@ -520,7 +520,7 @@ function PowerGenerator_UpdateAction(furniture, deltatime)
 
         j.RegisterJobCompletedCallback("PowerGenerator_JobComplete")
         j.JobDescription = "job_power_generator_fulling_desc"
-        furniture.AddJob( j )        
+        furniture.AddJob( j )
     else
         furniture.Parameters["burnTime"].ChangeFloatValue(-deltatime)
         if ( furniture.Parameters["burnTime"].ToFloat() < 0 ) then

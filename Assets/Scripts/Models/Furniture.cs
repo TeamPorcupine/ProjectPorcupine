@@ -106,7 +106,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         Height = other.Height;
         Tint = other.Tint;
         LinksToNeighbour = other.LinksToNeighbour;
-        
+
         JobSpotOffset = other.JobSpotOffset;
         jobSpawnSpotOffset = other.jobSpawnSpotOffset;
 
@@ -533,6 +533,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                             string state = animationReader.GetAttribute("state");
                             float fps = float.Parse(animationReader.GetAttribute("fps"));
                             bool looping = bool.Parse(animationReader.GetAttribute("looping"));
+                            
                             // read frames
                             XmlReader frameReader = animationReader.ReadSubtree();
                             List<string> framesSpriteNames = new List<string>();

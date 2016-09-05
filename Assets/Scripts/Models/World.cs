@@ -805,7 +805,6 @@ public class World : IXmlSerializable
                     Color color = ColorUtilities.ParseColorFromString(reader.GetAttribute("r"), reader.GetAttribute("g"), reader.GetAttribute("b"));
                     Color colorUni = ColorUtilities.ParseColorFromString(reader.GetAttribute("rUni"), reader.GetAttribute("gUni"), reader.GetAttribute("bUni"));
                     Color colorSkin = ColorUtilities.ParseColorFromString(reader.GetAttribute("rSkin"), reader.GetAttribute("gSkin"), reader.GetAttribute("bSkin"));
-
                     character = CreateCharacter(tiles[x, y, z], color, colorUni, colorSkin);
                 }
                 else
