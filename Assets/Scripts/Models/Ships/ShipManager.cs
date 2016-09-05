@@ -70,6 +70,7 @@ public class ShipManager
             Debug.ULogErrorChannel("Ships", "Prototype `" + type + "` does not exist");
             return null;
         }
+
         Ship ship = new Ship(this, PrototypeManager.Ship.Get(type));
         ship.Position = new Vector2(x, y);
 
