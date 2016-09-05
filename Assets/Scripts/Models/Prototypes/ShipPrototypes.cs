@@ -29,7 +29,7 @@ public class ShipPrototypes : XmlPrototypes<Ship>
             LogPrototypeError(e, ship.ShipType);
         }
 
-        SetPrototype(ship.ShipType, ship);
+        Set(ship.ShipType, ship);
 
         Debug.ULogChannel("Ships", "Ship type registered: " + ship.ShipType);
     }

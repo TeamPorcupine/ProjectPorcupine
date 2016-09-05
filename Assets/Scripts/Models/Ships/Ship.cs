@@ -40,7 +40,7 @@ public class Ship
 
     /// <summary>
     /// Constructs a blank prototype object of the <see cref="Ship"/> class.
-    /// Only type-defning variables are initialised. Other variables are not safe to use
+    /// Only type-defning variables are initialised. Other variables are not safe to use.
     /// </summary>
     public Ship()
     {
@@ -92,7 +92,7 @@ public class Ship
     }
 
     /// <summary>
-    /// Called when a change is made to the ship's instance variables
+    /// Called when a change is made to the ship's instance variables.
     /// </summary>
     public event ShipManager.ShipEventHandler ShipChanged;
 
@@ -223,7 +223,7 @@ public class Ship
     }
 
     /// <summary>
-    /// Sets the destination to an arbitrary world space location
+    /// Sets the destination to an arbitrary world space location.
     /// </summary>
     public void SetDestination(float x, float y)
     {
@@ -243,6 +243,7 @@ public class Ship
             Debug.ULogError("Ships", "Destination berth should not be set to null this way. Use Berth property or SetDestination(x,y) instead.");
             return;
         }
+
         Berth = goalBerth;
         Destination = new Vector2(goalBerth.Tile.X, goalBerth.Tile.Y);
     }
@@ -417,7 +418,6 @@ public class Ship
         return world.GetTileAt(worldX, worldY, z);
     }
 
-    // 
     /// <summary>
     /// Reads storage locations from XML and stores them in the prototype.
     /// </summary>
@@ -476,7 +476,7 @@ public class Ship
     }
 
     /// <summary>
-    /// Instantiates the tile and furniture type arrays and populates them with null values by default
+    /// Instantiates the tile and furniture type arrays and populates them with null values by default.
     /// </summary>
     private void InstantiateTiles()
     {
