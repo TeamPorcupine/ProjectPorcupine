@@ -38,6 +38,11 @@ errorCount=$(grep "failures" EditorTestResults.xml | awk -F"\"" '{print $8}') #f
 
 if [ "$errorCount" != "0" ]; then
     echo $errorCount ' unit tests failed!'
+     
+     #show the exact unit test failure
+    echo '\nThe following unit tests failed:'
+    echo | grep 'success="False"' EditorTestResults.xml | grep 'test-case'
+   
     exit 1
 fi
 
