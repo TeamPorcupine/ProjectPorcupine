@@ -337,6 +337,7 @@
     <Name>Small Landing Pad</Name>
     <Description>A landing pad for small spaceboats to land.</Description>
     <TypeTag>OutdoorOnly</TypeTag>
+    <TypeTag>LandingPad</TypeTag>
     <MovementCost>2</MovementCost>
     <PathfindingModifier>0</PathfindingModifier>
     <PathfindingWeight>2</PathfindingWeight>
@@ -354,7 +355,10 @@
     <JobSpotOffset X="0" Y="0" />
     <JobSpawnSpotOffset X="1" Y="-1" />
 
-    <ContextMenuAction FunctionName="LandingPad_Test_CallTradeShip" Text="Call Trade Ship Test" RequiereCharacterSelected="false" />
+    <ContextMenuAction FunctionName="LandingPad_Test_CallTradeShip" 
+                       Text="Call Trade Ship Test" 
+                       RequiereCharacterSelected="false" 
+                       DevModeOnly="true"/>
 
     <LocalizationCode>furn_small_landing_pad</LocalizationCode>
     <UnlocalizedDescription>furn_small_landing_pad_desc</UnlocalizedDescription>

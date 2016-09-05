@@ -547,7 +547,7 @@ function PowerGenerator_JobComplete( j )
 end
 
 function LandingPad_Test_CallTradeShip(furniture, character)
-   WorldController.Instance.CallTradeShipTest(furniture)
+   WorldController.Instance.TradeController.CallTradeShipTest(furniture)
 end
 
 -- This function gets called once, when the funriture is isntalled
