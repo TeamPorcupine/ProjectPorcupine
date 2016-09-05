@@ -22,7 +22,7 @@ public class ShipManager
     private Dictionary<Furniture, Ship> berthShipMap;
 
     /// <summary>
-    /// Creates a ShipManager with no ships or berths registered
+    /// Creates a ShipManager with no ships or berths registered.
     /// </summary>
     public ShipManager()
     {
@@ -43,12 +43,13 @@ public class ShipManager
     public event ShipEventHandler ShipRemoved;
 
     /// <summary>
-    /// Updates all ships according to the elapsed time
+    /// Updates all ships according to the elapsed time.
     /// </summary>
     /// <param name="deltaTime">The time in seconds since the last call of this function.</param>
     public void Update(float deltaTime)
     {
-        foreach (Ship s in shipsInWorld)
+        List<Ship> tempShipsInWorld = new List<Ship>(shipsInWorld);
+        foreach (Ship s in tempShipsInWorld)
         {
             s.Update(deltaTime);
         }
@@ -56,15 +57,20 @@ public class ShipManager
 
     /// <summary>
     /// Adds a ship to the world and puts its position at (x,y).
+    /// Returns the created ship instance.
     /// Calls the ShipCreated event.
     /// </summary>
-    /// <returns>The ship.</returns>
     /// <param name="type">The ship type to spawn.</param>
     /// <param name="x">The x coordinate where the ship should appear.</param>
     /// <param name="y">The y coordinate where the ship should appear.</param>
     public Ship AddShip(string type, float x, float y)
     {
-        Ship ship = new Ship(this, PrototypeManager.Ship.GetPrototype(type));
+        if (PrototypeManager.Ship.Has(type) == false)
+        {
+            Debug.ULogErrorChannel("Ships", "Prototype `" + type + "` does not exist");
+            return null;
+        }
+        Ship ship = new Ship(this, PrototypeManager.Ship.Get(type));
         ship.Position = new Vector2(x, y);
 
         shipsInWorld.Add(ship);
@@ -80,7 +86,6 @@ public class ShipManager
     /// <summary>
     /// Removes this ship from the world and calls the ShipRemoved event.
     /// </summary>
-    /// <param name="ship">Ship.</param>
     public void RemoveShip(Ship ship)
     {
         shipsInWorld.Remove(ship);

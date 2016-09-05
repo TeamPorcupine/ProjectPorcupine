@@ -173,7 +173,10 @@ public class World : IXmlSerializable
 
     public void Tick(float deltaTime)
     {
-        foreach (Furniture f in furnitures)
+        // List is copied over in case furniture is removed or added by furniture update.
+        // This way the update cycle won't be affected and won't throw errors.
+        List<Furniture> tempFurnitures = new List<Furniture>(furnitures);
+        foreach (Furniture f in tempFurnitures)
         {
             f.Update(deltaTime);
         }
