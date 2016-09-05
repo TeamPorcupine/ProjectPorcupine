@@ -8,6 +8,14 @@
 #endregion
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
+public enum RequestLevel {
+    	
+    	Desired = 1,
+    	Needed = 2,
+    	Desperate = 3
+    	
+}
 
 public class Trader
 {
@@ -15,7 +23,21 @@ public class Trader
     public Currency Currency;
     public float SaleMarginMultiplier;
     public List<Inventory> Stock;
-
+    public List<TraderPotentialInventory> possibleStock;
+    public Dictionary<TraderPotentialInventory, RequestLevel> requests;
+    public float requestChanceModifier = 0.2f;
+    
+    
+    
+    // Function allows to request items which have a 
+    // higher chance to be brought the next time this
+    // trader comes
+    public void RequestItems (Dictionary <TraderPotentialInventory, RequestLevel> requests) {
+    	
+    	this.requests = (Dictionary<TraderPotentialInventory, RequestLevel>)this.requests.Union (requests);
+    	
+    }
+    
     public static Trader FromPlayer(Currency currency)
     {
         Trader t = new Trader
@@ -43,5 +65,46 @@ public class Trader
         }
         
         return t;
+    }
+    
+    
+    
+    public void RefreshInventory () {
+    	
+    	List<TraderPotentialInventory> stockExceptRequests = possibleStock.Except (requests.Keys).ToList();
+    	
+    	// Maybe change different attributes (sales margins, possible stocks, traded currencies, etc.)
+    	// based on a relationship / time element?
+    	foreach (TraderPotentialInventory potentialStock in stockExceptRequests)
+        {
+            bool itemIsInStock = Random.Range(0f, 1f) > potentialStock.Rarity;
+
+            if (itemIsInStock)
+            	AddItemToStock (potentialStock);
+            
+        }
+    	// TODO make requests cost more based on how much you want them
+    	foreach (KeyValuePair<TraderPotentialInventory, RequestLevel> requestAndLevel in requests) {
+    		
+    		bool itemIsInStock = Random.Range(0f, 1f) + requestChanceModifier * requestAndLevel.Value > requestAndLevel.Key.Rarity;
+    		
+    		if (itemIsInStock) {
+    			AddItemToStock (requestAndLevel.Key);
+    			requests.Remove (requestAndLevel.Key);
+    		}
+    		
+    		
+    	}
+    	
+    	
+    }
+    void AddItemToStock (TraderPotentialInventory inventory) {
+    	
+    	Stock.Add (new Inventory {
+    	           	objectType = inventory.ObjectType,
+    	           	StackSize = Random.Range (inventory.MinQuantity, inventory.MaxQuantity);
+    	           });
+    	
+    	
     }
 }

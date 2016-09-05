@@ -19,6 +19,7 @@ public class TraderPrototype
     public string CurrencyName;
     public float MinSaleMarginMultiplier;
     public float MaxSaleMarginMultiplier;
+    public float RequestChanceModifier;
     public List<TraderPotentialInventory> PotentialStock;
 
     [Range(0, 1)]
@@ -68,6 +69,11 @@ public class TraderPrototype
                     MaxSaleMarginMultiplier = reader.ReadContentAsFloat();
                     break;
                 
+               	case "requestChanceModifier":
+                    reader.Read();
+                    RequestChanceModifier = reader.ReadContentAsFloat();
+                    break;
+                    
                 case "potentialStock":
                     PotentialStock = new List<TraderPotentialInventory>();
                     XmlReader invs_reader = reader.ReadSubtree();
@@ -88,6 +94,7 @@ public class TraderPrototype
                     }
 
                     break;
+               			
             }
         }
     }
@@ -104,23 +111,14 @@ public class TraderPrototype
             },
             Name = PotentialNames[Random.Range(0, PotentialNames.Count - 1)],
             SaleMarginMultiplier = Random.Range(MinSaleMarginMultiplier, MaxSaleMarginMultiplier),
-            Stock = new List<Inventory>()
+            Stock = new List<Inventory>(),
+            possibleStock = PotentialStock,
+            requestChanceModifier = RequestChanceModifier
         };
 
-        foreach (TraderPotentialInventory potentialStock in PotentialStock)
-        {
-            bool itemIsInStock = Random.Range(0f, 1f) > potentialStock.Rarity;
-
-            if (itemIsInStock)
-            {
-                t.Stock.Add(new Inventory
-                {
-                    objectType = potentialStock.ObjectType,
-                    StackSize = Random.Range(potentialStock.MinQuantity, potentialStock.MaxQuantity)
-                });
-            }
-        }
+        t.RefreshInventory ();
 
         return t;
     }
+
 }
