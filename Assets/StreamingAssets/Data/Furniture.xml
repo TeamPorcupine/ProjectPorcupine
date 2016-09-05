@@ -175,6 +175,7 @@
     <PathfindingWeight>2</PathfindingWeight>
     <Width>3</Width>
     <Height>3</Height>
+    <PowerConnection inputRate="1" outputRate="" capacity=""/>
 
     <BuildingJob jobTime="0" />
 
@@ -230,6 +231,7 @@
     <PathfindingWeight>2</PathfindingWeight>
     <Width>2</Width>
     <Height>2</Height>
+    <PowerConnection inputRate="1" outputRate="" capacity=""/>
 
     <BuildingJob jobTime="10">
       <Inventory objectType="Steel Plate" amount="50" />
@@ -267,6 +269,7 @@
     <PathfindingWeight>2</PathfindingWeight>
     <Width>3</Width>
     <Height>3</Height>
+    <PowerConnection inputRate="5" outputRate="" capacity=""/>
 
     <BuildingJob jobTime="0" />
 
@@ -325,6 +328,7 @@
     <PathfindingWeight>2</PathfindingWeight>
     <Width>2</Width>
     <Height>2</Height>
+    <PowerConnection inputRate="1" outputRate="" capacity=""/>
 
     <BuildingJob jobTime="1" />
 
@@ -382,6 +386,7 @@
     <PathfindingWeight>2</PathfindingWeight>
     <Width>2</Width>
     <Height>2</Height>
+    <PowerConnection inputRate="1" outputRate="" capacity=""/>
 
     <BuildingJob jobTime="2" />
 
