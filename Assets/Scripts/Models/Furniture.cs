@@ -13,7 +13,7 @@ using System.Xml.Schema;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
-using Power;
+using ProjectPorcupine.PowerNetwork;
 using UnityEngine;
 
 /// <summary>
@@ -131,7 +131,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         if (other.PowerConnection != null)
         {
             PowerConnection = other.PowerConnection.Clone() as Connection;
-            World.Current.PowerSystem.PlugIn(PowerConnection);
+            World.Current.PowerNetwork.PlugIn(PowerConnection);
             PowerConnection.NewThresholdReached += OnNewThresholdReached;
         }
 
@@ -189,7 +189,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     public EventAction EventActions { get; private set; }
 
     /// <summary>
-    /// Connection to power system.
+    /// Connection to PowerNetwork.
     /// </summary>
     public Connection PowerConnection { get; private set; }
 
@@ -413,7 +413,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
     public bool HasPower()
     {
-        IsOperating = PowerConnection == null || World.Current.PowerSystem.HasPower(PowerConnection);
+        IsOperating = PowerConnection == null || World.Current.PowerNetwork.HasPower(PowerConnection);
         return IsOperating;
     }
 
@@ -532,11 +532,12 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                     break;
                 case "ContextMenuAction":
                     contextMenuLuaActions.Add(new ContextMenuLuaAction
-                        {
-                            LuaFunction = reader.GetAttribute("FunctionName"),
-                            Text = reader.GetAttribute("Text"),
-                            RequiereCharacterSelected = bool.Parse(reader.GetAttribute("RequiereCharacterSelected"))
-                        });
+                    {
+                        LuaFunction = reader.GetAttribute("FunctionName"),
+                        Text = reader.GetAttribute("Text"),
+                        RequiereCharacterSelected = bool.Parse(reader.GetAttribute("RequiereCharacterSelected")),
+                        DevModeOnly = bool.Parse(reader.GetAttribute("DevModeOnly") ?? "false")
+                    });
                     break;
                 case "IsEnterable":
                     isEnterableAction = reader.GetAttribute("FunctionName");
@@ -684,7 +685,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
         if (PowerConnection != null)
         {
-            World.Current.PowerSystem.Unplug(PowerConnection);
+            World.Current.PowerNetwork.Unplug(PowerConnection);
             PowerConnection.NewThresholdReached -= OnNewThresholdReached;
         }
 
@@ -794,12 +795,16 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
         foreach (ContextMenuLuaAction contextMenuLuaAction in contextMenuLuaActions)
         {
-            yield return new ContextMenuAction
+            if (!contextMenuLuaAction.DevModeOnly ||
+                Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
             {
-                Text = contextMenuLuaAction.Text,
-                RequireCharacterSelected = contextMenuLuaAction.RequiereCharacterSelected,
-                Action = (cma, c) => InvokeContextMenuLuaAction(contextMenuLuaAction.LuaFunction, c)
-            };
+                yield return new ContextMenuAction
+                {
+                    Text = contextMenuLuaAction.Text,
+                    RequireCharacterSelected = contextMenuLuaAction.RequiereCharacterSelected,
+                    Action = (cma, c) => InvokeContextMenuLuaAction(contextMenuLuaAction.LuaFunction, c)
+                };
+            }
         }
     }
 

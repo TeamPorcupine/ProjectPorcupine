@@ -6,12 +6,8 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System.Collections.Generic;
 using System.IO;
 using MoonSharp.Interpreter;
-using MoonSharp.Interpreter.Debugging;
-using MoonSharp.RemoteDebugger;
-using MoonSharp.RemoteDebugger.Network;
 using UnityEngine;
 
 public class FurnitureActions
@@ -24,7 +20,8 @@ public class FurnitureActions
         LuaUtilities.RegisterGlobal(typeof(ModUtils));
         LuaUtilities.RegisterGlobal(typeof(World));
         LuaUtilities.RegisterGlobal(typeof(WorldController));
-        LuaUtilities.RegisterGlobal(typeof(Power.Connection));
+        LuaUtilities.RegisterGlobal(typeof(TradeController));
+        LuaUtilities.RegisterGlobal(typeof(ProjectPorcupine.PowerNetwork.Connection));
 
         LoadScripts();
     }
