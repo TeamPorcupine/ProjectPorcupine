@@ -19,7 +19,7 @@ using UnityEngine;
 /// is a list of LUA function that are registered and will be called once the event with that name is fired.
 /// </summary>
 [MoonSharpUserData]
-public class EventActions : IXmlSerializable
+public class EventAction : IXmlSerializable
 {
     /// <summary>
     /// Stores a list of LUA functions for each type of event (eventName). All will be called at once.
@@ -30,9 +30,9 @@ public class EventActions : IXmlSerializable
     /// Used to transfer registere actions to new object.
     /// </summary>
     /// <returns>A new object copy of this.</returns>
-    public EventActions Clone()
+    public EventAction Clone()
     {
-        EventActions evt = new EventActions();
+        EventAction evt = new EventAction();
 
         evt.actionsList = new Dictionary<string, List<string>>(actionsList);
 
@@ -48,19 +48,19 @@ public class EventActions : IXmlSerializable
         reader.Read();
         if (reader.Name != "Action")
         {
-            Debug.ULogErrorChannel("EventActions", string.Format("The element is not an Action, but a \"{0}\"", reader.Name));
+            Debug.ULogErrorChannel("EventAction", string.Format("The element is not an Action, but a \"{0}\"", reader.Name));
         }
 
         string name = reader.GetAttribute("event");
         if (name == null)
         {
-            Debug.ULogErrorChannel("EventActions", string.Format("The attribute \"event\" is a mandatory for an \"Action\" element."));
+            Debug.ULogErrorChannel("EventAction", string.Format("The attribute \"event\" is a mandatory for an \"Action\" element."));
         }
 
         string functionName = reader.GetAttribute("functionName");
         if (functionName == null)
         {
-            Debug.ULogErrorChannel("EventActions", string.Format("No function name was provided for the Action {0}.", name));
+            Debug.ULogErrorChannel("EventAction", string.Format("No function name was provided for the Action {0}.", name));
         }
 
         Register(name, functionName);
