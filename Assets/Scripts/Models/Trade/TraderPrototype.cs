@@ -68,8 +68,8 @@ public class TraderPrototype
                     reader.Read();
                     MaxSaleMarginMultiplier = reader.ReadContentAsFloat();
                     break;
-                
-               	case "requestChanceModifier":
+
+                case "requestChanceModifier":
                     reader.Read();
                     RequestChanceModifier = reader.ReadContentAsFloat();
                     break;
@@ -92,9 +92,8 @@ public class TraderPrototype
                             });
                         }
                     }
-
+                    
                     break;
-               			
             }
         }
     }
@@ -116,9 +115,8 @@ public class TraderPrototype
             requestChanceModifier = RequestChanceModifier
         };
 
-        t.RefreshInventory ();
+        t.RefreshInventory();
 
         return t;
     }
-
 }

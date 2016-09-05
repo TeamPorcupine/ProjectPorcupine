@@ -678,7 +678,6 @@ public class World : IXmlSerializable
                 LoadCurrencyFromFile(xmlModText);
             }
         }
-        
     }
 
     private void LoadCurrencyFromFile(string xmlText)

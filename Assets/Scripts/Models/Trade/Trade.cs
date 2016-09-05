@@ -46,6 +46,6 @@ public class Trade
 
     public bool IsValid()
     {
-    	return Player.Currency.Balance > TradeCurrencyBalanceForPlayer;
+        return Player.Currency.Balance > TradeCurrencyBalanceForPlayer;
     }
 }

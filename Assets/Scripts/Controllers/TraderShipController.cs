@@ -80,9 +80,8 @@ public class TraderShipController : MonoBehaviour
 
     private void TransferTradedItems(Trade trade)
     {
-    	
-    	trade.Player.Currency.ChangeBalance (trade.TradeCurrencyBalanceForPlayer);
-
+        trade.Player.Currency.ChangeBalance(trade.TradeCurrencyBalanceForPlayer);
+        
         foreach (TradeItem tradeItem in trade.TradeItems)
         {
             if (tradeItem.TradeAmount > 0)

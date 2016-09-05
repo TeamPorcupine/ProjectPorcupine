@@ -6,49 +6,50 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-
-using System.Xml;
 using System;
+using System.Xml;
 
 public class Currency
 {
+    private float balance;
+
     public string Name { get; set; }
+
     public string ShortName { get; set; }
 
-    private float balance;
     public float Balance
     {
-        get { return balance; }
+        get
+        {
+            return balance;
+        }
+
         set
         {
-
             if (balance == value)
             {
                 return;
             }
+
             balance = value;
             BalanceChanged(this);
         }
-
     }
+
     public Action<Currency> BalanceChanged { get; set; }
 
-    public void SetBalance (float value) {
-    	
-    	Balance = value;
-   	    BalanceChanged (this);
-    	
+    public void SetBalance(float value)
+    {
+        Balance = value;
+        BalanceChanged(this);
     }
     
-    public void ChangeBalance (float value) {
-    	
-    	Balance += value;
-    	BalanceChanged (this);
-    	
+    public void ChangeBalance(float value)
+    {
+        Balance += value;
+        BalanceChanged(this);
     }
-    
-   
-    
+
     public void WriteXml(XmlWriter writer)
     {
         writer.WriteAttributeString("Name", Name.ToString());
