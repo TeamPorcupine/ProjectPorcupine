@@ -148,6 +148,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
     /// <summary>
     /// This event will trigger when the furniture has been changed.
+    /// This is means that any change (parameters, job state etc) to the furniture will trigger this.
     /// </summary>
     public event Action<Furniture> Changed;
 
@@ -188,22 +189,23 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     public Color Tint { get; private set; }
 
     /// <summary>
-    /// Gets the spot where the astronaut will stand when he is using the furniture. This is relative to the bottom
+    /// Gets the spot where the Character will stand when he is using the furniture. This is relative to the bottom
     /// left tile of the sprite. This can be outside of the actual furniture.
     /// </summary>
-    /// <value>The spot where the astronaut will stand when he uses the furniture.</value>
+    /// <value>The spot where the Character will stand when he uses the furniture.</value>
     public Vector2 JobSpotOffset { get; private set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether the door is Vertical or not.
     /// Should be false if the furniture is not a door.
+    /// This field will most likely be moved to another class.
     /// </summary>
     /// <value>Whether the door is Vertical or not.</value>
     public bool VerticalDoor { get; set; }
 
     /// <summary>
     /// Gets the EventAction for the current furniture.
-    /// These actions are called when Trigger is called. They get passed the furniture
+    /// These actions are called when an event is called. They get passed the furniture
     /// they belong to, plus a deltaTime (which defaults to 0).
     /// </summary>
     /// <value>The event actions that is called on update.</value>
@@ -246,6 +248,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
     /// <summary>
     /// Gets the BASE tile of the furniture. (Large objects can span over multiple tiles).
+    /// This should be RENAMED (possibly to BaseTile)
     /// </summary>
     /// <value>The BASE tile of the furniture.</value>
     public Tile Tile { get; private set; }
@@ -280,7 +283,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     }
 
     /// <summary>
-    /// Gets a list of furniture this furniture can be replaced with.
+    /// Gets a list of furniture ObjectType this furniture can be replaced with.
+    /// This should most likely not be a list of strings.
     /// </summary>
     /// <value>A list of furniture that this furniture can be replaced with.</value>
     public List<string> ReplaceableFurniture
@@ -292,7 +296,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     }
 
     /// <summary>
-    /// Gets the movement cost multiplier that this furniture has. 1 is default, 2 is twice as slow.
+    /// Gets the movement cost multiplier that this furniture has. This can be a float value from 0 to any positive number.
+    /// The movement cost acts as a multiplier: e.g. 1 is default, 2 is twice as slow.
     /// Tile types and environmental effects will be combined with this value (additive).
     /// If this value is '0' then the furniture is impassable.
     /// </summary>
@@ -320,12 +325,13 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     public string LocalizationCode { get; private set; }
 
     /// <summary>
-    /// Gets the description of the furniture if there is no localization support.
+    /// Gets the description of the furniture. This is used by localization.
     /// </summary>
     public string UnlocalizedDescription { get; private set; }
 
     /// <summary>
     /// Gets a value indicating whether this furniture is next to any furniture of the same type.
+    /// This is used to check what sprite to use if furniture is next to each other.
     /// </summary>
     public bool LinksToNeighbour { get; private set; }
 
@@ -355,7 +361,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     /// Used to place furniture in a certain position
     /// </summary>
     /// <param name="proto">The prototype furniture to place</param>
-    /// <param name="tile">The tile to place the furniture on</param>
+    /// <param name="tile">The base tile to place the furniture on, The tile will be the bottom left corner of the furniture (to check)</param>
     /// <returns>Furniture object.</returns>
     public static Furniture PlaceInstance(Furniture proto, Tile tile)
     {
@@ -416,7 +422,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     }
 
     /// <summary>
-    /// The update function used by unity. Updates every frame
+    /// This function is called to update the furniture. This will also trigger EventsActions.
+    /// This checks if the furniture is a PowerConsumer, and if it does not have power it cancels its job.
     /// </summary>
     /// <param name="deltaTime">The time since the last update was called.</param>
     public void Update(float deltaTime)
@@ -456,7 +463,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     /// <summary>
     /// Checks if the furniture can be Entered
     /// </summary>
-    /// <returns>Yes if furniture can be entered</returns>
+    /// <returns>Enterability state Yes if furniture can be entered, Soon if it can be entered after a bit and No 
+    /// if it cannot be entered</returns>
     public Enterability IsEnterable()
     {
         if (string.IsNullOrEmpty(isEnterableAction))
@@ -472,10 +480,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     }
 
     /// <summary>
-    /// Check if the furniture has a unique name and return the name if it has one.
-    /// If the furniture has not unique name, it returns the object type
+    /// Check if the furniture has a function to determine the sprite name and calls that function
     /// </summary>
-    /// <returns>Name of the furniture</returns>
+    /// <returns>Name of the sprite</returns>
     public string GetSpriteName()
     {
         if (string.IsNullOrEmpty(getSpriteNameAction))
@@ -488,9 +495,10 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     }
 
     /// <summary>
-    /// Check if the position of the furniture is valid or not
+    /// Check if the position of the furniture is valid or not.
+    /// This is called when placing the furniture.
     /// </summary>
-    /// <param name="t">The tile to check</param>
+    /// <param name="t">The base tile.</param>
     /// <returns>True if the tile is valid for the placement of the furniture.</returns>
     public bool IsValidPosition(Tile t)
     {
@@ -508,7 +516,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     }
 
     /// <summary>
-    /// This does absolutely nothing
+    /// This does absolutely nothing.
+    /// This is required to implement IXmlSerializable
     /// </summary>
     /// <returns>NULL and NULL</returns>
     public XmlSchema GetSchema()
@@ -682,6 +691,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
     /// <summary>
     /// Reads the specified XMLReader (pass it to <see cref="ReadXmlParams(XmlReader)"/>)
+    /// This is used to load furniture form a save file
     /// </summary>
     /// <param name="reader">The XML reader to read from</param>
     public void ReadXml(XmlReader reader)
@@ -715,16 +725,16 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     }
 
     /// <summary>
-    /// How many jobs is linked to this furniture
+    /// How many jobs are linked to this furniture
     /// </summary>
-    /// <returns>A number</returns>
+    /// <returns>The number of jobs linked to this furniture</returns>
     public int JobCount()
     {
         return jobs.Count;
     }
 
     /// <summary>
-    /// Adds a job linked to the current furniture.
+    /// Link a job to the current furniture.
     /// </summary>
     /// <param name="job">The job that you want to link to the furniture</param>
     public void AddJob(Job job)
@@ -748,7 +758,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     }
 
     /// <summary>
-    /// Checks whether the furniture is a stockpile
+    /// Checks whether the furniture is a stockpile.
+    /// This function should probably be removed since it is tied to only one type of furniture.
+    /// I might be useful later on if we have stuff like storage boxes/locker or barrels/bins
     /// </summary>
     /// <returns>True is the furniture is a stockpile</returns>
     public bool IsStockpile()
@@ -863,9 +875,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     }
 
     /// <summary>
-    /// Gets the tile that is used to spawn new objects or spacemen
+    /// Gets the tile that is used to spawn new objects (i.e. Inventory, Character)
     /// </summary>
-    /// <returns>Tile that is used to spawn objects and or spacemen</returns>
+    /// <returns>Tile that is used to spawn objects (i.e. Inventory, Character)</returns>
     public Tile GetSpawnSpotTile()
     {
         return World.Current.GetTileAt(Tile.X + (int)jobSpawnSpotOffset.x, Tile.Y + (int)jobSpawnSpotOffset.y, Tile.Z);
@@ -882,16 +894,16 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     }
 
     /// <summary>
-    /// Returns the name of the furniture.
+    /// Returns LocalizationCode name for the furniture
     /// </summary>
-    /// <returns>name of the furniture</returns>
+    /// <returns>LocalizationCode for the name of the furniture</returns>
     public string GetName()
     {
         return LocalizationCode; // this.Name;
     }
 
     /// <summary>
-    /// Returns the description of the furniture
+    /// Returns the UnlocalizedDescription of the furniture
     /// </summary>
     /// <returns>description of the furniture</returns>
     public string GetDescription()
