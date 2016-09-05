@@ -593,8 +593,8 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         if (needPercent > 50 && needPercent <= 100 && need.RestoreNeedFurn != null)
         {
-            IEnumerable<Furniture> furnitures = World.Current.furnitures.Where(furniture => furniture.ObjectType == need.RestoreNeedFurn.ObjectType && furniture.IsUsable() == true);
-            if (furnitures.Count() > 0)
+            List<Furniture> furnitures = World.Current.furnitures.Where(furniture => furniture.ObjectType == need.RestoreNeedFurn.ObjectType && furniture.IsUsable() == true).ToList();
+            if (furnitures.Any())
             {
                 Furniture destFurniture = GetClosestFurniture(furnitures);
                 need.SetFurniture(destFurniture);
@@ -1077,20 +1077,21 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             }
         }
     }
-
-    private Furniture GetClosestFurniture(IEnumerable<Furniture> furnitures)
+    
+    private Furniture GetClosestFurniture(List<Furniture> furnitures)
     {
-        int bestLength = 0;
+        int bestLength = int.MaxValue;
         Furniture destFurniture = new Furniture();
 
         foreach (Furniture furniture in furnitures)
         {
             Path_AStar path = new Path_AStar(World.Current, currTile, furniture.Tile);
-            if (bestLength == 0 || path.Length() < bestLength)
+            if (path.Length() >= bestLength)
             {
-                bestLength = path.Length();
-                destFurniture = furniture;
+                continue;
             }
+            bestLength = path.Length();
+            destFurniture = furniture;
         }
 
         return destFurniture;
