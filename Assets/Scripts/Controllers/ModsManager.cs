@@ -39,6 +39,7 @@ public class ModsManager
         PrototypeManager.SchedulerEvent.LoadPrototypes(mods);
         PrototypeManager.Stat.LoadPrototypes(mods);
         PrototypeManager.Quest.LoadPrototypes(mods);
+        PrototypeManager.Ship.LoadPrototypes(mods);
     }
 
     public DirectoryInfo[] GetMods()
