@@ -1,6 +1,5 @@
-<<<<<<< HEAD
-﻿
-﻿#region License
+﻿﻿
+#region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
 // This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
@@ -33,40 +32,6 @@ public class CurrencyUpdate : MonoBehaviour
 		Debug.Log (builder.ToString ());
 		if (text != null)
         { 	
-=======
-﻿using UnityEngine;
-using UnityEngine.UI;
-using System.Collections.Generic;
-using System.Text;
-
-public class CurrencyUpdate : MonoBehaviour {
-
-	public Text text;
-	
-	static Dictionary <Currency, string> currencyBalances;
-	
-	void Start () {
-		
-		AddWallet (World.Current.Wallet);
-		
-	}
-	
-
-	// Event triggered function which updates the currency status text
-	void UpdateCurrency (Currency currencyToUpdate) {
-		
-		StringBuilder builder = new StringBuilder ();
-		currencyBalances[currencyToUpdate] = currencyToUpdate.Balance.ToString ();
-		foreach (KeyValuePair <Currency, string> kvp in currencyBalances) {
-			
-			builder.AppendFormat ("{0} : {1}", kvp.Key.Name, kvp.Value);
-			builder.AppendLine ();
-			
-		}
-		Debug.Log (builder.ToString ());
-		if (text != null) {
-			
->>>>>>> master
 			text.text = builder.ToString ();
 			
 		}
@@ -77,42 +42,31 @@ public class CurrencyUpdate : MonoBehaviour {
 	// Adds UpdateCurrency to all the currencies
 	public void AddWallet (Wallet wallet) {
 		if (currencyBalances == null) {
-<<<<<<< HEAD
+
 
             currencyBalances = new List<Currency>();
-
-=======
-			currencyBalances = new Dictionary<Currency, string> ();
->>>>>>> master
+            
+			
 		}
 		
 		foreach (KeyValuePair<string, Currency> kvp in wallet.Currencies) {
 			
 			Debug.Log (kvp.Value.Name + ":" + kvp.Value.Balance);
 			
-<<<<<<< HEAD
+
 
 			kvp.Value.BalanceChanged += UpdateCurrency;
 			currencyBalances.Add (kvp.Value);
-=======
-			kvp.Value.balanceChanged += UpdateCurrency;
-			currencyBalances.Add (kvp.Value, kvp.Value.Balance.ToString ());
->>>>>>> master
 			UpdateCurrency (kvp.Value);
 		
 		}
 		
 	}
-<<<<<<< HEAD
+
 
     private void Start()
     {
         AddWallet(World.Current.Wallet);
     }
 
-
-=======
-	
-	
->>>>>>> master
 }

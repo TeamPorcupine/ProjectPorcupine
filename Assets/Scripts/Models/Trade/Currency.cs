@@ -12,26 +12,42 @@ using System;
 
 public class Currency
 {
-    public string Name;
-    public string ShortName;
-    
-    public float Balance;
-    
+    public string Name { get; set; }
+    public string ShortName { get; set; }
+
+    private float balance;
+    public float Balance
+    {
+        get { return balance; }
+        set
+        {
+
+            if (balance == value)
+            {
+                return;
+            }
+            balance = value;
+            BalanceChanged(this);
+        }
+
+    }
+    public Action<Currency> BalanceChanged { get; set; }
+
     public void SetBalance (float value) {
     	
     	Balance = value;
-    	balanceChanged (this);
+   	    BalanceChanged (this);
     	
     }
     
     public void ChangeBalance (float value) {
     	
     	Balance += value;
-    	balanceChanged (this);
+    	BalanceChanged (this);
     	
     }
     
-    public Action<Currency> balanceChanged;
+   
     
     public void WriteXml(XmlWriter writer)
     {
