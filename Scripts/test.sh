@@ -21,9 +21,9 @@ if [ ! -f $(pwd)/EditorTestResults.xml ]; then
         out=$(grep "CompilerOutput" unity.log)
         if [ "$out" != "" ]; then
 
-            result=$(cat unity.log | awk '/CompilerOutput:/,/EndCompilerOutput/') #sed -n '/CompilerOutput:/,/EndCompilerOutput/p')
             echo 'Build Failed! \nThe compiler generated the following messages:'
-            echo $result
+            echo | awk '/CompilerOutput:/,/EndCompilerOutput/' < unity.log #show lines in between compiler output "tags" including tags 
+
         fi
     fi
     exit 1
