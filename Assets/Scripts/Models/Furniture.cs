@@ -528,7 +528,6 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                     Animation = new FurnitureAnimation();
                     while (animationReader.Read())
                     {
-                        string n = animationReader.Name;
                         if (animationReader.Name == "Animation")
                         {
                             string state = animationReader.GetAttribute("state");
@@ -540,6 +539,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                             Animation.AddAnimation(state, spriteBase, frames, fps, looping);                            
                         }
                     }
+
                     break;
                 case "Action":
                     XmlReader subtree = reader.ReadSubtree();
