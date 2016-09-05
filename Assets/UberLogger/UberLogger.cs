@@ -503,7 +503,7 @@ namespace UberLogger
             {
 				if(severity==LogSeverity.Message) UnityEngine.Debug.Log(showObject);
                 else if(severity==LogSeverity.Warning) UnityEngine.Debug.LogWarning(showObject);
-                else if(severity==LogSeverity.Error) UnityEngine.Debug.LogError(showObject);
+    
             }
             else
             {
