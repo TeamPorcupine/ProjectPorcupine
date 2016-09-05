@@ -629,18 +629,18 @@ function Accumulator_GetSpriteName(furniture)
 	return baseName .. "_" .. suffix
 end
 
-function IsUsable_Bed( furniture )
+function IsAvailable_Bed( furniture )
     if (furniture.Parameters["slots_in_use"].ToFloat() < furniture.Parameters["slots"].ToFloat()) then
        return true
     end
     return false
 end
 
-function OnUse_Bed( furniture, character )
+function OnJobStart_Bed( furniture, character )
     furniture.Parameters["slots_in_use"].SetValue(furniture.Parameters["slots_in_use"].ToFloat() + 1)
 end
 
-function OnRelease_Bed( furniture, character )
+function OnJobComplete_Bed( furniture, character )
     -- one more slot is available
     furniture.Parameters["slots_in_use"].SetValue(furniture.Parameters["slots_in_use"].ToFloat() - 1)
 

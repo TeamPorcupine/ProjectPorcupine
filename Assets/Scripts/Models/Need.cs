@@ -121,7 +121,7 @@ public class Need
     public void SetFurniture(Furniture furniture)
     {
         Furniture = furniture;
-        Furniture.EventActions.Trigger("OnUse", Furniture, character);
+        Furniture.EventActions.Trigger("OnJobStart", Furniture, character);
     }
 
     public void ReadXmlPrototype(XmlReader reader_parent)
@@ -192,7 +192,7 @@ public class Need
     {
         if (Furniture != null)
         {
-            Furniture.EventActions.Trigger("OnRelease", Furniture, character);
+            Furniture.EventActions.Trigger("OnJobComplete", Furniture, character);
         }
 
         Amount -= restoreNeedAmount;

@@ -430,6 +430,7 @@
     <Height>2</Height>
     <PathfindingModifier>1</PathfindingModifier>
     <PathfindingWeight>1</PathfindingWeight>
+    <JobSpotOffset X="0" Y="0" />
 
     <BuildingJob jobTime="1">
       <Inventory objectType="Steel Plate" amount="2" />
@@ -439,10 +440,10 @@
       <Inventory objectType="Steel Plate" amount="1" />
     </DeconstructJob>
 
-    <IsUsable FunctionName="IsUsable_Bed" />
+    <IsAvailable FunctionName="IsAvailable_Bed" />
 
-    <Action event="OnUse" functionName="OnUse_Bed" />
-    <Action event="OnRelease" functionName="OnRelease_Bed" />
+    <Action event="OnJobStart" functionName="OnJobStart_Bed" />
+    <Action event="OnJobComplete" functionName="OnJobComplete_Bed" />
 
     <Params>
       <Param name="slots_in_use" value="0" />
@@ -453,7 +454,6 @@
     <LocalizationCode>furn_simple_bed</LocalizationCode>
     <UnlocalizedDescription>furn_simple_bed_desc</UnlocalizedDescription>
   </Furniture>
-
 
   <Furniture objectType="accumulator">
     <Name>Accumulator</Name>

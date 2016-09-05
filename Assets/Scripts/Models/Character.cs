@@ -593,7 +593,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         if (needPercent > 50 && needPercent <= 100 && need.RestoreNeedFurn != null)
         {
-            List<Furniture> furnitures = World.Current.furnitures.Where(furniture => furniture.ObjectType == need.RestoreNeedFurn.ObjectType && furniture.IsUsable() == true).ToList();
+            List<Furniture> furnitures = World.Current.furnitures.Where(furniture => furniture.ObjectType == need.RestoreNeedFurn.ObjectType && furniture.IsAvailable() == true).ToList();
             if (furnitures.Any())
             {
                 Furniture destFurniture = GetClosestFurniture(furnitures);
