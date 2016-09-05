@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 namespace Controllers
 {
@@ -27,11 +28,12 @@ namespace Controllers
 		// Gets a random trader from the list
 		public Trader RequestRandomTrader () {
 			
-			Trader joe = traders[traders.Keys[UnityEngine.Random.Range (0, traders.Count)]];
+			Trader joe = traders.Values.ToList()[UnityEngine.Random.Range (0, traders.Count)];
 			joe.RefreshInventory ();
 			return joe;
 			
 		}
+		
 		
 		
 		

@@ -86,7 +86,7 @@ public class Trader
     	// TODO make requests cost more based on how much you want them
     	foreach (KeyValuePair<TraderPotentialInventory, RequestLevel> requestAndLevel in requests) {
     		
-    		bool itemIsInStock = Random.Range(0f, 1f) + requestChanceModifier * requestAndLevel.Value > requestAndLevel.Key.Rarity;
+    		bool itemIsInStock = Random.Range(0f, 1f) + requestChanceModifier * (int)(requestAndLevel.Value) > requestAndLevel.Key.Rarity;
     		
     		if (itemIsInStock) {
     			AddItemToStock (requestAndLevel.Key);
