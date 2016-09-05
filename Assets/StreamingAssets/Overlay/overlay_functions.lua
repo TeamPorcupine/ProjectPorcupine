@@ -25,13 +25,16 @@ end
 
 -- Returns a magic value if furniture in tile is a power gen
 function powerValueAt(tile)
-	mid = 128
-	if tile == nil or tile.furniture == nil then
-		return mid
-	else
-		val = mid + 10*tile.furniture.powerValue
+	if (tile == nil or tile.furniture == nil or tile.furniture.PowerConnection == nill) then
+		return 0
 	end
-	return math.max(math.min(val, 254), 0)
+	if (tile.furniture.PowerConnection.IsPowerConsumer) then
+		return tile.furniture.PowerConnection.InputRate * -1
+	end
+	if (tile.furniture.PowerConnection.IsPowerProducer) then
+		return tile.furniture.PowerConnection.OutputRate
+	end
+	return tile.furniture.PowerConnection.AccumulatedPower
 end
 
 -- Return temperature (in K) in current tile
