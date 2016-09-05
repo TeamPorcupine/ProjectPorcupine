@@ -425,6 +425,16 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     /// <param name="deltaTime">The time since the last update was called.</param>
     public void Update(float deltaTime)
     {
+        if (PowerConnection != null && PowerConnection.IsPowerConsumer && HasPower() == false)
+        {
+            if (JobCount() > 0)
+            {
+                CancelJobs();
+            }
+
+            return;
+        }
+
         // TODO: some weird thing happens
         if (EventActions != null)
         {
