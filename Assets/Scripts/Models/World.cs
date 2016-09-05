@@ -127,6 +127,19 @@ public class World : IXmlSerializable
         return rooms[i];
     }
 
+    public Room GetRoomFromTile(Tile tile)
+    {
+        foreach (Room r in rooms)
+        {
+            if (r.HasTile(tile))
+            {
+                return r;
+            }
+        }
+
+        return GetOutsideRoom();
+    }
+
     public void AddRoom(Room r)
     {
         rooms.Add(r);
@@ -330,7 +343,7 @@ public class World : IXmlSerializable
         return null;
     }
 
-    public Furniture PlaceFurniture(string objectType, Tile t, bool doRoomFloodFill = true)
+    public Furniture PlaceFurniture(string objectType, Tile t, bool doRoomFloodFill = true, bool doPositionValidaton = true)
     {
         if (PrototypeManager.Furniture.HasPrototype(objectType) == false)
         {
@@ -338,7 +351,7 @@ public class World : IXmlSerializable
             return null;
         }
 
-        Furniture furn = Furniture.PlaceInstance(PrototypeManager.Furniture.GetPrototype(objectType), t);
+        Furniture furn = Furniture.PlaceInstance(PrototypeManager.Furniture.GetPrototype(objectType), t, doPositionValidaton);
 
         if (furn == null)
         {
@@ -768,7 +781,7 @@ public class World : IXmlSerializable
                 int y = int.Parse(reader.GetAttribute("Y"));
                 int z = int.Parse(reader.GetAttribute("Z"));
 
-                Furniture furn = PlaceFurniture(reader.GetAttribute("objectType"), tiles[x, y, z], false);
+                Furniture furn = PlaceFurniture(reader.GetAttribute("objectType"), tiles[x, y, z], false, false);
                 furn.ReadXml(reader);
             }
             while (reader.ReadToNextSibling("Furniture"));

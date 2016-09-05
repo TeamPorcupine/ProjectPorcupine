@@ -50,7 +50,6 @@
     <LinksToNeighbours>false</LinksToNeighbours>
     <EnclosesRooms>true</EnclosesRooms>
     <CanReplaceFurniture typeTag="Wall" />
-
     <BuildingJob jobTime="1">
       <Inventory objectType="Steel Plate" amount="2" />
     </BuildingJob>
@@ -194,6 +193,9 @@
 
     <LocalizationCode>furn_mining_drone_station</LocalizationCode>
     <UnlocalizedDescription>furn_mining_drone_station_desc</UnlocalizedDescription>
+    <RequiredAtmosphere>
+      <Gas hasValue="true" name="O2" />
+    </RequiredAtmosphere>
   </Furniture>
 
 
@@ -252,6 +254,9 @@
 
     <LocalizationCode>furn_cloning_pod</LocalizationCode>
     <UnlocalizedDescription>furn_cloning_pod_desc</UnlocalizedDescription>
+    <RequiredAtmosphere>
+      <Gas hasValue="true" name="O2" />
+    </RequiredAtmosphere>
   </Furniture>
 
 
@@ -279,6 +284,9 @@
 
     <LocalizationCode>furn_metal_smelter</LocalizationCode>
     <UnlocalizedDescription>furn_metal_smelter_desc</UnlocalizedDescription>
+    <RequiredAtmosphere>
+      <Gas hasValue="true" name="O2" />
+    </RequiredAtmosphere>
   </Furniture>
 
 
@@ -308,6 +316,9 @@
 
     <LocalizationCode>furn_heater</LocalizationCode>
     <UnlocalizedDescription>furn_heater_desc</UnlocalizedDescription>
+    <RequiredAtmosphere>
+      <Gas hasValue="true" name="O2" min="3" />
+    </RequiredAtmosphere>
   </Furniture>
 
 
@@ -332,6 +343,9 @@
 
     <LocalizationCode>furn_power_cell_press</LocalizationCode>
     <UnlocalizedDescription>furn_power_cell_press_desc</UnlocalizedDescription>
+    <RequiredAtmosphere>
+      <Gas hasValue="true" name="O2" />
+    </RequiredAtmosphere>
   </Furniture>
 
 
@@ -364,6 +378,9 @@
 
     <LocalizationCode>furn_small_landing_pad</LocalizationCode>
     <UnlocalizedDescription>furn_small_landing_pad_desc</UnlocalizedDescription>
+    <RequiredAtmosphere>
+      <Gas hasValue="false" name="O2" />
+    </RequiredAtmosphere>
   </Furniture>
 
 
@@ -393,6 +410,9 @@
 
     <LocalizationCode>furn_oxygen_compressor</LocalizationCode>
     <UnlocalizedDescription>furn_oxygen_compressor_desc</UnlocalizedDescription>
+    <RequiredAtmosphere>
+      <Gas hasValue="true" name="O2" />
+    </RequiredAtmosphere>
   </Furniture>
 
 
@@ -419,6 +439,9 @@
 
     <LocalizationCode>furn_solar_panel</LocalizationCode>
     <UnlocalizedDescription>furn_solar_panel_desc</UnlocalizedDescription>
+    <RequiredAtmosphere>
+      <Gas hasValue="false" name="O2" />
+    </RequiredAtmosphere>
   </Furniture>
 
   <Furniture objectType="simple_bed">
@@ -444,6 +467,9 @@
     </Params>
     <LocalizationCode>furn_simple_bed</LocalizationCode>
     <UnlocalizedDescription>furn_simple_bed_desc</UnlocalizedDescription>
+    <RequiredAtmosphere>
+      <Gas hasValue="true" name="O2" />
+    </RequiredAtmosphere>
   </Furniture>
 
 

@@ -161,14 +161,14 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         return true;
     }
 
-    public bool PlaceFurniture(Furniture objInstance)
+    public bool PlaceFurniture(Furniture objInstance, bool doPlacementValidation = true)
     {
         if (objInstance == null)
         {
             return UnplaceFurniture();
         }
 
-        if (objInstance.IsValidPosition(this) == false)
+        if (doPlacementValidation && objInstance.IsValidPosition(this) == false)
         {
             Debug.ULogErrorChannel("Tile", "Trying to assign a furniture to a tile that isn't valid!");
             return false;
@@ -436,5 +436,31 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
                 };
             }
         }
+    }
+
+    public override bool Equals(object obj)
+    {
+        if (obj == null)
+        {
+            return false;
+        }
+
+        if (obj is Tile == false)
+        {
+            return false;
+        }
+
+        Tile otherTile = (Tile)obj;
+        return this.X.Equals(otherTile.X) && this.Y.Equals(otherTile.Y) && this.Z.Equals(otherTile.Z);
+    }
+
+    public override int GetHashCode()
+    {
+        return this.X.GetHashCode() + this.Y.GetHashCode() + this.Z.GetHashCode();
+    }
+
+    public override string ToString()
+    {
+        return string.Format("X: {0}, Y: {1}", this.X, this.Y);
     }
 }

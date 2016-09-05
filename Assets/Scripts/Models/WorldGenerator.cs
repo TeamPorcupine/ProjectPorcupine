@@ -71,7 +71,10 @@ public class WorldGenerator
 
                 if (startAreaFurnitures[x, y] != null && startAreaFurnitures[x, y] != string.Empty)
                 {
-                    world.PlaceFurniture(startAreaFurnitures[x, y], tile, true);
+                    // Do not do furniture placement validation while generating the world, this will avoid the
+                    // issue where depending on the order, some furniture pieces may not be placeable until
+                    // everything is loaded.
+                    world.PlaceFurniture(startAreaFurnitures[x, y], tile, true, false);
                 }
             }
         }

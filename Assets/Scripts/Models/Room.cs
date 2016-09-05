@@ -161,6 +161,11 @@ public class Room : IXmlSerializable
         tiles.Add(t);
     }
 
+    public bool HasTile(Tile tile)
+    {
+        return tiles.Contains(tile);
+    }
+
     public void ReturnTilesToOutsideRoom()
     {
         for (int i = 0; i < tiles.Count; i++)

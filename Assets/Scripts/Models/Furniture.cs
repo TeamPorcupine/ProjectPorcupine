@@ -8,6 +8,7 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
@@ -71,7 +72,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
     private bool isOperating;
 
-    /// TODO: Implement object rotation
+    private Dictionary<string, Gas> requiredAtmosphere;
+
+    // TODO: Implement object rotation
     public Furniture()
     {
         Tint = Color.white;
@@ -85,6 +88,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         typeTags = new HashSet<string>();
         funcPositionValidation = DefaultIsValidPosition;
         tileTypeBuildPermissions = new HashSet<TileType>();
+        requiredAtmosphere = new Dictionary<string, Gas>();
         Height = 1;
         Width = 1;
     }
@@ -141,6 +145,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
         LocalizationCode = other.LocalizationCode;
         UnlocalizedDescription = other.UnlocalizedDescription;
+        requiredAtmosphere = other.requiredAtmosphere;
     }
 
     public event Action<Furniture> Changed;
@@ -279,9 +284,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         }
     }
 
-    public static Furniture PlaceInstance(Furniture proto, Tile tile)
+    public static Furniture PlaceInstance(Furniture proto, Tile tile, bool doPositionValidaton = true)
     {
-        if (proto.funcPositionValidation(tile) == false)
+        if (doPositionValidaton && proto.funcPositionValidation(tile) == false)
         {
             Debug.ULogErrorChannel("Furniture", "PlaceInstance -- Position Validity Function returned FALSE. " + proto.Name + " " + tile.X + ", " + tile.Y + ", " + tile.Z);
             return null;
@@ -291,7 +296,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         Furniture obj = proto.Clone();
         obj.Tile = tile;
 
-        if (tile.PlaceFurniture(obj) == false)
+        if (tile.PlaceFurniture(obj, doPositionValidaton) == false)
         {
             // For some reason, we weren't able to place our object in this tile.
             // (Probably it was already occupied.)
@@ -339,7 +344,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
     public void Update(float deltaTime)
     {
-        if (PowerConnection != null && PowerConnection.IsPowerConsumer && HasPower() == false)
+        if ((PowerConnection != null && PowerConnection.IsPowerConsumer && HasPower() == false) || HasCorrectAtmosphere() == false)
         {
             if (JobCount() > 0)
             {
@@ -401,6 +406,28 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     {
         IsOperating = PowerConnection == null || World.Current.PowerNetwork.HasPower(PowerConnection);
         return IsOperating;
+    }
+
+    public bool HasCorrectAtmosphere()
+    {
+        if (requiredAtmosphere != null && requiredAtmosphere.Values.Count > 0)
+        {
+            Room containingRoom = World.Current.GetRoomFromTile(this.Tile);
+            foreach (Gas gas in requiredAtmosphere.Values)
+            {
+                float gasAmount = containingRoom.GetGasAmount(gas.name);
+                if (gas.hasValue == true && gasAmount < gas.min)
+                {
+                    return false;
+                }
+                else if (gas.hasValue == false && containingRoom.GetGasAmount(gas.name) > 0f)
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     public XmlSchema GetSchema()
@@ -506,7 +533,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                     PrototypeManager.FurnitureJob.SetPrototype(ObjectType, j);
                     break;
 
-                case "CanBeBuiltOn":
+            case "CanBeBuiltOn":
                     TileType tileType = TileType.GetTileType(reader.GetAttribute("tileType"));
                     tileTypeBuildPermissions.Add(tileType);
                     break;
@@ -561,6 +588,10 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                     reader.Read();
                     UnlocalizedDescription = reader.ReadContentAsString();
                     break;
+
+                case "RequiredAtmosphere":
+                    ReadXmlRequiredAtmosphere(reader);  // Read in the Param tag
+                    break;
             }
         }
     }
@@ -580,6 +611,12 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         // X, Y, and objectType have already been set, and we should already
         // be assigned to a tile.  So just read extra data.
         furnParameters = Parameter.ReadXml(reader);
+    }
+
+    public void ReadXmlRequiredAtmosphere(XmlReader reader)
+    {
+        Dictionary<string, Gas> gases = Gas.ReadXml(reader);
+        requiredAtmosphere = gases;
     }
 
     /// <summary>
@@ -736,7 +773,14 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
     public string GetDescription()
     {
-        return UnlocalizedDescription;
+        StringBuilder atmosphere = new StringBuilder();
+        atmosphere.AppendLine(string.Format("\nValid Atmosphere?: {0}", HasCorrectAtmosphere()));
+        foreach (Gas gas in requiredAtmosphere.Values)
+        {
+            atmosphere.AppendLine(string.Format("Gas: {0}, Needs Value? {1}, Minimum: {2}", gas.name, gas.hasValue, gas.min));
+        }
+
+        return UnlocalizedDescription + atmosphere.ToString();
     }
 
     public string GetHitPointString()
