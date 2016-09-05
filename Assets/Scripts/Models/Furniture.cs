@@ -80,7 +80,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         Tint = Color.white;
         JobSpotOffset = Vector2.zero;
         VerticalDoor = false;
-        EventActions = new EventAction();
+        EventActions = new EventActions();
 
         contextMenuLuaActions = new List<ContextMenuLuaAction>();
         furnParameters = new Parameter();
@@ -206,12 +206,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     /// These actions are called when Trigger is called. They get passed the furniture
     /// they belong to, plus a deltaTime (which defaults to 0).
     /// </summary>
-<<<<<<< HEAD
     /// <value>The event actions that is called on update.</value>
     public EventActions EventActions { get; private set; }
-=======
-    public EventAction EventActions { get; private set; }
->>>>>>> parent of 8a9dca4... Renamed EventAction to EventActions - makes a lot more sense.
 
     /// <summary>
     /// Gets the Connection that the furniture has to the power system.
