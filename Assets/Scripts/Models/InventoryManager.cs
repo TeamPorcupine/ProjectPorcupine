@@ -41,12 +41,12 @@ public class InventoryManager
         // We may also created a new stack on the tile, if the tile was previously empty.
         if (tileWasEmpty)
         {
-            if (inventories.ContainsKey(tile.Inventory.objectType) == false)
+            if (inventories.ContainsKey(tile.Inventory.ObjectType) == false)
             {
-                inventories[tile.Inventory.objectType] = new List<Inventory>();
+                inventories[tile.Inventory.ObjectType] = new List<Inventory>();
             }
 
-            inventories[tile.Inventory.objectType].Add(tile.Inventory);
+            inventories[tile.Inventory.ObjectType].Add(tile.Inventory);
 
             World.Current.OnInventoryCreatedCallback(tile.Inventory);
         }
@@ -56,18 +56,18 @@ public class InventoryManager
 
     public bool PlaceInventory(Job job, Inventory inv)
     {
-        if (job.inventoryRequirements.ContainsKey(inv.objectType) == false)
+        if (job.inventoryRequirements.ContainsKey(inv.ObjectType) == false)
         {
             Debug.ULogErrorChannel("InventoryManager", "Trying to add inventory to a job that it doesn't want.");
             return false;
         }
 
-        job.inventoryRequirements[inv.objectType].StackSize += inv.StackSize;
+        job.inventoryRequirements[inv.ObjectType].StackSize += inv.StackSize;
 
-        if (job.inventoryRequirements[inv.objectType].maxStackSize < job.inventoryRequirements[inv.objectType].StackSize)
+        if (job.inventoryRequirements[inv.ObjectType].MaxStackSize < job.inventoryRequirements[inv.ObjectType].StackSize)
         {
-            inv.StackSize = job.inventoryRequirements[inv.objectType].StackSize - job.inventoryRequirements[inv.objectType].maxStackSize;
-            job.inventoryRequirements[inv.objectType].StackSize = job.inventoryRequirements[inv.objectType].maxStackSize;
+            inv.StackSize = job.inventoryRequirements[inv.ObjectType].StackSize - job.inventoryRequirements[inv.ObjectType].MaxStackSize;
+            job.inventoryRequirements[inv.ObjectType].StackSize = job.inventoryRequirements[inv.ObjectType].MaxStackSize;
         }
         else
         {
@@ -94,10 +94,10 @@ public class InventoryManager
         {
             character.inventory = sourceInventory.Clone();
             character.inventory.StackSize = 0;
-            character.inventory.character = character;
-            inventories[character.inventory.objectType].Add(character.inventory);
+            character.inventory.Character = character;
+            inventories[character.inventory.ObjectType].Add(character.inventory);
         }
-        else if (character.inventory.objectType != sourceInventory.objectType)
+        else if (character.inventory.ObjectType != sourceInventory.ObjectType)
         {
             Debug.ULogErrorChannel("InventoryManager", "Character is trying to pick up a mismatched inventory object type.");
             return false;
@@ -105,10 +105,10 @@ public class InventoryManager
 
         character.inventory.StackSize += amount;
 
-        if (character.inventory.maxStackSize < character.inventory.StackSize)
+        if (character.inventory.MaxStackSize < character.inventory.StackSize)
         {
-            sourceInventory.StackSize = character.inventory.StackSize - character.inventory.maxStackSize;
-            character.inventory.StackSize = character.inventory.maxStackSize;
+            sourceInventory.StackSize = character.inventory.StackSize - character.inventory.MaxStackSize;
+            character.inventory.StackSize = character.inventory.MaxStackSize;
         }
         else
         {
@@ -160,9 +160,9 @@ public class InventoryManager
             {
                 if (onlyFromStockpiles)
                 {
-                    if (inventory.tile == null || 
-                        inventory.tile.Furniture == null ||
-                        inventory.tile.Furniture.ObjectType != "Stockpile")
+                    if (inventory.Tile == null || 
+                        inventory.Tile.Furniture == null ||
+                        inventory.Tile.Furniture.ObjectType != "Stockpile")
                     {
                         continue;
                     }
@@ -190,20 +190,20 @@ public class InventoryManager
         // We can also avoid going through the Astar construction if we know
         // that all available inventories are stockpiles and we are not allowed
         // to touch those
-        if (!canTakeFromStockpile && inventories[objectType].TrueForAll(i => i.tile != null && i.tile.Furniture != null && i.tile.Furniture.IsStockpile()))
+        if (!canTakeFromStockpile && inventories[objectType].TrueForAll(i => i.Tile != null && i.Tile.Furniture != null && i.Tile.Furniture.IsStockpile()))
         {
             return null;
         }
 
         // We shouldn't search if all inventories are locked.
-        if (inventories[objectType].TrueForAll(i => i.tile != null && i.tile.Furniture != null && i.tile.Inventory != null && i.tile.Inventory.locked))
+        if (inventories[objectType].TrueForAll(i => i.Tile != null && i.Tile.Furniture != null && i.Tile.Inventory != null && i.Tile.Inventory.Locked))
         {
             return null;
         }
 
         // Test that there is at least one stack on the floor, otherwise the
         // search below might cause a full map search for nothing.
-        if (inventories[objectType].Find(i => i.tile != null) == null)
+        if (inventories[objectType].Find(i => i.Tile != null) == null)
         {
             return null;
         }
@@ -217,21 +217,21 @@ public class InventoryManager
     {
         if (inv.StackSize == 0)
         {
-            if (inventories.ContainsKey(inv.objectType))
+            if (inventories.ContainsKey(inv.ObjectType))
             {
-                inventories[inv.objectType].Remove(inv);
+                inventories[inv.ObjectType].Remove(inv);
             }
 
-            if (inv.tile != null)
+            if (inv.Tile != null)
             {
-                inv.tile.Inventory = null;
-                inv.tile = null;
+                inv.Tile.Inventory = null;
+                inv.Tile = null;
             }
 
-            if (inv.character != null)
+            if (inv.Character != null)
             {
-                inv.character.inventory = null;
-                inv.character = null;
+                inv.Character.inventory = null;
+                inv.Character = null;
             }
         }
     }

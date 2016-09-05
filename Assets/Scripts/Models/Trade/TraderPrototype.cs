@@ -116,7 +116,6 @@ public class TraderPrototype
         };
 
         t.RefreshInventory();
-
         return t;
     }
 }
