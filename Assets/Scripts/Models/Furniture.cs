@@ -493,7 +493,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                                 invs.ToArray(),
                                 Job.JobPriority.High);
                     j.JobDescription = "job_build_" + ObjectType + "_desc";
-                    PrototypeManager.FurnitureJob.SetPrototype(ObjectType, j);
+                    PrototypeManager.FurnitureJob.Set(ObjectType, j);
                     break;
 
                 case "CanBeBuiltOn":
@@ -623,7 +623,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         Dictionary<string, Inventory> invsDict = new Dictionary<string, Inventory>();
         foreach (string objectType in PrototypeManager.Inventory.Keys)
         {
-            invsDict[objectType] = new Inventory(objectType, PrototypeManager.Inventory.GetPrototype(objectType).maxStackSize, 0);
+            invsDict[objectType] = new Inventory(objectType, PrototypeManager.Inventory.Get(objectType).maxStackSize, 0);
         }
 
         Inventory[] invs = new Inventory[invsDict.Count];

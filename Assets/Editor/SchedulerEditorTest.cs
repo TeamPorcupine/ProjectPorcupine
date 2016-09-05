@@ -183,7 +183,7 @@ public class SchedulerEditorTest
     [Test]
     public void SchedulerLuaEventTest()
     {
-        ScheduledEvent evt = new ScheduledEvent(PrototypeManager.SchedulerEvent.GetPrototype("ping_log_lua"), 1.0f, 1.0f, false, 1);
+        ScheduledEvent evt = new ScheduledEvent(PrototypeManager.SchedulerEvent.Get("ping_log_lua"), 1.0f, 1.0f, false, 1);
 
         scheduler.RegisterEvent(evt);
 

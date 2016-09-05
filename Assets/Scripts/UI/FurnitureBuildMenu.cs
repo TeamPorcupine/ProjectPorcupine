@@ -29,7 +29,7 @@ public class FurnitureBuildMenu : MonoBehaviour
             GameObject go = (GameObject)Instantiate(buildFurnitureButtonPrefab);
             go.transform.SetParent(this.transform);
 
-            Furniture proto = PrototypeManager.Furniture.GetPrototype(s);
+            Furniture proto = PrototypeManager.Furniture.Get(s);
             string objectId = s;
 
             go.name = "Button - Build " + objectId;
@@ -48,7 +48,7 @@ public class FurnitureBuildMenu : MonoBehaviour
             string furn = s;
             LocalizationTable.CBLocalizationFilesChanged += delegate
             {
-                go.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(PrototypeManager.Furniture.GetPrototype(furn).LocalizationCode) };
+                go.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(PrototypeManager.Furniture.Get(furn).LocalizationCode) };
             };
         }
 
@@ -65,7 +65,7 @@ public class FurnitureBuildMenu : MonoBehaviour
 
             for (int i = 0; i < localizers.Length; i++)
             {
-                localizers[i].UpdateText(LocalizationTable.GetLocalization(PrototypeManager.Furniture.GetPrototype(i).GetName()));
+                localizers[i].UpdateText(LocalizationTable.GetLocalization(PrototypeManager.Furniture.Get(i).GetName()));
             }
         }
     }

@@ -24,10 +24,10 @@ public class ModsManager
 
     public void LoadPrototypes()
     {
-        PrototypeManager.Furniture.LoadModPrototypesFromFile(mods);
-        PrototypeManager.Inventory.LoadModPrototypesFromFile(mods);
-        PrototypeManager.Need.LoadModPrototypesFromFile(mods);
-        PrototypeManager.Trader.LoadModPrototypesFromFile(mods);
+        PrototypeManager.Furniture.LoadPrototypes(mods);
+        PrototypeManager.Inventory.LoadPrototypes(mods);
+        PrototypeManager.Need.LoadPrototypes(mods);
+        PrototypeManager.Trader.LoadPrototypes(mods);
 
         FurnitureActions.LoadModsScripts(mods);
         NeedActions.LoadModsScripts(mods);

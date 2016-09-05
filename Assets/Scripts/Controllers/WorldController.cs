@@ -209,7 +209,7 @@ public class WorldController : MonoBehaviour
     public void CallTradeShipTest(Furniture landingPad)
     {
         // Currently not using any logic to select a trader
-        TraderPrototype prototype = PrototypeManager.Trader.GetPrototype(Random.Range(0, PrototypeManager.Trader.Count - 1));
+        TraderPrototype prototype = PrototypeManager.Trader.Get(Random.Range(0, PrototypeManager.Trader.Count - 1));
         Trader trader = prototype.CreateTrader();
 
         GameObject go = new GameObject(trader.Name);
