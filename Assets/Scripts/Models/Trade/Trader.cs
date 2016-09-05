@@ -24,6 +24,7 @@ public class Trader
     public float SaleMarginMultiplier;
     public List<Inventory> Stock;
     public List<TraderPotentialInventory> possibleStock;
+    public List<Inventory> possibleStockInventory;
     public Dictionary<TraderPotentialInventory, RequestLevel> requests;
     public float requestChanceModifier = 0.2f;
 
@@ -55,6 +56,8 @@ public class Trader
         
         return t;
     }
+
+
 
     // Function allows to request items which have a 
     // higher chance to be brought the next time this
@@ -90,6 +93,18 @@ public class Trader
                 AddItemToStock(requestAndLevel.Key);
                 requests.Remove(requestAndLevel.Key);
             }
+        }
+    }
+
+    public void InitializePossibleItemInventory()
+    {
+        foreach (TraderPotentialInventory potentialStock in possibleStock)
+        {
+            possibleStockInventory.Add(new Inventory
+            {
+                ObjectType = potentialStock.ObjectType,
+                StackSize = 0
+            });
         }
     }
 

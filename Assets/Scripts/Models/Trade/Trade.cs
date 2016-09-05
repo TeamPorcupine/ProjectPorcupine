@@ -12,6 +12,7 @@ using System.Linq;
 public class Trade
 {
     public List<TradeItem> TradeItems;
+    public List<TradeItem> PossibleItems;
 
     public Trader Player;
     public Trader Trader;
@@ -25,6 +26,20 @@ public class Trade
         totalStock.AddRange(player.Stock);
         totalStock.AddRange(trader.Stock);
         TradeItems = totalStock.GroupBy(s => s.ObjectType).Select(g => new TradeItem
+        {
+            ObjectType = g.Key,
+            BaseItemPrice = g.First().BasePrice,
+            PlayerStock = player.Stock.Where(s => s.ObjectType == g.Key).Sum(s => s.StackSize),
+            TraderStock = trader.Stock.Where(s => s.ObjectType == g.Key).Sum(s => s.StackSize),
+            TradeAmount = 0,
+            PlayerSellItemPrice = g.First().BasePrice * player.SaleMarginMultiplier,
+            TraderSellItemPrice = g.First().BasePrice * trader.SaleMarginMultiplier
+        }).ToList();
+
+        List<Inventory> possibleStock = new List<Inventory>(trader.possibleStockInventory);
+
+        // HOW DOES THIS EVEN?????? Linq is really confusing.
+        PossibleItems = totalStock.GroupBy(s => s.ObjectType).Select(g => new TradeItem
         {
             ObjectType = g.Key,
             BaseItemPrice = g.First().BasePrice,

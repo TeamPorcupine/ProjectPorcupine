@@ -32,7 +32,10 @@ public class Currency
             }
 
             balance = value;
-            BalanceChanged(this);
+            if (BalanceChanged != null)
+            {
+                BalanceChanged(this);
+            }
         }
     }
 

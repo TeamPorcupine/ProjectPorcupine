@@ -115,9 +115,10 @@ public class TraderPrototype
             requestChanceModifier = RequestChanceModifier
         };
 
-
+        t.InitializePossibleItemInventory();
         t.RefreshInventory();
-
+        WorldController.Instance.tradersController.AddTrader(t);
+        
 
         return t;
     }

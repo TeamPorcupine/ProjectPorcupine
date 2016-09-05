@@ -33,6 +33,7 @@ public class WorldController : MonoBehaviour
     public CameraController cameraController;
     public SpawnInventoryController spawnInventoryController;
     public TradeController TradeController;
+    public TradersController tradersController;
     public TimeManager timeManager;
     public ModsManager modsManager;
     public GameObject inventoryUI;
@@ -129,6 +130,7 @@ public class WorldController : MonoBehaviour
         questController = new QuestController();
         cameraController = new CameraController();
         TradeController = new TradeController();
+        tradersController = new TradersController();
         timeManager = new TimeManager();
 
         keyboardManager.RegisterInputAction("Pause", KeyboardMappedInputType.KeyUp, () => { IsPaused = !IsPaused; });

@@ -20,6 +20,7 @@ public class DialogBoxTrade : DialogBox
     public Text TraderCurrencyBalanceText;
     public Text TradeCurrencyBalanceText;
     public Transform TradeItemListPanel;
+    public Transform TradeHeaderPanel;
 
     public GameObject TradeItemPrefab;
 
@@ -92,14 +93,28 @@ public class DialogBoxTrade : DialogBox
     {
         if (trade.IsValid())
         {
-            trade = null;
-            ClearInterface();
-            CloseDialog();
+            
             if (TradeCompleted != null)
             {
                 TradeCompleted();
             }
+            
         }
+        StartRequests();
+    }
+
+    public void FinalizeTrade()
+    {
+        trade = null;
+        ClearInterface();
+        CloseDialog();
+    }
+
+    private void StartRequests ()
+    {
+        TradeHeaderPanel.gameObject.SetActive(false);
+        ClearInterface();
+
     }
 
     private void ClearInterface()
@@ -108,6 +123,18 @@ public class DialogBoxTrade : DialogBox
         foreach (Transform child in childrens)
         {
             Destroy(child.gameObject);
+        }
+    }
+
+    private void BuildRequestInterface()
+    {
+        foreach (TradeItem tradeItem in trade.PossibleItems)
+        {
+            GameObject go = (GameObject)Instantiate(Resources.Load("Prefab/TradeItemPrefab"), TradeItemListPanel);
+
+            DialogBoxTradeItem tradeItemBehaviour = go.GetComponent<DialogBoxTradeItem>();
+            tradeItemBehaviour.request = true;
+            tradeItemBehaviour.SetupTradeItem(tradeItem);
         }
     }
 
