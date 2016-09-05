@@ -485,9 +485,7 @@ function CloningPod_UpdateAction(furniture, deltaTime)
         false
     )
 
-    if (furniture.JobCount() < 1) then
-        furniture.SetAnimationState("idle")
-    end
+    furniture.SetAnimationState("idle")
     j.RegisterJobWorkedCallback("CloningPod_JobRunning")
     j.RegisterJobCompletedCallback("CloningPod_JobComplete")
 	j.JobDescription = "job_cloning_pod_cloning_desc"
