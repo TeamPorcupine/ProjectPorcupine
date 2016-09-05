@@ -559,15 +559,27 @@ end
 
 -- This function gets called once, when the funriture is unisntalled
 function Heater_UninstallAction( furniture, deltaTime)
-    -- TODO: find elegant way to unregister previous register
-	furniture.EventActions.Deregister("OnUpdateTemperature", "Heater_UpdateTemperature")
+    furniture.EventActions.Deregister("OnUpdateTemperature", "Heater_UpdateTemperature")
 	World.Current.temperature.DeregisterSinkOrSource(furniture)
+	-- TODO: find elegant way to unregister previous register
 end
 
--- Dummy heater uninstall function
--- THis function gets called once, when the funriture is unisntalled
 function Heater_UpdateTemperature( furniture, deltaTime)
-	World.Current.temperature.SetTemperature(furniture.Tile.X, furniture.Tile.Y, 300)
+    if (furniture.HasPower() == false) then
+        return
+    end
+    if (furniture.tile.Room.IsOutsideRoom() == true) then
+        return
+    end
+    
+    tile = furniture.tile
+    pressure = tile.Room.GetGasPressure() / tile.Room.GetSize()
+    efficiency = ModUtils.Clamp01(pressure / furniture.Parameters["pressure_threshold"].ToFloat())
+    temperatureChangePerSecond = furniture.Parameters["base_heating"].ToFloat() * efficiency
+    temperatureChange = temperatureChangePerSecond * deltaTime
+    
+    World.Current.temperature.ChangeTemperature(tile.X, tile.Y, temperatureChange)
+    --ModUtils.ULogChannel("Temperature", "Heat change: " .. temperatureChangePerSecond .. " => " .. World.current.temperature.GetTemperature(tile.X, tile.Y))
 end
 
 -- Should maybe later be integrated with GasGenerator function by
