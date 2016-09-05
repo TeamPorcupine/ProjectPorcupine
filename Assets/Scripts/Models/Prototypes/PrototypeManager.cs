@@ -15,9 +15,9 @@ public class PrototypeManager
 {
     public PrototypeManager()
     {
+        Inventory = new InventoryPrototypes();
         FurnitureJob = new BasePrototypes<Job>();
         Furniture = new FurniturePrototypes();
-        Inventory = new InventoryPrototypes();
         Need = new NeedPrototypes();
         Trader = new TraderPrototypes();
         Quest = new QuestPrototypes();

@@ -339,6 +339,16 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
     public void Update(float deltaTime)
     {
+        if (PowerConnection != null && PowerConnection.IsPowerConsumer && HasPower() == false)
+        {
+            if (JobCount() > 0)
+            {
+                CancelJobs();
+            }
+
+            return;
+        }
+
         // TODO: some weird thing happens
         if (EventActions != null)
         {
