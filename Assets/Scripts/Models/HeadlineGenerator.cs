@@ -37,14 +37,18 @@ public class HeadlineGenerator
         time += deltaTime;
         if (time > nextTime)
         {
-            if (UpdatedHeadline != null)
-            {
-                UpdatedHeadline(headlines[UnityEngine.Random.Range(0, headlines.Count)]);
-            }
-
-            time -= nextTime;
-            ResetNextTime();
+            OnUpdatedHeadline(headlines[UnityEngine.Random.Range(0, headlines.Count)]);
         }
+    }
+
+    private void OnUpdatedHeadline(string headline)
+    {
+        if (UpdatedHeadline != null)
+        {
+            UpdatedHeadline(headline);
+        }
+
+        ResetNextTime();
     }
 
     public void AddHeadline(string headline, bool displayImmediately = true, bool keepInQueue = true)
@@ -56,7 +60,7 @@ public class HeadlineGenerator
 
         if (displayImmediately)
         {
-            UpdatedHeadline(headline);
+            OnUpdatedHeadline(headline);
         }
     }
 

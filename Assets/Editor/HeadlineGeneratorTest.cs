@@ -6,7 +6,6 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System.IO;
 using System.Xml;
 using NUnit.Framework;
 
@@ -15,14 +14,17 @@ public class HeadlineGeneratorTest
     private HeadlineGenerator gen;
     private bool stringPrinted;
 
+    private string testHadlineXml = @"
+<Headlines minInterval=""5"" maxInterval=""10"">
+    <Headline>The CEO of Quillcorp, has announced that it main and only shareholder is still the main and only shareholder, Quill18.</Headline>
+    <Headline>Notice: Quillcorp has placed an embargo on ""Chairs"", any Quillcorp Basic Utility Station found in possession of this illegal contraband will be fined 2 million Quillbucks.</Headline>
+</Headlines>";
+
     [SetUp]
     public void SetUp()
     {
-        string filePath = System.IO.Path.Combine(UnityEngine.Application.streamingAssetsPath, "TestCase");
-        filePath = System.IO.Path.Combine(filePath, "Headlines.xml");
-        string furnitureXmlText = System.IO.File.ReadAllText(filePath);
         XmlDocument doc = new XmlDocument();
-        doc.Load(new StringReader(furnitureXmlText));
+        doc.Load(testHadlineXml);
         gen = new HeadlineGenerator(doc.SelectSingleNode("Headlines"));
         gen.UpdatedHeadline += StringPrinted;
         stringPrinted = false;
