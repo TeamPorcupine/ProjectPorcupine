@@ -56,7 +56,7 @@ public class WorldGenerator
                 int worldY = (height / 2) + startAreaCenterY - y;
 
                 Tile tile = world.GetTileAt(worldX, worldY, 0);
-                tile.Type = TileType.GetTileTypes()[startAreaTiles[x, y]];
+                tile.Type = TileType.LoadedTileTypes[startAreaTiles[x, y]];
             }
         }
 
