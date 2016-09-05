@@ -598,7 +598,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             {
                 Furniture destFurniture = GetClosestFurniture(furnitures);
                 need.SetFurniture(destFurniture);
-                MyJob = new Job(destFurniture.Tile, destFurniture.ObjectType, need.CompleteJobNorm, need.RestoreNeedTime, null, Job.JobPriority.High, false, true, false);
+                MyJob = new Job(destFurniture.GetSpawnSpotTile(), destFurniture.ObjectType, need.CompleteJobNorm, need.RestoreNeedTime, null, Job.JobPriority.High, false, true, false);
             }
         }
 
@@ -1090,6 +1090,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             {
                 continue;
             }
+
             bestLength = path.Length();
             destFurniture = furniture;
         }

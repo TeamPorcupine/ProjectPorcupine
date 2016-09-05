@@ -430,7 +430,8 @@
     <Height>2</Height>
     <PathfindingModifier>1</PathfindingModifier>
     <PathfindingWeight>1</PathfindingWeight>
-    <JobSpotOffset X="0" Y="0" />
+
+    <JobSpawnSpotOffset X="0" Y="0" />
 
     <BuildingJob jobTime="1">
       <Inventory objectType="Steel Plate" amount="2" />
