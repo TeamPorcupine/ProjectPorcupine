@@ -579,7 +579,7 @@ function Heater_UpdateTemperature( furniture, deltaTime)
     temperatureChange = temperatureChangePerSecond * deltaTime
     
     World.Current.temperature.ChangeTemperature(tile.X, tile.Y, temperatureChange)
-    ModUtils.ULogChannel("Temperature", "Heat change: " .. temperatureChangePerSecond .. " => " .. World.current.temperature.GetTemperature(tile.X, tile.Y))
+    --ModUtils.ULogChannel("Temperature", "Heat change: " .. temperatureChangePerSecond .. " => " .. World.current.temperature.GetTemperature(tile.X, tile.Y))
 end
 
 -- Should maybe later be integrated with GasGenerator function by
