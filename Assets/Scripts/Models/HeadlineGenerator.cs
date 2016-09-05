@@ -43,11 +43,11 @@ public class HeadlineGenerator
 
     private void OnUpdatedHeadline(string headline)
     {
-        if (UpdatedHeadline != null)
+        Action<string> handler = UpdatedHeadline;
+        if (handler != null)
         {
-            UpdatedHeadline(headline);
+            handler(headline);
         }
-
         ResetNextTime();
     }
 
