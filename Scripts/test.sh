@@ -13,7 +13,7 @@ echo 'travis_fold:start:tests'
 if [ ! -f $(pwd)/EditorTestResults.xml ]; then
     echo "Results file not found!"
     echo "travis_fold:end:tests"
-    $endTestsFold = 1
+    $endTestsFold=1
 
     # at this point we know that the build has failed due to compilation errors
     # lets try to parse them out of unity.log and display them
@@ -21,7 +21,7 @@ if [ ! -f $(pwd)/EditorTestResults.xml ]; then
         out=$(grep "CompilerOutput" unity.log)
         if [ "$out" != "" ]; then
 
-            echo 'Build Failed! \nThe compiler generated the following messages:'
+            echo '\nBuild Failed! \nThe compiler generated the following messages:'
             echo | awk '/CompilerOutput:/,/EndCompilerOutput/' < unity.log #show lines in between compiler output "tags" including tags 
 
         fi
