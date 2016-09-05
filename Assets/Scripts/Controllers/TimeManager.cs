@@ -25,6 +25,16 @@ public class TimeManager
     private float deltaTime = 0f;
     private float totalDeltaTime = 0f;
 
+    public TimeManager()
+    {
+        KeyboardManager keyboardManager = KeyboardManager.Instance;
+        keyboardManager.RegisterInputAction("SetSpeed1", KeyboardMappedInputType.KeyUp, () => SetTimeScalePosition(2));
+        keyboardManager.RegisterInputAction("SetSpeed2", KeyboardMappedInputType.KeyUp, () => SetTimeScalePosition(3));
+        keyboardManager.RegisterInputAction("SetSpeed3", KeyboardMappedInputType.KeyUp, () => SetTimeScalePosition(4));
+        keyboardManager.RegisterInputAction("DecreaseSpeed", KeyboardMappedInputType.KeyUp, DecreaseTimeScale);
+        keyboardManager.RegisterInputAction("IncreaseSpeed", KeyboardMappedInputType.KeyUp, IncreaseTimeScale);
+    }
+
     public static float GameTickDelay
     {
         get
