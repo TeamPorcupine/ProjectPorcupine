@@ -6,23 +6,76 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class KeyboadMappedInput
 {
-    public InputNames InputName { get; set; }
-    public KeyCode Primary { get; set; }
-    public KeyCode Alternate { get; set; }
-
     public KeyboadMappedInput()
     {
-        
+        KeyCodes = new List<KeyCode>();
     }
 
-    public KeyboadMappedInput(InputNames inputName, KeyCode primary, KeyCode alternate)
+    public string InputName { get; set; }
+
+    public List<KeyCode> KeyCodes { get; set; }
+
+    public KeyboardMappedInputType Type { get; set; }
+
+    public Action OnTriger { get; set; }
+
+    public void AddKeyCodes(KeyCode[] keycodes)
     {
-        InputName = inputName;
-        Primary = primary;
-        Alternate = alternate;
+        foreach (KeyCode keycode in keycodes)
+        {
+            if (!KeyCodes.Contains(keycode))
+            {
+                KeyCodes.Add(keycode);
+            }
+        }
+    }
+
+    public void TrigerActionIfInputValid()
+    {
+        if (UserUsedInputThisFrame())
+        {
+            if (OnTriger != null)
+            {
+                OnTriger();
+            }
+        }
+    }
+
+    private bool UserUsedInputThisFrame()
+    {
+        switch (Type)
+        {
+            case KeyboardMappedInputType.Key:
+                return GetKey();
+            case KeyboardMappedInputType.KeyUp:
+                return GetKeyUp();
+            case KeyboardMappedInputType.KeyDown:
+                return GetKeyDown();
+        }
+
+        return false;
+    }
+
+    private bool GetKey()
+    {
+        return KeyCodes.Any(Input.GetKey);
+    }
+
+    private bool GetKeyUp()
+    {
+        return KeyCodes.Any(Input.GetKeyUp);
+    }
+
+    private bool GetKeyDown()
+    {
+        return KeyCodes.Any(Input.GetKeyUp);
     }
 }

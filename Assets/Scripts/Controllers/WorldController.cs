@@ -29,7 +29,7 @@ public class WorldController : MonoBehaviour
     public QuestController questController;
     public BuildModeController buildModeController;
     public MouseController mouseController;
-    public KeyboardController keyboardController;
+    public KeyboardManager keyboardManager;
     public CameraController cameraController;
     public SpawnInventoryController spawnInventoryController;
     public TimeManager timeManager;
@@ -124,10 +124,12 @@ public class WorldController : MonoBehaviour
         buildModeController = new BuildModeController();
         spawnInventoryController = new SpawnInventoryController();
         mouseController = new MouseController(buildModeController, furnitureSpriteController, circleCursorPrefab);
-        keyboardController = new KeyboardController(Instance);
+        keyboardManager = KeyboardManager.Instance;
         questController = new QuestController();
         cameraController = new CameraController();
         timeManager = new TimeManager();
+
+        keyboardManager.RegisterInputAction("Pause", KeyboardMappedInputType.KeyUp, () => { IsPaused = !IsPaused; });
 
         // Hiding Dev Mode spawn inventory controller if devmode is off.
         spawnInventoryController.SetUIVisibility(Settings.GetSettingAsBool("DialogBoxSettings_developerModeToggle", false));
@@ -145,7 +147,7 @@ public class WorldController : MonoBehaviour
     {
         // Systems that update every frame.
         mouseController.Update(IsModal);
-        keyboardController.Update(IsModal);
+        keyboardManager.Update(IsModal);
         cameraController.Update(IsModal);
         timeManager.Update();
 
