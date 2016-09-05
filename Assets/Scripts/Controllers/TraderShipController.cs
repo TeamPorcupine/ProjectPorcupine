@@ -63,7 +63,9 @@ public class TraderShipController : MonoBehaviour
             }
             else
             {
+
                 WorldController.Instance.TradeController.ShowTradeDialogBox(this);
+
             }
         }
     }
