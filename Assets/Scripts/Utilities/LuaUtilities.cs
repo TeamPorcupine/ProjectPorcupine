@@ -68,7 +68,7 @@ public class LuaUtilities
         luaScript.Globals[type.Name] = type;
     }
 
-    private static void LoadScript(string script)
+    public static void LoadScript(string script)
     {
         luaScript.DoString(script);
     }

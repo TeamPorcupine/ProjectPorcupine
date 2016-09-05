@@ -7,6 +7,7 @@
 // ====================================================
 #endregion
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
@@ -18,23 +19,27 @@ public class SchedulerEditorTest
 {
     private Scheduler.Scheduler scheduler;
     private Action<ScheduledEvent> callback;
+    private string luaFunction = @"
+function ping_log_lua (event)
+    ModUtils.ULogChannel(""Scheduler"", ""Scheduled Lua event '"" .. event.Name .. ""'"")
+    return
+end";
 
     [SetUp]
     public void Init()
     {
-        if (PrototypeManager.SchedulerEvent == null)
-        {
-            new PrototypeManager();
-            PrototypeManager.SchedulerEvent.Add(
-                "ping_log",
-                new ScheduledEvent(
-                    "ping_log",
-                    evt => Debug.ULogChannel("Scheduler", "Event {0} fired", evt.Name)));
-        }
+        // Note: a little black magic happens here for testing purposes...
+        // You would normally create a scheduler with new Scheduler.Scheduler(null).
+        // However, this uses the PrototypeManager system for loading xml ScheduledEvent prototypes from StreamingAssets.
+        // Since unit tests cannot use the filesystem, it is necessary here to pass our own (in this case initially empty)
+        // Dictionary<string, ScheduledEvent> for the scheduler to use as its prototypes.
+        ScheduledEvent csharpEventPrototype = new ScheduledEvent("ping_log", evt => Debug.ULogChannel("Scheduler", "Event {0} fired", evt.Name));
+        LuaUtilities.LoadScript(luaFunction);
+        ScheduledEvent luaEventPrototype = new ScheduledEvent("ping_log_lua", "ping_log_lua");
 
-        // The problem with unit testing singletons
-        ///scheduler = Scheduler.Scheduler.Current;
-        scheduler = new Scheduler.Scheduler();
+        scheduler = new Scheduler.Scheduler(new Dictionary<string, ScheduledEvent>());
+        scheduler.RegisterEventPrototype("ping_log", csharpEventPrototype);
+        scheduler.RegisterEventPrototype("ping_log_lua", luaEventPrototype);
 
         callback = evt => Debug.ULogChannel("SchedulerTest", "Event {0} fired", evt.Name);
     }
@@ -183,9 +188,7 @@ public class SchedulerEditorTest
     [Test]
     public void SchedulerLuaEventTest()
     {
-        ScheduledEvent evt = new ScheduledEvent(PrototypeManager.SchedulerEvent.GetPrototype("ping_log_lua"), 1.0f, 1.0f, false, 1);
-
-        scheduler.RegisterEvent(evt);
+        scheduler.ScheduleEvent("ping_log_lua", 1.0f, false, 1);
 
         scheduler.Update(1);
     }
@@ -246,6 +249,7 @@ public class SchedulerEditorTest
     {
         scheduler.ScheduleEvent("ping_log", 1f, true, 0);
         scheduler.ScheduleEvent("ping_log_lua", 2f, false, 3);
+
         scheduler.Update(0); // updates the event list
 
         StringBuilder sb = new StringBuilder();
@@ -262,6 +266,7 @@ public class SchedulerEditorTest
         // prepare a scheduler instance to serialize
         scheduler.ScheduleEvent("ping_log", 1f, true, 0);
         scheduler.ScheduleEvent("ping_log_lua", 2f, false, 3);
+
         scheduler.Update(0.5f);
 
         // serialize it
@@ -272,7 +277,7 @@ public class SchedulerEditorTest
 
         // Tt is not actually necessary to replace the scheduler: it will properly clear the old one.
         // This just proves that it does work to recreate the scheduler from nothing.
-        scheduler = new Scheduler.Scheduler();
+        Init();
         scheduler.ReadXml(reader);
 
         Assert.That(scheduler.Events.Count, Is.EqualTo(2));
