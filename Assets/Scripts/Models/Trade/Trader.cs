@@ -97,7 +97,7 @@ public class Trader
     {
         Stock.Add(new Inventory
         {
-            objectType = inventory.ObjectType,
+            ObjectType = inventory.ObjectType,
             StackSize = Random.Range(inventory.MinQuantity, inventory.MaxQuantity)
         });
     }

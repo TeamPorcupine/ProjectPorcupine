@@ -32,9 +32,6 @@ public class TradeController
             (int)TimeSpan.FromMinutes(5).TotalSeconds,
             true);
         Scheduler.Scheduler.Current.RegisterEvent(traderVisitEvaluationEvent);
-
-        DialogBoxManager dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
-        dbm.dialogBoxTrade.DoTradingTestWithMockTraders();
     }
     
     public void CallTradeShipTest(Furniture landingPad)
