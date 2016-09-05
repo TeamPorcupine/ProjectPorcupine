@@ -44,7 +44,7 @@ public class ShipSpriteController : BaseSpriteController<Ship>
         GameObject ship_go = objectGameObjectMap[ship];
         ship_go.transform.position = new Vector3(ship.Position.x, ship.Position.y, 0);
 
-        if (ship.State == ShipState.BERTHED)
+        if (ship.State == ShipState.UNWRAPPED)
         {
             ship_go.GetComponent<SpriteRenderer>().enabled = false;
         }
