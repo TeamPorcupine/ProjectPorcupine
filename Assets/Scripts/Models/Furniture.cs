@@ -518,11 +518,12 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                     break;
                 case "ContextMenuAction":
                     contextMenuLuaActions.Add(new ContextMenuLuaAction
-                        {
-                            LuaFunction = reader.GetAttribute("FunctionName"),
-                            Text = reader.GetAttribute("Text"),
-                            RequiereCharacterSelected = bool.Parse(reader.GetAttribute("RequiereCharacterSelected"))
-                        });
+                    {
+                        LuaFunction = reader.GetAttribute("FunctionName"),
+                        Text = reader.GetAttribute("Text"),
+                        RequiereCharacterSelected = bool.Parse(reader.GetAttribute("RequiereCharacterSelected")),
+                        DevModeOnly = bool.Parse(reader.GetAttribute("DevModeOnly") ?? "false")
+                    });
                     break;
                 case "IsEnterable":
                     isEnterableAction = reader.GetAttribute("FunctionName");
@@ -777,12 +778,16 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
         foreach (ContextMenuLuaAction contextMenuLuaAction in contextMenuLuaActions)
         {
-            yield return new ContextMenuAction
+            if (!contextMenuLuaAction.DevModeOnly ||
+                Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
             {
-                Text = contextMenuLuaAction.Text,
-                RequireCharacterSelected = contextMenuLuaAction.RequiereCharacterSelected,
-                Action = (cma, c) => InvokeContextMenuLuaAction(contextMenuLuaAction.LuaFunction, c)
-            };
+                yield return new ContextMenuAction
+                {
+                    Text = contextMenuLuaAction.Text,
+                    RequireCharacterSelected = contextMenuLuaAction.RequiereCharacterSelected,
+                    Action = (cma, c) => InvokeContextMenuLuaAction(contextMenuLuaAction.LuaFunction, c)
+                };
+            }
         }
     }
 
