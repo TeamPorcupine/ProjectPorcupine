@@ -24,7 +24,7 @@ public class HeadlineGeneratorTest
     public void SetUp()
     {
         XmlDocument doc = new XmlDocument();
-        doc.Load(testHadlineXml);
+        doc.LoadXml(testHadlineXml);
         gen = new HeadlineGenerator(doc.SelectSingleNode("Headlines"));
         gen.UpdatedHeadline += StringPrinted;
         stringPrinted = false;
