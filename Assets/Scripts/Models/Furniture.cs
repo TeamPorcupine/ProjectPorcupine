@@ -134,10 +134,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         isEnterableAction = other.isEnterableAction;
         getSpriteNameAction = other.getSpriteNameAction;
 
-        PowerConnection = other.PowerConnection;
-
-        if (PowerConnection != null)
+        if (other.PowerConnection != null)
         {
+            PowerConnection = other.PowerConnection.Clone() as Connection;
             World.Current.PowerSystem.PlugIn(PowerConnection);
         }
 
@@ -362,6 +361,16 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         {
             Animation.Update(deltaTime);
         }
+    }
+
+    public bool IsExit()
+    {
+        if (RoomEnclosure && MovementCost > 0f)
+        {
+            return true;
+        }
+
+        return false;
     }
 
     public Enterability IsEnterable()
