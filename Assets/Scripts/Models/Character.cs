@@ -1095,10 +1095,4 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         return destFurniture;
     }
-
-    private void InitializeCharacterValues()
-    {
-        LoadNeeds();
-        LoadStats();
-    }
 }
