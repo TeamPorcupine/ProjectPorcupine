@@ -13,7 +13,7 @@ using System.Xml.Schema;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
 
-namespace Power
+namespace ProjectPorcupine.PowerNetwork
 {
     /// <summary>
     /// Represents connection to electric grid if furniture has connection specified it uses of produce power.
@@ -113,17 +113,17 @@ namespace Power
 
         public void ReadXml(XmlReader reader)
         {
-            InputRate = RaedFloatNullAsZero(reader.GetAttribute(InputRateAttributeName));
-            OutputRate = RaedFloatNullAsZero(reader.GetAttribute(OutputRateAttributeName));
-            Capacity = RaedFloatNullAsZero(reader.GetAttribute(CapacityAttributeName));
-            AccumulatedPower = RaedFloatNullAsZero(reader.GetAttribute(AccumulatedPowerAttributeName));
+            InputRate = ReadFloatNullAsZero(reader.GetAttribute(InputRateAttributeName));
+            OutputRate = ReadFloatNullAsZero(reader.GetAttribute(OutputRateAttributeName));
+            Capacity = ReadFloatNullAsZero(reader.GetAttribute(CapacityAttributeName));
+            AccumulatedPower = ReadFloatNullAsZero(reader.GetAttribute(AccumulatedPowerAttributeName));
         }
 
         public void ReadPrototype(XmlReader reader)
         {
-            InputRate = RaedFloatNullAsZero(reader.GetAttribute(InputRateAttributeName));
-            OutputRate = RaedFloatNullAsZero(reader.GetAttribute(OutputRateAttributeName));
-            Capacity = RaedFloatNullAsZero(reader.GetAttribute(CapacityAttributeName));
+            InputRate = ReadFloatNullAsZero(reader.GetAttribute(InputRateAttributeName));
+            OutputRate = ReadFloatNullAsZero(reader.GetAttribute(OutputRateAttributeName));
+            Capacity = ReadFloatNullAsZero(reader.GetAttribute(CapacityAttributeName));
         }
 
         public void WriteXml(XmlWriter writer)
@@ -145,7 +145,7 @@ namespace Power
             };
         }
 
-        private static float RaedFloatNullAsZero(string value)
+        private static float ReadFloatNullAsZero(string value)
         {
             float result;
             if (string.IsNullOrEmpty(value))

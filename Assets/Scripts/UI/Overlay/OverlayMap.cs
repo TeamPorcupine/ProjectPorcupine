@@ -324,6 +324,9 @@ public class OverlayMap : MonoBehaviour
         
         script = new Script();
         script.DoString(scriptTxt);
+        //TODO: Code needs rework
+        Type type = typeof(ModUtils);
+        script.Globals[type.Name] = type;
 
         // Build GUI.
         CreateGUI();
