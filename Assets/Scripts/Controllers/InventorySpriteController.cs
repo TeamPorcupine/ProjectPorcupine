@@ -76,7 +76,7 @@ public class InventorySpriteController : BaseSpriteController<Inventory>
 
         sr.sortingLayerName = "Inventory";
 
-        if (inv.maxStackSize > 1)
+        if (inv.maxStackSize > 1 && inventoryUIPrefab)
         {
             // This is a stackable object, so let's add a InventoryUI component
             // (Which is text that shows the current stackSize.)
