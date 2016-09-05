@@ -8,12 +8,30 @@
 #endregion
 
 using System.Xml;
+using System;
 
 public class Currency
 {
     public string Name;
     public string ShortName;
+    
     public float Balance;
+    
+    public void SetBalance (float value) {
+    	
+    	Balance = value;
+    	balanceChanged (this);
+    	
+    }
+    
+    public void ChangeBalance (float value) {
+    	
+    	Balance += value;
+    	balanceChanged (this);
+    	
+    }
+    
+    public Action<Currency> balanceChanged;
     
     public void WriteXml(XmlWriter writer)
     {
