@@ -531,12 +531,20 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                         if (animationReader.Name == "Animation")
                         {
                             string state = animationReader.GetAttribute("state");
-                            string spriteBase = animationReader.GetAttribute("spriteBase");
-                            string frames = animationReader.GetAttribute("frames");
                             float fps = float.Parse(animationReader.GetAttribute("fps"));
                             bool looping = bool.Parse(animationReader.GetAttribute("looping"));
+                            // read frames
+                            XmlReader frameReader = animationReader.ReadSubtree();
+                            List<string> framesSpriteNames = new List<string>();
+                            while (frameReader.Read())
+                            {
+                                if (frameReader.Name == "Frame")
+                                {
+                                    framesSpriteNames.Add(frameReader.GetAttribute("name"));
+                                }
+                            }
 
-                            Animation.AddAnimation(state, spriteBase, frames, fps, looping);                            
+                            Animation.AddAnimation(state, framesSpriteNames, fps, looping);                            
                         }
                     }
 

@@ -207,28 +207,15 @@
     <Height>2</Height>
     <PowerConnection inputRate="" outputRate="5" capacity=""/>
 
-<!-- 
-Maybe do animation frames like this in the future. 
-Might be harder to read if we have many animations
-        
     <Animations>
-      <Animation state="idle" looping="false">
-        <Frames>
-            <Frame name="Power-Generator-anim-04" time="0.5" />
-        </Frames>
+      <Animation state="idle" fps="2" looping="false">
+        <Frame name="Power-Generator-anim-04" />
       </Animation>
-      <Animation state="running" looping="true">   
-        <Frames>
-            <Frame name="Power-Generator-anim-01" time="0.5" />
-            <Frame name="Power-Generator-anim-02" time="0.5" />
-            <Frame name="Power-Generator-anim-03" time="0.5" />
-        </Frames>      
-      </Animation>       
-    </Animations>
--->
-    <Animations>
-      <Animation state="idle" spriteBase="Power-Generator-anim-" frames="04" fps="2" looping="false" />
-      <Animation state="running" spriteBase="Power-Generator-anim-" frames="01,02,03" fps="2" looping="true" />          
+      <Animation state="running" fps="6" looping="true">
+        <Frame name="Power-Generator-anim-01" />
+        <Frame name="Power-Generator-anim-02" />
+        <Frame name="Power-Generator-anim-03" />
+      </Animation>          
     </Animations>
     
     <BuildingJob jobTime="0" />
@@ -264,8 +251,13 @@ Might be harder to read if we have many animations
     </DeconstructJob>
 
     <Animations>
-      <Animation state="idle" spriteBase="cloning_" frames="pod" fps="1" looping="false" />
-      <Animation state="running" spriteBase="cloning_pod_" frames="0,1" fps="1" looping="true" />          
+      <Animation state="idle" fps="1" looping="false">
+        <Frame name="cloning_pod" />
+      </Animation>
+      <Animation state="running" fps="1" looping="true">
+        <Frame name="cloning_pod_0" />
+        <Frame name="cloning_pod_1" />
+      </Animation>          
     </Animations>
 
     <Params>

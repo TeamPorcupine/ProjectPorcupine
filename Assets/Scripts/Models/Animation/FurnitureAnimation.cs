@@ -78,15 +78,8 @@ namespace Animation
             }            
         }
 
-        public void AddAnimation(string state, string spriteBase, string frames, float fps, bool looping)
+        public void AddAnimation(string state, List<string> spriteNames, float fps, bool looping)
         {
-            string[] framesArr = frames.Split(',');
-            List<string> spriteNames = new List<string>();
-            for (int i = 0; i < framesArr.Length; i++)
-            {
-                spriteNames.Add(string.Concat(spriteBase, framesArr[i]));
-            }
-
             animations.Add(state, new SpritenameAnimation(state, spriteNames.ToArray(), 1 / fps, looping));
 
             currentAnimationState = state;
