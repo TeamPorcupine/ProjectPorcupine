@@ -13,29 +13,52 @@ using System.Xml.Serialization;
 using UnityEngine;
 using UnityEngine.UI;
 
-////   Object -> MonoBehaviour -> DialogBox -> DialogBoxLoadSaveGame ->
-////                                                        DialogBoxSaveGame
-////                                                        DialogBoxLoadGame
 
 public class DialogBoxJobList : DialogBox
 {
-    public static readonly Color SecondaryColor = new Color(0.9f, 0.9f, 0.9f);
-
+    
     public GameObject jobListItemPrefab;
     public Transform jobList;
 
+    // These are used as an update period to keep the list updated, and avoid spam
+    // (We already have a lot of FPS issues...)
+    // Also, it seems that if this "sleep" period isn't here, you wouldn't be able to
+    // click on the delete button, as well as it keeps those buttons well aligned (try
+    // to remove it and you'll get what I mean).
+
+    int waitPeriod = 5;
+    int currentWait = 0;
+
     public override void ShowDialog()
     {
-        base.ShowDialog();
-        
-        foreach (Character c in World.Current.characters)
-        {
-            GameObject go = (GameObject)Instantiate(jobListItemPrefab, jobList);
-            go.GetComponentInChildren<Text>().text = c.GetName() + " - " + c.GetJobDescription();
-            
-        }
+        gameObject.SetActive(true);
+    }
 
-        jobList.GetComponentInParent<ScrollRect>().scrollSensitivity = jobList.childCount / 2;
+    void Update()
+    {
+        if(currentWait == 5)
+        {
+            currentWait = 0;
+            while (jobList.childCount > 0)
+            {
+                Transform c = jobList.GetChild(0);
+                c.SetParent(null);  // Become Batman
+                Destroy(c.gameObject);
+            }
+
+            foreach (Character c in World.Current.characters)
+            {
+                GameObject go = (GameObject)Instantiate(jobListItemPrefab, jobList);
+                go.GetComponentInChildren<Text>().text = c.GetName() + " - " + c.GetJobDescription();
+
+            }
+
+            jobList.GetComponentInParent<ScrollRect>().scrollSensitivity = jobList.childCount / 2;
+        }else
+        {
+            currentWait += 1;
+        }
+        
     }
 
     public override void CloseDialog()
