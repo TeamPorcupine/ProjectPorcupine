@@ -43,7 +43,7 @@ public class TileType : IXmlSerializable, IEquatable<TileType>
 
     public static TileType Floor
     {
-        get { return floor ?? (floor = TileTypes["Floor"]); } 
+        get { return floor ?? (floor = TileTypes["Floor"]); }
     }
 
     /// <summary>
@@ -78,13 +78,13 @@ public class TileType : IXmlSerializable, IEquatable<TileType>
     /// </summary>
     public float PathfindingModifier { get; set; }
 
-    public bool LinksToNeighbours { get; protected set; }
+    public bool LinksToNeighbours { get; private set; }
 
-    public string CanBuildHereLua { get; protected set; }
+    public string CanBuildHereLua { get; private set; }
 
-    public string LocalizationCode { get; protected set; }
+    public string LocalizationCode { get; private set; }
 
-    public string UnlocalizedDescription { get; protected set; }
+    public string UnlocalizedDescription { get; private set; }
 
     /// <summary>
     /// Gets clone of construction job prototype for this tileType.
@@ -193,43 +193,43 @@ public class TileType : IXmlSerializable, IEquatable<TileType>
             switch (reader.Name)
             {
                 case "Name":
-                reader.Read();
-                Name = reader.ReadContentAsString();
-                break;
+                    reader.Read();
+                    Name = reader.ReadContentAsString();
+                    break;
                 case "Description":
-                reader.Read();
-                Description = reader.ReadContentAsString();
-                break;
+                    reader.Read();
+                    Description = reader.ReadContentAsString();
+                    break;
                 case "BaseMovementCost":
-                reader.Read();
-                BaseMovementCost = reader.ReadContentAsFloat();
-                break;
+                    reader.Read();
+                    BaseMovementCost = reader.ReadContentAsFloat();
+                    break;
                 case "PathfindingModifier":
-                reader.Read();
-                PathfindingModifier = reader.ReadContentAsFloat();
-                break;
+                    reader.Read();
+                    PathfindingModifier = reader.ReadContentAsFloat();
+                    break;
                 case "PathfindingWeight":
-                reader.Read();
-                PathfindingWeight = reader.ReadContentAsFloat();
-                break;
+                    reader.Read();
+                    PathfindingWeight = reader.ReadContentAsFloat();
+                    break;
                 case "LinksToNeighbours":
-                reader.Read();
-                LinksToNeighbours = reader.ReadContentAsBoolean();
-                break;
+                    reader.Read();
+                    LinksToNeighbours = reader.ReadContentAsBoolean();
+                    break;
                 case "BuildingJob":
-                ReadBuildingJob(reader);
-                break;
+                    ReadBuildingJob(reader);
+                    break;
                 case "CanPlaceHere":
-                CanBuildHereLua = reader.GetAttribute("functionName");
-                break;
+                    CanBuildHereLua = reader.GetAttribute("functionName");
+                    break;
                 case "LocalizationCode":
-                reader.Read();
-                LocalizationCode = reader.ReadContentAsString();
-                break;
+                    reader.Read();
+                    LocalizationCode = reader.ReadContentAsString();
+                    break;
                 case "UnlocalizedDescription":
-                reader.Read();
-                UnlocalizedDescription = reader.ReadContentAsString();
-                break;
+                    reader.Read();
+                    UnlocalizedDescription = reader.ReadContentAsString();
+                    break;
             }
         }
     }
