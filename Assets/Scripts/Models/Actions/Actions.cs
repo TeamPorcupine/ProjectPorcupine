@@ -34,14 +34,13 @@ public class Actions<T>
         RegisterGlobal(typeof(World));
         RegisterGlobal(typeof(WorldController));
         RegisterGlobal(typeof(Power.Connection));
-
-        LoadScripts();
     }
 
     /// <summary>
-    /// Loads the base scripts.
+    /// Loads the base and the mods scripts.
     /// </summary>
-    public void LoadScripts()
+    /// <param name="mods">The mods directories.</param>
+    public void LoadScripts(DirectoryInfo[] mods)
     {
         string filePath = Path.Combine(Application.streamingAssetsPath, "LUA");
         filePath = Path.Combine(filePath, fileName);
@@ -50,17 +49,10 @@ public class Actions<T>
             string text = File.ReadAllText(filePath);
             LoadScriptFromText(text);
         }
-    }
 
-    /// <summary>
-    /// Loads the mods scripts.
-    /// </summary>
-    /// <param name="mods">The mods directories.</param>
-    public void LoadModsScripts(DirectoryInfo[] mods)
-    {
         foreach (DirectoryInfo mod in mods)
         {
-            string filePath = Path.Combine(mod.FullName, fileName);
+            filePath = Path.Combine(mod.FullName, fileName);
             if (File.Exists(filePath))
             {
                 string text = File.ReadAllText(filePath);

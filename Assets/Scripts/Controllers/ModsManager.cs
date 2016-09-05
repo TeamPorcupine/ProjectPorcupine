@@ -24,12 +24,12 @@ public class ModsManager
 
     public void LoadPrototypes()
     {
-        ActionsManager.Furniture.LoadModsScripts(mods);
-        ActionsManager.Need.LoadModsScripts(mods);
-        ActionsManager.GameEvent.LoadModsScripts(mods);
-        ActionsManager.TileType.LoadModsScripts(mods);
-        ActionsManager.Quest.LoadModsScripts(mods);
-        ActionsManager.ScheduledEvent.LoadModsScripts(mods);
+        ActionsManager.Furniture.LoadScripts(mods);
+        ActionsManager.Need.LoadScripts(mods);
+        ActionsManager.GameEvent.LoadScripts(mods);
+        ActionsManager.TileType.LoadScripts(mods);
+        ActionsManager.Quest.LoadScripts(mods);
+        ActionsManager.ScheduledEvent.LoadScripts(mods);
 
         PrototypeManager.Furniture.LoadModPrototypesFromFile(mods);
         PrototypeManager.Inventory.LoadModPrototypesFromFile(mods);
