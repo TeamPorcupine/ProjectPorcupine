@@ -451,12 +451,12 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         }
 
         Tile otherTile = (Tile)obj;
-        return this.X.Equals(otherTile.X) && this.Y.Equals(otherTile.Y);
+        return this.X.Equals(otherTile.X) && this.Y.Equals(otherTile.Y) && this.Z.Equals(otherTile.Z);
     }
 
     public override int GetHashCode()
     {
-        return this.X.GetHashCode() + this.Y.GetHashCode();
+        return this.X.GetHashCode() + this.Y.GetHashCode() + this.Z.GetHashCode();
     }
 
     public override string ToString()
