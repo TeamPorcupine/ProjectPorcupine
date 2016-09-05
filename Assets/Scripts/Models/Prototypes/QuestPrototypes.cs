@@ -33,6 +33,6 @@ public class QuestPrototypes : XmlPrototypes<Quest>
             LogPrototypeError(e, quest.Name);
         }
 
-        SetPrototype(quest.Name, quest);
+        Set(quest.Name, quest);
     }
 }

@@ -33,6 +33,6 @@ public class InventoryPrototypes : XmlPrototypes<InventoryCommon>
             LogPrototypeError(e, inv.objectType);
         }
 
-        SetPrototype(inv.objectType, inv);
+        Set(inv.objectType, inv);
     }
 }
