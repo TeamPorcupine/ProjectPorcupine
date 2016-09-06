@@ -13,7 +13,7 @@ using System.Xml.Schema;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
-using Power;
+using ProjectPorcupine.PowerNetwork;
 using UnityEngine;
 
 /// <summary>
@@ -57,6 +57,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     private Parameter furnParameters;
 
     private List<Job> jobs;
+
+    private List<Job> pausedJobs;
 
     // This is the generic type of object this is, allowing things to interact with it based on it's generic type
     private HashSet<string> typeTags;
@@ -114,6 +116,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
         furnParameters = new Parameter(other.furnParameters);
         jobs = new List<Job>();
+        pausedJobs = new List<Job>();
 
         if (other.EventActions != null)
         {
@@ -131,7 +134,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         if (other.PowerConnection != null)
         {
             PowerConnection = other.PowerConnection.Clone() as Connection;
-            World.Current.PowerSystem.PlugIn(PowerConnection);
+            World.Current.PowerNetwork.PlugIn(PowerConnection);
             PowerConnection.NewThresholdReached += OnNewThresholdReached;
         }
 
@@ -432,10 +435,15 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         {
             if (JobCount() > 0)
             {
-                CancelJobs();
+                PauseJobs();
             }
 
             return;
+        }
+
+        if (pausedJobs.Count > 0)
+        {
+            ResumeJobs();
         }
 
         // TODO: some weird thing happens
@@ -511,7 +519,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     /// <returns>True if the furniture has power</returns>
     public bool HasPower()
     {
-        IsOperating = PowerConnection == null || World.Current.PowerSystem.HasPower(PowerConnection);
+        IsOperating = PowerConnection == null || World.Current.PowerNetwork.HasPower(PowerConnection);
         return IsOperating;
     }
 
@@ -628,7 +636,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                                 invs.ToArray(),
                                 Job.JobPriority.High);
                     j.JobDescription = "job_build_" + ObjectType + "_desc";
-                    PrototypeManager.FurnitureJob.SetPrototype(ObjectType, j);
+                    PrototypeManager.FurnitureJob.Set(ObjectType, j);
                     break;
 
                 case "CanBeBuiltOn":
@@ -643,11 +651,12 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                     break;
                 case "ContextMenuAction":
                     contextMenuLuaActions.Add(new ContextMenuLuaAction
-                        {
-                            LuaFunction = reader.GetAttribute("FunctionName"),
-                            Text = reader.GetAttribute("Text"),
-                            RequiereCharacterSelected = bool.Parse(reader.GetAttribute("RequiereCharacterSelected"))
-                        });
+                    {
+                        LuaFunction = reader.GetAttribute("FunctionName"),
+                        Text = reader.GetAttribute("Text"),
+                        RequiereCharacterSelected = bool.Parse(reader.GetAttribute("RequiereCharacterSelected")),
+                        DevModeOnly = bool.Parse(reader.GetAttribute("DevModeOnly") ?? "false")
+                    });
                     break;
                 case "IsEnterable":
                     isEnterableAction = reader.GetAttribute("FunctionName");
@@ -757,12 +766,28 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         }
     }
 
-    /// <summary>
-    /// Checks whether the furniture is a stockpile.
-    /// This function should probably be removed since it is tied to only one type of furniture.
-    /// I might be useful later on if we have stuff like storage boxes/locker or barrels/bins
-    /// </summary>
-    /// <returns>True is the furniture is a stockpile</returns>
+    /// TODO: Refactor this when the new job system is implemented
+    public void ResumeJobs()
+    {
+        Job[] jobsArray = pausedJobs.ToArray();
+        foreach (Job job in jobsArray)
+        {
+            AddJob(job);
+            pausedJobs.Remove(job);
+        }
+    }
+
+    /// TODO: Refactor this when the new job system is implemented
+    public void PauseJobs()
+    {
+        Job[] jobsArray = jobs.ToArray();
+        foreach (Job job in jobsArray)
+        {
+            pausedJobs.Add(job);
+            job.CancelJob();
+        }
+    }
+
     public bool IsStockpile()
     {
         return HasTypeTag("Storage");
@@ -784,7 +809,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         Dictionary<string, Inventory> invsDict = new Dictionary<string, Inventory>();
         foreach (string objectType in PrototypeManager.Inventory.Keys)
         {
-            invsDict[objectType] = new Inventory(objectType, PrototypeManager.Inventory.GetPrototype(objectType).maxStackSize, 0);
+            invsDict[objectType] = new Inventory(objectType, PrototypeManager.Inventory.Get(objectType).maxStackSize, 0);
         }
 
         Inventory[] invs = new Inventory[invsDict.Count];
@@ -821,7 +846,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
         if (PowerConnection != null)
         {
-            World.Current.PowerSystem.Unplug(PowerConnection);
+            World.Current.PowerNetwork.Unplug(PowerConnection);
             PowerConnection.NewThresholdReached -= OnNewThresholdReached;
         }
 
@@ -963,19 +988,23 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
         foreach (ContextMenuLuaAction contextMenuLuaAction in contextMenuLuaActions)
         {
-            yield return new ContextMenuAction
+            if (!contextMenuLuaAction.DevModeOnly ||
+                Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
             {
-                Text = contextMenuLuaAction.Text,
-                RequireCharacterSelected = contextMenuLuaAction.RequiereCharacterSelected,
-                Action = (cma, c) => InvokeContextMenuLuaAction(contextMenuLuaAction.LuaFunction, c)
-            };
+                yield return new ContextMenuAction
+                {
+                    Text = contextMenuLuaAction.Text,
+                    RequireCharacterSelected = contextMenuLuaAction.RequiereCharacterSelected,
+                    Action = (cma, c) => InvokeContextMenuLuaAction(contextMenuLuaAction.LuaFunction, c)
+                };
+            }
         }
     }
 
     // Make a copy of the current furniture.  Sub-classed should
     // override this Clone() if a different (sub-classed) copy
     // constructor should be run.
-    private Furniture Clone()
+    public Furniture Clone()
     {
         return new Furniture(this);
     }

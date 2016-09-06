@@ -24,15 +24,15 @@ public class Trade
         List<Inventory> totalStock = new List<Inventory>();
         totalStock.AddRange(player.Stock);
         totalStock.AddRange(trader.Stock);
-        TradeItems = totalStock.GroupBy(s => s.objectType).Select(g => new TradeItem
+        TradeItems = totalStock.GroupBy(s => s.ObjectType).Select(g => new TradeItem
         {
             ObjectType = g.Key,
-            BaseItemPrice = g.First().basePrice,
-            PlayerStock = player.Stock.Where(s => s.objectType == g.Key).Sum(s => s.StackSize),
-            TraderStock = trader.Stock.Where(s => s.objectType == g.Key).Sum(s => s.StackSize),
+            BaseItemPrice = g.First().BasePrice,
+            PlayerStock = player.Stock.Where(s => s.ObjectType == g.Key).Sum(s => s.StackSize),
+            TraderStock = trader.Stock.Where(s => s.ObjectType == g.Key).Sum(s => s.StackSize),
             TradeAmount = 0,
-            PlayerSellItemPrice = g.First().basePrice * player.SaleMarginMultiplier,
-            TraderSellItemPrice = g.First().basePrice * trader.SaleMarginMultiplier
+            PlayerSellItemPrice = g.First().BasePrice * player.SaleMarginMultiplier,
+            TraderSellItemPrice = g.First().BasePrice * trader.SaleMarginMultiplier
         }).ToList();
     }
 
@@ -46,6 +46,8 @@ public class Trade
 
     public bool IsValid()
     {
-        return Player.Currency.Balance > TradeCurrencyBalanceForPlayer;
+        return TradeCurrencyBalanceForPlayer < 0
+            ? Player.Currency.Balance >= -TradeCurrencyBalanceForPlayer
+            : Trader.Currency.Balance >= TradeCurrencyBalanceForPlayer;
     }
 }

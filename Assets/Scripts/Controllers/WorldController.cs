@@ -29,9 +29,10 @@ public class WorldController : MonoBehaviour
     public QuestController questController;
     public BuildModeController buildModeController;
     public MouseController mouseController;
-    public KeyboardController keyboardController;
+    public KeyboardManager keyboardManager;
     public CameraController cameraController;
     public SpawnInventoryController spawnInventoryController;
+    public TradeController TradeController;
     public TimeManager timeManager;
     public ModsManager modsManager;
     public GameObject inventoryUI;
@@ -124,10 +125,13 @@ public class WorldController : MonoBehaviour
         buildModeController = new BuildModeController();
         spawnInventoryController = new SpawnInventoryController();
         mouseController = new MouseController(buildModeController, furnitureSpriteController, circleCursorPrefab);
-        keyboardController = new KeyboardController(Instance);
+        keyboardManager = KeyboardManager.Instance;
         questController = new QuestController();
         cameraController = new CameraController();
+        TradeController = new TradeController();
         timeManager = new TimeManager();
+
+        keyboardManager.RegisterInputAction("Pause", KeyboardMappedInputType.KeyUp, () => { IsPaused = !IsPaused; });
 
         // Hiding Dev Mode spawn inventory controller if devmode is off.
         spawnInventoryController.SetUIVisibility(Settings.GetSetting("DialogBoxSettings_developerModeToggle", false));
@@ -145,14 +149,14 @@ public class WorldController : MonoBehaviour
     {
         // Systems that update every frame.
         mouseController.Update(IsModal);
-        keyboardController.Update(IsModal);
+        keyboardManager.Update(IsModal);
         cameraController.Update(IsModal);
         timeManager.Update();
 
         // Systems that update every frame when not paused.
         if (IsPaused == false)
         {
-            World.UpdateCharacters(timeManager.DeltaTime);
+            World.TickEveryFrame(timeManager.DeltaTime);
             Scheduler.Scheduler.Current.Update(timeManager.DeltaTime);
         }
 
@@ -162,7 +166,7 @@ public class WorldController : MonoBehaviour
             if (IsPaused == false)
             {
                 // Systems that update at fixed frequency when not paused.
-                World.Tick(timeManager.TotalDeltaTime);
+                World.TickFixedFrequency(timeManager.TotalDeltaTime);
                 questController.Update(timeManager.TotalDeltaTime);
             }
 
@@ -204,26 +208,6 @@ public class WorldController : MonoBehaviour
         // Reload the scene to reset all data (and purge old references)
         loadWorldFromFile = fileName;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
-
-    public void CallTradeShipTest(Furniture landingPad)
-    {
-        // Currently not using any logic to select a trader
-        TraderPrototype prototype = PrototypeManager.Trader.GetPrototype(Random.Range(0, PrototypeManager.Trader.Count - 1));
-        Trader trader = prototype.CreateTrader();
-
-        GameObject go = new GameObject(trader.Name);
-        go.transform.parent = transform;
-        TraderShipController controller = go.AddComponent<TraderShipController>();
-        controller.Trader = trader;
-        controller.Speed = 5f;
-        go.transform.position = new Vector3(-10, 50, 0);
-        controller.LandingCoordinates = new Vector3(landingPad.Tile.X + 1, landingPad.Tile.Y + 1, 0);
-        controller.LeavingCoordinates = new Vector3(100, 50, 0);
-        go.transform.localScale = new Vector3(1, 1, 1);
-        SpriteRenderer spriteRenderer = go.AddComponent<SpriteRenderer>();
-        spriteRenderer.sprite = SpriteManager.current.GetSprite("Trader", "BasicHaulShip");
-        spriteRenderer.sortingLayerName = "TradeShip";
     }
 
     private void CreateEmptyWorld()

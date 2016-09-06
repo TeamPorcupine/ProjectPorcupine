@@ -7,7 +7,6 @@
 // ====================================================
 #endregion
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -15,7 +14,6 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
-using Power;
 using UnityEngine;
 
 [MoonSharpUserData]
@@ -107,7 +105,7 @@ public class World : IXmlSerializable
     // The tile depth of the world
     public int Depth { get; protected set; }
 
-    public Syster PowerSystem { get; private set; }
+    public ProjectPorcupine.PowerNetwork.PowerNetwork PowerNetwork { get; private set; }
 
     public Room GetOutsideRoom()
     {
@@ -163,7 +161,7 @@ public class World : IXmlSerializable
         r.ReturnTilesToOutsideRoom();
     }
 
-    public void UpdateCharacters(float deltaTime)
+    public void TickEveryFrame(float deltaTime)
     {
         // Change from a foreach due to the collection being modified while its being looped through
         for (int i = 0; i < characters.Count; i++)
@@ -172,8 +170,9 @@ public class World : IXmlSerializable
         }
     }
 
-    public void Tick(float deltaTime)
+    public void TickFixedFrequency(float deltaTime)
     {
+        // Update Furniture
         foreach (Furniture f in furnitures)
         {
             f.Update(deltaTime);
@@ -181,7 +180,7 @@ public class World : IXmlSerializable
 
         // Progress temperature modelling
         temperature.Update();
-        PowerSystem.Update(deltaTime);
+        PowerNetwork.Update(deltaTime);
     }
 
     public Character CreateCharacter(Tile t)
@@ -208,6 +207,24 @@ public class World : IXmlSerializable
         }
 
         return c;
+    }
+
+    /// <summary>
+    /// A function to return the Character object from the character's name.
+    /// </summary>
+    /// <param name="name">The name of the character.</param>
+    /// <returns>The character with that name.</returns>
+    public Character GetCharacterFromName(string name)
+    {
+        foreach (Character character in characters)
+        {
+            if (character.name == name)
+            {
+                return character;
+            }
+        }
+
+        return null;
     }
 
     /// <summary>
@@ -334,13 +351,20 @@ public class World : IXmlSerializable
 
     public Furniture PlaceFurniture(string objectType, Tile t, bool doRoomFloodFill = true)
     {
-        if (PrototypeManager.Furniture.HasPrototype(objectType) == false)
+        if (PrototypeManager.Furniture.Has(objectType) == false)
         {
             Debug.ULogErrorChannel("World", "furniturePrototypes doesn't contain a proto for key: " + objectType);
             return null;
         }
 
-        Furniture furn = Furniture.PlaceInstance(PrototypeManager.Furniture.GetPrototype(objectType), t);
+        Furniture furn = PrototypeManager.Furniture.Get(objectType);
+
+        return PlaceFurniture(furn, t, doRoomFloodFill);
+    }
+
+    public Furniture PlaceFurniture(Furniture furniture, Tile t, bool doRoomFloodFill = true)
+    {
+        Furniture furn = Furniture.PlaceInstance(furniture, t);
 
         if (furn == null)
         {
@@ -387,7 +411,7 @@ public class World : IXmlSerializable
 
     public bool IsFurniturePlacementValid(string furnitureType, Tile t)
     {
-        return PrototypeManager.Furniture.GetPrototype(furnitureType).IsValidPosition(t);
+        return PrototypeManager.Furniture.Get(furnitureType).IsValidPosition(t);
     }
 
     public XmlSchema GetSchema()
@@ -445,7 +469,7 @@ public class World : IXmlSerializable
                 // If we don't have a tile, that means this is in a character's inventory (or some other non-tile location
                 //      which means we shouldn't save that Inventory here, the character will take care of saving and loading
                 //      the inventory properly.
-                if (inv.tile != null)
+                if (inv.Tile != null)
                 {
                     writer.WriteStartElement("Inventory");
                     inv.WriteXml(writer);
@@ -654,7 +678,7 @@ public class World : IXmlSerializable
         characters = new List<Character>();
         furnitures = new List<Furniture>();
         inventoryManager = new InventoryManager();
-        PowerSystem = new Syster();
+        PowerNetwork = new ProjectPorcupine.PowerNetwork.PowerNetwork();
         temperature = new Temperature(Width, Height);
         LoadSkybox();
     }

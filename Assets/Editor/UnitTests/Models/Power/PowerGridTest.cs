@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
 // This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
@@ -10,7 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using NUnit.Framework;
-using Power;
+using ProjectPorcupine.PowerNetwork;
 
 public class PowerGridTest
 {
