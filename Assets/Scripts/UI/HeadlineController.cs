@@ -10,13 +10,21 @@
 using System.Collections;
 using System.IO;
 using System.Xml;
-
+using Scheduler;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class HeadlineController : MonoBehaviour
 {
     public Text textBox;
+    public float dismissTime = 10;
+
+    private ScheduledEvent scheduledEvent;
+
+    public void Dismiss()
+    {
+        GetComponent<CanvasGroup>().alpha = 0;
+    }
 
     private void Start()
     {
@@ -32,7 +40,12 @@ public class HeadlineController : MonoBehaviour
 
     private void UpdateHeadline(string newHeadline)
     {
+        GetComponent<CanvasGroup>().alpha = 1;
         Debug.ULogChannel("Headline", newHeadline);
         textBox.text = newHeadline;
+
+        Scheduler.Scheduler.Current.DeregisterEvent(scheduledEvent);
+        scheduledEvent = new ScheduledEvent(ToString(), (incomingEvent) => Dismiss(), dismissTime);
+        Scheduler.Scheduler.Current.RegisterEvent(scheduledEvent);
     }
 }
