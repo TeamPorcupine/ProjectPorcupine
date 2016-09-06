@@ -997,7 +997,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     }
 
     /// <summary>
-    /// Set the animation state. Will only have an effect if stateName is different from current animation stateName
+    /// Set the animation state. Will only have an effect if stateName is different from current animation stateName.
     /// </summary>
     public void SetAnimationState(string stateName)
     {
