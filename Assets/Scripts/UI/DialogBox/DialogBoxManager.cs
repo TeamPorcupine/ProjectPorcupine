@@ -29,34 +29,40 @@ public class DialogBoxManager : MonoBehaviour
 
         GameObject tempGoObj;
 
-        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_SaveFile"), DialogBoxGO.transform.position, DialogBoxGO.transform.rotation, DialogBoxGO.transform);
-        tempGoObj.name = "Save File";
+        tempGoObj = CreateDialogGO("DB_SaveFile", "Save File");
         dialogBoxSaveGame = tempGoObj.GetComponent<DialogBoxSaveGame>();
 
-        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_LoadFile"), DialogBoxGO.transform.position, DialogBoxGO.transform.rotation, DialogBoxGO.transform);
-        tempGoObj.name = "Load File";
+        tempGoObj = CreateDialogGO("DB_LoadFile", "Load File");
         dialogBoxLoadGame = tempGoObj.GetComponent<DialogBoxLoadGame>();
 
-        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_Options"), DialogBoxGO.transform.position, DialogBoxGO.transform.rotation, DialogBoxGO.transform);
-        tempGoObj.name = "Options";
+        tempGoObj = CreateDialogGO("DB_Options", "Options");
         dialogBoxOptions = tempGoObj.GetComponent<DialogBoxOptions>();
 
-        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_Settings"), DialogBoxGO.transform.position, DialogBoxGO.transform.rotation, DialogBoxGO.transform);
-        tempGoObj.name = "Settings";
+        tempGoObj = CreateDialogGO("DB_Settings", "Settings");
         dialogBoxSettings = tempGoObj.GetComponent<DialogBoxSettings>();
 
-        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_Trade"), DialogBoxGO.transform.position, DialogBoxGO.transform.rotation, DialogBoxGO.transform);
-        tempGoObj.name = "Trade";
+        tempGoObj = CreateDialogGO("DB_Trade", "Trade");
         dialogBoxTrade = tempGoObj.GetComponent<DialogBoxTrade>();
 
-        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_AreYouSure"), DialogBoxGO.transform.position, DialogBoxGO.transform.rotation, DialogBoxGO.transform);
-        tempGoObj.name = "Are You Sure";
+        tempGoObj = CreateDialogGO("DB_AreYouSure", "Are You Sure");
         dialogBoxAreYouSure = tempGoObj.GetComponent<DialogBoxAreYouSure>();
 
-        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_Quests"), DialogBoxGO.transform.position, DialogBoxGO.transform.rotation, DialogBoxGO.transform);
-        tempGoObj.name = "Quests";
+        tempGoObj = CreateDialogGO("DB_Quests", "Quests");
         dialogBoxQuests = tempGoObj.GetComponent<DialogBoxQuests>();
         AddQuestList();
+    }
+
+    /// <summary>
+    /// Creates a dialog GameObject from its prefab.
+    /// </summary>
+    /// <param name="prefabName">The name of the prefab.</param>
+    /// <param name="name">The name of the instance of the prefab in the scene.</param>
+    /// <returns>The dialog as an instance in the scene.</returns>
+    private GameObject CreateDialogGO(string prefabName, string name)
+    {
+        GameObject tempGoObj = (GameObject)Instantiate(Resources.Load("UI/" + prefabName), DialogBoxGO.transform.position, DialogBoxGO.transform.rotation, DialogBoxGO.transform);
+        tempGoObj.name = name;
+        return tempGoObj;
     }
 
     // Temporary location until we have a proper code-driven UI
