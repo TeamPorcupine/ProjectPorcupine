@@ -161,7 +161,7 @@ public class World : IXmlSerializable
         r.ReturnTilesToOutsideRoom();
     }
 
-    public void UpdateCharacters(float deltaTime)
+    public void TickEveryFrame(float deltaTime)
     {
         // Change from a foreach due to the collection being modified while its being looped through
         for (int i = 0; i < characters.Count; i++)
@@ -170,8 +170,9 @@ public class World : IXmlSerializable
         }
     }
 
-    public void Tick(float deltaTime)
+    public void TickFixedFrequency(float deltaTime)
     {
+        // Update Furniture
         foreach (Furniture f in furnitures)
         {
             f.Update(deltaTime);
@@ -206,6 +207,24 @@ public class World : IXmlSerializable
         }
 
         return c;
+    }
+
+    /// <summary>
+    /// A function to return the Character object from the character's name.
+    /// </summary>
+    /// <param name="name">The name of the character.</param>
+    /// <returns>The character with that name.</returns>
+    public Character GetCharacterFromName(string name)
+    {
+        foreach (Character character in characters)
+        {
+            if (character.name == name)
+            {
+                return character;
+            }
+        }
+
+        return null;
     }
 
     /// <summary>
@@ -338,7 +357,14 @@ public class World : IXmlSerializable
             return null;
         }
 
-        Furniture furn = Furniture.PlaceInstance(PrototypeManager.Furniture.Get(objectType), t);
+        Furniture furn = PrototypeManager.Furniture.Get(objectType);
+
+        return PlaceFurniture(furn, t, doRoomFloodFill);
+    }
+
+    public Furniture PlaceFurniture(Furniture furniture, Tile t, bool doRoomFloodFill = true)
+    {
+        Furniture furn = Furniture.PlaceInstance(furniture, t);
 
         if (furn == null)
         {

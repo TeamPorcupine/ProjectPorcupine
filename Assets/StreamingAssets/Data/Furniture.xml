@@ -464,4 +464,32 @@
     <LocalizationCode>furn_accumulator</LocalizationCode>
     <UnlocalizedDescription>furn_accumulator_desc</UnlocalizedDescription>
   </Furniture>
+
+  
+  <Furniture objectType="mine">
+    <Name>A Mining Spot</Name>
+    <Description>A spot for mining ore</Description>
+    <TypeTag>Ore</TypeTag>
+    <TypeTag>OutdoorOnly</TypeTag>
+    <TypeTag>Non-buildable</TypeTag>
+    <MovementCost>2</MovementCost>
+    <PathfindingModifier>1.5</PathfindingModifier>
+    <PathfindingWeight>2</PathfindingWeight>
+    <Width>1</Width>
+    <Height>1</Height>
+
+    <BuildingJob jobTime="1" />
+
+    <Params>
+     <Param name="ore_type" value="Raw Iron" />
+    </Params>
+    
+    <ContextMenuAction FunctionName="OreMine_CreateMiningJob" Text="Mine Ore" RequiereCharacterSelected="false" />
+    <GetSpriteName FunctionName="OreMine_GetSpriteName" />
+
+    <LocalizationCode>furn_mine</LocalizationCode>
+    <UnlocalizedDescription>furn_mine_desc</UnlocalizedDescription>
+  </Furniture>
+
+
 </Furnitures>

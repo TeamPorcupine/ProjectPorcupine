@@ -13,6 +13,8 @@ using UnityEngine.UI;
 public class DialogBoxManager : MonoBehaviour
 {
     // This will just keep a reference to all the dialog boxes since there inactive on start you cant find them.
+
+    public DialogBoxJobList dialogBoxJobList;
     public DialogBoxLoadGame dialogBoxLoadGame;
     public DialogBoxSaveGame dialogBoxSaveGame;
     public DialogBoxOptions dialogBoxOptions;
@@ -46,6 +48,9 @@ public class DialogBoxManager : MonoBehaviour
 
         tempGoObj = CreateDialogGO("DB_AreYouSure", "Are You Sure");
         dialogBoxAreYouSure = tempGoObj.GetComponent<DialogBoxAreYouSure>();
+
+        tempGoObj = CreateDialogGO("DB_JobList", "Job List");
+        dialogBoxJobList = tempGoObj.GetComponent<DialogBoxJobList>();
 
         tempGoObj = CreateDialogGO("DB_Quests", "Quests");
         dialogBoxQuests = tempGoObj.GetComponent<DialogBoxQuests>();
