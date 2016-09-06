@@ -40,7 +40,7 @@ public class HeadlineGeneratorTest
     public void T01_1s_No_Generation()
     {
         stringPrinted = false;
-        gen.Update(1);
+        Scheduler.Scheduler.Current.Update(1);
         Assert.AreEqual(false, stringPrinted);
     }
 
@@ -48,7 +48,7 @@ public class HeadlineGeneratorTest
     public void T02_10s_Generated()
     {
         stringPrinted = false;
-        gen.Update(10);
+        Scheduler.Scheduler.Current.Update(10);
         Assert.AreEqual(true, stringPrinted);
     }
 

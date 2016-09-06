@@ -25,7 +25,6 @@ public class World : IXmlSerializable
     public List<Character> characters;
     public List<Furniture> furnitures;
     public List<Room> rooms;
-    public List<HeadlineGenerator> headlineGenerators = new List<HeadlineGenerator>();
     public InventoryManager inventoryManager;
     public Material skybox;
 
@@ -179,23 +178,9 @@ public class World : IXmlSerializable
             f.Update(deltaTime);
         }
 
-        // Update HeadlineGenerator
-        foreach (HeadlineGenerator hg in headlineGenerators)
-        {
-            hg.Update(deltaTime);
-        }
-
         // Progress temperature modelling
         temperature.Update();
         PowerNetwork.Update(deltaTime);
-    }
-
-    public HeadlineGenerator CreateHeadlineGenerator(XmlNode node, Action<string> updateHeadlineFunction)
-    {
-        HeadlineGenerator newGenerator = new HeadlineGenerator(node);
-        newGenerator.UpdatedHeadline += updateHeadlineFunction;
-        headlineGenerators.Add(newGenerator);
-        return newGenerator;
     }
 
     public Character CreateCharacter(Tile t)

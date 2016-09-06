@@ -7,6 +7,7 @@
 // ====================================================
 #endregion
 
+using Scheduler;
 using System;
 using System.Collections.Generic;
 using System.Xml;
@@ -14,7 +15,8 @@ using System.Xml;
 public class HeadlineGenerator 
 {
     private List<string> headlines = new List<string>();
-    private float time, nextTime, minInterval, maxInterval;
+    private float minInterval, maxInterval;
+    private ScheduledEvent scheduledEvent;
 
     public HeadlineGenerator(XmlNode baseNode)
     {
@@ -28,21 +30,11 @@ public class HeadlineGenerator
 
         OnUpdatedHeadline();
         ResetNextTime();
-        time = 0f;
     }
 
     public event Action<string> UpdatedHeadline;
 
     public string CurrentDisplayText { get; protected set; }
-
-    public void Update(float deltaTime)
-    {
-        time += deltaTime;
-        if (time > nextTime)
-        {
-            OnUpdatedHeadline(headlines[UnityEngine.Random.Range(0, headlines.Count)]);
-        }
-    }
 
     public void AddHeadline(string headline, bool displayImmediately = true, bool keepInQueue = true)
     {
@@ -76,6 +68,9 @@ public class HeadlineGenerator
 
     private void ResetNextTime()
     {
-        nextTime = UnityEngine.Random.Range(minInterval, maxInterval) + time;
+        Scheduler.Scheduler.Current.DeregisterEvent(scheduledEvent);
+        float nextTime = UnityEngine.Random.Range(minInterval, maxInterval);
+        scheduledEvent = new ScheduledEvent(ToString(), (incomingEvent) => OnUpdatedHeadline(), nextTime);
+        Scheduler.Scheduler.Current.RegisterEvent(scheduledEvent);
     }
 }
