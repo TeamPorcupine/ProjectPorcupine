@@ -661,30 +661,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                     break;
                 case "Animations":
                     XmlReader animationReader = reader.ReadSubtree();
-                    Animation = new FurnitureAnimation();
-                    while (animationReader.Read())
-                    {
-                        if (animationReader.Name == "Animation")
-                        {
-                            string state = animationReader.GetAttribute("state");
-                            float fps = float.Parse(animationReader.GetAttribute("fps"));
-                            bool looping = bool.Parse(animationReader.GetAttribute("looping"));
-                            
-                            // read frames
-                            XmlReader frameReader = animationReader.ReadSubtree();
-                            List<string> framesSpriteNames = new List<string>();
-                            while (frameReader.Read())
-                            {
-                                if (frameReader.Name == "Frame")
-                                {
-                                    framesSpriteNames.Add(frameReader.GetAttribute("name"));
-                                }
-                            }
-
-                            Animation.AddAnimation(state, framesSpriteNames, fps, looping);                            
-                        }
-                    }
-
+                    ReadAnimationXml(animationReader);
                     break;
                 case "Action":
                     XmlReader subtree = reader.ReadSubtree();
@@ -739,7 +716,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
             }
         }
     }
-
+    
     /// <summary>
     /// Reads the specified XMLReader (pass it to <see cref="ReadXmlParams(XmlReader)"/>)
     /// This is used to load furniture from a save file.
@@ -1166,5 +1143,35 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     private void OnNewThresholdReached(Connection connection)
     {
         UpdateOnChanged(this);
+    }
+
+    /// <summary>
+    /// Reads and creates FurnitureAnimation from the prototype xml. 
+    /// </summary>
+    private void ReadAnimationXml(XmlReader animationReader)
+    {
+        Animation = new FurnitureAnimation();
+        while (animationReader.Read())
+        {
+            if (animationReader.Name == "Animation")
+            {
+                string state = animationReader.GetAttribute("state");
+                float fps = float.Parse(animationReader.GetAttribute("fps"));
+                bool looping = bool.Parse(animationReader.GetAttribute("looping"));
+
+                // read frames
+                XmlReader frameReader = animationReader.ReadSubtree();
+                List<string> framesSpriteNames = new List<string>();
+                while (frameReader.Read())
+                {
+                    if (frameReader.Name == "Frame")
+                    {
+                        framesSpriteNames.Add(frameReader.GetAttribute("name"));
+                    }
+                }
+
+                Animation.AddAnimation(state, framesSpriteNames, fps, looping);
+            }
+        }
     }
 }
