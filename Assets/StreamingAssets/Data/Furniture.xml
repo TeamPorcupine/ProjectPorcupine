@@ -209,12 +209,12 @@
 
     <Animations>
       <Animation state="idle" fps="2" looping="false">
-        <Frame name="Power-Generator-anim-04" />
+        <Frame name="Power-Generator-01" />
       </Animation>
       <Animation state="running" fps="6" looping="true">
-        <Frame name="Power-Generator-anim-01" />
-        <Frame name="Power-Generator-anim-02" />
-        <Frame name="Power-Generator-anim-03" />
+        <Frame name="Power-Generator-02" />
+        <Frame name="Power-Generator-03" />
+        <Frame name="Power-Generator-04" />
       </Animation>          
     </Animations>
     
