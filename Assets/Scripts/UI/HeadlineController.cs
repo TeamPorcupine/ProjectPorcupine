@@ -20,10 +20,17 @@ public class HeadlineController : MonoBehaviour
     public float dismissTime = 10;
 
     private ScheduledEvent scheduledEvent;
+    private CanvasGroup canvasGroup;
 
     public void Dismiss()
     {
-        GetComponent<CanvasGroup>().alpha = 0;
+        canvasGroup.alpha = 0;
+        canvasGroup.interactable = false;
+    }
+
+    private void Awake()
+    {
+        canvasGroup = GetComponent<CanvasGroup>();
     }
 
     private void Start()
@@ -40,7 +47,9 @@ public class HeadlineController : MonoBehaviour
 
     private void UpdateHeadline(string newHeadline)
     {
-        GetComponent<CanvasGroup>().alpha = 1;
+        canvasGroup.alpha = 1;
+        canvasGroup.interactable = true;
+
         Debug.ULogChannel("Headline", newHeadline);
         textBox.text = newHeadline;
 
