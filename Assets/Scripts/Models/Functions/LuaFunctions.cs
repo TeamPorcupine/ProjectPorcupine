@@ -9,7 +9,6 @@
 using System;
 using System.IO;
 using MoonSharp.Interpreter;
-using UnityEngine;
 using ProjectPorcupine.PowerNetwork;
 
 public class LuaFunctions
@@ -36,29 +35,12 @@ public class LuaFunctions
     }
 
     /// <summary>
-    /// Loads the base and the mods scripts.
+    /// Registers a class as a global entity to use it inside of lua.
     /// </summary>
-    /// <param name="mods">The mods directories.</param>
-    /// <param name="fileName">The file name.</param>
-    public void LoadScripts(DirectoryInfo[] mods, string fileName)
+    /// <param name="type">Class typeof.</param>
+    public void RegisterGlobal(Type type)
     {
-        string filePath = Path.Combine(Application.streamingAssetsPath, "LUA");
-        filePath = Path.Combine(filePath, fileName);
-        if (File.Exists(filePath))
-        {
-            string text = File.ReadAllText(filePath);
-            LoadScriptFromText(text, fileName);
-        }
-
-        foreach (DirectoryInfo mod in mods)
-        {
-            filePath = Path.Combine(mod.FullName, fileName);
-            if (File.Exists(filePath))
-            {
-                string text = File.ReadAllText(filePath);
-                LoadScriptFromText(text, fileName);
-            }
-        }
+        script.Globals[type.Name] = type;
     }
 
     /// <summary>
@@ -66,25 +48,18 @@ public class LuaFunctions
     /// </summary>
     /// <param name="text">The code text.</param>
     /// <param name="scriptName">The script name.</param>
-    public void LoadScriptFromText(string text, string scriptName)
+    public bool LoadScript(string text, string scriptName)
     {
         try
         {
             script.DoString(text);
         }
-        catch (MoonSharp.Interpreter.SyntaxErrorException e)
+        catch (SyntaxErrorException e)
         {
             Debug.ULogErrorChannel("Lua", "[" + scriptName + "] LUA Parse error: " + e.DecoratedMessage);
+            return false;
         }
-    }
-
-    /// <summary>
-    /// Registers a class as a global entity to use it inside of lua.
-    /// </summary>
-    /// <param name="type">Class typeof.</param>
-    public void RegisterGlobal(Type type)
-    {
-        script.Globals[type.Name] = type;
+        return true;
     }
 
     /// <summary>

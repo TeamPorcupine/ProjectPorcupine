@@ -16,10 +16,16 @@ using Scheduler;
 
 public class SchedulerEditorTest
 {
+    private string luaFunction = @"
+        function ping_log_lua(event)
+            ModUtils.ULogChannel(""Scheduler"", ""Scheduled Lua event '"" .. event.Name .. ""'"")
+            return
+        end";
+    
     private const string XmlPrototypeString = @"
-<Events>
-    <Event name=""ping_log_lua"" onFire=""ping_log_lua""/>
-</Events>";
+        <Events>
+            <Event name=""ping_log_lua"" onFire=""ping_log_lua""/>
+        </Events>";
 
     private Scheduler.Scheduler scheduler;
     private Action<ScheduledEvent> callback;
@@ -27,6 +33,12 @@ public class SchedulerEditorTest
     [SetUp]
     public void Init()
     {
+        if (FunctionsManager.ScheduledEvent == null)
+        {
+            new FunctionsManager();
+            FunctionsManager.ScheduledEvent.LoadScript(luaFunction, "ScheduledEvent");
+        }
+
         if (PrototypeManager.SchedulerEvent == null)
         {
             new PrototypeManager();

@@ -51,31 +51,40 @@ public class LuaFunctionsTest
     [Test]
     public void Test_LoadScript()
     {
-        // Load our good lua file, shouldn't get any errors and shouldnt raise any expetions 
-        functions.LoadScriptFromText(testCode1, "testCode1");
+        // Try loading a good Lua Code
+        bool result = functions.LoadScript(testCode1, "testCode1");
+        Assert.AreEqual(true, result);
     }
 
     [Test]
-    [ExpectedException(typeof(System.ArgumentNullException))]
+    [ExpectedException(typeof(System.NullReferenceException))]
     public void Test_LoadScript_Null()
     {
-        // Try loading a file from the path null
-        functions.LoadScriptFromText(null, "");
+        // Try loading a Lua Code from a null text
+        functions.LoadScript(null, "");
+    }
+
+    [Test]
+    public void Test_LoadScript_Empty()
+    {
+        // Try loading a Lua Code from an empty text. Everything should be ok, but there won't be functions
+        bool result = functions.LoadScript("", "");
+        Assert.AreEqual(true, result);
     }
 
     [Test]
     public void Test_LoadScript_BadLua_NoEnd()
     {
-        // FIXME: use mocking to verify whats going on
-        // Bad Lua Code is caught in side the method from this level we don't know if an error happened
-        functions.LoadScriptFromText(testCode2, "testCode2");
+        // Try loading bad Lua Code. The Lua Interpreter will send an exception and the script won't be loaded
+        bool result = functions.LoadScript(testCode2, "testCode2");
+        Assert.AreEqual(false, result);
     }
 
     [Test]
     public void Test_CallFunction()
     {
         // Test a function that dosent return anything (void c# , nil/nan Lua)
-        functions.LoadScriptFromText(testCode1, "testCode1");
+        functions.LoadScript(testCode1, "testCode1");
         DynValue value = functions.Call("test_func0");
         Assert.AreEqual(true, value.IsNilOrNan());
     }
@@ -84,7 +93,7 @@ public class LuaFunctionsTest
     public void Test_CallFunction_ReturnString()
     {
         // Test a function that returns a string
-        functions.LoadScriptFromText(testCode1, "testCode1");
+        functions.LoadScript(testCode1, "testCode1");
         DynValue value = functions.Call("test_func1");
         Assert.AreEqual("test_func1_returns", value.CastToString());
     }
@@ -93,7 +102,7 @@ public class LuaFunctionsTest
     public void Test_CallFunction_InputString_ReturnInput()
     {
         // Test a function that returns the String passed to it
-        functions.LoadScriptFromText(testCode1, "testCode1");
+        functions.LoadScript(testCode1, "testCode1");
         DynValue value = functions.Call("test_func2", "inputted value");
         Assert.AreEqual("inputted value", value.CastToString());
     }
@@ -102,10 +111,11 @@ public class LuaFunctionsTest
     public void Test_CallFunction_InputInts_ReturnSum()
     {
         // Test passing more than one input
-        functions.LoadScriptFromText(testCode1, "testCode1");
+        functions.LoadScript(testCode1, "testCode1");
         DynValue value = functions.Call("test_func3", 4, 7);
         Assert.AreEqual(11, (int)value.CastToNumber());
     }
 
     // TODO: unit tests for LuaFunctions.RegisterGlobal
+    // TODO: unit tests for LuaFunctions.CallWithInstance
 }

@@ -30,7 +30,7 @@ public class FunctionsManager
     /// <value>The furniture Lua Functions.</value>
     public static LuaFunctions Furniture
     {
-        get { return actions["Furniture"]; }
+        get { return Get("Furniture"); }
     }
 
     /// <summary>
@@ -39,7 +39,7 @@ public class FunctionsManager
     /// <value>The need actions.</value>
     public static LuaFunctions Need
     {
-        get { return actions["Need"]; }
+        get { return Get("Need"); }
     }
 
     /// <summary>
@@ -48,7 +48,7 @@ public class FunctionsManager
     /// <value>The game event Lua Functions.</value>
     public static LuaFunctions GameEvent
     {
-        get { return actions["GameEvent"]; }
+        get { return Get("GameEvent"); }
     }
 
     /// <summary>
@@ -57,7 +57,7 @@ public class FunctionsManager
     /// <value>The tile type Lua Functions.</value>
     public static LuaFunctions TileType
     {
-        get { return actions["TileType"]; }
+        get { return Get("TileType"); }
     }
 
     /// <summary>
@@ -66,7 +66,7 @@ public class FunctionsManager
     /// <value>The quest Lua Functions.</value>
     public static LuaFunctions Quest
     {
-        get { return actions["Quest"]; }
+        get { return Get("Quest"); }
     }
 
     /// <summary>
@@ -75,7 +75,7 @@ public class FunctionsManager
     /// <value>The scheduled event Lua Functions.</value>
     public static LuaFunctions ScheduledEvent
     {
-        get { return actions["ScheduledEvent"]; }
+        get { return Get("ScheduledEvent"); }
     }
 
     /// <summary>
@@ -84,6 +84,11 @@ public class FunctionsManager
     /// <param name="name">The functions key.</param>
     public static LuaFunctions Get(string name)
     {
+        if (actions == null)
+        {
+            return null;
+        }
+
         if (actions.ContainsKey(name))
         {
             return actions[name];

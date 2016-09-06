@@ -8,6 +8,7 @@
 #endregion
 using System;
 using System.IO;
+using UnityEngine;
 
 public class ModsManager
 {
@@ -24,12 +25,12 @@ public class ModsManager
 
     public void LoadPrototypes()
     {
-        FunctionsManager.Furniture.LoadScripts(mods, "Furniture.lua");
-        FunctionsManager.Need.LoadScripts(mods, "Need.lua");
-        FunctionsManager.GameEvent.LoadScripts(mods, "GameEvent.lua");
-        FunctionsManager.TileType.LoadScripts(mods, "Tiles.lua");
-        FunctionsManager.Quest.LoadScripts(mods, "Quest.lua");
-        FunctionsManager.ScheduledEvent.LoadScripts(mods, "ScheduledEvent.lua");
+        LoadFunctionScripts("Furniture", "Furniture.lua");
+        LoadFunctionScripts("Need", "Need.lua");
+        LoadFunctionScripts("GameEvent", "GameEvent.lua");
+        LoadFunctionScripts("TileType", "Tiles.lua");
+        LoadFunctionScripts("Quest", "Quest.lua");
+        LoadFunctionScripts("ScheduledEvent", "ScheduledEvent.lua");
 
         PrototypeManager.Furniture.LoadPrototypes(mods);
         PrototypeManager.Inventory.LoadPrototypes(mods);
@@ -41,5 +42,31 @@ public class ModsManager
     public DirectoryInfo[] GetMods()
     {
         return mods;
+    }
+
+    /// <summary>
+    /// Loads the base and the mods scripts.
+    /// </summary>
+    /// <param name="mods">The mods directories.</param>
+    /// <param name="fileName">The file name.</param>
+    private void LoadFunctionScripts(string functionsName, string fileName)
+    {
+        string filePath = Path.Combine(Application.streamingAssetsPath, "LUA");
+        filePath = Path.Combine(filePath, fileName);
+        if (File.Exists(filePath))
+        {
+            string text = File.ReadAllText(filePath);
+            FunctionsManager.Get(functionsName).LoadScript(text, functionsName);
+        }
+
+        foreach (DirectoryInfo mod in mods)
+        {
+            filePath = Path.Combine(mod.FullName, fileName);
+            if (File.Exists(filePath))
+            {
+                string text = File.ReadAllText(filePath);
+                FunctionsManager.Get(functionsName).LoadScript(text, functionsName);
+            }
+        }
     }
 }

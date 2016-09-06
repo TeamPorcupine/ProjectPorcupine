@@ -20,7 +20,6 @@ public class TileType : IXmlSerializable, IEquatable<TileType>
 {
     private static readonly string ULogChanelName = "TileType";
     private static readonly string TilesDescriptionFileName = "Tiles.xml";
-    private static readonly string TilesScriptFileName = "Tiles.lua";
 
     // A private dictionary for storing all TileTypes
     private static readonly Dictionary<string, TileType> TileTypes = new Dictionary<string, TileType>();
