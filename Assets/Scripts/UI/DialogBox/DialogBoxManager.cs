@@ -14,6 +14,7 @@ public class DialogBoxManager : MonoBehaviour
 {
     // This will just keep a reference to all the dialog boxes since there inactive on start you cant find them.
     public MenuController mc;
+    public DialogBoxJobList dialogBoxJobList;
     public DialogBoxLoadGame dialogBoxLoadGame;
     public DialogBoxSaveGame dialogBoxSaveGame;
     public DialogBoxOptions dialogBoxOptions;
@@ -48,6 +49,10 @@ public class DialogBoxManager : MonoBehaviour
         tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_Trade"), controllers.transform.position, controllers.transform.rotation, controllers.transform);
         tempGoObj.name = "Trade";
         dialogBoxTrade = tempGoObj.GetComponent<DialogBoxTrade>();
+
+        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_JobList"), controllers.transform.position, controllers.transform.rotation, controllers.transform);
+        tempGoObj.name = "Job List";
+        dialogBoxJobList = tempGoObj.GetComponent<DialogBoxJobList>();
 
         tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_AreYouSure"), controllers.transform.position, controllers.transform.rotation, controllers.transform);
         tempGoObj.name = "Are You Sure";

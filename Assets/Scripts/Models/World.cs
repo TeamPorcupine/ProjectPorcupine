@@ -210,6 +210,24 @@ public class World : IXmlSerializable
     }
 
     /// <summary>
+    /// A function to return the Character object from the character's name.
+    /// </summary>
+    /// <param name="name">The name of the character.</param>
+    /// <returns>The character with that name.</returns>
+    public Character GetCharacterFromName(string name)
+    {
+        foreach (Character character in characters)
+        {
+            if (character.name == name)
+            {
+                return character;
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>
     /// A function for testing out the system.
     /// </summary>
     public void RandomizeTiles()
@@ -339,7 +357,14 @@ public class World : IXmlSerializable
             return null;
         }
 
-        Furniture furn = Furniture.PlaceInstance(PrototypeManager.Furniture.Get(objectType), t);
+        Furniture furn = PrototypeManager.Furniture.Get(objectType);
+
+        return PlaceFurniture(furn, t, doRoomFloodFill);
+    }
+
+    public Furniture PlaceFurniture(Furniture furniture, Tile t, bool doRoomFloodFill = true)
+    {
+        Furniture furn = Furniture.PlaceInstance(furniture, t);
 
         if (furn == null)
         {
@@ -444,7 +469,7 @@ public class World : IXmlSerializable
                 // If we don't have a tile, that means this is in a character's inventory (or some other non-tile location
                 //      which means we shouldn't save that Inventory here, the character will take care of saving and loading
                 //      the inventory properly.
-                if (inv.tile != null)
+                if (inv.Tile != null)
                 {
                     writer.WriteStartElement("Inventory");
                     inv.WriteXml(writer);

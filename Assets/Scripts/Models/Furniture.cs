@@ -58,6 +58,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
     private List<Job> jobs;
 
+    private List<Job> pausedJobs;
+
     // This is the generic type of object this is, allowing things to interact with it based on it's generic type
     private HashSet<string> typeTags;
 
@@ -111,6 +113,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
         furnParameters = new Parameter(other.furnParameters);
         jobs = new List<Job>();
+        pausedJobs = new List<Job>();
 
         if (other.EventActions != null)
         {
@@ -343,10 +346,15 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         {
             if (JobCount() > 0)
             {
-                CancelJobs();
+                PauseJobs();
             }
 
             return;
+        }
+
+        if (pausedJobs.Count > 0)
+        {
+            ResumeJobs();
         }
 
         // TODO: some weird thing happens
@@ -613,6 +621,28 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         }
     }
 
+    /// TODO: Refactor this when the new job system is implemented
+    public void ResumeJobs()
+    {
+        Job[] jobsArray = pausedJobs.ToArray();
+        foreach (Job job in jobsArray)
+        {
+            AddJob(job);
+            pausedJobs.Remove(job);
+        }
+    }
+
+    /// TODO: Refactor this when the new job system is implemented
+    public void PauseJobs()
+    {
+        Job[] jobsArray = jobs.ToArray();
+        foreach (Job job in jobsArray)
+        {
+            pausedJobs.Add(job);
+            job.CancelJob();
+        }
+    }
+
     public bool IsStockpile()
     {
         return HasTypeTag("Storage");
@@ -794,7 +824,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     // Make a copy of the current furniture.  Sub-classed should
     // override this Clone() if a different (sub-classed) copy
     // constructor should be run.
-    private Furniture Clone()
+    public Furniture Clone()
     {
         return new Furniture(this);
     }
