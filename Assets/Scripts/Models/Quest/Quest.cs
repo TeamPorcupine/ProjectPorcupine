@@ -13,17 +13,19 @@ using MoonSharp.Interpreter;
 [MoonSharpUserData]
 public class Quest
 {
-    public string Name;
-    public string Description;
+    public string Name { get; set; }
 
-    public List<QuestGoal> Goals;
+    public string Description { get; set; }
 
-    public bool IsAccepted;
-    public bool IsCompleted;
+    public List<QuestGoal> Goals { get; set; }
 
-    public List<QuestReward> Rewards;
+    public bool IsAccepted { get; set; }
 
-    public List<string> PreRequiredCompletedQuest;
+    public bool IsCompleted { get; set; }
+
+    public List<QuestReward> Rewards { get; set; }
+
+    public List<string> PreRequiredCompletedQuest { get; set; }
 
     public void ReadXmlPrototype(XmlTextReader reader_parent)
     {

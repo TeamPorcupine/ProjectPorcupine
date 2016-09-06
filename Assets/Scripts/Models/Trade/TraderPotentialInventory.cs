@@ -10,10 +10,27 @@ using UnityEngine;
 
 public class TraderPotentialInventory
 {
-    public string ObjectType;
-    public int MinQuantity;
-    public int MaxQuantity;
+    private float rarity;
 
-    [Range(0, 1)]
-    public float Rarity;
+    public string ObjectType { get; set; }
+
+    public int MinQuantity { get; set; }
+
+    public int MaxQuantity { get; set; }
+
+    /// <summary>
+    /// Value from 0 to 1, higher value represent lower availability of the trade resource.
+    /// </summary>
+    public float Rarity
+    {
+        get
+        {
+            return rarity;
+        }
+
+        set
+        {
+            rarity = Mathf.Clamp(value, 0f, 1f);
+        }
+    }
 }
