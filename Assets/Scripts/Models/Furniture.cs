@@ -700,7 +700,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
     /// <summary>
     /// Reads the specified XMLReader (pass it to <see cref="ReadXmlParams(XmlReader)"/>)
-    /// This is used to load furniture form a save file.
+    /// This is used to load furniture from a save file.
     /// </summary>
     /// <param name="reader">The XML reader to read from.</param>
     public void ReadXml(XmlReader reader)
