@@ -31,7 +31,7 @@ public class TraderPrototype
     public List<TraderPotentialInventory> PotentialStock { get; set; }
 
     /// <summary>
-    /// Value from 0 to 1, higher value represent lower availability of the trade resource.
+    /// Value from 0 to 1, higher value represent higher availability of the trade resource.
     /// </summary>
     public float Rarity
     {
