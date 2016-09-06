@@ -190,9 +190,10 @@ public class World : IXmlSerializable
         PowerNetwork.Update(deltaTime);
     }
 
-    public HeadlineGenerator CreateHeadlineGenerator(XmlNode node)
+    public HeadlineGenerator CreateHeadlineGenerator(XmlNode node, Action<string> updateHeadlineFunction)
     {
         HeadlineGenerator newGenerator = new HeadlineGenerator(node);
+        newGenerator.UpdatedHeadline += updateHeadlineFunction;
         headlineGenerators.Add(newGenerator);
         return newGenerator;
     }

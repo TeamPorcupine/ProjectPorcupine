@@ -15,6 +15,7 @@ public class HeadlineGenerator
 {
     private List<string> headlines = new List<string>();
     private float time, nextTime, minInterval, maxInterval;
+    public string currentDisplay { get; protected set; }
 
     public HeadlineGenerator(XmlNode baseNode)
     {
@@ -25,6 +26,7 @@ public class HeadlineGenerator
         {
             headlines.Add(node.InnerText);
         }
+        OnUpdatedHeadline();
 
         ResetNextTime();
         time = 0f;
@@ -41,8 +43,14 @@ public class HeadlineGenerator
         }
     }
 
+    private void OnUpdatedHeadline()
+    {
+        OnUpdatedHeadline(headlines[UnityEngine.Random.Range(0, headlines.Count)]);
+    }
+
     private void OnUpdatedHeadline(string headline)
     {
+        currentDisplay = headline;
         Action<string> handler = UpdatedHeadline;
         if (handler != null)
         {
@@ -66,6 +74,6 @@ public class HeadlineGenerator
 
     private void ResetNextTime()
     {
-        nextTime = UnityEngine.Random.Range(minInterval, maxInterval);
+        nextTime = UnityEngine.Random.Range(minInterval, maxInterval)+time;
     }
 }
