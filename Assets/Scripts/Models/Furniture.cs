@@ -621,6 +621,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         }
     }
 
+    /// TODO: Refactor this when the new job system is implemented
     public void ResumeJobs()
     {
         Job[] jobsArray = pausedJobs.ToArray();
@@ -631,6 +632,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         }
     }
 
+    /// TODO: Refactor this when the new job system is implemented
     public void PauseJobs()
     {
         Job[] jobsArray = jobs.ToArray();
