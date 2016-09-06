@@ -26,6 +26,7 @@ public class HeadlineController : MonoBehaviour
     {
         canvasGroup.alpha = 0;
         canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
     }
 
     private void Awake()
@@ -49,6 +50,7 @@ public class HeadlineController : MonoBehaviour
     {
         canvasGroup.alpha = 1;
         canvasGroup.interactable = true;
+        canvasGroup.blocksRaycasts = true;
 
         Debug.ULogChannel("Headline", newHeadline);
         textBox.text = newHeadline;
