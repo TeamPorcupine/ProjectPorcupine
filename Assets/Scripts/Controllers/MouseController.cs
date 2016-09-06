@@ -151,6 +151,14 @@ public class MouseController
         return false;
     }
 
+    public void ClearMouseMode(bool changeMode = false)
+    {
+        isDragging = false;
+        if (changeMode) {
+            currentMode = MouseMode.SELECT;
+        }
+    }
+
     private void UpdateCurrentFramePosition()
     {
         currFramePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -163,8 +171,7 @@ public class MouseController
         {
             if (currentMode == MouseMode.BUILD)
             {
-                isDragging = false;
-                currentMode = MouseMode.SELECT;
+                ClearMouseMode(true);
             }
             else if (currentMode == MouseMode.SPAWN_INVENTORY)
             {
