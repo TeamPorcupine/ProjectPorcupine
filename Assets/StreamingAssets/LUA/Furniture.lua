@@ -485,6 +485,7 @@ function CloningPod_UpdateAction(furniture, deltaTime)
         false
     )
 
+    furniture.SetAnimationState("idle")
     j.RegisterJobWorkedCallback("CloningPod_JobRunning")
     j.RegisterJobCompletedCallback("CloningPod_JobComplete")
 	j.JobDescription = "job_cloning_pod_cloning_desc"
@@ -492,22 +493,7 @@ function CloningPod_UpdateAction(furniture, deltaTime)
 end
 
 function CloningPod_JobRunning(j)
-    local step = 0
-    if (math.floor(math.abs(j.JobTime * j.furniture.Parameters["animationTimer"].ToFloat())) % 2 == 0) then
-        step = 1
-    end
-    if (j.furniture.Parameters["animationStep"].ToFloat() != step) then
-         j.furniture.Parameters["animationStep"].SetValue(step)
-         j.furniture.UpdateOnChanged(j.furniture)
-    end
-end
-
-function CloningPod_GetSpriteName(furniture)
-    local baseName = "cloning_pod"
-    if (furniture.JobCount() < 1) then
-        return baseName
-    end
-    return baseName .. "_" .. furniture.Parameters["animationStep"].ToFloat()
+    j.furniture.SetAnimationState("running")
 end
 
 function CloningPod_JobComplete(j)
@@ -537,7 +523,12 @@ function PowerGenerator_UpdateAction(furniture, deltatime)
         furniture.Parameters["burnTime"].ChangeFloatValue(-deltatime)
         if ( furniture.Parameters["burnTime"].ToFloat() < 0 ) then
             furniture.Parameters["burnTime"].SetValue(0)
-        end
+        end        
+    end
+    if (furniture.Parameters["burnTime"].ToFloat() == 0) then
+        furniture.SetAnimationState("idle")
+    else
+        furniture.SetAnimationState("running")
     end
 end
 

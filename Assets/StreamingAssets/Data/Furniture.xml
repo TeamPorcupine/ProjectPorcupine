@@ -207,6 +207,17 @@
     <Height>2</Height>
     <PowerConnection inputRate="" outputRate="5" capacity=""/>
 
+    <Animations>
+      <Animation state="idle" fps="2" looping="false">
+        <Frame name="Power-Generator-01" />
+      </Animation>
+      <Animation state="running" fps="6" looping="true">
+        <Frame name="Power-Generator-02" />
+        <Frame name="Power-Generator-03" />
+        <Frame name="Power-Generator-04" />
+      </Animation>          
+    </Animations>
+    
     <BuildingJob jobTime="0" />
 
     <Params>
@@ -239,6 +250,16 @@
       <Inventory objectType="Steel Plate" amount="15" />
     </DeconstructJob>
 
+    <Animations>
+      <Animation state="idle" fps="1" looping="false">
+        <Frame name="cloning_pod" />
+      </Animation>
+      <Animation state="running" fps="1" looping="true">
+        <Frame name="cloning_pod_0" />
+        <Frame name="cloning_pod_1" />
+      </Animation>          
+    </Animations>
+
     <Params>
       <Param name="animationTimer" value="1" />
       <Param name="animationStep" value="0" />
@@ -248,8 +269,7 @@
     <JobSpawnSpotOffset X="1" Y="-1" />
 
     <Action event="OnUpdate" functionName="CloningPod_UpdateAction" />
-    <GetSpriteName FunctionName="CloningPod_GetSpriteName" />
-
+    
     <LocalizationCode>furn_cloning_pod</LocalizationCode>
     <UnlocalizedDescription>furn_cloning_pod_desc</UnlocalizedDescription>
   </Furniture>
