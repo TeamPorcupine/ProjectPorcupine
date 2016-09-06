@@ -10,10 +10,13 @@ using UnityEngine;
 
 public class TraderPotentialInventory
 {
-    public string ObjectType;
-    public int MinQuantity;
-    public int MaxQuantity;
+    public string ObjectType { get; set; }
 
-    [Range(0, 1)]
-    public float Rarity;
+    public string ObjectCategory { get; set; }
+
+    public int MinQuantity { get; set; }
+
+    public int MaxQuantity { get; set; }
+
+    public float Rarity { get; set; }
 }
