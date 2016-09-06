@@ -20,7 +20,7 @@ public class FurnitureBuildMenu : MonoBehaviour
     private string lastLanguage;
     private bool showAllFurniture;
 
-    public void RebuildMenuButtons(bool showAllFurniture)
+    public void RebuildMenuButtons(bool showAllFurniture = false)
     {
         foreach (GameObject gameObject in buildMenu)
         {
