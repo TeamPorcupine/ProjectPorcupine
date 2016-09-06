@@ -18,6 +18,7 @@ public class MenuController : MonoBehaviour
     // The sub menus of the build menu (furniture, floor..... later - power, security, drones).
     public GameObject furnitureMenu;
     public GameObject floorMenu;
+    public GameObject workMenu;
     
     public Button buttonConstructor;
     public Button buttonWorld;
@@ -34,6 +35,7 @@ public class MenuController : MonoBehaviour
     // Deactivates All Menus.
     public void DeactivateAll()
     {
+        workMenu.SetActive(false);
         constructorMenu.SetActive(false);
         DeactivateSubs();
     }
@@ -66,7 +68,15 @@ public class MenuController : MonoBehaviour
 
     public void OnButtonWork()
     {
-        DeactivateAll();
+        if (constructorMenu.activeSelf)
+        {
+            DeactivateAll();
+        } 
+        else 
+        { 
+            DeactivateAll();
+            workMenu.SetActive(true);
+        }
     }
 
     public void OnButtonWorld()
@@ -112,6 +122,7 @@ public class MenuController : MonoBehaviour
         furnitureMenu = GameObject.Find("MenuFurniture");
         floorMenu = GameObject.Find("MenuFloor");
         constructorMenu = GameObject.Find("MenuConstruction");
+        workMenu = GameObject.Find("MenuWork");
 
         // Add liseners here.
         buttonConstructor.onClick.AddListener(delegate
