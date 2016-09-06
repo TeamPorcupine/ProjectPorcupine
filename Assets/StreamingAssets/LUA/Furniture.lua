@@ -629,5 +629,35 @@ function Accumulator_GetSpriteName(furniture)
 	return baseName .. "_" .. suffix
 end
 
+function IsAvailable_Bed( furniture )
+    if (furniture.Parameters["slots_in_use"].ToFloat() < furniture.Parameters["slots"].ToFloat()) then
+       return true
+    end
+    return false
+end
+
+function OnJobStart_Bed( furniture, character )
+    furniture.Parameters["slots_in_use"].SetValue(furniture.Parameters["slots_in_use"].ToFloat() + 1)
+end
+
+function OnJobComplete_Bed( furniture, character )
+    -- one more slot is available
+    furniture.Parameters["slots_in_use"].SetValue(furniture.Parameters["slots_in_use"].ToFloat() - 1)
+
+    -- Jump from bed
+    local destTile = World.Current.GetTileAt(furniture.Tile.X - 1, furniture.Tile.Y, furniture.Tile.Z)
+
+    local jump = Job.__new(
+            destTile,
+            nil,
+            nil,
+            0.5,
+            nil,
+            Job.JobPriority.High,
+            false
+        )
+    character.PrioritizeJob(jump)
+end
+
 ModUtils.ULog("Furniture.lua loaded")
 return "LUA Script Parsed!"

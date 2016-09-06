@@ -19,6 +19,7 @@ public class Need
     public string localisationID;
     public string Name;
     public Character character;
+    public Furniture Furniture;
     protected float addedInVacuum;
     protected float dps;
     protected string[] luaUpdate;
@@ -52,9 +53,9 @@ public class Need
         this.luaOnly = other.luaOnly;
     }
 
-    public float Amount 
-    { 
-        get 
+    public float Amount
+    {
+        get
         {
             return amount;
         }
@@ -115,6 +116,12 @@ public class Need
         {
             // FIXME: Insert need fail damage code here.
         }
+    }
+
+    public void SetFurniture(Furniture furniture)
+    {
+        Furniture = furniture;
+        Furniture.EventActions.Trigger("OnJobStart", Furniture, character);
     }
 
     public void ReadXmlPrototype(XmlReader reader_parent)
@@ -183,6 +190,11 @@ public class Need
 
     public void CompleteJobNorm(Job j)
     {
+        if (Furniture != null)
+        {
+            Furniture.EventActions.Trigger("OnJobComplete", Furniture, character);
+        }
+
         Amount -= restoreNeedAmount;
     }
 

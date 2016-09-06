@@ -45,23 +45,11 @@ public class FurnitureActions
         }
     }
 
-    public static void CallFunctionsWithFurniture<T>(string[] functionNames, T furn, float deltaTime)
+    public static void CallFunctionsWithFurniture(string[] functionNames, params object[] args)
     {
-        if (furn == null)
-        {
-            // These errors are about the lua code so putting themin the Lua channel.
-            Debug.ULogErrorChannel("Lua", "Furn is null, cannot call LUA function (something is fishy).");
-        }
-
         foreach (string fn in functionNames)
-        {
-            if (fn == null)
-            {
-                Debug.ULogErrorChannel("Lua", "'" + fn + "' is not a LUA function.");
-                return;
-            }
-            
-            DynValue result = LuaUtilities.CallFunction(fn, furn, deltaTime);
+        {           
+            DynValue result = LuaUtilities.CallFunction(fn, args);
             
             if (result.Type == DataType.String)
             {

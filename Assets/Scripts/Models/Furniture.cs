@@ -36,6 +36,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
     private string isEnterableAction;
 
+    // Avaibility of the furniture for jobs.
+    private string isAvailableAction;
+
     /// <summary>
     /// This action is called to get the sprite name based on the furniture parameters.
     /// </summary>
@@ -123,6 +126,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         }
 
         isEnterableAction = other.isEnterableAction;
+        isAvailableAction = other.isAvailableAction;
         getSpriteNameAction = other.getSpriteNameAction;
 
         if (other.PowerConnection != null)
@@ -381,6 +385,17 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         return (Enterability)ret.Number;
     }
 
+    public bool IsAvailable()
+    {
+        if (string.IsNullOrEmpty(isAvailableAction))
+        {
+            return true;
+        }
+
+        DynValue ret = LuaUtilities.CallFunction(isAvailableAction, this);
+        return ret.Boolean;
+    }
+
     public string GetSpriteName()
     {
         if (string.IsNullOrEmpty(getSpriteNameAction))
@@ -527,6 +542,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                     break;
                 case "IsEnterable":
                     isEnterableAction = reader.GetAttribute("FunctionName");
+                    break;
+                case "IsAvailable":
+                    isAvailableAction = reader.GetAttribute("FunctionName");
                     break;
                 case "GetSpriteName":
                     getSpriteNameAction = reader.GetAttribute("FunctionName");
