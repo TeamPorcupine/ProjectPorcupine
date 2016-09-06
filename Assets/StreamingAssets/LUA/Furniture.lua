@@ -565,9 +565,6 @@ function Heater_UninstallAction( furniture, deltaTime)
 end
 
 function Heater_UpdateTemperature( furniture, deltaTime)
-    if (furniture.HasPower() == false) then
-        return
-    end
     if (furniture.tile.Room.IsOutsideRoom() == true) then
         return
     end
