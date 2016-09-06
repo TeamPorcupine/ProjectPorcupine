@@ -1,3 +1,5 @@
+L E T ' S   G E T   S O M E   C H A N G E S   U P   I N   H E R E   B O I Z
+
 # ProjectPorcupine [![Build Status](https://travis-ci.org/TeamPorcupine/ProjectPorcupine.svg?branch=master)](https://travis-ci.org/TeamPorcupine/ProjectPorcupine)
 Project Porcupine: A Base-Building Game...in Space!
 
@@ -10,7 +12,7 @@ Project Porcupine: A Base-Building Game...in Space!
 [Contributing](#contributing)  
 [Vote on Proposed Features](#vote-on-proposed-features)  
 [Community](#community)  
-[Contact](#contact) 
+[Contact](#contact)
 
 ## About
 
@@ -25,7 +27,7 @@ Project Porcupine was created to serve two purposes:
   tile-based map with self-governing agents (i.e. characters)
   as well as highly customizable objects (i.e. XML/Lua defined
   furniture.)  To this end, we would be making a program themed as
-  a starbase-construction game -- though there's no reason that 
+  a starbase-construction game -- though there's no reason that
   someone couldn't produce something with a wildly different theme
   or purpose (including not being a base-building game at all).
 
@@ -84,4 +86,3 @@ You can contact Quill18 by Twitter (@quill18) or email:
 
 However, please note that Quill receives a lot of email and may
 not be able to respond to everyone in a timely manner.
-
