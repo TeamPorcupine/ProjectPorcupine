@@ -15,6 +15,7 @@ using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
 using Power;
 using UnityEngine;
+using System.Text;
 
 /// <summary>
 /// InstalledObjects are things like walls, doors, and furniture (e.g. a sofa).
@@ -575,10 +576,13 @@ public partial class Furniture : IXmlSerializable, ISelectable, IContextActionPr
                         furnParameters.AddParameter(new Parameter(CUR_PRODUCTION_CHAIN_PARAM_NAME, null));
                         foreach (var chain in factoryData.PossibleProductions)
                         {
+                            string prodChainName = chain.Name;
                             factoryMenuActions.Add(new FactoryContextMenu()
-                            {
-                                Text = chain.Name,
-                                Function = () => { furnParameters[CUR_PRODUCTION_CHAIN_PARAM_NAME].SetValue(chain.Name); }
+                            {                                
+                                Text = prodChainName,
+                                Function = (c) => {
+                                    furnParameters[CUR_PRODUCTION_CHAIN_PARAM_NAME].SetValue(c);
+                                }
                             });
                         }
                     }
@@ -768,7 +772,22 @@ public partial class Furniture : IXmlSerializable, ISelectable, IContextActionPr
 
     public string GetDescription()
     {
-        return UnlocalizedDescription;
+        StringBuilder sb = new StringBuilder();
+        sb.AppendLine(UnlocalizedDescription);
+
+        if (IsFactory)
+        {
+            var factoryChain = furnParameters[CUR_PRODUCTION_CHAIN_PARAM_NAME].ToString();
+            if (!string.IsNullOrEmpty(factoryChain))
+            {
+                sb.AppendLine(string.Format("Production: {0}", factoryChain));
+            }
+            else
+            {
+                sb.AppendLine("No selected production");
+            }
+        }
+        return sb.ToString();
     }
 
     public string GetHitPointString()
@@ -814,7 +833,7 @@ public partial class Furniture : IXmlSerializable, ISelectable, IContextActionPr
                 {
                     Text = factoryContextMenuAction.Text,
                     RequireCharacterSelected = false,
-                    Action = (cma, c) => factoryContextMenuAction.Function()
+                    Action = (cma, c) => factoryContextMenuAction.Function(factoryContextMenuAction.Text)
                 };
             }
         }

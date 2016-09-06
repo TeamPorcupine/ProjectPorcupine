@@ -78,7 +78,7 @@ public class TileObjectTypeAmount
 public class FactoryContextMenu
 {
     public string Text { get; set; }
-    public Action Function { get; set; }
+    public Action<string> Function { get; set; }
 }
 
 

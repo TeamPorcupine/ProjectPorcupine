@@ -356,12 +356,19 @@
 
     <BuildingJob jobTime="1" />
 
-    <Params>
-      <Param name="presstime" value="0" />
-      <Param name="presstime_required" value="15" />
-    </Params>
-
-    <Action event="OnUpdate" functionName="PowerCellPress_UpdateAction" />
+    <FactoryInfo>
+		<PossibleProductions>
+			<ProductionChain name="Power Cell Pressing" processingTime="5">
+				<Input>
+					<Item objectType="Uranium" amount="3" slotPosX="0" slotPosY="0" />
+					<Item objectType="Steel Plate" amount="1" slotPosX="1" slotPosY="0" />
+				</Input>
+				<Output>
+					<Item objectType="Power Cell" amount="1" slotPosX="2" slotPosY="1" />
+				</Output>
+			</ProductionChain>
+		</PossibleProductions>
+	</FactoryInfo>
 
     <LocalizationCode>furn_power_cell_press</LocalizationCode>
     <UnlocalizedDescription>furn_power_cell_press_desc</UnlocalizedDescription>
