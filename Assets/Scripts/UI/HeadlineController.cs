@@ -25,7 +25,7 @@ public class HeadlineController : MonoBehaviour
         string xmlText = System.IO.File.ReadAllText(filePath);
         XmlDocument doc = new XmlDocument();
         doc.Load(new StringReader(xmlText));
-        HeadlineGenerator headlineGenerator = new HeadlineGenerator(doc.SelectSingleNode("headlines"));
+        HeadlineGenerator headlineGenerator = new HeadlineGenerator(doc.SelectSingleNode("Headlines"));
         headlineGenerator.UpdatedHeadline += UpdateHeadline;
         UpdateHeadline(headlineGenerator.CurrentDisplayText);
     }
