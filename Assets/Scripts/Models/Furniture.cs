@@ -251,7 +251,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
     /// <summary>
     /// Gets the BASE tile of the furniture. (Large objects can span over multiple tiles).
-    /// This should be RENAMED (possibly to BaseTile)
+    /// This should be RENAMED (possibly to BaseTile).
     /// </summary>
     /// <value>The BASE tile of the furniture.</value>
     public Tile Tile { get; private set; }
@@ -340,7 +340,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
     /// <summary>
     /// Gets the type of dragging that is used to build multiples of this furniture. 
-    /// e.g walls
+    /// e.g walls.
     /// </summary>
     public string DragType { get; private set; }
 
@@ -361,10 +361,10 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     }
 
     /// <summary>
-    /// Used to place furniture in a certain position
+    /// Used to place furniture in a certain position.
     /// </summary>
-    /// <param name="proto">The prototype furniture to place</param>
-    /// <param name="tile">The base tile to place the furniture on, The tile will be the bottom left corner of the furniture (to check)</param>
+    /// <param name="proto">The prototype furniture to place.</param>
+    /// <param name="tile">The base tile to place the furniture on, The tile will be the bottom left corner of the furniture (to check).</param>
     /// <returns>Furniture object.</returns>
     public static Furniture PlaceInstance(Furniture proto, Tile tile)
     {
@@ -469,10 +469,10 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     }
 
     /// <summary>
-    /// Checks if the furniture can be Entered
+    /// Checks if the furniture can be Entered.
     /// </summary>
     /// <returns>Enterability state Yes if furniture can be entered, Soon if it can be entered after a bit and No 
-    /// if it cannot be entered</returns>
+    /// if it cannot be entered.</returns>
     public Enterability IsEnterable()
     {
         if (string.IsNullOrEmpty(isEnterableAction))
@@ -488,9 +488,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     }
 
     /// <summary>
-    /// Check if the furniture has a function to determine the sprite name and calls that function
+    /// Check if the furniture has a function to determine the sprite name and calls that function.
     /// </summary>
-    /// <returns>Name of the sprite</returns>
+    /// <returns>Name of the sprite.</returns>
     public string GetSpriteName()
     {
         if (string.IsNullOrEmpty(getSpriteNameAction))
@@ -514,9 +514,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     }
 
     /// <summary>
-    /// Whether the furniture has power or not
+    /// Whether the furniture has power or not.
     /// </summary>
-    /// <returns>True if the furniture has power</returns>
+    /// <returns>True if the furniture has power.</returns>
     public bool HasPower()
     {
         IsOperating = PowerConnection == null || World.Current.PowerNetwork.HasPower(PowerConnection);
@@ -525,18 +525,18 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
     /// <summary>
     /// This does absolutely nothing.
-    /// This is required to implement IXmlSerializable
+    /// This is required to implement IXmlSerializable.
     /// </summary>
-    /// <returns>NULL and NULL</returns>
+    /// <returns>NULL and NULL.</returns>
     public XmlSchema GetSchema()
     {
         return null;
     }
 
     /// <summary>
-    /// Writes the furniture to XML
+    /// Writes the furniture to XML.
     /// </summary>
-    /// <param name="writer">The XML writer to write to</param>
+    /// <param name="writer">The XML writer to write to.</param>
     public void WriteXml(XmlWriter writer)
     {
         writer.WriteAttributeString("X", Tile.X.ToString());
@@ -549,9 +549,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     }
 
     /// <summary>
-    /// Reads the prototype furniture from XML
+    /// Reads the prototype furniture from XML.
     /// </summary>
-    /// <param name="readerParent">The XML reader to read from</param>
+    /// <param name="readerParent">The XML reader to read from.</param>
     public void ReadXmlPrototype(XmlReader readerParent)
     {
         ObjectType = readerParent.GetAttribute("objectType");
@@ -700,9 +700,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
     /// <summary>
     /// Reads the specified XMLReader (pass it to <see cref="ReadXmlParams(XmlReader)"/>)
-    /// This is used to load furniture form a save file
+    /// This is used to load furniture form a save file.
     /// </summary>
-    /// <param name="reader">The XML reader to read from</param>
+    /// <param name="reader">The XML reader to read from.</param>
     public void ReadXml(XmlReader reader)
     {
         // X, Y, and objectType have already been set, and we should already
@@ -714,9 +714,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     }
 
     /// <summary>
-    /// Reads the XML for parameters that this furniture has and assign it to the furniture
+    /// Reads the XML for parameters that this furniture has and assign it to the furniture.
     /// </summary>
-    /// <param name="reader">the reader to read the parameters from</param>
+    /// <param name="reader">The reader to read the parameters from.</param>
     public void ReadXmlParams(XmlReader reader)
     {
         // X, Y, and objectType have already been set, and we should already
@@ -734,9 +734,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     }
 
     /// <summary>
-    /// How many jobs are linked to this furniture
+    /// How many jobs are linked to this furniture.
     /// </summary>
-    /// <returns>The number of jobs linked to this furniture</returns>
+    /// <returns>The number of jobs linked to this furniture.</returns>
     public int JobCount()
     {
         return jobs.Count;
@@ -745,7 +745,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     /// <summary>
     /// Link a job to the current furniture.
     /// </summary>
-    /// <param name="job">The job that you want to link to the furniture</param>
+    /// <param name="job">The job that you want to link to the furniture.</param>
     public void AddJob(Job job)
     {
         job.furniture = this;
@@ -755,7 +755,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     }
 
     /// <summary>
-    /// Cancel all the jobs linked to this furniture
+    /// Cancel all the jobs linked to this furniture.
     /// </summary>
     public void CancelJobs()
     {
@@ -893,72 +893,72 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     /// <summary>
     /// Gets the tile that is used to do a job.
     /// </summary>
-    /// <returns>Tile that is used for jobs</returns>
+    /// <returns>Tile that is used for jobs.</returns>
     public Tile GetJobSpotTile()
     {
         return World.Current.GetTileAt(Tile.X + (int)JobSpotOffset.x, Tile.Y + (int)JobSpotOffset.y, Tile.Z);
     }
 
     /// <summary>
-    /// Gets the tile that is used to spawn new objects (i.e. Inventory, Character)
+    /// Gets the tile that is used to spawn new objects (i.e. Inventory, Character).
     /// </summary>
-    /// <returns>Tile that is used to spawn objects (i.e. Inventory, Character)</returns>
+    /// <returns>Tile that is used to spawn objects (i.e. Inventory, Character).</returns>
     public Tile GetSpawnSpotTile()
     {
         return World.Current.GetTileAt(Tile.X + (int)jobSpawnSpotOffset.x, Tile.Y + (int)jobSpawnSpotOffset.y, Tile.Z);
     }
 
     /// <summary>
-    /// Checks whether the furniture has a certain tag
+    /// Checks whether the furniture has a certain tag.
     /// </summary>
-    /// <param name="typeTag">Tag to check for</param>
-    /// <returns>True if furniture has specified tag</returns>
+    /// <param name="typeTag">Tag to check for.</param>
+    /// <returns>True if furniture has specified tag.</returns>
     public bool HasTypeTag(string typeTag)
     {
         return typeTags.Contains(typeTag);
     }
 
     /// <summary>
-    /// Returns LocalizationCode name for the furniture
+    /// Returns LocalizationCode name for the furniture.
     /// </summary>
-    /// <returns>LocalizationCode for the name of the furniture</returns>
+    /// <returns>LocalizationCode for the name of the furniture.</returns>
     public string GetName()
     {
         return LocalizationCode; // this.Name;
     }
 
     /// <summary>
-    /// Returns the UnlocalizedDescription of the furniture
+    /// Returns the UnlocalizedDescription of the furniture.
     /// </summary>
-    /// <returns>description of the furniture</returns>
+    /// <returns>Description of the furniture.</returns>
     public string GetDescription()
     {
         return UnlocalizedDescription;
     }
 
     /// <summary>
-    /// Returns the HitPoints of the current furniture NOT IMPLEMENTED
+    /// Returns the HitPoints of the current furniture NOT IMPLEMENTED.
     /// </summary>
-    /// <returns>String with the HitPoints of the furniture</returns>
+    /// <returns>String with the HitPoints of the furniture.</returns>
     public string GetHitPointString()
     {
         return "18/18"; // TODO: Add a hitpoint system to...well...everything
     }
 
     /// <summary>
-    /// Returns the description of the job linked to the furniture. NOT INMPLEMENTED
+    /// Returns the description of the job linked to the furniture. NOT INMPLEMENTED.
     /// </summary>
-    /// <returns>Job description of the job linked to the furniture</returns>
+    /// <returns>Job description of the job linked to the furniture.</returns>
     public string GetJobDescription()
     {
         return string.Empty;
     }
 
     /// <summary>
-    /// Gets the Context Menu Actions
+    /// Gets the Context Menu Actions.
     /// </summary>
-    /// <param name="contextMenu">The context menu to check for actions</param>
-    /// <returns>Context menu actions</returns>
+    /// <param name="contextMenu">The context menu to check for actions.</param>
+    /// <returns>Context menu actions.</returns>
     public IEnumerable<ContextMenuAction> GetContextMenuActions(ContextMenu contextMenu)
     {
         yield return new ContextMenuAction
