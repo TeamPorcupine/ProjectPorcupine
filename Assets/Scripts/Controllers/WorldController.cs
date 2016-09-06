@@ -75,6 +75,7 @@ public class WorldController : MonoBehaviour
     // Use this for initialization.
     public void OnEnable()
     {
+        Debug.IsLogEnabled = true;
         if (Instance != null)
         {
             Debug.ULogErrorChannel("WorldController", "There should never be two world controllers.");
