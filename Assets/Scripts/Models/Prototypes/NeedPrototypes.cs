@@ -33,6 +33,6 @@ public class NeedPrototypes : XmlPrototypes<Need>
             LogPrototypeError(e, need.needType);
         }
 
-        SetPrototype(need.needType, need);
+        Set(need.needType, need);
     }
 }

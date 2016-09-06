@@ -295,7 +295,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         if the character is carrying materials but is not used in the new job, then drop them
         on the current tile for now.*/
 
-        if (inventory != null && !job.inventoryRequirements.ContainsKey(inventory.objectType))
+        if (inventory != null && !job.inventoryRequirements.ContainsKey(inventory.ObjectType))
         {
             World.Current.inventoryManager.PlaceInventory(CurrTile, inventory);
             DumpExcessInventory();
@@ -559,6 +559,12 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
     private void ReadStatsFromSave(XmlReader reader)
     {
+        // Protection vs. empty stats
+        if (reader.IsEmptyElement)
+        {
+            return;
+        }
+
         while (reader.Read())
         {
             if (reader.NodeType == XmlNodeType.EndElement)
@@ -943,7 +949,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             // At this point, the job still requires inventory, but we aren't carrying it!
             // Are we standing on a tile with goods that are desired by the job?
             if (CurrTile.Inventory != null &&
-                MyJob.AmountDesiredOfInventoryType(CurrTile.Inventory) > 0 && !CurrTile.Inventory.locked &&
+                MyJob.AmountDesiredOfInventoryType(CurrTile.Inventory) > 0 && !CurrTile.Inventory.Locked &&
                 (MyJob.canTakeFromStockpile || CurrTile.Furniture == null || CurrTile.Furniture.IsStockpile() == false))
             {
                 // Pick up the stuff!
@@ -964,7 +970,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 // Any chance we already have a path that leads to the items we want?
                 // Check that we have an end tile and that it has content.
                 // Check if contains the desired objectType�.
-                if (WalkingToUsableInventory() && fulfillableInventoryRequirements.Contains(pathAStar.EndTile().Inventory.objectType))
+                if (WalkingToUsableInventory() && fulfillableInventoryRequirements.Contains(pathAStar.EndTile().Inventory.ObjectType))
                 {
                     // We are already moving towards a tile that contains what we want!
                     // so....do nothing?
@@ -978,15 +984,15 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                     {
                         desired = MyJob.inventoryRequirements[itemType];
                         newPath = World.Current.inventoryManager.GetPathToClosestInventoryOfType(
-                            desired.objectType,
+                            desired.ObjectType,
                             CurrTile,
-                            desired.maxStackSize - desired.StackSize,
+                            desired.MaxStackSize - desired.StackSize,
                             MyJob.canTakeFromStockpile);
 
                         if (newPath == null || newPath.Length() < 1)
                         {
                             // Try the next requirement
-                            Debug.ULogChannel("Character", "No tile contains objects of type '" + desired.objectType + "' to satisfy job requirements.");
+                            Debug.ULogChannel("Character", "No tile contains objects of type '" + desired.ObjectType + "' to satisfy job requirements.");
                             continue;
                         }
 
@@ -1066,7 +1072,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             List<string> desired = job.FulfillableInventoryRequirements();
 
             // Check if the created inventory can fulfill the waiting job requirements.
-            if (desired != null && desired.Contains(inv.objectType))
+            if (desired != null && desired.Contains(inv.ObjectType))
             {
                 // If so, enqueue the job onto the (normal)
                 // job queue.
