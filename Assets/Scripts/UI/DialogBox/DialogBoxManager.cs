@@ -13,7 +13,6 @@ using UnityEngine.UI;
 public class DialogBoxManager : MonoBehaviour
 {
     // This will just keep a reference to all the dialog boxes since there inactive on start you cant find them.
-    public MenuController menuController;
     public DialogBoxLoadGame dialogBoxLoadGame;
     public DialogBoxSaveGame dialogBoxSaveGame;
     public DialogBoxOptions dialogBoxOptions;
@@ -27,7 +26,6 @@ public class DialogBoxManager : MonoBehaviour
     public void Awake()
     {
         DialogBoxGO = GameObject.Find("Dialog Boxes");
-        menuController = DialogBoxGO.GetComponent<MenuController>();
 
         GameObject tempGoObj;
 
