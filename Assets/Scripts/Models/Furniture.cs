@@ -58,6 +58,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
     private List<Job> jobs;
 
+    private List<Job> jobsQueued;
+
     // This is the generic type of object this is, allowing things to interact with it based on it's generic type
     private HashSet<string> typeTags;
 
@@ -111,6 +113,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
         furnParameters = new Parameter(other.furnParameters);
         jobs = new List<Job>();
+        jobsQueued = new List<Job>();
 
         if (other.EventActions != null)
         {
@@ -343,10 +346,15 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         {
             if (JobCount() > 0)
             {
-                CancelJobs();
+                DequeueJobs();
             }
 
             return;
+        }
+
+        if (jobsQueued.Count > 0)
+        {
+            EnqueueJobs();
         }
 
         // TODO: some weird thing happens
@@ -609,6 +617,26 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         Job[] jobsArray = jobs.ToArray();
         foreach (Job job in jobsArray)
         {
+            job.CancelJob();
+        }
+    }
+
+    public void EnqueueJobs()
+    {
+        Job[] jobsArray = jobsQueued.ToArray();
+        foreach (Job job in jobsArray)
+        {
+            AddJob(job);
+            jobsQueued.Remove(job);
+        }
+    }
+
+    public void DequeueJobs()
+    {
+        Job[] jobsArray = jobs.ToArray();
+        foreach (Job job in jobsArray)
+        {
+            jobsQueued.Add(job);
             job.CancelJob();
         }
     }
