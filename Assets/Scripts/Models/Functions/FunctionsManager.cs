@@ -8,81 +8,81 @@
 #endregion
 using System.Collections.Generic;
 
-public class ActionsManager
+public class FunctionsManager
 {
-    private static Dictionary<string, Actions> actions;
+    private static Dictionary<string, LuaFunctions> actions;
 
-    public ActionsManager()
+    public FunctionsManager()
     {
-        actions = new Dictionary<string, Actions>();
+        actions = new Dictionary<string, LuaFunctions>();
 
-        actions.Add("Furniture", new Actions("Furniture.lua"));
-        actions.Add("Need", new Actions("Need.lua"));
-        actions.Add("GameEvent", new Actions("GameEvent.lua"));
-        actions.Add("TileType", new Actions("Tile.lua"));
-        actions.Add("Quest", new Actions("Quest.lua"));
-        actions.Add("ScheduledEvent", new Actions("ScheduledEvent.lua"));
+        actions.Add("Furniture", new LuaFunctions());
+        actions.Add("Need", new LuaFunctions());
+        actions.Add("GameEvent", new LuaFunctions());
+        actions.Add("TileType", new LuaFunctions());
+        actions.Add("Quest", new LuaFunctions());
+        actions.Add("ScheduledEvent", new LuaFunctions());
     }
 
     /// <summary>
-    /// Gets the furniture actions.
+    /// Gets the furniture Lua Functions.
     /// </summary>
-    /// <value>The furniture actions.</value>
-    public static Actions Furniture
+    /// <value>The furniture Lua Functions.</value>
+    public static LuaFunctions Furniture
     {
         get { return actions["Furniture"]; }
     }
 
     /// <summary>
-    /// Gets the need actions.
+    /// Gets the need Lua Functions.
     /// </summary>
     /// <value>The need actions.</value>
-    public static Actions Need
+    public static LuaFunctions Need
     {
         get { return actions["Need"]; }
     }
 
     /// <summary>
-    /// Gets the game event actions.
+    /// Gets the game event Lua Functions.
     /// </summary>
-    /// <value>The game event actions.</value>
-    public static Actions GameEvent
+    /// <value>The game event Lua Functions.</value>
+    public static LuaFunctions GameEvent
     {
         get { return actions["GameEvent"]; }
     }
 
     /// <summary>
-    /// Gets the tile type actions.
+    /// Gets the tile type Lua Functions.
     /// </summary>
-    /// <value>The tile type actions.</value>
-    public static Actions TileType
+    /// <value>The tile type Lua Functions.</value>
+    public static LuaFunctions TileType
     {
         get { return actions["TileType"]; }
     }
 
     /// <summary>
-    /// Gets the quest actions.
+    /// Gets the quest Lua Functions.
     /// </summary>
-    /// <value>The quest actions.</value>
-    public static Actions Quest
+    /// <value>The quest Lua Functions.</value>
+    public static LuaFunctions Quest
     {
         get { return actions["Quest"]; }
     }
 
     /// <summary>
-    /// Gets the scheduled event actions.
+    /// Gets the scheduled event Lua Functions.
     /// </summary>
-    /// <value>The scheduled event actions.</value>
-    public static Actions ScheduledEvent
+    /// <value>The scheduled event Lua Functions.</value>
+    public static LuaFunctions ScheduledEvent
     {
         get { return actions["ScheduledEvent"]; }
     }
 
     /// <summary>
-    /// Get the Actions with the specified name.
+    /// Get the Lua Functions for the specified name.
     /// </summary>
-    /// <param name="name">The actions key.</param>
-    public static Actions Get(string name)
+    /// <param name="name">The functions key.</param>
+    public static LuaFunctions Get(string name)
     {
         if (actions.ContainsKey(name))
         {

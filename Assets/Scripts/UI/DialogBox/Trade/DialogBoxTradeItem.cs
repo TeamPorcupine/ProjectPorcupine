@@ -29,6 +29,11 @@ public class DialogBoxTradeItem : MonoBehaviour
         BindInterface();
     }
 
+    public void SetTradeAmount()
+    {
+        item.TradeAmount = int.Parse(TradeAmountText.text);
+    }
+
     public void OnTradeAmountChanged()
     {
         BindInterface();

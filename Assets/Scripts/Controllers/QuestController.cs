@@ -60,7 +60,7 @@ public class QuestController
         quest.IsCompleted = true;
         foreach (QuestGoal goal in quest.Goals)
         {
-            ActionsManager.Quest.Call(goal.IsCompletedLuaFunction, goal);
+            FunctionsManager.Quest.Call(goal.IsCompletedLuaFunction, goal);
             quest.IsCompleted &= goal.IsCompleted;
         }
 
@@ -73,7 +73,7 @@ public class QuestController
         {
             if (!reward.IsCollected)
             {
-                ActionsManager.Quest.Call(reward.OnRewardLuaFunction, reward);
+                FunctionsManager.Quest.Call(reward.OnRewardLuaFunction, reward);
             }
         }
     }

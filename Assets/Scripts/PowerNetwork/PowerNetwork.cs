@@ -10,15 +10,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Power
+namespace ProjectPorcupine.PowerNetwork
 {
-    public class Syster
+    public class PowerNetwork
     {
         private readonly HashSet<Grid> powerGrids;
         private readonly float secondsToTick = 1.0f;
         private float secondsPassed;
 
-        public Syster()
+        public PowerNetwork()
         {
             powerGrids = new HashSet<Grid>();
         }

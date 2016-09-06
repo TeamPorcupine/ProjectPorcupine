@@ -24,17 +24,18 @@ public class ModsManager
 
     public void LoadPrototypes()
     {
-        ActionsManager.Furniture.LoadScripts(mods);
-        ActionsManager.Need.LoadScripts(mods);
-        ActionsManager.GameEvent.LoadScripts(mods);
-        ActionsManager.TileType.LoadScripts(mods);
-        ActionsManager.Quest.LoadScripts(mods);
-        ActionsManager.ScheduledEvent.LoadScripts(mods);
+        FunctionsManager.Furniture.LoadScripts(mods, "Furniture.lua");
+        FunctionsManager.Need.LoadScripts(mods, "Need.lua");
+        FunctionsManager.GameEvent.LoadScripts(mods, "GameEvent.lua");
+        FunctionsManager.TileType.LoadScripts(mods, "Tiles.lua");
+        FunctionsManager.Quest.LoadScripts(mods, "Quest.lua");
+        FunctionsManager.ScheduledEvent.LoadScripts(mods, "ScheduledEvent.lua");
 
-        PrototypeManager.Furniture.LoadModPrototypesFromFile(mods);
-        PrototypeManager.Inventory.LoadModPrototypesFromFile(mods);
-        PrototypeManager.Need.LoadModPrototypesFromFile(mods);
-        PrototypeManager.Trader.LoadModPrototypesFromFile(mods);
+        PrototypeManager.Furniture.LoadPrototypes(mods);
+        PrototypeManager.Inventory.LoadPrototypes(mods);
+        PrototypeManager.Need.LoadPrototypes(mods);
+        PrototypeManager.Trader.LoadPrototypes(mods);
+        PrototypeManager.SchedulerEvent.LoadPrototypes(mods);
     }
 
     public DirectoryInfo[] GetMods()

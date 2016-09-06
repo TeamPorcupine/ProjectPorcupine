@@ -75,4 +75,9 @@ public static class ModUtils
     {
         Debug.ULogErrorChannel(defaultLogChannel, message);
     }
+
+    public static float Clamp(float value, float min, float max)
+    {
+        return value.Clamp(min, max);
+    }
 }

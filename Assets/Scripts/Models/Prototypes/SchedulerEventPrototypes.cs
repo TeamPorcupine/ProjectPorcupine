@@ -27,6 +27,6 @@ public class SchedulerEventPrototypes : XmlPrototypes<ScheduledEvent>
         string name = reader.GetAttribute("name");
         string luaFuncName = reader.GetAttribute("onFire");
         ScheduledEvent eventPrototype = new ScheduledEvent(name, luaFuncName);
-        SetPrototype(name, eventPrototype);
+        Set(name, eventPrototype);
     }
 }

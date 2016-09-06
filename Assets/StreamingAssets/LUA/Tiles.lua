@@ -10,5 +10,5 @@ function CanBuildHere_Ladder ( tile )
 	return tile.Room.IsOutsideRoom()
 end
 
-ModUtils.ULog("Tile.lua loaded")
+ModUtils.ULog("Tiles.lua loaded")
 return "LUA Tile Script Parsed!"

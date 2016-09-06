@@ -131,7 +131,7 @@ public class MouseController
         UpdateDragging();
         UpdateCameraMovement();
         UpdateSelection();
-        if (Settings.GetSettingAsBool("DialogBoxSettings_developerModeToggle", false))
+        if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
         {
             UpdateSpawnClicking();
         }
@@ -206,11 +206,11 @@ public class MouseController
         // If we are placing a multitile object we would like to modify the posiotion where the mouse grabs it.
         if (currentMode == MouseMode.BUILD
             && bmc.buildMode == BuildMode.FURNITURE
-            && PrototypeManager.Furniture.HasPrototype(bmc.buildModeObjectType)
-            && (PrototypeManager.Furniture.GetPrototype(bmc.buildModeObjectType).Width > 1
-            || PrototypeManager.Furniture.GetPrototype(bmc.buildModeObjectType).Height > 1))
+            && PrototypeManager.Furniture.Has(bmc.buildModeObjectType)
+            && (PrototypeManager.Furniture.Get(bmc.buildModeObjectType).Width > 1
+            || PrototypeManager.Furniture.Get(bmc.buildModeObjectType).Height > 1))
         {
-            Furniture proto = PrototypeManager.Furniture.GetPrototype(bmc.buildModeObjectType);
+            Furniture proto = PrototypeManager.Furniture.Get(bmc.buildModeObjectType);
 
             // If the furniture has af jobSpot set we would like to use that.
             if (proto.JobSpotOffset.Equals(Vector2.zero) == false)
@@ -375,7 +375,7 @@ public class MouseController
                     // Display the building hint on top of this tile position.
                     if (bmc.buildMode == BuildMode.FURNITURE)
                     {
-                        Furniture proto = PrototypeManager.Furniture.GetPrototype(bmc.buildModeObjectType);
+                        Furniture proto = PrototypeManager.Furniture.Get(bmc.buildModeObjectType);
                         if (IsPartOfDrag(t, dragParams, proto.DragType))
                         {
                             ShowFurnitureSpriteAtTile(bmc.buildModeObjectType, t);
@@ -415,7 +415,7 @@ public class MouseController
                 if (bmc.buildMode == BuildMode.FURNITURE)
                 {
                     // Check for furniture dragType.
-                    Furniture proto = PrototypeManager.Furniture.GetPrototype(bmc.buildModeObjectType);
+                    Furniture proto = PrototypeManager.Furniture.Get(bmc.buildModeObjectType);
 
                     if (IsPartOfDrag(t, dragParams, proto.DragType))
                     {
@@ -560,7 +560,7 @@ public class MouseController
             sr.color = new Color(1f, 0.5f, 0.5f, 0.25f);
         }
 
-        Furniture proto = PrototypeManager.Furniture.GetPrototype(furnitureType);
+        Furniture proto = PrototypeManager.Furniture.Get(furnitureType);
 
         go.transform.position = new Vector3(t.X + ((proto.Width - 1) / 2f), t.Y + ((proto.Height - 1) / 2f), WorldController.Instance.cameraController.CurrentLayer);
     }

@@ -10,19 +10,18 @@ using System;
 using System.IO;
 using MoonSharp.Interpreter;
 using UnityEngine;
+using ProjectPorcupine.PowerNetwork;
 
-public class Actions
+public class LuaFunctions
 {
-    protected string fileName;
     protected Script script;
 
-    public Actions(string fileName)
+    public LuaFunctions()
     {
         // Tell the LUA interpreter system to load all the classes
         // that we have marked as [MoonSharpUserData]
         UserData.RegisterAssembly();
 
-        this.fileName = fileName;
         this.script = new Script();
 
         // If we want to be able to instantiate a new object of a class
@@ -33,21 +32,22 @@ public class Actions
         RegisterGlobal(typeof(ModUtils));
         RegisterGlobal(typeof(World));
         RegisterGlobal(typeof(WorldController));
-        RegisterGlobal(typeof(Power.Connection));
+        RegisterGlobal(typeof(Connection));
     }
 
     /// <summary>
     /// Loads the base and the mods scripts.
     /// </summary>
     /// <param name="mods">The mods directories.</param>
-    public void LoadScripts(DirectoryInfo[] mods)
+    /// <param name="fileName">The file name.</param>
+    public void LoadScripts(DirectoryInfo[] mods, string fileName)
     {
         string filePath = Path.Combine(Application.streamingAssetsPath, "LUA");
         filePath = Path.Combine(filePath, fileName);
         if (File.Exists(filePath))
         {
             string text = File.ReadAllText(filePath);
-            LoadScriptFromText(text);
+            LoadScriptFromText(text, fileName);
         }
 
         foreach (DirectoryInfo mod in mods)
@@ -56,7 +56,7 @@ public class Actions
             if (File.Exists(filePath))
             {
                 string text = File.ReadAllText(filePath);
-                LoadScriptFromText(text);
+                LoadScriptFromText(text, fileName);
             }
         }
     }
@@ -65,7 +65,8 @@ public class Actions
     /// Loads the script from the specified text.
     /// </summary>
     /// <param name="text">The code text.</param>
-    public void LoadScriptFromText(string text)
+    /// <param name="scriptName">The script name.</param>
+    public void LoadScriptFromText(string text, string scriptName)
     {
         try
         {
@@ -73,7 +74,7 @@ public class Actions
         }
         catch (MoonSharp.Interpreter.SyntaxErrorException e)
         {
-            Debug.ULogErrorChannel("Lua", "[" + fileName + "] LUA Parse error: " + e.DecoratedMessage);
+            Debug.ULogErrorChannel("Lua", "[" + scriptName + "] LUA Parse error: " + e.DecoratedMessage);
         }
     }
 
