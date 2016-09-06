@@ -24,31 +24,36 @@ public class FurnitureBuildMenu : MonoBehaviour
 
         // For each furniture prototype in our world, create one instance
         // of the button to be clicked!
-        foreach (string s in PrototypeManager.Furniture.Keys)
+        foreach (string furnitureKey in PrototypeManager.Furniture.Keys)
         {
-            GameObject go = (GameObject)Instantiate(buildFurnitureButtonPrefab);
-            go.transform.SetParent(this.transform);
+            if (PrototypeManager.Furniture.Get(furnitureKey).HasTypeTag("Non-buildable"))
+            {
+                continue;
+            }
 
-            Furniture proto = PrototypeManager.Furniture.Get(s);
-            string objectId = s;
+            GameObject gameObject = (GameObject)Instantiate(buildFurnitureButtonPrefab);
+            gameObject.transform.SetParent(this.transform);
 
-            go.name = "Button - Build " + objectId;
+            Furniture proto = PrototypeManager.Furniture.Get(furnitureKey);
+            string objectId = furnitureKey;
 
-            go.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(proto.LocalizationCode) };
+            gameObject.name = "Button - Build " + objectId;
 
-            Button b = go.GetComponent<Button>();
+            gameObject.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(proto.LocalizationCode) };
 
-            b.onClick.AddListener(delegate
+            Button button = gameObject.GetComponent<Button>();
+
+            button.onClick.AddListener(delegate
                 {
                     bmc.SetMode_BuildFurniture(objectId);
                     this.gameObject.SetActive(false);
                 });
 
             // http://stackoverflow.com/questions/1757112/anonymous-c-sharp-delegate-within-a-loop
-            string furn = s;
+            string furniture = furnitureKey;
             LocalizationTable.CBLocalizationFilesChanged += delegate
             {
-                go.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(PrototypeManager.Furniture.Get(furn).LocalizationCode) };
+                gameObject.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(PrototypeManager.Furniture.Get(furniture).LocalizationCode) };
             };
         }
 
