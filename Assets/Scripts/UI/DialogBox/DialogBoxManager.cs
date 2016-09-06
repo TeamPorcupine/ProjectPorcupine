@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
 // This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
@@ -13,7 +13,7 @@ using UnityEngine.UI;
 public class DialogBoxManager : MonoBehaviour
 {
     // This will just keep a reference to all the dialog boxes since there inactive on start you cant find them.
-    public MenuController mc;
+    public MenuController menuController;
     public DialogBoxLoadGame dialogBoxLoadGame;
     public DialogBoxSaveGame dialogBoxSaveGame;
     public DialogBoxOptions dialogBoxOptions;
@@ -22,38 +22,40 @@ public class DialogBoxManager : MonoBehaviour
     public DialogBoxAreYouSure dialogBoxAreYouSure;
     public DialogBoxQuests dialogBoxQuests;
 
+    public GameObject DialogBoxGO;
+
     public void Awake()
     {
-        GameObject controllers = GameObject.Find("Dialog Boxes");
+        DialogBoxGO = GameObject.Find("Dialog Boxes");
+        menuController = DialogBoxGO.GetComponent<MenuController>();
+
         GameObject tempGoObj;
 
-        mc = GameObject.Find("Dialog Boxes").GetComponent<MenuController>();
-
-        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_SaveFile"), controllers.transform.position, controllers.transform.rotation, controllers.transform);
+        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_SaveFile"), DialogBoxGO.transform.position, DialogBoxGO.transform.rotation, DialogBoxGO.transform);
         tempGoObj.name = "Save File";
         dialogBoxSaveGame = tempGoObj.GetComponent<DialogBoxSaveGame>();
 
-        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_LoadFile"), controllers.transform.position, controllers.transform.rotation, controllers.transform);
+        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_LoadFile"), DialogBoxGO.transform.position, DialogBoxGO.transform.rotation, DialogBoxGO.transform);
         tempGoObj.name = "Load File";
         dialogBoxLoadGame = tempGoObj.GetComponent<DialogBoxLoadGame>();
 
-        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_Options"), controllers.transform.position, controllers.transform.rotation, controllers.transform);
+        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_Options"), DialogBoxGO.transform.position, DialogBoxGO.transform.rotation, DialogBoxGO.transform);
         tempGoObj.name = "Options";
         dialogBoxOptions = tempGoObj.GetComponent<DialogBoxOptions>();
 
-        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_Settings"), controllers.transform.position, controllers.transform.rotation, controllers.transform);
+        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_Settings"), DialogBoxGO.transform.position, DialogBoxGO.transform.rotation, DialogBoxGO.transform);
         tempGoObj.name = "Settings";
         dialogBoxSettings = tempGoObj.GetComponent<DialogBoxSettings>();
 
-        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_Trade"), controllers.transform.position, controllers.transform.rotation, controllers.transform);
+        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_Trade"), DialogBoxGO.transform.position, DialogBoxGO.transform.rotation, DialogBoxGO.transform);
         tempGoObj.name = "Trade";
         dialogBoxTrade = tempGoObj.GetComponent<DialogBoxTrade>();
 
-        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_AreYouSure"), controllers.transform.position, controllers.transform.rotation, controllers.transform);
+        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_AreYouSure"), DialogBoxGO.transform.position, DialogBoxGO.transform.rotation, DialogBoxGO.transform);
         tempGoObj.name = "Are You Sure";
         dialogBoxAreYouSure = tempGoObj.GetComponent<DialogBoxAreYouSure>();
 
-        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_Quests"), controllers.transform.position, controllers.transform.rotation, controllers.transform);
+        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_Quests"), DialogBoxGO.transform.position, DialogBoxGO.transform.rotation, DialogBoxGO.transform);
         tempGoObj.name = "Quests";
         dialogBoxQuests = tempGoObj.GetComponent<DialogBoxQuests>();
         AddQuestList();
@@ -62,7 +64,7 @@ public class DialogBoxManager : MonoBehaviour
     // Temporary location until we have a proper code-driven UI
     private void AddQuestList()
     {
-        Transform layoutRoot = GameObject.Find("Dialog Boxes").transform.parent.GetComponent<Transform>();
+        Transform layoutRoot = DialogBoxGO.transform.parent.GetComponent<Transform>();
         GameObject go = (GameObject)Instantiate(Resources.Load("UI/QuestsMainScreenBox"), layoutRoot.transform);
         go.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, -55, 0);
 
