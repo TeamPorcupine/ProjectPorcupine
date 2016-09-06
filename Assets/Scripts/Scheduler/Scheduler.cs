@@ -28,6 +28,10 @@ namespace Scheduler
         private List<ScheduledEvent> events;
         private List<ScheduledEvent> eventsToAddNextTick;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Scheduler.Scheduler"/> class.
+        /// Note: you probably want to use <see cref="Scheduler.Current"/> to get the singleton instance of the main game scheduler.
+        /// </summary>
         public Scheduler()
         {
             this.events = new List<ScheduledEvent>();
@@ -43,6 +47,10 @@ namespace Scheduler
             LoadScripts();
         }
 
+        /// <summary>
+        /// Get the singleton instance of the main game scheduler.
+        /// If it does not exist yet it is created on demand.
+        /// </summary>
         public static Scheduler Current
         {
             get
@@ -56,8 +64,13 @@ namespace Scheduler
             }
         }
 
+        /// <summary>
+        /// Gets the events currently queued for execution by the scheduler.
+        /// </summary>
+        /// <value>The events.</value>
         public ReadOnlyCollection<ScheduledEvent> Events
         {
+            // FIXME: Currently does not include eventsToAddNextTick!
             get
             {
                 return new ReadOnlyCollection<ScheduledEvent>(events);
@@ -66,13 +79,21 @@ namespace Scheduler
 
         #region LuaHandling
 
+        /// <summary>
+        /// Loads the Lua scripts from StreamingAssets/LUA/Events.lua.
+        /// </summary>
         public static void LoadScripts()
         {
+            // TODO: Use new FunctionsManager??
             string luaFilePath = Path.Combine(Application.streamingAssetsPath, "LUA");
             luaFilePath = Path.Combine(luaFilePath, "Events.lua");
             LuaUtilities.LoadScriptFromFile(luaFilePath);
         }
 
+        /// <summary>
+        /// Loads the Lua scripts from the Events.lua files in mod directories.
+        /// </summary>
+        /// <param name="mods">Mods directories to search for Lua scripts.</param>
         public static void LoadModsScripts(DirectoryInfo[] mods)
         {
             foreach (DirectoryInfo mod in mods)
@@ -121,6 +142,9 @@ namespace Scheduler
             RegisterEvent(evt);
         }
 
+        /// <summary>
+        /// Registers a ScheduledEvent to be tracked by the scheduler.
+        /// </summary>
         public void RegisterEvent(ScheduledEvent evt)
         {
             if (evt != null)
@@ -134,6 +158,9 @@ namespace Scheduler
             }
         }
 
+        /// <summary>
+        /// Determines whether this ScheduledEvent is registered with the scheduler.
+        /// </summary>
         public bool IsRegistered(ScheduledEvent evt)
         {
             return (events != null && events.Contains(evt)) || (eventsToAddNextTick != null && eventsToAddNextTick.Contains(evt));
@@ -142,7 +169,7 @@ namespace Scheduler
         /// <summary>
         /// Deregisters the event.
         /// NOTE: This actually calls Stop() on the event so that it will no longer be run.
-        /// It will be removed on the next call of ClearFinishedEvents().
+        /// It will be removed on the next call of Update().
         /// </summary>
         /// <param name="evt">Event to deregister.</param>
         public void DeregisterEvent(ScheduledEvent evt)
@@ -171,6 +198,10 @@ namespace Scheduler
             return events.Min((e) => e.TimeToWait);
         }
 
+        /// <summary>
+        /// Update the scheduler by the specified deltaTime, running event callbacks as needed.
+        /// </summary>
+        /// <param name="deltaTime">Delta time in seconds.</param>
         public void Update(float deltaTime)
         {
             if ((events == null || events.Count == 0) && (eventsToAddNextTick == null || eventsToAddNextTick.Count == 0))
@@ -193,6 +224,9 @@ namespace Scheduler
             ClearFinishedEvents();
         }
 
+        /// <summary>
+        /// Registers an event prototype with PrototypeManager.
+        /// </summary>
         public void RegisterEventPrototype(string name, ScheduledEvent eventPrototype)
         {
             PrototypeManager.SchedulerEvent.Add(name, eventPrototype);
@@ -200,11 +234,20 @@ namespace Scheduler
 
         #region IXmlSerializable implementation
 
+        /// <summary>
+        /// This does absolutely nothing.
+        /// This is required to implement IXmlSerializable.
+        /// </summary>
+        /// <returns>NULL and NULL.</returns>
         public XmlSchema GetSchema()
         {
             return null;
         }
 
+        /// <summary>
+        /// Generates a Scheduler from its XML representation.
+        /// Clears any previous events in the queue.
+        /// </summary>
         public void ReadXml(XmlReader reader)
         {
             Debug.ULogChannel("Scheduler", "Reading save file...", Events.Count);
@@ -240,6 +283,10 @@ namespace Scheduler
             Debug.ULogChannel("Scheduler", "Save file loaded. Event queue contains {0} events.", Events.Count);
         }
 
+        /// <summary>
+        /// Converts a Scheduler into its XML representation.
+        /// Only serializes events with IsSaveable == true.
+        /// </summary>
         public void WriteXml(XmlWriter writer)
         {
             writer.WriteStartElement("Scheduler");
@@ -271,6 +318,9 @@ namespace Scheduler
             }
         }
 
+        /// <summary>
+        /// Stops all events and clobbers the queue.
+        /// </summary>
         private void CleanUp()
         {
             if (events != null)
