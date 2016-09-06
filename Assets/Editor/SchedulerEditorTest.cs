@@ -33,6 +33,8 @@ public class SchedulerEditorTest
     [SetUp]
     public void Init()
     {
+        Debug.IsLogEnabled = false;
+
         if (FunctionsManager.ScheduledEvent == null)
         {
             new FunctionsManager();

@@ -45,6 +45,7 @@ public class LuaFunctionsTest
     [SetUp]
     public void Init()
     {
+        Debug.IsLogEnabled = false;
         functions = new LuaFunctions();
     }
 

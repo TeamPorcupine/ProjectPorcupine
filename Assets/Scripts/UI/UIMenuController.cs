@@ -25,6 +25,7 @@ public class UIMenuController : MonoBehaviour
         AddMenu("MenuSubHolder");
         AddMenu("MenuBottom");
         AddMenu("MenuConstruction");
+        AddMenu("Headlines");
     }
 
     private void Start()

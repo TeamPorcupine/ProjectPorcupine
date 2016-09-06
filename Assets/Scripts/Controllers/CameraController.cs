@@ -81,7 +81,7 @@ public class CameraController
 
     public void ChangeZoom(float amount)
     {
-        zoomTarget = Camera.main.orthographicSize - Settings.GetSetting("ZoomSensitivity", 3) * (Camera.main.orthographicSize * amount);
+        zoomTarget = Camera.main.orthographicSize - (Settings.GetSetting("ZoomSensitivity", 3) * (Camera.main.orthographicSize * amount));
     }
 
     public void ChangeLayer(int newLayer) 

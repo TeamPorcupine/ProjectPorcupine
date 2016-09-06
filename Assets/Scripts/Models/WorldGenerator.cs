@@ -80,12 +80,12 @@ public class WorldGenerator
 
         for (int z = 0; z < depth; z++)
         {
-            float zScale = Mathf.Lerp(1f, .5f, Mathf.Abs((depth / 2f) - z) / depth);
+            float scaleZ = Mathf.Lerp(1f, .5f, Mathf.Abs((depth / 2f) - z) / depth);
             for (int x = 0; x < width; x++)
             {
                 for (int y = 0; y < height; y++)
                 {
-                    float noiseValue = Mathf.PerlinNoise((x + offsetX) / (width * asteroidNoiseScale * zScale), (y + offsetY) / (height * asteroidNoiseScale * zScale));
+                    float noiseValue = Mathf.PerlinNoise((x + offsetX) / (width * asteroidNoiseScale * scaleZ), (y + offsetY) / (height * asteroidNoiseScale * scaleZ));
                     if (noiseValue >= asteroidNoiseThreshhold && !IsStartArea(x, y, world))
                     {
                         Tile tile = world.GetTileAt(x, y, z);
