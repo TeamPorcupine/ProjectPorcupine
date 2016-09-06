@@ -52,6 +52,7 @@ namespace Scheduler
             this.RepeatsForever = repeatsForever;
             this.RepeatsLeft = repeats;
             this.EventType = EventType.CSharp;
+            this.IsSaveable = true;
         }
 
         public ScheduledEvent(ScheduledEvent other)
@@ -64,6 +65,7 @@ namespace Scheduler
             this.RepeatsForever = other.RepeatsForever;
             this.RepeatsLeft = other.RepeatsLeft;
             this.EventType = other.EventType;
+            this.IsSaveable = other.IsSaveable;
         }
 
         public ScheduledEvent(ScheduledEvent eventPrototype, float cooldown, float timeToWait, bool repeatsForever = false, int repeats = 1)
@@ -83,6 +85,7 @@ namespace Scheduler
             this.RepeatsForever = repeatsForever;
             this.RepeatsLeft = repeats;
             this.EventType = eventPrototype.EventType;
+            this.IsSaveable = true;
         }
 
         public ScheduledEvent(string name, Action<ScheduledEvent> onFire)
@@ -114,6 +117,8 @@ namespace Scheduler
         public float TimeToWait { get; protected set; }
 
         public bool RepeatsForever { get; protected set; }
+
+        public bool IsSaveable { get; set; }
 
         public bool LastShot
         {

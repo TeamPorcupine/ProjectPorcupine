@@ -245,6 +245,11 @@ namespace Scheduler
             writer.WriteStartElement("Scheduler");
             foreach (ScheduledEvent evt in Events)
             {
+                if (evt.IsSaveable == false)
+                {
+                    continue;
+                }
+
                 evt.WriteXml(writer);
             }
 
