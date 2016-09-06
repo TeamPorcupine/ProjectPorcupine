@@ -629,5 +629,38 @@ function Accumulator_GetSpriteName(furniture)
 	return baseName .. "_" .. suffix
 end
 
+function OreMine_CreateMiningJob(furniture, character)
+    -- Creates job for a character to go and "mine" the Ore
+    local j = Job.__new(
+		furniture.Tile,
+		nil,
+		nil,
+		0,
+		nil,
+		Job.JobPriority.High,
+		false
+	)
+
+    j.RegisterJobWorkedCallback("OreMine_OreMined")
+    furniture.AddJob(j)
+    ModUtils.ULog("Ore Mine - Mining Job Created")
+end
+
+function OreMine_OreMined(job)
+    -- Defines the ore to be spawned by the mine
+    local inventory = Inventory.__new(job.furniture.Parameters["ore_type"], 50, 10)
+
+    -- Place the "mined" ore on the tile
+    World.Current.inventoryManager.PlaceInventory(job.tile, inventory)
+
+    -- Deconstruct the ore mine
+    job.furniture.Deconstruct()
+    job.CancelJob()
+end
+
+function OreMine_GetSpriteName(furniture)
+    return "mine_" .. furniture.Parameters["ore_type"].ToString()
+end
+
 ModUtils.ULog("Furniture.lua loaded")
 return "LUA Script Parsed!"

@@ -794,7 +794,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     // Make a copy of the current furniture.  Sub-classed should
     // override this Clone() if a different (sub-classed) copy
     // constructor should be run.
-    private Furniture Clone()
+    public Furniture Clone()
     {
         return new Furniture(this);
     }
