@@ -559,6 +559,12 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
     private void ReadStatsFromSave(XmlReader reader)
     {
+        // Protection vs. empty stats
+        if (reader.IsEmptyElement)
+        {
+            return;
+        }
+
         while (reader.Read())
         {
             if (reader.NodeType == XmlNodeType.EndElement)
