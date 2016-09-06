@@ -27,6 +27,7 @@ public class SchedulerEditorTest
     [SetUp]
     public void Init()
     {
+        Debug.IsLogEnabled = false;
         if (PrototypeManager.SchedulerEvent == null)
         {
             new PrototypeManager();

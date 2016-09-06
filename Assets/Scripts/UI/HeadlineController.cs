@@ -24,6 +24,10 @@ public class HeadlineController : MonoBehaviour
 
     public void Dismiss()
     {
+        if (canvasGroup==null)
+        {
+            return;
+        }
         canvasGroup.alpha = 0;
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = false;

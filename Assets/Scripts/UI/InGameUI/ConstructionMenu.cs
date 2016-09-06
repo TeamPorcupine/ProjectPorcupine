@@ -62,6 +62,7 @@ public class ConstructionMenu : MonoBehaviour
     // Deactivates any sub menu of the constrution options.
     public void DeactivateSubs()
     {
+        WorldController.Instance.mouseController.ClearMouseMode(true);
         furnitureMenu.SetActive(false);
         floorMenu.SetActive(false);
     }
@@ -74,6 +75,7 @@ public class ConstructionMenu : MonoBehaviour
 
     public void DeactivateSubsExcept(GameObject menu)
     {
+        WorldController.Instance.mouseController.ClearMouseMode(true);
         foreach (GameObject subMenu in FurnitureSubs)
         {
             if (subMenu != menu)
