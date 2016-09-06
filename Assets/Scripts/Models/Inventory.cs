@@ -18,16 +18,6 @@ using MoonSharp.Interpreter;
 [MoonSharpUserData]
 public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
 {
-    public string objectType { get; set; }
-    public int maxStackSize  { get; set; }
-    public float basePrice { get; set; }
-    public string category { get; set; }
-    public Tile tile { get; set; }
-    public Character character { get; set; }
-
-    // Should this inventory be allowed to be picked up for completing a job?
-    public bool locked { get; set; }
-
     protected int stackSize = 1;
 
     public Inventory()
@@ -36,30 +26,45 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
 
     public Inventory(string objectType, int maxStackSize, int stackSize)
     {
-        this.objectType = objectType;
+        this.ObjectType = objectType;
         ImportPrototypeSettings(maxStackSize, 1f, "inv_cat_none");
         this.StackSize = stackSize;
     }
 
     public Inventory(string objectType, int stackSize)
     {
-        this.objectType = objectType;
+        this.ObjectType = objectType;
         ImportPrototypeSettings(50, 1f, "inv_cat_none");
         this.StackSize = stackSize;
     }
 
     protected Inventory(Inventory other)
     {
-        objectType = other.objectType;
-        maxStackSize = other.maxStackSize;
-        basePrice = other.basePrice;
-        category = other.category;
+        ObjectType = other.ObjectType;
+        MaxStackSize = other.MaxStackSize;
+        BasePrice = other.BasePrice;
+        Category = other.Category;
         StackSize = other.StackSize;
-        locked = other.locked;
+        Locked = other.Locked;
     }
 
     // The function we callback any time our tile's data changes.
     public event Action<Inventory> OnInventoryChanged;
+
+    public string ObjectType { get; set; }
+
+    public int MaxStackSize { get; set; }
+
+    public float BasePrice { get; set; }
+
+    public string Category { get; set; }
+
+    public Tile Tile { get; set; }
+
+    public Character Character { get; set; }
+
+    // Should this inventory be allowed to be picked up for completing a job?
+    public bool Locked { get; set; }
 
     public int StackSize
     {
@@ -106,12 +111,12 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
 
     public string GetName()
     {
-        return this.objectType;
+        return this.ObjectType;
     }
 
     public string GetDescription()
     {
-        return string.Format("StackSize: {0}\nCategory: {1}\nBasePrice: {2:N2}", stackSize, category, basePrice);
+        return string.Format("StackSize: {0}\nCategory: {1}\nBasePrice: {2:N2}", stackSize, Category, BasePrice);
     }
 
     public string GetHitPointString()
@@ -136,18 +141,18 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
     {
         // If we reach this point through inventories we definitely have a tile
         // If we don't have a tile, that means we're writing a character's inventory
-        if (tile != null)
+        if (Tile != null)
         {
-            writer.WriteAttributeString("X", tile.X.ToString());
-            writer.WriteAttributeString("Y", tile.Y.ToString());
-            writer.WriteAttributeString("Z", tile.Z.ToString());
+            writer.WriteAttributeString("X", Tile.X.ToString());
+            writer.WriteAttributeString("Y", Tile.Y.ToString());
+            writer.WriteAttributeString("Z", Tile.Z.ToString());
         }
 
-        writer.WriteAttributeString("objectType", objectType);
-        writer.WriteAttributeString("maxStackSize", maxStackSize.ToString());
+        writer.WriteAttributeString("objectType", ObjectType);
+        writer.WriteAttributeString("maxStackSize", MaxStackSize.ToString());
         writer.WriteAttributeString("stackSize", StackSize.ToString());
-        writer.WriteAttributeString("basePrice", basePrice.ToString());
-        writer.WriteAttributeString("category", category);
+        writer.WriteAttributeString("basePrice", BasePrice.ToString());
+        writer.WriteAttributeString("category", Category);
     }
 
     public void ReadXml(XmlReader reader)
@@ -168,19 +173,18 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
 
     private void ImportPrototypeSettings(int defaulMaxStackSize, float defaultBasePrice, string defaultCategory)
     {
-        if (PrototypeManager.Inventory.HasPrototype(objectType))
+        if (PrototypeManager.Inventory.Has(ObjectType))
         {
-            InventoryCommon prototype = PrototypeManager.Inventory.GetPrototype(objectType);
-            maxStackSize = prototype.maxStackSize;
-            basePrice = prototype.basePrice;
-            category = prototype.category;
+            InventoryCommon prototype = PrototypeManager.Inventory.Get(ObjectType);
+            MaxStackSize = prototype.maxStackSize;
+            BasePrice = prototype.basePrice;
+            Category = prototype.category;
         }
         else
         {
-            maxStackSize = defaulMaxStackSize;
-            basePrice = defaultBasePrice;
-            category = defaultCategory;
+            MaxStackSize = defaulMaxStackSize;
+            BasePrice = defaultBasePrice;
+            Category = defaultCategory;
         }
     }
-
 }
