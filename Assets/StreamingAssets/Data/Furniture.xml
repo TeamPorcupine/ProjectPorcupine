@@ -492,4 +492,33 @@
   </Furniture>
 
 
+  <Furniture objectType="RTG">
+    <Name>RTG</Name>
+    <Description>Radioisotope thermoelectric generator provides electricity and heat</Description>
+    <TypeTag>Temperature</TypeTag>
+    <MovementCost>2</MovementCost>
+    <PathfindingModifier>0</PathfindingModifier>
+    <PathfindingWeight>2</PathfindingWeight>
+    <Width>1</Width>
+    <Height>1</Height>
+    <PowerConnection inputRate="" outputRate="2" capacity=""/>
+
+    <BuildingJob jobTime="0" />
+
+    <!-- This method gets called on Install -->
+    <Action event="OnInstall" functionName="Rtg_InstallAction"></Action>
+    <!-- This method gets called on Uninstall -->
+    <Action event="OnUninstall" functionName="Rtg_UninstallAction"></Action>
+    <Action event="OnUpdateTemperature" functionName="Rtg_UpdateTemperature" />
+
+    <Params>      
+      <Param name="base_heating" value="95" />
+      <Param name="pressure_threshold" value="0.2" />
+    </Params>    
+
+    <LocalizationCode>furn_rt_generator</LocalizationCode>
+    <UnlocalizedDescription>furn_rt_generator_desc</UnlocalizedDescription>
+  </Furniture>
+
+
 </Furnitures>
