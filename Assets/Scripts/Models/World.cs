@@ -161,7 +161,7 @@ public class World : IXmlSerializable
         r.ReturnTilesToOutsideRoom();
     }
 
-    public void UpdateCharacters(float deltaTime)
+    public void TickEveryFrame(float deltaTime)
     {
         // Change from a foreach due to the collection being modified while its being looped through
         for (int i = 0; i < characters.Count; i++)
@@ -170,8 +170,9 @@ public class World : IXmlSerializable
         }
     }
 
-    public void Tick(float deltaTime)
+    public void TickFixedFrequency(float deltaTime)
     {
+        // Update Furniture
         foreach (Furniture f in furnitures)
         {
             f.Update(deltaTime);
