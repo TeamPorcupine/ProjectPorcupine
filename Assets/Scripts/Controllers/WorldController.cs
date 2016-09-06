@@ -32,6 +32,7 @@ public class WorldController : MonoBehaviour
     public KeyboardManager keyboardManager;
     public CameraController cameraController;
     public SpawnInventoryController spawnInventoryController;
+    public AutosaveManager autosaveManager;
     public TradeController TradeController;
     public TimeManager timeManager;
     public ModsManager modsManager;
@@ -131,6 +132,7 @@ public class WorldController : MonoBehaviour
         cameraController = new CameraController();
         TradeController = new TradeController();
         timeManager = new TimeManager();
+        autosaveManager = new AutosaveManager();
 
         keyboardManager.RegisterInputAction("Pause", KeyboardMappedInputType.KeyUp, () => { IsPaused = !IsPaused; });
 
