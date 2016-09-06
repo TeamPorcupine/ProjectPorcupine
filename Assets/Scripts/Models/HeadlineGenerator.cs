@@ -15,7 +15,6 @@ public class HeadlineGenerator
 {
     private List<string> headlines = new List<string>();
     private float time, nextTime, minInterval, maxInterval;
-    public string currentDisplay { get; protected set; }
 
     public HeadlineGenerator(XmlNode baseNode)
     {
@@ -26,13 +25,15 @@ public class HeadlineGenerator
         {
             headlines.Add(node.InnerText);
         }
-        OnUpdatedHeadline();
 
+        OnUpdatedHeadline();
         ResetNextTime();
         time = 0f;
     }
 
     public event Action<string> UpdatedHeadline;
+
+    public string CurrentDisplayText { get; protected set; }
 
     public void Update(float deltaTime)
     {
@@ -41,22 +42,6 @@ public class HeadlineGenerator
         {
             OnUpdatedHeadline(headlines[UnityEngine.Random.Range(0, headlines.Count)]);
         }
-    }
-
-    private void OnUpdatedHeadline()
-    {
-        OnUpdatedHeadline(headlines[UnityEngine.Random.Range(0, headlines.Count)]);
-    }
-
-    private void OnUpdatedHeadline(string headline)
-    {
-        currentDisplay = headline;
-        Action<string> handler = UpdatedHeadline;
-        if (handler != null)
-        {
-            handler(headline);
-        }
-        ResetNextTime();
     }
 
     public void AddHeadline(string headline, bool displayImmediately = true, bool keepInQueue = true)
@@ -72,8 +57,25 @@ public class HeadlineGenerator
         }
     }
 
+    private void OnUpdatedHeadline()
+    {
+        OnUpdatedHeadline(headlines[UnityEngine.Random.Range(0, headlines.Count)]);
+    }
+
+    private void OnUpdatedHeadline(string headline)
+    {
+        CurrentDisplayText = headline;
+        Action<string> handler = UpdatedHeadline;
+        if (handler != null)
+        {
+            handler(headline);
+        }
+
+        ResetNextTime();
+    }
+
     private void ResetNextTime()
     {
-        nextTime = UnityEngine.Random.Range(minInterval, maxInterval)+time;
+        nextTime = UnityEngine.Random.Range(minInterval, maxInterval) + time;
     }
 }
