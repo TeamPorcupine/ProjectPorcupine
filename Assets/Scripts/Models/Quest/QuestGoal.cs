@@ -6,17 +6,19 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System.Security.Cryptography;
 using System.Xml;
 using MoonSharp.Interpreter;
 
 [MoonSharpUserData]
 public class QuestGoal
 {
-    public string Description;
-    public string IsCompletedLuaFunction;
-    public Parameter Parameters;
-    public bool IsCompleted;
+    public string Description { get; set; }
+
+    public string IsCompletedLuaFunction { get; set; }
+
+    public Parameter Parameters { get; set; }
+
+    public bool IsCompleted { get; set; }
 
     public void ReadXmlPrototype(XmlReader reader_parent)
     {

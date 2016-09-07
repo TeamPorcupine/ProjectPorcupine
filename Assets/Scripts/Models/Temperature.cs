@@ -96,8 +96,8 @@ public class Temperature
 
         if (elapsed >= updateInterval)
         {
-            ProgressTemperature(Time.deltaTime);
-            elapsed = 0;
+            ProgressTemperature(updateInterval);
+            elapsed = elapsed - updateInterval;
         }
     }
 
