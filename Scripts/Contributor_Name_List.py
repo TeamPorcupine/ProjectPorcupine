@@ -32,8 +32,7 @@ output=get_jsonparsed_data(url)
 
 names=[]
 for row in output:
-	temp=row["author"]["login"]
-	names+=[temp[:1].upper() + temp[1:]]
+	names+=[row["author"]["login"].capitalize()]
 
 names.sort()
 for name in names:
