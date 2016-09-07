@@ -25,6 +25,7 @@ public class ModsManager
     public void LoadPrototypes()
     {
         PrototypeManager.Furniture.LoadPrototypes(mods);
+        PrototypeManager.Utility.LoadPrototypes(mods);
         PrototypeManager.Inventory.LoadPrototypes(mods);
         PrototypeManager.Need.LoadPrototypes(mods);
         PrototypeManager.Trader.LoadPrototypes(mods);

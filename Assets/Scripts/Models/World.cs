@@ -24,6 +24,7 @@ public class World : IXmlSerializable
     public readonly string GameVersion = "Someone_will_come_up_with_a_proper_naming_scheme_later";
     public List<Character> characters;
     public List<Furniture> furnitures;
+    public List<Utility> utilities;
     public List<Room> rooms;
     public InventoryManager inventoryManager;
     public Material skybox;
@@ -87,6 +88,8 @@ public class World : IXmlSerializable
     }
 
     public event Action<Furniture> OnFurnitureCreated;
+
+    public event Action<Utility> OnUtilityCreated;
 
     public event Action<Character> OnCharacterCreated;
 
@@ -362,6 +365,19 @@ public class World : IXmlSerializable
         return PlaceFurniture(furn, t, doRoomFloodFill);
     }
 
+    public Utility PlaceUtility(string objectType, Tile t, bool doRoomFloodFill = false)
+    {
+        if (PrototypeManager.Utility.Has(objectType) == false)
+        {
+            Debug.ULogErrorChannel("World", "furniturePrototypes doesn't contain a proto for key: " + objectType);
+            return null;
+        }
+
+        Utility util = PrototypeManager.Utility.Get(objectType);
+
+        return PlaceUtility(util, t, doRoomFloodFill);
+    }
+
     public Furniture PlaceFurniture(Furniture furniture, Tile t, bool doRoomFloodFill = true)
     {
         Furniture furn = Furniture.PlaceInstance(furniture, t);
@@ -402,6 +418,27 @@ public class World : IXmlSerializable
         return furn;
     }
 
+    public Utility PlaceUtility(Utility utility, Tile t, bool doRoomFloodFill = true)
+    {
+        Utility util = Utility.PlaceInstance(utility, t);
+
+        if (util == null)
+        {
+            // Failed to place object -- most likely there was already something there.
+            return null;
+        }
+
+        util.Removed += OnUtilityRemoved;
+        utilities.Add(util);
+
+        if (OnUtilityCreated != null)
+        {
+            OnUtilityCreated(util);
+        }
+
+        return util;
+    }
+
     // This should be called whenever a change to the world
     // means that our old pathfinding info is invalid.
     public void InvalidateTileGraph()
@@ -412,6 +449,11 @@ public class World : IXmlSerializable
     public bool IsFurniturePlacementValid(string furnitureType, Tile t)
     {
         return PrototypeManager.Furniture.Get(furnitureType).IsValidPosition(t);
+    }
+
+    public bool IsUtilityPlacementValid(string furnitureType, Tile t)
+    {
+        return PrototypeManager.Utility.Get(furnitureType).IsValidPosition(t);
     }
 
     public XmlSchema GetSchema()
@@ -568,6 +610,11 @@ public class World : IXmlSerializable
     {
         furnitures.Remove(furn);
     }
+
+    public void OnUtilityRemoved(Utility util)
+    {
+        utilities.Remove(util);
+    }
     
     private void ReadXml_Wallet(XmlReader reader)
     {
@@ -671,6 +718,7 @@ public class World : IXmlSerializable
 
         characters = new List<Character>();
         furnitures = new List<Furniture>();
+        utilities = new List<Utility>();
         inventoryManager = new InventoryManager();
         PowerNetwork = new ProjectPorcupine.PowerNetwork.PowerNetwork();
         temperature = new Temperature(Width, Height);

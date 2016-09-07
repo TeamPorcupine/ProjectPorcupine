@@ -78,6 +78,9 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
     // Furniture is something like a wall, door, or sofa.
     public Furniture Furniture { get; private set; }
 
+    // Utility is something like a Power Cables or Water Pipes.
+    public Utility Utility { get; private set; }
+
     /// <summary>
     /// The total pathfinding cost of entering this tile.
     /// The final cost is equal to the Tile's BaseMovementCost * Tile's PathfindingWeight * Furniture's PathfindingWeight * Furniture's MovementCost +
@@ -182,6 +185,37 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
                 t.Furniture = objInstance;
             }
         }
+
+        return true;
+    }
+
+    public bool UnplaceUtility()
+    {
+        // Just uninstalling.
+        if (Utility == null)
+        {
+            return false;
+        }
+
+        Utility = null;
+
+        return true;
+    }
+
+    public bool PlaceUtility(Utility objInstance)
+    {
+        if (objInstance == null)
+        {
+            return UnplaceUtility();
+        }
+
+        if (objInstance.IsValidPosition(this) == false)
+        {
+            Debug.ULogErrorChannel("Tile", "Trying to assign a furniture to a tile that isn't valid!");
+            return false;
+        }
+
+        Utility = objInstance;
 
         return true;
     }

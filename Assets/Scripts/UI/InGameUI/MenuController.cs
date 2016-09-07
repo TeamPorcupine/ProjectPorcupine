@@ -17,6 +17,7 @@ public class MenuController : MonoBehaviour
 
     // The sub menus of the build menu (furniture, floor..... later - power, security, drones).
     public GameObject furnitureMenu;
+    public GameObject utilityMenu;
     public GameObject floorMenu;
     
     public Button buttonConstructor;
@@ -43,6 +44,7 @@ public class MenuController : MonoBehaviour
     {
         WorldController.Instance.mouseController.ClearMouseMode(true);
         furnitureMenu.SetActive(false);
+        utilityMenu.SetActive(false);
         floorMenu.SetActive(false);
     }
 
@@ -112,6 +114,7 @@ public class MenuController : MonoBehaviour
         dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
 
         furnitureMenu = GameObject.Find("MenuFurniture");
+        utilityMenu = GameObject.Find("MenuUtility");
         floorMenu = GameObject.Find("MenuFloor");
         constructorMenu = GameObject.Find("MenuConstruction");
 
