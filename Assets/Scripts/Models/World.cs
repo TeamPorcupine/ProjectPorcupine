@@ -613,6 +613,15 @@ public class World : IXmlSerializable
                 newSkybox = skyboxes[(int)(UnityEngine.Random.value * skyboxes.Length)];
             }
 
+            // Unload unused skyboxes
+            foreach (Material skybox in skyboxes)
+            {
+                if (!newSkybox.name.Equals(skybox.name))
+                {
+                    Resources.UnloadAsset(skybox);
+                }
+            }
+
             this.skybox = newSkybox;
             RenderSettings.skybox = this.skybox;
         }
