@@ -112,7 +112,7 @@ public class Path_AStar
                 if (current.data.Inventory != null && current.data.Inventory.ObjectType == objectType && lookingForFurn == false && current.data.Inventory.Locked == false)
                 {
                     // Type is correct and we are allowed to pick it up
-                    if (canTakeFromStockpile || current.data.Furniture == null || current.data.Furniture.IsStockpile() == false)
+                    if (canTakeFromStockpile || current.data.Furniture == null || current.data.Furniture.HasTypeTag("Storage") == false)
                     {
                         // Stockpile status is fine
                         Reconstruct_path(came_From, current);
