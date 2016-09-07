@@ -507,13 +507,20 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     /// <returns>Name of the sprite.</returns>
     public string GetSpriteName()
     {
-        if (string.IsNullOrEmpty(getSpriteNameAction))
+        if (!string.IsNullOrEmpty(getSpriteNameAction))
         {
-            return ObjectType;
+            DynValue ret = FunctionsManager.Furniture.Call(getSpriteNameAction, this);
+            return ret.String;
         }
 
-        DynValue ret = FunctionsManager.Furniture.Call(getSpriteNameAction, this);
-        return ret.String;
+        // Try to get spritename from animation
+        if (Animation != null)
+        {
+            return Animation.GetSpriteName();
+        }
+
+        // Else return default ObjectType string
+        return ObjectType;
     }
 
     /// <summary>
