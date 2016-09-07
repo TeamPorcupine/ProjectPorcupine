@@ -590,15 +590,9 @@ public class World : IXmlSerializable
 
     private void LoadSkybox(string name = null)
     {
-        Material[] skyboxes = (Material[])( Resources.LoadAll("Skyboxes",typeof(Material)));
-//        DirectoryInfo dirInfo = new DirectoryInfo(Path.Combine(Application.dataPath, "Resources/Skyboxes"));
-//        if (!dirInfo.Exists)
-//        {
-//            dirInfo.Create();
-//        }
-//
-//        FileInfo[] files = dirInfo.GetFiles("*.mat", SearchOption.AllDirectories);
-//
+        Material[] skyboxes = Resources.LoadAll("Skyboxes", typeof(Material)).Cast<Material>().ToArray();
+        Material newSkybox = null;
+
         if (skyboxes.Length > 0)
         {
             if (!string.IsNullOrEmpty(name))
@@ -607,34 +601,25 @@ public class World : IXmlSerializable
                 {
                     if (name.Equals(skybox.name))
                     {
-                        RenderSettings.skybox = skybox;
+                        newSkybox = skybox;
                         break;
                     }
                 }
             }
+
+            // Maybe we passed in a name that doesn't exist? Pick a random skybox.
+            if (newSkybox == null)
+            {
+                newSkybox = skyboxes[(int)(UnityEngine.Random.value * skyboxes.Length)];
+            }
+
+            this.skybox = newSkybox;
+            RenderSettings.skybox = this.skybox;
         }
-//
-//            // Maybe we passed in a name that doesn't exist? Pick a random skybox.
-//            if (file == null)
-//            {
-//                // Get random file
-//                file = files[(int)(UnityEngine.Random.value * files.Length)];
-//            }
-//
-//            resourcePath = Path.Combine(file.DirectoryName.Substring(file.DirectoryName.IndexOf("Skyboxes")), file.Name);
-//
-//            if (resourcePath.Contains("."))
-//            {
-//                resourcePath = resourcePath.Remove(resourcePath.LastIndexOf("."));
-//            }
-//
-//            skybox = Resources.Load<Material>(resourcePath);
-//            RenderSettings.skybox = skybox;
-//        }
-//        else
-//        {
-//            Debug.ULogWarningChannel("World", "No skyboxes detected! Falling back to black.");
-//        }
+        else
+        {
+            Debug.ULogWarningChannel("World", "No skyboxes detected! Falling back to black.");
+        }
     }
 
     private void SetupWorld(int width, int height, int depth)
