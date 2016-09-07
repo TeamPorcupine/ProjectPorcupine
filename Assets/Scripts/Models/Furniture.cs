@@ -511,6 +511,13 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     {
         if (string.IsNullOrEmpty(getSpriteNameAction))
         {
+            // Try to get spritename from animation
+            if (Animation != null)
+            {
+                return Animation.GetSpriteName();
+            }
+            
+            // Else return default ObjectType string
             return ObjectType;
         }
 
