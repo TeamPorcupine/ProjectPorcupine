@@ -47,10 +47,7 @@ namespace Animation
 
         // current shown frame
         private int prevFrameIndex;
-
-        // Holds the actual animation sprites from the spritesheet
-        private Sprite[] sprites;
-
+        
         // Collection of animations
         private Dictionary<AnimationType, SpritenameAnimation> animations;
         private SpritenameAnimation currentAnimation;
@@ -63,36 +60,14 @@ namespace Animation
             character = c;
             renderer = r;
 
-            Sprite[] sprites =
-                {
-                    SpriteManager.current.GetSprite("Character", "IdleBack"),
-                    SpriteManager.current.GetSprite("Character", "IdleSide"),
-                    SpriteManager.current.GetSprite("Character", "IdleFront"),
-                    SpriteManager.current.GetSprite("Character", "WalkBack1"),
-                    SpriteManager.current.GetSprite("Character", "WalkBack2"),
-                    SpriteManager.current.GetSprite("Character", "WalkSide1"),
-                    SpriteManager.current.GetSprite("Character", "WalkSide2"),
-                    SpriteManager.current.GetSprite("Character", "WalkFront1"),
-                    SpriteManager.current.GetSprite("Character", "WalkFront2"),
-
-                    SpriteManager.current.GetSprite("Character", "2IdleBack"),
-                    SpriteManager.current.GetSprite("Character", "2IdleSide"),
-                    SpriteManager.current.GetSprite("Character", "2IdleFront"),
-                    SpriteManager.current.GetSprite("Character", "2WalkBack1"),
-                    SpriteManager.current.GetSprite("Character", "2WalkBack2"),
-                    SpriteManager.current.GetSprite("Character", "2WalkSide1"),
-                    SpriteManager.current.GetSprite("Character", "2WalkSide2"),
-                    SpriteManager.current.GetSprite("Character", "2WalkFront1"),
-                    SpriteManager.current.GetSprite("Character", "2WalkFront2")
-                };
-            SetSprites(sprites);
+            SetSprites();
         }
 
         public int CurrentSortingOrder { get; private set; }
 
-        public void SetSprites(Sprite[] s)
+        public void SetSprites()
         {
-            sprites = s;
+            
             
             animations = new Dictionary<AnimationType, SpritenameAnimation>();
 
