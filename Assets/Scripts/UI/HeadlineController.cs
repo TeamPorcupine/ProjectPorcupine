@@ -61,6 +61,7 @@ public class HeadlineController : MonoBehaviour
 
         Scheduler.Scheduler.Current.DeregisterEvent(scheduledEvent);
         scheduledEvent = new ScheduledEvent(ToString(), (incomingEvent) => Dismiss(), dismissTime);
+        scheduledEvent.IsSaveable = false;
         Scheduler.Scheduler.Current.RegisterEvent(scheduledEvent);
     }
 }
