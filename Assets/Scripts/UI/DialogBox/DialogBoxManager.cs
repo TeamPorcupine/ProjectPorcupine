@@ -10,10 +10,11 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// This will just keep a reference to all the dialog boxes since there inactive on start you cant find them.
+/// </summary>
 public class DialogBoxManager : MonoBehaviour
 {
-    // This will just keep a reference to all the dialog boxes since there inactive on start you cant find them.
-
     public DialogBoxJobList dialogBoxJobList;
     public DialogBoxLoadGame dialogBoxLoadGame;
     public DialogBoxSaveGame dialogBoxSaveGame;

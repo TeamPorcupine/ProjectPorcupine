@@ -24,21 +24,22 @@ public class HeadlineController : MonoBehaviour
 
     public void Dismiss()
     {
-        if (canvasGroup==null)
+        if (canvasGroup == null)
         {
             return;
         }
+
         canvasGroup.alpha = 0;
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = false;
     }
 
-    private void Awake()
+    public void Awake()
     {
         canvasGroup = GetComponent<CanvasGroup>();
     }
 
-    private void Start()
+    public void Start()
     {
         string filePath = System.IO.Path.Combine(UnityEngine.Application.streamingAssetsPath, "Data");
         filePath = System.IO.Path.Combine(filePath, "Headlines.xml");
