@@ -12,6 +12,9 @@ using UnityEngine;
 
 namespace Animation
 {
+    /// <summary>
+    /// Animations for furniture. Can have several "states" that can be switched using SetState.
+    /// </summary>
     public class FurnitureAnimation
     {
         // current shown frame
@@ -59,7 +62,10 @@ namespace Animation
                 prevFrameIndex = currentAnimation.CurrentFrame;
             }            
         }
-        
+
+        /// <summary>
+        /// Set the animation state. Will only have an effect if stateName is different from current animation stateName.
+        /// </summary>
         public void SetState(string stateName)
         {
             if (animations.ContainsKey(stateName) == false)
@@ -78,13 +84,28 @@ namespace Animation
             }            
         }
 
+        /// <summary>
+        /// Get spritename from the current animation.
+        /// </summary>
+        public string GetSpriteName()
+        {            
+            return currentAnimation.CurrentFrameName;
+        }
+
+        /// <summary>
+        /// Add animation to furniture. First animation added will be default for sprites e.g. ghost image when placing furniture.
+        /// </summary>
         public void AddAnimation(string state, List<string> spriteNames, float fps, bool looping)
         {
             animations.Add(state, new SpritenameAnimation(state, spriteNames.ToArray(), 1 / fps, looping));
 
-            currentAnimationState = state;
-            currentAnimation = animations[currentAnimationState];
-            prevFrameIndex = 0;
+            // set default state to first state entered - most likely "idle"
+            if (string.IsNullOrEmpty(currentAnimationState))
+            {
+                currentAnimationState = state;
+                currentAnimation = animations[currentAnimationState];
+                prevFrameIndex = 0;
+            }
         }
 
         private void ShowSprite(string spriteName)
