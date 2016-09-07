@@ -35,11 +35,11 @@ public class DialogBoxAreYouSure : DialogBox
 
     public override void CloseDialog()
     {
-        InvodeClosed();
+        InvokeClosed();
         base.CloseDialog();
     }
 
-    private void InvodeClosed()
+    private void InvokeClosed()
     {
         Action closed = Closed;
         if (closed != null)
