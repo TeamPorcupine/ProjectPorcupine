@@ -976,7 +976,6 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     {
         yield return string.Format("Hitpoint 18 / 18");
 
-
         if (PowerConnection != null)
         {
             bool hasPower = HasPower();
