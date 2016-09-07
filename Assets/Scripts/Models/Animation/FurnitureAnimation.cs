@@ -76,7 +76,6 @@ namespace Animation
 
             if (stateName != currentAnimationState)
             {
-                Debug.ULogChannel("ani", "setstate " + stateName);
                 currentAnimationState = stateName;
                 currentAnimation = animations[currentAnimationState];
                 currentAnimation.Play();
