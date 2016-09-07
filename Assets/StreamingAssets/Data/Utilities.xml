@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Utilities>
+  <Utility objectType="util_power_cable">
+    <Name>Power Cables</Name>
+    <Description>This is a power cable.</Description>
+    <TypeTag>Power</TypeTag>
+    <LinksToNeighbours>true</LinksToNeighbours>
+    <DragType>path</DragType>
+
+    <BuildingJob jobTime="1">
+      <Inventory objectType="Steel Plate" amount="2" />
+    </BuildingJob>
+
+    <DeconstructJob>
+      <Inventory objectType="Steel Plate" amount="1" />
+    </DeconstructJob>
+    <LocalizationCode>util_power_cable</LocalizationCode>
+    <UnlocalizedDescription>util_power_cable_desc</UnlocalizedDescription>
+  </Utility>
+</Utilities>
