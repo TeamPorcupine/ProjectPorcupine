@@ -19,6 +19,10 @@ public class FurnitureJobs
     private List<Job> activeJobs;
     private List<Job> pausedJobs;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FurnitureJobs"/> class.
+    /// </summary>
+    /// <param name="furn">The current furniture.</param>
     public FurnitureJobs(Furniture furn)
     {
         furniture = furn;
@@ -29,6 +33,11 @@ public class FurnitureJobs
         WorkSpotOffset = Vector2.zero;
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FurnitureJobs"/> class by copying some of the values from another instance.
+    /// </summary>
+    /// <param name="furn">The current furniture.</param>
+    /// <param name="other">The prototype furniture.</param>
     public FurnitureJobs(Furniture furn, Furniture other)
     {
         furniture = furn;
@@ -39,15 +48,30 @@ public class FurnitureJobs
         WorkSpotOffset = other.Jobs.WorkSpotOffset;
     }
 
-
     /// <summary>
-    /// Gets the spot where the Character will stand when he is using the furniture. This is relative to the bottom
+    /// Gets the spot offset where the Character will stand when he is using the furniture. This is relative to the bottom
     /// left tile of the sprite. This can be outside of the actual furniture.
     /// </summary>
-    /// <value>The spot where the Character will stand when he uses the furniture.</value>
+    /// <value>The spot offset where the Character will stand when he uses the furniture.</value>
     public Vector2 WorkSpotOffset { get; private set; }
 
+    /// <summary>
+    /// Gets the spot offset where inventory is spawn when a Job is done with this machine.
+    /// </summary>
+    /// <value>The spawn spot offset.</value>
     public Vector2 SpawnSpotOffset { get; private set; }
+
+    /// <summary>
+    /// Gets the <see cref="Job"/> with the specified index.
+    /// </summary>
+    /// <param name="i">The index.</param>
+    public Job this[int i]
+    {
+        get
+        {
+            return activeJobs[i];
+        }
+    }
 
     /// <summary>
     /// Gets the tile that is used to do a job.
@@ -87,18 +111,6 @@ public class FurnitureJobs
         SpawnSpotOffset = new Vector2(
             int.Parse(reader.GetAttribute("X")),
             int.Parse(reader.GetAttribute("Y")));
-    }
-
-    /// <summary>
-    /// Gets the <see cref="Job"/> with the specified index.
-    /// </summary>
-    /// <param name="i">The index.</param>
-    public Job this[int i]
-    {
-        get
-        {
-            return activeJobs[i];
-        }
     }
 
     /// <summary>
@@ -169,9 +181,9 @@ public class FurnitureJobs
     }
 
     /// <summary>
-    /// Remove the specified job. It removes the link to the furniture and the event
+    /// Remove the specified job. It removes the link to the furniture and the event.
     /// </summary>
-    /// <param name="job">The job.</param>
+    /// <param name="job">The job to remove.</param>
     private void Remove(Job job)
     {
         job.OnJobStopped -= OnJobStopped;
@@ -194,7 +206,7 @@ public class FurnitureJobs
     /// <summary>
     /// Called when a job stops to remove the job from the active jobs.
     /// </summary>
-    /// <param name="job">The job.</param>
+    /// <param name="job">The stopped job.</param>
     private void OnJobStopped(Job job)
     {
         Remove(job);
