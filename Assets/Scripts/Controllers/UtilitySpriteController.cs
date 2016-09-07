@@ -80,12 +80,6 @@ public class UtilitySpriteController : BaseSpriteController<Utility>
         suffix += GetSuffixForNeighbour(util, x, y - 1, util.Tile.Z, "S");
         suffix += GetSuffixForNeighbour(util, x - 1, y, util.Tile.Z, "W");
 
-        // Now we check if we have the neighbours in the cardinal directions next to the respective diagonals
-        // because pure diagonal checking would leave us with diagonal walls and stockpiles, which make no sense.
-        suffix += GetSuffixForDiagonalNeighbour(suffix, "N", "E", util, x + 1, y + 1, util.Tile.Z);
-        suffix += GetSuffixForDiagonalNeighbour(suffix, "S", "E", util, x + 1, y - 1, util.Tile.Z);
-        suffix += GetSuffixForDiagonalNeighbour(suffix, "S", "W", util, x - 1, y - 1, util.Tile.Z);
-        suffix += GetSuffixForDiagonalNeighbour(suffix, "N", "W", util, x - 1, y + 1, util.Tile.Z);
 
         // For example, if this object has all eight neighbours of
         // the same type, then the string will look like:
