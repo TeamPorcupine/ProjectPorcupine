@@ -16,7 +16,7 @@ using Scheduler;
 
 public class SchedulerEditorTest
 {
-    private string luaFunction = @"
+    private const string LuaFunctionString = @"
         function ping_log_lua(event)
             ModUtils.ULogChannel(""Scheduler"", ""Scheduled Lua event '"" .. event.Name .. ""'"")
             return
@@ -38,7 +38,7 @@ public class SchedulerEditorTest
         if (FunctionsManager.ScheduledEvent == null)
         {
             new FunctionsManager();
-            FunctionsManager.ScheduledEvent.LoadScript(luaFunction, "ScheduledEvent");
+            FunctionsManager.ScheduledEvent.LoadScript(LuaFunctionString, "ScheduledEvent");
         }
 
         if (PrototypeManager.SchedulerEvent == null)

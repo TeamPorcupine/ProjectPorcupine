@@ -59,6 +59,7 @@ public class LuaFunctions
             Debug.ULogErrorChannel("Lua", "[" + scriptName + "] LUA Parse error: " + e.DecoratedMessage);
             return false;
         }
+
         return true;
     }
 

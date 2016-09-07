@@ -62,14 +62,14 @@ public class LuaFunctionsTest
     public void Test_LoadScript_Null()
     {
         // Try loading a Lua Code from a null text
-        functions.LoadScript(null, "");
+        functions.LoadScript(null, string.Empty);
     }
 
     [Test]
     public void Test_LoadScript_Empty()
     {
         // Try loading a Lua Code from an empty text. Everything should be ok, but there won't be functions
-        bool result = functions.LoadScript("", "");
+        bool result = functions.LoadScript(string.Empty, string.Empty);
         Assert.AreEqual(true, result);
     }
 
