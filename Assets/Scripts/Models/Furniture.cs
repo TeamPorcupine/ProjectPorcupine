@@ -7,6 +7,7 @@
 // ====================================================
 #endregion
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Schema;
@@ -963,21 +964,40 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     }
 
     /// <summary>
-    /// Returns the HitPoints of the current furniture NOT IMPLEMENTED.
-    /// </summary>
-    /// <returns>String with the HitPoints of the furniture.</returns>
-    public string GetHitPointString()
-    {
-        return "18/18"; // TODO: Add a hitpoint system to...well...everything
-    }
-
-    /// <summary>
     /// Returns the description of the job linked to the furniture. NOT INMPLEMENTED.
     /// </summary>
     /// <returns>Job description of the job linked to the furniture.</returns>
     public string GetJobDescription()
     {
         return string.Empty;
+    }
+
+    public IEnumerable<string> GetAdditionalInfo()
+    {
+        yield return string.Format("Hitpoint 18 / 18");
+
+
+        if (PowerConnection != null)
+        {
+            bool hasPower = HasPower();
+
+            yield return hasPower ? "<color=green>Online</color>" : "<color=red>Offline</color>";
+
+            if (PowerConnection.IsPowerConsumer)
+            {
+                yield return string.Format("Power Input: <color={0}>{1}</color>", hasPower ? "green" : "red", PowerConnection.InputRate);
+            }
+            
+            if (PowerConnection.IsPowerProducer)
+            {
+                yield return string.Format("Power Output: <color={0}>{1}</color>", hasPower ? "green" : "red", PowerConnection.OutputRate);
+            }
+
+            if (PowerConnection.IsPowerAccumulator)
+            {
+                yield return string.Format("Power Accumulated: {0} / {1}", PowerConnection.AccumulatedPower, PowerConnection.Capacity);
+            }
+        }
     }
 
     /// <summary>

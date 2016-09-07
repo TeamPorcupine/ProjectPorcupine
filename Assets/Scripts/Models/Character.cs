@@ -7,6 +7,7 @@
 // ====================================================
 #endregion
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -467,25 +468,23 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
     public string GetDescription()
     {
-        StringBuilder description = new StringBuilder();
-        description.AppendLine("A human astronaut.");
+        return "A human astronaut.";
+    }
+
+    public IEnumerable<string> GetAdditionalInfo()
+    {
+        yield return string.Format("HitPoints: 100/100");
+
         foreach (Need n in needs)
         {
-            description.AppendLine(LocalizationTable.GetLocalization(n.localisationID, n.DisplayAmount));
+           yield return LocalizationTable.GetLocalization(n.localisationID, n.DisplayAmount);
         }
 
         foreach (Stat stat in stats.Values)
         {
             // TODO: Localization
-            description.AppendLine(string.Format("{0}: {1}", stat.statType, stat.Value));
+            yield return string.Format("{0}: {1}", stat.statType, stat.Value);
         }
-
-        return description.ToString();
-    }
-
-    public string GetHitPointString()
-    {
-        return "100/100";
     }
 
     public Color GetCharacterColor()
