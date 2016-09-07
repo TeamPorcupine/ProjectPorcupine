@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using Animation;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
 using ProjectPorcupine.PowerNetwork;
@@ -93,6 +94,11 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
         Parameters = new Parameter(other.Parameters);
         Jobs = new FurnitureJobs(this, other);
+
+        if (other.Animation != null)
+        {
+            Animation = other.Animation.Clone();
+        }
 
         if (other.EventActions != null)
         {
@@ -189,7 +195,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     {
         get
         {
-            return isOperating;            
+            return isOperating;
         }
 
         private set
@@ -306,6 +312,11 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     public string DragType { get; private set; }
 
     /// <summary>
+    /// Gets or sets the furniture animation.
+    /// </summary>
+    public FurnitureAnimation Animation { get; set; }
+
+    /// <summary>
     /// Gets or sets the parameters that is tied to the furniture.
     /// </summary>
     public Parameter Parameters { get; set; }
@@ -398,6 +409,11 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         if (EventActions != null)
         {
             EventActions.Trigger("OnUpdate", this, deltaTime);
+        }
+
+        if (Animation != null)
+        {
+            Animation.Update(deltaTime);
         }
     }
 
@@ -560,6 +576,10 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                     TileType tileType = TileType.GetTileType(reader.GetAttribute("tileType"));
                     tileTypeBuildPermissions.Add(tileType);
                     break;
+                case "Animations":
+                    XmlReader animationReader = reader.ReadSubtree();
+                    ReadAnimationXml(animationReader);
+                    break;
                 case "Action":
                     XmlReader subtree = reader.ReadSubtree();
                     EventActions.ReadXml(subtree);
@@ -604,7 +624,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
             }
         }
     }
-
+    
     /// <summary>
     /// Reads the specified XMLReader (pass it to <see cref="ReadXmlParams(XmlReader)"/>)
     /// This is used to load furniture from a save file.
@@ -801,6 +821,17 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     }
 
     /// <summary>
+    /// Set the animation state. Will only have an effect if stateName is different from current animation stateName.
+    /// </summary>
+    public void SetAnimationState(string stateName)
+    {
+        if (Animation != null)
+        {
+            Animation.SetState(stateName);
+        }
+    }
+
+    /// <summary>
     /// Gets the Context Menu Actions.
     /// </summary>
     /// <param name="contextMenu">The context menu to check for actions.</param>
@@ -932,5 +963,35 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     private void OnNewThresholdReached(Connection connection)
     {
         UpdateOnChanged(this);
+    }
+
+    /// <summary>
+    /// Reads and creates FurnitureAnimation from the prototype xml. 
+    /// </summary>
+    private void ReadAnimationXml(XmlReader animationReader)
+    {
+        Animation = new FurnitureAnimation();
+        while (animationReader.Read())
+        {
+            if (animationReader.Name == "Animation")
+            {
+                string state = animationReader.GetAttribute("state");
+                float fps = float.Parse(animationReader.GetAttribute("fps"));
+                bool looping = bool.Parse(animationReader.GetAttribute("looping"));
+
+                // read frames
+                XmlReader frameReader = animationReader.ReadSubtree();
+                List<string> framesSpriteNames = new List<string>();
+                while (frameReader.Read())
+                {
+                    if (frameReader.Name == "Frame")
+                    {
+                        framesSpriteNames.Add(frameReader.GetAttribute("name"));
+                    }
+                }
+
+                Animation.AddAnimation(state, framesSpriteNames, fps, looping);
+            }
+        }
     }
 }

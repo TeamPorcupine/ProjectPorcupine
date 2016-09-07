@@ -154,7 +154,8 @@ public class MouseController
     public void ClearMouseMode(bool changeMode = false)
     {
         isDragging = false;
-        if (changeMode) {
+        if (changeMode) 
+        {
             currentMode = MouseMode.SELECT;
         }
     }

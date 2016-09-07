@@ -264,6 +264,27 @@ public class SchedulerEditorTest
     }
 
     [Test]
+    public void SchedulerWriteXmlDoesNotWriteNoSaveFlaggedEventsTest()
+    {
+        ScheduledEvent evt = new ScheduledEvent(
+            "test",
+            callback,
+            2.0f,
+            false,
+            1);
+        evt.IsSaveable = false;
+        scheduler.RegisterEvent(evt);
+        scheduler.Update(0); // updates the event list
+
+        StringBuilder sb = new StringBuilder();
+        XmlWriter writer = new XmlTextWriter(new StringWriter(sb));
+        scheduler.WriteXml(writer);
+
+        string expectedXml = "<Scheduler />";
+        Assert.That(sb.ToString(), Is.EqualTo(expectedXml));
+    }
+
+    [Test]
     public void SchedulerReadXmlTest()
     {
         // prepare a scheduler instance to serialize

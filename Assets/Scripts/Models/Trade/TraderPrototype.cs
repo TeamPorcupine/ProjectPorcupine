@@ -12,17 +12,39 @@ using UnityEngine;
 
 public class TraderPrototype
 {
-    public string ObjectType;
-    public List<string> PotentialNames;
-    public float MinCurrencyBalance;
-    public float MaxCurrencyBalance;
-    public string CurrencyName;
-    public float MinSaleMarginMultiplier;
-    public float MaxSaleMarginMultiplier;
-    public List<TraderPotentialInventory> PotentialStock;
+    private float rarity;
 
-    [Range(0, 1)]
-    public float Rarity;
+    public string ObjectType { get; set; }
+
+    public List<string> PotentialNames { get; set; }
+
+    public float MinCurrencyBalance { get; set; }
+
+    public float MaxCurrencyBalance { get; set; }
+
+    public string CurrencyName { get; set; }
+
+    public float MinSaleMarginMultiplier { get; set; }
+
+    public float MaxSaleMarginMultiplier { get; set; }
+
+    public List<TraderPotentialInventory> PotentialStock { get; set; }
+
+    /// <summary>
+    /// Value from 0 to 1, higher value represent higher availability of the trade resource.
+    /// </summary>
+    public float Rarity
+    {
+        get
+        {
+            return rarity;
+        }
+
+        set
+        {
+            rarity = Mathf.Clamp(value, 0f, 1f);
+        }
+    }
 
     public void ReadXmlPrototype(XmlReader reader_parent)
     {
@@ -92,6 +114,9 @@ public class TraderPrototype
         }
     }
 
+    /// <summary>
+    /// Create a random Trader out of this TraderPrototype.
+    /// </summary>
     public Trader CreateTrader()
     {
         Trader t = new Trader

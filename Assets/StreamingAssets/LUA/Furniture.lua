@@ -470,6 +470,7 @@ function CloningPod_UpdateAction(furniture, deltaTime)
         false
     )
 
+    furniture.SetAnimationState("idle")
     job.RegisterJobWorkedCallback("CloningPod_JobRunning")
     job.RegisterJobCompletedCallback("CloningPod_JobComplete")
     job.JobDescription = "job_cloning_pod_cloning_desc"
@@ -477,22 +478,7 @@ function CloningPod_UpdateAction(furniture, deltaTime)
 end
 
 function CloningPod_JobRunning(job)
-    local step = 0
-    if (math.floor(math.abs(job.JobTime * job.furniture.Parameters["animationTimer"].ToFloat())) % 2 == 0) then
-        step = 1
-    end
-    if (job.furniture.Parameters["animationStep"].ToFloat() != step) then
-         job.furniture.Parameters["animationStep"].SetValue(step)
-         job.furniture.UpdateOnChanged(j.furniture)
-    end
-end
-
-function CloningPod_GetSpriteName(furniture)
-    local baseName = "cloning_pod"
-    if (furniture.Jobs.Count() < 1) then
-        return baseName
-    end
-    return baseName .. "_" .. furniture.Parameters["animationStep"].ToFloat()
+    job.furniture.SetAnimationState("running")
 end
 
 function CloningPod_JobComplete(job)
@@ -522,7 +508,12 @@ function PowerGenerator_UpdateAction(furniture, deltatime)
         furniture.Parameters["burnTime"].ChangeFloatValue(-deltatime)
         if ( furniture.Parameters["burnTime"].ToFloat() < 0 ) then
             furniture.Parameters["burnTime"].SetValue(0)
-        end
+        end        
+    end
+    if (furniture.Parameters["burnTime"].ToFloat() == 0) then
+        furniture.SetAnimationState("idle")
+    else
+        furniture.SetAnimationState("running")
     end
 end
 
@@ -535,14 +526,14 @@ function LandingPad_Test_CallTradeShip(furniture, character)
    WorldController.Instance.TradeController.CallTradeShipTest(furniture)
 end
 
--- This function gets called once, when the funriture is isntalled
+-- This function gets called once, when the furniture is installed
 function Heater_InstallAction(furniture, deltaTime)
     -- TODO: find elegant way to register heat source and sinks to Temperature
     furniture.EventActions.Register("OnUpdateTemperature", "Heater_UpdateTemperature")
     World.Current.temperature.RegisterSinkOrSource(furniture)
 end
 
--- This function gets called once, when the funriture is unisntalled
+-- This function gets called once, when the furniture is uninstalled
 function Heater_UninstallAction(furniture, deltaTime)
     furniture.EventActions.Deregister("OnUpdateTemperature", "Heater_UpdateTemperature")
     World.Current.temperature.DeregisterSinkOrSource(furniture)
@@ -642,6 +633,35 @@ end
 
 function OreMine_GetSpriteName(furniture)
     return "mine_" .. furniture.Parameters["ore_type"].ToString()
+end
+
+-- This function gets called once, when the furniture is installed
+function Rtg_InstallAction( furniture, deltaTime)
+    -- TODO: find elegant way to register heat source and sinks to Temperature
+    furniture.EventActions.Register("OnUpdateTemperature", "Rtg_UpdateTemperature")
+    World.Current.temperature.RegisterSinkOrSource(furniture)
+end
+
+-- This function gets called once, when the furniture is uninstalled
+function Rtg_UninstallAction(furniture, deltaTime)
+    furniture.EventActions.Deregister("OnUpdateTemperature", "Rtg_UpdateTemperature")
+    World.Current.temperature.DeregisterSinkOrSource(furniture)
+    -- TODO: find elegant way to unregister previous register
+end
+
+function Rtg_UpdateTemperature(furniture, deltaTime)
+    if (furniture.tile.Room.IsOutsideRoom() == true) then
+        return
+    end
+
+    tile = furniture.tile
+    pressure = tile.Room.GetGasPressure() / tile.Room.GetSize()
+    efficiency = ModUtils.Clamp01(pressure / furniture.Parameters["pressure_threshold"].ToFloat())
+    temperatureChangePerSecond = furniture.Parameters["base_heating"].ToFloat() * efficiency
+    temperatureChange = temperatureChangePerSecond * deltaTime
+
+    World.Current.temperature.ChangeTemperature(tile.X, tile.Y, temperatureChange)
+    --ModUtils.ULogChannel("Temperature", "Heat change: " .. temperatureChangePerSecond .. " => " .. World.current.temperature.GetTemperature(tile.X, tile.Y))
 end
 
 ModUtils.ULog("Furniture.lua loaded")
