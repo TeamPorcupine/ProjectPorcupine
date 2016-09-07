@@ -7,6 +7,7 @@
 // ====================================================
 #endregion
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 using UnityEngine;
 
@@ -102,6 +103,7 @@ public class TraderPrototype
                             PotentialStock.Add(new TraderPotentialInventory
                             {
                                 ObjectType = invs_reader.GetAttribute("objectType"),
+                                ObjectCategory = invs_reader.GetAttribute("objectCategory"),
                                 MinQuantity = int.Parse(invs_reader.GetAttribute("minQuantity")),
                                 MaxQuantity = int.Parse(invs_reader.GetAttribute("maxQuantity")),
                                 Rarity = float.Parse(invs_reader.GetAttribute("rarity"))
@@ -138,14 +140,35 @@ public class TraderPrototype
 
             if (itemIsInStock)
             {
-                t.Stock.Add(new Inventory
+                if (!string.IsNullOrEmpty(potentialStock.ObjectType))
                 {
-                    ObjectType = potentialStock.ObjectType,
-                    StackSize = Random.Range(potentialStock.MinQuantity, potentialStock.MaxQuantity)
-                });
+                    Inventory inventory = new Inventory(
+                        potentialStock.ObjectType,
+                        Random.Range(potentialStock.MinQuantity, potentialStock.MaxQuantity));
+
+                    t.Stock.Add(inventory);
+                }
+                else if (!string.IsNullOrEmpty(potentialStock.ObjectCategory))
+                {
+                    List<InventoryCommon> potentialObjects = GetInventoryCommonWithCategory(potentialStock.ObjectCategory);
+
+                    foreach (InventoryCommon potentialObject in potentialObjects)
+                    {
+                        Inventory inventory = new Inventory(
+                            potentialObject.objectType,
+                            Random.Range(potentialStock.MinQuantity, potentialStock.MaxQuantity));
+
+                        t.Stock.Add(inventory);
+                    }
+                }
             }
         }
 
         return t;
+    }
+
+    private List<InventoryCommon> GetInventoryCommonWithCategory(string category)
+    {
+        return PrototypeManager.Inventory.Values.Where(i => i.category == category).ToList();
     }
 }

@@ -6,11 +6,14 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+
 using UnityEngine;
 
 public class TraderPotentialInventory
 {
     private float rarity;
+
+    public string ObjectCategory { get; set; }
 
     public string ObjectType { get; set; }
 
