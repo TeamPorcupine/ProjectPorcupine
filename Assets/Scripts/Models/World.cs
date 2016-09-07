@@ -590,46 +590,40 @@ public class World : IXmlSerializable
 
     private void LoadSkybox(string name = null)
     {
-        DirectoryInfo dirInfo = new DirectoryInfo(Path.Combine(Application.dataPath, "Resources/Skyboxes"));
-        if (!dirInfo.Exists)
-        {
-            dirInfo.Create();
-        }
+        Material[] skyboxes = Resources.LoadAll("Skyboxes", typeof(Material)).Cast<Material>().ToArray();
+        Material newSkybox = null;
 
-        FileInfo[] files = dirInfo.GetFiles("*.mat", SearchOption.AllDirectories);
-
-        if (files.Length > 0)
+        if (skyboxes.Length > 0)
         {
-            string resourcePath = string.Empty;
-            FileInfo file = null;
             if (!string.IsNullOrEmpty(name))
             {
-                foreach (FileInfo fileInfo in files)
+                foreach (Material skybox in skyboxes)
                 {
-                    if (name.Equals(fileInfo.Name.Remove(fileInfo.Name.LastIndexOf("."))))
+                    if (name.Equals(skybox.name))
                     {
-                        file = fileInfo;
+                        newSkybox = skybox;
                         break;
                     }
                 }
             }
 
             // Maybe we passed in a name that doesn't exist? Pick a random skybox.
-            if (file == null)
+            if (newSkybox == null)
             {
-                // Get random file
-                file = files[(int)(UnityEngine.Random.value * files.Length)];
+                newSkybox = skyboxes[(int)(UnityEngine.Random.value * skyboxes.Length)];
             }
 
-            resourcePath = Path.Combine(file.DirectoryName.Substring(file.DirectoryName.IndexOf("Skyboxes")), file.Name);
-
-            if (resourcePath.Contains("."))
+            // Unload unused skyboxes
+            foreach (Material skybox in skyboxes)
             {
-                resourcePath = resourcePath.Remove(resourcePath.LastIndexOf("."));
+                if (!newSkybox.name.Equals(skybox.name))
+                {
+                    Resources.UnloadAsset(skybox);
+                }
             }
 
-            skybox = Resources.Load<Material>(resourcePath);
-            RenderSettings.skybox = skybox;
+            this.skybox = newSkybox;
+            RenderSettings.skybox = this.skybox;
         }
         else
         {

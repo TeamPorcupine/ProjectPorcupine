@@ -16,6 +16,11 @@ public class Trade
     public Trader Player;
     public Trader Trader;
 
+    /// <summary>
+    /// Create a trade instance between two trader
+    /// Creating a trade will scan the inventory of both trader and assign a trade price to each inventory
+    /// A trade is a simple pivot on 2 Stock in a format easier to display to a humman.
+    /// </summary>
     public Trade(Trader player, Trader trader)
     {
         Player = player;
@@ -36,6 +41,11 @@ public class Trade
         }).ToList();
     }
 
+    /// <summary>
+    /// Current value of the deal for the player currency in the trade currency
+    /// If negative, the player has to give money to complete the trade
+    /// If positive, the player win money at the end of the trade.
+    /// </summary>
     public float TradeCurrencyBalanceForPlayer
     {
         get
@@ -44,6 +54,10 @@ public class Trade
         }
     }
 
+    /// <summary>
+    /// Check if both trader in the trade have enougth currency to complete the deal.
+    /// </summary>
+    /// <returns></returns>
     public bool IsValid()
     {
         return TradeCurrencyBalanceForPlayer < 0
