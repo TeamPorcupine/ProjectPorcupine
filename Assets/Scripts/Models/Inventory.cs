@@ -8,6 +8,7 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
@@ -18,27 +19,20 @@ using MoonSharp.Interpreter;
 [MoonSharpUserData]
 public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
 {
-    protected int stackSize = 1;
+    private int stackSize = 1;
 
     public Inventory()
     {
     }
 
-    public Inventory(string objectType, int maxStackSize, int stackSize)
+    public Inventory(string objectType, int stackSize, int maxStackSize = 50)
     {
-        this.ObjectType = objectType;
+        ObjectType = objectType;
         ImportPrototypeSettings(maxStackSize, 1f, "inv_cat_none");
-        this.StackSize = stackSize;
+        StackSize = stackSize;
     }
 
-    public Inventory(string objectType, int stackSize)
-    {
-        this.ObjectType = objectType;
-        ImportPrototypeSettings(50, 1f, "inv_cat_none");
-        this.StackSize = stackSize;
-    }
-
-    protected Inventory(Inventory other)
+    private Inventory(Inventory other)
     {
         ObjectType = other.ObjectType;
         MaxStackSize = other.MaxStackSize;
@@ -48,75 +42,55 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
         Locked = other.Locked;
     }
 
-    // The function we callback any time our tile's data changes.
-    public event Action<Inventory> OnInventoryChanged;
+    public event Action<Inventory> StackSizeChanged;
 
-    public string ObjectType { get; set; }
+    public string ObjectType { get; private set; }
 
-    public int MaxStackSize { get; set; }
+    public int MaxStackSize { get; private set; }
 
     public float BasePrice { get; set; }
 
-    public string Category { get; set; }
+    public string Category { get; private set; }
 
     public Tile Tile { get; set; }
-
-    public Character Character { get; set; }
 
     // Should this inventory be allowed to be picked up for completing a job?
     public bool Locked { get; set; }
 
     public int StackSize
     {
-        get 
+        get
         {
-            return stackSize; 
+            return stackSize;
         }
 
         set
         {
-            if (stackSize != value)
+            if (stackSize == value)
             {
-                stackSize = value;
-                if (OnInventoryChanged != null)
-                {
-                    OnInventoryChanged(this);
-                }
+                return;
             }
+
+            stackSize = value;
+            OnStackSizeChanged(this);
         }
     }
 
-    public bool IsSelected
-    {
-        get;
-        set;
-    }
+    public bool IsSelected { get; set; }
 
-    public static Inventory New(string objectType, int maxStackSize, int stackSize)
-    {
-        return new Inventory(objectType, maxStackSize, stackSize);
-    }
-
-    public static Inventory New(string objectType, int stackSize)
-    {
-        return new Inventory(objectType, stackSize);
-    }
-
-    public virtual Inventory Clone()
+    public Inventory Clone()
     {
         return new Inventory(this);
     }
-    
-    #region ISelectableInterface implementation
 
     public string GetName()
     {
-        return this.ObjectType;
+        return ObjectType;
     }
 
     public string GetDescription()
     {
-        return string.Format("StackSize: {0}\nCategory: {1}\nBasePrice: {2:N2}", stackSize, Category, BasePrice);
+        return string.Format("StackSize: {0}\nCategory: {1}\nBasePrice: {2:N2}", StackSize, Category, BasePrice);
     }
 
     public string GetHitPointString()
@@ -128,9 +102,6 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
     {
         return string.Empty;
     }
-    #endregion
-
-    #region IXmlSerializable implementation
 
     public XmlSchema GetSchema()
     {
@@ -151,15 +122,13 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
         writer.WriteAttributeString("objectType", ObjectType);
         writer.WriteAttributeString("maxStackSize", MaxStackSize.ToString());
         writer.WriteAttributeString("stackSize", StackSize.ToString());
-        writer.WriteAttributeString("basePrice", BasePrice.ToString());
+        writer.WriteAttributeString("basePrice", BasePrice.ToString(CultureInfo.InvariantCulture));
         writer.WriteAttributeString("category", Category);
     }
 
     public void ReadXml(XmlReader reader)
     {
     }
-
-    #endregion
 
     public IEnumerable<ContextMenuAction> GetContextMenuActions(ContextMenu contextMenu)
     {
@@ -185,6 +154,15 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
             MaxStackSize = defaulMaxStackSize;
             BasePrice = defaultBasePrice;
             Category = defaultCategory;
+        }
+    }
+
+    private void OnStackSizeChanged(Inventory inventory)
+    {
+        Action<Inventory> handler = StackSizeChanged;
+        if (handler != null)
+        {
+            handler(inventory);
         }
     }
 }

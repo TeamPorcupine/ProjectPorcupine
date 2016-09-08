@@ -361,7 +361,7 @@ public class Job : ISelectable
         {
             if (this.acceptsAny == false)
             {
-                if (World.Current.inventoryManager.QuickCheck(inv.ObjectType) == false)
+                if (World.Current.inventoryManager.HasInventoryOfType(inv.ObjectType) == false)
                 {
                     // the job requires ALL inventory requirements to be met, and there is no source of a desired objectType
                     return null;
@@ -371,7 +371,7 @@ public class Job : ISelectable
                     fulfillableInventoryRequirements.Add(inv.ObjectType);
                 }
             }
-            else if (World.Current.inventoryManager.QuickCheck(inv.ObjectType))
+            else if (World.Current.inventoryManager.HasInventoryOfType(inv.ObjectType))
             {
                 // there is a source for a desired objectType that the job will accept
                 fulfillableInventoryRequirements.Add(inv.ObjectType);
