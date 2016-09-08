@@ -437,24 +437,6 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 }
             }
         }
-
-        // Read the children elements.
-        // TODO: This should either not be XML, or use XmlSerializer.
-        while (reader.Read())
-        {
-            // Read until the end of the character.
-            if (reader.NodeType == XmlNodeType.EndElement)
-            {
-                break;
-            }
-
-            switch (reader.Name)
-            {
-                case "Stats":
-                    ReadStatsFromSave(reader);
-                    break;
-            }
-        }
     }
 
     #endregion
@@ -556,7 +538,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         Debug.ULogChannel("Character", "Initialized " + stats.Count + " Stats.");
     }
 
-    private void ReadStatsFromSave(XmlReader reader)
+    public void ReadStatsFromSave(XmlReader reader)
     {
         // Protection vs. empty stats
         if (reader.IsEmptyElement)
