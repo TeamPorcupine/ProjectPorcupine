@@ -63,11 +63,11 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
 
     /// TODO: Implement object rotation
     /// <summary>
-    /// Initializes a new instance of the <see cref="Furniture"/> class.
+    /// Initializes a new instance of the <see cref="Utility"/> class.
     /// </summary>
     public Utility()
     {
-        Tint = Color.white;
+        Tint = new Color(1f, 1f, 1f, .25f);
         JobSpotOffset = Vector2.zero;
         EventActions = new EventActions();
 
@@ -95,11 +95,6 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
         utilParameters = new Parameter(other.utilParameters);
         jobs = new List<Job>();
         pausedJobs = new List<Job>();
-
-        if (other.Animation != null)
-        {
-            Animation = other.Animation.Clone();
-        }        
 
         if (other.EventActions != null)
         {
@@ -278,11 +273,6 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
     public string DragType { get; private set; }
 
     /// <summary>
-    /// Gets or sets the furniture animation.
-    /// </summary>
-    public FurnitureAnimation Animation { get; set; }
-
-    /// <summary>
     /// Gets or sets the parameters that is tied to the furniture.
     /// </summary>
     public Parameter Parameters
@@ -303,12 +293,12 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
     /// </summary>
     /// <param name="proto">The prototype furniture to place.</param>
     /// <param name="tile">The base tile to place the furniture on, The tile will be the bottom left corner of the furniture (to check).</param>
-    /// <returns>Furniture object.</returns>
+    /// <returns>Utility object.</returns>
     public static Utility PlaceInstance(Utility proto, Tile tile)
     {
         if (proto.funcPositionValidation(tile) == false)
         {
-            Debug.ULogErrorChannel("Furniture", "PlaceInstance -- Position Validity Function returned FALSE. " + proto.Name + " " + tile.X + ", " + tile.Y + ", " + tile.Z);
+            Debug.ULogErrorChannel("Utility", "PlaceInstance -- Position Validity Function returned FALSE. " + proto.Name + " " + tile.X + ", " + tile.Y + ", " + tile.Z);
             return null;
         }
 
@@ -388,11 +378,6 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
             // updateActions(this, deltaTime);
             // TODO: Implement when EventActions.Trigger can take a Utility
 //            EventActions.Trigger("OnUpdate", this, deltaTime);
-        }
-
-        if (Animation != null)
-        {
-            Animation.Update(deltaTime);
         }
     }
 
@@ -524,10 +509,6 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
                 case "CanBeBuiltOn":
                     TileType tileType = TileType.GetTileType(reader.GetAttribute("tileType"));
                     tileTypeBuildPermissions.Add(tileType);
-                    break;
-                case "Animations":
-                    XmlReader animationReader = reader.ReadSubtree();
-                    ReadAnimationXml(animationReader);
                     break;
                 case "Action":
                     XmlReader subtree = reader.ReadSubtree();
@@ -683,7 +664,7 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
         }
 
         // We call lua to decostruct
-        // TODO: EventActions doesn't currently allow anything but Furniture Fix this when implemented
+        // TODO: EventActions doesn't currently allow anything but Utility Fix this when implemented
 //        EventActions.Trigger("OnUninstall", this);
         Tile.UnplaceUtility();
 
@@ -780,17 +761,6 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
     }
 
     /// <summary>
-    /// Set the animation state. Will only have an effect if stateName is different from current animation stateName.
-    /// </summary>
-    public void SetAnimationState(string stateName)
-    {
-        if (Animation != null)
-        {
-            Animation.SetState(stateName);
-        }
-    }
-
-    /// <summary>
     /// Gets the Context Menu Actions.
     /// </summary>
     /// <param name="contextMenu">The context menu to check for actions.</param>
@@ -846,7 +816,7 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
     }
 
     // FIXME: These functions should never be called directly,
-    // so they probably shouldn't be public functions of Furniture
+    // so they probably shouldn't be public functions of Utility
     // This will be replaced by validation checks fed to use from
     // LUA files that will be customizable for each piece of furniture.
     // For example, a door might specific that it needs two walls to
@@ -926,35 +896,5 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
     private void OnNewThresholdReached(Connection connection)
     {
         UpdateOnChanged(this);
-    }
-
-    /// <summary>
-    /// Reads and creates FurnitureAnimation from the prototype xml. 
-    /// </summary>
-    private void ReadAnimationXml(XmlReader animationReader)
-    {
-        Animation = new FurnitureAnimation();
-        while (animationReader.Read())
-        {
-            if (animationReader.Name == "Animation")
-            {
-                string state = animationReader.GetAttribute("state");
-                float fps = float.Parse(animationReader.GetAttribute("fps"));
-                bool looping = bool.Parse(animationReader.GetAttribute("looping"));
-
-                // read frames
-                XmlReader frameReader = animationReader.ReadSubtree();
-                List<string> framesSpriteNames = new List<string>();
-                while (frameReader.Read())
-                {
-                    if (frameReader.Name == "Frame")
-                    {
-                        framesSpriteNames.Add(frameReader.GetAttribute("name"));
-                    }
-                }
-
-                Animation.AddAnimation(state, framesSpriteNames, fps, looping);
-            }
-        }
     }
 }

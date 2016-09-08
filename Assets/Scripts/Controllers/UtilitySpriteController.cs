@@ -23,7 +23,7 @@ public class UtilitySpriteController : BaseSpriteController<Utility>
         // the tile's type changes.
         world.OnUtilityCreated += OnCreated;
 
-        // Go through any EXISTING furniture (i.e. from a save that was loaded OnEnable) and call the OnCreated event manually.
+        // Go through any EXISTING utility (i.e. from a save that was loaded OnEnable) and call the OnCreated event manually.
         foreach (Utility util in world.utilities)
         {
             OnCreated(util);
@@ -125,11 +125,6 @@ public class UtilitySpriteController : BaseSpriteController<Utility>
             }
         }
 
-        if (utility.Animation != null)
-        { 
-            utility.Animation.Renderer = sr;
-        }
-
         // Register our callback so that our GameObject gets updated whenever
         // the object's into changes.
         utility.Changed += OnChanged;
@@ -139,10 +134,10 @@ public class UtilitySpriteController : BaseSpriteController<Utility>
 
     protected override void OnChanged(Utility util)
     {
-        // Make sure the furniture's graphics are correct.
+        // Make sure the utility's graphics are correct.
         if (objectGameObjectMap.ContainsKey(util) == false)
         {
-            Debug.ULogErrorChannel("FurnitureSpriteController", "OnUtilityChanged -- trying to change visuals for furniture not in our map.");
+            Debug.ULogErrorChannel("UtilitySpriteController", "OnUtilityChanged -- trying to change visuals for utility not in our map.");
             return;
         }
 
@@ -156,7 +151,7 @@ public class UtilitySpriteController : BaseSpriteController<Utility>
     {
         if (objectGameObjectMap.ContainsKey(util) == false)
         {
-            Debug.ULogErrorChannel("UtilitySpriteController", "OnUtilityRemoved -- trying to change visuals for furniture not in our map.");
+            Debug.ULogErrorChannel("UtilitySpriteController", "OnUtilityRemoved -- trying to change visuals for utility not in our map.");
             return;
         }
 
