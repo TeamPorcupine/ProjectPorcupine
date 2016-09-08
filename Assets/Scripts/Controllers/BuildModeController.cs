@@ -194,7 +194,7 @@ public class BuildModeController
                     j.JobDescription = "job_build_" + furnitureType + "_desc";
                 }
 
-//                j.furniturePrototype = PrototypeManager.Utility.Get(furnitureType);
+                j.buildablePrototype = PrototypeManager.Utility.Get(furnitureType);
 
                 // Add the job to the queue or build immediately if in dev mode
                 if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
@@ -310,7 +310,7 @@ public class BuildModeController
                 {
                     // if the existing buildJobs furniture is replaceable by the current furnitureType,
                     // we can pretend it does not overlap with the new build
-                    return !proto.ReplaceableFurniture.Any(pendingBuildJob.buildablePrototype.HasTypeTag());
+                    return !proto.ReplaceableFurniture.Any(pendingBuildJob.buildablePrototype.HasTypeTag);
                 }
             }
         }

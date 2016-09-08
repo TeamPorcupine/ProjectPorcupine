@@ -123,7 +123,7 @@ public class WorldController : MonoBehaviour
         characterSpriteController = new CharacterSpriteController(World);
         furnitureSpriteController = new FurnitureSpriteController(World);
         utilitySpriteController = new UtilitySpriteController(World);
-        jobSpriteController = new JobSpriteController(World, furnitureSpriteController);
+        jobSpriteController = new JobSpriteController(World, furnitureSpriteController, utilitySpriteController);
         inventorySpriteController = new InventorySpriteController(World, inventoryUI);
 
         buildModeController = new BuildModeController();
