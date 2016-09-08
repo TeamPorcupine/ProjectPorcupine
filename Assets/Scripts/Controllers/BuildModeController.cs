@@ -39,6 +39,7 @@ public class BuildModeController
             // floors are draggable
             return true;
         }
+
         Furniture proto = PrototypeManager.Furniture.Get(buildModeObjectType);
 
         return proto.Width == 1 && proto.Height == 1;
@@ -159,9 +160,9 @@ public class BuildModeController
             // Run the ValidPlacement function!
             string furnitureType = buildModeObjectType;
 
+            // TODO: Reimplement this later: DoesBuildJobOverlapExistingBuildJob(t, furnitureType) == false)
             if ( 
-                WorldController.Instance.World.IsUtilityPlacementValid(furnitureType, t) &&
-                true) // TODO: Reimplement this later: DoesBuildJobOverlapExistingBuildJob(t, furnitureType) == false)
+                WorldController.Instance.World.IsUtilityPlacementValid(furnitureType, t)) 
             {
                 // This tile position is valid for this furniture
 
@@ -174,11 +175,7 @@ public class BuildModeController
 
                 // Create a job for it to be build
                 Job j;
-                Debug.Log(PrototypeManager.UtilityJob.Keys.Count);
-                foreach(string k in PrototypeManager.UtilityJob.Keys.ToList()) 
-                {
-                    Debug.Log(k);
-                }
+
                 if (PrototypeManager.UtilityJob.Has(furnitureType))
                 {
                     // Make a clone of the job prototype

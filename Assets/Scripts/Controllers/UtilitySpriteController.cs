@@ -80,7 +80,6 @@ public class UtilitySpriteController : BaseSpriteController<Utility>
         suffix += GetSuffixForNeighbour(util, x, y - 1, util.Tile.Z, "S");
         suffix += GetSuffixForNeighbour(util, x - 1, y, util.Tile.Z, "W");
 
-
         // For example, if this object has all eight neighbours of
         // the same type, then the string will look like:
         //       Wall_NESWneseswnw

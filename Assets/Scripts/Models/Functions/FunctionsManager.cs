@@ -34,7 +34,6 @@ public class FunctionsManager
         get { return Get("Furniture"); }
     }
 
-
     /// <summary>
     /// Gets the utility Lua Functions.
     /// </summary>

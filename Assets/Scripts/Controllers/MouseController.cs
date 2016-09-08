@@ -458,7 +458,6 @@ public class MouseController
                         }
                     }
                 }
-                    
                 else
                 {
                     bmc.DoBuild(t);
@@ -608,8 +607,8 @@ public class MouseController
         sr.sortingLayerName = "Jobs";
         sr.sprite = usc.GetSpriteForUtility(furnitureType);
 
-        if (WorldController.Instance.World.IsUtilityPlacementValid(furnitureType, t) &&
-            true) // TODO: reimplement this for utilities: bmc.DoesBuildJobOverlapExistingBuildJob(t, furnitureType) == false)
+        // TODO: reimplement this for utilities: bmc.DoesBuildJobOverlapExistingBuildJob(t, furnitureType) == false)
+        if (WorldController.Instance.World.IsUtilityPlacementValid(furnitureType, t)) 
         {
             sr.color = new Color(0.5f, 1f, 0.5f, 0.25f);
         }

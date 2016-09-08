@@ -150,15 +150,17 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
     /// <summary>
     /// Gets the width of the furniture.
     /// </summary>
-    public int Width { 
-        get {return 1;}
+    public int Width 
+    { 
+        get { return 1; }
     }
 
     /// <summary>
     /// Gets the height of the furniture.
     /// </summary>
-    public int Height { 
-        get {return 1;}
+    public int Height 
+    { 
+        get { return 1; }
     }
 
     /// <summary>
@@ -349,7 +351,6 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
 
         // TODO: Implement when EventActions.Trigger can take a Utility
 //        obj.EventActions.Trigger("OnInstall", obj);
-
         return obj;
     }
 
@@ -618,7 +619,7 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
     /// <param name="job">The job that you want to link to the furniture.</param>
     public void AddJob(Job job)
     {
-        //FIXME: Do we even need this?
+        // FIXME: Do we even need this?
 //        job.furniture = this;
         jobs.Add(job);
         job.OnJobStopped += OnJobStopped;
@@ -679,8 +680,6 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
         // We call lua to decostruct
         // TODO: EventActions doesn't currently allow anything but Furniture Fix this when implemented
 //        EventActions.Trigger("OnUninstall", this);
-
-
         Tile.UnplaceUtility();
 
         if (PowerConnection != null)
