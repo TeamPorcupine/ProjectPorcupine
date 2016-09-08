@@ -90,8 +90,6 @@ public class World : IXmlSerializable
 
     public event Action<Character> OnCharacterCreated;
 
-    public event Action<Inventory> OnInventoryCreated;
-
     public event Action<Tile> OnTileChanged;
 
     public static World Current { get; protected set; }
@@ -549,14 +547,6 @@ public class World : IXmlSerializable
                     Scheduler.Scheduler.Current.ReadXml(reader);
                     break;
             }
-        }
-    }
-
-    public void OnInventoryCreatedCallback(Inventory inv)
-    {
-        if (OnInventoryCreated != null)
-        {
-            OnInventoryCreated(inv);
         }
     }
 

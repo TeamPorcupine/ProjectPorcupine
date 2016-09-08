@@ -272,7 +272,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             // Also create a callback for when an inventory gets created.
             // Lastly, remove the job from "MyJob".
             World.Current.jobWaitingQueue.Enqueue(MyJob);
-            World.Current.OnInventoryCreated += OnInventoryCreated;
+            World.Current.inventoryManager.InventoryCreated += OnInventoryCreated;
             MyJob.OnJobStopped -= OnJobStopped;
             MyJob = null;
         }
@@ -1040,7 +1040,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     private void OnInventoryCreated(Inventory inv)
     {
         // First remove the callback.
-        World.Current.OnInventoryCreated -= OnInventoryCreated;
+        World.Current.inventoryManager.InventoryCreated -= OnInventoryCreated;
 
         // Get the relevant job and dequeue it from the waiting queue.
         Job job = World.Current.jobWaitingQueue.Dequeue();
@@ -1064,7 +1064,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 // If not, (re)enqueue the job onto the waiting queu
                 // and also register a callback for the future.
                 World.Current.jobWaitingQueue.Enqueue(job);
-                World.Current.OnInventoryCreated += OnInventoryCreated;
+                World.Current.inventoryManager.InventoryCreated += OnInventoryCreated;
             }
         }
     }

@@ -21,6 +21,8 @@ public class InventoryManager
         Inventories = new Dictionary<string, List<Inventory>>();
     }
 
+    public event Action<Inventory> InventoryCreated;
+
     public Dictionary<string, List<Inventory>> Inventories { get; private set; }
 
     public bool PlaceInventory(Tile tile, Inventory inventory)
@@ -44,8 +46,7 @@ public class InventoryManager
             }
 
             Inventories[tile.Inventory.ObjectType].Add(tile.Inventory);
-
-            World.Current.OnInventoryCreatedCallback(tile.Inventory);
+            OnInventoryCreated(tile.Inventory);
         }
 
         return true;
@@ -135,9 +136,10 @@ public class InventoryManager
         {
             if (onlyFromStockpiles)
             {
-                if (inventory.Tile == null || 
+                if (inventory.Tile == null ||
                     inventory.Tile.Furniture == null ||
-                    inventory.Tile.Furniture.ObjectType != "Stockpile")
+                    inventory.Tile.Furniture.ObjectType != "Stockpile" ||
+                    inventory.Tile.Furniture.HasTypeTag("Stockpile"))
                 {
                     continue;
                 }
@@ -203,6 +205,15 @@ public class InventoryManager
         {
             inventory.Tile.Inventory = null;
             inventory.Tile = null;
+        }
+    }
+
+    protected virtual void OnInventoryCreated(Inventory inventory)
+    {
+        Action<Inventory> handler = InventoryCreated;
+        if (handler != null)
+        {
+            handler(inventory);
         }
     }
 }
