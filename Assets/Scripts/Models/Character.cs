@@ -465,7 +465,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         foreach (Stat stat in stats.Values)
         {
             // TODO: Localization
-            yield return string.Format("{0}: {1}", stat.statType, stat.Value);
+            yield return string.Format("{0}: {1}", stat.StatType, stat.Value);
         }
     }
 
