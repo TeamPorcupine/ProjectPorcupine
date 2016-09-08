@@ -195,7 +195,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     /// Gets the tint used to change the color of the furniture.
     /// </summary>
     /// <value>The Color of the furniture.</value>
-    public Color Tint { get; private set; }
+    public Color Tint { get; set; }
 
     /// <summary>
     /// Gets the spot where the Character will stand when he is using the furniture. This is relative to the bottom
