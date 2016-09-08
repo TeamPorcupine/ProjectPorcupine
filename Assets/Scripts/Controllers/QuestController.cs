@@ -14,6 +14,7 @@ using UnityEngine;
 public class QuestController
 {
     private readonly float checkDelayInSeconds;
+
     private float totalDeltaTime;
 
     public QuestController()

@@ -20,14 +20,26 @@ public enum RequestLevel
 
 public class Trader
 {
-    public string Name;
-    public Currency Currency;
-    public float SaleMarginMultiplier;
-    public List<Inventory> Stock;
+
     public List<TraderPotentialInventory> possibleStock;
+
     public Dictionary<TraderPotentialInventory, RequestLevel> requests;
+
     public float requestChanceModifier = 0.2f;
 
+    public string Name { get; set; }
+
+    public Currency Currency { get; set; }
+
+    public float SaleMarginMultiplier { get; set; }
+
+    public List<Inventory> Stock { get; set; }
+
+    /// <summary>
+    /// Create a Trader from the current player
+    /// This method will scan every stockpile build and add the found inventory to the stock
+    /// It will also assign a 0.8f sale margin multiplayer to the Trader.
+    /// </summary>
     public static Trader FromPlayer(Currency currency)
     {
         Trader t = new Trader

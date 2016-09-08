@@ -32,6 +32,7 @@ public class WorldController : MonoBehaviour
     public KeyboardManager keyboardManager;
     public CameraController cameraController;
     public SpawnInventoryController spawnInventoryController;
+    public AutosaveManager autosaveManager;
     public TradeController TradeController;
     public TradersController tradersController;
     public TimeManager timeManager;
@@ -76,6 +77,7 @@ public class WorldController : MonoBehaviour
     // Use this for initialization.
     public void OnEnable()
     {
+        Debug.IsLogEnabled = true;
         if (Instance != null)
         {
             Debug.ULogErrorChannel("WorldController", "There should never be two world controllers.");
@@ -132,6 +134,7 @@ public class WorldController : MonoBehaviour
         TradeController = new TradeController();
         tradersController = new TradersController();
         timeManager = new TimeManager();
+        autosaveManager = new AutosaveManager();
 
         keyboardManager.RegisterInputAction("Pause", KeyboardMappedInputType.KeyUp, () => { IsPaused = !IsPaused; });
 
@@ -158,7 +161,7 @@ public class WorldController : MonoBehaviour
         // Systems that update every frame when not paused.
         if (IsPaused == false)
         {
-            World.UpdateCharacters(timeManager.DeltaTime);
+            World.TickEveryFrame(timeManager.DeltaTime);
             Scheduler.Scheduler.Current.Update(timeManager.DeltaTime);
         }
 
@@ -168,7 +171,7 @@ public class WorldController : MonoBehaviour
             if (IsPaused == false)
             {
                 // Systems that update at fixed frequency when not paused.
-                World.Tick(timeManager.TotalDeltaTime);
+                World.TickFixedFrequency(timeManager.TotalDeltaTime);
                 questController.Update(timeManager.TotalDeltaTime);
             }
 

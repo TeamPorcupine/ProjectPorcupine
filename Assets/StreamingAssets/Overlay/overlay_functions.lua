@@ -27,7 +27,7 @@ end
 function powerValueAt (tile)
 	zero = 128 -- This is middle between 0 and 256
 	multiplier = 12,8 -- For now 1 power is 40 in overlay
-	if (tile == nil or tile.furniture == nil or tile.furniture.PowerConnection == nill) then
+	if (tile == nil or tile.furniture == nil or tile.furniture.PowerConnection == nil) then
 		return zero
 	end
 	if (tile.furniture.PowerConnection.IsPowerConsumer) then

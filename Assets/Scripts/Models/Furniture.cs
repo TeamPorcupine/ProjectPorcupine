@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using Animation;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
 using ProjectPorcupine.PowerNetwork;
@@ -58,6 +59,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
     private List<Job> jobs;
 
+    private List<Job> pausedJobs;
+
     // This is the generic type of object this is, allowing things to interact with it based on it's generic type
     private HashSet<string> typeTags;
 
@@ -72,12 +75,15 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     private bool isOperating;
 
     /// TODO: Implement object rotation
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Furniture"/> class.
+    /// </summary>
     public Furniture()
     {
         Tint = Color.white;
         JobSpotOffset = Vector2.zero;
         VerticalDoor = false;
-        EventActions = new EventAction();
+        EventActions = new EventActions();
 
         contextMenuLuaActions = new List<ContextMenuLuaAction>();
         furnParameters = new Parameter();
@@ -111,6 +117,12 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
         furnParameters = new Parameter(other.furnParameters);
         jobs = new List<Job>();
+        pausedJobs = new List<Job>();
+
+        if (other.Animation != null)
+        {
+            Animation = other.Animation.Clone();
+        }        
 
         if (other.EventActions != null)
         {
@@ -143,15 +155,26 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         UnlocalizedDescription = other.UnlocalizedDescription;
     }
 
+    /// <summary>
+    /// This event will trigger when the furniture has been changed.
+    /// This is means that any change (parameters, job state etc) to the furniture will trigger this.
+    /// </summary>
     public event Action<Furniture> Changed;
 
+    /// <summary>
+    /// This event will trigger when the furniture has been removed.
+    /// </summary>
     public event Action<Furniture> Removed;
 
+    /// <summary>
+    /// This event will trigger if <see cref="IsOperating"/> has been changed.
+    /// </summary>
     public event Action<Furniture> IsOperatingChanged;
 
     /// <summary>
-    /// Gets or sets the Furniture's pathfinding modifier which is added into the Tile's final PathfindingCost.
+    /// Gets or sets the Furniture's <see cref="PathfindingModifier"/> which is added into the Tile's final PathfindingCost.
     /// </summary>
+    /// <value>The modifier used in pathfinding.</value>
     public float PathfindingModifier
     {
         get { return pathfindingModifier; }
@@ -161,40 +184,57 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     /// <summary>
     /// Gets or sets the Furniture's pathfinding weight which is multiplied into the Tile's final PathfindingCost.
     /// </summary>
+    /// <value>The pathfinding weight for the tiles the furniture currently occupies.</value>
     public float PathfindingWeight
     {
         get { return pathfindingWeight; }
         set { pathfindingWeight = value; }
     }
-
+    
+    /// <summary>
+    /// Gets the tint used to change the color of the furniture.
+    /// </summary>
+    /// <value>The Color of the furniture.</value>
     public Color Tint { get; private set; }
 
-    // If this furniture gets worked by a person,
-    // where is the correct spot for them to stand,
-    // relative to the bottom-left tile of the sprite.
-    // NOTE: This could even be something outside of the actual
-    // furniture tile itself!  (In fact, this will probably be common).
+    /// <summary>
+    /// Gets the spot where the Character will stand when he is using the furniture. This is relative to the bottom
+    /// left tile of the sprite. This can be outside of the actual furniture.
+    /// </summary>
+    /// <value>The spot where the Character will stand when he uses the furniture.</value>
     public Vector2 JobSpotOffset { get; private set; }
 
-    // Flag for Lua to check if this is a vertical or horizontal door and display the correct sprite.
+    /// <summary>
+    /// Gets or sets a value indicating whether the door is Vertical or not.
+    /// Should be false if the furniture is not a door.
+    /// This field will most likely be moved to another class.
+    /// </summary>
+    /// <value>Whether the door is Vertical or not.</value>
     public bool VerticalDoor { get; set; }
 
     /// <summary>
-    /// These actions are called when Trigger is called. They get passed the furniture
+    /// Gets the EventAction for the current furniture.
+    /// These actions are called when an event is called. They get passed the furniture
     /// they belong to, plus a deltaTime (which defaults to 0).
     /// </summary>
-    public EventAction EventActions { get; private set; }
+    /// <value>The event actions that is called on update.</value>
+    public EventActions EventActions { get; private set; }
 
     /// <summary>
-    /// Connection to PowerNetwork.
+    /// Gets the Connection that the furniture has to the power system.
     /// </summary>
+    /// <value>The Connection of the furniture.</value>
     public Connection PowerConnection { get; private set; }
 
+    /// <summary>
+    /// Gets a value indicating whether the furniture is operating or not.
+    /// </summary>
+    /// <value>Whether the furniture is operating or not.</value>
     public bool IsOperating
     {
         get
         {
-            return isOperating;            
+            return isOperating;
         }
 
         private set
@@ -209,15 +249,30 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         }
     }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether the furniture is selected by the player or not.
+    /// </summary>
+    /// <value>Whether the furniture is selected or not.</value>
     public bool IsSelected { get; set; }
 
-    // This represents the BASE tile of the object -- but in practice, large objects may actually occupy
-    // multile tiles.
+    /// <summary>
+    /// Gets the BASE tile of the furniture. (Large objects can span over multiple tiles).
+    /// This should be RENAMED (possibly to BaseTile).
+    /// </summary>
+    /// <value>The BASE tile of the furniture.</value>
     public Tile Tile { get; private set; }
 
-    // This "objectType" will be queried by the visual system to know what sprite to render for this object
+    /// <summary>
+    /// Gets the string that defines the type of object the furniture is. This gets queried by the visual system to 
+    /// know what sprite to render for this furniture.
+    /// </summary>
+    /// <value>The type of the furniture.</value>
     public string ObjectType { get; private set; }
 
+    /// <summary>
+    /// Gets the name of the furniture. The name is the object type by default.
+    /// </summary>
+    /// <value>The name of the furniture.</value>
     public string Name
     {
         get
@@ -236,6 +291,11 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         }
     }
 
+    /// <summary>
+    /// Gets a list of furniture ObjectType this furniture can be replaced with.
+    /// This should most likely not be a list of strings.
+    /// </summary>
+    /// <value>A list of furniture that this furniture can be replaced with.</value>
     public List<string> ReplaceableFurniture
     {
         get
@@ -244,28 +304,60 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         }
     }
 
-    // This is a multipler. So a value of "2" here, means you move twice as slowly (i.e. at half speed)
-    // Tile types and other environmental effects may be combined.
-    // For example, a "rough" tile (cost of 2) with a table (cost of 3) that is on fire (cost of 3)
-    // would have a total movement cost of (2+3+3 = 8), so you'd move through this tile at 1/8th normal speed.
-    // SPECIAL: If movementCost = 0, then this tile is impassible. (e.g. a wall).
+    /// <summary>
+    /// Gets the movement cost multiplier that this furniture has. This can be a float value from 0 to any positive number.
+    /// The movement cost acts as a multiplier: e.g. 1 is default, 2 is twice as slow.
+    /// Tile types and environmental effects will be combined with this value (additive).
+    /// If this value is '0' then the furniture is impassable.
+    /// </summary>
+    /// <value>The movement cost multiplier the furniture has.</value>
     public float MovementCost { get; private set; }
 
+    /// <summary>
+    /// Gets a value indicating whether the furniture can close a room (e.g. act as a wall).
+    /// </summary>
     public bool RoomEnclosure { get; private set; }
 
-    // For example, a sofa might be 3x2 (actual graphics only appear to cover the 3x1 area, but the extra row is for leg room.)
+    /// <summary>
+    /// Gets the width of the furniture.
+    /// </summary>
     public int Width { get; private set; }
 
+    /// <summary>
+    /// Gets the height of the furniture.
+    /// </summary>
     public int Height { get; private set; }
 
+    /// <summary>
+    /// Gets the code used for Localization of the furniture.
+    /// </summary>
     public string LocalizationCode { get; private set; }
 
+    /// <summary>
+    /// Gets the description of the furniture. This is used by localization.
+    /// </summary>
     public string UnlocalizedDescription { get; private set; }
 
+    /// <summary>
+    /// Gets a value indicating whether this furniture is next to any furniture of the same type.
+    /// This is used to check what sprite to use if furniture is next to each other.
+    /// </summary>
     public bool LinksToNeighbour { get; private set; }
 
+    /// <summary>
+    /// Gets the type of dragging that is used to build multiples of this furniture. 
+    /// e.g walls.
+    /// </summary>
     public string DragType { get; private set; }
 
+    /// <summary>
+    /// Gets or sets the furniture animation.
+    /// </summary>
+    public FurnitureAnimation Animation { get; set; }
+
+    /// <summary>
+    /// Gets or sets the parameters that is tied to the furniture.
+    /// </summary>
     public Parameter Parameters
     {
         get
@@ -279,6 +371,12 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         }
     }
 
+    /// <summary>
+    /// Used to place furniture in a certain position.
+    /// </summary>
+    /// <param name="proto">The prototype furniture to place.</param>
+    /// <param name="tile">The base tile to place the furniture on, The tile will be the bottom left corner of the furniture (to check).</param>
+    /// <returns>Furniture object.</returns>
     public static Furniture PlaceInstance(Furniture proto, Tile tile)
     {
         if (proto.funcPositionValidation(tile) == false)
@@ -337,16 +435,26 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         return obj;
     }
 
+    /// <summary>
+    /// This function is called to update the furniture. This will also trigger EventsActions.
+    /// This checks if the furniture is a PowerConsumer, and if it does not have power it cancels its job.
+    /// </summary>
+    /// <param name="deltaTime">The time since the last update was called.</param>
     public void Update(float deltaTime)
     {
         if (PowerConnection != null && PowerConnection.IsPowerConsumer && HasPower() == false)
         {
             if (JobCount() > 0)
             {
-                CancelJobs();
+                PauseJobs();
             }
 
             return;
+        }
+
+        if (pausedJobs.Count > 0)
+        {
+            ResumeJobs();
         }
 
         // TODO: some weird thing happens
@@ -355,8 +463,17 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
             // updateActions(this, deltaTime);
             EventActions.Trigger("OnUpdate", this, deltaTime);
         }
+
+        if (Animation != null)
+        {
+            Animation.Update(deltaTime);
+        }
     }
 
+    /// <summary>
+    /// Whether this furniture is an exit for a room.
+    /// </summary>
+    /// <returns>True if furniture is an exit.</returns>
     public bool IsExit()
     {
         if (RoomEnclosure && MovementCost > 0f)
@@ -367,6 +484,11 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         return false;
     }
 
+    /// <summary>
+    /// Checks if the furniture can be Entered.
+    /// </summary>
+    /// <returns>Enterability state Yes if furniture can be entered, Soon if it can be entered after a bit and No 
+    /// if it cannot be entered.</returns>
     public Enterability IsEnterable()
     {
         if (string.IsNullOrEmpty(isEnterableAction))
@@ -381,33 +503,63 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         return (Enterability)ret.Number;
     }
 
+    /// <summary>
+    /// Check if the furniture has a function to determine the sprite name and calls that function.
+    /// </summary>
+    /// <returns>Name of the sprite.</returns>
     public string GetSpriteName()
     {
-        if (string.IsNullOrEmpty(getSpriteNameAction))
+        if (!string.IsNullOrEmpty(getSpriteNameAction))
         {
-            return ObjectType;
+            DynValue ret = LuaUtilities.CallFunction(getSpriteNameAction, this);
+            return ret.String;
         }
 
-        DynValue ret = LuaUtilities.CallFunction(getSpriteNameAction, this);
-        return ret.String;
+        // Try to get spritename from animation
+        if (Animation != null)
+        {
+            return Animation.GetSpriteName();
+        }
+
+        // Else return default ObjectType string
+        return ObjectType;
     }
 
+    /// <summary>
+    /// Check if the position of the furniture is valid or not.
+    /// This is called when placing the furniture.
+    /// </summary>
+    /// <param name="t">The base tile.</param>
+    /// <returns>True if the tile is valid for the placement of the furniture.</returns>
     public bool IsValidPosition(Tile t)
     {
         return funcPositionValidation(t);
     }
 
+    /// <summary>
+    /// Whether the furniture has power or not.
+    /// </summary>
+    /// <returns>True if the furniture has power.</returns>
     public bool HasPower()
     {
         IsOperating = PowerConnection == null || World.Current.PowerNetwork.HasPower(PowerConnection);
         return IsOperating;
     }
 
+    /// <summary>
+    /// This does absolutely nothing.
+    /// This is required to implement IXmlSerializable.
+    /// </summary>
+    /// <returns>NULL and NULL.</returns>
     public XmlSchema GetSchema()
     {
         return null;
     }
 
+    /// <summary>
+    /// Writes the furniture to XML.
+    /// </summary>
+    /// <param name="writer">The XML writer to write to.</param>
     public void WriteXml(XmlWriter writer)
     {
         writer.WriteAttributeString("X", Tile.X.ToString());
@@ -419,6 +571,10 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         furnParameters.WriteXml(writer);
     }
 
+    /// <summary>
+    /// Reads the prototype furniture from XML.
+    /// </summary>
+    /// <param name="readerParent">The XML reader to read from.</param>
     public void ReadXmlPrototype(XmlReader readerParent)
     {
         ObjectType = readerParent.GetAttribute("objectType");
@@ -510,7 +666,10 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                     TileType tileType = TileType.GetTileType(reader.GetAttribute("tileType"));
                     tileTypeBuildPermissions.Add(tileType);
                     break;
-
+                case "Animations":
+                    XmlReader animationReader = reader.ReadSubtree();
+                    ReadAnimationXml(animationReader);
+                    break;
                 case "Action":
                     XmlReader subtree = reader.ReadSubtree();
                     EventActions.ReadXml(subtree);
@@ -564,7 +723,12 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
             }
         }
     }
-
+    
+    /// <summary>
+    /// Reads the specified XMLReader (pass it to <see cref="ReadXmlParams(XmlReader)"/>)
+    /// This is used to load furniture from a save file.
+    /// </summary>
+    /// <param name="reader">The XML reader to read from.</param>
     public void ReadXml(XmlReader reader)
     {
         // X, Y, and objectType have already been set, and we should already
@@ -575,6 +739,10 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         }
     }
 
+    /// <summary>
+    /// Reads the XML for parameters that this furniture has and assign it to the furniture.
+    /// </summary>
+    /// <param name="reader">The reader to read the parameters from.</param>
     public void ReadXmlParams(XmlReader reader)
     {
         // X, Y, and objectType have already been set, and we should already
@@ -591,11 +759,19 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         return furnParameters;
     }
 
+    /// <summary>
+    /// How many jobs are linked to this furniture.
+    /// </summary>
+    /// <returns>The number of jobs linked to this furniture.</returns>
     public int JobCount()
     {
         return jobs.Count;
     }
 
+    /// <summary>
+    /// Link a job to the current furniture.
+    /// </summary>
+    /// <param name="job">The job that you want to link to the furniture.</param>
     public void AddJob(Job job)
     {
         job.furniture = this;
@@ -604,11 +780,36 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         World.Current.jobQueue.Enqueue(job);
     }
 
+    /// <summary>
+    /// Cancel all the jobs linked to this furniture.
+    /// </summary>
     public void CancelJobs()
     {
         Job[] jobsArray = jobs.ToArray();
         foreach (Job job in jobsArray)
         {
+            job.CancelJob();
+        }
+    }
+
+    /// TODO: Refactor this when the new job system is implemented
+    public void ResumeJobs()
+    {
+        Job[] jobsArray = pausedJobs.ToArray();
+        foreach (Job job in jobsArray)
+        {
+            AddJob(job);
+            pausedJobs.Remove(job);
+        }
+    }
+
+    /// TODO: Refactor this when the new job system is implemented
+    public void PauseJobs()
+    {
+        Job[] jobsArray = jobs.ToArray();
+        foreach (Job job in jobsArray)
+        {
+            pausedJobs.Add(job);
             job.CancelJob();
         }
     }
@@ -642,6 +843,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         return invs;
     }
 
+    /// <summary>
+    /// Deconstructs the furniture.
+    /// </summary>
     public void Deconstruct()
     {
         int x = Tile.X;
@@ -712,43 +916,86 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         // should get garbage-collected.
     }
 
+    /// <summary>
+    /// Gets the tile that is used to do a job.
+    /// </summary>
+    /// <returns>Tile that is used for jobs.</returns>
     public Tile GetJobSpotTile()
     {
         return World.Current.GetTileAt(Tile.X + (int)JobSpotOffset.x, Tile.Y + (int)JobSpotOffset.y, Tile.Z);
     }
 
+    /// <summary>
+    /// Gets the tile that is used to spawn new objects (i.e. Inventory, Character).
+    /// </summary>
+    /// <returns>Tile that is used to spawn objects (i.e. Inventory, Character).</returns>
     public Tile GetSpawnSpotTile()
     {
         return World.Current.GetTileAt(Tile.X + (int)jobSpawnSpotOffset.x, Tile.Y + (int)jobSpawnSpotOffset.y, Tile.Z);
     }
 
-    // Returns true if furniture has typeTag, though simple, the intent is to separate the interaction with
-    //  the Furniture's typeTags from the implementation.
+    /// <summary>
+    /// Checks whether the furniture has a certain tag.
+    /// </summary>
+    /// <param name="typeTag">Tag to check for.</param>
+    /// <returns>True if furniture has specified tag.</returns>
     public bool HasTypeTag(string typeTag)
     {
         return typeTags.Contains(typeTag);
     }
 
+    /// <summary>
+    /// Returns LocalizationCode name for the furniture.
+    /// </summary>
+    /// <returns>LocalizationCode for the name of the furniture.</returns>
     public string GetName()
     {
         return LocalizationCode; // this.Name;
     }
 
+    /// <summary>
+    /// Returns the UnlocalizedDescription of the furniture.
+    /// </summary>
+    /// <returns>Description of the furniture.</returns>
     public string GetDescription()
     {
         return UnlocalizedDescription;
     }
 
+    /// <summary>
+    /// Returns the HitPoints of the current furniture NOT IMPLEMENTED.
+    /// </summary>
+    /// <returns>String with the HitPoints of the furniture.</returns>
     public string GetHitPointString()
     {
         return "18/18"; // TODO: Add a hitpoint system to...well...everything
     }
 
+    /// <summary>
+    /// Returns the description of the job linked to the furniture. NOT INMPLEMENTED.
+    /// </summary>
+    /// <returns>Job description of the job linked to the furniture.</returns>
     public string GetJobDescription()
     {
         return string.Empty;
     }
 
+    /// <summary>
+    /// Set the animation state. Will only have an effect if stateName is different from current animation stateName.
+    /// </summary>
+    public void SetAnimationState(string stateName)
+    {
+        if (Animation != null)
+        {
+            Animation.SetState(stateName);
+        }
+    }
+
+    /// <summary>
+    /// Gets the Context Menu Actions.
+    /// </summary>
+    /// <param name="contextMenu">The context menu to check for actions.</param>
+    /// <returns>Context menu actions.</returns>
     public IEnumerable<ContextMenuAction> GetContextMenuActions(ContextMenu contextMenu)
     {
         yield return new ContextMenuAction
@@ -794,7 +1041,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     // Make a copy of the current furniture.  Sub-classed should
     // override this Clone() if a different (sub-classed) copy
     // constructor should be run.
-    private Furniture Clone()
+    public Furniture Clone()
     {
         return new Furniture(this);
     }
@@ -903,5 +1150,35 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     private void OnNewThresholdReached(Connection connection)
     {
         UpdateOnChanged(this);
+    }
+
+    /// <summary>
+    /// Reads and creates FurnitureAnimation from the prototype xml. 
+    /// </summary>
+    private void ReadAnimationXml(XmlReader animationReader)
+    {
+        Animation = new FurnitureAnimation();
+        while (animationReader.Read())
+        {
+            if (animationReader.Name == "Animation")
+            {
+                string state = animationReader.GetAttribute("state");
+                float fps = float.Parse(animationReader.GetAttribute("fps"));
+                bool looping = bool.Parse(animationReader.GetAttribute("looping"));
+
+                // read frames
+                XmlReader frameReader = animationReader.ReadSubtree();
+                List<string> framesSpriteNames = new List<string>();
+                while (frameReader.Read())
+                {
+                    if (frameReader.Name == "Frame")
+                    {
+                        framesSpriteNames.Add(frameReader.GetAttribute("name"));
+                    }
+                }
+
+                Animation.AddAnimation(state, framesSpriteNames, fps, looping);
+            }
+        }
     }
 }

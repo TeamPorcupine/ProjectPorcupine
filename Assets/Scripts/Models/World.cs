@@ -161,7 +161,7 @@ public class World : IXmlSerializable
         r.ReturnTilesToOutsideRoom();
     }
 
-    public void UpdateCharacters(float deltaTime)
+    public void TickEveryFrame(float deltaTime)
     {
         // Change from a foreach due to the collection being modified while its being looped through
         for (int i = 0; i < characters.Count; i++)
@@ -170,8 +170,9 @@ public class World : IXmlSerializable
         }
     }
 
-    public void Tick(float deltaTime)
+    public void TickFixedFrequency(float deltaTime)
     {
+        // Update Furniture
         foreach (Furniture f in furnitures)
         {
             f.Update(deltaTime);
@@ -206,6 +207,24 @@ public class World : IXmlSerializable
         }
 
         return c;
+    }
+
+    /// <summary>
+    /// A function to return the Character object from the character's name.
+    /// </summary>
+    /// <param name="name">The name of the character.</param>
+    /// <returns>The character with that name.</returns>
+    public Character GetCharacterFromName(string name)
+    {
+        foreach (Character character in characters)
+        {
+            if (character.name == name)
+            {
+                return character;
+            }
+        }
+
+        return null;
     }
 
     /// <summary>
@@ -338,7 +357,14 @@ public class World : IXmlSerializable
             return null;
         }
 
-        Furniture furn = Furniture.PlaceInstance(PrototypeManager.Furniture.Get(objectType), t);
+        Furniture furn = PrototypeManager.Furniture.Get(objectType);
+
+        return PlaceFurniture(furn, t, doRoomFloodFill);
+    }
+
+    public Furniture PlaceFurniture(Furniture furniture, Tile t, bool doRoomFloodFill = true)
+    {
+        Furniture furn = Furniture.PlaceInstance(furniture, t);
 
         if (furn == null)
         {
@@ -564,46 +590,40 @@ public class World : IXmlSerializable
 
     private void LoadSkybox(string name = null)
     {
-        DirectoryInfo dirInfo = new DirectoryInfo(Path.Combine(Application.dataPath, "Resources/Skyboxes"));
-        if (!dirInfo.Exists)
-        {
-            dirInfo.Create();
-        }
+        Material[] skyboxes = Resources.LoadAll("Skyboxes", typeof(Material)).Cast<Material>().ToArray();
+        Material newSkybox = null;
 
-        FileInfo[] files = dirInfo.GetFiles("*.mat", SearchOption.AllDirectories);
-
-        if (files.Length > 0)
+        if (skyboxes.Length > 0)
         {
-            string resourcePath = string.Empty;
-            FileInfo file = null;
             if (!string.IsNullOrEmpty(name))
             {
-                foreach (FileInfo fileInfo in files)
+                foreach (Material skybox in skyboxes)
                 {
-                    if (name.Equals(fileInfo.Name.Remove(fileInfo.Name.LastIndexOf("."))))
+                    if (name.Equals(skybox.name))
                     {
-                        file = fileInfo;
+                        newSkybox = skybox;
                         break;
                     }
                 }
             }
 
             // Maybe we passed in a name that doesn't exist? Pick a random skybox.
-            if (file == null)
+            if (newSkybox == null)
             {
-                // Get random file
-                file = files[(int)(UnityEngine.Random.value * files.Length)];
+                newSkybox = skyboxes[(int)(UnityEngine.Random.value * skyboxes.Length)];
             }
 
-            resourcePath = Path.Combine(file.DirectoryName.Substring(file.DirectoryName.IndexOf("Skyboxes")), file.Name);
-
-            if (resourcePath.Contains("."))
+            // Unload unused skyboxes
+            foreach (Material skybox in skyboxes)
             {
-                resourcePath = resourcePath.Remove(resourcePath.LastIndexOf("."));
+                if (!newSkybox.name.Equals(skybox.name))
+                {
+                    Resources.UnloadAsset(skybox);
+                }
             }
 
-            skybox = Resources.Load<Material>(resourcePath);
-            RenderSettings.skybox = skybox;
+            this.skybox = newSkybox;
+            RenderSettings.skybox = this.skybox;
         }
         else
         {

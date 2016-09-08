@@ -22,7 +22,7 @@ public class FloorMenu : MonoBehaviour
     // Use this for initialization.
     private void Start()
     {
-        tileTypes = TileType.GetTileTypes();
+        tileTypes = TileType.LoadedTileTypes;
         BuildModeController bmc = WorldController.Instance.buildModeController;
 
         // For each furniture prototype in our world, create one instance

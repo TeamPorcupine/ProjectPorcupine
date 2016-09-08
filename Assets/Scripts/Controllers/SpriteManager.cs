@@ -176,8 +176,8 @@ public class SpriteManager : MonoBehaviour
             else
             {
                 // File couldn't be read, probably because it doesn't exist
-                // so we'll just assume the whole image is one sprite with pixelPerUnit = 32
-                LoadSprite(spriteCategory, baseSpriteName, imageTexture, new Rect(0, 0, imageTexture.width, imageTexture.height), 32, new Vector2(0.5f, 0.5f));
+                // so we'll just assume the whole image is one sprite with pixelPerUnit = 64
+                LoadSprite(spriteCategory, baseSpriteName, imageTexture, new Rect(0, 0, imageTexture.width, imageTexture.height), 64, new Vector2(0.5f, 0.5f));
             }
 
             // Attempt to load/parse the XML file to get information on the sprite(s)

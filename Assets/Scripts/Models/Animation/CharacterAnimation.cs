@@ -93,13 +93,7 @@ namespace Animation
         public void SetSprites(Sprite[] s)
         {
             sprites = s;
-
-            // make sure that every sprite has correct filtermode
-            foreach (Sprite sprite in sprites)
-            {
-                sprite.texture.filterMode = FilterMode.Point;
-            }
-
+            
             animations = new Dictionary<AnimationType, FrameAnimation>();
 
             animations.Add(AnimationType.HELMET_IDLE_NORTH, new FrameAnimation("in", new int[] { 0 }, 0.7f, false, false));
