@@ -577,7 +577,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                     DragType = reader.ReadContentAsString();
                     break;
                 case "BuildingJob":
-                    ReadXMLBuildingJob(reader);
+                    ReadXmlBuildingJob(reader);
                     break;
                 case "CanBeBuiltOn":
                     TileType tileType = TileType.GetTileType(reader.GetAttribute("tileType"));
@@ -662,7 +662,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     /// Reads the XML building job.
     /// </summary>
     /// <param name="reader">The XML reader to read from.</param>
-    public void ReadXMLBuildingJob(XmlReader reader)
+    public void ReadXmlBuildingJob(XmlReader reader)
     {
         float jobTime = float.Parse(reader.GetAttribute("jobTime"));
         List<Inventory> invs = new List<Inventory>();
