@@ -111,13 +111,33 @@ public class Trader
             }
         }
     }
-
+    
     private void AddItemToStock(TraderPotentialInventory inventory)
     {
-        Stock.Add(new Inventory
+        if (!string.IsNullOrEmpty(inventory.ObjectType))
         {
-            ObjectType = inventory.ObjectType,
-            StackSize = Random.Range(inventory.MinQuantity, inventory.MaxQuantity)
-        });
+            Inventory newInventory = new Inventory(
+                inventory.ObjectType,
+                Random.Range(inventory.MinQuantity, inventory.MaxQuantity));
+
+            Stock.Add(newInventory);
+        }
+        else if (!string.IsNullOrEmpty(inventory.ObjectCategory))
+        {
+            List<InventoryCommon> potentialObjects = GetInventoryCommonWithCategory(inventory.ObjectCategory);
+
+            foreach (InventoryCommon potentialObject in potentialObjects)
+            {
+                Inventory newInventory = new Inventory(
+                    potentialObject.objectType,
+                    Random.Range(inventory.MinQuantity, inventory.MaxQuantity));
+
+                Stock.Add(newInventory);
+            }
+        }
+    }
+    private List<InventoryCommon> GetInventoryCommonWithCategory(string category)
+    {
+        return PrototypeManager.Inventory.Values.Where(i => i.category == category).ToList();
     }
 }

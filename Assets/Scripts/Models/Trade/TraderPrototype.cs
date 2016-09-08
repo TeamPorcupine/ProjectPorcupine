@@ -13,20 +13,8 @@ using UnityEngine;
 
 public class TraderPrototype
 {
-<<<<<<< HEAD
-    public string ObjectType;
-    public List<string> PotentialNames;
-    public float MinCurrencyBalance;
-    public float MaxCurrencyBalance;
-    public string CurrencyName;
-    public float MinSaleMarginMultiplier;
-    public float MaxSaleMarginMultiplier;
-    public float RequestChanceModifier;
-    public List<TraderPotentialInventory> PotentialStock;
 
     [Range(0, 1)]
-    public float Rarity;
-=======
     private float rarity;
 
     public string ObjectType { get; set; }
@@ -156,40 +144,9 @@ public class TraderPrototype
             requestChanceModifier = RequestChanceModifier
         };
 
-<<<<<<< HEAD
         t.RefreshInventory();
         WorldController.Instance.tradersController.AddTrader(t);
-=======
-        foreach (TraderPotentialInventory potentialStock in PotentialStock)
-        {
-            bool itemIsInStock = Random.Range(0f, 1f) > potentialStock.Rarity;
 
-            if (itemIsInStock)
-            {
-                if (!string.IsNullOrEmpty(potentialStock.ObjectType))
-                {
-                    Inventory inventory = new Inventory(
-                        potentialStock.ObjectType,
-                        Random.Range(potentialStock.MinQuantity, potentialStock.MaxQuantity));
-
-                    t.Stock.Add(inventory);
-                }
-                else if (!string.IsNullOrEmpty(potentialStock.ObjectCategory))
-                {
-                    List<InventoryCommon> potentialObjects = GetInventoryCommonWithCategory(potentialStock.ObjectCategory);
-
-                    foreach (InventoryCommon potentialObject in potentialObjects)
-                    {
-                        Inventory inventory = new Inventory(
-                            potentialObject.objectType,
-                            Random.Range(potentialStock.MinQuantity, potentialStock.MaxQuantity));
-
-                        t.Stock.Add(inventory);
-                    }
-                }
-            }
-        }
->>>>>>> upstream/master
 
         return t;
     }
