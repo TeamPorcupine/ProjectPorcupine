@@ -554,6 +554,8 @@
      <Param name="ore_type" value="None" />
     </Params>
 
+    <ContextMenuAction FunctionName="OreMine_CreateMiningJob" Text="Mine Ore" RequiereCharacterSelected="false" />
+
     </Furniture>
     
 </Furnitures>

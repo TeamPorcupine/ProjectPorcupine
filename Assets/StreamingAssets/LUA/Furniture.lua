@@ -618,9 +618,30 @@ function Accumulator_GetSpriteName(furniture)
 end
 
 function OreMine_CreateMiningJob(furniture, character)
+    -- Get tiles that could be worked on
+    local tiles = furniture.tile.GetNeighbours(false)
+    local tile = furniture.tile
+
+    -- Check to see if the object's tile can be entered and if not
+    -- find a neighboring tile that can.
+    if (tile.MovementCost == 0) then
+        for k, t in pairs(tiles) do
+            if (t.MovementCost ~= 0) then
+                tile = t
+                break
+            end
+        end
+    end
+
+    if (tile.MovementCost == 0) then
+        -- There is still no way to get to the object
+        ModUtils.ULog("Create Mining Job - Unable to reach object to mine")
+        return
+    end
+
     -- Creates job for a character to go and "mine" the Ore
     local j = Job.__new(
-		furniture.Tile,
+		tile,
 		nil,
 		nil,
 		0,
@@ -631,17 +652,19 @@ function OreMine_CreateMiningJob(furniture, character)
 
     j.RegisterJobWorkedCallback("OreMine_OreMined")
     furniture.AddJob(j)
-    ModUtils.ULog("Ore Mine - Mining Job Created")
+    ModUtils.ULog("Create Mining Job - Mining Job Created")
 end
 
 function OreMine_OreMined(job)
-    -- Defines the ore to be spawned by the mine
+    -- Defines the ore to be spawned
     local inventory = Inventory.__new(job.furniture.Parameters["ore_type"], 50, 10)
 
-    -- Place the "mined" ore on the tile
-    World.Current.inventoryManager.PlaceInventory(job.tile, inventory)
-
-    -- Deconstruct the ore mine
+    if (inventory.ObjectType ~= "None") then
+        -- Place the "mined" ore on the tile
+        World.Current.inventoryManager.PlaceInventory(job.tile, inventory)
+    end
+    
+    -- Deconstruct the mined object
     job.furniture.Deconstruct()
     job.CancelJob()
 end
