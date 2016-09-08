@@ -208,7 +208,7 @@ public class InventoryManager
         }
     }
 
-    protected virtual void OnInventoryCreated(Inventory inventory)
+    private void OnInventoryCreated(Inventory inventory)
     {
         Action<Inventory> handler = InventoryCreated;
         if (handler != null)
