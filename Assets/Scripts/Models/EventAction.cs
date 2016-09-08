@@ -131,7 +131,7 @@ public class EventActions : IXmlSerializable
         }
         else
         {
-            FurnitureActions.CallFunctionsWithFurniture(actionsList[actionName].ToArray(), target, deltaTime);
+            FunctionsManager.Furniture.CallWithInstance(actionsList[actionName].ToArray(), target, deltaTime);
         }
     }
 }
