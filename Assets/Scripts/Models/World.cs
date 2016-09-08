@@ -532,6 +532,17 @@ public class World : IXmlSerializable
 
         writer.WriteEndElement();
 
+
+        writer.WriteStartElement("Utilities");
+        foreach (Utility util in utilities)
+        {
+            writer.WriteStartElement("Utility");
+            util.WriteXml(writer);
+            writer.WriteEndElement();
+        }
+
+        writer.WriteEndElement();
+
         writer.WriteStartElement("Characters");
         foreach (Character c in characters)
         {
@@ -581,6 +592,9 @@ public class World : IXmlSerializable
                     break;
                 case "Furnitures":
                     ReadXml_Furnitures(reader);
+                    break;
+                case "Utilities":
+                    ReadXml_Utilities(reader);
                     break;
                 case "Characters":
                     ReadXml_Characters(reader);
@@ -837,6 +851,23 @@ public class World : IXmlSerializable
                 furn.ReadXml(reader);
             }
             while (reader.ReadToNextSibling("Furniture"));
+        }
+    }
+
+    private void ReadXml_Utilities(XmlReader reader)
+    {
+        if (reader.ReadToDescendant("Utility"))
+        {
+            do
+            {
+                int x = int.Parse(reader.GetAttribute("X"));
+                int y = int.Parse(reader.GetAttribute("Y"));
+                int z = int.Parse(reader.GetAttribute("Z"));
+
+                Utility util = PlaceUtility(reader.GetAttribute("objectType"), tiles[x, y, z], false);
+                util.ReadXml(reader);
+            }
+            while (reader.ReadToNextSibling("Utility"));
         }
     }
 
