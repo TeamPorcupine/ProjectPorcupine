@@ -875,12 +875,7 @@ public class World : IXmlSerializable
             while (reader.ReadToNextSibling("Character"));
         }
     }
-
-    private void ReadCharacterInventoryFromSave(XmlReader reader)
-    {
-
-    }
-
+    
 #region TestFunctions
     /// <summary>
     /// Tests the room graph generation for the default world.
