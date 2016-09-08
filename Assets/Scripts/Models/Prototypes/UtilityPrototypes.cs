@@ -33,6 +33,7 @@ public class UtilityPrototypes : XmlPrototypes<Utility>
             LogPrototypeError(e, util.ObjectType);
         }
 
+        Debug.Log(util.Name);
         Set(util.ObjectType, util);
     }
 }

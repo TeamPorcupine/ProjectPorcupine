@@ -339,9 +339,15 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
                 for (int ypos = y - 1; ypos < y + 2; ypos++)
                 {
                     Tile tileAt = World.Current.GetTileAt(xpos, ypos, tile.Z);
-                    if (tileAt != null && tileAt.Utility != null && tileAt.Utility.Changed != null)
+                    if (tileAt != null && tileAt.Utilities != null)
                     {
-                        tileAt.Utility.Changed(tileAt.Utility);
+                        foreach (Utility utility in tileAt.Utilities.Values)
+                        {
+                            if (utility.Changed != null)
+                            {
+                                utility.Changed(utility);
+                            }
+                        }
                     }
                 }
             }
@@ -663,16 +669,15 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
     /// <summary>
     /// Deconstructs the furniture.
     /// </summary>
-    public void Deconstruct()
+    public void Deconstruct(Utility utility)
     {
         int x = Tile.X;
         int y = Tile.Y;
         int fwidth = 1;
         int fheight = 1;
         bool linksToNeighbour = false;
-        if (Tile.Utility != null)
+        if (Tile.Utilities != null)
         {
-            Utility utility = Tile.Utility;
             linksToNeighbour = utility.LinksToNeighbour;
             utility.CancelJobs();
         }
@@ -705,14 +710,20 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
         // Just trigger their OnChangedCallback. 
         if (linksToNeighbour == true)
         {
-            for (int xpos = x - 1; xpos < x + fwidth + 1; xpos++)
+            for (int xpos = x - 1; xpos < x + 2; xpos++)
             {
-                for (int ypos = y - 1; ypos < y + fheight + 1; ypos++)
+                for (int ypos = y - 1; ypos < y + 2; ypos++)
                 {
-                    Tile t = World.Current.GetTileAt(xpos, ypos, Tile.Z);
-                    if (t != null && t.Utility != null && t.Utility.Changed != null)
+                    Tile tileAt = World.Current.GetTileAt(xpos, ypos, Tile.Z);
+                    if (tileAt != null && tileAt.Utilities != null)
                     {
-                        t.Utility.Changed(t.Utility);
+                        foreach (Utility neighborUtility in tileAt.Utilities.Values)
+                        {
+                            if (neighborUtility.Changed != null)
+                            {
+                                neighborUtility.Changed(utility);
+                            }
+                        }
                     }
                 }
             }
@@ -790,7 +801,7 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
         {
             Text = "Deconstruct " + Name,
             RequireCharacterSelected = false,
-            Action = (ca, c) => Deconstruct()
+            Action = (ca, c) => Deconstruct(this)
         };
         if (jobs.Count > 0)
         {
@@ -859,27 +870,10 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
             }
         }
 
-        for (int x_off = tile.X; x_off < tile.X + 1; x_off++)
+        // Make sure tile is FLOOR
+        if (tile.Type != TileType.Floor && tileTypeBuildPermissions.Contains(tile.Type) == false)
         {
-            for (int y_off = tile.Y; y_off < tile.Y + 1; y_off++)
-            {
-                Tile t2 = World.Current.GetTileAt(x_off, y_off, tile.Z);
-
-                // Check to see if there is furniture which is replaceable
-                bool isReplaceable = false;
-
-                // Make sure tile is FLOOR
-                if (t2.Type != TileType.Floor && tileTypeBuildPermissions.Contains(t2.Type) == false)
-                {
-                    return false;
-                }
-
-                // Make sure tile doesn't already have furniture
-                if (t2.Utility != null && isReplaceable == false)
-                {
-                    return false;
-                }
-            }
+            return false;
         }
 
         return true;

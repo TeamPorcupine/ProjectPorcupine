@@ -201,7 +201,7 @@ public class UtilitySpriteController : BaseSpriteController<Utility>
     private string GetSuffixForNeighbour(Utility util, int x, int y, int z, string suffix)
     {
          Tile t = world.GetTileAt(x, y, z);
-         if (t != null && t.Utility != null && t.Utility.ObjectType == util.ObjectType)
+         if (t != null && t.Utilities != null && t.Utilities.ContainsKey(util.Name))
          {
              return suffix;
          }

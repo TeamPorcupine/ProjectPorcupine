@@ -39,6 +39,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         Z = z;
         Characters = new List<Character>();
         MovementModifier = 1;
+        Utilities = new Dictionary<string, Utility>();
     }
 
     // The function we callback any time our tile's data changes
@@ -79,7 +80,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
     public Furniture Furniture { get; private set; }
 
     // Utility is something like a Power Cables or Water Pipes.
-    public Utility Utility { get; private set; }
+    public Dictionary<string, Utility> Utilities { get; private set; }
 
     /// <summary>
     /// The total pathfinding cost of entering this tile.
@@ -192,12 +193,12 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
     public bool UnplaceUtility()
     {
         // Just uninstalling.
-        if (Utility == null)
+        if (Utilities == null)
         {
             return false;
         }
 
-        Utility = null;
+        Utilities = null;
 
         return true;
     }
@@ -215,7 +216,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
             return false;
         }
 
-        Utility = objInstance;
+        Utilities.Add(objInstance.Name, objInstance);
 
         return true;
     }

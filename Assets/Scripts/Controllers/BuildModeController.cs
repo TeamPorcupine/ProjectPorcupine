@@ -162,16 +162,10 @@ public class BuildModeController
 
             // TODO: Reimplement this later: DoesBuildJobOverlapExistingBuildJob(t, furnitureType) == false)
             if ( 
-                WorldController.Instance.World.IsUtilityPlacementValid(furnitureType, t)) 
+                WorldController.Instance.World.IsUtilityPlacementValid(furnitureType, t)  &&
+                DoesSameUtilityTypeAlreadyExist(t, furnitureType) == false)
             {
                 // This tile position is valid for this furniture
-
-                // Check if there is existing furniture in this tile. If so delete it.
-                // TODO Possibly return resources. Will the Deconstruct() method handle that? If so what will happen if resources drop ontop of new non-passable structure.
-                if (t.Utility != null)
-                {
-                    t.Utility.Deconstruct();
-                }
 
                 // Create a job for it to be build
                 Job j;
@@ -313,6 +307,12 @@ public class BuildModeController
         }
 
         return false;
+    }
+
+    public bool DoesSameUtilityTypeAlreadyExist(Tile t, string furnitureType)
+    {
+        Utility proto = PrototypeManager.Utility.Get(furnitureType);
+        return t.Utilities.ContainsKey(proto.Name);
     }
 
     // Use this for initialization
