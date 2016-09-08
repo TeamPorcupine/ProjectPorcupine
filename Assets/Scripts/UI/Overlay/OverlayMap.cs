@@ -545,8 +545,8 @@ public class OverlayMap : MonoBehaviour
         colorMapView.AddComponent<UnityEngine.UI.Text>();
         colorMapView.AddComponent<UnityEngine.UI.LayoutElement>();
         colorMapView.GetComponent<UnityEngine.UI.LayoutElement>().minHeight = 30;
-        colorMapView.GetComponent<UnityEngine.UI.LayoutElement>().minWidth = 150;        
-        Material overlayMaterial = Resources.Load<Material>("Shaders/UI-Unlit-Transparent");        
+        colorMapView.GetComponent<UnityEngine.UI.LayoutElement>().minWidth = 150;
+        Material overlayMaterial = Resources.Load<Material>("Shaders/UI-Unlit-Transparent");
         colorMapView.GetComponent<UnityEngine.UI.Image>().material = overlayMaterial;
 
         List<string> options = new List<string> { "None" };
