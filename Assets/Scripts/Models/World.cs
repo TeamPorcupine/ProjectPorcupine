@@ -633,9 +633,6 @@ public class World : IXmlSerializable
 
     private void SetupWorld(int width, int height, int depth)
     {
-        // Setup furniture actions before any other things are loaded.
-        new FurnitureActions();
-
         jobQueue = new JobQueue();
         jobWaitingQueue = new JobQueue();
 

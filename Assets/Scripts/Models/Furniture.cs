@@ -443,7 +443,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
             return Enterability.Yes;
         }
 
-        DynValue ret = LuaUtilities.CallFunction(isEnterableAction, this);
+        DynValue ret = FunctionsManager.Furniture.Call(isEnterableAction, this);
         return (Enterability)ret.Number;
     }
 
@@ -455,7 +455,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     {
         if (!string.IsNullOrEmpty(getSpriteNameAction))
         {
-            DynValue ret = LuaUtilities.CallFunction(getSpriteNameAction, this);
+            DynValue ret = FunctionsManager.Furniture.Call(getSpriteNameAction, this);
             return ret.String;
         }
 
@@ -679,7 +679,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
             }
         }
 
-        Job job = new Job(null, ObjectType, FurnitureActions.JobComplete_FurnitureBuilding, jobTime, invs.ToArray(), Job.JobPriority.High);
+        Job job = new Job(null, ObjectType, FunctionsManager.JobComplete_FurnitureBuilding, jobTime, invs.ToArray(), Job.JobPriority.High);
         job.JobDescription = "job_build_" + ObjectType + "_desc";
         PrototypeManager.FurnitureJob.Set(ObjectType, job);
     }
@@ -946,7 +946,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
     private void InvokeContextMenuLuaAction(string luaFunction, Character character)
     {
-        LuaUtilities.CallFunction(luaFunction, this, character);
+        FunctionsManager.Furniture.Call(luaFunction, this, character);
     }
 
     [MoonSharpVisible(true)]
