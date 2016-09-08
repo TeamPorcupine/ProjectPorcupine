@@ -1,4 +1,4 @@
-#region License
+﻿#region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
 // This program comes with ABSOLUTELY NO WARRANTY; This is free software,
@@ -375,7 +375,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         foreach (Need n in needs)
         {
             int storeAmount = (int)(n.Amount * 10);
-            needString = needString + n.needType + ";" + storeAmount.ToString() + ":";
+            needString = needString + n.Type + ";" + storeAmount.ToString() + ":";
         }
 
         writer.WriteAttributeString("needs", needString);
@@ -422,7 +422,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             string[] needListB = s.Split(new char[] { ';' });
             foreach (Need n in needs)
             {
-                if (n.needType == needListB[0])
+                if (n.Type == needListB[0])
                 {
                     int storeAmount;
                     if (int.TryParse(needListB[1], out storeAmount))
@@ -471,7 +471,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         description.AppendLine("A human astronaut.");
         foreach (Need n in needs)
         {
-            description.AppendLine(LocalizationTable.GetLocalization(n.localisationID, n.DisplayAmount));
+            description.AppendLine(LocalizationTable.GetLocalization(n.LocalisationID, n.DisplayAmount));
         }
 
         foreach (Stat stat in stats.Values)
@@ -605,7 +605,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             }
         }
 
-        if (needPercent == 100 && need != null && need.CompleteOnFail)
+        if (needPercent.AreEqual(100.0f) && need != null && need.CompleteOnFail)
         {
             MyJob = new Job(CurrTile, null, need.CompleteJobCrit, need.RestoreNeedTime * 10, null, Job.JobPriority.High, false, true, true);
         }
