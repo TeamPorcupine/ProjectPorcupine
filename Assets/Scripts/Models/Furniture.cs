@@ -980,7 +980,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         {
             bool hasPower = HasPower();
 
-            yield return hasPower ? "<color=green>Online</color>" : "<color=red>Offline</color>";
+            yield return string.Format("Power Grid: <color={0}>{1}</color>", hasPower ? "green" : "red", hasPower ? "Online" : "Offline");
 
             if (PowerConnection.IsPowerConsumer)
             {
