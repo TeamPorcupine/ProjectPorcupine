@@ -33,7 +33,6 @@ public class Ship
     private string[,] tileTypes;
     private string[,] furnitureTypes;
 
-    private ShipManager shipManager;
     private ShipState state;
     private Vector2 position;
     private Vector2 destination;
@@ -249,12 +248,6 @@ public class Ship
         Destination = new Vector2(goalBerth.Tile.X, goalBerth.Tile.Y);
     }
 
-    public void SetDestination(Furniture goalBerth)
-    {
-        Berth = goalBerth;
-        Destination = new Vector2(goalBerth.Tile.X, goalBerth.Tile.Y);
-    }
-
     /// <summary>
     /// If unwrapped, the ship does nothing. If wrapped it will move to its
     /// destination with a fixed speed of 5 tiles per seoond. If it reaches its destination
@@ -322,80 +315,6 @@ public class Ship
     /// Wraps the ship by turning the affected tiles back into empty tiles.
     /// Tiles are counted from the Berth, so this function should only be called when a destination berth is defined.
     /// </summary>
-    public void Wrap()
-    {
-        for (int x = 0; x < Width; x++)
-        {
-            for (int y = 0; y < Height; y++)
-            {
-                Tile tile = GetTile(World.Current, x, y, 0);
-
-                // Change tile to empty
-                // Order reversed in case furniture on an empty tile leads to problems
-                if (furnitureTypes[x, y] != null)
-                {
-                    tile.Furniture.Deconstruct();
-                }
-
-                tile.Type = TileType.Empty;
-            }
-        }
-
-        switch (State)
-        {
-            case ShipState.BERTHED:
-                break;
-            case ShipState.TRANSIT:
-                Move(deltaTime);
-                if (Berth == null)
-                {
-                    if (Vector2.Distance(Position, Destination) < 0.1f)
-                    {
-                        shipManager.RemoveShip(this);
-                    }
-                }
-                else
-                {
-                    if (Vector2.Distance(Position, Destination) < 0.1f)
-                    {
-                        shipManager.BerthShip(Berth, this);
-                    }
-                }
-
-                break;
-        }
-    }
-
-    private void Move(float deltaTime)
-    {
-        Vector2 direction = destination - position;
-        float distance = 5f * deltaTime;
-        Position += Vector2.ClampMagnitude(direction, distance);
-    }
-
-    public void UnwrapAtBerth()
-    {
-        for (int x = 0; x < Width; x++)
-        {
-            for (int y = 0; y < Height; y++)
-            {
-                Tile tile = GetTile(World.Current, x, y, 0);
-
-                // Change tile to defined contents
-                if (tile.Type.Equals(TileType.Empty) == false || tile.Furniture != null)
-                {
-                    Debug.ULogErrorChannel("Ships", "Tile " + tile.X + "," + tile.Y + " is not empty. Replacing anyway.");
-                }
-
-                tile.Type = TileType.GetTileType(tileTypes[x, y]);
-                if (furnitureTypes[x, y] != null)
-                {
-                    World.Current.PlaceFurniture(furnitureTypes[x, y], tile, false);
-                }
-            }
-        }
-    }
-
     public void Wrap()
     {
         for (int x = 0; x < Width; x++)
