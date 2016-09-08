@@ -99,6 +99,8 @@ public class WorldGenerator
 
                         tile.Type = AsteroidFloorType;
 
+                        world.PlaceFurniture("furn_SteelWall", tile, false);
+
                         if (Random.value <= asteroidResourceChance && tile.Furniture == null)
                         {
                             if (resources.Length > 0)
@@ -116,22 +118,22 @@ public class WorldGenerator
                                     if (randomweight <= currentweight)
                                     {
                                         if (inv.ObjectType == "Raw Iron" || inv.ObjectType == "Uranium")
-                                    {
-                                        Furniture mine = PrototypeManager.Furniture.Get("mine").Clone();
-                                        mine.Parameters["ore_type"].SetValue(inv.ObjectType.ToString());
-                                        world.PlaceFurniture(mine, tile, false);
+                                        {
+                                            Furniture mine = PrototypeManager.Furniture.Get("mine").Clone();
+                                            mine.Parameters["ore_type"].SetValue(inv.ObjectType.ToString());
+                                            world.PlaceFurniture(mine, tile, false);
+                                            break;
+                                        }
+
+                                        int stackSize = Random.Range(resourceMin[i], resourceMax[i]);
+
+                                        if (stackSize > inv.MaxStackSize)
+                                        {
+                                            stackSize = inv.MaxStackSize;
+                                        }
+
+                                        world.inventoryManager.PlaceInventory(tile, new Inventory(inv.ObjectType, inv.MaxStackSize, stackSize));
                                         break;
-                                    }
-
-                                    int stackSize = Random.Range(resourceMin[i], resourceMax[i]);
-
-                                    if (stackSize > inv.MaxStackSize)
-                                    {
-                                        stackSize = inv.MaxStackSize;
-                                    }
-
-                                    world.inventoryManager.PlaceInventory(tile, new Inventory(inv.ObjectType, inv.MaxStackSize, stackSize));
-                                    break;
                                     }
                                 }
                             }
