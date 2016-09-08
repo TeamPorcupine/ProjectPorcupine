@@ -99,9 +99,9 @@ public class WorldGenerator
 
                         tile.Type = AsteroidFloorType;
 
-                        world.PlaceFurniture("furn_SteelWall", tile, false);
+                        world.PlaceFurniture("astro_wall", tile, false);
 
-                        if (Random.value <= asteroidResourceChance && tile.Furniture == null)
+                        if (Random.value <= asteroidResourceChance && tile.Furniture.Name == "Rock Wall")
                         {
                             if (resources.Length > 0)
                             {
@@ -117,6 +117,8 @@ public class WorldGenerator
 
                                     if (randomweight <= currentweight)
                                     {
+                                        tile.Furniture.Deconstruct();
+
                                         if (inv.ObjectType == "Raw Iron" || inv.ObjectType == "Uranium")
                                         {
                                             Furniture mine = PrototypeManager.Furniture.Get("mine").Clone();

@@ -490,7 +490,6 @@
     <Name>A Mining Spot</Name>
     <Description>A spot for mining ore</Description>
     <TypeTag>Ore</TypeTag>
-    <TypeTag>OutdoorOnly</TypeTag>
     <TypeTag>Non-buildable</TypeTag>
     <MovementCost>2</MovementCost>
     <PathfindingModifier>1.5</PathfindingModifier>
@@ -550,6 +549,11 @@
     <Height>1</Height>
     <LinksToNeighbours>true</LinksToNeighbours>
     <EnclosesRooms>true</EnclosesRooms>
+    
+    <Params>
+     <Param name="ore_type" value="None" />
+    </Params>
 
+    </Furniture>
     
 </Furnitures>
