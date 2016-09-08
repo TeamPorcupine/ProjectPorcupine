@@ -18,7 +18,6 @@ public class DialogBoxTradeItem : MonoBehaviour
     public Text TraderStockText;
     public Text TraderSellItemPriceText;
     public InputField TradeAmountText;
-    public bool request;
     private TradeItem item;
 
     public event Action<TradeItem> OnTradeAmountChangedEvent;
@@ -51,12 +50,10 @@ public class DialogBoxTradeItem : MonoBehaviour
 
     public void TraderBuyOneMore()
     {
-        // Possibly implement trader requests in the future
-        if (!request)
-        {
-            item.TradeAmount--;
-            OnTradeAmountChanged();
-        }
+        
+        item.TradeAmount--;
+        OnTradeAmountChanged();
+        
     }
 
     public void PlayerBuyAll()
@@ -67,23 +64,21 @@ public class DialogBoxTradeItem : MonoBehaviour
 
     public void TraderBuyAll()
     {
-        if (!request)
-        {
-            item.TradeAmount = -item.PlayerStock;
-            OnTradeAmountChanged();
-        }
+       
+        item.TradeAmount = -item.PlayerStock;
+        OnTradeAmountChanged();
+        
     }
 
     private void BindInterface()
     {
         ItemNameText.text = item.ObjectType;
-        if (!request)
-        {
-            PlayerStockText.text = (item.PlayerStock + item.TradeAmount).ToString();
-            PlayerSellItemPriceText.text = item.PlayerSellItemPrice.ToString("N2");
-            TraderStockText.text = (item.TraderStock - item.TradeAmount).ToString();
-            TraderSellItemPriceText.text = item.TraderSellItemPrice.ToString("N2");
-            TradeAmountText.text = item.TradeAmount.ToString();
-        }
+        
+        PlayerStockText.text = (item.PlayerStock + item.TradeAmount).ToString();
+        PlayerSellItemPriceText.text = item.PlayerSellItemPrice.ToString("N2");
+        TraderStockText.text = (item.TraderStock - item.TradeAmount).ToString();
+        TraderSellItemPriceText.text = item.TraderSellItemPrice.ToString("N2");
+        TradeAmountText.text = item.TradeAmount.ToString();
+        
     }
 }

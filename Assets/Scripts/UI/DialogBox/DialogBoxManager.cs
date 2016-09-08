@@ -48,6 +48,7 @@ public class DialogBoxManager : MonoBehaviour
         tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_Trade"), controllers.transform.position, controllers.transform.rotation, controllers.transform);
         tempGoObj.name = "Trade";
         dialogBoxTrade = tempGoObj.GetComponent<DialogBoxTrade>();
+        dialogBoxTrade.DoTradingTestWithMockTraders();
 
         tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DB_AreYouSure"), controllers.transform.position, controllers.transform.rotation, controllers.transform);
         tempGoObj.name = "Are You Sure";

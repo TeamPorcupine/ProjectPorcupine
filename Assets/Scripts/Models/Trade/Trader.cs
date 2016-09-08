@@ -12,6 +12,7 @@ using UnityEngine;
 
 public enum RequestLevel
 {
+        None = 0,
         Desired = 1,
         Needed = 2,
         Desperate = 3
@@ -24,7 +25,6 @@ public class Trader
     public float SaleMarginMultiplier;
     public List<Inventory> Stock;
     public List<TraderPotentialInventory> possibleStock;
-    public List<Inventory> possibleStockInventory;
     public Dictionary<TraderPotentialInventory, RequestLevel> requests;
     public float requestChanceModifier = 0.2f;
 
@@ -64,7 +64,11 @@ public class Trader
     // trader comes
     public void RequestItems(Dictionary<TraderPotentialInventory, RequestLevel> requests)
     {
-        this.requests = (Dictionary<TraderPotentialInventory, RequestLevel>)this.requests.Union(requests);
+        if (this.requests == null)
+        {
+            this.requests = new Dictionary<TraderPotentialInventory, RequestLevel>();
+        }
+        this.requests.Union(requests);
     }
 
     public void RefreshInventory()
@@ -87,24 +91,12 @@ public class Trader
         foreach (KeyValuePair<TraderPotentialInventory, RequestLevel> requestAndLevel in requests)
         {
             bool itemIsInStock = Random.Range(0f, 1f) + (requestChanceModifier * (int)requestAndLevel.Value) > requestAndLevel.Key.Rarity;
-            
+
             if (itemIsInStock)
             {
                 AddItemToStock(requestAndLevel.Key);
                 requests.Remove(requestAndLevel.Key);
             }
-        }
-    }
-
-    public void InitializePossibleItemInventory()
-    {
-        foreach (TraderPotentialInventory potentialStock in possibleStock)
-        {
-            possibleStockInventory.Add(new Inventory
-            {
-                ObjectType = potentialStock.ObjectType,
-                StackSize = 0
-            });
         }
     }
 

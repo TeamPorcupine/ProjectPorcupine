@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Events;
 
 public class DialogBoxTrade : DialogBox
 {
@@ -19,6 +20,7 @@ public class DialogBoxTrade : DialogBox
     public Text PlayerCurrencyBalanceText;
     public Text TraderCurrencyBalanceText;
     public Text TradeCurrencyBalanceText;
+    public Text title;
     public Transform TradeItemListPanel;
     public Transform TradeHeaderPanel;
 
@@ -30,6 +32,7 @@ public class DialogBoxTrade : DialogBox
     public Button AcceptButton;
 
     private Trade trade;
+    private List<Transform> requests;
 
     public void SetupTrade(Trade trade)
     {
@@ -73,7 +76,12 @@ public class DialogBoxTrade : DialogBox
                 new Inventory("Steel Plate", 50, 40) { BasePrice = 3f },
                 new Inventory("Steel Plate", 50, 40) { BasePrice = 3f },
                 new Inventory("Oxygen Bottle", 10, 10) { BasePrice = 50f },
+            },
+            possibleStock = new List<TraderPotentialInventory>
+            {
+                new TraderPotentialInventory() { ObjectType = "Steel Plate" }
             }
+           
         };
         SetupTrade(new Trade(mockPlayer, mockTrader));
     }
@@ -100,11 +108,26 @@ public class DialogBoxTrade : DialogBox
             }
             
         }
+        else
+        {
+            return;
+        }
         StartRequests();
     }
 
-    public void FinalizeTrade()
+    public void FinalizeRequest()
     {
+        Dictionary<TraderPotentialInventory, RequestLevel> requestAndLevel = new Dictionary<TraderPotentialInventory, RequestLevel>();
+        foreach (Transform requestTransform in requests)
+        {
+            DialogBoxTradeRequest request = requestTransform.GetComponent<DialogBoxTradeRequest>();
+            if (request.requestLevel == RequestLevel.None)
+            {
+                continue;
+            }
+            requestAndLevel.Add(request.request, request.requestLevel);
+        }
+        trade.Trader.RequestItems(requestAndLevel);
         trade = null;
         ClearInterface();
         CloseDialog();
@@ -113,8 +136,12 @@ public class DialogBoxTrade : DialogBox
     private void StartRequests ()
     {
         TradeHeaderPanel.gameObject.SetActive(false);
+        title.text = "Requests";
+        requests = new List<Transform>();
         ClearInterface();
-
+        BuildRequestInterface();
+        AcceptButton.onClick.RemoveAllListeners();
+        AcceptButton.onClick.AddListener(new UnityAction(FinalizeRequest));
     }
 
     private void ClearInterface()
@@ -128,15 +155,18 @@ public class DialogBoxTrade : DialogBox
 
     private void BuildRequestInterface()
     {
-        foreach (TradeItem tradeItem in trade.PossibleItems)
+        
+        foreach (TraderPotentialInventory possible in trade.Trader.possibleStock)
         {
-            GameObject go = (GameObject)Instantiate(Resources.Load("Prefab/TradeItemPrefab"), TradeItemListPanel);
-
-            DialogBoxTradeItem tradeItemBehaviour = go.GetComponent<DialogBoxTradeItem>();
-            tradeItemBehaviour.request = true;
-            tradeItemBehaviour.SetupTradeItem(tradeItem);
+            GameObject go = (GameObject)Instantiate(Resources.Load("Prefab/TradeItemRequestPrefab"), TradeItemListPanel);
+            DialogBoxTradeRequest tradeItemBehaviour = go.GetComponent<DialogBoxTradeRequest>();
+            tradeItemBehaviour.itemName.text = possible.ObjectType;
+            tradeItemBehaviour.request = possible;
+            requests.Add(tradeItemBehaviour.transform);
         }
     }
+
+    
 
     private void BuildInterface()
     {
