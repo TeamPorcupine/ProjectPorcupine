@@ -7,6 +7,7 @@
 // ====================================================
 #endregion
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using MoonSharp.Interpreter;
@@ -415,14 +416,14 @@ public class Job : ISelectable
 
         return description;
     }
-
-    public string GetHitPointString()
-    {
-        return string.Empty;
-    }
-
+    
     public string GetJobDescription()
     {
         return GetDescription();
+    }
+
+    public IEnumerable<string> GetAdditionalInfo()
+    {
+        yield break;
     }
 }
