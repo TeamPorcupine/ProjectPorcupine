@@ -24,9 +24,9 @@ public class StatPrototypes : XmlPrototypes<Stat>
         }
         catch (Exception e)
         {
-            LogPrototypeError(e, stat.StatType);
+            LogPrototypeError(e, stat.Type);
         }
 
-        Set(stat.StatType, stat);
+        Set(stat.Type, stat);
     }
 }

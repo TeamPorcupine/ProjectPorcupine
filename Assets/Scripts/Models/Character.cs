@@ -1,4 +1,4 @@
-#region License
+﻿#region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
 // This program comes with ABSOLUTELY NO WARRANTY; This is free software,
@@ -465,7 +465,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         foreach (Stat stat in stats.Values)
         {
             // TODO: Localization
-            yield return string.Format("{0}: {1}", stat.StatType, stat.Value);
+            yield return string.Format("{0}: {1}", stat.Type, stat.Value);
         }
     }
 
@@ -532,7 +532,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             // Gets a random value within the min and max range of the stat.
             // TODO: Should there be any bias or any other algorithm applied here to make stats more interesting?
             newStat.Value = UnityEngine.Random.Range(1, 20);
-            stats.Add(newStat.StatType, newStat);
+            stats.Add(newStat.Type, newStat);
         }
 
         Debug.ULogChannel("Character", "Initialized " + stats.Count + " Stats.");

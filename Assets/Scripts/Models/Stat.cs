@@ -16,11 +16,11 @@ public class Stat
 
     private Stat(Stat other)
     {
-        StatType = other.StatType;
+        Type = other.Type;
         Name = other.Name;
     }
 
-    public string StatType { get; set; }
+    public string Type { get; set; }
 
     public string Name { get; set; }
 
@@ -28,13 +28,13 @@ public class Stat
 
     public void ReadXmlPrototype(XmlReader parentReader)
     {
-        StatType = parentReader.GetAttribute("statType");
+        Type = parentReader.GetAttribute("type");
         Name = parentReader.GetAttribute("name");
     }
 
     public void WriteXml(XmlWriter writer)
     {
-        writer.WriteAttributeString("statType", StatType);
+        writer.WriteAttributeString("type", Type);
         writer.WriteAttributeString("value", Value.ToString());
     }
 
@@ -45,6 +45,6 @@ public class Stat
 
     public override string ToString()
     {
-        return string.Format("{0}: {1}", StatType, Value);
+        return string.Format("{0}: {1}", Type, Value);
     }
 }
