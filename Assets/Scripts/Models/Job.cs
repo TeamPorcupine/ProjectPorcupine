@@ -15,8 +15,6 @@ using MoonSharp.Interpreter;
 using ProjectPorcupine.Localization;
 using UnityEngine;
 
-// TODO: Job system needs to handle needs much better. Probably have beds provide `sleep` and create a job that needs it, then perform the job.
-
 [MoonSharpUserData]
 [System.Diagnostics.DebuggerDisplay("Job {JobObjectType}")]
 public class Job : ISelectable, IPrototypable
@@ -203,6 +201,30 @@ public class Job : ISelectable, IPrototypable
         set;
     }
 
+    public ProjectPorcupine.Pathfinding.GoalEvaluator IsTileAtJobSite
+    {
+        get
+        {
+            if (tile == null)
+            {
+                return null;
+            }
+
+            // TODO: This doesn't handle multi-tile furniture
+            if (adjacent)
+            {
+                return otherTile => (
+                    tile.Z == otherTile.Z &&
+                    (tile.X - 1) <= otherTile.X && (tile.X + 1) >= otherTile.X &&
+                    (tile.Y - 1) <= otherTile.Y && (tile.Y + 1) >= otherTile.Y);
+            }
+            else
+            {
+                return otherTile => this.tile.CompareTo(otherTile) == 0;
+            }
+        }
+    }
+
     public Inventory[] GetInventoryRequirementValues()
     {
         return inventoryRequirements.Values.ToArray();
@@ -296,31 +318,6 @@ public class Job : ISelectable, IPrototypable
         World.Current.jobQueue.Remove(this);
     }
 
-    public ProjectPorcupine.Pathfinding.GoalEvaluator IsTileAtJobSite
-    {
-        get
-        {
-            // TODO: This doesn't handle multi-tile furniture
-
-            if (tile == null)
-            {
-                return null;
-            }
-
-            if (adjacent)
-            {
-                return otherTile => (
-                    tile.Z == otherTile.Z &&
-                    (tile.X - 1) >= otherTile.X && (tile.X + 1) <= otherTile.X &&
-                    (tile.Y - 1) >= otherTile.Y && (tile.Y + 1) <= otherTile.Y);
-            }
-            else
-            {
-                return otherTile => this.tile.CompareTo(otherTile) == 0;
-            }
-        }
-    }
-
     public bool MaterialNeedsMet()
     {
         if (acceptsAny && HasAnyMaterial())
@@ -395,14 +392,13 @@ public class Job : ISelectable, IPrototypable
     }
 
     /// <summary>
-    /// Returns the first fulfillable requirement of this job
+    /// Returns the first fulfillable requirement of this job. Especially useful for jobs that has a long list of materials and can use any of them.
     /// </summary>
-    /// <returns>The fulfillable inventory requirement.</returns>
     public Inventory GetFirstFulfillableInventoryRequirement()
     {
         foreach (Inventory inv in GetInventoryRequirementValues())
         {
-            if (World.Current.inventoryManager.HasInventoryOfType(inv.Type))
+            if (World.Current.inventoryManager.HasInventoryOfType(inv.Type, canTakeFromStockpile))
             {
                 return inv;
             }
@@ -423,7 +419,11 @@ public class Job : ISelectable, IPrototypable
         {
             if (this.acceptsAny == false)
             {
+<<<<<<< f9fe7bbce848876f3465e32df5e8f2d02624a9f5
                 if (World.Current.inventoryManager.HasInventoryOfType(inventory.Type) == false)
+=======
+                if (World.Current.inventoryManager.InventoryExistsSomewhere(inv.ObjectType, canTakeFromStockpile) == false)
+>>>>>>> Fixed several WorkState and MoveState bugs
                 {
                     // the job requires ALL inventory requirements to be met, and there is no source of a desired Type
                     return null;
@@ -433,7 +433,11 @@ public class Job : ISelectable, IPrototypable
                     fulfillableInventoryRequirements.Add(inventory.Type);
                 }
             }
+<<<<<<< f9fe7bbce848876f3465e32df5e8f2d02624a9f5
             else if (World.Current.inventoryManager.HasInventoryOfType(inventory.Type))
+=======
+            else if (World.Current.inventoryManager.InventoryExistsSomewhere(inv.ObjectType, canTakeFromStockpile))
+>>>>>>> Fixed several WorkState and MoveState bugs
             {
                 // there is a source for a desired Type that the job will accept
                 fulfillableInventoryRequirements.Add(inventory.Type);

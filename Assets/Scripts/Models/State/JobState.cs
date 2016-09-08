@@ -1,4 +1,13 @@
-﻿using System;
+﻿#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,12 +16,10 @@ namespace ProjectPorcupine.State
     [System.Diagnostics.DebuggerDisplay("JobState: {job}")]
     public class JobState : State
     {
-        public Job job { get; private set; }
-
         public JobState(Character character, Job job, State nextState = null)
             : base("Job", character, nextState)
         {
-            this.job = job;
+            this.Job = job;
 
             job.OnJobStopped += OnJobStopped;
             job.IsBeingWorked = true;
@@ -20,17 +27,23 @@ namespace ProjectPorcupine.State
             FSMLog("created {0}", job.GetName());
         }
 
+        public Job Job { get; private set; }
+
         public override void Update(float deltaTime)
         {
             if (IsAtJobSite())
             {
                 DropOffInventory();
 
-                job.DoWork(deltaTime);
-                return;
+                if (Job.MaterialNeedsMet())
+                {
+//                    FSMLog(" - DoWork({0}) (Left: {1})", deltaTime, Job.JobTime);
+                    Job.DoWork(deltaTime);
+                    return;
+                }
             }
 
-            if (job.IsNeed && NeedToWalkToFurniture())
+            if (Job.IsNeed && NeedToWalkToFurniture())
             {
                 return;
             }
@@ -46,12 +59,24 @@ namespace ProjectPorcupine.State
         public override void Interrupt()
         {
             // If we still have a reference to a job, then someone else is stealing the state and we should put it back on the queue.
-            if (job != null)
+            if (Job != null)
             {
                 AbandonJob();
             }
 
             base.Interrupt();
+        }
+
+        public override void Enter()
+        {
+            FSMLog(" - Enter");
+            base.Enter();
+        }
+
+        public override void Exit()
+        {
+            FSMLog(" - Exit");
+            base.Exit();
         }
 
         private void DropOffInventory()
@@ -60,8 +85,8 @@ namespace ProjectPorcupine.State
             {
                 if (job.AmountDesiredOfInventoryType(character.inventory.Type) > 0)
                 {
-                    FSMLog(" - Dropping off inventory");
-                    World.Current.inventoryManager.PlaceInventory(job, character.inventory);
+                    FSMLog(" - Dropping off {0} {1}", character.inventory.StackSize, character.inventory.ObjectType);
+                    World.Current.inventoryManager.PlaceInventory(Job, character.inventory);
                 }
                 else
                 {
@@ -76,20 +101,20 @@ namespace ProjectPorcupine.State
             List<Tile> path = null;
 
             // We know where we need to go, but we aren't there
-            if (job.tile != null)
+            if (Job.tile != null)
             {
-                if (job.IsTileAtJobSite(character.CurrTile))
+                if (Job.IsTileAtJobSite(character.CurrTile))
                 {
                     return false;
                 }
                 else
                 {
-                    path = Pathfinding.FindPath(character.CurrTile, job.IsTileAtJobSite, Pathfinding.DefaultDistanceHeuristic(job.tile));
+                    path = Pathfinding.FindPath(character.CurrTile, Job.IsTileAtJobSite, Pathfinding.DefaultDistanceHeuristic(Job.tile));
                 }
             }
             else
             {
-                path = Pathfinding.FindPathToFurniture(character.CurrTile, job.JobObjectType);    
+                path = Pathfinding.FindPathToFurniture(character.CurrTile, Job.JobObjectType);
             }
 
             if (path == null || path.Count == 0)
@@ -100,8 +125,8 @@ namespace ProjectPorcupine.State
                 return true;
             }
 
-            job.tile = path.Last();
-            if (job.IsTileAtJobSite(character.CurrTile))
+            Job.tile = path.Last();
+            if (Job.IsTileAtJobSite(character.CurrTile))
             {
                 // We are already there!
                 return false;
@@ -110,7 +135,7 @@ namespace ProjectPorcupine.State
             FSMLog(" - Need to walk to furniture");
 
             // Let's go there
-            MoveState moveState = new MoveState(character, job.IsTileAtJobSite, path, this);
+            MoveState moveState = new MoveState(character, Job.IsTileAtJobSite, path, this);
             character.SetState(moveState);
             return true;
         }
@@ -119,7 +144,7 @@ namespace ProjectPorcupine.State
         private bool NeedToFindMoreMaterial()
         {
             // Checks if material is already delivered to the job site
-            if (job.MaterialNeedsMet())
+            if (Job.MaterialNeedsMet())
             {
                 return false;
             }
@@ -127,17 +152,20 @@ namespace ProjectPorcupine.State
             // Check if character is carrying something that is needed
             if (character.inventory != null)
             {
-                int amountNeeded = job.AmountDesiredOfInventoryType(character.inventory);
+                int amountNeeded = Job.AmountDesiredOfInventoryType(character.inventory);
+
                 // 0 means that they don't want that inventory and we need to dump!
                 if (amountNeeded == 0)
                 {
                     DumpExcessInventory();
+
                     // Restart method as a stop gap measure instead of hauling
+                    // TODO: Change this when DumpExcessInventory() creates a hauling job
                     return NeedToFindMoreMaterial();
                 }
 
                 // We don't have enough, but we can carry enough
-                if (amountNeeded > character.inventory.StackSize && character.inventory.MaxStackSize >= amountNeeded)
+                if (amountNeeded > character.inventory.StackSize && character.inventory.MaxStackSize > amountNeeded)
                 {
                     return FetchInventory(character.inventory.Type, amountNeeded - character.inventory.StackSize);
                 }
@@ -148,7 +176,7 @@ namespace ProjectPorcupine.State
 
             // At this point we know we don't carry anything, so we can grab anything required
             // TODO: GetFirstFulfillableInventoryRequirement doesn't do the stockpile and lock check.
-            Inventory neededInventory = job.GetFirstFulfillableInventoryRequirement();
+            Inventory neededInventory = Job.GetFirstFulfillableInventoryRequirement();
             if (neededInventory == null)
             {
                 AbandonJob();
@@ -156,7 +184,8 @@ namespace ProjectPorcupine.State
                 return true;
             }
 
-            return FetchInventory(neededInventory.Type, neededInventory.StackSize);
+            // MaxStackSize is how many items the job want in total and StackSize is how many are already delivered
+            return FetchInventory(neededInventory.ObjectType, neededInventory.MaxStackSize - neededInventory.StackSize);
         }
 
         private bool TryPickupInventoryFromCurrentTile()
@@ -185,7 +214,7 @@ namespace ProjectPorcupine.State
                         character,
                         tileInventory,
                         amountToPickup);
-                    
+
                     return true;
                 }
             }
@@ -196,21 +225,20 @@ namespace ProjectPorcupine.State
         private void DumpExcessInventory()
         {
             FSMLog(" - Dumping excess inventory");
+
             // TODO: Should haul this away
             character.inventory = null;
         }
 
         private bool FetchInventory(string objectType, int amount)
         {
-            List<Tile> path = World.Current.inventoryManager.GetPathToClosestInventoryOfType(objectType, character.CurrTile, amount, job.canTakeFromStockpile);
+            FSMLog(" - Need to fetch {0} {1}", amount, objectType);
+
+            List<Tile> path = World.Current.inventoryManager.GetPathToClosestInventoryOfType(objectType, character.CurrTile, amount, Job.canTakeFromStockpile);
             if (path == null || path.Count == 0)
             {
-                AbandonJob();
-                Finished();
-                return true;
+                return false;
             }
-
-            FSMLog(" - Need to fetch {0} {1}", amount, objectType);
 
             Tile destinationTile = path.Last();
             Pathfinding.GoalEvaluator isGoal = tile => destinationTile.Equals(tile);
@@ -221,13 +249,14 @@ namespace ProjectPorcupine.State
 
         private bool IsAtJobSite()
         {
-            if (job.IsTileAtJobSite(character.CurrTile))
+            if (Job.IsTileAtJobSite(character.CurrTile))
             {
                 return true;
             }
 
+            FSMLog(" - IsAtJobSite: Must walk to job site");
             // Find our way to the jobsite
-            List<Tile> path = Pathfinding.FindPath(character.CurrTile, job.IsTileAtJobSite, Pathfinding.DefaultDistanceHeuristic(job.tile));
+            List<Tile> path = Pathfinding.FindPath(character.CurrTile, Job.IsTileAtJobSite, Pathfinding.DefaultDistanceHeuristic(Job.tile));
             if (path == null || path.Count == 0)
             {
                 AbandonJob();
@@ -235,7 +264,7 @@ namespace ProjectPorcupine.State
                 return false;
             }
 
-            MoveState moveState = new MoveState(character, job.IsTileAtJobSite, path, this);
+            MoveState moveState = new MoveState(character, Job.IsTileAtJobSite, path, this);
             character.SetState(moveState);
             return false;
         }
@@ -245,32 +274,50 @@ namespace ProjectPorcupine.State
             FSMLog(" - Job abandoned!");
             Debug.ULogChannel("Character", character.GetName() + " abandoned their job.");
 
-            job.OnJobStopped -= OnJobStopped;
-            job.IsBeingWorked = false;
+            Job.OnJobStopped -= OnJobStopped;
+            Job.IsBeingWorked = false;
 
             // Tell anyone else who cares that it was cancelled
-            job.CancelJob();
+            Job.CancelJob();
 
-            if (job.IsNeed)
+            if (Job.IsNeed)
             {
                 return;
             }
 
             // Drops the priority a level.
-            job.DropPriority();
+            Job.DropPriority();
 
             // If the job gets abandoned because of pathing issues or something else, just return it to the queue
-            World.Current.jobQueue.Enqueue(job);
+            World.Current.jobQueue.Enqueue(Job);
         }
 
         private void OnJobStopped(Job stoppedJob)
         {
-            FSMLog(" - Job stopped!");
-            // Job completed (if non-repeating) or was cancelled.
-            stoppedJob.OnJobStopped -= OnJobStopped;
-            job.IsBeingWorked = false;
+            FSMLog(" - Job stopped");
 
-            if (job != stoppedJob)
+            // Job completed (if non-repeating) or was cancelled.
+            stoppedJob.OnJobCompleted -= OnJobCompleted;
+            stoppedJob.OnJobStopped -= OnJobStopped;
+            Job.IsBeingWorked = false;
+
+            if (Job != stoppedJob)
+            {
+                Debug.ULogErrorChannel("Character", "Character being told about job that isn't his. You forgot to unregister something.");
+                return;
+            }
+
+            Finished();
+        }
+
+        private void OnJobCompleted(Job finishedJob)
+        {
+            FSMLog(" - Job finished");
+
+            finishedJob.OnJobCompleted -= OnJobCompleted;
+            finishedJob.OnJobStopped -= OnJobStopped;
+
+            if (Job != finishedJob)
             {
                 Debug.ULogErrorChannel("Character", "Character being told about job that isn't his. You forgot to unregister something.");
                 return;
@@ -280,4 +327,3 @@ namespace ProjectPorcupine.State
         }
     }
 }
-

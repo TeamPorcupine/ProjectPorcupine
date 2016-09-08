@@ -120,14 +120,14 @@ public class InventoryManager
         return path != null ? path.Last().Inventory : null;
     }
 
-    public bool HasInventoryOfType(string type)
+    public bool HasInventoryOfType(string type, bool canTakeFromStockpile)
     {
         return Inventories.ContainsKey(type) && Inventories[type].Count != 0;
     }
 
     public bool RemoveInventoryOfType(string type, int quantity, bool onlyFromStockpiles)
     {
-        if (!HasInventoryOfType(type))
+        if (!HasInventoryOfType(type, true))
         {
             return quantity == 0;
         }
@@ -161,7 +161,7 @@ public class InventoryManager
 
     public List<Tile> GetPathToClosestInventoryOfType(string type, Tile tile, int desiredAmount, bool canTakeFromStockpile)
     {
-        if (HasInventoryOfType(type) == false)
+        if (HasInventoryOfType(type, canTakeFromStockpile) == false)
         {
             return null;
         }

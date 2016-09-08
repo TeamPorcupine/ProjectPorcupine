@@ -49,7 +49,8 @@ public class JobQueue
         }
 
         // TODO: We really should check `job.tile.HasWalkableNeighbours(true)` here, but we aren't registered for events on neighboring tiles.
-        if (job.IsRequiredInventoriesAvailable() == false)
+        // If the job requres material but there is nothing available, store it in jobsWaitingForInventory
+        if (job.inventoryRequirements.Count > 0 && job.GetFirstFulfillableInventoryRequirement() == null)
         {
             string missing = job.acceptsAny ? "*" : job.GetFirstDesiredInventory().Type;
             Debug.ULogChannel("FSM", " - missingInventory {0}", missing);
@@ -62,10 +63,14 @@ public class JobQueue
         }
         else
         {
+            Debug.ULogChannel("FSM", " - {0}", job.acceptsAny ? "Any" : "All");
+            foreach (Inventory inventory in job.inventoryRequirements.Values)
+            {
+                Debug.ULogChannel("FSM", "   - {0} {1}", inventory.MaxStackSize - inventory.StackSize, inventory.ObjectType);
+            }
             Debug.ULogChannel("FSM", " - job ok");
             jobQueue.Add(job.Priority, job);
         }
-
 
         if (OnJobCreated != null)
         {
@@ -155,30 +160,35 @@ public class JobQueue
     private void ReevaluateWaitingQueue(Inventory inv)
     {
         Debug.ULogChannel("FSM", "ReevaluateWaitingQueue() new resource: {0}, count: {1}", inv.Type, inv.StackSize);
-        // In case we are alerted about something we don't care about
-        if (jobsWaitingForInventory.ContainsKey(inv.Type) == false || jobsWaitingForInventory[inv.Type].Count == 0)
-        {
-            return;
-        }
 
-        // Get the current list of jbos
-        List<Job> jobs = jobsWaitingForInventory[inv.Type];
-        // Replace it with an empty list
-        jobsWaitingForInventory[inv.Type] = new List<Job>();
+        List<Job> waitingJobs = null;
 
-        foreach (Job job in jobs)
+        // Check that there is a job waiting for this inventory.
+        if (jobsWaitingForInventory.ContainsKey(inv.ObjectType) && jobsWaitingForInventory[inv.ObjectType].Count > 0)
         {
-            // Enqueue will put them in the new waiting list we created if they still have unmet needs
-            Enqueue(job);
+            // Get the current list of jobs
+            waitingJobs = jobsWaitingForInventory[inv.ObjectType];
+
+            // Replace it with an empty list
+            jobsWaitingForInventory[inv.ObjectType] = new List<Job>();
+
+            foreach (Job job in waitingJobs)
+            {
+                // Enqueue will put them in the new waiting list we created if they still have unmet needs
+                Enqueue(job);
+            }
         }
 
         // Do the same thing for the AnyMaterial jobs
-        jobs = jobsWaitingForInventory["*"];
-        jobsWaitingForInventory["*"] = new List<Job>();
-
-        foreach (Job job in jobs)
+        if (jobsWaitingForInventory.ContainsKey("*"))
         {
-            Enqueue(job);
+            waitingJobs = jobsWaitingForInventory["*"];
+            jobsWaitingForInventory["*"] = new List<Job>();
+
+            foreach (Job job in waitingJobs)
+            {
+                Enqueue(job);
+            }
         }
     }
 }

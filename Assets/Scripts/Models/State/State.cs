@@ -1,14 +1,16 @@
-﻿using System;
-using System.Linq;
+﻿#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
 
 namespace ProjectPorcupine.State
 {
     public abstract class State
     {
-        public State NextState { get; protected set; }
-
-        public string Name { get; protected set; }
-
         protected Character character;
 
         public State(string name, Character character, State nextState)
@@ -17,6 +19,10 @@ namespace ProjectPorcupine.State
             this.character = character;
             NextState = nextState;
         }
+
+        public string Name { get; protected set; }
+
+        public State NextState { get; protected set; }
 
         public virtual void Enter()
         {
@@ -37,14 +43,14 @@ namespace ProjectPorcupine.State
             }
         }
 
-        protected void Finished()
-        {
-            character.SetState(NextState);
-        }
-
         public override string ToString()
         {
             return string.Format("[{0}State]", Name);
+        }
+
+        protected void Finished()
+        {
+            character.SetState(NextState);
         }
 
         #region Debug
@@ -59,4 +65,3 @@ namespace ProjectPorcupine.State
         #endregion
     }
 }
-

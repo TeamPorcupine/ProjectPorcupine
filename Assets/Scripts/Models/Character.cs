@@ -9,16 +9,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
-using ProjectPorcupine.State;
 using ProjectPorcupine.Localization;
+using ProjectPorcupine.State;
 using UnityEngine;
-using ProjectPorcupine;
 
 public enum Facing
 {
@@ -65,8 +63,10 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
     // The current state
     private State state;
+
     // List of global states that always run
     private List<State> globalStates;
+
     // Queue of states that aren't important enough to interrupt, but should run soon
     private Queue<State> stateQueue;
 
@@ -84,8 +84,11 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         characterUniformColor = uniformColor;
         characterSkinColor = skinColor;
         InitializeCharacterValues();
-        globalStates = new List<State>{ new NeedState(this) };
         stateQueue = new Queue<State>();
+        globalStates = new List<State>
+        {
+            new NeedState(this)
+        };
     }
 
     /// A callback to trigger when character information changes (notably, the position).
@@ -95,7 +98,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     public Need[] Needs { get; private set; }
 
     /// Tile offset for animation
-    public Vector3 tileOffset { get; set; }
+    public Vector3 TileOffset { get; set; }
 
     /// Tiles per second.
     public float MovementSpeed
@@ -114,7 +117,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     {
         get
         {
-            return CurrTile.X + tileOffset.x;
+            return CurrTile.X + TileOffset.x;
         }
     }
 
@@ -126,7 +129,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     {
         get
         {
-            return CurrTile.Y + tileOffset.y;
+            return CurrTile.Y + TileOffset.y;
         }
     }
 
@@ -138,7 +141,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     {
         get
         {
-            return CurrTile.Z + tileOffset.z;
+            return CurrTile.Z + TileOffset.z;
         }
     }
 
@@ -162,7 +165,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             currTile = value;
             currTile.Characters.Add(this);
 
-            tileOffset = Vector3.zero;
+            TileOffset = Vector3.zero;
         }
     }
 
@@ -174,7 +177,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             JobState jobState = FindInitiatingState() as JobState;
             if (jobState != null)
             {
-                return jobState.job;
+                return jobState.Job;
             }
 
             return null;
@@ -209,6 +212,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         };
     }
 
+    #region State
 
     public void PrioritizeJob(Job job)
     {
@@ -241,22 +245,6 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         }
     }
 
-    private State FindInitiatingState()
-    {
-        if (state == null)
-        {
-            return null;
-        }
-
-        State rootState = state;
-        while (rootState.NextState != null)
-        {
-            rootState = rootState.NextState;
-        }
-
-        return rootState;
-    }
-
     public void QueueState(State newState)
     {
         stateQueue.Enqueue(newState);
@@ -276,6 +264,8 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             state.Enter();
         }
     }
+
+    #endregion
 
     /// Runs every "frame" while the simulation is not paused
     public void Update(float deltaTime)
@@ -462,37 +452,41 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         return stat;
     }
 
-    public void ReadStatsFromSave(XmlReader reader)
+    public void FaceTile(Tile nextTile)
     {
-        // Protection vs. empty stats
-        if (reader.IsEmptyElement)
+        // Find character facing
+        if (nextTile.X > CurrTile.X)
         {
-            return;
+            CharFacing = Facing.EAST;
+        }
+        else if (nextTile.X < CurrTile.X)
+        {
+            CharFacing = Facing.WEST;
+        }
+        else if (nextTile.Y > CurrTile.Y)
+        {
+            CharFacing = Facing.NORTH;
+        }
+        else
+        {
+            CharFacing = Facing.SOUTH;
+        }
+    }
+
+    private State FindInitiatingState()
+    {
+        if (state == null)
+        {
+            return null;
         }
 
-        while (reader.Read())
+        State rootState = state;
+        while (rootState.NextState != null)
         {
-            if (reader.NodeType == XmlNodeType.EndElement)
-            {
-                break;
-            }
-
-            string statType = reader.GetAttribute("type");
-            Stat stat = GetStat(statType);
-            if (stat == null)
-            {
-                continue;
-            }
-
-            int statValue;
-            if (!int.TryParse(reader.GetAttribute("value"), out statValue))
-            {
-                Debug.ULogErrorChannel("Character", "Stat element did not have a value!");
-                continue;
-            }
-
-            stat.Value = statValue;
+            rootState = rootState.NextState;
         }
+
+        return rootState;
     }
 
     private void InitializeCharacterValues()
@@ -530,24 +524,36 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         Debug.ULogChannel("Character", "Initialized " + stats.Count + " Stats.");
     }
 
-    public void FaceTile(Tile nextTile)
+    public void ReadStatsFromSave(XmlReader reader)
     {
-        // Find character facing
-        if (nextTile.X > CurrTile.X)
+        // Protection vs. empty stats
+        if (reader.IsEmptyElement)
         {
-            CharFacing = Facing.EAST;
+            return;
         }
-        else if (nextTile.X < CurrTile.X)
+
+        while (reader.Read())
         {
-            CharFacing = Facing.WEST;
-        }
-        else if (nextTile.Y > CurrTile.Y)
-        {
-            CharFacing = Facing.NORTH;
-        }
-        else
-        {
-            CharFacing = Facing.SOUTH;
+            if (reader.NodeType == XmlNodeType.EndElement)
+            {
+                break;
+            }
+
+            string statType = reader.GetAttribute("type");
+            Stat stat = GetStat(statType);
+            if (stat == null)
+            {
+                continue;
+            }
+
+            int statValue;
+            if (!int.TryParse(reader.GetAttribute("value"), out statValue))
+            {
+                Debug.ULogErrorChannel("Character", "Stat element did not have a value!");
+                continue;
+            }
+
+            stat.Value = statValue;
         }
     }
 }

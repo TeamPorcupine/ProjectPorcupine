@@ -1,4 +1,13 @@
-﻿using System.Collections.Generic;
+﻿#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
+
+using System.Collections.Generic;
 using ProjectPorcupine;
 using UnityEngine;
 
@@ -6,7 +15,7 @@ namespace ProjectPorcupine.State
 {
     public class MoveState : State
     {
-        private Pathfinding.GoalEvaluator HasReachedDestination;
+        private Pathfinding.GoalEvaluator hasReachedDestination;
         private List<Tile> path;
 
         private float movementPercentage;
@@ -17,10 +26,10 @@ namespace ProjectPorcupine.State
         public MoveState(Character character, Pathfinding.GoalEvaluator goalEvaluator, List<Tile> path, State nextState = null)
             : base("Move", character, nextState)
         {
-            HasReachedDestination = goalEvaluator;
+            hasReachedDestination = goalEvaluator;
             this.path = path;
 
-            FSMLog("created path.Count: {0}", path.Count);
+            FSMLog("created with path length: {0}", path.Count);
         }
 
         public override void Update(float deltaTime)
@@ -53,7 +62,7 @@ namespace ProjectPorcupine.State
                 movementPercentage = 0f;
 
                 // Arrived at the destination or run out of path.
-                if (HasReachedDestination(character.CurrTile) || path.Count == 0)
+                if (hasReachedDestination(character.CurrTile) || path.Count == 0)
                 {
                     Finished();
                     return;
@@ -82,21 +91,21 @@ namespace ProjectPorcupine.State
                     // Debug.ULogErrorChannel("FIXME", "A character was trying to enter an unwalkable tile.");
 
                     // Should the character show that he is surprised to find a wall?
-
                     Finished();
                     return;
                 }
             }
 
-            character.tileOffset = new Vector3(
+            character.TileOffset = new Vector3(
                 (nextTile.X - character.CurrTile.X) * movementPercentage,
                 (nextTile.Y - character.CurrTile.Y) * movementPercentage,
-                (nextTile.Z - character.CurrTile.Z) * movementPercentage
-            );
+                (nextTile.Z - character.CurrTile.Z) * movementPercentage);
         }
 
         public override void Enter()
         {
+            FSMLog(" - Enter");
+
             character.IsWalking = true;
 
             if (character.IsSelected)
@@ -115,9 +124,10 @@ namespace ProjectPorcupine.State
             {
                 path.RemoveAt(0);
 
-                if (path.Count == 0 || HasReachedDestination(path[0]))
+                if (path.Count == 0)
                 {
-                    FSMLog(" - Reached the goal in Enter!");
+                    FSMLog(" - Ran out of path to walk");
+
                     // We've either arrived, or we need to find a new path to the target
                     Finished();
                     return;
@@ -134,7 +144,7 @@ namespace ProjectPorcupine.State
 
         public override void Exit()
         {
-            FSMLog(" - Arrived!");
+            FSMLog(" - Arrived");
 
             character.IsWalking = false;
 

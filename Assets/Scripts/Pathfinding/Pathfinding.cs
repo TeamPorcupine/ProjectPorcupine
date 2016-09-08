@@ -51,12 +51,13 @@ namespace ProjectPorcupine
             List<Tile> path = resolver.GetList();
             if (adjacent)
             {
-                Debug.ULogChannel("Pathfinding", "Searched adjacent from: " + start.X + "," + start.Y + ", to: " + end.X + "," + end.Y + " found: " + path.Last().X + "," + path.Last().Y + " [Length: " + path.Count + "]");
+                DebugLogIf(path.Count > 0, "Searched adjacent from: " + start.X + "," + start.Y + ", to: " + end.X + "," + end.Y + " found: " + path.Last().X + "," + path.Last().Y + " [Length: " + path.Count + "]");
             }
             else
             {
-                Debug.ULogChannel("Pathfinding", "Searched from: " + start.X + "," + start.Y + ", to: " + end.X + "," + end.Y + " found: " + path.Last().X + "," + path.Last().Y + " [Length: " + path.Count + "]");
+                DebugLogIf(path.Count > 0, "Searched from: " + start.X + "," + start.Y + ", to: " + end.X + "," + end.Y + " found: " + path.Last().X + "," + path.Last().Y + " [Length: " + path.Count + "]");
             }
+            DebugLogIf(path == null, "Failed to find path to tile {0}", start);
 
             return path;
         }
@@ -77,7 +78,9 @@ namespace ProjectPorcupine
 
             Path_AStar resolver = new Path_AStar(World.Current, start, GoalInventoryHeuristic(objectType, canTakeFromStockpile), DijkstraDistance());
             List<Tile> path = resolver.GetList();
-            Debug.ULogChannel("Pathfinding", "Searched from: " + start.X + "," + start.Y + ", for: " + objectType + " found: " + path.Last().X + "," + path.Last().Y + " [Length: " + path.Count + "]");
+            if (path.Count > 0)
+                DebugLog("Searched from: " + start.X + "," + start.Y + ", for: " + objectType + " found: " + path.Last().X + "," + path.Last().Y + " [Length: " + path.Count + "]");
+            DebugLogIf(path == null, "Failed to find path to inventory of type {0}", objectType);
             return path;
         }
 
@@ -96,7 +99,8 @@ namespace ProjectPorcupine
 
             Path_AStar resolver = new Path_AStar(World.Current, start, GoalFurnitureHeuristic(objectType), DijkstraDistance());
             List<Tile> path = resolver.GetList();
-            Debug.ULogChannel("Pathfinding", "Searched from: " + start.X + "," + start.Y + ", for: " + objectType + " found: " + path.Last().X + "," + path.Last().Y + " [Length: " + path.Count + "]");
+            DebugLogIf(path.Count > 0, "Searched from: " + start.X + "," + start.Y + ", for: " + objectType + " found: " + path.Last().X + "," + path.Last().Y + " [Length: " + path.Count + "]");
+            DebugLogIf(path == null, "Failed to find path to furniture of type {0}", objectType);
             return path;
         }
 
@@ -178,6 +182,19 @@ namespace ProjectPorcupine
         public static PathfindingHeuristic DijkstraDistance()
         {
             return tile => 0f;
+        }
+
+        private static void DebugLog(string message, params object[] par)
+        {
+            Debug.ULogChannel("Pathfinding", message, par);
+        }
+
+        private static void DebugLogIf(bool condition, string message, params object[] par)
+        {
+            if (condition)
+            {
+                DebugLog(message, par);
+            }
         }
     }
 }

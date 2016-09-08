@@ -1,4 +1,12 @@
-﻿using System;
+﻿#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
+
 using Random = UnityEngine.Random;
 
 namespace ProjectPorcupine.State
@@ -13,7 +21,7 @@ namespace ProjectPorcupine.State
             : base("Idle", character, nextState)
         {
             timeSpentIdle = 0f;
-            totalIdleTime = Random.Range(4f, 1.5f);
+            totalIdleTime = Random.Range(0.2f, 2.0f);
         }
 
         public override void Update(float deltaTime)
@@ -27,4 +35,3 @@ namespace ProjectPorcupine.State
         }
     }
 }
-
