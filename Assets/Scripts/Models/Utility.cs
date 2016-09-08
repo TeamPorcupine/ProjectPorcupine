@@ -21,7 +21,7 @@ using UnityEngine;
 /// InstalledObjects are things like walls, doors, and furniture (e.g. a sofa).
 /// </summary>
 [MoonSharpUserData]
-public class Utility : IXmlSerializable, ISelectable, IContextActionProvider
+public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IBuildable
 {
     // Prevent construction too close to the world's edge
     private const int MinEdgeDistance = 5;
@@ -146,6 +146,20 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider
     /// This event will trigger if <see cref="IsOperating"/> has been changed.
     /// </summary>
     public event Action<Utility> IsOperatingChanged;
+
+    /// <summary>
+    /// Gets the width of the furniture.
+    /// </summary>
+    public int Width { 
+        get {return 1;}
+    }
+
+    /// <summary>
+    /// Gets the height of the furniture.
+    /// </summary>
+    public int Height { 
+        get {return 1;}
+    }
 
     /// <summary>
     /// Gets the tint used to change the color of the furniture.
@@ -497,7 +511,7 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider
                                 invs.ToArray(),
                                 Job.JobPriority.High);
                     j.JobDescription = "job_build_" + ObjectType + "_desc";
-                    PrototypeManager.FurnitureJob.Set(ObjectType, j);
+                    PrototypeManager.UtilityJob.Set(ObjectType, j);
                     break;
 
                 case "CanBeBuiltOn":
@@ -876,7 +890,7 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider
     {
         j.OnJobStopped -= OnJobStopped;
         jobs.Remove(j);
-        j.furniture = null;
+        j.buildable = null;
     }
 
     private void ClearJobs()

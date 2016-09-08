@@ -104,7 +104,7 @@ public class JobSpriteController : BaseSpriteController<Job>
         else
         {
             // This is a normal furniture job.
-            job_go.transform.position = new Vector3(job.tile.X + ((job.furniturePrototype.Width - 1) / 2f), job.tile.Y + ((job.furniturePrototype.Height - 1) / 2f), job.tile.Z);
+            job_go.transform.position = new Vector3(job.tile.X + ((job.buildablePrototype.Width - 1) / 2f), job.tile.Y + ((job.buildablePrototype.Height - 1) / 2f), job.tile.Z);
             sr.sprite = fsc.GetSpriteForFurniture(job.JobObjectType);
         }
 

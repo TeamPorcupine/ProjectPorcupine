@@ -124,7 +124,7 @@ public class BuildModeController
                     j.JobDescription = "job_build_" + furnitureType + "_desc";
                 }
 
-                j.furniturePrototype = PrototypeManager.Furniture.Get(furnitureType);
+                j.buildablePrototype = PrototypeManager.Furniture.Get(furnitureType);
 
                 // Add the job to the queue or build immediately if in dev mode
                 if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
@@ -133,9 +133,9 @@ public class BuildModeController
                 }
                 else
                 {
-                    for (int x_off = t.X; x_off < (t.X + j.furniturePrototype.Width); x_off++)
+                    for (int x_off = t.X; x_off < (t.X + j.buildablePrototype.Width); x_off++)
                     {
-                        for (int y_off = t.Y; y_off < (t.Y + j.furniturePrototype.Height); y_off++)
+                        for (int y_off = t.Y; y_off < (t.Y + j.buildablePrototype.Height); y_off++)
                         {
                             // FIXME: I don't like having to manually and explicitly set
                             // flags that preven conflicts. It's too easy to forget to set/clear them!
@@ -174,7 +174,11 @@ public class BuildModeController
 
                 // Create a job for it to be build
                 Job j;
-
+                Debug.Log(PrototypeManager.UtilityJob.Keys.Count);
+                foreach(string k in PrototypeManager.UtilityJob.Keys.ToList()) 
+                {
+                    Debug.Log(k);
+                }
                 if (PrototypeManager.UtilityJob.Has(furnitureType))
                 {
                     // Make a clone of the job prototype
@@ -306,7 +310,7 @@ public class BuildModeController
                 {
                     // if the existing buildJobs furniture is replaceable by the current furnitureType,
                     // we can pretend it does not overlap with the new build
-                    return !proto.ReplaceableFurniture.Any(pendingBuildJob.furniturePrototype.HasTypeTag);
+                    return !proto.ReplaceableFurniture.Any(pendingBuildJob.buildablePrototype.HasTypeTag());
                 }
             }
         }
