@@ -112,7 +112,7 @@ public class BuildModeController
                 else
                 {
                     Debug.ULogErrorChannel("BuildModeController", "There is no furniture job prototype for '" + furnitureType + "'");
-                    j = new Job(t, furnitureType, FurnitureActions.JobComplete_FurnitureBuilding, 0.1f, null, Job.JobPriority.High);
+                    j = new Job(t, furnitureType, FunctionsManager.JobComplete_FurnitureBuilding, 0.1f, null, Job.JobPriority.High);
                     j.JobDescription = "job_build_" + furnitureType + "_desc";
                 }
 
@@ -155,31 +155,28 @@ public class BuildModeController
                 t.Type != tileType && 
                 t.Furniture == null &&
                 t.PendingBuildJob == null &&
-                CanBuildTileTypeHere(t, tileType))
+                tileType.CanBuildHere(t))
             {
                 // This tile position is valid tile type
 
                 // Create a job for it to be build
-                Job j = TileType.GetConstructionJobPrototype(tileType);
+                Job buildingJob = tileType.BuildingJob;
                 
-                j.tile = t;
+                buildingJob.tile = t;
 
                 // Add the job to the queue or build immediately if in dev mode
                 if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
                 {
-                    j.tile.Type = j.JobTileType;
+                    buildingJob.tile.Type = buildingJob.JobTileType;
                 }
                 else
                 {
                     // FIXME: I don't like having to manually and explicitly set
                     // flags that preven conflicts. It's too easy to forget to set/clear them!
-                    t.PendingBuildJob = j;
-                    j.OnJobStopped += (theJob) =>
-                        {
-                            theJob.tile.PendingBuildJob = null;
-                        };
-                    
-                    WorldController.Instance.World.jobQueue.Enqueue(j);
+                    t.PendingBuildJob = buildingJob;
+                    buildingJob.OnJobStopped += (theJob) => theJob.tile.PendingBuildJob = null;
+
+                    WorldController.Instance.World.jobQueue.Enqueue(buildingJob);
                 }
             }
         }
@@ -248,29 +245,6 @@ public class BuildModeController
         }
 
         return false;
-    }
-
-    // Checks whether the given floor type is allowed to be built on the tile.
-    // TODO Export this kind of check to an XML/LUA file for easier modding of floor types.
-    private bool CanBuildTileTypeHere(Tile t, TileType tileType)
-    {
-        if (tileType.CanBuildHereLua == null)
-        {
-            return true;
-        }
-
-        DynValue value = LuaUtilities.CallFunction(tileType.CanBuildHereLua, t);
-
-        if (value != null)
-        {
-            return value.Boolean;
-        }
-        else
-        {
-            Debug.ULogChannel("Lua", "Found no lua function " + tileType.CanBuildHereLua);
-
-            return false;
-        }
     }
 
     // Use this for initialization

@@ -485,6 +485,7 @@ function CloningPod_UpdateAction(furniture, deltaTime)
         false
     )
 
+    furniture.SetAnimationState("idle")
     j.RegisterJobWorkedCallback("CloningPod_JobRunning")
     j.RegisterJobCompletedCallback("CloningPod_JobComplete")
 	j.JobDescription = "job_cloning_pod_cloning_desc"
@@ -492,22 +493,7 @@ function CloningPod_UpdateAction(furniture, deltaTime)
 end
 
 function CloningPod_JobRunning(j)
-    local step = 0
-    if (math.floor(math.abs(j.JobTime * j.furniture.Parameters["animationTimer"].ToFloat())) % 2 == 0) then
-        step = 1
-    end
-    if (j.furniture.Parameters["animationStep"].ToFloat() != step) then
-         j.furniture.Parameters["animationStep"].SetValue(step)
-         j.furniture.UpdateOnChanged(j.furniture)
-    end
-end
-
-function CloningPod_GetSpriteName(furniture)
-    local baseName = "cloning_pod"
-    if (furniture.JobCount() < 1) then
-        return baseName
-    end
-    return baseName .. "_" .. furniture.Parameters["animationStep"].ToFloat()
+    j.furniture.SetAnimationState("running")
 end
 
 function CloningPod_JobComplete(j)
@@ -537,7 +523,12 @@ function PowerGenerator_UpdateAction(furniture, deltatime)
         furniture.Parameters["burnTime"].ChangeFloatValue(-deltatime)
         if ( furniture.Parameters["burnTime"].ToFloat() < 0 ) then
             furniture.Parameters["burnTime"].SetValue(0)
-        end
+        end        
+    end
+    if (furniture.Parameters["burnTime"].ToFloat() == 0) then
+        furniture.SetAnimationState("idle")
+    else
+        furniture.SetAnimationState("running")
     end
 end
 
@@ -550,14 +541,14 @@ function LandingPad_Test_CallTradeShip(furniture, character)
    WorldController.Instance.TradeController.CallTradeShipTest(furniture)
 end
 
--- This function gets called once, when the funriture is isntalled
+-- This function gets called once, when the furniture is installed
 function Heater_InstallAction( furniture, deltaTime)
     -- TODO: find elegant way to register heat source and sinks to Temperature
 	furniture.EventActions.Register("OnUpdateTemperature", "Heater_UpdateTemperature")
 	World.Current.temperature.RegisterSinkOrSource(furniture)
 end
 
--- This function gets called once, when the funriture is unisntalled
+-- This function gets called once, when the furniture is uninstalled
 function Heater_UninstallAction( furniture, deltaTime)
     furniture.EventActions.Deregister("OnUpdateTemperature", "Heater_UpdateTemperature")
 	World.Current.temperature.DeregisterSinkOrSource(furniture)
@@ -565,9 +556,6 @@ function Heater_UninstallAction( furniture, deltaTime)
 end
 
 function Heater_UpdateTemperature( furniture, deltaTime)
-    if (furniture.HasPower() == false) then
-        return
-    end
     if (furniture.tile.Room.IsOutsideRoom() == true) then
         return
     end
@@ -629,6 +617,7 @@ function Accumulator_GetSpriteName(furniture)
 	return baseName .. "_" .. suffix
 end
 
+<<<<<<< HEAD
 function Berth_TestSummoning(furniture, deltaTime)
     if (furniture.Parameters["occupied"].ToFloat() <= 0) then
         Berth_SummonShip(furniture, nil)
@@ -652,6 +641,68 @@ function Berth_DismissShip(furniture, character)
         shipManager.DeberthShip(furniture)
         ship.SetDestination(0, 0)
     end
+end
+    
+function OreMine_CreateMiningJob(furniture, character)
+    -- Creates job for a character to go and "mine" the Ore
+    local j = Job.__new(
+		furniture.Tile,
+		nil,
+		nil,
+		0,
+		nil,
+		Job.JobPriority.High,
+		false
+	)
+
+    j.RegisterJobWorkedCallback("OreMine_OreMined")
+    furniture.AddJob(j)
+    ModUtils.ULog("Ore Mine - Mining Job Created")
+end
+
+function OreMine_OreMined(job)
+    -- Defines the ore to be spawned by the mine
+    local inventory = Inventory.__new(job.furniture.Parameters["ore_type"], 50, 10)
+
+    -- Place the "mined" ore on the tile
+    World.Current.inventoryManager.PlaceInventory(job.tile, inventory)
+
+    -- Deconstruct the ore mine
+    job.furniture.Deconstruct()
+    job.CancelJob()
+end
+
+function OreMine_GetSpriteName(furniture)
+    return "mine_" .. furniture.Parameters["ore_type"].ToString()
+end
+
+-- This function gets called once, when the furniture is installed
+function Rtg_InstallAction( furniture, deltaTime)
+    -- TODO: find elegant way to register heat source and sinks to Temperature
+	furniture.EventActions.Register("OnUpdateTemperature", "Rtg_UpdateTemperature")
+	World.Current.temperature.RegisterSinkOrSource(furniture)
+end
+
+-- This function gets called once, when the furniture is uninstalled
+function Rtg_UninstallAction( furniture, deltaTime)
+    furniture.EventActions.Deregister("OnUpdateTemperature", "Rtg_UpdateTemperature")
+	World.Current.temperature.DeregisterSinkOrSource(furniture)
+	-- TODO: find elegant way to unregister previous register
+end
+
+function Rtg_UpdateTemperature( furniture, deltaTime)
+    if (furniture.tile.Room.IsOutsideRoom() == true) then
+        return
+    end
+    
+    tile = furniture.tile
+    pressure = tile.Room.GetGasPressure() / tile.Room.GetSize()
+    efficiency = ModUtils.Clamp01(pressure / furniture.Parameters["pressure_threshold"].ToFloat())
+    temperatureChangePerSecond = furniture.Parameters["base_heating"].ToFloat() * efficiency
+    temperatureChange = temperatureChangePerSecond * deltaTime
+    
+    World.Current.temperature.ChangeTemperature(tile.X, tile.Y, temperatureChange)
+    --ModUtils.ULogChannel("Temperature", "Heat change: " .. temperatureChangePerSecond .. " => " .. World.current.temperature.GetTemperature(tile.X, tile.Y))
 end
 
 ModUtils.ULog("Furniture.lua loaded")

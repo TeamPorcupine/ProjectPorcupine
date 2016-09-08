@@ -21,6 +21,7 @@ public class ScheduledEventTest
     [SetUp]
     public void Init()
     {
+        Debug.IsLogEnabled = false;
         callback = (evt) =>
             {
                 Debug.ULogChannel("ScheduledEventTest", "Event {0} fired", evt.Name);

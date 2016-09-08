@@ -10,15 +10,19 @@ using System;
 
 public class TradeItem
 {
-    public string ObjectType;
-    public float BaseItemPrice;
-
-    public float PlayerSellItemPrice;
-    public float TraderSellItemPrice;
-
-    public int PlayerStock;
-    public int TraderStock;
     private int tradeAmount;
+
+    public string ObjectType { get; set; }
+
+    public float BaseItemPrice { get; set; }
+
+    public float PlayerSellItemPrice { get; set; }
+
+    public float TraderSellItemPrice { get; set; }
+
+    public int PlayerStock { get; set; }
+
+    public int TraderStock { get; set; }
 
     public int TradeAmount
     {

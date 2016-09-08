@@ -50,7 +50,7 @@ public class GameEvent
         foreach (string precondition in preconditions)
         {
             // Call lua precondition it should return 1 if met otherwise 0
-            conditionsMet += (int)LuaUtilities.CallFunction(precondition, this, deltaTime).Number;
+            conditionsMet += (int)FunctionsManager.GameEvent.Call(precondition, this, deltaTime).Number;
         }
 
         if (conditionsMet >= preconditions.Count && executed == false && (MaxRepeats <= 0 || repeats < MaxRepeats))
@@ -80,7 +80,7 @@ public class GameEvent
         if (executionActions != null)
         {
             // Execute Lua code like in Furniture ( FurnitureActions ) 
-            GameEventActions.CallFunctionsWithEvent(executionActions.ToArray(), this);
+            FunctionsManager.GameEvent.CallWithInstance(executionActions.ToArray(), this);
         }
 
         if (!Repeat)

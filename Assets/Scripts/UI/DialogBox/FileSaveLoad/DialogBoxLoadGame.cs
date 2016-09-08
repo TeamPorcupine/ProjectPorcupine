@@ -14,7 +14,6 @@ using UnityEngine.UI;
 
 public class DialogBoxLoadGame : DialogBoxLoadSaveGame
 {
-    public GameObject dialog;
     public bool pressedDelete;
     private Component fileItem;
 
@@ -98,20 +97,22 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
             return;
         }
 
-        CloseSureDialog();
         File.Delete(filePath);
         CloseDialog();
         ShowDialog();
     }
 
-    public void CloseSureDialog()
-    {
-        dialog.SetActive(false);
-    }
-
     public void DeleteWasClicked()
     {
-        dialog.SetActive(true);
+        DialogBoxManager dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
+        dbm.dialogBoxAreYouSure.Closed = () =>
+        {
+            if (dbm.dialogBoxAreYouSure.Result == DialogBoxResult.Yes)
+            {
+                DeleteFile();
+            }
+        };
+        dbm.dialogBoxAreYouSure.ShowDialog();
     }
 
     public void LoadWorld(string filePath)

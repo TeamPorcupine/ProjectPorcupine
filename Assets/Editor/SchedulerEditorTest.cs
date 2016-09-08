@@ -16,10 +16,16 @@ using Scheduler;
 
 public class SchedulerEditorTest
 {
+    private const string LuaFunctionString = @"
+        function ping_log_lua(event)
+            ModUtils.ULogChannel(""Scheduler"", ""Scheduled Lua event '"" .. event.Name .. ""'"")
+            return
+        end";
+    
     private const string XmlPrototypeString = @"
-<Events>
-    <Event name=""ping_log_lua"" onFire=""ping_log_lua""/>
-</Events>";
+        <Events>
+            <Event name=""ping_log_lua"" onFire=""ping_log_lua""/>
+        </Events>";
 
     private Scheduler.Scheduler scheduler;
     private Action<ScheduledEvent> callback;
@@ -27,6 +33,14 @@ public class SchedulerEditorTest
     [SetUp]
     public void Init()
     {
+        Debug.IsLogEnabled = false;
+
+        if (FunctionsManager.ScheduledEvent == null)
+        {
+            new FunctionsManager();
+            FunctionsManager.ScheduledEvent.LoadScript(LuaFunctionString, "ScheduledEvent");
+        }
+
         if (PrototypeManager.SchedulerEvent == null)
         {
             new PrototypeManager();
@@ -259,6 +273,27 @@ public class SchedulerEditorTest
         scheduler.WriteXml(writer);
 
         string expectedXml = "<Scheduler><Event name=\"ping_log\" cooldown=\"1\" timeToWait=\"1\" repeatsForever=\"True\" /><Event name=\"ping_log_lua\" cooldown=\"2\" timeToWait=\"2\" repeatsLeft=\"3\" /></Scheduler>";
+        Assert.That(sb.ToString(), Is.EqualTo(expectedXml));
+    }
+
+    [Test]
+    public void SchedulerWriteXmlDoesNotWriteNoSaveFlaggedEventsTest()
+    {
+        ScheduledEvent evt = new ScheduledEvent(
+            "test",
+            callback,
+            2.0f,
+            false,
+            1);
+        evt.IsSaveable = false;
+        scheduler.RegisterEvent(evt);
+        scheduler.Update(0); // updates the event list
+
+        StringBuilder sb = new StringBuilder();
+        XmlWriter writer = new XmlTextWriter(new StringWriter(sb));
+        scheduler.WriteXml(writer);
+
+        string expectedXml = "<Scheduler />";
         Assert.That(sb.ToString(), Is.EqualTo(expectedXml));
     }
 

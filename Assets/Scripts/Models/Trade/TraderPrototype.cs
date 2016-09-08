@@ -7,22 +7,45 @@
 // ====================================================
 #endregion
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 using UnityEngine;
 
 public class TraderPrototype
 {
-    public string ObjectType;
-    public List<string> PotentialNames;
-    public float MinCurrencyBalance;
-    public float MaxCurrencyBalance;
-    public string CurrencyName;
-    public float MinSaleMarginMultiplier;
-    public float MaxSaleMarginMultiplier;
-    public List<TraderPotentialInventory> PotentialStock;
+    private float rarity;
 
-    [Range(0, 1)]
-    public float Rarity;
+    public string ObjectType { get; set; }
+
+    public List<string> PotentialNames { get; set; }
+
+    public float MinCurrencyBalance { get; set; }
+
+    public float MaxCurrencyBalance { get; set; }
+
+    public string CurrencyName { get; set; }
+
+    public float MinSaleMarginMultiplier { get; set; }
+
+    public float MaxSaleMarginMultiplier { get; set; }
+
+    public List<TraderPotentialInventory> PotentialStock { get; set; }
+
+    /// <summary>
+    /// Value from 0 to 1, higher value represent higher availability of the trade resource.
+    /// </summary>
+    public float Rarity
+    {
+        get
+        {
+            return rarity;
+        }
+
+        set
+        {
+            rarity = Mathf.Clamp(value, 0f, 1f);
+        }
+    }
 
     public void ReadXmlPrototype(XmlReader reader_parent)
     {
@@ -80,6 +103,7 @@ public class TraderPrototype
                             PotentialStock.Add(new TraderPotentialInventory
                             {
                                 ObjectType = invs_reader.GetAttribute("objectType"),
+                                ObjectCategory = invs_reader.GetAttribute("objectCategory"),
                                 MinQuantity = int.Parse(invs_reader.GetAttribute("minQuantity")),
                                 MaxQuantity = int.Parse(invs_reader.GetAttribute("maxQuantity")),
                                 Rarity = float.Parse(invs_reader.GetAttribute("rarity"))
@@ -92,6 +116,9 @@ public class TraderPrototype
         }
     }
 
+    /// <summary>
+    /// Create a random Trader out of this TraderPrototype.
+    /// </summary>
     public Trader CreateTrader()
     {
         Trader t = new Trader
@@ -113,14 +140,35 @@ public class TraderPrototype
 
             if (itemIsInStock)
             {
-                t.Stock.Add(new Inventory
+                if (!string.IsNullOrEmpty(potentialStock.ObjectType))
                 {
-                    ObjectType = potentialStock.ObjectType,
-                    StackSize = Random.Range(potentialStock.MinQuantity, potentialStock.MaxQuantity)
-                });
+                    Inventory inventory = new Inventory(
+                        potentialStock.ObjectType,
+                        Random.Range(potentialStock.MinQuantity, potentialStock.MaxQuantity));
+
+                    t.Stock.Add(inventory);
+                }
+                else if (!string.IsNullOrEmpty(potentialStock.ObjectCategory))
+                {
+                    List<InventoryCommon> potentialObjects = GetInventoryCommonWithCategory(potentialStock.ObjectCategory);
+
+                    foreach (InventoryCommon potentialObject in potentialObjects)
+                    {
+                        Inventory inventory = new Inventory(
+                            potentialObject.objectType,
+                            Random.Range(potentialStock.MinQuantity, potentialStock.MaxQuantity));
+
+                        t.Stock.Add(inventory);
+                    }
+                }
             }
         }
 
         return t;
+    }
+
+    private List<InventoryCommon> GetInventoryCommonWithCategory(string category)
+    {
+        return PrototypeManager.Inventory.Values.Where(i => i.category == category).ToList();
     }
 }

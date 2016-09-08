@@ -42,6 +42,8 @@ public class WorldGenerator
         int offsetX = Random.Range(0, 10000);
         int offsetY = Random.Range(0, 10000);
 
+        int minEdgeDistance = 5;
+
         int sumOfAllWeightedChances = 0;
         foreach (Inventory resource in resources)
         {
@@ -56,7 +58,7 @@ public class WorldGenerator
                 int worldY = (height / 2) + startAreaCenterY - y;
 
                 Tile tile = world.GetTileAt(worldX, worldY, 0);
-                tile.Type = TileType.GetTileTypes()[startAreaTiles[x, y]];
+                tile.Type = TileType.LoadedTileTypes[startAreaTiles[x, y]];
             }
         }
 
@@ -78,49 +80,65 @@ public class WorldGenerator
 
         for (int z = 0; z < depth; z++)
         {
-            float zScale = Mathf.Lerp(1f, .5f, Mathf.Abs((depth / 2f) - z) / depth);
+            float scaleZ = Mathf.Lerp(1f, .5f, Mathf.Abs((depth / 2f) - z) / depth);
             for (int x = 0; x < width; x++)
             {
                 for (int y = 0; y < height; y++)
                 {
-                        float noiseValue = Mathf.PerlinNoise((x + offsetX) / (width * asteroidNoiseScale * zScale), (y + offsetY) / (height * asteroidNoiseScale * zScale));
-                        if (noiseValue >= asteroidNoiseThreshhold && !IsStartArea(x, y, world))
+                    float noiseValue = Mathf.PerlinNoise((x + offsetX) / (width * asteroidNoiseScale * scaleZ), (y + offsetY) / (height * asteroidNoiseScale * scaleZ));
+                    if (noiseValue >= asteroidNoiseThreshhold && !IsStartArea(x, y, world))
+                    {
+                        Tile tile = world.GetTileAt(x, y, z);
+
+                        if (tile.X < minEdgeDistance || tile.Y < minEdgeDistance ||
+                              World.Current.Width - tile.X <= minEdgeDistance ||
+                              World.Current.Height - tile.Y <= minEdgeDistance)
                         {
-                            Tile t = world.GetTileAt(x, y, z);
-                            t.Type = AsteroidFloorType;
+                            continue;
+                        }
 
-                            if (Random.value <= asteroidResourceChance && t.Furniture == null)
+                        tile.Type = AsteroidFloorType;
+
+                        if (Random.value <= asteroidResourceChance && tile.Furniture == null)
+                        {
+                            if (resources.Length > 0)
                             {
-                                if (resources.Length > 0)
+                                int currentweight = 0;
+                                int randomweight = Random.Range(0, sumOfAllWeightedChances);
+
+                                for (int i = 0; i < resources.Length; i++)
                                 {
-                                    int currentweight = 0;
-                                    int randomweight = Random.Range(0, sumOfAllWeightedChances);
+                                    Inventory inv = resources[i];
 
-                                    for (int i = 0; i < resources.Length; i++)
+                                    int weight = inv.StackSize; // In stacksize the weight was cached
+                                    currentweight += weight;
+
+                                    if (randomweight <= currentweight)
                                     {
-                                        Inventory inv = resources[i];
+                                        if (inv.ObjectType == "Raw Iron" || inv.ObjectType == "Uranium")
+                                    {
+                                        Furniture mine = PrototypeManager.Furniture.Get("mine").Clone();
+                                        mine.Parameters["ore_type"].SetValue(inv.ObjectType.ToString());
+                                        world.PlaceFurniture(mine, tile, false);
+                                        break;
+                                    }
 
-                                        int weight = inv.StackSize; // In stacksize the weight was cached
-                                        currentweight += weight;
+                                    int stackSize = Random.Range(resourceMin[i], resourceMax[i]);
 
-                                        if (randomweight <= currentweight)
-                                        {
-                                            int stackSize = Random.Range(resourceMin[i], resourceMax[i]);
+                                    if (stackSize > inv.MaxStackSize)
+                                    {
+                                        stackSize = inv.MaxStackSize;
+                                    }
 
-                                            if (stackSize > inv.MaxStackSize)
-                                            {
-                                                stackSize = inv.MaxStackSize;
-                                            }
-
-                                            world.inventoryManager.PlaceInventory(t, new Inventory(inv.ObjectType, inv.MaxStackSize, stackSize));
-                                            break;
-                                        }
+                                    world.inventoryManager.PlaceInventory(tile, new Inventory(inv.ObjectType, inv.MaxStackSize, stackSize));
+                                    break;
                                     }
                                 }
                             }
                         }
                     }
                 }
+            }
         }
     }
     

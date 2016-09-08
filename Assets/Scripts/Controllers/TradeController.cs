@@ -22,6 +22,11 @@ public class TradeController
 
     private readonly ScheduledEvent traderVisitEvaluationEvent;
 
+    /// <summary>
+    /// Instanciate a new TradeController
+    /// This will also schedull and event every 5 minutes for the trade controller to evaluate
+    /// if a trader will or not visit.
+    /// </summary>
     public TradeController()
     {
         TradeShips = new List<TraderShipController>();
@@ -34,6 +39,11 @@ public class TradeController
         Scheduler.Scheduler.Current.RegisterEvent(traderVisitEvaluationEvent);
     }
     
+    /// <summary>
+    /// Summon the visit of a trader to a specific landing pad
+    /// The trader will be generated randomly from the trader prototypes.
+    /// </summary>
+    /// <param name="landingPad"></param>
     public void CallTradeShipTest(Furniture landingPad)
     {
         // Currently not using any logic to select a trader
@@ -55,6 +65,10 @@ public class TradeController
         spriteRenderer.sortingLayerName = "TradeShip";
     }
 
+    /// <summary>
+    /// Display the TradeDialogBox and allow the user to trade.
+    /// </summary>
+    /// <param name="tradeShip"></param>
     public void ShowTradeDialogBox(TraderShipController tradeShip)
     {
         DialogBoxManager dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
@@ -76,6 +90,11 @@ public class TradeController
         dbm.dialogBoxTrade.ShowDialog();
     }
 
+    /// <summary>
+    /// Once a trade is completed (and the trade dialog box is close): 
+    /// - spawn bougth inventory in a square of 6x6 around the tradingCoordinate (tile of the landing pad)
+    /// - delete all sold inventory from stockpiles.
+    /// </summary>
     private void TrasfertTradedItems(Trade trade, Vector3 tradingCoordinates)
     {
         trade.Player.Currency.Balance += trade.TradeCurrencyBalanceForPlayer;
@@ -95,6 +114,12 @@ public class TradeController
         }
     }
 
+    /// <summary>
+    /// Check if the player base should have the visit of a trader
+    /// this method is very simple for now: 
+    ///   if the player built a landing pad, then a trader will come.
+    /// </summary>
+    /// <param name="scheduledEvent"></param>
     private void EvaluateTraderVisit(ScheduledEvent scheduledEvent)
     {
         Furniture landingPad = FindRandomLandingPadWithouTrader();
@@ -105,6 +130,10 @@ public class TradeController
         }
     }
 
+    /// <summary>
+    /// Search all the built furniture in the world for the one with the tag 'LandingPad'.
+    /// </summary>
+    /// <returns></returns>
     private Furniture FindRandomLandingPadWithouTrader()
     {
         List<Furniture> landingPads = World.Current.furnitures.Where(f => f.HasTypeTag("LandingPad")).ToList();
