@@ -39,7 +39,6 @@ public class Trade
             PlayerSellItemPrice = g.First().BasePrice * player.SaleMarginMultiplier,
             TraderSellItemPrice = g.First().BasePrice * trader.SaleMarginMultiplier
         }).ToList();
-        
     }
 
     /// <summary>

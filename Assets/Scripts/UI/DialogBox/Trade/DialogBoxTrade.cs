@@ -11,8 +11,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 public class DialogBoxTrade : DialogBox
 {
@@ -81,7 +81,6 @@ public class DialogBoxTrade : DialogBox
             {
                 new TraderPotentialInventory() { ObjectType = "Steel Plate" }
             }
-           
         };
         SetupTrade(new Trade(mockPlayer, mockTrader));
     }
@@ -101,17 +100,16 @@ public class DialogBoxTrade : DialogBox
     {
         if (trade.IsValid())
         {
-            
             if (TradeCompleted != null)
             {
                 TradeCompleted();
             }
-            
         }
         else
         {
             return;
         }
+
         StartRequests();
     }
 
@@ -125,15 +123,17 @@ public class DialogBoxTrade : DialogBox
             {
                 continue;
             }
+
             requestAndLevel.Add(request.request, request.requestLevel);
         }
+
         trade.Trader.RequestItems(requestAndLevel);
         trade = null;
         ClearInterface();
         CloseDialog();
     }
 
-    private void StartRequests ()
+    private void StartRequests()
     {
         TradeHeaderPanel.gameObject.SetActive(false);
         title.text = "Requests";
@@ -155,7 +155,6 @@ public class DialogBoxTrade : DialogBox
 
     private void BuildRequestInterface()
     {
-        
         foreach (TraderPotentialInventory possible in trade.Trader.possibleStock)
         {
             GameObject go = (GameObject)Instantiate(Resources.Load("Prefab/TradeItemRequestPrefab"), TradeItemListPanel);
@@ -165,8 +164,6 @@ public class DialogBoxTrade : DialogBox
             requests.Add(tradeItemBehaviour.transform);
         }
     }
-
-    
 
     private void BuildInterface()
     {

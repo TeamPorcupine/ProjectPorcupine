@@ -50,10 +50,8 @@ public class DialogBoxTradeItem : MonoBehaviour
 
     public void TraderBuyOneMore()
     {
-        
         item.TradeAmount--;
         OnTradeAmountChanged();
-        
     }
 
     public void PlayerBuyAll()
@@ -64,10 +62,8 @@ public class DialogBoxTradeItem : MonoBehaviour
 
     public void TraderBuyAll()
     {
-       
         item.TradeAmount = -item.PlayerStock;
         OnTradeAmountChanged();
-        
     }
 
     private void BindInterface()
@@ -79,6 +75,5 @@ public class DialogBoxTradeItem : MonoBehaviour
         TraderStockText.text = (item.TraderStock - item.TradeAmount).ToString();
         TraderSellItemPriceText.text = item.TraderSellItemPrice.ToString("N2");
         TradeAmountText.text = item.TradeAmount.ToString();
-        
     }
 }

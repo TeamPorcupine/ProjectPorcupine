@@ -32,7 +32,6 @@ public class WorldController : MonoBehaviour
     public KeyboardManager keyboardManager;
     public CameraController cameraController;
     public SpawnInventoryController spawnInventoryController;
-    public AutosaveManager autosaveManager;
     public TradeController TradeController;
     public TradersController tradersController;
     public TimeManager timeManager;
@@ -134,8 +133,7 @@ public class WorldController : MonoBehaviour
         TradeController = new TradeController();
         tradersController = new TradersController();
         timeManager = new TimeManager();
-        autosaveManager = new AutosaveManager();
-
+       
         keyboardManager.RegisterInputAction("Pause", KeyboardMappedInputType.KeyUp, () => { IsPaused = !IsPaused; });
 
         // Hiding Dev Mode spawn inventory controller if devmode is off.

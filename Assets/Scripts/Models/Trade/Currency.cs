@@ -37,7 +37,6 @@ public class Currency
             {
                 BalanceChanged(this);
             }
-
         }
     }
 

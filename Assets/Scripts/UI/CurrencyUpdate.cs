@@ -1,4 +1,4 @@
-﻿﻿#region License
+﻿#region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
 // This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
@@ -25,47 +25,33 @@ public class CurrencyUpdate : MonoBehaviour
         {
             builder.AppendFormat("{0:N2} {1}", currency.Balance, currency.ShortName);
             builder.AppendLine();
-
         }
 
-		Debug.Log (builder.ToString ());
-		if (text != null)
-        { 	
-			text.text = builder.ToString ();
-			
-		}
-		
-	}
-	
-	
-	// Adds UpdateCurrency to all the currencies
-	public void AddWallet (Wallet wallet) {
-		if (currencyBalances == null) {
-
-
-            currencyBalances = new List<Currency>();
-            
-			
-		}
-		
-		foreach (KeyValuePair<string, Currency> kvp in wallet.Currencies) {
-			
-			Debug.Log (kvp.Value.Name + ":" + kvp.Value.Balance);
-			
-
-
-			kvp.Value.BalanceChanged += UpdateCurrency;
-			currencyBalances.Add (kvp.Value);
-			UpdateCurrency (kvp.Value);
-		
-		}
-		
-	}
-
+        Debug.Log(builder.ToString());
+        if (text != null)
+        { 
+            text.text = builder.ToString();
+        }
+    }
+    
+    // Adds UpdateCurrency to all the currencies
+    public void AddWallet(Wallet wallet)
+    {
+        if (currencyBalances == null)
+        {
+            currencyBalances = new List<Currency>();    
+        }
+        
+        foreach (KeyValuePair<string, Currency> kvp in wallet.Currencies)
+        {
+            kvp.Value.BalanceChanged += UpdateCurrency;
+            currencyBalances.Add(kvp.Value);
+            UpdateCurrency(kvp.Value);
+        }
+    }
 
     private void Start()
     {
         AddWallet(World.Current.Wallet);
     }
-
 }

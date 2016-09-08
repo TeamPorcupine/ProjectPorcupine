@@ -20,7 +20,6 @@ public enum RequestLevel
 
 public class Trader
 {
-
     public List<TraderPotentialInventory> possibleStock;
 
     public Dictionary<TraderPotentialInventory, RequestLevel> requests;
@@ -69,8 +68,6 @@ public class Trader
         return t;
     }
 
-
-
     // Function allows to request items which have a 
     // higher chance to be brought the next time this
     // trader comes
@@ -80,6 +77,7 @@ public class Trader
         {
             this.requests = new Dictionary<TraderPotentialInventory, RequestLevel>();
         }
+
         this.requests.Union(requests);
     }
 
@@ -136,6 +134,7 @@ public class Trader
             }
         }
     }
+
     private List<InventoryCommon> GetInventoryCommonWithCategory(string category)
     {
         return PrototypeManager.Inventory.Values.Where(i => i.category == category).ToList();

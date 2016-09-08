@@ -13,8 +13,6 @@ using UnityEngine;
 
 public class TraderPrototype
 {
-
-    [Range(0, 1)]
     private float rarity;
 
     public string ObjectType { get; set; }
@@ -30,6 +28,8 @@ public class TraderPrototype
     public float MinSaleMarginMultiplier { get; set; }
 
     public float MaxSaleMarginMultiplier { get; set; }
+
+    public float RequestChanceModifier { get; set; }
 
     public List<TraderPotentialInventory> PotentialStock { get; set; }
 
@@ -48,7 +48,6 @@ public class TraderPrototype
             rarity = Mathf.Clamp(value, 0f, 1f);
         }
     }
->>>>>>> upstream/master
 
     public void ReadXmlPrototype(XmlReader reader_parent)
     {
@@ -146,13 +145,6 @@ public class TraderPrototype
 
         t.RefreshInventory();
         WorldController.Instance.tradersController.AddTrader(t);
-
-
         return t;
-    }
-
-    private List<InventoryCommon> GetInventoryCommonWithCategory(string category)
-    {
-        return PrototypeManager.Inventory.Values.Where(i => i.category == category).ToList();
     }
 }
