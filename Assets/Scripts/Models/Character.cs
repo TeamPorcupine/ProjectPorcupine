@@ -7,6 +7,7 @@
 // ====================================================
 #endregion
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -436,24 +437,6 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 }
             }
         }
-
-        // Read the children elements.
-        // TODO: This should either not be XML, or use XmlSerializer.
-        while (reader.Read())
-        {
-            // Read until the end of the character.
-            if (reader.NodeType == XmlNodeType.EndElement)
-            {
-                break;
-            }
-
-            switch (reader.Name)
-            {
-                case "Stats":
-                    ReadStatsFromSave(reader);
-                    break;
-            }
-        }
     }
 
     #endregion
@@ -467,25 +450,23 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
     public string GetDescription()
     {
-        StringBuilder description = new StringBuilder();
-        description.AppendLine("A human astronaut.");
+        return "A human astronaut.";
+    }
+
+    public IEnumerable<string> GetAdditionalInfo()
+    {
+        yield return string.Format("HitPoints: 100/100");
+
         foreach (Need n in needs)
         {
-            description.AppendLine(LocalizationTable.GetLocalization(n.LocalisationID, n.DisplayAmount));
+           yield return LocalizationTable.GetLocalization(n.localisationID, n.DisplayAmount);
         }
 
         foreach (Stat stat in stats.Values)
         {
             // TODO: Localization
-            description.AppendLine(string.Format("{0}: {1}", stat.statType, stat.Value));
+            yield return string.Format("{0}: {1}", stat.statType, stat.Value);
         }
-
-        return description.ToString();
-    }
-
-    public string GetHitPointString()
-    {
-        return "100/100";
     }
 
     public Color GetCharacterColor()
@@ -557,7 +538,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         Debug.ULogChannel("Character", "Initialized " + stats.Count + " Stats.");
     }
 
-    private void ReadStatsFromSave(XmlReader reader)
+    public void ReadStatsFromSave(XmlReader reader)
     {
         // Protection vs. empty stats
         if (reader.IsEmptyElement)
