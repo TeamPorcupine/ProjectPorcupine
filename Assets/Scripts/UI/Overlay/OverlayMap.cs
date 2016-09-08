@@ -21,11 +21,6 @@ using UnityEngine;
 public class OverlayMap : MonoBehaviour
 {
     public Dictionary<string, OverlayDescriptor> overlays;
-    
-    /// <summary>
-    /// Starting left corner (x,y) and z-coordinate of mesh and (3d left corner).
-    /// </summary>
-    public Vector3 leftBottomCorner = new Vector3(-0.5f, -0.5f, 1f);
 
     /// <summary>
     /// Transparency of overlay.
@@ -74,6 +69,11 @@ public class OverlayMap : MonoBehaviour
     public GameObject parentPanel;
 
     private static List<Color32> randomColors;
+
+    /// <summary>
+    /// Starting left corner (x,y) and z-coordinate of mesh and (3d left corner).
+    /// </summary>
+    private Vector3 leftBottomCorner = new Vector3(-0.5f, -0.5f, -1f);
 
     /// <summary>
     /// Time since last update.
@@ -325,6 +325,10 @@ public class OverlayMap : MonoBehaviour
         script = new Script();
         script.DoString(scriptTxt);
 
+        // TODO: Code needs rework
+        Type type = typeof(ModUtils);
+        script.Globals[type.Name] = type;
+
         // Build GUI.
         CreateGUI();
 
@@ -532,7 +536,7 @@ public class OverlayMap : MonoBehaviour
         textView.GetComponent<UnityEngine.UI.LayoutElement>().minHeight = 30;
         textView.GetComponent<UnityEngine.UI.LayoutElement>().minWidth = 150;
         textView.transform.SetParent(parentPanel.transform);
-        textView.GetComponent<UnityEngine.UI.Text>().text = "Currently slected:";
+        textView.GetComponent<UnityEngine.UI.Text>().text = "Currently Selected:";
         textView.GetComponent<UnityEngine.UI.Text>().resizeTextForBestFit = true;
         textView.GetComponent<UnityEngine.UI.Text>().font = Resources.GetBuiltinResource<Font>("Arial.ttf");
 

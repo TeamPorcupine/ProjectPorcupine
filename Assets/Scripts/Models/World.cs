@@ -14,7 +14,6 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
-using Power;
 using UnityEngine;
 
 [MoonSharpUserData]
@@ -34,6 +33,7 @@ public class World : IXmlSerializable
 
     // The pathfinding graph used to navigate our world map.
     public Path_TileGraph tileGraph;
+    public Path_RoomGraph roomGraph;
 
     public Wallet Wallet;
 
@@ -45,20 +45,23 @@ public class World : IXmlSerializable
     public JobQueue jobWaitingQueue;
 
     // A two-dimensional array to hold our tile data.
-    private Tile[,] tiles;
+    private Tile[,,] tiles;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="World"/> class.
     /// </summary>
     /// <param name="width">Width in tiles.</param>
     /// <param name="height">Height in tiles.</param>
-    public World(int width, int height)
+    public World(int width, int height, int depth)
     {
         // Creates an empty world.
-        SetupWorld(width, height);
+        SetupWorld(width, height, depth);
         int seed = UnityEngine.Random.Range(0, int.MaxValue);
         WorldGenerator.Generate(this, seed);
         Debug.ULogChannel("World", "Generated World");
+
+        // Make one character
+        Debug.Log("Generated World");
 
         // adding air to enclosed rooms
         foreach (Room room in this.rooms)
@@ -69,9 +72,11 @@ public class World : IXmlSerializable
                 room.ChangeGas("N2", 0.8f * room.GetSize());
             }
         }
-        
+
         // Make one character.
-        CreateCharacter(GetTileAt(Width / 2, Height / 2));
+        CreateCharacter(GetTileAt(Width / 2, Height / 2, 0));
+
+        TestRoomGraphGeneration(this);
     }
 
     /// <summary>
@@ -97,7 +102,10 @@ public class World : IXmlSerializable
     // The tile height of the world
     public int Height { get; protected set; }
 
-    public Syster PowerSystem { get; private set; }
+    // The tile depth of the world
+    public int Depth { get; protected set; }
+
+    public ProjectPorcupine.PowerNetwork.PowerNetwork PowerNetwork { get; private set; }
 
     public Room GetOutsideRoom()
     {
@@ -122,6 +130,8 @@ public class World : IXmlSerializable
     public void AddRoom(Room r)
     {
         rooms.Add(r);
+        roomGraph = null;
+
         Debug.ULogChannel("Rooms", "creating room:" + r.ID);
     }
 
@@ -141,6 +151,8 @@ public class World : IXmlSerializable
 
         Debug.ULogChannel("Rooms", "Deleting room:" + r.ID);
 
+        roomGraph = null;
+
         // Remove this room from our rooms list.
         rooms.Remove(r);
 
@@ -149,7 +161,7 @@ public class World : IXmlSerializable
         r.ReturnTilesToOutsideRoom();
     }
 
-    public void UpdateCharacters(float deltaTime)
+    public void TickEveryFrame(float deltaTime)
     {
         // Change from a foreach due to the collection being modified while its being looped through
         for (int i = 0; i < characters.Count; i++)
@@ -158,8 +170,9 @@ public class World : IXmlSerializable
         }
     }
 
-    public void Tick(float deltaTime)
+    public void TickFixedFrequency(float deltaTime)
     {
+        // Update Furniture
         foreach (Furniture f in furnitures)
         {
             f.Update(deltaTime);
@@ -167,18 +180,18 @@ public class World : IXmlSerializable
 
         // Progress temperature modelling
         temperature.Update();
-        PowerSystem.Update(deltaTime);
+        PowerNetwork.Update(deltaTime);
     }
 
     public Character CreateCharacter(Tile t)
     {
-        return CreateCharacter(t, UnityEngine.Random.ColorHSV());
+        return CreateCharacter(t, ColorUtilities.RandomColor(), ColorUtilities.RandomGrayColor(), ColorUtilities.RandomSkinColor());
     }
 
-    public Character CreateCharacter(Tile t, Color color)
+    public Character CreateCharacter(Tile t, Color color, Color uniformColor, Color skinColor)
     {
         Debug.ULogChannel("World", "CreateCharacter");
-        Character c = new Character(t, color);
+        Character c = new Character(t, color, uniformColor, skinColor);
 
         // Adds a random name to the Character
         string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
@@ -197,6 +210,24 @@ public class World : IXmlSerializable
     }
 
     /// <summary>
+    /// A function to return the Character object from the character's name.
+    /// </summary>
+    /// <param name="name">The name of the character.</param>
+    /// <returns>The character with that name.</returns>
+    public Character GetCharacterFromName(string name)
+    {
+        foreach (Character character in characters)
+        {
+            if (character.name == name)
+            {
+                return character;
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>
     /// A function for testing out the system.
     /// </summary>
     public void RandomizeTiles()
@@ -205,13 +236,16 @@ public class World : IXmlSerializable
         {
             for (int y = 0; y < Height; y++)
             {
-                if (UnityEngine.Random.Range(0, 2) == 0)
+                for (int z = 0; z < Depth; z++)
                 {
-                    tiles[x, y].Type = TileType.Empty;
-                }
-                else
-                {
-                    tiles[x, y].Type = TileType.Floor;
+                    if (UnityEngine.Random.Range(0, 2) == 0)
+                    {
+                        tiles[x, y, z].Type = TileType.Empty;
+                    }
+                    else
+                    {
+                        tiles[x, y, z].Type = TileType.Floor;
+                    }
                 }
             }
         }
@@ -227,13 +261,13 @@ public class World : IXmlSerializable
         {
             for (int y = b - 5; y < b + 15; y++)
             {
-                tiles[x, y].Type = TileType.Floor;
+                tiles[x, y, 0].Type = TileType.Floor;
 
                 if (x == l || x == (l + 9) || y == b || y == (b + 9))
                 {
                     if (x != (l + 9) && y != (b + 4))
                     {
-                        PlaceFurniture("furn_SteelWall", tiles[x, y]);
+                        PlaceFurniture("furn_SteelWall", tiles[x, y, 0]);
                     }
                 }
             }
@@ -246,27 +280,28 @@ public class World : IXmlSerializable
     /// <returns>The <see cref="Tile"/> or null if called with invalid arguments.</returns>
     /// <param name="x">The x coordinate.</param>
     /// <param name="y">The y coordinate.</param>
-    public Tile GetTileAt(int x, int y)
+    public Tile GetTileAt(int x, int y, int z)
     {
-        if (x >= Width || x < 0 || y >= Height || y < 0)
+        if (x >= Width || x < 0 || y >= Height || y < 0 || z >= Depth || z < 0)
         {
             return null;
         }
 
-        return tiles[x, y];
+        return tiles[x, y, z];
     }
 
+    // Currently Hardcoded to have center tile at highest layer, to play nice with pathfinding.
     public Tile GetCenterTile()
     {
-        return GetTileAt(Width / 2, Height / 2);
+        return GetTileAt(Width / 2, Height / 2, 0);
     }
 
     public Tile GetFirstCenterTileWithNoInventory(int maxOffset)
     {
-        return GetFirstTileWithNoInventoryAround(maxOffset, Width / 2, Height / 2);
+        return GetFirstTileWithNoInventoryAround(maxOffset, Width / 2, Height / 2, 0);
     }
 
-    public Tile GetFirstTileWithNoInventoryAround(int maxOffset, int centerX, int centerY)
+    public Tile GetFirstTileWithNoInventoryAround(int maxOffset, int centerX, int centerY, int centerZ)
     {
         for (int offset = 0; offset <= maxOffset; offset++)
         {
@@ -278,14 +313,14 @@ public class World : IXmlSerializable
             for (offsetX = -offset; offsetX <= offset; offsetX++)
             {
                 offsetY = offset;
-                tile = GetTileAt(centerX + offsetX, centerY + offsetY);
+                tile = GetTileAt(centerX + offsetX, centerY + offsetY, centerZ);
                 if (tile.Inventory == null)
                 {
                     return tile;
                 }
 
                 offsetY = -offset;
-                tile = GetTileAt(centerX + offsetX, centerY + offsetY);
+                tile = GetTileAt(centerX + offsetX, centerY + offsetY, centerZ);
                 if (tile.Inventory == null)
                 {
                     return tile;
@@ -296,14 +331,14 @@ public class World : IXmlSerializable
             for (offsetY = -offset; offsetY <= offset; offsetY++)
             {
                 offsetX = offset;
-                tile = GetTileAt(centerX + offsetX, centerY + offsetY);
+                tile = GetTileAt(centerX + offsetX, centerY + offsetY,  centerZ);
                 if (tile.Inventory == null)
                 {
                     return tile;
                 }
 
                 offsetX = -offset;
-                tile = GetTileAt(centerX + offsetX, centerY + offsetY);
+                tile = GetTileAt(centerX + offsetX, centerY + offsetY,  centerZ);
                 if (tile.Inventory == null)
                 {
                     return tile;
@@ -316,14 +351,20 @@ public class World : IXmlSerializable
 
     public Furniture PlaceFurniture(string objectType, Tile t, bool doRoomFloodFill = true)
     {
-        // TODO: This function assumes 1x1 tiles -- change this later!
-        if (PrototypeManager.Furniture.HasPrototype(objectType) == false)
+        if (PrototypeManager.Furniture.Has(objectType) == false)
         {
             Debug.ULogErrorChannel("World", "furniturePrototypes doesn't contain a proto for key: " + objectType);
             return null;
         }
 
-        Furniture furn = Furniture.PlaceInstance(PrototypeManager.Furniture.GetPrototype(objectType), t);
+        Furniture furn = PrototypeManager.Furniture.Get(objectType);
+
+        return PlaceFurniture(furn, t, doRoomFloodFill);
+    }
+
+    public Furniture PlaceFurniture(Furniture furniture, Tile t, bool doRoomFloodFill = true)
+    {
+        Furniture furn = Furniture.PlaceInstance(furniture, t);
 
         if (furn == null)
         {
@@ -370,7 +411,7 @@ public class World : IXmlSerializable
 
     public bool IsFurniturePlacementValid(string furnitureType, Tile t)
     {
-        return PrototypeManager.Furniture.GetPrototype(furnitureType).IsValidPosition(t);
+        return PrototypeManager.Furniture.Get(furnitureType).IsValidPosition(t);
     }
 
     public XmlSchema GetSchema()
@@ -383,6 +424,7 @@ public class World : IXmlSerializable
         // Save info here
         writer.WriteAttributeString("Width", Width.ToString());
         writer.WriteAttributeString("Height", Height.ToString());
+        writer.WriteAttributeString("Depth", Depth.ToString());
 
         writer.WriteStartElement("Rooms");
         foreach (Room r in rooms)
@@ -405,11 +447,14 @@ public class World : IXmlSerializable
         {
             for (int y = 0; y < Height; y++)
             {
-                if (tiles[x, y].Type != TileType.Empty)
+                for (int z = 0; z < Depth; z++)
                 {
-                    writer.WriteStartElement("Tile");
-                    tiles[x, y].WriteXml(writer);
-                    writer.WriteEndElement();
+                    if (tiles[x, y, z].Type != TileType.Empty)
+                    {
+                        writer.WriteStartElement("Tile");
+                        tiles[x, y, z].WriteXml(writer);
+                        writer.WriteEndElement();
+                    }
                 }
             }
         }
@@ -424,7 +469,7 @@ public class World : IXmlSerializable
                 // If we don't have a tile, that means this is in a character's inventory (or some other non-tile location
                 //      which means we shouldn't save that Inventory here, the character will take care of saving and loading
                 //      the inventory properly.
-                if (inv.tile != null)
+                if (inv.Tile != null)
                 {
                     writer.WriteStartElement("Inventory");
                     inv.WriteXml(writer);
@@ -466,6 +511,8 @@ public class World : IXmlSerializable
         }
 
         writer.WriteEndElement();
+
+        Scheduler.Scheduler.Current.WriteXml(writer);
     }
 
     public void ReadXml(XmlReader reader)
@@ -473,8 +520,9 @@ public class World : IXmlSerializable
         // Load info here
         Width = int.Parse(reader.GetAttribute("Width"));
         Height = int.Parse(reader.GetAttribute("Height"));
+        Depth = int.Parse(reader.GetAttribute("Depth"));
 
-        SetupWorld(Width, Height);
+        SetupWorld(Width, Height, Depth);
 
         while (reader.Read())
         {
@@ -501,33 +549,10 @@ public class World : IXmlSerializable
                 case "Wallet":
                     ReadXml_Wallet(reader);
                     break;
+                case "Scheduler":
+                    Scheduler.Scheduler.Current.ReadXml(reader);
+                    break;
             }
-        }
-
-        // DEBUGGING ONLY!  REMOVE ME LATER!
-        // Create an Inventory Item
-        Inventory inv = new Inventory("Steel Plate", 50, 50);
-        Tile t = GetTileAt(Width / 2, Height / 2);
-        inventoryManager.PlaceInventory(t, inv);
-        if (OnInventoryCreated != null)
-        {
-            OnInventoryCreated(t.Inventory);
-        }
-
-        inv = new Inventory("Steel Plate", 50, 4);
-        t = GetTileAt((Width / 2) + 2, Height / 2);
-        inventoryManager.PlaceInventory(t, inv);
-        if (OnInventoryCreated != null)
-        {
-            OnInventoryCreated(t.Inventory);
-        }
-
-        inv = new Inventory("Copper Wire", 50, 3);
-        t = GetTileAt((Width / 2) + 1, (Height / 2) + 2);
-        inventoryManager.PlaceInventory(t, inv);
-        if (OnInventoryCreated != null)
-        {
-            OnInventoryCreated(t.Inventory);
         }
     }
 
@@ -565,46 +590,40 @@ public class World : IXmlSerializable
 
     private void LoadSkybox(string name = null)
     {
-        DirectoryInfo dirInfo = new DirectoryInfo(Path.Combine(Application.dataPath, "Resources/Skyboxes"));
-        if (!dirInfo.Exists)
-        {
-            dirInfo.Create();
-        }
+        Material[] skyboxes = Resources.LoadAll("Skyboxes", typeof(Material)).Cast<Material>().ToArray();
+        Material newSkybox = null;
 
-        FileInfo[] files = dirInfo.GetFiles("*.mat", SearchOption.AllDirectories);
-
-        if (files.Length > 0)
+        if (skyboxes.Length > 0)
         {
-            string resourcePath = string.Empty;
-            FileInfo file = null;
             if (!string.IsNullOrEmpty(name))
             {
-                foreach (FileInfo fileInfo in files)
+                foreach (Material skybox in skyboxes)
                 {
-                    if (name.Equals(fileInfo.Name.Remove(fileInfo.Name.LastIndexOf("."))))
+                    if (name.Equals(skybox.name))
                     {
-                        file = fileInfo;
+                        newSkybox = skybox;
                         break;
                     }
                 }
             }
 
             // Maybe we passed in a name that doesn't exist? Pick a random skybox.
-            if (file == null)
+            if (newSkybox == null)
             {
-                // Get random file
-                file = files[(int)(UnityEngine.Random.value * files.Length)];
+                newSkybox = skyboxes[(int)(UnityEngine.Random.value * skyboxes.Length)];
             }
 
-            resourcePath = Path.Combine(file.DirectoryName.Substring(file.DirectoryName.IndexOf("Skyboxes")), file.Name);
-
-            if (resourcePath.Contains("."))
+            // Unload unused skyboxes
+            foreach (Material skybox in skyboxes)
             {
-                resourcePath = resourcePath.Remove(resourcePath.LastIndexOf("."));
+                if (!newSkybox.name.Equals(skybox.name))
+                {
+                    Resources.UnloadAsset(skybox);
+                }
             }
 
-            skybox = Resources.Load<Material>(resourcePath);
-            RenderSettings.skybox = skybox;
+            this.skybox = newSkybox;
+            RenderSettings.skybox = this.skybox;
         }
         else
         {
@@ -612,11 +631,8 @@ public class World : IXmlSerializable
         }
     }
 
-    private void SetupWorld(int width, int height)
+    private void SetupWorld(int width, int height, int depth)
     {
-        // Setup furniture actions before any other things are loaded.
-        new FurnitureActions();
-
         jobQueue = new JobQueue();
         jobWaitingQueue = new JobQueue();
 
@@ -626,10 +642,11 @@ public class World : IXmlSerializable
 
         Width = width;
         Height = height;
+        Depth = depth;
 
         TileType.LoadTileTypes();
 
-        tiles = new Tile[Width, Height];
+        tiles = new Tile[Width, Height, Depth];
 
         rooms = new List<Room>();
         rooms.Add(new Room()); // Create the outside?
@@ -638,9 +655,12 @@ public class World : IXmlSerializable
         {
             for (int y = 0; y < Height; y++)
             {
-                tiles[x, y] = new Tile(x, y);
-                tiles[x, y].TileChanged += OnTileChangedCallback;
-                tiles[x, y].Room = GetOutsideRoom(); // Rooms 0 is always going to be outside, and that is our default room
+                for (int z = 0; z < Depth; z++)
+                {
+                    tiles[x, y, z] = new Tile(x, y, z);
+                    tiles[x, y, z].TileChanged += OnTileChangedCallback;
+                    tiles[x, y, z].Room = GetOutsideRoom(); // Rooms 0 is always going to be outside, and that is our default room
+                }
             }
         }
 
@@ -649,7 +669,7 @@ public class World : IXmlSerializable
         characters = new List<Character>();
         furnitures = new List<Furniture>();
         inventoryManager = new InventoryManager();
-        PowerSystem = new Syster();
+        PowerNetwork = new ProjectPorcupine.PowerNetwork.PowerNetwork();
         temperature = new Temperature(Width, Height);
         LoadSkybox();
     }
@@ -724,7 +744,8 @@ public class World : IXmlSerializable
             {
                 int x = int.Parse(reader.GetAttribute("X"));
                 int y = int.Parse(reader.GetAttribute("Y"));
-                tiles[x, y].ReadXml(reader);
+                int z = int.Parse(reader.GetAttribute("Z"));
+                tiles[x, y, z].ReadXml(reader);
             }
             while (reader.ReadToNextSibling("Tile"));
         }
@@ -740,6 +761,7 @@ public class World : IXmlSerializable
             {
                 int x = int.Parse(reader.GetAttribute("X"));
                 int y = int.Parse(reader.GetAttribute("Y"));
+                int z = int.Parse(reader.GetAttribute("Z"));
 
                 // Create our inventory from the file
                 Inventory inv = new Inventory(
@@ -747,7 +769,7 @@ public class World : IXmlSerializable
                     int.Parse(reader.GetAttribute("maxStackSize")),
                     int.Parse(reader.GetAttribute("stackSize")));
 
-                inventoryManager.PlaceInventory(tiles[x, y], inv);
+                inventoryManager.PlaceInventory(tiles[x, y, z], inv);
             }
             while (reader.ReadToNextSibling("Inventory"));
         }
@@ -761,8 +783,9 @@ public class World : IXmlSerializable
             {
                 int x = int.Parse(reader.GetAttribute("X"));
                 int y = int.Parse(reader.GetAttribute("Y"));
+                int z = int.Parse(reader.GetAttribute("Z"));
 
-                Furniture furn = PlaceFurniture(reader.GetAttribute("objectType"), tiles[x, y], false);
+                Furniture furn = PlaceFurniture(reader.GetAttribute("objectType"), tiles[x, y, z], false);
                 furn.ReadXml(reader);
             }
             while (reader.ReadToNextSibling("Furniture"));
@@ -793,17 +816,17 @@ public class World : IXmlSerializable
 
                 int x = int.Parse(reader.GetAttribute("X"));
                 int y = int.Parse(reader.GetAttribute("Y"));
+                int z = int.Parse(reader.GetAttribute("Z"));
                 if (reader.GetAttribute("r") != null)
                 {
-                    float r = float.Parse(reader.GetAttribute("r"));
-                    float b = float.Parse(reader.GetAttribute("b"));
-                    float g = float.Parse(reader.GetAttribute("g"));
-                    Color color = new Color(r, g, b, 1.0f);
-                    character = CreateCharacter(tiles[x, y], color);
+                    Color color = ColorUtilities.ParseColorFromString(reader.GetAttribute("r"), reader.GetAttribute("g"), reader.GetAttribute("b"));
+                    Color colorUni = ColorUtilities.ParseColorFromString(reader.GetAttribute("rUni"), reader.GetAttribute("gUni"), reader.GetAttribute("bUni"));
+                    Color colorSkin = ColorUtilities.ParseColorFromString(reader.GetAttribute("rSkin"), reader.GetAttribute("gSkin"), reader.GetAttribute("bSkin"));
+                    character = CreateCharacter(tiles[x, y, z], color, colorUni, colorSkin);
                 }
                 else
                 {
-                    character = CreateCharacter(tiles[x, y]);
+                    character = CreateCharacter(tiles[x, y, z]);
                 }
 
                 character.name = reader.GetAttribute("name");
@@ -832,4 +855,172 @@ public class World : IXmlSerializable
             while (reader.ReadToNextSibling("Character"));
         }
     }
+
+#region TestFunctions
+    /// <summary>
+    /// Tests the room graph generation for the default world.
+    /// </summary>
+    private void TestRoomGraphGeneration(World world)
+    {
+        // FIXME: This code is fugly!!!
+        // TODO: Make it work for other testing maps?
+
+        // roomGraph is auto-generated by Path_AStar if needed
+        // doing this explicitly here to make sure we have one now
+        roomGraph = new Path_RoomGraph(world);
+
+        int errorCount = 0;
+
+        if (roomGraph.nodes.Count() != 6)
+        {
+            Debug.ULogErrorChannel("Path_RoomGraph", "Generated incorrect number of nodes: " + roomGraph.nodes.Count().ToString());
+            errorCount++;
+        }
+
+        foreach (Room r in world.rooms)
+        {
+            if (roomGraph.nodes.ContainsKey(r) == false)
+            {
+                Debug.ULogErrorChannel("Path_RoomGraph", "Does not contain room: " + r.ID);
+                errorCount++;
+            }
+            else
+            {
+                Path_Node<Room> node = roomGraph.nodes[r];
+                int edgeCount = node.edges.Count();
+                switch (r.ID)
+                {
+                    case 0: // the outside room has two edges both connecting to room 2
+                        if (edgeCount != 2)
+                        {
+                            Debug.ULogErrorChannel("Path_RoomGraph", "Room 0 supposed to have 2 edges. Instead has: " + edgeCount);
+                            errorCount++;
+                            continue;
+                        }
+
+                        if (node.edges[0].node.data != world.rooms[2] || node.edges[1].node.data != world.rooms[2])
+                        {
+                            Debug.ULogErrorChannel("Path_RoomGraph", "Room 0 supposed to have edges to Room 2.");
+                            Debug.ULogErrorChannel(
+                                "Path_RoomGraph",
+                                string.Format("Instead has: {1} and {2}", node.edges[0].node.data.ID, node.edges[1].node.data.ID));
+                            
+                            // "Instead has: " + node.edges[0].node.data.ID.ToString() + " and "
+                            // + node.edges[1].node.data.ID.ToString());
+                            errorCount++;
+                        }
+
+                        break;
+                    case 1: // Room 1 has one edge connecting to room 2
+                        if (edgeCount != 1)
+                        {
+                            Debug.ULogErrorChannel("Path_RoomGraph", "Room 1 supposed to have 1 edge. Instead has: " + edgeCount);
+                            errorCount++;
+                            continue;
+                        }
+
+                        if (node.edges[0].node.data != world.rooms[2])
+                        {
+                            Debug.ULogErrorChannel("Path_RoomGraph", "Room 1 supposed to have edge to Room 2.");
+                            Debug.ULogErrorChannel("Path_RoomGraph", "Instead has: " + node.edges[0].node.data.ID.ToString());
+                            errorCount++;
+                        }
+
+                        break;
+                    case 2: // Room 2 has two edges both connecting to the outside room, one connecting to room 1 and one connecting to room 5
+                        if (edgeCount != 4)
+                        {
+                            Debug.ULogErrorChannel("Path_RoomGraph", "Room 2 supposed to have 4 edges. Instead has: " + edgeCount);
+                            errorCount++;
+                            continue;
+                        }
+
+                        // group edges by target room
+                        IEnumerable<IGrouping<Room, Path_Edge<Room>>> query =
+                            node.edges.GroupBy(edge => edge.node.data, edge => edge);
+
+                        foreach (IGrouping<Room, Path_Edge<Room>> group in query)
+                        {
+                            switch (group.Key.ID)
+                            {
+                                case 0:
+                                    if (group.Count() != 2)
+                                    {
+                                        Debug.ULogErrorChannel("Path_RoomGraph", "Room 2 supposed to have two edges to Room 0.");
+                                        errorCount++;
+                                    }
+
+                                    break;
+                                case 1:
+                                    if (group.Count() != 1)
+                                    {
+                                        Debug.ULogErrorChannel("Path_RoomGraph", "Room 2 supposed to have one edge to Room 1.");
+                                        errorCount++;
+                                    }
+
+                                    break;
+                                case 5:
+                                    if (group.Count() != 1)
+                                    {
+                                        Debug.ULogErrorChannel("Path_RoomGraph", "Room 2 supposed to have one edge to Room 5.");
+                                        errorCount++;
+                                    }
+
+                                    break;
+                                default:
+                                    Debug.ULogErrorChannel("Path_RoomGraph", "Room 2 only supposed to have edges to Rooms 0, 1 and 5.");
+                                    errorCount++;
+                                    break;
+                            }
+                        }
+
+                        break;
+                    case 3: // Room 3 has no edges
+                        if (edgeCount != 0)
+                        {
+                            Debug.ULogErrorChannel("Path_RoomGraph", "Room 3 supposed to have no edges. Instead has: " + edgeCount);
+                            errorCount++;
+                            continue;
+                        }
+
+                        break;
+                    case 4: // Room 4 has no edges
+                        if (edgeCount != 0)
+                        {
+                            Debug.ULogErrorChannel("Path_RoomGraph", "Room 4 supposed to have no edges. Instead has: " + edgeCount);
+                            errorCount++;
+                            continue;
+                        }
+
+                        break;
+                    case 5: // Room 5 has one edge to Room 2
+                        if (edgeCount != 1)
+                        {
+                            Debug.ULogErrorChannel("Path_RoomGraph", "Room 5 supposed to have 1 edge. Instead has: " + edgeCount);
+                            errorCount++;
+                            continue;
+                        }
+
+                        if (node.edges[0].node.data != world.rooms[2])
+                        {
+                            Debug.ULogErrorChannel("Path_RoomGraph", "Room 5 supposed to have edge to Room 2.");
+                            Debug.ULogErrorChannel("Path_RoomGraph", "Instead has: " + node.edges[0].node.data.ID.ToString());
+                            errorCount++;
+                        }
+
+                        break;
+                    default:
+                        Debug.ULogErrorChannel("Path_RoomGraph", "Unknown room ID: " + r.ID);
+                        errorCount++;
+                        break;
+                }
+            }
+        }
+
+        if (errorCount == 0)
+        {
+            Debug.ULogChannel("Path_RoomGraph", "TestRoomGraphGeneration completed without errors!");
+        }
+    }
+#endregion
 }

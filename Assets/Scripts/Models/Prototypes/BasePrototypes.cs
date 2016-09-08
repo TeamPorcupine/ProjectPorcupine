@@ -62,7 +62,7 @@ public class BasePrototypes<T>
     /// </summary>
     /// <returns><c>true</c> if there is a prototype with the specified type; otherwise, <c>false</c>.</returns>
     /// <param name="protoType">The prototype type.</param>
-    public bool HasPrototype(string type)
+    public bool Has(string type)
     {
         return prototypes.ContainsKey(type);
     }
@@ -72,9 +72,9 @@ public class BasePrototypes<T>
     /// </summary>
     /// <returns>The prototype.</returns>
     /// <param name="protoType">The prototype type.</param>
-    public T GetPrototype(string type)
+    public T Get(string type)
     {
-        if (HasPrototype(type))
+        if (Has(type))
         {
             return prototypes[type];
         }
@@ -87,18 +87,33 @@ public class BasePrototypes<T>
     /// </summary>
     /// <returns>The prototype.</returns>
     /// <param name="index">The prototype index.</param>
-    public T GetPrototype(int index)
+    public T Get(int index)
     {
         return prototypes.ElementAt(index).Value;
     }
 
     /// <summary>
-    /// Adds the given prototype.
+    /// Adds the given prototype. If the protptype exists it is overwirten.
     /// </summary>
     /// <param name="type">The prototype type.</param>
     /// <param name="proto">The prototype instance.</param>
-    public void SetPrototype(string type, T proto)
+    public void Set(string type, T proto)
     {
         prototypes[type] = proto;
+    }
+
+    /// <summary>
+    /// Add the given prototype. If a prototype of the given type is already registered, overwrite the old one while logging a warning.
+    /// </summary>
+    /// <param name="type">The prototype type.</param>
+    /// <param name="proto">The prototype instance.</param>
+    public void Add(string type, T proto)
+    {
+        if (Has(type))
+        {
+            Debug.ULogWarningChannel("BasePrototypes<T>.Add", "Trying to register a prototype of type '{0}' which already exists. Overwriting.", type);
+        }
+
+        Set(type, proto);
     }
 }

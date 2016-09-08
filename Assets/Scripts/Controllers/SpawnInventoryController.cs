@@ -22,12 +22,12 @@ public class SpawnInventoryController
 
     public string InventoryToBuild { get; protected set; }
 
-    public void HideUI() 
+    public void HideUI()
     {
         spawnUI.SetActive(false);
     }
 
-    public void ShowUI() 
+    public void ShowUI()
     {
         spawnUI.SetActive(true);
     }
@@ -53,7 +53,7 @@ public class SpawnInventoryController
             return; 
         }
 
-        if (t.Inventory == null || t.Inventory.objectType == InventoryToBuild)
+        if (t.Inventory == null || t.Inventory.ObjectType == InventoryToBuild)
         {
             World.Current.inventoryManager.PlaceInventory(t, inventoryChange);
         }
@@ -74,7 +74,7 @@ public class SpawnInventoryController
         rectTransform.anchorMax = new Vector2(0, 0.5f);
         rectTransform.anchoredPosition = new Vector2(0, 0);
 
-        Image image = spawnUI.AddComponent<Image>();
+        spawnUI.AddComponent<Image>();
 
         VerticalLayoutGroup vlg = spawnUI.AddComponent<VerticalLayoutGroup>();
         vlg.childForceExpandWidth = false;
@@ -96,7 +96,7 @@ public class SpawnInventoryController
 
             inventoryButton_go.transform.SetParent(spawnUI.transform);
 
-            Image image = inventoryButton_go.AddComponent<Image>();
+            inventoryButton_go.AddComponent<Image>();
 
             Button button = inventoryButton_go.AddComponent<Button>();
             ColorBlock colorBlock = new ColorBlock();
@@ -105,9 +105,9 @@ public class SpawnInventoryController
             button.colors = colorBlock;
             string localName = invName;
             button.onClick.AddListener(
-                () => { OnButtonClick(localName); });
+                () => OnButtonClick(localName));
 
-            GameObject text_go = CreateTextComponent(inventoryButton_go, invName);
+            CreateTextComponent(inventoryButton_go, invName);
 
             LayoutElement layoutElement = inventoryButton_go.AddComponent<LayoutElement>();
             layoutElement.minWidth = 120;

@@ -33,6 +33,6 @@ public class TraderPrototypes : XmlPrototypes<TraderPrototype>
             LogPrototypeError(e, trader.ObjectType);
         }
 
-        SetPrototype(trader.ObjectType, trader);
+        Set(trader.ObjectType, trader);
     }
 }

@@ -90,6 +90,7 @@ public class DialogBoxSettings : DialogBox
     {
         this.CloseDialog();
         WorldController.Instance.spawnInventoryController.SetUIVisibility(developerModeToggle.isOn);
+        FurnitureBuildMenu.instance.RebuildMenuButtons(developerModeToggle.isOn);
         SaveSetting();
     }
 
@@ -172,17 +173,17 @@ public class DialogBoxSettings : DialogBox
     /// </summary>
     private void LoadSetting()
     {
-        musicVolume.normalizedValue = Settings.GetSettingAsFloat("DialogBoxSettings_musicVolume", 0.5f);
+        musicVolume.normalizedValue = Settings.GetSetting("DialogBoxSettings_musicVolume", 0.5f);
 
-        langToggle.isOn = Settings.GetSettingAsBool("DialogBoxSettings_langToggle", true);
-        fpsToggle.isOn = Settings.GetSettingAsBool("DialogBoxSettings_fpsToggle", true);
-        fullScreenToggle.isOn = Settings.GetSettingAsBool("DialogBoxSettings_fullScreenToggle", true);
-        developerModeToggle.isOn = Settings.GetSettingAsBool("DialogBoxSettings_developerModeToggle", false);
+        langToggle.isOn = Settings.GetSetting("DialogBoxSettings_langToggle", true);
+        fpsToggle.isOn = Settings.GetSetting("DialogBoxSettings_fpsToggle", true);
+        fullScreenToggle.isOn = Settings.GetSetting("DialogBoxSettings_fullScreenToggle", true);
+        developerModeToggle.isOn = Settings.GetSetting("DialogBoxSettings_developerModeToggle", false);
 
-        qualityDropdown.value = Settings.GetSettingAsInt("DialogBoxSettings_qualityDropdown", 0);
-        vsyncDropdown.value = Settings.GetSettingAsInt("DialogBoxSettings_vSyncDropdown", 0);
-        resolutionDropdown.value = Settings.GetSettingAsInt("DialogBoxSettings_resolutionDropdown", 0);
-        aliasingDropdown.value = Settings.GetSettingAsInt("DialogBoxSettings_aliasingDropdown", 0);
+        qualityDropdown.value = Settings.GetSetting("DialogBoxSettings_qualityDropdown", 0);
+        vsyncDropdown.value = Settings.GetSetting("DialogBoxSettings_vSyncDropdown", 0);
+        resolutionDropdown.value = Settings.GetSetting("DialogBoxSettings_resolutionDropdown", 0);
+        aliasingDropdown.value = Settings.GetSetting("DialogBoxSettings_aliasingDropdown", 0);
     }
 
     private void CreateResDropDown()
