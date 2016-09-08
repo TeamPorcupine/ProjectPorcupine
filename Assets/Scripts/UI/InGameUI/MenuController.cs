@@ -68,7 +68,6 @@ public class MenuController : MonoBehaviour
     public void OnButtonWork()
     {
         DeactivateAll();
-        dbm.dialogBoxJobList.ShowDialog();
     }
 
     public void OnButtonWorld()
