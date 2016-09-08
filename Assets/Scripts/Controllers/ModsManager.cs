@@ -26,6 +26,7 @@ public class ModsManager
     public void LoadPrototypes()
     {
         LoadFunctionScripts("Furniture", "Furniture.lua");
+        LoadFunctionScripts("Utility", "Utility.lua");
         LoadFunctionScripts("Need", "Need.lua");
         LoadFunctionScripts("GameEvent", "GameEvent.lua");
         LoadFunctionScripts("TileType", "Tiles.lua");

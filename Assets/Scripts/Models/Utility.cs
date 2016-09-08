@@ -386,7 +386,7 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider
             return ObjectType;
         }
 
-        DynValue ret = LuaUtilities.CallFunction(getSpriteNameAction, this);
+        DynValue ret = FunctionsManager.Utility.Call(getSpriteNameAction, this);
         return ret.String;
     }
 
@@ -492,7 +492,7 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider
                     Job j = new Job(
                                 null,
                                 ObjectType,
-                                FurnitureActions.JobComplete_FurnitureBuilding,
+                                FunctionsManager.JobComplete_UtilityBuilding,
                                 jobTime,
                                 invs.ToArray(),
                                 Job.JobPriority.High);
@@ -890,7 +890,7 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider
 
     private void InvokeContextMenuLuaAction(string luaFunction, Character character)
     {
-        LuaUtilities.CallFunction(luaFunction, this, character);
+        FunctionsManager.Utility.Call(luaFunction, this, character);
     }
 
     [MoonSharpVisible(true)]
