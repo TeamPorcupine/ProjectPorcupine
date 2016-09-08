@@ -503,6 +503,33 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         return stat;
     }
 
+    public void ReadStatsFromSave(XmlReader reader)
+    {
+        // Protection vs. empty stats
+        if (reader.IsEmptyElement)
+        {
+            return;
+        }
+
+        while (reader.Read())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement)
+            {
+                break;
+            }
+
+            string statType = reader.GetAttribute("statType");
+            Stat stat = GetStat(statType);
+            if (stat != null)
+            {
+                if (!int.TryParse(reader.GetAttribute("value"), out stat.Value))
+                {
+                    Debug.ULogErrorChannel("Character", "Stat element did not have a value!");
+                }
+            }
+        }
+    }
+
     private void InitializeCharacterValues()
     {
         LoadNeeds();
@@ -536,33 +563,6 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         }
 
         Debug.ULogChannel("Character", "Initialized " + stats.Count + " Stats.");
-    }
-
-    public void ReadStatsFromSave(XmlReader reader)
-    {
-        // Protection vs. empty stats
-        if (reader.IsEmptyElement)
-        {
-            return;
-        }
-
-        while (reader.Read())
-        {
-            if (reader.NodeType == XmlNodeType.EndElement)
-            {
-                break;
-            }
-
-            string statType = reader.GetAttribute("statType");
-            Stat stat = GetStat(statType);
-            if (stat != null)
-            {
-                if (!int.TryParse(reader.GetAttribute("value"), out stat.Value))
-                {
-                    Debug.ULogErrorChannel("Character", "Stat element did not have a value!");
-                }
-            }
-        }
     }
 
     private void GetNewJob()
