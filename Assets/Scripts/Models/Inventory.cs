@@ -7,6 +7,7 @@
 // ====================================================
 #endregion
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Xml;
@@ -92,15 +93,18 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
     {
         return string.Format("StackSize: {0}\nCategory: {1}\nBasePrice: {2:N2}", StackSize, Category, BasePrice);
     }
-
-    public string GetHitPointString()
-    {
-        return string.Empty;  // Does inventory have hitpoints? How does it get destroyed? Maybe it's just a percentage chance based on damage.
-    }
-
+    
     public string GetJobDescription()
     {
         return string.Empty;
+    }
+
+    public IEnumerable<string> GetAdditionalInfo()
+    {
+        // Does inventory have hitpoints? How does it get destroyed? Maybe it's just a percentage chance based on damage.
+        yield return string.Format("StackSize: {0}", stackSize);
+        yield return string.Format("Category: {0}", BasePrice);
+        yield return string.Format("BasePrice: {0:N2}", BasePrice);
     }
 
     public XmlSchema GetSchema()

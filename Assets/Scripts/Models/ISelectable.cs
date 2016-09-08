@@ -7,6 +7,7 @@
 // ====================================================
 #endregion
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public interface ISelectable
@@ -16,10 +17,8 @@ public interface ISelectable
     string GetName();
 
     string GetDescription();
-
-    // TODO: Decide whether to allow indestructible thing.
-    // For indestructible things (if any) this is allowed to return blank.
-    string GetHitPointString();
-
+    
     string GetJobDescription();
+
+    IEnumerable<string> GetAdditionalInfo();
 }
