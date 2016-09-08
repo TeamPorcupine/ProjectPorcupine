@@ -532,7 +532,6 @@ public class World : IXmlSerializable
 
         writer.WriteEndElement();
 
-
         writer.WriteStartElement("Utilities");
         foreach (Utility util in utilities)
         {
