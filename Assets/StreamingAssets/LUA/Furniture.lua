@@ -402,7 +402,7 @@ end
 
 function MetalSmelter_JobWorked(j)
     j.CancelJob()
-    local spawnSpot = j.tile.furniture.Jobs.GetSpawnSpotTile()
+    local spawnSpot = j.tile.Furniture.Jobs.GetSpawnSpotTile()
     for k, inv in pairs(j.inventoryRequirements) do
         if(inv ~= nil and inv.StackSize > 0) then
             World.Current.inventoryManager.PlaceInventory(spawnSpot, inv)
@@ -459,7 +459,7 @@ function PowerCellPress_UpdateAction(furniture, deltaTime)
 end
 
 function PowerCellPress_JobComplete(j)
-    local spawnSpot = j.tile.furniture.Jobs.GetSpawnSpotTile()
+    local spawnSpot = j.tile.Furniture.Jobs.GetSpawnSpotTile()
 
     for k, inv in pairs(j.inventoryRequirements) do
         if(inv.StackSize > 0) then
