@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Quests>
-
   <Quest Name="Mining Drone Beta Test Program">
     <Description>Participate in the Beta Program of brand new mining Drones!</Description>
     <Goals>
@@ -43,7 +42,7 @@
       </Reward>
     </Rewards>
   </Quest>
-  
+
   <Quest Name="Survival basics - Fresh">
     <Description>Build 2 Oxygen Generator and the power for it</Description>
     <Goals>
@@ -92,5 +91,4 @@
       </Reward>
     </Rewards>
   </Quest>
-
 </Quests>

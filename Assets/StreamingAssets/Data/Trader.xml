@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Traders>
-  
   <Trader objectType="Wire Inc.">
     <potentialNames>
       <name>Wire Inc.</name>
@@ -32,5 +31,4 @@
       <Inventory objectType="Ice" rarity="0.8" minQuantity="1000" maxQuantity="2500"/>
     </potentialStock>
   </Trader>
-  
 </Traders>

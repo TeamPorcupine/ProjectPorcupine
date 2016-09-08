@@ -33,7 +33,6 @@
     <UnlocalizedDescription>furn_steel_wall_desc</UnlocalizedDescription>
   </Furniture>
 
-
   <Furniture objectType="Door">
     <Name>Door</Name>
     <Description>A door that characters can walk through.</Description>
@@ -75,7 +74,6 @@
     <UnlocalizedDescription>furn_door_desc</UnlocalizedDescription>
   </Furniture>
 
-
   <Furniture objectType="Airlock">
     <Name>Door</Name>
     <Description>An Airlock prevents air from leaving the base</Description>
@@ -116,7 +114,6 @@
     <UnlocalizedDescription>furn_airlock_desc</UnlocalizedDescription>
   </Furniture>
 
-
   <Furniture objectType="Stockpile">
     <Name>Stockpile</Name>
     <Description>Characters will brings inventory here for storage.</Description>
@@ -131,7 +128,6 @@
     <LocalizationCode>furn_stockpile</LocalizationCode>
     <UnlocalizedDescription>furn_stockpile_desc</UnlocalizedDescription>
   </Furniture>
-
 
   <Furniture objectType="Oxygen Generator">
     <Name>Oxygen Generator</Name>
@@ -166,7 +162,6 @@
     <UnlocalizedDescription>furn_oxygen_generator_desc</UnlocalizedDescription>
   </Furniture>
 
-
   <Furniture objectType="Mining Drone Station">
     <Name>Mining Drone Station</Name>
     <Description>Creates raw materials when worked by a character.</Description>
@@ -196,7 +191,6 @@
     <UnlocalizedDescription>furn_mining_drone_station_desc</UnlocalizedDescription>
   </Furniture>
 
-
   <Furniture objectType="Power Generator">
     <Name>Power Generator</Name>
     <TypeTag>Generator</TypeTag>
@@ -215,9 +209,9 @@
         <Frame name="Power-Generator-02" />
         <Frame name="Power-Generator-03" />
         <Frame name="Power-Generator-04" />
-      </Animation>          
+      </Animation>
     </Animations>
-    
+
     <BuildingJob jobTime="0" />
 
     <Params>
@@ -230,7 +224,6 @@
     <LocalizationCode>furn_power_generator</LocalizationCode>
     <UnlocalizedDescription>furn_power_generator_desc</UnlocalizedDescription>
   </Furniture>
-
 
   <Furniture objectType="cloning_pod">
     <Name>Cloning Pod</Name>
@@ -257,7 +250,7 @@
       <Animation state="running" fps="1" looping="true">
         <Frame name="cloning_pod_0" />
         <Frame name="cloning_pod_1" />
-      </Animation>          
+      </Animation>
     </Animations>
 
     <Params>
@@ -269,11 +262,10 @@
     <JobSpawnSpotOffset X="1" Y="-1" />
 
     <Action event="OnUpdate" functionName="CloningPod_UpdateAction" />
-    
+
     <LocalizationCode>furn_cloning_pod</LocalizationCode>
     <UnlocalizedDescription>furn_cloning_pod_desc</UnlocalizedDescription>
   </Furniture>
-
 
   <Furniture objectType="Metal Smelter">
     <Name>Metal Smelter</Name>
@@ -300,7 +292,6 @@
     <LocalizationCode>furn_metal_smelter</LocalizationCode>
     <UnlocalizedDescription>furn_metal_smelter_desc</UnlocalizedDescription>
   </Furniture>
-
 
   <Furniture objectType="heater">
     <Name>Heater</Name>
@@ -330,7 +321,6 @@
     <UnlocalizedDescription>furn_heater_desc</UnlocalizedDescription>
   </Furniture>
 
-
   <Furniture objectType="Power Cell Press">
     <Name>Power Cell Press</Name>
     <Description>A press that converts steel plate and something into power cells.</Description>
@@ -354,7 +344,6 @@
     <UnlocalizedDescription>furn_power_cell_press_desc</UnlocalizedDescription>
   </Furniture>
 
-
   <Furniture objectType="Small Landing Pad">
     <Name>Small Landing Pad</Name>
     <Description>A landing pad for small spaceboats to land.</Description>
@@ -377,15 +366,14 @@
     <JobSpotOffset X="0" Y="0" />
     <JobSpawnSpotOffset X="1" Y="-1" />
 
-    <ContextMenuAction FunctionName="LandingPad_Test_CallTradeShip" 
-                       Text="Call Trade Ship Test" 
-                       RequiereCharacterSelected="false" 
+    <ContextMenuAction FunctionName="LandingPad_Test_CallTradeShip"
+                       Text="Call Trade Ship Test"
+                       RequiereCharacterSelected="false"
                        DevModeOnly="true"/>
 
     <LocalizationCode>furn_small_landing_pad</LocalizationCode>
     <UnlocalizedDescription>furn_small_landing_pad_desc</UnlocalizedDescription>
   </Furniture>
-
 
   <Furniture objectType="compressor_oxygen">
     <Name>Oxygen Compressor</Name>
@@ -414,7 +402,6 @@
     <LocalizationCode>furn_oxygen_compressor</LocalizationCode>
     <UnlocalizedDescription>furn_oxygen_compressor_desc</UnlocalizedDescription>
   </Furniture>
-
 
   <Furniture objectType="solar_panel">
     <Name>Solar Panel</Name>
@@ -466,7 +453,6 @@
     <UnlocalizedDescription>furn_simple_bed_desc</UnlocalizedDescription>
   </Furniture>
 
-
   <Furniture objectType="accumulator">
     <Name>Accumulator</Name>
     <Description>Accumulator</Description>
@@ -485,7 +471,6 @@
     <UnlocalizedDescription>furn_accumulator_desc</UnlocalizedDescription>
   </Furniture>
 
-  
   <Furniture objectType="mine">
     <Name>A Mining Spot</Name>
     <Description>A spot for mining ore</Description>
@@ -501,16 +486,15 @@
     <BuildingJob jobTime="1" />
 
     <Params>
-     <Param name="ore_type" value="Raw Iron" />
+      <Param name="ore_type" value="Raw Iron" />
     </Params>
-    
+
     <ContextMenuAction FunctionName="OreMine_CreateMiningJob" Text="Mine Ore" RequiereCharacterSelected="false" />
     <GetSpriteName FunctionName="OreMine_GetSpriteName" />
 
     <LocalizationCode>furn_mine</LocalizationCode>
     <UnlocalizedDescription>furn_mine_desc</UnlocalizedDescription>
   </Furniture>
-
 
   <Furniture objectType="RTG">
     <Name>RTG</Name>
@@ -531,14 +515,12 @@
     <Action event="OnUninstall" functionName="Rtg_UninstallAction"></Action>
     <Action event="OnUpdateTemperature" functionName="Rtg_UpdateTemperature" />
 
-    <Params>      
+    <Params>
       <Param name="base_heating" value="95" />
       <Param name="pressure_threshold" value="0.2" />
-    </Params>    
+    </Params>
 
     <LocalizationCode>furn_rt_generator</LocalizationCode>
     <UnlocalizedDescription>furn_rt_generator_desc</UnlocalizedDescription>
   </Furniture>
-
-
 </Furnitures>
