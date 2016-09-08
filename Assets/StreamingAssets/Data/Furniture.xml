@@ -492,6 +492,7 @@
     <TypeTag>Ore</TypeTag>
     <TypeTag>OutdoorOnly</TypeTag>
     <TypeTag>Non-buildable</TypeTag>
+    <TypeTag>Non-destructible</TypeTag>
     <MovementCost>2</MovementCost>
     <PathfindingModifier>1.5</PathfindingModifier>
     <PathfindingWeight>2</PathfindingWeight>
