@@ -36,15 +36,6 @@ namespace Scheduler
         {
             this.events = new List<ScheduledEvent>();
             this.eventsToAddNextTick = new List<ScheduledEvent>();
-
-            Debug.ULogChannel("Scheduler", "Loading Lua stripts");
-
-            // FIXME: Are these actually needed here?
-            LuaUtilities.RegisterGlobal(typeof(Inventory));
-            LuaUtilities.RegisterGlobal(typeof(Job));
-            LuaUtilities.RegisterGlobal(typeof(ModUtils));
-            LuaUtilities.RegisterGlobal(typeof(World));
-            LoadScripts();
         }
 
         /// <summary>
@@ -76,37 +67,6 @@ namespace Scheduler
                 return new ReadOnlyCollection<ScheduledEvent>(events);
             }
         }
-
-        #region LuaHandling
-
-        /// <summary>
-        /// Loads the Lua scripts from StreamingAssets/LUA/Events.lua.
-        /// </summary>
-        public static void LoadScripts()
-        {
-            // TODO: Use new FunctionsManager??
-            string luaFilePath = Path.Combine(Application.streamingAssetsPath, "LUA");
-            luaFilePath = Path.Combine(luaFilePath, "Events.lua");
-            LuaUtilities.LoadScriptFromFile(luaFilePath);
-        }
-
-        /// <summary>
-        /// Loads the Lua scripts from the Events.lua files in mod directories.
-        /// </summary>
-        /// <param name="mods">Mods directories to search for Lua scripts.</param>
-        public static void LoadModsScripts(DirectoryInfo[] mods)
-        {
-            foreach (DirectoryInfo mod in mods)
-            {
-                string luaModFile = Path.Combine(mod.FullName, "Events.lua");
-                if (File.Exists(luaModFile))
-                {
-                    LuaUtilities.LoadScriptFromFile(luaModFile);
-                }
-            }
-        }
-
-        #endregion
 
         /// <summary>
         /// Schedules an event from a prototype.
