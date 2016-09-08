@@ -525,29 +525,29 @@ public class World : IXmlSerializable
             switch (reader.Name)
             {
                 case "Rooms":
-                ReadXml_Rooms(reader);
-                break;
+                    ReadXml_Rooms(reader);
+                    break;
                 case "Tiles":
-                ReadXml_Tiles(reader);
-                break;
+                    ReadXml_Tiles(reader);
+                    break;
                 case "Inventories":
-                ReadXml_Inventories(reader);
-                break;
+                    ReadXml_Inventories(reader);
+                    break;
                 case "Furnitures":
-                ReadXml_Furnitures(reader);
-                break;
+                    ReadXml_Furnitures(reader);
+                    break;
                 case "Characters":
-                ReadXml_Characters(reader);
-                break;
+                    ReadXml_Characters(reader);
+                    break;
                 case "Skybox":
-                LoadSkybox(reader.ReadElementString("Skybox"));
-                break;
+                    LoadSkybox(reader.ReadElementString("Skybox"));
+                    break;
                 case "Wallet":
-                ReadXml_Wallet(reader);
-                break;
+                    ReadXml_Wallet(reader);
+                    break;
                 case "Scheduler":
-                Scheduler.Scheduler.Current.ReadXml(reader);
-                break;
+                    Scheduler.Scheduler.Current.ReadXml(reader);
+                    break;
             }
         }
     }
@@ -887,128 +887,128 @@ public class World : IXmlSerializable
                 switch (r.ID)
                 {
                     case 0: // the outside room has two edges both connecting to room 2
-                    if (edgeCount != 2)
-                    {
-                        Debug.ULogErrorChannel("Path_RoomGraph", "Room 0 supposed to have 2 edges. Instead has: " + edgeCount);
-                        errorCount++;
-                        continue;
-                    }
-
-                    if (node.edges[0].node.data != world.rooms[2] || node.edges[1].node.data != world.rooms[2])
-                    {
-                        Debug.ULogErrorChannel("Path_RoomGraph", "Room 0 supposed to have edges to Room 2.");
-                        Debug.ULogErrorChannel(
-                            "Path_RoomGraph",
-                            string.Format("Instead has: {1} and {2}", node.edges[0].node.data.ID, node.edges[1].node.data.ID));
-
-                        // "Instead has: " + node.edges[0].node.data.ID.ToString() + " and "
-                        // + node.edges[1].node.data.ID.ToString());
-                        errorCount++;
-                    }
-
-                    break;
-                    case 1: // Room 1 has one edge connecting to room 2
-                    if (edgeCount != 1)
-                    {
-                        Debug.ULogErrorChannel("Path_RoomGraph", "Room 1 supposed to have 1 edge. Instead has: " + edgeCount);
-                        errorCount++;
-                        continue;
-                    }
-
-                    if (node.edges[0].node.data != world.rooms[2])
-                    {
-                        Debug.ULogErrorChannel("Path_RoomGraph", "Room 1 supposed to have edge to Room 2.");
-                        Debug.ULogErrorChannel("Path_RoomGraph", "Instead has: " + node.edges[0].node.data.ID.ToString());
-                        errorCount++;
-                    }
-
-                    break;
-                    case 2: // Room 2 has two edges both connecting to the outside room, one connecting to room 1 and one connecting to room 5
-                    if (edgeCount != 4)
-                    {
-                        Debug.ULogErrorChannel("Path_RoomGraph", "Room 2 supposed to have 4 edges. Instead has: " + edgeCount);
-                        errorCount++;
-                        continue;
-                    }
-
-                    // group edges by target room
-                    IEnumerable<IGrouping<Room, Path_Edge<Room>>> query =
-                        node.edges.GroupBy(edge => edge.node.data, edge => edge);
-
-                    foreach (IGrouping<Room, Path_Edge<Room>> group in query)
-                    {
-                        switch (group.Key.ID)
+                        if (edgeCount != 2)
                         {
-                            case 0:
-                            if (group.Count() != 2)
-                            {
-                                Debug.ULogErrorChannel("Path_RoomGraph", "Room 2 supposed to have two edges to Room 0.");
-                                errorCount++;
-                            }
-
-                            break;
-                            case 1:
-                            if (group.Count() != 1)
-                            {
-                                Debug.ULogErrorChannel("Path_RoomGraph", "Room 2 supposed to have one edge to Room 1.");
-                                errorCount++;
-                            }
-
-                            break;
-                            case 5:
-                            if (group.Count() != 1)
-                            {
-                                Debug.ULogErrorChannel("Path_RoomGraph", "Room 2 supposed to have one edge to Room 5.");
-                                errorCount++;
-                            }
-
-                            break;
-                            default:
-                            Debug.ULogErrorChannel("Path_RoomGraph", "Room 2 only supposed to have edges to Rooms 0, 1 and 5.");
+                            Debug.ULogErrorChannel("Path_RoomGraph", "Room 0 supposed to have 2 edges. Instead has: " + edgeCount);
                             errorCount++;
-                            break;
+                            continue;
                         }
-                    }
 
-                    break;
+                        if (node.edges[0].node.data != world.rooms[2] || node.edges[1].node.data != world.rooms[2])
+                        {
+                            Debug.ULogErrorChannel("Path_RoomGraph", "Room 0 supposed to have edges to Room 2.");
+                            Debug.ULogErrorChannel(
+                                "Path_RoomGraph",
+                                string.Format("Instead has: {1} and {2}", node.edges[0].node.data.ID, node.edges[1].node.data.ID));
+
+                            // "Instead has: " + node.edges[0].node.data.ID.ToString() + " and "
+                            // + node.edges[1].node.data.ID.ToString());
+                            errorCount++;
+                        }
+
+                        break;
+                    case 1: // Room 1 has one edge connecting to room 2
+                        if (edgeCount != 1)
+                        {
+                            Debug.ULogErrorChannel("Path_RoomGraph", "Room 1 supposed to have 1 edge. Instead has: " + edgeCount);
+                            errorCount++;
+                            continue;
+                        }
+
+                        if (node.edges[0].node.data != world.rooms[2])
+                        {
+                            Debug.ULogErrorChannel("Path_RoomGraph", "Room 1 supposed to have edge to Room 2.");
+                            Debug.ULogErrorChannel("Path_RoomGraph", "Instead has: " + node.edges[0].node.data.ID.ToString());
+                            errorCount++;
+                        }
+
+                        break;
+                    case 2: // Room 2 has two edges both connecting to the outside room, one connecting to room 1 and one connecting to room 5
+                        if (edgeCount != 4)
+                        {
+                            Debug.ULogErrorChannel("Path_RoomGraph", "Room 2 supposed to have 4 edges. Instead has: " + edgeCount);
+                            errorCount++;
+                            continue;
+                        }
+
+                        // group edges by target room
+                        IEnumerable<IGrouping<Room, Path_Edge<Room>>> query =
+                            node.edges.GroupBy(edge => edge.node.data, edge => edge);
+
+                        foreach (IGrouping<Room, Path_Edge<Room>> group in query)
+                        {
+                            switch (group.Key.ID)
+                            {
+                                case 0:
+                                    if (group.Count() != 2)
+                                    {
+                                        Debug.ULogErrorChannel("Path_RoomGraph", "Room 2 supposed to have two edges to Room 0.");
+                                        errorCount++;
+                                    }
+
+                                    break;
+                                case 1:
+                                    if (group.Count() != 1)
+                                    {
+                                        Debug.ULogErrorChannel("Path_RoomGraph", "Room 2 supposed to have one edge to Room 1.");
+                                        errorCount++;
+                                    }
+
+                                    break;
+                                case 5:
+                                    if (group.Count() != 1)
+                                    {
+                                        Debug.ULogErrorChannel("Path_RoomGraph", "Room 2 supposed to have one edge to Room 5.");
+                                        errorCount++;
+                                    }
+
+                                    break;
+                                default:
+                                    Debug.ULogErrorChannel("Path_RoomGraph", "Room 2 only supposed to have edges to Rooms 0, 1 and 5.");
+                                    errorCount++;
+                                    break;
+                            }
+                        }
+
+                        break;
                     case 3: // Room 3 has no edges
-                    if (edgeCount != 0)
-                    {
-                        Debug.ULogErrorChannel("Path_RoomGraph", "Room 3 supposed to have no edges. Instead has: " + edgeCount);
-                        errorCount++;
-                        continue;
-                    }
+                        if (edgeCount != 0)
+                        {
+                            Debug.ULogErrorChannel("Path_RoomGraph", "Room 3 supposed to have no edges. Instead has: " + edgeCount);
+                            errorCount++;
+                            continue;
+                        }
 
-                    break;
+                        break;
                     case 4: // Room 4 has no edges
-                    if (edgeCount != 0)
-                    {
-                        Debug.ULogErrorChannel("Path_RoomGraph", "Room 4 supposed to have no edges. Instead has: " + edgeCount);
-                        errorCount++;
-                        continue;
-                    }
+                        if (edgeCount != 0)
+                        {
+                            Debug.ULogErrorChannel("Path_RoomGraph", "Room 4 supposed to have no edges. Instead has: " + edgeCount);
+                            errorCount++;
+                            continue;
+                        }
 
-                    break;
+                        break;
                     case 5: // Room 5 has one edge to Room 2
-                    if (edgeCount != 1)
-                    {
-                        Debug.ULogErrorChannel("Path_RoomGraph", "Room 5 supposed to have 1 edge. Instead has: " + edgeCount);
-                        errorCount++;
-                        continue;
-                    }
+                        if (edgeCount != 1)
+                        {
+                            Debug.ULogErrorChannel("Path_RoomGraph", "Room 5 supposed to have 1 edge. Instead has: " + edgeCount);
+                            errorCount++;
+                            continue;
+                        }
 
-                    if (node.edges[0].node.data != world.rooms[2])
-                    {
-                        Debug.ULogErrorChannel("Path_RoomGraph", "Room 5 supposed to have edge to Room 2.");
-                        Debug.ULogErrorChannel("Path_RoomGraph", "Instead has: " + node.edges[0].node.data.ID.ToString());
-                        errorCount++;
-                    }
+                        if (node.edges[0].node.data != world.rooms[2])
+                        {
+                            Debug.ULogErrorChannel("Path_RoomGraph", "Room 5 supposed to have edge to Room 2.");
+                            Debug.ULogErrorChannel("Path_RoomGraph", "Instead has: " + node.edges[0].node.data.ID.ToString());
+                            errorCount++;
+                        }
 
-                    break;
+                        break;
                     default:
-                    Debug.ULogErrorChannel("Path_RoomGraph", "Unknown room ID: " + r.ID);
-                    errorCount++;
-                    break;
+                        Debug.ULogErrorChannel("Path_RoomGraph", "Unknown room ID: " + r.ID);
+                        errorCount++;
+                        break;
                 }
             }
         }
