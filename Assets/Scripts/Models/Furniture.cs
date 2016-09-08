@@ -998,7 +998,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     /// <returns>Context menu actions.</returns>
     public IEnumerable<ContextMenuAction> GetContextMenuActions(ContextMenu contextMenu)
     {
-        if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false) == true || HasTypeTag("Non-destructible") == false)
+        if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false) == true || HasTypeTag("Non-deconstructible") == false)
         {
             yield return new ContextMenuAction
             {
