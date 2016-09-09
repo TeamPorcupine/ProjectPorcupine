@@ -1,4 +1,4 @@
-#region License
+﻿#region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
 // This program comes with ABSOLUTELY NO WARRANTY; This is free software,
@@ -465,7 +465,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         foreach (Stat stat in stats.Values)
         {
             // TODO: Localization
-            yield return string.Format("{0}: {1}", stat.statType, stat.Value);
+            yield return string.Format("{0}: {1}", stat.Type, stat.Value);
         }
     }
 
@@ -532,7 +532,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             // Gets a random value within the min and max range of the stat.
             // TODO: Should there be any bias or any other algorithm applied here to make stats more interesting?
             newStat.Value = UnityEngine.Random.Range(1, 20);
-            stats.Add(newStat.statType, newStat);
+            stats.Add(newStat.Type, newStat);
         }
 
         Debug.ULogChannel("Character", "Initialized " + stats.Count + " Stats.");
@@ -555,13 +555,19 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
             string statType = reader.GetAttribute("statType");
             Stat stat = GetStat(statType);
-            if (stat != null)
+            if (stat == null)
             {
-                if (!int.TryParse(reader.GetAttribute("value"), out stat.Value))
-                {
-                    Debug.ULogErrorChannel("Character", "Stat element did not have a value!");
-                }
+                continue;               
             }
+
+            int statValue;
+            if (!int.TryParse(reader.GetAttribute("value"), out statValue))
+            {
+                Debug.ULogErrorChannel("Character", "Stat element did not have a value!");
+                continue;
+            }
+
+            stat.Value = statValue;
         }
     }
 
@@ -736,7 +742,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             need.Update(deltaTime);
         }
     }
-        
+
     private void Update_DoMovement(float deltaTime)
     {
         if (CurrTile == DestTile)
@@ -859,7 +865,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             CharFacing = Facing.SOUTH;
         }
     }
-        
+
     /// <summary>
     /// Checks whether the current job has all the materials in place and if not instructs the working character to get the materials there first.
     /// Only ever returns true if all materials for the job are at the job location and thus signals to the calling code, that it can proceed with job execution.
@@ -1036,7 +1042,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         inventory = null;
     }
-        
+
     private void OnInventoryCreated(Inventory inv)
     {
         // First remove the callback.

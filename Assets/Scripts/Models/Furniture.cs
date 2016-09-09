@@ -978,14 +978,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     /// <returns>Description of the furniture.</returns>
     public string GetDescription()
     {
-        StringBuilder sb = new StringBuilder();
-        sb.AppendLine(UnlocalizedDescription);
-
-        if (IsWorkshop)
-        {
-            sb.AppendLine(workshop.GetDescription());
-        }
-        return sb.ToString();
+        return UnlocalizedDescription;        
     }
 
     /// <summary>
@@ -999,6 +992,11 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
     public IEnumerable<string> GetAdditionalInfo()
     {
+        if (IsWorkshop)
+        {
+            yield return workshop.GetDescription();
+        }
+
         yield return string.Format("Hitpoint 18 / 18");
 
         if (PowerConnection != null)

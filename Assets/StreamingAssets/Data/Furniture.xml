@@ -301,47 +301,46 @@
     <UnlocalizedDescription>furn_metal_smelter_desc</UnlocalizedDescription>
   </Furniture>
 
-	<Furniture objectType="Metal Furnace">
-		<Name>Metal Furnace</Name>
-		<Description>Smelts your raw ores into metal.</Description>
-		<TypeTag>Processor</TypeTag>
-		<MovementCost>1</MovementCost>
-		<PathfindingModifier>1.5</PathfindingModifier>
-		<PathfindingWeight>2</PathfindingWeight>
-		<Width>3</Width>
-		<Height>3</Height>
+    <Furniture objectType="Metal Furnace">
+        <Name>Metal Furnace</Name>
+        <Description>Smelts your raw ores into metal.</Description>
+        <TypeTag>Processor</TypeTag>
+        <MovementCost>1</MovementCost>
+        <PathfindingModifier>1.5</PathfindingModifier>
+        <PathfindingWeight>2</PathfindingWeight>
+        <Width>3</Width>
+        <Height>3</Height>
 
-		<BuildingJob jobTime="0" />
+        <BuildingJob jobTime="0" />
 
-		<JobSpotOffset X="1" Y="0" />
+        <JobSpotOffset X="1" Y="0" />
 
-		<Workshop>
-			<PossibleProductions>
-				<ProductionChain name="Copper smelting" processingTime="3">
-					<Input>
-						<Item objectType="Raw Copper" amount="2" slotPosX="0" slotPosY="0" />
-					</Input>
-					<Output>
-						<Item objectType="Copper Plate" amount="1" slotPosX="2" slotPosY="0" />
-					</Output>
-				</ProductionChain>
-				<ProductionChain name="Iron smelting" processingTime="4">
-					<Input>
-						<Item objectType="Raw Iron" amount="2" slotPosX="0" slotPosY="0" />
-					</Input>
-					<Output>
-						<Item objectType="Steel Plate" amount="1" slotPosX="2" slotPosY="0" />
-					</Output>
-				</ProductionChain>
-			</PossibleProductions>
-		</Workshop>
+        <Workshop>
+            <PossibleProductions>
+                <ProductionChain name="Copper smelting" processingTime="3">
+                    <Input>
+                        <Item objectType="Raw Copper" amount="2" slotPosX="0" slotPosY="0" />
+                    </Input>
+                    <Output>
+                        <Item objectType="Copper Plate" amount="1" slotPosX="2" slotPosY="0" />
+                    </Output>
+                </ProductionChain>
+                <ProductionChain name="Iron smelting" processingTime="4">
+                    <Input>
+                        <Item objectType="Raw Iron" amount="2" slotPosX="0" slotPosY="0" />
+                    </Input>
+                    <Output>
+                        <Item objectType="Steel Plate" amount="1" slotPosX="2" slotPosY="0" />
+                    </Output>
+                </ProductionChain>
+            </PossibleProductions>
+        </Workshop>
 
-		<LocalizationCode>furn_metal_furnace</LocalizationCode>
-		<UnlocalizedDescription>furn_metal_furnace_desc</UnlocalizedDescription>
-	</Furniture>
+        <LocalizationCode>furn_metal_furnace</LocalizationCode>
+        <UnlocalizedDescription>furn_metal_furnace_desc</UnlocalizedDescription>
+    </Furniture>
 
-
-  <Furniture objectType="heater">
+    <Furniture objectType="heater">
     <Name>Heater</Name>
     <Description>Raises temperature in the room.</Description>
     <BaseType>Temperature</BaseType>
@@ -382,19 +381,19 @@
 
     <BuildingJob jobTime="1" />
 
-	  <Workshop>
-		<PossibleProductions>
-			<ProductionChain name="Power Cell Pressing" processingTime="5">
-				<Input>
-					<Item objectType="Uranium" amount="3" slotPosX="0" slotPosY="0" />
-					<Item objectType="Steel Plate" amount="2" slotPosX="1" slotPosY="0" />
-				</Input>
-				<Output>
-					<Item objectType="Power Cell" amount="1" slotPosX="2" slotPosY="1" />
-				</Output>
-			</ProductionChain>
-		</PossibleProductions>
-	</Workshop>
+      <Workshop>
+          <PossibleProductions>
+              <ProductionChain name="Power Cell Pressing" processingTime="5">
+                  <Input>
+                      <Item objectType="Uranium" amount="3" slotPosX="0" slotPosY="0" />
+                      <Item objectType="Steel Plate" amount="2" slotPosX="1" slotPosY="0" />
+                  </Input>
+                  <Output>
+                      <Item objectType="Power Cell" amount="1" slotPosX="2" slotPosY="1" />
+                  </Output>
+              </ProductionChain>
+          </PossibleProductions>
+      </Workshop>
 
     <LocalizationCode>furn_power_cell_press</LocalizationCode>
     <UnlocalizedDescription>furn_power_cell_press_desc</UnlocalizedDescription>
@@ -485,6 +484,32 @@
 
     <LocalizationCode>furn_solar_panel</LocalizationCode>
     <UnlocalizedDescription>furn_solar_panel_desc</UnlocalizedDescription>
+  </Furniture>
+  
+  <Furniture objectType="pump_air">
+      <Name>Air Pump</Name>
+      <MovementCost>0</MovementCost>
+      <Width>1</Width>
+      <Height>1</Height>
+      <EnclosesRooms>true</EnclosesRooms>
+      <PowerConnection inputRate="1" outputRate="" capacity=""/>
+
+      <BuildingJob jobTime="1" />
+      <CanReplaceFurniture typeTag="Wall" />
+
+      <Params>
+          <Param name="gas_throughput" value="0.5" />
+          <Param name="source_pressure_limit" value="0" />
+          <Param name="target_pressure_limit" value="1" />
+          <Param name="flow_direction_up" value="1" />
+      </Params>
+
+      <Action event="OnUpdate" functionName="AirPump_OnUpdate" />
+      <GetSpriteName FunctionName="AirPump_GetSpriteName" />
+      <ContextMenuAction FunctionName="AirPump_FlipDirection" Text="Flip Direction" RequiereCharacterSelected="false" />
+
+      <LocalizationCode>furn_pump_air</LocalizationCode>
+      <UnlocalizedDescription>furn_pump_air_desc</UnlocalizedDescription>
   </Furniture>
 
   <Furniture objectType="simple_bed">
@@ -585,6 +610,4 @@
     <LocalizationCode>furn_rt_generator</LocalizationCode>
     <UnlocalizedDescription>furn_rt_generator_desc</UnlocalizedDescription>
   </Furniture>
-
-
 </Furnitures>

@@ -554,6 +554,89 @@ function SolarPanel_OnUpdate(furniture, deltaTime)
 	furniture.PowerConnection.OutputRate = powerPerSecond
 end
 
+function AirPump_OnUpdate(furniture, deltaTime)
+    if (furniture.HasPower() == false) then
+        return
+    end
+
+    local t = furniture.Tile
+    local north = World.Current.GetTileAt(t.X, t.Y + 1, t.Z)
+    local south = World.Current.GetTileAt(t.X, t.Y - 1, t.Z)
+    local west = World.Current.GetTileAt(t.X - 1, t.Y, t.Z)
+    local east = World.Current.GetTileAt(t.X + 1, t.Y, t.Z)
+    
+    -- Find the correct rooms for source and target
+    -- Maybe in future this could be cached. it only changes when the direction changes
+    local sourceRoom = nil
+    local targetRoom = nil
+    if (north.Room != nil and south.Room != nil) then
+        if (furniture.Parameters["flow_direction_up"].ToFloat() > 0) then
+            sourceRoom = south.Room
+            targetRoom = north.Room
+        else
+            sourceRoom = north.Room
+            targetRoom = south.Room
+        end
+    elseif (west.Room != nil and east.Room != nil) then
+        if (furniture.Parameters["flow_direction_up"].ToFloat() > 0) then
+            sourceRoom = west.Room
+            targetRoom = east.Room
+        else
+            sourceRoom = east.Room
+            targetRoom = west.Room
+        end
+    else
+        ModUtils.UChannelLogWarning("Furniture", "Air Pump blocked. Direction unclear")
+        return
+    end
+    
+    local sourcePressureLimit = furniture.Parameters["source_pressure_limit"].ToFloat()
+    local targetPressureLimit = furniture.Parameters["target_pressure_limit"].ToFloat()
+    local flow = furniture.Parameters["gas_throughput"].ToFloat() * deltaTime
+    
+    -- Only transfer gas if the pressures are within the defined bounds
+    if (sourceRoom.GetTotalGasPressure() > sourcePressureLimit and targetRoom.GetTotalGasPressure() < targetPressureLimit) then
+        sourceRoom.MoveGasTo(targetRoom, flow)
+    end
+end
+
+function AirPump_GetSpriteName(furniture)
+    local t = furniture.Tile
+    if (furniture.Tile == nil) then
+        return furniture.ObjectType
+    end
+    local north = World.Current.GetTileAt(t.X, t.Y + 1, t.Z)
+    local south = World.Current.GetTileAt(t.X, t.Y - 1, t.Z)
+    local west = World.Current.GetTileAt(t.X - 1, t.Y, t.Z)
+    local east = World.Current.GetTileAt(t.X + 1, t.Y, t.Z)
+    
+    suffix = ""
+    if (north.Room != nil and south.Room != nil) then
+        if (furniture.Parameters["flow_direction_up"].ToFloat() > 0) then
+           suffix = "_SN"
+        else
+           suffix = "_NS"
+        end
+    elseif (west.Room != nil and east.Room != nil) then
+        if (furniture.Parameters["flow_direction_up"].ToFloat() > 0) then
+            suffix = "_WE"
+        else
+            suffix = "_EW"
+        end
+    end
+    
+    return furniture.ObjectType .. suffix
+end
+
+function AirPump_FlipDirection(furniture, character)
+    if (furniture.Parameters["flow_direction_up"].ToFloat() > 0) then
+        furniture.Parameters["flow_direction_up"].SetValue(0)
+    else
+        furniture.Parameters["flow_direction_up"].SetValue(1)
+    end
+    furniture.UpdateOnChanged(furniture)
+end
+    
 function Accumulator_GetSpriteName(furniture)
 	local baseName = furniture.ObjectType
 	local suffix = furniture.PowerConnection.CurrentThreshold 
