@@ -182,6 +182,23 @@ public class Room : IXmlSerializable
         return tiles.Count();
     }
 
+    // Changes gas by amount in pressure (atm) per tile, evenly distributed over all gases present
+    // Possibly deprecated. Use MoveGasTo(room, amount)
+    public void ChangeGas(float amount)
+    {
+        if (IsOutsideRoom())
+        {
+            return;
+        }
+
+        List<string> names = new List<string>(atmosphericGasses.Keys);
+        foreach (string name in names)
+        {
+            float fraction = GetGasFraction(name);
+            ChangeGas(name, amount * fraction);
+        }
+    }
+
     public Tile[] FindExits()
     {
         List<Tile> exits = new List<Tile>();
@@ -291,7 +308,7 @@ public class Room : IXmlSerializable
         }
     }
 
-    // Gets absolute gas amount in preasure(in atm) multiplyed by number of tiles.
+    // Gets absolute gas amount in pressure(in atm) multiplied by number of tiles.
     public float GetGasAmount(string name)
     {
         if (atmosphericGasses.ContainsKey(name))
@@ -302,6 +319,7 @@ public class Room : IXmlSerializable
         return 0;
     }
 
+    // Gets gas amount in pressure(in atm).
     public float GetGasPressure()
     {
         float pressure = 0;
@@ -338,7 +356,7 @@ public class Room : IXmlSerializable
             t += atmosphericGasses[n];
         }
 
-        return atmosphericGasses[name] / t;
+        return t == 0 ? 0 : atmosphericGasses[name] / t;
     }
 
     public float GetTotalGasPressure()
@@ -347,10 +365,26 @@ public class Room : IXmlSerializable
 
         foreach (string n in atmosphericGasses.Keys)
         {
-            t += atmosphericGasses[n];
+            t += atmosphericGasses[n] / GetSize();
         }
 
         return t;
+    }
+
+    public void MoveGasTo(Room room, float amount)
+    {
+        List<string> names = new List<string>(atmosphericGasses.Keys);
+        foreach (string name in names)
+        {
+            MoveGasTo(room, name, amount * GetGasFraction(name));
+        }
+    }
+
+    public void MoveGasTo(Room room, string name, float amount)
+    {
+        float amountMoved = Mathf.Min(amount, GetGasAmount(name));
+        this.ChangeGas(name, -amountMoved);
+        room.ChangeGas(name, amountMoved);
     }
 
     public float GetTemperature()

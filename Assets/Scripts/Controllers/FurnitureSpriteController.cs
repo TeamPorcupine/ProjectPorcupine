@@ -53,7 +53,8 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
     public Sprite GetSpriteForFurniture(string objectType)
     {
         Furniture proto = PrototypeManager.Furniture.Get(objectType);
-        Sprite s = SpriteManager.current.GetSprite("Furniture", objectType + (proto.LinksToNeighbour ? "_" : string.Empty));
+        string spriteName = proto.GetSpriteName();
+        Sprite s = SpriteManager.current.GetSprite("Furniture", spriteName + (proto.LinksToNeighbour ? "_" : string.Empty));
 
         return s;
     }

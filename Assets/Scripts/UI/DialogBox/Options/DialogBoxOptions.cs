@@ -31,7 +31,7 @@ public class DialogBoxOptions : DialogBox
         dialogManager.dialogBoxLoadGame.ShowDialog();
     }
 
-    // Quit the app wheather in editor or a build version.
+    // Quit the app whether in editor or a build version.
     public void OnButtonQuitGame()
     {
         // Maybe ask the user if he want to save or is sure they want to quit??
@@ -48,7 +48,7 @@ public class DialogBoxOptions : DialogBox
         dialogManager = GameObject.FindObjectOfType<DialogBoxManager>();
         WorldController wc = GameObject.FindObjectOfType<WorldController>();
 
-        // Add liseners here.
+        // Add listeners here.
         buttonQuit.onClick.AddListener(delegate
         {
             OnButtonQuitGame();

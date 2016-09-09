@@ -7,6 +7,7 @@
 // ====================================================
 #endregion
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Schema;
@@ -496,9 +497,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
             return Enterability.Yes;
         }
 
-        //// FurnitureActions.CallFunctionsWithFurniture( isEnterableActions.ToArray(), this );
-
-        DynValue ret = LuaUtilities.CallFunction(isEnterableAction, this);
+        DynValue ret = FunctionsManager.Furniture.Call(isEnterableAction, this);
 
         return (Enterability)ret.Number;
     }
@@ -509,13 +508,20 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     /// <returns>Name of the sprite.</returns>
     public string GetSpriteName()
     {
-        if (string.IsNullOrEmpty(getSpriteNameAction))
+        if (!string.IsNullOrEmpty(getSpriteNameAction))
         {
-            return ObjectType;
+            DynValue ret = FunctionsManager.Furniture.Call(getSpriteNameAction, this);
+            return ret.String;
         }
 
-        DynValue ret = LuaUtilities.CallFunction(getSpriteNameAction, this);
-        return ret.String;
+        // Try to get spritename from animation
+        if (Animation != null)
+        {
+            return Animation.GetSpriteName();
+        }
+
+        // Else return default ObjectType string
+        return ObjectType;
     }
 
     /// <summary>
@@ -647,7 +653,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                     Job j = new Job(
                                 null,
                                 ObjectType,
-                                FurnitureActions.JobComplete_FurnitureBuilding,
+                                FunctionsManager.JobComplete_FurnitureBuilding,
                                 jobTime,
                                 invs.ToArray(),
                                 Job.JobPriority.High);
@@ -956,21 +962,40 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     }
 
     /// <summary>
-    /// Returns the HitPoints of the current furniture NOT IMPLEMENTED.
-    /// </summary>
-    /// <returns>String with the HitPoints of the furniture.</returns>
-    public string GetHitPointString()
-    {
-        return "18/18"; // TODO: Add a hitpoint system to...well...everything
-    }
-
-    /// <summary>
     /// Returns the description of the job linked to the furniture. NOT INMPLEMENTED.
     /// </summary>
     /// <returns>Job description of the job linked to the furniture.</returns>
     public string GetJobDescription()
     {
         return string.Empty;
+    }
+
+    public IEnumerable<string> GetAdditionalInfo()
+    {
+        yield return string.Format("Hitpoint 18 / 18");
+
+        if (PowerConnection != null)
+        {
+            bool hasPower = HasPower();
+            string powerColor = hasPower ? "green" : "red";
+
+            yield return string.Format("Power Grid: <color={0}>{1}</color>", powerColor, hasPower ? "Online" : "Offline");
+
+            if (PowerConnection.IsPowerConsumer)
+            {
+                yield return string.Format("Power Input: <color={0}>{1}</color>", powerColor, PowerConnection.InputRate);
+            }
+            
+            if (PowerConnection.IsPowerProducer)
+            {
+                yield return string.Format("Power Output: <color={0}>{1}</color>", powerColor, PowerConnection.OutputRate);
+            }
+
+            if (PowerConnection.IsPowerAccumulator)
+            {
+                yield return string.Format("Power Accumulated: {0} / {1}", PowerConnection.AccumulatedPower, PowerConnection.Capacity);
+            }
+        }
     }
 
     /// <summary>
@@ -1114,7 +1139,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
     private void InvokeContextMenuLuaAction(string luaFunction, Character character)
     {
-        LuaUtilities.CallFunction(luaFunction, this, character);
+        FunctionsManager.Furniture.Call(luaFunction, this, character);
     }
 
     [MoonSharpVisible(true)]

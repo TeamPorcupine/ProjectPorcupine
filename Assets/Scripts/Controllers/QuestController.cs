@@ -20,7 +20,6 @@ public class QuestController
     public QuestController()
     {
         checkDelayInSeconds = 5f;
-        LoadLuaScript();
     }
 
     public void Update(float deltaTime)
@@ -31,15 +30,6 @@ public class QuestController
             totalDeltaTime = 0f;
             CheckAllAcceptedQuests();
         }
-    }
-
-    private void LoadLuaScript()
-    {
-        string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
-        filePath = System.IO.Path.Combine(filePath, "Quest.lua");
-        string luaCode = System.IO.File.ReadAllText(filePath);
-
-        new QuestActions(luaCode);
     }
 
     private void CheckAllAcceptedQuests()
@@ -71,7 +61,7 @@ public class QuestController
         quest.IsCompleted = true;
         foreach (QuestGoal goal in quest.Goals)
         {
-            QuestActions.CallFunction(goal.IsCompletedLuaFunction, goal);
+            FunctionsManager.Quest.Call(goal.IsCompletedLuaFunction, goal);
             quest.IsCompleted &= goal.IsCompleted;
         }
 
@@ -84,7 +74,7 @@ public class QuestController
         {
             if (!reward.IsCollected)
             {
-                QuestActions.CallFunction(reward.OnRewardLuaFunction, reward);
+                FunctionsManager.Quest.Call(reward.OnRewardLuaFunction, reward);
             }
         }
     }
