@@ -52,12 +52,22 @@ public class World : IXmlSerializable
     /// </summary>
     /// <param name="width">Width in tiles.</param>
     /// <param name="height">Height in tiles.</param>
-    public World(int width, int height, int depth)
+    public World(int width, int height, int depth, bool useOtherWorldGen)
     {
         // Creates an empty world.
         SetupWorld(width, height, depth);
-        int seed = UnityEngine.Random.Range(0, int.MaxValue);
-        WorldGenerator.Generate(this, seed);
+
+        int seed;
+        if (WorldController.Instance.UseMapSeed == false)
+        {
+            seed = UnityEngine.Random.Range(0, int.MaxValue);
+        }
+        else
+        {
+            seed = WorldController.Instance.mapSeed;
+        }
+        
+        WorldGenerator.Generate(seed, useOtherWorldGen);
         Debug.ULogChannel("World", "Generated World");
 
         // Make one character
@@ -865,6 +875,7 @@ public class World : IXmlSerializable
                                 // One more read to step out of Inventories, so ReadToNextSibling will find sibling Character
                                 reader.Read();
                             }
+
                             break;
                     }
                 }

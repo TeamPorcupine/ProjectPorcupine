@@ -42,6 +42,10 @@ public class WorldController : MonoBehaviour
     // If true, a modal dialog box is open, so normal inputs should be ignored.
     public bool IsModal;
 
+    public bool UseOtherWorldGen;
+    public bool UseMapSeed = false;
+    public int mapSeed;
+
     private static string loadWorldFromFile = null;
 
     private float gameTickDelay;
@@ -223,7 +227,7 @@ public class WorldController : MonoBehaviour
         int depth = 5;
 
         // Create a world with Empty tiles
-        World = new World(width, height, depth);
+        World = new World(width, height, depth, UseOtherWorldGen);
 
         // Center the Camera
         Camera.main.transform.position = new Vector3(World.Width / 2, World.Height / 2, Camera.main.transform.position.z);
