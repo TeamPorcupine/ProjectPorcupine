@@ -124,6 +124,8 @@ namespace Animation
                 {
                     renderer.flipX = false;
                 }
+                Debug.ULogChannel("ani", "new anim " + currentAnimationType + " f " + character.CharFacing + " flip " + renderer.flipX);
+
             }
 
             currentAnimation.Update(deltaTime);

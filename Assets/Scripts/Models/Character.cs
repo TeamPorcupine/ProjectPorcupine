@@ -877,8 +877,10 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         {
             CharFacing = Facing.SOUTH;
         }
+        Debug.ULogChannel("ani", "facing " + nextTile.X + " - " + CurrTile.X + " flip " + CharFacing);
+
     }
-        
+
     /// <summary>
     /// Checks whether the current job has all the materials in place and if not instructs the working character to get the materials there first.
     /// Only ever returns true if all materials for the job are at the job location and thus signals to the calling code, that it can proceed with job execution.
