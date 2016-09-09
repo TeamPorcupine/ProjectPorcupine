@@ -6,39 +6,35 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Xml;
-using System.Xml.Schema;
-using System.Xml.Serialization;
-using UnityEngine;
 
 public class Stat
 {
-    public string statType;
-    public string Name;
-    public int Value;
-
     public Stat()
     {
     }
 
-    protected Stat(Stat other)
+    private Stat(Stat other)
     {
-        this.statType = other.statType;
-        this.Name = other.Name;
+        Type = other.Type;
+        Name = other.Name;
     }
+
+    public string Type { get; set; }
+
+    public string Name { get; set; }
+
+    public int Value { get; set; }
 
     public void ReadXmlPrototype(XmlReader parentReader)
     {
-        statType = parentReader.GetAttribute("statType");
+        Type = parentReader.GetAttribute("type");
         Name = parentReader.GetAttribute("name");
     }
 
     public void WriteXml(XmlWriter writer)
     {
-        writer.WriteAttributeString("statType", statType);
+        writer.WriteAttributeString("type", Type);
         writer.WriteAttributeString("value", Value.ToString());
     }
 
@@ -49,6 +45,6 @@ public class Stat
 
     public override string ToString()
     {
-        return statType + ": " + Value;
+        return string.Format("{0}: {1}", Type, Value);
     }
 }
