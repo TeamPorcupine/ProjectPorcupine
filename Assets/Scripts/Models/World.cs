@@ -365,17 +365,17 @@ public class World : IXmlSerializable
         return PlaceFurniture(furn, t, doRoomFloodFill);
     }
 
-    public Utility PlaceUtility(string objectType, Tile t, bool doRoomFloodFill = false)
+    public Utility PlaceUtility(string objectType, Tile tile, bool doRoomFloodFill = false)
     {
         if (PrototypeManager.Utility.Has(objectType) == false)
         {
-            Debug.ULogErrorChannel("World", "furniturePrototypes doesn't contain a proto for key: " + objectType);
+            Debug.ULogErrorChannel("World", "PrototypeManager.Utility doesn't contain a proto for key: " + objectType);
             return null;
         }
 
         Utility util = PrototypeManager.Utility.Get(objectType);
 
-        return PlaceUtility(util, t, doRoomFloodFill);
+        return PlaceUtility(util, tile, doRoomFloodFill);
     }
 
     public Furniture PlaceFurniture(Furniture furniture, Tile t, bool doRoomFloodFill = true)

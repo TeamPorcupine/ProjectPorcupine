@@ -351,9 +351,9 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
     /// </summary>
     /// <param name="t">The base tile.</param>
     /// <returns>True if the tile is valid for the placement of the utility.</returns>
-    public bool IsValidPosition(Tile t)
+    public bool IsValidPosition(Tile tile)
     {
-        return funcPositionValidation(t);
+        return funcPositionValidation(tile);
     }
 
     /// <summary>
