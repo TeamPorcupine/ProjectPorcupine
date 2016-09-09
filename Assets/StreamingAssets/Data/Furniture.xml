@@ -428,6 +428,32 @@
         <UnlocalizedDescription>furn_solar_panel_desc</UnlocalizedDescription>
     </Furniture>
 
+    <Furniture objectType="pump_air">
+        <Name>Air Pump</Name>
+        <MovementCost>0</MovementCost>
+        <Width>1</Width>
+        <Height>1</Height>
+        <EnclosesRooms>true</EnclosesRooms>
+        <PowerConnection inputRate="1" outputRate="" capacity=""/>
+
+        <BuildingJob jobTime="1" />
+        <CanReplaceFurniture typeTag="Wall" />
+
+        <Params>
+            <Param name="gas_throughput" value="0.5" />
+            <Param name="source_pressure_limit" value="0" />
+            <Param name="target_pressure_limit" value="1" />
+            <Param name="flow_direction_up" value="1" />
+        </Params>
+
+        <Action event="OnUpdate" functionName="AirPump_OnUpdate" />
+        <GetSpriteName FunctionName="AirPump_GetSpriteName" />
+        <ContextMenuAction FunctionName="AirPump_FlipDirection" Text="Flip Direction" RequiereCharacterSelected="false" />
+
+        <LocalizationCode>furn_pump_air</LocalizationCode>
+        <UnlocalizedDescription>furn_pump_air_desc</UnlocalizedDescription>
+    </Furniture>
+
     <Furniture objectType="simple_bed">
         <Name>Simple Bed</Name>
         <Description>A simple bed</Description>

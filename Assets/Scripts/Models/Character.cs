@@ -7,6 +7,7 @@
 // ====================================================
 #endregion
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -306,7 +307,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         // Get our destination from the job.
         DestTile = MyJob.tile;
 
-        // If the dest tile does not have neighbours that are walkable it's very likable that they can't be walked to.
+        // If the destination tile does not have neighbours that are walkable it's very likable that they can't be walked to.
         if (DestTile.HasWalkableNeighbours() == false)
         {
             Debug.ULogChannel("Character", "No neighbouring floor tiles! Abandoning job.");
@@ -370,7 +371,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         writer.WriteAttributeString("Y", CurrTile.Y.ToString());
         writer.WriteAttributeString("Z", CurrTile.Z.ToString());
 
-        // TODO: It is more verbose, but easier to parse if these are represented as key-value elements rather than a string with delimeters.
+        // TODO: It is more verbose, but easier to parse if these are represented as key-value elements rather than a string with delimiters.
         string needString = string.Empty;
         foreach (Need n in needs)
         {
@@ -436,24 +437,6 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 }
             }
         }
-
-        // Read the children elements.
-        // TODO: This should either not be XML, or use XmlSerializer.
-        while (reader.Read())
-        {
-            // Read until the end of the character.
-            if (reader.NodeType == XmlNodeType.EndElement)
-            {
-                break;
-            }
-
-            switch (reader.Name)
-            {
-                case "Stats":
-                    ReadStatsFromSave(reader);
-                    break;
-            }
-        }
     }
 
     #endregion
@@ -467,25 +450,23 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
     public string GetDescription()
     {
-        StringBuilder description = new StringBuilder();
-        description.AppendLine("A human astronaut.");
+        return "A human astronaut.";
+    }
+
+    public IEnumerable<string> GetAdditionalInfo()
+    {
+        yield return string.Format("HitPoints: 100/100");
+
         foreach (Need n in needs)
         {
-            description.AppendLine(LocalizationTable.GetLocalization(n.localisationID, n.DisplayAmount));
+           yield return LocalizationTable.GetLocalization(n.localisationID, n.DisplayAmount);
         }
 
         foreach (Stat stat in stats.Values)
         {
             // TODO: Localization
-            description.AppendLine(string.Format("{0}: {1}", stat.statType, stat.Value));
+            yield return string.Format("{0}: {1}", stat.statType, stat.Value);
         }
-
-        return description.ToString();
-    }
-
-    public string GetHitPointString()
-    {
-        return "100/100";
     }
 
     public Color GetCharacterColor()
@@ -557,7 +538,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         Debug.ULogChannel("Character", "Initialized " + stats.Count + " Stats.");
     }
 
-    private void ReadStatsFromSave(XmlReader reader)
+    public void ReadStatsFromSave(XmlReader reader)
     {
         // Protection vs. empty stats
         if (reader.IsEmptyElement)
@@ -645,7 +626,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         // Get our destination from the job.
         DestTile = MyJob.tile;
 
-        // If the dest tile does not have neighbours that are walkable it's very likely that they can't be walked to
+        // If the destination tile does not have neighbours that are walkable it's very likely that they can't be walked to
         if (DestTile != null)
         {
             if (DestTile.HasWalkableNeighbours() == false)
@@ -665,7 +646,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         Profiler.BeginSample("PathGeneration");
         if (MyJob.IsNeed)
         {
-            // This will calculate a path from curr to dest.
+            // This will calculate a path from current tile to destination tile.
             pathAStar = new Path_AStar(World.Current, CurrTile, DestTile, need.RestoreNeedFurn.ObjectType, 0, false, true);
         }
         else
@@ -773,7 +754,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             if (pathAStar == null || pathAStar.Length() == 0)
             {
                 // Generate a path to our destination.
-                // This will calculate a path from curr to dest.
+                // This will calculate a path from current tile to destination tile.
                 pathAStar = new Path_AStar(World.Current, CurrTile, DestTile);
                 if (pathAStar.Length() == 0)
                 {
@@ -1036,12 +1017,12 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
     /// <summary>
     /// This function instructs the character to null its inventory.
-    /// However in the fuure it should actually look for a place to dump the materials and then do so.
+    /// However in the future it should actually look for a place to dump the materials and then do so.
     /// </summary>
     private void DumpExcessInventory()
     {
         // TODO: Look for Places accepting the inventory in the following order:
-        // - Jobs also needing this item (this could serve us when building Walls, as the character could transport ressources for multiple walls at once)
+        // - Jobs also needing this item (this could serve us when building Walls, as the character could transport resources for multiple walls at once)
         // - Stockpiles (as not to clutter the floor)
         // - Floor
 
@@ -1066,7 +1047,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         // Check if the initial job still exists.
         // It could have been deleted through the user
-        // cancelling the job manually.
+        // canceling the job manually.
         if (job != null)
         {
             List<string> desired = job.FulfillableInventoryRequirements();
@@ -1080,7 +1061,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             }
             else
             {
-                // If not, (re)enqueue the job onto the waiting queu
+                // If not, (re)enqueue the job onto the waiting queue
                 // and also register a callback for the future.
                 World.Current.jobWaitingQueue.Enqueue(job);
                 World.Current.OnInventoryCreated += OnInventoryCreated;
