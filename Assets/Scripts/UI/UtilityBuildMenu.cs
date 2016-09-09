@@ -14,20 +14,20 @@ using UnityEngine.UI;
 public class UtilityBuildMenu : MonoBehaviour
 {
     public static UtilityBuildMenu instance;
-    public GameObject buildFurnitureButtonPrefab;
+    public GameObject buildutilityButtonPrefab;
 
     private List<GameObject> buildMenu;
     private string lastLanguage;
-    private bool showAllFurniture;
+    private bool showAllutility;
 
-    public void RebuildMenuButtons(bool showAllFurniture = false)
+    public void RebuildMenuButtons(bool showAllutility = false)
     {
         foreach (GameObject gameObject in buildMenu)
         {
             Destroy(gameObject);
         }
 
-        this.showAllFurniture = showAllFurniture;
+        this.showAllutility = showAllutility;
 
         GenerateMenuButtons();
     }
@@ -35,7 +35,7 @@ public class UtilityBuildMenu : MonoBehaviour
     private void Start()
     {
         instance = this;
-        showAllFurniture = Settings.GetSetting("DialogBoxSettings_developerModeToggle", false);
+        showAllutility = Settings.GetSetting("DialogBoxSettings_developerModeToggle", false);
         GenerateMenuButtons();        
     }
 
@@ -60,21 +60,21 @@ public class UtilityBuildMenu : MonoBehaviour
 
         buildMenu = new List<GameObject>();
 
-        // For each furniture prototype in our world, create one instance
+        // For each utility prototype in our world, create one instance
         // of the button to be clicked!
-        foreach (string furnitureKey in PrototypeManager.Utility.Keys)
+        foreach (string utilityKey in PrototypeManager.Utility.Keys)
         {
-            if (PrototypeManager.Utility.Get(furnitureKey).HasTypeTag("Non-buildable") && showAllFurniture == false)
+            if (PrototypeManager.Utility.Get(utilityKey).HasTypeTag("Non-buildable") && showAllutility == false)
             {
                 continue;
             }
 
-            GameObject gameObject = (GameObject)Instantiate(buildFurnitureButtonPrefab);
+            GameObject gameObject = (GameObject)Instantiate(buildutilityButtonPrefab);
             gameObject.transform.SetParent(this.transform);
             buildMenu.Add(gameObject);
 
-            Utility proto = PrototypeManager.Utility.Get(furnitureKey);
-            string objectId = furnitureKey;
+            Utility proto = PrototypeManager.Utility.Get(utilityKey);
+            string objectId = utilityKey;
 
             gameObject.name = "Button - Build " + objectId;
 
@@ -89,10 +89,10 @@ public class UtilityBuildMenu : MonoBehaviour
             });
 
             // http://stackoverflow.com/questions/1757112/anonymous-c-sharp-delegate-within-a-loop
-            string furniture = furnitureKey;
+            string utility = utilityKey;
             LocalizationTable.CBLocalizationFilesChanged += delegate
             {
-                gameObject.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(PrototypeManager.Furniture.Get(furniture).LocalizationCode) };
+                gameObject.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(PrototypeManager.Utility.Get(utility).LocalizationCode) };
             };
         }
 

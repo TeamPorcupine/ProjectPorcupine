@@ -16,9 +16,6 @@ public class UtilitySpriteController : BaseSpriteController<Utility>
     // Use this for initialization
     public UtilitySpriteController(World world) : base(world, "Utility")
     {
-        // Instantiate our dictionary that tracks which GameObject is rendering which Tile data.
-        powerStatusGameObjectMap = new Dictionary<Utility, GameObject>();
-
         // Register our callback so that our GameObject gets updated whenever
         // the tile's type changes.
         world.OnUtilityCreated += OnCreated;
@@ -38,7 +35,6 @@ public class UtilitySpriteController : BaseSpriteController<Utility>
         {
             util.Changed -= OnChanged;
             util.Removed -= OnRemoved;
-            util.IsOperatingChanged -= OnIsOperatingChanged;
         }
 
         foreach (Utility util in powerStatusGameObjectMap.Keys)
@@ -103,33 +99,10 @@ public class UtilitySpriteController : BaseSpriteController<Utility>
         sr.sortingLayerName = "Utility";
         sr.color = utility.Tint;
 
-        if (utility.PowerConnection != null && utility.PowerConnection.IsPowerConsumer)
-        {
-            GameObject powerGameObject = new GameObject();
-            powerStatusGameObjectMap.Add(utility, powerGameObject);
-            powerGameObject.transform.parent = util_go.transform;
-            powerGameObject.transform.position = util_go.transform.position;
-
-            SpriteRenderer powerSpriteRenderer = powerGameObject.AddComponent<SpriteRenderer>();
-            powerSpriteRenderer.sprite = GetPowerStatusSprite();
-            powerSpriteRenderer.sortingLayerName = "Power";
-            powerSpriteRenderer.color = Color.red;
-
-            if (utility.IsOperating)
-            {
-                powerGameObject.SetActive(false);
-            }
-            else
-            {
-                powerGameObject.SetActive(true);
-            }
-        }
-
         // Register our callback so that our GameObject gets updated whenever
         // the object's into changes.
         utility.Changed += OnChanged;
         utility.Removed += OnRemoved;
-        utility.IsOperatingChanged += OnIsOperatingChanged;
     }
 
     protected override void OnChanged(Utility util)
@@ -157,15 +130,9 @@ public class UtilitySpriteController : BaseSpriteController<Utility>
 
         util.Changed -= OnChanged;
         util.Removed -= OnRemoved;
-        util.IsOperatingChanged -= OnIsOperatingChanged;
         GameObject util_go = objectGameObjectMap[util];
         objectGameObjectMap.Remove(util);
         GameObject.Destroy(util_go);
-
-        if (powerStatusGameObjectMap.ContainsKey(util) == false)
-        {
-            return;
-        }
 
         powerStatusGameObjectMap.Remove(util);
     }
@@ -180,16 +147,6 @@ public class UtilitySpriteController : BaseSpriteController<Utility>
         if (powerStatusGameObjectMap.ContainsKey(utility) == false)
         {
             return;
-        }
-
-        GameObject powerGameObject = powerStatusGameObjectMap[utility];
-        if (utility.IsOperating)
-        {
-            powerGameObject.SetActive(false);
-        }
-        else
-        {
-            powerGameObject.SetActive(true);
         }
     }
 
@@ -212,10 +169,5 @@ public class UtilitySpriteController : BaseSpriteController<Utility>
         }
 
         return string.Empty;
-    }
-
-    private Sprite GetPowerStatusSprite()
-    {
-        return SpriteManager.current.GetSprite("Power", "PowerIcon");
     }
 }
