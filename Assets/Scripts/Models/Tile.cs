@@ -7,6 +7,7 @@
 // ====================================================
 #endregion
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
@@ -429,14 +430,15 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         return "tile_" + type.ToString() + "_desc";
     }
 
-    public string GetHitPointString()
-    {
-        return string.Empty; // Do tiles have hitpoints? Can flooring be damaged? Obviously "empty" is indestructible.
-    }
-
     public string GetJobDescription()
     {
         return string.Empty;
+    }
+
+    public IEnumerable<string> GetAdditionalInfo()
+    {
+        // Do tiles have hitpoints? Can flooring be damaged? Obviously "empty" is indestructible.
+        yield break;
     }
 
     #endregion

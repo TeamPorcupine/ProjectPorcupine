@@ -7,6 +7,7 @@
 // ====================================================
 #endregion
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using MoonSharp.Interpreter;
@@ -49,7 +50,7 @@ public class Job : ISelectable
 
     private List<string> jobWorkedLua;
    
-    // The job has been stopped, either because it's non-repeating or was cancelled.
+    // The job has been stopped, either because it's non-repeating or was canceled.
     private List<string> jobCompletedLua;
 
     public Job(Tile tile, string jobObjectType, Action<Job> jobComplete, float jobTime, Inventory[] inventoryRequirements, Job.JobPriority jobPriority, bool jobRepeats = false, bool need = false, bool critical = false)
@@ -396,7 +397,7 @@ public class Job : ISelectable
 
     public void DropPriority()
     {
-        // TODO: This casting to and from enums are a bit wierd. We should decide on ONE priority system.
+        // TODO: This casting to and from enums are a bit weird. We should decide on ONE priority system.
         this.Priority = (Job.JobPriority)Mathf.Min((int)Job.JobPriority.Low, (int)Priority + 1);
     }
 
@@ -415,14 +416,14 @@ public class Job : ISelectable
 
         return description;
     }
-
-    public string GetHitPointString()
-    {
-        return string.Empty;
-    }
-
+    
     public string GetJobDescription()
     {
         return GetDescription();
+    }
+
+    public IEnumerable<string> GetAdditionalInfo()
+    {
+        yield break;
     }
 }

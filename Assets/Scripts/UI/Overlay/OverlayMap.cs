@@ -381,8 +381,7 @@ public class OverlayMap : MonoBehaviour
         texture.wrapMode = TextureWrapMode.Clamp;
 
         // Set material.
-        Shader shader = Shader.Find("Transparent/Diffuse");
-        Material mat = new Material(shader);
+        Material mat = Resources.Load<Material>("Shaders/Transparent-Diffuse");
         meshRenderer.material = mat;
         if (mat == null || meshRenderer == null || texture == null)
         {
@@ -547,8 +546,8 @@ public class OverlayMap : MonoBehaviour
         colorMapView.AddComponent<UnityEngine.UI.LayoutElement>();
         colorMapView.GetComponent<UnityEngine.UI.LayoutElement>().minHeight = 30;
         colorMapView.GetComponent<UnityEngine.UI.LayoutElement>().minWidth = 150;
-        Shader shader = Shader.Find("UI/Unlit/Transparent");
-        colorMapView.GetComponent<UnityEngine.UI.Image>().material = new Material(shader);
+        Material overlayMaterial = Resources.Load<Material>("Shaders/UI-Unlit-Transparent");
+        colorMapView.GetComponent<UnityEngine.UI.Image>().material = overlayMaterial;
 
         List<string> options = new List<string> { "None" };
         options.AddRange(overlays.Keys);

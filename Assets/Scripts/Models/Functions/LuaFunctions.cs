@@ -99,7 +99,7 @@ public class LuaFunctions
     {
         if (instance == null)
         {
-            // These errors are about the lua code so putting themin the Lua channel.
+            // These errors are about the lua code so putting them in the Lua channel.
             Debug.ULogErrorChannel("Lua", "Instance is null, cannot call LUA function (something is fishy).");
         }
 

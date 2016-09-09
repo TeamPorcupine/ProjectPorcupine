@@ -127,7 +127,7 @@ public class BuildModeController
 
                 j.buildablePrototype = PrototypeManager.Furniture.Get(furnitureType);
 
-                // Add the job to the queue or build immediately if in dev mode
+                // Add the job to the queue or build immediately if in Dev mode
                 if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
                 {
                     WorldController.Instance.World.PlaceFurniture(j.JobObjectType, j.tile);
@@ -139,7 +139,7 @@ public class BuildModeController
                         for (int y_off = t.Y; y_off < (t.Y + j.buildablePrototype.Height); y_off++)
                         {
                             // FIXME: I don't like having to manually and explicitly set
-                            // flags that preven conflicts. It's too easy to forget to set/clear them!
+                            // flags that prevent conflicts. It's too easy to forget to set/clear them!
                             Tile offsetTile = WorldController.Instance.World.GetTileAt(x_off, y_off, t.Z);
                             offsetTile.PendingBuildJob = j;
                             j.OnJobStopped += (theJob) =>
@@ -226,7 +226,7 @@ public class BuildModeController
                 
                 buildingJob.tile = t;
 
-                // Add the job to the queue or build immediately if in dev mode
+                // Add the job to the queue or build immediately if in Dev mode
                 if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
                 {
                     buildingJob.tile.Type = buildingJob.JobTileType;
@@ -234,7 +234,7 @@ public class BuildModeController
                 else
                 {
                     // FIXME: I don't like having to manually and explicitly set
-                    // flags that preven conflicts. It's too easy to forget to set/clear them!
+                    // flags that prevent conflicts. It's too easy to forget to set/clear them!
                     t.PendingBuildJob = buildingJob;
                     buildingJob.OnJobStopped += (theJob) => theJob.tile.PendingBuildJob = null;
 
@@ -247,7 +247,7 @@ public class BuildModeController
             // TODO
             if (t.Furniture != null)
             {
-                // check if this is a WALL neighbouring a pressured and pressureless environ & if so bail
+                // check if this is a WALL neighbouring a pressured and pressureless environment, and if so, bail
                 if (t.Furniture.HasTypeTag("Wall"))
                 {
                     Tile[] neighbors = t.GetNeighbours(); // diagOkay??
@@ -270,7 +270,7 @@ public class BuildModeController
 
                     if (vacuumNeighbors > 0 && pressuredNeighbors > 0)
                     {
-                        Debug.ULogChannel("BuildModeController", "Someone tried to deconstruct a wall between a pressurised room and vacuum!");
+                        Debug.ULogChannel("BuildModeController", "Someone tried to deconstruct a wall between a pressurized room and vacuum!");
                         return;
                     }
                 }

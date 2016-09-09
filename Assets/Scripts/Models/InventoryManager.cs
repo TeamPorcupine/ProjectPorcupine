@@ -187,7 +187,7 @@ public class InventoryManager
     {
         QuickCheck(objectType);
 
-        // We can also avoid going through the Astar construction if we know
+        // We can also avoid going through the A* construction if we know
         // that all available inventories are stockpiles and we are not allowed
         // to touch those
         if (!canTakeFromStockpile && inventories[objectType].TrueForAll(i => i.Tile != null && i.Tile.Furniture != null && i.Tile.Furniture.IsStockpile()))
