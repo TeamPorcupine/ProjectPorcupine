@@ -72,7 +72,7 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
             }
 
             stackSize = value;
-            OnStackSizeChanged(this);
+            InvokeStackSizeChanged(this);
         }
     }
 
@@ -160,7 +160,7 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
         }
     }
 
-    private void OnStackSizeChanged(Inventory inventory)
+    private void InvokeStackSizeChanged(Inventory inventory)
     {
         Action<Inventory> handler = StackSizeChanged;
         if (handler != null)

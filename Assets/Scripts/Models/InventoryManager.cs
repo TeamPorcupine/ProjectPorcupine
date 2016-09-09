@@ -46,7 +46,7 @@ public class InventoryManager
             }
 
             Inventories[tile.Inventory.ObjectType].Add(tile.Inventory);
-            OnInventoryCreated(tile.Inventory);
+            InvokeInventoryCreated(tile.Inventory);
         }
 
         return true;
@@ -208,7 +208,7 @@ public class InventoryManager
         }
     }
 
-    private void OnInventoryCreated(Inventory inventory)
+    private void InvokeInventoryCreated(Inventory inventory)
     {
         Action<Inventory> handler = InventoryCreated;
         if (handler != null)
