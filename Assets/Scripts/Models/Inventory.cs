@@ -127,10 +127,12 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
         writer.WriteAttributeString("stackSize", StackSize.ToString());
         writer.WriteAttributeString("basePrice", BasePrice.ToString(CultureInfo.InvariantCulture));
         writer.WriteAttributeString("category", Category);
+        writer.WriteAttributeString("locked", Locked.ToString());
     }
 
     public void ReadXml(XmlReader reader)
     {
+
     }
 
     public IEnumerable<ContextMenuAction> GetContextMenuActions(ContextMenu contextMenu)

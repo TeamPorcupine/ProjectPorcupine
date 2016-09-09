@@ -753,7 +753,10 @@ public class World : IXmlSerializable
                 Inventory inv = new Inventory(
                     reader.GetAttribute("type"),
                     int.Parse(reader.GetAttribute("stackSize")),
-                    int.Parse(reader.GetAttribute("maxStackSize")));
+                    int.Parse(reader.GetAttribute("maxStackSize")))
+                {
+                    Locked = bool.Parse(reader.GetAttribute("locked"))
+                };
 
                 inventoryManager.PlaceInventory(tiles[x, y, z], inv);
             }
@@ -842,7 +845,10 @@ public class World : IXmlSerializable
                                     Inventory inv = new Inventory(
                                         reader.GetAttribute("type"),
                                         int.Parse(reader.GetAttribute("stackSize")),
-                                        int.Parse(reader.GetAttribute("maxStackSize")));
+                                        int.Parse(reader.GetAttribute("maxStackSize")))
+                                    {
+                                        Locked = bool.Parse(reader.GetAttribute("locked"))
+                                    };
 
                                     inventoryManager.PlaceInventory(character, inv);
                                 }
