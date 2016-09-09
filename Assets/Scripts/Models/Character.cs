@@ -348,12 +348,13 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         Update_DoMovement(deltaTime);
 
+        animation.Update(deltaTime);
+
         if (OnCharacterChanged != null)
         {
             OnCharacterChanged(this);
         }
-
-        animation.Update(deltaTime);
+        
     }
 
     #region IXmlSerializable implementation
@@ -877,8 +878,6 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         {
             CharFacing = Facing.SOUTH;
         }
-        //Debug.ULogChannel("ani", "facing " + nextTile.X + " - " + CurrTile.X + " flip " + CharFacing);
-
     }
 
     /// <summary>

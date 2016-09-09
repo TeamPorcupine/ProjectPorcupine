@@ -123,9 +123,7 @@ namespace Animation
                 else if (currentAnimation.FlipX == false && renderer.flipX == true)
                 {
                     renderer.flipX = false;
-                }
-                //Debug.ULogChannel("ani", "new anim " + currentAnimationType + " f " + character.CharFacing + " flip " + renderer.flipX);
-
+                }                
             }
 
             currentAnimation.Update(deltaTime);
@@ -141,7 +139,6 @@ namespace Animation
             {
                 CurrentSortingOrder = Mathf.RoundToInt(character.Y * 100f) * -1;
                 renderer.sortingOrder = CurrentSortingOrder;
-                Debug.ULogChannel("ani", CurrentSortingOrder.ToString());
             }
 
             lastCharYPosition = character.Y;
