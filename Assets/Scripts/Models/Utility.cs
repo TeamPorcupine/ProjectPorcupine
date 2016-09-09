@@ -18,7 +18,7 @@ using ProjectPorcupine.PowerNetwork;
 using UnityEngine;
 
 /// <summary>
-/// InstalledObjects are things like walls, doors, and furniture (e.g. a sofa).
+/// InstalledObjects are things like walls, doors, and utility (e.g. a sofa).
 /// </summary>
 [MoonSharpUserData]
 public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IBuildable
@@ -27,17 +27,17 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
     private const int MinEdgeDistance = 5;
 
     /// <summary>
-    /// This action is called to get the sprite name based on the furniture parameters.
+    /// This action is called to get the sprite name based on the utility parameters.
     /// </summary>
     private string getSpriteNameAction;
 
     /// <summary>
-    /// These context menu lua action are used to build the context menu of the furniture.
+    /// These context menu lua action are used to build the context menu of the utility.
     /// </summary>
     private List<ContextMenuLuaAction> contextMenuLuaActions;
 
     /// <summary>
-    /// Custom parameter for this particular piece of furniture.  We are
+    /// Custom parameter for this particular piece of utility.  We are
     /// using a custom Parameter class because later, custom LUA function will be
     /// able to use whatever parameters the user/modder would like, and contain strings or floats.
     /// Basically, the LUA code will bind to this Parameter.
@@ -108,13 +108,6 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
 
         getSpriteNameAction = other.getSpriteNameAction;
 
-        if (other.PowerConnection != null)
-        {
-            PowerConnection = other.PowerConnection.Clone() as Connection;
-            World.Current.PowerNetwork.PlugIn(PowerConnection);
-            PowerConnection.NewThresholdReached += OnNewThresholdReached;
-        }
-
         if (other.funcPositionValidation != null)
         {
             funcPositionValidation = (Func<Tile, bool>)other.funcPositionValidation.Clone();
@@ -127,23 +120,18 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
     }
 
     /// <summary>
-    /// This event will trigger when the furniture has been changed.
-    /// This is means that any change (parameters, job state etc) to the furniture will trigger this.
+    /// This event will trigger when the utility has been changed.
+    /// This is means that any change (parameters, job state etc) to the utility will trigger this.
     /// </summary>
     public event Action<Utility> Changed;
 
     /// <summary>
-    /// This event will trigger when the furniture has been removed.
+    /// This event will trigger when the utility has been removed.
     /// </summary>
     public event Action<Utility> Removed;
 
     /// <summary>
-    /// This event will trigger if <see cref="IsOperating"/> has been changed.
-    /// </summary>
-    public event Action<Utility> IsOperatingChanged;
-
-    /// <summary>
-    /// Gets the width of the furniture.
+    /// Gets the width of the utility.
     /// </summary>
     public int Width 
     { 
@@ -151,7 +139,7 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
     }
 
     /// <summary>
-    /// Gets the height of the furniture.
+    /// Gets the height of the utility.
     /// </summary>
     public int Height 
     { 
@@ -159,79 +147,50 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
     }
 
     /// <summary>
-    /// Gets the tint used to change the color of the furniture.
+    /// Gets the tint used to change the color of the utility.
     /// </summary>
-    /// <value>The Color of the furniture.</value>
+    /// <value>The Color of the utility.</value>
     public Color Tint { get; private set; }
 
     /// <summary>
-    /// Gets the spot where the Character will stand when he is using the furniture. This is relative to the bottom
-    /// left tile of the sprite. This can be outside of the actual furniture.
+    /// Gets the spot where the Character will stand when he is using the utility. This is relative to the bottom
+    /// left tile of the sprite. This can be outside of the actual utility.
     /// </summary>
-    /// <value>The spot where the Character will stand when he uses the furniture.</value>
+    /// <value>The spot where the Character will stand when he uses the utility.</value>
     public Vector2 JobSpotOffset { get; private set; }
 
     /// <summary>
-    /// Gets the EventAction for the current furniture.
-    /// These actions are called when an event is called. They get passed the furniture
+    /// Gets the EventAction for the current utility.
+    /// These actions are called when an event is called. They get passed the utility
     /// they belong to, plus a deltaTime (which defaults to 0).
     /// </summary>
     /// <value>The event actions that is called on update.</value>
     public EventActions EventActions { get; private set; }
 
     /// <summary>
-    /// Gets the Connection that the furniture has to the power system.
+    /// Gets or sets a value indicating whether the utility is selected by the player or not.
     /// </summary>
-    /// <value>The Connection of the furniture.</value>
-    public Connection PowerConnection { get; private set; }
-
-    /// <summary>
-    /// Gets a value indicating whether the furniture is operating or not.
-    /// </summary>
-    /// <value>Whether the furniture is operating or not.</value>
-    public bool IsOperating
-    {
-        get
-        {
-            return isOperating;
-        }
-
-        private set
-        {
-            if (isOperating == value)
-            {
-                return;
-            }
-
-            isOperating = value;
-            OnIsOperatingChanged(this);
-        }
-    }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether the furniture is selected by the player or not.
-    /// </summary>
-    /// <value>Whether the furniture is selected or not.</value>
+    /// <value>Whether the utility is selected or not.</value>
     public bool IsSelected { get; set; }
 
     /// <summary>
-    /// Gets the BASE tile of the furniture. (Large objects can span over multiple tiles).
+    /// Gets the BASE tile of the utility. (Large objects can span over multiple tiles).
     /// This should be RENAMED (possibly to BaseTile).
     /// </summary>
-    /// <value>The BASE tile of the furniture.</value>
+    /// <value>The BASE tile of the utility.</value>
     public Tile Tile { get; private set; }
 
     /// <summary>
-    /// Gets the string that defines the type of object the furniture is. This gets queried by the visual system to 
-    /// know what sprite to render for this furniture.
+    /// Gets the string that defines the type of object the utility is. This gets queried by the visual system to 
+    /// know what sprite to render for this utility.
     /// </summary>
-    /// <value>The type of the furniture.</value>
+    /// <value>The type of the utility.</value>
     public string ObjectType { get; private set; }
 
     /// <summary>
-    /// Gets the name of the furniture. The name is the object type by default.
+    /// Gets the name of the utility. The name is the object type by default.
     /// </summary>
-    /// <value>The name of the furniture.</value>
+    /// <value>The name of the utility.</value>
     public string Name
     {
         get
@@ -251,29 +210,29 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
     }
 
     /// <summary>
-    /// Gets the code used for Localization of the furniture.
+    /// Gets the code used for Localization of the utility.
     /// </summary>
     public string LocalizationCode { get; private set; }
 
     /// <summary>
-    /// Gets the description of the furniture. This is used by localization.
+    /// Gets the description of the utility. This is used by localization.
     /// </summary>
     public string UnlocalizedDescription { get; private set; }
 
     /// <summary>
-    /// Gets a value indicating whether this furniture is next to any furniture of the same type.
-    /// This is used to check what sprite to use if furniture is next to each other.
+    /// Gets a value indicating whether this utility is next to any utility of the same type.
+    /// This is used to check what sprite to use if utility is next to each other.
     /// </summary>
     public bool LinksToNeighbour { get; private set; }
 
     /// <summary>
-    /// Gets the type of dragging that is used to build multiples of this furniture. 
+    /// Gets the type of dragging that is used to build multiples of this utility. 
     /// e.g walls.
     /// </summary>
     public string DragType { get; private set; }
 
     /// <summary>
-    /// Gets or sets the parameters that is tied to the furniture.
+    /// Gets or sets the parameters that is tied to the utility.
     /// </summary>
     public Parameter Parameters
     {
@@ -289,10 +248,10 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
     }
 
     /// <summary>
-    /// Used to place furniture in a certain position.
+    /// Used to place utility in a certain position.
     /// </summary>
-    /// <param name="proto">The prototype furniture to place.</param>
-    /// <param name="tile">The base tile to place the furniture on, The tile will be the bottom left corner of the furniture (to check).</param>
+    /// <param name="proto">The prototype utility to place.</param>
+    /// <param name="tile">The base tile to place the utility on, The tile will be the bottom left corner of the utility (to check).</param>
     /// <returns>Utility object.</returns>
     public static Utility PlaceInstance(Utility proto, Tile tile)
     {
@@ -318,7 +277,7 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
 
         if (obj.LinksToNeighbour)
         {
-            // This type of furniture links itself to its neighbours,
+            // This type of utility links itself to its neighbours,
             // so we should inform our neighbours that they have a new
             // buddy.  Just trigger their OnChangedCallback.
             int x = tile.X;
@@ -351,22 +310,12 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
     }
 
     /// <summary>
-    /// This function is called to update the furniture. This will also trigger EventsActions.
-    /// This checks if the furniture is a PowerConsumer, and if it does not have power it cancels its job.
+    /// This function is called to update the utility. This will also trigger EventsActions.
+    /// This checks if the utility is a PowerConsumer, and if it does not have power it cancels its job.
     /// </summary>
     /// <param name="deltaTime">The time since the last update was called.</param>
     public void Update(float deltaTime)
     {
-        if (PowerConnection != null && PowerConnection.IsPowerConsumer && HasPower() == false)
-        {
-            if (JobCount() > 0)
-            {
-                PauseJobs();
-            }
-
-            return;
-        }
-
         if (pausedJobs.Count > 0)
         {
             ResumeJobs();
@@ -382,7 +331,7 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
     }
 
     /// <summary>
-    /// Check if the furniture has a function to determine the sprite name and calls that function.
+    /// Check if the utility has a function to determine the sprite name and calls that function.
     /// </summary>
     /// <returns>Name of the sprite.</returns>
     public string GetSpriteName()
@@ -397,24 +346,14 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
     }
 
     /// <summary>
-    /// Check if the position of the furniture is valid or not.
-    /// This is called when placing the furniture.
+    /// Check if the position of the utility is valid or not.
+    /// This is called when placing the utility.
     /// </summary>
     /// <param name="t">The base tile.</param>
-    /// <returns>True if the tile is valid for the placement of the furniture.</returns>
+    /// <returns>True if the tile is valid for the placement of the utility.</returns>
     public bool IsValidPosition(Tile t)
     {
         return funcPositionValidation(t);
-    }
-
-    /// <summary>
-    /// Whether the furniture has power or not.
-    /// </summary>
-    /// <returns>True if the furniture has power.</returns>
-    public bool HasPower()
-    {
-        IsOperating = PowerConnection == null || World.Current.PowerNetwork.HasPower(PowerConnection);
-        return IsOperating;
     }
 
     /// <summary>
@@ -428,7 +367,7 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
     }
 
     /// <summary>
-    /// Writes the furniture to XML.
+    /// Writes the utility to XML.
     /// </summary>
     /// <param name="writer">The XML writer to write to.</param>
     public void WriteXml(XmlWriter writer)
@@ -443,7 +382,7 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
     }
 
     /// <summary>
-    /// Reads the prototype furniture from XML.
+    /// Reads the prototype utility from XML.
     /// </summary>
     /// <param name="readerParent">The XML reader to read from.</param>
     public void ReadXmlPrototype(XmlReader readerParent)
@@ -530,15 +469,9 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
 
                 case "JobSpotOffset":
                     JobSpotOffset = new Vector2(
-                        int.Parse(reader.GetAttribute("X")),
-                        int.Parse(reader.GetAttribute("Y")));
+                    int.Parse(reader.GetAttribute("X")),
+                    int.Parse(reader.GetAttribute("Y")));
                     break;
-
-                case "PowerConnection":
-                    PowerConnection = new Connection();
-                    PowerConnection.ReadPrototype(reader);
-                    break;
-
                 case "Params":
                     ReadXmlParams(reader);  // Read in the Param tag
                     break;
@@ -558,7 +491,7 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
     
     /// <summary>
     /// Reads the specified XMLReader (pass it to <see cref="ReadXmlParams(XmlReader)"/>)
-    /// This is used to load furniture from a save file.
+    /// This is used to load utility from a save file.
     /// </summary>
     /// <param name="reader">The XML reader to read from.</param>
     public void ReadXml(XmlReader reader)
@@ -572,7 +505,7 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
     }
 
     /// <summary>
-    /// Reads the XML for parameters that this furniture has and assign it to the furniture.
+    /// Reads the XML for parameters that this utility has and assign it to the utility.
     /// </summary>
     /// <param name="reader">The reader to read the parameters from.</param>
     public void ReadXmlParams(XmlReader reader)
@@ -583,7 +516,7 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
     }
 
     /// <summary>
-    /// Gets the furniture's Parameter structure from a string key.
+    /// Gets the utility's Parameter structure from a string key.
     /// </summary>
     /// <returns>The Parameter value..</returns>
     public Parameter GetParameters()
@@ -592,29 +525,29 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
     }
 
     /// <summary>
-    /// How many jobs are linked to this furniture.
+    /// How many jobs are linked to this utility.
     /// </summary>
-    /// <returns>The number of jobs linked to this furniture.</returns>
+    /// <returns>The number of jobs linked to this utility.</returns>
     public int JobCount()
     {
         return jobs.Count;
     }
 
     /// <summary>
-    /// Link a job to the current furniture.
+    /// Link a job to the current utility.
     /// </summary>
-    /// <param name="job">The job that you want to link to the furniture.</param>
+    /// <param name="job">The job that you want to link to the utility.</param>
     public void AddJob(Job job)
     {
         // FIXME: Do we even need this?
-//        job.furniture = this;
+//        job.utility = this;
         jobs.Add(job);
         job.OnJobStopped += OnJobStopped;
         World.Current.jobQueue.Enqueue(job);
     }
 
     /// <summary>
-    /// Cancel all the jobs linked to this furniture.
+    /// Cancel all the jobs linked to this utility.
     /// </summary>
     public void CancelJobs()
     {
@@ -648,7 +581,7 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
     }
 
     /// <summary>
-    /// Deconstructs the furniture.
+    /// Deconstructs the utility.
     /// </summary>
     public void Deconstruct(Utility utility)
     {
@@ -668,22 +601,9 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
 //        EventActions.Trigger("OnUninstall", this);
         Tile.UnplaceUtility();
 
-        if (PowerConnection != null)
-        {
-            World.Current.PowerNetwork.Unplug(PowerConnection);
-            PowerConnection.NewThresholdReached -= OnNewThresholdReached;
-        }
-
         if (Removed != null)
         {
             Removed(this);
-        }
-
-        ////World.current.InvalidateTileGraph();
-
-        if (World.Current.tileGraph != null)
-        {
-            World.Current.tileGraph.RegenerateGraphAtTile(Tile);
         }
 
         // We should inform our neighbours that they have just lost a
@@ -715,46 +635,42 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
     }
 
     /// <summary>
-    /// Checks whether the furniture has a certain tag.
+    /// Checks whether the utility has a certain tag.
     /// </summary>
     /// <param name="typeTag">Tag to check for.</param>
-    /// <returns>True if furniture has specified tag.</returns>
+    /// <returns>True if utility has specified tag.</returns>
     public bool HasTypeTag(string typeTag)
     {
         return typeTags.Contains(typeTag);
     }
 
     /// <summary>
-    /// Returns LocalizationCode name for the furniture.
+    /// Returns LocalizationCode name for the utility.
     /// </summary>
-    /// <returns>LocalizationCode for the name of the furniture.</returns>
+    /// <returns>LocalizationCode for the name of the utility.</returns>
     public string GetName()
     {
         return LocalizationCode; // this.Name;
     }
 
     /// <summary>
-    /// Returns the UnlocalizedDescription of the furniture.
+    /// Returns the UnlocalizedDescription of the utility.
     /// </summary>
-    /// <returns>Description of the furniture.</returns>
+    /// <returns>Description of the utility.</returns>
     public string GetDescription()
     {
         return UnlocalizedDescription;
     }
 
-    /// <summary>
-    /// Returns the HitPoints of the current furniture NOT IMPLEMENTED.
-    /// </summary>
-    /// <returns>String with the HitPoints of the furniture.</returns>
-    public string GetHitPointString()
+    public IEnumerable<string> GetAdditionalInfo()
     {
-        return "18/18"; // TODO: Add a hitpoint system to...well...everything
+        yield return string.Empty;
     }
 
     /// <summary>
-    /// Returns the description of the job linked to the furniture. NOT INMPLEMENTED.
+    /// Returns the description of the job linked to the utility. NOT INMPLEMENTED.
     /// </summary>
-    /// <returns>Job description of the job linked to the furniture.</returns>
+    /// <returns>Job description of the job linked to the utility.</returns>
     public string GetJobDescription()
     {
         return string.Empty;
@@ -807,7 +723,7 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
         }
     }
 
-    // Make a copy of the current furniture.  Sub-classed should
+    // Make a copy of the current utility.  Sub-classes should
     // override this Clone() if a different (sub-classed) copy
     // constructor should be run.
     public Utility Clone()
@@ -818,7 +734,7 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
     // FIXME: These functions should never be called directly,
     // so they probably shouldn't be public functions of Utility
     // This will be replaced by validation checks fed to use from
-    // LUA files that will be customizable for each piece of furniture.
+    // LUA files that will be customizable for each piece of utility.
     // For example, a door might specific that it needs two walls to
     // connect to.
     private bool DefaultIsValidPosition(Tile tile)
@@ -871,30 +787,16 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
     }
 
     [MoonSharpVisible(true)]
-    private void UpdateOnChanged(Utility furn)
+    private void UpdateOnChanged(Utility util)
     {
         if (Changed != null)
         {
-            Changed(furn);
+            Changed(util);
         }
     }
 
     private void OnJobStopped(Job j)
     {
         RemoveJob(j);
-    }
-
-    private void OnIsOperatingChanged(Utility utility)
-    {
-        Action<Utility> handler = IsOperatingChanged;
-        if (handler != null)
-        {
-            handler(utility);
-        }
-    }
-
-    private void OnNewThresholdReached(Connection connection)
-    {
-        UpdateOnChanged(this);
     }
 }
