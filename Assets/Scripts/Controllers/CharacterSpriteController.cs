@@ -107,6 +107,7 @@ public class CharacterSpriteController : BaseSpriteController<Character>
         {
             inv_sr.sprite = SpriteManager.current.GetSprite("Inventory", c.inventory.GetName());
             inv_sr.sortingOrder = c.animation.CurrentSortingOrder + 1;
+            Debug.ULogChannel("ani", " - " + inv_sr.sortingOrder.ToString());
         }
         else
         {
