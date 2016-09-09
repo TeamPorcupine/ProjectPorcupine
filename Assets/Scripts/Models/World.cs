@@ -633,9 +633,6 @@ public class World : IXmlSerializable
 
     private void SetupWorld(int width, int height, int depth)
     {
-        // Setup furniture actions before any other things are loaded.
-        new FurnitureActions();
-
         jobQueue = new JobQueue();
         jobWaitingQueue = new JobQueue();
 
@@ -834,31 +831,48 @@ public class World : IXmlSerializable
 
                 character.name = reader.GetAttribute("name");
                 character.ReadXml(reader);
-                if (reader.ReadToDescendant("Inventories")) 
+
+                // Read the children elements.
+                // TODO: This should either not be XML, or use XmlSerializer.
+                while (reader.Read())
                 {
-                    if (reader.ReadToDescendant("Inventory"))
+                    // Read until the end of the character.
+                    if (reader.NodeType == XmlNodeType.EndElement)
                     {
-                        do
-                        {
-                            // Create our inventory from the file
-                            Inventory inv = new Inventory(
-                                reader.GetAttribute("objectType"),
-                                int.Parse(reader.GetAttribute("maxStackSize")),
-                                int.Parse(reader.GetAttribute("stackSize")));
+                        break;
+                    }
 
-                            inventoryManager.PlaceInventory(character, inv);
-                        }
-                        while (reader.ReadToNextSibling("Inventory"));
+                    switch (reader.Name)
+                    {
+                        case "Stats":
+                            character.ReadStatsFromSave(reader);
+                            break;
+                        case "Inventories":
+                            if (reader.ReadToDescendant("Inventory"))
+                            {
+                                do
+                                {
+                                    // Create our inventory from the file
+                                    Inventory inv = new Inventory(
+                                        reader.GetAttribute("objectType"),
+                                        int.Parse(reader.GetAttribute("maxStackSize")),
+                                        int.Parse(reader.GetAttribute("stackSize")));
 
-                        // One more read to step out of Inventories, so ReadToNextSibling will find sibling Character
-                        reader.Read();
+                                    inventoryManager.PlaceInventory(character, inv);
+                                }
+                                while (reader.ReadToNextSibling("Inventory"));
+
+                                // One more read to step out of Inventories, so ReadToNextSibling will find sibling Character
+                                reader.Read();
+                            }
+                            break;
                     }
                 }
             }
             while (reader.ReadToNextSibling("Character"));
         }
     }
-
+    
 #region TestFunctions
     /// <summary>
     /// Tests the room graph generation for the default world.

@@ -7,6 +7,7 @@
 // ====================================================
 #endregion
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using MoonSharp.Interpreter;
@@ -227,7 +228,7 @@ public class Job : ISelectable
         {
             foreach (string luaFunction in jobWorkedLua.ToList())
             {
-                LuaUtilities.CallFunction(luaFunction, this);
+                FunctionsManager.Furniture.Call(luaFunction, this);
             }
         }
 
@@ -250,7 +251,7 @@ public class Job : ISelectable
 
             foreach (string luaFunction in jobCompletedLua.ToList())
             {
-                LuaUtilities.CallFunction(luaFunction, this);
+                FunctionsManager.Furniture.Call(luaFunction, this);
             }
             
             if (jobRepeats == false)
@@ -415,14 +416,14 @@ public class Job : ISelectable
 
         return description;
     }
-
-    public string GetHitPointString()
-    {
-        return string.Empty;
-    }
-
+    
     public string GetJobDescription()
     {
         return GetDescription();
+    }
+
+    public IEnumerable<string> GetAdditionalInfo()
+    {
+        yield break;
     }
 }

@@ -8,6 +8,7 @@
 #endregion
 using System;
 using System.IO;
+using UnityEngine;
 
 public class ModsManager
 {
@@ -24,6 +25,13 @@ public class ModsManager
 
     public void LoadPrototypes()
     {
+        LoadFunctionScripts("Furniture", "Furniture.lua");
+        LoadFunctionScripts("Need", "Need.lua");
+        LoadFunctionScripts("GameEvent", "GameEvent.lua");
+        LoadFunctionScripts("TileType", "Tiles.lua");
+        LoadFunctionScripts("Quest", "Quest.lua");
+        LoadFunctionScripts("ScheduledEvent", "ScheduledEvent.lua");
+
         PrototypeManager.Furniture.LoadPrototypes(mods);
         PrototypeManager.Inventory.LoadPrototypes(mods);
         PrototypeManager.Need.LoadPrototypes(mods);
@@ -31,13 +39,36 @@ public class ModsManager
         PrototypeManager.SchedulerEvent.LoadPrototypes(mods);
         PrototypeManager.Stat.LoadPrototypes(mods);
         PrototypeManager.Quest.LoadPrototypes(mods);
-
-        FurnitureActions.LoadModsScripts(mods);
-        NeedActions.LoadModsScripts(mods);
     }
 
     public DirectoryInfo[] GetMods()
     {
         return mods;
+    }
+
+    /// <summary>
+    /// Loads the base and the mods scripts.
+    /// </summary>
+    /// <param name="mods">The mods directories.</param>
+    /// <param name="fileName">The file name.</param>
+    private void LoadFunctionScripts(string functionsName, string fileName)
+    {
+        string filePath = Path.Combine(Application.streamingAssetsPath, "LUA");
+        filePath = Path.Combine(filePath, fileName);
+        if (File.Exists(filePath))
+        {
+            string text = File.ReadAllText(filePath);
+            FunctionsManager.Get(functionsName).LoadScript(text, functionsName);
+        }
+
+        foreach (DirectoryInfo mod in mods)
+        {
+            filePath = Path.Combine(mod.FullName, fileName);
+            if (File.Exists(filePath))
+            {
+                string text = File.ReadAllText(filePath);
+                FunctionsManager.Get(functionsName).LoadScript(text, functionsName);
+            }
+        }
     }
 }
