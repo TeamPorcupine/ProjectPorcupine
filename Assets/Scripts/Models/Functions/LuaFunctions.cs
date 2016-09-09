@@ -32,6 +32,8 @@ public class LuaFunctions
         RegisterGlobal(typeof(World));
         RegisterGlobal(typeof(WorldController));
         RegisterGlobal(typeof(Connection));
+        RegisterGlobal(typeof(Scheduler.Scheduler));
+        RegisterGlobal(typeof(Scheduler.ScheduledEvent));
     }
 
     /// <summary>
