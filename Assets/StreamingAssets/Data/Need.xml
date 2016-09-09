@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Needs>
-
-    <Need needType="Oxygen">
+    <Need type="Oxygen">
         <Name>Oxygen</Name>
         <GrowthRate>0</GrowthRate>
         <GrowthInVacuum>0.1</GrowthInVacuum>
@@ -14,7 +13,7 @@
         <Localization>need_oxygen</Localization>
     </Need>
 
-    <Need needType="Sleep">
+    <Need type="Sleep">
         <Name>Sleep</Name>
         <RestoreNeedFurnitureType>simple_bed</RestoreNeedFurnitureType>
         <GrowthRate>0.3</GrowthRate>
@@ -22,5 +21,4 @@
         <RestoreNeedAmount>100</RestoreNeedAmount>
         <Localization>need_sleep</Localization>
     </Need>
-
 </Needs>
