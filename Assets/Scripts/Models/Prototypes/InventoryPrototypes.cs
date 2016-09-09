@@ -6,7 +6,9 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+
 using System;
+using System.Collections.Generic;
 using System.Xml;
 
 public class InventoryPrototypes : XmlPrototypes<InventoryCommon>
@@ -28,9 +30,9 @@ public class InventoryPrototypes : XmlPrototypes<InventoryCommon>
         }
         catch (Exception e)
         {
-            LogPrototypeError(e, inv.type);
+            LogPrototypeError(e, inv.objectType);
         }
 
-        Set(inv.type, inv);
+        Set(inv.objectType, inv);
     }
 }

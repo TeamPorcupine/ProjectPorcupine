@@ -115,10 +115,10 @@ public class WorldGenerator
 
                                     if (randomweight <= currentweight)
                                     {
-                                        if (inv.Type == "Raw Iron" || inv.Type == "Uranium")
+                                        if (inv.ObjectType == "Raw Iron" || inv.ObjectType == "Uranium")
                                     {
                                         Furniture mine = PrototypeManager.Furniture.Get("mine").Clone();
-                                        mine.Parameters["ore_type"].SetValue(inv.Type.ToString());
+                                        mine.Parameters["ore_type"].SetValue(inv.ObjectType.ToString());
                                         world.PlaceFurniture(mine, tile, false);
                                         break;
                                     }
@@ -130,7 +130,7 @@ public class WorldGenerator
                                         stackSize = inv.MaxStackSize;
                                     }
 
-                                    world.inventoryManager.PlaceInventory(tile, new Inventory(inv.Type, inv.MaxStackSize, stackSize));
+                                    world.inventoryManager.PlaceInventory(tile, new Inventory(inv.ObjectType, inv.MaxStackSize, stackSize));
                                     break;
                                     }
                                 }

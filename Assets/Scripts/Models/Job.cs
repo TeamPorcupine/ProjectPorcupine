@@ -73,7 +73,7 @@ public class Job : ISelectable
         {
             foreach (Inventory inv in inventoryRequirements)
             {
-                this.inventoryRequirements[inv.Type] = inv.Clone();
+                this.inventoryRequirements[inv.ObjectType] = inv.Clone();
             }
         }
     }
@@ -97,7 +97,7 @@ public class Job : ISelectable
         {
             foreach (Inventory inv in inventoryRequirements)
             {
-                this.inventoryRequirements[inv.Type] = inv.Clone();
+                this.inventoryRequirements[inv.ObjectType] = inv.Clone();
             }
         }
     }
@@ -122,7 +122,7 @@ public class Job : ISelectable
         {
             foreach (Inventory inv in other.inventoryRequirements.Values)
             {
-                this.inventoryRequirements[inv.Type] = inv.Clone();
+                this.inventoryRequirements[inv.ObjectType] = inv.Clone();
             }
         }
     }
@@ -347,7 +347,7 @@ public class Job : ISelectable
 
     public int AmountDesiredOfInventoryType(Inventory inv)
     {
-        return AmountDesiredOfInventoryType(inv.Type);
+        return AmountDesiredOfInventoryType(inv.ObjectType);
     }
 
     /// <summary>
@@ -362,20 +362,20 @@ public class Job : ISelectable
         {
             if (this.acceptsAny == false)
             {
-                if (World.Current.inventoryManager.HasInventoryOfType(inv.Type) == false)
+                if (World.Current.inventoryManager.HasInventoryOfType(inv.ObjectType) == false)
                 {
                     // the job requires ALL inventory requirements to be met, and there is no source of a desired objectType
                     return null;
                 }
                 else
                 {
-                    fulfillableInventoryRequirements.Add(inv.Type);
+                    fulfillableInventoryRequirements.Add(inv.ObjectType);
                 }
             }
-            else if (World.Current.inventoryManager.HasInventoryOfType(inv.Type))
+            else if (World.Current.inventoryManager.HasInventoryOfType(inv.ObjectType))
             {
                 // there is a source for a desired objectType that the job will accept
-                fulfillableInventoryRequirements.Add(inv.Type);
+                fulfillableInventoryRequirements.Add(inv.ObjectType);
             }
         }
 
