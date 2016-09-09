@@ -834,7 +834,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         Dictionary<string, Inventory> invsDict = new Dictionary<string, Inventory>();
         foreach (string objectType in PrototypeManager.Inventory.Keys)
         {
-            invsDict[objectType] = new Inventory(objectType, PrototypeManager.Inventory.Get(objectType).maxStackSize, 0);
+            invsDict[objectType] = new Inventory(objectType, 0);
         }
 
         Inventory[] invs = new Inventory[invsDict.Count];

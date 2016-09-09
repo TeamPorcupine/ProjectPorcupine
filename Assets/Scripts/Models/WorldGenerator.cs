@@ -130,7 +130,7 @@ public class WorldGenerator
                                         stackSize = inv.MaxStackSize;
                                     }
 
-                                    world.inventoryManager.PlaceInventory(tile, new Inventory(inv.ObjectType, inv.MaxStackSize, stackSize));
+                                    world.inventoryManager.PlaceInventory(tile, new Inventory(inv.ObjectType, stackSize, inv.MaxStackSize));
                                     break;
                                     }
                                 }
@@ -201,8 +201,8 @@ public class WorldGenerator
                                     {
                                         res.Add(new Inventory(
                                                 res_reader.GetAttribute("objectType"),
-                                                int.Parse(res_reader.GetAttribute("maxStack")),
-                                                Mathf.CeilToInt(float.Parse(res_reader.GetAttribute("weightedChance")))));
+                                                Mathf.CeilToInt(float.Parse(res_reader.GetAttribute("weightedChance"))),
+                                                int.Parse(res_reader.GetAttribute("maxStack"))));
 
                                         resMin.Add(int.Parse(res_reader.GetAttribute("min")));
                                         resMax.Add(int.Parse(res_reader.GetAttribute("max")));

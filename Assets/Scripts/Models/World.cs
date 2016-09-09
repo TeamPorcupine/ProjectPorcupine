@@ -752,8 +752,8 @@ public class World : IXmlSerializable
                 // Create our inventory from the file
                 Inventory inv = new Inventory(
                     reader.GetAttribute("objectType"),
-                    int.Parse(reader.GetAttribute("maxStackSize")),
-                    int.Parse(reader.GetAttribute("stackSize")));
+                    int.Parse(reader.GetAttribute("stackSize")),
+                    int.Parse(reader.GetAttribute("maxStackSize")));
 
                 inventoryManager.PlaceInventory(tiles[x, y, z], inv);
             }
@@ -841,8 +841,8 @@ public class World : IXmlSerializable
                                     // Create our inventory from the file
                                     Inventory inv = new Inventory(
                                         reader.GetAttribute("objectType"),
-                                        int.Parse(reader.GetAttribute("maxStackSize")),
-                                        int.Parse(reader.GetAttribute("stackSize")));
+                                        int.Parse(reader.GetAttribute("stackSize")),
+                                        int.Parse(reader.GetAttribute("maxStackSize")));
 
                                     inventoryManager.PlaceInventory(character, inv);
                                 }

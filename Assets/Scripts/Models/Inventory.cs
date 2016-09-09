@@ -46,7 +46,7 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
 
     public string ObjectType { get; private set; }
 
-    public int MaxStackSize { get; private set; }
+    public int MaxStackSize { get; set; }
 
     public float BasePrice { get; set; }
 
