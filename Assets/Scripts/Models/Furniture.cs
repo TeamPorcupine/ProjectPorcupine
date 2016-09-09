@@ -21,7 +21,7 @@ using System.Text;
 /// InstalledObjects are things like walls, doors, and furniture (e.g. a sofa).
 /// </summary>
 [MoonSharpUserData]
-public partial class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
+public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 {
     // Prevent construction too close to the world's edge
     private const int MinEdgeDistance = 5;
@@ -57,7 +57,12 @@ public partial class Furniture : IXmlSerializable, ISelectable, IContextActionPr
     /// </summary>
     private Parameter furnParameters;
 
-    private List<Job> jobs;
+    public List<Job> jobs { get; protected set; }
+
+    /// <summary>
+    /// Workshop reference if furniture is consumer/producer (not null). 
+    /// </summary>
+    private FurnitureWorkshop workshop;
 
     // This is the generic type of object this is, allowing things to interact with it based on it's generic type
     private HashSet<string> typeTags;
@@ -83,7 +88,7 @@ public partial class Furniture : IXmlSerializable, ISelectable, IContextActionPr
         VerticalDoor = false;
         EventActions = new EventAction();
 
-        factoryMenuActions = new List<FactoryContextMenu>();
+        //WorkShopMenuActions = new List<WorkshopContextMenu>();
         contextMenuLuaActions = new List<ContextMenuLuaAction>();
         furnParameters = new Parameter("furnParameters");
         jobs = new List<Job>();
@@ -113,8 +118,8 @@ public partial class Furniture : IXmlSerializable, ISelectable, IContextActionPr
 
         JobSpotOffset = other.JobSpotOffset;
         jobSpawnSpotOffset = other.jobSpawnSpotOffset;
-        factoryData = other.factoryData; // don't need to clone here, as all are prototype things (not changing)
-
+        workshop = other.workshop; // don't need to clone here, as all are prototype things (not changing)
+       
         furnParameters = new Parameter(other.furnParameters);
         jobs = new List<Job>();
 
@@ -122,12 +127,7 @@ public partial class Furniture : IXmlSerializable, ISelectable, IContextActionPr
         {
             EventActions = other.EventActions.Clone();
         }
-
-        if (other.factoryMenuActions != null)
-        {
-            factoryMenuActions = new List<FactoryContextMenu>(other.factoryMenuActions);
-        }
-
+        
         if (other.contextMenuLuaActions != null)
         {
             contextMenuLuaActions = new List<ContextMenuLuaAction>(other.contextMenuLuaActions);
@@ -187,7 +187,7 @@ public partial class Furniture : IXmlSerializable, ISelectable, IContextActionPr
     // furniture tile itself!  (In fact, this will probably be common).
     public Vector2 JobSpotOffset { get; private set; }
 
-    public bool IsFactory { get { return factoryData != null; } }
+    public bool IsWorkshop { get { return workshop != null; } }
 
     // Flag for Lua to check if this is a vertical or horizontal door and display the correct sprite.
     public bool VerticalDoor { get; set; }
@@ -303,6 +303,8 @@ public partial class Furniture : IXmlSerializable, ISelectable, IContextActionPr
         // We know our placement destination is valid.
         Furniture obj = proto.Clone();
         obj.Tile = tile;
+        // need to update reference to furniture for workshop (is there a nicer way?)
+        if(obj.IsWorkshop) obj.workshop.SetParentFurniture(obj);
 
         // FIXME: This assumes we are 1x1!
         if (tile.PlaceFurniture(obj) == false)
@@ -359,8 +361,8 @@ public partial class Furniture : IXmlSerializable, ISelectable, IContextActionPr
             // updateActions(this, deltaTime);
             EventActions.Trigger("OnUpdate", this, deltaTime);
         }
-        if (IsFactory)
-            UpdateFactory(deltaTime);
+        if (IsWorkshop)
+            workshop.Update(deltaTime);
     }
     
     public bool IsExit()
@@ -566,40 +568,10 @@ public partial class Furniture : IXmlSerializable, ISelectable, IContextActionPr
                 UnlocalizedDescription = reader.ReadContentAsString();
                 break;
 
-                case "FactoryInfo":
-                    // deserialize FActoryINfo into factoryData
-                    XmlSerializer serializer = new XmlSerializer(typeof(FactoryInfo));
-                    factoryData = (FactoryInfo)serializer.Deserialize(reader);
-                    // check if context menu is needed
-                    if(factoryData.PossibleProductions.Count > 1)
-                    {
-                        furnParameters.AddParameter(new Parameter(CUR_PRODUCTION_CHAIN_PARAM_NAME, null));
-                        foreach (var chain in factoryData.PossibleProductions)
-                        {
-                            string prodChainName = chain.Name;
-                            factoryMenuActions.Add(new FactoryContextMenu()
-                            {                                
-                                Text = prodChainName,
-                                Function = (c) => {
-                                    furnParameters[CUR_PRODUCTION_CHAIN_PARAM_NAME].SetValue(c);
-                                }
-                            });
-                        }
-                    }
-                    else
-                    {
-                        if (factoryData.PossibleProductions.Count == 1)
-                            furnParameters.AddParameter(new Parameter(CUR_PRODUCTION_CHAIN_PARAM_NAME,
-                                factoryData.PossibleProductions[0].Name));
-                        else
-                            Debug.ULogWarning("Furniture {0} is marked as factory, but has no production chain", name);
-                    }                  
-
-                    // add dynamic params here
-                    furnParameters.AddParameter(new Parameter(CUR_PROCESSING_TIME_PARAM_NAME, 0f));
-                    furnParameters.AddParameter(new Parameter(MAX_PROCESSING_TIME_PARAM_NAME, 0f));
-                    furnParameters.AddParameter(new Parameter(CUR_PROCESSED_INV_PARAM_NAME, 0));
-        
+                case "Workshop":                   
+                    workshop = FurnitureWorkshop.Deserialize(reader);
+                    workshop.SetParentFurniture(this);
+                    workshop.Initialize();
                     break;
             }
         }
@@ -775,17 +747,9 @@ public partial class Furniture : IXmlSerializable, ISelectable, IContextActionPr
         StringBuilder sb = new StringBuilder();
         sb.AppendLine(UnlocalizedDescription);
 
-        if (IsFactory)
+        if (IsWorkshop)
         {
-            var factoryChain = furnParameters[CUR_PRODUCTION_CHAIN_PARAM_NAME].ToString();
-            if (!string.IsNullOrEmpty(factoryChain))
-            {
-                sb.AppendLine(string.Format("Production: {0}", factoryChain));
-            }
-            else
-            {
-                sb.AppendLine("No selected production");
-            }
+            sb.AppendLine(workshop.GetDescription());
         }
         return sb.ToString();
     }
@@ -825,15 +789,16 @@ public partial class Furniture : IXmlSerializable, ISelectable, IContextActionPr
         }
 
         // context menu if it's factory and has multiple production chains
-        if (IsFactory && factoryMenuActions != null)
+        if (IsWorkshop && workshop.WorkshopMenuActions != null)
         {
-            foreach (FactoryContextMenu factoryContextMenuAction in factoryMenuActions)
+            foreach (WorkshopContextMenu factoryContextMenuAction in workshop.WorkshopMenuActions)
             {
+                WorkshopContextMenu curItem = factoryContextMenuAction;
                 yield return new ContextMenuAction
                 {
-                    Text = factoryContextMenuAction.Text,
+                    Text = curItem.ProductionChainName, // TODO: localization here
                     RequireCharacterSelected = false,
-                    Action = (cma, c) => factoryContextMenuAction.Function(factoryContextMenuAction.Text)
+                    Action = (cma, c) =>  InvokeContextMenuAction(curItem.Function, curItem.ProductionChainName) 
                 };
             }
         }
@@ -928,6 +893,11 @@ public partial class Furniture : IXmlSerializable, ISelectable, IContextActionPr
         {
             RemoveJob(j);
         }
+    }
+
+    private void InvokeContextMenuAction(Action<Furniture, string> function, string arg)
+    {
+        function(this, arg);
     }
 
     private void InvokeContextMenuLuaAction(string luaFunction, Character character)

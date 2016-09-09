@@ -1,26 +1,123 @@
-﻿using MoonSharp.Interpreter;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml;
 using System.Xml.Serialization;
+using UnityEngine;
 
-/// <summary>
-/// InstalledObjects are things like walls, doors, and furniture (e.g. a sofa).
-/// </summary>
-public partial class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
+[Serializable]
+[XmlRoot("Workshop")]
+public class FurnitureWorkshop
 {
+    #region Serialization
+    [Serializable]
+    public class Item
+    {
+        [XmlAttribute("objectType")]
+        public string ObjectType { get; set; }
+        [XmlAttribute("amount")]
+        public int Amount { get; set; }
+        [XmlAttribute("slotPosX")]
+        public int SlotPosX { get; set; }
+        [XmlAttribute("slotPosY")]
+        public int SlotPosY { get; set; }
+    }
+
+    [Serializable]
+    public class ProductionChain
+    {
+        [XmlAttribute("name")]
+        public string Name { get; set; }
+        [XmlAttribute("processingTime")]
+        public float ProcessingTime { get; set; }
+
+        public List<Item> Input { get; set; }
+        public List<Item> Output { get; set; }
+    }
+       
+    public List<ProductionChain> PossibleProductions { get; set; }
+
+    public static FurnitureWorkshop Deserialize(XmlReader xmlReader)
+    {
+        // deserialize FActoryINfo into factoryData
+        XmlSerializer serializer = new XmlSerializer(typeof(FurnitureWorkshop));
+        return (FurnitureWorkshop)serializer.Deserialize(xmlReader);
+    }
+
+    #endregion
+
     // constants for parameters
     const string CUR_PROCESSING_TIME_PARAM_NAME = "cur_processing_time";
     const string MAX_PROCESSING_TIME_PARAM_NAME = "max_processing_time";
     const string CUR_PROCESSED_INV_PARAM_NAME = "cur_processed_inv";
     const string CUR_PRODUCTION_CHAIN_PARAM_NAME = "cur_production_chain";
 
-    private FactoryInfo factoryData;
-    
-    private List<FactoryContextMenu> factoryMenuActions;
+    [XmlIgnore]
+    public List<WorkshopContextMenu> WorkshopMenuActions { get; protected set; }
 
-    private void UpdateFactory(float deltaTime)
+    private Furniture furniture;
+
+    protected Parameter furnParameters { get { return furniture.Parameters; } }
+
+    public string GetDescription()
+    {
+        StringBuilder sb = new StringBuilder();
+        var prodChain = furnParameters[CUR_PRODUCTION_CHAIN_PARAM_NAME].ToString();
+        if (!string.IsNullOrEmpty(prodChain))
+        {
+            sb.AppendLine(string.Format("Production: {0}", prodChain));
+        }
+        else
+        {
+            sb.AppendLine("No selected production");
+        }
+        return sb.ToString();
+    }
+
+    public void Initialize()
+    {
+        WorkshopMenuActions = new List<WorkshopContextMenu>();
+        //this.furniture = furniture;
+
+        // check if context menu is needed
+        if (PossibleProductions.Count > 1)
+        {
+            furnParameters.AddParameter(new Parameter(CUR_PRODUCTION_CHAIN_PARAM_NAME, null));
+            foreach (var chain in PossibleProductions)
+            {
+                string prodChainName = chain.Name;
+                WorkshopMenuActions.Add(new WorkshopContextMenu()
+                {
+                    ProductionChainName = prodChainName,
+                    Function = (furn, prod) =>
+                    {
+                        furn.Parameters[CUR_PRODUCTION_CHAIN_PARAM_NAME].SetValue(prod);
+                    }
+                });
+            }
+        }
+        else
+        {
+            if (PossibleProductions.Count == 1)
+                furnParameters.AddParameter(new Parameter(CUR_PRODUCTION_CHAIN_PARAM_NAME,
+                    PossibleProductions[0].Name));
+            else
+                Debug.ULogWarning("Furniture {0} is marked as factory, but has no production chain", furniture.Name);
+        }
+
+        // add dynamic params here
+        furnParameters.AddParameter(new Parameter(CUR_PROCESSING_TIME_PARAM_NAME, 0f));
+        furnParameters.AddParameter(new Parameter(MAX_PROCESSING_TIME_PARAM_NAME, 0f));
+        furnParameters.AddParameter(new Parameter(CUR_PROCESSED_INV_PARAM_NAME, 0));
+    }
+
+    public void SetParentFurniture(Furniture furniture)
+    {
+        this.furniture = furniture;
+    }
+
+    public void Update(float deltaTime)
     {
         // if there is enough input, do the processing and store item to output
         // - remove items from input
@@ -33,7 +130,7 @@ public partial class Furniture : IXmlSerializable, ISelectable, IContextActionPr
 
         if (!string.IsNullOrEmpty(curSetupChainName))
         {
-            FactoryInfo.ProductionChain prodChain = GetProductionChainInfo(curSetupChainName);
+            FurnitureWorkshop.ProductionChain prodChain = GetProductionChainInfo(curSetupChainName);
             // if there is no processing in progress
             if (furnParameters[CUR_PROCESSED_INV_PARAM_NAME].ToInt() == 0)
             {
@@ -76,20 +173,21 @@ public partial class Furniture : IXmlSerializable, ISelectable, IContextActionPr
         }
     }
 
-    private void HaulingJobForInputs(FactoryInfo.ProductionChain prodChain)
+    private void HaulingJobForInputs(FurnitureWorkshop.ProductionChain prodChain)
     {
         // for all inputs in production chain
         foreach (var reqInputItem in prodChain.Input)
         {
             // if there is no hauling job for input object type, create one
-            if (jobs.FirstOrDefault(x => x.JobObjectType == reqInputItem.ObjectType) == null)
+            var existingHaulingJob = furniture.jobs.Any(x => x.inventoryRequirements.ContainsKey(reqInputItem.ObjectType));
+            if (!existingHaulingJob)
             {
-                Tile inTile = World.Current.GetTileAt(Tile.X + reqInputItem.SlotPosX, Tile.Y + reqInputItem.SlotPosY);
+                Tile inTile = World.Current.GetTileAt(furniture.Tile.X + reqInputItem.SlotPosX, furniture.Tile.Y + reqInputItem.SlotPosY);
 
-                // TODO: this is from LUA .. looks like some hack
+                //// TODO: this is from LUA .. looks like some hack
                 if (inTile.Inventory != null && inTile.Inventory.StackSize == inTile.Inventory.maxStackSize)
                 {
-                    CancelJobs();
+                    furniture.CancelJobs();
                     return;
                 }
 
@@ -117,11 +215,12 @@ public partial class Furniture : IXmlSerializable, ISelectable, IContextActionPr
 
                 if (desiredAmount > 0)
                 {
-                    var jb = new Job(inTile, desiredInv, null, 0.4f,
+                    // beware: passed jobObjectType is expected Furniture only !!
+                    var jb = new Job(inTile, null, null, 0.4f,
                         new Inventory[] { new Inventory(desiredInv, desiredAmount, 0) },
                         Job.JobPriority.Medium, false, false, false);
                     jb.OnJobWorked += jobWorkedAction;
-                    AddJob(jb);
+                    furniture.AddJob(jb);
                 }
             }
         }
@@ -139,7 +238,7 @@ public partial class Furniture : IXmlSerializable, ISelectable, IContextActionPr
         }
     }
 
-    private List<TileObjectTypeAmount> CheckForInventoryAtOutput(FactoryInfo.ProductionChain prodChain)
+    private List<TileObjectTypeAmount> CheckForInventoryAtOutput(FurnitureWorkshop.ProductionChain prodChain)
     {
         List<TileObjectTypeAmount> outPlacement = new List<TileObjectTypeAmount>();
         // processing is done, try to spit the output
@@ -151,10 +250,12 @@ public partial class Furniture : IXmlSerializable, ISelectable, IContextActionPr
 
             // check ouput slots for products:                        
             Tile tt = World.Current.GetTileAt(
-                Tile.X + outObjType.SlotPosX, Tile.Y + outObjType.SlotPosY);
+                furniture.Tile.X + outObjType.SlotPosX, furniture.Tile.Y + outObjType.SlotPosY);
 
-            if (tt.Inventory == null || tt.Inventory.objectType == outObjType.ObjectType
-                && tt.Inventory.StackSize + amount <= tt.Inventory.maxStackSize)
+            bool tileHasOtherFurniture = tt.Furniture != null && tt.Furniture != furniture;
+
+            if (!tileHasOtherFurniture && (tt.Inventory == null || tt.Inventory.objectType == outObjType.ObjectType
+                && tt.Inventory.StackSize + amount <= tt.Inventory.maxStackSize))
             {
                 // out product can be placed here
                 outPlacement.Add(new TileObjectTypeAmount()
@@ -181,13 +282,13 @@ public partial class Furniture : IXmlSerializable, ISelectable, IContextActionPr
         }
     }
 
-    private List<KeyValuePair<Tile, int>> CheckForInventoryAtInput(FactoryInfo.ProductionChain prodChain)
+    private List<KeyValuePair<Tile, int>> CheckForInventoryAtInput(FurnitureWorkshop.ProductionChain prodChain)
     {
         List<KeyValuePair<Tile, int>> flaggedForTaking = new List<KeyValuePair<Tile, int>>();
         foreach (var reqInputItem in prodChain.Input)
         {
             // check input slots for req. item:                        
-            Tile tt = World.Current.GetTileAt(Tile.X + reqInputItem.SlotPosX, Tile.Y + reqInputItem.SlotPosY);
+            Tile tt = World.Current.GetTileAt(furniture.Tile.X + reqInputItem.SlotPosX, furniture.Tile.Y + reqInputItem.SlotPosY);
 
             if (tt.Inventory != null && tt.Inventory.objectType == reqInputItem.ObjectType
                 && tt.Inventory.StackSize >= reqInputItem.Amount)
@@ -199,10 +300,10 @@ public partial class Furniture : IXmlSerializable, ISelectable, IContextActionPr
         return flaggedForTaking;
     }
 
-    private FactoryInfo.ProductionChain GetProductionChainInfo(string curSetupChainName)
+    private FurnitureWorkshop.ProductionChain GetProductionChainInfo(string curSetupChainName)
     {
-        FactoryInfo.ProductionChain cChain = null;
-        foreach (var chain in factoryData.PossibleProductions)
+        FurnitureWorkshop.ProductionChain cChain = null;
+        foreach (var chain in PossibleProductions)
         {
             if (chain.Name.Equals(curSetupChainName))
             {
@@ -214,4 +315,20 @@ public partial class Furniture : IXmlSerializable, ISelectable, IContextActionPr
         return cChain;
     }
 }
+
+public class TileObjectTypeAmount
+{
+    public Tile Tile { get; set; }
+    public bool IsEmpty { get; set; }
+    public string ObjectType { get; set; }
+    public int Amount { get; set; }
+}
+
+public class WorkshopContextMenu
+{
+    public string ProductionChainName { get; set; }
+    public Action<Furniture, string> Function { get; set; }
+}
+
+
 
