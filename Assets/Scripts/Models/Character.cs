@@ -348,14 +348,13 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         Update_Needs(deltaTime);
 
         Update_DoMovement(deltaTime);
-
+ 
         animation.Update(deltaTime);
 
         if (OnCharacterChanged != null)
         {
             OnCharacterChanged(this);
-        }
-        
+        }        
     }
 
     #region IXmlSerializable implementation
@@ -437,6 +436,39 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                     }
                 }
             }
+        }
+    }
+
+    public void ReadStatsFromSave(XmlReader reader)
+    {
+        // Protection vs. empty stats
+        if (reader.IsEmptyElement)
+        {
+            return;
+        }
+
+        while (reader.Read())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement)
+            {
+                break;
+            }
+
+            string statType = reader.GetAttribute("statType");
+            Stat stat = GetStat(statType);
+            if (stat == null)
+            {
+                continue;
+            }
+
+            int statValue;
+            if (!int.TryParse(reader.GetAttribute("value"), out statValue))
+            {
+                Debug.ULogErrorChannel("Character", "Stat element did not have a value!");
+                continue;
+            }
+
+            stat.Value = statValue;
         }
     }
 
@@ -538,40 +570,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         Debug.ULogChannel("Character", "Initialized " + stats.Count + " Stats.");
     }
-
-    public void ReadStatsFromSave(XmlReader reader)
-    {
-        // Protection vs. empty stats
-        if (reader.IsEmptyElement)
-        {
-            return;
-        }
-
-        while (reader.Read())
-        {
-            if (reader.NodeType == XmlNodeType.EndElement)
-            {
-                break;
-            }
-
-            string statType = reader.GetAttribute("statType");
-            Stat stat = GetStat(statType);
-            if (stat == null)
-            {
-                continue;               
-            }
-
-            int statValue;
-            if (!int.TryParse(reader.GetAttribute("value"), out statValue))
-            {
-                Debug.ULogErrorChannel("Character", "Stat element did not have a value!");
-                continue;
-            }
-
-            stat.Value = statValue;
-        }
-    }
-
+    
     private void GetNewJob()
     {
         float needPercent = 0;

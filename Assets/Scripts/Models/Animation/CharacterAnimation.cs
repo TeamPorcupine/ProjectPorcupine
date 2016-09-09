@@ -66,9 +66,7 @@ namespace Animation
         public int CurrentSortingOrder { get; private set; }
 
         public void SetSprites()
-        {
-            
-            
+        {            
             animations = new Dictionary<AnimationType, SpritenameAnimation>();
 
             animations.Add(AnimationType.HELMET_IDLE_NORTH, new SpritenameAnimation(AnimationType.HELMET_IDLE_NORTH.ToString(), new string[] { "IdleBack" }, 0.7f, false));
@@ -94,6 +92,22 @@ namespace Animation
             currentAnimationType = AnimationType.HELMET_IDLE_SOUTH;
             currentAnimation = animations[currentAnimationType];
             prevFrameIndex = 0;
+        }
+
+        /// <summary>
+        /// Sets sortingOrder on the character and returns the value.
+        /// </summary>
+        public int SetAndGetSortOrder()
+        {
+            // if there was change in Y position, update the sorting order
+            if (lastCharYPosition - character.Y != 0f)
+            {
+                CurrentSortingOrder = Mathf.RoundToInt(character.Y * 100f) * -1;
+                renderer.sortingOrder = CurrentSortingOrder;
+            }
+
+            lastCharYPosition = character.Y;
+            return renderer.sortingOrder;
         }
 
         public void Update(float deltaTime)
@@ -133,23 +147,13 @@ namespace Animation
                 ShowSprite(currentAnimation.CurrentFrameName);
                 prevFrameIndex = currentAnimation.CurrentFrame;
             }
-
-            // if there was change in Y position, update the sorting order
-            if (lastCharYPosition - character.Y != 0f)
-            {
-                CurrentSortingOrder = Mathf.RoundToInt(character.Y * 100f) * -1;
-                renderer.sortingOrder = CurrentSortingOrder;
-            }
-
-            lastCharYPosition = character.Y;
         }
 
         private void ShowSprite(string spriteName)
         {
             if (renderer != null)
             {
-                renderer.sprite = SpriteManager.current.GetSprite("Character", spriteName);
-                
+                renderer.sprite = SpriteManager.current.GetSprite("Character", spriteName);                
             }
         }
     }

@@ -103,10 +103,13 @@ public class CharacterSpriteController : BaseSpriteController<Character>
     {
         // Make sure the furniture's graphics are correct.
         SpriteRenderer inv_sr = objectGameObjectMap[c].transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>();
+
+        // Important to set the characters SortOrder first.
+        int charSortOrder = c.animation.SetAndGetSortOrder();
         if (c.inventory != null)
         {
             inv_sr.sprite = SpriteManager.current.GetSprite("Inventory", c.inventory.GetName());
-            inv_sr.sortingOrder = c.animation.CurrentSortingOrder + 1;            
+            inv_sr.sortingOrder = charSortOrder + 1;            
         }
         else
         {
