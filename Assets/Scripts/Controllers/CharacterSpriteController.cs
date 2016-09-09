@@ -27,7 +27,6 @@ public enum SpriteSwapRedColor
 public class CharacterSpriteController : BaseSpriteController<Character>
 {
     private Color[] swapSpriteColors;
-    private Color[] skinColors;
 
     // Use this for initialization
     public CharacterSpriteController(World world) : base(world, "Characters")
