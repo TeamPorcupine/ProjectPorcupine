@@ -13,6 +13,8 @@ public class Currency
 {
     private float balance;
 
+    public Action<Currency> BalanceChanged { get; set; }
+
     public string Name { get; set; }
 
     public string ShortName { get; set; }
@@ -39,19 +41,14 @@ public class Currency
             }
         }
     }
-
-    public Action<Currency> BalanceChanged { get; set; }
-
-    public void SetBalance(float value)
-    {
-        Balance = value;
-        BalanceChanged(this);
-    }
     
     public void ChangeBalance(float value)
     {
         Balance += value;
-        BalanceChanged(this);
+        if (BalanceChanged != null)
+        {
+            BalanceChanged(this);
+        }
     }
 
     public void WriteXml(XmlWriter writer)

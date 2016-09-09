@@ -128,7 +128,7 @@ public class TraderPrototype
     /// </summary>
     public Trader CreateTrader()
     {
-        Trader t = new Trader
+        Trader trader = new Trader
         {
             Currency = new Currency
             {
@@ -143,8 +143,8 @@ public class TraderPrototype
             requestChanceModifier = RequestChanceModifier
         };
 
-        t.RefreshInventory();
-        WorldController.Instance.tradersController.AddTrader(t);
-        return t;
+        trader.RefreshInventory();
+        WorldController.Instance.tradersController.AddTrader(trader);
+        return trader;
     }
 }

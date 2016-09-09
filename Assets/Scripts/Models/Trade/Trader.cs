@@ -68,16 +68,17 @@ public class Trader
         return t;
     }
 
-    // Function allows to request items which have a 
-    // higher chance to be brought the next time this
-    // trader comes
+    // <summary>
+    // Function allows to request items which have a higher 
+    // chance to be brought the next time this trader comes
+    // </summary>
     public void RequestItems(Dictionary<TraderPotentialInventory, RequestLevel> requests)
     {
         if (this.requests == null)
         {
             this.requests = new Dictionary<TraderPotentialInventory, RequestLevel>();
         }
-
+        
         this.requests.Union(requests);
     }
 
