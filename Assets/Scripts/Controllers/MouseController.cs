@@ -211,7 +211,7 @@ public class MouseController
 
     private void CalculatePlacingPosition()
     {
-        // If we are placing a multitile object we would like to modify the posiotion where the mouse grabs it.
+        // If we are placing a multitile object we would like to modify the postilion where the mouse grabs it.
         if (currentMode == MouseMode.BUILD
             && bmc.buildMode == BuildMode.FURNITURE
             && PrototypeManager.Furniture.Has(bmc.buildModeObjectType)
@@ -411,7 +411,7 @@ public class MouseController
         for (int x = dragParams.StartX; x <= dragParams.EndX; x++)
         {
             // Variables for the for-loop over the y-coordinates.
-            // These are used to determine whether the loop should run from highest to lowest values or viceversa.
+            // These are used to determine whether the loop should run from highest to lowest values or vice-versa.
             // The tiles are thus added in a snake or zig-zag pattern, which makes building more efficient.
             int begin = (x - dragParams.StartX) % 2 == 0 ? dragParams.StartY : dragParams.EndY;
             int stop = (x - dragParams.StartX) % 2 == 0 ? dragParams.EndY + 1 : dragParams.StartY - 1;

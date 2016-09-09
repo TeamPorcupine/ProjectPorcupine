@@ -60,7 +60,7 @@ public class DialogBoxLoadSaveGame : DialogBox
             FileInfo file = saveGames[i];
             GameObject go = (GameObject)GameObject.Instantiate(fileListItemPrefab);
 
-            // Make sure this gameobject is a child of our list box
+            // Make sure this GameObject is a child of our list box
             go.transform.SetParent(fileList);
 
             // file contains something like "C:\Users\UserName\......\Project Porcupine\Saves\SomeFileName.sav"
