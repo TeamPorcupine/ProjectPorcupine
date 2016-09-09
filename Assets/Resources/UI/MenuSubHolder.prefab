@@ -123,7 +123,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae2f480660ba4a7499f487969ee6a745, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buildFurnitureButtonPrefab: {fileID: 159176, guid: 945aa8381fd2ebc468deabb07515fe73,
+  buildUtilityButtonPrefab: {fileID: 159176, guid: 945aa8381fd2ebc468deabb07515fe73,
     type: 2}
 --- !u!114 &114000010924489858
 MonoBehaviour:

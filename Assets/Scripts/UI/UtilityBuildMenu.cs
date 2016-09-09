@@ -14,20 +14,20 @@ using UnityEngine.UI;
 public class UtilityBuildMenu : MonoBehaviour
 {
     public static UtilityBuildMenu instance;
-    public GameObject buildutilityButtonPrefab;
+    public GameObject buildUtilityButtonPrefab;
 
     private List<GameObject> buildMenu;
     private string lastLanguage;
-    private bool showAllutility;
+    private bool showAllUtility;
 
-    public void RebuildMenuButtons(bool showAllutility = false)
+    public void RebuildMenuButtons(bool showAllUtility = false)
     {
         foreach (GameObject gameObject in buildMenu)
         {
             Destroy(gameObject);
         }
 
-        this.showAllutility = showAllutility;
+        this.showAllUtility = showAllUtility;
 
         GenerateMenuButtons();
     }
@@ -35,7 +35,7 @@ public class UtilityBuildMenu : MonoBehaviour
     private void Start()
     {
         instance = this;
-        showAllutility = Settings.GetSetting("DialogBoxSettings_developerModeToggle", false);
+        showAllUtility = Settings.GetSetting("DialogBoxSettings_developerModeToggle", false);
         GenerateMenuButtons();        
     }
 
@@ -64,12 +64,12 @@ public class UtilityBuildMenu : MonoBehaviour
         // of the button to be clicked!
         foreach (string utilityKey in PrototypeManager.Utility.Keys)
         {
-            if (PrototypeManager.Utility.Get(utilityKey).HasTypeTag("Non-buildable") && showAllutility == false)
+            if (PrototypeManager.Utility.Get(utilityKey).HasTypeTag("Non-buildable") && showAllUtility == false)
             {
                 continue;
             }
 
-            GameObject gameObject = (GameObject)Instantiate(buildutilityButtonPrefab);
+            GameObject gameObject = (GameObject)Instantiate(buildUtilityButtonPrefab);
             gameObject.transform.SetParent(this.transform);
             buildMenu.Add(gameObject);
 
