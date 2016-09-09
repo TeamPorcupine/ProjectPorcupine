@@ -29,6 +29,11 @@ public class DialogBoxTradeItem : MonoBehaviour
         BindInterface();
     }
 
+    public void SetTradeAmount()
+    {
+        item.TradeAmount = int.Parse(TradeAmountText.text);
+    }
+
     public void OnTradeAmountChanged()
     {
         BindInterface();
@@ -65,10 +70,10 @@ public class DialogBoxTradeItem : MonoBehaviour
     private void BindInterface()
     {
         ItemNameText.text = item.ObjectType;
-        PlayerStockText.text = item.PlayerStock.ToString();
-        PlayerSellItemPriceText.text = Math.Round(item.PlayerSellItemPrice, 2).ToString();
-        TraderStockText.text = item.TraderStock.ToString();
-        TraderSellItemPriceText.text = Math.Round(item.TraderSellItemPrice, 2).ToString();
+        PlayerStockText.text = (item.PlayerStock + item.TradeAmount).ToString();
+        PlayerSellItemPriceText.text = item.PlayerSellItemPrice.ToString("N2");
+        TraderStockText.text = (item.TraderStock - item.TradeAmount).ToString();
+        TraderSellItemPriceText.text = item.TraderSellItemPrice.ToString("N2");
         TradeAmountText.text = item.TradeAmount.ToString();
     }
 }

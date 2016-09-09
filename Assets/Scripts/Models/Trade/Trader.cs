@@ -11,11 +11,19 @@ using System.Linq;
 
 public class Trader
 {
-    public string Name;
-    public Currency Currency;
-    public float SaleMarginMultiplier;
-    public List<Inventory> Stock;
+    public string Name { get; set; }
 
+    public Currency Currency { get; set; }
+
+    public float SaleMarginMultiplier { get; set; }
+
+    public List<Inventory> Stock { get; set; }
+
+    /// <summary>
+    /// Create a Trader from the current player
+    /// This method will scan every stockpile build and add the found inventory to the stock
+    /// It will also assign a 0.8f sale margin multiplayer to the Trader.
+    /// </summary>
     public static Trader FromPlayer(Currency currency)
     {
         Trader t = new Trader
@@ -33,9 +41,9 @@ public class Trader
         {
             foreach (Inventory inventory in worldInventory)
             {
-                if (inventory.tile != null && 
-                    inventory.tile.Furniture != null &&
-                    inventory.tile.Furniture.ObjectType == "Stockpile")
+                if (inventory.Tile != null && 
+                    inventory.Tile.Furniture != null &&
+                    inventory.Tile.Furniture.ObjectType == "Stockpile")
                 {
                     t.Stock.Add(inventory);
                 }

@@ -38,9 +38,10 @@ public class MenuController : MonoBehaviour
         DeactivateSubs();
     }
 
-    // Deactivates any sub menu of the constrution options.
+    // Deactivates any sub menu of the construction options.
     public void DeactivateSubs()
     {
+        WorldController.Instance.mouseController.ClearMouseMode(true);
         furnitureMenu.SetActive(false);
         floorMenu.SetActive(false);
     }
@@ -67,6 +68,7 @@ public class MenuController : MonoBehaviour
     public void OnButtonWork()
     {
         DeactivateAll();
+        dbm.dialogBoxJobList.ShowDialog();
     }
 
     public void OnButtonWorld()
@@ -113,7 +115,7 @@ public class MenuController : MonoBehaviour
         floorMenu = GameObject.Find("MenuFloor");
         constructorMenu = GameObject.Find("MenuConstruction");
 
-        // Add liseners here.
+        // Add listeners here.
         buttonConstructor.onClick.AddListener(delegate
         {
             OnButtonConstruction();

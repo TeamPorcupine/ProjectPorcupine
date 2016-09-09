@@ -16,13 +16,13 @@ public class FloorMenu : MonoBehaviour
     public GameObject buildFurnitureButtonPrefab;
     private string lastLanguage;
 
-    // A chached copy to save gc. Could result in issues if TileType gets dynamically changed.
+    // A cached copy to save gc. Could result in issues if TileType gets dynamically changed.
     private TileType[] tileTypes;
 
     // Use this for initialization.
     private void Start()
     {
-        tileTypes = TileType.GetTileTypes();
+        tileTypes = TileType.LoadedTileTypes;
         BuildModeController bmc = WorldController.Instance.buildModeController;
 
         // For each furniture prototype in our world, create one instance

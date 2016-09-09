@@ -23,8 +23,10 @@ public class DialogBoxTrade : DialogBox
 
     public GameObject TradeItemPrefab;
 
-    public Action OnTradeCompleted;
-    public Action OnTradeCancelled;
+    public Action TradeCompleted;
+    public Action TradeCancelled;
+
+    public Button AcceptButton;
 
     private Trade trade;
 
@@ -50,8 +52,8 @@ public class DialogBoxTrade : DialogBox
             SaleMarginMultiplier = 1f,
             Stock = new List<Inventory>
             {
-                new Inventory("Steel Plate", 50, 10) { basePrice = 3f },
-                new Inventory("Raw Iron", 100, 90) { basePrice = 0.2f },
+                new Inventory("Steel Plate", 50, 10) { BasePrice = 3f },
+                new Inventory("Raw Iron", 100, 90) { BasePrice = 0.2f },
             }
         };
 
@@ -67,9 +69,9 @@ public class DialogBoxTrade : DialogBox
             SaleMarginMultiplier = 1.23f,
             Stock = new List<Inventory>
             {
-                new Inventory("Steel Plate", 50, 40) { basePrice = 3f },
-                new Inventory("Steel Plate", 50, 40) { basePrice = 3f },
-                new Inventory("Oxygen Bottle", 10, 10) { basePrice = 50f },
+                new Inventory("Steel Plate", 50, 40) { BasePrice = 3f },
+                new Inventory("Steel Plate", 50, 40) { BasePrice = 3f },
+                new Inventory("Oxygen Bottle", 10, 10) { BasePrice = 50f },
             }
         };
         SetupTrade(new Trade(mockPlayer, mockTrader));
@@ -80,9 +82,9 @@ public class DialogBoxTrade : DialogBox
         trade = null;
         ClearInterface();
         CloseDialog();
-        if (OnTradeCompleted != null)
+        if (TradeCompleted != null)
         {
-            OnTradeCancelled();
+            TradeCancelled();
         }
     }
 
@@ -93,9 +95,9 @@ public class DialogBoxTrade : DialogBox
             trade = null;
             ClearInterface();
             CloseDialog();
-            if (OnTradeCompleted != null)
+            if (TradeCompleted != null)
             {
-                OnTradeCompleted();
+                TradeCompleted();
             }
         }
     }
@@ -127,8 +129,16 @@ public class DialogBoxTrade : DialogBox
     private void BuildInterfaceHeader()
     {
         float tradeAmount = trade.TradeCurrencyBalanceForPlayer;
-        PlayerCurrencyBalanceText.text = string.Format("{0} {1}", Math.Round(trade.Player.Currency.Balance + tradeAmount, 2), trade.Player.Currency.ShortName);
-        TraderCurrencyBalanceText.text = string.Format("{0} {1}", Math.Round(trade.Trader.Currency.Balance - tradeAmount, 2), trade.Trader.Currency.ShortName);
-        TradeCurrencyBalanceText.text = tradeAmount.ToString();
+        PlayerCurrencyBalanceText.text = string.Format(
+            "{0:N2} {1}", 
+            trade.Player.Currency.Balance + trade.TradeCurrencyBalanceForPlayer, 
+            trade.Player.Currency.ShortName);
+        TraderCurrencyBalanceText.text = string.Format(
+            "{0:N2} {1}", 
+            trade.Trader.Currency.Balance - trade.TradeCurrencyBalanceForPlayer, 
+            trade.Trader.Currency.ShortName);
+        TradeCurrencyBalanceText.text = tradeAmount.ToString("N2");
+
+        AcceptButton.interactable = trade.IsValid();
     }
 }

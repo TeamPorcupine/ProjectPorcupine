@@ -33,6 +33,6 @@ public class FurniturePrototypes : XmlPrototypes<Furniture>
             LogPrototypeError(e, furn.ObjectType);
         }
 
-        SetPrototype(furn.ObjectType, furn);
+        Set(furn.ObjectType, furn);
     }
 }

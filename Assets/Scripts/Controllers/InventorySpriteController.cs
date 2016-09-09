@@ -50,33 +50,33 @@ public class InventorySpriteController : BaseSpriteController<Inventory>
 
     protected override void OnCreated(Inventory inv)
     {
-        // FIXME: Does not consider multi-tile objects nor rotated objects
+        // FIXME: Does not consider rotated objects
         // This creates a new GameObject and adds it to our scene.
         GameObject inv_go = new GameObject();
 
         // Add our tile/GO pair to the dictionary.
         objectGameObjectMap.Add(inv, inv_go);
 
-        inv_go.name = inv.objectType;
+        inv_go.name = inv.ObjectType;
 
         // Only create a Game Object if inventory was created on tile, anything else will handle its own game object
-        if (inv.tile != null)
+        if (inv.Tile != null)
         {
-            inv_go.transform.position = new Vector3(inv.tile.X, inv.tile.Y, 0);
+            inv_go.transform.position = new Vector3(inv.Tile.X, inv.Tile.Y, inv.Tile.Z);
         }
 
         inv_go.transform.SetParent(objectParent.transform, true);
 
         SpriteRenderer sr = inv_go.AddComponent<SpriteRenderer>();
-        sr.sprite = SpriteManager.current.GetSprite("Inventory", inv.objectType);
+        sr.sprite = SpriteManager.current.GetSprite("Inventory", inv.ObjectType);
         if (sr.sprite == null)
         {
-            Debug.ULogErrorChannel("InventorySpriteController", "No sprite for: " + inv.objectType);
+            Debug.ULogErrorChannel("InventorySpriteController", "No sprite for: " + inv.ObjectType);
         }
 
         sr.sortingLayerName = "Inventory";
 
-        if (inv.maxStackSize > 1)
+        if (inv.MaxStackSize > 1)
         {
             // This is a stackable object, so let's add a InventoryUI component
             // (Which is text that shows the current stackSize.)

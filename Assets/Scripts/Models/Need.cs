@@ -98,28 +98,17 @@ public class Need
     // Update is called once per frame
     public void Update(float deltaTime)
     {
-        NeedActions.CallFunctionsWithNeed(luaUpdate, this, deltaTime);
+        FunctionsManager.Need.CallWithInstance(luaUpdate, this, deltaTime);
         if (luaOnly)
         {
             return;
         }
 
         Amount += growthRate * deltaTime;
+
         if (character != null && character.CurrTile.GetGasPressure("O2") < 0.15)
         {
             Amount += (addedInVacuum - (addedInVacuum * (character.CurrTile.GetGasPressure("O2") * 5))) * deltaTime;
-        }
-
-        if (Amount > 75 && character.MyJob.IsNeed == false)
-        {
-            Debug.ULogChannel("Need", character.name + " needs " + Name);
-            character.AbandonJob(false);
-        }
-
-        if (Amount == 100 && character.MyJob.Critical == false && CompleteOnFail)
-        {
-            Debug.ULogChannel("Need", character.name + " failed their " + Name + " need.");
-            character.AbandonJob(false);
         }
 
         if (Amount == 100)
@@ -145,7 +134,7 @@ public class Need
                 break;
             case "RestoreNeedFurnitureType":
                 reader.Read();
-                RestoreNeedFurn = PrototypeManager.Furniture.GetPrototype(reader.ReadContentAsString());
+                RestoreNeedFurn = PrototypeManager.Furniture.Get(reader.ReadContentAsString());
                 break;
             case "RestoreNeedTime":
                 reader.Read();

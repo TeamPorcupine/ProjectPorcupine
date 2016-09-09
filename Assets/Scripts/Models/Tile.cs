@@ -1,12 +1,13 @@
 #region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
-// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
-// and you are welcome to redistribute it under certain conditions; See 
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
@@ -32,11 +33,13 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
     /// </summary>
     /// <param name="x">The x coordinate.</param>
     /// <param name="y">The y coordinate.</param>
-    public Tile(int x, int y)
+    public Tile(int x, int y, int z)
     {
         X = x;
         Y = y;
+        Z = z;
         Characters = new List<Character>();
+        MovementModifier = 1;
     }
 
     // The function we callback any time our tile's data changes
@@ -93,8 +96,8 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
 
             if (Furniture != null)
             {
-                return (Furniture.PathfindingWeight * Furniture.MovementCost * Type.PathfindingWeight * Type.BaseMovementCost) + 
-                    Furniture.PathfindingModifier + Type.PathfindingModifier;
+                return (Furniture.PathfindingWeight * Furniture.MovementCost * Type.PathfindingWeight * Type.BaseMovementCost) +
+                Furniture.PathfindingModifier + Type.PathfindingModifier;
             }
             else
             {
@@ -111,18 +114,17 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
 
     public int Y { get; private set; }
 
+    public int Z { get; private set; }
+
+    public float MovementModifier { get; set; }
+
     public float MovementCost
     {
         get
         {
             // This prevented the character from walking in empty tiles. It has been diasbled to allow the character to construct floor tiles.
             // TODO: Permanent solution for handeling when a character can walk in empty tiles is required
-            if (Type.MovementCostLua == null)
-            {
-                return Type.BaseMovementCost * (Furniture != null ? Furniture.MovementCost : 1);
-            }
-
-            return (float)LuaUtilities.CallFunction(Type.MovementCostLua, this).Number;
+            return Type.BaseMovementCost * MovementModifier * (Furniture != null ? Furniture.MovementCost : 1);
         }
     }
 
@@ -141,7 +143,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
 
     public bool UnplaceFurniture()
     {
-        // Just uninstalling.  FIXME:  What if we have a multi-tile furniture?
+        // Just uninstalling.
         if (Furniture == null)
         {
             return false;
@@ -152,7 +154,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         {
             for (int y_off = Y; y_off < Y + furniture.Height; y_off++)
             {
-                Tile tile = World.Current.GetTileAt(x_off, y_off);
+                Tile tile = World.Current.GetTileAt(x_off, y_off, Z);
                 tile.Furniture = null;
             }
         }
@@ -177,7 +179,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         {
             for (int y_off = Y; y_off < Y + objInstance.Height; y_off++)
             {
-                Tile t = World.Current.GetTileAt(x_off, y_off);
+                Tile t = World.Current.GetTileAt(x_off, y_off, Z);
                 t.Furniture = objInstance;
             }
         }
@@ -196,16 +198,16 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         if (Inventory != null)
         {
             // There's already inventory here. Maybe we can combine a stack?
-            if (Inventory.objectType != inventory.objectType)
+            if (Inventory.ObjectType != inventory.ObjectType)
             {
                 Debug.ULogErrorChannel("Tile", "Trying to assign inventory to a tile that already has some of a different type.");
                 return false;
             }
 
             int numToMove = inventory.StackSize;
-            if (Inventory.StackSize + numToMove > Inventory.maxStackSize)
+            if (Inventory.StackSize + numToMove > Inventory.MaxStackSize)
             {
-                numToMove = Inventory.maxStackSize - Inventory.StackSize;
+                numToMove = Inventory.MaxStackSize - Inventory.StackSize;
             }
 
             Inventory.StackSize += numToMove;
@@ -219,7 +221,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         // the inventory manager needs to know that the old stack is now
         // empty and has to be removed from the previous lists.
         Inventory = inventory.Clone();
-        Inventory.tile = this;
+        Inventory.Tile = this;
         inventory.StackSize = 0;
 
         return true;
@@ -235,6 +237,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
     {
         // Check to see if we have a difference of exactly ONE between the two
         // tile coordinates.  Is so, then we are vertical or horizontal neighbours.
+        // Note: We do not care about vertical adjacency, only horizontal (X and Y)
         return
             Math.Abs(X - tile.X) + Math.Abs(Y - tile.Y) == 1 || // Check hori/vert adjacency
         (diagOkay && Math.Abs(X - tile.X) == 1 && Math.Abs(Y - tile.Y) == 1); // Check diag adjacency
@@ -247,30 +250,21 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
     /// <param name="diagOkay">Is diagonal movement okay?.</param>
     public Tile[] GetNeighbours(bool diagOkay = false)
     {
-        Tile[] ns = diagOkay == false ? new Tile[4] : new Tile[8];
-
-        Tile tile = World.Current.GetTileAt(X, Y + 1);
-        ns[0] = tile; // Could be null, but that's okay.
-        tile = World.Current.GetTileAt(X + 1, Y);
-        ns[1] = tile; // Could be null, but that's okay.
-        tile = World.Current.GetTileAt(X, Y - 1);
-        ns[2] = tile; // Could be null, but that's okay.
-        tile = World.Current.GetTileAt(X - 1, Y);
-        ns[3] = tile; // Could be null, but that's okay.
+        Tile[] tiles = diagOkay == false ? new Tile[4] : new Tile[8];
+        tiles[0] = World.Current.GetTileAt(X, Y + 1, Z);
+        tiles[1] = World.Current.GetTileAt(X + 1, Y, Z);
+        tiles[2] = World.Current.GetTileAt(X, Y - 1, Z);
+        tiles[3] = World.Current.GetTileAt(X - 1, Y, Z);
 
         if (diagOkay == true)
         {
-            tile = World.Current.GetTileAt(X + 1, Y + 1);
-            ns[4] = tile; // Could be null, but that's okay.
-            tile = World.Current.GetTileAt(X + 1, Y - 1);
-            ns[5] = tile; // Could be null, but that's okay.
-            tile = World.Current.GetTileAt(X - 1, Y - 1);
-            ns[6] = tile; // Could be null, but that's okay.
-            tile = World.Current.GetTileAt(X - 1, Y + 1);
-            ns[7] = tile; // Could be null, but that's okay.
+            tiles[4] = World.Current.GetTileAt(X + 1, Y + 1, Z);
+            tiles[5] = World.Current.GetTileAt(X + 1, Y - 1, Z);
+            tiles[6] = World.Current.GetTileAt(X - 1, Y - 1, Z);
+            tiles[7] = World.Current.GetTileAt(X - 1, Y + 1, Z);
         }
 
-        return ns;
+        return tiles.Where(tile => tile != null).ToArray();
     }
 
     /// <summary>
@@ -278,7 +272,16 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
     /// </summary>
     public bool HasNeighboursOfType(TileType tileType)
     {
-        return GetNeighbours(true).Any(tile => tile.Type == tileType);
+        return GetNeighbours(true).Any(tile => (tile != null && tile.Type == tileType));
+    }
+
+    /// <summary>
+    /// Returns true if any of the neighours is walkable.
+    /// </summary>
+    /// <param name="checkDiagonals">Will test diagonals as well if true.</param>
+    public bool HasWalkableNeighbours(bool checkDiagonals = false)
+    {
+        return GetNeighbours(checkDiagonals).Any(tile => tile != null && tile.MovementCost > 0);
     }
 
     public XmlSchema GetSchema()
@@ -290,6 +293,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
     {
         writer.WriteAttributeString("X", X.ToString());
         writer.WriteAttributeString("Y", Y.ToString());
+        writer.WriteAttributeString("Z", Z.ToString());
         writer.WriteAttributeString("RoomID", Room == null ? "-1" : Room.ID.ToString());
         writer.WriteAttributeString("Type", Type.Type);
     }
@@ -305,7 +309,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
 
         Type = TileType.GetTileType(reader.GetAttribute("Type"));
     }
-        
+
     public Enterability IsEnterable()
     {
         // This returns true if you can enter this tile right this moment.
@@ -325,22 +329,22 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
 
     public Tile North()
     {
-        return World.Current.GetTileAt(X, Y + 1);
+        return World.Current.GetTileAt(X, Y + 1, Z);
     }
 
     public Tile South()
     {
-        return World.Current.GetTileAt(X, Y - 1);
+        return World.Current.GetTileAt(X, Y - 1, Z);
     }
 
     public Tile East()
     {
-        return World.Current.GetTileAt(X + 1, Y);
+        return World.Current.GetTileAt(X + 1, Y, Z);
     }
 
     public Tile West()
     {
-        return World.Current.GetTileAt(X - 1, Y);
+        return World.Current.GetTileAt(X - 1, Y, Z);
     }
 
     public float GetGasPressure(string gas)
@@ -391,14 +395,15 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         return "tile_" + type.ToString() + "_desc";
     }
 
-    public string GetHitPointString()
-    {
-        return string.Empty; // Do tiles have hitpoints? Can flooring be damaged? Obviously "empty" is indestructible.
-    }
-
     public string GetJobDescription()
     {
         return string.Empty;
+    }
+
+    public IEnumerable<string> GetAdditionalInfo()
+    {
+        // Do tiles have hitpoints? Can flooring be damaged? Obviously "empty" is indestructible.
+        yield break;
     }
 
     #endregion
@@ -411,7 +416,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
             {
                 Text = "Cancel Job",
                 RequireCharacterSelected = false,
-                Action = (cm, c) => 
+                Action = (cm, c) =>
                 {
                     if (PendingBuildJob != null)
                     {
@@ -426,7 +431,10 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
                 {
                     Text = "Prioritize " + PendingBuildJob.GetName(),
                     RequireCharacterSelected = true,
-                    Action = (cm, c) => { c.PrioritizeJob(PendingBuildJob); }
+                    Action = (cm, c) =>
+                    {
+                        c.PrioritizeJob(PendingBuildJob);
+                    }
                 };
             }
         }

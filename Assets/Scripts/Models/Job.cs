@@ -7,6 +7,7 @@
 // ====================================================
 #endregion
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using MoonSharp.Interpreter;
@@ -49,7 +50,7 @@ public class Job : ISelectable
 
     private List<string> jobWorkedLua;
    
-    // The job has been stopped, either because it's non-repeating or was cancelled.
+    // The job has been stopped, either because it's non-repeating or was canceled.
     private List<string> jobCompletedLua;
 
     public Job(Tile tile, string jobObjectType, Action<Job> jobComplete, float jobTime, Inventory[] inventoryRequirements, Job.JobPriority jobPriority, bool jobRepeats = false, bool need = false, bool critical = false)
@@ -72,7 +73,7 @@ public class Job : ISelectable
         {
             foreach (Inventory inv in inventoryRequirements)
             {
-                this.inventoryRequirements[inv.objectType] = inv.Clone();
+                this.inventoryRequirements[inv.ObjectType] = inv.Clone();
             }
         }
     }
@@ -96,7 +97,7 @@ public class Job : ISelectable
         {
             foreach (Inventory inv in inventoryRequirements)
             {
-                this.inventoryRequirements[inv.objectType] = inv.Clone();
+                this.inventoryRequirements[inv.ObjectType] = inv.Clone();
             }
         }
     }
@@ -121,7 +122,7 @@ public class Job : ISelectable
         {
             foreach (Inventory inv in other.inventoryRequirements.Values)
             {
-                this.inventoryRequirements[inv.objectType] = inv.Clone();
+                this.inventoryRequirements[inv.ObjectType] = inv.Clone();
             }
         }
     }
@@ -227,7 +228,7 @@ public class Job : ISelectable
         {
             foreach (string luaFunction in jobWorkedLua.ToList())
             {
-                LuaUtilities.CallFunction(luaFunction, this);
+                FunctionsManager.Furniture.Call(luaFunction, this);
             }
         }
 
@@ -250,7 +251,7 @@ public class Job : ISelectable
 
             foreach (string luaFunction in jobCompletedLua.ToList())
             {
-                LuaUtilities.CallFunction(luaFunction, this);
+                FunctionsManager.Furniture.Call(luaFunction, this);
             }
             
             if (jobRepeats == false)
@@ -305,7 +306,7 @@ public class Job : ISelectable
 
         foreach (Inventory inv in inventoryRequirements.Values)
         {
-            if (inv.maxStackSize > inv.StackSize)
+            if (inv.MaxStackSize > inv.StackSize)
             {
                 return false;
             }
@@ -334,19 +335,19 @@ public class Job : ISelectable
             return 0;
         }
 
-        if (inventoryRequirements[objectType].StackSize >= inventoryRequirements[objectType].maxStackSize)
+        if (inventoryRequirements[objectType].StackSize >= inventoryRequirements[objectType].MaxStackSize)
         {
             // We already have all that we need!
             return 0;
         }
 
         // The inventory is of a type we want, and we still need more.
-        return inventoryRequirements[objectType].maxStackSize - inventoryRequirements[objectType].StackSize;
+        return inventoryRequirements[objectType].MaxStackSize - inventoryRequirements[objectType].StackSize;
     }
 
     public int AmountDesiredOfInventoryType(Inventory inv)
     {
-        return AmountDesiredOfInventoryType(inv.objectType);
+        return AmountDesiredOfInventoryType(inv.ObjectType);
     }
 
     /// <summary>
@@ -361,20 +362,20 @@ public class Job : ISelectable
         {
             if (this.acceptsAny == false)
             {
-                if (World.Current.inventoryManager.QuickCheck(inv.objectType) == false)
+                if (World.Current.inventoryManager.QuickCheck(inv.ObjectType) == false)
                 {
                     // the job requires ALL inventory requirements to be met, and there is no source of a desired objectType
                     return null;
                 }
                 else
                 {
-                    fulfillableInventoryRequirements.Add(inv.objectType);
+                    fulfillableInventoryRequirements.Add(inv.ObjectType);
                 }
             }
-            else if (World.Current.inventoryManager.QuickCheck(inv.objectType))
+            else if (World.Current.inventoryManager.QuickCheck(inv.ObjectType))
             {
                 // there is a source for a desired objectType that the job will accept
-                fulfillableInventoryRequirements.Add(inv.objectType);
+                fulfillableInventoryRequirements.Add(inv.ObjectType);
             }
         }
 
@@ -385,7 +386,7 @@ public class Job : ISelectable
     {
         foreach (Inventory inv in inventoryRequirements.Values)
         {
-            if (inv.maxStackSize > inv.StackSize)
+            if (inv.MaxStackSize > inv.StackSize)
             {
                 return inv;
             }
@@ -396,7 +397,7 @@ public class Job : ISelectable
 
     public void DropPriority()
     {
-        // TODO: This casting to and from enums are a bit wierd. We should decide on ONE priority system.
+        // TODO: This casting to and from enums are a bit weird. We should decide on ONE priority system.
         this.Priority = (Job.JobPriority)Mathf.Min((int)Job.JobPriority.Low, (int)Priority + 1);
     }
 
@@ -410,19 +411,19 @@ public class Job : ISelectable
         string description = "Requirements:\n\t";
         foreach (KeyValuePair<string, Inventory> inv in inventoryRequirements)
         {
-            description += inv.Value.StackSize + "/" + inv.Value.maxStackSize + "\n\t";
+            description += inv.Value.StackSize + "/" + inv.Value.MaxStackSize + "\n\t";
         }
 
         return description;
     }
-
-    public string GetHitPointString()
-    {
-        return string.Empty;
-    }
-
+    
     public string GetJobDescription()
     {
         return GetDescription();
+    }
+
+    public IEnumerable<string> GetAdditionalInfo()
+    {
+        yield break;
     }
 }

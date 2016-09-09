@@ -78,7 +78,6 @@ public class FurnitureWorkshop
     public void Initialize()
     {
         WorkshopMenuActions = new List<WorkshopContextMenu>();
-        //this.furniture = furniture;
 
         // check if context menu is needed
         if (PossibleProductions.Count > 1)
@@ -92,7 +91,14 @@ public class FurnitureWorkshop
                     ProductionChainName = prodChainName,
                     Function = (furn, prod) =>
                     {
-                        furn.Parameters[CUR_PRODUCTION_CHAIN_PARAM_NAME].SetValue(prod);
+                        var oldProd = furn.Parameters[CUR_PRODUCTION_CHAIN_PARAM_NAME];
+                        var isNotProcessing = furn.Parameters[CUR_PROCESSED_INV_PARAM_NAME].ToInt() == 0;
+                        // if selected production really changes and nothing is being processed now
+                        if (!prod.Equals(oldProd) && isNotProcessing)
+                        {
+                            furn.CancelJobs();
+                            furn.Parameters[CUR_PRODUCTION_CHAIN_PARAM_NAME].SetValue(prod);
+                        }
                     }
                 });
             }
@@ -182,18 +188,19 @@ public class FurnitureWorkshop
             var existingHaulingJob = furniture.jobs.Any(x => x.inventoryRequirements.ContainsKey(reqInputItem.ObjectType));
             if (!existingHaulingJob)
             {
-                Tile inTile = World.Current.GetTileAt(furniture.Tile.X + reqInputItem.SlotPosX, furniture.Tile.Y + reqInputItem.SlotPosY);
+                Tile inTile = World.Current.GetTileAt(furniture.Tile.X + reqInputItem.SlotPosX,
+                    furniture.Tile.Y + reqInputItem.SlotPosY, furniture.Tile.Z);
 
                 //// TODO: this is from LUA .. looks like some hack
-                if (inTile.Inventory != null && inTile.Inventory.StackSize == inTile.Inventory.maxStackSize)
+                if (inTile.Inventory != null && inTile.Inventory.StackSize == inTile.Inventory.MaxStackSize)
                 {
                     furniture.CancelJobs();
                     return;
                 }
 
                 string desiredInv = reqInputItem.ObjectType;
-                int desiredAmount = PrototypeManager.Inventory.GetPrototype(desiredInv).maxStackSize;
-                if (inTile.Inventory != null && inTile.Inventory.objectType == reqInputItem.ObjectType &&
+                int desiredAmount = PrototypeManager.Inventory.Get(desiredInv).maxStackSize;
+                if (inTile.Inventory != null && inTile.Inventory.ObjectType == reqInputItem.ObjectType &&
                     inTile.Inventory.StackSize <= desiredAmount)
                 {
                     desiredAmount = desiredAmount - inTile.Inventory.StackSize;
@@ -208,7 +215,7 @@ public class FurnitureWorkshop
                         if (inv != null && inv.StackSize > 0)
                         {
                             World.Current.inventoryManager.PlaceInventory(job.tile, jobInvReq.Value);
-                            job.tile.Inventory.locked = true;
+                            job.tile.Inventory.Locked = true;
                         }
                     }
                 };
@@ -219,6 +226,7 @@ public class FurnitureWorkshop
                     var jb = new Job(inTile, null, null, 0.4f,
                         new Inventory[] { new Inventory(desiredInv, desiredAmount, 0) },
                         Job.JobPriority.Medium, false, false, false);
+                    jb.JobDescription = string.Format("Hauling '{0}' to '{1}'", desiredInv, furniture.Name);
                     jb.OnJobWorked += jobWorkedAction;
                     furniture.AddJob(jb);
                 }
@@ -249,13 +257,13 @@ public class FurnitureWorkshop
             int amount = outObjType.Amount;
 
             // check ouput slots for products:                        
-            Tile tt = World.Current.GetTileAt(
-                furniture.Tile.X + outObjType.SlotPosX, furniture.Tile.Y + outObjType.SlotPosY);
+            Tile tt = World.Current.GetTileAt(furniture.Tile.X + outObjType.SlotPosX,
+                furniture.Tile.Y + outObjType.SlotPosY, furniture.Tile.Z);
 
             bool tileHasOtherFurniture = tt.Furniture != null && tt.Furniture != furniture;
 
-            if (!tileHasOtherFurniture && (tt.Inventory == null || tt.Inventory.objectType == outObjType.ObjectType
-                && tt.Inventory.StackSize + amount <= tt.Inventory.maxStackSize))
+            if (!tileHasOtherFurniture && (tt.Inventory == null || tt.Inventory.ObjectType == outObjType.ObjectType
+                && tt.Inventory.StackSize + amount <= tt.Inventory.MaxStackSize))
             {
                 // out product can be placed here
                 outPlacement.Add(new TileObjectTypeAmount()
@@ -288,9 +296,10 @@ public class FurnitureWorkshop
         foreach (var reqInputItem in prodChain.Input)
         {
             // check input slots for req. item:                        
-            Tile tt = World.Current.GetTileAt(furniture.Tile.X + reqInputItem.SlotPosX, furniture.Tile.Y + reqInputItem.SlotPosY);
+            Tile tt = World.Current.GetTileAt(furniture.Tile.X + reqInputItem.SlotPosX,
+                furniture.Tile.Y + reqInputItem.SlotPosY, furniture.Tile.Z);
 
-            if (tt.Inventory != null && tt.Inventory.objectType == reqInputItem.ObjectType
+            if (tt.Inventory != null && tt.Inventory.ObjectType == reqInputItem.ObjectType
                 && tt.Inventory.StackSize >= reqInputItem.Amount)
             {
                 flaggedForTaking.Add(new KeyValuePair<Tile, int>(tt, reqInputItem.Amount));

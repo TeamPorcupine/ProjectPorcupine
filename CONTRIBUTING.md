@@ -88,23 +88,50 @@ We have standardized on Microsoft's [C# Coding Conventions](https://msdn.microso
 As a TL;DR on our coding practises, adhere to the following example:
 
 ```c#
+// All files begin with the following license header (remove this line):
+#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
+
+using System; // System usings go first
+using UnityEngine; // followed by any other using directives
+
 // Use camelCasing unless stated otherwise.
 // Descriptive names for variables/methods should be used.
 // Fields, properties and methods should always specify their scope, aka private/protected/internal/public.
 
 // Interfaces start with an I and should use PascalCasing.
-interface IInterfaceable { }
+public interface IInterfaceable
+{
+}
 
 // Class names should use PascalCasing.
 // Braces are on a new line. ;)
-class Class
-{
-    // Properties should use PascalCasing.
-    public int MemberProperty { get; set; }
 
+/// <summary>
+/// Xml documentation comments are encouraged. Describe public APIs and the intent of code, not implementation details.
+/// </summary>
+public class Class
+{
     // Private fields should be camelCased. 
     // Use properties for any field that needs access levels other than private
     private string someField;
+
+    // Events should use PascalCasing as well.
+    // ✓ DO name events with a verb or a verb phrase.
+    // Examples include Clicked, Painting, DroppedDown, and so on.
+    // ✓ DO give events names with a concept of before and after, using the present and past tenses.
+    // For example, a close event that is raised before a window is closed would be called Closing, and one that is raised 
+    // after the window is closed would be called Closed.
+    public event EventHandler<EventArgs> SomeEvent;
+
+    // Properties should use PascalCasing.
+    public int MemberProperty { get; set; }
 
     // Methods should use PascalCasing.
     // Method parameters should be camelCased.
@@ -113,9 +140,6 @@ class Class
         // Local variables should also be camelCased.
         int myLocalVariable = 0;
     }
-
-    // Events should use PascalCasing as well.
-    public event SomeEvent;
 }
 ```
 

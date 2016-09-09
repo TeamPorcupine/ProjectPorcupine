@@ -12,9 +12,7 @@
     <minSaleMarginMultiplier>1.2</minSaleMarginMultiplier>
     <maxSaleMarginMultiplier>1.5</maxSaleMarginMultiplier>
     <potentialStock>
-      <Inventory objectType="Steel Plate" rarity="0.1" minQuantity="100" maxQuantity="150"/>
-      <Inventory objectType="Power Cell" rarity="0.3" minQuantity="200" maxQuantity="300"/>
-      <Inventory objectType="Copper Wire" rarity="0.8" minQuantity="20" maxQuantity="50"/>
+      <Inventory objectCategory="inv_cat_raw" rarity="0" minQuantity="100" maxQuantity="150"/>
     </potentialStock>
   </Trader>
 
