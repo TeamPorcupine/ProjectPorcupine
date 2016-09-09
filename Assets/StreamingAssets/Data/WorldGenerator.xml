@@ -3,6 +3,9 @@
   <Asteroid>
     <NoiseScale>0.2</NoiseScale>
     <NoiseThreshhold>0.75</NoiseThreshhold>
+    <NoiseOctaves>10</NoiseOctaves>
+    <NoisePersistance>6.53451</NoisePersistance>
+    <NoiseLacunarity>0.565654</NoiseLacunarity>
     <ResourceChance>0.15</ResourceChance>
     <Resources>
         <Resource objectType="Raw Iron" maxStack="50" min="5" max="15" weightedChance="50" />
