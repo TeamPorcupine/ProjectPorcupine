@@ -751,7 +751,7 @@ public class World : IXmlSerializable
 
                 // Create our inventory from the file
                 Inventory inv = new Inventory(
-                    reader.GetAttribute("objectType"),
+                    reader.GetAttribute("type"),
                     int.Parse(reader.GetAttribute("stackSize")),
                     int.Parse(reader.GetAttribute("maxStackSize")));
 
@@ -840,7 +840,7 @@ public class World : IXmlSerializable
                                 {
                                     // Create our inventory from the file
                                     Inventory inv = new Inventory(
-                                        reader.GetAttribute("objectType"),
+                                        reader.GetAttribute("type"),
                                         int.Parse(reader.GetAttribute("stackSize")),
                                         int.Parse(reader.GetAttribute("maxStackSize")));
 

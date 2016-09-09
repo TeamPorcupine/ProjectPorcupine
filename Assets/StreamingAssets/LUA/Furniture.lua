@@ -301,7 +301,7 @@ function MiningDroneStation_UpdateAction( furniture, deltaTime )
 		return
 	end
 
-	if(furniture.GetSpawnSpotTile().Inventory != nil and furniture.GetSpawnSpotTile().Inventory.ObjectType != furniture.Parameters["mine_type"].ToString()) then
+	if(furniture.GetSpawnSpotTile().Inventory != nil and furniture.GetSpawnSpotTile().Inventory.Type != furniture.Parameters["mine_type"].ToString()) then
 		return
 	end
 
@@ -323,7 +323,7 @@ function MiningDroneStation_UpdateAction( furniture, deltaTime )
 end
 
 function MiningDroneStation_JobComplete(j)
-	if (j.furniture.GetSpawnSpotTile().Inventory == nil or j.furniture.GetSpawnSpotTile().Inventory.ObjectType == j.furniture.Parameters["mine_type"].ToString()) then
+	if (j.furniture.GetSpawnSpotTile().Inventory == nil or j.furniture.GetSpawnSpotTile().Inventory.Type == j.furniture.Parameters["mine_type"].ToString()) then
 		World.Current.inventoryManager.PlaceInventory( j.furniture.GetSpawnSpotTile(), Inventory.__new(j.furniture.Parameters["mine_type"].ToString() , 2) )
 	else
 		j.CancelJob()

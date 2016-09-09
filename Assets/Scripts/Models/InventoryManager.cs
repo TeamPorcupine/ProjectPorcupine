@@ -40,12 +40,12 @@ public class InventoryManager
         // We may also created a new stack on the tile, if the startTile was previously empty.
         if (tileWasEmpty)
         {
-            if (Inventories.ContainsKey(tile.Inventory.ObjectType) == false)
+            if (Inventories.ContainsKey(tile.Inventory.Type) == false)
             {
-                Inventories[tile.Inventory.ObjectType] = new List<Inventory>();
+                Inventories[tile.Inventory.Type] = new List<Inventory>();
             }
 
-            Inventories[tile.Inventory.ObjectType].Add(tile.Inventory);
+            Inventories[tile.Inventory.Type].Add(tile.Inventory);
             InvokeInventoryCreated(tile.Inventory);
         }
 
@@ -54,18 +54,18 @@ public class InventoryManager
 
     public bool PlaceInventory(Job job, Inventory inventory)
     {
-        if (job.inventoryRequirements.ContainsKey(inventory.ObjectType) == false)
+        if (job.inventoryRequirements.ContainsKey(inventory.Type) == false)
         {
             Debug.ULogErrorChannel(InventoryManagerLogChanel, "Trying to add inventory to a job that it doesn't want.");
             return false;
         }
 
-        job.inventoryRequirements[inventory.ObjectType].StackSize += inventory.StackSize;
+        job.inventoryRequirements[inventory.Type].StackSize += inventory.StackSize;
 
-        if (job.inventoryRequirements[inventory.ObjectType].MaxStackSize < job.inventoryRequirements[inventory.ObjectType].StackSize)
+        if (job.inventoryRequirements[inventory.Type].MaxStackSize < job.inventoryRequirements[inventory.Type].StackSize)
         {
-            inventory.StackSize = job.inventoryRequirements[inventory.ObjectType].StackSize - job.inventoryRequirements[inventory.ObjectType].MaxStackSize;
-            job.inventoryRequirements[inventory.ObjectType].StackSize = job.inventoryRequirements[inventory.ObjectType].MaxStackSize;
+            inventory.StackSize = job.inventoryRequirements[inventory.Type].StackSize - job.inventoryRequirements[inventory.Type].MaxStackSize;
+            job.inventoryRequirements[inventory.Type].StackSize = job.inventoryRequirements[inventory.Type].MaxStackSize;
         }
         else
         {
@@ -85,9 +85,9 @@ public class InventoryManager
         {
             character.inventory = sourceInventory.Clone();
             character.inventory.StackSize = 0;
-            Inventories[character.inventory.ObjectType].Add(character.inventory);
+            Inventories[character.inventory.Type].Add(character.inventory);
         }
-        else if (character.inventory.ObjectType != sourceInventory.ObjectType)
+        else if (character.inventory.Type != sourceInventory.Type)
         {
             Debug.ULogErrorChannel(InventoryManagerLogChanel, "Character is trying to pick up a mismatched inventory object type.");
             return false;
@@ -196,9 +196,9 @@ public class InventoryManager
             return;
         }
 
-        if (Inventories.ContainsKey(inventory.ObjectType))
+        if (Inventories.ContainsKey(inventory.Type))
         {
-            Inventories[inventory.ObjectType].Remove(inventory);
+            Inventories[inventory.Type].Remove(inventory);
         }
 
         if (inventory.Tile != null)

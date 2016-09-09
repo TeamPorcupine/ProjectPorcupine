@@ -293,7 +293,7 @@ public class TileType : IXmlSerializable, IEquatable<TileType>
 
             // Found an inventory requirement, so add it to the list!
             int amount;
-            string objectType = inventoryReader.GetAttribute("objectType");
+            string objectType = inventoryReader.GetAttribute("type");
             if (int.TryParse(inventoryReader.GetAttribute("amount"), out amount))
             {
                 inventoryRequirements.Add(new Inventory(objectType, amount));
