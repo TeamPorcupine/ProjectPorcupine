@@ -51,7 +51,7 @@ public sealed class InventorySpriteController : BaseSpriteController<Inventory>
         // Add our tile/GO pair to the dictionary.
         objectGameObjectMap.Add(inventory, inventoryGameObject);
 
-        inventoryGameObject.name = inventory.ObjectType;
+        inventoryGameObject.name = inventory.Type;
 
         // Only create a Game Object if inventory was created on tile, anything else will handle its own game object
         if (inventory.Tile != null)
@@ -62,10 +62,10 @@ public sealed class InventorySpriteController : BaseSpriteController<Inventory>
         inventoryGameObject.transform.SetParent(objectParent.transform, true);
 
         SpriteRenderer sr = inventoryGameObject.AddComponent<SpriteRenderer>();
-        sr.sprite = SpriteManager.current.GetSprite("Inventory", inventory.ObjectType);
+        sr.sprite = SpriteManager.current.GetSprite("Inventory", inventory.Type);
         if (sr.sprite == null)
         {
-            Debug.ULogErrorChannel("InventorySpriteController", "No sprite for: " + inventory.ObjectType);
+            Debug.ULogErrorChannel("InventorySpriteController", "No sprite for: " + inventory.Type);
         }
 
         sr.sortingLayerName = "Inventory";

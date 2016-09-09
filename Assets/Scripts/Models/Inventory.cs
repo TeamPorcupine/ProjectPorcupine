@@ -25,16 +25,16 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
     {
     }
 
-    public Inventory(string objectType, int stackSize, int maxStackSize = 50)
+    public Inventory(string type, int stackSize, int maxStackSize = 50)
     {
-        ObjectType = objectType;
+        Type = type;
         ImportPrototypeSettings(maxStackSize, 1f, "inv_cat_none");
         StackSize = stackSize;
     }
 
     private Inventory(Inventory other)
     {
-        ObjectType = other.ObjectType;
+        Type = other.Type;
         MaxStackSize = other.MaxStackSize;
         BasePrice = other.BasePrice;
         Category = other.Category;
@@ -44,7 +44,7 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
 
     public event Action<Inventory> StackSizeChanged;
 
-    public string ObjectType { get; private set; }
+    public string Type { get; private set; }
 
     public int MaxStackSize { get; private set; }
 
@@ -85,7 +85,7 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
 
     public string GetName()
     {
-        return ObjectType;
+        return Type;
     }
 
     public string GetDescription()
@@ -122,7 +122,7 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
             writer.WriteAttributeString("Z", Tile.Z.ToString());
         }
 
-        writer.WriteAttributeString("objectType", ObjectType);
+        writer.WriteAttributeString("type", Type);
         writer.WriteAttributeString("maxStackSize", MaxStackSize.ToString());
         writer.WriteAttributeString("stackSize", StackSize.ToString());
         writer.WriteAttributeString("basePrice", BasePrice.ToString(CultureInfo.InvariantCulture));
@@ -145,9 +145,9 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
 
     private void ImportPrototypeSettings(int defaulMaxStackSize, float defaultBasePrice, string defaultCategory)
     {
-        if (PrototypeManager.Inventory.Has(ObjectType))
+        if (PrototypeManager.Inventory.Has(Type))
         {
-            InventoryCommon prototype = PrototypeManager.Inventory.Get(ObjectType);
+            InventoryCommon prototype = PrototypeManager.Inventory.Get(Type);
             MaxStackSize = prototype.maxStackSize;
             BasePrice = prototype.basePrice;
             Category = prototype.category;
