@@ -27,6 +27,7 @@ public class MenuController : MonoBehaviour
 
     // The left build menu.
     private GameObject constructorMenu;
+    private MenuLeft menuLeft;
 
     // Deactivates All Menus.
     public void DeactivateAll()
@@ -50,14 +51,14 @@ public class MenuController : MonoBehaviour
 
     public void OnButtonConstruction()
     {
-        if (constructorMenu.activeSelf)
+        DeactivateAll();
+        if (menuLeft.CurrentlyOpen != null && menuLeft.CurrentlyOpen.gameObject.name == "ConstructionMenu")
         {
-            DeactivateAll();
+            menuLeft.CloseMenu();
         }
         else
         {
-            DeactivateAll();
-            constructorMenu.SetActive(true);
+            menuLeft.OpenMenu("ConstructionMenu");
         }
     }
 
@@ -106,6 +107,7 @@ public class MenuController : MonoBehaviour
     private void Start()
     {
         dialogManager = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
+        menuLeft = GameObject.Find("MenuLeft").GetComponent<MenuLeft>();
 
         furnitureMenu = GameObject.Find("MenuFurniture");
         floorMenu = GameObject.Find("MenuFloor");
