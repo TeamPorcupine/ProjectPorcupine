@@ -41,15 +41,6 @@ public class Currency
             }
         }
     }
-    
-    public void ChangeBalance(float value)
-    {
-        Balance += value;
-        if (BalanceChanged != null)
-        {
-            BalanceChanged(this);
-        }
-    }
 
     public void WriteXml(XmlWriter writer)
     {
