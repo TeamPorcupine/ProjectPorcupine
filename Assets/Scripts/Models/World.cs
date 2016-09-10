@@ -90,8 +90,6 @@ public class World : IXmlSerializable
 
     public event Action<Character> OnCharacterCreated;
 
-    public event Action<Inventory> OnInventoryCreated;
-
     public event Action<Tile> OnTileChanged;
 
     public static World Current { get; protected set; }
@@ -252,7 +250,7 @@ public class World : IXmlSerializable
     }
 
     public void SetupPathfindingExample()
-    { 
+    {
         // Make a set of floors/walls to test pathfinding with.
         int l = (Width / 2) - 5;
         int b = (Height / 2) - 5;
@@ -331,14 +329,14 @@ public class World : IXmlSerializable
             for (offsetY = -offset; offsetY <= offset; offsetY++)
             {
                 offsetX = offset;
-                tile = GetTileAt(centerX + offsetX, centerY + offsetY,  centerZ);
+                tile = GetTileAt(centerX + offsetX, centerY + offsetY, centerZ);
                 if (tile.Inventory == null)
                 {
                     return tile;
                 }
 
                 offsetX = -offset;
-                tile = GetTileAt(centerX + offsetX, centerY + offsetY,  centerZ);
+                tile = GetTileAt(centerX + offsetX, centerY + offsetY, centerZ);
                 if (tile.Inventory == null)
                 {
                     return tile;
@@ -433,7 +431,7 @@ public class World : IXmlSerializable
             {
                 // Skip the outside room. Alternatively, should SetupWorld be changed to not create one?
                 continue;
-            }   
+            }
 
             writer.WriteStartElement("Room");
             r.WriteXml(writer);
@@ -460,21 +458,17 @@ public class World : IXmlSerializable
         }
 
         writer.WriteEndElement();
-
         writer.WriteStartElement("Inventories");
-        foreach (string objectType in inventoryManager.inventories.Keys)
+        foreach (Inventory inventory in inventoryManager.Inventories.SelectMany(pair => pair.Value))
         {
-            foreach (Inventory inv in inventoryManager.inventories[objectType])
+            // If we don't have a tile, that means this is in a character's inventory (or some other non-tile location
+            //      which means we shouldn't save that Inventory here, the character will take care of saving and loading
+            //      the inventory properly.
+            if (inventory.Tile != null)
             {
-                // If we don't have a tile, that means this is in a character's inventory (or some other non-tile location
-                //      which means we shouldn't save that Inventory here, the character will take care of saving and loading
-                //      the inventory properly.
-                if (inv.Tile != null)
-                {
-                    writer.WriteStartElement("Inventory");
-                    inv.WriteXml(writer);
-                    writer.WriteEndElement();
-                }
+                writer.WriteStartElement("Inventory");
+                inventory.WriteXml(writer);
+                writer.WriteEndElement();
             }
         }
 
@@ -501,7 +495,7 @@ public class World : IXmlSerializable
         writer.WriteEndElement();
 
         writer.WriteElementString("Skybox", skybox.name);
-        
+
         writer.WriteStartElement("Wallet");
         foreach (Currency currency in Wallet.Currencies.Values)
         {
@@ -556,19 +550,11 @@ public class World : IXmlSerializable
         }
     }
 
-    public void OnInventoryCreatedCallback(Inventory inv)
-    {
-        if (OnInventoryCreated != null)
-        { 
-            OnInventoryCreated(inv);
-        }
-    }
-
     public void OnFurnitureRemoved(Furniture furn)
     {
         furnitures.Remove(furn);
     }
-    
+
     private void ReadXml_Wallet(XmlReader reader)
     {
         if (reader.ReadToDescendant("Currency"))
@@ -677,7 +663,7 @@ public class World : IXmlSerializable
     private void CreateWallet()
     {
         Wallet = new Wallet();
-        
+
         string dataPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
         string filePath = System.IO.Path.Combine(dataPath, "Currency.xml");
         string xmlText = System.IO.File.ReadAllText(filePath);
@@ -765,9 +751,12 @@ public class World : IXmlSerializable
 
                 // Create our inventory from the file
                 Inventory inv = new Inventory(
-                    reader.GetAttribute("objectType"),
-                    int.Parse(reader.GetAttribute("maxStackSize")),
-                    int.Parse(reader.GetAttribute("stackSize")));
+                    reader.GetAttribute("type"),
+                    int.Parse(reader.GetAttribute("stackSize")),
+                    int.Parse(reader.GetAttribute("maxStackSize")))
+                {
+                    Locked = bool.Parse(reader.GetAttribute("locked"))
+                };
 
                 inventoryManager.PlaceInventory(tiles[x, y, z], inv);
             }
@@ -854,17 +843,18 @@ public class World : IXmlSerializable
                                 {
                                     // Create our inventory from the file
                                     Inventory inv = new Inventory(
-                                        reader.GetAttribute("objectType"),
-                                        int.Parse(reader.GetAttribute("maxStackSize")),
-                                        int.Parse(reader.GetAttribute("stackSize")));
+                                        reader.GetAttribute("type"),
+                                        int.Parse(reader.GetAttribute("stackSize")),
+                                        int.Parse(reader.GetAttribute("maxStackSize")))
+                                    {
+                                        Locked = bool.Parse(reader.GetAttribute("locked"))
+                                    };
 
                                     inventoryManager.PlaceInventory(character, inv);
                                 }
                                 while (reader.ReadToNextSibling("Inventory"));
-
-                                // One more read to step out of Inventories, so ReadToNextSibling will find sibling Character
-                                reader.Read();
                             }
+
                             break;
                     }
                 }
@@ -872,8 +862,8 @@ public class World : IXmlSerializable
             while (reader.ReadToNextSibling("Character"));
         }
     }
-    
-#region TestFunctions
+
+    #region TestFunctions
     /// <summary>
     /// Tests the room graph generation for the default world.
     /// </summary>
@@ -921,7 +911,7 @@ public class World : IXmlSerializable
                             Debug.ULogErrorChannel(
                                 "Path_RoomGraph",
                                 string.Format("Instead has: {1} and {2}", node.edges[0].node.data.ID, node.edges[1].node.data.ID));
-                            
+
                             // "Instead has: " + node.edges[0].node.data.ID.ToString() + " and "
                             // + node.edges[1].node.data.ID.ToString());
                             errorCount++;
@@ -1039,5 +1029,5 @@ public class World : IXmlSerializable
             Debug.ULogChannel("Path_RoomGraph", "TestRoomGraphGeneration completed without errors!");
         }
     }
-#endregion
+    #endregion
 }

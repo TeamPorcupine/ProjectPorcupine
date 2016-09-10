@@ -644,7 +644,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                         {
                             // Found an inventory requirement, so add it to the list!
                             invs.Add(new Inventory(
-                                    inventoryReader.GetAttribute("objectType"),
+                                    inventoryReader.GetAttribute("type"),
                                     int.Parse(inventoryReader.GetAttribute("amount")),
                                     0));
                         }
@@ -832,9 +832,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
         // TODO: read this from furniture params
         Dictionary<string, Inventory> invsDict = new Dictionary<string, Inventory>();
-        foreach (string objectType in PrototypeManager.Inventory.Keys)
+        foreach (string type in PrototypeManager.Inventory.Keys)
         {
-            invsDict[objectType] = new Inventory(objectType, PrototypeManager.Inventory.Get(objectType).maxStackSize, 0);
+            invsDict[type] = new Inventory(type, 0);
         }
 
         Inventory[] invs = new Inventory[invsDict.Count];

@@ -143,6 +143,7 @@ public class TraderPrototype
             requestChanceModifier = RequestChanceModifier
         };
 
+
         trader.RefreshInventory();
         WorldController.Instance.tradersController.AddTrader(trader);
         return trader;

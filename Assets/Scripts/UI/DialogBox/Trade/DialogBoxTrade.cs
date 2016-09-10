@@ -55,8 +55,8 @@ public class DialogBoxTrade : DialogBox
             SaleMarginMultiplier = 1f,
             Stock = new List<Inventory>
             {
-                new Inventory("Steel Plate", 50, 10) { BasePrice = 3f },
-                new Inventory("Raw Iron", 100, 90) { BasePrice = 0.2f },
+                new Inventory("Steel Plate", 10) { BasePrice = 3f },
+                new Inventory("Raw Iron", 90) { BasePrice = 0.2f },
             }
         };
 
@@ -72,6 +72,7 @@ public class DialogBoxTrade : DialogBox
             SaleMarginMultiplier = 1.23f,
             Stock = new List<Inventory>
             {
+
                 new Inventory("Steel Plate", 50, 40) { BasePrice = 3f },
                 new Inventory("Steel Plate", 50, 40) { BasePrice = 3f },
                 new Inventory("Oxygen Bottle", 10, 10) { BasePrice = 50f },
