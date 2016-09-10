@@ -700,7 +700,6 @@ function Accumulator_GetSpriteName(furniture)
 	return baseName .. "_" .. suffix
 end
 
-<<<<<<< HEAD
 function Berth_TestSummoning(furniture, deltaTime)
     if (furniture.Parameters["occupied"].ToFloat() <= 0) then
         Berth_SummonShip(furniture, nil)
