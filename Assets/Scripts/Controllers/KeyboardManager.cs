@@ -60,15 +60,6 @@ public class KeyboardManager
         RegisterInputMapping("IncreaseSpeed", KeyCode.Plus, KeyCode.KeypadPlus);
         RegisterInputMapping("Pause", KeyCode.Space, KeyCode.Pause);
         RegisterInputMapping("DevMode", KeyCode.F12);
-
-        this.RegisterInputAction("DevMode", KeyboardMappedInputType.Key, () => 
-        {
-            bool developerMode = !Settings.GetSetting("DialogBoxSettings_developerModeToggle", false);
-            Debug.LogWarning(developerMode);
-            Settings.SetSetting("DialogBoxSettings_developerModeToggle", developerMode);
-      //      WorldController.Instance.spawnInventoryController.SetUIVisibility(developerMode);
-       //     FurnitureBuildMenu.instance.RebuildMenuButtons(developerMode);
-        });
     }
 
     public void Update(bool isModal)
@@ -122,5 +113,4 @@ public class KeyboardManager
                 });
         }
     }
-
 }
