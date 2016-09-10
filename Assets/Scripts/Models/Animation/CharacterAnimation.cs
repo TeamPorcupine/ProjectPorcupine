@@ -101,6 +101,10 @@ namespace Animation
             {                
                 currentAnimationType = (AnimationType)newAnimation;
                 currentAnimation = animations[currentAnimationType];
+
+                // Make sure we update the sprite
+                prevFrameIndex = -1;
+
                 if (currentAnimation.FlipX == true && renderer.flipX == false)
                 {
                     renderer.flipX = true;
