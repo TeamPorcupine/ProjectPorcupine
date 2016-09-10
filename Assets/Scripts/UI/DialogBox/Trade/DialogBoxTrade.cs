@@ -32,8 +32,7 @@ public class DialogBoxTrade : DialogBox
     public Button AcceptButton;
 
     private Trade trade;
-    private List<Transform> requests;
-
+    
     public void SetupTrade(Trade trade)
     {
         this.trade = trade;
@@ -116,9 +115,8 @@ public class DialogBoxTrade : DialogBox
     public void FinalizeRequest()
     {
         Dictionary<TraderPotentialInventory, RequestLevel> requestAndLevel = new Dictionary<TraderPotentialInventory, RequestLevel>();
-        foreach (Transform requestTransform in requests)
+        foreach (DialogBoxTradeRequest request in TradeItemListPanel.GetComponentsInChildren<DialogBoxTradeRequest>())
         {
-            DialogBoxTradeRequest request = requestTransform.GetComponent<DialogBoxTradeRequest>();
             if (request.requestLevel == RequestLevel.None)
             {
                 continue;
@@ -137,7 +135,6 @@ public class DialogBoxTrade : DialogBox
     {
         TradeHeaderPanel.gameObject.SetActive(false);
         title.text = "Requests";
-        requests = new List<Transform>();
         ClearInterface();
         BuildRequestInterface();
         AcceptButton.onClick.RemoveAllListeners();
@@ -161,7 +158,6 @@ public class DialogBoxTrade : DialogBox
             DialogBoxTradeRequest tradeItemBehaviour = go.GetComponent<DialogBoxTradeRequest>();
             tradeItemBehaviour.itemName.text = possible.ObjectType;
             tradeItemBehaviour.request = possible;
-            requests.Add(tradeItemBehaviour.transform);
         }
     }
 
