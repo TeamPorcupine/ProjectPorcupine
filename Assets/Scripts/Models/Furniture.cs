@@ -662,7 +662,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                         {
                             // Found an inventory requirement, so add it to the list!
                             invs.Add(new Inventory(
-                                    inventoryReader.GetAttribute("objectType"),
+                                    inventoryReader.GetAttribute("type"),
                                     int.Parse(inventoryReader.GetAttribute("amount")),
                                     0));
                         }
@@ -689,8 +689,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                         {
                         // Found an inventory requirement, so add it to the list!
                             deconstructInvs.Add(new Inventory(
-                                deconstructInventoryReader.GetAttribute("objectType"),
-                                PrototypeManager.Inventory.Get(deconstructInventoryReader.GetAttribute("objectType")).maxStackSize,
+                                deconstructInventoryReader.GetAttribute("type"),
+                                PrototypeManager.Inventory.Get(deconstructInventoryReader.GetAttribute("type")).maxStackSize,
                                 int.Parse(deconstructInventoryReader.GetAttribute("amount"))));
                         }
                     }
@@ -867,9 +867,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
         // TODO: read this from furniture params
         Dictionary<string, Inventory> invsDict = new Dictionary<string, Inventory>();
-        foreach (string objectType in PrototypeManager.Inventory.Keys)
+        foreach (string type in PrototypeManager.Inventory.Keys)
         {
-            invsDict[objectType] = new Inventory(objectType, PrototypeManager.Inventory.Get(objectType).maxStackSize, 0);
+            invsDict[type] = new Inventory(type, 0);
         }
 
         Inventory[] invs = new Inventory[invsDict.Count];
@@ -1188,7 +1188,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         {
             for (int i = 0; i < deconstructInvs.Count; i++)
             {
-                if (deconstructInvs[i].ObjectType == t.Inventory.ObjectType)
+                if (deconstructInvs[i].Type == t.Inventory.Type)
                 {
                     World.Current.inventoryManager.PlaceInventory(t, deconstructInvs[i]);
                     if (deconstructInvs[i].StackSize == 0)

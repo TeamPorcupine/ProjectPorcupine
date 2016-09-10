@@ -109,7 +109,7 @@ public class Path_AStar
             {
                 // We don't have a POSITIONAL goal, we're just trying to find
                 // some kind of inventory or furniture.  Have we reached it?
-                if (current.data.Inventory != null && current.data.Inventory.ObjectType == objectType && lookingForFurn == false && current.data.Inventory.Locked == false)
+                if (current.data.Inventory != null && current.data.Inventory.Type == objectType && lookingForFurn == false && current.data.Inventory.Locked == false)
                 {
                     // Type is correct and we are allowed to pick it up
                     if (canTakeFromStockpile || current.data.Furniture == null || current.data.Furniture.IsStockpile() == false)
