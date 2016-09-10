@@ -865,6 +865,7 @@ public class World : IXmlSerializable
                                 // One more read to step out of Inventories, so ReadToNextSibling will find sibling Character
                                 reader.Read();
                             }
+
                             break;
                     }
                 }

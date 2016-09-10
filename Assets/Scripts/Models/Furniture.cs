@@ -7,8 +7,8 @@
 // ====================================================
 #endregion
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
@@ -17,7 +17,6 @@ using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
 using ProjectPorcupine.PowerNetwork;
 using UnityEngine;
-using System.Text;
 
 /// <summary>
 /// InstalledObjects are things like walls, doors, and furniture (e.g. a sofa).
@@ -58,13 +57,13 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     /// Basically, the LUA code will bind to this Parameter.
     /// </summary>
     private Parameter furnParameters;
-
-    public List<Job> jobs { get; protected set; }
-
+    
     /// <summary>
     /// Workshop reference if furniture is consumer/producer (not null). 
     /// </summary>
     private FurnitureWorkshop workshop;
+
+    private List<Job> jobs;
 
     private List<Job> pausedJobs;
 
@@ -178,7 +177,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     /// This event will trigger if <see cref="IsOperating"/> has been changed.
     /// </summary>
     public event Action<Furniture> IsOperatingChanged;
-
+    
     /// <summary>
     /// Gets or sets the Furniture's <see cref="PathfindingModifier"/> which is added into the Tile's final PathfindingCost.
     /// </summary>
@@ -212,7 +211,10 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     /// <value>The spot where the Character will stand when he uses the furniture.</value>
     public Vector2 JobSpotOffset { get; private set; }
 
-    public bool IsWorkshop { get { return workshop != null; } }
+    public bool IsWorkshop
+    {
+        get { return workshop != null; }
+    }
 
     /// <summary>
     /// Gets or sets a value indicating whether the door is Vertical or not.
@@ -397,9 +399,12 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
         // We know our placement destination is valid.
         Furniture obj = proto.Clone();
-        obj.Tile = tile;
-        // need to update reference to furniture for workshop (is there a nicer way?)
-        if(obj.IsWorkshop) obj.workshop.SetParentFurniture(obj);
+        obj.Tile = tile;        
+        if (obj.IsWorkshop)
+        {
+            // need to update reference to furniture for workshop (is there a nicer way?)
+            obj.workshop.SetParentFurniture(obj);
+        }
 
         if (tile.PlaceFurniture(obj) == false)
         {
@@ -475,8 +480,11 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
             // updateActions(this, deltaTime);
             EventActions.Trigger("OnUpdate", this, deltaTime);
         }
+
         if (IsWorkshop)
+        {
             workshop.Update(deltaTime);
+        }
 
         if (Animation != null)
         {
@@ -775,6 +783,18 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     public Parameter GetParameters()
     {
         return furnParameters;
+    }
+
+    /// <summary>
+    /// Checks for first furniture job with specific condition.
+    /// </summary>
+    /// <param name="predicate"></param>
+    /// <param name="job">Job fulfilling predicate.</param>
+    /// <returns>True if there is job with predicate.</returns>
+    public bool HasJobWithPredicate(Func<Job, bool> predicate, out Job job)
+    {
+        job = jobs.FirstOrDefault(predicate);
+        return job != null;
     }
 
     /// <summary>
@@ -1089,17 +1109,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
             }
         }
     }
-
-    private ContextMenuAction CreateWorkshopContextMenuItem(WorkshopContextMenu factoryContextMenuAction)
-    {
-        return new ContextMenuAction
-        {
-            Text = factoryContextMenuAction.ProductionChainName, // TODO: localization here
-            RequireCharacterSelected = false,
-            Action = (cma, c) => InvokeContextMenuAction(factoryContextMenuAction.Function, factoryContextMenuAction.ProductionChainName)
-        };
-    }
-
+    
     // Make a copy of the current furniture.  Sub-classed should
     // override this Clone() if a different (sub-classed) copy
     // constructor should be run.
@@ -1179,6 +1189,16 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         {
             RemoveJob(j);
         }
+    }
+
+    private ContextMenuAction CreateWorkshopContextMenuItem(WorkshopContextMenu factoryContextMenuAction)
+    {
+        return new ContextMenuAction
+        {
+            Text = factoryContextMenuAction.ProductionChainName, // TODO: localization here
+            RequireCharacterSelected = false,
+            Action = (cma, c) => InvokeContextMenuAction(factoryContextMenuAction.Function, factoryContextMenuAction.ProductionChainName)
+        };
     }
 
     private void InvokeContextMenuAction(Action<Furniture, string> function, string arg)

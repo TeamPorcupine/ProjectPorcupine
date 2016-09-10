@@ -316,24 +316,22 @@
         <JobSpotOffset X="1" Y="0" />
 
         <Workshop>
-            <PossibleProductions>
-                <ProductionChain name="Copper smelting" processingTime="3">
-                    <Input>
-                        <Item objectType="Raw Copper" amount="2" slotPosX="0" slotPosY="0" />
-                    </Input>
-                    <Output>
-                        <Item objectType="Copper Plate" amount="1" slotPosX="2" slotPosY="0" />
-                    </Output>
-                </ProductionChain>
-                <ProductionChain name="Iron smelting" processingTime="4">
-                    <Input>
-                        <Item objectType="Raw Iron" amount="2" slotPosX="0" slotPosY="0" />
-                    </Input>
-                    <Output>
-                        <Item objectType="Steel Plate" amount="1" slotPosX="2" slotPosY="0" />
-                    </Output>
-                </ProductionChain>
-            </PossibleProductions>
+            <ProductionChain name="Copper smelting" processingTime="3">
+                <Input>
+                    <Item objectType="Raw Copper" amount="2" slotPosX="0" slotPosY="0" />
+                </Input>
+                <Output>
+                    <Item objectType="Copper Plate" amount="1" slotPosX="2" slotPosY="0" />
+                </Output>
+            </ProductionChain>
+            <ProductionChain name="Iron smelting" processingTime="4">
+                <Input>
+                    <Item objectType="Raw Iron" amount="2" slotPosX="0" slotPosY="0" />
+                </Input>
+                <Output>
+                    <Item objectType="Steel Plate" amount="1" slotPosX="2" slotPosY="0" />
+                </Output>
+            </ProductionChain>
         </Workshop>
 
         <LocalizationCode>furn_metal_furnace</LocalizationCode>
@@ -382,17 +380,15 @@
     <BuildingJob jobTime="1" />
 
       <Workshop>
-          <PossibleProductions>
-              <ProductionChain name="Power Cell Pressing" processingTime="5">
-                  <Input>
-                      <Item objectType="Uranium" amount="3" slotPosX="0" slotPosY="0" />
-                      <Item objectType="Steel Plate" amount="2" slotPosX="1" slotPosY="0" />
-                  </Input>
-                  <Output>
-                      <Item objectType="Power Cell" amount="1" slotPosX="2" slotPosY="1" />
-                  </Output>
-              </ProductionChain>
-          </PossibleProductions>
+          <ProductionChain name="Power Cell Pressing" processingTime="5">
+              <Input>
+                  <Item objectType="Uranium" amount="3" slotPosX="0" slotPosY="0" />
+                  <Item objectType="Steel Plate" amount="2" slotPosX="1" slotPosY="0" />
+              </Input>
+              <Output>
+                  <Item objectType="Power Cell" amount="1" slotPosX="2" slotPosY="1" />
+              </Output>
+          </ProductionChain>
       </Workshop>
 
     <LocalizationCode>furn_power_cell_press</LocalizationCode>
