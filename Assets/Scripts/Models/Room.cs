@@ -192,7 +192,7 @@ public class Room : IXmlSerializable
         }
 
         List<string> names = new List<string>(atmosphericGasses.Keys);
-        foreach(string name in names)
+        foreach (string name in names)
         {
             float fraction = GetGasFraction(name);
             ChangeGas(name, amount * fraction);
@@ -374,7 +374,7 @@ public class Room : IXmlSerializable
     public void MoveGasTo(Room room, float amount)
     {
         List<string> names = new List<string>(atmosphericGasses.Keys);
-        foreach(string name in names)
+        foreach (string name in names)
         {
             MoveGasTo(room, name, amount * GetGasFraction(name));
         }
