@@ -358,12 +358,41 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
     }
 
     /// <summary>
-    /// Returns true if any of the neighours is walkable.
+    /// Returns true if any of the neighours can reach this tile. Checks for clipping of diagonal paths
     /// </summary>
     /// <param name="checkDiagonals">Will test diagonals as well if true.</param>
-    public bool HasWalkableNeighbours(bool checkDiagonals = false)
+    public bool IsReachableFromAnyNeighbor(bool checkDiagonals = false)
     {
-        return GetNeighbours(checkDiagonals).Any(tile => tile != null && tile.MovementCost > 0);
+        return GetNeighbours(checkDiagonals).Any(tile => tile != null && tile.MovementCost > 0 && (checkDiagonals == false || IsClippingCorner(tile) == false));
+    }
+
+    public bool IsClippingCorner(Tile neighborTile)
+    {
+        // If the movement from curr to neigh is diagonal (e.g. N-E)
+        // Then check to make sure we aren't clipping (e.g. N and E are both walkable)
+        int dX = this.X - neighborTile.X;
+        int dY = this.Y - neighborTile.Y;
+
+        if (Mathf.Abs(dX) + Mathf.Abs(dY) == 2)
+        {
+            // We are diagonal
+            if (World.Current.GetTileAt(X - dX, Y, Z).PathfindingCost.AreEqual(0f))
+            {
+                // East or West is unwalkable, therefore this would be a clipped movement.
+                return true;
+            }
+
+            if (World.Current.GetTileAt(X, Y - dY, Z).PathfindingCost.AreEqual(0f))
+            {
+                // North or South is unwalkable, therefore this would be a clipped movement.
+                return true;
+            }
+
+            // If we reach here, we are diagonal, but not clipping
+        }
+
+        // If we are here, we are either not clipping, or not diagonal
+        return false;
     }
 
     public Tile North()

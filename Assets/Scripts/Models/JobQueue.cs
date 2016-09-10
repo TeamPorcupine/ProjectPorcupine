@@ -8,19 +8,30 @@
 #endregion
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class JobQueue
 {
     private SortedList<Job.JobPriority, Job> jobQueue;
     private Dictionary<string, List<Job>> jobsWaitingForInventory;
+    private Queue<Job> unreachableJobs;
 
     public JobQueue()
     {
         jobQueue = new SortedList<Job.JobPriority, Job>(new DuplicateKeyComparer<Job.JobPriority>(true));
         jobsWaitingForInventory = new Dictionary<string, List<Job>>();
+        unreachableJobs = new Queue<Job>();
 
         World.Current.inventoryManager.InventoryCreated += ReevaluateWaitingQueue;
+
+        PrototypeManager.SchedulerEvent.Add(
+            "JobQueue_ReevaluateReachability",
+            new Scheduler.ScheduledEvent(
+                "JobQueue_ReevaluateReachability",
+                (evt) => ReevaluateReachability()
+            )
+        );
+
+        Scheduler.Scheduler.Current.ScheduleEvent("JobQueue_ReevaluateReachability", 60f, true);
     }
 
     public event Action<Job> OnJobCreated;
@@ -48,7 +59,6 @@ public class JobQueue
             return;
         }
 
-        // TODO: We really should check `job.tile.HasWalkableNeighbours(true)` here, but we aren't registered for events on neighboring tiles.
         // If the job requres material but there is nothing available, store it in jobsWaitingForInventory
         if (job.inventoryRequirements.Count > 0 && job.GetFirstFulfillableInventoryRequirement() == null)
         {
@@ -60,6 +70,11 @@ public class JobQueue
             }
 
             jobsWaitingForInventory[missing].Add(job);
+        }
+        else if (job.tile != null && job.tile.IsReachableFromAnyNeighbor(true) == false)
+        {
+            Debug.ULogChannel("FSM", " - Job can't be reached");
+            unreachableJobs.Enqueue(job);
         }
         else
         {
@@ -108,7 +123,7 @@ public class JobQueue
 
             // TODO: This is a simplistic version and needs to be expanded.
             // If we can get all material and we can walk to the tile, the job is workable.
-            if (job.IsRequiredInventoriesAvailable() && job.tile.HasWalkableNeighbours())
+            if (job.IsRequiredInventoriesAvailable() && job.tile.IsReachableFromAnyNeighbor(true))
             {
                 jobQueue.RemoveAt(i);
                 return job;
@@ -189,6 +204,18 @@ public class JobQueue
             {
                 Enqueue(job);
             }
+        }
+    }
+
+    private void ReevaluateReachability()
+    {
+        Debug.ULogChannel("FSM", " - Reevaluate reachability of {0} jobs", unreachableJobs.Count);
+        Queue<Job> jobsToReevaluate = unreachableJobs;
+        unreachableJobs = new Queue<Job>();
+
+        foreach (Job job in jobsToReevaluate)
+        {
+            Enqueue(job);
         }
     }
 }

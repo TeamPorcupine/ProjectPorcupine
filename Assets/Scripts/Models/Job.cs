@@ -216,7 +216,9 @@ public class Job : ISelectable, IPrototypable
                 return otherTile => (
                     tile.Z == otherTile.Z &&
                     (tile.X - 1) <= otherTile.X && (tile.X + 1) >= otherTile.X &&
-                    (tile.Y - 1) <= otherTile.Y && (tile.Y + 1) >= otherTile.Y);
+                    (tile.Y - 1) <= otherTile.Y && (tile.Y + 1) >= otherTile.Y &&
+                    tile.IsClippingCorner(otherTile) == false
+                );
             }
             else
             {

@@ -33,6 +33,11 @@ namespace ProjectPorcupine.State
         {
             if (IsAtJobSite())
             {
+                if (character.CurrTile.Equals(Job.tile) == false)
+                {
+                    character.FaceTile(Job.tile);
+                }
+
                 DropOffInventory();
 
                 if (Job.MaterialNeedsMet())
@@ -87,6 +92,9 @@ namespace ProjectPorcupine.State
                 {
                     FSMLog(" - Dropping off {0} {1}", character.inventory.StackSize, character.inventory.ObjectType);
                     World.Current.inventoryManager.PlaceInventory(Job, character.inventory);
+
+                    // Ping the machine
+                    Job.DoWork(0);
                 }
                 else
                 {
