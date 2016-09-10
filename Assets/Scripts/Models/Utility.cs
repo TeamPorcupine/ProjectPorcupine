@@ -523,7 +523,7 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
     public void AddJob(Job job)
     {
         // FIXME: Do we even need this?
-//        job.utility = this;
+        job.buildable = this;
         jobs.Add(job);
         job.OnJobStopped += OnJobStopped;
         World.Current.jobQueue.Enqueue(job);
