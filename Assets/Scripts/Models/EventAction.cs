@@ -27,7 +27,7 @@ public class EventActions : IXmlSerializable
     protected Dictionary<string, List<string>> actionsList = new Dictionary<string, List<string>>();
 
     /// <summary>
-    /// Used to transfer registere actions to new object.
+    /// Used to transfer register actions to new object.
     /// </summary>
     /// <returns>A new object copy of this.</returns>
     public EventActions Clone()
@@ -88,7 +88,7 @@ public class EventActions : IXmlSerializable
     }
 
     /// <summary>
-    /// Register a function named luaFunc, that gets fired in respnse to an action named actionName.
+    /// Register a function named luaFunc, that gets fired in response to an action named actionName.
     /// </summary>
     /// <param name="actionName">Name of event triggering action.</param>
     /// <param name="luaFunc">Lua function to add to list of actions.</param>
@@ -131,7 +131,7 @@ public class EventActions : IXmlSerializable
         }
         else
         {
-            FurnitureActions.CallFunctionsWithFurniture(actionsList[actionName].ToArray(), target, deltaTime);
+            FunctionsManager.Furniture.CallWithInstance(actionsList[actionName].ToArray(), target, deltaTime);
         }
     }
 }

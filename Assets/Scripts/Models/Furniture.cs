@@ -7,6 +7,7 @@
 // ====================================================
 #endregion
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Schema;
@@ -496,9 +497,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
             return Enterability.Yes;
         }
 
-        //// FurnitureActions.CallFunctionsWithFurniture( isEnterableActions.ToArray(), this );
-
-        DynValue ret = LuaUtilities.CallFunction(isEnterableAction, this);
+        DynValue ret = FunctionsManager.Furniture.Call(isEnterableAction, this);
 
         return (Enterability)ret.Number;
     }
@@ -511,7 +510,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     {
         if (!string.IsNullOrEmpty(getSpriteNameAction))
         {
-            DynValue ret = LuaUtilities.CallFunction(getSpriteNameAction, this);
+            DynValue ret = FunctionsManager.Furniture.Call(getSpriteNameAction, this);
             return ret.String;
         }
 
@@ -645,7 +644,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                         {
                             // Found an inventory requirement, so add it to the list!
                             invs.Add(new Inventory(
-                                    inventoryReader.GetAttribute("objectType"),
+                                    inventoryReader.GetAttribute("type"),
                                     int.Parse(inventoryReader.GetAttribute("amount")),
                                     0));
                         }
@@ -654,7 +653,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                     Job j = new Job(
                                 null,
                                 ObjectType,
-                                FurnitureActions.JobComplete_FurnitureBuilding,
+                                FunctionsManager.JobComplete_FurnitureBuilding,
                                 jobTime,
                                 invs.ToArray(),
                                 Job.JobPriority.High);
@@ -833,9 +832,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
         // TODO: read this from furniture params
         Dictionary<string, Inventory> invsDict = new Dictionary<string, Inventory>();
-        foreach (string objectType in PrototypeManager.Inventory.Keys)
+        foreach (string type in PrototypeManager.Inventory.Keys)
         {
-            invsDict[objectType] = new Inventory(objectType, PrototypeManager.Inventory.Get(objectType).maxStackSize, 0);
+            invsDict[type] = new Inventory(type, 0);
         }
 
         Inventory[] invs = new Inventory[invsDict.Count];
@@ -963,21 +962,40 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     }
 
     /// <summary>
-    /// Returns the HitPoints of the current furniture NOT IMPLEMENTED.
-    /// </summary>
-    /// <returns>String with the HitPoints of the furniture.</returns>
-    public string GetHitPointString()
-    {
-        return "18/18"; // TODO: Add a hitpoint system to...well...everything
-    }
-
-    /// <summary>
     /// Returns the description of the job linked to the furniture. NOT INMPLEMENTED.
     /// </summary>
     /// <returns>Job description of the job linked to the furniture.</returns>
     public string GetJobDescription()
     {
         return string.Empty;
+    }
+
+    public IEnumerable<string> GetAdditionalInfo()
+    {
+        yield return string.Format("Hitpoint 18 / 18");
+
+        if (PowerConnection != null)
+        {
+            bool hasPower = HasPower();
+            string powerColor = hasPower ? "green" : "red";
+
+            yield return string.Format("Power Grid: <color={0}>{1}</color>", powerColor, hasPower ? "Online" : "Offline");
+
+            if (PowerConnection.IsPowerConsumer)
+            {
+                yield return string.Format("Power Input: <color={0}>{1}</color>", powerColor, PowerConnection.InputRate);
+            }
+            
+            if (PowerConnection.IsPowerProducer)
+            {
+                yield return string.Format("Power Output: <color={0}>{1}</color>", powerColor, PowerConnection.OutputRate);
+            }
+
+            if (PowerConnection.IsPowerAccumulator)
+            {
+                yield return string.Format("Power Accumulated: {0} / {1}", PowerConnection.AccumulatedPower, PowerConnection.Capacity);
+            }
+        }
     }
 
     /// <summary>
@@ -1125,7 +1143,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
     private void InvokeContextMenuLuaAction(string luaFunction, Character character)
     {
-        LuaUtilities.CallFunction(luaFunction, this, character);
+        FunctionsManager.Furniture.Call(luaFunction, this, character);
     }
 
     [MoonSharpVisible(true)]

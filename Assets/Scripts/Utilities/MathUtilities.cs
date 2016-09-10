@@ -9,7 +9,7 @@
 using System;
 
 /// <summary>
-/// Different mathemathical calculations. 
+/// Different mathematical calculations. 
 /// </summary>
 public static class MathUtilities
 {

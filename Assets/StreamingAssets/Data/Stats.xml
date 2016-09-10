@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Stats>
-  <Stat statType="Strength" name="Strength" />
-  <Stat statType="Dexterity" name="Dexterity" />
-  <Stat statType="Constitution" name="Constitution" />
-  <Stat statType="Intelligence" name="Intelligence" />
-  <Stat statType="Wisdom" name="Wisdom" />
-  <Stat statType="Charisma" name="Charisma" />
+    <Stat type="Strength" name="Strength" />
+    <Stat type="Dexterity" name="Dexterity" />
+    <Stat type="Constitution" name="Constitution" />
+    <Stat type="Intelligence" name="Intelligence" />
+    <Stat type="Wisdom" name="Wisdom" />
+    <Stat type="Charisma" name="Charisma" />
 </Stats>

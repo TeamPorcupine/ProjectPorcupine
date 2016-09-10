@@ -6,26 +6,19 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System.Collections;
 using System.Collections.Generic;
 using System.Xml;
-using System.Xml.Schema;
-using System.Xml.Serialization;
-using UnityEngine;
 
-public class Need 
+public class Need
 {
-    public string needType;
-    public string localisationID;
-    public string Name;
     public Character character;
-    protected float addedInVacuum;
-    protected float dps;
-    protected string[] luaUpdate;
-    protected bool luaOnly = false;
-    protected float restoreNeedAmount = 100;
-    protected float growthRate;
-    protected bool highToLow = true;
+    private float addedInVacuum;
+    private float dps;
+    private string[] luaUpdate;
+    private bool luaOnly = false;
+    private float restoreNeedAmount = 100;
+    private float growthRate;
+    private bool highToLow = true;
     private float amount = 0;
 
     // Use this for initialization
@@ -34,53 +27,48 @@ public class Need
         Amount = 0;
     }
 
-    protected Need(Need other)
+    private Need(Need other)
     {
         Amount = 0;
-        this.needType = other.needType;
-        this.localisationID = other.localisationID;
-        this.Name = other.Name;
-        this.growthRate = other.growthRate;
-        this.highToLow = other.highToLow;
-        this.RestoreNeedFurn = other.RestoreNeedFurn;
-        this.RestoreNeedTime = other.RestoreNeedTime;
-        this.restoreNeedAmount = other.restoreNeedAmount;
-        this.CompleteOnFail = other.CompleteOnFail;
-        this.addedInVacuum = other.addedInVacuum;
-        this.dps = other.dps;
-        this.luaUpdate = other.luaUpdate;
-        this.luaOnly = other.luaOnly;
+        Type = other.Type;
+        LocalisationID = other.LocalisationID;
+        Name = other.Name;
+        growthRate = other.growthRate;
+        highToLow = other.highToLow;
+        RestoreNeedFurn = other.RestoreNeedFurn;
+        RestoreNeedTime = other.RestoreNeedTime;
+        restoreNeedAmount = other.restoreNeedAmount;
+        CompleteOnFail = other.CompleteOnFail;
+        addedInVacuum = other.addedInVacuum;
+        dps = other.dps;
+        luaUpdate = other.luaUpdate;
+        luaOnly = other.luaOnly;
     }
 
-    public float Amount 
-    { 
-        get 
+    public string Type { get; private set; }
+
+    public string LocalisationID { get; private set; }
+
+    public string Name { get; private set; }
+
+    public float Amount
+    {
+        get
         {
             return amount;
         }
 
         set
         {
-            float f = value;
-            if (f < 0)
-            {
-                f = 0;
-            }
-
-            if (f > 100)
-            {
-                f = 100;
-            }
-
-            amount = f;
+            amount = value.Clamp(0.0f, 100.0f);
         }
     }
 
-    public bool CompleteOnFail { get; protected set; }
+    public bool CompleteOnFail { get; private set; }
 
-    public Furniture RestoreNeedFurn { get; protected set; }
+    public Furniture RestoreNeedFurn { get; private set; }
 
-    public float RestoreNeedTime { get; protected set; }
+    public float RestoreNeedTime { get; private set; }
 
     public string DisplayAmount
     {
@@ -98,7 +86,7 @@ public class Need
     // Update is called once per frame
     public void Update(float deltaTime)
     {
-        NeedActions.CallFunctionsWithNeed(luaUpdate, this, deltaTime);
+        FunctionsManager.Need.CallWithInstance(luaUpdate, this, deltaTime);
         if (luaOnly)
         {
             return;
@@ -111,82 +99,82 @@ public class Need
             Amount += (addedInVacuum - (addedInVacuum * (character.CurrTile.GetGasPressure("O2") * 5))) * deltaTime;
         }
 
-        if (Amount == 100)
+        if (Amount.AreEqual(100))
         {
             // FIXME: Insert need fail damage code here.
         }
     }
 
-    public void ReadXmlPrototype(XmlReader reader_parent)
+    public void ReadXmlPrototype(XmlReader parentReader)
     {
-        needType = reader_parent.GetAttribute("needType");
+        Type = parentReader.GetAttribute("type");
 
-        XmlReader reader = reader_parent.ReadSubtree();
+        XmlReader reader = parentReader.ReadSubtree();
         List<string> luaActions = new List<string>();
 
         while (reader.Read())
         {
             switch (reader.Name)
             {
-            case "Name":
-                reader.Read();
-                Name = reader.ReadContentAsString();
-                break;
-            case "RestoreNeedFurnitureType":
-                reader.Read();
-                RestoreNeedFurn = PrototypeManager.Furniture.Get(reader.ReadContentAsString());
-                break;
-            case "RestoreNeedTime":
-                reader.Read();
-                RestoreNeedTime = reader.ReadContentAsFloat();
-                break;
-            case "Damage":
-                reader.Read();
-                dps = reader.ReadContentAsFloat();
-                break;
-            case "CompleteOnFail":
-                reader.Read();
-                CompleteOnFail = reader.ReadContentAsBoolean();
-                break;
-            case "HighToLow":
-                reader.Read();
-                highToLow = reader.ReadContentAsBoolean();
-                break;
-            case "GrowthRate":
-                reader.Read();
-                growthRate = reader.ReadContentAsFloat();
-                break;
-            case "GrowthInVacuum":
-                reader.Read();
-                addedInVacuum = reader.ReadContentAsFloat();
-                break;
-            case "RestoreNeedAmount":
-                reader.Read();
-                restoreNeedAmount = reader.ReadContentAsFloat();
-                break;
-            case "Localization":
-                reader.Read();
-                localisationID = reader.ReadContentAsString();
-                break;
-            case "LuaProcessingOnly":
-                luaOnly = true;
-                break;
-            case "OnUpdate":
-                reader.Read();
-                luaActions.Add(reader.ReadContentAsString());
-                break;
+                case "Name":
+                    reader.Read();
+                    Name = reader.ReadContentAsString();
+                    break;
+                case "RestoreNeedFurnitureType":
+                    reader.Read();
+                    RestoreNeedFurn = PrototypeManager.Furniture.Get(reader.ReadContentAsString());
+                    break;
+                case "RestoreNeedTime":
+                    reader.Read();
+                    RestoreNeedTime = reader.ReadContentAsFloat();
+                    break;
+                case "Damage":
+                    reader.Read();
+                    dps = reader.ReadContentAsFloat();
+                    break;
+                case "CompleteOnFail":
+                    reader.Read();
+                    CompleteOnFail = reader.ReadContentAsBoolean();
+                    break;
+                case "HighToLow":
+                    reader.Read();
+                    highToLow = reader.ReadContentAsBoolean();
+                    break;
+                case "GrowthRate":
+                    reader.Read();
+                    growthRate = reader.ReadContentAsFloat();
+                    break;
+                case "GrowthInVacuum":
+                    reader.Read();
+                    addedInVacuum = reader.ReadContentAsFloat();
+                    break;
+                case "RestoreNeedAmount":
+                    reader.Read();
+                    restoreNeedAmount = reader.ReadContentAsFloat();
+                    break;
+                case "Localization":
+                    reader.Read();
+                    LocalisationID = reader.ReadContentAsString();
+                    break;
+                case "LuaProcessingOnly":
+                    luaOnly = true;
+                    break;
+                case "OnUpdate":
+                    reader.Read();
+                    luaActions.Add(reader.ReadContentAsString());
+                    break;
             }
         }
 
         luaUpdate = luaActions.ToArray();
     }
 
-    public void CompleteJobNorm(Job j)
+    public void CompleteJobNorm(Job job)
     {
         Amount -= restoreNeedAmount;
     }
 
-    public void CompleteJobCrit(Job j)
+    public void CompleteJobCrit(Job job)
     {
         Amount -= restoreNeedAmount / 4;
     }

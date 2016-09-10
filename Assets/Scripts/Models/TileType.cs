@@ -20,7 +20,6 @@ public class TileType : IXmlSerializable, IEquatable<TileType>
 {
     private static readonly string ULogChanelName = "TileType";
     private static readonly string TilesDescriptionFileName = "Tiles.xml";
-    private static readonly string TilesScriptFileName = "Tiles.lua";
 
     // A private dictionary for storing all TileTypes
     private static readonly Dictionary<string, TileType> TileTypes = new Dictionary<string, TileType>();
@@ -113,22 +112,6 @@ public class TileType : IXmlSerializable, IEquatable<TileType>
     /// </summary>
     public static void LoadTileTypes()
     {
-        // Load lua code
-        string luaPath = Path.Combine(Application.streamingAssetsPath, "LUA");
-        string luaFilePath = Path.Combine(luaPath, TilesScriptFileName);
-
-        LuaUtilities.LoadScriptFromFile(luaFilePath);
-
-        // Load all mod defined lua code
-        foreach (DirectoryInfo mod in WorldController.Instance.modsManager.GetMods())
-        {
-            foreach (FileInfo file in mod.GetFiles(TilesScriptFileName))
-            {
-                Debug.ULogChannel(ULogChanelName, "Loading Tile LUA scripts from mod: {0}", mod.Name);
-                LuaUtilities.LoadScriptFromFile(file.FullName);
-            }
-        }
-
         // Load TileType xml definitions
         string dataPath = Path.Combine(Application.streamingAssetsPath, "Data");
         string xmlPath = Path.Combine(dataPath, TilesDescriptionFileName);
@@ -176,6 +159,28 @@ public class TileType : IXmlSerializable, IEquatable<TileType>
     public override string ToString()
     {
         return Type;
+    }
+
+    // Checks whether the given floor type is allowed to be built on the tile.
+    public bool CanBuildHere(Tile t)
+    {
+        if (CanBuildHereLua == null)
+        {
+            return true;
+        }
+
+        DynValue value = FunctionsManager.TileType.Call(CanBuildHereLua, t);
+
+        if (value != null)
+        {
+            return value.Boolean;
+        }
+        else
+        {
+            Debug.ULogChannel("Lua", "Found no lua function " + CanBuildHereLua);
+
+            return false;
+        }
     }
 
     public System.Xml.Schema.XmlSchema GetSchema()
@@ -288,10 +293,10 @@ public class TileType : IXmlSerializable, IEquatable<TileType>
 
             // Found an inventory requirement, so add it to the list!
             int amount;
-            string objectType = inventoryReader.GetAttribute("objectType");
+            string type = inventoryReader.GetAttribute("type");
             if (int.TryParse(inventoryReader.GetAttribute("amount"), out amount))
             {
-                inventoryRequirements.Add(new Inventory(objectType, amount));
+                inventoryRequirements.Add(new Inventory(type, amount));
             }
             else
             {

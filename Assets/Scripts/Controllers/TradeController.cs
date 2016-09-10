@@ -109,7 +109,7 @@ public class TradeController
             }
             else if (tradeItem.TradeAmount < 0)
             {
-                WorldController.Instance.World.inventoryManager.QuickRemove(tradeItem.ObjectType, -tradeItem.TradeAmount, true);
+                World.Current.inventoryManager.RemoveInventoryOfType(tradeItem.ObjectType, -tradeItem.TradeAmount, true);
             }
         }
     }

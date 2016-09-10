@@ -13,7 +13,8 @@ public class CameraController
     [Range(0, 3)]
     public float scrollSpeed = 0.1f;
 
-    private float zoomTarget;
+    // Zoom of the main camera.
+    private float zoomTarget = 11f;
     private int currentLayer;
     private Camera[] layerCameras;
 
@@ -34,6 +35,9 @@ public class CameraController
         keyboardManager.RegisterInputAction("ZoomIn", KeyboardMappedInputType.Key, () => ChangeZoom(-0.1f));
         keyboardManager.RegisterInputAction("MoveCameraUp", KeyboardMappedInputType.KeyUp, ChangeLayerUp);
         keyboardManager.RegisterInputAction("MoveCameraDown", KeyboardMappedInputType.KeyUp, ChangeLayerDown);
+
+        // Set default zoom value on camera.
+        Camera.main.orthographicSize = zoomTarget;
     }
 
     public int CurrentLayer

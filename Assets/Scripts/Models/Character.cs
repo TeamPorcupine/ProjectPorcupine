@@ -1,4 +1,4 @@
-#region License
+﻿#region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
 // This program comes with ABSOLUTELY NO WARRANTY; This is free software,
@@ -7,6 +7,7 @@
 // ====================================================
 #endregion
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -271,7 +272,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             // Also create a callback for when an inventory gets created.
             // Lastly, remove the job from "MyJob".
             World.Current.jobWaitingQueue.Enqueue(MyJob);
-            World.Current.OnInventoryCreated += OnInventoryCreated;
+            World.Current.inventoryManager.InventoryCreated += OnInventoryCreated;
             MyJob.OnJobStopped -= OnJobStopped;
             MyJob = null;
         }
@@ -295,7 +296,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         if the character is carrying materials but is not used in the new job, then drop them
         on the current tile for now.*/
 
-        if (inventory != null && !job.inventoryRequirements.ContainsKey(inventory.ObjectType))
+        if (inventory != null && !job.inventoryRequirements.ContainsKey(inventory.Type))
         {
             World.Current.inventoryManager.PlaceInventory(CurrTile, inventory);
             DumpExcessInventory();
@@ -306,7 +307,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         // Get our destination from the job.
         DestTile = MyJob.tile;
 
-        // If the dest tile does not have neighbours that are walkable it's very likable that they can't be walked to.
+        // If the destination tile does not have neighbours that are walkable it's very likable that they can't be walked to.
         if (DestTile.HasWalkableNeighbours() == false)
         {
             Debug.ULogChannel("Character", "No neighbouring floor tiles! Abandoning job.");
@@ -370,12 +371,12 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         writer.WriteAttributeString("Y", CurrTile.Y.ToString());
         writer.WriteAttributeString("Z", CurrTile.Z.ToString());
 
-        // TODO: It is more verbose, but easier to parse if these are represented as key-value elements rather than a string with delimeters.
+        // TODO: It is more verbose, but easier to parse if these are represented as key-value elements rather than a string with delimiters.
         string needString = string.Empty;
         foreach (Need n in needs)
         {
             int storeAmount = (int)(n.Amount * 10);
-            needString = needString + n.needType + ";" + storeAmount.ToString() + ":";
+            needString = needString + n.Type + ";" + storeAmount.ToString() + ":";
         }
 
         writer.WriteAttributeString("needs", needString);
@@ -422,7 +423,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             string[] needListB = s.Split(new char[] { ';' });
             foreach (Need n in needs)
             {
-                if (n.needType == needListB[0])
+                if (n.Type == needListB[0])
                 {
                     int storeAmount;
                     if (int.TryParse(needListB[1], out storeAmount))
@@ -434,24 +435,6 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                         Debug.ULogErrorChannel("Character", "Character.ReadXml() expected an int when deserializing needs");
                     }
                 }
-            }
-        }
-
-        // Read the children elements.
-        // TODO: This should either not be XML, or use XmlSerializer.
-        while (reader.Read())
-        {
-            // Read until the end of the character.
-            if (reader.NodeType == XmlNodeType.EndElement)
-            {
-                break;
-            }
-
-            switch (reader.Name)
-            {
-                case "Stats":
-                    ReadStatsFromSave(reader);
-                    break;
             }
         }
     }
@@ -467,25 +450,23 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
     public string GetDescription()
     {
-        StringBuilder description = new StringBuilder();
-        description.AppendLine("A human astronaut.");
+        return "A human astronaut.";
+    }
+
+    public IEnumerable<string> GetAdditionalInfo()
+    {
+        yield return string.Format("HitPoints: 100/100");
+
         foreach (Need n in needs)
         {
-            description.AppendLine(LocalizationTable.GetLocalization(n.localisationID, n.DisplayAmount));
+           yield return LocalizationTable.GetLocalization(n.LocalisationID, n.DisplayAmount);
         }
 
         foreach (Stat stat in stats.Values)
         {
             // TODO: Localization
-            description.AppendLine(string.Format("{0}: {1}", stat.statType, stat.Value));
+            yield return string.Format("{0}: {1}", stat.Type, stat.Value);
         }
-
-        return description.ToString();
-    }
-
-    public string GetHitPointString()
-    {
-        return "100/100";
     }
 
     public Color GetCharacterColor()
@@ -551,13 +532,13 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             // Gets a random value within the min and max range of the stat.
             // TODO: Should there be any bias or any other algorithm applied here to make stats more interesting?
             newStat.Value = UnityEngine.Random.Range(1, 20);
-            stats.Add(newStat.statType, newStat);
+            stats.Add(newStat.Type, newStat);
         }
 
         Debug.ULogChannel("Character", "Initialized " + stats.Count + " Stats.");
     }
 
-    private void ReadStatsFromSave(XmlReader reader)
+    public void ReadStatsFromSave(XmlReader reader)
     {
         // Protection vs. empty stats
         if (reader.IsEmptyElement)
@@ -574,13 +555,19 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
             string statType = reader.GetAttribute("statType");
             Stat stat = GetStat(statType);
-            if (stat != null)
+            if (stat == null)
             {
-                if (!int.TryParse(reader.GetAttribute("value"), out stat.Value))
-                {
-                    Debug.ULogErrorChannel("Character", "Stat element did not have a value!");
-                }
+                continue;               
             }
+
+            int statValue;
+            if (!int.TryParse(reader.GetAttribute("value"), out statValue))
+            {
+                Debug.ULogErrorChannel("Character", "Stat element did not have a value!");
+                continue;
+            }
+
+            stat.Value = statValue;
         }
     }
 
@@ -605,7 +592,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             }
         }
 
-        if (needPercent == 100 && need != null && need.CompleteOnFail)
+        if (needPercent.AreEqual(100.0f) && need != null && need.CompleteOnFail)
         {
             MyJob = new Job(CurrTile, null, need.CompleteJobCrit, need.RestoreNeedTime * 10, null, Job.JobPriority.High, false, true, true);
         }
@@ -645,7 +632,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         // Get our destination from the job.
         DestTile = MyJob.tile;
 
-        // If the dest tile does not have neighbours that are walkable it's very likely that they can't be walked to
+        // If the destination tile does not have neighbours that are walkable it's very likely that they can't be walked to
         if (DestTile != null)
         {
             if (DestTile.HasWalkableNeighbours() == false)
@@ -665,7 +652,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         Profiler.BeginSample("PathGeneration");
         if (MyJob.IsNeed)
         {
-            // This will calculate a path from curr to dest.
+            // This will calculate a path from current tile to destination tile.
             pathAStar = new Path_AStar(World.Current, CurrTile, DestTile, need.RestoreNeedFurn.ObjectType, 0, false, true);
         }
         else
@@ -755,7 +742,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             need.Update(deltaTime);
         }
     }
-        
+
     private void Update_DoMovement(float deltaTime)
     {
         if (CurrTile == DestTile)
@@ -773,7 +760,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             if (pathAStar == null || pathAStar.Length() == 0)
             {
                 // Generate a path to our destination.
-                // This will calculate a path from curr to dest.
+                // This will calculate a path from current tile to destination tile.
                 pathAStar = new Path_AStar(World.Current, CurrTile, DestTile);
                 if (pathAStar.Length() == 0)
                 {
@@ -878,7 +865,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             CharFacing = Facing.SOUTH;
         }
     }
-        
+
     /// <summary>
     /// Checks whether the current job has all the materials in place and if not instructs the working character to get the materials there first.
     /// Only ever returns true if all materials for the job are at the job location and thus signals to the calling code, that it can proceed with job execution.
@@ -970,7 +957,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 // Any chance we already have a path that leads to the items we want?
                 // Check that we have an end tile and that it has content.
                 // Check if contains the desired objectType�.
-                if (WalkingToUsableInventory() && fulfillableInventoryRequirements.Contains(pathAStar.EndTile().Inventory.ObjectType))
+                if (WalkingToUsableInventory() && fulfillableInventoryRequirements.Contains(pathAStar.EndTile().Inventory.Type))
                 {
                     // We are already moving towards a tile that contains what we want!
                     // so....do nothing?
@@ -984,7 +971,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                     {
                         desired = MyJob.inventoryRequirements[itemType];
                         newPath = World.Current.inventoryManager.GetPathToClosestInventoryOfType(
-                            desired.ObjectType,
+                            desired.Type,
                             CurrTile,
                             desired.MaxStackSize - desired.StackSize,
                             MyJob.canTakeFromStockpile);
@@ -992,7 +979,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                         if (newPath == null || newPath.Length() < 1)
                         {
                             // Try the next requirement
-                            Debug.ULogChannel("Character", "No tile contains objects of type '" + desired.ObjectType + "' to satisfy job requirements.");
+                            Debug.ULogChannel("Character", "No tile contains objects of type '" + desired.Type + "' to satisfy job requirements.");
                             continue;
                         }
 
@@ -1036,12 +1023,12 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
     /// <summary>
     /// This function instructs the character to null its inventory.
-    /// However in the fuure it should actually look for a place to dump the materials and then do so.
+    /// However in the future it should actually look for a place to dump the materials and then do so.
     /// </summary>
     private void DumpExcessInventory()
     {
         // TODO: Look for Places accepting the inventory in the following order:
-        // - Jobs also needing this item (this could serve us when building Walls, as the character could transport ressources for multiple walls at once)
+        // - Jobs also needing this item (this could serve us when building Walls, as the character could transport resources for multiple walls at once)
         // - Stockpiles (as not to clutter the floor)
         // - Floor
 
@@ -1055,24 +1042,24 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         inventory = null;
     }
-        
+
     private void OnInventoryCreated(Inventory inv)
     {
         // First remove the callback.
-        World.Current.OnInventoryCreated -= OnInventoryCreated;
+        World.Current.inventoryManager.InventoryCreated -= OnInventoryCreated;
 
         // Get the relevant job and dequeue it from the waiting queue.
         Job job = World.Current.jobWaitingQueue.Dequeue();
 
         // Check if the initial job still exists.
         // It could have been deleted through the user
-        // cancelling the job manually.
+        // canceling the job manually.
         if (job != null)
         {
             List<string> desired = job.FulfillableInventoryRequirements();
 
             // Check if the created inventory can fulfill the waiting job requirements.
-            if (desired != null && desired.Contains(inv.ObjectType))
+            if (desired != null && desired.Contains(inv.Type))
             {
                 // If so, enqueue the job onto the (normal)
                 // job queue.
@@ -1080,10 +1067,10 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             }
             else
             {
-                // If not, (re)enqueue the job onto the waiting queu
+                // If not, (re)enqueue the job onto the waiting queue
                 // and also register a callback for the future.
                 World.Current.jobWaitingQueue.Enqueue(job);
-                World.Current.OnInventoryCreated += OnInventoryCreated;
+                World.Current.inventoryManager.InventoryCreated += OnInventoryCreated;
             }
         }
     }
