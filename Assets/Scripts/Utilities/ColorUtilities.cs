@@ -10,7 +10,7 @@ using System;
 using UnityEngine;
 
 /// <summary>
-/// Different mathemathical calculations. 
+/// Different mathematical calculations. 
 /// </summary>
 public static class ColorUtilities
 {

@@ -32,6 +32,8 @@ public class LuaFunctions
         RegisterGlobal(typeof(World));
         RegisterGlobal(typeof(WorldController));
         RegisterGlobal(typeof(Connection));
+        RegisterGlobal(typeof(Scheduler.Scheduler));
+        RegisterGlobal(typeof(Scheduler.ScheduledEvent));
     }
 
     /// <summary>
@@ -99,7 +101,7 @@ public class LuaFunctions
     {
         if (instance == null)
         {
-            // These errors are about the lua code so putting themin the Lua channel.
+            // These errors are about the lua code so putting them in the Lua channel.
             Debug.ULogErrorChannel("Lua", "Instance is null, cannot call LUA function (something is fishy).");
         }
 

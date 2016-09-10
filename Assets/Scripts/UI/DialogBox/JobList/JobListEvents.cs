@@ -21,7 +21,7 @@ public class JobListEvents : MonoBehaviour
     public Text jobText;
 
     /// <summary>
-    /// Deletes the job list item after cancelling the job.
+    /// Deletes the job list item after canceling the job.
     /// </summary>
     public void DeleteSelf()
     {
@@ -47,7 +47,7 @@ public class JobListEvents : MonoBehaviour
     }
 
     /// <summary>
-    /// Util function to return the name of the character that's in the item.
+    /// Utility function to return the name of the character that's in the item.
     /// </summary>
     /// <returns>The character's name.</returns>
     private string GetNameFromItem()
