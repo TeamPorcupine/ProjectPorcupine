@@ -29,11 +29,6 @@ public class DialogBoxJobList : DialogBox
 
     private int currentWait = 0;
 
-    public override void ShowDialog()
-    {
-        gameObject.SetActive(true);
-    }
-
     public override void CloseDialog()
     {
         // Clear out all the children of our file list
