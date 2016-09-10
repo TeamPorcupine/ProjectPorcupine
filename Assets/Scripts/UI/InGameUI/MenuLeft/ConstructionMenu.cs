@@ -12,7 +12,7 @@ using UnityEngine.UI;
 
 public class ConstructionMenu : MonoBehaviour
 {
-    const string LOCALIZATION_DECONSTRUCT = "deconstruct_furniture";
+    private const string LocalizationDeconstruct = "deconstruct_furniture";
 
     private string lastLanguage;
 
@@ -84,7 +84,6 @@ public class ConstructionMenu : MonoBehaviour
 
             go.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(key) };
 
-
             Button button = go.GetComponent<Button>();
             button.onClick.AddListener(delegate
             {
@@ -108,7 +107,7 @@ public class ConstructionMenu : MonoBehaviour
         go.transform.SetParent(contentTransform);
         go.name = "Button - Deconstruct";
 
-        go.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(LOCALIZATION_DECONSTRUCT) };
+        go.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(LocalizationDeconstruct) };
 
         Button button = go.GetComponent<Button>();
 
@@ -119,7 +118,7 @@ public class ConstructionMenu : MonoBehaviour
 
         LocalizationTable.CBLocalizationFilesChanged += delegate
         {
-            go.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(LOCALIZATION_DECONSTRUCT) };
+            go.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(LocalizationDeconstruct) };
         };
     }
 

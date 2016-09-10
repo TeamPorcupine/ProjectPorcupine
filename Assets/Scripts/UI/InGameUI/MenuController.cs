@@ -13,11 +13,7 @@ using UnityEngine.UI;
 
 public class MenuController : MonoBehaviour
 {
-    // The sub menus of the build menu (furniture, floor..... later - power, security, drones).
-    public GameObject furnitureMenu;
-    public GameObject floorMenu;
-
-    public Button buttonConstructor;
+    public Button buttonConstruction;
     public Button buttonWorld;
     public Button buttonWork;
     public Button buttonOptions;
@@ -29,20 +25,6 @@ public class MenuController : MonoBehaviour
     private GameObject constructorMenu;
     private MenuLeft menuLeft;
 
-    // Deactivates All Menus.
-    public void DeactivateAll()
-    {
-        constructorMenu.SetActive(false);
-        DeactivateSubs();
-    }
-
-    // Deactivates any sub menu of the constrution options.
-    public void DeactivateSubs()
-    {
-        furnitureMenu.SetActive(false);
-        floorMenu.SetActive(false);
-    }
-
     // Toggles whether menu is active.
     public void ToggleMenu(GameObject menu)
     {
@@ -51,7 +33,6 @@ public class MenuController : MonoBehaviour
 
     public void OnButtonConstruction()
     {
-        DeactivateAll();
         if (menuLeft.CurrentlyOpen != null && menuLeft.CurrentlyOpen.gameObject.name == "ConstructionMenu")
         {
             menuLeft.CloseMenu();
@@ -64,14 +45,14 @@ public class MenuController : MonoBehaviour
 
     public void OnButtonWork()
     {
-        DeactivateAll();
+        menuLeft.CloseMenu();
     }
 
     public void OnButtonWorld()
     {
         if (!WorldController.Instance.IsModal)
         {
-            DeactivateAll();
+            menuLeft.CloseMenu();
         }
     }
 
@@ -79,28 +60,21 @@ public class MenuController : MonoBehaviour
     {
         if (!WorldController.Instance.IsModal)
         {
-            DeactivateAll();
+            menuLeft.CloseMenu();
             dialogManager.dialogBoxQuests.ShowDialog();
         }
     }
 
     public void OnButtonOptions()
     {
-        DeactivateAll();
+        menuLeft.CloseMenu();
+
         if (dialogManager.dialogBoxSettings.isActiveAndEnabled)
         {
             dialogManager.dialogBoxSettings.CloseDialog();
         }
-        dialogManager.dialogBoxOptions.ToggleDialog();
-    }
 
-    public void OnButtonSettings()
-    {
-        if (!WorldController.Instance.IsModal)
-        {
-            DeactivateAll();
-            dialogManager.dialogBoxSettings.ShowDialog();
-        }
+        dialogManager.dialogBoxOptions.ToggleDialog();
     }
 
     // Use this for initialization.
@@ -109,12 +83,8 @@ public class MenuController : MonoBehaviour
         dialogManager = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
         menuLeft = GameObject.Find("MenuLeft").GetComponent<MenuLeft>();
 
-        furnitureMenu = GameObject.Find("MenuFurniture");
-        floorMenu = GameObject.Find("MenuFloor");
-        constructorMenu = GameObject.Find("MenuConstruction");
-
         // Add liseners here.
-        buttonConstructor.onClick.AddListener(delegate
+        buttonConstruction.onClick.AddListener(delegate
         {
             OnButtonConstruction();
         });
@@ -140,7 +110,7 @@ public class MenuController : MonoBehaviour
             OnButtonQuests();
         });
 
-        DeactivateAll();
+        menuLeft.CloseMenu();
     }
 
     private Button CreateButton(string text)
@@ -158,7 +128,7 @@ public class MenuController : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.Escape))
         {
-            DeactivateAll();
+            menuLeft.CloseMenu();
         }
     }
 }
