@@ -59,7 +59,7 @@ public class ConstructionMenu : MonoBehaviour
         ToggleMenu(furnitureMenu);
     }
 
-    // Deactivates any sub menu of the constrution options.
+    // Deactivates any sub menu of the construction options.
     public void DeactivateSubs()
     {
         WorldController.Instance.mouseController.ClearMouseMode(true);

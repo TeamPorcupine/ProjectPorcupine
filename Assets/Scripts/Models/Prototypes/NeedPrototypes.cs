@@ -6,9 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-
 using System;
-using System.Collections.Generic;
 using System.Xml;
 
 public class NeedPrototypes : XmlPrototypes<Need>
@@ -30,9 +28,9 @@ public class NeedPrototypes : XmlPrototypes<Need>
         }
         catch (Exception e)
         {
-            LogPrototypeError(e, need.needType);
+            LogPrototypeError(e, need.Type);
         }
 
-        Set(need.needType, need);
+        Set(need.Type, need);
     }
 }
