@@ -77,7 +77,7 @@
         <Goals>
             <Goal Description="Build 1 Heater" IsCompletedLuaFunction="Quest_Have_Furniture_Built">
                 <Params>
-                    <Param name="objectType" value="heater"/>
+                    <Param name="objectType" value="Heater"/>
                     <Param name="amount" value="1"/>
                 </Params>
             </Goal>
