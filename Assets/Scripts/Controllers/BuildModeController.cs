@@ -168,41 +168,41 @@ public class BuildModeController
                 // This tile position is valid for this furniture
 
                 // Create a job for it to be build
-                Job j;
+                Job job;
 
                 if (PrototypeManager.UtilityJob.Has(furnitureType))
                 {
                     // Make a clone of the job prototype
-                    j = PrototypeManager.UtilityJob.Get(furnitureType).Clone();
+                    job = PrototypeManager.UtilityJob.Get(furnitureType).Clone();
 
                     // Assign the correct tile.
-                    j.tile = t;
+                    job.tile = t;
                 }
                 else
                 {
                     Debug.ULogErrorChannel("BuildModeController", "There is no furniture job prototype for '" + furnitureType + "'");
-                    j = new Job(t, furnitureType, FunctionsManager.JobComplete_UtilityBuilding, 0.1f, null, Job.JobPriority.High);
-                    j.JobDescription = "job_build_" + furnitureType + "_desc";
+                    job = new Job(t, furnitureType, FunctionsManager.JobComplete_UtilityBuilding, 0.1f, null, Job.JobPriority.High);
+                    job.JobDescription = "job_build_" + furnitureType + "_desc";
                 }
 
-                j.buildablePrototype = PrototypeManager.Utility.Get(furnitureType);
+                job.buildablePrototype = PrototypeManager.Utility.Get(furnitureType);
 
                 // Add the job to the queue or build immediately if in dev mode
                 if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
                 {
-                    WorldController.Instance.World.PlaceUtility(j.JobObjectType, j.tile);
+                    WorldController.Instance.World.PlaceUtility(job.JobObjectType, job.tile);
                 }
                 else
                 {
                     // FIXME: I don't like having to manually and explicitly set
                     // flags that preven conflicts. It's too easy to forget to set/clear them!
                     Tile offsetTile = WorldController.Instance.World.GetTileAt(t.X, t.Y, t.Z);
-                    offsetTile.PendingBuildJob = j;
-                    j.OnJobStopped += (theJob) =>
+                    offsetTile.PendingBuildJob = job;
+                    job.OnJobStopped += (theJob) =>
                         {
                             offsetTile.PendingBuildJob = null;
                         };
-                    WorldController.Instance.World.jobQueue.Enqueue(j);
+                    WorldController.Instance.World.jobQueue.Enqueue(job);
                 }
             }
         }
@@ -309,10 +309,10 @@ public class BuildModeController
         return false;
     }
 
-    public bool DoesSameUtilityTypeAlreadyExist(Tile t, string furnitureType)
+    public bool DoesSameUtilityTypeAlreadyExist(Tile tile, string furnitureType)
     {
         Utility proto = PrototypeManager.Utility.Get(furnitureType);
-        return t.Utilities.ContainsKey(proto.Name);
+        return tile.Utilities.ContainsKey(proto.Name);
     }
 
     // Use this for initialization

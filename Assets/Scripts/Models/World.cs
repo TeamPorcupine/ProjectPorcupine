@@ -418,9 +418,9 @@ public class World : IXmlSerializable
         return furn;
     }
 
-    public Utility PlaceUtility(Utility utility, Tile t, bool doRoomFloodFill = true)
+    public Utility PlaceUtility(Utility utility, Tile tile, bool doRoomFloodFill = true)
     {
-        Utility util = Utility.PlaceInstance(utility, t);
+        Utility util = Utility.PlaceInstance(utility, tile);
 
         if (util == null)
         {

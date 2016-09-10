@@ -597,7 +597,7 @@ public class MouseController
         go.transform.position = new Vector3(t.X + ((proto.Width - 1) / 2f), t.Y + ((proto.Height - 1) / 2f), WorldController.Instance.cameraController.CurrentLayer);
     }
 
-    private void ShowUtilitySpriteAtTile(string furnitureType, Tile t)
+    private void ShowUtilitySpriteAtTile(string furnitureType, Tile tile)
     {
         GameObject go = new GameObject();
         go.transform.SetParent(furnitureParent.transform, true);
@@ -608,7 +608,7 @@ public class MouseController
         sr.sprite = usc.GetSpriteForUtility(furnitureType);
 
         // TODO: reimplement this for utilities: bmc.DoesBuildJobOverlapExistingBuildJob(t, furnitureType) == false)
-        if (WorldController.Instance.World.IsUtilityPlacementValid(furnitureType, t)) 
+        if (WorldController.Instance.World.IsUtilityPlacementValid(furnitureType, tile)) 
         {
             sr.color = new Color(0.5f, 1f, 0.5f, 0.25f);
         }
@@ -619,7 +619,7 @@ public class MouseController
 
         Utility proto = PrototypeManager.Utility.Get(furnitureType);
 
-        go.transform.position = new Vector3(t.X, t.Y, WorldController.Instance.cameraController.CurrentLayer);
+        go.transform.position = new Vector3(tile.X, tile.Y, WorldController.Instance.cameraController.CurrentLayer);
     }
 
     public class DragParameters
