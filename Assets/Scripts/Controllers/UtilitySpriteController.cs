@@ -137,14 +137,4 @@ public class UtilitySpriteController : BaseSpriteController<Utility>
 
         return string.Empty;
     }
-
-    private string GetSuffixForDiagonalNeighbour(string suffix, string coord1, string coord2, Utility util, int x, int y, int z)
-    {
-        if (suffix.Contains(coord1) && suffix.Contains(coord2))
-        {
-            return GetSuffixForNeighbour(util, x, y, z, coord1.ToLower() + coord2.ToLower());
-        }
-
-        return string.Empty;
-    }
 }
