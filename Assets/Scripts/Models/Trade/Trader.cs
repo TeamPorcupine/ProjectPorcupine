@@ -84,7 +84,15 @@ public class Trader
 
     public void RefreshInventory()
     {
-        List<TraderPotentialInventory> stockExceptRequests = possibleStock.Except(requests.Keys).ToList();
+        List<TraderPotentialInventory> stockExceptRequests;
+        if (requests == null)
+        {
+            stockExceptRequests = possibleStock;
+        }
+        else
+        {
+            stockExceptRequests = possibleStock.Except(requests.Keys).ToList();
+        }
 
         // Maybe change different attributes(sales margins, possible stocks, traded currencies, etc.)
         // based on a relationship / time element?
@@ -99,6 +107,9 @@ public class Trader
         }
 
         // TODO make requests cost more based on how much you want them
+        if (requests == null)
+            return;
+
         foreach (KeyValuePair<TraderPotentialInventory, RequestLevel> requestAndLevel in requests)
         {
             bool itemIsInStock = Random.Range(0f, 1f) + (requestChanceModifier * (int)requestAndLevel.Value) > requestAndLevel.Key.Rarity;
@@ -128,7 +139,7 @@ public class Trader
             foreach (InventoryCommon potentialObject in potentialObjects)
             {
                 Inventory newInventory = new Inventory(
-                    potentialObject.objectType,
+                    potentialObject.type,
                     Random.Range(inventory.MinQuantity, inventory.MaxQuantity));
 
                 Stock.Add(newInventory);
