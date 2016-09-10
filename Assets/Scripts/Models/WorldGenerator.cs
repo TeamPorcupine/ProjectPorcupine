@@ -115,10 +115,10 @@ public class WorldGenerator
 
                                     if (randomweight <= currentweight)
                                     {
-                                        if (inv.ObjectType == "Raw Iron" || inv.ObjectType == "Uranium")
+                                        if (inv.Type == "Raw Iron" || inv.Type == "Uranium")
                                     {
                                         Furniture mine = PrototypeManager.Furniture.Get("mine").Clone();
-                                        mine.Parameters["ore_type"].SetValue(inv.ObjectType.ToString());
+                                        mine.Parameters["ore_type"].SetValue(inv.Type.ToString());
                                         world.PlaceFurniture(mine, tile, false);
                                         break;
                                     }
@@ -130,7 +130,7 @@ public class WorldGenerator
                                         stackSize = inv.MaxStackSize;
                                     }
 
-                                    world.inventoryManager.PlaceInventory(tile, new Inventory(inv.ObjectType, inv.MaxStackSize, stackSize));
+                                    world.inventoryManager.PlaceInventory(tile, new Inventory(inv.Type, stackSize, inv.MaxStackSize));
                                     break;
                                     }
                                 }
@@ -200,9 +200,9 @@ public class WorldGenerator
                                     if (res_reader.Name == "Resource")
                                     {
                                         res.Add(new Inventory(
-                                                res_reader.GetAttribute("objectType"),
-                                                int.Parse(res_reader.GetAttribute("maxStack")),
-                                                Mathf.CeilToInt(float.Parse(res_reader.GetAttribute("weightedChance")))));
+                                                res_reader.GetAttribute("type"),
+                                                Mathf.CeilToInt(float.Parse(res_reader.GetAttribute("weightedChance"))),
+                                                int.Parse(res_reader.GetAttribute("maxStack"))));
 
                                         resMin.Add(int.Parse(res_reader.GetAttribute("min")));
                                         resMax.Add(int.Parse(res_reader.GetAttribute("max")));

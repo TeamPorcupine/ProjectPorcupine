@@ -35,7 +35,7 @@ public class Trader
         };
 
         List<List<Inventory>> worldInventories =
-            WorldController.Instance.World.inventoryManager.inventories.Values.Select(i => i.ToList()).ToList();
+            WorldController.Instance.World.inventoryManager.Inventories.Values.Select(i => i.ToList()).ToList();
         
         foreach (List<Inventory> worldInventory in worldInventories)
         {

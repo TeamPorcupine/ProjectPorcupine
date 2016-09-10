@@ -12,11 +12,11 @@
         <DragType>path</DragType>
 
         <BuildingJob jobTime="1">
-            <Inventory objectType="Steel Plate" amount="5" />
+            <Inventory type="Steel Plate" amount="5" />
         </BuildingJob>
 
         <DeconstructJob>
-            <Inventory objectType="Steel Plate" amount="3" />
+            <Inventory type="Steel Plate" amount="3" />
         </DeconstructJob>
 
         <Params>
@@ -51,11 +51,11 @@
         <CanReplaceFurniture typeTag="Wall" />
 
         <BuildingJob jobTime="1">
-            <Inventory objectType="Steel Plate" amount="2" />
+            <Inventory type="Steel Plate" amount="2" />
         </BuildingJob>
 
         <DeconstructJob>
-            <Inventory objectType="Steel Plate" amount="1" />
+            <Inventory type="Steel Plate" amount="1" />
         </DeconstructJob>
 
         <Params>
@@ -89,11 +89,11 @@
         <CanReplaceFurniture typeTag="Door" />
 
         <BuildingJob jobTime="5">
-            <Inventory objectType="Steel Plate" amount="10" />
+            <Inventory type="Steel Plate" amount="10" />
         </BuildingJob>
 
         <DeconstructJob>
-            <Inventory objectType="Steel Plate" amount="7" />
+            <Inventory type="Steel Plate" amount="7" />
         </DeconstructJob>
 
         <Params>
@@ -236,11 +236,11 @@
         <PowerConnection inputRate="1" outputRate="" capacity=""/>
 
         <BuildingJob jobTime="10">
-            <Inventory objectType="Steel Plate" amount="50" />
+            <Inventory type="Steel Plate" amount="50" />
         </BuildingJob>
 
         <DeconstructJob>
-            <Inventory objectType="Steel Plate" amount="15" />
+            <Inventory type="Steel Plate" amount="15" />
         </DeconstructJob>
 
         <Animations>
@@ -356,11 +356,11 @@
         <Height>3</Height>
 
         <BuildingJob jobTime="5">
-            <Inventory objectType="Steel Plate" amount="20" />
+            <Inventory type="Steel Plate" amount="20" />
         </BuildingJob>
 
         <DeconstructJob>
-            <Inventory objectType="Steel Plate" amount="10" />
+            <Inventory type="Steel Plate" amount="10" />
         </DeconstructJob>
 
         <JobSpotOffset X="0" Y="0" />
@@ -465,11 +465,11 @@
         <PathfindingWeight>1</PathfindingWeight>
 
         <BuildingJob jobTime="1">
-            <Inventory objectType="Steel Plate" amount="2" />
+            <Inventory type="Steel Plate" amount="2" />
         </BuildingJob>
 
         <DeconstructJob>
-            <Inventory objectType="Steel Plate" amount="1" />
+            <Inventory type="Steel Plate" amount="1" />
         </DeconstructJob>
 
         <Params>
