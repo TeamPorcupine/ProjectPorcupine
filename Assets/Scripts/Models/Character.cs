@@ -272,7 +272,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             // Also create a callback for when an inventory gets created.
             // Lastly, remove the job from "MyJob".
             World.Current.jobWaitingQueue.Enqueue(MyJob);
-            World.Current.OnInventoryCreated += OnInventoryCreated;
+            World.Current.inventoryManager.InventoryCreated += OnInventoryCreated;
             MyJob.OnJobStopped -= OnJobStopped;
             MyJob = null;
         }
@@ -296,7 +296,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         if the character is carrying materials but is not used in the new job, then drop them
         on the current tile for now.*/
 
-        if (inventory != null && !job.inventoryRequirements.ContainsKey(inventory.ObjectType))
+        if (inventory != null && !job.inventoryRequirements.ContainsKey(inventory.Type))
         {
             World.Current.inventoryManager.PlaceInventory(CurrTile, inventory);
             DumpExcessInventory();
@@ -376,7 +376,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         foreach (Need n in needs)
         {
             int storeAmount = (int)(n.Amount * 10);
-            needString = needString + n.needType + ";" + storeAmount.ToString() + ":";
+            needString = needString + n.Type + ";" + storeAmount.ToString() + ":";
         }
 
         writer.WriteAttributeString("needs", needString);
@@ -423,7 +423,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             string[] needListB = s.Split(new char[] { ';' });
             foreach (Need n in needs)
             {
-                if (n.needType == needListB[0])
+                if (n.Type == needListB[0])
                 {
                     int storeAmount;
                     if (int.TryParse(needListB[1], out storeAmount))
@@ -459,7 +459,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         foreach (Need n in needs)
         {
-           yield return LocalizationTable.GetLocalization(n.localisationID, n.DisplayAmount);
+           yield return LocalizationTable.GetLocalization(n.LocalisationID, n.DisplayAmount);
         }
 
         foreach (Stat stat in stats.Values)
@@ -592,7 +592,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             }
         }
 
-        if (needPercent == 100 && need != null && need.CompleteOnFail)
+        if (needPercent.AreEqual(100.0f) && need != null && need.CompleteOnFail)
         {
             MyJob = new Job(CurrTile, null, need.CompleteJobCrit, need.RestoreNeedTime * 10, null, Job.JobPriority.High, false, true, true);
         }
@@ -957,7 +957,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 // Any chance we already have a path that leads to the items we want?
                 // Check that we have an end tile and that it has content.
                 // Check if contains the desired objectType�.
-                if (WalkingToUsableInventory() && fulfillableInventoryRequirements.Contains(pathAStar.EndTile().Inventory.ObjectType))
+                if (WalkingToUsableInventory() && fulfillableInventoryRequirements.Contains(pathAStar.EndTile().Inventory.Type))
                 {
                     // We are already moving towards a tile that contains what we want!
                     // so....do nothing?
@@ -971,7 +971,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                     {
                         desired = MyJob.inventoryRequirements[itemType];
                         newPath = World.Current.inventoryManager.GetPathToClosestInventoryOfType(
-                            desired.ObjectType,
+                            desired.Type,
                             CurrTile,
                             desired.MaxStackSize - desired.StackSize,
                             MyJob.canTakeFromStockpile);
@@ -979,7 +979,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                         if (newPath == null || newPath.Length() < 1)
                         {
                             // Try the next requirement
-                            Debug.ULogChannel("Character", "No tile contains objects of type '" + desired.ObjectType + "' to satisfy job requirements.");
+                            Debug.ULogChannel("Character", "No tile contains objects of type '" + desired.Type + "' to satisfy job requirements.");
                             continue;
                         }
 
@@ -1046,7 +1046,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     private void OnInventoryCreated(Inventory inv)
     {
         // First remove the callback.
-        World.Current.OnInventoryCreated -= OnInventoryCreated;
+        World.Current.inventoryManager.InventoryCreated -= OnInventoryCreated;
 
         // Get the relevant job and dequeue it from the waiting queue.
         Job job = World.Current.jobWaitingQueue.Dequeue();
@@ -1059,7 +1059,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             List<string> desired = job.FulfillableInventoryRequirements();
 
             // Check if the created inventory can fulfill the waiting job requirements.
-            if (desired != null && desired.Contains(inv.ObjectType))
+            if (desired != null && desired.Contains(inv.Type))
             {
                 // If so, enqueue the job onto the (normal)
                 // job queue.
@@ -1070,7 +1070,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 // If not, (re)enqueue the job onto the waiting queue
                 // and also register a callback for the future.
                 World.Current.jobWaitingQueue.Enqueue(job);
-                World.Current.OnInventoryCreated += OnInventoryCreated;
+                World.Current.inventoryManager.InventoryCreated += OnInventoryCreated;
             }
         }
     }

@@ -155,7 +155,7 @@ public class TraderPrototype
                     foreach (InventoryCommon potentialObject in potentialObjects)
                     {
                         Inventory inventory = new Inventory(
-                            potentialObject.objectType,
+                            potentialObject.type,
                             Random.Range(potentialStock.MinQuantity, potentialStock.MaxQuantity));
 
                         t.Stock.Add(inventory);

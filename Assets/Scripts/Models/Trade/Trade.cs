@@ -29,12 +29,12 @@ public class Trade
         List<Inventory> totalStock = new List<Inventory>();
         totalStock.AddRange(player.Stock);
         totalStock.AddRange(trader.Stock);
-        TradeItems = totalStock.GroupBy(s => s.ObjectType).Select(g => new TradeItem
+        TradeItems = totalStock.GroupBy(s => s.Type).Select(g => new TradeItem
         {
             ObjectType = g.Key,
             BaseItemPrice = g.First().BasePrice,
-            PlayerStock = player.Stock.Where(s => s.ObjectType == g.Key).Sum(s => s.StackSize),
-            TraderStock = trader.Stock.Where(s => s.ObjectType == g.Key).Sum(s => s.StackSize),
+            PlayerStock = player.Stock.Where(s => s.Type == g.Key).Sum(s => s.StackSize),
+            TraderStock = trader.Stock.Where(s => s.Type == g.Key).Sum(s => s.StackSize),
             TradeAmount = 0,
             PlayerSellItemPrice = g.First().BasePrice * player.SaleMarginMultiplier,
             TraderSellItemPrice = g.First().BasePrice * trader.SaleMarginMultiplier
