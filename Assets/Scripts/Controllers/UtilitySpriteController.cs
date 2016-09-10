@@ -49,9 +49,9 @@ public class UtilitySpriteController : BaseSpriteController<Utility>
     public Sprite GetSpriteForUtility(string objectType)
     {
         Utility proto = PrototypeManager.Utility.Get(objectType);
-        Sprite s = SpriteManager.current.GetSprite("Utility", objectType + (proto.LinksToNeighbour ? "_" : string.Empty));
+        Sprite sprite = SpriteManager.current.GetSprite("Utility", objectType + (proto.LinksToNeighbour ? "_" : string.Empty));
 
-        return s;
+        return sprite;
     }
 
     public Sprite GetSpriteForUtility(Utility util)
@@ -94,10 +94,10 @@ public class UtilitySpriteController : BaseSpriteController<Utility>
         util_go.transform.position = new Vector3(utility.Tile.X, utility.Tile.Y, utility.Tile.Z);
         util_go.transform.SetParent(objectParent.transform, true);
 
-        SpriteRenderer sr = util_go.AddComponent<SpriteRenderer>();
-        sr.sprite = GetSpriteForUtility(utility);
-        sr.sortingLayerName = "Utility";
-        sr.color = utility.Tint;
+        SpriteRenderer spriteRenderer = util_go.AddComponent<SpriteRenderer>();
+        spriteRenderer.sprite = GetSpriteForUtility(utility);
+        spriteRenderer.sortingLayerName = "Utility";
+        spriteRenderer.color = utility.Tint;
 
         // Register our callback so that our GameObject gets updated whenever
         // the object's into changes.
