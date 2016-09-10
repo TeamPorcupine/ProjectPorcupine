@@ -10,14 +10,30 @@ using UnityEngine;
 
 public class CameraController
 {
+    [Range(0, 3)]
+    public float scrollSpeed = 0.1f;
+
     private float zoomTarget;
     private int currentLayer;
     private Camera[] layerCameras;
+
+    private float frameMoveHorizontal = 0;
+    private float frameMoveVertical = 0;
 
     public CameraController()
     {
         // Main camera handles UI only
         Camera.main.farClipPlane = 9;
+
+        KeyboardManager keyboardManager = KeyboardManager.Instance;
+        keyboardManager.RegisterInputAction("MoveCameraEast", KeyboardMappedInputType.Key, () => { frameMoveHorizontal++; });
+        keyboardManager.RegisterInputAction("MoveCameraWest", KeyboardMappedInputType.Key, () => { frameMoveHorizontal--; });
+        keyboardManager.RegisterInputAction("MoveCameraNorth", KeyboardMappedInputType.Key, () => { frameMoveVertical++; });
+        keyboardManager.RegisterInputAction("MoveCameraSouth", KeyboardMappedInputType.Key, () => { frameMoveVertical--; });
+        keyboardManager.RegisterInputAction("ZoomOut", KeyboardMappedInputType.Key, () => ChangeZoom(0.1f));
+        keyboardManager.RegisterInputAction("ZoomIn", KeyboardMappedInputType.Key, () => ChangeZoom(-0.1f));
+        keyboardManager.RegisterInputAction("MoveCameraUp", KeyboardMappedInputType.KeyUp, ChangeLayerUp);
+        keyboardManager.RegisterInputAction("MoveCameraDown", KeyboardMappedInputType.KeyUp, ChangeLayerDown);
     }
 
     public int CurrentLayer
@@ -38,13 +54,18 @@ public class CameraController
             return;
         }
 
+        Vector3 inputAxis = new Vector3(frameMoveHorizontal, frameMoveVertical, 0);
+        Camera.main.transform.position += Camera.main.orthographicSize * scrollSpeed * inputAxis;
+        frameMoveHorizontal = 0;
+        frameMoveVertical = 0;
+
         Vector3 oldMousePosition;
         oldMousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         oldMousePosition.z = 0;
 
         if (Camera.main.orthographicSize != zoomTarget)
         {
-            float target = Mathf.Lerp(Camera.main.orthographicSize, zoomTarget, Settings.GetSettingAsFloat("ZoomLerp", 3) * Time.deltaTime);
+            float target = Mathf.Lerp(Camera.main.orthographicSize, zoomTarget, Settings.GetSetting("ZoomLerp", 3) * Time.deltaTime);
             Camera.main.orthographicSize = Mathf.Clamp(target, 3f, 25f);
             SyncCameras();
         }
@@ -60,7 +81,7 @@ public class CameraController
 
     public void ChangeZoom(float amount)
     {
-        zoomTarget = Camera.main.orthographicSize - (Settings.GetSettingAsFloat("ZoomSensitivity", 3) * (Camera.main.orthographicSize * amount));
+        zoomTarget = Camera.main.orthographicSize - (Settings.GetSetting("ZoomSensitivity", 3) * (Camera.main.orthographicSize * amount));
     }
 
     public void ChangeLayer(int newLayer) 

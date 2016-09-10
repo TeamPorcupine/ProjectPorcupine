@@ -148,7 +148,7 @@ public class CharacterSpriteController : BaseSpriteController<Character>
 
         colorSwapTex.Apply();
 
-        // Define the swapping colors. Add white to hightlights and black to shadows        
+        // Define the swapping colors. Add white to highlights and black to shadows        
         Color newColorLight = Color.Lerp(c.GetCharacterColor(), ColorUtilities.ColorFromIntRGB(255, 255, 255), 0.5f);
         Color newColorDark = Color.Lerp(c.GetCharacterColor(), ColorUtilities.ColorFromIntRGB(0, 0, 0), 0.5f);
         Color newSkinColor = c.GetCharacterSkinColor();

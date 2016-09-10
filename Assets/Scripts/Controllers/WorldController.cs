@@ -29,15 +29,17 @@ public class WorldController : MonoBehaviour
     public QuestController questController;
     public BuildModeController buildModeController;
     public MouseController mouseController;
-    public KeyboardController keyboardController;
+    public KeyboardManager keyboardManager;
     public CameraController cameraController;
     public SpawnInventoryController spawnInventoryController;
+    public AutosaveManager autosaveManager;
+    public TradeController TradeController;
     public TimeManager timeManager;
     public ModsManager modsManager;
     public GameObject inventoryUI;
     public GameObject circleCursorPrefab;
 
-    // If true, a modal dialog box is open so normal inputs should be ignored.
+    // If true, a modal dialog box is open, so normal inputs should be ignored.
     public bool IsModal;
 
     private static string loadWorldFromFile = null;
@@ -74,6 +76,7 @@ public class WorldController : MonoBehaviour
     // Use this for initialization.
     public void OnEnable()
     {
+        Debug.IsLogEnabled = true;
         if (Instance != null)
         {
             Debug.ULogErrorChannel("WorldController", "There should never be two world controllers.");
@@ -81,7 +84,7 @@ public class WorldController : MonoBehaviour
 
         Instance = this;
 
-        new FurnitureActions();
+        new FunctionsManager();
         new PrototypeManager();
 
         // FIXME: Do something real here. This is just to show how to register a C# event prototype for the Scheduler.
@@ -111,7 +114,7 @@ public class WorldController : MonoBehaviour
 
     public void Start()
     {
-        // Create gameobject so we can have access to a tranform thats position is "Vector3.zero".
+        // Create GameObject so we can have access to a transform which has a position of "Vector3.zero".
         new GameObject("VisualPath", typeof(VisualPath));
         GameObject go;
 
@@ -124,13 +127,17 @@ public class WorldController : MonoBehaviour
         buildModeController = new BuildModeController();
         spawnInventoryController = new SpawnInventoryController();
         mouseController = new MouseController(buildModeController, furnitureSpriteController, circleCursorPrefab);
-        keyboardController = new KeyboardController(Instance);
+        keyboardManager = KeyboardManager.Instance;
         questController = new QuestController();
         cameraController = new CameraController();
+        TradeController = new TradeController();
         timeManager = new TimeManager();
+        autosaveManager = new AutosaveManager();
+
+        keyboardManager.RegisterInputAction("Pause", KeyboardMappedInputType.KeyUp, () => { IsPaused = !IsPaused; });
 
         // Hiding Dev Mode spawn inventory controller if devmode is off.
-        spawnInventoryController.SetUIVisibility(Settings.GetSettingAsBool("DialogBoxSettings_developerModeToggle", false));
+        spawnInventoryController.SetUIVisibility(Settings.GetSetting("DialogBoxSettings_developerModeToggle", false));
 
         // Initialising controllers.
         GameObject controllers = GameObject.Find("Controllers");
@@ -145,14 +152,14 @@ public class WorldController : MonoBehaviour
     {
         // Systems that update every frame.
         mouseController.Update(IsModal);
-        keyboardController.Update(IsModal);
+        keyboardManager.Update(IsModal);
         cameraController.Update(IsModal);
         timeManager.Update();
 
-        // Systems that update every frame when not paused.
+        // Systems that update every frame while unpaused.
         if (IsPaused == false)
         {
-            World.UpdateCharacters(timeManager.DeltaTime);
+            World.TickEveryFrame(timeManager.DeltaTime);
             Scheduler.Scheduler.Current.Update(timeManager.DeltaTime);
         }
 
@@ -162,7 +169,7 @@ public class WorldController : MonoBehaviour
             if (IsPaused == false)
             {
                 // Systems that update at fixed frequency when not paused.
-                World.Tick(timeManager.TotalDeltaTime);
+                World.TickFixedFrequency(timeManager.TotalDeltaTime);
                 questController.Update(timeManager.TotalDeltaTime);
             }
 
@@ -173,7 +180,7 @@ public class WorldController : MonoBehaviour
     }
 
     /// <summary>
-    /// Gets the tile at the unity-space coordinates.
+    /// Gets the tile at the Unity-space coordinates.
     /// </summary>
     /// <returns>The tile at world coordinate.</returns>
     /// <param name="coord">Unity World-Space coordinates.</param>
@@ -206,31 +213,11 @@ public class WorldController : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
-    public void CallTradeShipTest(Furniture landingPad)
-    {
-        // Currently not using any logic to select a trader
-        TraderPrototype prototype = PrototypeManager.Trader.GetPrototype(Random.Range(0, PrototypeManager.Trader.Count - 1));
-        Trader trader = prototype.CreateTrader();
-
-        GameObject go = new GameObject(trader.Name);
-        go.transform.parent = transform;
-        TraderShipController controller = go.AddComponent<TraderShipController>();
-        controller.Trader = trader;
-        controller.Speed = 5f;
-        go.transform.position = new Vector3(-10, 50, 0);
-        controller.LandingCoordinates = new Vector3(landingPad.Tile.X + 1, landingPad.Tile.Y + 1, 0);
-        controller.LeavingCoordinates = new Vector3(100, 50, 0);
-        go.transform.localScale = new Vector3(1, 1, 1);
-        SpriteRenderer spriteRenderer = go.AddComponent<SpriteRenderer>();
-        spriteRenderer.sprite = SpriteManager.current.GetSprite("Trader", "BasicHaulShip");
-        spriteRenderer.sortingLayerName = "TradeShip";
-    }
-
     private void CreateEmptyWorld()
     {
         // get world size from settings
-        int width = Settings.GetSettingAsInt("worldWidth", 100);
-        int height = Settings.GetSettingAsInt("worldHeight", 100);
+        int width = Settings.GetSetting("worldWidth", 100);
+        int height = Settings.GetSetting("worldHeight", 100);
 
         // FIXME: Need to read this from settings.
         int depth = 5;
@@ -255,7 +242,7 @@ public class WorldController : MonoBehaviour
 
         TextReader reader = new StringReader(saveGameText);
 
-        // Leaving this for Unitys console because UberLogger mangles multiline messages.
+        // Leaving this for Unity's console because UberLogger mangles multiline messages.
         Debug.Log(reader.ToString());
         World = (World)serializer.Deserialize(reader);
         reader.Close();

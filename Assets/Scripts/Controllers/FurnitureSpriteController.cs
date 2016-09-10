@@ -52,8 +52,9 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
 
     public Sprite GetSpriteForFurniture(string objectType)
     {
-        Furniture proto = PrototypeManager.Furniture.GetPrototype(objectType);
-        Sprite s = SpriteManager.current.GetSprite("Furniture", objectType + (proto.LinksToNeighbour ? "_" : string.Empty));
+        Furniture proto = PrototypeManager.Furniture.Get(objectType);
+        string spriteName = proto.GetSpriteName();
+        Sprite s = SpriteManager.current.GetSprite("Furniture", spriteName + (proto.LinksToNeighbour ? "_" : string.Empty));
 
         return s;
     }
@@ -145,6 +146,11 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
             {
                 powerGameObject.SetActive(true);
             }
+        }
+
+        if (furniture.Animation != null)
+        { 
+            furniture.Animation.Renderer = sr;
         }
 
         // Register our callback so that our GameObject gets updated whenever

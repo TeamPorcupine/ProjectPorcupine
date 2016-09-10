@@ -29,7 +29,6 @@ public class DialogBoxSettings : DialogBox
     public Resolution[] resolutions;
     public Dropdown resolutionDropdown;
 
-    public Dropdown aliasingDropdown;
     public Dropdown vsyncDropdown;
     public Dropdown qualityDropdown;
 
@@ -48,7 +47,7 @@ public class DialogBoxSettings : DialogBox
 
     public void OnFullScreenToggle()
     {
-        /// TODO : impliment full screen toggle.
+        /// TODO : implement full screen toggle.
     }
 
     public void OnQualityChange()
@@ -71,11 +70,6 @@ public class DialogBoxSettings : DialogBox
         /// TODO : Implement Resolution changes.
     }
 
-    public void OnAliasingChange()
-    {
-        /// TODO : Implement AA changes.
-    }
-
     public void OnMusicChange()
     {
         /// TODO : Implement Music changes.
@@ -90,6 +84,7 @@ public class DialogBoxSettings : DialogBox
     {
         this.CloseDialog();
         WorldController.Instance.spawnInventoryController.SetUIVisibility(developerModeToggle.isOn);
+        FurnitureBuildMenu.instance.RebuildMenuButtons(developerModeToggle.isOn);
         SaveSetting();
     }
 
@@ -108,7 +103,6 @@ public class DialogBoxSettings : DialogBox
         Settings.SetSetting("DialogBoxSettings_qualityDropdown", qualityDropdown.value);
         Settings.SetSetting("DialogBoxSettings_vSyncDropdown", vsyncDropdown.value);
         Settings.SetSetting("DialogBoxSettings_resolutionDropdown", resolutionDropdown.value);
-        Settings.SetSetting("DialogBoxSettings_aliasingDropdown", aliasingDropdown.value);
     }
 
     private void OnEnable()
@@ -142,10 +136,6 @@ public class DialogBoxSettings : DialogBox
         {
             OnResolutionChange();
         });
-        aliasingDropdown.onValueChanged.AddListener(delegate
-        {
-            OnAliasingChange();
-        });
         vsyncDropdown.onValueChanged.AddListener(delegate
         {
             OnVSyncChange();
@@ -172,17 +162,16 @@ public class DialogBoxSettings : DialogBox
     /// </summary>
     private void LoadSetting()
     {
-        musicVolume.normalizedValue = Settings.GetSettingAsFloat("DialogBoxSettings_musicVolume", 0.5f);
+        musicVolume.normalizedValue = Settings.GetSetting("DialogBoxSettings_musicVolume", 0.5f);
 
-        langToggle.isOn = Settings.GetSettingAsBool("DialogBoxSettings_langToggle", true);
-        fpsToggle.isOn = Settings.GetSettingAsBool("DialogBoxSettings_fpsToggle", true);
-        fullScreenToggle.isOn = Settings.GetSettingAsBool("DialogBoxSettings_fullScreenToggle", true);
-        developerModeToggle.isOn = Settings.GetSettingAsBool("DialogBoxSettings_developerModeToggle", false);
+        langToggle.isOn = Settings.GetSetting("DialogBoxSettings_langToggle", true);
+        fpsToggle.isOn = Settings.GetSetting("DialogBoxSettings_fpsToggle", true);
+        fullScreenToggle.isOn = Settings.GetSetting("DialogBoxSettings_fullScreenToggle", true);
+        developerModeToggle.isOn = Settings.GetSetting("DialogBoxSettings_developerModeToggle", false);
 
-        qualityDropdown.value = Settings.GetSettingAsInt("DialogBoxSettings_qualityDropdown", 0);
-        vsyncDropdown.value = Settings.GetSettingAsInt("DialogBoxSettings_vSyncDropdown", 0);
-        resolutionDropdown.value = Settings.GetSettingAsInt("DialogBoxSettings_resolutionDropdown", 0);
-        aliasingDropdown.value = Settings.GetSettingAsInt("DialogBoxSettings_aliasingDropdown", 0);
+        qualityDropdown.value = Settings.GetSetting("DialogBoxSettings_qualityDropdown", 0);
+        vsyncDropdown.value = Settings.GetSetting("DialogBoxSettings_vSyncDropdown", 0);
+        resolutionDropdown.value = Settings.GetSetting("DialogBoxSettings_resolutionDropdown", 0);
     }
 
     private void CreateResDropDown()

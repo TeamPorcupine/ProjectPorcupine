@@ -7,6 +7,7 @@
 // ====================================================
 #endregion
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
@@ -197,16 +198,16 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         if (Inventory != null)
         {
             // There's already inventory here. Maybe we can combine a stack?
-            if (Inventory.objectType != inventory.objectType)
+            if (Inventory.ObjectType != inventory.ObjectType)
             {
                 Debug.ULogErrorChannel("Tile", "Trying to assign inventory to a tile that already has some of a different type.");
                 return false;
             }
 
             int numToMove = inventory.StackSize;
-            if (Inventory.StackSize + numToMove > Inventory.maxStackSize)
+            if (Inventory.StackSize + numToMove > Inventory.MaxStackSize)
             {
-                numToMove = Inventory.maxStackSize - Inventory.StackSize;
+                numToMove = Inventory.MaxStackSize - Inventory.StackSize;
             }
 
             Inventory.StackSize += numToMove;
@@ -220,7 +221,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         // the inventory manager needs to know that the old stack is now
         // empty and has to be removed from the previous lists.
         Inventory = inventory.Clone();
-        Inventory.tile = this;
+        Inventory.Tile = this;
         inventory.StackSize = 0;
 
         return true;
@@ -394,14 +395,15 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         return "tile_" + type.ToString() + "_desc";
     }
 
-    public string GetHitPointString()
-    {
-        return string.Empty; // Do tiles have hitpoints? Can flooring be damaged? Obviously "empty" is indestructible.
-    }
-
     public string GetJobDescription()
     {
         return string.Empty;
+    }
+
+    public IEnumerable<string> GetAdditionalInfo()
+    {
+        // Do tiles have hitpoints? Can flooring be damaged? Obviously "empty" is indestructible.
+        yield break;
     }
 
     #endregion

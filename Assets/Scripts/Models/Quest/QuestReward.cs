@@ -12,10 +12,13 @@ using MoonSharp.Interpreter;
 [MoonSharpUserData]
 public class QuestReward
 {
-    public string Description;
-    public string OnRewardLuaFunction;
-    public Parameter Parameters;
-    public bool IsCollected;
+    public string Description { get; set; }
+
+    public string OnRewardLuaFunction { get; set; }
+
+    public Parameter Parameters { get; set; }
+
+    public bool IsCollected { get; set; }
 
     public void ReadXmlPrototype(XmlReader reader_parent)
     {

@@ -22,6 +22,7 @@ public class ParametersEditorTest
     [SetUp]
     public void Init()
     {
+        Debug.IsLogEnabled = false;
         xmlTest1 = @"<Params>
             <Param name='gas_limit' value='0.2' />
             <Param name='gas_per_second' value='0.16' />

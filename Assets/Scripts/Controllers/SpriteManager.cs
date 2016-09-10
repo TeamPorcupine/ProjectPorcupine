@@ -141,6 +141,8 @@ public class SpriteManager : MonoBehaviour
         if (imageTexture.LoadImage(imageBytes))
         {
             // Image was successfully loaded.
+            imageTexture.filterMode = FilterMode.Point;
+
             // So let's see if there's a matching XML file for this image.
             string baseSpriteName = Path.GetFileNameWithoutExtension(filePath);
             string basePath = Path.GetDirectoryName(filePath);
@@ -174,14 +176,14 @@ public class SpriteManager : MonoBehaviour
             else
             {
                 // File couldn't be read, probably because it doesn't exist
-                // so we'll just assume the whole image is one sprite with pixelPerUnit = 32
-                LoadSprite(spriteCategory, baseSpriteName, imageTexture, new Rect(0, 0, imageTexture.width, imageTexture.height), 32, new Vector2(0.5f, 0.5f));
+                // so we'll just assume the whole image is one sprite with pixelPerUnit = 64
+                LoadSprite(spriteCategory, baseSpriteName, imageTexture, new Rect(0, 0, imageTexture.width, imageTexture.height), 64, new Vector2(0.5f, 0.5f));
             }
 
             // Attempt to load/parse the XML file to get information on the sprite(s)
         }
 
-        // else, the file wasn't actually a image file, so just move on.
+        // Else, the file wasn't actually a image file, so just move on.
     }
 
     private void ReadSpriteFromXml(string spriteCategory, XmlReader reader, Texture2D imageTexture)

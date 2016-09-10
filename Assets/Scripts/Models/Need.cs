@@ -98,7 +98,7 @@ public class Need
     // Update is called once per frame
     public void Update(float deltaTime)
     {
-        NeedActions.CallFunctionsWithNeed(luaUpdate, this, deltaTime);
+        FunctionsManager.Need.CallWithInstance(luaUpdate, this, deltaTime);
         if (luaOnly)
         {
             return;
@@ -134,7 +134,7 @@ public class Need
                 break;
             case "RestoreNeedFurnitureType":
                 reader.Read();
-                RestoreNeedFurn = PrototypeManager.Furniture.GetPrototype(reader.ReadContentAsString());
+                RestoreNeedFurn = PrototypeManager.Furniture.Get(reader.ReadContentAsString());
                 break;
             case "RestoreNeedTime":
                 reader.Read();
