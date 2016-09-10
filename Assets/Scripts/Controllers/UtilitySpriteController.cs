@@ -11,8 +11,6 @@ using UnityEngine;
 
 public class UtilitySpriteController : BaseSpriteController<Utility>
 {
-    private Dictionary<Utility, GameObject> powerStatusGameObjectMap;
-
     // Use this for initialization
     public UtilitySpriteController(World world) : base(world, "Utility")
     {
@@ -37,12 +35,6 @@ public class UtilitySpriteController : BaseSpriteController<Utility>
             util.Removed -= OnRemoved;
         }
 
-        foreach (Utility util in powerStatusGameObjectMap.Keys)
-        {
-            GameObject.Destroy(powerStatusGameObjectMap[util]);
-        }
-            
-        powerStatusGameObjectMap.Clear();
         base.RemoveAll();
     }
 
@@ -133,21 +125,6 @@ public class UtilitySpriteController : BaseSpriteController<Utility>
         GameObject util_go = objectGameObjectMap[util];
         objectGameObjectMap.Remove(util);
         GameObject.Destroy(util_go);
-
-        powerStatusGameObjectMap.Remove(util);
-    }
-        
-    private void OnIsOperatingChanged(Utility utility)
-    {
-        if (utility == null)
-        {
-            return;
-        }
-
-        if (powerStatusGameObjectMap.ContainsKey(utility) == false)
-        {
-            return;
-        }
     }
 
     private string GetSuffixForNeighbour(Utility util, int x, int y, int z, string suffix)
