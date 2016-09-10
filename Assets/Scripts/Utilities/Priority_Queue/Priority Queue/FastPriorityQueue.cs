@@ -138,7 +138,7 @@ namespace Priority_Queue
             _nodes[node1.QueueIndex] = node2;
             _nodes[node2.QueueIndex] = node1;
 
-            //Swap their indicies
+            //Swap their indices
             int temp = node1.QueueIndex;
             node1.QueueIndex = node2.QueueIndex;
             node2.QueueIndex = temp;
