@@ -13,6 +13,7 @@ using System.Linq;
 using System.Xml;
 using MoonSharp.Interpreter;
 using ProjectPorcupine.Localization;
+using ProjectPorcupine.Pathfinding;
 using UnityEngine;
 
 [MoonSharpUserData]
@@ -201,7 +202,7 @@ public class Job : ISelectable, IPrototypable
         set;
     }
 
-    public ProjectPorcupine.Pathfinding.GoalEvaluator IsTileAtJobSite
+    public Pathfinder.GoalEvaluator IsTileAtJobSite
     {
         get
         {
@@ -421,11 +422,7 @@ public class Job : ISelectable, IPrototypable
         {
             if (this.acceptsAny == false)
             {
-<<<<<<< f9fe7bbce848876f3465e32df5e8f2d02624a9f5
-                if (World.Current.inventoryManager.HasInventoryOfType(inventory.Type) == false)
-=======
-                if (World.Current.inventoryManager.InventoryExistsSomewhere(inv.ObjectType, canTakeFromStockpile) == false)
->>>>>>> Fixed several WorkState and MoveState bugs
+                if (World.Current.inventoryManager.HasInventoryOfType(inventory.Type, canTakeFromStockpile) == false)
                 {
                     // the job requires ALL inventory requirements to be met, and there is no source of a desired Type
                     return null;
@@ -435,11 +432,7 @@ public class Job : ISelectable, IPrototypable
                     fulfillableInventoryRequirements.Add(inventory.Type);
                 }
             }
-<<<<<<< f9fe7bbce848876f3465e32df5e8f2d02624a9f5
-            else if (World.Current.inventoryManager.HasInventoryOfType(inventory.Type))
-=======
-            else if (World.Current.inventoryManager.InventoryExistsSomewhere(inv.ObjectType, canTakeFromStockpile))
->>>>>>> Fixed several WorkState and MoveState bugs
+            else if (World.Current.inventoryManager.HasInventoryOfType(inventory.Type, canTakeFromStockpile))
             {
                 // there is a source for a desired Type that the job will accept
                 fulfillableInventoryRequirements.Add(inventory.Type);

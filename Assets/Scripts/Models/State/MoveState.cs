@@ -8,14 +8,14 @@
 #endregion
 
 using System.Collections.Generic;
-using ProjectPorcupine;
+using ProjectPorcupine.Pathfinding;
 using UnityEngine;
 
 namespace ProjectPorcupine.State
 {
     public class MoveState : State
     {
-        private Pathfinding.GoalEvaluator hasReachedDestination;
+        private Pathfinder.GoalEvaluator hasReachedDestination;
         private List<Tile> path;
 
         private float movementPercentage;
@@ -23,7 +23,7 @@ namespace ProjectPorcupine.State
 
         private Tile nextTile;
 
-        public MoveState(Character character, Pathfinding.GoalEvaluator goalEvaluator, List<Tile> path, State nextState = null)
+        public MoveState(Character character, Pathfinder.GoalEvaluator goalEvaluator, List<Tile> path, State nextState = null)
             : base("Move", character, nextState)
         {
             hasReachedDestination = goalEvaluator;
@@ -104,7 +104,7 @@ namespace ProjectPorcupine.State
 
         public override void Enter()
         {
-            FSMLog(" - Enter");
+            base.Enter();
 
             character.IsWalking = true;
 
@@ -144,7 +144,7 @@ namespace ProjectPorcupine.State
 
         public override void Exit()
         {
-            FSMLog(" - Arrived");
+            base.Exit();
 
             character.IsWalking = false;
 

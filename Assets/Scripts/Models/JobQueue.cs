@@ -81,7 +81,7 @@ public class JobQueue
             Debug.ULogChannel("FSM", " - {0}", job.acceptsAny ? "Any" : "All");
             foreach (Inventory inventory in job.inventoryRequirements.Values)
             {
-                Debug.ULogChannel("FSM", "   - {0} {1}", inventory.MaxStackSize - inventory.StackSize, inventory.ObjectType);
+                Debug.ULogChannel("FSM", "   - {0} {1}", inventory.MaxStackSize - inventory.StackSize, inventory.Type);
             }
             Debug.ULogChannel("FSM", " - job ok");
             jobQueue.Add(job.Priority, job);
@@ -179,13 +179,13 @@ public class JobQueue
         List<Job> waitingJobs = null;
 
         // Check that there is a job waiting for this inventory.
-        if (jobsWaitingForInventory.ContainsKey(inv.ObjectType) && jobsWaitingForInventory[inv.ObjectType].Count > 0)
+        if (jobsWaitingForInventory.ContainsKey(inv.Type) && jobsWaitingForInventory[inv.Type].Count > 0)
         {
             // Get the current list of jobs
-            waitingJobs = jobsWaitingForInventory[inv.ObjectType];
+            waitingJobs = jobsWaitingForInventory[inv.Type];
 
             // Replace it with an empty list
-            jobsWaitingForInventory[inv.ObjectType] = new List<Job>();
+            jobsWaitingForInventory[inv.Type] = new List<Job>();
 
             foreach (Job job in waitingJobs)
             {

@@ -41,6 +41,7 @@ namespace ProjectPorcupine.State
             {
                 Job job = new Job(character.CurrTile, null, biggestNeed.CompleteJobCrit, biggestNeed.RestoreNeedTime * 10, null, Job.JobPriority.High, false, true, true);
                 character.InterruptState();
+                character.ClearStateQueue();
                 character.SetState(new JobState(character, job));
             }
         }

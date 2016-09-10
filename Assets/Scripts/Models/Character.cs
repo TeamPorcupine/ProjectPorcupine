@@ -236,7 +236,13 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             // We can't use SetState(null), because it runs Exit on the state and we don't want to run both Interrupt and Exit.
             state = null;
         }
+    }
 
+    /// <summary>
+    /// Removes all the queued up states
+    /// </summary>
+    public void ClearStateQueue()
+    {
         // If we interrupt, we get rid of the queue as well.
         while (stateQueue.Count > 0)
         {
@@ -279,20 +285,23 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         // We finished the last state
         if (state == null)
         {
-            Job job;
-
             if (stateQueue.Count > 0)
             {
                 SetState(stateQueue.Dequeue());
             }
-            else if ((job = World.Current.jobQueue.GetJob(this)) != null)
-            {
-                SetState(new JobState(this, job));
-            }
             else
             {
-                // TODO: Lack of job states should be more interesting. Maybe go to the pub and have a pint?
-                SetState(new IdleState(this));
+                Debug.ULogChannel("FSM", "---");
+                Job job = World.Current.jobQueue.GetJob(this);
+                if (job != null)
+                {
+                    SetState(new JobState(this, job));
+                }
+                else
+                {
+                    // TODO: Lack of job states should be more interesting. Maybe go to the pub and have a pint?
+                    SetState(new IdleState(this));
+                }
             }
         }
 

@@ -8,7 +8,7 @@
 #endregion
 using System.Collections.Generic;
 using System.Linq;
-using ProjectPorcupine;
+using ProjectPorcupine.Pathfinding;
 using UnityEngine;
 
 public class Path_AStar
@@ -25,7 +25,7 @@ public class Path_AStar
         this.path = path;
     }
 
-    public Path_AStar(World world, Tile tileStart, Pathfinding.GoalEvaluator isGoal, Pathfinding.PathfindingHeuristic costEstimate)
+    public Path_AStar(World world, Tile tileStart, Pathfinder.GoalEvaluator isGoal, Pathfinder.PathfindingHeuristic costEstimate)
     {
         // Set path to empty Queue so that there always is something to check count on
         path = new Queue<Tile>();
