@@ -377,7 +377,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         foreach (Need n in needs)
         {
             int storeAmount = (int)(n.Amount * 10);
-            needString = needString + n.needType + ";" + storeAmount.ToString() + ":";
+            needString = needString + n.Type + ";" + storeAmount.ToString() + ":";
         }
 
         writer.WriteAttributeString("needs", needString);
@@ -424,7 +424,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             string[] needListB = s.Split(new char[] { ';' });
             foreach (Need n in needs)
             {
-                if (n.needType == needListB[0])
+                if (n.Type == needListB[0])
                 {
                     int storeAmount;
                     if (int.TryParse(needListB[1], out storeAmount))
@@ -460,7 +460,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         foreach (Need n in needs)
         {
-           yield return LocalizationTable.GetLocalization(n.localisationID, n.DisplayAmount);
+           yield return LocalizationTable.GetLocalization(n.LocalisationID, n.DisplayAmount);
         }
 
         foreach (Stat stat in stats.Values)
@@ -593,7 +593,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             }
         }
 
-        if (needPercent == 100 && need != null && need.CompleteOnFail)
+        if (needPercent.AreEqual(100.0f) && need != null && need.CompleteOnFail)
         {
             MyJob = new Job(CurrTile, null, need.CompleteJobCrit, need.RestoreNeedTime * 10, null, Job.JobPriority.High, false, true, true);
         }
