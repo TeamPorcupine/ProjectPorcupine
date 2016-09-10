@@ -861,10 +861,8 @@ public class World : IXmlSerializable
                                     inventoryManager.PlaceInventory(character, inv);
                                 }
                                 while (reader.ReadToNextSibling("Inventory"));
-
-                                // One more read to step out of Inventories, so ReadToNextSibling will find sibling Character
-                                reader.Read();
                             }
+
                             break;
                     }
                 }
