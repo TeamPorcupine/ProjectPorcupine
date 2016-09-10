@@ -73,10 +73,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
     private bool isOperating;
 
-    // TODO: Implement larger objects
-    // TODO: Implement object rotation
-
-    // Empty constructor is used for serialization
+    /// TODO: Implement object rotation
     public Furniture()
     {
         Tint = Color.white;
@@ -85,7 +82,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         EventActions = new EventAction();
         deconstructInvs = new List<Inventory>();
         contextMenuLuaActions = new List<ContextMenuLuaAction>();
-        furnParameters = new Parameter("furnParameters");
+        furnParameters = new Parameter();
         jobs = new List<Job>();
         typeTags = new HashSet<string>();
         funcPositionValidation = DefaultIsValidPosition;
@@ -131,11 +128,11 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         isEnterableAction = other.isEnterableAction;
         getSpriteNameAction = other.getSpriteNameAction;
 
-        PowerConnection = other.PowerConnection;
-
-        if (PowerConnection != null)
+        if (other.PowerConnection != null)
         {
+            PowerConnection = other.PowerConnection.Clone() as Connection;
             World.Current.PowerSystem.PlugIn(PowerConnection);
+            PowerConnection.NewThresholdReached += OnNewThresholdReached;
         }
 
         if (other.funcPositionValidation != null)
@@ -160,8 +157,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     /// </summary>
     public float PathfindingModifier
     {
-        get { return pathfindingWeight; }
-        set { pathfindingWeight = value; }
+        get { return pathfindingModifier; }
+        set { pathfindingModifier = value; }
     }
 
     /// <summary>
@@ -299,7 +296,6 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         Furniture obj = proto.Clone();
         obj.Tile = tile;
 
-        // FIXME: This assumes we are 1x1!
         if (tile.PlaceFurniture(obj) == false)
         {
             // For some reason, we weren't able to place our object in this tile.
@@ -322,7 +318,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
             {
                 for (int ypos = y - 1; ypos < y + proto.Height + 1; ypos++)
                 {
-                    Tile tileAt = World.Current.GetTileAt(xpos, ypos);
+                    Tile tileAt = World.Current.GetTileAt(xpos, ypos, tile.Z);
                     if (tileAt != null && tileAt.Furniture != null && tileAt.Furniture.Changed != null)
                     {
                         tileAt.Furniture.Changed(tileAt.Furniture);
@@ -367,6 +363,16 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
             // updateActions(this, deltaTime);
             EventActions.Trigger("OnUpdate", this, deltaTime);
         }
+    }
+
+    public bool IsExit()
+    {
+        if (RoomEnclosure && MovementCost > 0f)
+        {
+            return true;
+        }
+
+        return false;
     }
 
     public Enterability IsEnterable()
@@ -431,83 +437,83 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
             switch (reader.Name)
             {
                 case "Name":
-                reader.Read();
-                Name = reader.ReadContentAsString();
-                break;
+                    reader.Read();
+                    Name = reader.ReadContentAsString();
+                    break;
                 case "TypeTag":
-                reader.Read();
-                typeTags.Add(reader.ReadContentAsString());
-                break;
+                    reader.Read();
+                    typeTags.Add(reader.ReadContentAsString());
+                    break;
                 case "Description":
-                reader.Read();
-                description = reader.ReadContentAsString();
-                break;
+                    reader.Read();
+                    description = reader.ReadContentAsString();
+                    break;
                 case "MovementCost":
-                reader.Read();
-                MovementCost = reader.ReadContentAsFloat();
-                break;
-            case "PathfindingModifier":
-                reader.Read();
-                PathfindingModifier = reader.ReadContentAsFloat();
-                break;
-            case "PathfindingWeight":
-                reader.Read();
-                PathfindingWeight = reader.ReadContentAsFloat();
-                break;
-            case "Width":
-                reader.Read();
-                Width = reader.ReadContentAsInt();
-                break;
+                    reader.Read();
+                    MovementCost = reader.ReadContentAsFloat();
+                    break;
+                case "PathfindingModifier":
+                    reader.Read();
+                    PathfindingModifier = reader.ReadContentAsFloat();
+                    break;
+                case "PathfindingWeight":
+                    reader.Read();
+                    PathfindingWeight = reader.ReadContentAsFloat();
+                    break;
+                case "Width":
+                    reader.Read();
+                    Width = reader.ReadContentAsInt();
+                    break;
                 case "Height":
-                reader.Read();
-                Height = reader.ReadContentAsInt();
-                break;
+                    reader.Read();
+                    Height = reader.ReadContentAsInt();
+                    break;
                 case "LinksToNeighbours":
-                reader.Read();
-                LinksToNeighbour = reader.ReadContentAsBoolean();
-                break;
+                    reader.Read();
+                    LinksToNeighbour = reader.ReadContentAsBoolean();
+                    break;
                 case "EnclosesRooms":
-                reader.Read();
-                RoomEnclosure = reader.ReadContentAsBoolean();
-                break;
+                    reader.Read();
+                    RoomEnclosure = reader.ReadContentAsBoolean();
+                    break;
                 case "CanReplaceFurniture":
-                replaceableFurniture.Add(reader.GetAttribute("typeTag").ToString());
-                break;
+                    replaceableFurniture.Add(reader.GetAttribute("typeTag").ToString());
+                    break;
                 case "DragType":
-                reader.Read();
-                DragType = reader.ReadContentAsString();
-                break;
+                    reader.Read();
+                    DragType = reader.ReadContentAsString();
+                    break;
                 case "BuildingJob":
-                float jobTime = float.Parse(reader.GetAttribute("jobTime"));
+                    float jobTime = float.Parse(reader.GetAttribute("jobTime"));
 
-                List<Inventory> invs = new List<Inventory>();
+                    List<Inventory> invs = new List<Inventory>();
 
-                XmlReader inventoryReader = reader.ReadSubtree();
+                    XmlReader inventoryReader = reader.ReadSubtree();
 
-                while (inventoryReader.Read())
-                {
-                    if (inventoryReader.Name == "Inventory")
+                    while (inventoryReader.Read())
                     {
-                        // Found an inventory requirement, so add it to the list!
-                        invs.Add(new Inventory(
-                            inventoryReader.GetAttribute("objectType"),
-                            int.Parse(inventoryReader.GetAttribute("amount")),
-                            0));
+                        if (inventoryReader.Name == "Inventory")
+                        {
+                            // Found an inventory requirement, so add it to the list!
+                            invs.Add(new Inventory(
+                                    inventoryReader.GetAttribute("objectType"),
+                                    int.Parse(inventoryReader.GetAttribute("amount")),
+                                    0));
+                        }
                     }
-                }
 
-                Job j = new Job(
-                    null,
-                    ObjectType,
-                    FurnitureActions.JobComplete_FurnitureBuilding,
-                    jobTime,
-                    invs.ToArray(),
-                    Job.JobPriority.High);
-                j.JobDescription = "job_build_" + ObjectType + "_desc";
+                    Job j = new Job(
+                                null,
+                                ObjectType,
+                                FurnitureActions.JobComplete_FurnitureBuilding,
+                                jobTime,
+                                invs.ToArray(),
+                                Job.JobPriority.High);
+                    j.JobDescription = "job_build_" + ObjectType + "_desc";
                     PrototypeManager.FurnitureJob.SetPrototype(ObjectType, j);
-                break;
-            case "DeconstructJob":
-                deconstructJobTime = float.Parse(reader.GetAttribute("jobTime") ?? "-1");
+                    break;
+                case "DeconstructJob":
+                    deconstructJobTime = float.Parse(reader.GetAttribute("jobTime") ?? "-1");
 
                 XmlReader deconstructInventoryReader = reader.ReadSubtree();
 
@@ -529,55 +535,55 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                 tileTypeBuildPermissions.Add(tileType);
                 break;
 
-            case "Action":
-                XmlReader subtree = reader.ReadSubtree();
-                EventActions.ReadXml(subtree);
-                subtree.Close();
-                break;
+                case "Action":
+                    XmlReader subtree = reader.ReadSubtree();
+                    EventActions.ReadXml(subtree);
+                    subtree.Close();
+                    break;
                 case "ContextMenuAction":
-                contextMenuLuaActions.Add(new ContextMenuLuaAction
-                {
-                    LuaFunction = reader.GetAttribute("FunctionName"),
-                    Text = reader.GetAttribute("Text"),
-                    RequiereCharacterSelected = bool.Parse(reader.GetAttribute("RequiereCharacterSelected"))
-                });
-                break;
+                    contextMenuLuaActions.Add(new ContextMenuLuaAction
+                        {
+                            LuaFunction = reader.GetAttribute("FunctionName"),
+                            Text = reader.GetAttribute("Text"),
+                            RequiereCharacterSelected = bool.Parse(reader.GetAttribute("RequiereCharacterSelected"))
+                        });
+                    break;
                 case "IsEnterable":
-                isEnterableAction = reader.GetAttribute("FunctionName");
-                break;
+                    isEnterableAction = reader.GetAttribute("FunctionName");
+                    break;
                 case "GetSpriteName":
-                getSpriteNameAction = reader.GetAttribute("FunctionName");
-                break;
+                    getSpriteNameAction = reader.GetAttribute("FunctionName");
+                    break;
 
                 case "JobSpotOffset":
-                JobSpotOffset = new Vector2(
-                    int.Parse(reader.GetAttribute("X")),
-                    int.Parse(reader.GetAttribute("Y")));
-                break;
+                    JobSpotOffset = new Vector2(
+                        int.Parse(reader.GetAttribute("X")),
+                        int.Parse(reader.GetAttribute("Y")));
+                    break;
                 case "JobSpawnSpotOffset":
-                jobSpawnSpotOffset = new Vector2(
-                    int.Parse(reader.GetAttribute("X")),
-                    int.Parse(reader.GetAttribute("Y")));
-                break;
+                    jobSpawnSpotOffset = new Vector2(
+                        int.Parse(reader.GetAttribute("X")),
+                        int.Parse(reader.GetAttribute("Y")));
+                    break;
 
                 case "PowerConnection":
-                PowerConnection = new Connection();
-                PowerConnection.ReadPrototype(reader);
-                break;
+                    PowerConnection = new Connection();
+                    PowerConnection.ReadPrototype(reader);
+                    break;
 
                 case "Params":
-                ReadXmlParams(reader);  // Read in the Param tag
-                break;
+                    ReadXmlParams(reader);  // Read in the Param tag
+                    break;
 
                 case "LocalizationCode":
-                reader.Read();
-                LocalizationCode = reader.ReadContentAsString();
-                break;
+                    reader.Read();
+                    LocalizationCode = reader.ReadContentAsString();
+                    break;
 
                 case "UnlocalizedDescription":
-                reader.Read();
-                UnlocalizedDescription = reader.ReadContentAsString();
-                break;
+                    reader.Read();
+                    UnlocalizedDescription = reader.ReadContentAsString();
+                    break;
             }
         }
     }
@@ -585,8 +591,11 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     public void ReadXml(XmlReader reader)
     {
         // X, Y, and objectType have already been set, and we should already
-        // be assigned to a tile.  So just read extra data.
-        ReadXmlParams(reader);
+        // be assigned to a tile.  So just read extra data if we have any.
+        if (!reader.IsEmptyElement)
+        {
+            ReadXmlParams(reader);
+        }
     }
 
     public void ReadXmlParams(XmlReader reader)
@@ -683,6 +692,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         if (PowerConnection != null)
         {
             World.Current.PowerSystem.Unplug(PowerConnection);
+            PowerConnection.NewThresholdReached -= OnNewThresholdReached;
         }
 
         if (Removed != null)
@@ -717,7 +727,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
             {
                 for (int ypos = y - 1; ypos < y + fheight + 1; ypos++)
                 {
-                    Tile t = World.Current.GetTileAt(xpos, ypos);
+                    Tile t = World.Current.GetTileAt(xpos, ypos, Tile.Z);
                     if (t != null && t.Furniture != null && t.Furniture.Changed != null)
                     {
                         t.Furniture.Changed(t.Furniture);
@@ -732,12 +742,12 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
     public Tile GetJobSpotTile()
     {
-        return World.Current.GetTileAt(Tile.X + (int)JobSpotOffset.x, Tile.Y + (int)JobSpotOffset.y);
+        return World.Current.GetTileAt(Tile.X + (int)JobSpotOffset.x, Tile.Y + (int)JobSpotOffset.y, Tile.Z);
     }
 
     public Tile GetSpawnSpotTile()
     {
-        return World.Current.GetTileAt(Tile.X + (int)jobSpawnSpotOffset.x, Tile.Y + (int)jobSpawnSpotOffset.y);
+        return World.Current.GetTileAt(Tile.X + (int)jobSpawnSpotOffset.x, Tile.Y + (int)jobSpawnSpotOffset.y, Tile.Z);
     }
 
     // Returns true if furniture has typeTag, though simple, the intent is to separate the interaction with
@@ -785,7 +795,10 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                     {
                         Text = "Prioritize " + Name,
                         RequireCharacterSelected = true,
-                        Action = (ca, c) => { c.PrioritizeJob(jobs[0]); }
+                        Action = (ca, c) =>
+                        {
+                            c.PrioritizeJob(jobs[0]);
+                        }
                     };
                 }
             }
@@ -816,11 +829,11 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     // LUA files that will be customizable for each piece of furniture.
     // For example, a door might specific that it needs two walls to
     // connect to.
-    private bool DefaultIsValidPosition(Tile t)
+    private bool DefaultIsValidPosition(Tile tile)
     {
-        bool tooCloseToEdge = t.X < MinEdgeDistance || t.Y < MinEdgeDistance ||
-            World.Current.Width - t.X <= MinEdgeDistance ||
-            World.Current.Height - t.Y <= MinEdgeDistance;
+        bool tooCloseToEdge = tile.X < MinEdgeDistance || tile.Y < MinEdgeDistance ||
+                              World.Current.Width - tile.X <= MinEdgeDistance ||
+                              World.Current.Height - tile.Y <= MinEdgeDistance;
 
         if (tooCloseToEdge)
         {
@@ -829,17 +842,17 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
         if (HasTypeTag("OutdoorOnly"))
         {
-            if (t.Room == null || !t.Room.IsOutsideRoom())
+            if (tile.Room == null || !tile.Room.IsOutsideRoom())
             {
                 return false;
             }
         }
 
-        for (int x_off = t.X; x_off < t.X + Width; x_off++)
+        for (int x_off = tile.X; x_off < tile.X + Width; x_off++)
         {
-            for (int y_off = t.Y; y_off < t.Y + Height; y_off++)
+            for (int y_off = tile.Y; y_off < tile.Y + Height; y_off++)
             {
-                Tile t2 = World.Current.GetTileAt(x_off, y_off);
+                Tile t2 = World.Current.GetTileAt(x_off, y_off, tile.Z);
 
                 // Check to see if there is furniture which is replaceable
                 bool isReplaceable = false;
@@ -942,5 +955,10 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         {
             handler(furniture);
         }
+    }
+
+    private void OnNewThresholdReached(Connection connection)
+    {
+        UpdateOnChanged(this);
     }
 }

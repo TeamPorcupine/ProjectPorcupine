@@ -349,7 +349,7 @@ function MetalSmelter_UpdateAction(furniture, deltaTime)
         furniture.Parameters["smelttime"].ChangeFloatValue(deltaTime)
         if(furniture.Parameters["smelttime"].ToFloat() >= furniture.Parameters["smelttime_required"].ToFloat()) then
             furniture.Parameters["smelttime"].SetValue(0)
-            local outputSpot = World.Current.GetTileAt(spawnSpot.X+2, spawnSpot.y)
+            local outputSpot = World.Current.GetTileAt(spawnSpot.X+2, spawnSpot.y, spawnSpot.Zs)
 
             if(outputSpot.Inventory == nil) then
                 World.Current.inventoryManager.PlaceInventory(outputSpot, Inventory.__new("Steel Plate", 50, 5))
@@ -384,7 +384,7 @@ function MetalSmelter_UpdateAction(furniture, deltaTime)
     local itemsDesired = { Inventory.__new("Raw Iron", desiredStackSize, 0) }
     if(spawnSpot.Inventory ~= nil and spawnSpot.Inventory.StackSize < spawnSpot.Inventory.maxStackSize) then
         desiredStackSize = spawnSpot.Inventory.maxStackSize - spawnSpot.Inventory.StackSize
-        itemsDesired.maxStackSize = desiredStackSize
+        itemsDesired[1].maxStackSize = desiredStackSize
     end
     ModUtils.ULog("MetalSmelter: Creating job for " .. desiredStackSize .. " raw iron.")
 
@@ -443,7 +443,7 @@ function PowerCellPress_UpdateAction(furniture, deltaTime)
 
         if(furniture.Parameters["presstime"].ToFloat() >= furniture.Parameters["presstime_required"].ToFloat()) then
             furniture.Parameters["presstime"].SetValue(0)
-            local outputSpot = World.Current.GetTileAt(spawnSpot.X+2, spawnSpot.y)
+            local outputSpot = World.Current.GetTileAt(spawnSpot.X+2, spawnSpot.y, spawnSpot.Z)
 
             if(outputSpot.Inventory == nil) then
                 World.Current.inventoryManager.PlaceInventory( outputSpot, Inventory.__new("Power Cell", 5, 1) )
@@ -611,6 +611,12 @@ function SolarPanel_OnUpdate(furniture, deltaTime)
     local efficiency = furniture.Parameters["efficiency"].ToFloat()
     local powerPerSecond = baseOutput * efficiency
 	furniture.PowerConnection.OutputRate = powerPerSecond
+end
+
+function Accumulator_GetSpriteName(furniture)
+	local baseName = furniture.ObjectType
+	local suffix = furniture.PowerConnection.CurrentThreshold 
+	return baseName .. "_" .. suffix
 end
 
 ModUtils.ULog("Furniture.lua loaded")

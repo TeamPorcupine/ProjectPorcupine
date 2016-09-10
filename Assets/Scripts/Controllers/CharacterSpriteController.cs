@@ -31,18 +31,7 @@ public class CharacterSpriteController : BaseSpriteController<Character>
 
     // Use this for initialization
     public CharacterSpriteController(World world) : base(world, "Characters")
-    {
-        // default skincolors to pick at random
-        skinColors = new Color[]
-        {
-            ColorFromIntRGB(245, 217, 203),
-            ColorFromIntRGB(237, 191, 167),
-            ColorFromIntRGB(211, 142, 111),
-            ColorFromIntRGB(234, 183, 138),
-            ColorFromIntRGB(197, 132, 92),
-            ColorFromIntRGB(88, 59, 43)
-        };
-
+    {        
         // prepare swap texture for shader
         Texture2D colorSwapTex = new Texture2D(256, 1, TextureFormat.RGBA32, false, false);
         colorSwapTex.filterMode = FilterMode.Point;
@@ -63,13 +52,7 @@ public class CharacterSpriteController : BaseSpriteController<Character>
         {
             OnCreated(c);
         }
-    }
-
-    // helper function for shader replacement colors
-    public static Color ColorFromIntRGB(int r, int g, int b)
-    {
-        return new Color((float)r / 255.0f, (float)g / 255.0f, (float)b / 255.0f, 1.0f);
-    }
+    }   
 
     public override void RemoveAll()
     {
@@ -92,7 +75,7 @@ public class CharacterSpriteController : BaseSpriteController<Character>
         objectGameObjectMap.Add(c, char_go);
 
         char_go.name = "Character";
-        char_go.transform.position = new Vector3(c.X, c.Y, 0);
+        char_go.transform.position = new Vector3(c.X, c.Y, c.Z);
         char_go.transform.SetParent(objectParent.transform, true);
 
         SpriteRenderer sr = char_go.AddComponent<SpriteRenderer>();
@@ -100,7 +83,7 @@ public class CharacterSpriteController : BaseSpriteController<Character>
 
         // Add material with color replacement shader, and generate color replacement texture
         sr.material = GetMaterial(c);
-        c.animation = new CharacterAnimation(c, sr);
+        c.animation = new Animation.CharacterAnimation(c, sr);
 
         // Add the inventory sprite onto the character
         GameObject inv_go = new GameObject("Inventory");
@@ -123,6 +106,7 @@ public class CharacterSpriteController : BaseSpriteController<Character>
         if (c.inventory != null)
         {
             inv_sr.sprite = SpriteManager.current.GetSprite("Inventory", c.inventory.GetName());
+            inv_sr.sortingOrder = c.animation.CurrentSortingOrder + 1;
         }
         else
         {
@@ -165,14 +149,13 @@ public class CharacterSpriteController : BaseSpriteController<Character>
         colorSwapTex.Apply();
 
         // Define the swapping colors. Add white to hightlights and black to shadows        
-        Color newColorLight = Color.Lerp(c.GetCharacterColor(), ColorFromIntRGB(255, 255, 255), 0.5f);
-        Color newColorDark = Color.Lerp(c.GetCharacterColor(), ColorFromIntRGB(0, 0, 0), 0.5f);
-        Color newSkinColor = skinColors[UnityEngine.Random.Range(0, 5)];
-        Color newSkinColorDark = Color.Lerp(newSkinColor, ColorFromIntRGB(0, 0, 0), 0.2f);
-        int uniColor = UnityEngine.Random.Range(80, 230);
-        Color newUniformColor = ColorFromIntRGB(uniColor, uniColor, uniColor);
-        Color newUniformColorLight = Color.Lerp(newUniformColor, ColorFromIntRGB(255, 255, 255), 0.5f);
-        Color newUniformColorDark = Color.Lerp(newUniformColor, ColorFromIntRGB(0, 0, 0), 0.2f);
+        Color newColorLight = Color.Lerp(c.GetCharacterColor(), ColorUtilities.ColorFromIntRGB(255, 255, 255), 0.5f);
+        Color newColorDark = Color.Lerp(c.GetCharacterColor(), ColorUtilities.ColorFromIntRGB(0, 0, 0), 0.5f);
+        Color newSkinColor = c.GetCharacterSkinColor();
+        Color newSkinColorDark = Color.Lerp(newSkinColor, ColorUtilities.ColorFromIntRGB(0, 0, 0), 0.2f);        
+        Color newUniformColor = c.GetCharacterUniformColor();
+        Color newUniformColorLight = Color.Lerp(newUniformColor, ColorUtilities.ColorFromIntRGB(255, 255, 255), 0.5f);
+        Color newUniformColorDark = Color.Lerp(newUniformColor, ColorUtilities.ColorFromIntRGB(0, 0, 0), 0.2f);
 
         // add the colors to the texture
         // TODO: Do something similar for HAIRCOLOR, when we have a character with visible hair
