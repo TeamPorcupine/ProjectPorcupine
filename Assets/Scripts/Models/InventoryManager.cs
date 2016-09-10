@@ -114,25 +114,25 @@ public class InventoryManager
     /// Gets <see cref="Inventory"/> closest to <see cref="startTile"/>.
     /// </summary>
     /// <returns>The closest inventory of type.</returns>
-    public Inventory GetClosestInventoryOfType(string objectType, Tile startTile, int desiredAmount, bool canTakeFromStockpile)
+    public Inventory GetClosestInventoryOfType(string type, Tile startTile, int desiredAmount, bool canTakeFromStockpile)
     {
-        Path_AStar path = GetPathToClosestInventoryOfType(objectType, startTile, desiredAmount, canTakeFromStockpile);
+        Path_AStar path = GetPathToClosestInventoryOfType(type, startTile, desiredAmount, canTakeFromStockpile);
         return path.EndTile().Inventory;
     }
 
-    public bool HasInventoryOfType(string objectType)
+    public bool HasInventoryOfType(string type)
     {
-        return Inventories.ContainsKey(objectType) && Inventories[objectType].Count != 0;
+        return Inventories.ContainsKey(type) && Inventories[type].Count != 0;
     }
 
-    public bool RemoveInventoryOfType(string objectType, int quantity, bool onlyFromStockpiles)
+    public bool RemoveInventoryOfType(string type, int quantity, bool onlyFromStockpiles)
     {
-        if (!HasInventoryOfType(objectType))
+        if (!HasInventoryOfType(type))
         {
             return quantity == 0;
         }
 
-        foreach (Inventory inventory in Inventories[objectType].ToList())
+        foreach (Inventory inventory in Inventories[type].ToList())
         {
             if (onlyFromStockpiles)
             {
@@ -159,33 +159,33 @@ public class InventoryManager
         return quantity == 0;
     }
 
-    public Path_AStar GetPathToClosestInventoryOfType(string objectType, Tile t, int desiredAmount, bool canTakeFromStockpile)
+    public Path_AStar GetPathToClosestInventoryOfType(string type, Tile tile, int desiredAmount, bool canTakeFromStockpile)
     {
-        HasInventoryOfType(objectType);
+        HasInventoryOfType(type);
 
         // We can also avoid going through the Astar construction if we know
         // that all available inventories are stockpiles and we are not allowed
         // to touch those
-        if (!canTakeFromStockpile && Inventories[objectType].TrueForAll(i => i.Tile != null && i.Tile.Furniture != null && i.Tile.Furniture.IsStockpile()))
+        if (!canTakeFromStockpile && Inventories[type].TrueForAll(i => i.Tile != null && i.Tile.Furniture != null && i.Tile.Furniture.IsStockpile()))
         {
             return null;
         }
 
         // We shouldn't search if all inventories are locked.
-        if (Inventories[objectType].TrueForAll(i => i.Tile != null && i.Tile.Furniture != null && i.Tile.Inventory != null && i.Tile.Inventory.Locked))
+        if (Inventories[type].TrueForAll(i => i.Tile != null && i.Tile.Furniture != null && i.Tile.Inventory != null && i.Tile.Inventory.Locked))
         {
             return null;
         }
 
         // Test that there is at least one stack on the floor, otherwise the
         // search below might cause a full map search for nothing.
-        if (Inventories[objectType].Find(i => i.Tile != null) == null)
+        if (Inventories[type].Find(i => i.Tile != null) == null)
         {
             return null;
         }
 
         // We know the objects are out there, now find the closest.
-        Path_AStar path = new Path_AStar(World.Current, t, null, objectType, desiredAmount, canTakeFromStockpile);
+        Path_AStar path = new Path_AStar(World.Current, tile, null, type, desiredAmount, canTakeFromStockpile);
         return path;
     }
 
