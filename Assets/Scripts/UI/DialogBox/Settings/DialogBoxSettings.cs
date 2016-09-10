@@ -47,7 +47,7 @@ public class DialogBoxSettings : DialogBox
 
     public void OnFullScreenToggle()
     {
-        /// TODO : impliment full screen toggle.
+        /// TODO : implement full screen toggle.
     }
 
     public void OnQualityChange()
