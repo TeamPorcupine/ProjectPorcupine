@@ -93,7 +93,7 @@ public class BasePrototypes<T>
     }
 
     /// <summary>
-    /// Adds the given prototype. If the protptype exists it is overwirten.
+    /// Adds the given prototype. If the prototype exists it is overwritten.
     /// </summary>
     /// <param name="type">The prototype type.</param>
     /// <param name="proto">The prototype instance.</param>

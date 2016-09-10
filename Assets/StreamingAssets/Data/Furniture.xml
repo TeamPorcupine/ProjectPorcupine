@@ -564,4 +564,25 @@
     <LocalizationCode>furn_rt_generator</LocalizationCode>
     <UnlocalizedDescription>furn_rt_generator_desc</UnlocalizedDescription>
   </Furniture>
+
+  <Furniture objectType="trading_console">
+    <Name>Trading Console</Name>
+    <Description>This trading console allows better trading</Description>
+    <MovementCost>2</MovementCost>
+    <PathfindingModifier>0</PathfindingModifier>
+    <PathfindingWeight>2</PathfindingWeight>
+    <Width>1</Width>
+    <Height>1</Height>
+
+    <PowerConnection inputRate="1" outputRate="" capacity=""/>
+    
+    <BuildingJob jobTime="0"/>
+    
+    <ContextMenuAction FunctionName="TradingConsole_PassivelyTrade" Text="Passively trade" RequiereCharacterSelected="false" />
+    <ContextMenuAction FunctionName="TradingConsole_OpenTraderWindow" Text="Contact traders" RequiereCharacterSelected="false" />  
+    
+    <LocalizationCode>furn_trading_console</LocalizationCode>
+    <UnlocalizedDescription>furn_trading_console_desc</UnlocalizedDescription>
+    
+  </Furniture>
 </Furnitures>
