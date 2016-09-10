@@ -14,10 +14,12 @@ public class ConstructionMenu : MonoBehaviour
 {
     // The sub menus of the build menu (furniture, floor..... later - power, security, drones).
     public GameObject furnitureMenu;
+    public GameObject utilityMenu;
     public GameObject floorMenu;
 
     public Button buttonFloors;
     public Button buttonFurniture;
+    public Button buttonUtility;
     public Button buttonDeconstruction;
 
     private BuildModeController bmc;
@@ -33,7 +35,7 @@ public class ConstructionMenu : MonoBehaviour
                 furnitureSubs = new GameObject[]
                 {
                     // add every furniture submenu here
-                    furnitureMenu, floorMenu
+                    furnitureMenu, floorMenu, utilityMenu
                 };
             }
 
@@ -59,11 +61,18 @@ public class ConstructionMenu : MonoBehaviour
         ToggleMenu(furnitureMenu);
     }
 
+    public void OnClickUtility()
+    {
+        DeactivateSubsExcept(utilityMenu);
+        ToggleMenu(utilityMenu);
+    }
+
     // Deactivates any sub menu of the construction options.
     public void DeactivateSubs()
     {
         WorldController.Instance.mouseController.ClearMouseMode(true);
         furnitureMenu.SetActive(false);
+        utilityMenu.SetActive(false);
         floorMenu.SetActive(false);
     }
 
@@ -92,6 +101,7 @@ public class ConstructionMenu : MonoBehaviour
         MenuController cm = GameObject.Find("MenuBottom").GetComponent<MenuController>();
 
         furnitureMenu = cm.furnitureMenu;
+        utilityMenu = cm.utilityMenu;
         floorMenu = cm.floorMenu;
 
         // Add liseners here.
@@ -102,11 +112,15 @@ public class ConstructionMenu : MonoBehaviour
 
         buttonFloors.onClick.AddListener(delegate
         {
-            OnClickFloors();
+        OnClickFloors();
         });
         buttonFurniture.onClick.AddListener(delegate
         {
             OnClickFurniture();
+        });
+        buttonUtility.onClick.AddListener(delegate
+        {
+            OnClickUtility();
         });
     }
 }

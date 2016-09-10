@@ -18,6 +18,8 @@ public class PrototypeManager
         Inventory = new InventoryPrototypes();
         FurnitureJob = new BasePrototypes<Job>();
         Furniture = new FurniturePrototypes();
+        UtilityJob = new BasePrototypes<Job>();
+        Utility = new UtilityPrototypes();
         Need = new NeedPrototypes();
         Trader = new TraderPrototypes();
         Quest = new QuestPrototypes();
@@ -32,6 +34,18 @@ public class PrototypeManager
     }
 
     public static FurniturePrototypes Furniture
+    {
+        get;
+        protected set;
+    }
+
+    public static BasePrototypes<Job> UtilityJob
+    {
+        get;
+        protected set;
+    }
+
+    public static UtilityPrototypes Utility
     {
         get;
         protected set;

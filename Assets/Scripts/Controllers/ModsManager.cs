@@ -26,6 +26,7 @@ public class ModsManager
     public void LoadPrototypes()
     {
         LoadFunctionScripts("Furniture", "Furniture.lua");
+        LoadFunctionScripts("Utility", "Utility.lua");
         LoadFunctionScripts("Need", "Need.lua");
         LoadFunctionScripts("GameEvent", "GameEvent.lua");
         LoadFunctionScripts("TileType", "Tiles.lua");
@@ -33,6 +34,7 @@ public class ModsManager
         LoadFunctionScripts("ScheduledEvent", "ScheduledEvent.lua");
 
         PrototypeManager.Furniture.LoadPrototypes(mods);
+        PrototypeManager.Utility.LoadPrototypes(mods);
         PrototypeManager.Inventory.LoadPrototypes(mods);
         PrototypeManager.Need.LoadPrototypes(mods);
         PrototypeManager.Trader.LoadPrototypes(mods);

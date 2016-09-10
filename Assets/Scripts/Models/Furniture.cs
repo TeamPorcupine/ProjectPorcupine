@@ -22,7 +22,7 @@ using UnityEngine;
 /// InstalledObjects are things like walls, doors, and furniture (e.g. a sofa).
 /// </summary>
 [MoonSharpUserData]
-public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
+public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider, IBuildable
 {
     // Prevent construction too close to the world's edge
     private const int MinEdgeDistance = 5;
@@ -773,7 +773,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     /// <param name="job">The job that you want to link to the furniture.</param>
     public void AddJob(Job job)
     {
-        job.furniture = this;
+        job.buildable = this;
         jobs.Add(job);
         job.OnJobStopped += OnJobStopped;
         World.Current.jobQueue.Enqueue(job);
@@ -1125,7 +1125,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     {
         j.OnJobStopped -= OnJobStopped;
         jobs.Remove(j);
-        j.furniture = null;
+        j.buildable = null;
     }
 
     private void ClearJobs()

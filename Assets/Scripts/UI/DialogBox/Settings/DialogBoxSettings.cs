@@ -85,6 +85,7 @@ public class DialogBoxSettings : DialogBox
         this.CloseDialog();
         WorldController.Instance.spawnInventoryController.SetUIVisibility(developerModeToggle.isOn);
         FurnitureBuildMenu.instance.RebuildMenuButtons(developerModeToggle.isOn);
+        UtilityBuildMenu.instance.RebuildMenuButtons(developerModeToggle.isOn);
         SaveSetting();
     }
 
