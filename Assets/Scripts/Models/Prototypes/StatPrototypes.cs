@@ -15,10 +15,6 @@ public class StatPrototypes : XmlPrototypes<Stat>
     {
     }
 
-    /// <summary>
-    /// Loads the prototype.
-    /// </summary>
-    /// <param name="reader">The Xml Reader.</param>
     protected override void LoadPrototype(XmlTextReader reader)
     {
         Stat stat = new Stat();
@@ -28,9 +24,9 @@ public class StatPrototypes : XmlPrototypes<Stat>
         }
         catch (Exception e)
         {
-            LogPrototypeError(e, stat.statType);
+            LogPrototypeError(e, stat.Type);
         }
 
-        Set(stat.statType, stat);
+        Set(stat.Type, stat);
     }
 }

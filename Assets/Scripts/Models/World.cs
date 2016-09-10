@@ -64,7 +64,7 @@ public class World : IXmlSerializable
         // Make one character
         Debug.Log("Generated World");
 
-        // adding air to enclosed rooms
+        // Adding air to enclosed rooms
         foreach (Room room in this.rooms)
         {
             if (room.ID > 0)
@@ -331,7 +331,7 @@ public class World : IXmlSerializable
                 }
             }
 
-            // searching left & rigth line of the square
+            // searching left & right line of the square
             for (offsetY = -offset; offsetY <= offset; offsetY++)
             {
                 offsetX = offset;
@@ -392,7 +392,7 @@ public class World : IXmlSerializable
             if (furn.MovementCost != 1)
             {
                 // Since tiles return movement cost as their base cost multiplied
-                // buy the furniture's movement cost, a furniture movement cost
+                // by the furniture's movement cost, a furniture movement cost
                 // of exactly 1 doesn't impact our pathfinding system, so we can
                 // occasionally avoid invalidating pathfinding graphs.
                 // InvalidateTileGraph();    // Reset the pathfinding system
