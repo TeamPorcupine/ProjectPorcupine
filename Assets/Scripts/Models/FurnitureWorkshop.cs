@@ -233,7 +233,7 @@ public class FurnitureWorkshop
 
                 string desiredInv = reqInputItem.ObjectType;
                 int desiredAmount = PrototypeManager.Inventory.Get(desiredInv).maxStackSize;
-                if (inTile.Inventory != null && inTile.Inventory.ObjectType == reqInputItem.ObjectType &&
+                if (inTile.Inventory != null && inTile.Inventory.Type == reqInputItem.ObjectType &&
                     inTile.Inventory.StackSize <= desiredAmount)
                 {
                     desiredAmount = desiredAmount - inTile.Inventory.StackSize;
@@ -246,7 +246,7 @@ public class FurnitureWorkshop
                         null,  // beware: passed jobObjectType is expected Furniture only !!
                         null, 
                         0.4f,
-                        new Inventory[] { new Inventory(desiredInv, desiredAmount, 0) },
+                        new Inventory[] { new Inventory(desiredInv, 0, desiredAmount) },
                         Job.JobPriority.Medium,
                         false,
                         false,
@@ -278,7 +278,7 @@ public class FurnitureWorkshop
 
             if (!tileHasOtherFurniture && 
                 (tt.Inventory == null || 
-                (tt.Inventory.ObjectType == outObjType.ObjectType && tt.Inventory.StackSize + amount <= tt.Inventory.MaxStackSize)))
+                (tt.Inventory.Type == outObjType.ObjectType && tt.Inventory.StackSize + amount <= tt.Inventory.MaxStackSize)))
             {
                 // out product can be placed here
                 outPlacement.Add(new TileObjectTypeAmount()
@@ -305,7 +305,7 @@ public class FurnitureWorkshop
                 furniture.Tile.Y + reqInputItem.SlotPosY,
                 furniture.Tile.Z);
 
-            if (tile.Inventory != null && tile.Inventory.ObjectType == reqInputItem.ObjectType
+            if (tile.Inventory != null && tile.Inventory.Type == reqInputItem.ObjectType
                 && tile.Inventory.StackSize >= reqInputItem.Amount)
             {
                 flaggedForTaking.Add(new KeyValuePair<Tile, int>(tile, reqInputItem.Amount));
