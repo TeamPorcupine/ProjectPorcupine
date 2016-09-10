@@ -1004,7 +1004,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_IgnoreLayout: 0
   m_MinWidth: -1
-  m_MinHeight: -1
+  m_MinHeight: 20
   m_PreferredWidth: -1
   m_PreferredHeight: 25
   m_FlexibleWidth: -1
@@ -1141,10 +1141,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 25
-    m_Right: 25
-    m_Top: 10
-    m_Bottom: 30
+    m_Left: 60
+    m_Right: 60
+    m_Top: 20
+    m_Bottom: 40
   m_ChildAlignment: 0
   m_Spacing: 20
   m_ChildForceExpandWidth: 1
@@ -1212,7 +1212,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: edcf61feae5bffd41914a2f9a5560353, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 9ee7d4c5b920c784199fcc84879e51e6, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
