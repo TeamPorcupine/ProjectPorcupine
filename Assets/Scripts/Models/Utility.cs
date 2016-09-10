@@ -36,14 +36,6 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
     /// </summary>
     private List<ContextMenuLuaAction> contextMenuLuaActions;
 
-    /// <summary>
-    /// Custom parameter for this particular piece of utility.  We are
-    /// using a custom Parameter class because later, custom LUA function will be
-    /// able to use whatever parameters the user/modder would like, and contain strings or floats.
-    /// Basically, the LUA code will bind to this Parameter.
-    /// </summary>
-    private Parameter utilParameters;
-
     private List<Job> jobs;
 
     private List<Job> pausedJobs;
@@ -72,7 +64,7 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
         EventActions = new EventActions();
 
         contextMenuLuaActions = new List<ContextMenuLuaAction>();
-        utilParameters = new Parameter();
+        Parameters = new Parameter();
         jobs = new List<Job>();
         typeTags = new HashSet<string>();
         funcPositionValidation = DefaultIsValidPosition;
@@ -88,11 +80,10 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
         typeTags = new HashSet<string>(other.typeTags);
         description = other.description;
         Tint = other.Tint;
-        LinksToNeighbour = other.LinksToNeighbour;
 
         JobSpotOffset = other.JobSpotOffset;
 
-        utilParameters = new Parameter(other.utilParameters);
+        Parameters = new Parameter(other.Parameters);
         jobs = new List<Job>();
         pausedJobs = new List<Job>();
 
@@ -223,29 +214,30 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
     /// Gets a value indicating whether this utility is next to any utility of the same type.
     /// This is used to check what sprite to use if utility is next to each other.
     /// </summary>
-    public bool LinksToNeighbour { get; private set; }
+    public bool LinksToNeighbour 
+    { 
+        get
+        {
+            return true;
+        }
+    }
 
     /// <summary>
     /// Gets the type of dragging that is used to build multiples of this utility. 
     /// e.g walls.
     /// </summary>
-    public string DragType { get; private set; }
+    public string DragType 
+    { 
+        get
+        {
+            return "path";
+        }
+    }
 
     /// <summary>
     /// Gets or sets the parameters that is tied to the utility.
     /// </summary>
-    public Parameter Parameters
-    {
-        get
-        {
-            return utilParameters;
-        }
-
-        private set
-        {
-            utilParameters = value;
-        }
-    }
+    public Parameter Parameters { get; private set; }
 
     /// <summary>
     /// Used to place utility in a certain position.
@@ -378,7 +370,7 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
         writer.WriteAttributeString("objectType", ObjectType);
 
         // Let the Parameters handle their own xml
-        utilParameters.WriteXml(writer);
+        Parameters.WriteXml(writer);
     }
 
     /// <summary>
@@ -406,14 +398,6 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
                 case "Description":
                     reader.Read();
                     description = reader.ReadContentAsString();
-                    break;
-                case "LinksToNeighbours":
-                    reader.Read();
-                    LinksToNeighbour = reader.ReadContentAsBoolean();
-                    break;
-                case "DragType":
-                    reader.Read();
-                    DragType = reader.ReadContentAsString();
                     break;
                 case "BuildingJob":
                     float jobTime = float.Parse(reader.GetAttribute("jobTime"));
@@ -466,7 +450,6 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
                 case "GetSpriteName":
                     getSpriteNameAction = reader.GetAttribute("FunctionName");
                     break;
-
                 case "JobSpotOffset":
                     JobSpotOffset = new Vector2(
                     int.Parse(reader.GetAttribute("X")),
@@ -512,7 +495,7 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
     {
         // X, Y, and objectType have already been set, and we should already
         // be assigned to a tile.  So just read extra data.
-        utilParameters = Parameter.ReadXml(reader);
+        Parameters = Parameter.ReadXml(reader);
     }
 
     /// <summary>
@@ -521,7 +504,7 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
     /// <returns>The Parameter value..</returns>
     public Parameter GetParameters()
     {
-        return utilParameters;
+        return Parameters;
     }
 
     /// <summary>

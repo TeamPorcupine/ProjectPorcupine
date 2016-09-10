@@ -4,8 +4,6 @@
     <Name>Power Cables</Name>
     <Description>This is a power cable.</Description>
     <TypeTag>Power</TypeTag>
-    <LinksToNeighbours>true</LinksToNeighbours>
-    <DragType>path</DragType>
 
     <BuildingJob jobTime="1">
       <Inventory objectType="Copper Wire" amount="2" />
@@ -21,8 +19,6 @@
     <Name>Water Pipe</Name>
     <Description>This is a water pipe.</Description>
     <TypeTag>Water</TypeTag>
-    <LinksToNeighbours>true</LinksToNeighbours>
-    <DragType>path</DragType>
 
     <BuildingJob jobTime="1">
       <Inventory objectType="Steel Plate" amount="2" />
