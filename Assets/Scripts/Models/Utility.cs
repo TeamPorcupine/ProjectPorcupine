@@ -522,7 +522,6 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
     /// <param name="job">The job that you want to link to the utility.</param>
     public void AddJob(Job job)
     {
-        // FIXME: Do we even need this?
         job.buildable = this;
         jobs.Add(job);
         job.OnJobStopped += OnJobStopped;
