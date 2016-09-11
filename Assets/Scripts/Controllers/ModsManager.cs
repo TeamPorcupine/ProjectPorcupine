@@ -32,8 +32,8 @@ public class ModsManager
         LoadFunctionScripts("Quest", "Quest.lua");
         LoadFunctionScripts("ScheduledEvent", "ScheduledEvent.lua");
 
-        PrototypeManager.Furniture.LoadPrototypes(mods);
         PrototypeManager.Inventory.LoadPrototypes(mods);
+        PrototypeManager.Furniture.LoadPrototypes(mods);
         PrototypeManager.Need.LoadPrototypes(mods);
         PrototypeManager.Trader.LoadPrototypes(mods);
         PrototypeManager.SchedulerEvent.LoadPrototypes(mods);

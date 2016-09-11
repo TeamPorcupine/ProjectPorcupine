@@ -129,6 +129,10 @@ public class Path_AStar
             }
 
             closedSet.Add(current);
+            if (current.data.IsEnterable() == Enterability.Never && current != start)
+            {
+                continue;
+            }
 
             foreach (Path_Edge<Tile> edge_neighbor in current.edges)
             {

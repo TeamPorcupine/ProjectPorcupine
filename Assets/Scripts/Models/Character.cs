@@ -55,6 +55,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
     /// Destination tile of the character.
     private Tile destTile;
+    private bool recentPath;
 
     /// Current tile the character is standing on.
     private Tile currTile;
@@ -503,6 +504,39 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         return stat;
     }
 
+    public void ReadStatsFromSave(XmlReader reader)
+    {
+        // Protection vs. empty stats
+        if (reader.IsEmptyElement)
+        {
+            return;
+        }
+
+        while (reader.Read())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement)
+            {
+                break;
+            }
+
+            string statType = reader.GetAttribute("statType");
+            Stat stat = GetStat(statType);
+            if (stat == null)
+            {
+                continue;               
+            }
+
+            int statValue;
+            if (!int.TryParse(reader.GetAttribute("value"), out statValue))
+            {
+                Debug.ULogErrorChannel("Character", "Stat element did not have a value!");
+                continue;
+            }
+
+            stat.Value = statValue;
+        }
+    }
+
     private void InitializeCharacterValues()
     {
         LoadNeeds();
@@ -536,39 +570,6 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         }
 
         Debug.ULogChannel("Character", "Initialized " + stats.Count + " Stats.");
-    }
-
-    public void ReadStatsFromSave(XmlReader reader)
-    {
-        // Protection vs. empty stats
-        if (reader.IsEmptyElement)
-        {
-            return;
-        }
-
-        while (reader.Read())
-        {
-            if (reader.NodeType == XmlNodeType.EndElement)
-            {
-                break;
-            }
-
-            string statType = reader.GetAttribute("statType");
-            Stat stat = GetStat(statType);
-            if (stat == null)
-            {
-                continue;               
-            }
-
-            int statValue;
-            if (!int.TryParse(reader.GetAttribute("value"), out statValue))
-            {
-                Debug.ULogErrorChannel("Character", "Stat element did not have a value!");
-                continue;
-            }
-
-            stat.Value = statValue;
-        }
     }
 
     private void GetNewJob()
@@ -769,6 +770,8 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                     return;
                 }
 
+                recentPath = true;
+
                 // Let's ignore the first tile, because that's the tile we're currently in.
                 nextTile = pathAStar.Dequeue();
             }
@@ -789,7 +792,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             }
         }
 
-        if (nextTile.IsEnterable() == Enterability.Never)
+        if (nextTile.IsEnterable() == Enterability.Never && nextTile != DestTile)
         {
             //// Most likely a wall got built, so we just need to reset our pathfinding information.
             //// FIXME: Ideally, when a wall gets spawned, we should invalidate our path immediately,
@@ -799,6 +802,11 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             //// Debug.ULogErrorChannel("FIXME", "A character was trying to enter an unwalkable tile.");
             nextTile = null;    // our next tile is a no-go
             pathAStar = null;   // clearly our pathfinding info is out of date.
+            if (recentPath)
+            {
+                AbandonJob(false);
+            }
+
             return;
         }
         else if (nextTile.IsEnterable() == Enterability.Soon)
@@ -809,6 +817,8 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             // now and don't actually process the movement.
             return;
         }
+
+        recentPath = false;
 
         CharacterFacing();
 

@@ -313,7 +313,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
     public Enterability IsEnterable()
     {
         // This returns true if you can enter this tile right this moment.
-        if (MovementCost.IsZero())
+        if (PathfindingCost >= 1000000)
         {
             return Enterability.Never;
         }

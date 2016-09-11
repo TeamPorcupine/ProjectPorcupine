@@ -95,7 +95,12 @@ public class BuildModeController
                 // TODO Possibly return resources. Will the Deconstruct() method handle that? If so what will happen if resources drop ontop of new non-passable structure.
                 if (t.Furniture != null)
                 {
-                    t.Furniture.Deconstruct();
+                    if (t.Furniture.AwaitingDeconstruction == false)
+                    {
+                        DeconstructFurnitureAt(t, furnitureType);
+                    }
+
+                    return;
                 }
 
                 // Create a job for it to be build
@@ -183,7 +188,7 @@ public class BuildModeController
         else if (buildMode == BuildMode.DECONSTRUCT)
         {
             // TODO
-            if (t.Furniture != null)
+            if (t.Furniture != null && t.Furniture.AwaitingDeconstruction == false)
             {
                 // check if this is a WALL neighbouring a pressured and pressureless environment, and if so, bail
                 if (t.Furniture.HasTypeTag("Wall"))
@@ -213,7 +218,7 @@ public class BuildModeController
                     }
                 }
 
-                t.Furniture.Deconstruct();
+                DeconstructFurnitureAt(t);
             }
             else if (t.PendingBuildJob != null)
             {
@@ -245,6 +250,79 @@ public class BuildModeController
         }
 
         return false;
+    }
+
+    public void DeconstructFurnitureAt(Tile tile, string nextBuild = null)
+    {
+        Job job;
+
+        if (PrototypeManager.FurnitureJobDeconstruct.Has(tile.Furniture.ObjectType))
+        {
+            // Make a clone of the job prototype
+            job = PrototypeManager.FurnitureJobDeconstruct.Get(tile.Furniture.ObjectType).Clone();
+
+            // Assign the correct tile.
+            job.tile = tile;
+            job.OnJobCompleted += (Job jo) =>
+            {
+                tile.Furniture.Deconstruct();
+            };
+        }
+        else
+        {
+            tile.Furniture.Deconstruct();
+            return;
+        }
+
+        if (tile.Furniture.MovementCost >= 1000000) 
+        {
+            job.adjacent = true;
+        }
+
+        if (nextBuild != null)
+        {
+            job.OnJobCompleted += (Job jo) =>
+            {
+                this.QueueBuild(tile, nextBuild);
+            };
+        }
+
+        tile.Furniture.AwaitingDeconstruction = true;
+        World.Current.jobQueue.Enqueue(job.Clone());
+    }
+
+    public void QueueBuild(Tile t, string objectType)
+    {
+        BuildMode oldBM = buildMode;
+        string oldObjectType = buildModeObjectType;
+        buildMode = BuildMode.FURNITURE;
+        buildModeObjectType = objectType;
+        DoBuild(t);
+        buildMode = oldBM;
+        buildModeObjectType = oldObjectType;
+    }
+
+    // Checks whether the given floor type is allowed to be built on the tile.
+    // TODO Export this kind of check to an XML/LUA file for easier modding of floor types.
+    private bool CanBuildTileTypeHere(Tile t, TileType tileType)
+    {
+        if (tileType.CanBuildHereLua == null)
+        {
+            return true;
+        }
+
+        DynValue value = FunctionsManager.TileType.Call(tileType.CanBuildHereLua, t);
+
+        if (value != null)
+        {
+            return value.Boolean;
+        }
+        else
+        {
+            Debug.ULogChannel("Lua", "Found no lua function " + tileType.CanBuildHereLua);
+
+            return false;
+        }
     }
 
     // Use this for initialization

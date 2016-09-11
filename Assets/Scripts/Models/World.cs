@@ -653,8 +653,8 @@ public class World : IXmlSerializable
         CreateWallet();
 
         characters = new List<Character>();
-        furnitures = new List<Furniture>();
         inventoryManager = new InventoryManager();
+        furnitures = new List<Furniture>();
         PowerNetwork = new ProjectPorcupine.PowerNetwork.PowerNetwork();
         temperature = new Temperature(Width, Height);
         LoadSkybox();
