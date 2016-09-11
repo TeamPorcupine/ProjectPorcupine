@@ -11,7 +11,7 @@ using System.Linq;
 using System.Xml;
 using UnityEngine;
 
-public class TraderPrototype
+public class TraderPrototype : IPrototypable
 {
     private float rarity;
 
