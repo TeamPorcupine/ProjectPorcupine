@@ -412,63 +412,6 @@ function MetalSmelter_JobWorked(j)
     end
 end
 
-function PowerCellPress_UpdateAction(furniture, deltaTime)
-    local spawnSpot = furniture.GetSpawnSpotTile()
-
-    if(spawnSpot.Inventory == nil) then
-        if(furniture.JobCount() == 0) then
-            local itemsDesired = {Inventory.__new("Steel Plate", 0, 10)}
-            local jobSpot = furniture.GetJobSpotTile()
-
-            local j = Job.__new(
-                jobSpot,
-                nil,
-                nil,
-                1,
-                itemsDesired,
-                Job.JobPriority.Medium,
-                false
-            )
-
-            j.RegisterJobCompletedCallback("PowerCellPress_JobComplete")
-            j.JobDescription = "job_power_cell_fulling_desc"
-            furniture.AddJob(j)
-        end
-    else
-        furniture.Parameters["presstime"].ChangeFloatValue(deltaTime)
-
-        if(furniture.Parameters["presstime"].ToFloat() >= furniture.Parameters["presstime_required"].ToFloat()) then
-            furniture.Parameters["presstime"].SetValue(0)
-            local outputSpot = World.Current.GetTileAt(spawnSpot.X+2, spawnSpot.y, spawnSpot.Z)
-
-            if(outputSpot.Inventory == nil) then
-                World.Current.inventoryManager.PlaceInventory( outputSpot, Inventory.__new("Power Cell", 1, 5) )
-                spawnSpot.Inventory.StackSize = spawnSpot.Inventory.StackSize-10
-            else
-                if(outputSpot.Inventory.StackSize <= 4) then
-                    outputSpot.Inventory.StackSize = outputSpot.Inventory.StackSize+1
-                    spawnSpot.Inventory.StackSize = spawnSpot.Inventory.StackSize-10
-                end
-            end
-
-            if(spawnSpot.Inventory.StackSize <= 0) then
-                spawnSpot.Inventory = nil
-            end
-        end
-    end
-end
-
-function PowerCellPress_JobComplete(j)
-    local spawnSpot = j.tile.Furniture.GetSpawnSpotTile()
-
-    for k, inv in pairs(j.inventoryRequirements) do
-        if(inv.StackSize > 0) then
-            World.Current.inventoryManager.PlaceInventory(spawnSpot, inv)
-            return
-        end
-    end
-end
-
 function CloningPod_UpdateAction(furniture, deltaTime)
 	
     if( furniture.JobCount() > 0 ) then

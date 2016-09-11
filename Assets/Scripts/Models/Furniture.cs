@@ -7,8 +7,8 @@
 // ====================================================
 #endregion
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
@@ -57,6 +57,11 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     /// Basically, the LUA code will bind to this Parameter.
     /// </summary>
     private Parameter furnParameters;
+    
+    /// <summary>
+    /// Workshop reference if furniture is consumer/producer (not null). 
+    /// </summary>
+    private FurnitureWorkshop workshop;
 
     private List<Job> jobs;
 
@@ -85,7 +90,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         JobSpotOffset = Vector2.zero;
         VerticalDoor = false;
         EventActions = new EventActions();
-
+        
         contextMenuLuaActions = new List<ContextMenuLuaAction>();
         furnParameters = new Parameter();
         jobs = new List<Job>();
@@ -115,7 +120,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
         JobSpotOffset = other.JobSpotOffset;
         jobSpawnSpotOffset = other.jobSpawnSpotOffset;
-
+        workshop = other.workshop; // don't need to clone here, as all are prototype things (not changing)
+       
         furnParameters = new Parameter(other.furnParameters);
         jobs = new List<Job>();
         pausedJobs = new List<Job>();
@@ -129,7 +135,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         {
             EventActions = other.EventActions.Clone();
         }
-
+        
         if (other.contextMenuLuaActions != null)
         {
             contextMenuLuaActions = new List<ContextMenuLuaAction>(other.contextMenuLuaActions);
@@ -171,7 +177,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     /// This event will trigger if <see cref="IsOperating"/> has been changed.
     /// </summary>
     public event Action<Furniture> IsOperatingChanged;
-
+    
     /// <summary>
     /// Gets or sets the Furniture's <see cref="PathfindingModifier"/> which is added into the Tile's final PathfindingCost.
     /// </summary>
@@ -204,6 +210,11 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     /// </summary>
     /// <value>The spot where the Character will stand when he uses the furniture.</value>
     public Vector2 JobSpotOffset { get; private set; }
+
+    public bool IsWorkshop
+    {
+        get { return workshop != null; }
+    }
 
     /// <summary>
     /// Gets or sets a value indicating whether the door is Vertical or not.
@@ -388,7 +399,12 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
         // We know our placement destination is valid.
         Furniture obj = proto.Clone();
-        obj.Tile = tile;
+        obj.Tile = tile;        
+        if (obj.IsWorkshop)
+        {
+            // need to update reference to furniture for workshop (is there a nicer way?)
+            obj.workshop.SetParentFurniture(obj);
+        }
 
         if (tile.PlaceFurniture(obj) == false)
         {
@@ -465,12 +481,17 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
             EventActions.Trigger("OnUpdate", this, deltaTime);
         }
 
+        if (IsWorkshop)
+        {
+            workshop.Update(deltaTime);
+        }
+
         if (Animation != null)
         {
             Animation.Update(deltaTime);
         }
     }
-
+    
     /// <summary>
     /// Whether this furniture is an exit for a room.
     /// </summary>
@@ -718,6 +739,12 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                     reader.Read();
                     UnlocalizedDescription = reader.ReadContentAsString();
                     break;
+
+                case "Workshop":                   
+                    workshop = FurnitureWorkshop.Deserialize(reader);
+                    workshop.SetParentFurniture(this);
+                    workshop.Initialize();
+                    break;
             }
         }
     }
@@ -758,6 +785,18 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     }
 
     /// <summary>
+    /// Checks for first furniture job with specific condition.
+    /// </summary>
+    /// <param name="predicate"></param>
+    /// <param name="job">Job fulfilling predicate.</param>
+    /// <returns>True if there is job with predicate.</returns>
+    public bool HasJobWithPredicate(Func<Job, bool> predicate, out Job job)
+    {
+        job = jobs.FirstOrDefault(predicate);
+        return job != null;
+    }
+
+    /// <summary>
     /// How many jobs are linked to this furniture.
     /// </summary>
     /// <returns>The number of jobs linked to this furniture.</returns>
@@ -775,6 +814,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         job.furniture = this;
         jobs.Add(job);
         job.OnJobStopped += OnJobStopped;
+        job.OnJobCompleted += OnJobStopped;
         World.Current.jobQueue.Enqueue(job);
     }
 
@@ -957,7 +997,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     /// <returns>Description of the furniture.</returns>
     public string GetDescription()
     {
-        return UnlocalizedDescription;
+        return UnlocalizedDescription;        
     }
 
     /// <summary>
@@ -971,6 +1011,11 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
     public IEnumerable<string> GetAdditionalInfo()
     {
+        if (IsWorkshop)
+        {
+            yield return workshop.GetDescription();
+        }
+
         yield return string.Format("Hitpoint 18 / 18");
 
         if (PowerConnection != null)
@@ -1044,6 +1089,15 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
             }
         }
 
+        // context menu if it's workshop and has multiple production chains
+        if (IsWorkshop && workshop.WorkshopMenuActions != null)
+        {
+            foreach (WorkshopContextMenu factoryContextMenuAction in workshop.WorkshopMenuActions)
+            {
+                yield return CreateWorkshopContextMenuItem(factoryContextMenuAction);
+            }
+        }       
+
         foreach (ContextMenuLuaAction contextMenuLuaAction in contextMenuLuaActions)
         {
             if (!contextMenuLuaAction.DevModeOnly ||
@@ -1058,7 +1112,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
             }
         }
     }
-
+    
     // Make a copy of the current furniture.  Sub-classed should
     // override this Clone() if a different (sub-classed) copy
     // constructor should be run.
@@ -1138,6 +1192,21 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         {
             RemoveJob(j);
         }
+    }
+
+    private ContextMenuAction CreateWorkshopContextMenuItem(WorkshopContextMenu factoryContextMenuAction)
+    {
+        return new ContextMenuAction
+        {
+            Text = factoryContextMenuAction.ProductionChainName, // TODO: localization here
+            RequireCharacterSelected = false,
+            Action = (cma, c) => InvokeContextMenuAction(factoryContextMenuAction.Function, factoryContextMenuAction.ProductionChainName)
+        };
+    }
+
+    private void InvokeContextMenuAction(Action<Furniture, string> function, string arg)
+    {
+        function(this, arg);
     }
 
     private void InvokeContextMenuLuaAction(string luaFunction, Character character)
