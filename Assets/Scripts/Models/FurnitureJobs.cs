@@ -8,6 +8,7 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 using MoonSharp.Interpreter;
 using UnityEngine;
@@ -120,6 +121,18 @@ public class FurnitureJobs
     public int Count()
     {
         return activeJobs.Count;
+    }
+
+    /// <summary>
+    /// Checks for first furniture job with specific condition.
+    /// </summary>
+    /// <param name="predicate"></param>
+    /// <param name="job">Job fulfilling predicate.</param>
+    /// <returns>True if there is job with predicate.</returns>
+    public bool HasJobWithPredicate(Func<Job, bool> predicate, out Job job)
+    {
+        job = activeJobs.FirstOrDefault(predicate);
+        return job != null;
     }
 
     /// <summary>
