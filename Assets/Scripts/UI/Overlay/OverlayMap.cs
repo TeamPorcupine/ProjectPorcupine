@@ -256,6 +256,7 @@ public class OverlayMap : MonoBehaviour
         {
             meshRenderer.enabled = false;
             currentOverlay = name;
+            HideGUI();
             return;
         }
         else if (overlays.ContainsKey(name))
@@ -283,6 +284,8 @@ public class OverlayMap : MonoBehaviour
 
             ColorMapSG = descr.colorMap;
             Bake();
+
+            ShowGUI();
         }
         else
         {
@@ -332,9 +335,13 @@ public class OverlayMap : MonoBehaviour
         // Build GUI.
         CreateGUI();
 
+        SetOverlay("None");
+
+        HideGUI();
+
         // TODO: remove this dummy set size.
         SetSize(100, 100);
-        SetOverlay("None");
+
     }
 
     /// <summary>
@@ -555,5 +562,24 @@ public class OverlayMap : MonoBehaviour
         dropdown.AddOptions(options);
         dropdown.onValueChanged.AddListener(
             (int idx) => { SetOverlay(dropdown.captionText.text); });
+    }
+
+    private void HideGUI()
+    {
+        textView.SetActive(false);
+        colorMapView.SetActive(false);
+        parentPanel.GetComponentInChildren<UnityEngine.UI.Image>().enabled = false;
+    }
+
+    private void ShowGUI()
+    {
+        textView.SetActive(true);
+        parentPanel.GetComponentInChildren<UnityEngine.UI.Image>().enabled = true;
+
+        colorMapView.SetActive(true);
+
+        Material overlayMaterial = new Material(Resources.Load<Material>("Shaders/UI-Unlit-Transparent"));
+        colorMapView.GetComponent<UnityEngine.UI.Image>().material = overlayMaterial;
+        GenerateColorMap();
     }
 }
