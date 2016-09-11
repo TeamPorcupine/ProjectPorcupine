@@ -518,7 +518,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 break;
             }
 
-            string statType = reader.GetAttribute("statType");
+            string statType = reader.GetAttribute("type");
             Stat stat = GetStat(statType);
             if (stat == null)
             {
