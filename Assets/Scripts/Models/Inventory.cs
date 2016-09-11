@@ -84,6 +84,17 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
 
     public bool IsSelected { get; set; }
 
+    public static Inventory ReadXmlFromSave(XmlReader reader)
+    {
+        Inventory inventory = new Inventory(
+                    reader.GetAttribute("type"),
+                    int.Parse(reader.GetAttribute("stackSize") ?? "0"))
+        {
+            Locked = bool.Parse(reader.GetAttribute("locked") ?? false.ToString())
+        };
+        return inventory;
+    }
+
     public Inventory Clone()
     {
         return new Inventory(this);
@@ -138,17 +149,6 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
 
     public void ReadXml(XmlReader reader)
     {
-    }
-
-    public static Inventory ReadXmlFromSave(XmlReader reader)
-    {
-        Inventory inventory = new Inventory(
-                    reader.GetAttribute("type"),
-                    int.Parse(reader.GetAttribute("stackSize") ?? "0"))
-        {
-            Locked = bool.Parse(reader.GetAttribute("locked") ?? false.ToString())
-        };
-        return inventory;
     }
 
     public void ReadXmlFromPrototype(XmlReader reader)
