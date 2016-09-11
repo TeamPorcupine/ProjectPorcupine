@@ -72,7 +72,7 @@ public class WorldController : MonoBehaviour
             return timeManager.TimeScale;
         }
     }
-    
+
     // Use this for initialization.
     public void OnEnable()
     {
@@ -223,7 +223,7 @@ public class WorldController : MonoBehaviour
         bool developerMode = !Settings.GetSetting("DialogBoxSettings_developerModeToggle", false);
         Settings.SetSetting("DialogBoxSettings_developerModeToggle", developerMode);
         spawnInventoryController.SetUIVisibility(developerMode);
-        FurnitureBuildMenu.instance.RebuildMenuButtons(developerMode);
+        ///FurnitureBuildMenu.instance.RebuildMenuButtons(developerMode);
     }
 
     private void CreateEmptyWorld()

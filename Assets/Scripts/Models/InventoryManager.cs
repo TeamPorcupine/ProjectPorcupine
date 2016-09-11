@@ -138,7 +138,7 @@ public class InventoryManager
             {
                 if (inventory.Tile == null ||
                     inventory.Tile.Furniture == null ||
-                    inventory.Tile.Furniture.ObjectType != "Stockpile" ||
+                    inventory.Tile.Furniture.Type != "Stockpile" ||
                     inventory.Tile.Furniture.HasTypeTag("Stockpile"))
                 {
                     continue;
