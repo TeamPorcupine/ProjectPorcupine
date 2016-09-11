@@ -82,7 +82,8 @@ public class ModsManager
     }
 
     /// <summary>
-    /// Loads the given file from the given folder in the base and inside the mods and calls the Delegate.
+    /// Loads the given file from the given folder in the base and inside the mods and
+    /// calls the Action with the file path.
     /// </summary>
     /// <param name="folderName">Folder name.</param>
     /// <param name="fileName">File name.</param>

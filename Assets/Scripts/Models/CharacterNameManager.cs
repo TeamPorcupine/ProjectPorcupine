@@ -7,10 +7,11 @@
 // ====================================================
 #endregion
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// Character name manager that holds all the possible names and tryes to give a random and unused name everytime is requested.
+/// Character name manager that holds all the possible names and tries to give a random and unused name everytime is requested.
 /// </summary>
 public class CharacterNameManager
 {
@@ -27,19 +28,13 @@ public class CharacterNameManager
     }
 
     /// <summary>
-    /// Load new names to use for Characters and add them in a random way.
+    /// Load new names to use for Characters.
     /// </summary>
     /// <param name="nameStrings">An array of name strings.</param>
     public static void LoadNames(string[] nameStrings)
     {
         // Randomize the given strings
-        for (int i = 0; i < nameStrings.Length; i++)
-        {
-            int index = Random.Range(0, nameStrings.Length - 1);
-            string tempName = nameStrings[index];
-            nameStrings[index] = nameStrings[i];
-            nameStrings[i] = tempName;
-        }
+        nameStrings.OrderBy(Random.Range(0f, 1f));
 
         // Add all the names to the unused queue in the random order
         foreach (string name in nameStrings)
@@ -49,9 +44,9 @@ public class CharacterNameManager
     }
 
     /// <summary>
-    /// Gets a name which wasn't used before.
+    /// Returns a randomly chosen name, prioritizing names which have not been used yet.
     /// </summary>
-    /// <returns>Psossibly an unused name.</returns>
+    /// <returns>A randomly chosen name.</returns>
     public static string GetNewName()
     {
         string name = unusedNames.Dequeue();
