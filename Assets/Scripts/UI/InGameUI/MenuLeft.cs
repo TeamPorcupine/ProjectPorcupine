@@ -6,38 +6,51 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System.Collections;
 using UnityEngine;
 
-public class UIMenuController : MonoBehaviour
+public class MenuLeft : MonoBehaviour
 {
     // This is the parent of the menus.
     private Transform parent;
 
-    // Use this for initialization.
-    private void Awake()
+    public GameObject CurrentlyOpen
     {
-        // Set the parent for all menu to uses.
-        parent = this.gameObject.transform;
-
-        // Add the menus.
-        AddMenu("MenuTop");
-        AddMenu("MenuBottom");
-        AddMenu("MenuLeft");
-        AddMenu("Headlines");
+        get;
+        private set;
     }
 
-    private void Start()
+    // Use this for initialization
+    public void Start()
     {
-        // Add the Right Menu because of the mouse controller needed do it here.
-        AddMenu("MenuRight");
+        parent = this.gameObject.transform;
+
+        AddMenu("ConstructionMenu");
+    }
+
+    public void OpenMenu(string menuName)
+    {
+        GameObject menu = parent.FindChild(menuName).gameObject;
+
+        CloseMenu();
+
+        menu.SetActive(true);
+        CurrentlyOpen = menu;
+    }
+
+    public void CloseMenu()
+    {
+        if (CurrentlyOpen != null)
+        {
+            CurrentlyOpen.SetActive(false);
+            CurrentlyOpen = null;
+        }
     }
 
     // Use this function to add all the menus.
     private void AddMenu(string menuName)
     {
         GameObject tempGoObj;
-        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/" + menuName));
+        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/MenuLeft/" + menuName));
         tempGoObj.name = menuName;
         tempGoObj.transform.SetParent(parent, false);
     }
