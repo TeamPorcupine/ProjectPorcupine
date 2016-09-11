@@ -100,6 +100,7 @@
             <Param name="openness" value="0" />
             <Param name="is_opening" value="0" />
             <Param name="thermal_diffusivity" value="0.00001" />
+            <Param name="pressure_locked" value="0" />
         </Params>
 
         <Action event="OnUpdate" functionName="OnUpdate_AirlockDoor" />

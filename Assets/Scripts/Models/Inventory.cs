@@ -132,7 +132,6 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
 
     public void ReadXml(XmlReader reader)
     {
-
     }
 
     public IEnumerable<ContextMenuAction> GetContextMenuActions(ContextMenu contextMenu)
