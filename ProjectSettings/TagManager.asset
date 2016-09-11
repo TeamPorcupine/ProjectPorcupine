@@ -3,7 +3,9 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - DeleteButton
+  - AreYouSureDelete
   layers:
   - Default
   - TransparentFX
@@ -38,14 +40,14 @@ TagManager:
   - 
   - 
   m_SortingLayers:
-  - name: Default
-    uniqueID: 0
-    locked: 0
   - name: Tiles
     uniqueID: 2329541923
     locked: 0
   - name: Furniture
     uniqueID: 1892590203
+    locked: 0
+  - name: Power
+    uniqueID: 186703983
     locked: 0
   - name: Jobs
     uniqueID: 3858056555
@@ -61,4 +63,7 @@ TagManager:
     locked: 0
   - name: TileUI
     uniqueID: 656026085
+    locked: 0
+  - name: Default
+    uniqueID: 0
     locked: 0

@@ -1,27 +1,41 @@
-﻿//=======================================================================
-// Copyright Martin "quill18" Glaude 2015-2016.
-//		http://quill18.com
-//=======================================================================
-
-using UnityEngine;
-using System.Collections.Generic;
+#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
 using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class JobQueue
 {
-    Queue<Job> jobQueue;
-
-    public event Action<Job> cbJobCreated;
+    private SortedList<Job.JobPriority, Job> jobQueue;
 
     public JobQueue()
     {
-        jobQueue = new Queue<Job>();
+        jobQueue = new SortedList<Job.JobPriority, Job>(new DuplicateKeyComparer<Job.JobPriority>(true));
+    }
+
+    public event Action<Job> OnJobCreated;
+
+    public bool IsEmpty()
+    {
+        return jobQueue.Count == 0;
+    }
+
+    // Returns the job count in the queue.
+    // (Necessary, since jobQueue is private).
+    public int GetCount()
+    {
+        return jobQueue.Count;
     }
 
     public void Enqueue(Job j)
     {
-        //Debug.Log("Adding job to queue. Existing queue size: " + jobQueue.Count);
-        if (j.jobTime < 0)
+        if (j.JobTime < 0)
         {
             // Job has a negative job time, so it's not actually
             // supposed to be queued up.  Just insta-complete it.
@@ -29,36 +43,43 @@ public class JobQueue
             return;
         }
 
-        jobQueue.Enqueue(j);
-
-        if (cbJobCreated != null)
+        jobQueue.Add(j.Priority, j);
+        
+        if (OnJobCreated != null)
         {
-            cbJobCreated(j);
+            OnJobCreated(j);
         }
     }
 
     public Job Dequeue()
     {
         if (jobQueue.Count == 0)
+        {
             return null;
+        }
 
-        return jobQueue.Dequeue();
+        Job job = jobQueue.Values[0];
+        jobQueue.RemoveAt(0);
+        return job;
     }
-    
+
     public void Remove(Job j)
     {
-        // TODO: Check docs to see if there's a less memory/swappy solution
-        List<Job> jobs = new List<Job>(jobQueue);
-
-        if (jobs.Contains(j) == false)
+        if (jobQueue.ContainsValue(j) == false)
         {
-            //Debug.LogError("Trying to remove a job that doesn't exist on the queue.");
             // Most likely, this job wasn't on the queue because a character was working it!
             return;
         }
 
-        jobs.Remove(j);
-        jobQueue = new Queue<Job>(jobs);
+        jobQueue.RemoveAt(jobQueue.IndexOfValue(j));
     }
 
+    public IEnumerable<Job> PeekJobs()
+    {
+        // For debugging only. For the real thing we want to return something safer (like preformatted strings.).
+        foreach (Job job in jobQueue.Values)
+        {
+            yield return job;
+        }
+    }
 }
