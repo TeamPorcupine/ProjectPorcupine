@@ -17,8 +17,10 @@ namespace Animation
     /// </summary>
     public class SpritenameAnimation
     {
-        private int frameCount;
+        public bool FlipX;
 
+        private int frameCount;
+                
         // delay between frames in seconds
         private float delay;
         private bool finished;
@@ -26,12 +28,13 @@ namespace Animation
         private string[] frames;
         private float timer = 0;
         
-        public SpritenameAnimation(string state, string[] frames, float delay = .5f, bool loops = true)
+        public SpritenameAnimation(string state, string[] frames, float delay = .5f, bool loops = true, bool flipX = false)
         {
             this.State = state;
             this.frames = frames;
             this.delay = delay;
             this.loops = loops;
+            this.FlipX = flipX;
 
             frameCount = this.frames.Length;
             CurrentFrame = 0;
