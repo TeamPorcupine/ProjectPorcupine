@@ -1,20 +1,34 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
 using System.Collections;
-using System.Xml.Serialization;
 using System.IO;
-
+using System.Xml.Serialization;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class DialogBoxSaveGame : DialogBoxLoadSaveGame
 {
-
+    public override void ShowDialog()
+    {
+        base.ShowDialog();
+        DialogListItem[] listItems = GetComponentsInChildren<DialogListItem>();
+        foreach (DialogListItem listItem in listItems)
+        {
+            listItem.doubleclick = OkayWasClicked;
+        }
+    }
 
     public void OkayWasClicked()
     {
         // TODO:
         // check to see if the file already exists
         // if so, ask for overwrite confirmation.
-
         string fileName = gameObject.GetComponentInChildren<InputField>().text;
 
         // TODO: Is the filename valid?  I.E. we may want to ban path-delimiters (/ \ or :) and 
@@ -26,17 +40,14 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
         //    C:\Users\Quill18\ApplicationData\MyCompanyName\MyGameName\Saves\SaveGameName123.sav
 
         // Application.persistentDataPath == C:\Users\<username>\ApplicationData\MyCompanyName\MyGameName\
-
         string filePath = System.IO.Path.Combine(WorldController.Instance.FileSaveBasePath(), fileName + ".sav");
 
         // At this point, filePath should look very much like
         //     C:\Users\Quill18\ApplicationData\MyCompanyName\MyGameName\Saves\SaveGameName123.sav
-
         if (File.Exists(filePath) == true)
         {
             // TODO: Do file overwrite dialog box.
-
-            Debug.LogWarning("File already exists -- overwriting the file for now.");
+            Debug.ULogErrorChannel("DialogBoxSaveGame", "File already exists -- overwriting the file for now.");
         }
 
         CloseDialog();
@@ -49,18 +60,18 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
         // This function gets called when the user confirms a filename
         // from the save dialog box.
 
-        // Get the file name from the save file dialog box
-
-        Debug.Log("SaveWorld button was clicked.");
+        // Get the file name from the save file dialog box.
+        Debug.ULogErrorChannel("DialogBoxSaveGame", "SaveWorld button was clicked.");
 
         XmlSerializer serializer = new XmlSerializer(typeof(World));
         TextWriter writer = new StringWriter();
-        serializer.Serialize(writer, WorldController.Instance.world);
+        serializer.Serialize(writer, WorldController.Instance.World);
         writer.Close();
 
+        // Leaving this unchanged as UberLogger doesn't handle multi-line messages well.
         Debug.Log(writer.ToString());
 
-        //PlayerPrefs.SetString("SaveGame00", writer.ToString());
+        // PlayerPrefs.SetString("SaveGame00", writer.ToString());
 
         // Create/overwrite the save file with the xml text.
 
@@ -75,6 +86,5 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
         }
 
         File.WriteAllText(filePath, writer.ToString());
-
     }
 }

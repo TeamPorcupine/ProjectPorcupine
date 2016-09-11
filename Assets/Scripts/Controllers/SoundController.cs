@@ -1,43 +1,40 @@
-﻿using UnityEngine;
+#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
 using System.Collections;
+using UnityEngine;
 
-public class SoundController : MonoBehaviour
+public class SoundController
 {
-    float soundCooldown = 0;
+    private float soundCooldown = 0;
 
     // Use this for initialization
-    void Start()
+    public SoundController(World world)
     {
-        WorldController.Instance.world.cbFurnitureCreated += OnFurnitureCreated;
-
-        WorldController.Instance.world.cbTileChanged += OnTileChanged;
+        world.OnFurnitureCreated += OnFurnitureCreated;
+        world.OnTileChanged += OnTileChanged;
     }
-	
+    
     // Update is called once per frame
-    void Update()
+    public void Update(float deltaTime)
     {
-        soundCooldown -= Time.deltaTime;
-    }
-
-    void OnTileChanged(Tile tile_data)
-    {
-        // FIXME
-
-        if (soundCooldown > 0)
-            return;
-
-        AudioClip ac = Resources.Load<AudioClip>("Sounds/Floor_OnCreated");
-        AudioSource.PlayClipAtPoint(ac, Camera.main.transform.position);
-        soundCooldown = 0.1f;
+        soundCooldown -= deltaTime;
     }
 
     public void OnFurnitureCreated(Furniture furn)
     {
         // FIXME
         if (soundCooldown > 0)
+        {
             return;
-		
-        AudioClip ac = Resources.Load<AudioClip>("Sounds/" + furn.objectType + "_OnCreated");
+        }
+
+        AudioClip ac = Resources.Load<AudioClip>("Sounds/" + furn.Type + "_OnCreated");
 
         if (ac == null)
         {
@@ -47,6 +44,19 @@ public class SoundController : MonoBehaviour
             ac = Resources.Load<AudioClip>("Sounds/Wall_OnCreated");
         }
 
+        AudioSource.PlayClipAtPoint(ac, Camera.main.transform.position);
+        soundCooldown = 0.1f;
+    }
+
+    private void OnTileChanged(Tile tileData)
+    {
+        // FIXME
+        if (soundCooldown > 0)
+        {
+            return;
+        }
+
+        AudioClip ac = Resources.Load<AudioClip>("Sounds/Floor_OnCreated");
         AudioSource.PlayClipAtPoint(ac, Camera.main.transform.position);
         soundCooldown = 0.1f;
     }
