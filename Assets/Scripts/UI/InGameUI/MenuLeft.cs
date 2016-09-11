@@ -47,7 +47,8 @@ public class MenuLeft : MonoBehaviour
         {
             CurrentlyOpen.SetActive(false);
 
-            if (CurrentlyOpen.name == "ConstructionMenu") {
+            if (CurrentlyOpen.name == "ConstructionMenu")
+            {
                 WorldController.Instance.spawnInventoryController.SetUIVisibility(Settings.GetSetting("DialogBoxSettings_developerModeToggle", false));
             }
 

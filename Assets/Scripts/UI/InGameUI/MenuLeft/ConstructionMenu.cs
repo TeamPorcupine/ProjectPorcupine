@@ -25,7 +25,6 @@ public class ConstructionMenu : MonoBehaviour
 
     private MenuLeft menuLeft;
 
-
     public void RebuildMenuButtons(bool showAllFurniture = false)
     {
         foreach (GameObject gameObject in furnitureItems)
@@ -52,9 +51,11 @@ public class ConstructionMenu : MonoBehaviour
 
     private void Start()
     {
+        menuLeft = this.transform.GetComponentInParent<MenuLeft>();
+
         this.transform.FindChild("Close Button").GetComponent<Button>().onClick.AddListener(delegate
         {
-            this.transform.GetComponentInParent<MenuLeft>().CloseMenu();
+            menuLeft.CloseMenu();
         });
 
         RenderDeconstructButton();
@@ -62,9 +63,6 @@ public class ConstructionMenu : MonoBehaviour
         RenderFurnitureButtons();
 
         lastLanguage = LocalizationTable.currentLanguage;
-
-        menuLeft = this.transform.parent.GetComponent<MenuLeft>();
-
     }
 
     private void RenderFurnitureButtons()
