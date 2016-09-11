@@ -150,7 +150,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
             funcPositionValidation = (Func<Tile, bool>)other.funcPositionValidation.Clone();
         }
 
-        tileTypeBuildPermissions = other.tileTypeBuildPermissions;
+        tileTypeBuildPermissions = new HashSet<string>(other.tileTypeBuildPermissions);
 
         LocalizationCode = other.LocalizationCode;
         UnlocalizedDescription = other.UnlocalizedDescription;
