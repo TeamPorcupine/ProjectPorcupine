@@ -47,13 +47,10 @@ namespace Animation
 
         // current shown frame
         private int prevFrameIndex;
-
-        // Holds the actual animation sprites from the spritesheet
-        private Sprite[] sprites;
-
+        
         // Collection of animations
-        private Dictionary<AnimationType, FrameAnimation> animations;
-        private FrameAnimation currentAnimation;
+        private Dictionary<AnimationType, SpritenameAnimation> animations;
+        private SpritenameAnimation currentAnimation;
         private AnimationType currentAnimationType;
 
         private float lastCharYPosition = 0;
@@ -63,62 +60,25 @@ namespace Animation
             character = c;
             renderer = r;
 
-            Sprite[] sprites =
-                {
-                    SpriteManager.current.GetSprite("Character", "IdleBack"),
-                    SpriteManager.current.GetSprite("Character", "IdleSide"),
-                    SpriteManager.current.GetSprite("Character", "IdleFront"),
-                    SpriteManager.current.GetSprite("Character", "WalkBack1"),
-                    SpriteManager.current.GetSprite("Character", "WalkBack2"),
-                    SpriteManager.current.GetSprite("Character", "WalkSide1"),
-                    SpriteManager.current.GetSprite("Character", "WalkSide2"),
-                    SpriteManager.current.GetSprite("Character", "WalkFront1"),
-                    SpriteManager.current.GetSprite("Character", "WalkFront2"),
-
-                    SpriteManager.current.GetSprite("Character", "2IdleBack"),
-                    SpriteManager.current.GetSprite("Character", "2IdleSide"),
-                    SpriteManager.current.GetSprite("Character", "2IdleFront"),
-                    SpriteManager.current.GetSprite("Character", "2WalkBack1"),
-                    SpriteManager.current.GetSprite("Character", "2WalkBack2"),
-                    SpriteManager.current.GetSprite("Character", "2WalkSide1"),
-                    SpriteManager.current.GetSprite("Character", "2WalkSide2"),
-                    SpriteManager.current.GetSprite("Character", "2WalkFront1"),
-                    SpriteManager.current.GetSprite("Character", "2WalkFront2")
-                };
-            SetSprites(sprites);
+            SetSprites();
         }
 
         public int CurrentSortingOrder { get; private set; }
-
-        public void SetSprites(Sprite[] s)
+        
+        /// <summary>
+        /// Sets sortingOrder on the character and returns the value.
+        /// </summary>
+        public int SetAndGetSortOrder()
         {
-            sprites = s;
-            
-            animations = new Dictionary<AnimationType, FrameAnimation>();
+            // if there was change in Y position, update the sorting order
+            if (lastCharYPosition - character.Y != 0f)
+            {
+                CurrentSortingOrder = Mathf.RoundToInt(character.Y * 100f) * -1;
+                renderer.sortingOrder = CurrentSortingOrder;
+            }
 
-            animations.Add(AnimationType.HELMET_IDLE_NORTH, new FrameAnimation("in", new int[] { 0 }, 0.7f, false, false));
-            animations.Add(AnimationType.HELMET_IDLE_EAST, new FrameAnimation("ie", new int[] { 1 }, 0.7f, false, false));
-            animations.Add(AnimationType.HELMET_IDLE_SOUTH, new FrameAnimation("is", new int[] { 2 }, 0.7f, false, false));
-            animations.Add(AnimationType.HELMET_IDLE_WEST, new FrameAnimation("iw", new int[] { 1 }, 0.7f, false, true));
-
-            animations.Add(AnimationType.HELMET_WALK_NORTH, new FrameAnimation("wn", new int[] { 3, 4 }, 0.7f));
-            animations.Add(AnimationType.HELMET_WALK_EAST, new FrameAnimation("we", new int[] { 5, 6 }, 0.7f));
-            animations.Add(AnimationType.HELMET_WALK_SOUTH, new FrameAnimation("ws", new int[] { 7, 8 }, 0.7f));
-            animations.Add(AnimationType.HELMET_WALK_WEST, new FrameAnimation("ww", new int[] { 5, 6 }, 0.7f, true, true));
-
-            animations.Add(AnimationType.NOHELMET_IDLE_NORTH, new FrameAnimation("in", new int[] { 9 }, 0.2f, false, false));
-            animations.Add(AnimationType.NOHELMET_IDLE_EAST, new FrameAnimation("ie", new int[] { 10 }, 0.2f, false, false));
-            animations.Add(AnimationType.NOHELMET_IDLE_SOUTH, new FrameAnimation("is", new int[] { 11 }, 0.2f, false, false));
-            animations.Add(AnimationType.NOHELMET_IDLE_WEST, new FrameAnimation("iw", new int[] { 10 }, 0.2f, false, true));
-
-            animations.Add(AnimationType.NOHELMET_WALK_NORTH, new FrameAnimation("wn", new int[] { 12, 13 }, 0.2f));
-            animations.Add(AnimationType.NOHELMET_WALK_EAST, new FrameAnimation("we", new int[] { 14, 15 }, 0.2f));
-            animations.Add(AnimationType.NOHELMET_WALK_SOUTH, new FrameAnimation("ws", new int[] { 16, 17 }, 0.2f));
-            animations.Add(AnimationType.NOHELMET_WALK_WEST, new FrameAnimation("ww", new int[] { 14, 15 }, 0.2f, true, true));
-
-            currentAnimationType = AnimationType.HELMET_IDLE_SOUTH;
-            currentAnimation = animations[currentAnimationType];
-            prevFrameIndex = 0;
+            lastCharYPosition = character.Y;
+            return renderer.sortingOrder;
         }
 
         public void Update(float deltaTime)
@@ -141,6 +101,10 @@ namespace Animation
             {
                 currentAnimationType = (AnimationType)newAnimation;
                 currentAnimation = animations[currentAnimationType];
+
+                // Make sure we update the sprite
+                prevFrameIndex = -1;
+
                 if (currentAnimation.FlipX == true && renderer.flipX == false)
                 {
                     renderer.flipX = true;
@@ -153,25 +117,48 @@ namespace Animation
 
             currentAnimation.Update(deltaTime);
 
-            if (prevFrameIndex != currentAnimation.CurrentIndex)
+            if (prevFrameIndex != currentAnimation.CurrentFrame)
             {
-                ShowSprite(currentAnimation.CurrentIndex);
-                prevFrameIndex = currentAnimation.CurrentIndex;
+                ShowSprite(currentAnimation.CurrentFrameName);
+                prevFrameIndex = currentAnimation.CurrentFrame;
             }
-
-            // if there was change in Y position, update the sorting order
-            if (lastCharYPosition - character.Y != 0f)
-            {
-                CurrentSortingOrder = Mathf.RoundToInt(character.Y * 100f) * -1;
-                renderer.sortingOrder = CurrentSortingOrder;
-            }
-
-            lastCharYPosition = character.Y;
         }
 
-        private void ShowSprite(int s)
+        private void SetSprites()
         {
-            renderer.sprite = sprites[s];
+            animations = new Dictionary<AnimationType, SpritenameAnimation>();
+
+            animations.Add(AnimationType.HELMET_IDLE_NORTH, new SpritenameAnimation(AnimationType.HELMET_IDLE_NORTH.ToString(), new string[] { "IdleBack" }, 0.7f, false));
+            animations.Add(AnimationType.HELMET_IDLE_EAST, new SpritenameAnimation(AnimationType.HELMET_IDLE_EAST.ToString(), new string[] { "IdleSide" }, 0.7f, false));
+            animations.Add(AnimationType.HELMET_IDLE_SOUTH, new SpritenameAnimation(AnimationType.HELMET_IDLE_SOUTH.ToString(), new string[] { "IdleFront" }, 0.7f, false));
+            animations.Add(AnimationType.HELMET_IDLE_WEST, new SpritenameAnimation(AnimationType.HELMET_IDLE_WEST.ToString(), new string[] { "IdleSide" }, 0.7f, false, true));
+
+            animations.Add(AnimationType.HELMET_WALK_NORTH, new SpritenameAnimation(AnimationType.HELMET_WALK_NORTH.ToString(), new string[] { "WalkBack1", "WalkBack2" }, 0.7f));
+            animations.Add(AnimationType.HELMET_WALK_EAST, new SpritenameAnimation(AnimationType.HELMET_WALK_EAST.ToString(), new string[] { "WalkSide1", "WalkSide2" }, 0.7f));
+            animations.Add(AnimationType.HELMET_WALK_SOUTH, new SpritenameAnimation(AnimationType.HELMET_WALK_SOUTH.ToString(), new string[] { "WalkFront1", "WalkFront2" }, 0.7f));
+            animations.Add(AnimationType.HELMET_WALK_WEST, new SpritenameAnimation(AnimationType.HELMET_WALK_WEST.ToString(), new string[] { "WalkSide1", "WalkSide2" }, 0.7f, true, true));
+
+            animations.Add(AnimationType.NOHELMET_IDLE_NORTH, new SpritenameAnimation(AnimationType.NOHELMET_IDLE_NORTH.ToString(), new string[] { "2IdleBack" }, 0.7f, false));
+            animations.Add(AnimationType.NOHELMET_IDLE_EAST, new SpritenameAnimation(AnimationType.NOHELMET_IDLE_EAST.ToString(), new string[] { "2IdleSide" }, 0.7f, false));
+            animations.Add(AnimationType.NOHELMET_IDLE_SOUTH, new SpritenameAnimation(AnimationType.NOHELMET_IDLE_SOUTH.ToString(), new string[] { "2IdleFront" }, 0.7f, false));
+            animations.Add(AnimationType.NOHELMET_IDLE_WEST, new SpritenameAnimation(AnimationType.NOHELMET_IDLE_WEST.ToString(), new string[] { "2IdleSide" }, 0.7f, false, true));
+
+            animations.Add(AnimationType.NOHELMET_WALK_NORTH, new SpritenameAnimation(AnimationType.NOHELMET_WALK_NORTH.ToString(), new string[] { "2WalkBack1", "2WalkBack2" }, 0.7f));
+            animations.Add(AnimationType.NOHELMET_WALK_EAST, new SpritenameAnimation(AnimationType.NOHELMET_WALK_EAST.ToString(), new string[] { "2WalkSide1", "2WalkSide2" }, 0.7f));
+            animations.Add(AnimationType.NOHELMET_WALK_SOUTH, new SpritenameAnimation(AnimationType.NOHELMET_WALK_SOUTH.ToString(), new string[] { "2WalkFront1", "2WalkFront2" }, 0.7f));
+            animations.Add(AnimationType.NOHELMET_WALK_WEST, new SpritenameAnimation(AnimationType.NOHELMET_WALK_WEST.ToString(), new string[] { "2WalkSide1", "2WalkSide2" }, 0.7f, true, true));
+
+            currentAnimationType = AnimationType.HELMET_IDLE_SOUTH;
+            currentAnimation = animations[currentAnimationType];
+            prevFrameIndex = 0;
+        }
+
+        private void ShowSprite(string spriteName)
+        {
+            if (renderer != null)
+            {
+                renderer.sprite = SpriteManager.current.GetSprite("Character", spriteName);                
+            }
         }
     }
 }

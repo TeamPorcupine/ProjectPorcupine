@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
 // This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
@@ -22,6 +22,8 @@ public class ConstructionMenu : MonoBehaviour
     private string lastLanguage;
 
     private bool showAllFurniture;
+
+    private MenuLeft menuLeft;
 
     public void RebuildMenuButtons(bool showAllFurniture = false)
     {
@@ -49,9 +51,11 @@ public class ConstructionMenu : MonoBehaviour
 
     private void Start()
     {
+        menuLeft = this.transform.GetComponentInParent<MenuLeft>();
+
         this.transform.FindChild("Close Button").GetComponent<Button>().onClick.AddListener(delegate
         {
-            this.transform.GetComponentInParent<MenuLeft>().CloseMenu();
+            menuLeft.CloseMenu();
         });
 
         RenderDeconstructButton();
@@ -95,7 +99,7 @@ public class ConstructionMenu : MonoBehaviour
             button.onClick.AddListener(delegate
             {
                 buildModeController.SetMode_BuildFurniture(objectId);
-                this.gameObject.SetActive(false);
+                menuLeft.CloseMenu();
             });
 
             // http://stackoverflow.com/questions/1757112/anonymous-c-sharp-delegate-within-a-loop
