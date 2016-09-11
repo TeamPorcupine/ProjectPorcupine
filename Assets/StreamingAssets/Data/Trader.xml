@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Traders>
-    <Trader objectType="Wire Inc.">
+    <Trader type="Wire Inc.">
         <potentialNames>
             <name>Wire Inc.</name>
             <name>Connectron Corp.</name>
@@ -11,11 +11,11 @@
         <minSaleMarginMultiplier>1.2</minSaleMarginMultiplier>
         <maxSaleMarginMultiplier>1.5</maxSaleMarginMultiplier>
         <potentialStock>
-            <Inventory objectCategory="inv_cat_raw" rarity="0" minQuantity="100" maxQuantity="150"/>
+            <Inventory category="inv_cat_raw" rarity="0" minQuantity="100" maxQuantity="150"/>
         </potentialStock>
     </Trader>
 
-    <Trader objectType="Raw Depot">
+    <Trader type="Raw Depot">
         <potentialNames>
             <name>Raw Depot</name>
             <name>Miners Delight</name>

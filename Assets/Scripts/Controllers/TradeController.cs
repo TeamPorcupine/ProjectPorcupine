@@ -104,12 +104,12 @@ public class TradeController
             if (tradeItem.TradeAmount > 0)
             {
                 Tile tile = WorldController.Instance.World.GetFirstTileWithNoInventoryAround(6, (int)tradingCoordinates.x, (int)tradingCoordinates.y, (int)tradingCoordinates.z);
-                Inventory inv = new Inventory(tradeItem.ObjectType, tradeItem.TradeAmount, tradeItem.TradeAmount);
+                Inventory inv = new Inventory(tradeItem.Type, tradeItem.TradeAmount, tradeItem.TradeAmount);
                 WorldController.Instance.World.inventoryManager.PlaceInventory(tile, inv);
             }
             else if (tradeItem.TradeAmount < 0)
             {
-                World.Current.inventoryManager.RemoveInventoryOfType(tradeItem.ObjectType, -tradeItem.TradeAmount, true);
+                World.Current.inventoryManager.RemoveInventoryOfType(tradeItem.Type, -tradeItem.TradeAmount, true);
             }
         }
     }
