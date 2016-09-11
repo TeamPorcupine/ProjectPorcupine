@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using UnityEngine;
+using ProjectPorcupine.Noise;
 
 public class WorldGenerator
 {
@@ -47,7 +48,7 @@ public class WorldGenerator
         int depth = World.Current.Depth;
         useOtherNoiseSource = useOtherWorldGen;
 
-        noiseMap = Noise.GeneratePerlinNoiseMap(width, height, depth, seed, asteroidNoiseScale, asteroidNoiseOctaves, asteroidNoisePersistance, asteroidNoiseLacunarity);       
+        noiseMap = Noise.GetPerlinNoiseMap(width, height, depth, seed, asteroidNoiseScale, asteroidNoiseOctaves, asteroidNoisePersistance, asteroidNoiseLacunarity);       
 
         StartAreaCreation(width, height, depth);
         MapGeneration(width, height, depth);
