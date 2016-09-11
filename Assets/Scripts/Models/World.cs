@@ -750,15 +750,8 @@ public class World : IXmlSerializable
                 int z = int.Parse(reader.GetAttribute("Z"));
 
                 // Create our inventory from the file
-                Inventory inv = new Inventory(
-                    reader.GetAttribute("type"),
-                    int.Parse(reader.GetAttribute("stackSize")),
-                    int.Parse(reader.GetAttribute("maxStackSize")))
-                {
-                    Locked = bool.Parse(reader.GetAttribute("locked"))
-                };
-
-                inventoryManager.PlaceInventory(tiles[x, y, z], inv);
+                Inventory inventory = Inventory.ReadXmlFromSave(reader);
+                inventoryManager.PlaceInventory(tiles[x, y, z], inventory);
             }
             while (reader.ReadToNextSibling("Inventory"));
         }
@@ -842,15 +835,8 @@ public class World : IXmlSerializable
                                 do
                                 {
                                     // Create our inventory from the file
-                                    Inventory inv = new Inventory(
-                                        reader.GetAttribute("type"),
-                                        int.Parse(reader.GetAttribute("stackSize")),
-                                        int.Parse(reader.GetAttribute("maxStackSize")))
-                                    {
-                                        Locked = bool.Parse(reader.GetAttribute("locked"))
-                                    };
-
-                                    inventoryManager.PlaceInventory(character, inv);
+                                    Inventory inventory = Inventory.ReadXmlFromSave(reader);
+                                    inventoryManager.PlaceInventory(character, inventory);
                                 }
                                 while (reader.ReadToNextSibling("Inventory"));
                             }

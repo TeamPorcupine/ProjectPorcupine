@@ -130,7 +130,7 @@ public class WorldGenerator
                                         stackSize = inv.MaxStackSize;
                                     }
 
-                                    world.inventoryManager.PlaceInventory(tile, new Inventory(inv.Type, stackSize, inv.MaxStackSize));
+                                    world.inventoryManager.PlaceInventory(tile, new Inventory(inv.Type, stackSize));
                                     break;
                                     }
                                 }
@@ -199,11 +199,8 @@ public class WorldGenerator
                                 {
                                     if (res_reader.Name == "Resource")
                                     {
-                                        res.Add(new Inventory(
-                                                res_reader.GetAttribute("type"),
-                                                Mathf.CeilToInt(float.Parse(res_reader.GetAttribute("weightedChance"))),
-                                                int.Parse(res_reader.GetAttribute("maxStack"))));
-
+                                        Inventory inventory = Inventory.ReadXmlFromSave(res_reader);
+                                        res.Add(inventory);
                                         resMin.Add(int.Parse(res_reader.GetAttribute("min")));
                                         resMax.Add(int.Parse(res_reader.GetAttribute("max")));
                                     }

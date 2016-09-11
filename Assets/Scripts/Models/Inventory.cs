@@ -14,21 +14,27 @@ using System.Xml.Schema;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
 
-// Inventory are things that are lying on the floor/stockpile, like a bunch of metal bars
-// or potentially a non-installed copy of furniture (e.g. a cabinet still in the box from Ikea).
+/// <summary>
+/// Inventory are things that are lying on the floor/stockpile, like a bunch of metal bars
+/// or potentially a non-installed copy of furniture (e.g. a cabinet still in the box from Ikea).
+/// </summary>
 [MoonSharpUserData]
 public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
 {
+    public const int DefaultMaxStackSize = 50;
+    public const float DefaultBasePrice = 1.0f;
+    public const string DefaultCategory = "inv_cat_none";
+
     private int stackSize = 1;
 
     public Inventory()
     {
     }
 
-    public Inventory(string type, int stackSize, int maxStackSize = 50)
+    public Inventory(string type, int stackSize)
     {
         Type = type;
-        ImportPrototypeSettings(maxStackSize, 1f, "inv_cat_none");
+        ImportPrototypeSettings();
         StackSize = stackSize;
     }
 
@@ -46,7 +52,7 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
 
     public string Type { get; private set; }
 
-    public int MaxStackSize { get; set; }
+    public int MaxStackSize { get; private set; }
 
     public float BasePrice { get; set; }
 
@@ -92,7 +98,7 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
     {
         return string.Format("StackSize: {0}\nCategory: {1}\nBasePrice: {2:N2}", StackSize, Category, BasePrice);
     }
-    
+
     public string GetJobDescription()
     {
         return string.Empty;
@@ -134,6 +140,25 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
     {
     }
 
+    public static Inventory ReadXmlFromSave(XmlReader reader)
+    {
+        Inventory inventory = new Inventory(
+                    reader.GetAttribute("type"),
+                    int.Parse(reader.GetAttribute("stackSize") ?? "0"))
+        {
+            Locked = bool.Parse(reader.GetAttribute("locked") ?? false.ToString())
+        };
+        return inventory;
+    }
+
+    public void ReadXmlFromPrototype(XmlReader reader)
+    {
+        Type = reader.GetAttribute("type");
+        MaxStackSize = int.Parse(reader.GetAttribute("maxStackSize") ?? "50");
+        BasePrice = float.Parse(reader.GetAttribute("basePrice") ?? "1");
+        Category = reader.GetAttribute("category") ?? DefaultCategory;
+    }
+
     public IEnumerable<ContextMenuAction> GetContextMenuActions(ContextMenu contextMenu)
     {
         yield return new ContextMenuAction
@@ -144,20 +169,25 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
         };
     }
 
-    private void ImportPrototypeSettings(int defaulMaxStackSize, float defaultBasePrice, string defaultCategory)
+    private void ImportPrototypeSettings()
     {
+        if (string.IsNullOrEmpty(Type))
+        {
+            throw new ArgumentNullException("Type");
+        }
+
         if (PrototypeManager.Inventory.Has(Type))
         {
-            InventoryCommon prototype = PrototypeManager.Inventory.Get(Type);
-            MaxStackSize = prototype.maxStackSize;
-            BasePrice = prototype.basePrice;
-            Category = prototype.category;
+            Inventory prototype = PrototypeManager.Inventory.Get(Type);
+            MaxStackSize = prototype.MaxStackSize;
+            BasePrice = prototype.BasePrice;
+            Category = prototype.Category;
         }
         else
         {
-            MaxStackSize = defaulMaxStackSize;
-            BasePrice = defaultBasePrice;
-            Category = defaultCategory;
+            MaxStackSize = DefaultMaxStackSize;
+            BasePrice = DefaultBasePrice;
+            Category = DefaultCategory;
         }
     }
 
