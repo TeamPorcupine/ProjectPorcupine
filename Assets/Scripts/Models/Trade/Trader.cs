@@ -26,7 +26,7 @@ public class Trader
     /// </summary>
     public static Trader FromPlayer(Currency currency)
     {
-        Trader t = new Trader
+        Trader trader = new Trader
         {
             Name = "Player",
             SaleMarginMultiplier = 0.8f,
@@ -35,7 +35,7 @@ public class Trader
         };
 
         List<List<Inventory>> worldInventories =
-            WorldController.Instance.World.inventoryManager.inventories.Values.Select(i => i.ToList()).ToList();
+            WorldController.Instance.World.inventoryManager.Inventories.Values.Select(i => i.ToList()).ToList();
         
         foreach (List<Inventory> worldInventory in worldInventories)
         {
@@ -43,13 +43,13 @@ public class Trader
             {
                 if (inventory.Tile != null && 
                     inventory.Tile.Furniture != null &&
-                    inventory.Tile.Furniture.ObjectType == "Stockpile")
+                    inventory.Tile.Furniture.HasTypeTag("Stockpile"))
                 {
-                    t.Stock.Add(inventory);
+                    trader.Stock.Add(inventory);
                 }
             }
         }
         
-        return t;
+        return trader;
     }
 }

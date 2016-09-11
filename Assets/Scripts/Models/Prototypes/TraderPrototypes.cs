@@ -30,9 +30,9 @@ public class TraderPrototypes : XmlPrototypes<TraderPrototype>
         }
         catch (Exception e)
         {
-            LogPrototypeError(e, trader.ObjectType);
+            LogPrototypeError(e, trader.Type);
         }
 
-        Set(trader.ObjectType, trader);
+        Set(trader.Type, trader);
     }
 }
