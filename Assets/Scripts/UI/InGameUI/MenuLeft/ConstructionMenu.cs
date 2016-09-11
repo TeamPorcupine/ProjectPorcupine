@@ -19,8 +19,6 @@ public class ConstructionMenu : MonoBehaviour
     private List<GameObject> tileItems;
     private List<GameObject> taskItems;
 
-    private BuildModeController buildModeController;
-
     private string lastLanguage;
 
     private bool showAllFurniture;
@@ -56,8 +54,6 @@ public class ConstructionMenu : MonoBehaviour
             this.transform.GetComponentInParent<MenuLeft>().CloseMenu();
         });
 
-        BuildModeController buildModeController = WorldController.Instance.buildModeController;
-
         RenderDeconstructButton();
         RenderTileButtons();
         RenderFurnitureButtons();
@@ -71,6 +67,8 @@ public class ConstructionMenu : MonoBehaviour
 
         Object buttonPrefab = Resources.Load("UI/MenuLeft/ConstructionMenu/Button");
         Transform contentTransform = this.transform.FindChild("Scroll View").FindChild("Viewport").FindChild("Content");
+
+        BuildModeController buildModeController = WorldController.Instance.buildModeController;
 
         // For each furniture prototype in our world, create one instance
         // of the button to be clicked!
@@ -116,6 +114,8 @@ public class ConstructionMenu : MonoBehaviour
         Object buttonPrefab = Resources.Load("UI/MenuLeft/ConstructionMenu/Button");
         Transform contentTransform = this.transform.FindChild("Scroll View").FindChild("Viewport").FindChild("Content");
 
+        BuildModeController buildModeController = WorldController.Instance.buildModeController;
+
         TileType[] tileTypes = tileTypes = TileType.LoadedTileTypes;
 
         foreach (TileType item in tileTypes)
@@ -150,6 +150,8 @@ public class ConstructionMenu : MonoBehaviour
 
         Object buttonPrefab = Resources.Load("UI/MenuLeft/ConstructionMenu/Button");
         Transform contentTransform = this.transform.FindChild("Scroll View").FindChild("Viewport").FindChild("Content");
+
+        BuildModeController buildModeController = WorldController.Instance.buildModeController;
 
         GameObject gameObject = (GameObject)Instantiate(buttonPrefab);
         gameObject.transform.SetParent(contentTransform);
