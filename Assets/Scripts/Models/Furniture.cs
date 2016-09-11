@@ -76,7 +76,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
     private Func<Tile, bool> funcPositionValidation;
 
-    private HashSet<TileType> tileTypeBuildPermissions;
+    private HashSet<string> tileTypeBuildPermissions;
 
     private bool isOperating;
 
@@ -96,7 +96,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         jobs = new List<Job>();
         typeTags = new HashSet<string>();
         funcPositionValidation = DefaultIsValidPosition;
-        tileTypeBuildPermissions = new HashSet<TileType>();
+        tileTypeBuildPermissions = new HashSet<string>();
         Height = 1;
         Width = 1;
     }
@@ -105,7 +105,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     // do ANY sub-classing. Instead use Clone(), which is more virtual.
     private Furniture(Furniture other)
     {
-        ObjectType = other.ObjectType;
+        Type = other.Type;
         Name = other.Name;
         typeTags = new HashSet<string>(other.typeTags);
         description = other.description;
@@ -156,7 +156,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
             funcPositionValidation = (Func<Tile, bool>)other.funcPositionValidation.Clone();
         }
 
-        tileTypeBuildPermissions = other.tileTypeBuildPermissions;
+        tileTypeBuildPermissions = new HashSet<string>(other.tileTypeBuildPermissions);
 
         LocalizationCode = other.LocalizationCode;
         UnlocalizedDescription = other.UnlocalizedDescription;
@@ -279,7 +279,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     /// know what sprite to render for this furniture.
     /// </summary>
     /// <value>The type of the furniture.</value>
-    public string ObjectType { get; private set; }
+    public string Type { get; private set; }
 
     /// <summary>
     /// Gets the name of the furniture. The name is the object type by default.
@@ -291,7 +291,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         {
             if (string.IsNullOrEmpty(name))
             {
-                return ObjectType;
+                return Type;
             }
 
             return name;
@@ -304,7 +304,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     }
 
     /// <summary>
-    /// Gets a list of furniture ObjectType this furniture can be replaced with.
+    /// Gets a list of furniture Type this furniture can be replaced with.
     /// This should most likely not be a list of strings.
     /// </summary>
     /// <value>A list of furniture that this furniture can be replaced with.</value>
@@ -541,8 +541,8 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
             return Animation.GetSpriteName();
         }
 
-        // Else return default ObjectType string
-        return ObjectType;
+        // Else return default Type string
+        return Type;
     }
 
     /// <summary>
@@ -585,7 +585,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         writer.WriteAttributeString("X", Tile.X.ToString());
         writer.WriteAttributeString("Y", Tile.Y.ToString());
         writer.WriteAttributeString("Z", Tile.Z.ToString());
-        writer.WriteAttributeString("objectType", ObjectType);
+        writer.WriteAttributeString("type", Type);
 
         // Let the Parameters handle their own xml
         furnParameters.WriteXml(writer);
@@ -597,7 +597,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     /// <param name="readerParent">The XML reader to read from.</param>
     public void ReadXmlPrototype(XmlReader readerParent)
     {
-        ObjectType = readerParent.GetAttribute("objectType");
+        Type = readerParent.GetAttribute("type");
 
         XmlReader reader = readerParent.ReadSubtree();
 
@@ -673,18 +673,17 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
                     Job j = new Job(
                                 null,
-                                ObjectType,
+                                Type,
                                 FunctionsManager.JobComplete_FurnitureBuilding,
                                 jobTime,
                                 invs.ToArray(),
                                 Job.JobPriority.High);
-                    j.JobDescription = "job_build_" + ObjectType + "_desc";
-                    PrototypeManager.FurnitureJob.Set(ObjectType, j);
+                    j.JobDescription = "job_build_" + Type + "_desc";
+                    PrototypeManager.FurnitureJob.Set(Type, j);
                     break;
 
                 case "CanBeBuiltOn":
-                    TileType tileType = TileType.GetTileType(reader.GetAttribute("tileType"));
-                    tileTypeBuildPermissions.Add(tileType);
+                    tileTypeBuildPermissions.Add(reader.GetAttribute("tileType"));
                     break;
                 case "Animations":
                     XmlReader animationReader = reader.ReadSubtree();
@@ -757,7 +756,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     /// <param name="reader">The XML reader to read from.</param>
     public void ReadXml(XmlReader reader)
     {
-        // X, Y, and objectType have already been set, and we should already
+        // X, Y, and type have already been set, and we should already
         // be assigned to a tile.  So just read extra data if we have any.
         if (!reader.IsEmptyElement)
         {
@@ -771,7 +770,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     /// <param name="reader">The reader to read the parameters from.</param>
     public void ReadXmlParams(XmlReader reader)
     {
-        // X, Y, and objectType have already been set, and we should already
+        // X, Y, and type have already been set, and we should already
         // be assigned to a tile.  So just read extra data.
         furnParameters = Parameter.ReadXml(reader);
     }
@@ -934,7 +933,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
         }
 
         // We should inform our neighbours that they have just lost a
-        // neighbour regardless of objectType.  
+        // neighbour regardless of type.  
         // Just trigger their OnChangedCallback. 
         if (linksToNeighbour == true)
         {
@@ -1061,12 +1060,16 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     /// <returns>Context menu actions.</returns>
     public IEnumerable<ContextMenuAction> GetContextMenuActions(ContextMenu contextMenu)
     {
-        yield return new ContextMenuAction
+        if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false) == true || HasTypeTag("Non-deconstructible") == false)
         {
-            Text = "Deconstruct " + Name,
-            RequireCharacterSelected = false,
-            Action = (ca, c) => Deconstruct()
-        };
+            yield return new ContextMenuAction
+            {
+                Text = "Deconstruct " + Name,
+                RequireCharacterSelected = false,
+                Action = (ca, c) => Deconstruct()
+            };
+        }
+
         if (jobs.Count > 0)
         {
             for (int i = 0; i < jobs.Count; i++)
@@ -1159,7 +1162,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                 }
 
                 // Make sure tile is FLOOR
-                if (t2.Type != TileType.Floor && tileTypeBuildPermissions.Contains(t2.Type) == false)
+                if (t2.Type != TileType.Floor && tileTypeBuildPermissions.Contains(t2.Type.Type) == false)
                 {
                     return false;
                 }

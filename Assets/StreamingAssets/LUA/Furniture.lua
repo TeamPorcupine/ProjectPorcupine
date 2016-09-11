@@ -538,7 +538,7 @@ function OxygenCompressor_OnUpdate(furniture, deltaTime)
 end
 
 function OxygenCompressor_GetSpriteName(furniture)
-    local baseName = furniture.ObjectType
+    local baseName = furniture.Type
     local suffix = 0
     if (furniture.Parameters["gas_content"].ToFloat() > 0) then
         idxAsFloat = 8 * (furniture.Parameters["gas_content"].ToFloat() / furniture.Parameters["max_gas_content"].ToFloat())
@@ -603,7 +603,7 @@ end
 function AirPump_GetSpriteName(furniture)
     local t = furniture.Tile
     if (furniture.Tile == nil) then
-        return furniture.ObjectType
+        return furniture.Type
     end
     local north = World.Current.GetTileAt(t.X, t.Y + 1, t.Z)
     local south = World.Current.GetTileAt(t.X, t.Y - 1, t.Z)
@@ -625,7 +625,7 @@ function AirPump_GetSpriteName(furniture)
         end
     end
     
-    return furniture.ObjectType .. suffix
+    return furniture.Type .. suffix
 end
 
 function AirPump_FlipDirection(furniture, character)
@@ -638,7 +638,7 @@ function AirPump_FlipDirection(furniture, character)
 end
     
 function Accumulator_GetSpriteName(furniture)
-	local baseName = furniture.ObjectType
+	local baseName = furniture.Type
 	local suffix = furniture.PowerConnection.CurrentThreshold 
 	return baseName .. "_" .. suffix
 end

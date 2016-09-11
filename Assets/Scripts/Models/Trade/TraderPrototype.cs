@@ -15,7 +15,7 @@ public class TraderPrototype
 {
     private float rarity;
 
-    public string ObjectType { get; set; }
+    public string Type { get; set; }
 
     public List<string> PotentialNames { get; set; }
 
@@ -49,7 +49,7 @@ public class TraderPrototype
 
     public void ReadXmlPrototype(XmlReader reader_parent)
     {
-        ObjectType = reader_parent.GetAttribute("objectType");
+        Type = reader_parent.GetAttribute("type");
 
         XmlReader reader = reader_parent.ReadSubtree();
 
@@ -59,13 +59,13 @@ public class TraderPrototype
             {
                 case "potentialNames":
                     PotentialNames = new List<string>();
-                    XmlReader names_reader = reader.ReadSubtree();
+                    XmlReader namesReader = reader.ReadSubtree();
 
-                    while (names_reader.Read())
+                    while (namesReader.Read())
                     {
-                        if (names_reader.Name == "name")
+                        if (namesReader.Name == "name")
                         {
-                            PotentialNames.Add(names_reader.Value);
+                            PotentialNames.Add(namesReader.ReadElementContentAsString());
                         }
                     }
 
@@ -102,8 +102,8 @@ public class TraderPrototype
                             // Found an inventory requirement, so add it to the list!
                             PotentialStock.Add(new TraderPotentialInventory
                             {
-                                ObjectType = invs_reader.GetAttribute("objectType"),
-                                ObjectCategory = invs_reader.GetAttribute("objectCategory"),
+                                Type = invs_reader.GetAttribute("type"),
+                                Category = invs_reader.GetAttribute("category"),
                                 MinQuantity = int.Parse(invs_reader.GetAttribute("minQuantity")),
                                 MaxQuantity = int.Parse(invs_reader.GetAttribute("maxQuantity")),
                                 Rarity = float.Parse(invs_reader.GetAttribute("rarity"))
@@ -140,17 +140,17 @@ public class TraderPrototype
 
             if (itemIsInStock)
             {
-                if (!string.IsNullOrEmpty(potentialStock.ObjectType))
+                if (!string.IsNullOrEmpty(potentialStock.Type))
                 {
                     Inventory inventory = new Inventory(
-                        potentialStock.ObjectType,
+                        potentialStock.Type,
                         Random.Range(potentialStock.MinQuantity, potentialStock.MaxQuantity));
 
                     t.Stock.Add(inventory);
                 }
-                else if (!string.IsNullOrEmpty(potentialStock.ObjectCategory))
+                else if (!string.IsNullOrEmpty(potentialStock.Category))
                 {
-                    List<InventoryCommon> potentialObjects = GetInventoryCommonWithCategory(potentialStock.ObjectCategory);
+                    List<InventoryCommon> potentialObjects = GetInventoryCommonWithCategory(potentialStock.Category);
 
                     foreach (InventoryCommon potentialObject in potentialObjects)
                     {
