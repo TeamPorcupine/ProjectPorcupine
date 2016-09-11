@@ -284,7 +284,7 @@ public class OverlayMap : MonoBehaviour
 
             ColorMapSG = descr.colorMap;
             Bake();
-            ShowGUIToolitip();
+            ShowGUITooltip();
         }
         else
         {
@@ -566,7 +566,7 @@ public class OverlayMap : MonoBehaviour
         parentPanel.GetComponentInChildren<UnityEngine.UI.Image>().enabled = false;
     }
 
-    private void ShowGUIToolitip()
+    private void ShowGUITooltip()
     {
         textView.SetActive(true);
         parentPanel.GetComponentInChildren<UnityEngine.UI.Image>().enabled = true;
