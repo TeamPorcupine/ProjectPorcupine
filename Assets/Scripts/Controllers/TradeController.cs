@@ -47,7 +47,7 @@ public class TradeController
     public void CallTradeShipTest(Furniture landingPad)
     {
         // Currently not using any logic to select a trader
-        TraderPrototype prototype = PrototypeManager.Trader.Get(Random.Range(0, PrototypeManager.Trader.Count - 1));
+        TraderPrototype prototype = PrototypeManager.Trader[Random.Range(0, PrototypeManager.Trader.Count - 1)];
         Trader trader = prototype.CreateTrader();
 
         GameObject go = new GameObject(trader.Name);
@@ -103,9 +103,15 @@ public class TradeController
         {
             if (tradeItem.TradeAmount > 0)
             {
-                Tile tile = WorldController.Instance.World.GetFirstTileWithNoInventoryAround(6, (int)tradingCoordinates.x, (int)tradingCoordinates.y, (int)tradingCoordinates.z);
-                Inventory inv = new Inventory(tradeItem.Type, tradeItem.TradeAmount, tradeItem.TradeAmount);
-                WorldController.Instance.World.inventoryManager.PlaceInventory(tile, inv);
+                while (tradeItem.TradeAmount != 0)
+                {
+                    Inventory inventory = new Inventory(tradeItem.Type, 0);
+                    int stackSize = tradeItem.TradeAmount > inventory.MaxStackSize ? inventory.MaxStackSize : tradeItem.TradeAmount;
+                    Tile tile = WorldController.Instance.World.GetFirstTileWithNoInventoryAround(6, (int)tradingCoordinates.x, (int)tradingCoordinates.y, (int)tradingCoordinates.z);
+                    inventory.StackSize = stackSize;
+                    WorldController.Instance.World.inventoryManager.PlaceInventory(tile, inventory);
+                    tradeItem.TradeAmount -= stackSize;
+                }
             }
             else if (tradeItem.TradeAmount < 0)
             {

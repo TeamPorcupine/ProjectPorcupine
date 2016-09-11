@@ -6,33 +6,27 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-
 using System;
-using System.Collections.Generic;
 using System.Xml;
 
-public class InventoryPrototypes : XmlPrototypes<InventoryCommon>
+public class InventoryPrototypes : XmlPrototypes<Inventory>
 {
     public InventoryPrototypes() : base("Inventory.xml", "Inventories", "Inventory")
     {
     }
 
-    /// <summary>
-    /// Loads the prototype.
-    /// </summary>
-    /// <param name="reader">The Xml Reader.</param>
     protected override void LoadPrototype(XmlTextReader reader)
     {
-        InventoryCommon inv = new InventoryCommon();
+        Inventory inventory = new Inventory();
         try
         {
-            inv.ReadXmlPrototype(reader);
+            inventory.ReadXmlFromPrototype(reader);
         }
         catch (Exception e)
         {
-            LogPrototypeError(e, inv.type);
+            LogPrototypeError(e, inventory.Type);
         }
 
-        Set(inv.type, inv);
+        Set(inventory.Type, inventory);
     }
 }

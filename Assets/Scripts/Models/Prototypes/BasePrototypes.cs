@@ -6,19 +6,16 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 public class BasePrototypes<T>
 {
-    protected Dictionary<string, T> prototypes;
+    protected readonly Dictionary<string, T> Prototypes;
 
     public BasePrototypes()
     {
-        prototypes = new Dictionary<string, T>();
+        Prototypes = new Dictionary<string, T>();
     }
 
     /// <summary>
@@ -29,7 +26,7 @@ public class BasePrototypes<T>
     {
         get
         {
-            return prototypes.Keys;
+            return Prototypes.Keys;
         }
     }
 
@@ -41,7 +38,7 @@ public class BasePrototypes<T>
     {
         get
         {
-            return prototypes.Values.ToList();
+            return Prototypes.Values.ToList();
         }
     }
 
@@ -53,7 +50,20 @@ public class BasePrototypes<T>
     {
         get
         {
-            return prototypes.Count;
+            return Prototypes.Count;
+        }
+    }
+
+    /// <summary>
+    /// Returns the prototype at the specified index.
+    /// </summary>
+    /// <param name="index">The prototype index.</param>
+    /// <returns>The prototype.</returns>
+    public T this[int index]
+    {
+        get
+        {
+            return Prototypes.ElementAt(index).Value;
         }
     }
 
@@ -61,35 +71,25 @@ public class BasePrototypes<T>
     /// Determines whether there is a prototype with the specified type.
     /// </summary>
     /// <returns><c>true</c> if there is a prototype with the specified type; otherwise, <c>false</c>.</returns>
-    /// <param name="protoType">The prototype type.</param>
+    /// <param name="type">The prototype type.</param>
     public bool Has(string type)
     {
-        return prototypes.ContainsKey(type);
+        return Prototypes.ContainsKey(type);
     }
 
     /// <summary>
     /// Returns the prototype with the specified type.
     /// </summary>
     /// <returns>The prototype.</returns>
-    /// <param name="protoType">The prototype type.</param>
+    /// <param name="type">The prototype type.</param>
     public T Get(string type)
     {
         if (Has(type))
         {
-            return prototypes[type];
+            return Prototypes[type];
         }
 
         return default(T);
-    }
-
-    /// <summary>
-    /// Returns the prototype at the specified index.
-    /// </summary>
-    /// <returns>The prototype.</returns>
-    /// <param name="index">The prototype index.</param>
-    public T Get(int index)
-    {
-        return prototypes.ElementAt(index).Value;
     }
 
     /// <summary>
@@ -99,7 +99,7 @@ public class BasePrototypes<T>
     /// <param name="proto">The prototype instance.</param>
     public void Set(string type, T proto)
     {
-        prototypes[type] = proto;
+        Prototypes[type] = proto;
     }
 
     /// <summary>
