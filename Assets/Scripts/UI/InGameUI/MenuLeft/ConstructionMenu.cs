@@ -69,7 +69,7 @@ public class ConstructionMenu : MonoBehaviour
     {
         furnitureItems = new List<GameObject>();
 
-        Object buttonPrefab = Resources.Load("UI/MenuLeft/ConstructionMenu/Button");
+        UnityEngine.Object buttonPrefab = Resources.Load("UI/MenuLeft/ConstructionMenu/Button");
         Transform contentTransform = this.transform.FindChild("Scroll View").FindChild("Viewport").FindChild("Content");
 
         BuildModeController buildModeController = WorldController.Instance.buildModeController;
@@ -115,12 +115,12 @@ public class ConstructionMenu : MonoBehaviour
     {
         tileItems = new List<GameObject>();
 
-        Object buttonPrefab = Resources.Load("UI/MenuLeft/ConstructionMenu/Button");
+        UnityEngine.Object buttonPrefab = Resources.Load("UI/MenuLeft/ConstructionMenu/Button");
         Transform contentTransform = this.transform.FindChild("Scroll View").FindChild("Viewport").FindChild("Content");
 
         BuildModeController buildModeController = WorldController.Instance.buildModeController;
 
-        TileType[] tileTypes = tileTypes = TileType.LoadedTileTypes;
+        TileType[] tileTypes = TileType.LoadedTileTypes;
 
         foreach (TileType item in tileTypes)
         {
@@ -152,7 +152,7 @@ public class ConstructionMenu : MonoBehaviour
     {
         taskItems = new List<GameObject>();
 
-        Object buttonPrefab = Resources.Load("UI/MenuLeft/ConstructionMenu/Button");
+        UnityEngine.Object buttonPrefab = Resources.Load("UI/MenuLeft/ConstructionMenu/Button");
         Transform contentTransform = this.transform.FindChild("Scroll View").FindChild("Viewport").FindChild("Content");
 
         BuildModeController buildModeController = WorldController.Instance.buildModeController;
