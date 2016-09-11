@@ -353,7 +353,7 @@ public class Job : ISelectable
     /// <summary>
     /// Fulfillable inventory requirements for job.
     /// </summary>
-    /// <returns>A list of (string) objectTypes for job inventory requirements that can be met. Returns null if the job requires materials which do not exist on the map.</returns>
+    /// <returns>A list of (string) Type for job inventory requirements that can be met. Returns null if the job requires materials which do not exist on the map.</returns>
     public List<string> FulfillableInventoryRequirements()
     {
         List<string> fulfillableInventoryRequirements = new List<string>();
@@ -364,7 +364,7 @@ public class Job : ISelectable
             {
                 if (World.Current.inventoryManager.HasInventoryOfType(inventory.Type) == false)
                 {
-                    // the job requires ALL inventory requirements to be met, and there is no source of a desired objectType
+                    // the job requires ALL inventory requirements to be met, and there is no source of a desired Type
                     return null;
                 }
                 else
@@ -374,7 +374,7 @@ public class Job : ISelectable
             }
             else if (World.Current.inventoryManager.HasInventoryOfType(inventory.Type))
             {
-                // there is a source for a desired objectType that the job will accept
+                // there is a source for a desired Type that the job will accept
                 fulfillableInventoryRequirements.Add(inventory.Type);
             }
         }

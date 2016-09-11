@@ -12,7 +12,7 @@ public class TradeItem
 {
     private int tradeAmount;
 
-    public string ObjectType { get; set; }
+    public string Type { get; set; }
 
     public float BaseItemPrice { get; set; }
 
