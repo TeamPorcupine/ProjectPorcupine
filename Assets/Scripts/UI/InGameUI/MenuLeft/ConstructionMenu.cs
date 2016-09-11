@@ -7,6 +7,7 @@
 // ====================================================
 #endregion
 using System.Collections.Generic;
+using System.Linq;
 using ProjectPorcupine.Localization;
 using UnityEngine;
 using UnityEngine.UI;
@@ -108,6 +109,9 @@ public class ConstructionMenu : MonoBehaviour
             {
                 gameObject.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(PrototypeManager.Furniture.Get(furniture).LocalizationCode) };
             };
+
+            Image image = gameObject.transform.GetChild(0).GetComponentsInChildren<Image>().First();
+            image.sprite = WorldController.Instance.furnitureSpriteController.GetSpriteForFurniture(furnitureKey);
         }
     }
 
@@ -120,7 +124,7 @@ public class ConstructionMenu : MonoBehaviour
 
         BuildModeController buildModeController = WorldController.Instance.buildModeController;
 
-        TileType[] tileTypes = tileTypes = TileType.LoadedTileTypes;
+        TileType[] tileTypes = TileType.LoadedTileTypes;
 
         foreach (TileType item in tileTypes)
         {
@@ -145,6 +149,9 @@ public class ConstructionMenu : MonoBehaviour
             {
                 gameObject.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(key) };
             };
+
+            Image image = gameObject.transform.GetChild(0).GetComponentsInChildren<Image>().First();
+            image.sprite = SpriteManager.current.GetSprite("Tile", key);
         }
     }
 
@@ -176,6 +183,9 @@ public class ConstructionMenu : MonoBehaviour
         {
             gameObject.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(LocalizationDeconstruct) };
         };
+
+        Image image = gameObject.transform.GetChild(0).GetComponentsInChildren<Image>().First();
+        image.sprite = SpriteManager.current.GetSprite("UI", "Deconstruct");
     }
 
     private void Update()

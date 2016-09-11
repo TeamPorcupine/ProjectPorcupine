@@ -331,7 +331,7 @@
         <UnlocalizedDescription>furn_metal_furnace_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture type="heater">
+    <Furniture type="Heater">
         <Name>Heater</Name>
         <Description>Raises temperature in the room.</Description>
         <BaseType>Temperature</BaseType>
