@@ -239,12 +239,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     {
         get
         {
-            if (string.IsNullOrEmpty(name))
-            {
-                return ObjectType;
-            }
-
-            return name;
+            return string.IsNullOrEmpty(name) ? ObjectType : name;
         }
 
         private set
@@ -323,7 +318,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     public Parameter Parameters { get; set; }
 
     /// <summary>
-    /// Gets the jobs linked to the furniture.
+    /// Gets a component that handles the jobs linked to the furniture.
     /// </summary>
     public FurnitureJobs Jobs { get; private set; }
 

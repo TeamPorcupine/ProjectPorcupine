@@ -62,7 +62,7 @@ public class FurnitureJobs
     public Vector2 SpawnSpotOffset { get; private set; }
 
     /// <summary>
-    /// Gets the <see cref="Job"/> with the specified index.
+    /// Gets the active <see cref="Job"/> with the specified index.
     /// </summary>
     /// <param name="i">The index.</param>
     public Job this[int i]
@@ -135,7 +135,7 @@ public class FurnitureJobs
     }
 
     /// <summary>
-    /// Cancel all the jobs linked to the current furniture.
+    /// Cancel all the active jobs linked to the current furniture.
     /// </summary>
     public void CancelAll()
     {
@@ -147,7 +147,7 @@ public class FurnitureJobs
     }
 
     /// <summary>
-    /// Resumes all the paused jobs.
+    /// Resumes all the paused jobs linked to the current furniture.
     /// </summary>
     /// TODO: Refactor this when the new job system is implemented
     public void ResumeAll()
@@ -164,7 +164,7 @@ public class FurnitureJobs
     }
 
     /// <summary>
-    /// Pauses all the active jobs.
+    /// Pauses all the active jobs linked to the current furniture.
     /// </summary>
     /// TODO: Refactor this when the new job system is implemented
     public void PauseAll()
