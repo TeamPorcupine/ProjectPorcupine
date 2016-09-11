@@ -348,7 +348,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         Update_Needs(deltaTime);
 
         Update_DoMovement(deltaTime);
- 
+
         animation.Update(deltaTime);
 
         if (OnCharacterChanged != null)
@@ -439,39 +439,6 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         }
     }
 
-    public void ReadStatsFromSave(XmlReader reader)
-    {
-        // Protection vs. empty stats
-        if (reader.IsEmptyElement)
-        {
-            return;
-        }
-
-        while (reader.Read())
-        {
-            if (reader.NodeType == XmlNodeType.EndElement)
-            {
-                break;
-            }
-
-            string statType = reader.GetAttribute("statType");
-            Stat stat = GetStat(statType);
-            if (stat == null)
-            {
-                continue;
-            }
-
-            int statValue;
-            if (!int.TryParse(reader.GetAttribute("value"), out statValue))
-            {
-                Debug.ULogErrorChannel("Character", "Stat element did not have a value!");
-                continue;
-            }
-
-            stat.Value = statValue;
-        }
-    }
-
     #endregion
 
     #region ISelectableInterface implementation
@@ -492,7 +459,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         foreach (Need n in needs)
         {
-           yield return LocalizationTable.GetLocalization(n.LocalisationID, n.DisplayAmount);
+            yield return LocalizationTable.GetLocalization(n.LocalisationID, n.DisplayAmount);
         }
 
         foreach (Stat stat in stats.Values)
@@ -555,7 +522,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             Stat stat = GetStat(statType);
             if (stat == null)
             {
-                continue;               
+                continue;
             }
 
             int statValue;
@@ -844,7 +811,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             // now and don't actually process the movement.
             return;
         }
-        
+
         // At this point we should have a valid nextTile to move to.
         // What's the total distance from point A to point B?
         // We are going to use Euclidean distance FOR NOW...
