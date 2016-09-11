@@ -39,7 +39,7 @@ public class WorldController : MonoBehaviour
     public GameObject inventoryUI;
     public GameObject circleCursorPrefab;
 
-    // If true, a modal dialog box is open so normal inputs should be ignored.
+    // If true, a modal dialog box is open, so normal inputs should be ignored.
     public bool IsModal;
 
     private static string loadWorldFromFile = null;
@@ -114,7 +114,7 @@ public class WorldController : MonoBehaviour
 
     public void Start()
     {
-        // Create gameobject so we can have access to a tranform thats position is "Vector3.zero".
+        // Create GameObject so we can have access to a transform which has a position of "Vector3.zero".
         new GameObject("VisualPath", typeof(VisualPath));
         GameObject go;
 
@@ -134,7 +134,9 @@ public class WorldController : MonoBehaviour
         timeManager = new TimeManager();
         autosaveManager = new AutosaveManager();
 
+        // Register inputs actions
         keyboardManager.RegisterInputAction("Pause", KeyboardMappedInputType.KeyUp, () => { IsPaused = !IsPaused; });
+        keyboardManager.RegisterInputAction("DevMode", KeyboardMappedInputType.KeyDown, ChangeDevMode);
 
         // Hiding Dev Mode spawn inventory controller if devmode is off.
         spawnInventoryController.SetUIVisibility(Settings.GetSetting("DialogBoxSettings_developerModeToggle", false));
@@ -156,7 +158,7 @@ public class WorldController : MonoBehaviour
         cameraController.Update(IsModal);
         timeManager.Update();
 
-        // Systems that update every frame when not paused.
+        // Systems that update every frame while unpaused.
         if (IsPaused == false)
         {
             World.TickEveryFrame(timeManager.DeltaTime);
@@ -180,7 +182,7 @@ public class WorldController : MonoBehaviour
     }
 
     /// <summary>
-    /// Gets the tile at the unity-space coordinates.
+    /// Gets the tile at the Unity-space coordinates.
     /// </summary>
     /// <returns>The tile at world coordinate.</returns>
     /// <param name="coord">Unity World-Space coordinates.</param>
@@ -213,6 +215,17 @@ public class WorldController : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
+    /// <summary>
+    /// Change the developper mode.
+    /// </summary>
+    public void ChangeDevMode()
+    {
+        bool developerMode = !Settings.GetSetting("DialogBoxSettings_developerModeToggle", false);
+        Settings.SetSetting("DialogBoxSettings_developerModeToggle", developerMode);
+        spawnInventoryController.SetUIVisibility(developerMode);
+        FurnitureBuildMenu.instance.RebuildMenuButtons(developerMode);
+    }
+
     private void CreateEmptyWorld()
     {
         // get world size from settings
@@ -242,7 +255,7 @@ public class WorldController : MonoBehaviour
 
         TextReader reader = new StringReader(saveGameText);
 
-        // Leaving this for Unitys console because UberLogger mangles multiline messages.
+        // Leaving this for Unity's console because UberLogger mangles multiline messages.
         Debug.Log(reader.ToString());
         World = (World)serializer.Deserialize(reader);
         reader.Close();

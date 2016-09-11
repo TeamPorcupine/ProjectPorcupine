@@ -59,13 +59,13 @@ public class TraderPrototype
             {
                 case "potentialNames":
                     PotentialNames = new List<string>();
-                    XmlReader names_reader = reader.ReadSubtree();
+                    XmlReader namesReader = reader.ReadSubtree();
 
-                    while (names_reader.Read())
+                    while (namesReader.Read())
                     {
-                        if (names_reader.Name == "name")
+                        if (namesReader.Name == "name")
                         {
-                            PotentialNames.Add(names_reader.Value);
+                            PotentialNames.Add(namesReader.ReadElementContentAsString());
                         }
                     }
 
@@ -155,7 +155,7 @@ public class TraderPrototype
                     foreach (InventoryCommon potentialObject in potentialObjects)
                     {
                         Inventory inventory = new Inventory(
-                            potentialObject.objectType,
+                            potentialObject.type,
                             Random.Range(potentialStock.MinQuantity, potentialStock.MaxQuantity));
 
                         t.Stock.Add(inventory);

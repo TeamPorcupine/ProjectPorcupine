@@ -7,6 +7,7 @@
 // ====================================================
 #endregion
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Schema;
@@ -666,7 +667,6 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     {
         float jobTime = float.Parse(reader.GetAttribute("jobTime"));
         List<Inventory> invs = new List<Inventory>();
-
         XmlReader inventoryReader = reader.ReadSubtree();
 
         while (inventoryReader.Read())
@@ -674,13 +674,22 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
             if (inventoryReader.Name == "Inventory")
             {
                 // Found an inventory requirement, so add it to the list!
-                int inventoryAmount = int.Parse(inventoryReader.GetAttribute("amount"));
-                invs.Add(new Inventory(inventoryReader.GetAttribute("objectType"), inventoryAmount, 0));
+                invs.Add(new Inventory(
+                    inventoryReader.GetAttribute("type"),
+                    int.Parse(inventoryReader.GetAttribute("amount")),
+                    0));
             }
         }
 
-        Job job = new Job(null, ObjectType, FunctionsManager.JobComplete_FurnitureBuilding, jobTime, invs.ToArray(), Job.JobPriority.High);
+        Job job = new Job(
+            null,
+            ObjectType,
+            FunctionsManager.JobComplete_FurnitureBuilding,
+            jobTime,
+            invs.ToArray(),
+            Job.JobPriority.High);
         job.JobDescription = "job_build_" + ObjectType + "_desc";
+
         PrototypeManager.FurnitureJob.Set(ObjectType, job);
     }
 
@@ -698,9 +707,9 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
 
         // TODO: read this from furniture params
         Dictionary<string, Inventory> invsDict = new Dictionary<string, Inventory>();
-        foreach (string objectType in PrototypeManager.Inventory.Keys)
+        foreach (string type in PrototypeManager.Inventory.Keys)
         {
-            invsDict[objectType] = new Inventory(objectType, PrototypeManager.Inventory.Get(objectType).maxStackSize, 0);
+            invsDict[type] = new Inventory(type, 0);
         }
 
         Inventory[] invs = new Inventory[invsDict.Count];
@@ -810,21 +819,40 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     }
 
     /// <summary>
-    /// Returns the HitPoints of the current furniture NOT IMPLEMENTED.
-    /// </summary>
-    /// <returns>String with the HitPoints of the furniture.</returns>
-    public string GetHitPointString()
-    {
-        return "18/18"; // TODO: Add a hitpoint system to...well...everything
-    }
-
-    /// <summary>
     /// Returns the description of the job linked to the furniture. NOT INMPLEMENTED.
     /// </summary>
     /// <returns>Job description of the job linked to the furniture.</returns>
     public string GetJobDescription()
     {
         return string.Empty;
+    }
+
+    public IEnumerable<string> GetAdditionalInfo()
+    {
+        yield return string.Format("Hitpoint 18 / 18");
+
+        if (PowerConnection != null)
+        {
+            bool hasPower = HasPower();
+            string powerColor = hasPower ? "green" : "red";
+
+            yield return string.Format("Power Grid: <color={0}>{1}</color>", powerColor, hasPower ? "Online" : "Offline");
+
+            if (PowerConnection.IsPowerConsumer)
+            {
+                yield return string.Format("Power Input: <color={0}>{1}</color>", powerColor, PowerConnection.InputRate);
+            }
+            
+            if (PowerConnection.IsPowerProducer)
+            {
+                yield return string.Format("Power Output: <color={0}>{1}</color>", powerColor, PowerConnection.OutputRate);
+            }
+
+            if (PowerConnection.IsPowerAccumulator)
+            {
+                yield return string.Format("Power Accumulated: {0} / {1}", PowerConnection.AccumulatedPower, PowerConnection.Capacity);
+            }
+        }
     }
 
     /// <summary>

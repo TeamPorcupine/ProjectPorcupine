@@ -7,6 +7,7 @@
 // ====================================================
 #endregion
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
@@ -197,7 +198,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         if (Inventory != null)
         {
             // There's already inventory here. Maybe we can combine a stack?
-            if (Inventory.ObjectType != inventory.ObjectType)
+            if (Inventory.Type != inventory.Type)
             {
                 Debug.ULogErrorChannel("Tile", "Trying to assign inventory to a tile that already has some of a different type.");
                 return false;
@@ -394,14 +395,15 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         return "tile_" + type.ToString() + "_desc";
     }
 
-    public string GetHitPointString()
-    {
-        return string.Empty; // Do tiles have hitpoints? Can flooring be damaged? Obviously "empty" is indestructible.
-    }
-
     public string GetJobDescription()
     {
         return string.Empty;
+    }
+
+    public IEnumerable<string> GetAdditionalInfo()
+    {
+        // Do tiles have hitpoints? Can flooring be damaged? Obviously "empty" is indestructible.
+        yield break;
     }
 
     #endregion

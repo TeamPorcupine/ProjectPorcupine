@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
 // This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
@@ -18,7 +18,7 @@ public class MenuController : MonoBehaviour
     // The sub menus of the build menu (furniture, floor..... later - power, security, drones).
     public GameObject furnitureMenu;
     public GameObject floorMenu;
-    
+
     public Button buttonConstructor;
     public Button buttonWorld;
     public Button buttonWork;
@@ -38,7 +38,7 @@ public class MenuController : MonoBehaviour
         DeactivateSubs();
     }
 
-    // Deactivates any sub menu of the constrution options.
+    // Deactivates any sub menu of the construction options.
     public void DeactivateSubs()
     {
         WorldController.Instance.mouseController.ClearMouseMode(true);
@@ -57,9 +57,9 @@ public class MenuController : MonoBehaviour
         if (constructorMenu.activeSelf)
         {
             DeactivateAll();
-        } 
-        else 
-        { 
+        }
+        else
+        {
             DeactivateAll();
             constructorMenu.SetActive(true);
         }
@@ -67,8 +67,11 @@ public class MenuController : MonoBehaviour
 
     public void OnButtonWork()
     {
-        DeactivateAll();
-        dbm.dialogBoxJobList.ShowDialog();
+        if (!WorldController.Instance.IsModal)
+        {
+            DeactivateAll();
+            dbm.dialogBoxJobList.ShowDialog();
+        }
     }
 
     public void OnButtonWorld()
@@ -115,7 +118,7 @@ public class MenuController : MonoBehaviour
         floorMenu = GameObject.Find("MenuFloor");
         constructorMenu = GameObject.Find("MenuConstruction");
 
-        // Add liseners here.
+        // Add listeners here.
         buttonConstructor.onClick.AddListener(delegate
         {
             OnButtonConstruction();

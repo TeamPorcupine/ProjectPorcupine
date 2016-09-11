@@ -6,6 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,10 +18,12 @@ public class SpawnInventoryController
     public SpawnInventoryController()
     {
         CreateSpawnUI();
-        CreateInventoryButtons();
+        CreateInventoryEntries();
     }
 
     public string InventoryToBuild { get; protected set; }
+
+    public int AmountToCreate { get; protected set; }
 
     public void HideUI()
     {
@@ -45,7 +48,7 @@ public class SpawnInventoryController
             return;
         }
 
-        Inventory inventoryChange = new Inventory(InventoryToBuild, 1);
+        Inventory inventoryChange = new Inventory(InventoryToBuild, AmountToCreate);
 
         // You can't spawn on occupied tiles
         if (t.Furniture != null)
@@ -53,7 +56,7 @@ public class SpawnInventoryController
             return; 
         }
 
-        if (t.Inventory == null || t.Inventory.ObjectType == InventoryToBuild)
+        if (t.Inventory == null || t.Inventory.Type == InventoryToBuild)
         {
             World.Current.inventoryManager.PlaceInventory(t, inventoryChange);
         }
@@ -86,36 +89,62 @@ public class SpawnInventoryController
         csf.verticalFit = ContentSizeFitter.FitMode.MinSize;
     }
 
-    private void CreateInventoryButtons()
+    private void CreateInventoryEntries()
     {
         foreach (string invName in PrototypeManager.Inventory.Keys)
         {
-            GameObject inventoryButton_go = new GameObject();
-            inventoryButton_go.name = "Button - " + invName;
-            inventoryButton_go.layer = LayerMask.NameToLayer("UI");
+            GameObject inventorySlot_go = new GameObject();
+            inventorySlot_go.name = "Slot - " + invName;
+            inventorySlot_go.layer = LayerMask.NameToLayer("UI");
 
-            inventoryButton_go.transform.SetParent(spawnUI.transform);
+            inventorySlot_go.transform.SetParent(spawnUI.transform);
 
-            inventoryButton_go.AddComponent<Image>();
+            HorizontalLayoutGroup hlg = inventorySlot_go.AddComponent<HorizontalLayoutGroup>();
+            hlg.childForceExpandWidth = false;
+            hlg.childForceExpandHeight = false;
+            hlg.spacing = 2;
 
-            Button button = inventoryButton_go.AddComponent<Button>();
-            ColorBlock colorBlock = new ColorBlock();
-            colorBlock.normalColor = Color.white;
-            colorBlock.pressedColor = Color.blue;
-            button.colors = colorBlock;
+            inventorySlot_go.AddComponent<Image>();
+
             string localName = invName;
-            button.onClick.AddListener(
-                () => OnButtonClick(localName));
 
-            CreateTextComponent(inventoryButton_go, invName);
+            CreateTextComponent(inventorySlot_go, invName, TextAnchor.MiddleLeft);
+            CreateButtonComponents(inventorySlot_go, localName, new int[] { 1, 20, 50 });
 
-            LayoutElement layoutElement = inventoryButton_go.AddComponent<LayoutElement>();
-            layoutElement.minWidth = 120;
+            LayoutElement layoutElement = inventorySlot_go.AddComponent<LayoutElement>();
+            layoutElement.minWidth = 160;
             layoutElement.minHeight = 20;
         }
     }
 
-    private GameObject CreateTextComponent(GameObject go, string invName)
+    private void CreateButtonComponents(GameObject go, string invName, int[] amounts)
+    {
+        foreach (int amount in amounts)
+        {
+            GameObject button_go = new GameObject();
+            button_go.name = "Button";
+            button_go.layer = LayerMask.NameToLayer("UI");
+
+            button_go.AddComponent<Image>();
+
+            RectTransform rectTransform = button_go.GetComponent<RectTransform>();
+            rectTransform.SetParent(go.transform);
+
+            Button button = button_go.AddComponent<Button>();
+            CreateTextComponent(button_go, amount.ToString(), TextAnchor.MiddleCenter);
+
+            LayoutElement layoutElement = button_go.AddComponent<LayoutElement>();
+            layoutElement.minWidth = 20;
+            layoutElement.minHeight = 20;
+
+            int localAmount = amount;
+
+            button.onClick.AddListener(
+                () => OnButtonClick(invName, localAmount));
+        }
+    }
+
+    private GameObject CreateTextComponent(GameObject go, string invName, TextAnchor textAnchor)
     {
         GameObject text_go = new GameObject();
         text_go.name = "Text";
@@ -123,23 +152,27 @@ public class SpawnInventoryController
 
         RectTransform rectTransform = text_go.AddComponent<RectTransform>();
         rectTransform.SetParent(go.transform);
-        rectTransform.anchorMin = Vector2.zero;
+        rectTransform.sizeDelta = Vector2.zero;
         rectTransform.anchorMax = Vector2.one;
-        rectTransform.offsetMin = Vector2.zero;
-        rectTransform.offsetMax = Vector2.zero;
+        rectTransform.anchorMin = Vector2.zero;
 
         Text text = text_go.AddComponent<Text>();
         text.font = Font.CreateDynamicFontFromOSFont("Arial", 14);
-        text.alignment = TextAnchor.MiddleLeft;
+        text.alignment = textAnchor;
         text.color = Color.black;
         text.text = invName;
+
+        LayoutElement layoutElement = text_go.AddComponent<LayoutElement>();
+        layoutElement.minWidth = 100;
+        layoutElement.minHeight = 20;
 
         return text_go;
     }
 
-    private void OnButtonClick(string invName)
+    private void OnButtonClick(string invName, int amount)
     {
         InventoryToBuild = invName;
+        AmountToCreate = amount;
         WorldController.Instance.mouseController.StartSpawnMode();
     }
 }

@@ -29,7 +29,6 @@ public class DialogBoxSettings : DialogBox
     public Resolution[] resolutions;
     public Dropdown resolutionDropdown;
 
-    public Dropdown aliasingDropdown;
     public Dropdown vsyncDropdown;
     public Dropdown qualityDropdown;
 
@@ -48,7 +47,7 @@ public class DialogBoxSettings : DialogBox
 
     public void OnFullScreenToggle()
     {
-        /// TODO : impliment full screen toggle.
+        /// TODO : implement full screen toggle.
     }
 
     public void OnQualityChange()
@@ -69,11 +68,6 @@ public class DialogBoxSettings : DialogBox
     public void OnResolutionChange()
     {
         /// TODO : Implement Resolution changes.
-    }
-
-    public void OnAliasingChange()
-    {
-        /// TODO : Implement AA changes.
     }
 
     public void OnMusicChange()
@@ -109,7 +103,6 @@ public class DialogBoxSettings : DialogBox
         Settings.SetSetting("DialogBoxSettings_qualityDropdown", qualityDropdown.value);
         Settings.SetSetting("DialogBoxSettings_vSyncDropdown", vsyncDropdown.value);
         Settings.SetSetting("DialogBoxSettings_resolutionDropdown", resolutionDropdown.value);
-        Settings.SetSetting("DialogBoxSettings_aliasingDropdown", aliasingDropdown.value);
     }
 
     private void OnEnable()
@@ -142,10 +135,6 @@ public class DialogBoxSettings : DialogBox
         resolutionDropdown.onValueChanged.AddListener(delegate
         {
             OnResolutionChange();
-        });
-        aliasingDropdown.onValueChanged.AddListener(delegate
-        {
-            OnAliasingChange();
         });
         vsyncDropdown.onValueChanged.AddListener(delegate
         {
@@ -183,7 +172,6 @@ public class DialogBoxSettings : DialogBox
         qualityDropdown.value = Settings.GetSetting("DialogBoxSettings_qualityDropdown", 0);
         vsyncDropdown.value = Settings.GetSetting("DialogBoxSettings_vSyncDropdown", 0);
         resolutionDropdown.value = Settings.GetSetting("DialogBoxSettings_resolutionDropdown", 0);
-        aliasingDropdown.value = Settings.GetSetting("DialogBoxSettings_aliasingDropdown", 0);
     }
 
     private void CreateResDropDown()

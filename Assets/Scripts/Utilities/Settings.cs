@@ -25,7 +25,6 @@ public static class Settings
   <DialogBoxSettings_qualityDropdown>2</DialogBoxSettings_qualityDropdown>
   <DialogBoxSettings_vSyncDropdown>0</DialogBoxSettings_vSyncDropdown>
   <DialogBoxSettings_resolutionDropdown>0</DialogBoxSettings_resolutionDropdown>
-  <DialogBoxSettings_aliasingDropdown>2</DialogBoxSettings_aliasingDropdown>
   <DialogBoxSettings_musicVolume>1</DialogBoxSettings_musicVolume>
   <ZoomLerp>10</ZoomLerp>
   <ZoomSensitivity>3</ZoomSensitivity>

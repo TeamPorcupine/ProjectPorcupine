@@ -1,544 +1,552 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Furnitures>
-  <Furniture objectType="furn_SteelWall">
-    <Name>Steel Wall</Name>
-    <Description>This is a steel wall.</Description>
-    <TypeTag>Wall</TypeTag>
-    <MovementCost>0</MovementCost>
-    <Width>1</Width>
-    <Height>1</Height>
-    <LinksToNeighbours>true</LinksToNeighbours>
-    <EnclosesRooms>true</EnclosesRooms>
-    <DragType>path</DragType>
-
-    <BuildingJob jobTime="1">
-      <Inventory objectType="Steel Plate" amount="5" />
-    </BuildingJob>
-
-    <DeconstructJob>
-      <Inventory objectType="Steel Plate" amount="3" />
-    </DeconstructJob>
-
-    <Params>
-      <!-- Temperature stuff  example -->
-      <!-- Thermal diffusivity (also called alpha) is how much the furniture is "isolating" the tile it is placed on. -->
-      <!-- 0 means *NO* temperature is exchanged between tiles -->
-      <!-- 1 means a regular amout is exchanged -->
-      <!-- Walls will likely have low values, whilst tables and so on will have values close to 1 (if not 1). -->
-      <!-- Leave default value (i.e. nothing) if the furniture does not have any isolation effect. -->
-      <Param name="thermal_diffusivity" value="0.0" />
-    </Params>
-
-    <LocalizationCode>furn_steel_wall</LocalizationCode>
-    <UnlocalizedDescription>furn_steel_wall_desc</UnlocalizedDescription>
-  </Furniture>
-
-
-  <Furniture objectType="Door">
-    <Name>Door</Name>
-    <Description>A door that characters can walk through.</Description>
-    <TypeTag>Door</TypeTag>
-    <MovementCost>1</MovementCost>
-    <!-- PathfindingModifer is additive, so a PathfindingModifier of 1 will basically respond to Pathfinding as though it takes 1 extra tile of movement -->
-    <!-- Default value of PathfindingModifier is 0 -->
-    <PathfindingModifier>1.5</PathfindingModifier>
-    <!-- PathfindingWeight is multiplicative, so a PathfindingWeight of 2 would basically respond to Pathfinding as though it takes double the tiles of movement -->
-    <!-- Default value of PathfindingWeight is 1 -->
-    <PathfindingWeight>1</PathfindingWeight>
-    <Width>1</Width>
-    <Height>1</Height>
-    <LinksToNeighbours>false</LinksToNeighbours>
-    <EnclosesRooms>true</EnclosesRooms>
-    <CanReplaceFurniture typeTag="Wall" />
-
-    <BuildingJob jobTime="1">
-      <Inventory objectType="Steel Plate" amount="2" />
-    </BuildingJob>
-
-    <DeconstructJob>
-      <Inventory objectType="Steel Plate" amount="1" />
-    </DeconstructJob>
-
-    <Params>
-      <Param name="openness" value="0" />
-      <Param name="is_opening" value="0" />
-      <Param name="thermal_diffusivity" value="0.0001" />
-    </Params>
-
-    <Action event="OnUpdate" functionName="OnUpdate_Door" />
-    <Action event="OnUpdate" functionName="OnUpdate_Leak_Door" />
-
-    <IsEnterable FunctionName="IsEnterable_Door" />
-    <GetSpriteName FunctionName="GetSpriteName_Door" />
-
-    <LocalizationCode>furn_door</LocalizationCode>
-    <UnlocalizedDescription>furn_door_desc</UnlocalizedDescription>
-  </Furniture>
-
-
-  <Furniture objectType="Airlock">
-    <Name>Door</Name>
-    <Description>An Airlock prevents air from leaving the base</Description>
-    <TypeTag>Door</TypeTag>
-    <MovementCost>1</MovementCost>
-    <PathfindingModifier>3</PathfindingModifier>
-    <PathfindingWeight>1</PathfindingWeight>
-    <Width>1</Width>
-    <Height>1</Height>
-    <LinksToNeighbours>false</LinksToNeighbours>
-    <EnclosesRooms>true</EnclosesRooms>
-    <CanReplaceFurniture typeTag="Wall" />
-    <CanReplaceFurniture typeTag="Door" />
-
-    <BuildingJob jobTime="5">
-      <Inventory objectType="Steel Plate" amount="10" />
-    </BuildingJob>
-
-    <DeconstructJob>
-      <Inventory objectType="Steel Plate" amount="7" />
-    </DeconstructJob>
-
-    <Params>
-      <Param name="openness" value="0" />
-      <Param name="is_opening" value="0" />
-      <Param name="thermal_diffusivity" value="0.00001" />
-    </Params>
-
-    <Action event="OnUpdate" functionName="OnUpdate_AirlockDoor" />
-    <Action event="OnUpdate" functionName="OnUpdate_Leak_Airlock" />
-
-    <ContextMenuAction FunctionName="AirlockDoor_Toggle_Pressure_Lock" Text="Toggle Pressure Lock" RequiereCharacterSelected="false"/>
-
-    <IsEnterable FunctionName="IsEnterable_Door" />
-    <GetSpriteName FunctionName="GetSpriteName_Airlock" />
-
-    <LocalizationCode>furn_airlock</LocalizationCode>
-    <UnlocalizedDescription>furn_airlock_desc</UnlocalizedDescription>
-  </Furniture>
-
-
-  <Furniture objectType="Stockpile">
-    <Name>Stockpile</Name>
-    <Description>Characters will brings inventory here for storage.</Description>
-    <TypeTag>Storage</TypeTag>
-    <MovementCost>1</MovementCost>
-    <LinksToNeighbours>true</LinksToNeighbours>
-
-    <BuildingJob jobTime="0" />
-
-    <Action event="OnUpdate" functionName="Stockpile_UpdateAction" />
-
-    <LocalizationCode>furn_stockpile</LocalizationCode>
-    <UnlocalizedDescription>furn_stockpile_desc</UnlocalizedDescription>
-  </Furniture>
-
-
-  <Furniture objectType="Oxygen Generator">
-    <Name>Oxygen Generator</Name>
-    <Description>Create O2 in the room in which it is built.</Description>
-    <TypeTag>Generator</TypeTag>
-    <MovementCost>2</MovementCost>
-    <PathfindingModifier>0</PathfindingModifier>
-    <PathfindingWeight>2</PathfindingWeight>
-    <Width>2</Width>
-    <Height>2</Height>
-    <PowerConnection inputRate="1" outputRate="" capacity=""/>
-
-    <BuildingJob jobTime="0" />
-
-    <Params>
-      <!-- <Param name="gas_name" value="O2" /> -->
-      <Param name="gas_limit" value="0.2" />
-      <Param name="gas_per_second" value="0.16" />
-      <Param name="gas_gen">
-        <Param name="O2">
-          <Param name="gas_limit" value="0.2" />
-        </Param>
-        <Param name="N2">
-          <Param name="gas_limit" value="0.8" />
-        </Param>
-      </Param>
-    </Params>
-
-    <Action event="OnUpdate" functionName="OnUpdate_GasGenerator" />
-
-    <LocalizationCode>furn_oxygen_generator</LocalizationCode>
-    <UnlocalizedDescription>furn_oxygen_generator_desc</UnlocalizedDescription>
-  </Furniture>
-
-
-  <Furniture objectType="Mining Drone Station">
-    <Name>Mining Drone Station</Name>
-    <Description>Creates raw materials when worked by a character.</Description>
-    <TypeTag>Workstation</TypeTag>
-    <MovementCost>1</MovementCost>
-    <PathfindingModifier>0</PathfindingModifier>
-    <PathfindingWeight>2</PathfindingWeight>
-    <Width>3</Width>
-    <Height>3</Height>
-    <PowerConnection inputRate="1" outputRate="" capacity=""/>
-
-    <BuildingJob jobTime="0" />
-
-    <Params>
-      <Param name="mine_type" value="Raw Iron" />
-    </Params>
-
-    <JobSpotOffset X="1" Y="0" />
-    <JobSpawnSpotOffset X="0" Y="0" />
-
-    <Action event="OnUpdate" functionName="MiningDroneStation_UpdateAction" />
-
-    <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Iron" Text="change to raw iron" RequiereCharacterSelected="false"/>
-    <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Copper" Text="change to raw copper" RequiereCharacterSelected="false"/>
-
-    <LocalizationCode>furn_mining_drone_station</LocalizationCode>
-    <UnlocalizedDescription>furn_mining_drone_station_desc</UnlocalizedDescription>
-  </Furniture>
-
-
-  <Furniture objectType="Power Generator">
-    <Name>Power Generator</Name>
-    <TypeTag>Generator</TypeTag>
-    <MovementCost>2</MovementCost>
-    <PathfindingModifier>0</PathfindingModifier>
-    <PathfindingWeight>2</PathfindingWeight>
-    <Width>2</Width>
-    <Height>2</Height>
-    <PowerConnection inputRate="" outputRate="5" capacity=""/>
-
-    <Animations>
-      <Animation state="idle" fps="2" looping="false">
-        <Frame name="Power-Generator-01" />
-      </Animation>
-      <Animation state="running" fps="6" looping="true">
-        <Frame name="Power-Generator-02" />
-        <Frame name="Power-Generator-03" />
-        <Frame name="Power-Generator-04" />
-      </Animation>          
-    </Animations>
-    
-    <BuildingJob jobTime="0" />
-
-    <Params>
-      <Param name="burnTime" value="0" />
-      <Param name="burnTimeRequired" value="10" />
-    </Params>
-
-    <Action event="OnUpdate" functionName="PowerGenerator_UpdateAction" />
-
-    <LocalizationCode>furn_power_generator</LocalizationCode>
-    <UnlocalizedDescription>furn_power_generator_desc</UnlocalizedDescription>
-  </Furniture>
-
-
-  <Furniture objectType="cloning_pod">
-    <Name>Cloning Pod</Name>
-    <Description>Creates an additional worker, then is destroyed.</Description>
-    <MovementCost>2</MovementCost>
-    <PathfindingModifier>0</PathfindingModifier>
-    <PathfindingWeight>2</PathfindingWeight>
-    <Width>2</Width>
-    <Height>2</Height>
-    <PowerConnection inputRate="1" outputRate="" capacity=""/>
-
-    <BuildingJob jobTime="10">
-      <Inventory objectType="Steel Plate" amount="50" />
-    </BuildingJob>
-
-    <DeconstructJob>
-      <Inventory objectType="Steel Plate" amount="15" />
-    </DeconstructJob>
-
-    <Animations>
-      <Animation state="idle" fps="1" looping="false">
-        <Frame name="cloning_pod" />
-      </Animation>
-      <Animation state="running" fps="1" looping="true">
-        <Frame name="cloning_pod_0" />
-        <Frame name="cloning_pod_1" />
-      </Animation>          
-    </Animations>
-
-    <Params>
-      <Param name="animationTimer" value="1" />
-      <Param name="animationStep" value="0" />
-    </Params>
-
-    <JobSpotOffset X="0" Y="-1" />
-    <JobSpawnSpotOffset X="1" Y="-1" />
-
-    <Action event="OnUpdate" functionName="CloningPod_UpdateAction" />
-    
-    <LocalizationCode>furn_cloning_pod</LocalizationCode>
-    <UnlocalizedDescription>furn_cloning_pod_desc</UnlocalizedDescription>
-  </Furniture>
-
-
-  <Furniture objectType="Metal Smelter">
-    <Name>Metal Smelter</Name>
-    <Description>Smelts your raw iron into metal.</Description>
-    <TypeTag>Processor</TypeTag>
-    <MovementCost>1</MovementCost>
-    <PathfindingModifier>1.5</PathfindingModifier>
-    <PathfindingWeight>2</PathfindingWeight>
-    <Width>3</Width>
-    <Height>3</Height>
-    <PowerConnection inputRate="5" outputRate="" capacity=""/>
-
-    <BuildingJob jobTime="0" />
-
-    <JobSpotOffset X="1" Y="0" />
-
-    <Params>
-      <Param name="smelttime" value="0" />
-      <Param name="smelttime_required" value="6" />
-    </Params>
-
-    <Action event="OnUpdate" functionName="MetalSmelter_UpdateAction" />
-
-    <LocalizationCode>furn_metal_smelter</LocalizationCode>
-    <UnlocalizedDescription>furn_metal_smelter_desc</UnlocalizedDescription>
-  </Furniture>
-
-
-  <Furniture objectType="heater">
-    <Name>Heater</Name>
-    <Description>Raises temperature in the room.</Description>
-    <BaseType>Temperature</BaseType>
-    <MovementCost>2</MovementCost>
-    <PathfindingModifier>0</PathfindingModifier>
-    <PathfindingWeight>2</PathfindingWeight>
-    <Width>1</Width>
-    <Height>1</Height>
-    <PowerConnection inputRate="4" outputRate="" capacity=""/>
-
-    <BuildingJob jobTime="0" />
-
-    <!-- This method gets called on Install -->
-    <Action event="OnInstall" functionName="Heater_InstallAction"></Action>
-    <!-- This method gets called on Uninstall -->
-    <Action event="OnUninstall" functionName="Heater_UninstallAction"></Action>
-    <Action event="OnUpdateTemperature" functionName="Heater_UpdateTemperature" />
-
-    <Params>
-      <Param name="base_heating" value="100" />
-      <Param name="pressure_threshold" value="0.5" />
-    </Params>
-
-    <LocalizationCode>furn_heater</LocalizationCode>
-    <UnlocalizedDescription>furn_heater_desc</UnlocalizedDescription>
-  </Furniture>
-
-
-  <Furniture objectType="Power Cell Press">
-    <Name>Power Cell Press</Name>
-    <Description>A press that converts steel plate and something into power cells.</Description>
-    <MovementCost>1</MovementCost>
-    <PathfindingModifier>1.5</PathfindingModifier>
-    <PathfindingWeight>2</PathfindingWeight>
-    <Width>2</Width>
-    <Height>2</Height>
-    <PowerConnection inputRate="1" outputRate="" capacity=""/>
-
-    <BuildingJob jobTime="1" />
-
-    <Params>
-      <Param name="presstime" value="0" />
-      <Param name="presstime_required" value="15" />
-    </Params>
-
-    <Action event="OnUpdate" functionName="PowerCellPress_UpdateAction" />
-
-    <LocalizationCode>furn_power_cell_press</LocalizationCode>
-    <UnlocalizedDescription>furn_power_cell_press_desc</UnlocalizedDescription>
-  </Furniture>
-
-
-  <Furniture objectType="Small Landing Pad">
-    <Name>Small Landing Pad</Name>
-    <Description>A landing pad for small spaceboats to land.</Description>
-    <TypeTag>OutdoorOnly</TypeTag>
-    <TypeTag>LandingPad</TypeTag>
-    <MovementCost>2</MovementCost>
-    <PathfindingModifier>0</PathfindingModifier>
-    <PathfindingWeight>2</PathfindingWeight>
-    <Width>3</Width>
-    <Height>3</Height>
-
-    <BuildingJob jobTime="5">
-      <Inventory objectType="Steel Plate" amount="20" />
-    </BuildingJob>
-
-    <DeconstructJob>
-      <Inventory objectType="Steel Plate" amount="10" />
-    </DeconstructJob>
-
-    <JobSpotOffset X="0" Y="0" />
-    <JobSpawnSpotOffset X="1" Y="-1" />
-
-    <ContextMenuAction FunctionName="LandingPad_Test_CallTradeShip" 
-                       Text="Call Trade Ship Test" 
-                       RequiereCharacterSelected="false" 
-                       DevModeOnly="true"/>
-
-    <LocalizationCode>furn_small_landing_pad</LocalizationCode>
-    <UnlocalizedDescription>furn_small_landing_pad_desc</UnlocalizedDescription>
-  </Furniture>
-
-
-  <Furniture objectType="compressor_oxygen">
-    <Name>Oxygen Compressor</Name>
-    <Description>Stores and releases oxygen as needed</Description>
-    <MovementCost>2</MovementCost>
-    <PathfindingModifier>0</PathfindingModifier>
-    <PathfindingWeight>2</PathfindingWeight>
-    <Width>2</Width>
-    <Height>2</Height>
-    <PowerConnection inputRate="1" outputRate="" capacity=""/>
-
-    <BuildingJob jobTime="2" />
-
-    <Params>
-      <!-- <Param name="gas_name" value="O2" /> -->
-      <Param name="max_gas_content" value="5" />
-      <Param name="gas_content" value="0" />
-      <Param name="give_threshold" value="0.005" />
-      <Param name="take_threshold" value="0.01" />
-      <Param name="flow_rate" value="0.1" />
-    </Params>
-
-    <Action event="OnUpdate" functionName="OxygenCompressor_OnUpdate" />
-    <GetSpriteName FunctionName="OxygenCompressor_GetSpriteName" />
-
-    <LocalizationCode>furn_oxygen_compressor</LocalizationCode>
-    <UnlocalizedDescription>furn_oxygen_compressor_desc</UnlocalizedDescription>
-  </Furniture>
-
-
-  <Furniture objectType="solar_panel">
-    <Name>Solar Panel</Name>
-    <TypeTag>Generator</TypeTag>
-    <TypeTag>OutdoorOnly</TypeTag>
-    <MovementCost>2</MovementCost>
-    <PathfindingModifier>1.5</PathfindingModifier>
-    <PathfindingWeight>2</PathfindingWeight>
-    <Width>2</Width>
-    <Height>3</Height>
-    <PowerConnection inputRate="" outputRate="3" capacity=""/>
-
-    <BuildingJob jobTime="1" />
-    <CanBeBuiltOn tileType="Ladder" />
-
-    <Params>
-      <Param name="base_output" value="3" />
-      <Param name="efficiency" value="1" />
-    </Params>
-
-    <Action event="OnUpdate" functionName="SolarPanel_OnUpdate" />
-
-    <LocalizationCode>furn_solar_panel</LocalizationCode>
-    <UnlocalizedDescription>furn_solar_panel_desc</UnlocalizedDescription>
-  </Furniture>
-
-  <Furniture objectType="simple_bed">
-    <Name>Simple Bed</Name>
-    <Description>A simple bed</Description>
-    <TypeTag>Bed</TypeTag>
-    <MovementCost>2</MovementCost>
-    <Width>1</Width>
-    <Height>2</Height>
-    <PathfindingModifier>1</PathfindingModifier>
-    <PathfindingWeight>1</PathfindingWeight>
-
-    <BuildingJob jobTime="1">
-      <Inventory objectType="Steel Plate" amount="2" />
-    </BuildingJob>
-
-    <DeconstructJob>
-      <Inventory objectType="Steel Plate" amount="1" />
-    </DeconstructJob>
-
-    <Params>
-      <Param name="comfort" value="0.5" />
-    </Params>
-    <LocalizationCode>furn_simple_bed</LocalizationCode>
-    <UnlocalizedDescription>furn_simple_bed_desc</UnlocalizedDescription>
-  </Furniture>
-
-
-  <Furniture objectType="accumulator">
-    <Name>Accumulator</Name>
-    <Description>Accumulator</Description>
-    <MovementCost>2</MovementCost>
-    <PathfindingModifier>0</PathfindingModifier>
-    <PathfindingWeight>2</PathfindingWeight>
-    <Width>1</Width>
-    <Height>1</Height>
-    <PowerConnection inputRate="5" outputRate="10" capacity="50"/>
-
-    <BuildingJob jobTime="2" />
-
-    <GetSpriteName FunctionName="Accumulator_GetSpriteName" />
-
-    <LocalizationCode>furn_accumulator</LocalizationCode>
-    <UnlocalizedDescription>furn_accumulator_desc</UnlocalizedDescription>
-  </Furniture>
-
-  
-  <Furniture objectType="mine">
-    <Name>A Mining Spot</Name>
-    <Description>A spot for mining ore</Description>
-    <TypeTag>Ore</TypeTag>
-    <TypeTag>OutdoorOnly</TypeTag>
-    <TypeTag>Non-buildable</TypeTag>
-    <MovementCost>2</MovementCost>
-    <PathfindingModifier>1.5</PathfindingModifier>
-    <PathfindingWeight>2</PathfindingWeight>
-    <Width>1</Width>
-    <Height>1</Height>
-
-    <BuildingJob jobTime="1" />
-
-    <Params>
-     <Param name="ore_type" value="Raw Iron" />
-    </Params>
-    
-    <ContextMenuAction FunctionName="OreMine_CreateMiningJob" Text="Mine Ore" RequiereCharacterSelected="false" />
-    <GetSpriteName FunctionName="OreMine_GetSpriteName" />
-
-    <LocalizationCode>furn_mine</LocalizationCode>
-    <UnlocalizedDescription>furn_mine_desc</UnlocalizedDescription>
-  </Furniture>
-
-
-  <Furniture objectType="RTG">
-    <Name>RTG</Name>
-    <Description>Radioisotope thermoelectric generator provides electricity and heat</Description>
-    <TypeTag>Temperature</TypeTag>
-    <MovementCost>2</MovementCost>
-    <PathfindingModifier>0</PathfindingModifier>
-    <PathfindingWeight>2</PathfindingWeight>
-    <Width>1</Width>
-    <Height>1</Height>
-    <PowerConnection inputRate="" outputRate="2" capacity=""/>
-
-    <BuildingJob jobTime="0" />
-
-    <!-- This method gets called on Install -->
-    <Action event="OnInstall" functionName="Rtg_InstallAction"></Action>
-    <!-- This method gets called on Uninstall -->
-    <Action event="OnUninstall" functionName="Rtg_UninstallAction"></Action>
-    <Action event="OnUpdateTemperature" functionName="Rtg_UpdateTemperature" />
-
-    <Params>      
-      <Param name="base_heating" value="95" />
-      <Param name="pressure_threshold" value="0.2" />
-    </Params>    
-
-    <LocalizationCode>furn_rt_generator</LocalizationCode>
-    <UnlocalizedDescription>furn_rt_generator_desc</UnlocalizedDescription>
-  </Furniture>
-
-
+    <Furniture objectType="furn_SteelWall">
+        <Name>Steel Wall</Name>
+        <Description>This is a steel wall.</Description>
+        <TypeTag>Wall</TypeTag>
+        <MovementCost>0</MovementCost>
+        <Width>1</Width>
+        <Height>1</Height>
+        <LinksToNeighbours>true</LinksToNeighbours>
+        <EnclosesRooms>true</EnclosesRooms>
+        <DragType>path</DragType>
+
+        <BuildingJob jobTime="1">
+            <Inventory type="Steel Plate" amount="5" />
+        </BuildingJob>
+
+        <DeconstructJob>
+            <Inventory type="Steel Plate" amount="3" />
+        </DeconstructJob>
+
+        <Params>
+            <!-- Temperature stuff  example -->
+            <!-- Thermal diffusivity (also called alpha) is how much the furniture is "isolating" the tile it is placed on. -->
+            <!-- 0 means *NO* temperature is exchanged between tiles -->
+            <!-- 1 means a regular amout is exchanged -->
+            <!-- Walls will likely have low values, whilst tables and so on will have values close to 1 (if not 1). -->
+            <!-- Leave default value (i.e. nothing) if the furniture does not have any isolation effect. -->
+            <Param name="thermal_diffusivity" value="0.0" />
+        </Params>
+
+        <LocalizationCode>furn_steel_wall</LocalizationCode>
+        <UnlocalizedDescription>furn_steel_wall_desc</UnlocalizedDescription>
+    </Furniture>
+
+    <Furniture objectType="Door">
+        <Name>Door</Name>
+        <Description>A door that characters can walk through.</Description>
+        <TypeTag>Door</TypeTag>
+        <MovementCost>1</MovementCost>
+        <!-- PathfindingModifer is additive, so a PathfindingModifier of 1 will basically respond to Pathfinding as though it takes 1 extra tile of movement -->
+        <!-- Default value of PathfindingModifier is 0 -->
+        <PathfindingModifier>1.5</PathfindingModifier>
+        <!-- PathfindingWeight is multiplicative, so a PathfindingWeight of 2 would basically respond to Pathfinding as though it takes double the tiles of movement -->
+        <!-- Default value of PathfindingWeight is 1 -->
+        <PathfindingWeight>1</PathfindingWeight>
+        <Width>1</Width>
+        <Height>1</Height>
+        <LinksToNeighbours>false</LinksToNeighbours>
+        <EnclosesRooms>true</EnclosesRooms>
+        <CanReplaceFurniture typeTag="Wall" />
+
+        <BuildingJob jobTime="1">
+            <Inventory type="Steel Plate" amount="2" />
+        </BuildingJob>
+
+        <DeconstructJob>
+            <Inventory type="Steel Plate" amount="1" />
+        </DeconstructJob>
+
+        <Params>
+            <Param name="openness" value="0" />
+            <Param name="is_opening" value="0" />
+            <Param name="thermal_diffusivity" value="0.0001" />
+        </Params>
+
+        <Action event="OnUpdate" functionName="OnUpdate_Door" />
+        <Action event="OnUpdate" functionName="OnUpdate_Leak_Door" />
+
+        <IsEnterable FunctionName="IsEnterable_Door" />
+        <GetSpriteName FunctionName="GetSpriteName_Door" />
+
+        <LocalizationCode>furn_door</LocalizationCode>
+        <UnlocalizedDescription>furn_door_desc</UnlocalizedDescription>
+    </Furniture>
+
+    <Furniture objectType="Airlock">
+        <Name>Door</Name>
+        <Description>An Airlock prevents air from leaving the base</Description>
+        <TypeTag>Door</TypeTag>
+        <MovementCost>1</MovementCost>
+        <PathfindingModifier>3</PathfindingModifier>
+        <PathfindingWeight>1</PathfindingWeight>
+        <Width>1</Width>
+        <Height>1</Height>
+        <LinksToNeighbours>false</LinksToNeighbours>
+        <EnclosesRooms>true</EnclosesRooms>
+        <CanReplaceFurniture typeTag="Wall" />
+        <CanReplaceFurniture typeTag="Door" />
+
+        <BuildingJob jobTime="5">
+            <Inventory type="Steel Plate" amount="10" />
+        </BuildingJob>
+
+        <DeconstructJob>
+            <Inventory type="Steel Plate" amount="7" />
+        </DeconstructJob>
+
+        <Params>
+            <Param name="openness" value="0" />
+            <Param name="is_opening" value="0" />
+            <Param name="thermal_diffusivity" value="0.00001" />
+        </Params>
+
+        <Action event="OnUpdate" functionName="OnUpdate_AirlockDoor" />
+        <Action event="OnUpdate" functionName="OnUpdate_Leak_Airlock" />
+
+        <ContextMenuAction FunctionName="AirlockDoor_Toggle_Pressure_Lock" Text="Toggle Pressure Lock" RequiereCharacterSelected="false"/>
+
+        <IsEnterable FunctionName="IsEnterable_Door" />
+        <GetSpriteName FunctionName="GetSpriteName_Airlock" />
+
+        <LocalizationCode>furn_airlock</LocalizationCode>
+        <UnlocalizedDescription>furn_airlock_desc</UnlocalizedDescription>
+    </Furniture>
+
+    <Furniture objectType="Stockpile">
+        <Name>Stockpile</Name>
+        <Description>Characters will brings inventory here for storage.</Description>
+        <TypeTag>Storage</TypeTag>
+        <MovementCost>1</MovementCost>
+        <LinksToNeighbours>true</LinksToNeighbours>
+
+        <BuildingJob jobTime="0" />
+
+        <Action event="OnUpdate" functionName="Stockpile_UpdateAction" />
+
+        <LocalizationCode>furn_stockpile</LocalizationCode>
+        <UnlocalizedDescription>furn_stockpile_desc</UnlocalizedDescription>
+    </Furniture>
+
+    <Furniture objectType="Oxygen Generator">
+        <Name>Oxygen Generator</Name>
+        <Description>Create O2 in the room in which it is built.</Description>
+        <TypeTag>Generator</TypeTag>
+        <MovementCost>2</MovementCost>
+        <PathfindingModifier>0</PathfindingModifier>
+        <PathfindingWeight>2</PathfindingWeight>
+        <Width>2</Width>
+        <Height>2</Height>
+        <PowerConnection inputRate="1" outputRate="" capacity=""/>
+
+        <BuildingJob jobTime="0" />
+
+        <Params>
+            <!-- <Param name="gas_name" value="O2" /> -->
+            <Param name="gas_limit" value="0.2" />
+            <Param name="gas_per_second" value="0.16" />
+            <Param name="gas_gen">
+                <Param name="O2">
+                    <Param name="gas_limit" value="0.2" />
+                </Param>
+                <Param name="N2">
+                    <Param name="gas_limit" value="0.8" />
+                </Param>
+            </Param>
+        </Params>
+
+        <Action event="OnUpdate" functionName="OnUpdate_GasGenerator" />
+
+        <LocalizationCode>furn_oxygen_generator</LocalizationCode>
+        <UnlocalizedDescription>furn_oxygen_generator_desc</UnlocalizedDescription>
+    </Furniture>
+
+    <Furniture objectType="Mining Drone Station">
+        <Name>Mining Drone Station</Name>
+        <Description>Creates raw materials when worked by a character.</Description>
+        <TypeTag>Workstation</TypeTag>
+        <MovementCost>1</MovementCost>
+        <PathfindingModifier>0</PathfindingModifier>
+        <PathfindingWeight>2</PathfindingWeight>
+        <Width>3</Width>
+        <Height>3</Height>
+        <PowerConnection inputRate="1" outputRate="" capacity=""/>
+
+        <BuildingJob jobTime="0" />
+
+        <Params>
+            <Param name="mine_type" value="Raw Iron" />
+        </Params>
+
+        <JobSpotOffset X="1" Y="0" />
+        <JobSpawnSpotOffset X="0" Y="0" />
+
+        <Action event="OnUpdate" functionName="MiningDroneStation_UpdateAction" />
+
+        <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Iron" Text="change to raw iron" RequiereCharacterSelected="false"/>
+        <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Copper" Text="change to raw copper" RequiereCharacterSelected="false"/>
+
+        <LocalizationCode>furn_mining_drone_station</LocalizationCode>
+        <UnlocalizedDescription>furn_mining_drone_station_desc</UnlocalizedDescription>
+    </Furniture>
+
+    <Furniture objectType="Power Generator">
+        <Name>Power Generator</Name>
+        <TypeTag>Generator</TypeTag>
+        <MovementCost>2</MovementCost>
+        <PathfindingModifier>0</PathfindingModifier>
+        <PathfindingWeight>2</PathfindingWeight>
+        <Width>2</Width>
+        <Height>2</Height>
+        <PowerConnection inputRate="" outputRate="5" capacity=""/>
+
+        <Animations>
+            <Animation state="idle" fps="2" looping="false">
+                <Frame name="Power-Generator-01" />
+            </Animation>
+            <Animation state="running" fps="6" looping="true">
+                <Frame name="Power-Generator-02" />
+                <Frame name="Power-Generator-03" />
+                <Frame name="Power-Generator-04" />
+            </Animation>
+        </Animations>
+
+        <BuildingJob jobTime="0" />
+
+        <Params>
+            <Param name="burnTime" value="0" />
+            <Param name="burnTimeRequired" value="10" />
+        </Params>
+
+        <Action event="OnUpdate" functionName="PowerGenerator_UpdateAction" />
+
+        <LocalizationCode>furn_power_generator</LocalizationCode>
+        <UnlocalizedDescription>furn_power_generator_desc</UnlocalizedDescription>
+    </Furniture>
+
+    <Furniture objectType="cloning_pod">
+        <Name>Cloning Pod</Name>
+        <Description>Creates an additional worker, then is destroyed.</Description>
+        <MovementCost>2</MovementCost>
+        <PathfindingModifier>0</PathfindingModifier>
+        <PathfindingWeight>2</PathfindingWeight>
+        <Width>2</Width>
+        <Height>2</Height>
+        <PowerConnection inputRate="1" outputRate="" capacity=""/>
+
+        <BuildingJob jobTime="10">
+            <Inventory type="Steel Plate" amount="50" />
+        </BuildingJob>
+
+        <DeconstructJob>
+            <Inventory type="Steel Plate" amount="15" />
+        </DeconstructJob>
+
+        <Animations>
+            <Animation state="idle" fps="1" looping="false">
+                <Frame name="cloning_pod" />
+            </Animation>
+            <Animation state="running" fps="1" looping="true">
+                <Frame name="cloning_pod_0" />
+                <Frame name="cloning_pod_1" />
+            </Animation>
+        </Animations>
+
+        <Params>
+            <Param name="animationTimer" value="1" />
+            <Param name="animationStep" value="0" />
+        </Params>
+
+        <JobSpotOffset X="0" Y="-1" />
+        <JobSpawnSpotOffset X="1" Y="-1" />
+
+        <Action event="OnUpdate" functionName="CloningPod_UpdateAction" />
+
+        <LocalizationCode>furn_cloning_pod</LocalizationCode>
+        <UnlocalizedDescription>furn_cloning_pod_desc</UnlocalizedDescription>
+    </Furniture>
+
+    <Furniture objectType="Metal Smelter">
+        <Name>Metal Smelter</Name>
+        <Description>Smelts your raw iron into metal.</Description>
+        <TypeTag>Processor</TypeTag>
+        <MovementCost>1</MovementCost>
+        <PathfindingModifier>1.5</PathfindingModifier>
+        <PathfindingWeight>2</PathfindingWeight>
+        <Width>3</Width>
+        <Height>3</Height>
+        <PowerConnection inputRate="5" outputRate="" capacity=""/>
+
+        <BuildingJob jobTime="0" />
+
+        <JobSpotOffset X="1" Y="0" />
+
+        <Params>
+            <Param name="smelttime" value="0" />
+            <Param name="smelttime_required" value="6" />
+        </Params>
+
+        <Action event="OnUpdate" functionName="MetalSmelter_UpdateAction" />
+
+        <LocalizationCode>furn_metal_smelter</LocalizationCode>
+        <UnlocalizedDescription>furn_metal_smelter_desc</UnlocalizedDescription>
+    </Furniture>
+
+    <Furniture objectType="Heater">
+        <Name>Heater</Name>
+        <Description>Raises temperature in the room.</Description>
+        <BaseType>Temperature</BaseType>
+        <MovementCost>2</MovementCost>
+        <PathfindingModifier>0</PathfindingModifier>
+        <PathfindingWeight>2</PathfindingWeight>
+        <Width>1</Width>
+        <Height>1</Height>
+        <PowerConnection inputRate="4" outputRate="" capacity=""/>
+
+        <BuildingJob jobTime="0" />
+
+        <!-- This method gets called on Install -->
+        <Action event="OnInstall" functionName="Heater_InstallAction"></Action>
+        <!-- This method gets called on Uninstall -->
+        <Action event="OnUninstall" functionName="Heater_UninstallAction"></Action>
+        <Action event="OnUpdateTemperature" functionName="Heater_UpdateTemperature" />
+
+        <Params>
+            <Param name="base_heating" value="100" />
+            <Param name="pressure_threshold" value="0.5" />
+        </Params>
+
+        <LocalizationCode>furn_heater</LocalizationCode>
+        <UnlocalizedDescription>furn_heater_desc</UnlocalizedDescription>
+    </Furniture>
+
+    <Furniture objectType="Power Cell Press">
+        <Name>Power Cell Press</Name>
+        <Description>A press that converts steel plate and something into power cells.</Description>
+        <MovementCost>1</MovementCost>
+        <PathfindingModifier>1.5</PathfindingModifier>
+        <PathfindingWeight>2</PathfindingWeight>
+        <Width>2</Width>
+        <Height>2</Height>
+        <PowerConnection inputRate="1" outputRate="" capacity=""/>
+
+        <BuildingJob jobTime="1" />
+
+        <Params>
+            <Param name="presstime" value="0" />
+            <Param name="presstime_required" value="15" />
+        </Params>
+
+        <Action event="OnUpdate" functionName="PowerCellPress_UpdateAction" />
+
+        <LocalizationCode>furn_power_cell_press</LocalizationCode>
+        <UnlocalizedDescription>furn_power_cell_press_desc</UnlocalizedDescription>
+    </Furniture>
+
+    <Furniture objectType="Small Landing Pad">
+        <Name>Small Landing Pad</Name>
+        <Description>A landing pad for small spaceboats to land.</Description>
+        <TypeTag>OutdoorOnly</TypeTag>
+        <TypeTag>LandingPad</TypeTag>
+        <MovementCost>2</MovementCost>
+        <PathfindingModifier>0</PathfindingModifier>
+        <PathfindingWeight>2</PathfindingWeight>
+        <Width>3</Width>
+        <Height>3</Height>
+
+        <BuildingJob jobTime="5">
+            <Inventory type="Steel Plate" amount="20" />
+        </BuildingJob>
+
+        <DeconstructJob>
+            <Inventory type="Steel Plate" amount="10" />
+        </DeconstructJob>
+
+        <JobSpotOffset X="0" Y="0" />
+        <JobSpawnSpotOffset X="1" Y="-1" />
+
+        <ContextMenuAction FunctionName="LandingPad_Test_CallTradeShip"
+                           Text="Call Trade Ship Test"
+                           RequiereCharacterSelected="false"
+                           DevModeOnly="true"/>
+
+        <LocalizationCode>furn_small_landing_pad</LocalizationCode>
+        <UnlocalizedDescription>furn_small_landing_pad_desc</UnlocalizedDescription>
+    </Furniture>
+
+    <Furniture objectType="compressor_oxygen">
+        <Name>Oxygen Compressor</Name>
+        <Description>Stores and releases oxygen as needed</Description>
+        <MovementCost>2</MovementCost>
+        <PathfindingModifier>0</PathfindingModifier>
+        <PathfindingWeight>2</PathfindingWeight>
+        <Width>2</Width>
+        <Height>2</Height>
+        <PowerConnection inputRate="1" outputRate="" capacity=""/>
+
+        <BuildingJob jobTime="2" />
+
+        <Params>
+            <!-- <Param name="gas_name" value="O2" /> -->
+            <Param name="max_gas_content" value="5" />
+            <Param name="gas_content" value="0" />
+            <Param name="give_threshold" value="0.005" />
+            <Param name="take_threshold" value="0.01" />
+            <Param name="flow_rate" value="0.1" />
+        </Params>
+
+        <Action event="OnUpdate" functionName="OxygenCompressor_OnUpdate" />
+        <GetSpriteName FunctionName="OxygenCompressor_GetSpriteName" />
+
+        <LocalizationCode>furn_oxygen_compressor</LocalizationCode>
+        <UnlocalizedDescription>furn_oxygen_compressor_desc</UnlocalizedDescription>
+    </Furniture>
+
+    <Furniture objectType="solar_panel">
+        <Name>Solar Panel</Name>
+        <TypeTag>Generator</TypeTag>
+        <TypeTag>OutdoorOnly</TypeTag>
+        <MovementCost>2</MovementCost>
+        <PathfindingModifier>1.5</PathfindingModifier>
+        <PathfindingWeight>2</PathfindingWeight>
+        <Width>2</Width>
+        <Height>3</Height>
+        <PowerConnection inputRate="" outputRate="3" capacity=""/>
+
+        <BuildingJob jobTime="1" />
+        <CanBeBuiltOn tileType="Ladder" />
+
+        <Params>
+            <Param name="base_output" value="3" />
+            <Param name="efficiency" value="1" />
+        </Params>
+
+        <Action event="OnUpdate" functionName="SolarPanel_OnUpdate" />
+
+        <LocalizationCode>furn_solar_panel</LocalizationCode>
+        <UnlocalizedDescription>furn_solar_panel_desc</UnlocalizedDescription>
+    </Furniture>
+
+    <Furniture objectType="pump_air">
+        <Name>Air Pump</Name>
+        <MovementCost>0</MovementCost>
+        <Width>1</Width>
+        <Height>1</Height>
+        <EnclosesRooms>true</EnclosesRooms>
+        <PowerConnection inputRate="1" outputRate="" capacity=""/>
+
+        <BuildingJob jobTime="1" />
+        <CanReplaceFurniture typeTag="Wall" />
+
+        <Params>
+            <Param name="gas_throughput" value="0.5" />
+            <Param name="source_pressure_limit" value="0" />
+            <Param name="target_pressure_limit" value="1" />
+            <Param name="flow_direction_up" value="1" />
+        </Params>
+
+        <Action event="OnUpdate" functionName="AirPump_OnUpdate" />
+        <GetSpriteName FunctionName="AirPump_GetSpriteName" />
+        <ContextMenuAction FunctionName="AirPump_FlipDirection" Text="Flip Direction" RequiereCharacterSelected="false" />
+
+        <LocalizationCode>furn_pump_air</LocalizationCode>
+        <UnlocalizedDescription>furn_pump_air_desc</UnlocalizedDescription>
+    </Furniture>
+
+    <Furniture objectType="simple_bed">
+        <Name>Simple Bed</Name>
+        <Description>A simple bed</Description>
+        <TypeTag>Bed</TypeTag>
+        <MovementCost>2</MovementCost>
+        <Width>1</Width>
+        <Height>2</Height>
+        <PathfindingModifier>1</PathfindingModifier>
+        <PathfindingWeight>1</PathfindingWeight>
+
+        <BuildingJob jobTime="1">
+            <Inventory type="Steel Plate" amount="2" />
+        </BuildingJob>
+
+        <DeconstructJob>
+            <Inventory type="Steel Plate" amount="1" />
+        </DeconstructJob>
+
+        <Params>
+            <Param name="comfort" value="0.5" />
+        </Params>
+        <LocalizationCode>furn_simple_bed</LocalizationCode>
+        <UnlocalizedDescription>furn_simple_bed_desc</UnlocalizedDescription>
+    </Furniture>
+
+    <Furniture objectType="accumulator">
+        <Name>Accumulator</Name>
+        <Description>Accumulator</Description>
+        <MovementCost>2</MovementCost>
+        <PathfindingModifier>0</PathfindingModifier>
+        <PathfindingWeight>2</PathfindingWeight>
+        <Width>1</Width>
+        <Height>1</Height>
+        <PowerConnection inputRate="5" outputRate="10" capacity="50"/>
+
+        <BuildingJob jobTime="2" />
+
+        <GetSpriteName FunctionName="Accumulator_GetSpriteName" />
+
+        <LocalizationCode>furn_accumulator</LocalizationCode>
+        <UnlocalizedDescription>furn_accumulator_desc</UnlocalizedDescription>
+    </Furniture>
+
+    <Furniture objectType="mine">
+        <Name>A Mining Spot</Name>
+        <Description>A spot for mining ore</Description>
+        <TypeTag>Ore</TypeTag>
+        <TypeTag>OutdoorOnly</TypeTag>
+        <TypeTag>Non-buildable</TypeTag>
+        <MovementCost>2</MovementCost>
+        <PathfindingModifier>1.5</PathfindingModifier>
+        <PathfindingWeight>2</PathfindingWeight>
+        <Width>1</Width>
+        <Height>1</Height>
+
+        <BuildingJob jobTime="1" />
+
+        <Params>
+            <Param name="ore_type" value="Raw Iron" />
+        </Params>
+
+        <ContextMenuAction FunctionName="OreMine_CreateMiningJob" Text="Mine Ore" RequiereCharacterSelected="false" />
+        <GetSpriteName FunctionName="OreMine_GetSpriteName" />
+
+        <LocalizationCode>furn_mine</LocalizationCode>
+        <UnlocalizedDescription>furn_mine_desc</UnlocalizedDescription>
+    </Furniture>
+
+    <Furniture objectType="RTG">
+        <Name>RTG</Name>
+        <Description>Radioisotope thermoelectric generator provides electricity and heat</Description>
+        <TypeTag>Temperature</TypeTag>
+        <MovementCost>2</MovementCost>
+        <PathfindingModifier>0</PathfindingModifier>
+        <PathfindingWeight>2</PathfindingWeight>
+        <Width>1</Width>
+        <Height>1</Height>
+        <PowerConnection inputRate="" outputRate="2" capacity=""/>
+
+        <BuildingJob jobTime="0" />
+
+        <!-- This method gets called on Install -->
+        <Action event="OnInstall" functionName="Rtg_InstallAction"></Action>
+        <!-- This method gets called on Uninstall -->
+        <Action event="OnUninstall" functionName="Rtg_UninstallAction"></Action>
+        <Action event="OnUpdateTemperature" functionName="Rtg_UpdateTemperature" />
+
+        <Params>
+            <Param name="base_heating" value="95" />
+            <Param name="pressure_threshold" value="0.2" />
+        </Params>
+
+        <LocalizationCode>furn_rt_generator</LocalizationCode>
+        <UnlocalizedDescription>furn_rt_generator_desc</UnlocalizedDescription>
+    </Furniture>
 </Furnitures>

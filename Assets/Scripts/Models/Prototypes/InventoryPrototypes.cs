@@ -30,9 +30,9 @@ public class InventoryPrototypes : XmlPrototypes<InventoryCommon>
         }
         catch (Exception e)
         {
-            LogPrototypeError(e, inv.objectType);
+            LogPrototypeError(e, inv.type);
         }
 
-        Set(inv.objectType, inv);
+        Set(inv.type, inv);
     }
 }
