@@ -50,9 +50,9 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
         base.RemoveAll();
     }
 
-    public Sprite GetSpriteForFurniture(string objectType)
+    public Sprite GetSpriteForFurniture(string type)
     {
-        Furniture proto = PrototypeManager.Furniture.Get(objectType);
+        Furniture proto = PrototypeManager.Furniture.Get(type);
         string spriteName = proto.GetSpriteName();
         Sprite s = SpriteManager.current.GetSprite("Furniture", spriteName + (proto.LinksToNeighbour ? "_" : string.Empty));
 
@@ -102,7 +102,7 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
         // Add our tile/GO pair to the dictionary.
         objectGameObjectMap.Add(furniture, furn_go);
 
-        furn_go.name = furniture.ObjectType + "_" + furniture.Tile.X + "_" + furniture.Tile.Y;
+        furn_go.name = furniture.Type + "_" + furniture.Tile.X + "_" + furniture.Tile.Y;
         furn_go.transform.position = new Vector3(furniture.Tile.X + ((furniture.Width - 1) / 2f), furniture.Tile.Y + ((furniture.Height - 1) / 2f), furniture.Tile.Z);
         furn_go.transform.SetParent(objectParent.transform, true);
 
@@ -245,7 +245,7 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
     private string GetSuffixForNeighbour(Furniture furn, int x, int y, int z, string suffix)
     {
          Tile t = world.GetTileAt(x, y, z);
-         if (t != null && t.Furniture != null && t.Furniture.ObjectType == furn.ObjectType)
+         if (t != null && t.Furniture != null && t.Furniture.Type == furn.Type)
          {
              return suffix;
          }

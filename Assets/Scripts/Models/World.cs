@@ -133,9 +133,9 @@ public class World : IXmlSerializable
         Debug.ULogChannel("Rooms", "creating room:" + r.ID);
     }
 
-    public int CountFurnitureType(string objectType)
+    public int CountFurnitureType(string type)
     {
-        int count = furnitures.Count(f => f.ObjectType == objectType);
+        int count = furnitures.Count(f => f.Type == type);
         return count;
     }
 
@@ -347,15 +347,15 @@ public class World : IXmlSerializable
         return null;
     }
 
-    public Furniture PlaceFurniture(string objectType, Tile t, bool doRoomFloodFill = true)
+    public Furniture PlaceFurniture(string type, Tile t, bool doRoomFloodFill = true)
     {
-        if (PrototypeManager.Furniture.Has(objectType) == false)
+        if (PrototypeManager.Furniture.Has(type) == false)
         {
-            Debug.ULogErrorChannel("World", "furniturePrototypes doesn't contain a proto for key: " + objectType);
+            Debug.ULogErrorChannel("World", "furniturePrototypes doesn't contain a proto for key: " + type);
             return null;
         }
 
-        Furniture furn = PrototypeManager.Furniture.Get(objectType);
+        Furniture furn = PrototypeManager.Furniture.Get(type);
 
         return PlaceFurniture(furn, t, doRoomFloodFill);
     }
@@ -767,7 +767,7 @@ public class World : IXmlSerializable
                 int y = int.Parse(reader.GetAttribute("Y"));
                 int z = int.Parse(reader.GetAttribute("Z"));
 
-                Furniture furn = PlaceFurniture(reader.GetAttribute("objectType"), tiles[x, y, z], false);
+                Furniture furn = PlaceFurniture(reader.GetAttribute("type"), tiles[x, y, z], false);
                 furn.ReadXml(reader);
             }
             while (reader.ReadToNextSibling("Furniture"));

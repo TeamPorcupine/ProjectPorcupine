@@ -13,9 +13,9 @@ public class TraderPotentialInventory
 {
     private float rarity;
 
-    public string ObjectCategory { get; set; }
+    public string Category { get; set; }
 
-    public string ObjectType { get; set; }
+    public string Type { get; set; }
 
     public int MinQuantity { get; set; }
 

@@ -31,7 +31,7 @@ public class Trade
         totalStock.AddRange(trader.Stock);
         TradeItems = totalStock.GroupBy(s => s.Type).Select(g => new TradeItem
         {
-            ObjectType = g.Key,
+            Type = g.Key,
             BaseItemPrice = g.First().BasePrice,
             PlayerStock = player.Stock.Where(s => s.Type == g.Key).Sum(s => s.StackSize),
             TraderStock = trader.Stock.Where(s => s.Type == g.Key).Sum(s => s.StackSize),

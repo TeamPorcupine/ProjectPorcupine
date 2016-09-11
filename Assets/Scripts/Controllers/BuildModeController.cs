@@ -20,7 +20,7 @@ public enum BuildMode
 public class BuildModeController
 {
     public BuildMode buildMode = BuildMode.FLOOR;
-    public string buildModeObjectType;
+    public string buildModeType;
 
     private MouseController mouseController;
     private TileType buildModeTile = TileType.Floor;
@@ -39,7 +39,7 @@ public class BuildModeController
             return true;
         }
 
-        Furniture proto = PrototypeManager.Furniture.Get(buildModeObjectType);
+        Furniture proto = PrototypeManager.Furniture.Get(buildModeType);
 
         return proto.Width == 1 && proto.Height == 1;
     }
@@ -57,11 +57,11 @@ public class BuildModeController
         mouseController.StartBuildMode();
     }
     
-    public void SetMode_BuildFurniture(string objectType)
+    public void SetMode_BuildFurniture(string type)
     {
         // Wall is not a Tile!  Wall is an "Furniture" that exists on TOP of a tile.
         buildMode = BuildMode.FURNITURE;
-        buildModeObjectType = objectType;
+        buildModeType = type;
         mouseController.StartBuildMode();
     }
 
@@ -83,7 +83,7 @@ public class BuildModeController
             // Create the Furniture and assign it to the tile
             // Can we build the furniture in the selected tile?
             // Run the ValidPlacement function!
-            string furnitureType = buildModeObjectType;
+            string furnitureType = buildModeType;
 
             if ( 
                 WorldController.Instance.World.IsFurniturePlacementValid(furnitureType, t) &&
