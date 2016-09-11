@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Furnitures>
-    <Furniture objectType="furn_SteelWall">
+    <Furniture type="furn_SteelWall">
         <Name>Steel Wall</Name>
         <Description>This is a steel wall.</Description>
         <TypeTag>Wall</TypeTag>
@@ -33,7 +33,7 @@
         <UnlocalizedDescription>furn_steel_wall_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture objectType="Door">
+    <Furniture type="Door">
         <Name>Door</Name>
         <Description>A door that characters can walk through.</Description>
         <TypeTag>Door</TypeTag>
@@ -74,7 +74,7 @@
         <UnlocalizedDescription>furn_door_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture objectType="Airlock">
+    <Furniture type="Airlock">
         <Name>Door</Name>
         <Description>An Airlock prevents air from leaving the base</Description>
         <TypeTag>Door</TypeTag>
@@ -114,7 +114,7 @@
         <UnlocalizedDescription>furn_airlock_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture objectType="Stockpile">
+    <Furniture type="Stockpile">
         <Name>Stockpile</Name>
         <Description>Characters will brings inventory here for storage.</Description>
         <TypeTag>Storage</TypeTag>
@@ -129,7 +129,7 @@
         <UnlocalizedDescription>furn_stockpile_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture objectType="Oxygen Generator">
+    <Furniture type="Oxygen Generator">
         <Name>Oxygen Generator</Name>
         <Description>Create O2 in the room in which it is built.</Description>
         <TypeTag>Generator</TypeTag>
@@ -162,7 +162,7 @@
         <UnlocalizedDescription>furn_oxygen_generator_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture objectType="Mining Drone Station">
+    <Furniture type="Mining Drone Station">
         <Name>Mining Drone Station</Name>
         <Description>Creates raw materials when worked by a character.</Description>
         <TypeTag>Workstation</TypeTag>
@@ -191,7 +191,7 @@
         <UnlocalizedDescription>furn_mining_drone_station_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture objectType="Power Generator">
+    <Furniture type="Power Generator">
         <Name>Power Generator</Name>
         <TypeTag>Generator</TypeTag>
         <MovementCost>2</MovementCost>
@@ -225,7 +225,7 @@
         <UnlocalizedDescription>furn_power_generator_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture objectType="cloning_pod">
+    <Furniture type="cloning_pod">
         <Name>Cloning Pod</Name>
         <Description>Creates an additional worker, then is destroyed.</Description>
         <MovementCost>2</MovementCost>
@@ -267,7 +267,7 @@
         <UnlocalizedDescription>furn_cloning_pod_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture objectType="Metal Smelter">
+    <Furniture type="Metal Smelter">
         <Name>Metal Smelter</Name>
         <Description>Smelts your raw iron into metal.</Description>
         <TypeTag>Processor</TypeTag>
@@ -293,7 +293,7 @@
         <UnlocalizedDescription>furn_metal_smelter_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture objectType="Heater">
+    <Furniture type="Heater">
         <Name>Heater</Name>
         <Description>Raises temperature in the room.</Description>
         <BaseType>Temperature</BaseType>
@@ -321,7 +321,7 @@
         <UnlocalizedDescription>furn_heater_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture objectType="Power Cell Press">
+    <Furniture type="Power Cell Press">
         <Name>Power Cell Press</Name>
         <Description>A press that converts steel plate and something into power cells.</Description>
         <MovementCost>1</MovementCost>
@@ -344,7 +344,7 @@
         <UnlocalizedDescription>furn_power_cell_press_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture objectType="Small Landing Pad">
+    <Furniture type="Small Landing Pad">
         <Name>Small Landing Pad</Name>
         <Description>A landing pad for small spaceboats to land.</Description>
         <TypeTag>OutdoorOnly</TypeTag>
@@ -375,7 +375,7 @@
         <UnlocalizedDescription>furn_small_landing_pad_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture objectType="compressor_oxygen">
+    <Furniture type="compressor_oxygen">
         <Name>Oxygen Compressor</Name>
         <Description>Stores and releases oxygen as needed</Description>
         <MovementCost>2</MovementCost>
@@ -403,7 +403,7 @@
         <UnlocalizedDescription>furn_oxygen_compressor_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture objectType="solar_panel">
+    <Furniture type="solar_panel">
         <Name>Solar Panel</Name>
         <TypeTag>Generator</TypeTag>
         <TypeTag>OutdoorOnly</TypeTag>
@@ -428,7 +428,7 @@
         <UnlocalizedDescription>furn_solar_panel_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture objectType="pump_air">
+    <Furniture type="pump_air">
         <Name>Air Pump</Name>
         <MovementCost>0</MovementCost>
         <Width>1</Width>
@@ -454,7 +454,7 @@
         <UnlocalizedDescription>furn_pump_air_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture objectType="simple_bed">
+    <Furniture type="simple_bed">
         <Name>Simple Bed</Name>
         <Description>A simple bed</Description>
         <TypeTag>Bed</TypeTag>
@@ -479,7 +479,7 @@
         <UnlocalizedDescription>furn_simple_bed_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture objectType="accumulator">
+    <Furniture type="accumulator">
         <Name>Accumulator</Name>
         <Description>Accumulator</Description>
         <MovementCost>2</MovementCost>
@@ -497,7 +497,7 @@
         <UnlocalizedDescription>furn_accumulator_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture objectType="mine">
+    <Furniture type="mine">
         <Name>A Mining Spot</Name>
         <Description>A spot for mining ore</Description>
         <TypeTag>Ore</TypeTag>
@@ -522,7 +522,7 @@
         <UnlocalizedDescription>furn_mine_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture objectType="RTG">
+    <Furniture type="RTG">
         <Name>RTG</Name>
         <Description>Radioisotope thermoelectric generator provides electricity and heat</Description>
         <TypeTag>Temperature</TypeTag>
