@@ -3,13 +3,16 @@
     <Asteroid>
         <NoiseScale>0.2</NoiseScale>
         <NoiseThreshhold>0.75</NoiseThreshhold>
+        <NoiseOctaves>10</NoiseOctaves>
+        <NoisePersistance>6.53451</NoisePersistance>
+        <NoiseLacunarity>0.565654</NoiseLacunarity>
         <ResourceChance>0.15</ResourceChance>
         <Resources>
-            <Resource type="Raw Iron" maxStack="50" min="5" max="15" weightedChance="50" />
-            <Resource type="Ice" maxStack="10" min="5" max="10" weightedChance="15" />
-            <Resource type="Uranium" maxStack="20" min="5" max="15" weightedChance="35" />
+            <Resource objectType="Raw Iron" maxStack="50" min="5" max="15" weightedChance="50" />
+            <Resource objectType="Ice" maxStack="10" min="5" max="10" weightedChance="15" />
+            <Resource objectType="Uranium" maxStack="20" min="5" max="15" weightedChance="35" />
         </Resources>
-    </Asteroid>
+     </Asteroid>
     <StartArea width="18" height="15" centerX="8" centerY="7">
         <Tiles>
             0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,
@@ -36,10 +39,9 @@
             <Furniture x="15" y="0" name="furn_SteelWall" />
             <Furniture x="16" y="0" name="furn_SteelWall" />
             <Furniture x="17" y="0" name="furn_SteelWall" />
-
+          
             <Furniture x="10" y="1" name="furn_SteelWall" />
-            <Furniture x="16" y="1" name="furn_SteelWall" />
-
+            <Furniture x="16" y="1" name="furn_SteelWall" />            
             <Furniture x="9" y="2" name="furn_SteelWall" />
             <Furniture x="16" y="2" name="furn_SteelWall" />
 
