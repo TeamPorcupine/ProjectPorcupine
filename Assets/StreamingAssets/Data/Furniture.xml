@@ -294,7 +294,44 @@
         <UnlocalizedDescription>furn_metal_smelter_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture type="Heater">
+    <Furniture type="Metal Furnace">
+        <Name>Metal Furnace</Name>
+        <Description>Smelts your raw ores into metal.</Description>
+        <TypeTag>Processor</TypeTag>
+        <MovementCost>1</MovementCost>
+        <PathfindingModifier>1.5</PathfindingModifier>
+        <PathfindingWeight>2</PathfindingWeight>
+        <Width>3</Width>
+        <Height>3</Height>
+
+        <BuildingJob jobTime="0" />
+
+        <JobSpotOffset X="1" Y="0" />
+
+        <Workshop>
+            <ProductionChain name="Copper smelting" processingTime="3">
+                <Input>
+                    <Item objectType="Raw Copper" amount="2" slotPosX="0" slotPosY="0" />
+                </Input>
+                <Output>
+                    <Item objectType="Copper Plate" amount="1" slotPosX="2" slotPosY="0" />
+                </Output>
+            </ProductionChain>
+            <ProductionChain name="Iron smelting" processingTime="4">
+                <Input>
+                    <Item objectType="Raw Iron" amount="2" slotPosX="0" slotPosY="0" />
+                </Input>
+                <Output>
+                    <Item objectType="Steel Plate" amount="1" slotPosX="2" slotPosY="0" />
+                </Output>
+            </ProductionChain>
+        </Workshop>
+
+        <LocalizationCode>furn_metal_furnace</LocalizationCode>
+        <UnlocalizedDescription>furn_metal_furnace_desc</UnlocalizedDescription>
+    </Furniture>
+
+    <Furniture type="heater">
         <Name>Heater</Name>
         <Description>Raises temperature in the room.</Description>
         <BaseType>Temperature</BaseType>
@@ -334,12 +371,17 @@
 
         <BuildingJob jobTime="1" />
 
-        <Params>
-            <Param name="presstime" value="0" />
-            <Param name="presstime_required" value="15" />
-        </Params>
-
-        <Action event="OnUpdate" functionName="PowerCellPress_UpdateAction" />
+      <Workshop>
+          <ProductionChain name="Power Cell Pressing" processingTime="5">
+              <Input>
+                  <Item objectType="Uranium" amount="3" slotPosX="0" slotPosY="0" />
+                  <Item objectType="Steel Plate" amount="2" slotPosX="1" slotPosY="0" />
+              </Input>
+              <Output>
+                  <Item objectType="Power Cell" amount="1" slotPosX="2" slotPosY="1" />
+              </Output>
+          </ProductionChain>
+      </Workshop>
 
         <LocalizationCode>furn_power_cell_press</LocalizationCode>
         <UnlocalizedDescription>furn_power_cell_press_desc</UnlocalizedDescription>

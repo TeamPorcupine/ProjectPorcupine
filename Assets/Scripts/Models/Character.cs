@@ -349,12 +349,12 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         Update_DoMovement(deltaTime);
 
+        animation.Update(deltaTime);
+
         if (OnCharacterChanged != null)
         {
             OnCharacterChanged(this);
-        }
-
-        animation.Update(deltaTime);
+        }        
     }
 
     #region IXmlSerializable implementation
@@ -459,7 +459,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         foreach (Need n in needs)
         {
-           yield return LocalizationTable.GetLocalization(n.LocalisationID, n.DisplayAmount);
+            yield return LocalizationTable.GetLocalization(n.LocalisationID, n.DisplayAmount);
         }
 
         foreach (Stat stat in stats.Values)
@@ -518,11 +518,11 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 break;
             }
 
-            string statType = reader.GetAttribute("statType");
+            string statType = reader.GetAttribute("type");
             Stat stat = GetStat(statType);
             if (stat == null)
             {
-                continue;               
+                continue;
             }
 
             int statValue;
@@ -789,6 +789,8 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             }
         }
 
+        CharacterFacing();
+
         if (nextTile.IsEnterable() == Enterability.Never)
         {
             //// Most likely a wall got built, so we just need to reset our pathfinding information.
@@ -809,8 +811,6 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             // now and don't actually process the movement.
             return;
         }
-
-        CharacterFacing();
 
         // At this point we should have a valid nextTile to move to.
         // What's the total distance from point A to point B?
