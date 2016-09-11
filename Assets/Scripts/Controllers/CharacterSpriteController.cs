@@ -108,7 +108,7 @@ public class CharacterSpriteController : BaseSpriteController<Character>
         if (c.inventory != null)
         {
             inv_sr.sprite = SpriteManager.current.GetSprite("Inventory", c.inventory.GetName());
-            inv_sr.sortingOrder = charSortOrder + 1;            
+            inv_sr.sortingOrder = charSortOrder + 1;
         }
         else
         {

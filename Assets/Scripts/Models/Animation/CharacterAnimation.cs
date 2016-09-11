@@ -88,7 +88,7 @@ namespace Animation
             {
                 newAnimation += 10;
             }
-            
+
             // TODO: What is the acceptable amount of O2 gas pressure? 
             // Using .15 from Need.cs for now.        
             if (character.CurrTile.GetGasPressure("O2") >= 0.15f)
@@ -98,7 +98,7 @@ namespace Animation
 
             // check if we need to switch animations
             if (newAnimation != (int)currentAnimationType)
-            {                
+            {
                 currentAnimationType = (AnimationType)newAnimation;
                 currentAnimation = animations[currentAnimationType];
 
@@ -112,11 +112,11 @@ namespace Animation
                 else if (currentAnimation.FlipX == false && renderer.flipX == true)
                 {
                     renderer.flipX = false;
-                }                
+                }
             }
 
             currentAnimation.Update(deltaTime);
-            
+
             if (prevFrameIndex != currentAnimation.CurrentFrame)
             {
                 ShowSprite(currentAnimation.CurrentFrameName);
