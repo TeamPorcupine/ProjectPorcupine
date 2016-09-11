@@ -256,7 +256,7 @@ public class OverlayMap : MonoBehaviour
         {
             meshRenderer.enabled = false;
             currentOverlay = name;
-            HideGUI();
+            HideGUITooltip();
             return;
         }
         else if (overlays.ContainsKey(name))
@@ -284,8 +284,7 @@ public class OverlayMap : MonoBehaviour
 
             ColorMapSG = descr.colorMap;
             Bake();
-
-            ShowGUI();
+            ShowGUIToolitip();
         }
         else
         {
@@ -335,13 +334,9 @@ public class OverlayMap : MonoBehaviour
         // Build GUI.
         CreateGUI();
 
-        SetOverlay("None");
-
-        HideGUI();
-
         // TODO: remove this dummy set size.
+        SetOverlay("None");
         SetSize(100, 100);
-
     }
 
     /// <summary>
@@ -546,7 +541,6 @@ public class OverlayMap : MonoBehaviour
         textView.GetComponent<UnityEngine.UI.Text>().fontSize = 15;
         textView.GetComponent<UnityEngine.UI.Text>().font = Resources.GetBuiltinResource<Font>("Arial.ttf");
 
-
         colorMapView = new GameObject();
         colorMapView.AddComponent<UnityEngine.UI.Image>();
         colorMapView.transform.SetParent(parentPanel.transform);
@@ -565,14 +559,14 @@ public class OverlayMap : MonoBehaviour
             (int idx) => { SetOverlay(dropdown.captionText.text); });
     }
 
-    private void HideGUI()
+    private void HideGUITooltip()
     {
         textView.SetActive(false);
         colorMapView.SetActive(false);
         parentPanel.GetComponentInChildren<UnityEngine.UI.Image>().enabled = false;
     }
 
-    private void ShowGUI()
+    private void ShowGUIToolitip()
     {
         textView.SetActive(true);
         parentPanel.GetComponentInChildren<UnityEngine.UI.Image>().enabled = true;
