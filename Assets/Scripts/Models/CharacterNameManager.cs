@@ -7,6 +7,7 @@
 // ====================================================
 #endregion
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 /// <summary>
@@ -33,16 +34,10 @@ public class CharacterNameManager
     public static void LoadNames(string[] nameStrings)
     {
         // Randomize the given strings
-        for (int i = 0; i < nameStrings.Length; i++)
-        {
-            int index = Random.Range(0, nameStrings.Length - 1);
-            string tempName = nameStrings[index];
-            nameStrings[index] = nameStrings[i];
-            nameStrings[i] = tempName;
-        }
+        List<string> namesList = nameStrings.OrderBy(c => Random.Range(0f, 1f)).ToList();
 
         // Add all the names to the unused queue in the random order
-        foreach (string name in nameStrings)
+        foreach (string name in namesList)
         {
             unusedNames.Enqueue(name);
         }
