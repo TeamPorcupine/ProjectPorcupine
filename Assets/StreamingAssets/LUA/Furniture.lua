@@ -301,11 +301,7 @@ function MiningDroneStation_UpdateAction( furniture, deltaTime )
 		return
 	end
 
-<<<<<<< HEAD
-	if(furniture.Jobs.GetSpawnSpotTile().Inventory != nil and furniture.Jobs.GetSpawnSpotTile().Inventory.ObjectType != furniture.Parameters["mine_type"].ToString()) then
-=======
-	if(furniture.GetSpawnSpotTile().Inventory != nil and furniture.GetSpawnSpotTile().Inventory.Type != furniture.Parameters["mine_type"].ToString()) then
->>>>>>> 1665df07286db183ad8e0d1e4c3eedfba9206622
+	if(furniture.Jobs.GetSpawnSpotTile().Inventory != nil and furniture.Jobs.GetSpawnSpotTile().Inventory.Type != furniture.Parameters["mine_type"].ToString()) then
 		return
 	end
 
@@ -327,13 +323,8 @@ function MiningDroneStation_UpdateAction( furniture, deltaTime )
 end
 
 function MiningDroneStation_JobComplete(j)
-<<<<<<< HEAD
-	if (j.furniture.Jobs.GetSpawnSpotTile().Inventory == nil or j.furniture.Jobs.GetSpawnSpotTile().Inventory.ObjectType == j.furniture.Parameters["mine_type"].ToString()) then
-		World.Current.inventoryManager.PlaceInventory( j.furniture.Jobs.GetSpawnSpotTile(), Inventory.__new(j.furniture.Parameters["mine_type"].ToString() , 50, 2) )
-=======
-	if (j.furniture.GetSpawnSpotTile().Inventory == nil or j.furniture.GetSpawnSpotTile().Inventory.Type == j.furniture.Parameters["mine_type"].ToString()) then
-		World.Current.inventoryManager.PlaceInventory( j.furniture.GetSpawnSpotTile(), Inventory.__new(j.furniture.Parameters["mine_type"].ToString() , 2) )
->>>>>>> 1665df07286db183ad8e0d1e4c3eedfba9206622
+	if (j.furniture.Jobs.GetSpawnSpotTile().Inventory == nil or j.furniture.Jobs.GetSpawnSpotTile().Inventory.Type == j.furniture.Parameters["mine_type"].ToString()) then
+		World.Current.inventoryManager.PlaceInventory( j.furniture.Jobs.GetSpawnSpotTile(), Inventory.__new(j.furniture.Parameters["mine_type"].ToString(), 2))
 	else
 		j.CancelJob()
 	end
@@ -425,15 +416,9 @@ function PowerCellPress_UpdateAction(furniture, deltaTime)
     local spawnSpot = furniture.Jobs.GetSpawnSpotTile()
 
     if(spawnSpot.Inventory == nil) then
-<<<<<<< HEAD
-        if(furniture.Jobs.Count() == 0) then
-            local itemsDesired = {Inventory.__new("Steel Plate", 10, 0)}
-            local jobSpot = furniture.Jobs.GetWorkSpotTile()
-=======
-        if(furniture.JobCount() == 0) then
+        if(furniture.Job.Count() == 0) then
             local itemsDesired = {Inventory.__new("Steel Plate", 0, 10)}
-            local jobSpot = furniture.GetJobSpotTile()
->>>>>>> 1665df07286db183ad8e0d1e4c3eedfba9206622
+            local jobSpot = furniture.Jobs.GetWorkSpotTile()
 
             local j = Job.__new(
                 jobSpot,
