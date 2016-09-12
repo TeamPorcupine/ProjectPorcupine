@@ -157,7 +157,7 @@ namespace Animation
         {
             if (renderer != null)
             {
-                renderer.sprite = SpriteManager.current.GetSprite("Character", spriteName);                
+                renderer.sprite = SpriteManager.GetSprite("Character", spriteName);                
             }
         }
     }

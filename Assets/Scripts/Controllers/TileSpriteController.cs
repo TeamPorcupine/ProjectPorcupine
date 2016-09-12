@@ -53,7 +53,7 @@ public class TileSpriteController : BaseSpriteController<Tile>
         // Add a Sprite Renderer
         // Add a default sprite for empty tiles.
         SpriteRenderer sr = tile_go.AddComponent<SpriteRenderer>();
-        sr.sprite = SpriteManager.current.GetSprite("Tile", "Empty");
+        sr.sprite = SpriteManager.GetSprite("Tile", "Empty");
         sr.sortingLayerName = "Tiles";
 
         OnChanged(tile);
@@ -76,7 +76,7 @@ public class TileSpriteController : BaseSpriteController<Tile>
             return;
         }
         
-        tile_go.GetComponent<SpriteRenderer>().sprite = SpriteManager.current.GetSprite("Tile", tile.Type.Name);
+        tile_go.GetComponent<SpriteRenderer>().sprite = SpriteManager.GetSprite("Tile", tile.Type.Name);
         if (tile.Type == TileType.Empty)
         {
             tile_go.SetActive(false);
