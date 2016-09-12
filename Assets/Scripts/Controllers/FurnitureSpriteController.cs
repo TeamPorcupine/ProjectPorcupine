@@ -195,6 +195,7 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
         // don't change sprites on furniture with animations
         if (furn.Animation != null)
         {
+            furn.Animation.OnFurnitureChanged();
             return;
         }
         

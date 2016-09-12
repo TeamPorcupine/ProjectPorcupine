@@ -59,6 +59,14 @@ namespace Animation
         }
 
         /// <summary>
+        /// Furniture has changed, so make sure the sprite is updated
+        /// </summary>
+        public void OnFurnitureChanged()
+        {
+            ShowSprite(GetSpriteName());
+        }
+
+        /// <summary>
         /// Set the animation frame depending on a value. The currentvalue percent of the maxvalue will determine which frame is shown.
         /// </summary>
         public void SetProgressValue(float percent)

@@ -114,6 +114,25 @@
             <Inventory type="Steel Plate" amount="7" />
         </DeconstructJob>
 
+        <Animations>
+          <Animation state="horizontal" fps="1" looping="true" valuebased="true">
+            <Frame name="AirlockHorizontal_0" />
+            <Frame name="AirlockHorizontal_1" />
+            <Frame name="AirlockHorizontal_2" />
+            <Frame name="AirlockHorizontal_3" />
+            <Frame name="AirlockHorizontal_4" />
+            <Frame name="AirlockHorizontal_5" />
+          </Animation>
+          <Animation state="vertical" fps="1" looping="true" valuebased="true">
+            <Frame name="AirlockVertical_0" />
+            <Frame name="AirlockVertical_1" />
+            <Frame name="AirlockVertical_2" />
+            <Frame name="AirlockVertical_3" />
+            <Frame name="AirlockVertical_4" />
+            <Frame name="AirlockVertical_5" />
+          </Animation>
+        </Animations>
+      
         <Params>
             <Param name="openness" value="0" />
             <Param name="is_opening" value="0" />
@@ -127,8 +146,7 @@
         <ContextMenuAction FunctionName="AirlockDoor_Toggle_Pressure_Lock" Text="Toggle Pressure Lock" RequiereCharacterSelected="false"/>
 
         <IsEnterable FunctionName="IsEnterable_Door" />
-        <GetSpriteName FunctionName="GetSpriteName_Airlock" />
-
+        
         <LocalizationCode>furn_airlock</LocalizationCode>
         <UnlocalizedDescription>furn_airlock_desc</UnlocalizedDescription>
     </Furniture>
