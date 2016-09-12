@@ -20,6 +20,8 @@ public class QuestController
     public QuestController()
     {
         checkDelayInSeconds = 5f;
+
+        TimeManager.Instance.FixedFrequencyUnpaused += Update;
     }
 
     public void Update(float deltaTime)

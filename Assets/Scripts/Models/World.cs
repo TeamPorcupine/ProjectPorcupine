@@ -76,6 +76,8 @@ public class World : IXmlSerializable
         // Make one character.
         CreateCharacter(GetTileAt(Width / 2, Height / 2, 0));
 
+        AddEventListeners();
+
         TestRoomGraphGeneration(this);
     }
 
@@ -84,6 +86,7 @@ public class World : IXmlSerializable
     /// </summary>
     public World()
     {
+        AddEventListeners();
     }
 
     public event Action<Furniture> OnFurnitureCreated;
@@ -157,6 +160,12 @@ public class World : IXmlSerializable
         // All tiles that belonged to this room should be re-assigned to
         // the outside.
         r.ReturnTilesToOutsideRoom();
+    }
+
+    public void AddEventListeners()
+    {
+        TimeManager.Instance.EveryFrameUnpaused += TickEveryFrame;
+        TimeManager.Instance.FixedFrequencyUnpaused += TickFixedFrequency;
     }
 
     public void TickEveryFrame(float deltaTime)

@@ -21,6 +21,9 @@ public class KeyboardManager
     public KeyboardManager()
     {
         mapping = new Dictionary<string, KeyboadMappedInput>();
+
+        TimeManager.Instance.EveryFrameNotModal += (time) => Update();
+
         ReadXmlOrJsonAfterWeDecide();
     }
 
@@ -62,14 +65,8 @@ public class KeyboardManager
         RegisterInputMapping("DevMode", KeyCode.F12);
     }
 
-    public void Update(bool isModal)
+    public void Update()
     {
-        if (isModal)
-        {
-            // A modal dialog box is open. Bail.
-            return;
-        }
-
         foreach (KeyboadMappedInput input in mapping.Values)
         {
             input.TrigerActionIfInputValid();
