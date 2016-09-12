@@ -26,7 +26,6 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
         // Go through any EXISTING furniture (i.e. from a save that was loaded OnEnable) and call the OnCreated event manually.
         foreach (Furniture furn in world.furnitures)
         {
-            Debug.Log(furn.Name);
             OnCreated(furn);
         }
     }
