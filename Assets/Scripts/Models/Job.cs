@@ -10,12 +10,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
 using MoonSharp.Interpreter;
 using ProjectPorcupine.Localization;
 using UnityEngine;
 
 [MoonSharpUserData]
-public class Job : ISelectable
+public class Job : ISelectable, IPrototypable
 {
     // This class holds info for a queued up job, which can include
     // things like placing furniture, moving stored inventory,
@@ -52,6 +53,11 @@ public class Job : ISelectable
    
     // The job has been stopped, either because it's non-repeating or was canceled.
     private List<string> jobCompletedLua;
+
+    // Required for IPrototypable
+    public Job()
+    {
+    }
 
     public Job(Tile tile, string jobObjectType, Action<Job> jobComplete, float jobTime, Inventory[] inventoryRequirements, Job.JobPriority jobPriority, bool jobRepeats = false, bool need = false, bool critical = false)
     {
@@ -146,6 +152,11 @@ public class Job : ISelectable
     {
         get;
         protected set;
+    }
+
+    public string Type
+    {
+        get { return JobObjectType; }
     }
 
     public bool IsNeed
@@ -425,5 +436,9 @@ public class Job : ISelectable
     public IEnumerable<string> GetAdditionalInfo()
     {
         yield break;
+    }
+
+    public void ReadXmlPrototype(XmlReader reader)
+    {
     }
 }
