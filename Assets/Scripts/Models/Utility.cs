@@ -71,8 +71,11 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         tileTypeBuildPermissions = new HashSet<TileType>();
     }
 
-    // Copy Constructor -- don't call this directly, unless we never
-    // do ANY sub-classing. Instead use Clone(), which is more virtual.
+    /// <summary>
+    /// Copy Constructor -- don't call this directly, unless we never
+    /// do ANY sub-classing. Instead use Clone(), which is more virtual.
+    /// </summary>
+    /// <param name="other"><see cref="Utility"/> being cloned.</param>
     private Utility(Utility other)
     {
         Type = other.Type;
@@ -267,27 +270,24 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
             return null;
         }
 
-        if (obj.LinksToNeighbour)
-        {
-            // This type of utility links itself to its neighbours,
-            // so we should inform our neighbours that they have a new
-            // buddy.  Just trigger their OnChangedCallback.
-            int x = tile.X;
-            int y = tile.Y;
+        // This type of utility links itself to its neighbours,
+        // so we should inform our neighbours that they have a new
+        // buddy.  Just trigger their OnChangedCallback.
+        int x = tile.X;
+        int y = tile.Y;
 
-            for (int xpos = x - 1; xpos < x + 2; xpos++)
+        for (int xpos = x - 1; xpos < x + 2; xpos++)
+        {
+            for (int ypos = y - 1; ypos < y + 2; ypos++)
             {
-                for (int ypos = y - 1; ypos < y + 2; ypos++)
+                Tile tileAt = World.Current.GetTileAt(xpos, ypos, tile.Z);
+                if (tileAt != null && tileAt.Utilities != null)
                 {
-                    Tile tileAt = World.Current.GetTileAt(xpos, ypos, tile.Z);
-                    if (tileAt != null && tileAt.Utilities != null)
+                    foreach (Utility utility in tileAt.Utilities.Values)
                     {
-                        foreach (Utility utility in tileAt.Utilities.Values)
+                        if (utility.Changed != null)
                         {
-                            if (utility.Changed != null)
-                            {
-                                utility.Changed(utility);
-                            }
+                            utility.Changed(utility);
                         }
                     }
                 }
@@ -341,7 +341,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     /// Check if the position of the utility is valid or not.
     /// This is called when placing the utility.
     /// </summary>
-    /// <param name="t">The base tile.</param>
+    /// <param name="tile">The base tile.</param>
     /// <returns>True if the tile is valid for the placement of the utility.</returns>
     public bool IsValidPosition(Tile tile)
     {
@@ -499,15 +499,6 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     }
 
     /// <summary>
-    /// Gets the utility's Parameter structure from a string key.
-    /// </summary>
-    /// <returns>The Parameter value..</returns>
-    public Parameter GetParameters()
-    {
-        return Parameters;
-    }
-
-    /// <summary>
     /// How many jobs are linked to this utility.
     /// </summary>
     /// <returns>The number of jobs linked to this utility.</returns>
@@ -569,12 +560,8 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     {
         int x = Tile.X;
         int y = Tile.Y;
-        int fwidth = 1;
-        int fheight = 1;
-        bool linksToNeighbour = false;
         if (Tile.Utilities != null)
         {
-            linksToNeighbour = utility.LinksToNeighbour;
             utility.CancelJobs();
         }
 
@@ -591,21 +578,18 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         // We should inform our neighbours that they have just lost a
         // neighbour regardless of type.  
         // Just trigger their OnChangedCallback. 
-        if (linksToNeighbour == true)
+        for (int xpos = x - 1; xpos < x + 2; xpos++)
         {
-            for (int xpos = x - 1; xpos < x + 2; xpos++)
+            for (int ypos = y - 1; ypos < y + 2; ypos++)
             {
-                for (int ypos = y - 1; ypos < y + 2; ypos++)
+                Tile tileAt = World.Current.GetTileAt(xpos, ypos, Tile.Z);
+                if (tileAt != null && tileAt.Utilities != null)
                 {
-                    Tile tileAt = World.Current.GetTileAt(xpos, ypos, Tile.Z);
-                    if (tileAt != null && tileAt.Utilities != null)
+                    foreach (Utility neighborUtility in tileAt.Utilities.Values)
                     {
-                        foreach (Utility neighborUtility in tileAt.Utilities.Values)
+                        if (neighborUtility.Changed != null)
                         {
-                            if (neighborUtility.Changed != null)
-                            {
-                                neighborUtility.Changed(utility);
-                            }
+                            neighborUtility.Changed(utility);
                         }
                     }
                 }

@@ -26,7 +26,7 @@ public class ModsManager
     public void LoadFiles()
     {
         LoadFunctions("Furniture.lua", "Furniture");
-//        LoadFunctions("Utility.lua", "Utility");
+        LoadFunctions("Utility.lua", "Utility");
         LoadFunctions("Need.lua", "Need");
         LoadFunctions("GameEvent.lua", "GameEvent");
         LoadFunctions("TileType.lua", "Tiles");
