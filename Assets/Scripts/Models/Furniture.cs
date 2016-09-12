@@ -22,7 +22,7 @@ using UnityEngine;
 /// InstalledObjects are things like walls, doors, and furniture (e.g. a sofa).
 /// </summary>
 [MoonSharpUserData]
-public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
+public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextActionProvider
 {
     // Prevent construction too close to the world's edge
     private const int MinEdgeDistance = 5;

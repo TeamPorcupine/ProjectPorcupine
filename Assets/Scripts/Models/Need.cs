@@ -9,7 +9,7 @@
 using System.Collections.Generic;
 using System.Xml;
 
-public class Need
+public class Need : IPrototypable
 {
     public Character character;
     private float addedInVacuum;
