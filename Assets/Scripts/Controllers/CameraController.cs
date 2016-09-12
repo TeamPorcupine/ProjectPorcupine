@@ -21,6 +21,8 @@ public class CameraController
     private float frameMoveHorizontal = 0;
     private float frameMoveVertical = 0;
 
+    private Vector3[] presetCameraPositions = new Vector3[5];
+
     public CameraController()
     {
         // Main camera handles UI only
@@ -35,6 +37,11 @@ public class CameraController
         keyboardManager.RegisterInputAction("ZoomIn", KeyboardMappedInputType.Key, () => ChangeZoom(-0.1f));
         keyboardManager.RegisterInputAction("MoveCameraUp", KeyboardMappedInputType.KeyUp, ChangeLayerUp);
         keyboardManager.RegisterInputAction("MoveCameraDown", KeyboardMappedInputType.KeyUp, ChangeLayerDown);
+        keyboardManager.RegisterInputAction("GoToPresetCameraPosition1", KeyboardMappedInputType.Key, () => GoToPresetCameraPosition(presetCameraPositions[0]));
+        keyboardManager.RegisterInputAction("GoToPresetCameraPosition2", KeyboardMappedInputType.Key, () => GoToPresetCameraPosition(presetCameraPositions[0]));
+        keyboardManager.RegisterInputAction("GoToPresetCameraPosition3", KeyboardMappedInputType.Key, () => GoToPresetCameraPosition(presetCameraPositions[0]));
+        keyboardManager.RegisterInputAction("GoToPresetCameraPosition4", KeyboardMappedInputType.Key, () => GoToPresetCameraPosition(presetCameraPositions[0]));
+        keyboardManager.RegisterInputAction("GoToPresetCameraPosition5", KeyboardMappedInputType.Key, () => GoToPresetCameraPosition(presetCameraPositions[0]));
 
         // Set default zoom value on camera.
         Camera.main.orthographicSize = zoomTarget;
@@ -114,6 +121,19 @@ public class CameraController
     public void ChangeLayerDown()
     {
         ChangeLayer(currentLayer + 1);
+    }
+
+    public void InitializePresetCameraPositions()
+    {
+        for (int i = 0; i < presetCameraPositions.Length; i++)
+        {
+            presetCameraPositions[i] = Camera.main.transform.position;
+        }
+    }
+
+    private void GoToPresetCameraPosition(Vector3 presetPosition)
+    {
+        Camera.main.transform.position = presetPosition;
     }
 
     private void SyncCameras()

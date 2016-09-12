@@ -128,6 +128,8 @@ public class WorldController : MonoBehaviour
         // Hiding Dev Mode spawn inventory controller if devmode is off.
         spawnInventoryController.SetUIVisibility(Settings.GetSetting("DialogBoxSettings_developerModeToggle", false));
 
+        cameraController.InitializePresetCameraPositions();
+
         // Initialising controllers.
         GameObject controllers = GameObject.Find("Controllers");
         Instantiate(Resources.Load("UIController"), controllers.transform);

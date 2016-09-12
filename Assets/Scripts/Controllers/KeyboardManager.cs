@@ -57,6 +57,11 @@ public class KeyboardManager
         RegisterInputMapping("ZoomIn", KeyCode.PageDown);
         RegisterInputMapping("MoveCameraUp", KeyCode.Home);
         RegisterInputMapping("MoveCameraDown", KeyCode.End);
+        RegisterInputMapping("GoToPresetCameraPosition1", KeyCode.F1);
+        RegisterInputMapping("GoToPresetCameraPosition2", KeyCode.F2);
+        RegisterInputMapping("GoToPresetCameraPosition3", KeyCode.F3);
+        RegisterInputMapping("GoToPresetCameraPosition4", KeyCode.F4);
+        RegisterInputMapping("GoToPresetCameraPosition5", KeyCode.F5);
         RegisterInputMapping("SetSpeed1", KeyCode.Alpha1, KeyCode.Keypad1);
         RegisterInputMapping("SetSpeed2", KeyCode.Alpha2, KeyCode.Keypad2);
         RegisterInputMapping("SetSpeed3", KeyCode.Alpha3, KeyCode.Keypad3);
