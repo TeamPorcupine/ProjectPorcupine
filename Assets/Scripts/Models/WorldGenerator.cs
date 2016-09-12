@@ -119,39 +119,26 @@ public class WorldGenerator
                                     {
                                         tile.Furniture.Deconstruct();
 
-                                        if (inv.Type == "Raw Iron" || inv.Type == "Uranium" || inv.Type == "Ice")
+                                        Furniture oreWall = PrototypeManager.Furniture.Get("astro_wall").Clone();
+                                        oreWall.Parameters["ore_type"].SetValue(inv.Type.ToString());
+
+                                        switch (inv.Type)
                                         {
-                                            Furniture oreWall = PrototypeManager.Furniture.Get("astro_wall").Clone();
-                                            oreWall.Parameters["ore_type"].SetValue(inv.Type.ToString());
-
-                                            switch (inv.Type)
-                                            {
-                                                case "Raw Iron":
-                                                    oreWall.Tint = Color.red;
-                                                    break;
-                                                case "Uranium":
-                                                    oreWall.Tint = Color.green;
-                                                    break;
-                                                case "Ice":
-                                                    oreWall.Tint = Color.cyan;
-                                                    break;
-                                                default:
-                                                    oreWall.Tint = Color.gray;
-                                                    break;
-                                            }
-
-                                            world.PlaceFurniture(oreWall, tile, false);
-                                            break;
+                                            case "Raw Iron":
+                                                oreWall.Tint = Color.red;
+                                                break;
+                                            case "Uranium":
+                                                oreWall.Tint = Color.green;
+                                                break;
+                                            case "Ice":
+                                                oreWall.Tint = Color.cyan;
+                                                break;
+                                            default:
+                                                oreWall.Tint = Color.gray;
+                                                break;
                                         }
 
-                                        int stackSize = Random.Range(resourceMin[i], resourceMax[i]);
-
-                                        if (stackSize > inv.MaxStackSize)
-                                        {
-                                            stackSize = inv.MaxStackSize;
-                                        }
-
-                                        // world.inventoryManager.PlaceInventory(tile, new Inventory(inv.ObjectType, inv.MaxStackSize, stackSize));
+                                        world.PlaceFurniture(oreWall, tile, false);
                                         break;
                                     }
                                 }
