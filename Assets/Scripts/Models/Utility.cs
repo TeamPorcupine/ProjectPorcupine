@@ -21,7 +21,7 @@ using UnityEngine;
 /// InstalledObjects are things like walls, doors, and utility (e.g. a sofa).
 /// </summary>
 [MoonSharpUserData]
-public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IBuildable
+public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextActionProvider, IBuildable
 {
     // Prevent construction too close to the world's edge
     private const int MinEdgeDistance = 5;
@@ -75,7 +75,7 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
     // do ANY sub-classing. Instead use Clone(), which is more virtual.
     private Utility(Utility other)
     {
-        ObjectType = other.ObjectType;
+        Type = other.Type;
         Name = other.Name;
         typeTags = new HashSet<string>(other.typeTags);
         description = other.description;
@@ -176,7 +176,7 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
     /// know what sprite to render for this utility.
     /// </summary>
     /// <value>The type of the utility.</value>
-    public string ObjectType { get; private set; }
+    public string Type { get; private set; }
 
     /// <summary>
     /// Gets the name of the utility. The name is the object type by default.
@@ -188,7 +188,7 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
         {
             if (string.IsNullOrEmpty(name))
             {
-                return ObjectType;
+                return Type;
             }
 
             return name;
@@ -330,7 +330,7 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
     {
         if (string.IsNullOrEmpty(getSpriteNameAction))
         {
-            return ObjectType;
+            return Type;
         }
 
         DynValue ret = FunctionsManager.Utility.Call(getSpriteNameAction, this);
@@ -367,7 +367,7 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
         writer.WriteAttributeString("X", Tile.X.ToString());
         writer.WriteAttributeString("Y", Tile.Y.ToString());
         writer.WriteAttributeString("Z", Tile.Z.ToString());
-        writer.WriteAttributeString("objectType", ObjectType);
+        writer.WriteAttributeString("type", Type);
 
         // Let the Parameters handle their own xml
         Parameters.WriteXml(writer);
@@ -379,7 +379,7 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
     /// <param name="readerParent">The XML reader to read from.</param>
     public void ReadXmlPrototype(XmlReader readerParent)
     {
-        ObjectType = readerParent.GetAttribute("objectType");
+        Type = readerParent.GetAttribute("type");
 
         XmlReader reader = readerParent.ReadSubtree();
 
@@ -412,7 +412,7 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
                         {
                             // Found an inventory requirement, so add it to the list!
                             invs.Add(new Inventory(
-                                    inventoryReader.GetAttribute("objectType"),
+                                    inventoryReader.GetAttribute("type"),
                                     int.Parse(inventoryReader.GetAttribute("amount")),
                                     0));
                         }
@@ -420,13 +420,13 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
 
                     Job j = new Job(
                                 null,
-                                ObjectType,
+                                Type,
                                 FunctionsManager.JobComplete_UtilityBuilding,
                                 jobTime,
                                 invs.ToArray(),
                                 Job.JobPriority.High);
-                    j.JobDescription = "job_build_" + ObjectType + "_desc";
-                    PrototypeManager.UtilityJob.Set(ObjectType, j);
+                    j.JobDescription = "job_build_" + Type + "_desc";
+                    PrototypeManager.UtilityJob.Set(Type, j);
                     break;
 
                 case "CanBeBuiltOn":
@@ -479,7 +479,7 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
     /// <param name="reader">The XML reader to read from.</param>
     public void ReadXml(XmlReader reader)
     {
-        // X, Y, and objectType have already been set, and we should already
+        // X, Y, and type have already been set, and we should already
         // be assigned to a tile.  So just read extra data if we have any.
         if (!reader.IsEmptyElement)
         {
@@ -493,7 +493,7 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
     /// <param name="reader">The reader to read the parameters from.</param>
     public void ReadXmlParams(XmlReader reader)
     {
-        // X, Y, and objectType have already been set, and we should already
+        // X, Y, and type have already been set, and we should already
         // be assigned to a tile.  So just read extra data.
         Parameters = Parameter.ReadXml(reader);
     }
@@ -589,7 +589,7 @@ public class Utility : IXmlSerializable, ISelectable, IContextActionProvider, IB
         }
 
         // We should inform our neighbours that they have just lost a
-        // neighbour regardless of objectType.  
+        // neighbour regardless of type.  
         // Just trigger their OnChangedCallback. 
         if (linksToNeighbour == true)
         {

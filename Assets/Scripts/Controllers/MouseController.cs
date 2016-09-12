@@ -393,10 +393,10 @@ public class MouseController
                     }
                     else if (bmc.buildMode == BuildMode.UTILITY)
                     {
-                        Utility proto = PrototypeManager.Utility.Get(bmc.buildModeObjectType);
+                        Utility proto = PrototypeManager.Utility.Get(bmc.buildModeType);
                         if (IsPartOfDrag(t, dragParams, proto.DragType))
                         {
-                            ShowUtilitySpriteAtTile(bmc.buildModeObjectType, t);
+                            ShowUtilitySpriteAtTile(bmc.buildModeType, t);
                         }
                     }
                     else
@@ -447,7 +447,7 @@ public class MouseController
                 else if (bmc.buildMode == BuildMode.UTILITY)
                 {
                     // Check for furniture dragType.
-                    Utility proto = PrototypeManager.Utility.Get(bmc.buildModeObjectType);
+                    Utility proto = PrototypeManager.Utility.Get(bmc.buildModeType);
 
                     if (IsPartOfDrag(t, dragParams, proto.DragType))
                     {

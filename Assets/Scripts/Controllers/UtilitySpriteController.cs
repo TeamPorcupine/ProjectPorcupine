@@ -82,7 +82,7 @@ public class UtilitySpriteController : BaseSpriteController<Utility>
         // Add our tile/GO pair to the dictionary.
         objectGameObjectMap.Add(utility, util_go);
 
-        util_go.name = utility.ObjectType + "_" + utility.Tile.X + "_" + utility.Tile.Y;
+        util_go.name = utility.Type + "_" + utility.Tile.X + "_" + utility.Tile.Y;
         util_go.transform.position = new Vector3(utility.Tile.X, utility.Tile.Y, utility.Tile.Z);
         util_go.transform.SetParent(objectParent.transform, true);
 

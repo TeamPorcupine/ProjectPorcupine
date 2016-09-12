@@ -49,7 +49,7 @@ public class UtilityBuildMenu : MonoBehaviour
 
             for (int i = 0; i < localizers.Length; i++)
             {
-                localizers[i].UpdateText(LocalizationTable.GetLocalization(PrototypeManager.Utility.Get(i).GetName()));
+                localizers[i].UpdateText(LocalizationTable.GetLocalization(PrototypeManager.Utility[i].GetName()));
             }
         }
     }

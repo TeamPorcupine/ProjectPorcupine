@@ -43,11 +43,11 @@ TagManager:
   - name: Tiles
     uniqueID: 2329541923
     locked: 0
+  - name: Utility
+    uniqueID: 3987794993
+    locked: 0
   - name: Furniture
     uniqueID: 1892590203
-    locked: 0
-  - name: Utility
-    uniqueID: 2055637085
     locked: 0
   - name: Power
     uniqueID: 186703983
