@@ -685,7 +685,7 @@ function OreMine_OreMined(job)
     -- Defines the ore to be spawned by the mine
     local inventory = Inventory.__new(job.furniture.Parameters["ore_type"], 10)
 
-    if (inventory.ObjectType ~= "None") then
+    if (inventory.Type ~= "None") then
         -- Place the "mined" ore on the tile
         World.Current.inventoryManager.PlaceInventory(job.tile, inventory)
     end
