@@ -88,6 +88,7 @@ public class FunctionsManager
         {
             return null;
         }
+
         if (actions.ContainsKey(name))
         {
             return actions[name];

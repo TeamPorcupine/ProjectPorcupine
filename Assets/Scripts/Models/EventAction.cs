@@ -134,4 +134,14 @@ public class EventActions : IXmlSerializable
             FunctionsManager.Get(target.GetType().ToString()).CallWithInstance(actionsList[actionName].ToArray(), target, deltaTime);
         }
     }
+
+    /// <summary>
+    /// Determines whether this instance has any events named actionName.
+    /// </summary>
+    /// <returns><c>true</c> if this instance has any events named actionName; otherwise, <c>false</c>.</returns>
+    /// <param name="actionName">Action name.</param>
+    public bool HasEvent(string actionName)
+    {
+        return actionsList.ContainsKey(actionName);
+    }
 }

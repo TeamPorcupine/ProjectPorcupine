@@ -43,7 +43,6 @@ public class Need : IPrototypable
         }
     }
 
-
     public Character Character { get; set; }
 
     public string Type { get; private set; }
@@ -101,16 +100,51 @@ public class Need : IPrototypable
     // Update is called once per frame
     public void Update(float deltaTime)
     {
-
-        if (EventActions != null)
+        if (EventActions != null && EventActions.HasEvent("OnUpdate"))
         {
             // updateActions(this, deltaTime);
             EventActions.Trigger("OnUpdate", this, deltaTime);
         }
+        else 
+        {
+            DefaultNeedDecay();
+        }
 
         if (Amount.AreEqual(100))
         {
-            // FIXME: Insert need fail damage code here.
+            if (EventActions != null && EventActions.HasEvent("OnEmptyNeed"))
+            {
+                // updateActions(this, deltaTime);
+                EventActions.Trigger("OnEmptyNeed", this, deltaTime);
+            }
+            else
+            {
+                DefaultEmptyNeed();
+            }
+        } 
+        else if (Amount > 90f)
+        {
+            if (EventActions != null && EventActions.HasEvent("OnSevereNeed"))
+            {
+                // updateActions(this, deltaTime);
+                EventActions.Trigger("OnSevereNeed", this, deltaTime);
+            }
+        }
+        else if (Amount > 75f)
+        {
+            if (EventActions != null && EventActions.HasEvent("OnCriticalNeed"))
+            {
+                // updateActions(this, deltaTime);
+                EventActions.Trigger("OnCriticalNeed", this, deltaTime);
+            }
+        }
+        else if (Amount > 50f)
+        {
+            if (EventActions != null && EventActions.HasEvent("OnModerateNeed"))
+            {
+                // updateActions(this, deltaTime);
+                EventActions.Trigger("OnModerateNeed", this, deltaTime);
+            }
         }
     }
 
@@ -183,5 +217,16 @@ public class Need : IPrototypable
     public Need Clone()
     {
         return new Need(this);
+    }
+
+    public void DefaultNeedDecay()
+    {
+        Amount += this.GrowthRate;
+    }
+
+    public void DefaultEmptyNeed()
+    {
+        // TODO: Default for empty need should probably be taking damage, but shouldn't be implemented until characters are 
+        //       better able to handle getting their oxygen and maybe have real space suits.
     }
 }
