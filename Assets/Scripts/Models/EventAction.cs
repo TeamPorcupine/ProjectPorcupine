@@ -6,13 +6,11 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System.Collections;
 using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
-using UnityEngine;
 
 /// <summary>
 /// This class handles LUA actions take in response to events triggered within C# or LUA. For each event name (e.g. OnUpdate, ...) there
@@ -123,7 +121,7 @@ public class EventActions : IXmlSerializable
     /// <param name="actionName">Name of the action being triggered.</param>
     /// <param name="target">Object, passed to LUA function as 1-argument (TODO: make it an object).</param>
     /// <param name="deltaTime">Time since last Trigger of this event.</param>
-    public void Trigger(string actionName, Furniture target, float deltaTime = 0f)
+    public void Trigger<T>(string actionName, T target, float deltaTime = 0f)
     {
         if (!actionsList.ContainsKey(actionName) || actionsList[actionName] == null)
         {
@@ -131,7 +129,7 @@ public class EventActions : IXmlSerializable
         }
         else
         {
-            FunctionsManager.Furniture.CallWithInstance(actionsList[actionName].ToArray(), target, deltaTime);
+            FunctionsManager.Get(target.GetType().ToString()).CallWithInstance(actionsList[actionName].ToArray(), target, deltaTime);
         }
     }
 }
