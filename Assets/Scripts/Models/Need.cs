@@ -102,7 +102,6 @@ public class Need : IPrototypable
     {
         if (EventActions != null && EventActions.HasEvent("OnUpdate"))
         {
-            // updateActions(this, deltaTime);
             EventActions.Trigger("OnUpdate", this, deltaTime);
         }
         else 
@@ -114,7 +113,6 @@ public class Need : IPrototypable
         {
             if (EventActions != null && EventActions.HasEvent("OnEmptyNeed"))
             {
-                // updateActions(this, deltaTime);
                 EventActions.Trigger("OnEmptyNeed", this, deltaTime);
             }
             else
@@ -126,7 +124,6 @@ public class Need : IPrototypable
         {
             if (EventActions != null && EventActions.HasEvent("OnSevereNeed"))
             {
-                // updateActions(this, deltaTime);
                 EventActions.Trigger("OnSevereNeed", this, deltaTime);
             }
         }
@@ -134,7 +131,6 @@ public class Need : IPrototypable
         {
             if (EventActions != null && EventActions.HasEvent("OnCriticalNeed"))
             {
-                // updateActions(this, deltaTime);
                 EventActions.Trigger("OnCriticalNeed", this, deltaTime);
             }
         }
@@ -142,7 +138,6 @@ public class Need : IPrototypable
         {
             if (EventActions != null && EventActions.HasEvent("OnModerateNeed"))
             {
-                // updateActions(this, deltaTime);
                 EventActions.Trigger("OnModerateNeed", this, deltaTime);
             }
         }
