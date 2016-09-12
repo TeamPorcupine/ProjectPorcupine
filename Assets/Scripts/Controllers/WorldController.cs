@@ -72,7 +72,7 @@ public class WorldController : MonoBehaviour
             return timeManager.TimeScale;
         }
     }
-    
+
     // Use this for initialization.
     public void OnEnable()
     {
@@ -86,6 +86,7 @@ public class WorldController : MonoBehaviour
 
         new FunctionsManager();
         new PrototypeManager();
+        new CharacterNameManager();
 
         // FIXME: Do something real here. This is just to show how to register a C# event prototype for the Scheduler.
         PrototypeManager.SchedulerEvent.Add(
@@ -134,7 +135,9 @@ public class WorldController : MonoBehaviour
         timeManager = new TimeManager();
         autosaveManager = new AutosaveManager();
 
+        // Register inputs actions
         keyboardManager.RegisterInputAction("Pause", KeyboardMappedInputType.KeyUp, () => { IsPaused = !IsPaused; });
+        keyboardManager.RegisterInputAction("DevMode", KeyboardMappedInputType.KeyDown, ChangeDevMode);
 
         // Hiding Dev Mode spawn inventory controller if devmode is off.
         spawnInventoryController.SetUIVisibility(Settings.GetSetting("DialogBoxSettings_developerModeToggle", false));
@@ -211,6 +214,17 @@ public class WorldController : MonoBehaviour
         // Reload the scene to reset all data (and purge old references)
         loadWorldFromFile = fileName;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    /// <summary>
+    /// Change the developper mode.
+    /// </summary>
+    public void ChangeDevMode()
+    {
+        bool developerMode = !Settings.GetSetting("DialogBoxSettings_developerModeToggle", false);
+        Settings.SetSetting("DialogBoxSettings_developerModeToggle", developerMode);
+        spawnInventoryController.SetUIVisibility(developerMode);
+        ///FurnitureBuildMenu.instance.RebuildMenuButtons(developerMode);
     }
 
     private void CreateEmptyWorld()

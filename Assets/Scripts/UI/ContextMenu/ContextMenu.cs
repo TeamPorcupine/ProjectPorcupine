@@ -119,8 +119,7 @@ public class ContextMenu : MonoBehaviour
         {
             contextualActions.AddRange(contextualActionProvider.GetContextMenuActions(this));
         }
-
-        contextualActions = contextualActions.OrderBy(c => c.Text).ToList();
+        
         return contextualActions;
     }
 }

@@ -59,6 +59,7 @@ public class KeyboardManager
         RegisterInputMapping("DecreaseSpeed", KeyCode.Minus, KeyCode.KeypadMinus);
         RegisterInputMapping("IncreaseSpeed", KeyCode.Plus, KeyCode.KeypadPlus);
         RegisterInputMapping("Pause", KeyCode.Space, KeyCode.Pause);
+        RegisterInputMapping("DevMode", KeyCode.F12);
     }
 
     public void Update(bool isModal)

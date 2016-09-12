@@ -20,25 +20,27 @@ public class ModsManager
         DirectoryInfo modsDir = new DirectoryInfo(modsPath);
         mods = modsDir.GetDirectories();
 
-        LoadPrototypes();
+        LoadFiles();
     }
 
-    public void LoadPrototypes()
+    public void LoadFiles()
     {
-        LoadFunctionScripts("Furniture", "Furniture.lua");
-        LoadFunctionScripts("Need", "Need.lua");
-        LoadFunctionScripts("GameEvent", "GameEvent.lua");
-        LoadFunctionScripts("TileType", "Tiles.lua");
-        LoadFunctionScripts("Quest", "Quest.lua");
-        LoadFunctionScripts("ScheduledEvent", "ScheduledEvent.lua");
+        LoadFunctions("Furniture.lua", "Furniture");
+        LoadFunctions("Need.lua", "Need");
+        LoadFunctions("GameEvent.lua", "GameEvent");
+        LoadFunctions("TileType.lua", "Tiles");
+        LoadFunctions("Quest.lua", "Quest");
+        LoadFunctions("ScheduledEvent.lua", "ScheduledEvent");
 
-        PrototypeManager.Furniture.LoadPrototypes(mods);
-        PrototypeManager.Inventory.LoadPrototypes(mods);
-        PrototypeManager.Need.LoadPrototypes(mods);
-        PrototypeManager.Trader.LoadPrototypes(mods);
-        PrototypeManager.SchedulerEvent.LoadPrototypes(mods);
-        PrototypeManager.Stat.LoadPrototypes(mods);
-        PrototypeManager.Quest.LoadPrototypes(mods);
+        LoadPrototypes("Furniture.xml", (text) => PrototypeManager.Furniture.LoadPrototypes(text));
+        LoadPrototypes("Inventory.xml", (text) => PrototypeManager.Inventory.LoadPrototypes(text));
+        LoadPrototypes("Need.xml", (text) => PrototypeManager.Need.LoadPrototypes(text));
+        LoadPrototypes("Trader.xml", (text) => PrototypeManager.Trader.LoadPrototypes(text));
+        LoadPrototypes("Events.xml", (text) => PrototypeManager.SchedulerEvent.LoadPrototypes(text));
+        LoadPrototypes("Stats.xml", (text) => PrototypeManager.Stat.LoadPrototypes(text));
+        LoadPrototypes("Quest.xml", (text) => PrototypeManager.Quest.LoadPrototypes(text));
+
+        LoadCharacterNames("CharacterNames.txt");
     }
 
     public DirectoryInfo[] GetMods()
@@ -47,18 +49,69 @@ public class ModsManager
     }
 
     /// <summary>
-    /// Loads the base and the mods scripts.
+    /// Loads all the functions using the given file name.
     /// </summary>
-    /// <param name="mods">The mods directories.</param>
     /// <param name="fileName">The file name.</param>
-    private void LoadFunctionScripts(string functionsName, string fileName)
+    /// <param name="functionsName">The functions name.</param>
+    private void LoadFunctions(string fileName, string functionsName)
     {
-        string filePath = Path.Combine(Application.streamingAssetsPath, "LUA");
+        LoadTextFile(
+            "LUA",
+            fileName,
+            (filePath) =>
+            {
+                string text = File.ReadAllText(filePath);
+                FunctionsManager.Get(functionsName).LoadScript(text, functionsName);
+            });
+    }
+
+    /// <summary>
+    /// Loads all the protoypes using the given file name.
+    /// </summary>
+    /// <param name="fileName">The file name.</param>
+    /// <param name="prototypesLoader">Called to handle the prototypes loading.</param>
+    private void LoadPrototypes(string fileName, Action<string> prototypesLoader)
+    {
+        LoadTextFile(
+            "Data",
+            fileName,
+            (filePath) =>
+            {
+                string text = File.ReadAllText(filePath);
+                prototypesLoader(text);
+            });
+    }
+
+    /// <summary>
+    /// Loads all the character names from the given file.
+    /// </summary>
+    /// <param name="fileName">The file name.</param>
+    private void LoadCharacterNames(string fileName)
+    {
+        LoadTextFile(
+            "Data",
+            fileName,
+            (filePath) =>
+            {
+                string[] lines = File.ReadAllLines(filePath);
+                CharacterNameManager.LoadNames(lines);
+            });
+    }
+
+    /// <summary>
+    /// Loads the given file from the given folder in the base and inside the mods and
+    /// calls the Action with the file path.
+    /// </summary>
+    /// <param name="folderName">Folder name.</param>
+    /// <param name="fileName">File name.</param>
+    /// <param name="readText">Called to handle the text reading and actual loading.</param>
+    private void LoadTextFile(string folderName, string fileName, Action<string> readText)
+    {
+        string filePath = Path.Combine(Application.streamingAssetsPath, folderName);
         filePath = Path.Combine(filePath, fileName);
         if (File.Exists(filePath))
         {
-            string text = File.ReadAllText(filePath);
-            FunctionsManager.Get(functionsName).LoadScript(text, functionsName);
+            readText(filePath);
         }
 
         foreach (DirectoryInfo mod in mods)
@@ -66,8 +119,7 @@ public class ModsManager
             filePath = Path.Combine(mod.FullName, fileName);
             if (File.Exists(filePath))
             {
-                string text = File.ReadAllText(filePath);
-                FunctionsManager.Get(functionsName).LoadScript(text, functionsName);
+                readText(filePath);
             }
         }
     }

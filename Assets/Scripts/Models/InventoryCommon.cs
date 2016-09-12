@@ -8,16 +8,21 @@
 #endregion
 using System.Xml;
 
-public class InventoryCommon
+public class InventoryCommon : IPrototypable
 {
-    public string objectType;
+    public string type;
     public int maxStackSize;
     public float basePrice = 1f;
     public string category;
 
+    public string Type
+    {
+        get { return type; }
+    }
+
     public void ReadXmlPrototype(XmlReader reader_parent)
     {
-        objectType = reader_parent.GetAttribute("objectType");
+        type = reader_parent.GetAttribute("type");
         maxStackSize = int.Parse(reader_parent.GetAttribute("maxStackSize") ?? "50");
         basePrice = float.Parse(reader_parent.GetAttribute("basePrice") ?? "1");
         category = reader_parent.GetAttribute("category");

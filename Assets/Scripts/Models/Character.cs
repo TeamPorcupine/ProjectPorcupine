@@ -272,7 +272,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             // Also create a callback for when an inventory gets created.
             // Lastly, remove the job from "MyJob".
             World.Current.jobWaitingQueue.Enqueue(MyJob);
-            World.Current.OnInventoryCreated += OnInventoryCreated;
+            World.Current.inventoryManager.InventoryCreated += OnInventoryCreated;
             MyJob.OnJobStopped -= OnJobStopped;
             MyJob = null;
         }
@@ -296,7 +296,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         if the character is carrying materials but is not used in the new job, then drop them
         on the current tile for now.*/
 
-        if (inventory != null && !job.inventoryRequirements.ContainsKey(inventory.ObjectType))
+        if (inventory != null && !job.inventoryRequirements.ContainsKey(inventory.Type))
         {
             World.Current.inventoryManager.PlaceInventory(CurrTile, inventory);
             DumpExcessInventory();
@@ -349,12 +349,12 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         Update_DoMovement(deltaTime);
 
+        animation.Update(deltaTime);
+
         if (OnCharacterChanged != null)
         {
             OnCharacterChanged(this);
-        }
-
-        animation.Update(deltaTime);
+        }        
     }
 
     #region IXmlSerializable implementation
@@ -376,7 +376,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         foreach (Need n in needs)
         {
             int storeAmount = (int)(n.Amount * 10);
-            needString = needString + n.needType + ";" + storeAmount.ToString() + ":";
+            needString = needString + n.Type + ";" + storeAmount.ToString() + ":";
         }
 
         writer.WriteAttributeString("needs", needString);
@@ -423,7 +423,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             string[] needListB = s.Split(new char[] { ';' });
             foreach (Need n in needs)
             {
-                if (n.needType == needListB[0])
+                if (n.Type == needListB[0])
                 {
                     int storeAmount;
                     if (int.TryParse(needListB[1], out storeAmount))
@@ -459,7 +459,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         foreach (Need n in needs)
         {
-           yield return LocalizationTable.GetLocalization(n.localisationID, n.DisplayAmount);
+            yield return LocalizationTable.GetLocalization(n.LocalisationID, n.DisplayAmount);
         }
 
         foreach (Stat stat in stats.Values)
@@ -503,6 +503,39 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         return stat;
     }
 
+    public void ReadStatsFromSave(XmlReader reader)
+    {
+        // Protection vs. empty stats
+        if (reader.IsEmptyElement)
+        {
+            return;
+        }
+
+        while (reader.Read())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement)
+            {
+                break;
+            }
+
+            string statType = reader.GetAttribute("type");
+            Stat stat = GetStat(statType);
+            if (stat == null)
+            {
+                continue;
+            }
+
+            int statValue;
+            if (!int.TryParse(reader.GetAttribute("value"), out statValue))
+            {
+                Debug.ULogErrorChannel("Character", "Stat element did not have a value!");
+                continue;
+            }
+
+            stat.Value = statValue;
+        }
+    }
+
     private void InitializeCharacterValues()
     {
         LoadNeeds();
@@ -538,39 +571,6 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         Debug.ULogChannel("Character", "Initialized " + stats.Count + " Stats.");
     }
 
-    public void ReadStatsFromSave(XmlReader reader)
-    {
-        // Protection vs. empty stats
-        if (reader.IsEmptyElement)
-        {
-            return;
-        }
-
-        while (reader.Read())
-        {
-            if (reader.NodeType == XmlNodeType.EndElement)
-            {
-                break;
-            }
-
-            string statType = reader.GetAttribute("statType");
-            Stat stat = GetStat(statType);
-            if (stat == null)
-            {
-                continue;               
-            }
-
-            int statValue;
-            if (!int.TryParse(reader.GetAttribute("value"), out statValue))
-            {
-                Debug.ULogErrorChannel("Character", "Stat element did not have a value!");
-                continue;
-            }
-
-            stat.Value = statValue;
-        }
-    }
-
     private void GetNewJob()
     {
         float needPercent = 0;
@@ -586,13 +586,13 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         if (needPercent > 50 && needPercent < 100 && need.RestoreNeedFurn != null)
         {
-            if (World.Current.CountFurnitureType(need.RestoreNeedFurn.ObjectType) > 0)
+            if (World.Current.CountFurnitureType(need.RestoreNeedFurn.Type) > 0)
             {
-                MyJob = new Job(null, need.RestoreNeedFurn.ObjectType, need.CompleteJobNorm, need.RestoreNeedTime, null, Job.JobPriority.High, false, true, false);
+                MyJob = new Job(null, need.RestoreNeedFurn.Type, need.CompleteJobNorm, need.RestoreNeedTime, null, Job.JobPriority.High, false, true, false);
             }
         }
 
-        if (needPercent == 100 && need != null && need.CompleteOnFail)
+        if (needPercent.AreEqual(100.0f) && need != null && need.CompleteOnFail)
         {
             MyJob = new Job(CurrTile, null, need.CompleteJobCrit, need.RestoreNeedTime * 10, null, Job.JobPriority.High, false, true, true);
         }
@@ -653,7 +653,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         if (MyJob.IsNeed)
         {
             // This will calculate a path from current tile to destination tile.
-            pathAStar = new Path_AStar(World.Current, CurrTile, DestTile, need.RestoreNeedFurn.ObjectType, 0, false, true);
+            pathAStar = new Path_AStar(World.Current, CurrTile, DestTile, need.RestoreNeedFurn.Type, 0, false, true);
         }
         else
         {
@@ -789,6 +789,8 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             }
         }
 
+        CharacterFacing();
+
         if (nextTile.IsEnterable() == Enterability.Never)
         {
             //// Most likely a wall got built, so we just need to reset our pathfinding information.
@@ -809,8 +811,6 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             // now and don't actually process the movement.
             return;
         }
-
-        CharacterFacing();
 
         // At this point we should have a valid nextTile to move to.
         // What's the total distance from point A to point B?
@@ -956,8 +956,8 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
                 // Any chance we already have a path that leads to the items we want?
                 // Check that we have an end tile and that it has content.
-                // Check if contains the desired objectType�.
-                if (WalkingToUsableInventory() && fulfillableInventoryRequirements.Contains(pathAStar.EndTile().Inventory.ObjectType))
+                // Check if contains the desired type.
+                if (WalkingToUsableInventory() && fulfillableInventoryRequirements.Contains(pathAStar.EndTile().Inventory.Type))
                 {
                     // We are already moving towards a tile that contains what we want!
                     // so....do nothing?
@@ -971,7 +971,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                     {
                         desired = MyJob.inventoryRequirements[itemType];
                         newPath = World.Current.inventoryManager.GetPathToClosestInventoryOfType(
-                            desired.ObjectType,
+                            desired.Type,
                             CurrTile,
                             desired.MaxStackSize - desired.StackSize,
                             MyJob.canTakeFromStockpile);
@@ -979,7 +979,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                         if (newPath == null || newPath.Length() < 1)
                         {
                             // Try the next requirement
-                            Debug.ULogChannel("Character", "No tile contains objects of type '" + desired.ObjectType + "' to satisfy job requirements.");
+                            Debug.ULogChannel("Character", "No tile contains objects of type '" + desired.Type + "' to satisfy job requirements.");
                             continue;
                         }
 
@@ -1046,7 +1046,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     private void OnInventoryCreated(Inventory inv)
     {
         // First remove the callback.
-        World.Current.OnInventoryCreated -= OnInventoryCreated;
+        World.Current.inventoryManager.InventoryCreated -= OnInventoryCreated;
 
         // Get the relevant job and dequeue it from the waiting queue.
         Job job = World.Current.jobWaitingQueue.Dequeue();
@@ -1059,7 +1059,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             List<string> desired = job.FulfillableInventoryRequirements();
 
             // Check if the created inventory can fulfill the waiting job requirements.
-            if (desired != null && desired.Contains(inv.ObjectType))
+            if (desired != null && desired.Contains(inv.Type))
             {
                 // If so, enqueue the job onto the (normal)
                 // job queue.
@@ -1070,7 +1070,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 // If not, (re)enqueue the job onto the waiting queue
                 // and also register a callback for the future.
                 World.Current.jobWaitingQueue.Enqueue(job);
-                World.Current.OnInventoryCreated += OnInventoryCreated;
+                World.Current.inventoryManager.InventoryCreated += OnInventoryCreated;
             }
         }
     }

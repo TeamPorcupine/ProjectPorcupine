@@ -10,12 +10,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
 using MoonSharp.Interpreter;
 using ProjectPorcupine.Localization;
 using UnityEngine;
 
 [MoonSharpUserData]
-public class Job : ISelectable
+public class Job : ISelectable, IPrototypable
 {
     // This class holds info for a queued up job, which can include
     // things like placing furniture, moving stored inventory,
@@ -53,6 +54,11 @@ public class Job : ISelectable
     // The job has been stopped, either because it's non-repeating or was canceled.
     private List<string> jobCompletedLua;
 
+    // Required for IPrototypable
+    public Job()
+    {
+    }
+
     public Job(Tile tile, string jobObjectType, Action<Job> jobComplete, float jobTime, Inventory[] inventoryRequirements, Job.JobPriority jobPriority, bool jobRepeats = false, bool need = false, bool critical = false)
     {
         this.tile = tile;
@@ -73,7 +79,7 @@ public class Job : ISelectable
         {
             foreach (Inventory inv in inventoryRequirements)
             {
-                this.inventoryRequirements[inv.ObjectType] = inv.Clone();
+                this.inventoryRequirements[inv.Type] = inv.Clone();
             }
         }
     }
@@ -97,7 +103,7 @@ public class Job : ISelectable
         {
             foreach (Inventory inv in inventoryRequirements)
             {
-                this.inventoryRequirements[inv.ObjectType] = inv.Clone();
+                this.inventoryRequirements[inv.Type] = inv.Clone();
             }
         }
     }
@@ -122,7 +128,7 @@ public class Job : ISelectable
         {
             foreach (Inventory inv in other.inventoryRequirements.Values)
             {
-                this.inventoryRequirements[inv.ObjectType] = inv.Clone();
+                this.inventoryRequirements[inv.Type] = inv.Clone();
             }
         }
     }
@@ -146,6 +152,11 @@ public class Job : ISelectable
     {
         get;
         protected set;
+    }
+
+    public string Type
+    {
+        get { return JobObjectType; }
     }
 
     public bool IsNeed
@@ -328,54 +339,54 @@ public class Job : ISelectable
         return false;
     }
 
-    public int AmountDesiredOfInventoryType(string objectType)
+    public int AmountDesiredOfInventoryType(string type)
     {
-        if (inventoryRequirements.ContainsKey(objectType) == false)
+        if (inventoryRequirements.ContainsKey(type) == false)
         {
             return 0;
         }
 
-        if (inventoryRequirements[objectType].StackSize >= inventoryRequirements[objectType].MaxStackSize)
+        if (inventoryRequirements[type].StackSize >= inventoryRequirements[type].MaxStackSize)
         {
             // We already have all that we need!
             return 0;
         }
 
         // The inventory is of a type we want, and we still need more.
-        return inventoryRequirements[objectType].MaxStackSize - inventoryRequirements[objectType].StackSize;
+        return inventoryRequirements[type].MaxStackSize - inventoryRequirements[type].StackSize;
     }
 
     public int AmountDesiredOfInventoryType(Inventory inv)
     {
-        return AmountDesiredOfInventoryType(inv.ObjectType);
+        return AmountDesiredOfInventoryType(inv.Type);
     }
 
     /// <summary>
     /// Fulfillable inventory requirements for job.
     /// </summary>
-    /// <returns>A list of (string) objectTypes for job inventory requirements that can be met. Returns null if the job requires materials which do not exist on the map.</returns>
+    /// <returns>A list of (string) Type for job inventory requirements that can be met. Returns null if the job requires materials which do not exist on the map.</returns>
     public List<string> FulfillableInventoryRequirements()
     {
         List<string> fulfillableInventoryRequirements = new List<string>();
 
-        foreach (Inventory inv in this.GetInventoryRequirementValues())
+        foreach (Inventory inventory in this.GetInventoryRequirementValues())
         {
             if (this.acceptsAny == false)
             {
-                if (World.Current.inventoryManager.QuickCheck(inv.ObjectType) == false)
+                if (World.Current.inventoryManager.HasInventoryOfType(inventory.Type) == false)
                 {
-                    // the job requires ALL inventory requirements to be met, and there is no source of a desired objectType
+                    // the job requires ALL inventory requirements to be met, and there is no source of a desired Type
                     return null;
                 }
                 else
                 {
-                    fulfillableInventoryRequirements.Add(inv.ObjectType);
+                    fulfillableInventoryRequirements.Add(inventory.Type);
                 }
             }
-            else if (World.Current.inventoryManager.QuickCheck(inv.ObjectType))
+            else if (World.Current.inventoryManager.HasInventoryOfType(inventory.Type))
             {
-                // there is a source for a desired objectType that the job will accept
-                fulfillableInventoryRequirements.Add(inv.ObjectType);
+                // there is a source for a desired Type that the job will accept
+                fulfillableInventoryRequirements.Add(inventory.Type);
             }
         }
 
@@ -425,5 +436,9 @@ public class Job : ISelectable
     public IEnumerable<string> GetAdditionalInfo()
     {
         yield break;
+    }
+
+    public void ReadXmlPrototype(XmlReader reader)
+    {
     }
 }

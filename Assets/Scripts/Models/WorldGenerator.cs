@@ -218,9 +218,9 @@ public class WorldGenerator
                                     if (res_reader.Name == "Resource")
                                     {
                                         res.Add(new Inventory(
-                                                res_reader.GetAttribute("objectType"),
-                                                int.Parse(res_reader.GetAttribute("maxStack")),
-                                                Mathf.CeilToInt(float.Parse(res_reader.GetAttribute("weightedChance")))));
+                                                res_reader.GetAttribute("type"),
+                                                Mathf.CeilToInt(float.Parse(res_reader.GetAttribute("weightedChance"))),
+                                                int.Parse(res_reader.GetAttribute("maxStack"))));
 
                                         resMin.Add(int.Parse(res_reader.GetAttribute("min")));
                                         resMax.Add(int.Parse(res_reader.GetAttribute("max")));

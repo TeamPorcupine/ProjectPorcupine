@@ -256,6 +256,7 @@ public class OverlayMap : MonoBehaviour
         {
             meshRenderer.enabled = false;
             currentOverlay = name;
+            HideGUITooltip();
             return;
         }
         else if (overlays.ContainsKey(name))
@@ -283,6 +284,7 @@ public class OverlayMap : MonoBehaviour
 
             ColorMapSG = descr.colorMap;
             Bake();
+            ShowGUITooltip();
         }
         else
         {
@@ -333,8 +335,8 @@ public class OverlayMap : MonoBehaviour
         CreateGUI();
 
         // TODO: remove this dummy set size.
-        SetSize(100, 100);
         SetOverlay("None");
+        SetSize(100, 100);
     }
 
     /// <summary>
@@ -536,7 +538,7 @@ public class OverlayMap : MonoBehaviour
         textView.GetComponent<UnityEngine.UI.LayoutElement>().minWidth = 150;
         textView.transform.SetParent(parentPanel.transform);
         textView.GetComponent<UnityEngine.UI.Text>().text = "Currently Selected:";
-        textView.GetComponent<UnityEngine.UI.Text>().resizeTextForBestFit = true;
+        textView.GetComponent<UnityEngine.UI.Text>().fontSize = 15;
         textView.GetComponent<UnityEngine.UI.Text>().font = Resources.GetBuiltinResource<Font>("Arial.ttf");
 
         colorMapView = new GameObject();
@@ -546,7 +548,7 @@ public class OverlayMap : MonoBehaviour
         colorMapView.AddComponent<UnityEngine.UI.LayoutElement>();
         colorMapView.GetComponent<UnityEngine.UI.LayoutElement>().minHeight = 30;
         colorMapView.GetComponent<UnityEngine.UI.LayoutElement>().minWidth = 150;
-        Material overlayMaterial = Resources.Load<Material>("Shaders/UI-Unlit-Transparent");
+        Material overlayMaterial = new Material(Resources.Load<Material>("Shaders/UI-Unlit-Transparent"));
         colorMapView.GetComponent<UnityEngine.UI.Image>().material = overlayMaterial;
 
         List<string> options = new List<string> { "None" };
@@ -555,5 +557,24 @@ public class OverlayMap : MonoBehaviour
         dropdown.AddOptions(options);
         dropdown.onValueChanged.AddListener(
             (int idx) => { SetOverlay(dropdown.captionText.text); });
+    }
+
+    private void HideGUITooltip()
+    {
+        textView.SetActive(false);
+        colorMapView.SetActive(false);
+        parentPanel.GetComponentInChildren<UnityEngine.UI.Image>().enabled = false;
+    }
+
+    private void ShowGUITooltip()
+    {
+        textView.SetActive(true);
+        parentPanel.GetComponentInChildren<UnityEngine.UI.Image>().enabled = true;
+
+        colorMapView.SetActive(true);
+
+        Material overlayMaterial = new Material(Resources.Load<Material>("Shaders/UI-Unlit-Transparent"));
+        colorMapView.GetComponent<UnityEngine.UI.Image>().material = overlayMaterial;
+        GenerateColorMap();
     }
 }
