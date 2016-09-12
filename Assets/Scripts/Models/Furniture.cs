@@ -1002,10 +1002,30 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     /// </summary>
     public void SetAnimationState(string stateName)
     {
-        if (Animation != null)
+        if (Animation == null)
         {
-            Animation.SetState(stateName);
+            return;
         }
+
+        Animation.SetState(stateName);
+    }
+
+    /// <summary>
+    /// Set the animation frame depending on a value. The currentvalue percent of the maxvalue will determine which frame is shown.
+    /// </summary>
+    public void SetAnimationProgressValue(float currentValue, float maxValue)
+    {
+        if (Animation == null)
+        {
+            return;
+        }
+
+        if (maxValue == 0)
+        {
+            Debug.ULogError("SetAnimationProgressValue maxValue is zero");
+        }
+        float percent = Mathf.Clamp01(currentValue / maxValue);
+        Animation.SetProgressValue(percent);        
     }
 
     /// <summary>
@@ -1180,8 +1200,12 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
             if (animationReader.Name == "Animation")
             {
                 string state = animationReader.GetAttribute("state");
-                float fps = float.Parse(animationReader.GetAttribute("fps"));
-                bool looping = bool.Parse(animationReader.GetAttribute("looping"));
+                float fps = 1;
+                float.TryParse(animationReader.GetAttribute("fps"), out fps);
+                bool looping = true;
+                bool.TryParse(animationReader.GetAttribute("looping"), out looping);
+                bool valueBased = false;
+                bool.TryParse(animationReader.GetAttribute("valuebased"), out valueBased);
 
                 // read frames
                 XmlReader frameReader = animationReader.ReadSubtree();
@@ -1194,7 +1218,7 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
                     }
                 }
 
-                Animation.AddAnimation(state, framesSpriteNames, fps, looping);
+                Animation.AddAnimation(state, framesSpriteNames, fps, looping, valueBased);
             }
         }
     }

@@ -45,6 +45,14 @@ function OnUpdate_Door( furniture, deltaTime )
 
 	furniture.Parameters["openness"].SetValue( ModUtils.Clamp01(furniture.Parameters["openness"].ToFloat()) )
 	furniture.UpdateOnChanged(furniture);
+    
+	if (furniture.verticalDoor == true) then
+		furniture.SetAnimationState("vertical")
+	else
+		furniture.SetAnimationState("horizontal")
+	end
+    furniture.SetAnimationProgressValue(furniture.Parameters["openness"].ToFloat(), 1)
+
 end
 
 
@@ -99,60 +107,6 @@ function IsEnterable_Door( furniture )
 	end
 
     return ENTERABILITY_SOON --ENTERABILITY.Soon
-end
-
-function GetSpriteName_Door( furniture )
-
-	local openness = furniture.Parameters["openness"].ToFloat()
-
-	if (furniture.verticalDoor == true) then
-			-- Door is closed
-		if (openness < 0.1) then
-			return "DoorVertical_0"
-		end
-
-		if (openness < 0.25) then
-			return "DoorVertical_1"
-		end
-
-		if (openness < 0.5) then
-			return "DoorVertical_2"
-		end
-
-		if (openness < 0.75) then
-			return "DoorVertical_3"
-		end
-
-		if (openness < 0.9) then
-			return "DoorVertical_4"
-		end
-		-- Door is a fully open
-		return "DoorVertical_5"
-	end
-
-
-	-- Door is closed
-	if (openness < 0.1) then
-		return "DoorHorizontal_0"
-	end
-
-	if (openness < 0.25) then
-		return "DoorHorizontal_1"
-	end
-
-	if (openness < 0.5) then
-		return "DoorHorizontal_2"
-	end
-
-	if (openness < 0.75) then
-		return "DoorHorizontal_3"
-	end
-
-	if (openness < 0.9) then
-		return "DoorHorizontal_4"
-	end
-	-- Door is a fully open
-	return "DoorHorizontal_5"
 end
 
 function GetSpriteName_Airlock( furniture )
