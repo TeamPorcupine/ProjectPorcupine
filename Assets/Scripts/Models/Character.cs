@@ -550,7 +550,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         {
             Need need = needs[i];
             needs[i] = need.Clone();
-            needs[i].character = this;
+            needs[i].Character = this;
         }
     }
 
