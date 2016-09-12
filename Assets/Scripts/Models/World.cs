@@ -89,6 +89,15 @@ public class World : IXmlSerializable
         AddEventListeners();
     }
 
+    /// <summary>
+    /// Releases the TimeManager events when <see cref="World"/> is reclaimed by garbage collection.
+    /// </summary>
+    ~World()
+    {
+        TimeManager.Instance.EveryFrameUnpaused -= TickEveryFrame;
+        TimeManager.Instance.FixedFrequencyUnpaused -= TickFixedFrequency;
+    }
+
     public event Action<Furniture> OnFurnitureCreated;
 
     public event Action<Character> OnCharacterCreated;

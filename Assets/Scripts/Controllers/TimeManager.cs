@@ -22,21 +22,6 @@ public class TimeManager
     // An array of possible time multipliers.
     private float[] possibleTimeScales = new float[6] { 0.1f, 0.5f, 1f, 2f, 4f, 8f };
 
-    // Systems that update every frame.
-    public event Action<float> EveryFrame;
-
-    // Systems that update every frame not in Modal.
-    public event Action<float> EveryFrameNotModal;
-
-    // Systems that update every frame while unpaused.
-    public event Action<float>  EveryFrameUnpaused;
-
-    // Systems that update at fixed frequency.
-    public event Action<float> FixedFrequency;
-
-    // Systems that update at fixed frequency while unpaused.
-    public event Action<float> FixedFrequencyUnpaused;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="TimeManager"/> class.
     /// </summary>
@@ -53,6 +38,31 @@ public class TimeManager
         KeyboardManager.Instance.RegisterInputAction("DecreaseSpeed", KeyboardMappedInputType.KeyUp, DecreaseTimeScale);
         KeyboardManager.Instance.RegisterInputAction("IncreaseSpeed", KeyboardMappedInputType.KeyUp, IncreaseTimeScale);
     }
+
+    /// <summary>
+    /// Systems that update every frame.
+    /// </summary>
+    public event Action<float> EveryFrame;
+
+    /// <summary>
+    /// Systems that update every frame not in Modal.
+    /// </summary>
+    public event Action<float> EveryFrameNotModal;
+
+    /// <summary>
+    /// Systems that update every frame while unpaused.
+    /// </summary>
+    public event Action<float> EveryFrameUnpaused;
+
+    /// <summary>
+    /// Systems that update at fixed frequency.
+    /// </summary>
+    public event Action<float> FixedFrequency;
+
+    /// <summary>
+    /// Systems that update at fixed frequency while unpaused.
+    /// </summary>
+    public event Action<float> FixedFrequencyUnpaused;
 
     /// <summary>
     /// Gets the TimeManager instance.
@@ -99,9 +109,9 @@ public class TimeManager
     public bool IsPaused { get; set; }
 
     /// <summary>
-    /// Update the specified time and invoke the required events.
+    /// Update the total time and invoke the required events.
     /// </summary>
-    /// <param name="time">Time.</param>
+    /// <param name="time">Time since last frame.</param>
     public void Update(float time)
     {
         float deltaTime = time * TimeScale;
@@ -169,15 +179,15 @@ public class TimeManager
     }
 
     /// <summary>
-    /// Invokes the given events.
+    /// Invokes the given event action.
     /// </summary>
-    /// <param name="Event">The events.</param>
-    /// <param name="time">The time delta.</param>
-    private void InvokeEvent(Action<float> Event, float time)
+    /// <param name="eventAction">The event action.</param>
+    /// <param name="time">The delta time.</param>
+    private void InvokeEvent(Action<float> eventAction, float time)
     {
-        if (Event != null)
+        if (eventAction != null)
         {
-            Event(time);
+            eventAction(time);
         }
     }
 }
