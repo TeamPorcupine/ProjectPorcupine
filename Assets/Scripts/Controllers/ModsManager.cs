@@ -39,6 +39,8 @@ public class ModsManager
         LoadPrototypes("Events.xml", (text) => PrototypeManager.SchedulerEvent.LoadPrototypes(text));
         LoadPrototypes("Stats.xml", (text) => PrototypeManager.Stat.LoadPrototypes(text));
         LoadPrototypes("Quest.xml", (text) => PrototypeManager.Quest.LoadPrototypes(text));
+
+        LoadCharacterNames("CharacterNames.txt");
     }
 
     public DirectoryInfo[] GetMods()
@@ -77,6 +79,22 @@ public class ModsManager
             {
                 string text = File.ReadAllText(filePath);
                 prototypesLoader(text);
+            });
+    }
+
+    /// <summary>
+    /// Loads all the character names from the given file.
+    /// </summary>
+    /// <param name="fileName">The file name.</param>
+    private void LoadCharacterNames(string fileName)
+    {
+        LoadTextFile(
+            "Data",
+            fileName,
+            (filePath) =>
+            {
+                string[] lines = File.ReadAllLines(filePath);
+                CharacterNameManager.LoadNames(lines);
             });
     }
 
