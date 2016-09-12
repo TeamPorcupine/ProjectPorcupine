@@ -119,7 +119,7 @@ public class WorldGenerator
                                     {
                                         tile.Furniture.Deconstruct();
 
-                                        if (inv.Type == "Raw Iron" || inv.Type == "Uranium")
+                                        if (inv.Type == "Raw Iron" || inv.Type == "Uranium" || inv.Type == "Ice")
                                         {
                                             Furniture oreWall = PrototypeManager.Furniture.Get("astro_wall").Clone();
                                             oreWall.Parameters["ore_type"].SetValue(inv.Type.ToString());
@@ -132,8 +132,11 @@ public class WorldGenerator
                                                 case "Uranium":
                                                     oreWall.Tint = Color.green;
                                                     break;
+                                                case "Ice":
+                                                    oreWall.Tint = Color.cyan;
+                                                    break;
                                                 default:
-                                                    oreWall.Tint = Color.blue;
+                                                    oreWall.Tint = Color.gray;
                                                     break;
                                             }
 
