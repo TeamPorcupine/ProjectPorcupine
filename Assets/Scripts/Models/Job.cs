@@ -254,17 +254,17 @@ public class Job : ISelectable, IPrototypable
         
         if (JobTime <= 0)
         {
+            foreach (string luaFunction in jobCompletedLua.ToList())
+            {
+                FunctionsManager.Furniture.Call(luaFunction, this);
+            }
+
             // Do whatever is supposed to happen with a job cycle completes.
             if (OnJobCompleted != null)
             {
                 OnJobCompleted(this);
             }
 
-            foreach (string luaFunction in jobCompletedLua.ToList())
-            {
-                FunctionsManager.Furniture.Call(luaFunction, this);
-            }
-            
             if (jobRepeats == false)
             {
                 // Let everyone know that the job is officially concluded
