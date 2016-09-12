@@ -73,7 +73,7 @@ public class Job : ISelectable
         {
             foreach (Inventory inv in inventoryRequirements)
             {
-                this.inventoryRequirements[inv.ObjectType] = inv.Clone();
+                this.inventoryRequirements[inv.Type] = inv.Clone();
             }
         }
     }
@@ -97,7 +97,7 @@ public class Job : ISelectable
         {
             foreach (Inventory inv in inventoryRequirements)
             {
-                this.inventoryRequirements[inv.ObjectType] = inv.Clone();
+                this.inventoryRequirements[inv.Type] = inv.Clone();
             }
         }
     }
@@ -122,7 +122,7 @@ public class Job : ISelectable
         {
             foreach (Inventory inv in other.inventoryRequirements.Values)
             {
-                this.inventoryRequirements[inv.ObjectType] = inv.Clone();
+                this.inventoryRequirements[inv.Type] = inv.Clone();
             }
         }
     }
@@ -328,54 +328,54 @@ public class Job : ISelectable
         return false;
     }
 
-    public int AmountDesiredOfInventoryType(string objectType)
+    public int AmountDesiredOfInventoryType(string type)
     {
-        if (inventoryRequirements.ContainsKey(objectType) == false)
+        if (inventoryRequirements.ContainsKey(type) == false)
         {
             return 0;
         }
 
-        if (inventoryRequirements[objectType].StackSize >= inventoryRequirements[objectType].MaxStackSize)
+        if (inventoryRequirements[type].StackSize >= inventoryRequirements[type].MaxStackSize)
         {
             // We already have all that we need!
             return 0;
         }
 
         // The inventory is of a type we want, and we still need more.
-        return inventoryRequirements[objectType].MaxStackSize - inventoryRequirements[objectType].StackSize;
+        return inventoryRequirements[type].MaxStackSize - inventoryRequirements[type].StackSize;
     }
 
     public int AmountDesiredOfInventoryType(Inventory inv)
     {
-        return AmountDesiredOfInventoryType(inv.ObjectType);
+        return AmountDesiredOfInventoryType(inv.Type);
     }
 
     /// <summary>
     /// Fulfillable inventory requirements for job.
     /// </summary>
-    /// <returns>A list of (string) objectTypes for job inventory requirements that can be met. Returns null if the job requires materials which do not exist on the map.</returns>
+    /// <returns>A list of (string) Type for job inventory requirements that can be met. Returns null if the job requires materials which do not exist on the map.</returns>
     public List<string> FulfillableInventoryRequirements()
     {
         List<string> fulfillableInventoryRequirements = new List<string>();
 
-        foreach (Inventory inv in this.GetInventoryRequirementValues())
+        foreach (Inventory inventory in this.GetInventoryRequirementValues())
         {
             if (this.acceptsAny == false)
             {
-                if (World.Current.inventoryManager.QuickCheck(inv.ObjectType) == false)
+                if (World.Current.inventoryManager.HasInventoryOfType(inventory.Type) == false)
                 {
-                    // the job requires ALL inventory requirements to be met, and there is no source of a desired objectType
+                    // the job requires ALL inventory requirements to be met, and there is no source of a desired Type
                     return null;
                 }
                 else
                 {
-                    fulfillableInventoryRequirements.Add(inv.ObjectType);
+                    fulfillableInventoryRequirements.Add(inventory.Type);
                 }
             }
-            else if (World.Current.inventoryManager.QuickCheck(inv.ObjectType))
+            else if (World.Current.inventoryManager.HasInventoryOfType(inventory.Type))
             {
-                // there is a source for a desired objectType that the job will accept
-                fulfillableInventoryRequirements.Add(inv.ObjectType);
+                // there is a source for a desired Type that the job will accept
+                fulfillableInventoryRequirements.Add(inventory.Type);
             }
         }
 

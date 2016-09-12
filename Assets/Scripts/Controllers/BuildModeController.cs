@@ -21,7 +21,7 @@ public enum BuildMode
 public class BuildModeController
 {
     public BuildMode buildMode = BuildMode.FLOOR;
-    public string buildModeObjectType;
+    public string buildModeType;
 
     private MouseController mouseController;
     private TileType buildModeTile = TileType.Floor;
@@ -40,7 +40,7 @@ public class BuildModeController
             return true;
         }
 
-        Furniture proto = PrototypeManager.Furniture.Get(buildModeObjectType);
+        Furniture proto = PrototypeManager.Furniture.Get(buildModeType);
 
         return proto.Width == 1 && proto.Height == 1;
     }
@@ -57,20 +57,20 @@ public class BuildModeController
 
         mouseController.StartBuildMode();
     }
-
-    public void SetMode_BuildFurniture(string objectType)
+    
+    public void SetMode_BuildFurniture(string type)
     {
         // Wall is not a Tile!  Wall is an "Furniture" that exists on TOP of a tile.
         buildMode = BuildMode.FURNITURE;
-        buildModeObjectType = objectType;
+        buildModeType = type;
         mouseController.StartBuildMode();
     }
 
-    public void SetMode_BuildUtility(string objectType)
+    public void SetMode_BuildUtility(string type)
     {
         // Wall is not a Tile!  Wall is an "Furniture" that exists on TOP of a tile.
         buildMode = BuildMode.UTILITY;
-        buildModeObjectType = objectType;
+        buildModeType = type;
         mouseController.StartBuildMode();
     }
 
@@ -92,7 +92,7 @@ public class BuildModeController
             // Create the Furniture and assign it to the tile
             // Can we build the furniture in the selected tile?
             // Run the ValidPlacement function!
-            string furnitureType = buildModeObjectType;
+            string furnitureType = buildModeType;
 
             if ( 
                 WorldController.Instance.World.IsFurniturePlacementValid(furnitureType, t) &&
@@ -158,34 +158,34 @@ public class BuildModeController
             // Create the Furniture and assign it to the tile
             // Can we build the furniture in the selected tile?
             // Run the ValidPlacement function!
-            string furnitureType = buildModeObjectType;
+            string utilityType = buildModeType;
 
             // TODO: Reimplement this later: DoesBuildJobOverlapExistingBuildJob(t, furnitureType) == false)
             if ( 
-                WorldController.Instance.World.IsUtilityPlacementValid(furnitureType, t)  &&
-                DoesSameUtilityTypeAlreadyExist(t, furnitureType) == false)
+                WorldController.Instance.World.IsUtilityPlacementValid(utilityType, t)  &&
+                DoesSameUtilityTypeAlreadyExist(t, utilityType) == false)
             {
                 // This tile position is valid for this furniture
 
                 // Create a job for it to be build
                 Job job;
 
-                if (PrototypeManager.UtilityJob.Has(furnitureType))
+                if (PrototypeManager.UtilityJob.Has(utilityType))
                 {
                     // Make a clone of the job prototype
-                    job = PrototypeManager.UtilityJob.Get(furnitureType).Clone();
+                    job = PrototypeManager.UtilityJob.Get(utilityType).Clone();
 
                     // Assign the correct tile.
                     job.tile = t;
                 }
                 else
                 {
-                    Debug.ULogErrorChannel("BuildModeController", "There is no furniture job prototype for '" + furnitureType + "'");
-                    job = new Job(t, furnitureType, FunctionsManager.JobComplete_UtilityBuilding, 0.1f, null, Job.JobPriority.High);
-                    job.JobDescription = "job_build_" + furnitureType + "_desc";
+                    Debug.ULogErrorChannel("BuildModeController", "There is no furniture job prototype for '" + utilityType + "'");
+                    job = new Job(t, utilityType, FunctionsManager.JobComplete_UtilityBuilding, 0.1f, null, Job.JobPriority.High);
+                    job.JobDescription = "job_build_" + utilityType + "_desc";
                 }
 
-                job.buildablePrototype = PrototypeManager.Utility.Get(furnitureType);
+                job.buildablePrototype = PrototypeManager.Utility.Get(utilityType);
 
                 // Add the job to the queue or build immediately if in dev mode
                 if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
@@ -245,7 +245,8 @@ public class BuildModeController
         else if (buildMode == BuildMode.DECONSTRUCT)
         {
             // TODO
-            if (t.Furniture != null)
+            bool canDeconstructAll = Settings.GetSetting("DialogBoxSettings_developerModeToggle", false);
+            if (t.Furniture != null && (canDeconstructAll || t.Furniture.HasTypeTag("Non-deconstructible") == false))
             {
                 // check if this is a WALL neighbouring a pressured and pressureless environment, and if so, bail
                 if (t.Furniture.HasTypeTag("Wall"))
@@ -257,7 +258,7 @@ public class BuildModeController
                     {
                         if (neighbor != null && neighbor.Room != null)
                         {
-                            if ((neighbor.Room == World.Current.GetOutsideRoom()) || MathUtilities.IsZero(neighbor.Room.GetTotalGasPressure()))
+                            if (neighbor.Room.IsOutsideRoom() || MathUtilities.IsZero(neighbor.Room.GetTotalGasPressure()))
                             {
                                 vacuumNeighbors++;
                             }

@@ -11,7 +11,10 @@ function oxygenValueAt ( tile )
     if room == nil then
 		return 0
 	end
-    return room.GetGasAmount("O2") * 1e3
+	if (room.GetGasAmount("O2") > 0) then
+		return 128
+	end
+    return 0
 end
 
 -- Returns room id or null if room or tile invalid

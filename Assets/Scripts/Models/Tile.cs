@@ -233,7 +233,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         if (Inventory != null)
         {
             // There's already inventory here. Maybe we can combine a stack?
-            if (Inventory.ObjectType != inventory.ObjectType)
+            if (Inventory.Type != inventory.Type)
             {
                 Debug.ULogErrorChannel("Tile", "Trying to assign inventory to a tile that already has some of a different type.");
                 return false;

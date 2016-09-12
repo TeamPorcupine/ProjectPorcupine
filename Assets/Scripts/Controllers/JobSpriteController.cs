@@ -130,7 +130,7 @@ public class JobSpriteController : BaseSpriteController<Job>
             Tile southTile = world.GetTileAt(job.tile.X, job.tile.Y - 1, job.tile.Z);
 
             if (northTile != null && southTile != null && northTile.Furniture != null && southTile.Furniture != null &&
-            northTile.Furniture.ObjectType.Contains("Wall") && southTile.Furniture.ObjectType.Contains("Wall"))
+            northTile.Furniture.HasTypeTag("Wall") && southTile.Furniture.HasTypeTag("Wall"))
             {
                 job_go.transform.rotation = Quaternion.Euler(0, 0, 90);
             }

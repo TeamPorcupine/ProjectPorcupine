@@ -301,7 +301,7 @@ function MiningDroneStation_UpdateAction( furniture, deltaTime )
 		return
 	end
 
-	if(furniture.GetSpawnSpotTile().Inventory != nil and furniture.GetSpawnSpotTile().Inventory.ObjectType != furniture.Parameters["mine_type"].ToString()) then
+	if(furniture.GetSpawnSpotTile().Inventory != nil and furniture.GetSpawnSpotTile().Inventory.Type != furniture.Parameters["mine_type"].ToString()) then
 		return
 	end
 
@@ -323,8 +323,8 @@ function MiningDroneStation_UpdateAction( furniture, deltaTime )
 end
 
 function MiningDroneStation_JobComplete(j)
-	if (j.furniture.GetSpawnSpotTile().Inventory == nil or j.furniture.GetSpawnSpotTile().Inventory.ObjectType == j.furniture.Parameters["mine_type"].ToString()) then
-		World.Current.inventoryManager.PlaceInventory( j.furniture.GetSpawnSpotTile(), Inventory.__new(j.furniture.Parameters["mine_type"].ToString() , 50, 2) )
+	if (j.furniture.GetSpawnSpotTile().Inventory == nil or j.furniture.GetSpawnSpotTile().Inventory.Type == j.furniture.Parameters["mine_type"].ToString()) then
+		World.Current.inventoryManager.PlaceInventory( j.furniture.GetSpawnSpotTile(), Inventory.__new(j.furniture.Parameters["mine_type"].ToString() , 2) )
 	else
 		j.CancelJob()
 	end
@@ -348,7 +348,7 @@ function MetalSmelter_UpdateAction(furniture, deltaTime)
             local outputSpot = World.Current.GetTileAt(spawnSpot.X+2, spawnSpot.Y, spawnSpot.Z)
 
             if(outputSpot.Inventory == nil) then
-                World.Current.inventoryManager.PlaceInventory(outputSpot, Inventory.__new("Steel Plate", 50, 5))
+                World.Current.inventoryManager.PlaceInventory(outputSpot, Inventory.__new("Steel Plate", 5))
                 spawnSpot.Inventory.StackSize = spawnSpot.Inventory.StackSize - 5
             else
                 if(outputSpot.Inventory.StackSize <= 45) then
@@ -377,7 +377,7 @@ function MetalSmelter_UpdateAction(furniture, deltaTime)
 
     -- Create job depending on the already available stack size.
     local desiredStackSize = 50
-    local itemsDesired = { Inventory.__new("Raw Iron", desiredStackSize, 0) }
+    local itemsDesired = { Inventory.__new("Raw Iron", 0, desiredStackSize) }
     if(spawnSpot.Inventory ~= nil and spawnSpot.Inventory.StackSize < spawnSpot.Inventory.MaxStackSize) then
         desiredStackSize = spawnSpot.Inventory.MaxStackSize - spawnSpot.Inventory.StackSize
         itemsDesired[1].MaxStackSize = desiredStackSize
@@ -407,63 +407,6 @@ function MetalSmelter_JobWorked(j)
         if(inv ~= nil and inv.StackSize > 0) then
             World.Current.inventoryManager.PlaceInventory(spawnSpot, inv)
             spawnSpot.Inventory.Locked = true
-            return
-        end
-    end
-end
-
-function PowerCellPress_UpdateAction(furniture, deltaTime)
-    local spawnSpot = furniture.GetSpawnSpotTile()
-
-    if(spawnSpot.Inventory == nil) then
-        if(furniture.JobCount() == 0) then
-            local itemsDesired = {Inventory.__new("Steel Plate", 10, 0)}
-            local jobSpot = furniture.GetJobSpotTile()
-
-            local j = Job.__new(
-                jobSpot,
-                nil,
-                nil,
-                1,
-                itemsDesired,
-                Job.JobPriority.Medium,
-                false
-            )
-
-            j.RegisterJobCompletedCallback("PowerCellPress_JobComplete")
-            j.JobDescription = "job_power_cell_fulling_desc"
-            furniture.AddJob(j)
-        end
-    else
-        furniture.Parameters["presstime"].ChangeFloatValue(deltaTime)
-
-        if(furniture.Parameters["presstime"].ToFloat() >= furniture.Parameters["presstime_required"].ToFloat()) then
-            furniture.Parameters["presstime"].SetValue(0)
-            local outputSpot = World.Current.GetTileAt(spawnSpot.X+2, spawnSpot.y, spawnSpot.Z)
-
-            if(outputSpot.Inventory == nil) then
-                World.Current.inventoryManager.PlaceInventory( outputSpot, Inventory.__new("Power Cell", 5, 1) )
-                spawnSpot.Inventory.StackSize = spawnSpot.Inventory.StackSize-10
-            else
-                if(outputSpot.Inventory.StackSize <= 4) then
-                    outputSpot.Inventory.StackSize = outputSpot.Inventory.StackSize+1
-                    spawnSpot.Inventory.StackSize = spawnSpot.Inventory.StackSize-10
-                end
-            end
-
-            if(spawnSpot.Inventory.StackSize <= 0) then
-                spawnSpot.Inventory = nil
-            end
-        end
-    end
-end
-
-function PowerCellPress_JobComplete(j)
-    local spawnSpot = j.tile.Furniture.GetSpawnSpotTile()
-
-    for k, inv in pairs(j.inventoryRequirements) do
-        if(inv.StackSize > 0) then
-            World.Current.inventoryManager.PlaceInventory(spawnSpot, inv)
             return
         end
     end
@@ -504,7 +447,7 @@ end
 function PowerGenerator_UpdateAction(furniture, deltatime)
     if (furniture.JobCount() < 1 and furniture.Parameters["burnTime"].ToFloat() == 0) then
         furniture.PowerConnection.OutputRate = 0
-        local itemsDesired = {Inventory.__new("Uranium", 5, 0)}
+        local itemsDesired = {Inventory.__new("Uranium", 0, 5)}
 
         local j = Job.__new(
             furniture.GetJobSpotTile(),
@@ -595,7 +538,7 @@ function OxygenCompressor_OnUpdate(furniture, deltaTime)
 end
 
 function OxygenCompressor_GetSpriteName(furniture)
-    local baseName = furniture.ObjectType
+    local baseName = furniture.Type
     local suffix = 0
     if (furniture.Parameters["gas_content"].ToFloat() > 0) then
         idxAsFloat = 8 * (furniture.Parameters["gas_content"].ToFloat() / furniture.Parameters["max_gas_content"].ToFloat())
@@ -611,8 +554,91 @@ function SolarPanel_OnUpdate(furniture, deltaTime)
 	furniture.PowerConnection.OutputRate = powerPerSecond
 end
 
+function AirPump_OnUpdate(furniture, deltaTime)
+    if (furniture.HasPower() == false) then
+        return
+    end
+
+    local t = furniture.Tile
+    local north = World.Current.GetTileAt(t.X, t.Y + 1, t.Z)
+    local south = World.Current.GetTileAt(t.X, t.Y - 1, t.Z)
+    local west = World.Current.GetTileAt(t.X - 1, t.Y, t.Z)
+    local east = World.Current.GetTileAt(t.X + 1, t.Y, t.Z)
+    
+    -- Find the correct rooms for source and target
+    -- Maybe in future this could be cached. it only changes when the direction changes
+    local sourceRoom = nil
+    local targetRoom = nil
+    if (north.Room != nil and south.Room != nil) then
+        if (furniture.Parameters["flow_direction_up"].ToFloat() > 0) then
+            sourceRoom = south.Room
+            targetRoom = north.Room
+        else
+            sourceRoom = north.Room
+            targetRoom = south.Room
+        end
+    elseif (west.Room != nil and east.Room != nil) then
+        if (furniture.Parameters["flow_direction_up"].ToFloat() > 0) then
+            sourceRoom = west.Room
+            targetRoom = east.Room
+        else
+            sourceRoom = east.Room
+            targetRoom = west.Room
+        end
+    else
+        ModUtils.UChannelLogWarning("Furniture", "Air Pump blocked. Direction unclear")
+        return
+    end
+    
+    local sourcePressureLimit = furniture.Parameters["source_pressure_limit"].ToFloat()
+    local targetPressureLimit = furniture.Parameters["target_pressure_limit"].ToFloat()
+    local flow = furniture.Parameters["gas_throughput"].ToFloat() * deltaTime
+    
+    -- Only transfer gas if the pressures are within the defined bounds
+    if (sourceRoom.GetTotalGasPressure() > sourcePressureLimit and targetRoom.GetTotalGasPressure() < targetPressureLimit) then
+        sourceRoom.MoveGasTo(targetRoom, flow)
+    end
+end
+
+function AirPump_GetSpriteName(furniture)
+    local t = furniture.Tile
+    if (furniture.Tile == nil) then
+        return furniture.Type
+    end
+    local north = World.Current.GetTileAt(t.X, t.Y + 1, t.Z)
+    local south = World.Current.GetTileAt(t.X, t.Y - 1, t.Z)
+    local west = World.Current.GetTileAt(t.X - 1, t.Y, t.Z)
+    local east = World.Current.GetTileAt(t.X + 1, t.Y, t.Z)
+    
+    suffix = ""
+    if (north.Room != nil and south.Room != nil) then
+        if (furniture.Parameters["flow_direction_up"].ToFloat() > 0) then
+           suffix = "_SN"
+        else
+           suffix = "_NS"
+        end
+    elseif (west.Room != nil and east.Room != nil) then
+        if (furniture.Parameters["flow_direction_up"].ToFloat() > 0) then
+            suffix = "_WE"
+        else
+            suffix = "_EW"
+        end
+    end
+    
+    return furniture.Type .. suffix
+end
+
+function AirPump_FlipDirection(furniture, character)
+    if (furniture.Parameters["flow_direction_up"].ToFloat() > 0) then
+        furniture.Parameters["flow_direction_up"].SetValue(0)
+    else
+        furniture.Parameters["flow_direction_up"].SetValue(1)
+    end
+    furniture.UpdateOnChanged(furniture)
+end
+    
 function Accumulator_GetSpriteName(furniture)
-	local baseName = furniture.ObjectType
+	local baseName = furniture.Type
 	local suffix = furniture.PowerConnection.CurrentThreshold 
 	return baseName .. "_" .. suffix
 end
@@ -636,7 +662,7 @@ end
 
 function OreMine_OreMined(job)
     -- Defines the ore to be spawned by the mine
-    local inventory = Inventory.__new(job.furniture.Parameters["ore_type"], 50, 10)
+    local inventory = Inventory.__new(job.furniture.Parameters["ore_type"], 10)
 
     -- Place the "mined" ore on the tile
     World.Current.inventoryManager.PlaceInventory(job.tile, inventory)
