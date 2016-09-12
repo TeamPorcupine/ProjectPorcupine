@@ -2,14 +2,14 @@
 <Needs>
     <Need type="Oxygen">
         <Name>Oxygen</Name>
-        <GrowthRate>0</GrowthRate>
-        <GrowthInVacuum>0.1</GrowthInVacuum>
+        <GrowthRate>0.3</GrowthRate>
         <RestoreNeedFurnitureType>Oxygen Generator</RestoreNeedFurnitureType>
         <RestoreNeedTime>10</RestoreNeedTime>
         <RestoreNeedAmount>100</RestoreNeedAmount>
         <Damage>20</Damage>
         <CompleteOnFail>false</CompleteOnFail>
         <HighToLow>true</HighToLow>
+        <Action event="OnUpdate" functionName="OnUpdate_Oxygen" />
         <Localization>need_oxygen</Localization>
     </Need>
 

@@ -5,6 +5,15 @@
 
 ---------------------------- Need Actions --------------------------------
 
+function OnUpdate_Oxygen( need, deltaTime )
+    need.Amount = need.Amount + (need.GrowthRate * deltaTime)
 
+    if (need.Character != nil and need.Character.CurrTile.GetGasPressure("O2") < 0.15) then
+        need.Amount = need.Amount + ((0.3 - (0.3 * (need.Character.CurrTile.GetGasPressure("O2") * 5))) * deltaTime)
+    end
+    
+    return
+end
 
+ModUtils.ULog("Need.lua loaded")
 return "LUA Script Parsed!"

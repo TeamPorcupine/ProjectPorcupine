@@ -8,16 +8,11 @@
 #endregion
 using System.Collections.Generic;
 using System.Xml;
+using MoonSharp.Interpreter;
 
+[MoonSharpUserData]
 public class Need : IPrototypable
 {
-    public Character character;
-    private float addedInVacuum;
-    private float dps;
-    private string[] luaUpdate;
-    private bool luaOnly = false;
-    private float restoreNeedAmount = 100;
-    private float growthRate;
     private bool highToLow = true;
     private float amount = 0;
 
@@ -25,6 +20,8 @@ public class Need : IPrototypable
     public Need()
     {
         Amount = 0;
+        RestoreNeedAmount = 100;
+        EventActions = new EventActions();
     }
 
     private Need(Need other)
@@ -33,17 +30,21 @@ public class Need : IPrototypable
         Type = other.Type;
         LocalisationID = other.LocalisationID;
         Name = other.Name;
-        growthRate = other.growthRate;
+        GrowthRate = other.GrowthRate;
         highToLow = other.highToLow;
         RestoreNeedFurn = other.RestoreNeedFurn;
         RestoreNeedTime = other.RestoreNeedTime;
-        restoreNeedAmount = other.restoreNeedAmount;
-        CompleteOnFail = other.CompleteOnFail;
-        addedInVacuum = other.addedInVacuum;
-        dps = other.dps;
-        luaUpdate = other.luaUpdate;
-        luaOnly = other.luaOnly;
+        RestoreNeedAmount = other.RestoreNeedAmount;
+        Damage = other.Damage;
+
+        if (other.EventActions != null)
+        {
+            EventActions = other.EventActions.Clone();
+        }
     }
+
+
+    public Character Character { get; set; }
 
     public string Type { get; private set; }
 
@@ -64,6 +65,12 @@ public class Need : IPrototypable
         }
     }
 
+    public float RestoreNeedAmount { get; private set; }
+
+    public float GrowthRate { get; private set; }
+
+    public float Damage { get; private set; }
+
     public bool CompleteOnFail { get; private set; }
 
     public Furniture RestoreNeedFurn { get; private set; }
@@ -83,20 +90,22 @@ public class Need : IPrototypable
         }
     }
 
+    /// <summary>
+    /// Gets the EventAction for the current furniture.
+    /// These actions are called when an event is called. They get passed the furniture
+    /// they belong to, plus a deltaTime (which defaults to 0).
+    /// </summary>
+    /// <value>The event actions that is called on update.</value>
+    public EventActions EventActions { get; private set; }
+
     // Update is called once per frame
     public void Update(float deltaTime)
     {
-        FunctionsManager.Need.CallWithInstance(luaUpdate, this, deltaTime);
-        if (luaOnly)
-        {
-            return;
-        }
 
-        Amount += growthRate * deltaTime;
-
-        if (character != null && character.CurrTile.GetGasPressure("O2") < 0.15)
+        if (EventActions != null)
         {
-            Amount += (addedInVacuum - (addedInVacuum * (character.CurrTile.GetGasPressure("O2") * 5))) * deltaTime;
+            // updateActions(this, deltaTime);
+            EventActions.Trigger("OnUpdate", this, deltaTime);
         }
 
         if (Amount.AreEqual(100))
@@ -130,7 +139,7 @@ public class Need : IPrototypable
                     break;
                 case "Damage":
                     reader.Read();
-                    dps = reader.ReadContentAsFloat();
+                    Damage = reader.ReadContentAsFloat();
                     break;
                 case "CompleteOnFail":
                     reader.Read();
@@ -142,41 +151,33 @@ public class Need : IPrototypable
                     break;
                 case "GrowthRate":
                     reader.Read();
-                    growthRate = reader.ReadContentAsFloat();
-                    break;
-                case "GrowthInVacuum":
-                    reader.Read();
-                    addedInVacuum = reader.ReadContentAsFloat();
+                    GrowthRate = reader.ReadContentAsFloat();
                     break;
                 case "RestoreNeedAmount":
                     reader.Read();
-                    restoreNeedAmount = reader.ReadContentAsFloat();
+                    RestoreNeedAmount = reader.ReadContentAsFloat();
                     break;
                 case "Localization":
                     reader.Read();
                     LocalisationID = reader.ReadContentAsString();
                     break;
-                case "LuaProcessingOnly":
-                    luaOnly = true;
-                    break;
-                case "OnUpdate":
-                    reader.Read();
-                    luaActions.Add(reader.ReadContentAsString());
+                case "Action":
+                    XmlReader subtree = reader.ReadSubtree();
+                    EventActions.ReadXml(subtree);
+                    subtree.Close();
                     break;
             }
         }
-
-        luaUpdate = luaActions.ToArray();
     }
 
     public void CompleteJobNorm(Job job)
     {
-        Amount -= restoreNeedAmount;
+        Amount -= RestoreNeedAmount;
     }
 
     public void CompleteJobCrit(Job job)
     {
-        Amount -= restoreNeedAmount / 4;
+        Amount -= RestoreNeedAmount / 4;
     }
 
     public Need Clone()
