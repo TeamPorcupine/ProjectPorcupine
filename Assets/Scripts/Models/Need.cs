@@ -153,7 +153,6 @@ public class Need : IPrototypable
         Type = parentReader.GetAttribute("type");
 
         XmlReader reader = parentReader.ReadSubtree();
-        List<string> luaActions = new List<string>();
 
         while (reader.Read())
         {
