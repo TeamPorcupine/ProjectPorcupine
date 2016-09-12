@@ -183,7 +183,8 @@ public class BuildModeController
         else if (buildMode == BuildMode.DECONSTRUCT)
         {
             // TODO
-            if (t.Furniture != null)
+            bool canDeconstructAll = Settings.GetSetting("DialogBoxSettings_developerModeToggle", false);
+            if (t.Furniture != null && (canDeconstructAll || t.Furniture.HasTypeTag("Non-deconstructible") == false))
             {
                 // check if this is a WALL neighbouring a pressured and pressureless environment, and if so, bail
                 if (t.Furniture.HasTypeTag("Wall"))
@@ -195,7 +196,7 @@ public class BuildModeController
                     {
                         if (neighbor != null && neighbor.Room != null)
                         {
-                            if ((neighbor.Room == World.Current.GetOutsideRoom()) || MathUtilities.IsZero(neighbor.Room.GetTotalGasPressure()))
+                            if (neighbor.Room.IsOutsideRoom() || MathUtilities.IsZero(neighbor.Room.GetTotalGasPressure()))
                             {
                                 vacuumNeighbors++;
                             }

@@ -64,6 +64,13 @@ namespace ProjectPorcupine.Localization
             return GetLocalization(key, FallbackMode.ReturnDefaultLanguage, currentLanguage, additionalValues);
         }
 
+        public static void SetLocalization(int lang)
+        {
+            string[] languages = GetLanguages();
+            currentLanguage = languages[lang];
+            Settings.SetSetting("localization", languages[lang]);
+        }
+
         public static void LoadingLanguagesFinished()
         {
             initialized = true;

@@ -180,7 +180,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 614d1936f989c6949b68336704b91aa8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GameTickPerSecond: 5
   inventoryUI: {fileID: 191780, guid: d1e1fcd802f51614595cb99879a132a5, type: 2}
   circleCursorPrefab: {fileID: 110048, guid: 782976062f887844ca858482495fcdbd, type: 2}
   IsModal: 0
@@ -1393,7 +1392,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 880d84f7377fd34489cb30281e28c2b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  leftBottomCorner: {x: -0.5, y: -0.5, z: 1}
   transparency: 0.8
   updateInterval: 5
   pixelsPerTileX: 20
@@ -1634,7 +1632,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9500ef008befed7449f0b38f088a5b1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mc: {fileID: 0}
+  dialogBoxJobList: {fileID: 0}
   dialogBoxLoadGame: {fileID: 0}
   dialogBoxSaveGame: {fileID: 0}
   dialogBoxOptions: {fileID: 0}
@@ -1642,6 +1640,7 @@ MonoBehaviour:
   dialogBoxTrade: {fileID: 0}
   dialogBoxAreYouSure: {fileID: 0}
   dialogBoxQuests: {fileID: 0}
+  DialogBoxGO: {fileID: 0}
 --- !u!1 &2038247388
 GameObject:
   m_ObjectHideFlags: 0
@@ -1920,11 +1919,11 @@ RectTransform:
   - {fileID: 305970543}
   m_Father: {fileID: 2038247389}
   m_RootOrder: 1
-  m_AnchorMin: {x: 1, y: 0}
-  m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: 450}
+  m_AnchorMin: {x: 1, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: -50}
   m_SizeDelta: {x: 200, y: 100}
-  m_Pivot: {x: 1, y: 0}
+  m_Pivot: {x: 1, y: -2}
 --- !u!114 &2130921648
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1962,7 +1961,7 @@ MonoBehaviour:
   m_ChildAlignment: 0
   m_Spacing: 0
   m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 1
+  m_ChildForceExpandHeight: 0
 --- !u!114 &2130921650
 MonoBehaviour:
   m_ObjectHideFlags: 0

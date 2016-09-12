@@ -86,6 +86,7 @@ public class WorldController : MonoBehaviour
 
         new FunctionsManager();
         new PrototypeManager();
+        new CharacterNameManager();
 
         // FIXME: Do something real here. This is just to show how to register a C# event prototype for the Scheduler.
         PrototypeManager.SchedulerEvent.Add(
@@ -223,7 +224,7 @@ public class WorldController : MonoBehaviour
         bool developerMode = !Settings.GetSetting("DialogBoxSettings_developerModeToggle", false);
         Settings.SetSetting("DialogBoxSettings_developerModeToggle", developerMode);
         spawnInventoryController.SetUIVisibility(developerMode);
-        //FurnitureBuildMenu.instance.RebuildMenuButtons(developerMode);
+        ///FurnitureBuildMenu.instance.RebuildMenuButtons(developerMode);
     }
 
     private void CreateEmptyWorld()
