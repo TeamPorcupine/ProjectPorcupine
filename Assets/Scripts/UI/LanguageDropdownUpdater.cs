@@ -12,13 +12,6 @@ using UnityEngine.UI;
 
 public class LanguageDropdownUpdater : MonoBehaviour
 {
-    public void SelectLanguage(int lang)
-    {
-        string[] languages = LocalizationTable.GetLanguages();
-        LocalizationTable.currentLanguage = languages[lang];
-        Settings.SetSetting("localization", languages[lang]);
-    }
-
     private void Start()
     {
         UpdateLanguageDropdown();
