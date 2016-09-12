@@ -106,7 +106,7 @@ public class Need : IPrototypable
         }
         else 
         {
-            DefaultNeedDecay();
+            DefaultNeedDecay(deltaTime);
         }
 
         if (Amount.AreEqual(100))
@@ -213,9 +213,9 @@ public class Need : IPrototypable
         return new Need(this);
     }
 
-    public void DefaultNeedDecay()
+    public void DefaultNeedDecay(float deltaTime)
     {
-        Amount += this.GrowthRate;
+        Amount += this.GrowthRate  * deltaTime;
     }
 
     public void DefaultEmptyNeed()
