@@ -20,6 +20,7 @@ public class KeyboardManager
     
     public KeyboardManager()
     {
+        instance = this;
         mapping = new Dictionary<string, KeyboadMappedInput>();
 
         TimeManager.Instance.EveryFrameNotModal += (time) => Update();
@@ -33,7 +34,7 @@ public class KeyboardManager
         {
             if (instance == null)
             {
-                instance = new KeyboardManager();
+                new KeyboardManager();
             }
 
             return instance;

@@ -12,6 +12,8 @@ using UnityEngine;
 
 public class TimeManager
 {
+    private static TimeManager instance;
+
     private float gameTickPerSecond = 5;
 
     // Current position in that array.
@@ -40,7 +42,7 @@ public class TimeManager
     /// </summary>
     public TimeManager()
     {
-        Instance = this;
+        instance = this;
         TimeScale = 1f;
         TotalDeltaTime = 0f;
         IsPaused = false;
@@ -56,7 +58,18 @@ public class TimeManager
     /// Gets the TimeManager instance.
     /// </summary>
     /// <value>The TimeManager instance.</value>
-    public static TimeManager Instance { get; private set; }
+    public static TimeManager Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                new TimeManager();
+            }
+
+            return instance;
+        }
+    }
 
     /// <summary>
     /// Gets the game time tick delay.
