@@ -59,7 +59,7 @@
         </DeconstructJob>
 
         <Animations>
-          <Animation state="horizontal" fps="1" looping="true" valuebased="true">
+          <Animation state="horizontal" valuebased="true">
             <Frame name="DoorHorizontal_0" />
             <Frame name="DoorHorizontal_1" />
             <Frame name="DoorHorizontal_2" />
@@ -67,7 +67,7 @@
             <Frame name="DoorHorizontal_4" />
             <Frame name="DoorHorizontal_5" />
           </Animation>  
-          <Animation state="vertical" fps="1" looping="true" valuebased="true">
+          <Animation state="vertical" valuebased="true">
             <Frame name="DoorVertical_0" />
             <Frame name="DoorVertical_1" />
             <Frame name="DoorVertical_2" />
@@ -115,7 +115,7 @@
         </DeconstructJob>
 
         <Animations>
-          <Animation state="horizontal" fps="1" looping="true" valuebased="true">
+          <Animation state="horizontal" valuebased="true">
             <Frame name="AirlockHorizontal_0" />
             <Frame name="AirlockHorizontal_1" />
             <Frame name="AirlockHorizontal_2" />
@@ -123,7 +123,7 @@
             <Frame name="AirlockHorizontal_4" />
             <Frame name="AirlockHorizontal_5" />
           </Animation>
-          <Animation state="vertical" fps="1" looping="true" valuebased="true">
+          <Animation state="vertical" valuebased="true">
             <Frame name="AirlockVertical_0" />
             <Frame name="AirlockVertical_1" />
             <Frame name="AirlockVertical_2" />

@@ -55,11 +55,11 @@ namespace Animation
         public void Update(float deltaTime)
         {
             currentAnimation.Update(deltaTime);
-            checkFrameChange();
+            CheckFrameChange();
         }
 
         /// <summary>
-        /// Furniture has changed, so make sure the sprite is updated
+        /// Furniture has changed, so make sure the sprite is updated.
         /// </summary>
         public void OnFurnitureChanged()
         {
@@ -72,7 +72,7 @@ namespace Animation
         public void SetProgressValue(float percent)
         {
             currentAnimation.SetProgressValue(percent);
-            checkFrameChange();
+            CheckFrameChange();
         }
 
         /// <summary>
@@ -89,6 +89,7 @@ namespace Animation
             {
                 return;
             }
+
             currentAnimationState = stateName;
             currentAnimation = animations[currentAnimationState];
             currentAnimation.Play();
@@ -120,7 +121,7 @@ namespace Animation
         }
 
         // check if time or value requires us to show a new animationframe
-        private void checkFrameChange()
+        private void CheckFrameChange()
         {
             if (prevFrameIndex != currentAnimation.CurrentFrame)
             {

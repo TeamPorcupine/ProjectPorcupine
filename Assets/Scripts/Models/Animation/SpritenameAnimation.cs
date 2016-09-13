@@ -79,11 +79,12 @@ namespace Animation
 
         public void SetProgressValue(float percent)
         {
-            int frame = (int)Math.Round((frameCount-1) * percent, 0);
+            int frame = (int)Math.Round((frameCount - 1) * percent, 0);
             if (frame == CurrentFrame)
             {
                 return;
             }
+
             SetFrame(frame);
         }
 

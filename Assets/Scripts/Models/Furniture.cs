@@ -1069,6 +1069,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         {
             Debug.ULogError("SetAnimationProgressValue maxValue is zero");
         }
+
         float percent = Mathf.Clamp01(currentValue / maxValue);
         Animation.SetProgressValue(percent);        
     }
