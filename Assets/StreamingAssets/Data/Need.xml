@@ -2,21 +2,24 @@
 <Needs>
     <Need type="Oxygen">
         <Name>Oxygen</Name>
-        <GrowthRate>0</GrowthRate>
-        <GrowthInVacuum>0.1</GrowthInVacuum>
+        <GrowthRate>0.3</GrowthRate>
         <RestoreNeedFurnitureType>Oxygen Generator</RestoreNeedFurnitureType>
         <RestoreNeedTime>10</RestoreNeedTime>
         <RestoreNeedAmount>100</RestoreNeedAmount>
         <Damage>20</Damage>
         <CompleteOnFail>false</CompleteOnFail>
         <HighToLow>true</HighToLow>
+        <Action event="OnUpdate" functionName="OnUpdate_Oxygen" />
         <Localization>need_oxygen</Localization>
     </Need>
 
     <Need type="Sleep">
         <Name>Sleep</Name>
         <RestoreNeedFurnitureType>simple_bed</RestoreNeedFurnitureType>
-        <GrowthRate>0.3</GrowthRate>
+        <!-- A GrowthRate of .15 approximates a "day (16 hours of awake time + 8 hours of sleep time)
+             that is approximately 1000 seconds long. RestoreNeedTime has not yet been adjusted to the
+             same approximation -->
+        <GrowthRate>0.15</GrowthRate>
         <RestoreNeedTime>30</RestoreNeedTime>
         <RestoreNeedAmount>100</RestoreNeedAmount>
         <Localization>need_sleep</Localization>
