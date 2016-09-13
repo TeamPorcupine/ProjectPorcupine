@@ -392,6 +392,8 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         writer.WriteAttributeString("X", X.ToString());
         writer.WriteAttributeString("Y", Y.ToString());
         writer.WriteAttributeString("Z", Z.ToString());
+        writer.WriteAttributeString("timesWalked", walkCount.ToString());
+        writer.WriteAttributeString("damageCount", damageEventCount.ToString());
         writer.WriteAttributeString("RoomID", Room == null ? "-1" : Room.ID.ToString());
         writer.WriteAttributeString("Type", Type.Type);
     }
@@ -406,6 +408,8 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         }
 
         Type = TileType.GetTileType(reader.GetAttribute("Type"));
+        walkCount = int.Parse(reader.GetAttribute("timesWalked"));
+        damageEventCount = int.Parse(reader.GetAttribute("damageCount"));
     }
     #endregion
 
