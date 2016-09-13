@@ -235,12 +235,9 @@ public class Job : ISelectable, IPrototypable
             OnJobWorked(this);
         }
 
-        if (jobWorkedLua != null)
+        foreach (string luaFunction in jobWorkedLua.ToList())
         {
-            foreach (string luaFunction in jobWorkedLua.ToList())
-            {
-                FunctionsManager.Furniture.Call(luaFunction, this);
-            }
+            FunctionsManager.Furniture.Call(luaFunction, this);
         }
 
         // Check to make sure we actually have everything we need. 
