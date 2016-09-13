@@ -38,6 +38,8 @@ public class CameraController
 
         // Set default zoom value on camera.
         Camera.main.orthographicSize = zoomTarget;
+
+        TimeManager.Instance.EveryFrameNotModal += (time) => Update();
     }
 
     public int CurrentLayer
@@ -49,14 +51,9 @@ public class CameraController
     }
 
     // Update is called once per frame.
-    public void Update(bool modal)
+    public void Update()
     {
         CreateLayerCameras();
-        if (modal)
-        {
-            // A modal dialog box is open. Bail.
-            return;
-        }
 
         Vector3 inputAxis = new Vector3(frameMoveHorizontal, frameMoveVertical, 0);
         Camera.main.transform.position += Camera.main.orthographicSize * scrollSpeed * inputAxis;
