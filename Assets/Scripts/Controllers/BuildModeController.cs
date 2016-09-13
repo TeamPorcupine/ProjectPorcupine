@@ -80,11 +80,6 @@ public class BuildModeController
         mouseController.StartBuildMode();
     }
 
-    public void DoPathfindingTest()
-    {
-        WorldController.Instance.World.SetupPathfindingExample();
-    }
-
     public void DoBuild(Tile tile)
     {
         if (buildMode == BuildMode.FURNITURE)

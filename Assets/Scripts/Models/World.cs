@@ -45,7 +45,7 @@ public class World : IXmlSerializable
     public JobQueue jobQueue;
     public JobQueue jobWaitingQueue;
 
-    // A two-dimensional array to hold our tile data.
+    // A three-dimensional array to hold our tile data.
     private Tile[,,] tiles;
 
     /// <summary>
@@ -53,6 +53,7 @@ public class World : IXmlSerializable
     /// </summary>
     /// <param name="width">Width in tiles.</param>
     /// <param name="height">Height in tiles.</param>
+    /// <param name="depth">Depth in amount.</param>
     public World(int width, int height, int depth)
     {
         // Creates an empty world.
@@ -77,6 +78,8 @@ public class World : IXmlSerializable
         // Make one character.
         CreateCharacter(GetTileAt(Width / 2, Height / 2, 0));
 
+        AddEventListeners();
+
         TestRoomGraphGeneration(this);
     }
 
@@ -85,6 +88,16 @@ public class World : IXmlSerializable
     /// </summary>
     public World()
     {
+        AddEventListeners();
+    }
+
+    /// <summary>
+    /// Releases the TimeManager events when <see cref="World"/> is reclaimed by garbage collection.
+    /// </summary>
+    ~World()
+    {
+        TimeManager.Instance.EveryFrameUnpaused -= TickEveryFrame;
+        TimeManager.Instance.FixedFrequencyUnpaused -= TickFixedFrequency;
     }
 
     public event Action<Furniture> OnFurnitureCreated;
@@ -162,6 +175,12 @@ public class World : IXmlSerializable
         r.ReturnTilesToOutsideRoom();
     }
 
+    public void AddEventListeners()
+    {
+        TimeManager.Instance.EveryFrameUnpaused += TickEveryFrame;
+        TimeManager.Instance.FixedFrequencyUnpaused += TickFixedFrequency;
+    }
+
     public void TickEveryFrame(float deltaTime)
     {
         // Change from a foreach due to the collection being modified while its being looped through
@@ -221,53 +240,6 @@ public class World : IXmlSerializable
         }
 
         return null;
-    }
-
-    /// <summary>
-    /// A function for testing out the system.
-    /// </summary>
-    public void RandomizeTiles()
-    {
-        for (int x = 0; x < Width; x++)
-        {
-            for (int y = 0; y < Height; y++)
-            {
-                for (int z = 0; z < Depth; z++)
-                {
-                    if (UnityEngine.Random.Range(0, 2) == 0)
-                    {
-                        tiles[x, y, z].Type = TileType.Empty;
-                    }
-                    else
-                    {
-                        tiles[x, y, z].Type = TileType.Floor;
-                    }
-                }
-            }
-        }
-    }
-
-    public void SetupPathfindingExample()
-    {
-        // Make a set of floors/walls to test pathfinding with.
-        int l = (Width / 2) - 5;
-        int b = (Height / 2) - 5;
-
-        for (int x = l - 5; x < l + 15; x++)
-        {
-            for (int y = b - 5; y < b + 15; y++)
-            {
-                tiles[x, y, 0].Type = TileType.Floor;
-
-                if (x == l || x == (l + 9) || y == b || y == (b + 9))
-                {
-                    if (x != (l + 9) && y != (b + 4))
-                    {
-                        PlaceFurniture("furn_SteelWall", tiles[x, y, 0]);
-                    }
-                }
-            }
-        }
     }
 
     /// <summary>

@@ -235,12 +235,9 @@ public class Job : ISelectable, IPrototypable
             OnJobWorked(this);
         }
 
-        if (jobWorkedLua != null)
+        foreach (string luaFunction in jobWorkedLua.ToList())
         {
-            foreach (string luaFunction in jobWorkedLua.ToList())
-            {
-                FunctionsManager.Furniture.Call(luaFunction, this);
-            }
+            FunctionsManager.Furniture.Call(luaFunction, this);
         }
 
         // Check to make sure we actually have everything we need. 
@@ -254,17 +251,17 @@ public class Job : ISelectable, IPrototypable
         
         if (JobTime <= 0)
         {
+            foreach (string luaFunction in jobCompletedLua.ToList())
+            {
+                FunctionsManager.Furniture.Call(luaFunction, this);
+            }
+
             // Do whatever is supposed to happen with a job cycle completes.
             if (OnJobCompleted != null)
             {
                 OnJobCompleted(this);
             }
 
-            foreach (string luaFunction in jobCompletedLua.ToList())
-            {
-                FunctionsManager.Furniture.Call(luaFunction, this);
-            }
-            
             if (jobRepeats == false)
             {
                 // Let everyone know that the job is officially concluded
