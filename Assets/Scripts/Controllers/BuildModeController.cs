@@ -85,7 +85,7 @@ public class BuildModeController
         WorldController.Instance.World.SetupPathfindingExample();
     }
 
-    public void DoBuild(Tile t)
+    public void DoBuild(Tile tile)
     {
         if (buildMode == BuildMode.FURNITURE)
         {
@@ -95,16 +95,16 @@ public class BuildModeController
             string furnitureType = buildModeType;
 
             if ( 
-                WorldController.Instance.World.IsFurniturePlacementValid(furnitureType, t) &&
-                DoesBuildJobOverlapExistingBuildJob(t, furnitureType) == false)
+                WorldController.Instance.World.IsFurniturePlacementValid(furnitureType, tile) &&
+                DoesBuildJobOverlapExistingBuildJob(tile, furnitureType) == false)
             {
                 // This tile position is valid for this furniture
 
                 // Check if there is existing furniture in this tile. If so delete it.
                 // TODO Possibly return resources. Will the Deconstruct() method handle that? If so what will happen if resources drop ontop of new non-passable structure.
-                if (t.Furniture != null)
+                if (tile.Furniture != null)
                 {
-                    t.Furniture.Deconstruct();
+                    tile.Furniture.Deconstruct();
                 }
 
                 // Create a job for it to be build
@@ -116,12 +116,12 @@ public class BuildModeController
                     j = PrototypeManager.FurnitureJob.Get(furnitureType).Clone();
 
                     // Assign the correct tile.
-                    j.tile = t;
+                    j.tile = tile;
                 }
                 else
                 {
                     Debug.ULogErrorChannel("BuildModeController", "There is no furniture job prototype for '" + furnitureType + "'");
-                    j = new Job(t, furnitureType, FunctionsManager.JobComplete_FurnitureBuilding, 0.1f, null, Job.JobPriority.High);
+                    j = new Job(tile, furnitureType, FunctionsManager.JobComplete_FurnitureBuilding, 0.1f, null, Job.JobPriority.High);
                     j.JobDescription = "job_build_" + furnitureType + "_desc";
                 }
 
@@ -134,13 +134,13 @@ public class BuildModeController
                 }
                 else
                 {
-                    for (int x_off = t.X; x_off < (t.X + j.buildablePrototype.Width); x_off++)
+                    for (int x_off = tile.X; x_off < (tile.X + j.buildablePrototype.Width); x_off++)
                     {
-                        for (int y_off = t.Y; y_off < (t.Y + j.buildablePrototype.Height); y_off++)
+                        for (int y_off = tile.Y; y_off < (tile.Y + j.buildablePrototype.Height); y_off++)
                         {
                             // FIXME: I don't like having to manually and explicitly set
                             // flags that prevent conflicts. It's too easy to forget to set/clear them!
-                            Tile offsetTile = WorldController.Instance.World.GetTileAt(x_off, y_off, t.Z);
+                            Tile offsetTile = WorldController.Instance.World.GetTileAt(x_off, y_off, tile.Z);
                             offsetTile.PendingBuildJob = j;
                             j.OnJobStopped += (theJob) =>
                                 {
@@ -162,8 +162,8 @@ public class BuildModeController
 
             // TODO: Reimplement this later: DoesBuildJobOverlapExistingBuildJob(t, furnitureType) == false)
             if ( 
-                WorldController.Instance.World.IsUtilityPlacementValid(utilityType, t)  &&
-                DoesSameUtilityTypeAlreadyExist(t, utilityType) == false)
+                WorldController.Instance.World.IsUtilityPlacementValid(utilityType, tile)  &&
+                DoesSameUtilityTypeAlreadyExist(tile, utilityType) == false)
             {
                 // This tile position is valid for this furniture
 
@@ -176,12 +176,12 @@ public class BuildModeController
                     job = PrototypeManager.UtilityJob.Get(utilityType).Clone();
 
                     // Assign the correct tile.
-                    job.tile = t;
+                    job.tile = tile;
                 }
                 else
                 {
                     Debug.ULogErrorChannel("BuildModeController", "There is no furniture job prototype for '" + utilityType + "'");
-                    job = new Job(t, utilityType, FunctionsManager.JobComplete_UtilityBuilding, 0.1f, null, Job.JobPriority.High);
+                    job = new Job(tile, utilityType, FunctionsManager.JobComplete_UtilityBuilding, 0.1f, null, Job.JobPriority.High);
                     job.JobDescription = "job_build_" + utilityType + "_desc";
                 }
 
@@ -196,7 +196,7 @@ public class BuildModeController
                 {
                     // FIXME: I don't like having to manually and explicitly set
                     // flags that preven conflicts. It's too easy to forget to set/clear them!
-                    Tile offsetTile = WorldController.Instance.World.GetTileAt(t.X, t.Y, t.Z);
+                    Tile offsetTile = WorldController.Instance.World.GetTileAt(tile.X, tile.Y, tile.Z);
                     offsetTile.PendingBuildJob = job;
                     job.OnJobStopped += (theJob) =>
                         {
@@ -214,17 +214,17 @@ public class BuildModeController
             TileType tileType = buildModeTile;
 
             if ( 
-                t.Type != tileType && 
-                t.Furniture == null &&
-                t.PendingBuildJob == null &&
-                tileType.CanBuildHere(t))
+                tile.Type != tileType && 
+                tile.Furniture == null &&
+                tile.PendingBuildJob == null &&
+                tileType.CanBuildHere(tile))
             {
                 // This tile position is valid tile type
 
                 // Create a job for it to be build
                 Job buildingJob = tileType.BuildingJob;
                 
-                buildingJob.tile = t;
+                buildingJob.tile = tile;
 
                 // Add the job to the queue or build immediately if in Dev mode
                 if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
@@ -235,7 +235,7 @@ public class BuildModeController
                 {
                     // FIXME: I don't like having to manually and explicitly set
                     // flags that prevent conflicts. It's too easy to forget to set/clear them!
-                    t.PendingBuildJob = buildingJob;
+                    tile.PendingBuildJob = buildingJob;
                     buildingJob.OnJobStopped += (theJob) => theJob.tile.PendingBuildJob = null;
 
                     WorldController.Instance.World.jobQueue.Enqueue(buildingJob);
@@ -246,12 +246,12 @@ public class BuildModeController
         {
             // TODO
             bool canDeconstructAll = Settings.GetSetting("DialogBoxSettings_developerModeToggle", false);
-            if (t.Furniture != null && (canDeconstructAll || t.Furniture.HasTypeTag("Non-deconstructible") == false))
+            if (tile.Furniture != null && (canDeconstructAll || tile.Furniture.HasTypeTag("Non-deconstructible") == false))
             {
                 // check if this is a WALL neighbouring a pressured and pressureless environment, and if so, bail
-                if (t.Furniture.HasTypeTag("Wall"))
+                if (tile.Furniture.HasTypeTag("Wall"))
                 {
-                    Tile[] neighbors = t.GetNeighbours(); // diagOkay??
+                    Tile[] neighbors = tile.GetNeighbours(); // diagOkay??
                     int pressuredNeighbors = 0;
                     int vacuumNeighbors = 0;
                     foreach (Tile neighbor in neighbors)
@@ -276,11 +276,11 @@ public class BuildModeController
                     }
                 }
 
-                t.Furniture.Deconstruct();
+                tile.Furniture.Deconstruct();
             }
-            else if (t.PendingBuildJob != null)
+            else if (tile.PendingBuildJob != null)
             {
-                t.PendingBuildJob.CancelJob();
+                tile.PendingBuildJob.CancelJob();
             }
         }
         else

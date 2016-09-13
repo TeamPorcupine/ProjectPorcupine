@@ -411,25 +411,25 @@ public class World : IXmlSerializable
         return furn;
     }
 
-    public Utility PlaceUtility(Utility utility, Tile tile, bool doRoomFloodFill = true)
+    public Utility PlaceUtility(Utility proto, Tile tile, bool doRoomFloodFill = true)
     {
-        Utility util = Utility.PlaceInstance(utility, tile);
+        Utility utility = Utility.PlaceInstance(proto, tile);
 
-        if (util == null)
+        if (utility == null)
         {
             // Failed to place object -- most likely there was already something there.
             return null;
         }
 
-        util.Removed += OnUtilityRemoved;
-        utilities.Add(util);
+        utility.Removed += OnUtilityRemoved;
+        utilities.Add(utility);
 
         if (OnUtilityCreated != null)
         {
-            OnUtilityCreated(util);
+            OnUtilityCreated(utility);
         }
 
-        return util;
+        return utility;
     }
 
     // This should be called whenever a change to the world
@@ -444,9 +444,9 @@ public class World : IXmlSerializable
         return PrototypeManager.Furniture.Get(furnitureType).IsValidPosition(t);
     }
 
-    public bool IsUtilityPlacementValid(string furnitureType, Tile t)
+    public bool IsUtilityPlacementValid(string furnitureType, Tile tile)
     {
-        return PrototypeManager.Utility.Get(furnitureType).IsValidPosition(t);
+        return PrototypeManager.Utility.Get(furnitureType).IsValidPosition(tile);
     }
 
     public XmlSchema GetSchema()

@@ -51,8 +51,6 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
 
     private HashSet<TileType> tileTypeBuildPermissions;
 
-    private bool isOperating;
-
     /// TODO: Implement object rotation
     /// <summary>
     /// Initializes a new instance of the <see cref="Utility"/> class.
@@ -60,7 +58,6 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     public Utility()
     {
         Tint = new Color(1f, 1f, 1f, .25f);
-        JobSpotOffset = Vector2.zero;
         EventActions = new EventActions();
 
         contextMenuLuaActions = new List<ContextMenuLuaAction>();
@@ -83,8 +80,6 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         typeTags = new HashSet<string>(other.typeTags);
         description = other.description;
         Tint = other.Tint;
-
-        JobSpotOffset = other.JobSpotOffset;
 
         Parameters = new Parameter(other.Parameters);
         jobs = new List<Job>();
@@ -145,13 +140,6 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     /// </summary>
     /// <value>The Color of the utility.</value>
     public Color Tint { get; private set; }
-
-    /// <summary>
-    /// Gets the spot where the Character will stand when he is using the utility. This is relative to the bottom
-    /// left tile of the sprite. This can be outside of the actual utility.
-    /// </summary>
-    /// <value>The spot where the Character will stand when he uses the utility.</value>
-    public Vector2 JobSpotOffset { get; private set; }
 
     /// <summary>
     /// Gets the EventAction for the current utility.
@@ -418,17 +406,16 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
                         }
                     }
 
-                    Job j = new Job(
+                    Job job = new Job(
                                 null,
                                 Type,
                                 FunctionsManager.JobComplete_UtilityBuilding,
                                 jobTime,
                                 invs.ToArray(),
                                 Job.JobPriority.High);
-                    j.JobDescription = "job_build_" + Type + "_desc";
-                    PrototypeManager.UtilityJob.Set(Type, j);
+                    job.JobDescription = "job_build_" + Type + "_desc";
+                    PrototypeManager.UtilityJob.Set(Type, job);
                     break;
-
                 case "CanBeBuiltOn":
                     TileType tileType = TileType.GetTileType(reader.GetAttribute("tileType"));
                     tileTypeBuildPermissions.Add(tileType);
@@ -450,20 +437,13 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
                 case "GetSpriteName":
                     getSpriteNameAction = reader.GetAttribute("FunctionName");
                     break;
-                case "JobSpotOffset":
-                    JobSpotOffset = new Vector2(
-                    int.Parse(reader.GetAttribute("X")),
-                    int.Parse(reader.GetAttribute("Y")));
-                    break;
                 case "Params":
                     ReadXmlParams(reader);  // Read in the Param tag
                     break;
-
                 case "LocalizationCode":
                     reader.Read();
                     LocalizationCode = reader.ReadContentAsString();
                     break;
-
                 case "UnlocalizedDescription":
                     reader.Read();
                     UnlocalizedDescription = reader.ReadContentAsString();
@@ -653,7 +633,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         {
             Text = "Deconstruct " + Name,
             RequireCharacterSelected = false,
-            Action = (ca, c) => Deconstruct(this)
+            Action = (contextMenuAction, character) => Deconstruct(this)
         };
         if (jobs.Count > 0)
         {
@@ -665,9 +645,9 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
                     {
                         Text = "Prioritize " + Name,
                         RequireCharacterSelected = true,
-                        Action = (ca, c) =>
+                        Action = (contextMenuAcion, character) =>
                         {
-                            c.PrioritizeJob(jobs[0]);
+                            character.PrioritizeJob(jobs[0]);
                         }
                     };
                 }
@@ -689,9 +669,14 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         }
     }
 
-    // Make a copy of the current utility.  Sub-classes should
-    // override this Clone() if a different (sub-classed) copy
-    // constructor should be run.
+
+    /// <summary>
+    /// Make a copy of the current utility.  Sub-classes should
+    /// override this Clone() if a different (sub-classed) copy
+    /// constructor should be run.
+    /// </summary>
+    /// <returns>A clone of the utility.</returns>
+
     public Utility Clone()
     {
         return new Utility(this);
@@ -731,19 +716,19 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         return true;
     }
 
-    private void RemoveJob(Job j)
+    private void RemoveJob(Job job)
     {
-        j.OnJobStopped -= OnJobStopped;
-        jobs.Remove(j);
-        j.buildable = null;
+        job.OnJobStopped -= OnJobStopped;
+        jobs.Remove(job);
+        job.buildable = null;
     }
 
     private void ClearJobs()
     {
         Job[] jobsArray = jobs.ToArray();
-        foreach (Job j in jobsArray)
+        foreach (Job job in jobsArray)
         {
-            RemoveJob(j);
+            RemoveJob(job);
         }
     }
 
@@ -761,8 +746,8 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         }
     }
 
-    private void OnJobStopped(Job j)
+    private void OnJobStopped(Job job)
     {
-        RemoveJob(j);
+        RemoveJob(job);
     }
 }
