@@ -38,6 +38,8 @@ namespace Scheduler
         {
             this.events = new List<ScheduledEvent>();
             this.eventsToAddNextTick = new List<ScheduledEvent>();
+
+            TimeManager.Instance.EveryFrameUnpaused += Update;
         }
 
         /// <summary>

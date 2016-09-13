@@ -55,6 +55,8 @@ public class MouseController
         cursorParent = new GameObject("Cursor");
         mouseCursor = new MouseCursor(this, bmc);
         furnitureParent = new GameObject("Furniture Preview Sprites");
+
+        TimeManager.Instance.EveryFrameNotModal += (time) => Update();
     }
 
     public enum MouseMode
@@ -113,14 +115,8 @@ public class MouseController
     }
 
     // Update is called once per frame.
-    public void Update(bool isModal)
+    public void Update()
     {
-        if (isModal)
-        {
-            // A modal dialog is open, so don't process any game inputs from the mouse.
-            return;
-        }
-
         UpdateCurrentFramePosition();
 
         CalculatePlacingPosition();
@@ -131,6 +127,7 @@ public class MouseController
         UpdateDragging();
         UpdateCameraMovement();
         UpdateSelection();
+
         if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
         {
             UpdateSpawnClicking();
@@ -170,11 +167,11 @@ public class MouseController
     {
         if (Input.GetKeyUp(KeyCode.Escape) || Input.GetMouseButtonUp(1))
         {
-            if (currentMode == MouseMode.BUILD)
+            if (currentMode == MouseMode.BUILD && isPanning == false)
             {
                 ClearMouseMode(true);
             }
-            else if (currentMode == MouseMode.SPAWN_INVENTORY)
+            else if (currentMode == MouseMode.SPAWN_INVENTORY && isPanning == false)
             {
                 currentMode = MouseMode.SELECT;
             }
@@ -402,7 +399,7 @@ public class MouseController
     {
         GameObject go = SimplePool.Spawn(circleCursorPrefab, new Vector3(x, y, WorldController.Instance.cameraController.CurrentLayer), Quaternion.identity);
         go.transform.SetParent(cursorParent.transform, true);
-        go.GetComponent<SpriteRenderer>().sprite = SpriteManager.current.GetSprite("UI", "CursorCircle");
+        go.GetComponent<SpriteRenderer>().sprite = SpriteManager.GetSprite("UI", "CursorCircle");
         dragPreviewGameObjects.Add(go);
     }
 
