@@ -41,7 +41,7 @@ public class UtilitySpriteController : BaseSpriteController<Utility>
     public Sprite GetSpriteForUtility(string objectType)
     {
         Utility proto = PrototypeManager.Utility.Get(objectType);
-        Sprite sprite = SpriteManager.current.GetSprite("Utility", objectType + (proto.LinksToNeighbour ? "_" : string.Empty));
+        Sprite sprite = SpriteManager.GetSprite("Utility", objectType + (proto.LinksToNeighbour ? "_" : string.Empty));
 
         return sprite;
     }
@@ -52,7 +52,7 @@ public class UtilitySpriteController : BaseSpriteController<Utility>
 
         if (util.LinksToNeighbour == false)
         {
-            return SpriteManager.current.GetSprite("Utility", spriteName);
+            return SpriteManager.GetSprite("Utility", spriteName);
         }
 
         // Otherwise, the sprite name is more complicated.
@@ -71,7 +71,7 @@ public class UtilitySpriteController : BaseSpriteController<Utility>
         // For example, if this object has all eight neighbours of
         // the same type, then the string will look like:
         //       Wall_NESWneseswnw
-        return SpriteManager.current.GetSprite("Utility", spriteName + suffix);
+        return SpriteManager.GetSprite("Utility", spriteName + suffix);
     }
 
     protected override void OnCreated(Utility utility)
