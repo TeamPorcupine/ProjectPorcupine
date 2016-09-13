@@ -70,7 +70,7 @@ public class ConstructionMenu : MonoBehaviour
     {
         furnitureItems = new List<GameObject>();
 
-        Object buttonPrefab = Resources.Load("UI/MenuLeft/ConstructionMenu/Button");
+        UnityEngine.Object buttonPrefab = Resources.Load("UI/MenuLeft/ConstructionMenu/Button");
         Transform contentTransform = this.transform.FindChild("Scroll View").FindChild("Viewport").FindChild("Content");
 
         BuildModeController buildModeController = WorldController.Instance.buildModeController;
@@ -119,7 +119,7 @@ public class ConstructionMenu : MonoBehaviour
     {
         tileItems = new List<GameObject>();
 
-        Object buttonPrefab = Resources.Load("UI/MenuLeft/ConstructionMenu/Button");
+        UnityEngine.Object buttonPrefab = Resources.Load("UI/MenuLeft/ConstructionMenu/Button");
         Transform contentTransform = this.transform.FindChild("Scroll View").FindChild("Viewport").FindChild("Content");
 
         BuildModeController buildModeController = WorldController.Instance.buildModeController;
@@ -159,7 +159,7 @@ public class ConstructionMenu : MonoBehaviour
     {
         taskItems = new List<GameObject>();
 
-        Object buttonPrefab = Resources.Load("UI/MenuLeft/ConstructionMenu/Button");
+        UnityEngine.Object buttonPrefab = Resources.Load("UI/MenuLeft/ConstructionMenu/Button");
         Transform contentTransform = this.transform.FindChild("Scroll View").FindChild("Viewport").FindChild("Content");
 
         BuildModeController buildModeController = WorldController.Instance.buildModeController;
@@ -198,7 +198,7 @@ public class ConstructionMenu : MonoBehaviour
 
             for (int i = 0; i < localizers.Length; i++)
             {
-                localizers[i].UpdateText(LocalizationTable.GetLocalization(PrototypeManager.Furniture.Get(i).GetName()));
+                localizers[i].UpdateText(LocalizationTable.GetLocalization(PrototypeManager.Furniture[i].GetName()));
             }
         }
     }

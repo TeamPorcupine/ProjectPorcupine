@@ -20,27 +20,29 @@ public class ModsManager
         DirectoryInfo modsDir = new DirectoryInfo(modsPath);
         mods = modsDir.GetDirectories();
 
-        LoadPrototypes();
+        LoadFiles();
     }
 
-    public void LoadPrototypes()
+    public void LoadFiles()
     {
-        LoadFunctions("Furniture", "Furniture.lua");
-        LoadFunctions("Need", "Need.lua");
-        LoadFunctions("GameEvent", "GameEvent.lua");
-        LoadFunctions("TileType", "Tiles.lua");
-        LoadFunctions("Quest", "Quest.lua");
-        LoadFunctions("ScheduledEvent", "ScheduledEvent.lua");
+        LoadFunctions("Furniture.lua", "Furniture");
+        LoadFunctions("Need.lua", "Need");
+        LoadFunctions("GameEvent.lua", "GameEvent");
+        LoadFunctions("TileType.lua", "Tiles");
+        LoadFunctions("Quest.lua", "Quest");
+        LoadFunctions("ScheduledEvent.lua", "ScheduledEvent");
 
-        PrototypeManager.Furniture.LoadPrototypes(mods);
-        PrototypeManager.Inventory.LoadPrototypes(mods);
-        PrototypeManager.Need.LoadPrototypes(mods);
-        PrototypeManager.Trader.LoadPrototypes(mods);
-        PrototypeManager.SchedulerEvent.LoadPrototypes(mods);
-        PrototypeManager.Stat.LoadPrototypes(mods);
-        PrototypeManager.Quest.LoadPrototypes(mods);
+        LoadPrototypes("Furniture.xml", (text) => PrototypeManager.Furniture.LoadPrototypes(text));
+        LoadPrototypes("Inventory.xml", (text) => PrototypeManager.Inventory.LoadPrototypes(text));
+        LoadPrototypes("Need.xml", (text) => PrototypeManager.Need.LoadPrototypes(text));
+        LoadPrototypes("Trader.xml", (text) => PrototypeManager.Trader.LoadPrototypes(text));
+        LoadPrototypes("Events.xml", (text) => PrototypeManager.SchedulerEvent.LoadPrototypes(text));
+        LoadPrototypes("Stats.xml", (text) => PrototypeManager.Stat.LoadPrototypes(text));
+        LoadPrototypes("Quest.xml", (text) => PrototypeManager.Quest.LoadPrototypes(text));
 
         LoadCharacterNames("CharacterNames.txt");
+
+        LoadSprites();
     }
 
     public DirectoryInfo[] GetMods()
@@ -49,11 +51,11 @@ public class ModsManager
     }
 
     /// <summary>
-    /// Loads all the functions from the given script.
+    /// Loads all the functions using the given file name.
     /// </summary>
-    /// <param name="functionsName">The functions name.</param>
     /// <param name="fileName">The file name.</param>
-    private void LoadFunctions(string functionsName, string fileName)
+    /// <param name="functionsName">The functions name.</param>
+    private void LoadFunctions(string fileName, string functionsName)
     {
         LoadTextFile(
             "LUA",
@@ -62,6 +64,23 @@ public class ModsManager
             {
                 string text = File.ReadAllText(filePath);
                 FunctionsManager.Get(functionsName).LoadScript(text, functionsName);
+            });
+    }
+
+    /// <summary>
+    /// Loads all the protoypes using the given file name.
+    /// </summary>
+    /// <param name="fileName">The file name.</param>
+    /// <param name="prototypesLoader">Called to handle the prototypes loading.</param>
+    private void LoadPrototypes(string fileName, Action<string> prototypesLoader)
+    {
+        LoadTextFile(
+            "Data",
+            fileName,
+            (filePath) =>
+            {
+                string text = File.ReadAllText(filePath);
+                prototypesLoader(text);
             });
     }
 
@@ -103,6 +122,24 @@ public class ModsManager
             if (File.Exists(filePath))
             {
                 readText(filePath);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Loads the all the sprites.
+    /// </summary>
+    private void LoadSprites()
+    {
+        string filePath = Path.Combine(Application.streamingAssetsPath, "Images");
+        SpriteManager.LoadSprites(filePath);
+
+        foreach (DirectoryInfo mod in mods)
+        {
+            filePath = Path.Combine(mod.FullName, "Images");
+            if (Directory.Exists(filePath))
+            {
+                SpriteManager.LoadSprites(filePath);
             }
         }
     }

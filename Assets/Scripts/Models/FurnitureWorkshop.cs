@@ -162,7 +162,7 @@ public class FurnitureWorkshop
             return;
         }
 
-        furniture.CancelJobs();
+        furniture.Jobs.CancelAll();
         furniture.Parameters[CurProductionChainParamName].SetValue(newProductionChainName);
     }
 
@@ -216,7 +216,7 @@ public class FurnitureWorkshop
             // if there is no hauling job for input object type, create one
             Job furnJob;
             string requiredType = reqInputItem.ObjectType;
-            var existingHaulingJob = furniture.HasJobWithPredicate(x => x.inventoryRequirements.ContainsKey(requiredType), out furnJob);
+            bool existingHaulingJob = furniture.Jobs.HasJobWithPredicate(x => x.inventoryRequirements.ContainsKey(requiredType), out furnJob);
             if (!existingHaulingJob)
             {
                 Tile inTile = World.Current.GetTileAt(
@@ -227,7 +227,7 @@ public class FurnitureWorkshop
                 //// TODO: this is from LUA .. looks like some hack
                 if (inTile.Inventory != null && inTile.Inventory.StackSize == inTile.Inventory.MaxStackSize)
                 {
-                    furniture.CancelJobs();
+                    furniture.Jobs.CancelAll();
                     return;
                 }
 
@@ -253,7 +253,7 @@ public class FurnitureWorkshop
                         false);
                     jb.JobDescription = string.Format("Hauling '{0}' to '{1}'", desiredInv, furniture.Name);
                     jb.OnJobWorked += PlaceInventoryToWorkshopInput;
-                    furniture.AddJob(jb);
+                    furniture.Jobs.Add(jb);
                 }
             }
         }

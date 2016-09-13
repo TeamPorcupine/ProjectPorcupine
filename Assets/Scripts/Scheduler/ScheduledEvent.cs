@@ -36,8 +36,16 @@ namespace Scheduler
     /// for handling by the events.
     /// </summary>
     [MoonSharpUserData]
-    public class ScheduledEvent : IXmlSerializable
+    public class ScheduledEvent : IXmlSerializable, IPrototypable
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ScheduledEvent"/> class.
+        /// This is required to create a Prototype.
+        /// </summary>
+        public ScheduledEvent()
+        {
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Scheduler.ScheduledEvent"/> class.
         /// This form of the constructor assumes the ScheduledEvent is of the EventType.CSharp type.
@@ -137,6 +145,14 @@ namespace Scheduler
         /// Gets or sets the name.
         /// </summary>
         public string Name { get; protected set; }
+
+        /// <summary>
+        /// Gets the type, which is the name. Required to implement IPrototypable.
+        /// </summary>
+        public string Type
+        {
+            get { return Name; }
+        }
 
         /// <summary>
         /// Gets or sets the type of the event.
@@ -263,6 +279,13 @@ namespace Scheduler
         public void ReadXml(XmlReader reader)
         {
             throw new NotImplementedException();
+        }
+
+        public void ReadXmlPrototype(XmlReader reader)
+        {
+            this.Name = reader.GetAttribute("name");
+            this.LuaFunctionName = reader.GetAttribute("onFire");
+            this.EventType = EventType.Lua;
         }
 
         /// <summary>

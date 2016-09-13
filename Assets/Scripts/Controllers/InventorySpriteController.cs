@@ -62,7 +62,7 @@ public sealed class InventorySpriteController : BaseSpriteController<Inventory>
         inventoryGameObject.transform.SetParent(objectParent.transform, true);
 
         SpriteRenderer sr = inventoryGameObject.AddComponent<SpriteRenderer>();
-        sr.sprite = SpriteManager.current.GetSprite("Inventory", inventory.Type);
+        sr.sprite = SpriteManager.GetSprite("Inventory", inventory.Type);
         if (sr.sprite == null)
         {
             Debug.ULogErrorChannel("InventorySpriteController", "No sprite for: " + inventory.Type);
