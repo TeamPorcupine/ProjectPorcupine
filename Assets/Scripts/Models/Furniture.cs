@@ -27,15 +27,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     // Prevent construction too close to the world's edge
     private const int MinEdgeDistance = 5;
 
-    // Base cost of pathfinding over this furniture, movement cost will modify the effective value
-    private float pathfindingWeight = 1f;
-
-    // Additional cost of pathfinding over this furniture, will be added to pathfindingWeight * MovementCost
-    private float pathfindingModifier = 0f;
-
-    // If the job causes some kind of object to be spawned, where will it appear?
-    private Vector2 jobSpawnSpotOffset = Vector2.zero;
-
     private string isEnterableAction;
 
     /// <summary>
@@ -51,21 +42,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     private List<ContextMenuLuaAction> contextMenuLuaActions;
 
     /// <summary>
-    /// Custom parameter for this particular piece of furniture.  We are
-    /// using a custom Parameter class because later, custom LUA function will be
-    /// able to use whatever parameters the user/modder would like, and contain strings or floats.
-    /// Basically, the LUA code will bind to this Parameter.
-    /// </summary>
-    private Parameter furnParameters;
-    
-    /// <summary>
     /// Workshop reference if furniture is consumer/producer (not null). 
     /// </summary>
     private FurnitureWorkshop workshop;
-
-    private List<Job> jobs;
-
-    private List<Job> pausedJobs;
 
     // This is the generic type of object this is, allowing things to interact with it based on it's generic type
     private HashSet<string> typeTags;
@@ -87,16 +66,17 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     public Furniture()
     {
         Tint = Color.white;
-        JobSpotOffset = Vector2.zero;
         VerticalDoor = false;
         EventActions = new EventActions();
         
         contextMenuLuaActions = new List<ContextMenuLuaAction>();
-        furnParameters = new Parameter();
-        jobs = new List<Job>();
+        Parameters = new Parameter();
+        Jobs = new FurnitureJobs(this);
         typeTags = new HashSet<string>();
         funcPositionValidation = DefaultIsValidPosition;
         tileTypeBuildPermissions = new HashSet<string>();
+        PathfindingWeight = 1f;
+        PathfindingModifier = 0f;
         Height = 1;
         Width = 1;
     }
@@ -118,18 +98,14 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         Tint = other.Tint;
         LinksToNeighbour = other.LinksToNeighbour;
 
-        JobSpotOffset = other.JobSpotOffset;
-        jobSpawnSpotOffset = other.jobSpawnSpotOffset;
+        Parameters = new Parameter(other.Parameters);
+        Jobs = new FurnitureJobs(this, other);
         workshop = other.workshop; // don't need to clone here, as all are prototype things (not changing)
-       
-        furnParameters = new Parameter(other.furnParameters);
-        jobs = new List<Job>();
-        pausedJobs = new List<Job>();
 
         if (other.Animation != null)
         {
             Animation = other.Animation.Clone();
-        }        
+        }
 
         if (other.EventActions != null)
         {
@@ -182,22 +158,14 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// Gets or sets the Furniture's <see cref="PathfindingModifier"/> which is added into the Tile's final PathfindingCost.
     /// </summary>
     /// <value>The modifier used in pathfinding.</value>
-    public float PathfindingModifier
-    {
-        get { return pathfindingModifier; }
-        set { pathfindingModifier = value; }
-    }
+    public float PathfindingModifier { get; set; }
 
     /// <summary>
     /// Gets or sets the Furniture's pathfinding weight which is multiplied into the Tile's final PathfindingCost.
     /// </summary>
     /// <value>The pathfinding weight for the tiles the furniture currently occupies.</value>
-    public float PathfindingWeight
-    {
-        get { return pathfindingWeight; }
-        set { pathfindingWeight = value; }
-    }
-    
+    public float PathfindingWeight { get; set; }
+
     /// <summary>
     /// Gets the tint used to change the color of the furniture.
     /// </summary>
@@ -205,12 +173,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     public Color Tint { get; private set; }
 
     /// <summary>
-    /// Gets the spot where the Character will stand when he is using the furniture. This is relative to the bottom
-    /// left tile of the sprite. This can be outside of the actual furniture.
+    /// Returns whether this instance is workshop or not.
     /// </summary>
-    /// <value>The spot where the Character will stand when he uses the furniture.</value>
-    public Vector2 JobSpotOffset { get; private set; }
-
+    /// <value><c>true</c> if this instance is workshop; otherwise, <c>false</c>.</value>
     public bool IsWorkshop
     {
         get { return workshop != null; }
@@ -289,12 +254,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     {
         get
         {
-            if (string.IsNullOrEmpty(name))
-            {
-                return Type;
-            }
-
-            return name;
+            return string.IsNullOrEmpty(name) ? Type : name;
         }
 
         private set
@@ -370,18 +330,12 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// <summary>
     /// Gets or sets the parameters that is tied to the furniture.
     /// </summary>
-    public Parameter Parameters
-    {
-        get
-        {
-            return furnParameters;
-        }
+    public Parameter Parameters { get; set; }
 
-        private set
-        {
-            furnParameters = value;
-        }
-    }
+    /// <summary>
+    /// Gets a component that handles the jobs linked to the furniture.
+    /// </summary>
+    public FurnitureJobs Jobs { get; private set; }
 
     /// <summary>
     /// Used to place furniture in a certain position.
@@ -442,9 +396,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
 
         // Update thermalDiffusifity using coefficient
         float thermalDiffusivity = Temperature.defaultThermalDiffusivity;
-        if (obj.furnParameters.ContainsKey("thermal_diffusivity"))
+        if (obj.Parameters.ContainsKey("thermal_diffusivity"))
         {
-            thermalDiffusivity = obj.furnParameters["thermal_diffusivity"].ToFloat();
+            thermalDiffusivity = obj.Parameters["thermal_diffusivity"].ToFloat();
         }
 
         World.Current.temperature.SetThermalDiffusivity(tile.X, tile.Y, thermalDiffusivity);
@@ -461,23 +415,15 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     {
         if (PowerConnection != null && PowerConnection.IsPowerConsumer && HasPower() == false)
         {
-            if (JobCount() > 0)
-            {
-                PauseJobs();
-            }
-
+            Jobs.PauseAll();
             return;
         }
 
-        if (pausedJobs.Count > 0)
-        {
-            ResumeJobs();
-        }
+        Jobs.ResumeAll();
 
         // TODO: some weird thing happens
         if (EventActions != null)
         {
-            // updateActions(this, deltaTime);
             EventActions.Trigger("OnUpdate", this, deltaTime);
         }
 
@@ -519,7 +465,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         }
 
         DynValue ret = FunctionsManager.Furniture.Call(isEnterableAction, this);
-
         return (Enterability)ret.Number;
     }
 
@@ -588,7 +533,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         writer.WriteAttributeString("type", Type);
 
         // Let the Parameters handle their own xml
-        furnParameters.WriteXml(writer);
+        Parameters.WriteXml(writer);
     }
 
     /// <summary>
@@ -653,35 +598,8 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                     DragType = reader.ReadContentAsString();
                     break;
                 case "BuildingJob":
-                    float jobTime = float.Parse(reader.GetAttribute("jobTime"));
-
-                    List<Inventory> invs = new List<Inventory>();
-
-                    XmlReader inventoryReader = reader.ReadSubtree();
-
-                    while (inventoryReader.Read())
-                    {
-                        if (inventoryReader.Name == "Inventory")
-                        {
-                            // Found an inventory requirement, so add it to the list!
-                            invs.Add(new Inventory(
-                                    inventoryReader.GetAttribute("type"),
-                                    int.Parse(inventoryReader.GetAttribute("amount")),
-                                    0));
-                        }
-                    }
-
-                    Job j = new Job(
-                                null,
-                                Type,
-                                FunctionsManager.JobComplete_FurnitureBuilding,
-                                jobTime,
-                                invs.ToArray(),
-                                Job.JobPriority.High);
-                    j.JobDescription = "job_build_" + Type + "_desc";
-                    PrototypeManager.FurnitureJob.Set(Type, j);
+                    ReadXmlBuildingJob(reader);
                     break;
-
                 case "CanBeBuiltOn":
                     tileTypeBuildPermissions.Add(reader.GetAttribute("tileType"));
                     break;
@@ -709,32 +627,23 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                 case "GetSpriteName":
                     getSpriteNameAction = reader.GetAttribute("FunctionName");
                     break;
-
                 case "JobSpotOffset":
-                    JobSpotOffset = new Vector2(
-                        int.Parse(reader.GetAttribute("X")),
-                        int.Parse(reader.GetAttribute("Y")));
+                    Jobs.ReadWorkSpotOffset(reader);
                     break;
                 case "JobSpawnSpotOffset":
-                    jobSpawnSpotOffset = new Vector2(
-                        int.Parse(reader.GetAttribute("X")),
-                        int.Parse(reader.GetAttribute("Y")));
+                    Jobs.ReadSpawnSpotOffset(reader);
                     break;
-
                 case "PowerConnection":
                     PowerConnection = new Connection();
                     PowerConnection.ReadPrototype(reader);
                     break;
-
                 case "Params":
                     ReadXmlParams(reader);  // Read in the Param tag
                     break;
-
                 case "LocalizationCode":
                     reader.Read();
                     LocalizationCode = reader.ReadContentAsString();
                     break;
-
                 case "UnlocalizedDescription":
                     reader.Read();
                     UnlocalizedDescription = reader.ReadContentAsString();
@@ -772,89 +681,41 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     {
         // X, Y, and type have already been set, and we should already
         // be assigned to a tile.  So just read extra data.
-        furnParameters = Parameter.ReadXml(reader);
+        Parameters = Parameter.ReadXml(reader);
     }
 
     /// <summary>
-    /// Gets the furniture's Parameter structure from a string key.
+    /// Reads the XML building job.
     /// </summary>
-    /// <returns>The Parameter value..</returns>
-    public Parameter GetParameters()
+    /// <param name="reader">The XML reader to read from.</param>
+    public void ReadXmlBuildingJob(XmlReader reader)
     {
-        return furnParameters;
-    }
+        float jobTime = float.Parse(reader.GetAttribute("jobTime"));
+        List<Inventory> invs = new List<Inventory>();
+        XmlReader inventoryReader = reader.ReadSubtree();
 
-    /// <summary>
-    /// Checks for first furniture job with specific condition.
-    /// </summary>
-    /// <param name="predicate"></param>
-    /// <param name="job">Job fulfilling predicate.</param>
-    /// <returns>True if there is job with predicate.</returns>
-    public bool HasJobWithPredicate(Func<Job, bool> predicate, out Job job)
-    {
-        job = jobs.FirstOrDefault(predicate);
-        return job != null;
-    }
-
-    /// <summary>
-    /// How many jobs are linked to this furniture.
-    /// </summary>
-    /// <returns>The number of jobs linked to this furniture.</returns>
-    public int JobCount()
-    {
-        return jobs.Count;
-    }
-
-    /// <summary>
-    /// Link a job to the current furniture.
-    /// </summary>
-    /// <param name="job">The job that you want to link to the furniture.</param>
-    public void AddJob(Job job)
-    {
-        job.furniture = this;
-        jobs.Add(job);
-        job.OnJobStopped += OnJobStopped;
-        job.OnJobCompleted += OnJobStopped;
-        World.Current.jobQueue.Enqueue(job);
-    }
-
-    /// <summary>
-    /// Cancel all the jobs linked to this furniture.
-    /// </summary>
-    public void CancelJobs()
-    {
-        Job[] jobsArray = jobs.ToArray();
-        foreach (Job job in jobsArray)
+        while (inventoryReader.Read())
         {
-            job.CancelJob();
+            if (inventoryReader.Name == "Inventory")
+            {
+                // Found an inventory requirement, so add it to the list!
+                invs.Add(new Inventory(
+                    inventoryReader.GetAttribute("type"),
+                    int.Parse(inventoryReader.GetAttribute("amount")),
+                    0));
+            }
         }
-    }
 
-    /// TODO: Refactor this when the new job system is implemented
-    public void ResumeJobs()
-    {
-        Job[] jobsArray = pausedJobs.ToArray();
-        foreach (Job job in jobsArray)
-        {
-            AddJob(job);
-            pausedJobs.Remove(job);
-        }
-    }
+        Job job = new Job(
+            null,
+            Type,
+            FunctionsManager.JobComplete_FurnitureBuilding,
+            jobTime,
+            invs.ToArray(),
+            Job.JobPriority.High);
+        job.JobDescription = "job_build_" + Type + "_desc";
 
-    /// TODO: Refactor this when the new job system is implemented
-    public void PauseJobs()
-    {
-        Job[] jobsArray = jobs.ToArray();
-        foreach (Job job in jobsArray)
-        {
-            pausedJobs.Add(job);
-            job.CancelJob();
-        }
-    }
-
-    public bool IsStockpile()
-    {
-        return HasTypeTag("Storage");
+        PrototypeManager.FurnitureJob.Set(Type, job);
     }
 
     /// <summary>
@@ -863,7 +724,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// <returns>A list of Inventory which the Furniture accepts for storage.</returns>
     public Inventory[] AcceptsForStorage()
     {
-        if (IsStockpile() == false)
+        if (HasTypeTag("Storage") == false)
         {
             Debug.ULogChannel("Stockpile_messages", "Someone is asking a non-stockpile to store stuff!?");
             return null;
@@ -897,7 +758,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             fwidth = furniture.Width;
             fheight = furniture.Height;
             linksToNeighbour = furniture.LinksToNeighbour;
-            furniture.CancelJobs();
+            furniture.Jobs.CancelAll();
         }
 
         // We call lua to decostruct
@@ -952,24 +813,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
 
         // At this point, no DATA structures should be pointing to us, so we
         // should get garbage-collected.
-    }
-
-    /// <summary>
-    /// Gets the tile that is used to do a job.
-    /// </summary>
-    /// <returns>Tile that is used for jobs.</returns>
-    public Tile GetJobSpotTile()
-    {
-        return World.Current.GetTileAt(Tile.X + (int)JobSpotOffset.x, Tile.Y + (int)JobSpotOffset.y, Tile.Z);
-    }
-
-    /// <summary>
-    /// Gets the tile that is used to spawn new objects (i.e. Inventory, Character).
-    /// </summary>
-    /// <returns>Tile that is used to spawn objects (i.e. Inventory, Character).</returns>
-    public Tile GetSpawnSpotTile()
-    {
-        return World.Current.GetTileAt(Tile.X + (int)jobSpawnSpotOffset.x, Tile.Y + (int)jobSpawnSpotOffset.y, Tile.Z);
     }
 
     /// <summary>
@@ -1091,22 +934,16 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             };
         }
 
-        if (jobs.Count > 0)
+        for (int i = 0; i < Jobs.Count(); i++)
         {
-            for (int i = 0; i < jobs.Count; i++)
+            if (!Jobs[i].IsBeingWorked)
             {
-                if (!jobs[i].IsBeingWorked)
+                yield return new ContextMenuAction
                 {
-                    yield return new ContextMenuAction
-                    {
-                        Text = "Prioritize " + Name,
-                        RequireCharacterSelected = true,
-                        Action = (ca, c) =>
-                        {
-                            c.PrioritizeJob(jobs[0]);
-                        }
-                    };
-                }
+                    Text = "Prioritize " + Name,
+                    RequireCharacterSelected = true,
+                    Action = (ca, c) => c.PrioritizeJob(Jobs[0])
+                };
             }
         }
 
@@ -1199,22 +1036,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         return true;
     }
 
-    private void RemoveJob(Job j)
-    {
-        j.OnJobStopped -= OnJobStopped;
-        jobs.Remove(j);
-        j.furniture = null;
-    }
-
-    private void ClearJobs()
-    {
-        Job[] jobsArray = jobs.ToArray();
-        foreach (Job j in jobsArray)
-        {
-            RemoveJob(j);
-        }
-    }
-
     private ContextMenuAction CreateWorkshopContextMenuItem(WorkshopContextMenu factoryContextMenuAction)
     {
         return new ContextMenuAction
@@ -1242,11 +1063,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         {
             Changed(furn);
         }
-    }
-
-    private void OnJobStopped(Job j)
-    {
-        RemoveJob(j);
     }
 
     private void OnIsOperatingChanged(Furniture furniture)
