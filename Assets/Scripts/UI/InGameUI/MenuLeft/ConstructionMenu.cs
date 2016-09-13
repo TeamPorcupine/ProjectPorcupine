@@ -151,7 +151,7 @@ public class ConstructionMenu : MonoBehaviour
             };
 
             Image image = gameObject.transform.GetChild(0).GetComponentsInChildren<Image>().First();
-            image.sprite = SpriteManager.current.GetSprite("Tile", key);
+            image.sprite = SpriteManager.GetSprite("Tile", key);
         }
     }
 
@@ -185,7 +185,7 @@ public class ConstructionMenu : MonoBehaviour
         };
 
         Image image = gameObject.transform.GetChild(0).GetComponentsInChildren<Image>().First();
-        image.sprite = SpriteManager.current.GetSprite("UI", "Deconstruct");
+        image.sprite = SpriteManager.GetSprite("UI", "Deconstruct");
     }
 
     private void Update()
