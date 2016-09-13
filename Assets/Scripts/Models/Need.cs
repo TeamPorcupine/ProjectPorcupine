@@ -122,21 +122,21 @@ public class Need : IPrototypable
         } 
         else if (Amount > 90f)
         {
-            if (EventActions != null && EventActions.HasEvent("OnSevereNeed"))
+            if (EventActions != null)
             {
                 EventActions.Trigger("OnSevereNeed", this, deltaTime);
             }
         }
         else if (Amount > 75f)
         {
-            if (EventActions != null && EventActions.HasEvent("OnCriticalNeed"))
+            if (EventActions != null)
             {
                 EventActions.Trigger("OnCriticalNeed", this, deltaTime);
             }
         }
         else if (Amount > 50f)
         {
-            if (EventActions != null && EventActions.HasEvent("OnModerateNeed"))
+            if (EventActions != null)
             {
                 EventActions.Trigger("OnModerateNeed", this, deltaTime);
             }

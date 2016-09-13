@@ -11,8 +11,6 @@ function OnUpdate_Oxygen( need, deltaTime )
     else
         need.Amount = need.Amount - (need.GrowthRate * deltaTime)
     end
-    
-    return
 end
 
 ModUtils.ULog("Need.lua loaded")
