@@ -39,14 +39,20 @@ function OnUpdate_Door( furniture, deltaTime )
 		if (furniture.Parameters["openness"].ToFloat() >= 1)  then
 			furniture.Parameters["is_opening"].SetValue(0)
 		end
-	else
+	elseif (furniture.Parameters["openness"].ToFloat() > 0.0) then
         furniture.Parameters["openness"].ChangeFloatValue(deltaTime * -4)
 	end
 
 	furniture.Parameters["openness"].SetValue( ModUtils.Clamp01(furniture.Parameters["openness"].ToFloat()) )
-	furniture.UpdateOnChanged(furniture);
-end
+	
+	if (furniture.verticalDoor == true) then
+		furniture.SetAnimationState("vertical")
+	else
+		furniture.SetAnimationState("horizontal")
+	end
+    furniture.SetAnimationProgressValue(furniture.Parameters["openness"].ToFloat(), 1)
 
+end
 
 function OnUpdate_AirlockDoor( furniture, deltaTime )
     if (furniture.Parameters["pressure_locked"].ToFloat() >= 1.0) then
@@ -99,80 +105,6 @@ function IsEnterable_Door( furniture )
 	end
 
     return ENTERABILITY_SOON --ENTERABILITY.Soon
-end
-
-function GetSpriteName_Door( furniture )
-
-	local openness = furniture.Parameters["openness"].ToFloat()
-
-	if (furniture.verticalDoor == true) then
-			-- Door is closed
-		if (openness < 0.1) then
-			return "DoorVertical_0"
-		end
-
-		if (openness < 0.25) then
-			return "DoorVertical_1"
-		end
-
-		if (openness < 0.5) then
-			return "DoorVertical_2"
-		end
-
-		if (openness < 0.75) then
-			return "DoorVertical_3"
-		end
-
-		if (openness < 0.9) then
-			return "DoorVertical_4"
-		end
-		-- Door is a fully open
-		return "DoorVertical_5"
-	end
-
-
-	-- Door is closed
-	if (openness < 0.1) then
-		return "DoorHorizontal_0"
-	end
-
-	if (openness < 0.25) then
-		return "DoorHorizontal_1"
-	end
-
-	if (openness < 0.5) then
-		return "DoorHorizontal_2"
-	end
-
-	if (openness < 0.75) then
-		return "DoorHorizontal_3"
-	end
-
-	if (openness < 0.9) then
-		return "DoorHorizontal_4"
-	end
-	-- Door is a fully open
-	return "DoorHorizontal_5"
-end
-
-function GetSpriteName_Airlock( furniture )
-
-	local openness = furniture.Parameters["openness"].ToFloat()
-
-	-- Door is closed
-	if (openness < 0.1) then
-		return "Airlock"
-	end
-	-- Door is a bit open
-	if (openness < 0.5) then
-		return "Airlock_openness_1"
-	end
-	-- Door is a lot open
-	if (openness < 0.9) then
-		return "Airlock_openness_2"
-	end
-	-- Door is a fully open
-	return "Airlock_openness_3"
 end
 
 function Stockpile_GetItemsFromFilter( furniture )

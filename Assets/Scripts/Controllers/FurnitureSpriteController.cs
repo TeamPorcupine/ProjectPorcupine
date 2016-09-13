@@ -192,6 +192,13 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
             }
         }
 
+        // don't change sprites on furniture with animations
+        if (furn.Animation != null)
+        {
+            furn.Animation.OnFurnitureChanged();
+            return;
+        }
+        
         furn_go.GetComponent<SpriteRenderer>().sprite = GetSpriteForFurniture(furn);
         furn_go.GetComponent<SpriteRenderer>().color = furn.Tint;
     }
