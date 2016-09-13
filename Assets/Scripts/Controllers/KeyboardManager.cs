@@ -45,8 +45,8 @@ public class KeyboardManager
     public void ReadXmlOrJsonAfterWeDecide()
     {
         // mock data for now until xml vs json is decided
-        RegisterInputMapping("MoveCameraEast", KeyCode.D, KeyCode.RightArrow);
-        RegisterInputMapping("MoveCameraWest", KeyCode.A, KeyCode.LeftArrow);
+        RegisterInputMapping("MoveCameraEast", KeyCode.D, KeyCode.LeftArrow);
+        RegisterInputMapping("MoveCameraWest", KeyCode.A, KeyCode.RightArrow);
         RegisterInputMapping("MoveCameraNorth", KeyCode.W, KeyCode.UpArrow);
         RegisterInputMapping("MoveCameraSouth", KeyCode.S, KeyCode.DownArrow);
         RegisterInputMapping("ZoomOut", KeyCode.PageUp);
