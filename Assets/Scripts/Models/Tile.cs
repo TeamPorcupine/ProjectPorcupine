@@ -61,7 +61,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
             }
 
             type = value;
-            TypeChanged = true;
+            ForceTileUpdate = true;
 
             OnTileClean();
         }
@@ -130,7 +130,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
     }
 
     public bool IsSelected { get; set; }
-    public bool TypeChanged { get; protected set; }
+    public bool ForceTileUpdate { get; protected set; }
     #endregion
 
     #region Manage Objects
@@ -406,6 +406,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
 
         Type = TileType.GetTileType(reader.GetAttribute("Type"));
         walkCount = int.Parse(reader.GetAttribute("timesWalked"));
+        ForceTileUpdate = true;
     }
     #endregion
 
@@ -473,6 +474,6 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         {
             TileChanged(this);
         }
-        TypeChanged = false;
+        ForceTileUpdate = false;
     }
 }

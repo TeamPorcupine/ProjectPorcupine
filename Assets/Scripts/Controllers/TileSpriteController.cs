@@ -59,7 +59,6 @@ public class TileSpriteController : BaseSpriteController<Tile>
         OnChanged(tile);
     }
 
-
     // This function should be called automatically whenever a tile's data gets changed.
     protected override void OnChanged(Tile tile)
     {
@@ -77,22 +76,23 @@ public class TileSpriteController : BaseSpriteController<Tile>
             return;
         }
 
-        //TODO Evaluate this criteria and naming schema!
-        if (DoesTileSpriteExist(tile.Type.Name + "_Heavy") &&(tile.walkCount>=100))
+        // TODO Evaluate this criteria and naming schema!
+        if (DoesTileSpriteExist(tile.Type.Name + "_Heavy") && (tile.walkCount >= 30))
         {
-            if (tile.TypeChanged || tile.walkCount == 100)
+            if (tile.ForceTileUpdate || tile.walkCount == 30)
             {
                 ChangeTileSprite(tile_go, tile.Type.Name + "_Heavy");
             }
         }
         else if (DoesTileSpriteExist(tile.Type.Name + "_Low") && (tile.walkCount >= 10))
         {
-            if (tile.TypeChanged || tile.walkCount == 10)
+            if (tile.ForceTileUpdate || tile.walkCount == 10)
             {
                 ChangeTileSprite(tile_go, tile.Type.Name + "_Low");
             }
         }
-        else { 
+        else
+        { 
             ChangeTileSprite(tile_go, tile.Type.Name);
         }
 
@@ -110,11 +110,12 @@ public class TileSpriteController : BaseSpriteController<Tile>
     {
     }
 
-    private void ChangeTileSprite(GameObject tile_go,string name)
+    private void ChangeTileSprite(GameObject tile_go, string name)
     {
-        //TODO How to manage if not all of the names are present?
+        // TODO How to manage if not all of the names are present?
         tile_go.GetComponent<SpriteRenderer>().sprite = SpriteManager.current.GetSprite("Tile", name);
     }
+
     private bool DoesTileSpriteExist(string name)
     {
         return SpriteManager.current.HasSprite("Tile", name);
