@@ -37,11 +37,16 @@ public class CameraController
         keyboardManager.RegisterInputAction("ZoomIn", KeyboardMappedInputType.Key, () => ChangeZoom(-0.1f));
         keyboardManager.RegisterInputAction("MoveCameraUp", KeyboardMappedInputType.KeyUp, ChangeLayerUp);
         keyboardManager.RegisterInputAction("MoveCameraDown", KeyboardMappedInputType.KeyUp, ChangeLayerDown);
-        keyboardManager.RegisterInputAction("GoToPresetCameraPosition1", KeyboardMappedInputType.Key, () => GoToPresetCameraPosition(presetCameraPositions[0]));
-        keyboardManager.RegisterInputAction("GoToPresetCameraPosition2", KeyboardMappedInputType.Key, () => GoToPresetCameraPosition(presetCameraPositions[0]));
-        keyboardManager.RegisterInputAction("GoToPresetCameraPosition3", KeyboardMappedInputType.Key, () => GoToPresetCameraPosition(presetCameraPositions[0]));
-        keyboardManager.RegisterInputAction("GoToPresetCameraPosition4", KeyboardMappedInputType.Key, () => GoToPresetCameraPosition(presetCameraPositions[0]));
-        keyboardManager.RegisterInputAction("GoToPresetCameraPosition5", KeyboardMappedInputType.Key, () => GoToPresetCameraPosition(presetCameraPositions[0]));
+        keyboardManager.RegisterInputAction("GoToPresetCameraPosition1", KeyboardMappedInputType.KeyUp, () => GoToPresetCameraPosition(presetCameraPositions[0]));
+        keyboardManager.RegisterInputAction("GoToPresetCameraPosition2", KeyboardMappedInputType.KeyUp, () => GoToPresetCameraPosition(presetCameraPositions[1]));
+        keyboardManager.RegisterInputAction("GoToPresetCameraPosition3", KeyboardMappedInputType.KeyUp, () => GoToPresetCameraPosition(presetCameraPositions[2]));
+        keyboardManager.RegisterInputAction("GoToPresetCameraPosition4", KeyboardMappedInputType.KeyUp, () => GoToPresetCameraPosition(presetCameraPositions[3]));
+        keyboardManager.RegisterInputAction("GoToPresetCameraPosition5", KeyboardMappedInputType.KeyUp, () => GoToPresetCameraPosition(presetCameraPositions[4]));
+        keyboardManager.RegisterInputAction("SavePresetCameraPosition1", KeyboardMappedInputType.KeyUp, () => SavePresetCameraPosition(0));
+        keyboardManager.RegisterInputAction("SavePresetCameraPosition2", KeyboardMappedInputType.KeyUp, () => SavePresetCameraPosition(1));
+        keyboardManager.RegisterInputAction("SavePresetCameraPosition3", KeyboardMappedInputType.KeyUp, () => SavePresetCameraPosition(2));
+        keyboardManager.RegisterInputAction("SavePresetCameraPosition4", KeyboardMappedInputType.KeyUp, () => SavePresetCameraPosition(3));
+        keyboardManager.RegisterInputAction("SavePresetCameraPosition5", KeyboardMappedInputType.KeyUp, () => SavePresetCameraPosition(4));
 
         // Set default zoom value on camera.
         Camera.main.orthographicSize = zoomTarget;
@@ -134,6 +139,11 @@ public class CameraController
     private void GoToPresetCameraPosition(Vector3 presetPosition)
     {
         Camera.main.transform.position = presetPosition;
+    }
+
+    private void SavePresetCameraPosition(int position)
+    {
+        presetCameraPositions[position] = Camera.main.transform.position;
     }
 
     private void SyncCameras()

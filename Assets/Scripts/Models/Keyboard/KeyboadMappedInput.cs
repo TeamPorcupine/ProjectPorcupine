@@ -25,7 +25,9 @@ public class KeyboadMappedInput
 
     public KeyboardMappedInputType Type { get; set; }
 
-    public Action OnTriger { get; set; }
+    public KeyboardInputModifier Modifier { get; set; }
+
+    public Action OnTrigger { get; set; }
 
     public void AddKeyCodes(KeyCode[] keycodes)
     {
@@ -38,27 +40,49 @@ public class KeyboadMappedInput
         }
     }
 
-    public void TrigerActionIfInputValid()
+    public void TriggerActionIfInputValid()
     {
         if (UserUsedInputThisFrame())
         {
-            if (OnTriger != null)
+            if (OnTrigger != null)
             {
-                OnTriger();
+                OnTrigger();
             }
         }
     }
 
     private bool UserUsedInputThisFrame()
     {
-        switch (Type)
+        if (ModifierActive())
         {
-            case KeyboardMappedInputType.Key:
-                return GetKey();
-            case KeyboardMappedInputType.KeyUp:
-                return GetKeyUp();
-            case KeyboardMappedInputType.KeyDown:
-                return GetKeyDown();
+            switch (Type)
+            {
+                case KeyboardMappedInputType.Key:
+                    return GetKey();
+                case KeyboardMappedInputType.KeyUp:
+                    return GetKeyUp();
+                case KeyboardMappedInputType.KeyDown:
+                    return GetKeyDown();
+            } 
+        }
+
+        return false;
+    }
+
+    private bool ModifierActive()
+    {
+        switch (Modifier)
+        {
+            case KeyboardInputModifier.None:
+                return !(Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)
+                        || Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)
+                        || Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt));
+            case KeyboardInputModifier.Shift:
+                return Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+            case KeyboardInputModifier.Control:
+                return Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
+            case KeyboardInputModifier.Alt:
+                return Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt);
         }
 
         return false;
