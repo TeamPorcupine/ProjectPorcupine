@@ -7,9 +7,9 @@
 // ====================================================
 #endregion
 using System.Collections.Generic;
+using ProjectPorcupine.Localization;
 using UnityEngine;
 using UnityEngine.UI;
-using ProjectPorcupine.Localization;
 
 public class DialogBoxSettings : DialogBox
 {
@@ -78,7 +78,7 @@ public class DialogBoxSettings : DialogBox
         this.CloseDialog();
         WorldController.Instance.spawnInventoryController.SetUIVisibility(developerModeToggle.isOn);
         LocalizationTable.SetLocalization(languageDropdown.value);
-        //FurnitureBuildMenu.instance.RebuildMenuButtons(developerModeToggle.isOn);
+        ///FurnitureBuildMenu.instance.RebuildMenuButtons(developerModeToggle.isOn);
         SaveSetting();
     }
 
