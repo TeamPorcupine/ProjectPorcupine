@@ -18,7 +18,7 @@ public class SpriteManager : MonoBehaviour
     // Our job is simply to load all sprites from disk and keep the organized.
     public static SpriteManager current;
 
-    public static Texture2D noRescourceTexture;
+    public static Texture2D noResourceTexture;
 
     // A sprite image with a "ph_" as a prefix will be loaded as a placeholder if the normal spite image is missing.
     // This is used to easily identity spires that needs improvement.
@@ -28,18 +28,18 @@ public class SpriteManager : MonoBehaviour
 
     public void Awake()
     {
-        if (noRescourceTexture == null)
+        if (noResourceTexture == null)
         {
             // Generate a 32x32 magenta image
-            noRescourceTexture = new Texture2D(32, 32, TextureFormat.ARGB32, false);
-            Color32[] pixels = noRescourceTexture.GetPixels32();
+            noResourceTexture = new Texture2D(32, 32, TextureFormat.ARGB32, false);
+            Color32[] pixels = noResourceTexture.GetPixels32();
             for (int i = 0; i < pixels.Length; i++)
             {
                 pixels[i] = new Color32(255, 0, 255, 255);
             }
 
-            noRescourceTexture.SetPixels32(pixels);
-            noRescourceTexture.Apply();
+            noResourceTexture.SetPixels32(pixels);
+            noResourceTexture.Apply();
         }
     }
 
@@ -68,10 +68,17 @@ public class SpriteManager : MonoBehaviour
         }
         else
         {
-            sprite = Sprite.Create(noRescourceTexture, new Rect(Vector2.zero, new Vector3(32, 32)), new Vector2(0.5f, 0.5f), 32);
+            sprite = Sprite.Create(noResourceTexture, new Rect(Vector2.zero, new Vector3(32, 32)), new Vector2(0.5f, 0.5f), 32);
         }
 
         return sprite;
+    }
+
+    public bool HasSprite(string categoryName, string spriteName)
+    {
+        string spriteNamePlaceHolder = categoryName + "/" + PlaceHolderPrefix + spriteName;
+        spriteName = categoryName + "/" + spriteName;
+        return sprites.ContainsKey(spriteName) || sprites.ContainsKey(spriteNamePlaceHolder);
     }
 
     private void LoadSprites()

@@ -56,8 +56,11 @@ public class SoundController
             return;
         }
 
-        AudioClip ac = Resources.Load<AudioClip>("Sounds/Floor_OnCreated");
-        AudioSource.PlayClipAtPoint(ac, Camera.main.transform.position);
-        soundCooldown = 0.1f;
+        if (tileData.walkCount == 0 && tileData.damageEventCount == 0)
+        {   //Brand new tile 
+            AudioClip ac = Resources.Load<AudioClip>("Sounds/Floor_OnCreated");
+            AudioSource.PlayClipAtPoint(ac, Camera.main.transform.position);
+            soundCooldown = 0.1f;
+        }
     }
 }

@@ -56,11 +56,16 @@ public class TileSpriteController : BaseSpriteController<Tile>
         sr.sprite = SpriteManager.current.GetSprite("Tile", "Empty");
         sr.sortingLayerName = "Tiles";
 
-        OnChanged(tile);
+        OnChanged(tile,true);
+    }
+
+    protected override void OnChanged(Tile obj)
+    {
+        OnChanged(obj, false);
     }
 
     // This function should be called automatically whenever a tile's data gets changed.
-    protected override void OnChanged(Tile tile)
+    protected void OnChanged(Tile tile, bool forceTile)
     {
         if (objectGameObjectMap.ContainsKey(tile) == false)
         {
@@ -75,8 +80,20 @@ public class TileSpriteController : BaseSpriteController<Tile>
             Debug.ULogErrorChannel("TileSpriteController", "tileGameObjectMap's returned GameObject is null -- did you forget to add the tile to the dictionary? Or maybe forget to unregister a callback?");
             return;
         }
-        
-        tile_go.GetComponent<SpriteRenderer>().sprite = SpriteManager.current.GetSprite("Tile", tile.Type.Name);
+
+        //TODO Evaluate this criteria and naming schema!
+        if (DoesTileSpriteExist(tile.Type.Name + "_Heavy") &&(tile.walkCount>=100))
+        {
+            ChangeTileSprite(tile_go, tile.Type.Name + "_Heavy");
+        }
+        else if (DoesTileSpriteExist(tile.Type.Name + "_Low") && (tile.walkCount >= 10))
+        {
+            ChangeTileSprite(tile_go, tile.Type.Name + "_Low");
+        }
+        else { 
+            ChangeTileSprite(tile_go, tile.Type.Name);
+        }
+
         if (tile.Type == TileType.Empty)
         {
             tile_go.SetActive(false);
@@ -89,5 +106,15 @@ public class TileSpriteController : BaseSpriteController<Tile>
 
     protected override void OnRemoved(Tile tile)
     {
+    }
+
+    private void ChangeTileSprite(GameObject tile_go,string name)
+    {
+        //TODO How to manage if not all of the names are present?
+        tile_go.GetComponent<SpriteRenderer>().sprite = SpriteManager.current.GetSprite("Tile", name);
+    }
+    private bool DoesTileSpriteExist(string name)
+    {
+        return SpriteManager.current.HasSprite("Tile", name);
     }
 }

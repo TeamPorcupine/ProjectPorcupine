@@ -839,6 +839,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             ////       reached our destination.
 
             CurrTile = nextTile;
+            CurrTile.OnEnter();
             movementPercentage = 0;
 
             // FIXME?  Do we actually want to retain any overshot movement?

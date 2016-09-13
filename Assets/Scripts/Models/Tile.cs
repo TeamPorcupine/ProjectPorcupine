@@ -45,6 +45,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
     // The function we callback any time our tile's data changes
     public event Action<Tile> TileChanged;
 
+    #region Accessors
     public TileType Type
     {
         get
@@ -61,11 +62,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
 
             type = value;
 
-            // Call the callback and let things know we've changed.
-            if (TileChanged != null)
-            {
-                TileChanged(this);
-            }
+            OnTileClean();
         }
     }
 
@@ -78,6 +75,12 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
 
     // Furniture is something like a wall, door, or sofa.
     public Furniture Furniture { get; private set; }
+
+    //The number of times this tile has been walked on since last cleaned.
+    public int walkCount { get; protected set; }
+
+    //The number of damaging events that have occured on the tile.
+    public int damageEventCount { get; protected set; }
 
     /// <summary>
     /// The total pathfinding cost of entering this tile.
@@ -129,7 +132,9 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
     }
 
     public bool IsSelected { get; set; }
+    #endregion
 
+    #region Manage Objects
     // Called when the character has completed the job to change tile type
     public static void ChangeTileTypeJobComplete(Job theJob)
     {
@@ -227,11 +232,52 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         return true;
     }
 
+    #endregion
+
+    #region Manage Gas
     public void EqualiseGas(float leakFactor)
     {
         Room.EqualiseGasByTile(this, leakFactor);
     }
 
+    public float GetGasPressure(string gas)
+    {
+        if (Room == null)
+        {
+            float pressure = Mathf.Infinity;
+            if (North().Room != null && North().GetGasPressure(gas) < pressure)
+            {
+                pressure = North().GetGasPressure(gas);
+            }
+
+            if (East().Room != null && East().GetGasPressure(gas) < pressure)
+            {
+                pressure = East().GetGasPressure(gas);
+            }
+
+            if (South().Room != null && South().GetGasPressure(gas) < pressure)
+            {
+                pressure = South().GetGasPressure(gas);
+            }
+
+            if (West().Room != null && West().GetGasPressure(gas) < pressure)
+            {
+                pressure = West().GetGasPressure(gas);
+            }
+
+            if (pressure == Mathf.Infinity)
+            {
+                return 0f;
+            }
+
+            return pressure;
+        }
+
+        return Room.GetGasPressure(gas);
+    }
+    #endregion
+
+    #region Neighbors and pathfinding
     // Tells us if two tiles are adjacent.
     public bool IsNeighbour(Tile tile, bool diagOkay = false)
     {
@@ -284,6 +330,58 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         return GetNeighbours(checkDiagonals).Any(tile => tile != null && tile.MovementCost > 0);
     }
 
+    public Tile North()
+    {
+        return World.Current.GetTileAt(X, Y + 1, Z);
+    }
+
+    public Tile South()
+    {
+        return World.Current.GetTileAt(X, Y - 1, Z);
+    }
+
+    public Tile East()
+    {
+        return World.Current.GetTileAt(X + 1, Y, Z);
+    }
+
+    public Tile West()
+    {
+        return World.Current.GetTileAt(X - 1, Y, Z);
+    }
+
+    public Enterability IsEnterable()
+    {
+        // This returns true if you can enter this tile right this moment.
+        if (MovementCost.IsZero())
+        {
+            return Enterability.Never;
+        }
+
+        // Check out furniture to see if it has a special block on enterability
+        if (Furniture != null)
+        {
+            return Furniture.IsEnterable();
+        }
+
+        return Enterability.Yes;
+    }
+
+    public void OnEnter()
+    {
+        walkCount++;
+        ReportTileChanged();
+    }
+
+    public void OnTileClean()
+    {
+        walkCount = 0;
+        damageEventCount++; //TODO Probably not the best place for this, but...
+        ReportTileChanged();
+    }
+    #endregion
+
+    #region Save XML
     public XmlSchema GetSchema()
     {
         return null;
@@ -309,79 +407,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
 
         Type = TileType.GetTileType(reader.GetAttribute("Type"));
     }
-
-    public Enterability IsEnterable()
-    {
-        // This returns true if you can enter this tile right this moment.
-        if (MovementCost.IsZero())
-        {
-            return Enterability.Never;
-        }
-
-        // Check out furniture to see if it has a special block on enterability
-        if (Furniture != null)
-        {
-            return Furniture.IsEnterable();
-        }
-
-        return Enterability.Yes;
-    }
-
-    public Tile North()
-    {
-        return World.Current.GetTileAt(X, Y + 1, Z);
-    }
-
-    public Tile South()
-    {
-        return World.Current.GetTileAt(X, Y - 1, Z);
-    }
-
-    public Tile East()
-    {
-        return World.Current.GetTileAt(X + 1, Y, Z);
-    }
-
-    public Tile West()
-    {
-        return World.Current.GetTileAt(X - 1, Y, Z);
-    }
-
-    public float GetGasPressure(string gas)
-    {
-        if (Room == null)
-        {
-            float pressure = Mathf.Infinity;
-            if (North().Room != null && North().GetGasPressure(gas) < pressure)
-            {
-                pressure = North().GetGasPressure(gas);
-            }
-
-            if (East().Room != null && East().GetGasPressure(gas) < pressure)
-            {
-                pressure = East().GetGasPressure(gas);
-            }
-
-            if (South().Room != null && South().GetGasPressure(gas) < pressure)
-            {
-                pressure = South().GetGasPressure(gas);
-            }
-
-            if (West().Room != null && West().GetGasPressure(gas) < pressure)
-            {
-                pressure = West().GetGasPressure(gas);
-            }
-
-            if (pressure == Mathf.Infinity)
-            {
-                return 0f;
-            }
-
-            return pressure;
-        }
-
-        return Room.GetGasPressure(gas);
-    }
+    #endregion
 
     #region ISelectableInterface implementation
 
@@ -437,6 +463,15 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
                     }
                 };
             }
+        }
+    }
+
+    private void ReportTileChanged()
+    {
+        // Call the callback and let things know we've changed.
+        if (TileChanged != null)
+        {
+            TileChanged(this);
         }
     }
 }
