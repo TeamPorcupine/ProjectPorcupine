@@ -167,11 +167,11 @@ public class MouseController
     {
         if (Input.GetKeyUp(KeyCode.Escape) || Input.GetMouseButtonUp(1))
         {
-            if (currentMode == MouseMode.BUILD)
+            if (currentMode == MouseMode.BUILD && isPanning == false)
             {
                 ClearMouseMode(true);
             }
-            else if (currentMode == MouseMode.SPAWN_INVENTORY)
+            else if (currentMode == MouseMode.SPAWN_INVENTORY && isPanning == false)
             {
                 currentMode = MouseMode.SELECT;
             }
