@@ -41,6 +41,8 @@ public class ModsManager
         LoadPrototypes("Quest.xml", (text) => PrototypeManager.Quest.LoadPrototypes(text));
 
         LoadCharacterNames("CharacterNames.txt");
+
+        LoadSprites();
     }
 
     public DirectoryInfo[] GetMods()
@@ -120,6 +122,24 @@ public class ModsManager
             if (File.Exists(filePath))
             {
                 readText(filePath);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Loads the all the sprites.
+    /// </summary>
+    private void LoadSprites()
+    {
+        string filePath = Path.Combine(Application.streamingAssetsPath, "Images");
+        SpriteManager.LoadSprites(filePath);
+
+        foreach (DirectoryInfo mod in mods)
+        {
+            filePath = Path.Combine(mod.FullName, "Images");
+            if (Directory.Exists(filePath))
+            {
+                SpriteManager.LoadSprites(filePath);
             }
         }
     }

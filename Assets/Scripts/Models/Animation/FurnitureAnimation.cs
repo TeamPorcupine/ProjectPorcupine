@@ -111,7 +111,7 @@ namespace Animation
         {
             if (Renderer != null)
             {
-                Renderer.sprite = SpriteManager.current.GetSprite("Furniture", spriteName);
+                Renderer.sprite = SpriteManager.GetSprite("Furniture", spriteName);
             }
         }
     }

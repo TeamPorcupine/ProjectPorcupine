@@ -61,7 +61,7 @@ public class TradeController
         controller.LeavingCoordinates = new Vector3(100, 50, 0);
         go.transform.localScale = new Vector3(1, 1, 1);
         SpriteRenderer spriteRenderer = go.AddComponent<SpriteRenderer>();
-        spriteRenderer.sprite = SpriteManager.current.GetSprite("Trader", "BasicHaulShip");
+        spriteRenderer.sprite = SpriteManager.GetSprite("Trader", "BasicHaulShip");
         spriteRenderer.sortingLayerName = "TradeShip";
     }
 
