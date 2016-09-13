@@ -1,5 +1,9 @@
-# ProjectPorcupine
+# ProjectPorcupine [![Build Status](https://travis-ci.org/TeamPorcupine/ProjectPorcupine.svg?branch=master)](https://travis-ci.org/TeamPorcupine/ProjectPorcupine)
 Project Porcupine: A Base-Building Game...in Space!
+
+
+![Preview Thumbnail](http://i.imgur.com/t0l6PNk.png)
+
 
 [About](#about)  
 [Copyright & Licensing](#copyright--licensing)  
@@ -56,6 +60,10 @@ are licensed under the MIT License and can be found here:
 ## Contributing
 
 Please check the [CONTRIBUTING.md](CONTRIBUTING.md) file for contribution instructions and guidelines.
+
+For further information, such as Roadmaps, explanations of systems and features, Standards and Conventions, and all your Git needs and troubleshooting see the [Wiki](https://github.com/TeamPorcupine/ProjectPorcupine/wiki)
+
+Make sure that you are using [Unity 5.4] (https://unity3d.com/unity/beta).
 
 ## Vote on Proposed Features
 

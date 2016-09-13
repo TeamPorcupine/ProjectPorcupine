@@ -7,25 +7,49 @@
 // ====================================================
 #endregion
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 using UnityEngine;
 
-public class TraderPrototype
+public class TraderPrototype : IPrototypable
 {
-    public string ObjectType;
-    public List<string> PotentialNames;
-    public float MinCurrencyBalance;
-    public float MaxCurrencyBalance;
-    public float MinSaleMarginMultiplier;
-    public float MaxSaleMarginMultiplier;
-    public List<TraderPotentialInventory> PotentialStock;
+    private float rarity;
 
-    [Range(0, 1)]
-    public float Rarity;
+    public string Type { get; set; }
+
+    public List<string> PotentialNames { get; set; }
+
+    public float MinCurrencyBalance { get; set; }
+
+    public float MaxCurrencyBalance { get; set; }
+
+    public string CurrencyName { get; set; }
+
+    public float MinSaleMarginMultiplier { get; set; }
+
+    public float MaxSaleMarginMultiplier { get; set; }
+
+    public List<TraderPotentialInventory> PotentialStock { get; set; }
+
+    /// <summary>
+    /// Value from 0 to 1, higher value represent higher availability of the trade resource.
+    /// </summary>
+    public float Rarity
+    {
+        get
+        {
+            return rarity;
+        }
+
+        set
+        {
+            rarity = Mathf.Clamp(value, 0f, 1f);
+        }
+    }
 
     public void ReadXmlPrototype(XmlReader reader_parent)
     {
-        ObjectType = reader_parent.GetAttribute("objectType");
+        Type = reader_parent.GetAttribute("type");
 
         XmlReader reader = reader_parent.ReadSubtree();
 
@@ -35,15 +59,20 @@ public class TraderPrototype
             {
                 case "potentialNames":
                     PotentialNames = new List<string>();
-                    XmlReader names_reader = reader.ReadSubtree();
+                    XmlReader namesReader = reader.ReadSubtree();
 
-                    while (names_reader.Read())
+                    while (namesReader.Read())
                     {
-                        if (names_reader.Name == "name")
+                        if (namesReader.Name == "name")
                         {
-                            PotentialNames.Add(names_reader.Value);
+                            PotentialNames.Add(namesReader.ReadElementContentAsString());
                         }
                     }
+
+                    break;
+                case "currencyName":
+                    reader.Read();
+                    CurrencyName = reader.ReadContentAsString();
                     break;
                 case "minCurrencyBalance":
                     reader.Read();
@@ -61,6 +90,7 @@ public class TraderPrototype
                     reader.Read();
                     MaxSaleMarginMultiplier = reader.ReadContentAsFloat();
                     break;
+                
                 case "potentialStock":
                     PotentialStock = new List<TraderPotentialInventory>();
                     XmlReader invs_reader = reader.ReadSubtree();
@@ -72,40 +102,73 @@ public class TraderPrototype
                             // Found an inventory requirement, so add it to the list!
                             PotentialStock.Add(new TraderPotentialInventory
                             {
-                                ObjectType = invs_reader.GetAttribute("objectType"),
+                                Type = invs_reader.GetAttribute("type"),
+                                Category = invs_reader.GetAttribute("category"),
                                 MinQuantity = int.Parse(invs_reader.GetAttribute("minQuantity")),
                                 MaxQuantity = int.Parse(invs_reader.GetAttribute("maxQuantity")),
                                 Rarity = float.Parse(invs_reader.GetAttribute("rarity"))
                             });
                         }
                     }
+
                     break;
             }
         }
     }
+
+    /// <summary>
+    /// Create a random Trader out of this TraderPrototype.
+    /// </summary>
     public Trader CreateTrader()
     {
         Trader t = new Trader
         {
-            CurrencyBalance = Random.Range(MinCurrencyBalance, MaxCurrencyBalance),
-            Name = PotentialNames[Random.Range(PotentialNames.Count, PotentialNames.Count - 1)],
-            SaleMarginMultiplier = Random.Range(MinSaleMarginMultiplier, MaxSaleMarginMultiplier)
+            Currency = new Currency
+            {
+                Name = CurrencyName,
+                Balance = Random.Range(MinCurrencyBalance, MaxCurrencyBalance),   
+                ShortName = World.Current.Wallet.Currencies[CurrencyName].ShortName
+            },
+            Name = PotentialNames[Random.Range(0, PotentialNames.Count - 1)],
+            SaleMarginMultiplier = Random.Range(MinSaleMarginMultiplier, MaxSaleMarginMultiplier),
+            Stock = new List<Inventory>()
         };
 
-        foreach (var potentialStock in PotentialStock)
+        foreach (TraderPotentialInventory potentialStock in PotentialStock)
         {
-            var itemIsInStock = Random.Range(0f, 1f) > potentialStock.Rarity;
+            bool itemIsInStock = Random.Range(0f, 1f) > potentialStock.Rarity;
 
             if (itemIsInStock)
             {
-                t.Stock.Add(new Inventory
+                if (!string.IsNullOrEmpty(potentialStock.Type))
                 {
-                    objectType = potentialStock.ObjectType,
-                    stackSize = Random.Range(potentialStock.MinQuantity,potentialStock.MaxQuantity)
-                });
+                    Inventory inventory = new Inventory(
+                        potentialStock.Type,
+                        Random.Range(potentialStock.MinQuantity, potentialStock.MaxQuantity));
+
+                    t.Stock.Add(inventory);
+                }
+                else if (!string.IsNullOrEmpty(potentialStock.Category))
+                {
+                    List<InventoryCommon> potentialObjects = GetInventoryCommonWithCategory(potentialStock.Category);
+
+                    foreach (InventoryCommon potentialObject in potentialObjects)
+                    {
+                        Inventory inventory = new Inventory(
+                            potentialObject.type,
+                            Random.Range(potentialStock.MinQuantity, potentialStock.MaxQuantity));
+
+                        t.Stock.Add(inventory);
+                    }
+                }
             }
         }
 
         return t;
+    }
+
+    private List<InventoryCommon> GetInventoryCommonWithCategory(string category)
+    {
+        return PrototypeManager.Inventory.Values.Where(i => i.category == category).ToList();
     }
 }

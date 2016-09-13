@@ -6,6 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using System.Linq;
 using MoonSharp.Interpreter;
 using UnityEngine;
 
@@ -19,7 +20,7 @@ public enum BuildMode
 public class BuildModeController
 {
     public BuildMode buildMode = BuildMode.FLOOR;
-    public string buildModeObjectType;
+    public string buildModeType;
 
     private MouseController mouseController;
     private TileType buildModeTile = TileType.Floor;
@@ -38,9 +39,14 @@ public class BuildModeController
             return true;
         }
 
-        Furniture proto = WorldController.Instance.world.furniturePrototypes[buildModeObjectType];
+        Furniture proto = PrototypeManager.Furniture.Get(buildModeType);
 
         return proto.Width == 1 && proto.Height == 1;
+    }
+
+    public string GetFloorTile()
+    {
+        return buildModeTile.ToString();
     }
 
     public void SetModeBuildTile(TileType type)
@@ -51,11 +57,11 @@ public class BuildModeController
         mouseController.StartBuildMode();
     }
     
-    public void SetMode_BuildFurniture(string objectType)
+    public void SetMode_BuildFurniture(string type)
     {
         // Wall is not a Tile!  Wall is an "Furniture" that exists on TOP of a tile.
         buildMode = BuildMode.FURNITURE;
-        buildModeObjectType = objectType;
+        buildModeType = type;
         mouseController.StartBuildMode();
     }
 
@@ -67,7 +73,7 @@ public class BuildModeController
 
     public void DoPathfindingTest()
     {
-        WorldController.Instance.world.SetupPathfindingExample();
+        WorldController.Instance.World.SetupPathfindingExample();
     }
 
     public void DoBuild(Tile t)
@@ -77,10 +83,10 @@ public class BuildModeController
             // Create the Furniture and assign it to the tile
             // Can we build the furniture in the selected tile?
             // Run the ValidPlacement function!
-            string furnitureType = buildModeObjectType;
+            string furnitureType = buildModeType;
 
             if ( 
-                WorldController.Instance.world.IsFurniturePlacementValid(furnitureType, t) &&
+                WorldController.Instance.World.IsFurniturePlacementValid(furnitureType, t) &&
                 DoesBuildJobOverlapExistingBuildJob(t, furnitureType) == false)
             {
                 // This tile position is valid for this furniture
@@ -95,46 +101,46 @@ public class BuildModeController
                 // Create a job for it to be build
                 Job j;
 
-                if (WorldController.Instance.world.furnitureJobPrototypes.ContainsKey(furnitureType))
+                if (PrototypeManager.FurnitureJob.Has(furnitureType))
                 {
                     // Make a clone of the job prototype
-                    j = WorldController.Instance.world.furnitureJobPrototypes[furnitureType].Clone();
+                    j = PrototypeManager.FurnitureJob.Get(furnitureType).Clone();
 
                     // Assign the correct tile.
                     j.tile = t;
                 }
                 else
                 {
-                    Debug.LogError("There is no furniture job prototype for '" + furnitureType + "'");
-                    j = new Job(t, furnitureType, FurnitureActions.JobComplete_FurnitureBuilding, 0.1f, null, Job.JobPriority.High);
+                    Debug.ULogErrorChannel("BuildModeController", "There is no furniture job prototype for '" + furnitureType + "'");
+                    j = new Job(t, furnitureType, FunctionsManager.JobComplete_FurnitureBuilding, 0.1f, null, Job.JobPriority.High);
                     j.JobDescription = "job_build_" + furnitureType + "_desc";
                 }
 
-                j.furniturePrototype = WorldController.Instance.world.furniturePrototypes[furnitureType];
+                j.furniturePrototype = PrototypeManager.Furniture.Get(furnitureType);
 
-                for (int x_off = t.X; x_off < (t.X + WorldController.Instance.world.furniturePrototypes[furnitureType].Width); x_off++)
+                // Add the job to the queue or build immediately if in Dev mode
+                if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
                 {
-                    for (int y_off = t.Y; y_off < (t.Y + WorldController.Instance.world.furniturePrototypes[furnitureType].Height); y_off++)
-                    {
-                        // FIXME: I don't like having to manually and explicitly set
-                        // flags that preven conflicts. It's too easy to forget to set/clear them!
-                        Tile offsetTile = WorldController.Instance.world.GetTileAt(x_off,y_off);
-                        offsetTile.PendingBuildJob = j;
-                        j.cbJobStopped += (theJob) =>
-                            {
-                                offsetTile.PendingBuildJob = null;
-                            };
-                    }
-                }
-
-                // Add the job to the queue
-                if (WorldController.Instance.devMode)
-                {
-                    WorldController.Instance.world.PlaceFurniture(j.jobObjectType, j.tile);
+                    WorldController.Instance.World.PlaceFurniture(j.JobObjectType, j.tile);
                 }
                 else
                 {
-                    WorldController.Instance.world.jobQueue.Enqueue(j);
+                    for (int x_off = t.X; x_off < (t.X + j.furniturePrototype.Width); x_off++)
+                    {
+                        for (int y_off = t.Y; y_off < (t.Y + j.furniturePrototype.Height); y_off++)
+                        {
+                            // FIXME: I don't like having to manually and explicitly set
+                            // flags that prevent conflicts. It's too easy to forget to set/clear them!
+                            Tile offsetTile = WorldController.Instance.World.GetTileAt(x_off, y_off, t.Z);
+                            offsetTile.PendingBuildJob = j;
+                            j.OnJobStopped += (theJob) =>
+                                {
+                                    offsetTile.PendingBuildJob = null;
+                                };
+                        }
+                    }
+
+                    WorldController.Instance.World.jobQueue.Enqueue(j);
                 }
             }
         }
@@ -149,39 +155,65 @@ public class BuildModeController
                 t.Type != tileType && 
                 t.Furniture == null &&
                 t.PendingBuildJob == null &&
-                CanBuildTileTypeHere(t, tileType))
+                tileType.CanBuildHere(t))
             {
                 // This tile position is valid tile type
 
                 // Create a job for it to be build
-                Job j = TileType.GetConstructionJobPrototype(tileType);
+                Job buildingJob = tileType.BuildingJob;
                 
-                j.tile = t;
+                buildingJob.tile = t;
 
-                // FIXME: I don't like having to manually and explicitly set
-                // flags that preven conflicts. It's too easy to forget to set/clear them!
-                t.PendingBuildJob = j;
-                j.cbJobStopped += (theJob) =>
+                // Add the job to the queue or build immediately if in Dev mode
+                if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
                 {
-                    theJob.tile.PendingBuildJob = null;
-                };
-
-                // Add the job to the queue
-                if (WorldController.Instance.devMode)
-                {
-                    j.tile.Type = j.jobTileType;
+                    buildingJob.tile.Type = buildingJob.JobTileType;
                 }
                 else
                 {
-                    WorldController.Instance.world.jobQueue.Enqueue(j);
+                    // FIXME: I don't like having to manually and explicitly set
+                    // flags that prevent conflicts. It's too easy to forget to set/clear them!
+                    t.PendingBuildJob = buildingJob;
+                    buildingJob.OnJobStopped += (theJob) => theJob.tile.PendingBuildJob = null;
+
+                    WorldController.Instance.World.jobQueue.Enqueue(buildingJob);
                 }
             }
         }
         else if (buildMode == BuildMode.DECONSTRUCT)
         {
             // TODO
-            if (t.Furniture != null)
+            bool canDeconstructAll = Settings.GetSetting("DialogBoxSettings_developerModeToggle", false);
+            if (t.Furniture != null && (canDeconstructAll || t.Furniture.HasTypeTag("Non-deconstructible") == false))
             {
+                // check if this is a WALL neighbouring a pressured and pressureless environment, and if so, bail
+                if (t.Furniture.HasTypeTag("Wall"))
+                {
+                    Tile[] neighbors = t.GetNeighbours(); // diagOkay??
+                    int pressuredNeighbors = 0;
+                    int vacuumNeighbors = 0;
+                    foreach (Tile neighbor in neighbors)
+                    {
+                        if (neighbor != null && neighbor.Room != null)
+                        {
+                            if (neighbor.Room.IsOutsideRoom() || MathUtilities.IsZero(neighbor.Room.GetTotalGasPressure()))
+                            {
+                                vacuumNeighbors++;
+                            }
+                            else
+                            {
+                                pressuredNeighbors++;
+                            }
+                        }
+                    }
+
+                    if (vacuumNeighbors > 0 && pressuredNeighbors > 0)
+                    {
+                        Debug.ULogChannel("BuildModeController", "Someone tried to deconstruct a wall between a pressurized room and vacuum!");
+                        return;
+                    }
+                }
+
                 t.Furniture.Deconstruct();
             }
             else if (t.PendingBuildJob != null)
@@ -191,37 +223,24 @@ public class BuildModeController
         }
         else
         {
-            Debug.LogError("UNIMPLEMENTED BUILD MODE");
-        }
-    }
-
-    // Checks whether the given floor type is allowed to be built on the tile.
-    // TODO Export this kind of check to an XML/LUA file for easier modding of floor types.
-    private bool CanBuildTileTypeHere(Tile t, TileType tileType)
-    {
-        DynValue value = FurnitureActions.CallFunction(tileType.CanBuildHereLua, t);
-
-        if (value != null)
-        {
-            return value.Boolean;
-        }
-        else
-        {
-            Debug.ULogChannel("Lua", "Found no lua function " + tileType.CanBuildHereLua);
-
-            return false;
+            Debug.ULogErrorChannel("BuildModeController", "UNIMPLEMENTED BUILD MODE");
         }
     }
 
     public bool DoesBuildJobOverlapExistingBuildJob(Tile t, string furnitureType)
     {
-        for (int x_off = t.X; x_off < (t.X + WorldController.Instance.world.furniturePrototypes[furnitureType].Width); x_off++)
+        Furniture proto = PrototypeManager.Furniture.Get(furnitureType);
+
+        for (int x_off = t.X; x_off < (t.X + proto.Width); x_off++)
         {
-            for (int y_off = t.Y; y_off < (t.Y + WorldController.Instance.world.furniturePrototypes[furnitureType].Height); y_off++)
+            for (int y_off = t.Y; y_off < (t.Y + proto.Height); y_off++)
             {
-                if (WorldController.Instance.world.GetTileAt(x_off, y_off).PendingBuildJob != null)
+                Job pendingBuildJob = WorldController.Instance.World.GetTileAt(x_off, y_off, t.Z).PendingBuildJob;
+                if (pendingBuildJob != null)
                 {
-                    return true;
+                    // if the existing buildJobs furniture is replaceable by the current furnitureType,
+                    // we can pretend it does not overlap with the new build
+                    return !proto.ReplaceableFurniture.Any(pendingBuildJob.furniturePrototype.HasTypeTag);
                 }
             }
         }

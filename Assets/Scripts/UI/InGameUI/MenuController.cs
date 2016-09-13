@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
 // This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
@@ -6,74 +6,31 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using System.Collections;
+using ProjectPorcupine.Localization;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
 
 public class MenuController : MonoBehaviour
 {
-    DialogBoxManager dbm;
-
-    // The left build menu.
-    public GameObject constructorMenu;
-
-    // The sub menus of the build menu (furniture, floor..... later - power, security, drones).
-    public GameObject furnitureMenu;
-    public GameObject floorMenu;
+    public static MenuController Instance;
 
     public Button buttonConstructor;
     public Button buttonWorld;
     public Button buttonWork;
     public Button buttonOptions;
     public Button buttonSettings;
+    public Button buttonQuests;
 
-    // Use this for initialization.
-    void Start()
-    {
-        dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
+    private DialogBoxManager dialogBoxManager;
 
-        // Add liseners here.
-        buttonConstructor.onClick.AddListener(delegate
-            {
-                OnButtonConstruction();
-            });
-
-        buttonWorld.onClick.AddListener(delegate
-            {
-                OnButtonWorld();
-            });
-
-        buttonWork.onClick.AddListener(delegate
-            {
-                OnButtonWork();
-            });
-
-        buttonOptions.onClick.AddListener(delegate
-            {
-                OnButtonOptions();
-            });
-
-        buttonSettings.onClick.AddListener(delegate
-            {
-                OnButtonSettings();
-            });
-
-        DeactivateAll();
-    }
+    private MenuLeft menuLeft;
 
     // Deactivates All Menus.
     public void DeactivateAll()
     {
-        constructorMenu.SetActive(false);
-        DeactivateSubs();
-
-    }
-
-    // Deactivates any sub menu of the constrution options.
-    public void DeactivateSubs()
-    {
-        furnitureMenu.SetActive(false);
-        floorMenu.SetActive(false);
+        menuLeft.CloseMenu();
+        WorldController.Instance.mouseController.ClearMouseMode(true);
     }
 
     // Toggles whether menu is active.
@@ -82,31 +39,25 @@ public class MenuController : MonoBehaviour
         menu.SetActive(!menu.activeSelf);
     }
 
-    void Update()
-    {
-        if (Input.GetKey(KeyCode.Escape))
-        {
-            DeactivateAll();
-        }
-    }
-
     public void OnButtonConstruction()
     {
-        if (constructorMenu.activeSelf)
+        if (menuLeft.CurrentlyOpen != null && menuLeft.CurrentlyOpen.gameObject.name == "ConstructionMenu")
         {
-            DeactivateAll();
-        } 
-        else 
-        { 
-            DeactivateAll();
-            constructorMenu.SetActive(true);
+            menuLeft.CloseMenu();
+        }
+        else
+        {
+            menuLeft.OpenMenu("ConstructionMenu");
         }
     }
 
     public void OnButtonWork()
     {
-        DeactivateAll();
-
+        if (!WorldController.Instance.IsModal)
+        {
+            DeactivateAll();
+            dialogBoxManager.dialogBoxJobList.ShowDialog();
+        }
     }
 
     public void OnButtonWorld()
@@ -115,7 +66,15 @@ public class MenuController : MonoBehaviour
         {
             DeactivateAll();
         }
+    }
 
+    public void OnButtonQuests()
+    {
+        if (!WorldController.Instance.IsModal)
+        {
+            DeactivateAll();
+            dialogBoxManager.dialogBoxQuests.ShowDialog();
+        }
     }
 
     public void OnButtonOptions()
@@ -123,7 +82,12 @@ public class MenuController : MonoBehaviour
         if (!WorldController.Instance.IsModal)
         {
             DeactivateAll();
-            dbm.dialogBoxOptions.ShowDialog();
+            if (dialogBoxManager.dialogBoxSettings.isActiveAndEnabled)
+            {
+                dialogBoxManager.dialogBoxSettings.CloseDialog();
+            }
+
+            dialogBoxManager.dialogBoxOptions.ShowDialog();
         }
     }
 
@@ -132,7 +96,67 @@ public class MenuController : MonoBehaviour
         if (!WorldController.Instance.IsModal)
         {
             DeactivateAll();
-            dbm.dialogBoxSettings.ShowDialog();
+            dialogBoxManager.dialogBoxSettings.ShowDialog();
+        }
+    }
+
+    // Use this for initialization.
+    private void Start()
+    {
+        dialogBoxManager = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
+        menuLeft = GameObject.Find("MenuLeft").GetComponent<MenuLeft>();
+
+        // Add listeners here.
+        buttonConstructor.onClick.AddListener(delegate
+        {
+            OnButtonConstruction();
+        });
+
+        buttonWorld.onClick.AddListener(delegate
+        {
+            OnButtonWorld();
+        });
+
+        buttonWork.onClick.AddListener(delegate
+        {
+            OnButtonWork();
+        });
+
+        buttonOptions.onClick.AddListener(delegate
+        {
+            OnButtonOptions();
+        });
+
+        buttonSettings.onClick.AddListener(delegate
+        {
+            OnButtonSettings();
+        });
+
+        buttonQuests = CreateButton("menu_quests");
+        buttonQuests.onClick.AddListener(delegate
+        {
+            OnButtonQuests();
+        });
+
+        DeactivateAll();
+    }
+
+    private Button CreateButton(string text)
+    {
+        GameObject buttonQuestGameObject = (GameObject)Instantiate(Resources.Load("UI/MenuButton"), this.gameObject.transform);
+        buttonQuestGameObject.name = "Button - " + text;
+        Text buttonText = buttonQuestGameObject.transform.GetChild(0).GetComponent<Text>();
+        buttonText.text = text;
+        buttonText.GetComponent<TextLocalizer>().text = buttonText;
+        buttonText.GetComponent<TextLocalizer>().UpdateText();
+        return buttonQuestGameObject.GetComponent<Button>();
+    }
+
+    private void Update()
+    {
+        if (Input.GetKey(KeyCode.Escape))
+        {
+            DeactivateAll();
         }
     }
 }

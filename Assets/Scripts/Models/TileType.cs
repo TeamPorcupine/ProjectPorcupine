@@ -6,211 +6,193 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-
-using UnityEngine;
-using System.Collections.Generic;
 using System;
-using MoonSharp.Interpreter;
-using System.Xml;
+using System.Collections.Generic;
 using System.IO;
-using System.Xml.Serialization;
-using System.Xml.Schema;
 using System.Linq;
+using System.Xml;
+using System.Xml.Serialization;
+using MoonSharp.Interpreter;
+using UnityEngine;
 
 [MoonSharpUserData]
-public class TileType : IXmlSerializable {
-
-    // Just two util functions to not break every link to TileType.(Empty | Floor)
-    // TODO: Maybe cache the empty and floor tiletypes.
-    public static TileType Empty { get { return tileTypeDictionary["Empty"]; } }
-
-    public static TileType Floor { get { return tileTypeDictionary["Floor"]; } }
+public class TileType : IXmlSerializable, IEquatable<TileType>
+{
+    private static readonly string ULogChanelName = "TileType";
+    private static readonly string TilesDescriptionFileName = "Tiles.xml";
 
     // A private dictionary for storing all TileTypes
-    private static Dictionary<string, TileType> tileTypeDictionary = new Dictionary<string, TileType>();
+    private static readonly Dictionary<string, TileType> TileTypes = new Dictionary<string, TileType>();
 
-    private static Dictionary<TileType, Job> tileTypeBuildJobPrototypes = new Dictionary<TileType, Job>();
+    private static TileType empty;
+    private static TileType floor;
 
-    public string Type { get; protected set; }
-
-    public string Name { get; protected set; }
-
-    public string Description { get; protected set; }
-    
-    public float BaseMovementCost { get; protected set; }
-
-    // TODO!
-    public bool LinksToNeighbours { get; protected set; }
-
-    // Standard movement cost calculation (lua function).
-    public string MovementCostLua { get; protected set; }
-    
-    public string CanBuildHereLua { get; protected set; }
-    
-    public string LocalizationCode { get; protected set; }
-
-    public string UnlocalizedDescription { get; protected set; }
+    private Job buildingJob;
 
     private TileType()
     {
-        // Default lua method names
-        MovementCostLua = "MovementCost_Standard";
-        CanBuildHereLua = "CanBuildHere_Standard";
+        PathfindingModifier = 0.0f;
+        PathfindingWeight = 1.0f;
     }
 
-    // Will this even be needed?
-    private TileType(string name, string description, float baseMovementCost)
+    public static TileType Empty
     {
-        this.Name = name;
-        this.Description = description;
-        this.BaseMovementCost = baseMovementCost;
+        get { return empty ?? (empty = TileTypes["Empty"]); }
+    }
 
-        // Add this to the dictionary of all tileTypes
-        tileTypeDictionary[name] = this;
+    public static TileType Floor
+    {
+        get { return floor ?? (floor = TileTypes["Floor"]); }
     }
 
     /// <summary>
-    /// Gets the TileType with the type, null if not found!
+    /// All currently registerd TileTypes.
     /// </summary>
-    /// <param name="name"></param>
-    /// <returns></returns>
+    public static TileType[] LoadedTileTypes
+    {
+        get
+        {
+            return TileTypes.Values.ToArray();
+        }
+    }
+
+    /// <summary>
+    /// Unique TileType identifier.
+    /// </summary>
+    public string Type { get; private set; }
+
+    public string Name { get; private set; }
+
+    public string Description { get; private set; }
+
+    public float BaseMovementCost { get; private set; }
+
+    /// <summary>
+    /// Gets or sets the TileType's pathfinding weight which is multiplied into the Tile's final PathfindingCost.
+    /// </summary>
+    public float PathfindingWeight { get; set; }
+
+    /// <summary>
+    /// Gets or sets the TileType's pathfinding modifier which is added into the Tile's final PathfindingCost.
+    /// </summary>
+    public float PathfindingModifier { get; set; }
+
+    public bool LinksToNeighbours { get; private set; }
+
+    public string CanBuildHereLua { get; private set; }
+
+    public string LocalizationCode { get; private set; }
+
+    public string UnlocalizedDescription { get; private set; }
+
+    /// <summary>
+    /// Gets clone of construction job prototype for this tileType.
+    /// </summary>
+    public Job BuildingJob
+    {
+        get { return buildingJob.Clone(); }
+    }
+
+    /// <summary>
+    /// Gets the TileType with the type, null if not found.
+    /// </summary>
     public static TileType GetTileType(string type)
     {
-        if (tileTypeDictionary.ContainsKey(type))
+        if (TileTypes.ContainsKey(type))
         {
-            return tileTypeDictionary[type];
-        }
-        else
-        {
-            Debug.ULogWarningChannel("TileType", "No tile type " + type + " found!");
-
-            return null;
-        }
-    }
-
-    /// <summary>
-    /// Returns an array of all the currently registerd TileTypes.
-    /// </summary>
-    /// <returns></returns>
-    public static TileType[] GetTileTypes()
-    {
-        return tileTypeDictionary.Values.ToArray();
-    }
-
-    /// <summary>
-    /// Gets the construction job prototype for this tileType.
-    /// </summary>
-    /// <param name="type"></param>
-    /// <returns></returns>
-    public static Job GetConstructionJobPrototype(TileType type)
-    {
-        if (tileTypeBuildJobPrototypes.ContainsKey(type))
-        {
-            return tileTypeBuildJobPrototypes[type].Clone();
+            return TileTypes[type];
         }
 
-        Debug.ULogWarningChannel("TileType", "TileType job prototype for " + type + " did not exits!");
-
+        Debug.ULogWarningChannel(ULogChanelName, "No TileType with Type = {0} found.", type);
         return null;
     }
-    
+
     /// <summary>
-    /// Loads all TileType definitions in Data\ and Data\Mods
+    /// Loads all TileType definitions in Data\ and Data\Mods.
     /// </summary>
     public static void LoadTileTypes()
     {
-        // Load lua code
-        string luaPath = System.IO.Path.Combine(Application.streamingAssetsPath, "LUA");
-        string luaFilePath = System.IO.Path.Combine(luaPath, "Tile.lua");
-        string luaCode = System.IO.File.ReadAllText(luaFilePath);
-        
-        FurnitureActions.addScript(luaCode);
-
-        // Load all mod defined lua code
-        foreach (DirectoryInfo mod in WorldController.Instance.modsManager.GetMods())
-        {
-            foreach (FileInfo file in mod.GetFiles("Tiles.lua"))
-            {
-                Debug.ULogChannel("TileType", "Loading mod " + mod.Name + " TileType definitions!");
-
-                luaCode = System.IO.File.ReadAllText(file.FullName);
-
-                FurnitureActions.addScript(luaCode);
-            }
-        }
-
         // Load TileType xml definitions
-        string dataPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
-        string xmlPath = System.IO.Path.Combine(dataPath, "Tiles.xml");
-        string xmlText = System.IO.File.ReadAllText(xmlPath);
-        
-        readTileTypesFromXml(xmlText);
+        string dataPath = Path.Combine(Application.streamingAssetsPath, "Data");
+        string xmlPath = Path.Combine(dataPath, TilesDescriptionFileName);
+        string xmlText = File.ReadAllText(xmlPath);
+
+        ReadTileTypesFromXml(xmlText);
 
         // Load all mod defined TileType definitions
         foreach (DirectoryInfo mod in WorldController.Instance.modsManager.GetMods())
         {
-            foreach (FileInfo file in mod.GetFiles("Tiles.xml"))
+            foreach (FileInfo file in mod.GetFiles(TilesDescriptionFileName))
             {
-                Debug.ULogChannel("TileType", "Loading mod " + mod.Name + " TileType definitions!");
-
-                xmlText = System.IO.File.ReadAllText(file.FullName);
-
-                readTileTypesFromXml(xmlText);
+                Debug.ULogChannel(ULogChanelName, "Loading TileType definitions from mod: {0}", mod.Name);
+                xmlText = File.ReadAllText(file.FullName);
+                ReadTileTypesFromXml(xmlText);
             }
         }
     }
 
-    // Overrides ToString() to be able to do localizaton in character
+    public static bool operator ==(TileType left, TileType right)
+    {
+        return Equals(left, right);
+    }
+
+    public static bool operator !=(TileType left, TileType right)
+    {
+        return !Equals(left, right);
+    }
+
+    public bool Equals(TileType other)
+    {
+        return string.Equals(Type, other.Type);
+    }
+
+    public override bool Equals(object obj)
+    {
+        return Equals((TileType)obj);
+    }
+
+    public override int GetHashCode()
+    {
+        return Type != null ? Type.GetHashCode() : 0;
+    }
+
     public override string ToString()
     {
         return Type;
     }
 
-    private static void readTileTypesFromXml(string xmlText)
+    // Checks whether the given floor type is allowed to be built on the tile.
+    public bool CanBuildHere(Tile t)
     {
-        XmlTextReader reader = new XmlTextReader(new StringReader(xmlText));
-
-        if (reader.ReadToDescendant("Tiles"))
+        if (CanBuildHereLua == null)
         {
-            if (reader.ReadToDescendant("Tile"))
-            {
-                do
-                {
+            return true;
+        }
 
-                    TileType type = new TileType();
-                    
-                    type.ReadXml(reader);
+        DynValue value = FunctionsManager.TileType.Call(CanBuildHereLua, t);
 
-                    tileTypeDictionary[type.Type] = type;
-
-                    Debug.ULogChannel("TileType", "Read tileType: " + type.Name + "!");
-
-                } while (reader.ReadToNextSibling("Tile"));
-            }
-            else
-            {
-                Debug.ULogErrorChannel("TileType", "The tiletypes definition file doesn't have any 'Tile' elements.");
-            }
+        if (value != null)
+        {
+            return value.Boolean;
         }
         else
         {
-            Debug.ULogErrorChannel("TileType", "Did not find a 'Tiles' element in the prototype definition file.");
+            Debug.ULogChannel("Lua", "Found no lua function " + CanBuildHereLua);
+
+            return false;
         }
     }
-    
-    #region IXmlSerializable implementation 
 
-    public XmlSchema GetSchema()
+    public System.Xml.Schema.XmlSchema GetSchema()
     {
         return null;
     }
 
-    public void ReadXml(XmlReader reader_parent)
+    public void ReadXml(XmlReader parentReader)
     {
-        Type = reader_parent.GetAttribute("tileType");
+        Type = parentReader.GetAttribute("tileType");
 
-        XmlReader reader = reader_parent.ReadSubtree();
-
+        XmlReader reader = parentReader.ReadSubtree();
         while (reader.Read())
         {
             switch (reader.Name)
@@ -227,58 +209,23 @@ public class TileType : IXmlSerializable {
                     reader.Read();
                     BaseMovementCost = reader.ReadContentAsFloat();
                     break;
+                case "PathfindingModifier":
+                    reader.Read();
+                    PathfindingModifier = reader.ReadContentAsFloat();
+                    break;
+                case "PathfindingWeight":
+                    reader.Read();
+                    PathfindingWeight = reader.ReadContentAsFloat();
+                    break;
                 case "LinksToNeighbours":
                     reader.Read();
                     LinksToNeighbours = reader.ReadContentAsBoolean();
                     break;
                 case "BuildingJob":
-
-                    float jobTime = float.Parse(reader.GetAttribute("jobTime"));
-
-                    List<Inventory> invs = new List<Inventory>();
-
-                    XmlReader invs_reader = reader.ReadSubtree();
-
-                    while (invs_reader.Read())
-                    {
-                        if (invs_reader.Name == "Inventory")
-                        {
-                            // Found an inventory requirement, so add it to the list!
-                            invs.Add(new Inventory(
-                                    invs_reader.GetAttribute("objectType"),
-                                    int.Parse(invs_reader.GetAttribute("amount")),
-                                    0));
-                        }
-                    }
-                    
-                    Job j = new Job(
-                        null,
-                        this,
-                        Tile.ChangeTileTypeJobComplete,
-                        jobTime,
-                        invs.ToArray(),
-                        Job.JobPriority.High,
-                        false,
-                        true);
-                    j.JobDescription = "job_build_floor_" + this;
-
-                    tileTypeBuildJobPrototypes[this] = j;
-
-                    break;
-                case "MovementCost":
-                    string movementCostAttribute = reader.GetAttribute("FunctionName");
-                    if (movementCostAttribute != null)
-                    {
-                        MovementCostLua = movementCostAttribute;
-                    }
-                    Debug.Log("MovmentCostLua: " + MovementCostLua);
+                    ReadBuildingJob(reader);
                     break;
                 case "CanPlaceHere":
-                    string canPlaceHereAttribute = reader.GetAttribute("FunctionName");
-                    if (canPlaceHereAttribute != null)
-                    {
-                        CanBuildHereLua = canPlaceHereAttribute;
-                    }
+                    CanBuildHereLua = reader.GetAttribute("functionName");
                     break;
                 case "LocalizationCode":
                     reader.Read();
@@ -297,5 +244,77 @@ public class TileType : IXmlSerializable {
         throw new NotSupportedException();
     }
 
-    #endregion
+    private static void ReadTileTypesFromXml(string xmlText)
+    {
+        XmlTextReader reader = new XmlTextReader(new StringReader(xmlText));
+        if (reader.ReadToDescendant("Tiles"))
+        {
+            if (reader.ReadToDescendant("Tile"))
+            {
+                do
+                {
+                    TileType tileType = new TileType();
+                    tileType.ReadXml(reader);
+                    TileTypes[tileType.Type] = tileType;
+
+                    Debug.ULogChannel(ULogChanelName, "Read tileType: " + tileType.Name + "!");
+                }
+                while (reader.ReadToNextSibling("Tile"));
+            }
+            else
+            {
+                Debug.ULogErrorChannel(ULogChanelName, "The tiletypes definition file doesn't have any 'Tile' elements.");
+            }
+        }
+        else
+        {
+            Debug.ULogErrorChannel(ULogChanelName, "Did not find a 'Tiles' element in the prototype definition file.");
+        }
+    }
+
+    private void ReadBuildingJob(XmlReader parentReader)
+    {
+        string jobTime = parentReader.GetAttribute("jobTime");
+        float jobTimeValue;
+        if (float.TryParse(jobTime, out jobTimeValue) == false)
+        {
+            Debug.ULogErrorChannel(ULogChanelName, "Could not load jobTime for TyleType: {0} -- jobTime readed {1}", Type, jobTime);
+            return;
+        }
+
+        List<Inventory> inventoryRequirements = new List<Inventory>();
+        XmlReader inventoryReader = parentReader.ReadSubtree();
+        while (inventoryReader.Read())
+        {
+            if (inventoryReader.Name != "Inventory")
+            {
+                continue;
+            }
+
+            // Found an inventory requirement, so add it to the list!
+            int amount;
+            string type = inventoryReader.GetAttribute("type");
+            if (int.TryParse(inventoryReader.GetAttribute("amount"), out amount))
+            {
+                inventoryRequirements.Add(new Inventory(type, amount));
+            }
+            else
+            {
+                Debug.ULogErrorChannel(ULogChanelName, "Could not load Inventory item for TyleType: {0}", Type);
+            }
+        }
+
+        buildingJob = new Job(
+            null,
+            this,
+            Tile.ChangeTileTypeJobComplete,
+            jobTimeValue,
+            inventoryRequirements.ToArray(),
+            Job.JobPriority.High,
+            false,
+            true)
+        {
+            JobDescription = "job_build_floor_" + this
+        };
+    }
 }

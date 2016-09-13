@@ -12,13 +12,6 @@ using UnityEngine.UI;
 
 public class LanguageDropdownUpdater : MonoBehaviour
 {
-    public void SelectLanguage(int lang)
-    {
-        string[] languages = LocalizationTable.GetLanguages();
-        LocalizationTable.currentLanguage = languages[lang];
-        Settings.setSetting("localization", languages[lang]);
-    }
-
     private void Start()
     {
         UpdateLanguageDropdown();
@@ -48,7 +41,7 @@ public class LanguageDropdownUpdater : MonoBehaviour
             }
         }
 
-        // Set scroll sensitivity based on the save-item count
+        // Set scroll sensitivity based on the save-item count.
         dropdown.template.GetComponent<ScrollRect>().scrollSensitivity = dropdown.options.Count / 3;
     }
 }

@@ -10,22 +10,30 @@ using System;
 
 public class TradeItem
 {
-    public string ObjectType;
-    public float BaseItemPrice;
+    private int tradeAmount;
 
-    public float PlayerSellItemPrice;
-    public float TraderSellItemPrice;
+    public string Type { get; set; }
 
-    public int PlayerStock;
-    public int TraderStock;
-    private int _tradeAmount;
+    public float BaseItemPrice { get; set; }
+
+    public float PlayerSellItemPrice { get; set; }
+
+    public float TraderSellItemPrice { get; set; }
+
+    public int PlayerStock { get; set; }
+
+    public int TraderStock { get; set; }
 
     public int TradeAmount
     {
-        get { return _tradeAmount; }
+        get
+        {
+            return tradeAmount;
+        }
+
         set
         {
-            _tradeAmount = value < 0
+            tradeAmount = value < 0
                 ? Math.Max(value, -PlayerStock)
                 : Math.Min(value, TraderStock);
         }

@@ -6,58 +6,54 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using UnityEngine;
 using System.Collections;
-using UnityEngine.UI;
 using ProjectPorcupine.Localization;
+using UnityEngine;
+using UnityEngine.UI;
 
+/// Every frame, this script checks to see which tile
+/// is under the mouse and then updates the GetComponent<Text>.text
+/// parameter of the object it is attached to.
 public class MouseOverFurnitureTypeText : MonoBehaviour
 {
+    private Text text;
+    private MouseController mouseController;
 
-    // Every frame, this script checks to see which tile
-    // is under the mouse and then updates the GetComponent<Text>.text
-    // parameter of the object it is attached to.
-
-    Text myText;
-    MouseController mouseController;
-
-    // Use this for initialization
-    void Start()
+    // Use this for initialization.
+    private void Start()
     {
-        myText = GetComponent<Text>();
+        text = GetComponent<Text>();
 
-        if (myText == null)
+        if (text == null)
         {
-            Debug.LogError("MouseOverTileTypeText: No 'Text' UI component on this object.");
+            Debug.ULogErrorChannel("MouseOver", "No 'Text' UI component on this object.");
             this.enabled = false;
             return;
         }
 
         mouseController = WorldController.Instance.mouseController;
+
         if (mouseController == null)
         {
-            Debug.LogError("How do we not have an instance of mouse controller?");
+            Debug.ULogErrorChannel("MouseOver", "How do we not have an instance of mouse controller?");
             return;
         }
-
     }
-	
-    // Update is called once per frame
-    void Update()
+
+    // Update is called once per frame.
+    private void Update()
     {
         Tile t = mouseController.GetMouseOverTile();
-
         string s = "NULL";
 
         if (t != null && t.Furniture != null)
         {
             s = t.Furniture.Name;
-            myText.text = LocalizationTable.GetLocalization("furniture") + ": " + s;
+            text.text = LocalizationTable.GetLocalization("furniture") + ": " + s;
         }
         else
         {
-            myText.text = "";
+            text.text = string.Empty;
         }
-
     }
 }
