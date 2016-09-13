@@ -18,6 +18,8 @@ public class SoundController
     {
         world.OnFurnitureCreated += OnFurnitureCreated;
         world.OnTileChanged += OnTileChanged;
+
+        TimeManager.Instance.EveryFrame += Update;
     }
     
     // Update is called once per frame
