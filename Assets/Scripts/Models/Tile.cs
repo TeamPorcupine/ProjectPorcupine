@@ -61,6 +61,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
             }
 
             type = value;
+            TypeChanged = true;
 
             OnTileClean();
         }
@@ -78,9 +79,6 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
 
     //The number of times this tile has been walked on since last cleaned.
     public int walkCount { get; protected set; }
-
-    //The number of damaging events that have occured on the tile.
-    public int damageEventCount { get; protected set; }
 
     /// <summary>
     /// The total pathfinding cost of entering this tile.
@@ -132,6 +130,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
     }
 
     public bool IsSelected { get; set; }
+    public bool TypeChanged { get; protected set; }
     #endregion
 
     #region Manage Objects
@@ -376,7 +375,6 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
     public void OnTileClean()
     {
         walkCount = 0;
-        damageEventCount++; //TODO Probably not the best place for this, but...
         ReportTileChanged();
     }
     #endregion
@@ -393,7 +391,6 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         writer.WriteAttributeString("Y", Y.ToString());
         writer.WriteAttributeString("Z", Z.ToString());
         writer.WriteAttributeString("timesWalked", walkCount.ToString());
-        writer.WriteAttributeString("damageCount", damageEventCount.ToString());
         writer.WriteAttributeString("RoomID", Room == null ? "-1" : Room.ID.ToString());
         writer.WriteAttributeString("Type", Type.Type);
     }
@@ -409,7 +406,6 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
 
         Type = TileType.GetTileType(reader.GetAttribute("Type"));
         walkCount = int.Parse(reader.GetAttribute("timesWalked"));
-        damageEventCount = int.Parse(reader.GetAttribute("damageCount"));
     }
     #endregion
 
@@ -477,5 +473,6 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         {
             TileChanged(this);
         }
+        TypeChanged = false;
     }
 }

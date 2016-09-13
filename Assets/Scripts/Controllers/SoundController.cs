@@ -56,7 +56,7 @@ public class SoundController
             return;
         }
 
-        if (tileData.walkCount == 0 && tileData.damageEventCount == 0)
+        if (tileData.TypeChanged)
         {   //Brand new tile 
             AudioClip ac = Resources.Load<AudioClip>("Sounds/Floor_OnCreated");
             AudioSource.PlayClipAtPoint(ac, Camera.main.transform.position);

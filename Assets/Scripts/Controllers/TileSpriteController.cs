@@ -56,16 +56,12 @@ public class TileSpriteController : BaseSpriteController<Tile>
         sr.sprite = SpriteManager.current.GetSprite("Tile", "Empty");
         sr.sortingLayerName = "Tiles";
 
-        OnChanged(tile,true);
+        OnChanged(tile);
     }
 
-    protected override void OnChanged(Tile obj)
-    {
-        OnChanged(obj, false);
-    }
 
     // This function should be called automatically whenever a tile's data gets changed.
-    protected void OnChanged(Tile tile, bool forceTile)
+    protected override void OnChanged(Tile tile)
     {
         if (objectGameObjectMap.ContainsKey(tile) == false)
         {
@@ -84,11 +80,17 @@ public class TileSpriteController : BaseSpriteController<Tile>
         //TODO Evaluate this criteria and naming schema!
         if (DoesTileSpriteExist(tile.Type.Name + "_Heavy") &&(tile.walkCount>=100))
         {
-            ChangeTileSprite(tile_go, tile.Type.Name + "_Heavy");
+            if (tile.TypeChanged || tile.walkCount == 100)
+            {
+                ChangeTileSprite(tile_go, tile.Type.Name + "_Heavy");
+            }
         }
         else if (DoesTileSpriteExist(tile.Type.Name + "_Low") && (tile.walkCount >= 10))
         {
-            ChangeTileSprite(tile_go, tile.Type.Name + "_Low");
+            if (tile.TypeChanged || tile.walkCount == 10)
+            {
+                ChangeTileSprite(tile_go, tile.Type.Name + "_Low");
+            }
         }
         else { 
             ChangeTileSprite(tile_go, tile.Type.Name);
