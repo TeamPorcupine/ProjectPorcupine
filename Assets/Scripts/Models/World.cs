@@ -77,8 +77,6 @@ public class World : IXmlSerializable
         // Make one character.
         CreateCharacter(GetTileAt(Width / 2, Height / 2, 0));
 
-        AddEventListeners();
-
         TestRoomGraphGeneration(this);
     }
 
@@ -87,7 +85,6 @@ public class World : IXmlSerializable
     /// </summary>
     public World()
     {
-        AddEventListeners();
     }
 
     /// <summary>
@@ -624,6 +621,8 @@ public class World : IXmlSerializable
         inventoryManager = new InventoryManager();
         PowerNetwork = new ProjectPorcupine.PowerNetwork.PowerNetwork();
         temperature = new Temperature(Width, Height);
+
+        AddEventListeners();
         LoadSkybox();
     }
 
