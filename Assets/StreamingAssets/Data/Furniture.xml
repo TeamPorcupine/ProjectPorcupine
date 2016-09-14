@@ -58,6 +58,25 @@
             <Inventory type="Steel Plate" amount="1" />
         </DeconstructJob>
 
+        <Animations>
+          <Animation state="horizontal" valuebased="true">
+            <Frame name="DoorHorizontal_0" />
+            <Frame name="DoorHorizontal_1" />
+            <Frame name="DoorHorizontal_2" />
+            <Frame name="DoorHorizontal_3" />
+            <Frame name="DoorHorizontal_4" />
+            <Frame name="DoorHorizontal_5" />
+          </Animation>  
+          <Animation state="vertical" valuebased="true">
+            <Frame name="DoorVertical_0" />
+            <Frame name="DoorVertical_1" />
+            <Frame name="DoorVertical_2" />
+            <Frame name="DoorVertical_3" />
+            <Frame name="DoorVertical_4" />
+            <Frame name="DoorVertical_5" />                
+          </Animation>                      
+        </Animations>
+
         <Params>
             <Param name="openness" value="0" />
             <Param name="is_opening" value="0" />
@@ -68,7 +87,6 @@
         <Action event="OnUpdate" functionName="OnUpdate_Leak_Door" />
 
         <IsEnterable FunctionName="IsEnterable_Door" />
-        <GetSpriteName FunctionName="GetSpriteName_Door" />
 
         <LocalizationCode>furn_door</LocalizationCode>
         <UnlocalizedDescription>furn_door_desc</UnlocalizedDescription>
@@ -96,6 +114,25 @@
             <Inventory type="Steel Plate" amount="7" />
         </DeconstructJob>
 
+        <Animations>
+          <Animation state="horizontal" valuebased="true">
+            <Frame name="AirlockHorizontal_0" />
+            <Frame name="AirlockHorizontal_1" />
+            <Frame name="AirlockHorizontal_2" />
+            <Frame name="AirlockHorizontal_3" />
+            <Frame name="AirlockHorizontal_4" />
+            <Frame name="AirlockHorizontal_5" />
+          </Animation>
+          <Animation state="vertical" valuebased="true">
+            <Frame name="AirlockVertical_0" />
+            <Frame name="AirlockVertical_1" />
+            <Frame name="AirlockVertical_2" />
+            <Frame name="AirlockVertical_3" />
+            <Frame name="AirlockVertical_4" />
+            <Frame name="AirlockVertical_5" />
+          </Animation>
+        </Animations>
+      
         <Params>
             <Param name="openness" value="0" />
             <Param name="is_opening" value="0" />
@@ -109,8 +146,7 @@
         <ContextMenuAction FunctionName="AirlockDoor_Toggle_Pressure_Lock" Text="Toggle Pressure Lock" RequiereCharacterSelected="false"/>
 
         <IsEnterable FunctionName="IsEnterable_Door" />
-        <GetSpriteName FunctionName="GetSpriteName_Airlock" />
-
+        
         <LocalizationCode>furn_airlock</LocalizationCode>
         <UnlocalizedDescription>furn_airlock_desc</UnlocalizedDescription>
     </Furniture>
@@ -331,7 +367,7 @@
         <UnlocalizedDescription>furn_metal_furnace_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture type="heater">
+    <Furniture type="Heater">
         <Name>Heater</Name>
         <Description>Raises temperature in the room.</Description>
         <BaseType>Temperature</BaseType>
