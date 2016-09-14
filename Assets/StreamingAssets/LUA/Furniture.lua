@@ -31,8 +31,13 @@ function OnUpdate_GasGenerator( furniture, deltaTime )
         end
     end
 	return
-	furniture.SetAnimationState("running") --TODO: how do we detect power?
+	furniture.SetAnimationState("running")
 end
+
+function OnPowerOff_GasGenerator( furniture, deltaTime )
+	furniture.SetAnimationState("idle")
+end
+
 
 function OnUpdate_Door( furniture, deltaTime )
 	if (furniture.Parameters["is_opening"].ToFloat() >= 1.0) then
@@ -448,7 +453,7 @@ end
 
 -- Should maybe later be integrated with GasGenerator function by
 -- someone who knows how that would work in this case
-function OxygenCompressor_OnUpdate(furniture, deltaTime)
+function OnUpdate_OxygenCompressor(furniture, deltaTime)
     local room = furniture.Tile.Room
     local pressure = room.GetGasPressure("O2")
     local gasAmount = furniture.Parameters["flow_rate"].ToFloat() * deltaTime
@@ -468,13 +473,18 @@ function OxygenCompressor_OnUpdate(furniture, deltaTime)
             furniture.UpdateOnChanged(furniture)
         end
     end
-	--if (power == true) then
-	--	furniture.SetAnimationState("running")
-	--else
-	--	furniture.SetAnimationState("idle")
-	--end
 	furniture.SetAnimationState("running")
 	furniture.SetAnimationProgressValue(furniture.Parameters["gas_content"].ToFloat(), furniture.Parameters["max_gas_content"].ToFloat());
+end
+
+function OnPowerOff_OxygenCompressor(furniture, deltaTime)
+    -- lose half of gas, in case of blackout
+	local gasContent = furniture.Parameters["gas_content"].ToFloat()
+	if (gasContent > 0) then
+            furniture.Parameters["gas_content"].ChangeFloatValue(-gasContent/2)
+            furniture.UpdateOnChanged(furniture)
+    end
+    furniture.SetAnimationProgressValue(furniture.Parameters["gas_content"].ToFloat(), furniture.Parameters["max_gas_content"].ToFloat());
 end
 
 function SolarPanel_OnUpdate(furniture, deltaTime)

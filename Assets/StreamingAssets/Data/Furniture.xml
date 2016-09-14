@@ -183,7 +183,7 @@
           <Animation state="idle" looping="false">
             <Frame name="Oxygen Generator" />
           </Animation>
-          <Animation state="running" fps="2" looping="true">
+          <Animation state="running" fps="8" looping="true">
             <Frame name="Oxygen_Generator_Running1" />
             <Frame name="Oxygen_Generator_Running2" />
             <Frame name="Oxygen_Generator_Running3" />
@@ -205,7 +205,8 @@
         </Params>
 
         <Action event="OnUpdate" functionName="OnUpdate_GasGenerator" />
-
+        <Action event="OnPowerOff" functionName="OnPowerOff_GasGenerator" />
+      
         <LocalizationCode>furn_oxygen_generator</LocalizationCode>
         <UnlocalizedDescription>furn_oxygen_generator_desc</UnlocalizedDescription>
     </Furniture>
@@ -501,8 +502,9 @@
             <Param name="flow_rate" value="0.1" />
         </Params>
 
-        <Action event="OnUpdate" functionName="OxygenCompressor_OnUpdate" />
-
+        <Action event="OnUpdate" functionName="OnUpdate_OxygenCompressor" />
+        <Action event="OnPowerOff" functionName="OnPowerOff_OxygenCompressor" />
+      
         <LocalizationCode>furn_oxygen_compressor</LocalizationCode>
         <UnlocalizedDescription>furn_oxygen_compressor_desc</UnlocalizedDescription>
     </Furniture>
