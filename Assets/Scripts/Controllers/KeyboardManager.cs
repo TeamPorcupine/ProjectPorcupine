@@ -110,11 +110,11 @@ public class KeyboardManager
         }
     }
 
-    public void RegisterInputMapping(string inputName, KeyboardInputModifier inputModifier, params KeyCode[] keyCodes)
+    public void RegisterInputMapping(string inputName, KeyboardInputModifier inputModifiers, params KeyCode[] keyCodes)
     {
         if (mapping.ContainsKey(inputName))
         {
-            mapping[inputName].Modifier = inputModifier;
+            mapping[inputName].Modifiers = inputModifiers;
             mapping[inputName].AddKeyCodes(keyCodes);
         }
         else
@@ -124,7 +124,7 @@ public class KeyboardManager
                 new KeyboadMappedInput
                 {
                     InputName = inputName,
-                    Modifier = inputModifier,
+                    Modifiers = inputModifiers,
                     KeyCodes = keyCodes.ToList()
                 });
         }
