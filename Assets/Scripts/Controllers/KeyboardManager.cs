@@ -17,10 +17,7 @@ public class KeyboardManager
     private static KeyboardManager instance;
 
     private Dictionary<string, KeyboadMappedInput> mapping;
-
-    // First entry is SHIFT, second CONTROL, third ALT
-    private bool[] modifiers = new bool[3] { false, false, false };
-    
+  
     public KeyboardManager()
     {
         instance = this;
