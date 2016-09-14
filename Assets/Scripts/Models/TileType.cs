@@ -149,7 +149,7 @@ public class TileType : IPrototypable, IEquatable<TileType>
     /// Determines whether this tile type is allowed to be built on the given tile.
     /// </summary>
     /// <returns><c>true</c> if the ile type is allowed to be built on the given tile; otherwise, <c>false</c>.</returns>
-    /// <param name="t">The tile to build on.</param>
+    /// <param name="tile">The tile to build on.</param>
     public bool CanBuildHere(Tile tile)
     {
         if (CanBuildHereLua == null)
@@ -170,7 +170,7 @@ public class TileType : IPrototypable, IEquatable<TileType>
     /// <summary>
     /// Reads the prototype from the specified XML reader.
     /// </summary>
-    /// <param name="readerParent">The XML reader to read from.</param>
+    /// <param name="parentReader">The XML reader to read from.</param>
     public void ReadXmlPrototype(XmlReader parentReader)
     {
         Type = parentReader.GetAttribute("type");
