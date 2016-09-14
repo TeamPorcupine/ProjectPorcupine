@@ -218,11 +218,11 @@ public class MouseController
             Furniture proto = PrototypeManager.Furniture.Get(bmc.buildModeType);
 
             // If the furniture has af jobSpot set we would like to use that.
-            if (proto.JobSpotOffset.Equals(Vector2.zero) == false)
+            if (proto.Jobs.WorkSpotOffset.Equals(Vector2.zero) == false)
             {
                 currPlacingPosition = new Vector3(
-                    currFramePosition.x - proto.JobSpotOffset.x,
-                    currFramePosition.y - proto.JobSpotOffset.y,
+                    currFramePosition.x - proto.Jobs.WorkSpotOffset.x,
+                    currFramePosition.y - proto.Jobs.WorkSpotOffset.y,
                     WorldController.Instance.cameraController.CurrentLayer);
             }
             else

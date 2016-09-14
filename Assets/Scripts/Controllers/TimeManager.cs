@@ -179,6 +179,14 @@ public class TimeManager
     }
 
     /// <summary>
+    /// Destroy this instance.
+    /// </summary>
+    public void Destroy()
+    {
+        instance = null;
+    }
+
+    /// <summary>
     /// Invokes the given event action.
     /// </summary>
     /// <param name="eventAction">The event action.</param>

@@ -938,7 +938,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             // Are we standing on a tile with goods that are desired by the job?
             if (CurrTile.Inventory != null &&
                 MyJob.AmountDesiredOfInventoryType(CurrTile.Inventory) > 0 && !CurrTile.Inventory.Locked &&
-                (MyJob.canTakeFromStockpile || CurrTile.Furniture == null || CurrTile.Furniture.IsStockpile() == false))
+                (MyJob.canTakeFromStockpile || CurrTile.Furniture == null || CurrTile.Furniture.HasTypeTag("Storage") == false))
             {
                 // Pick up the stuff!
                 World.Current.inventoryManager.PlaceInventory(
@@ -1019,7 +1019,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     {
         bool destHasInventory = pathAStar != null && pathAStar.EndTile() != null && pathAStar.EndTile().Inventory != null;
         return destHasInventory &&
-        !(pathAStar.EndTile().Furniture != null && (MyJob.canTakeFromStockpile == false && pathAStar.EndTile().Furniture.IsStockpile() == true));
+        !(pathAStar.EndTile().Furniture != null && (MyJob.canTakeFromStockpile == false && pathAStar.EndTile().Furniture.HasTypeTag("Storage") == true));
     }
 
     /// <summary>
