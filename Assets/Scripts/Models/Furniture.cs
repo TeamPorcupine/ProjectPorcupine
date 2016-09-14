@@ -996,6 +996,11 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             return false;
         }
 
+        if (Jobs != null && World.Current.GetTileAt((int)(tile.X + Jobs.WorkSpotOffset.x), (int)(tile.Y + Jobs.WorkSpotOffset.y), (int)tile.Z).Furniture != null)
+        {
+            return false;
+        }
+
         if (HasTypeTag("OutdoorOnly"))
         {
             if (tile.Room == null || !tile.Room.IsOutsideRoom())

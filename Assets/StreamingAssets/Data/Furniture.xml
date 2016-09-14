@@ -216,7 +216,7 @@
             <Param name="mine_type" value="Raw Iron" />
         </Params>
 
-        <JobSpotOffset X="1" Y="0" />
+        <JobSpotOffset X="1" Y="-1" />
         <JobSpawnSpotOffset X="0" Y="0" />
 
         <Action event="OnUpdate" functionName="MiningDroneStation_UpdateAction" />
