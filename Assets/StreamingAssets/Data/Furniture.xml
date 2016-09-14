@@ -204,8 +204,8 @@
             </Param>
         </Params>
 
-        <Action event="OnUpdate" functionName="OnUpdate_GasGenerator" />
-        <Action event="OnPowerOff" functionName="OnPowerOff_GasGenerator" />
+        <Action event="OnUpdate" functionName="OxygenGenerator_OnUpdate" />
+        <Action event="OnPowerOff" functionName="OxygenGenerator_OnPowerOff" />
       
         <LocalizationCode>furn_oxygen_generator</LocalizationCode>
         <UnlocalizedDescription>furn_oxygen_generator_desc</UnlocalizedDescription>
@@ -516,8 +516,8 @@
             <Param name="flow_rate" value="0.1" />
         </Params>
 
-        <Action event="OnUpdate" functionName="OnUpdate_OxygenCompressor" />
-        <Action event="OnPowerOff" functionName="OnPowerOff_OxygenCompressor" />
+        <Action event="OnUpdate" functionName="OxygenCompressor_OnUpdate" />
+        <Action event="OnPowerOff" functionName="OxygenCompressor_OnPowerOff" />
       
         <LocalizationCode>furn_oxygen_compressor</LocalizationCode>
         <UnlocalizedDescription>furn_oxygen_compressor_desc</UnlocalizedDescription>

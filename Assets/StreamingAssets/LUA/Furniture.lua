@@ -17,7 +17,7 @@ ENTERABILITY_SOON = 2
 -- ModUtils.ULogError("Testing ModUtils.ULogErrorChannel") -- Note: pauses the game
 
 -------------------------------- Furniture Actions --------------------------------
-function OnUpdate_GasGenerator( furniture, deltaTime )
+function OxygenGenerator_OnUpdate( furniture, deltaTime )
     if ( furniture.Tile.Room == nil ) then
 		return "Furniture's room was null."
 	end
@@ -34,7 +34,7 @@ function OnUpdate_GasGenerator( furniture, deltaTime )
 	furniture.SetAnimationState("running")
 end
 
-function OnPowerOff_GasGenerator( furniture, deltaTime )
+function OxygenGenerator_OnPowerOff( furniture, deltaTime )
 	furniture.SetAnimationState("idle")
 end
 
@@ -453,7 +453,7 @@ end
 
 -- Should maybe later be integrated with GasGenerator function by
 -- someone who knows how that would work in this case
-function OnUpdate_OxygenCompressor(furniture, deltaTime)
+function OxygenCompressor_OnUpdate(furniture, deltaTime)
     local room = furniture.Tile.Room
     local pressure = room.GetGasPressure("O2")
     local gasAmount = furniture.Parameters["flow_rate"].ToFloat() * deltaTime
@@ -473,11 +473,11 @@ function OnUpdate_OxygenCompressor(furniture, deltaTime)
             furniture.UpdateOnChanged(furniture)
         end
     end
-	furniture.SetAnimationState("running")
-	furniture.SetAnimationProgressValue(furniture.Parameters["gas_content"].ToFloat(), furniture.Parameters["max_gas_content"].ToFloat());
+    furniture.SetAnimationState("running")
+    furniture.SetAnimationProgressValue(furniture.Parameters["gas_content"].ToFloat(), furniture.Parameters["max_gas_content"].ToFloat());
 end
 
-function OnPowerOff_OxygenCompressor(furniture, deltaTime)
+function OxygenCompressor_OnPowerOff(furniture, deltaTime)
     -- lose half of gas, in case of blackout
 	local gasContent = furniture.Parameters["gas_content"].ToFloat()
 	if (gasContent > 0) then
