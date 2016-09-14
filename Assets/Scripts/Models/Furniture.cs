@@ -447,7 +447,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             thermalDiffusivity = obj.furnParameters["thermal_diffusivity"].ToFloat();
         }
 
-        World.Current.temperature.SetThermalDiffusivity(tile.X, tile.Y, thermalDiffusivity);
+        World.Current.temperature.SetThermalDiffusivity(tile.X, tile.Y, tile.Z, thermalDiffusivity);
 
         return obj;
     }
@@ -904,7 +904,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         EventActions.Trigger("OnUninstall", this);
 
         // Update thermalDiffusifity to default value
-        World.Current.temperature.SetThermalDiffusivity(Tile.X, Tile.Y, Temperature.defaultThermalDiffusivity);
+        World.Current.temperature.SetThermalDiffusivity(Tile.X, Tile.Y, Tile.Z, Temperature.defaultThermalDiffusivity);
 
         Tile.UnplaceFurniture();
 

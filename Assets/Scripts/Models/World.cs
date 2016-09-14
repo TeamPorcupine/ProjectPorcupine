@@ -651,7 +651,7 @@ public class World : IXmlSerializable
         furnitures = new List<Furniture>();
         inventoryManager = new InventoryManager();
         PowerNetwork = new ProjectPorcupine.PowerNetwork.PowerNetwork();
-        temperature = new Temperature(Width, Height);
+        temperature = new Temperature();
         LoadSkybox();
     }
 

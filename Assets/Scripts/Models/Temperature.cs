@@ -45,7 +45,9 @@ public class Temperature
     /// <summary>
     /// Size of map.
     /// </summary>
-    private int sizeX, sizeY;
+    private int sizeX = World.Current.Width;
+    private int sizeY = World.Current.Height;
+    private int sizeZ = World.Current.Depth;
 
     /// <summary>
     /// Time since last update.
@@ -62,27 +64,32 @@ public class Temperature
     /// </summary>
     /// <param name="xS">X size of world.</param>
     /// <param name="yS">Y size of world.</param>
-    public Temperature(int xS, int yS)
+    public Temperature()
     {
-        sizeX = xS;
-        sizeY = yS;
-        temperature = new float[2][]
-        {
-            new float[sizeX * sizeY],
-            new float[sizeX * sizeY],
-        };
-        thermalDiffusivity = new float[sizeX * sizeY];
+        List<Room> rooms = World.Current.rooms;
+        //int totalSize = 0;
+        //if (rooms.Count == 1) { return; }
+        for (int x = 1; x < rooms.Count; x++) {
 
-        for (int y = 0; y < sizeY; y++)
-        {
-            for (int x = 0; x < sizeX; x++)
-            {
-                int index = GetIndex(x, y);
-                temperature[0][index] = 0f;
-                thermalDiffusivity[index] = 1f;
-            }
+            //totalSize += rooms[x].getTiles.count;
+            
         }
 
+        temperature = new float[2][]
+         {
+            new float[sizeX * sizeY * sizeZ],
+            new float[sizeX * sizeY * sizeZ],
+        };
+        thermalDiffusivity = new float[sizeX * sizeY * sizeZ];
+        for (int z = 0; z < sizeZ; z++) {
+            for (int y = 0; y < sizeY; y++) {
+                for (int x = 0; x < sizeX; x++) {
+                    int index = GetIndex(x, y, z);
+                    temperature[0][index] = 0f;
+                    thermalDiffusivity[index] = 1f;
+                }
+            }
+        }
         sinksAndSources = new Dictionary<Furniture, Action<float>>();
     }
 
@@ -124,9 +131,9 @@ public class Temperature
     /// <param name="x">X coordinates.</param>
     /// <param name="y">Y coordinates.</param>
     /// <returns>Temperature at x,y.</returns>
-    public float GetTemperature(int x, int y)
+    public float GetTemperature(int x, int y, int z)
     {
-        return temperature[offset][GetIndex(x, y)];
+        return temperature[offset][GetIndex(x, y, z)];
     }
 
     /// <summary>
@@ -135,11 +142,11 @@ public class Temperature
     /// <param name="x">X coordinates.</param>
     /// <param name="y">Y coordinates.</param>
     /// <param name="temp">Temperature to set at x,y.</param>
-    public void SetTemperature(int x, int y, float temp)
+    public void SetTemperature(int x, int y, int z, float temp)
     {
         if (IsWithinTemperatureBounds(temp))
         {
-            temperature[offset][GetIndex(x, y)] = temp;
+            temperature[offset][GetIndex(x, y, z)] = temp;
         }
     }
 
@@ -149,11 +156,11 @@ public class Temperature
     /// <param name="x">X coordinates.</param>
     /// <param name="y">Y coordinates.</param>
     /// <param name="incr">Temperature to increase at x,y.</param>
-    public void ChangeTemperature(int x, int y, float incr)
+    public void ChangeTemperature(int x, int y, int z, float incr)
     {
-        if (IsWithinTemperatureBounds(temperature[offset][GetIndex(x, y)] + incr))
+        if (IsWithinTemperatureBounds(temperature[offset][GetIndex(x, y, z)] + incr))
         {
-            temperature[offset][GetIndex(x, y)] += incr;
+            temperature[offset][GetIndex(x, y, z)] += incr;
         }
     }
 
@@ -166,9 +173,9 @@ public class Temperature
     /// <param name="x">X coordinates.</param>
     /// <param name="y">Y coordinates.</param>
     /// <returns>Thermal diffusivity alpha at x,y.</returns>
-    public float GetThermalDiffusivity(int x, int y)
+    public float GetThermalDiffusivity(int x, int y, int z)
     {
-        return thermalDiffusivity[GetIndex(x, y)];
+        return thermalDiffusivity[GetIndex(x, y, z)];
     }
 
     /// <summary>
@@ -177,11 +184,11 @@ public class Temperature
     /// <param name="x">X coordinates.</param>
     /// <param name="y">Y coordinates.</param>
     /// <param name="coeff">Thermal diffusifity to set at x,y.</param>
-    public void SetThermalDiffusivity(int x, int y, float coeff)
+    public void SetThermalDiffusivity(int x, int y, int z,  float coeff)
     {
         if (IsWithinThermalDiffusivityBounds(coeff))
         {
-            thermalDiffusivity[GetIndex(x, y)] = coeff;
+            thermalDiffusivity[GetIndex(x, y, z)] = coeff;
         }
     }
 
@@ -191,11 +198,11 @@ public class Temperature
     /// <param name="x">X coordinates.</param>
     /// <param name="y">Y coordinates.</param>
     /// <param name="incr">Thermal diffusifity to increase at x,y.</param>
-    public void ChangeThermalDiffusivity(int x, int y, float incr)
+    public void ChangeThermalDiffusivity(int x, int y, int z, float incr)
     {
-        if (IsWithinThermalDiffusivityBounds(thermalDiffusivity[GetIndex(x, y)] + incr))
+        if (IsWithinThermalDiffusivityBounds(thermalDiffusivity[GetIndex(x, y, z)] + incr))
         {
-            thermalDiffusivity[GetIndex(x, y)] += incr;
+            thermalDiffusivity[GetIndex(x, y, z)] += incr;
         }
     }
 
@@ -242,9 +249,9 @@ public class Temperature
     /// <param name="x">X coordinates.</param>
     /// <param name="y">Y coordinates.</param>
     /// <returns>Actual index for array access.</returns>
-    private int GetIndex(int x, int y)
+    private int GetIndex(int x, int y, int z)
     {
-        return (y * sizeX) + x;
+        return (z*sizeZ +y) * sizeX + x;
     }
 
     /// <summary>
@@ -279,56 +286,50 @@ public class Temperature
         // Make sure c is always between 0 and 0.5*0.25 (not included) or things will blow up
         // in your face.
         float c = 0.23f * 0.5f;
-        for (int y = 0; y < sizeY; y++)
-        {
-            for (int x = 0; x < sizeX; x++)
-            {
-                int index = GetIndex(x, y);
-                int index_up = GetIndex(x, y + 1);
-                int index_down = GetIndex(x, y - 1);
-                int index_left = GetIndex(x - 1, y);
-                int index_right = GetIndex(x + 1, y);
+        for (int z = 0; z < sizeZ; z++) {
+            for (int y = 0; y < sizeY; y++) {
+                for (int x = 0; x < sizeX; x++) {
+                    int index = GetIndex(x, y, z);
+                    int index_up = GetIndex(x, y + 1, z);
+                    int index_down = GetIndex(x, y - 1, z);
+                    int index_left = GetIndex(x - 1, y, z);
+                    int index_right = GetIndex(x + 1, y, z);
 
-                // Update temperature using finite difference and forward method:
-                // U^{n+1} = U^n + dt*(\Div alpha \Grad U^n).
-                temp_curr[index] = temp_old[index];
+                    // Update temperature using finite difference and forward method:
+                    // U^{n+1} = U^n + dt*(\Div alpha \Grad U^n).
+                    temp_curr[index] = temp_old[index];
 
-                // TODO: If empty space, set temperature to 0.
-                if (WorldController.Instance.GetTileAtWorldCoord(new Vector3(x, y, 0)).Room == null)
-                {
-                    temp_curr[index] = 0f;
-                }
+                    // TODO: If empty space, set temperature to 0.
+                    if (WorldController.Instance.GetTileAtWorldCoord(new Vector3(x, y, z)).Room == null) {
+                        temp_curr[index] = 0f;
+                    }
 
-                if (x > 0)
-                {
-                    temp_curr[index] +=
-                        c * Mathf.Min(thermalDiffusivity[index], thermalDiffusivity[index_left]) *
-                        (temp_old[index_left] - temp_old[index]);
-                }
+                    if (x > 0) {
+                        temp_curr[index] +=
+                            c * Mathf.Min(thermalDiffusivity[index], thermalDiffusivity[index_left]) *
+                            (temp_old[index_left] - temp_old[index]);
+                    }
 
-                if (y > 0)
-                {
-                    temp_curr[index] +=
-                        c * Mathf.Min(thermalDiffusivity[index], thermalDiffusivity[index_down]) *
-                        (temp_old[index_down] - temp_old[index]);
-                }
+                    if (y > 0) {
+                        temp_curr[index] +=
+                            c * Mathf.Min(thermalDiffusivity[index], thermalDiffusivity[index_down]) *
+                            (temp_old[index_down] - temp_old[index]);
+                    }
 
-                if (x < sizeX - 1)
-                {
-                    temp_curr[index] +=
-                        c * Mathf.Min(thermalDiffusivity[index], thermalDiffusivity[index_right]) *
-                        (temp_old[index_right] - temp_old[index]);
-                }
+                    if (x < sizeX - 1) {
+                        temp_curr[index] +=
+                            c * Mathf.Min(thermalDiffusivity[index], thermalDiffusivity[index_right]) *
+                            (temp_old[index_right] - temp_old[index]);
+                    }
 
-                if (y < sizeY - 1)
-                {
-                    temp_curr[index] +=
-                        c * Mathf.Min(thermalDiffusivity[index], thermalDiffusivity[index_up]) *
-                        (temp_old[index_up] - temp_old[index]);
+                    if (y < sizeY - 1) {
+                        temp_curr[index] +=
+                            c * Mathf.Min(thermalDiffusivity[index], thermalDiffusivity[index_up]) *
+                            (temp_old[index_up] - temp_old[index]);
+                    }
                 }
             }
         }
-
         // Swap variable order
         offset = 1 - offset;
     }

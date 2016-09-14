@@ -48,6 +48,11 @@ public class Room : IXmlSerializable
         }
     }
 
+    public List<Tile> getTiles() 
+    {
+            return tiles;
+    }
+
     public static void EqualiseGasByTile(Tile tile, float leakFactor)
     {
         List<Room> roomsDone = new List<Room>();
