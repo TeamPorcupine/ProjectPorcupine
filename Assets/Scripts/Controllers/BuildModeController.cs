@@ -41,7 +41,7 @@ public class BuildModeController
 
         Furniture proto = PrototypeManager.Furniture.Get(buildModeType);
 
-        return proto.DragType!="single";
+        return proto.DragType != "single";
     }
 
     public string GetFloorTile()
