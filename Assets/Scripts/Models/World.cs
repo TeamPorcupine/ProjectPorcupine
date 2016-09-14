@@ -28,6 +28,8 @@ public class World : IXmlSerializable
     public InventoryManager inventoryManager;
     public Material skybox;
 
+    public CameraData cameraData;
+
     // Store all temperature information
     public Temperature temperature;
 
@@ -458,6 +460,10 @@ public class World : IXmlSerializable
 
         writer.WriteEndElement();
 
+        writer.WriteStartElement("CameraData");
+        cameraData.WriteXml(writer);
+        writer.WriteEndElement();
+
         writer.WriteElementString("Skybox", skybox.name);
 
         writer.WriteStartElement("Wallet");
@@ -497,6 +503,9 @@ public class World : IXmlSerializable
                     break;
                 case "Furnitures":
                     ReadXml_Furnitures(reader);
+                    break;
+                case "CameraData":
+                    ReadXml_CameraData(reader);
                     break;
                 case "Characters":
                     ReadXml_Characters(reader);
@@ -619,6 +628,7 @@ public class World : IXmlSerializable
         characters = new List<Character>();
         furnitures = new List<Furniture>();
         inventoryManager = new InventoryManager();
+        cameraData = new CameraData();
         PowerNetwork = new ProjectPorcupine.PowerNetwork.PowerNetwork();
         temperature = new Temperature(Width, Height);
 
@@ -759,6 +769,11 @@ public class World : IXmlSerializable
             }
             while (reader.ReadToNextSibling("Room"));
         }
+    }
+
+    private void ReadXml_CameraData(XmlReader reader)
+    {
+        cameraData.ReadXml(reader);
     }
 
     private void ReadXml_Characters(XmlReader reader)

@@ -25,7 +25,7 @@ public class CameraController
     private Vector3 positionTarget;
 
     private Vector3[] presetCameraPositions = new Vector3[5];
-    private float[] presetCameraZoomlevels = new float[5];
+    private float[] presetCameraZoomLevels = new float[5];
 
     public CameraController()
     {
@@ -42,19 +42,18 @@ public class CameraController
         keyboardManager.RegisterInputAction("MoveCameraUp", KeyboardMappedInputType.KeyUp, ChangeLayerUp);
         keyboardManager.RegisterInputAction("MoveCameraDown", KeyboardMappedInputType.KeyUp, ChangeLayerDown);
 
-
-        keyboardManager.RegisterInputAction("GoToPresetCameraPosition1", KeyboardMappedInputType.KeyUp, () => LoadPreset(presetCameraPositions[0], presetCameraZoomlevels[0]));
-        keyboardManager.RegisterInputAction("GoToPresetCameraPosition2", KeyboardMappedInputType.KeyUp, () => LoadPreset(presetCameraPositions[1], presetCameraZoomlevels[1]));
-        keyboardManager.RegisterInputAction("GoToPresetCameraPosition3", KeyboardMappedInputType.KeyUp, () => LoadPreset(presetCameraPositions[2], presetCameraZoomlevels[2]));
-        keyboardManager.RegisterInputAction("GoToPresetCameraPosition4", KeyboardMappedInputType.KeyUp, () => LoadPreset(presetCameraPositions[3], presetCameraZoomlevels[3]));
-        keyboardManager.RegisterInputAction("GoToPresetCameraPosition5", KeyboardMappedInputType.KeyUp, () => LoadPreset(presetCameraPositions[4], presetCameraZoomlevels[4]));
+        keyboardManager.RegisterInputAction("GoToPresetCameraPosition1", KeyboardMappedInputType.KeyUp, () => LoadPreset(presetCameraPositions[0], presetCameraZoomLevels[0]));
+        keyboardManager.RegisterInputAction("GoToPresetCameraPosition2", KeyboardMappedInputType.KeyUp, () => LoadPreset(presetCameraPositions[1], presetCameraZoomLevels[1]));
+        keyboardManager.RegisterInputAction("GoToPresetCameraPosition3", KeyboardMappedInputType.KeyUp, () => LoadPreset(presetCameraPositions[2], presetCameraZoomLevels[2]));
+        keyboardManager.RegisterInputAction("GoToPresetCameraPosition4", KeyboardMappedInputType.KeyUp, () => LoadPreset(presetCameraPositions[3], presetCameraZoomLevels[3]));
+        keyboardManager.RegisterInputAction("GoToPresetCameraPosition5", KeyboardMappedInputType.KeyUp, () => LoadPreset(presetCameraPositions[4], presetCameraZoomLevels[4]));
         keyboardManager.RegisterInputAction("SavePresetCameraPosition1", KeyboardMappedInputType.KeyUp, () => SavePreset(0));
         keyboardManager.RegisterInputAction("SavePresetCameraPosition2", KeyboardMappedInputType.KeyUp, () => SavePreset(1));
         keyboardManager.RegisterInputAction("SavePresetCameraPosition3", KeyboardMappedInputType.KeyUp, () => SavePreset(2));
         keyboardManager.RegisterInputAction("SavePresetCameraPosition4", KeyboardMappedInputType.KeyUp, () => SavePreset(3));
         keyboardManager.RegisterInputAction("SavePresetCameraPosition5", KeyboardMappedInputType.KeyUp, () => SavePreset(4));
 
-        // Set default zoom value on camera.
+        // Set default zoom value on camera
         Camera.main.orthographicSize = zoomTarget;
 
         TimeManager.Instance.EveryFrameNotModal += (time) => Update();
@@ -150,12 +149,34 @@ public class CameraController
         ChangeLayer(currentLayer + 1);
     }
 
-    public void InitializePresetValues()
+    public void InitializeCameraDataValues()
     {
-        for (int i = 0; i < presetCameraPositions.Length; i++)
+        if (WorldController.Instance.World.cameraData.presetCameraPositions == null)
         {
-            presetCameraPositions[i] = Camera.main.transform.position;
-            presetCameraZoomlevels[i] = Camera.main.orthographicSize;
+            for (int i = 0; i < presetCameraPositions.Length; i++)
+            {
+                presetCameraPositions[i] = Camera.main.transform.position;
+                presetCameraZoomLevels[i] = Camera.main.orthographicSize;
+            }
+
+            WorldController.Instance.World.cameraData.position = Camera.main.transform.position;
+            WorldController.Instance.World.cameraData.zoomLevel = zoomTarget;
+            WorldController.Instance.World.cameraData.presetCameraPositions = presetCameraPositions;
+            WorldController.Instance.World.cameraData.presetCameraZoomLevels = presetCameraZoomLevels;
+        }
+        else
+        {
+            positionTarget = WorldController.Instance.World.cameraData.position;
+            Camera.main.transform.position = positionTarget;
+
+            zoomTarget = WorldController.Instance.World.cameraData.zoomLevel;
+            Camera.main.orthographicSize = zoomTarget;
+
+            for (int i = 0; i < WorldController.Instance.World.cameraData.presetCameraPositions.Length; i++)
+            {
+                presetCameraPositions[i] = WorldController.Instance.World.cameraData.presetCameraPositions[i];
+                presetCameraZoomLevels[i] = WorldController.Instance.World.cameraData.presetCameraZoomLevels[i];
+            }
         }
     }
 
@@ -169,7 +190,9 @@ public class CameraController
     private void SavePreset(int index)
     {
         presetCameraPositions[index] = Camera.main.transform.position;
-        presetCameraZoomlevels[index] = Camera.main.orthographicSize;
+        presetCameraZoomLevels[index] = Camera.main.orthographicSize;
+        WorldController.Instance.World.cameraData.presetCameraPositions = presetCameraPositions;
+        WorldController.Instance.World.cameraData.presetCameraZoomLevels = presetCameraZoomLevels;
     }
 
     private void SyncCameras()
