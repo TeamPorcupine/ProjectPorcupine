@@ -79,6 +79,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         PathfindingModifier = 0f;
         Height = 1;
         Width = 1;
+        DragType = "single";
     }
 
     // Copy Constructor -- don't call this directly, unless we never
