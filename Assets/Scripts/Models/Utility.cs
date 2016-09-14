@@ -283,9 +283,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         }
 
         // Call LUA install scripts
-
-        // TODO: Implement when EventActions.Trigger can take a Utility
-//        obj.EventActions.Trigger("OnInstall", obj);
+        obj.EventActions.Trigger("OnInstall", obj);
         return obj;
     }
 
@@ -300,13 +298,11 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         {
             ResumeJobs();
         }
-
-        // TODO: some weird thing happens
+            
         if (EventActions != null)
         {
             // updateActions(this, deltaTime);
-            // TODO: Implement when EventActions.Trigger can take a Utility
-//            EventActions.Trigger("OnUpdate", this, deltaTime);
+            EventActions.Trigger("OnUpdate", this, deltaTime);
         }
     }
 
@@ -546,8 +542,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         }
 
         // We call lua to decostruct
-        // TODO: EventActions doesn't currently allow anything but Utility Fix this when implemented
-//        EventActions.Trigger("OnUninstall", this);
+        EventActions.Trigger("OnUninstall", this);
         Tile.UnplaceUtility();
 
         if (Removed != null)
