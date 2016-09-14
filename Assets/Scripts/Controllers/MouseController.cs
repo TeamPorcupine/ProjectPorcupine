@@ -451,8 +451,6 @@ public class MouseController
                 bool withinXBounds = dragParams.StartX <= tile.X && tile.X <= dragParams.EndX;
                 bool onPath = tile.Y == dragParams.RawStartY || tile.X == dragParams.RawEndX;
                 return withinXBounds && onPath;
-            case "single":
-                return tile.X == dragParams.StartX && tile.Y == dragParams.StartY;
             default:
                 return true;
         }
