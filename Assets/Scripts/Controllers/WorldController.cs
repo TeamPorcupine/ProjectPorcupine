@@ -164,7 +164,7 @@ public class WorldController : MonoBehaviour
     {
         Debug.ULogChannel("WorldController", "NewWorld button was clicked.");
 
-        TimeManager.Instance.Destroy();
+        Destroy();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
@@ -174,8 +174,15 @@ public class WorldController : MonoBehaviour
 
         // Reload the scene to reset all data (and purge old references)
         loadWorldFromFile = fileName;
-        TimeManager.Instance.Destroy();
+        Destroy();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void Destroy()
+    {
+        TimeManager.Instance.Destroy();
+        KeyboardManager.Instance.Destroy();
+        Scheduler.Scheduler.Current.Destroy();
     }
 
     /// <summary>

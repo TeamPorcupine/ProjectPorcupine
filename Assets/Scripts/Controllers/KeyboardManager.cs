@@ -111,4 +111,12 @@ public class KeyboardManager
                 });
         }
     }
+
+    /// <summary>
+    /// Destroy this instance.
+    /// </summary>
+    public void Destroy()
+    {
+        instance = null;
+    }
 }
