@@ -1015,12 +1015,16 @@ public class Furniture : IXmlSerializable, ISelectable, IContextActionProvider
     /// <returns>Context menu actions.</returns>
     public IEnumerable<ContextMenuAction> GetContextMenuActions(ContextMenu contextMenu)
     {
-        yield return new ContextMenuAction
+        if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false) == true || HasTypeTag("Non-deconstructible") == false)
         {
-            Text = "Deconstruct " + Name,
-            RequireCharacterSelected = false,
-            Action = (ca, c) => Deconstruct()
-        };
+            yield return new ContextMenuAction
+            {
+                Text = "Deconstruct " + Name,
+                RequireCharacterSelected = false,
+                Action = (ca, c) => Deconstruct()
+            };
+        }
+
         if (jobs.Count > 0)
         {
             for (int i = 0; i < jobs.Count; i++)
