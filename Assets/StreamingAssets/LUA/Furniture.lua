@@ -31,6 +31,7 @@ function OnUpdate_GasGenerator( furniture, deltaTime )
         end
     end
 	return
+	furniture.SetAnimationState("running") --TODO: how do we detect power?
 end
 
 function OnUpdate_Door( furniture, deltaTime )
@@ -467,16 +468,13 @@ function OxygenCompressor_OnUpdate(furniture, deltaTime)
             furniture.UpdateOnChanged(furniture)
         end
     end
-end
-
-function OxygenCompressor_GetSpriteName(furniture)
-    local baseName = furniture.Type
-    local suffix = 0
-    if (furniture.Parameters["gas_content"].ToFloat() > 0) then
-        idxAsFloat = 8 * (furniture.Parameters["gas_content"].ToFloat() / furniture.Parameters["max_gas_content"].ToFloat())
-        suffix = ModUtils.FloorToInt(idxAsFloat)
-    end
-    return baseName .. "_" .. suffix
+	--if (power == true) then
+	--	furniture.SetAnimationState("running")
+	--else
+	--	furniture.SetAnimationState("idle")
+	--end
+	furniture.SetAnimationState("running")
+	furniture.SetAnimationProgressValue(furniture.Parameters["gas_content"].ToFloat(), furniture.Parameters["max_gas_content"].ToFloat());
 end
 
 function SolarPanel_OnUpdate(furniture, deltaTime)
