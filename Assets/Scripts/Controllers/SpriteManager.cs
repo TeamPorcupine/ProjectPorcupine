@@ -18,7 +18,6 @@ using UnityEngine;
 /// </summary>
 public class SpriteManager
 {
-
     // A sprite image with a "ph_" as a prefix will be loaded as a placeholder if the normal spite image is missing.
     // This is used to easily identity spires that needs improvement.
     private const string PlaceHolderPrefix = "ph_";
@@ -65,7 +64,6 @@ public class SpriteManager
 
         return sprite;
     }
-
 
     public static bool HasSprite(string categoryName, string spriteName)
     {
