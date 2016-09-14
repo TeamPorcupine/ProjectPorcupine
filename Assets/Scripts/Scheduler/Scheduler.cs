@@ -269,6 +269,14 @@ namespace Scheduler
 
         #endregion
 
+        /// <summary>
+        /// Destroy this instance.
+        /// </summary>
+        public void Destroy()
+        {
+            instance = null;
+        }
+
         private void ClearFinishedEvents()
         {
             if (events != null)
