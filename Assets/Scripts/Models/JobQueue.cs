@@ -110,7 +110,7 @@ public class JobQueue
     /// </summary>
     public Job GetJob(Character character)
     {
-        Debug.ULogChannel("FSM", "GetJob() (Queue size: {0})", jobQueue.Count);
+        Debug.ULogChannel("FSM", "{0} GetJob() (Queue size: {1})", character.GetName(), jobQueue.Count);
         if (jobQueue.Count == 0)
         {
             return null;

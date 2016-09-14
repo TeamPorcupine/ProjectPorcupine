@@ -45,6 +45,13 @@ namespace ProjectPorcupine.State
             // If we are lacking material, then go deliver materials
             if (Job.MaterialNeedsMet() == false)
             {
+                if (Job.IsRequiredInventoriesAvailable() == false)
+                {
+                    AbandonJob();
+                    Finished();
+                    return;
+                }
+
                 FSMLog(" - Next action: Haul material");
                 character.SetState(new HaulState(character, Job, this));
             }
@@ -84,6 +91,7 @@ namespace ProjectPorcupine.State
             FSMLog(" - Job abandoned!");
             Debug.ULogChannel("Character", character.GetName() + " abandoned their job.");
 
+            Job.OnJobCompleted -= OnJobCompleted;
             Job.OnJobStopped -= OnJobStopped;
             Job.IsBeingWorked = false;
 

@@ -136,11 +136,6 @@ public class InventoryManager
         return furniture == null || canTakeFromStockpile == true || furniture.HasTypeTag("Storage") == false;
     }
 
-    public bool HasInventoryOfType(string type, bool canTakeFromStockpile)
-    {
-        return Inventories.ContainsKey(type) && Inventories[type].Count != 0;
-    }
-
     public bool RemoveInventoryOfType(string type, int quantity, bool onlyFromStockpiles)
     {
         if (!HasInventoryOfType(type, true))
@@ -175,7 +170,17 @@ public class InventoryManager
         return quantity == 0;
     }
 
-    public bool InventoryExistsSomewhere(string[] objectTypes, bool canTakeFromStockpile)
+    public bool HasInventoryOfType(string type, bool canTakeFromStockpile)
+    {
+        if (Inventories.ContainsKey(type) == false || Inventories[type].Count == 0)
+        {
+            return false;
+        }
+
+        return Inventories[type].Find(inventory => InventoryCanBePickedUp(inventory, canTakeFromStockpile)) != null;
+    }
+
+    public bool HasInventoryOfType(string[] objectTypes, bool canTakeFromStockpile)
     {
         // Test that we have records for any of the types
         List<string> filteredTypes = objectTypes
@@ -211,7 +216,7 @@ public class InventoryManager
 
     public List<Tile> GetPathToClosestInventoryOfType(string[] objectTypes, Tile tile, bool canTakeFromStockpile)
     {
-        if (InventoryExistsSomewhere(objectTypes, canTakeFromStockpile) == false)
+        if (HasInventoryOfType(objectTypes, canTakeFromStockpile) == false)
         {
             return null;
         }
