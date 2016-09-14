@@ -10,6 +10,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Animation;
 using MoonSharp.Interpreter;
 using Scheduler;
 using UnityEngine;
@@ -63,6 +64,8 @@ public class TradeController
         SpriteRenderer spriteRenderer = go.AddComponent<SpriteRenderer>();
         spriteRenderer.sprite = SpriteManager.GetSprite("Trader", "BasicHaulShip");
         spriteRenderer.sortingLayerName = "TradeShip";
+        controller.Animation = new SpritenameAnimation("flying", new string[] { "BasicHaulShip_01", "BasicHaulShip_02" }, 1 / 4);
+        controller.Renderer = spriteRenderer;
     }
 
     /// <summary>
