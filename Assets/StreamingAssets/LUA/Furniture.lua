@@ -267,7 +267,7 @@ function MiningDroneStation_Change_to_Raw_Iron(furniture, character)
 end
 
 function MiningDroneStation_Change_to_Raw_Copper(furniture, character)
-	furniture.Parameters["mine_type"].SetValue("raw_copper")
+	furniture.Parameters["mine_type"].SetValue("Raw Copper")
 end
 
 function MetalSmelter_UpdateAction(furniture, deltaTime)
