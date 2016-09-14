@@ -49,7 +49,6 @@
         <LinksToNeighbours>false</LinksToNeighbours>
         <EnclosesRooms>true</EnclosesRooms>
         <CanReplaceFurniture typeTag="Wall" />
-        <DragType>single</DragType>
 
         <BuildingJob jobTime="1">
             <Inventory type="Steel Plate" amount="2" />
@@ -106,7 +105,6 @@
         <EnclosesRooms>true</EnclosesRooms>
         <CanReplaceFurniture typeTag="Wall" />
         <CanReplaceFurniture typeTag="Door" />
-        <DragType>single</DragType>v
 
         <BuildingJob jobTime="5">
             <Inventory type="Steel Plate" amount="10" />
@@ -393,7 +391,6 @@
         <Width>1</Width>
         <Height>1</Height>
         <PowerConnection inputRate="4" outputRate="" capacity=""/>
-        <DragType>single</DragType>
 
         <BuildingJob jobTime="0" />
 
@@ -531,7 +528,6 @@
         <Height>1</Height>
         <EnclosesRooms>true</EnclosesRooms>
         <PowerConnection inputRate="1" outputRate="" capacity=""/>
-        <DragType>single</DragType>
 
         <BuildingJob jobTime="1" />
         <CanReplaceFurniture typeTag="Wall" />
@@ -585,7 +581,6 @@
         <Width>1</Width>
         <Height>1</Height>
         <PowerConnection inputRate="5" outputRate="10" capacity="50"/>
-        <DragType>single</DragType>
 
         <BuildingJob jobTime="2" />
 
@@ -631,7 +626,6 @@
         <Width>1</Width>
         <Height>1</Height>
         <PowerConnection inputRate="" outputRate="2" capacity=""/>
-        <DragType>single</DragType>
 
         <BuildingJob jobTime="0" />
 
