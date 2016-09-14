@@ -50,6 +50,24 @@ public class ConstructionMenu : MonoBehaviour
         RenderFurnitureButtons();
     }
 
+    public void FilterTextChanged(string filterText)
+    {
+        Transform contentTransform = this.transform.FindChild("Scroll View").FindChild("Viewport").FindChild("Content");
+
+        List<Transform> childs = contentTransform.Cast<Transform>().ToList();
+
+        foreach (Transform child in childs)
+        {
+            Text buttonText = child.gameObject.transform.GetComponentInChildren<Text>();
+
+            string buildableName = buttonText.text;
+
+            bool nameMatchFilter = string.IsNullOrEmpty(filterText) || buildableName.ToLower().Contains(filterText.ToLower());
+
+            child.gameObject.SetActive(nameMatchFilter);
+        }
+    }
+
     private void Start()
     {
         menuLeft = this.transform.GetComponentInParent<MenuLeft>();
@@ -64,6 +82,9 @@ public class ConstructionMenu : MonoBehaviour
         RenderFurnitureButtons();
 
         lastLanguage = LocalizationTable.currentLanguage;
+
+        InputField filterField = GetComponentInChildren<InputField>();
+        KeyboardManager.Instance.RegisterModalInputField(filterField);
     }
 
     private void RenderFurnitureButtons()
