@@ -190,4 +190,12 @@ public class TimeManager
             eventAction(time);
         }
     }
+
+    /// <summary>
+    /// Destroy this instance.
+    /// </summary>
+    public void Destroy()
+    {
+        instance = null;
+    }
 }

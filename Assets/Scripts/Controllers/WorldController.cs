@@ -155,16 +155,17 @@ public class WorldController : MonoBehaviour
         return World.GetTileAt(x, y, (int)coord.z);
     }
 
+    public string FileSaveBasePath()
+    {
+        return System.IO.Path.Combine(Application.persistentDataPath, "Saves");
+    }
+
     public void NewWorld()
     {
         Debug.ULogChannel("WorldController", "NewWorld button was clicked.");
 
+        TimeManager.Instance.Destroy();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
-
-    public string FileSaveBasePath()
-    {
-        return System.IO.Path.Combine(Application.persistentDataPath, "Saves");
     }
 
     public void LoadWorld(string fileName)
@@ -173,6 +174,7 @@ public class WorldController : MonoBehaviour
 
         // Reload the scene to reset all data (and purge old references)
         loadWorldFromFile = fileName;
+        TimeManager.Instance.Destroy();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
