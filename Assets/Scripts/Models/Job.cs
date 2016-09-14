@@ -10,12 +10,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
 using MoonSharp.Interpreter;
 using ProjectPorcupine.Localization;
 using UnityEngine;
 
 [MoonSharpUserData]
-public class Job : ISelectable
+public class Job : ISelectable, IPrototypable
 {
     // This class holds info for a queued up job, which can include
     // things like placing furniture, moving stored inventory,
@@ -52,6 +53,11 @@ public class Job : ISelectable
    
     // The job has been stopped, either because it's non-repeating or was canceled.
     private List<string> jobCompletedLua;
+
+    // Required for IPrototypable
+    public Job()
+    {
+    }
 
     public Job(Tile tile, string jobObjectType, Action<Job> jobComplete, float jobTime, Inventory[] inventoryRequirements, Job.JobPriority jobPriority, bool jobRepeats = false, bool need = false, bool critical = false)
     {
@@ -148,6 +154,11 @@ public class Job : ISelectable
         protected set;
     }
 
+    public string Type
+    {
+        get { return JobObjectType; }
+    }
+
     public bool IsNeed
     {
         get;
@@ -224,12 +235,9 @@ public class Job : ISelectable
             OnJobWorked(this);
         }
 
-        if (jobWorkedLua != null)
+        foreach (string luaFunction in jobWorkedLua.ToList())
         {
-            foreach (string luaFunction in jobWorkedLua.ToList())
-            {
-                FunctionsManager.Furniture.Call(luaFunction, this);
-            }
+            FunctionsManager.Furniture.Call(luaFunction, this);
         }
 
         // Check to make sure we actually have everything we need. 
@@ -243,17 +251,17 @@ public class Job : ISelectable
         
         if (JobTime <= 0)
         {
+            foreach (string luaFunction in jobCompletedLua.ToList())
+            {
+                FunctionsManager.Furniture.Call(luaFunction, this);
+            }
+
             // Do whatever is supposed to happen with a job cycle completes.
             if (OnJobCompleted != null)
             {
                 OnJobCompleted(this);
             }
 
-            foreach (string luaFunction in jobCompletedLua.ToList())
-            {
-                FunctionsManager.Furniture.Call(luaFunction, this);
-            }
-            
             if (jobRepeats == false)
             {
                 // Let everyone know that the job is officially concluded
@@ -425,5 +433,9 @@ public class Job : ISelectable
     public IEnumerable<string> GetAdditionalInfo()
     {
         yield break;
+    }
+
+    public void ReadXmlPrototype(XmlReader reader)
+    {
     }
 }
