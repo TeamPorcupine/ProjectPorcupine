@@ -12,18 +12,21 @@ using System.Xml.Schema;
 using System.Xml.Serialization;
 using UnityEngine;
 
+public struct Preset
+{
+    public Vector3 position;
+    public float zoomLevel;
+}
+
 public class CameraData : IXmlSerializable
 {
     public Vector3 position;
     public float zoomLevel;
-    public Vector3[] presetCameraPositions;
-    public float[] presetCameraZoomLevels;
-
+    public Preset[] presets;
 
     public void ReadXml(XmlReader reader)
     {
-        presetCameraPositions = new Vector3[5];
-        presetCameraZoomLevels = new float[5];
+        presets = new Preset[5];
 
         do
         {
@@ -50,13 +53,15 @@ public class CameraData : IXmlSerializable
 
                             do
                             {
-                                presetCameraPositions[index].x = float.Parse(reader.GetAttribute("X"));
-                                presetCameraPositions[index].y = float.Parse(reader.GetAttribute("Y"));
-                                presetCameraPositions[index].z = float.Parse(reader.GetAttribute("Z"));
+                                presets[index].position.x = float.Parse(reader.GetAttribute("X"));
+                                presets[index].position.y = float.Parse(reader.GetAttribute("Y"));
+                                presets[index].position.z = float.Parse(reader.GetAttribute("Z"));
 
                                 index++;
-                            } while (reader.ReadToNextSibling("Position"));
+                            }
+                            while (reader.ReadToNextSibling("Position"));
                         }
+
                         break;
 
                     case "PresetZoomLevels":
@@ -65,47 +70,52 @@ public class CameraData : IXmlSerializable
                             int index = 0;
                             do
                             {
-                                presetCameraZoomLevels[index] = float.Parse(reader.GetAttribute("Value"));
+                                presets[index].zoomLevel = float.Parse(reader.GetAttribute("Value"));
                                 index++;
-                            } while (reader.ReadToNextSibling("Level"));
+                            }
+                            while (reader.ReadToNextSibling("Level"));
                         }
+
                         break;
                 }
             }
-        } while (reader.ReadToNextSibling("CameraData"));
-
+        }
+        while (reader.ReadToNextSibling("CameraData"));
     }
 
     public void WriteXml(XmlWriter writer)
     {
-        if (presetCameraPositions == null || presetCameraZoomLevels == null)
+        if (presets == null)
         {
-            Debug.ULogErrorChannel("CameraData", "Tried to serialize non existant camera presets");
+            Debug.ULogErrorChannel("CameraData", "Tried to serialize non existent camera presets");
             return;
         }
+
         writer.WriteAttributeString("X", Camera.main.transform.position.x.ToString());
         writer.WriteAttributeString("Y", Camera.main.transform.position.y.ToString());
         writer.WriteAttributeString("Z", Camera.main.transform.position.z.ToString());
         writer.WriteAttributeString("zoomLevel", Camera.main.orthographicSize.ToString());
 
         writer.WriteStartElement("PresetPositions");
-        foreach (Vector3 presetPosition in presetCameraPositions)
+        foreach (Preset preset in presets)
         {
             writer.WriteStartElement("Position");
-            writer.WriteAttributeString("X", presetPosition.x.ToString());
-            writer.WriteAttributeString("Y", presetPosition.y.ToString());
-            writer.WriteAttributeString("Z", presetPosition.z.ToString());
+            writer.WriteAttributeString("X", preset.position.x.ToString());
+            writer.WriteAttributeString("Y", preset.position.y.ToString());
+            writer.WriteAttributeString("Z", preset.position.z.ToString());
             writer.WriteEndElement();
         }
+
         writer.WriteEndElement();
 
         writer.WriteStartElement("PresetZoomLevels");
-        foreach (float presetZoom in presetCameraZoomLevels)
+        foreach (Preset preset in presets)
         {
             writer.WriteStartElement("Level");
-            writer.WriteAttributeString("Value", presetZoom.ToString());
+            writer.WriteAttributeString("Value", preset.zoomLevel.ToString());
             writer.WriteEndElement();
         }
+
         writer.WriteEndElement();
     }
 
