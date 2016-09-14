@@ -422,10 +422,12 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             {
                 EventActions.Trigger("OnPowerOff", this, deltaTime);                
             }
+
             Jobs.PauseAll();
             prevUpdatePowerOn = false;
             return;
         }
+
         prevUpdatePowerOn = true;
         Jobs.ResumeAll();
 
