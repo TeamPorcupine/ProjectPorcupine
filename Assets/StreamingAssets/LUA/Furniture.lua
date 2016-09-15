@@ -570,18 +570,16 @@ function Vent_SetOrientationState(furniture)
     if (furniture.Tile == nil) then
         return furniture.Type
     end
+    
     local north = World.Current.GetTileAt(t.X, t.Y + 1, t.Z)
     local south = World.Current.GetTileAt(t.X, t.Y - 1, t.Z)
     local west = World.Current.GetTileAt(t.X - 1, t.Y, t.Z)
     local east = World.Current.GetTileAt(t.X + 1, t.Y, t.Z)
     
-    suffix = ""
     if (north.Room != nil and south.Room != nil) then
-        suffix = "_NS"
-		furniture.SetAnimationState("vertical")
+        furniture.SetAnimationState("vertical")
     elseif (west.Room != nil and east.Room != nil) then
-        suffix = "_EW"
-		furniture.SetAnimationState("horizontal")
+        furniture.SetAnimationState("horizontal")
     end
 end
 
