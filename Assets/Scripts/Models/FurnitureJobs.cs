@@ -30,8 +30,9 @@ public class FurnitureJobs
         activeJobs = new List<Job>();
         pausedJobs = new List<Job>();
 
-        SpawnSpotOffset = Vector2.zero;
         WorkSpotOffset = Vector2.zero;
+        InputSpotOffset = Vector2.zero;
+        OutputSpotOffset = Vector2.zero;
     }
 
     /// <summary>
@@ -45,8 +46,9 @@ public class FurnitureJobs
         activeJobs = new List<Job>();
         pausedJobs = new List<Job>();
 
-        SpawnSpotOffset = other.Jobs.SpawnSpotOffset;
         WorkSpotOffset = other.Jobs.WorkSpotOffset;
+        InputSpotOffset = other.Jobs.InputSpotOffset;
+        OutputSpotOffset = other.Jobs.OutputSpotOffset;
     }
 
     /// <summary>
@@ -57,10 +59,52 @@ public class FurnitureJobs
     public Vector2 WorkSpotOffset { get; private set; }
 
     /// <summary>
-    /// Gets the spot offset where inventory is spawn when a Job is done with this machine.
+    /// Gets the spot offset where inventory is inserted for a Job with this furniture.
     /// </summary>
     /// <value>The spawn spot offset.</value>
-    public Vector2 SpawnSpotOffset { get; private set; }
+    public Vector2 InputSpotOffset { get; private set; }
+
+    /// <summary>
+    /// Gets the spot offset where inventory is spawn when a Job is done with this furniture.
+    /// </summary>
+    /// <value>The spawn spot offset.</value>
+    public Vector2 OutputSpotOffset { get; private set; }
+
+    /// <summary>
+    /// Gets the tile that is used to do a job.
+    /// </summary>
+    /// <value>Tile that is used for jobs.</value>
+    public Tile WorkSpotTile
+    {
+        get { return GetTileAtOffset(WorkSpotOffset); }
+    }
+
+    /// <summary>
+    /// Gets the tile where inventory is placed to be used by this furniture.
+    /// </summary>
+    /// <value>Tile where inventory is placed to be used by this furniture.</value>
+    public Tile InputSpotTile
+    {
+        get { return GetTileAtOffset(InputSpotOffset); }
+    }
+
+    /// <summary>
+    /// Gets the tile that is used to spawn new objects (i.e. Inventory, Character).
+    /// </summary>
+    /// <value>Tile that is used to spawn objects (i.e. Inventory, Character).</value>
+    public Tile OutputSpotTile
+    {
+        get { return GetTileAtOffset(OutputSpotOffset); }
+    }
+
+    /// <summary>
+    /// How many active jobs are linked to this furniture.
+    /// </summary>
+    /// <value>The number of active jobs linked to this furniture.</value>
+    public int Count
+    {
+        get { return activeJobs.Count; }
+    }
 
     /// <summary>
     /// Gets the active <see cref="Job"/> with the specified index.
@@ -68,28 +112,7 @@ public class FurnitureJobs
     /// <param name="i">The index.</param>
     public Job this[int i]
     {
-        get
-        {
-            return activeJobs[i];
-        }
-    }
-
-    /// <summary>
-    /// Gets the tile that is used to do a job.
-    /// </summary>
-    /// <returns>Tile that is used for jobs.</returns>
-    public Tile GetWorkSpotTile()
-    {
-        return World.Current.GetTileAt(furniture.Tile.X + (int)WorkSpotOffset.x, furniture.Tile.Y + (int)WorkSpotOffset.y, furniture.Tile.Z);
-    }
-
-    /// <summary>
-    /// Gets the tile that is used to spawn new objects (i.e. Inventory, Character).
-    /// </summary>
-    /// <returns>Tile that is used to spawn objects (i.e. Inventory, Character).</returns>
-    public Tile GetSpawnSpotTile()
-    {
-        return World.Current.GetTileAt(furniture.Tile.X + (int)SpawnSpotOffset.x, furniture.Tile.Y + (int)SpawnSpotOffset.y, furniture.Tile.Z);
+        get { return activeJobs[i]; }
     }
 
     /// <summary>
@@ -98,29 +121,25 @@ public class FurnitureJobs
     /// <param name="reader">The Xml Reader.</param>
     public void ReadWorkSpotOffset(XmlReader reader)
     {
-        WorkSpotOffset = new Vector2(
-            int.Parse(reader.GetAttribute("X")),
-            int.Parse(reader.GetAttribute("Y")));
+        WorkSpotOffset = ReadVector(reader);
     }
 
     /// <summary>
-    /// Reads the spawn spot offset from the xml.
+    /// Reads the input spot offset from the xml.
     /// </summary>
     /// <param name="reader">The Xml Reader.</param>
-    public void ReadSpawnSpotOffset(XmlReader reader)
+    public void ReadInputSpotOffset(XmlReader reader)
     {
-        SpawnSpotOffset = new Vector2(
-            int.Parse(reader.GetAttribute("X")),
-            int.Parse(reader.GetAttribute("Y")));
+        InputSpotOffset = ReadVector(reader);
     }
 
     /// <summary>
-    /// How many active jobs are linked to this furniture.
+    /// Reads the output spot offset from the xml.
     /// </summary>
-    /// <returns>The number of jobs linked to this furniture.</returns>
-    public int Count()
+    /// <param name="reader">The Xml Reader.</param>
+    public void ReadOutputSpotOffset(XmlReader reader)
     {
-        return activeJobs.Count;
+        OutputSpotOffset = ReadVector(reader);
     }
 
     /// <summary>
@@ -223,5 +242,27 @@ public class FurnitureJobs
     private void OnJobStopped(Job job)
     {
         Remove(job);
+    }
+
+    /// <summary>
+    /// Gets the a tile at the furniture tile plus an offset.
+    /// </summary>
+    /// <returns>The a tile at the furniture tile plus an offset.</returns>
+    /// <param name="offset">A an offset from the furniture Tile.</param>
+    private Tile GetTileAtOffset(Vector2 offset)
+    {
+        return World.Current.GetTileAt(furniture.Tile.X + (int)offset.x, furniture.Tile.Y + (int)offset.y, furniture.Tile.Z);
+    }
+
+    /// <summary>
+    /// Reads from the Xml Reader and creates a vector.
+    /// </summary>
+    /// <returns>The vector.</returns>
+    /// <param name="reader">The Xml Reader.</param>
+    private Vector2 ReadVector(XmlReader reader)
+    {
+        return new Vector2(
+            int.Parse(reader.GetAttribute("X")),
+            int.Parse(reader.GetAttribute("Y")));
     }
 }

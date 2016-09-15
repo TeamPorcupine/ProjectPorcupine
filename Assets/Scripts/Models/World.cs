@@ -364,6 +364,15 @@ public class World : IXmlSerializable
         return furn;
     }
 
+    public void JobComplete_FurnitureBuilding(Job theJob)
+    {
+        PlaceFurniture(theJob.JobObjectType, theJob.tile);
+
+        // FIXME: I don't like having to manually and explicitly set
+        // flags that prevent conflicts. It's too easy to forget to set/clear them!
+        theJob.tile.PendingBuildJob = null;
+    }
+
     // This should be called whenever a change to the world
     // means that our old pathfinding info is invalid.
     public void InvalidateTileGraph()

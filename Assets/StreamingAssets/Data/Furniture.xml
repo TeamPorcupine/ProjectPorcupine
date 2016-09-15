@@ -216,8 +216,8 @@
             <Param name="mine_type" value="Raw Iron" />
         </Params>
 
-        <JobSpotOffset X="1" Y="0" />
-        <JobSpawnSpotOffset X="0" Y="0" />
+        <JobWorkSpotOffset X="1" Y="0" />
+        <JobOutputSpotOffset X="0" Y="0" />
 
         <Action event="OnUpdate" functionName="MiningDroneStation_UpdateAction" />
 
@@ -295,8 +295,8 @@
             <Param name="animationStep" value="0" />
         </Params>
 
-        <JobSpotOffset X="0" Y="-1" />
-        <JobSpawnSpotOffset X="1" Y="-1" />
+        <JobWorkSpotOffset X="0" Y="-1" />
+        <JobOutputSpotOffset X="1" Y="-1" />
 
         <Action event="OnUpdate" functionName="CloningPod_UpdateAction" />
 
@@ -317,7 +317,8 @@
 
         <BuildingJob jobTime="0" />
 
-        <JobSpotOffset X="1" Y="0" />
+        <JobInputSpotOffset X="0" Y="0" />
+        <JobOutputSpotTile X="1" Y="0" />
 
         <Params>
             <Param name="smelttime" value="0" />
@@ -342,7 +343,7 @@
 
         <BuildingJob jobTime="0" />
 
-        <JobSpotOffset X="1" Y="0" />
+        <JobWorkSpotOffset X="1" Y="0" />
 
         <Workshop>
             <ProductionChain name="Copper smelting" processingTime="3">
@@ -456,8 +457,8 @@
             <Inventory type="Steel Plate" amount="10" />
         </DeconstructJob>
 
-        <JobSpotOffset X="0" Y="0" />
-        <JobSpawnSpotOffset X="1" Y="-1" />
+        <JobWorkSpotOffset X="0" Y="0" />
+        <JobOutputSpotOffset X="1" Y="-1" />
 
         <ContextMenuAction FunctionName="LandingPad_Test_CallTradeShip"
                            Text="Call Trade Ship Test"

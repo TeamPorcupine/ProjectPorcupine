@@ -627,11 +627,14 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                 case "GetSpriteName":
                     getSpriteNameAction = reader.GetAttribute("FunctionName");
                     break;
-                case "JobSpotOffset":
+                case "JobWorkSpotOffset":
                     Jobs.ReadWorkSpotOffset(reader);
                     break;
-                case "JobSpawnSpotOffset":
-                    Jobs.ReadSpawnSpotOffset(reader);
+                case "JobInputSpotOffset":
+                    Jobs.ReadInputSpotOffset(reader);
+                    break;
+                case "JobOutputSpotOffset":
+                    Jobs.ReadOutputSpotOffset(reader);
                     break;
                 case "PowerConnection":
                     PowerConnection = new Connection();
@@ -648,7 +651,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                     reader.Read();
                     UnlocalizedDescription = reader.ReadContentAsString();
                     break;
-
                 case "Workshop":                   
                     workshop = FurnitureWorkshop.Deserialize(reader);
                     workshop.SetParentFurniture(this);
@@ -709,7 +711,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         Job job = new Job(
             null,
             Type,
-            FunctionsManager.JobComplete_FurnitureBuilding,
+            (theJob) => World.Current.JobComplete_FurnitureBuilding(theJob),
             jobTime,
             invs.ToArray(),
             Job.JobPriority.High);
@@ -934,7 +936,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             };
         }
 
-        for (int i = 0; i < Jobs.Count(); i++)
+        for (int i = 0; i < Jobs.Count; i++)
         {
             if (!Jobs[i].IsBeingWorked)
             {
