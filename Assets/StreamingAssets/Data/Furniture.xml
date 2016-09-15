@@ -549,10 +549,11 @@
         </Params>
 
         <Action event="OnUpdate" functionName="Vent_OnUpdate" />
-        <Action event="OnChange" functionName="Vent_OnChange" />
+        <Action event="OnChange" functionName="Vent_SetOrientationState" />
+        <Action event="OnInstall" functionName="Vent_SetOrientationState" />
 
-        <ContextMenuAction FunctionName="Vent_Open" Text="Open Vent" RequiereCharacterSelected="false" />
-        <ContextMenuAction FunctionName="Vent_Close" Text="Close Vent" RequiereCharacterSelected="false" />
+        <ContextMenuAction FunctionName="Vent_Open" Text="Open Vent" RequireCharacterSelected="false" />
+        <ContextMenuAction FunctionName="Vent_Close" Text="Close Vent" RequireCharacterSelected="false" />
 
         <Animations>
           <Animation state="horizontal" valuebased="true">

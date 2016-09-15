@@ -562,12 +562,10 @@ end
 
 function Vent_OnUpdate(furniture, deltaTime)
     furniture.SetAnimationProgressValue(furniture.Parameters["openness"].ToFloat(), 1)
-    if (furniture.Parameters["openness"].ToInt() == 1) then
-        furniture.Tile.EqualiseGas(deltaTime * furniture.Parameters["gas_throughput"].ToFloat() * furniture.Parameters["openness"].ToInt())
-    end
+    furniture.Tile.EqualiseGas(deltaTime * furniture.Parameters["gas_throughput"].ToFloat() * furniture.Parameters["openness"].ToInt())
 end
 
-function Vent_GetSpriteName(furniture)
+function Vent_SetOrientationState(furniture)
     local t = furniture.Tile
     if (furniture.Tile == nil) then
         return furniture.Type
@@ -585,17 +583,6 @@ function Vent_GetSpriteName(furniture)
         suffix = "_EW"
 		furniture.SetAnimationState("horizontal")
     end
-    
-    if (furniture.Parameters["openness"].ToInt() == 0) then
-        suffix = suffix .. "_Closed"
-        ModUtils.ULogWarning("Closed")
-    else
-        suffix = suffix .. "_Opened"
-        ModUtils.ULogWarning("Opened")
-    end
-    
-    ModUtils.ULogWarning(suffix)
-    return furniture.Type .. suffix
 end
 
 function Vent_Open(furniture)
