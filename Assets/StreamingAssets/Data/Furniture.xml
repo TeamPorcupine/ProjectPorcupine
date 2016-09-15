@@ -570,14 +570,14 @@
         <ContextMenuAction FunctionName="Vent_Close" Text="Close Vent" RequireCharacterSelected="false" />
 
         <Animations>
-          <Animation state="horizontal" valuebased="true">
-            <Frame name="vent_EW_Opened" />
-            <Frame name="vent_EW_Closed" />
-          </Animation>  
-          <Animation state="vertical" valuebased="true">
-            <Frame name="vent_NS_Opened" />
-            <Frame name="vent_NS_Closed" />             
-          </Animation>                      
+            <Animation state="horizontal" valuebased="true">
+                <Frame name="vent_EW_Opened" />
+                <Frame name="vent_EW_Closed" />
+            </Animation>  
+            <Animation state="vertical" valuebased="true">
+                <Frame name="vent_NS_Opened" />
+                <Frame name="vent_NS_Closed" />             
+            </Animation>                      
         </Animations>
         
         <LocalizationCode>furn_vent</LocalizationCode>

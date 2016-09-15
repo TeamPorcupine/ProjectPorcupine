@@ -566,19 +566,14 @@ function Vent_OnUpdate(furniture, deltaTime)
 end
 
 function Vent_SetOrientationState(furniture)
-    local t = furniture.Tile
     if (furniture.Tile == nil) then
-        return furniture.Type
+        return
     end
     
-    local north = World.Current.GetTileAt(t.X, t.Y + 1, t.Z)
-    local south = World.Current.GetTileAt(t.X, t.Y - 1, t.Z)
-    local west = World.Current.GetTileAt(t.X - 1, t.Y, t.Z)
-    local east = World.Current.GetTileAt(t.X + 1, t.Y, t.Z)
-    
-    if (north.Room != nil and south.Room != nil) then
+    local tile = furniture.Tile
+    if (tile.North().Room != nil and tile.South().Room != nil) then
         furniture.SetAnimationState("vertical")
-    elseif (west.Room != nil and east.Room != nil) then
+    elseif (tile.West().Room != nil and tile.East().Room != nil) then
         furniture.SetAnimationState("horizontal")
     end
 end
