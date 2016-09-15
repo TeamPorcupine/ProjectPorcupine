@@ -36,10 +36,6 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     /// </summary>
     private List<ContextMenuLuaAction> contextMenuLuaActions;
 
-    private List<Job> jobs;
-
-    private List<Job> pausedJobs;
-
     // This is the generic type of object this is, allowing things to interact with it based on it's generic type
     private HashSet<string> typeTags;
 
@@ -62,7 +58,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
 
         contextMenuLuaActions = new List<ContextMenuLuaAction>();
         Parameters = new Parameter();
-        jobs = new List<Job>();
+        Jobs = new BuildableJobs(this);
         typeTags = new HashSet<string>();
         funcPositionValidation = DefaultIsValidPosition;
         tileTypeBuildPermissions = new HashSet<TileType>();
@@ -82,8 +78,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         Tint = other.Tint;
 
         Parameters = new Parameter(other.Parameters);
-        jobs = new List<Job>();
-        pausedJobs = new List<Job>();
+        Jobs = new BuildableJobs(this, other);
 
         if (other.EventActions != null)
         {
@@ -207,10 +202,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     /// </summary>
     public bool LinksToNeighbour 
     { 
-        get
-        {
-            return true;
-        }
+        get { return true; }
     }
 
     /// <summary>
@@ -219,16 +211,18 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     /// </summary>
     public string DragType 
     { 
-        get
-        {
-            return "path";
-        }
+        get { return "path"; }
     }
 
     /// <summary>
     /// Gets or sets the parameters that is tied to the utility.
     /// </summary>
     public Parameter Parameters { get; private set; }
+
+    /// <summary>
+    /// Gets a component that handles the jobs linked to the furniture.
+    /// </summary>
+    public BuildableJobs Jobs { get; private set; }
 
     /// <summary>
     /// Used to place utility in a certain position.
@@ -294,11 +288,6 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     /// <param name="deltaTime">The time since the last update was called.</param>
     public void Update(float deltaTime)
     {
-        if (pausedJobs.Count > 0)
-        {
-            ResumeJobs();
-        }
-            
         if (EventActions != null)
         {
             // updateActions(this, deltaTime);
@@ -482,61 +471,6 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     }
 
     /// <summary>
-    /// How many jobs are linked to this utility.
-    /// </summary>
-    /// <returns>The number of jobs linked to this utility.</returns>
-    public int JobCount()
-    {
-        return jobs.Count;
-    }
-
-    /// <summary>
-    /// Link a job to the current utility.
-    /// </summary>
-    /// <param name="job">The job that you want to link to the utility.</param>
-    public void AddJob(Job job)
-    {
-        job.buildable = this;
-        jobs.Add(job);
-        job.OnJobStopped += OnJobStopped;
-        World.Current.jobQueue.Enqueue(job);
-    }
-
-    /// <summary>
-    /// Cancel all the jobs linked to this utility.
-    /// </summary>
-    public void CancelJobs()
-    {
-        Job[] jobsArray = jobs.ToArray();
-        foreach (Job job in jobsArray)
-        {
-            job.CancelJob();
-        }
-    }
-
-    /// TODO: Refactor this when the new job system is implemented
-    public void ResumeJobs()
-    {
-        Job[] jobsArray = pausedJobs.ToArray();
-        foreach (Job job in jobsArray)
-        {
-            AddJob(job);
-            pausedJobs.Remove(job);
-        }
-    }
-
-    /// TODO: Refactor this when the new job system is implemented
-    public void PauseJobs()
-    {
-        Job[] jobsArray = jobs.ToArray();
-        foreach (Job job in jobsArray)
-        {
-            pausedJobs.Add(job);
-            job.CancelJob();
-        }
-    }
-
-    /// <summary>
     /// Deconstructs the utility.
     /// </summary>
     public void Deconstruct(Utility utility)
@@ -545,7 +479,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         int y = Tile.Y;
         if (Tile.Utilities != null)
         {
-            utility.CancelJobs();
+            utility.Jobs.CancelAll();
         }
 
         // We call lua to decostruct
@@ -637,20 +571,17 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
             RequireCharacterSelected = false,
             Action = (contextMenuAction, character) => Deconstruct(this)
         };
-        if (jobs.Count > 0)
+        if (Jobs.Count > 0)
         {
-            for (int i = 0; i < jobs.Count; i++)
+            for (int i = 0; i < Jobs.Count; i++)
             {
-                if (!jobs[i].IsBeingWorked)
+                if (!Jobs[i].IsBeingWorked)
                 {
                     yield return new ContextMenuAction
                     {
                         Text = "Prioritize " + Name,
                         RequireCharacterSelected = true,
-                        Action = (contextMenuAcion, character) =>
-                        {
-                            character.PrioritizeJob(jobs[0]);
-                        }
+                        Action = (contextMenuAcion, character) => character.PrioritizeJob(Jobs[0])
                     };
                 }
             }
@@ -716,22 +647,6 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         return true;
     }
 
-    private void RemoveJob(Job job)
-    {
-        job.OnJobStopped -= OnJobStopped;
-        jobs.Remove(job);
-        job.buildable = null;
-    }
-
-    private void ClearJobs()
-    {
-        Job[] jobsArray = jobs.ToArray();
-        foreach (Job job in jobsArray)
-        {
-            RemoveJob(job);
-        }
-    }
-
     private void InvokeContextMenuLuaAction(string luaFunction, Character character)
     {
         FunctionsManager.Utility.Call(luaFunction, this, character);
@@ -744,10 +659,5 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         {
             Changed(util);
         }
-    }
-
-    private void OnJobStopped(Job job)
-    {
-        RemoveJob(job);
     }
 }

@@ -74,7 +74,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         
         contextMenuLuaActions = new List<ContextMenuLuaAction>();
         Parameters = new Parameter();
-        Jobs = new FurnitureJobs(this);
+        Jobs = new BuildableJobs(this);
         typeTags = new HashSet<string>();
         funcPositionValidation = DefaultIsValidPosition;
         tileTypeBuildPermissions = new HashSet<string>();
@@ -103,7 +103,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         LinksToNeighbour = other.LinksToNeighbour;
 
         Parameters = new Parameter(other.Parameters);
-        Jobs = new FurnitureJobs(this, other);
+        Jobs = new BuildableJobs(this, other);
         workshop = other.workshop; // don't need to clone here, as all are prototype things (not changing)
 
         if (other.Animation != null)
@@ -274,10 +274,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// <value>A list of furniture that this furniture can be replaced with.</value>
     public List<string> ReplaceableFurniture
     {
-        get
-        {
-            return replaceableFurniture;
-        }
+        get { return replaceableFurniture; }
     }
 
     /// <summary>
@@ -339,7 +336,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// <summary>
     /// Gets a component that handles the jobs linked to the furniture.
     /// </summary>
-    public FurnitureJobs Jobs { get; private set; }
+    public BuildableJobs Jobs { get; private set; }
 
     /// <summary>
     /// Used to place furniture in a certain position.
