@@ -82,7 +82,7 @@ public class PrototypeMap<T> where T : IPrototypable, new()
     /// </summary>
     /// <param name="index">The prototype index.</param>
     /// <returns>The prototype.</returns>
-    public T this [int index]
+    public T this[int index]
     {
         get
         {

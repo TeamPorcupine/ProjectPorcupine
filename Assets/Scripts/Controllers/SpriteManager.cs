@@ -65,6 +65,13 @@ public class SpriteManager
         return sprite;
     }
 
+    public static bool HasSprite(string categoryName, string spriteName)
+    {
+        string spriteNamePlaceHolder = categoryName + "/" + PlaceHolderPrefix + spriteName;
+        spriteName = categoryName + "/" + spriteName;
+        return sprites.ContainsKey(spriteName) || sprites.ContainsKey(spriteNamePlaceHolder);
+    }
+
     /// <summary>
     /// Loads the sprites from the given directory path.
     /// </summary>

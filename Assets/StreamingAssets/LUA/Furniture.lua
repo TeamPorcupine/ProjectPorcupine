@@ -17,7 +17,7 @@ ENTERABILITY_SOON = 2
 -- ModUtils.ULogError("Testing ModUtils.ULogErrorChannel") -- Note: pauses the game
 
 -------------------------------- Furniture Actions --------------------------------
-function OnUpdate_GasGenerator( furniture, deltaTime )
+function OxygenGenerator_OnUpdate( furniture, deltaTime )
     if ( furniture.Tile.Room == nil ) then
 		return "Furniture's room was null."
 	end
@@ -31,7 +31,13 @@ function OnUpdate_GasGenerator( furniture, deltaTime )
         end
     end
 	return
+	furniture.SetAnimationState("running")
 end
+
+function OxygenGenerator_OnPowerOff( furniture, deltaTime )
+	furniture.SetAnimationState("idle")
+end
+
 
 function OnUpdate_Door( furniture, deltaTime )
 	if (furniture.Parameters["is_opening"].ToFloat() >= 1.0) then
@@ -182,7 +188,7 @@ function Stockpile_UpdateAction( furniture, deltaTime )
         itemsDesired = { desInv }
     end
 
-	local j = Job.__new(
+	local job = Job.__new(
 		furniture.Tile,
 		nil,
 		nil,
@@ -191,25 +197,25 @@ function Stockpile_UpdateAction( furniture, deltaTime )
 		Job.JobPriority.Low,
 		false
 	)
-	j.JobDescription = "job_stockpile_moving_desc"
-	j.acceptsAny = true
+	job.JobDescription = "job_stockpile_moving_desc"
+	job.acceptsAny = true
 
 	-- TODO: Later on, add stockpile priorities, so that we can take from a lower
 	-- priority stockpile for a higher priority one.
-	j.canTakeFromStockpile = false
+	job.canTakeFromStockpile = false
 
-	j.RegisterJobWorkedCallback("Stockpile_JobWorked")
-	furniture.Jobs.Add( j )
+	job.RegisterJobWorkedCallback("Stockpile_JobWorked")
+	furniture.Jobs.Add(job)
 end
 
-function Stockpile_JobWorked(j)
-    j.CancelJob()
+function Stockpile_JobWorked(job)
+    job.CancelJob()
 
     -- TODO: Change this when we figure out what we're doing for the all/any pickup job.
-    --values = j.GetInventoryRequirementValues();
-    for k, inv in pairs(j.inventoryRequirements) do
+    --values = job.GetInventoryRequirementValues();
+    for k, inv in pairs(job.inventoryRequirements) do
         if(inv.StackSize > 0) then
-            World.Current.inventoryManager.PlaceInventory(j.tile, inv)
+            World.Current.inventoryManager.PlaceInventory(job.tile, inv)
             return -- There should be no way that we ever end up with more than on inventory requirement with StackSize > 0
         end
     end
@@ -253,11 +259,11 @@ function MiningDroneStation_UpdateAction( furniture, deltaTime )
 	furniture.Jobs.Add(job)
 end
 
-function MiningDroneStation_JobComplete(j)
-	if (j.furniture.Jobs.OutputSpotTile.Inventory == nil or j.furniture.Jobs.OutputSpotTile.Inventory.Type == j.furniture.Parameters["mine_type"].ToString()) then
-		World.Current.inventoryManager.PlaceInventory( j.furniture.Jobs.OutputSpotTile, Inventory.__new(j.furniture.Parameters["mine_type"].ToString(), 2))
+function MiningDroneStation_JobComplete(job)
+	if (job.buildable.Jobs.OutputSpotTile.Inventory == nil or job.buildable.Jobs.OutputSpotTile.Inventory.Type == job.buildable.Parameters["mine_type"].ToString()) then
+		World.Current.inventoryManager.PlaceInventory(job.buildable.Jobs.OutputSpotTile, Inventory.__new(job.buildable.Parameters["mine_type"].ToString(), 2))
 	else
-		j.CancelJob()
+		job.CancelJob()
 	end
 end
 
@@ -330,21 +336,20 @@ function MetalSmelter_UpdateAction(furniture, deltaTime)
     return
 end
 
-function MetalSmelter_JobWorked(j)
-    j.CancelJob()
-    local spawnSpot = j.tile.Furniture.Jobs.OutputSpotTile
-    for k, inv in pairs(j.inventoryRequirements) do
-        if(inv ~= nil and inv.StackSize > 0) then
-            World.Current.inventoryManager.PlaceInventory(spawnSpot, inv)
-            spawnSpot.Inventory.Locked = true
+function MetalSmelter_JobWorked(job)
+    job.CancelJob()
+    local outputSpot = job.tile.Furniture.Jobs.OutputSpotTile
+    for k, inv in pairs(job.inventoryRequirements) do
+        if (inv ~= nil and inv.StackSize > 0) then
+            World.Current.inventoryManager.PlaceInventory(outputSpot, inv)
+            outputSpot.Inventory.Locked = true
             return
         end
     end
 end
 
 function CloningPod_UpdateAction(furniture, deltaTime)
-	
-    if( furniture.JobWorkSpotOffset > 0 ) then
+    if (furniture.JobWorkSpotOffset > 0) then
         return
     end
 
@@ -365,13 +370,13 @@ function CloningPod_UpdateAction(furniture, deltaTime)
     furniture.Jobs.Add(job)
 end
 
-function CloningPod_JobRunning(j)
-    j.furniture.SetAnimationState("running")
+function CloningPod_JobRunning(job)
+    job.buildable.SetAnimationState("running")
 end
 
-function CloningPod_JobComplete(j)
-    World.Current.CreateCharacter(j.furniture.Jobs.OutputSpotTile)
-    j.furniture.Deconstruct()
+function CloningPod_JobComplete(job)
+    World.Current.CreateCharacter(job.buildable.Jobs.OutputSpotTile)
+    job.buildable.Deconstruct()
 end
 
 function PowerGenerator_UpdateAction(furniture, deltatime)
@@ -405,9 +410,9 @@ function PowerGenerator_UpdateAction(furniture, deltatime)
     end
 end
 
-function PowerGenerator_JobComplete( j )
-    j.furniture.Parameters["burnTime"].SetValue(j.furniture.Parameters["burnTimeRequired"].ToFloat())
-    j.furniture.PowerConnection.OutputRate = 5
+function PowerGenerator_JobComplete(job)
+    job.buildable.Parameters["burnTime"].SetValue(job.buildable.Parameters["burnTimeRequired"].ToFloat())
+    job.buildable.PowerConnection.OutputRate = 5
 end
 
 function LandingPad_Test_CallTradeShip(furniture, character)
@@ -465,16 +470,18 @@ function OxygenCompressor_OnUpdate(furniture, deltaTime)
             furniture.UpdateOnChanged(furniture)
         end
     end
+    furniture.SetAnimationState("running")
+    furniture.SetAnimationProgressValue(furniture.Parameters["gas_content"].ToFloat(), furniture.Parameters["max_gas_content"].ToFloat());
 end
 
-function OxygenCompressor_GetSpriteName(furniture)
-    local baseName = furniture.Type
-    local suffix = 0
-    if (furniture.Parameters["gas_content"].ToFloat() > 0) then
-        idxAsFloat = 8 * (furniture.Parameters["gas_content"].ToFloat() / furniture.Parameters["max_gas_content"].ToFloat())
-        suffix = ModUtils.FloorToInt(idxAsFloat)
+function OxygenCompressor_OnPowerOff(furniture, deltaTime)
+    -- lose half of gas, in case of blackout
+	local gasContent = furniture.Parameters["gas_content"].ToFloat()
+	if (gasContent > 0) then
+            furniture.Parameters["gas_content"].ChangeFloatValue(-gasContent/2)
+            furniture.UpdateOnChanged(furniture)
     end
-    return baseName .. "_" .. suffix
+    furniture.SetAnimationProgressValue(furniture.Parameters["gas_content"].ToFloat(), furniture.Parameters["max_gas_content"].ToFloat());
 end
 
 function SolarPanel_OnUpdate(furniture, deltaTime)
@@ -592,13 +599,13 @@ end
 
 function OreMine_OreMined(job)
     -- Defines the ore to be spawned by the mine
-    local inventory = Inventory.__new(job.furniture.Parameters["ore_type"], 10)
+    local inventory = Inventory.__new(job.buildable.Parameters["ore_type"], 10)
 
     -- Place the "mined" ore on the tile
     World.Current.inventoryManager.PlaceInventory(job.tile, inventory)
 
     -- Deconstruct the ore mine
-    job.furniture.Deconstruct()
+    job.buildable.Deconstruct()
     job.CancelJob()
 end
 

@@ -17,6 +17,7 @@ public class FunctionsManager
         actions = new Dictionary<string, LuaFunctions>();
 
         actions.Add("Furniture", new LuaFunctions());
+        actions.Add("Utility", new LuaFunctions());
         actions.Add("Need", new LuaFunctions());
         actions.Add("GameEvent", new LuaFunctions());
         actions.Add("TileType", new LuaFunctions());
@@ -31,6 +32,15 @@ public class FunctionsManager
     public static LuaFunctions Furniture
     {
         get { return Get("Furniture"); }
+    }
+
+    /// <summary>
+    /// Gets the utility Lua Functions.
+    /// </summary>
+    /// <value>The utility Lua Functions.</value>
+    public static LuaFunctions Utility
+    {
+        get { return Get("Utility"); }
     }
 
     /// <summary>
