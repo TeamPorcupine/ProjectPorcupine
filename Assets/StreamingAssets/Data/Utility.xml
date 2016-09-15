@@ -15,4 +15,19 @@
     <LocalizationCode>util_power_cable</LocalizationCode>
     <UnlocalizedDescription>util_power_cable_desc</UnlocalizedDescription>
   </Utility>
+  <Utility type="util_water_pipe">
+    <Name>Water Cables</Name>
+    <Description>This is a water cable.</Description>
+    <TypeTag>Power</TypeTag>
+
+    <BuildingJob jobTime="1">
+      <Inventory type="Copper Wire" amount="2" />
+    </BuildingJob>
+
+    <DeconstructJob>
+      <Inventory type="Copper Wire" amount="1" />
+    </DeconstructJob>
+    <LocalizationCode>util_water_pipe</LocalizationCode>
+    <UnlocalizedDescription>util_water_pipe_desc</UnlocalizedDescription>
+  </Utility>
 </Utilities>
