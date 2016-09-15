@@ -182,7 +182,7 @@ function Stockpile_UpdateAction( furniture, deltaTime )
         itemsDesired = { desInv }
     end
 
-	local j = Job.__new(
+	local job = Job.__new(
 		furniture.Tile,
 		nil,
 		nil,
@@ -191,25 +191,25 @@ function Stockpile_UpdateAction( furniture, deltaTime )
 		Job.JobPriority.Low,
 		false
 	)
-	j.JobDescription = "job_stockpile_moving_desc"
-	j.acceptsAny = true
+	job.JobDescription = "job_stockpile_moving_desc"
+	job.acceptsAny = true
 
 	-- TODO: Later on, add stockpile priorities, so that we can take from a lower
 	-- priority stockpile for a higher priority one.
-	j.canTakeFromStockpile = false
+	job.canTakeFromStockpile = false
 
-	j.RegisterJobWorkedCallback("Stockpile_JobWorked")
-	furniture.Jobs.Add( j )
+	job.RegisterJobWorkedCallback("Stockpile_JobWorked")
+	furniture.Jobs.Add(job)
 end
 
-function Stockpile_JobWorked(j)
-    j.CancelJob()
+function Stockpile_JobWorked(job)
+    job.CancelJob()
 
     -- TODO: Change this when we figure out what we're doing for the all/any pickup job.
-    --values = j.GetInventoryRequirementValues();
-    for k, inv in pairs(j.inventoryRequirements) do
+    --values = job.GetInventoryRequirementValues();
+    for k, inv in pairs(job.inventoryRequirements) do
         if(inv.StackSize > 0) then
-            World.Current.inventoryManager.PlaceInventory(j.tile, inv)
+            World.Current.inventoryManager.PlaceInventory(job.tile, inv)
             return -- There should be no way that we ever end up with more than on inventory requirement with StackSize > 0
         end
     end
@@ -239,7 +239,7 @@ function MiningDroneStation_UpdateAction( furniture, deltaTime )
 
 	-- If we get here, we need to CREATE a new job.
 	local jobSpot = furniture.Jobs.GetWorkSpotTile()
-	local j = Job.__new(
+	local job = Job.__new(
 		jobSpot,
 		nil,
 		nil,
@@ -249,16 +249,16 @@ function MiningDroneStation_UpdateAction( furniture, deltaTime )
 		true	-- This job repeats until the destination tile is full.
 	)
 
-	j.RegisterJobCompletedCallback("MiningDroneStation_JobComplete")
-	j.JobDescription = "job_mining_drone_station_mining_desc"
-	furniture.Jobs.Add( j )
+	job.RegisterJobCompletedCallback("MiningDroneStation_JobComplete")
+	job.JobDescription = "job_mining_drone_station_mining_desc"
+	furniture.Jobs.Add(job)
 end
 
-function MiningDroneStation_JobComplete(j)
-	if (j.furniture.Jobs.GetSpawnSpotTile().Inventory == nil or j.furniture.Jobs.GetSpawnSpotTile().Inventory.Type == j.furniture.Parameters["mine_type"].ToString()) then
-		World.Current.inventoryManager.PlaceInventory( j.furniture.Jobs.GetSpawnSpotTile(), Inventory.__new(j.furniture.Parameters["mine_type"].ToString(), 2))
+function MiningDroneStation_JobComplete(job)
+	if (job.buildable.Jobs.GetSpawnSpotTile().Inventory == nil or job.buildable.Jobs.GetSpawnSpotTile().Inventory.Type == job.buildable.Parameters["mine_type"].ToString()) then
+		World.Current.inventoryManager.PlaceInventory( job.buildable.Jobs.GetSpawnSpotTile(), Inventory.__new(job.buildable.Parameters["mine_type"].ToString(), 2))
 	else
-		j.CancelJob()
+		job.CancelJob()
 	end
 end
 
@@ -267,7 +267,7 @@ function MiningDroneStation_Change_to_Raw_Iron(furniture, character)
 end
 
 function MiningDroneStation_Change_to_Raw_Copper(furniture, character)
-	furniture.Parameters["mine_type"].SetValue("raw_copper")
+	furniture.Parameters["mine_type"].SetValue("Raw Copper")
 end
 
 function MetalSmelter_UpdateAction(furniture, deltaTime)
@@ -317,7 +317,7 @@ function MetalSmelter_UpdateAction(furniture, deltaTime)
     ModUtils.ULog("MetalSmelter: Creating job for " .. desiredStackSize .. " raw iron.")
 
     local jobSpot = furniture.Jobs.GetWorkSpotTile()
-    local j = Job.__new(
+    local job = Job.__new(
         jobSpot,
         nil,
         nil,
@@ -327,15 +327,15 @@ function MetalSmelter_UpdateAction(furniture, deltaTime)
         false
     )
 
-    j.RegisterJobWorkedCallback("MetalSmelter_JobWorked")
-    furniture.Jobs.Add(j)
+    job.RegisterJobWorkedCallback("MetalSmelter_JobWorked")
+    furniture.Jobs.Add(job)
     return
 end
 
-function MetalSmelter_JobWorked(j)
-    j.CancelJob()
-    local spawnSpot = j.tile.Furniture.Jobs.GetSpawnSpotTile()
-    for k, inv in pairs(j.inventoryRequirements) do
+function MetalSmelter_JobWorked(job)
+    job.CancelJob()
+    local spawnSpot = job.tile.Furniture.Jobs.GetSpawnSpotTile()
+    for k, inv in pairs(job.inventoryRequirements) do
         if(inv ~= nil and inv.StackSize > 0) then
             World.Current.inventoryManager.PlaceInventory(spawnSpot, inv)
             spawnSpot.Inventory.Locked = true
@@ -350,7 +350,7 @@ function CloningPod_UpdateAction(furniture, deltaTime)
         return
     end
 
-    local j = Job.__new(
+    local job = Job.__new(
         furniture.Jobs.GetWorkSpotTile(),
         nil,
         nil,
@@ -361,19 +361,19 @@ function CloningPod_UpdateAction(furniture, deltaTime)
     )
 
     furniture.SetAnimationState("idle")
-    j.RegisterJobWorkedCallback("CloningPod_JobRunning")
-    j.RegisterJobCompletedCallback("CloningPod_JobComplete")
-	j.JobDescription = "job_cloning_pod_cloning_desc"
-    furniture.Jobs.Add(j)
+    job.RegisterJobWorkedCallback("CloningPod_JobRunning")
+    job.RegisterJobCompletedCallback("CloningPod_JobComplete")
+	job.JobDescription = "job_cloning_pod_cloning_desc"
+    furniture.Jobs.Add(job)
 end
 
-function CloningPod_JobRunning(j)
-    j.furniture.SetAnimationState("running")
+function CloningPod_JobRunning(job)
+    job.buildable.SetAnimationState("running")
 end
 
-function CloningPod_JobComplete(j)
-    World.Current.CreateCharacter(j.furniture.Jobs.GetSpawnSpotTile())
-    j.furniture.Deconstruct()
+function CloningPod_JobComplete(job)
+    World.Current.CreateCharacter(job.buildable.Jobs.GetSpawnSpotTile())
+    job.buildable.Deconstruct()
 end
 
 function PowerGenerator_UpdateAction(furniture, deltatime)
@@ -381,7 +381,7 @@ function PowerGenerator_UpdateAction(furniture, deltatime)
         furniture.PowerConnection.OutputRate = 0
         local itemsDesired = {Inventory.__new("Uranium", 0, 5)}
 
-        local j = Job.__new(
+        local job = Job.__new(
             furniture.Jobs.GetWorkSpotTile(),
             nil,
             nil,
@@ -391,9 +391,9 @@ function PowerGenerator_UpdateAction(furniture, deltatime)
             false
         )
 
-        j.RegisterJobCompletedCallback("PowerGenerator_JobComplete")
-        j.JobDescription = "job_power_generator_fulling_desc"
-        furniture.Jobs.Add( j )
+        job.RegisterJobCompletedCallback("PowerGenerator_JobComplete")
+        job.JobDescription = "job_power_generator_fulling_desc"
+        furniture.Jobs.Add(job)
     else
         furniture.Parameters["burnTime"].ChangeFloatValue(-deltatime)
         if ( furniture.Parameters["burnTime"].ToFloat() < 0 ) then
@@ -407,9 +407,9 @@ function PowerGenerator_UpdateAction(furniture, deltatime)
     end
 end
 
-function PowerGenerator_JobComplete( j )
-    j.furniture.Parameters["burnTime"].SetValue(j.furniture.Parameters["burnTimeRequired"].ToFloat())
-    j.furniture.PowerConnection.OutputRate = 5
+function PowerGenerator_JobComplete(job)
+    job.buildable.Parameters["burnTime"].SetValue(job.buildable.Parameters["burnTimeRequired"].ToFloat())
+    job.buildable.PowerConnection.OutputRate = 5
 end
 
 function LandingPad_Test_CallTradeShip(furniture, character)
@@ -598,7 +598,7 @@ function OreMine_CreateMiningJob(furniture, character)
     end
 
     -- Creates job for a character to go and "mine" the Ore
-    local j = Job.__new(
+    local job = Job.__new(
 		tile,
 		nil,
 		nil,
@@ -608,14 +608,14 @@ function OreMine_CreateMiningJob(furniture, character)
 		false
 	)
 
-    j.RegisterJobWorkedCallback("OreMine_OreMined")
-    furniture.Jobs.Add(j)
+    job.RegisterJobWorkedCallback("OreMine_OreMined")
+    furniture.Jobs.Add(job)
     ModUtils.ULog("Create Mining Job - Mining Job Created")
 end
 
 function OreMine_OreMined(job)
     -- Defines the ore to be spawned by the mine
-    local inventory = Inventory.__new(job.furniture.Parameters["ore_type"], 10)
+    local inventory = Inventory.__new(job.buildable.Parameters["ore_type"], 10)
 
     if (inventory.Type ~= "None") then
         -- Place the "mined" ore on the tile
@@ -623,7 +623,7 @@ function OreMine_OreMined(job)
     end
     
     -- Deconstruct the mined object
-    job.furniture.Deconstruct()
+    job.buildable.Deconstruct()
     job.CancelJob()
 end
 

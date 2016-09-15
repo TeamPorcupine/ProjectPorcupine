@@ -26,6 +26,7 @@ public class WorldController : MonoBehaviour
     public JobSpriteController jobSpriteController;
     public InventorySpriteController inventorySpriteController;
     public FurnitureSpriteController furnitureSpriteController;
+    public UtilitySpriteController utilitySpriteController;
     public QuestController questController;
     public BuildModeController buildModeController;
     public MouseController mouseController;
@@ -109,12 +110,13 @@ public class WorldController : MonoBehaviour
         tileSpriteController = new TileSpriteController(World);
         characterSpriteController = new CharacterSpriteController(World);
         furnitureSpriteController = new FurnitureSpriteController(World);
-        jobSpriteController = new JobSpriteController(World, furnitureSpriteController);
+        utilitySpriteController = new UtilitySpriteController(World);
+        jobSpriteController = new JobSpriteController(World, furnitureSpriteController, utilitySpriteController);
         inventorySpriteController = new InventorySpriteController(World, inventoryUI);
 
         buildModeController = new BuildModeController();
         spawnInventoryController = new SpawnInventoryController();
-        mouseController = new MouseController(buildModeController, furnitureSpriteController, circleCursorPrefab);
+        mouseController = new MouseController(buildModeController, furnitureSpriteController, utilitySpriteController, circleCursorPrefab);
         keyboardManager = KeyboardManager.Instance;
         questController = new QuestController();
         cameraController = new CameraController();

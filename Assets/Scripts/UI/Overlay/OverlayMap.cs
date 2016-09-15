@@ -531,16 +531,6 @@ public class OverlayMap : MonoBehaviour
             return;
         }
 
-        textView = new GameObject();
-        textView.AddComponent<UnityEngine.UI.Text>();
-        textView.AddComponent<UnityEngine.UI.LayoutElement>();
-        textView.GetComponent<UnityEngine.UI.LayoutElement>().minHeight = 30;
-        textView.GetComponent<UnityEngine.UI.LayoutElement>().minWidth = 150;
-        textView.transform.SetParent(parentPanel.transform);
-        textView.GetComponent<UnityEngine.UI.Text>().text = "Currently Selected:";
-        textView.GetComponent<UnityEngine.UI.Text>().fontSize = 15;
-        textView.GetComponent<UnityEngine.UI.Text>().font = Resources.GetBuiltinResource<Font>("Arial.ttf");
-
         colorMapView = new GameObject();
         colorMapView.AddComponent<UnityEngine.UI.Image>();
         colorMapView.transform.SetParent(parentPanel.transform);
@@ -550,6 +540,16 @@ public class OverlayMap : MonoBehaviour
         colorMapView.GetComponent<UnityEngine.UI.LayoutElement>().minWidth = 150;
         Material overlayMaterial = new Material(Resources.Load<Material>("Shaders/UI-Unlit-Transparent"));
         colorMapView.GetComponent<UnityEngine.UI.Image>().material = overlayMaterial;
+
+        textView = new GameObject();
+        textView.AddComponent<UnityEngine.UI.Text>();
+        textView.AddComponent<UnityEngine.UI.LayoutElement>();
+        textView.GetComponent<UnityEngine.UI.LayoutElement>().minHeight = 30;
+        textView.GetComponent<UnityEngine.UI.LayoutElement>().minWidth = 150;
+        textView.transform.SetParent(parentPanel.transform);
+        textView.GetComponent<UnityEngine.UI.Text>().text = "Currently Selected:";
+        textView.GetComponent<UnityEngine.UI.Text>().fontSize = 14;
+        textView.GetComponent<UnityEngine.UI.Text>().font = Resources.GetBuiltinResource<Font>("Arial.ttf");
 
         List<string> options = new List<string> { "None" };
         options.AddRange(overlays.Keys);

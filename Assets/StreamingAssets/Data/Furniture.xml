@@ -143,7 +143,7 @@
         <Action event="OnUpdate" functionName="OnUpdate_AirlockDoor" />
         <Action event="OnUpdate" functionName="OnUpdate_Leak_Airlock" />
 
-        <ContextMenuAction FunctionName="AirlockDoor_Toggle_Pressure_Lock" Text="Toggle Pressure Lock" RequiereCharacterSelected="false"/>
+        <ContextMenuAction FunctionName="AirlockDoor_Toggle_Pressure_Lock" Text="Toggle Pressure Lock" RequireCharacterSelected="false"/>
 
         <IsEnterable FunctionName="IsEnterable_Door" />
         
@@ -221,8 +221,8 @@
 
         <Action event="OnUpdate" functionName="MiningDroneStation_UpdateAction" />
 
-        <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Iron" Text="change to raw iron" RequiereCharacterSelected="false"/>
-        <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Copper" Text="change to raw copper" RequiereCharacterSelected="false"/>
+        <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Iron" Text="Change to Raw Iron" RequireCharacterSelected="false"/>
+        <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Copper" Text="Change to Raw Copper" RequireCharacterSelected="false"/>
 
         <LocalizationCode>furn_mining_drone_station</LocalizationCode>
         <UnlocalizedDescription>furn_mining_drone_station_desc</UnlocalizedDescription>
@@ -361,7 +361,21 @@
                     <Item objectType="Steel Plate" amount="1" slotPosX="2" slotPosY="0" />
                 </Output>
             </ProductionChain>
+            <UsedAnimations idle="idle" running="running" />
         </Workshop>
+
+        <Animations>
+            <Animation state="idle" fps="2" looping="false">
+                <Frame name="Metal Furnace" />
+            </Animation>
+            <Animation state="running" fps="6" looping="true">
+                <Frame name="Metal_Furnace_Running_1" />
+                <Frame name="Metal_Furnace_Running_2" />
+                <Frame name="Metal_Furnace_Running_3" />
+                <Frame name="Metal_Furnace_Running_4" />
+                <Frame name="Metal_Furnace_Running_5" />
+            </Animation>
+        </Animations>
 
         <LocalizationCode>furn_metal_furnace</LocalizationCode>
         <UnlocalizedDescription>furn_metal_furnace_desc</UnlocalizedDescription>
@@ -447,7 +461,7 @@
 
         <ContextMenuAction FunctionName="LandingPad_Test_CallTradeShip"
                            Text="Call Trade Ship Test"
-                           RequiereCharacterSelected="false"
+                           RequireCharacterSelected="false"
                            DevModeOnly="true"/>
 
         <LocalizationCode>furn_small_landing_pad</LocalizationCode>
@@ -527,7 +541,7 @@
 
         <Action event="OnUpdate" functionName="AirPump_OnUpdate" />
         <GetSpriteName FunctionName="AirPump_GetSpriteName" />
-        <ContextMenuAction FunctionName="AirPump_FlipDirection" Text="Flip Direction" RequiereCharacterSelected="false" />
+        <ContextMenuAction FunctionName="AirPump_FlipDirection" Text="Flip Direction" RequireCharacterSelected="false" />
 
         <LocalizationCode>furn_pump_air</LocalizationCode>
         <UnlocalizedDescription>furn_pump_air_desc</UnlocalizedDescription>
@@ -594,7 +608,7 @@
             <Param name="ore_type" value="Raw Iron" />
         </Params>
 
-        <ContextMenuAction FunctionName="OreMine_CreateMiningJob" Text="Mine Ore" RequiereCharacterSelected="false" />
+        <ContextMenuAction FunctionName="OreMine_CreateMiningJob" Text="Mine Ore" RequireCharacterSelected="false" />
         <GetSpriteName FunctionName="OreMine_GetSpriteName" />
 
         <LocalizationCode>furn_mine</LocalizationCode>
