@@ -26,17 +26,25 @@ public class FurnitureWorkshop
 
     private Furniture furniture;
 
+    private event Action<bool> OnRunningStateChanged;
+
     [XmlElement("ProductionChain")]
     public List<ProductionChain> PossibleProductions { get; set; }
+
+    [XmlElement("UsedAnimations")]
+    public UsedAnimations UsedAnimation { get; set; }
 
     [XmlIgnore]
     public List<WorkshopContextMenu> WorkshopMenuActions { get; protected set; }
 
+    [XmlIgnore]
+    public bool IsRunning { get; private set; }
+    
     protected Parameter FurnitureParams
     {
         get { return furniture.Parameters; }
     }
-
+    
     public static FurnitureWorkshop Deserialize(XmlReader xmlReader)
     {
         // deserialize FActoryINfo into factoryData
@@ -86,6 +94,8 @@ public class FurnitureWorkshop
         FurnitureParams.AddParameter(new Parameter(CurProcessingTimeParamName, 0f));
         FurnitureParams.AddParameter(new Parameter(MaxProcessingTimeParamName, 0f));
         FurnitureParams.AddParameter(new Parameter(CurProcessedInvParamName, 0));
+        IsRunning = false;
+        OnRunningStateChanged += RunningStateChanged;
     }
 
     public void SetParentFurniture(Furniture furniture)
@@ -109,7 +119,7 @@ public class FurnitureWorkshop
             ProductionChain prodChain = GetProductionChainByName(curSetupChainName);
             //// if there is no processing in progress
             if (FurnitureParams[CurProcessedInvParamName].ToInt() == 0)
-            {
+            {                
                 // check input slots for input inventory               
                 List<KeyValuePair<Tile, int>> flaggedForTaking = CheckForInventoryAtInput(prodChain);
 
@@ -123,11 +133,16 @@ public class FurnitureWorkshop
 
                     // reset processing timer and set max time for processing for this prod. chain
                     FurnitureParams[CurProcessingTimeParamName].SetValue(0f);
-                    FurnitureParams[MaxProcessingTimeParamName].SetValue(prodChain.ProcessingTime);
+                    FurnitureParams[MaxProcessingTimeParamName].SetValue(prodChain.ProcessingTime);                    
+                }
+                //// trigger running state change
+                if (IsRunning)
+                {
+                    OnRunningStateChanged(IsRunning = false);
                 }
             }
             else
-            {
+            {                
                 // processing is in progress
                 FurnitureParams[CurProcessingTimeParamName].ChangeFloatValue(deltaTime);
 
@@ -143,6 +158,11 @@ public class FurnitureWorkshop
                         //// processing done, can fetch input for another processing
                         FurnitureParams[CurProcessedInvParamName].SetValue(0);
                     }
+                }
+                //// trigger running state change
+                if (!IsRunning)
+                {
+                    OnRunningStateChanged(IsRunning = true);
                 }
             }
 
@@ -162,7 +182,7 @@ public class FurnitureWorkshop
             return;
         }
 
-        furniture.CancelJobs();
+        furniture.Jobs.CancelAll();
         furniture.Parameters[CurProductionChainParamName].SetValue(newProductionChainName);
     }
 
@@ -208,6 +228,21 @@ public class FurnitureWorkshop
         }
     }
 
+    private void RunningStateChanged(bool newIsRunningState)
+    {
+        if (UsedAnimation != null)
+        {
+            if (newIsRunningState == true && !string.IsNullOrEmpty(UsedAnimation.Running))
+            {
+                furniture.Animation.SetState(UsedAnimation.Running);
+            }
+            else if (newIsRunningState == false && !string.IsNullOrEmpty(UsedAnimation.Idle))
+            {
+                furniture.Animation.SetState(UsedAnimation.Idle);
+            }
+        }
+    }
+
     private void HaulingJobForInputs(ProductionChain prodChain)
     {
         // for all inputs in production chain
@@ -216,7 +251,7 @@ public class FurnitureWorkshop
             // if there is no hauling job for input object type, create one
             Job furnJob;
             string requiredType = reqInputItem.ObjectType;
-            var existingHaulingJob = furniture.HasJobWithPredicate(x => x.inventoryRequirements.ContainsKey(requiredType), out furnJob);
+            bool existingHaulingJob = furniture.Jobs.HasJobWithPredicate(x => x.inventoryRequirements.ContainsKey(requiredType), out furnJob);
             if (!existingHaulingJob)
             {
                 Tile inTile = World.Current.GetTileAt(
@@ -227,7 +262,7 @@ public class FurnitureWorkshop
                 //// TODO: this is from LUA .. looks like some hack
                 if (inTile.Inventory != null && inTile.Inventory.StackSize == inTile.Inventory.MaxStackSize)
                 {
-                    furniture.CancelJobs();
+                    furniture.Jobs.CancelAll();
                     return;
                 }
 
@@ -253,7 +288,7 @@ public class FurnitureWorkshop
                         false);
                     jb.JobDescription = string.Format("Hauling '{0}' to '{1}'", desiredInv, furniture.Name);
                     jb.OnJobWorked += PlaceInventoryToWorkshopInput;
-                    furniture.AddJob(jb);
+                    furniture.Jobs.Add(jb);
                 }
             }
         }
@@ -344,6 +379,16 @@ public class FurnitureWorkshop
         public List<Item> Input { get; set; }
 
         public List<Item> Output { get; set; }
+    }
+
+    [Serializable]
+    public class UsedAnimations
+    {
+        [XmlAttribute("idle")]
+        public string Idle { get; set; }
+
+        [XmlAttribute("running")]
+        public string Running { get; set; }
     }
     
     private class TileObjectTypeAmount

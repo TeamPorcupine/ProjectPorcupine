@@ -99,7 +99,7 @@ public class JobSpriteController : BaseSpriteController<Job>
             // For now, the only tile that could be is the floor, so just show a floor sprite
             // until the graphics system for tiles is fleshed out further.
             job_go.transform.position = new Vector3(job.tile.X, job.tile.Y, job.tile.Z);
-            sr.sprite = SpriteManager.current.GetSprite("Tile", "Solid");
+            sr.sprite = SpriteManager.GetSprite("Tile", "Solid");
         }
         else
         {

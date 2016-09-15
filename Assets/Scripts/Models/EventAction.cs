@@ -121,9 +121,9 @@ public class EventActions : IXmlSerializable
     /// Fire the event named actionName, resulting in all lua functions being called.
     /// </summary>
     /// <param name="actionName">Name of the action being triggered.</param>
-    /// <param name="target">Object, passed to LUA function as 1-argument (TODO: make it an object).</param>
+    /// <param name="target">Object, passed to LUA function as 1-argument.</param>
     /// <param name="deltaTime">Time since last Trigger of this event.</param>
-    public void Trigger(string actionName, Furniture target, float deltaTime = 0f)
+    public void Trigger<T>(string actionName, T target, float deltaTime = 0f)
     {
         if (!actionsList.ContainsKey(actionName) || actionsList[actionName] == null)
         {
@@ -131,7 +131,17 @@ public class EventActions : IXmlSerializable
         }
         else
         {
-            FunctionsManager.Furniture.CallWithInstance(actionsList[actionName].ToArray(), target, deltaTime);
+            FunctionsManager.Get(target.GetType().ToString()).CallWithInstance(actionsList[actionName].ToArray(), target, deltaTime);
         }
+    }
+
+    /// <summary>
+    /// Determines whether this instance has any events named actionName.
+    /// </summary>
+    /// <returns><c>true</c> if this instance has any events named actionName; otherwise, <c>false</c>.</returns>
+    /// <param name="actionName">Action name.</param>
+    public bool HasEvent(string actionName)
+    {
+        return actionsList.ContainsKey(actionName);
     }
 }

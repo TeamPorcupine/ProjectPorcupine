@@ -52,6 +52,12 @@ public class WorkshopTest
 
         fi.PossibleProductions.Add(chain2);
 
+        fi.UsedAnimation = new FurnitureWorkshop.UsedAnimations()
+        {
+            Idle = "idle",
+            Running = "running"
+        };
+
         FileStream fs = new FileStream("Workshop.xml", FileMode.Create);
         TextWriter writer = new StreamWriter(fs, new UTF8Encoding());
 
