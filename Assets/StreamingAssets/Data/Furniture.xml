@@ -361,7 +361,21 @@
                     <Item objectType="Steel Plate" amount="1" slotPosX="2" slotPosY="0" />
                 </Output>
             </ProductionChain>
+            <UsedAnimations idle="idle" running="running" />
         </Workshop>
+
+        <Animations>
+            <Animation state="idle" fps="2" looping="false">
+                <Frame name="Metal Furnace" />
+            </Animation>
+            <Animation state="running" fps="6" looping="true">
+                <Frame name="Metal_Furnace_Running_1" />
+                <Frame name="Metal_Furnace_Running_2" />
+                <Frame name="Metal_Furnace_Running_3" />
+                <Frame name="Metal_Furnace_Running_4" />
+                <Frame name="Metal_Furnace_Running_5" />
+            </Animation>
+        </Animations>
 
         <LocalizationCode>furn_metal_furnace</LocalizationCode>
         <UnlocalizedDescription>furn_metal_furnace_desc</UnlocalizedDescription>
