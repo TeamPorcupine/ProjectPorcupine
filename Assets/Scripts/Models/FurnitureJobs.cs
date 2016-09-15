@@ -141,7 +141,7 @@ public class FurnitureJobs
     /// <param name="job">The job that you want to link to the furniture.</param>
     public void Add(Job job)
     {
-        job.furniture = furniture;
+        job.buildable = furniture;
         activeJobs.Add(job);
         job.OnJobStopped += OnJobStopped;
         World.Current.jobQueue.Enqueue(job);
@@ -201,7 +201,7 @@ public class FurnitureJobs
     {
         job.OnJobStopped -= OnJobStopped;
         activeJobs.Remove(job);
-        job.furniture = null;
+        job.buildable = null;
     }
 
     /// <summary>
