@@ -394,7 +394,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         // Call LUA install scripts
         obj.EventActions.Trigger("OnInstall", obj);
 
-        // Update thermalDiffusifity using coefficient
+        // Update thermalDiffusivity using coefficient
         float thermalDiffusivity = Temperature.defaultThermalDiffusivity;
         if (obj.Parameters.ContainsKey("thermal_diffusivity"))
         {

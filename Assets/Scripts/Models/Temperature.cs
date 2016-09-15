@@ -288,10 +288,12 @@ public class Temperature
             for (int y = 0; y < sizeY; y++) {
                 for (int x = 0; x < sizeX; x++) {
                     int index = GetIndex(x, y, z);
-                    int index_up = GetIndex(x, y + 1, z);
-                    int index_down = GetIndex(x, y - 1, z);
-                    int index_left = GetIndex(x - 1, y, z);
-                    int index_right = GetIndex(x + 1, y, z);
+                    int index_N = GetIndex(x, y + 1, z);
+                    int index_S = GetIndex(x, y - 1, z);
+                    int index_W = GetIndex(x - 1, y, z);
+                    int index_E = GetIndex(x + 1, y, z);
+                    int index_above = GetIndex(x, y, z + 1);
+                    int index_below = GetIndex(x, y, z - 1);
 
                     // Update temperature using finite difference and forward method:
                     // U^{n+1} = U^n + dt*(\Div alpha \Grad U^n).
@@ -304,26 +306,38 @@ public class Temperature
 
                     if (x > 0) {
                         temp_curr[index] +=
-                            c * Mathf.Min(thermalDiffusivity[index], thermalDiffusivity[index_left]) *
-                            (temp_old[index_left] - temp_old[index]);
+                            c * Mathf.Min(thermalDiffusivity[index], thermalDiffusivity[index_W]) *
+                            (temp_old[index_W] - temp_old[index]);
                     }
 
                     if (y > 0) {
                         temp_curr[index] +=
-                            c * Mathf.Min(thermalDiffusivity[index], thermalDiffusivity[index_down]) *
-                            (temp_old[index_down] - temp_old[index]);
+                            c * Mathf.Min(thermalDiffusivity[index], thermalDiffusivity[index_S]) *
+                            (temp_old[index_S] - temp_old[index]);
                     }
 
                     if (x < sizeX - 1) {
                         temp_curr[index] +=
-                            c * Mathf.Min(thermalDiffusivity[index], thermalDiffusivity[index_right]) *
-                            (temp_old[index_right] - temp_old[index]);
+                            c * Mathf.Min(thermalDiffusivity[index], thermalDiffusivity[index_E]) *
+                            (temp_old[index_E] - temp_old[index]);
                     }
 
                     if (y < sizeY - 1) {
                         temp_curr[index] +=
-                            c * Mathf.Min(thermalDiffusivity[index], thermalDiffusivity[index_up]) *
-                            (temp_old[index_up] - temp_old[index]);
+                            c * Mathf.Min(thermalDiffusivity[index], thermalDiffusivity[index_N]) *
+                            (temp_old[index_N] - temp_old[index]);
+                    }
+
+                    if (z > 0) {
+                        temp_curr[index] +=
+                            c * Mathf.Min(thermalDiffusivity[index], thermalDiffusivity[index_below]) *
+                            (temp_old[index_below] - temp_old[index]);
+                    }
+
+                    if (z < sizeZ - 1) {
+                        temp_curr[index] +=
+                            c * Mathf.Min(thermalDiffusivity[index], thermalDiffusivity[index_above]) *
+                            (temp_old[index_above] - temp_old[index]);
                     }
                 }
             }

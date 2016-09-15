@@ -26,7 +26,7 @@
             <!-- 1 means a regular amout is exchanged -->
             <!-- Walls will likely have low values, whilst tables and so on will have values close to 1 (if not 1). -->
             <!-- Leave default value (i.e. nothing) if the furniture does not have any isolation effect. -->
-            <Param name="thermal_diffusivity" value="0.0" />
+            <Param name="thermal_diffusivity" value="0.1" />
         </Params>
 
         <LocalizationCode>furn_steel_wall</LocalizationCode>
@@ -80,7 +80,7 @@
         <Params>
             <Param name="openness" value="0" />
             <Param name="is_opening" value="0" />
-            <Param name="thermal_diffusivity" value="0.0001" />
+            <Param name="thermal_diffusivity" value="0.2" />
         </Params>
 
         <Action event="OnUpdate" functionName="OnUpdate_Door" />
@@ -136,7 +136,7 @@
         <Params>
             <Param name="openness" value="0" />
             <Param name="is_opening" value="0" />
-            <Param name="thermal_diffusivity" value="0.00001" />
+            <Param name="thermal_diffusivity" value="0.05" />
             <Param name="pressure_locked" value="0" />
         </Params>
 
@@ -401,7 +401,7 @@
         <Action event="OnUpdateTemperature" functionName="Heater_UpdateTemperature" />
 
         <Params>
-            <Param name="base_heating" value="100" />
+            <Param name="base_heating" value="500" />
             <Param name="pressure_threshold" value="0.5" />
         </Params>
 

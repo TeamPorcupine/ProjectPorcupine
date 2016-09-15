@@ -617,10 +617,10 @@ public class World : IXmlSerializable
         CreateWallet();
 
         characters = new List<Character>();
+        temperature = new Temperature();
         furnitures = new List<Furniture>();
         inventoryManager = new InventoryManager();
         PowerNetwork = new ProjectPorcupine.PowerNetwork.PowerNetwork();
-        temperature = new Temperature();
         AddEventListeners();
         LoadSkybox();
     }
