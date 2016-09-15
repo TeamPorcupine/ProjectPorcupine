@@ -18,6 +18,8 @@ public class SoundController
     {
         world.OnFurnitureCreated += OnFurnitureCreated;
         world.OnTileChanged += OnTileChanged;
+
+        TimeManager.Instance.EveryFrame += Update;
     }
     
     // Update is called once per frame
@@ -34,7 +36,7 @@ public class SoundController
             return;
         }
 
-        AudioClip ac = Resources.Load<AudioClip>("Sounds/" + furn.ObjectType + "_OnCreated");
+        AudioClip ac = Resources.Load<AudioClip>("Sounds/" + furn.Type + "_OnCreated");
 
         if (ac == null)
         {

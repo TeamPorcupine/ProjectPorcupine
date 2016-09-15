@@ -99,7 +99,7 @@ public class JobSpriteController : BaseSpriteController<Job>
             // For now, the only tile that could be is the floor, so just show a floor sprite
             // until the graphics system for tiles is fleshed out further.
             job_go.transform.position = new Vector3(job.tile.X, job.tile.Y, job.tile.Z);
-            sr.sprite = SpriteManager.current.GetSprite("Tile", "Solid");
+            sr.sprite = SpriteManager.GetSprite("Tile", "Solid");
         }
         else
         {
@@ -121,7 +121,7 @@ public class JobSpriteController : BaseSpriteController<Job>
             Tile southTile = world.GetTileAt(job.tile.X, job.tile.Y - 1, job.tile.Z);
 
             if (northTile != null && southTile != null && northTile.Furniture != null && southTile.Furniture != null &&
-            northTile.Furniture.ObjectType.Contains("Wall") && southTile.Furniture.ObjectType.Contains("Wall"))
+            northTile.Furniture.HasTypeTag("Wall") && southTile.Furniture.HasTypeTag("Wall"))
             {
                 job_go.transform.rotation = Quaternion.Euler(0, 0, 90);
             }

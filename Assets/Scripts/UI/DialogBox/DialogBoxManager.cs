@@ -15,6 +15,7 @@ using UnityEngine.UI;
 /// </summary>
 public class DialogBoxManager : MonoBehaviour
 {
+    public DialogBoxJobList dialogBoxJobList;
     public DialogBoxLoadGame dialogBoxLoadGame;
     public DialogBoxSaveGame dialogBoxSaveGame;
     public DialogBoxOptions dialogBoxOptions;
@@ -49,6 +50,9 @@ public class DialogBoxManager : MonoBehaviour
 
         tempGoObj = CreateDialogGO("DB_AreYouSure", "Are You Sure");
         dialogBoxAreYouSure = tempGoObj.GetComponent<DialogBoxAreYouSure>();
+
+        tempGoObj = CreateDialogGO("DB_JobList", "Job List");
+        dialogBoxJobList = tempGoObj.GetComponent<DialogBoxJobList>();
 
         tempGoObj = CreateDialogGO("DB_Quests", "Quests");
         dialogBoxQuests = tempGoObj.GetComponent<DialogBoxQuests>();

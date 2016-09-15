@@ -138,7 +138,7 @@ public class InventoryManager
             {
                 if (inventory.Tile == null ||
                     inventory.Tile.Furniture == null ||
-                    inventory.Tile.Furniture.ObjectType != "Stockpile" ||
+                    inventory.Tile.Furniture.Type != "Stockpile" ||
                     inventory.Tile.Furniture.HasTypeTag("Stockpile"))
                 {
                     continue;
@@ -166,7 +166,7 @@ public class InventoryManager
         // We can also avoid going through the A* construction if we know
         // that all available inventories are stockpiles and we are not allowed
         // to touch those
-        if (!canTakeFromStockpile && Inventories[type].TrueForAll(i => i.Tile != null && i.Tile.Furniture != null && i.Tile.Furniture.IsStockpile()))
+        if (!canTakeFromStockpile && Inventories[type].TrueForAll(i => i.Tile != null && i.Tile.Furniture != null && i.Tile.Furniture.HasTypeTag("Storage")))
         {
             return null;
         }

@@ -349,12 +349,12 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         Update_DoMovement(deltaTime);
 
+        animation.Update(deltaTime);
+
         if (OnCharacterChanged != null)
         {
             OnCharacterChanged(this);
-        }
-
-        animation.Update(deltaTime);
+        }        
     }
 
     #region IXmlSerializable implementation
@@ -459,7 +459,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         foreach (Need n in needs)
         {
-           yield return LocalizationTable.GetLocalization(n.LocalisationID, n.DisplayAmount);
+            yield return LocalizationTable.GetLocalization(n.LocalisationID, n.DisplayAmount);
         }
 
         foreach (Stat stat in stats.Values)
@@ -503,6 +503,39 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         return stat;
     }
 
+    public void ReadStatsFromSave(XmlReader reader)
+    {
+        // Protection vs. empty stats
+        if (reader.IsEmptyElement)
+        {
+            return;
+        }
+
+        while (reader.Read())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement)
+            {
+                break;
+            }
+
+            string statType = reader.GetAttribute("type");
+            Stat stat = GetStat(statType);
+            if (stat == null)
+            {
+                continue;
+            }
+
+            int statValue;
+            if (!int.TryParse(reader.GetAttribute("value"), out statValue))
+            {
+                Debug.ULogErrorChannel("Character", "Stat element did not have a value!");
+                continue;
+            }
+
+            stat.Value = statValue;
+        }
+    }
+
     private void InitializeCharacterValues()
     {
         LoadNeeds();
@@ -517,7 +550,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         {
             Need need = needs[i];
             needs[i] = need.Clone();
-            needs[i].character = this;
+            needs[i].Character = this;
         }
     }
 
@@ -538,39 +571,6 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         Debug.ULogChannel("Character", "Initialized " + stats.Count + " Stats.");
     }
 
-    public void ReadStatsFromSave(XmlReader reader)
-    {
-        // Protection vs. empty stats
-        if (reader.IsEmptyElement)
-        {
-            return;
-        }
-
-        while (reader.Read())
-        {
-            if (reader.NodeType == XmlNodeType.EndElement)
-            {
-                break;
-            }
-
-            string statType = reader.GetAttribute("statType");
-            Stat stat = GetStat(statType);
-            if (stat == null)
-            {
-                continue;               
-            }
-
-            int statValue;
-            if (!int.TryParse(reader.GetAttribute("value"), out statValue))
-            {
-                Debug.ULogErrorChannel("Character", "Stat element did not have a value!");
-                continue;
-            }
-
-            stat.Value = statValue;
-        }
-    }
-
     private void GetNewJob()
     {
         float needPercent = 0;
@@ -586,9 +586,9 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         if (needPercent > 50 && needPercent < 100 && need.RestoreNeedFurn != null)
         {
-            if (World.Current.CountFurnitureType(need.RestoreNeedFurn.ObjectType) > 0)
+            if (World.Current.CountFurnitureType(need.RestoreNeedFurn.Type) > 0)
             {
-                MyJob = new Job(null, need.RestoreNeedFurn.ObjectType, need.CompleteJobNorm, need.RestoreNeedTime, null, Job.JobPriority.High, false, true, false);
+                MyJob = new Job(null, need.RestoreNeedFurn.Type, need.CompleteJobNorm, need.RestoreNeedTime, null, Job.JobPriority.High, false, true, false);
             }
         }
 
@@ -653,7 +653,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         if (MyJob.IsNeed)
         {
             // This will calculate a path from current tile to destination tile.
-            pathAStar = new Path_AStar(World.Current, CurrTile, DestTile, need.RestoreNeedFurn.ObjectType, 0, false, true);
+            pathAStar = new Path_AStar(World.Current, CurrTile, DestTile, need.RestoreNeedFurn.Type, 0, false, true);
         }
         else
         {
@@ -789,6 +789,8 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             }
         }
 
+        CharacterFacing();
+
         if (nextTile.IsEnterable() == Enterability.Never)
         {
             //// Most likely a wall got built, so we just need to reset our pathfinding information.
@@ -809,8 +811,6 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             // now and don't actually process the movement.
             return;
         }
-
-        CharacterFacing();
 
         // At this point we should have a valid nextTile to move to.
         // What's the total distance from point A to point B?
@@ -937,7 +937,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             // Are we standing on a tile with goods that are desired by the job?
             if (CurrTile.Inventory != null &&
                 MyJob.AmountDesiredOfInventoryType(CurrTile.Inventory) > 0 && !CurrTile.Inventory.Locked &&
-                (MyJob.canTakeFromStockpile || CurrTile.Furniture == null || CurrTile.Furniture.IsStockpile() == false))
+                (MyJob.canTakeFromStockpile || CurrTile.Furniture == null || CurrTile.Furniture.HasTypeTag("Storage") == false))
             {
                 // Pick up the stuff!
                 World.Current.inventoryManager.PlaceInventory(
@@ -956,7 +956,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
                 // Any chance we already have a path that leads to the items we want?
                 // Check that we have an end tile and that it has content.
-                // Check if contains the desired objectType�.
+                // Check if contains the desired type.
                 if (WalkingToUsableInventory() && fulfillableInventoryRequirements.Contains(pathAStar.EndTile().Inventory.Type))
                 {
                     // We are already moving towards a tile that contains what we want!
@@ -1018,7 +1018,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     {
         bool destHasInventory = pathAStar != null && pathAStar.EndTile() != null && pathAStar.EndTile().Inventory != null;
         return destHasInventory &&
-        !(pathAStar.EndTile().Furniture != null && (MyJob.canTakeFromStockpile == false && pathAStar.EndTile().Furniture.IsStockpile() == true));
+        !(pathAStar.EndTile().Furniture != null && (MyJob.canTakeFromStockpile == false && pathAStar.EndTile().Furniture.HasTypeTag("Storage") == true));
     }
 
     /// <summary>

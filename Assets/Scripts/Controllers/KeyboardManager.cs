@@ -20,7 +20,11 @@ public class KeyboardManager
     
     public KeyboardManager()
     {
+        instance = this;
         mapping = new Dictionary<string, KeyboadMappedInput>();
+
+        TimeManager.Instance.EveryFrameNotModal += (time) => Update();
+
         ReadXmlOrJsonAfterWeDecide();
     }
 
@@ -30,7 +34,7 @@ public class KeyboardManager
         {
             if (instance == null)
             {
-                instance = new KeyboardManager();
+                new KeyboardManager();
             }
 
             return instance;
@@ -45,8 +49,8 @@ public class KeyboardManager
     public void ReadXmlOrJsonAfterWeDecide()
     {
         // mock data for now until xml vs json is decided
-        RegisterInputMapping("MoveCameraEast", KeyCode.D, KeyCode.LeftArrow);
-        RegisterInputMapping("MoveCameraWest", KeyCode.A, KeyCode.RightArrow);
+        RegisterInputMapping("MoveCameraEast", KeyCode.D, KeyCode.RightArrow);
+        RegisterInputMapping("MoveCameraWest", KeyCode.A, KeyCode.LeftArrow);
         RegisterInputMapping("MoveCameraNorth", KeyCode.W, KeyCode.UpArrow);
         RegisterInputMapping("MoveCameraSouth", KeyCode.S, KeyCode.DownArrow);
         RegisterInputMapping("ZoomOut", KeyCode.PageUp);
@@ -59,16 +63,11 @@ public class KeyboardManager
         RegisterInputMapping("DecreaseSpeed", KeyCode.Minus, KeyCode.KeypadMinus);
         RegisterInputMapping("IncreaseSpeed", KeyCode.Plus, KeyCode.KeypadPlus);
         RegisterInputMapping("Pause", KeyCode.Space, KeyCode.Pause);
+        RegisterInputMapping("DevMode", KeyCode.F12);
     }
 
-    public void Update(bool isModal)
+    public void Update()
     {
-        if (isModal)
-        {
-            // A modal dialog box is open. Bail.
-            return;
-        }
-
         foreach (KeyboadMappedInput input in mapping.Values)
         {
             input.TrigerActionIfInputValid();
@@ -111,5 +110,13 @@ public class KeyboardManager
                     KeyCodes = keyCodes.ToList()
                 });
         }
+    }
+
+    /// <summary>
+    /// Destroy this instance.
+    /// </summary>
+    public void Destroy()
+    {
+        instance = null;
     }
 }

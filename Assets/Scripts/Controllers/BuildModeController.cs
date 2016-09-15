@@ -20,7 +20,7 @@ public enum BuildMode
 public class BuildModeController
 {
     public BuildMode buildMode = BuildMode.FLOOR;
-    public string buildModeObjectType;
+    public string buildModeType;
 
     private MouseController mouseController;
     private TileType buildModeTile = TileType.Floor;
@@ -39,7 +39,7 @@ public class BuildModeController
             return true;
         }
 
-        Furniture proto = PrototypeManager.Furniture.Get(buildModeObjectType);
+        Furniture proto = PrototypeManager.Furniture.Get(buildModeType);
 
         return proto.Width == 1 && proto.Height == 1;
     }
@@ -57,11 +57,11 @@ public class BuildModeController
         mouseController.StartBuildMode();
     }
     
-    public void SetMode_BuildFurniture(string objectType)
+    public void SetMode_BuildFurniture(string type)
     {
         // Wall is not a Tile!  Wall is an "Furniture" that exists on TOP of a tile.
         buildMode = BuildMode.FURNITURE;
-        buildModeObjectType = objectType;
+        buildModeType = type;
         mouseController.StartBuildMode();
     }
 
@@ -71,11 +71,6 @@ public class BuildModeController
         mouseController.StartBuildMode();
     }
 
-    public void DoPathfindingTest()
-    {
-        WorldController.Instance.World.SetupPathfindingExample();
-    }
-
     public void DoBuild(Tile t)
     {
         if (buildMode == BuildMode.FURNITURE)
@@ -83,7 +78,7 @@ public class BuildModeController
             // Create the Furniture and assign it to the tile
             // Can we build the furniture in the selected tile?
             // Run the ValidPlacement function!
-            string furnitureType = buildModeObjectType;
+            string furnitureType = buildModeType;
 
             if ( 
                 WorldController.Instance.World.IsFurniturePlacementValid(furnitureType, t) &&
@@ -183,7 +178,8 @@ public class BuildModeController
         else if (buildMode == BuildMode.DECONSTRUCT)
         {
             // TODO
-            if (t.Furniture != null)
+            bool canDeconstructAll = Settings.GetSetting("DialogBoxSettings_developerModeToggle", false);
+            if (t.Furniture != null && (canDeconstructAll || t.Furniture.HasTypeTag("Non-deconstructible") == false))
             {
                 // check if this is a WALL neighbouring a pressured and pressureless environment, and if so, bail
                 if (t.Furniture.HasTypeTag("Wall"))
@@ -195,7 +191,7 @@ public class BuildModeController
                     {
                         if (neighbor != null && neighbor.Room != null)
                         {
-                            if ((neighbor.Room == World.Current.GetOutsideRoom()) || MathUtilities.IsZero(neighbor.Room.GetTotalGasPressure()))
+                            if (neighbor.Room.IsOutsideRoom() || MathUtilities.IsZero(neighbor.Room.GetTotalGasPressure()))
                             {
                                 vacuumNeighbors++;
                             }

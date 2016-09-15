@@ -79,7 +79,7 @@ public class DialogBoxTrade : DialogBox
             },
             possibleStock = new List<TraderPotentialInventory>
             {
-                new TraderPotentialInventory() { ObjectType = "Steel Plate" }
+                new TraderPotentialInventory() { Type = "Steel Plate" }
             }
         };
         SetupTrade(new Trade(mockPlayer, mockTrader));
@@ -157,7 +157,7 @@ public class DialogBoxTrade : DialogBox
         {
             GameObject go = (GameObject)Instantiate(Resources.Load("Prefab/TradeItemRequestPrefab"), TradeItemListPanel);
             DialogBoxTradeRequest tradeItemBehaviour = go.GetComponent<DialogBoxTradeRequest>();
-            tradeItemBehaviour.itemName.text = possible.ObjectType;
+            tradeItemBehaviour.itemName.text = possible.Type;
             tradeItemBehaviour.request = possible;
         }
     }

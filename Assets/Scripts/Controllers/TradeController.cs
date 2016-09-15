@@ -47,7 +47,7 @@ public class TradeController
     public void CallTradeShipTest(Furniture landingPad)
     {
         // Currently not using any logic to select a trader
-        TraderPrototype prototype = PrototypeManager.Trader.Get(Random.Range(0, PrototypeManager.Trader.Count));
+        TraderPrototype prototype = PrototypeManager.Trader[Random.Range(0, PrototypeManager.Trader.Count)];
         Trader trader = prototype.CreateTrader();
 
         GameObject go = new GameObject(trader.Name);
@@ -61,7 +61,7 @@ public class TradeController
         controller.LeavingCoordinates = new Vector3(100, 50, 0);
         go.transform.localScale = new Vector3(1, 1, 1);
         SpriteRenderer spriteRenderer = go.AddComponent<SpriteRenderer>();
-        spriteRenderer.sprite = SpriteManager.current.GetSprite("Trader", "BasicHaulShip");
+        spriteRenderer.sprite = SpriteManager.GetSprite("Trader", "BasicHaulShip");
         spriteRenderer.sortingLayerName = "TradeShip";
     }
 
@@ -104,12 +104,12 @@ public class TradeController
             if (tradeItem.TradeAmount > 0)
             {
                 Tile tile = WorldController.Instance.World.GetFirstTileWithNoInventoryAround(6, (int)tradingCoordinates.x, (int)tradingCoordinates.y, (int)tradingCoordinates.z);
-                Inventory inv = new Inventory(tradeItem.ObjectType, tradeItem.TradeAmount, tradeItem.TradeAmount);
+                Inventory inv = new Inventory(tradeItem.Type, tradeItem.TradeAmount, tradeItem.TradeAmount);
                 WorldController.Instance.World.inventoryManager.PlaceInventory(tile, inv);
             }
             else if (tradeItem.TradeAmount < 0)
             {
-                World.Current.inventoryManager.RemoveInventoryOfType(tradeItem.ObjectType, -tradeItem.TradeAmount, true);
+                World.Current.inventoryManager.RemoveInventoryOfType(tradeItem.Type, -tradeItem.TradeAmount, true);
             }
         }
     }

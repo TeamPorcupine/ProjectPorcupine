@@ -41,7 +41,7 @@ public class Trader
     /// </summary>
     public static Trader FromPlayer(Currency currency)
     {
-        Trader t = new Trader
+        Trader trader = new Trader
         {
             Name = "Player",
             SaleMarginMultiplier = 0.8f,
@@ -58,14 +58,14 @@ public class Trader
             {
                 if (inventory.Tile != null && 
                     inventory.Tile.Furniture != null &&
-                    inventory.Tile.Furniture.ObjectType == "Stockpile")
+                    inventory.Tile.Furniture.HasTypeTag("Stockpile"))
                 {
-                    t.Stock.Add(inventory);
+                    trader.Stock.Add(inventory);
                 }
             }
         }
         
-        return t;
+        return trader;
     }
 
     // <summary>
@@ -124,17 +124,17 @@ public class Trader
     
     private void AddItemToStock(TraderPotentialInventory inventory)
     {
-        if (!string.IsNullOrEmpty(inventory.ObjectType))
+        if (!string.IsNullOrEmpty(inventory.Type))
         {
             Inventory newInventory = new Inventory(
-                inventory.ObjectType,
+                inventory.Type,
                 Random.Range(inventory.MinQuantity, inventory.MaxQuantity));
 
             Stock.Add(newInventory);
         }
-        else if (!string.IsNullOrEmpty(inventory.ObjectCategory))
+        else if (!string.IsNullOrEmpty(inventory.Category))
         {
-            List<InventoryCommon> potentialObjects = GetInventoryCommonWithCategory(inventory.ObjectCategory);
+            List<InventoryCommon> potentialObjects = GetInventoryCommonWithCategory(inventory.Category);
 
             foreach (InventoryCommon potentialObject in potentialObjects)
             {

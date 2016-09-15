@@ -180,7 +180,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 614d1936f989c6949b68336704b91aa8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GameTickPerSecond: 5
   inventoryUI: {fileID: 191780, guid: d1e1fcd802f51614595cb99879a132a5, type: 2}
   circleCursorPrefab: {fileID: 110048, guid: 782976062f887844ca858482495fcdbd, type: 2}
   IsModal: 0
@@ -245,7 +244,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -259,7 +258,7 @@ MonoBehaviour:
     m_BestFit: 0
     m_MinSize: 10
     m_MaxSize: 40
-    m_Alignment: 3
+    m_Alignment: 5
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
@@ -391,14 +390,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.1995026, g: 0.26564556, b: 0.3, a: 0.628}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: 0}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -737,7 +736,6 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 752785403}
-  - 114: {fileID: 752785404}
   - 114: {fileID: 752785406}
   - 114: {fileID: 752785405}
   m_Layer: 0
@@ -761,17 +759,6 @@ Transform:
   - {fileID: 179601669}
   m_Father: {fileID: 0}
   m_RootOrder: 4
---- !u!114 &752785404
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 752785402}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62c8935a69c2ef54cb9d5951be6e2dfe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &752785405
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1393,7 +1380,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 880d84f7377fd34489cb30281e28c2b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  leftBottomCorner: {x: -0.5, y: -0.5, z: 1}
   transparency: 0.8
   updateInterval: 5
   pixelsPerTileX: 20
@@ -1634,7 +1620,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9500ef008befed7449f0b38f088a5b1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mc: {fileID: 0}
+  dialogBoxJobList: {fileID: 0}
   dialogBoxLoadGame: {fileID: 0}
   dialogBoxSaveGame: {fileID: 0}
   dialogBoxOptions: {fileID: 0}
@@ -1642,6 +1628,7 @@ MonoBehaviour:
   dialogBoxTrade: {fileID: 0}
   dialogBoxAreYouSure: {fileID: 0}
   dialogBoxQuests: {fileID: 0}
+  DialogBoxGO: {fileID: 0}
 --- !u!1 &2038247388
 GameObject:
   m_ObjectHideFlags: 0
@@ -1920,11 +1907,11 @@ RectTransform:
   - {fileID: 305970543}
   m_Father: {fileID: 2038247389}
   m_RootOrder: 1
-  m_AnchorMin: {x: 1, y: 0}
-  m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: 450}
+  m_AnchorMin: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: -300}
   m_SizeDelta: {x: 200, y: 100}
-  m_Pivot: {x: 1, y: 0}
+  m_Pivot: {x: 1, y: -2}
 --- !u!114 &2130921648
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1960,9 +1947,9 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 0
-  m_Spacing: 0
+  m_Spacing: 5
   m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 1
+  m_ChildForceExpandHeight: 0
 --- !u!114 &2130921650
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1975,14 +1962,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.392}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: 0}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1

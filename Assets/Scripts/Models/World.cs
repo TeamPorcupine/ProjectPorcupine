@@ -44,7 +44,7 @@ public class World : IXmlSerializable
     public JobQueue jobQueue;
     public JobQueue jobWaitingQueue;
 
-    // A two-dimensional array to hold our tile data.
+    // A three-dimensional array to hold our tile data.
     private Tile[,,] tiles;
 
     /// <summary>
@@ -52,6 +52,7 @@ public class World : IXmlSerializable
     /// </summary>
     /// <param name="width">Width in tiles.</param>
     /// <param name="height">Height in tiles.</param>
+    /// <param name="depth">Depth in amount.</param>
     public World(int width, int height, int depth)
     {
         // Creates an empty world.
@@ -84,6 +85,15 @@ public class World : IXmlSerializable
     /// </summary>
     public World()
     {
+    }
+
+    /// <summary>
+    /// Releases the TimeManager events when <see cref="World"/> is reclaimed by garbage collection.
+    /// </summary>
+    ~World()
+    {
+        TimeManager.Instance.EveryFrameUnpaused -= TickEveryFrame;
+        TimeManager.Instance.FixedFrequencyUnpaused -= TickFixedFrequency;
     }
 
     public event Action<Furniture> OnFurnitureCreated;
@@ -133,9 +143,9 @@ public class World : IXmlSerializable
         Debug.ULogChannel("Rooms", "creating room:" + r.ID);
     }
 
-    public int CountFurnitureType(string objectType)
+    public int CountFurnitureType(string type)
     {
-        int count = furnitures.Count(f => f.ObjectType == objectType);
+        int count = furnitures.Count(f => f.Type == type);
         return count;
     }
 
@@ -157,6 +167,12 @@ public class World : IXmlSerializable
         // All tiles that belonged to this room should be re-assigned to
         // the outside.
         r.ReturnTilesToOutsideRoom();
+    }
+
+    public void AddEventListeners()
+    {
+        TimeManager.Instance.EveryFrameUnpaused += TickEveryFrame;
+        TimeManager.Instance.FixedFrequencyUnpaused += TickFixedFrequency;
     }
 
     public void TickEveryFrame(float deltaTime)
@@ -191,12 +207,7 @@ public class World : IXmlSerializable
         Debug.ULogChannel("World", "CreateCharacter");
         Character c = new Character(t, color, uniformColor, skinColor);
 
-        // Adds a random name to the Character
-        string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
-        filePath = System.IO.Path.Combine(filePath, "CharacterNames.txt");
-
-        string[] names = File.ReadAllLines(filePath);
-        c.name = names[UnityEngine.Random.Range(0, names.Length - 1)];
+        c.name = CharacterNameManager.GetNewName();
         characters.Add(c);
 
         if (OnCharacterCreated != null)
@@ -223,53 +234,6 @@ public class World : IXmlSerializable
         }
 
         return null;
-    }
-
-    /// <summary>
-    /// A function for testing out the system.
-    /// </summary>
-    public void RandomizeTiles()
-    {
-        for (int x = 0; x < Width; x++)
-        {
-            for (int y = 0; y < Height; y++)
-            {
-                for (int z = 0; z < Depth; z++)
-                {
-                    if (UnityEngine.Random.Range(0, 2) == 0)
-                    {
-                        tiles[x, y, z].Type = TileType.Empty;
-                    }
-                    else
-                    {
-                        tiles[x, y, z].Type = TileType.Floor;
-                    }
-                }
-            }
-        }
-    }
-
-    public void SetupPathfindingExample()
-    {
-        // Make a set of floors/walls to test pathfinding with.
-        int l = (Width / 2) - 5;
-        int b = (Height / 2) - 5;
-
-        for (int x = l - 5; x < l + 15; x++)
-        {
-            for (int y = b - 5; y < b + 15; y++)
-            {
-                tiles[x, y, 0].Type = TileType.Floor;
-
-                if (x == l || x == (l + 9) || y == b || y == (b + 9))
-                {
-                    if (x != (l + 9) && y != (b + 4))
-                    {
-                        PlaceFurniture("furn_SteelWall", tiles[x, y, 0]);
-                    }
-                }
-            }
-        }
     }
 
     /// <summary>
@@ -347,15 +311,15 @@ public class World : IXmlSerializable
         return null;
     }
 
-    public Furniture PlaceFurniture(string objectType, Tile t, bool doRoomFloodFill = true)
+    public Furniture PlaceFurniture(string type, Tile t, bool doRoomFloodFill = true)
     {
-        if (PrototypeManager.Furniture.Has(objectType) == false)
+        if (PrototypeManager.Furniture.Has(type) == false)
         {
-            Debug.ULogErrorChannel("World", "furniturePrototypes doesn't contain a proto for key: " + objectType);
+            Debug.ULogErrorChannel("World", "furniturePrototypes doesn't contain a proto for key: " + type);
             return null;
         }
 
-        Furniture furn = PrototypeManager.Furniture.Get(objectType);
+        Furniture furn = PrototypeManager.Furniture.Get(type);
 
         return PlaceFurniture(furn, t, doRoomFloodFill);
     }
@@ -657,6 +621,8 @@ public class World : IXmlSerializable
         inventoryManager = new InventoryManager();
         PowerNetwork = new ProjectPorcupine.PowerNetwork.PowerNetwork();
         temperature = new Temperature(Width, Height);
+
+        AddEventListeners();
         LoadSkybox();
     }
 
@@ -774,7 +740,7 @@ public class World : IXmlSerializable
                 int y = int.Parse(reader.GetAttribute("Y"));
                 int z = int.Parse(reader.GetAttribute("Z"));
 
-                Furniture furn = PlaceFurniture(reader.GetAttribute("objectType"), tiles[x, y, z], false);
+                Furniture furn = PlaceFurniture(reader.GetAttribute("type"), tiles[x, y, z], false);
                 furn.ReadXml(reader);
             }
             while (reader.ReadToNextSibling("Furniture"));

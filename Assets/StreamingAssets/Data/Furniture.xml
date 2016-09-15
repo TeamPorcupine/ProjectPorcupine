@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Furnitures>
-    <Furniture objectType="furn_SteelWall">
+    <Furniture type="furn_SteelWall">
         <Name>Steel Wall</Name>
         <Description>This is a steel wall.</Description>
         <TypeTag>Wall</TypeTag>
@@ -33,7 +33,7 @@
         <UnlocalizedDescription>furn_steel_wall_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture objectType="Door">
+    <Furniture type="Door">
         <Name>Door</Name>
         <Description>A door that characters can walk through.</Description>
         <TypeTag>Door</TypeTag>
@@ -58,6 +58,25 @@
             <Inventory type="Steel Plate" amount="1" />
         </DeconstructJob>
 
+        <Animations>
+          <Animation state="horizontal" valuebased="true">
+            <Frame name="DoorHorizontal_0" />
+            <Frame name="DoorHorizontal_1" />
+            <Frame name="DoorHorizontal_2" />
+            <Frame name="DoorHorizontal_3" />
+            <Frame name="DoorHorizontal_4" />
+            <Frame name="DoorHorizontal_5" />
+          </Animation>  
+          <Animation state="vertical" valuebased="true">
+            <Frame name="DoorVertical_0" />
+            <Frame name="DoorVertical_1" />
+            <Frame name="DoorVertical_2" />
+            <Frame name="DoorVertical_3" />
+            <Frame name="DoorVertical_4" />
+            <Frame name="DoorVertical_5" />                
+          </Animation>                      
+        </Animations>
+
         <Params>
             <Param name="openness" value="0" />
             <Param name="is_opening" value="0" />
@@ -68,13 +87,12 @@
         <Action event="OnUpdate" functionName="OnUpdate_Leak_Door" />
 
         <IsEnterable FunctionName="IsEnterable_Door" />
-        <GetSpriteName FunctionName="GetSpriteName_Door" />
 
         <LocalizationCode>furn_door</LocalizationCode>
         <UnlocalizedDescription>furn_door_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture objectType="Airlock">
+    <Furniture type="Airlock">
         <Name>Door</Name>
         <Description>An Airlock prevents air from leaving the base</Description>
         <TypeTag>Door</TypeTag>
@@ -96,10 +114,30 @@
             <Inventory type="Steel Plate" amount="7" />
         </DeconstructJob>
 
+        <Animations>
+          <Animation state="horizontal" valuebased="true">
+            <Frame name="AirlockHorizontal_0" />
+            <Frame name="AirlockHorizontal_1" />
+            <Frame name="AirlockHorizontal_2" />
+            <Frame name="AirlockHorizontal_3" />
+            <Frame name="AirlockHorizontal_4" />
+            <Frame name="AirlockHorizontal_5" />
+          </Animation>
+          <Animation state="vertical" valuebased="true">
+            <Frame name="AirlockVertical_0" />
+            <Frame name="AirlockVertical_1" />
+            <Frame name="AirlockVertical_2" />
+            <Frame name="AirlockVertical_3" />
+            <Frame name="AirlockVertical_4" />
+            <Frame name="AirlockVertical_5" />
+          </Animation>
+        </Animations>
+      
         <Params>
             <Param name="openness" value="0" />
             <Param name="is_opening" value="0" />
             <Param name="thermal_diffusivity" value="0.00001" />
+            <Param name="pressure_locked" value="0" />
         </Params>
 
         <Action event="OnUpdate" functionName="OnUpdate_AirlockDoor" />
@@ -108,13 +146,12 @@
         <ContextMenuAction FunctionName="AirlockDoor_Toggle_Pressure_Lock" Text="Toggle Pressure Lock" RequiereCharacterSelected="false"/>
 
         <IsEnterable FunctionName="IsEnterable_Door" />
-        <GetSpriteName FunctionName="GetSpriteName_Airlock" />
-
+        
         <LocalizationCode>furn_airlock</LocalizationCode>
         <UnlocalizedDescription>furn_airlock_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture objectType="Stockpile">
+    <Furniture type="Stockpile">
         <Name>Stockpile</Name>
         <Description>Characters will brings inventory here for storage.</Description>
         <TypeTag>Storage</TypeTag>
@@ -129,7 +166,7 @@
         <UnlocalizedDescription>furn_stockpile_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture objectType="Oxygen Generator">
+    <Furniture type="Oxygen Generator">
         <Name>Oxygen Generator</Name>
         <Description>Create O2 in the room in which it is built.</Description>
         <TypeTag>Generator</TypeTag>
@@ -162,7 +199,7 @@
         <UnlocalizedDescription>furn_oxygen_generator_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture objectType="Mining Drone Station">
+    <Furniture type="Mining Drone Station">
         <Name>Mining Drone Station</Name>
         <Description>Creates raw materials when worked by a character.</Description>
         <TypeTag>Workstation</TypeTag>
@@ -184,14 +221,14 @@
 
         <Action event="OnUpdate" functionName="MiningDroneStation_UpdateAction" />
 
-        <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Iron" Text="change to raw iron" RequiereCharacterSelected="false"/>
-        <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Copper" Text="change to raw copper" RequiereCharacterSelected="false"/>
+        <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Iron" Text="Change to Raw Iron" RequiereCharacterSelected="false"/>
+        <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Copper" Text="Change to Raw Copper" RequiereCharacterSelected="false"/>
 
         <LocalizationCode>furn_mining_drone_station</LocalizationCode>
         <UnlocalizedDescription>furn_mining_drone_station_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture objectType="Power Generator">
+    <Furniture type="Power Generator">
         <Name>Power Generator</Name>
         <TypeTag>Generator</TypeTag>
         <MovementCost>2</MovementCost>
@@ -225,7 +262,7 @@
         <UnlocalizedDescription>furn_power_generator_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture objectType="cloning_pod">
+    <Furniture type="cloning_pod">
         <Name>Cloning Pod</Name>
         <Description>Creates an additional worker, then is destroyed.</Description>
         <MovementCost>2</MovementCost>
@@ -267,7 +304,7 @@
         <UnlocalizedDescription>furn_cloning_pod_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture objectType="Metal Smelter">
+    <Furniture type="Metal Smelter">
         <Name>Metal Smelter</Name>
         <Description>Smelts your raw iron into metal.</Description>
         <TypeTag>Processor</TypeTag>
@@ -293,7 +330,58 @@
         <UnlocalizedDescription>furn_metal_smelter_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture objectType="heater">
+    <Furniture type="Metal Furnace">
+        <Name>Metal Furnace</Name>
+        <Description>Smelts your raw ores into metal.</Description>
+        <TypeTag>Processor</TypeTag>
+        <MovementCost>1</MovementCost>
+        <PathfindingModifier>1.5</PathfindingModifier>
+        <PathfindingWeight>2</PathfindingWeight>
+        <Width>3</Width>
+        <Height>3</Height>
+
+        <BuildingJob jobTime="0" />
+
+        <JobSpotOffset X="1" Y="0" />
+
+        <Workshop>
+            <ProductionChain name="Copper smelting" processingTime="3">
+                <Input>
+                    <Item objectType="Raw Copper" amount="2" slotPosX="0" slotPosY="0" />
+                </Input>
+                <Output>
+                    <Item objectType="Copper Plate" amount="1" slotPosX="2" slotPosY="0" />
+                </Output>
+            </ProductionChain>
+            <ProductionChain name="Iron smelting" processingTime="4">
+                <Input>
+                    <Item objectType="Raw Iron" amount="2" slotPosX="0" slotPosY="0" />
+                </Input>
+                <Output>
+                    <Item objectType="Steel Plate" amount="1" slotPosX="2" slotPosY="0" />
+                </Output>
+            </ProductionChain>
+            <UsedAnimations idle="idle" running="running" />
+        </Workshop>
+
+        <Animations>
+            <Animation state="idle" fps="2" looping="false">
+                <Frame name="Metal Furnace" />
+            </Animation>
+            <Animation state="running" fps="6" looping="true">
+                <Frame name="Metal_Furnace_Running_1" />
+                <Frame name="Metal_Furnace_Running_2" />
+                <Frame name="Metal_Furnace_Running_3" />
+                <Frame name="Metal_Furnace_Running_4" />
+                <Frame name="Metal_Furnace_Running_5" />
+            </Animation>
+        </Animations>
+
+        <LocalizationCode>furn_metal_furnace</LocalizationCode>
+        <UnlocalizedDescription>furn_metal_furnace_desc</UnlocalizedDescription>
+    </Furniture>
+
+    <Furniture type="Heater">
         <Name>Heater</Name>
         <Description>Raises temperature in the room.</Description>
         <BaseType>Temperature</BaseType>
@@ -321,7 +409,7 @@
         <UnlocalizedDescription>furn_heater_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture objectType="Power Cell Press">
+    <Furniture type="Power Cell Press">
         <Name>Power Cell Press</Name>
         <Description>A press that converts steel plate and something into power cells.</Description>
         <MovementCost>1</MovementCost>
@@ -333,18 +421,23 @@
 
         <BuildingJob jobTime="1" />
 
-        <Params>
-            <Param name="presstime" value="0" />
-            <Param name="presstime_required" value="15" />
-        </Params>
-
-        <Action event="OnUpdate" functionName="PowerCellPress_UpdateAction" />
+      <Workshop>
+          <ProductionChain name="Power Cell Pressing" processingTime="5">
+              <Input>
+                  <Item objectType="Uranium" amount="3" slotPosX="0" slotPosY="0" />
+                  <Item objectType="Steel Plate" amount="2" slotPosX="1" slotPosY="0" />
+              </Input>
+              <Output>
+                  <Item objectType="Power Cell" amount="1" slotPosX="2" slotPosY="1" />
+              </Output>
+          </ProductionChain>
+      </Workshop>
 
         <LocalizationCode>furn_power_cell_press</LocalizationCode>
         <UnlocalizedDescription>furn_power_cell_press_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture objectType="Small Landing Pad">
+    <Furniture type="Small Landing Pad">
         <Name>Small Landing Pad</Name>
         <Description>A landing pad for small spaceboats to land.</Description>
         <TypeTag>OutdoorOnly</TypeTag>
@@ -375,7 +468,7 @@
         <UnlocalizedDescription>furn_small_landing_pad_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture objectType="compressor_oxygen">
+    <Furniture type="compressor_oxygen">
         <Name>Oxygen Compressor</Name>
         <Description>Stores and releases oxygen as needed</Description>
         <MovementCost>2</MovementCost>
@@ -403,7 +496,7 @@
         <UnlocalizedDescription>furn_oxygen_compressor_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture objectType="solar_panel">
+    <Furniture type="solar_panel">
         <Name>Solar Panel</Name>
         <TypeTag>Generator</TypeTag>
         <TypeTag>OutdoorOnly</TypeTag>
@@ -428,7 +521,7 @@
         <UnlocalizedDescription>furn_solar_panel_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture objectType="pump_air">
+    <Furniture type="pump_air">
         <Name>Air Pump</Name>
         <MovementCost>0</MovementCost>
         <Width>1</Width>
@@ -454,7 +547,7 @@
         <UnlocalizedDescription>furn_pump_air_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture objectType="simple_bed">
+    <Furniture type="simple_bed">
         <Name>Simple Bed</Name>
         <Description>A simple bed</Description>
         <TypeTag>Bed</TypeTag>
@@ -479,7 +572,7 @@
         <UnlocalizedDescription>furn_simple_bed_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture objectType="accumulator">
+    <Furniture type="accumulator">
         <Name>Accumulator</Name>
         <Description>Accumulator</Description>
         <MovementCost>2</MovementCost>
@@ -497,12 +590,13 @@
         <UnlocalizedDescription>furn_accumulator_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture objectType="mine">
+    <Furniture type="mine">
         <Name>A Mining Spot</Name>
         <Description>A spot for mining ore</Description>
         <TypeTag>Ore</TypeTag>
         <TypeTag>OutdoorOnly</TypeTag>
         <TypeTag>Non-buildable</TypeTag>
+        <TypeTag>Non-deconstructible</TypeTag>
         <MovementCost>2</MovementCost>
         <PathfindingModifier>1.5</PathfindingModifier>
         <PathfindingWeight>2</PathfindingWeight>
@@ -522,7 +616,7 @@
         <UnlocalizedDescription>furn_mine_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture objectType="RTG">
+    <Furniture type="RTG">
         <Name>RTG</Name>
         <Description>Radioisotope thermoelectric generator provides electricity and heat</Description>
         <TypeTag>Temperature</TypeTag>
