@@ -15,11 +15,13 @@ public class JobSpriteController : BaseSpriteController<Job>
     // on FurnitureSpriteController because we don't yet fully know
     // what our job system is going to look like in the end.
     private FurnitureSpriteController fsc;
+    private UtilitySpriteController usc;
 
     // Use this for initialization
-    public JobSpriteController(World world, FurnitureSpriteController furnitureSpriteController) : base(world, "Jobs")
+    public JobSpriteController(World world, FurnitureSpriteController furnitureSpriteController, UtilitySpriteController utilitySpriteController) : base(world, "Jobs")
     {
         fsc = furnitureSpriteController;
+        usc = utilitySpriteController;
         world.jobQueue.OnJobCreated += OnCreated;
 
         foreach (Job job in world.jobQueue.PeekJobs())
@@ -104,8 +106,15 @@ public class JobSpriteController : BaseSpriteController<Job>
         else
         {
             // This is a normal furniture job.
-            job_go.transform.position = new Vector3(job.tile.X + ((job.furniturePrototype.Width - 1) / 2f), job.tile.Y + ((job.furniturePrototype.Height - 1) / 2f), job.tile.Z);
-            sr.sprite = fsc.GetSpriteForFurniture(job.JobObjectType);
+            job_go.transform.position = new Vector3(job.tile.X + ((job.buildablePrototype.Width - 1) / 2f), job.tile.Y + ((job.buildablePrototype.Height - 1) / 2f), job.tile.Z);
+            if (job.buildablePrototype.GetType().ToString() == "Furniture")
+            {
+                sr.sprite = fsc.GetSpriteForFurniture(job.JobObjectType);
+            }
+            else if (job.buildablePrototype.GetType().ToString() == "Utility")
+            {
+                sr.sprite = usc.GetSpriteForUtility(job.JobObjectType);
+            }
         }
 
         sr.color = new Color(0.5f, 1f, 0.5f, 0.25f);
