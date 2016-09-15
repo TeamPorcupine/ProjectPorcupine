@@ -560,6 +560,55 @@ function AirPump_GetSpriteName(furniture)
     return furniture.Type .. suffix
 end
 
+function Vent_OnUpdate(furniture, deltaTime)
+    if (furniture.HasPower() == false) then
+        return
+    end
+
+    local t = furniture.Tile
+    local north = World.Current.GetTileAt(t.X, t.Y + 1, t.Z)
+    local south = World.Current.GetTileAt(t.X, t.Y - 1, t.Z)
+    local west = World.Current.GetTileAt(t.X - 1, t.Y, t.Z)
+    local east = World.Current.GetTileAt(t.X + 1, t.Y, t.Z)
+    
+    -- Find the correct rooms for source and target
+    -- Maybe in future this could be cached. it only changes when the direction changes
+    local sourceRoom = nil
+    local targetRoom = nil
+    if (north.Room != nil and south.Room != nil) then
+        sourceRoom = south.Room
+        targetRoom = north.Room
+    elseif (west.Room != nil and east.Room != nil) then
+        sourceRoom = west.Room
+        targetRoom = east.Room
+    else
+        ModUtils.UChannelLogWarning("Furniture", "Air Pump blocked. Direction unclear")
+        return
+    end
+    
+    furniture.Tile.EqualiseGas(deltaTime * furniture.Parameters["gas_throughput"].ToFloat() * furniture.Parameters["openness"].ToFloat())
+end
+
+function Vent_GetSpriteName(furniture)
+    local t = furniture.Tile
+    if (furniture.Tile == nil) then
+        return furniture.Type
+    end
+    local north = World.Current.GetTileAt(t.X, t.Y + 1, t.Z)
+    local south = World.Current.GetTileAt(t.X, t.Y - 1, t.Z)
+    local west = World.Current.GetTileAt(t.X - 1, t.Y, t.Z)
+    local east = World.Current.GetTileAt(t.X + 1, t.Y, t.Z)
+    
+    suffix = ""
+    if (north.Room != nil and south.Room != nil) then
+        suffix = "_NS"
+    elseif (west.Room != nil and east.Room != nil) then
+        suffix = "_EW"
+    end
+    
+    return furniture.Type .. suffix
+end
+
 function AirPump_FlipDirection(furniture, character)
     if (furniture.Parameters["flow_direction_up"].ToFloat() > 0) then
         furniture.Parameters["flow_direction_up"].SetValue(0)
