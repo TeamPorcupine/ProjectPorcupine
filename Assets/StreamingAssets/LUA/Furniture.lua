@@ -585,12 +585,10 @@ end
 
 function Vent_Open(furniture)
     furniture.Parameters["openness"].SetValue("1")
-        ModUtils.ULogWarning("Opening Vent")
 end
 
 function Vent_Close(furniture)
     furniture.Parameters["openness"].SetValue("0")
-        ModUtils.ULogWarning("Closing Vent")
 end
 
 function AirPump_FlipDirection(furniture, character)
