@@ -36,7 +36,7 @@ public class BuildableJobs
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="FurnitureJobs"/> class by copying some of the values from another instance.
+    /// Initializes a new instance of the <see cref="BuildableJobs"/> class by copying some of the values from another instance.
     /// </summary>
     /// <param name="buildEntity">The current buildable.</param>
     /// <param name="jobs">The buildable jobs to copy from.</param>
@@ -52,20 +52,20 @@ public class BuildableJobs
     }
 
     /// <summary>
-    /// Gets the spot offset where the Character will stand when he is using the furniture. This is relative to the bottom
-    /// left tile of the sprite. This can be outside of the actual furniture.
+    /// Gets the spot offset where the Character will stand when he is using the buildable. This is relative to the bottom
+    /// left tile of the sprite. This can be outside of the actual buildable.
     /// </summary>
-    /// <value>The spot offset where the Character will stand when he uses the furniture.</value>
+    /// <value>The spot offset where the Character will stand when he uses the buildable.</value>
     public Vector2 WorkSpotOffset { get; private set; }
 
     /// <summary>
-    /// Gets the spot offset where inventory is inserted for a Job with this furniture.
+    /// Gets the spot offset where inventory is inserted for a Job with this buildable.
     /// </summary>
     /// <value>The spawn spot offset.</value>
     public Vector2 InputSpotOffset { get; private set; }
 
     /// <summary>
-    /// Gets the spot offset where inventory is spawn when a Job is done with this furniture.
+    /// Gets the spot offset where inventory is spawn when a Job is done with this buildable.
     /// </summary>
     /// <value>The spawn spot offset.</value>
     public Vector2 OutputSpotOffset { get; private set; }
@@ -80,9 +80,9 @@ public class BuildableJobs
     }
 
     /// <summary>
-    /// Gets the tile where inventory is placed to be used by this furniture.
+    /// Gets the tile where inventory is placed to be used by this buildable.
     /// </summary>
-    /// <value>Tile where inventory is placed to be used by this furniture.</value>
+    /// <value>Tile where inventory is placed to be used by this buildable.</value>
     public Tile InputSpotTile
     {
         get { return GetTileAtOffset(InputSpotOffset); }
@@ -98,9 +98,9 @@ public class BuildableJobs
     }
 
     /// <summary>
-    /// How many active jobs are linked to this furniture.
+    /// How many active jobs are linked to this buildable.
     /// </summary>
-    /// <value>The number of active jobs linked to this furniture.</value>
+    /// <value>The number of active jobs linked to this buildable.</value>
     public int Count
     {
         get { return activeJobs.Count; }
@@ -143,7 +143,7 @@ public class BuildableJobs
     }
 
     /// <summary>
-    /// Checks for first furniture job with specific condition.
+    /// Checks for the first buildable job with specific condition.
     /// </summary>
     /// <param name="predicate"></param>
     /// <param name="job">Job fulfilling predicate.</param>
@@ -155,9 +155,9 @@ public class BuildableJobs
     }
 
     /// <summary>
-    /// Link a job to the current furniture.
+    /// Link a job to the current buildable.
     /// </summary>
-    /// <param name="job">The job that you want to link to the furniture.</param>
+    /// <param name="job">The job that you want to link to the buildable.</param>
     public void Add(Job job)
     {
         job.buildable = buildable;
@@ -167,7 +167,7 @@ public class BuildableJobs
     }
 
     /// <summary>
-    /// Cancel all the active jobs linked to the current furniture.
+    /// Cancel all the active jobs linked to the current buildable.
     /// </summary>
     public void CancelAll()
     {
@@ -179,7 +179,7 @@ public class BuildableJobs
     }
 
     /// <summary>
-    /// Resumes all the paused jobs linked to the current furniture.
+    /// Resumes all the paused jobs linked to the current buildable.
     /// </summary>
     /// TODO: Refactor this when the new job system is implemented
     public void ResumeAll()
@@ -196,7 +196,7 @@ public class BuildableJobs
     }
 
     /// <summary>
-    /// Pauses all the active jobs linked to the current furniture.
+    /// Pauses all the active jobs linked to the current buildable.
     /// </summary>
     /// TODO: Refactor this when the new job system is implemented
     public void PauseAll()
@@ -213,7 +213,7 @@ public class BuildableJobs
     }
 
     /// <summary>
-    /// Remove the specified job. It removes the link to the furniture and the event.
+    /// Remove the specified job. It removes the link to the buildable and the event.
     /// </summary>
     /// <param name="job">The job to remove.</param>
     private void Remove(Job job)
@@ -245,10 +245,10 @@ public class BuildableJobs
     }
 
     /// <summary>
-    /// Gets the a tile at the furniture tile plus an offset.
+    /// Gets the a tile at the buildable tile plus an offset.
     /// </summary>
-    /// <returns>The a tile at the furniture tile plus an offset.</returns>
-    /// <param name="offset">A an offset from the furniture Tile.</param>
+    /// <returns>The a tile at the buildable tile plus an offset.</returns>
+    /// <param name="offset">A an offset from the buildable Tile.</param>
     private Tile GetTileAtOffset(Vector2 offset)
     {
         return World.Current.GetTileAt(buildable.Tile.X + (int)offset.x, buildable.Tile.Y + (int)offset.y, buildable.Tile.Z);
