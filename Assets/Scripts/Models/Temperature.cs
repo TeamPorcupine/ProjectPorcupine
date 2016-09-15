@@ -62,18 +62,16 @@ public class Temperature
     /// <summary>
     /// Create and Initialize arrays with default values.
     /// </summary>
-    /// <param name="xS">X size of world.</param>
-    /// <param name="yS">Y size of world.</param>
     public Temperature()
     {
         List<Room> rooms = World.Current.rooms;
         //int totalSize = 0;
         //if (rooms.Count == 1) { return; }
-        for (int x = 1; x < rooms.Count; x++) {
+        //for (int x = 1; x < rooms.Count; x++) {
 
-            //totalSize += rooms[x].getTiles.count;
+        //    totalSize += rooms[x].getTiles.count;
             
-        }
+        //}
 
         temperature = new float[2][]
          {
@@ -251,7 +249,7 @@ public class Temperature
     /// <returns>Actual index for array access.</returns>
     private int GetIndex(int x, int y, int z)
     {
-        return (z*sizeZ +y) * sizeX + x;
+        return (z * sizeX * sizeY) + y * sizeX + x;
     }
 
     /// <summary>
