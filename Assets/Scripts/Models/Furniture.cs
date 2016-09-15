@@ -477,7 +477,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         if (!string.IsNullOrEmpty(getSpriteNameAction))
         {
             DynValue ret = FunctionsManager.Furniture.Call(getSpriteNameAction, this);
-            Debug.Log(ret);
             return ret.String;
         }
 
