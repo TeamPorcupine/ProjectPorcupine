@@ -78,8 +78,9 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
     // Furniture is something like a wall, door, or sofa.
     public Furniture Furniture { get; private set; }
 
-    //The number of times this tile has been walked on since last cleaned.
-    public int walkCount { get; protected set; }
+    // The number of times this tile has been walked on since last cleaned.
+    public int WalkCount { get; protected set; }
+
     // Utility is something like a Power Cables or Water Pipes.
     public Dictionary<string, Utility> Utilities { get; private set; }
 
@@ -133,6 +134,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
     }
 
     public bool IsSelected { get; set; }
+
     public bool ForceTileUpdate { get; protected set; }
     #endregion
 
@@ -402,13 +404,13 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
 
     public void OnEnter()
     {
-        walkCount++;
+        WalkCount++;
         ReportTileChanged();
     }
 
     public void OnTileClean()
     {
-        walkCount = 0;
+        WalkCount = 0;
         ReportTileChanged();
     }
     #endregion
@@ -424,7 +426,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         writer.WriteAttributeString("X", X.ToString());
         writer.WriteAttributeString("Y", Y.ToString());
         writer.WriteAttributeString("Z", Z.ToString());
-        writer.WriteAttributeString("timesWalked", walkCount.ToString());
+        writer.WriteAttributeString("timesWalked", WalkCount.ToString());
         writer.WriteAttributeString("RoomID", Room == null ? "-1" : Room.ID.ToString());
         writer.WriteAttributeString("Type", Type.Type);
     }
@@ -439,7 +441,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         }
 
         Type = TileType.GetTileType(reader.GetAttribute("Type"));
-        walkCount = int.Parse(reader.GetAttribute("timesWalked"));
+        WalkCount = int.Parse(reader.GetAttribute("timesWalked"));
         ForceTileUpdate = true;
     }
     #endregion
@@ -508,6 +510,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         {
             TileChanged(this);
         }
+
         ForceTileUpdate = false;
     }
 }

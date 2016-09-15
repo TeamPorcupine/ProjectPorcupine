@@ -77,16 +77,16 @@ public class TileSpriteController : BaseSpriteController<Tile>
         }
 
         // TODO Evaluate this criteria and naming schema!
-        if (DoesTileSpriteExist(tile.Type.Name + "_Heavy") && (tile.walkCount >= 30))
+        if (DoesTileSpriteExist(tile.Type.Name + "_Heavy") && (tile.WalkCount >= 30))
         {
-            if (tile.ForceTileUpdate || tile.walkCount == 30)
+            if (tile.ForceTileUpdate || tile.WalkCount == 30)
             {
                 ChangeTileSprite(tile_go, tile.Type.Name + "_Heavy");
             }
         }
-        else if (DoesTileSpriteExist(tile.Type.Name + "_Low") && (tile.walkCount >= 10))
+        else if (DoesTileSpriteExist(tile.Type.Name + "_Low") && (tile.WalkCount >= 10))
         {
-            if (tile.ForceTileUpdate || tile.walkCount == 10)
+            if (tile.ForceTileUpdate || tile.WalkCount == 10)
             {
                 ChangeTileSprite(tile_go, tile.Type.Name + "_Low");
             }
