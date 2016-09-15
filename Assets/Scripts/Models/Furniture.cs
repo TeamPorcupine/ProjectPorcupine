@@ -59,6 +59,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
 
     private bool isOperating;
 
+    // did we have power in the last update?
+    private bool prevUpdatePowerOn;
+
     /// TODO: Implement object rotation
     /// <summary>
     /// Initializes a new instance of the <see cref="Furniture"/> class.
@@ -79,6 +82,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         PathfindingModifier = 0f;
         Height = 1;
         Width = 1;
+        DragType = "single";
     }
 
     // Copy Constructor -- don't call this directly, unless we never
@@ -415,10 +419,17 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     {
         if (PowerConnection != null && PowerConnection.IsPowerConsumer && HasPower() == false)
         {
+            if (prevUpdatePowerOn)
+            {
+                EventActions.Trigger("OnPowerOff", this, deltaTime);                
+            }
+
             Jobs.PauseAll();
+            prevUpdatePowerOn = false;
             return;
         }
 
+        prevUpdatePowerOn = true;
         Jobs.ResumeAll();
 
         // TODO: some weird thing happens
@@ -617,7 +628,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                     {
                         LuaFunction = reader.GetAttribute("FunctionName"),
                         Text = reader.GetAttribute("Text"),
-                        RequiereCharacterSelected = bool.Parse(reader.GetAttribute("RequiereCharacterSelected")),
+                        RequireCharacterSelected = bool.Parse(reader.GetAttribute("RequireCharacterSelected")),
                         DevModeOnly = bool.Parse(reader.GetAttribute("DevModeOnly") ?? "false")
                     });
                     break;
@@ -961,11 +972,13 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             if (!contextMenuLuaAction.DevModeOnly ||
                 Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
             {
+                // TODO The Action could be done via a lambda, but it always uses the same space of memory, thus if 2 actions are performed, the same action will be produced for each.
                 yield return new ContextMenuAction
                 {
                     Text = contextMenuLuaAction.Text,
-                    RequireCharacterSelected = contextMenuLuaAction.RequiereCharacterSelected,
-                    Action = (cma, c) => InvokeContextMenuLuaAction(contextMenuLuaAction.LuaFunction, c)
+                    RequireCharacterSelected = contextMenuLuaAction.RequireCharacterSelected,
+                    Action = InvokeContextMenuLuaAction,
+                    Parameter = contextMenuLuaAction.LuaFunction    // Note that this is only in place because of the problem with the previous statement.
                 };
             }
         }
@@ -1051,9 +1064,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         function(this, arg);
     }
 
-    private void InvokeContextMenuLuaAction(string luaFunction, Character character)
+    private void InvokeContextMenuLuaAction(ContextMenuAction action, Character character)
     {
-        FunctionsManager.Furniture.Call(luaFunction, this, character);
+        FunctionsManager.Furniture.Call(action.Parameter, this, character);
     }
 
     [MoonSharpVisible(true)]

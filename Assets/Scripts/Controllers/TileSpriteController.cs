@@ -75,8 +75,27 @@ public class TileSpriteController : BaseSpriteController<Tile>
             Debug.ULogErrorChannel("TileSpriteController", "tileGameObjectMap's returned GameObject is null -- did you forget to add the tile to the dictionary? Or maybe forget to unregister a callback?");
             return;
         }
-        
-        tile_go.GetComponent<SpriteRenderer>().sprite = SpriteManager.GetSprite("Tile", tile.Type.Name);
+
+        // TODO Evaluate this criteria and naming schema!
+        if (DoesTileSpriteExist(tile.Type.Name + "_Heavy") && (tile.WalkCount >= 30))
+        {
+            if (tile.ForceTileUpdate || tile.WalkCount == 30)
+            {
+                ChangeTileSprite(tile_go, tile.Type.Name + "_Heavy");
+            }
+        }
+        else if (DoesTileSpriteExist(tile.Type.Name + "_Low") && (tile.WalkCount >= 10))
+        {
+            if (tile.ForceTileUpdate || tile.WalkCount == 10)
+            {
+                ChangeTileSprite(tile_go, tile.Type.Name + "_Low");
+            }
+        }
+        else
+        { 
+            ChangeTileSprite(tile_go, tile.Type.Name);
+        }
+
         if (tile.Type == TileType.Empty)
         {
             tile_go.SetActive(false);
@@ -89,5 +108,16 @@ public class TileSpriteController : BaseSpriteController<Tile>
 
     protected override void OnRemoved(Tile tile)
     {
+    }
+
+    private void ChangeTileSprite(GameObject tile_go, string name)
+    {
+        // TODO How to manage if not all of the names are present?
+        tile_go.GetComponent<SpriteRenderer>().sprite = SpriteManager.GetSprite("Tile", name);
+    }
+
+    private bool DoesTileSpriteExist(string name)
+    {
+        return SpriteManager.HasSprite("Tile", name);
     }
 }

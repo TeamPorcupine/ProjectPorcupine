@@ -143,7 +143,7 @@
         <Action event="OnUpdate" functionName="OnUpdate_AirlockDoor" />
         <Action event="OnUpdate" functionName="OnUpdate_Leak_Airlock" />
 
-        <ContextMenuAction FunctionName="AirlockDoor_Toggle_Pressure_Lock" Text="Toggle Pressure Lock" RequiereCharacterSelected="false"/>
+        <ContextMenuAction FunctionName="AirlockDoor_Toggle_Pressure_Lock" Text="Toggle Pressure Lock" RequireCharacterSelected="false"/>
 
         <IsEnterable FunctionName="IsEnterable_Door" />
         
@@ -161,6 +161,7 @@
         <BuildingJob jobTime="0" />
 
         <Action event="OnUpdate" functionName="Stockpile_UpdateAction" />
+        <DragType>area</DragType>
 
         <LocalizationCode>furn_stockpile</LocalizationCode>
         <UnlocalizedDescription>furn_stockpile_desc</UnlocalizedDescription>
@@ -179,6 +180,17 @@
 
         <BuildingJob jobTime="0" />
 
+        <Animations>
+          <Animation state="idle" looping="false">
+            <Frame name="Oxygen Generator" />
+          </Animation>
+          <Animation state="running" fps="8" looping="true">
+            <Frame name="Oxygen_Generator_Running1" />
+            <Frame name="Oxygen_Generator_Running2" />
+            <Frame name="Oxygen_Generator_Running3" />
+          </Animation>
+        </Animations>
+      
         <Params>
             <!-- <Param name="gas_name" value="O2" /> -->
             <Param name="gas_limit" value="0.2" />
@@ -193,8 +205,9 @@
             </Param>
         </Params>
 
-        <Action event="OnUpdate" functionName="OnUpdate_GasGenerator" />
-
+        <Action event="OnUpdate" functionName="OxygenGenerator_OnUpdate" />
+        <Action event="OnPowerOff" functionName="OxygenGenerator_OnPowerOff" />
+      
         <LocalizationCode>furn_oxygen_generator</LocalizationCode>
         <UnlocalizedDescription>furn_oxygen_generator_desc</UnlocalizedDescription>
     </Furniture>
@@ -221,8 +234,8 @@
 
         <Action event="OnUpdate" functionName="MiningDroneStation_UpdateAction" />
 
-        <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Iron" Text="Change to Raw Iron" RequiereCharacterSelected="false"/>
-        <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Copper" Text="Change to Raw Copper" RequiereCharacterSelected="false"/>
+        <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Iron" Text="Change to Raw Iron" RequireCharacterSelected="false"/>
+        <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Copper" Text="Change to Raw Copper" RequireCharacterSelected="false"/>
 
         <LocalizationCode>furn_mining_drone_station</LocalizationCode>
         <UnlocalizedDescription>furn_mining_drone_station_desc</UnlocalizedDescription>
@@ -239,7 +252,7 @@
         <PowerConnection inputRate="" outputRate="5" capacity=""/>
 
         <Animations>
-            <Animation state="idle" fps="2" looping="false">
+            <Animation state="idle" looping="false">
                 <Frame name="Power-Generator-01" />
             </Animation>
             <Animation state="running" fps="6" looping="true">
@@ -281,7 +294,7 @@
         </DeconstructJob>
 
         <Animations>
-            <Animation state="idle" fps="1" looping="false">
+            <Animation state="idle" looping="false">
                 <Frame name="cloning_pod" />
             </Animation>
             <Animation state="running" fps="1" looping="true">
@@ -461,7 +474,7 @@
 
         <ContextMenuAction FunctionName="LandingPad_Test_CallTradeShip"
                            Text="Call Trade Ship Test"
-                           RequiereCharacterSelected="false"
+                           RequireCharacterSelected="false"
                            DevModeOnly="true"/>
 
         <LocalizationCode>furn_small_landing_pad</LocalizationCode>
@@ -480,6 +493,21 @@
 
         <BuildingJob jobTime="2" />
 
+        <Animations>
+          <Animation state="running" valuebased="true">
+            <Frame name="compressor_oxygen" />
+            <Frame name="compressor_oxygen_0" />
+            <Frame name="compressor_oxygen_1" />
+            <Frame name="compressor_oxygen_2" />
+            <Frame name="compressor_oxygen_3" />
+            <Frame name="compressor_oxygen_4" />
+            <Frame name="compressor_oxygen_5" />
+            <Frame name="compressor_oxygen_6" />
+            <Frame name="compressor_oxygen_7" />
+            <Frame name="compressor_oxygen_8" />
+          </Animation>
+        </Animations>
+      
         <Params>
             <!-- <Param name="gas_name" value="O2" /> -->
             <Param name="max_gas_content" value="5" />
@@ -490,8 +518,8 @@
         </Params>
 
         <Action event="OnUpdate" functionName="OxygenCompressor_OnUpdate" />
-        <GetSpriteName FunctionName="OxygenCompressor_GetSpriteName" />
-
+        <Action event="OnPowerOff" functionName="OxygenCompressor_OnPowerOff" />
+      
         <LocalizationCode>furn_oxygen_compressor</LocalizationCode>
         <UnlocalizedDescription>furn_oxygen_compressor_desc</UnlocalizedDescription>
     </Furniture>
@@ -541,7 +569,7 @@
 
         <Action event="OnUpdate" functionName="AirPump_OnUpdate" />
         <GetSpriteName FunctionName="AirPump_GetSpriteName" />
-        <ContextMenuAction FunctionName="AirPump_FlipDirection" Text="Flip Direction" RequiereCharacterSelected="false" />
+        <ContextMenuAction FunctionName="AirPump_FlipDirection" Text="Flip Direction" RequireCharacterSelected="false" />
 
         <LocalizationCode>furn_pump_air</LocalizationCode>
         <UnlocalizedDescription>furn_pump_air_desc</UnlocalizedDescription>
@@ -609,7 +637,7 @@
             <Param name="ore_type" value="Raw Iron" />
         </Params>
 
-        <ContextMenuAction FunctionName="OreMine_CreateMiningJob" Text="Mine Ore" RequiereCharacterSelected="false" />
+        <ContextMenuAction FunctionName="OreMine_CreateMiningJob" Text="Mine Ore" RequireCharacterSelected="false" />
         <GetSpriteName FunctionName="OreMine_GetSpriteName" />
 
         <LocalizationCode>furn_mine</LocalizationCode>
