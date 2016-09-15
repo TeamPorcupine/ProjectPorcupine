@@ -260,7 +260,7 @@ public class Room : IXmlSerializable
         if (atmosphericGasses.ContainsKey(name))
         {
             atmosphericGasses[name] += amount;
-            if(amount.IsZero()) 
+            if (amount.IsZero()) 
             {
                 deltaGas[name] = "=";
             }
