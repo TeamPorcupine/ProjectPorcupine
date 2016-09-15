@@ -561,32 +561,10 @@ function AirPump_GetSpriteName(furniture)
 end
 
 function Vent_OnUpdate(furniture, deltaTime)
-    if (furniture.HasPower() == false) then
-        return
+    furniture.SetAnimationProgressValue(furniture.Parameters["openness"].ToFloat(), 1)
+    if (furniture.Parameters["openness"].ToInt() == 1) then
+        furniture.Tile.EqualiseGas(deltaTime * furniture.Parameters["gas_throughput"].ToFloat() * furniture.Parameters["openness"].ToInt())
     end
-
-    local t = furniture.Tile
-    local north = World.Current.GetTileAt(t.X, t.Y + 1, t.Z)
-    local south = World.Current.GetTileAt(t.X, t.Y - 1, t.Z)
-    local west = World.Current.GetTileAt(t.X - 1, t.Y, t.Z)
-    local east = World.Current.GetTileAt(t.X + 1, t.Y, t.Z)
-    
-    -- Find the correct rooms for source and target
-    -- Maybe in future this could be cached. it only changes when the direction changes
-    local sourceRoom = nil
-    local targetRoom = nil
-    if (north.Room != nil and south.Room != nil) then
-        sourceRoom = south.Room
-        targetRoom = north.Room
-    elseif (west.Room != nil and east.Room != nil) then
-        sourceRoom = west.Room
-        targetRoom = east.Room
-    else
-        ModUtils.UChannelLogWarning("Furniture", "Air Pump blocked. Direction unclear")
-        return
-    end
-    
-    furniture.Tile.EqualiseGas(deltaTime * furniture.Parameters["gas_throughput"].ToFloat() * furniture.Parameters["openness"].ToFloat())
 end
 
 function Vent_GetSpriteName(furniture)
@@ -602,11 +580,32 @@ function Vent_GetSpriteName(furniture)
     suffix = ""
     if (north.Room != nil and south.Room != nil) then
         suffix = "_NS"
+		furniture.SetAnimationState("vertical")
     elseif (west.Room != nil and east.Room != nil) then
         suffix = "_EW"
+		furniture.SetAnimationState("horizontal")
     end
     
+    if (furniture.Parameters["openness"].ToInt() == 0) then
+        suffix = suffix .. "_Closed"
+        ModUtils.ULogWarning("Closed")
+    else
+        suffix = suffix .. "_Opened"
+        ModUtils.ULogWarning("Opened")
+    end
+    
+    ModUtils.ULogWarning(suffix)
     return furniture.Type .. suffix
+end
+
+function Vent_Open(furniture)
+    furniture.Parameters["openness"].SetValue("1")
+        ModUtils.ULogWarning("Opening Vent")
+end
+
+function Vent_Close(furniture)
+    furniture.Parameters["openness"].SetValue("0")
+        ModUtils.ULogWarning("Closing Vent")
 end
 
 function AirPump_FlipDirection(furniture, character)
