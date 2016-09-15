@@ -7,9 +7,9 @@
 // ====================================================
 #endregion
 using System.Collections.Generic;
+using ProjectPorcupine.Localization;
 using UnityEngine;
 using UnityEngine.UI;
-using ProjectPorcupine.Localization;
 
 public class DialogBoxSettings : DialogBox
 {
