@@ -23,10 +23,10 @@ public class Job : ISelectable, IPrototypable
     // working at a desk, and maybe even fighting enemies.
     public Tile tile;
 
-    public Furniture furniturePrototype;
+    public IBuildable buildablePrototype;
 
     // The piece of furniture that owns this job. Frequently will be null.
-    public Furniture furniture;
+    public IBuildable buildable;
 
     public bool canTakeFromStockpile = true;
 

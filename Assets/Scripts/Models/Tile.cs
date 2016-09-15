@@ -40,11 +40,13 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         Z = z;
         Characters = new List<Character>();
         MovementModifier = 1;
+        Utilities = new Dictionary<string, Utility>();
     }
 
     // The function we callback any time our tile's data changes
     public event Action<Tile> TileChanged;
 
+    #region Accessors
     public TileType Type
     {
         get
@@ -60,12 +62,9 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
             }
 
             type = value;
+            ForceTileUpdate = true;
 
-            // Call the callback and let things know we've changed.
-            if (TileChanged != null)
-            {
-                TileChanged(this);
-            }
+            OnTileClean();
         }
     }
 
@@ -78,6 +77,12 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
 
     // Furniture is something like a wall, door, or sofa.
     public Furniture Furniture { get; private set; }
+
+    // The number of times this tile has been walked on since last cleaned.
+    public int WalkCount { get; protected set; }
+
+    // Utility is something like a Power Cables or Water Pipes.
+    public Dictionary<string, Utility> Utilities { get; private set; }
 
     /// <summary>
     /// The total pathfinding cost of entering this tile.
@@ -130,6 +135,10 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
 
     public bool IsSelected { get; set; }
 
+    public bool ForceTileUpdate { get; protected set; }
+    #endregion
+
+    #region Manage Objects
     // Called when the character has completed the job to change tile type
     public static void ChangeTileTypeJobComplete(Job theJob)
     {
@@ -187,6 +196,37 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         return true;
     }
 
+    public bool UnplaceUtility()
+    {
+        // Just uninstalling.
+        if (Utilities == null)
+        {
+            return false;
+        }
+
+        Utilities = null;
+
+        return true;
+    }
+
+    public bool PlaceUtility(Utility objInstance)
+    {
+        if (objInstance == null)
+        {
+            return UnplaceUtility();
+        }
+
+        if (objInstance.IsValidPosition(this) == false)
+        {
+            Debug.ULogErrorChannel("Tile", "Trying to assign a furniture to a tile that isn't valid!");
+            return false;
+        }
+
+        Utilities.Add(objInstance.Name, objInstance);
+
+        return true;
+    }
+
     public bool PlaceInventory(Inventory inventory)
     {
         if (inventory == null)
@@ -227,11 +267,52 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         return true;
     }
 
+    #endregion
+
+    #region Manage Gas
     public void EqualiseGas(float leakFactor)
     {
         Room.EqualiseGasByTile(this, leakFactor);
     }
 
+    public float GetGasPressure(string gas)
+    {
+        if (Room == null)
+        {
+            float pressure = Mathf.Infinity;
+            if (North().Room != null && North().GetGasPressure(gas) < pressure)
+            {
+                pressure = North().GetGasPressure(gas);
+            }
+
+            if (East().Room != null && East().GetGasPressure(gas) < pressure)
+            {
+                pressure = East().GetGasPressure(gas);
+            }
+
+            if (South().Room != null && South().GetGasPressure(gas) < pressure)
+            {
+                pressure = South().GetGasPressure(gas);
+            }
+
+            if (West().Room != null && West().GetGasPressure(gas) < pressure)
+            {
+                pressure = West().GetGasPressure(gas);
+            }
+
+            if (pressure == Mathf.Infinity)
+            {
+                return 0f;
+            }
+
+            return pressure;
+        }
+
+        return Room.GetGasPressure(gas);
+    }
+    #endregion
+
+    #region Neighbors and pathfinding
     // Tells us if two tiles are adjacent.
     public bool IsNeighbour(Tile tile, bool diagOkay = false)
     {
@@ -284,49 +365,6 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         return GetNeighbours(checkDiagonals).Any(tile => tile != null && tile.MovementCost > 0);
     }
 
-    public XmlSchema GetSchema()
-    {
-        return null;
-    }
-
-    public void WriteXml(XmlWriter writer)
-    {
-        writer.WriteAttributeString("X", X.ToString());
-        writer.WriteAttributeString("Y", Y.ToString());
-        writer.WriteAttributeString("Z", Z.ToString());
-        writer.WriteAttributeString("RoomID", Room == null ? "-1" : Room.ID.ToString());
-        writer.WriteAttributeString("Type", Type.Type);
-    }
-
-    public void ReadXml(XmlReader reader)
-    {
-        // X and Y have already been read/processed
-        Room = World.Current.GetRoomFromID(int.Parse(reader.GetAttribute("RoomID")));
-        if (Room != null)
-        {
-            Room.AssignTile(this);
-        }
-
-        Type = TileType.GetTileType(reader.GetAttribute("Type"));
-    }
-
-    public Enterability IsEnterable()
-    {
-        // This returns true if you can enter this tile right this moment.
-        if (MovementCost.IsZero())
-        {
-            return Enterability.Never;
-        }
-
-        // Check out furniture to see if it has a special block on enterability
-        if (Furniture != null)
-        {
-            return Furniture.IsEnterable();
-        }
-
-        return Enterability.Yes;
-    }
-
     public Tile North()
     {
         return World.Current.GetTileAt(X, Y + 1, Z);
@@ -347,41 +385,66 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         return World.Current.GetTileAt(X - 1, Y, Z);
     }
 
-    public float GetGasPressure(string gas)
+    public Enterability IsEnterable()
     {
-        if (Room == null)
+        // This returns true if you can enter this tile right this moment.
+        if (MovementCost.IsZero())
         {
-            float pressure = Mathf.Infinity;
-            if (North().Room != null && North().GetGasPressure(gas) < pressure)
-            {
-                pressure = North().GetGasPressure(gas);
-            }
-
-            if (East().Room != null && East().GetGasPressure(gas) < pressure)
-            {
-                pressure = East().GetGasPressure(gas);
-            }
-
-            if (South().Room != null && South().GetGasPressure(gas) < pressure)
-            {
-                pressure = South().GetGasPressure(gas);
-            }
-
-            if (West().Room != null && West().GetGasPressure(gas) < pressure)
-            {
-                pressure = West().GetGasPressure(gas);
-            }
-
-            if (pressure == Mathf.Infinity)
-            {
-                return 0f;
-            }
-
-            return pressure;
+            return Enterability.Never;
         }
 
-        return Room.GetGasPressure(gas);
+        // Check out furniture to see if it has a special block on enterability
+        if (Furniture != null)
+        {
+            return Furniture.IsEnterable();
+        }
+
+        return Enterability.Yes;
     }
+
+    public void OnEnter()
+    {
+        WalkCount++;
+        ReportTileChanged();
+    }
+
+    public void OnTileClean()
+    {
+        WalkCount = 0;
+        ReportTileChanged();
+    }
+    #endregion
+
+    #region Save XML
+    public XmlSchema GetSchema()
+    {
+        return null;
+    }
+
+    public void WriteXml(XmlWriter writer)
+    {
+        writer.WriteAttributeString("X", X.ToString());
+        writer.WriteAttributeString("Y", Y.ToString());
+        writer.WriteAttributeString("Z", Z.ToString());
+        writer.WriteAttributeString("timesWalked", WalkCount.ToString());
+        writer.WriteAttributeString("RoomID", Room == null ? "-1" : Room.ID.ToString());
+        writer.WriteAttributeString("Type", Type.Type);
+    }
+
+    public void ReadXml(XmlReader reader)
+    {
+        // X and Y have already been read/processed
+        Room = World.Current.GetRoomFromID(int.Parse(reader.GetAttribute("RoomID")));
+        if (Room != null)
+        {
+            Room.AssignTile(this);
+        }
+
+        Type = TileType.GetTileType(reader.GetAttribute("Type"));
+        WalkCount = int.Parse(reader.GetAttribute("timesWalked"));
+        ForceTileUpdate = true;
+    }
+    #endregion
 
     #region ISelectableInterface implementation
 
@@ -438,5 +501,16 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
                 };
             }
         }
+    }
+
+    private void ReportTileChanged()
+    {
+        // Call the callback and let things know we've changed.
+        if (TileChanged != null)
+        {
+            TileChanged(this);
+        }
+
+        ForceTileUpdate = false;
     }
 }
