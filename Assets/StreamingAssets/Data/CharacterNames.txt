@@ -1,8 +1,8 @@
 65001
-AaronBuckles
 Abackwood
 Aiwha
 Aleserena
+Alexfriesen
 Alexisfcote
 Arrowgroundgames
 Azathos
@@ -10,6 +10,7 @@ B4ux1t3
 Behindcurtain3
 Bitope
 Bjubes
+Buggy213
 Ceddini
 Cryma
 Cskiwi
@@ -18,7 +19,6 @@ DeShrike
 Derebeyi
 DevOrc
 DiyarD
-Don42
 Dormanil
 Dusho
 Dustinwloring1988
@@ -42,7 +42,6 @@ JosephBywater
 Kd7uiy
 Koljenka
 Koosemose
-Lameox
 Lincore81
 Longtomjr
 MANDAL0R3
@@ -63,6 +62,7 @@ Pyroar
 QuiZr
 Quill18
 Racerand
+Rafaeu749
 Raketfart
 Randshot
 Relinu
@@ -96,4 +96,5 @@ Vringar
 WardBenjamin
 WilcoDW
 Xeni91
+Yurgeta
 Zwrawr
