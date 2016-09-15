@@ -617,7 +617,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                     {
                         LuaFunction = reader.GetAttribute("FunctionName"),
                         Text = reader.GetAttribute("Text"),
-                        RequiereCharacterSelected = bool.Parse(reader.GetAttribute("RequiereCharacterSelected")),
+                        RequireCharacterSelected = bool.Parse(reader.GetAttribute("RequireCharacterSelected")),
                         DevModeOnly = bool.Parse(reader.GetAttribute("DevModeOnly") ?? "false")
                     });
                     break;
@@ -964,8 +964,8 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                 yield return new ContextMenuAction
                 {
                     Text = contextMenuLuaAction.Text,
-                    RequireCharacterSelected = contextMenuLuaAction.RequiereCharacterSelected,
                     Action = (cma, c) => InvokeContextMenuLuaAction(contextMenuLuaAction.LuaFunction, c)
+                    RequireCharacterSelected = contextMenuLuaAction.RequireCharacterSelected,
                 };
             }
         }
