@@ -664,14 +664,12 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         }
     }
 
-
     /// <summary>
     /// Make a copy of the current utility.  Sub-classes should
     /// override this Clone() if a different (sub-classed) copy
     /// constructor should be run.
     /// </summary>
     /// <returns>A clone of the utility.</returns>
-
     public Utility Clone()
     {
         return new Utility(this);
