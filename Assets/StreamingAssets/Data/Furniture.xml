@@ -161,6 +161,7 @@
         <BuildingJob jobTime="0" />
 
         <Action event="OnUpdate" functionName="Stockpile_UpdateAction" />
+        <DragType>area</DragType>
 
         <LocalizationCode>furn_stockpile</LocalizationCode>
         <UnlocalizedDescription>furn_stockpile_desc</UnlocalizedDescription>
