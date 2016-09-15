@@ -11,12 +11,11 @@ using System;
 public class ContextMenuAction
 {    
     public Action<ContextMenuAction, Character> Action;
+    public string Parameter;
 
     public bool RequireCharacterSelected { get; set; }
 
     public string Text { get; set; }
-
-    public string Parameter;
 
     public void OnClick(MouseController mouseController)
     {
