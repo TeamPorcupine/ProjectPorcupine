@@ -59,6 +59,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
 
     private bool isOperating;
 
+    // did we have power in the last update?
+    private bool prevUpdatePowerOn;
+
     /// TODO: Implement object rotation
     /// <summary>
     /// Initializes a new instance of the <see cref="Furniture"/> class.
@@ -416,10 +419,17 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     {
         if (PowerConnection != null && PowerConnection.IsPowerConsumer && HasPower() == false)
         {
+            if (prevUpdatePowerOn)
+            {
+                EventActions.Trigger("OnPowerOff", this, deltaTime);                
+            }
+
             Jobs.PauseAll();
+            prevUpdatePowerOn = false;
             return;
         }
 
+        prevUpdatePowerOn = true;
         Jobs.ResumeAll();
 
         // TODO: some weird thing happens
