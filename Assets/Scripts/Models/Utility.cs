@@ -426,7 +426,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
                     {
                         LuaFunction = reader.GetAttribute("FunctionName"),
                         Text = reader.GetAttribute("Text"),
-                        RequiereCharacterSelected = bool.Parse(reader.GetAttribute("RequiereCharacterSelected")),
+                        RequireCharacterSelected = bool.Parse(reader.GetAttribute("RequiereCharacterSelected")),
                         DevModeOnly = bool.Parse(reader.GetAttribute("DevModeOnly") ?? "false")
                     });
                     break;
@@ -657,7 +657,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
                 yield return new ContextMenuAction
                 {
                     Text = contextMenuLuaAction.Text,
-                    RequireCharacterSelected = contextMenuLuaAction.RequiereCharacterSelected,
+                    RequireCharacterSelected = contextMenuLuaAction.RequireCharacterSelected,
                     Action = (cma, c) => InvokeContextMenuLuaAction(contextMenuLuaAction.LuaFunction, c)
                 };
             }
