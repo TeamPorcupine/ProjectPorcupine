@@ -6,70 +6,74 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-
-using System.IO;
+using System.Collections.Generic;
 using Scheduler;
-using UnityEngine;
 
+/// <summary>
+/// A class that holds the Prototype Maps of each entity that requires it.
+/// </summary>
 public class PrototypeManager
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PrototypeManager"/> class.
+    /// </summary>
     public PrototypeManager()
     {
-        Inventory = new InventoryPrototypes();
-        FurnitureJob = new BasePrototypes<Job>();
-        Furniture = new FurniturePrototypes();
-        Need = new NeedPrototypes();
-        Trader = new TraderPrototypes();
-        Quest = new QuestPrototypes();
-        Stat = new StatPrototypes();
-        SchedulerEvent = new SchedulerEventPrototypes();
+        Inventory = new PrototypeMap<InventoryCommon>("Inventories", "Inventory");
+        FurnitureJob = new PrototypeMap<Job>();
+        Furniture = new PrototypeMap<Furniture>("Furnitures", "Furniture");
+        Need = new PrototypeMap<Need>("Needs", "Need");
+        Trader = new PrototypeMap<TraderPrototype>("Traders", "Trader");
+        Quest = new PrototypeMap<Quest>("Quests", "Quest");
+        Stat = new PrototypeMap<Stat>("Stats", "Stat");
+        SchedulerEvent = new PrototypeMap<ScheduledEvent>("Events", "Event");
     }
 
-    public static BasePrototypes<Job> FurnitureJob
-    {
-        get;
-        protected set;
-    }
+    /// <summary>
+    /// Gets the furniture job prototype map.
+    /// </summary>
+    /// <value>The furniture job prototype map.</value>
+    public static PrototypeMap<Job> FurnitureJob { get; private set; }
 
-    public static FurniturePrototypes Furniture
-    {
-        get;
-        protected set;
-    }
+    /// <summary>
+    /// Gets the furniture prototype map.
+    /// </summary>
+    /// <value>The furniture prototype map.</value>
+    public static PrototypeMap<Furniture> Furniture { get; private set; }
 
-    public static InventoryPrototypes Inventory
-    {
-        get;
-        protected set;
-    }
+    /// <summary>
+    /// Gets the inventory prototype map.
+    /// </summary>
+    /// <value>The inventory prototype map.</value>
+    public static PrototypeMap<InventoryCommon> Inventory { get; private set; }
 
-    public static NeedPrototypes Need
-    {
-        get;
-        protected set;
-    }
+    /// <summary>
+    /// Gets the need prototype map.
+    /// </summary>
+    /// <value>The need prototype map.</value>
+    public static PrototypeMap<Need> Need { get; private set; }
 
-    public static TraderPrototypes Trader
-    {
-        get;
-        protected set;
-    }
+    /// <summary>
+    /// Gets the trader prototype map.
+    /// </summary>
+    /// <value>The trader prototype map.</value>
+    public static PrototypeMap<TraderPrototype> Trader { get; private set; }
 
-    public static QuestPrototypes Quest
-    {
-        get;
-        protected set;
-    }
+    /// <summary>
+    /// Gets the quest prototype map.
+    /// </summary>
+    /// <value>The quest prototype map.</value>
+    public static PrototypeMap<Quest> Quest { get; private set; }
 
-    public static StatPrototypes Stat
-    {
-        get;
-        protected set;
-    }
+    /// <summary>
+    /// Gets the stat prototype map.
+    /// </summary>
+    /// <value>The stat prototype map.</value>
+    public static PrototypeMap<Stat> Stat { get; private set; }
 
-    public static SchedulerEventPrototypes SchedulerEvent
-    {
-        get;
-        protected set;
-    }
+    /// <summary>
+    /// Gets the scheduler event prototype map.
+    /// </summary>
+    /// <value>The scheduler event prototype map.</value>
+    public static PrototypeMap<ScheduledEvent> SchedulerEvent { get; private set; }
 }

@@ -2,8 +2,9 @@
 <Inventories>
     <Inventory type="Raw Iron" maxStackSize="50" basePrice="0.8" category="inv_cat_raw"/>
     <Inventory type="Ice" maxStackSize="10" basePrice="1.2" category="inv_cat_raw"/>
+    <Inventory type="Raw Copper" maxStackSize="50" basePrice="0.8" category="inv_cat_raw"/>
     <Inventory type="Uranium" maxStackSize="20" basePrice="3" category="inv_cat_raw"/>
     <Inventory type="Steel Plate" maxStackSize="50" basePrice="1.5" category="inv_cat_refined"/>
     <Inventory type="Power Cell" maxStackSize="5" basePrice="5" category="inv_cat_crafted"/>
-    <Inventory type="Copper Wire" maxStackSize="50" basePrice="2.7" category="inv_cat_crafted"/>
+    <Inventory type="Copper Plate" maxStackSize="50" basePrice="1.5" category="inv_cat_refined"/>
 </Inventories>

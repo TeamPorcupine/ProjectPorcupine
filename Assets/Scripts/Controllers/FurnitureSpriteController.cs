@@ -54,7 +54,7 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
     {
         Furniture proto = PrototypeManager.Furniture.Get(type);
         string spriteName = proto.GetSpriteName();
-        Sprite s = SpriteManager.current.GetSprite("Furniture", spriteName + (proto.LinksToNeighbour ? "_" : string.Empty));
+        Sprite s = SpriteManager.GetSprite("Furniture", spriteName + (proto.LinksToNeighbour ? "_" : string.Empty));
 
         return s;
     }
@@ -65,7 +65,7 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
 
         if (furn.LinksToNeighbour == false)
         {
-            return SpriteManager.current.GetSprite("Furniture", spriteName);
+            return SpriteManager.GetSprite("Furniture", spriteName);
         }
 
         // Otherwise, the sprite name is more complicated.
@@ -91,7 +91,7 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
         // For example, if this object has all eight neighbours of
         // the same type, then the string will look like:
         //       Wall_NESWneseswnw
-        return SpriteManager.current.GetSprite("Furniture", spriteName + suffix);
+        return SpriteManager.GetSprite("Furniture", spriteName + suffix);
     }
 
     protected override void OnCreated(Furniture furniture)
@@ -192,6 +192,13 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
             }
         }
 
+        // don't change sprites on furniture with animations
+        if (furn.Animation != null)
+        {
+            furn.Animation.OnFurnitureChanged();
+            return;
+        }
+        
         furn_go.GetComponent<SpriteRenderer>().sprite = GetSpriteForFurniture(furn);
         furn_go.GetComponent<SpriteRenderer>().color = furn.Tint;
     }
@@ -265,6 +272,6 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
 
     private Sprite GetPowerStatusSprite()
     {
-        return SpriteManager.current.GetSprite("Power", "PowerIcon");
+        return SpriteManager.GetSprite("Power", "PowerIcon");
     }
 }

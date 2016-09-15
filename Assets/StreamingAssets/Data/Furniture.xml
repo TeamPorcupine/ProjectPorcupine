@@ -58,6 +58,25 @@
             <Inventory type="Steel Plate" amount="1" />
         </DeconstructJob>
 
+        <Animations>
+          <Animation state="horizontal" valuebased="true">
+            <Frame name="DoorHorizontal_0" />
+            <Frame name="DoorHorizontal_1" />
+            <Frame name="DoorHorizontal_2" />
+            <Frame name="DoorHorizontal_3" />
+            <Frame name="DoorHorizontal_4" />
+            <Frame name="DoorHorizontal_5" />
+          </Animation>  
+          <Animation state="vertical" valuebased="true">
+            <Frame name="DoorVertical_0" />
+            <Frame name="DoorVertical_1" />
+            <Frame name="DoorVertical_2" />
+            <Frame name="DoorVertical_3" />
+            <Frame name="DoorVertical_4" />
+            <Frame name="DoorVertical_5" />                
+          </Animation>                      
+        </Animations>
+
         <Params>
             <Param name="openness" value="0" />
             <Param name="is_opening" value="0" />
@@ -68,7 +87,6 @@
         <Action event="OnUpdate" functionName="OnUpdate_Leak_Door" />
 
         <IsEnterable FunctionName="IsEnterable_Door" />
-        <GetSpriteName FunctionName="GetSpriteName_Door" />
 
         <LocalizationCode>furn_door</LocalizationCode>
         <UnlocalizedDescription>furn_door_desc</UnlocalizedDescription>
@@ -96,6 +114,25 @@
             <Inventory type="Steel Plate" amount="7" />
         </DeconstructJob>
 
+        <Animations>
+          <Animation state="horizontal" valuebased="true">
+            <Frame name="AirlockHorizontal_0" />
+            <Frame name="AirlockHorizontal_1" />
+            <Frame name="AirlockHorizontal_2" />
+            <Frame name="AirlockHorizontal_3" />
+            <Frame name="AirlockHorizontal_4" />
+            <Frame name="AirlockHorizontal_5" />
+          </Animation>
+          <Animation state="vertical" valuebased="true">
+            <Frame name="AirlockVertical_0" />
+            <Frame name="AirlockVertical_1" />
+            <Frame name="AirlockVertical_2" />
+            <Frame name="AirlockVertical_3" />
+            <Frame name="AirlockVertical_4" />
+            <Frame name="AirlockVertical_5" />
+          </Animation>
+        </Animations>
+      
         <Params>
             <Param name="openness" value="0" />
             <Param name="is_opening" value="0" />
@@ -109,8 +146,7 @@
         <ContextMenuAction FunctionName="AirlockDoor_Toggle_Pressure_Lock" Text="Toggle Pressure Lock" RequiereCharacterSelected="false"/>
 
         <IsEnterable FunctionName="IsEnterable_Door" />
-        <GetSpriteName FunctionName="GetSpriteName_Airlock" />
-
+        
         <LocalizationCode>furn_airlock</LocalizationCode>
         <UnlocalizedDescription>furn_airlock_desc</UnlocalizedDescription>
     </Furniture>
@@ -185,8 +221,8 @@
 
         <Action event="OnUpdate" functionName="MiningDroneStation_UpdateAction" />
 
-        <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Iron" Text="change to raw iron" RequiereCharacterSelected="false"/>
-        <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Copper" Text="change to raw copper" RequiereCharacterSelected="false"/>
+        <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Iron" Text="Change to Raw Iron" RequiereCharacterSelected="false"/>
+        <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Copper" Text="Change to Raw Copper" RequiereCharacterSelected="false"/>
 
         <LocalizationCode>furn_mining_drone_station</LocalizationCode>
         <UnlocalizedDescription>furn_mining_drone_station_desc</UnlocalizedDescription>
@@ -294,6 +330,57 @@
         <UnlocalizedDescription>furn_metal_smelter_desc</UnlocalizedDescription>
     </Furniture>
 
+    <Furniture type="Metal Furnace">
+        <Name>Metal Furnace</Name>
+        <Description>Smelts your raw ores into metal.</Description>
+        <TypeTag>Processor</TypeTag>
+        <MovementCost>1</MovementCost>
+        <PathfindingModifier>1.5</PathfindingModifier>
+        <PathfindingWeight>2</PathfindingWeight>
+        <Width>3</Width>
+        <Height>3</Height>
+
+        <BuildingJob jobTime="0" />
+
+        <JobSpotOffset X="1" Y="0" />
+
+        <Workshop>
+            <ProductionChain name="Copper smelting" processingTime="3">
+                <Input>
+                    <Item objectType="Raw Copper" amount="2" slotPosX="0" slotPosY="0" />
+                </Input>
+                <Output>
+                    <Item objectType="Copper Plate" amount="1" slotPosX="2" slotPosY="0" />
+                </Output>
+            </ProductionChain>
+            <ProductionChain name="Iron smelting" processingTime="4">
+                <Input>
+                    <Item objectType="Raw Iron" amount="2" slotPosX="0" slotPosY="0" />
+                </Input>
+                <Output>
+                    <Item objectType="Steel Plate" amount="1" slotPosX="2" slotPosY="0" />
+                </Output>
+            </ProductionChain>
+            <UsedAnimations idle="idle" running="running" />
+        </Workshop>
+
+        <Animations>
+            <Animation state="idle" fps="2" looping="false">
+                <Frame name="Metal Furnace" />
+            </Animation>
+            <Animation state="running" fps="6" looping="true">
+                <Frame name="Metal_Furnace_Running_1" />
+                <Frame name="Metal_Furnace_Running_2" />
+                <Frame name="Metal_Furnace_Running_3" />
+                <Frame name="Metal_Furnace_Running_4" />
+                <Frame name="Metal_Furnace_Running_5" />
+            </Animation>
+        </Animations>
+
+        <LocalizationCode>furn_metal_furnace</LocalizationCode>
+        <UnlocalizedDescription>furn_metal_furnace_desc</UnlocalizedDescription>
+    </Furniture>
+
     <Furniture type="Heater">
         <Name>Heater</Name>
         <Description>Raises temperature in the room.</Description>
@@ -334,12 +421,17 @@
 
         <BuildingJob jobTime="1" />
 
-        <Params>
-            <Param name="presstime" value="0" />
-            <Param name="presstime_required" value="15" />
-        </Params>
-
-        <Action event="OnUpdate" functionName="PowerCellPress_UpdateAction" />
+      <Workshop>
+          <ProductionChain name="Power Cell Pressing" processingTime="5">
+              <Input>
+                  <Item objectType="Uranium" amount="3" slotPosX="0" slotPosY="0" />
+                  <Item objectType="Steel Plate" amount="2" slotPosX="1" slotPosY="0" />
+              </Input>
+              <Output>
+                  <Item objectType="Power Cell" amount="1" slotPosX="2" slotPosY="1" />
+              </Output>
+          </ProductionChain>
+      </Workshop>
 
         <LocalizationCode>furn_power_cell_press</LocalizationCode>
         <UnlocalizedDescription>furn_power_cell_press_desc</UnlocalizedDescription>

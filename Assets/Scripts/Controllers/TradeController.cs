@@ -47,7 +47,7 @@ public class TradeController
     public void CallTradeShipTest(Furniture landingPad)
     {
         // Currently not using any logic to select a trader
-        TraderPrototype prototype = PrototypeManager.Trader.Get(Random.Range(0, PrototypeManager.Trader.Count - 1));
+        TraderPrototype prototype = PrototypeManager.Trader[Random.Range(0, PrototypeManager.Trader.Count - 1)];
         Trader trader = prototype.CreateTrader();
 
         GameObject go = new GameObject(trader.Name);
@@ -61,7 +61,7 @@ public class TradeController
         controller.LeavingCoordinates = new Vector3(100, 50, 0);
         go.transform.localScale = new Vector3(1, 1, 1);
         SpriteRenderer spriteRenderer = go.AddComponent<SpriteRenderer>();
-        spriteRenderer.sprite = SpriteManager.current.GetSprite("Trader", "BasicHaulShip");
+        spriteRenderer.sprite = SpriteManager.GetSprite("Trader", "BasicHaulShip");
         spriteRenderer.sortingLayerName = "TradeShip";
     }
 

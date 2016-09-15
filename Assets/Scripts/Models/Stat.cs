@@ -8,7 +8,7 @@
 #endregion
 using System.Xml;
 
-public class Stat
+public class Stat : IPrototypable
 {
     public Stat()
     {
