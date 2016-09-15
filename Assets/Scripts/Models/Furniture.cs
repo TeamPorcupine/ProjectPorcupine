@@ -964,8 +964,8 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                 yield return new ContextMenuAction
                 {
                     Text = contextMenuLuaAction.Text,
-                    Action = (cma, c) => InvokeContextMenuLuaAction(contextMenuLuaAction.LuaFunction, c)
                     RequireCharacterSelected = contextMenuLuaAction.RequireCharacterSelected,
+                    Action = (cma, c) => InvokeContextMenuLuaAction(contextMenuLuaAction.LuaFunction, c)
                 };
             }
         }
