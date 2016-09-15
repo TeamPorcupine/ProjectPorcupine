@@ -20,7 +20,11 @@ public class KeyboardManager
     
     public KeyboardManager()
     {
+        instance = this;
         mapping = new Dictionary<string, KeyboadMappedInput>();
+
+        TimeManager.Instance.EveryFrameNotModal += (time) => Update();
+
         ReadXmlOrJsonAfterWeDecide();
     }
 
@@ -30,7 +34,7 @@ public class KeyboardManager
         {
             if (instance == null)
             {
-                instance = new KeyboardManager();
+                new KeyboardManager();
             }
 
             return instance;
@@ -62,14 +66,8 @@ public class KeyboardManager
         RegisterInputMapping("DevMode", KeyCode.F12);
     }
 
-    public void Update(bool isModal)
+    public void Update()
     {
-        if (isModal)
-        {
-            // A modal dialog box is open. Bail.
-            return;
-        }
-
         foreach (KeyboadMappedInput input in mapping.Values)
         {
             input.TrigerActionIfInputValid();
@@ -112,5 +110,13 @@ public class KeyboardManager
                     KeyCodes = keyCodes.ToList()
                 });
         }
+    }
+
+    /// <summary>
+    /// Destroy this instance.
+    /// </summary>
+    public void Destroy()
+    {
+        instance = null;
     }
 }

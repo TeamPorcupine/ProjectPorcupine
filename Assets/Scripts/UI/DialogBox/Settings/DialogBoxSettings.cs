@@ -78,9 +78,6 @@ public class DialogBoxSettings : DialogBox
         this.CloseDialog();
         WorldController.Instance.spawnInventoryController.SetUIVisibility(developerModeToggle.isOn);
         LocalizationTable.SetLocalization(languageDropdown.value);
-
-        // TODO: Fix this line
-        // ConstructionBuildMenu.instance.RebuildMenuButtons(developerModeToggle.isOn);
         SaveSetting();
     }
 

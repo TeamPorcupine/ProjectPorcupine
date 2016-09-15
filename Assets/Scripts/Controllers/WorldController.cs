@@ -26,6 +26,7 @@ public class WorldController : MonoBehaviour
     public JobSpriteController jobSpriteController;
     public InventorySpriteController inventorySpriteController;
     public FurnitureSpriteController furnitureSpriteController;
+    public UtilitySpriteController utilitySpriteController;
     public QuestController questController;
     public BuildModeController buildModeController;
     public MouseController mouseController;
@@ -34,7 +35,6 @@ public class WorldController : MonoBehaviour
     public SpawnInventoryController spawnInventoryController;
     public AutosaveManager autosaveManager;
     public TradeController TradeController;
-    public TimeManager timeManager;
     public ModsManager modsManager;
     public GameObject inventoryUI;
     public GameObject circleCursorPrefab;
@@ -43,9 +43,6 @@ public class WorldController : MonoBehaviour
     public bool IsModal;
 
     private static string loadWorldFromFile = null;
-
-    private float gameTickDelay;
-    private bool isPaused = false;
 
     public static WorldController Instance { get; protected set; }
 
@@ -56,20 +53,12 @@ public class WorldController : MonoBehaviour
     {
         get
         {
-            return isPaused || IsModal;
+            return TimeManager.Instance.IsPaused || IsModal;
         }
 
         set
         {
-            isPaused = value;
-        }
-    }
-
-    public float TimeScale
-    {
-        get
-        {
-            return timeManager.TimeScale;
+            TimeManager.Instance.IsPaused = value;
         }
     }
 
@@ -87,6 +76,7 @@ public class WorldController : MonoBehaviour
         new FunctionsManager();
         new PrototypeManager();
         new CharacterNameManager();
+        new SpriteManager();
 
         // FIXME: Do something real here. This is just to show how to register a C# event prototype for the Scheduler.
         PrototypeManager.SchedulerEvent.Add(
@@ -109,8 +99,6 @@ public class WorldController : MonoBehaviour
         }
 
         soundController = new SoundController(World);
-
-        gameTickDelay = TimeManager.GameTickDelay;
     }
 
     public void Start()
@@ -122,17 +110,17 @@ public class WorldController : MonoBehaviour
         tileSpriteController = new TileSpriteController(World);
         characterSpriteController = new CharacterSpriteController(World);
         furnitureSpriteController = new FurnitureSpriteController(World);
-        jobSpriteController = new JobSpriteController(World, furnitureSpriteController);
+        utilitySpriteController = new UtilitySpriteController(World);
+        jobSpriteController = new JobSpriteController(World, furnitureSpriteController, utilitySpriteController);
         inventorySpriteController = new InventorySpriteController(World, inventoryUI);
 
         buildModeController = new BuildModeController();
         spawnInventoryController = new SpawnInventoryController();
-        mouseController = new MouseController(buildModeController, furnitureSpriteController, circleCursorPrefab);
+        mouseController = new MouseController(buildModeController, furnitureSpriteController, utilitySpriteController, circleCursorPrefab);
         keyboardManager = KeyboardManager.Instance;
         questController = new QuestController();
         cameraController = new CameraController();
         TradeController = new TradeController();
-        timeManager = new TimeManager();
         autosaveManager = new AutosaveManager();
 
         // Register inputs actions
@@ -153,33 +141,7 @@ public class WorldController : MonoBehaviour
 
     public void Update()
     {
-        // Systems that update every frame.
-        mouseController.Update(IsModal);
-        keyboardManager.Update(IsModal);
-        cameraController.Update(IsModal);
-        timeManager.Update();
-
-        // Systems that update every frame while unpaused.
-        if (IsPaused == false)
-        {
-            World.TickEveryFrame(timeManager.DeltaTime);
-            Scheduler.Scheduler.Current.Update(timeManager.DeltaTime);
-        }
-
-        if (timeManager.TotalDeltaTime >= gameTickDelay)
-        {
-            // Systems that update at fixed frequency. 
-            if (IsPaused == false)
-            {
-                // Systems that update at fixed frequency when not paused.
-                World.TickFixedFrequency(timeManager.TotalDeltaTime);
-                questController.Update(timeManager.TotalDeltaTime);
-            }
-
-            timeManager.ResetTotalDeltaTime();
-        }
-
-        soundController.Update(Time.deltaTime);
+        TimeManager.Instance.Update(Time.deltaTime);
     }
 
     /// <summary>
@@ -195,16 +157,17 @@ public class WorldController : MonoBehaviour
         return World.GetTileAt(x, y, (int)coord.z);
     }
 
+    public string FileSaveBasePath()
+    {
+        return System.IO.Path.Combine(Application.persistentDataPath, "Saves");
+    }
+
     public void NewWorld()
     {
         Debug.ULogChannel("WorldController", "NewWorld button was clicked.");
 
+        Destroy();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
-
-    public string FileSaveBasePath()
-    {
-        return System.IO.Path.Combine(Application.persistentDataPath, "Saves");
     }
 
     public void LoadWorld(string fileName)
@@ -213,7 +176,15 @@ public class WorldController : MonoBehaviour
 
         // Reload the scene to reset all data (and purge old references)
         loadWorldFromFile = fileName;
+        Destroy();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void Destroy()
+    {
+        TimeManager.Instance.Destroy();
+        KeyboardManager.Instance.Destroy();
+        Scheduler.Scheduler.Current.Destroy();
     }
 
     /// <summary>

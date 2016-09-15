@@ -24,6 +24,7 @@ public class World : IXmlSerializable
     public readonly string GameVersion = "Someone_will_come_up_with_a_proper_naming_scheme_later";
     public List<Character> characters;
     public List<Furniture> furnitures;
+    public List<Utility> utilities;
     public List<Room> rooms;
     public InventoryManager inventoryManager;
     public Material skybox;
@@ -44,7 +45,7 @@ public class World : IXmlSerializable
     public JobQueue jobQueue;
     public JobQueue jobWaitingQueue;
 
-    // A two-dimensional array to hold our tile data.
+    // A three-dimensional array to hold our tile data.
     private Tile[,,] tiles;
 
     /// <summary>
@@ -52,6 +53,7 @@ public class World : IXmlSerializable
     /// </summary>
     /// <param name="width">Width in tiles.</param>
     /// <param name="height">Height in tiles.</param>
+    /// <param name="depth">Depth in amount.</param>
     public World(int width, int height, int depth)
     {
         // Creates an empty world.
@@ -86,7 +88,18 @@ public class World : IXmlSerializable
     {
     }
 
+    /// <summary>
+    /// Releases the TimeManager events when <see cref="World"/> is reclaimed by garbage collection.
+    /// </summary>
+    ~World()
+    {
+        TimeManager.Instance.EveryFrameUnpaused -= TickEveryFrame;
+        TimeManager.Instance.FixedFrequencyUnpaused -= TickFixedFrequency;
+    }
+
     public event Action<Furniture> OnFurnitureCreated;
+
+    public event Action<Utility> OnUtilityCreated;
 
     public event Action<Character> OnCharacterCreated;
 
@@ -159,6 +172,12 @@ public class World : IXmlSerializable
         r.ReturnTilesToOutsideRoom();
     }
 
+    public void AddEventListeners()
+    {
+        TimeManager.Instance.EveryFrameUnpaused += TickEveryFrame;
+        TimeManager.Instance.FixedFrequencyUnpaused += TickFixedFrequency;
+    }
+
     public void TickEveryFrame(float deltaTime)
     {
         // Change from a foreach due to the collection being modified while its being looped through
@@ -218,53 +237,6 @@ public class World : IXmlSerializable
         }
 
         return null;
-    }
-
-    /// <summary>
-    /// A function for testing out the system.
-    /// </summary>
-    public void RandomizeTiles()
-    {
-        for (int x = 0; x < Width; x++)
-        {
-            for (int y = 0; y < Height; y++)
-            {
-                for (int z = 0; z < Depth; z++)
-                {
-                    if (UnityEngine.Random.Range(0, 2) == 0)
-                    {
-                        tiles[x, y, z].Type = TileType.Empty;
-                    }
-                    else
-                    {
-                        tiles[x, y, z].Type = TileType.Floor;
-                    }
-                }
-            }
-        }
-    }
-
-    public void SetupPathfindingExample()
-    {
-        // Make a set of floors/walls to test pathfinding with.
-        int l = (Width / 2) - 5;
-        int b = (Height / 2) - 5;
-
-        for (int x = l - 5; x < l + 15; x++)
-        {
-            for (int y = b - 5; y < b + 15; y++)
-            {
-                tiles[x, y, 0].Type = TileType.Floor;
-
-                if (x == l || x == (l + 9) || y == b || y == (b + 9))
-                {
-                    if (x != (l + 9) && y != (b + 4))
-                    {
-                        PlaceFurniture("furn_SteelWall", tiles[x, y, 0]);
-                    }
-                }
-            }
-        }
     }
 
     /// <summary>
@@ -355,6 +327,19 @@ public class World : IXmlSerializable
         return PlaceFurniture(furn, t, doRoomFloodFill);
     }
 
+    public Utility PlaceUtility(string objectType, Tile tile, bool doRoomFloodFill = false)
+    {
+        if (PrototypeManager.Utility.Has(objectType) == false)
+        {
+            Debug.ULogErrorChannel("World", "PrototypeManager.Utility doesn't contain a proto for key: " + objectType);
+            return null;
+        }
+
+        Utility util = PrototypeManager.Utility.Get(objectType);
+
+        return PlaceUtility(util, tile, doRoomFloodFill);
+    }
+
     public Furniture PlaceFurniture(Furniture furniture, Tile t, bool doRoomFloodFill = true)
     {
         Furniture furn = Furniture.PlaceInstance(furniture, t);
@@ -395,6 +380,27 @@ public class World : IXmlSerializable
         return furn;
     }
 
+    public Utility PlaceUtility(Utility proto, Tile tile, bool doRoomFloodFill = true)
+    {
+        Utility utility = Utility.PlaceInstance(proto, tile);
+
+        if (utility == null)
+        {
+            // Failed to place object -- most likely there was already something there.
+            return null;
+        }
+
+        utility.Removed += OnUtilityRemoved;
+        utilities.Add(utility);
+
+        if (OnUtilityCreated != null)
+        {
+            OnUtilityCreated(utility);
+        }
+
+        return utility;
+    }
+
     // This should be called whenever a change to the world
     // means that our old pathfinding info is invalid.
     public void InvalidateTileGraph()
@@ -405,6 +411,11 @@ public class World : IXmlSerializable
     public bool IsFurniturePlacementValid(string furnitureType, Tile t)
     {
         return PrototypeManager.Furniture.Get(furnitureType).IsValidPosition(t);
+    }
+
+    public bool IsUtilityPlacementValid(string furnitureType, Tile tile)
+    {
+        return PrototypeManager.Utility.Get(furnitureType).IsValidPosition(tile);
     }
 
     public XmlSchema GetSchema()
@@ -479,6 +490,16 @@ public class World : IXmlSerializable
 
         writer.WriteEndElement();
 
+        writer.WriteStartElement("Utilities");
+        foreach (Utility util in utilities)
+        {
+            writer.WriteStartElement("Utility");
+            util.WriteXml(writer);
+            writer.WriteEndElement();
+        }
+
+        writer.WriteEndElement();
+
         writer.WriteStartElement("Characters");
         foreach (Character c in characters)
         {
@@ -529,6 +550,9 @@ public class World : IXmlSerializable
                 case "Furnitures":
                     ReadXml_Furnitures(reader);
                     break;
+                case "Utilities":
+                    ReadXml_Utilities(reader);
+                    break;
                 case "Characters":
                     ReadXml_Characters(reader);
                     break;
@@ -548,6 +572,11 @@ public class World : IXmlSerializable
     public void OnFurnitureRemoved(Furniture furn)
     {
         furnitures.Remove(furn);
+    }
+
+    public void OnUtilityRemoved(Utility util)
+    {
+        utilities.Remove(util);
     }
 
     private void ReadXml_Wallet(XmlReader reader)
@@ -647,9 +676,12 @@ public class World : IXmlSerializable
 
         characters = new List<Character>();
         furnitures = new List<Furniture>();
+        utilities = new List<Utility>();
         inventoryManager = new InventoryManager();
         PowerNetwork = new ProjectPorcupine.PowerNetwork.PowerNetwork();
         temperature = new Temperature(Width, Height);
+
+        AddEventListeners();
         LoadSkybox();
     }
 
@@ -771,6 +803,23 @@ public class World : IXmlSerializable
                 furn.ReadXml(reader);
             }
             while (reader.ReadToNextSibling("Furniture"));
+        }
+    }
+
+    private void ReadXml_Utilities(XmlReader reader)
+    {
+        if (reader.ReadToDescendant("Utility"))
+        {
+            do
+            {
+                int x = int.Parse(reader.GetAttribute("X"));
+                int y = int.Parse(reader.GetAttribute("Y"));
+                int z = int.Parse(reader.GetAttribute("Z"));
+
+                Utility util = PlaceUtility(reader.GetAttribute("objectType"), tiles[x, y, z], false);
+                util.ReadXml(reader);
+            }
+            while (reader.ReadToNextSibling("Utility"));
         }
     }
 

@@ -26,14 +26,16 @@ public class ModsManager
     public void LoadFiles()
     {
         LoadFunctions("Furniture.lua", "Furniture");
+        LoadFunctions("Utility.lua", "Utility");
         LoadFunctions("Need.lua", "Need");
         LoadFunctions("GameEvent.lua", "GameEvent");
         LoadFunctions("Tiles.lua", "TileType");
         LoadFunctions("Quest.lua", "Quest");
         LoadFunctions("ScheduledEvent.lua", "ScheduledEvent");
 
-        LoadPrototypes("Furniture.xml", (text) => PrototypeManager.Furniture.LoadPrototypes(text));
         LoadPrototypes("Tiles.xml", (text) => PrototypeManager.TileType.LoadPrototypes(text));
+        LoadPrototypes("Furniture.xml", (text) => PrototypeManager.Furniture.LoadPrototypes(text));
+        LoadPrototypes("Utility.xml", (text) => PrototypeManager.Utility.LoadPrototypes(text));
         LoadPrototypes("Inventory.xml", (text) => PrototypeManager.Inventory.LoadPrototypes(text));
         LoadPrototypes("Need.xml", (text) => PrototypeManager.Need.LoadPrototypes(text));
         LoadPrototypes("Trader.xml", (text) => PrototypeManager.Trader.LoadPrototypes(text));
@@ -42,6 +44,8 @@ public class ModsManager
         LoadPrototypes("Quest.xml", (text) => PrototypeManager.Quest.LoadPrototypes(text));
 
         LoadCharacterNames("CharacterNames.txt");
+
+        LoadSprites();
     }
 
     public DirectoryInfo[] GetMods()
@@ -121,6 +125,24 @@ public class ModsManager
             if (File.Exists(filePath))
             {
                 readText(filePath);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Loads the all the sprites.
+    /// </summary>
+    private void LoadSprites()
+    {
+        string filePath = Path.Combine(Application.streamingAssetsPath, "Images");
+        SpriteManager.LoadSprites(filePath);
+
+        foreach (DirectoryInfo mod in mods)
+        {
+            filePath = Path.Combine(mod.FullName, "Images");
+            if (Directory.Exists(filePath))
+            {
+                SpriteManager.LoadSprites(filePath);
             }
         }
     }
