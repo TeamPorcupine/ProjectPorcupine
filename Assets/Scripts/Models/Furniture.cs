@@ -961,14 +961,13 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             if (!contextMenuLuaAction.DevModeOnly ||
                 Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
             {
+                // TODO The Action could be done via a lambda, but it always uses the same space of memory, thus if 2 actions are performed, the same action will be produced for each.
                 yield return new ContextMenuAction
                 {
                     Text = contextMenuLuaAction.Text,
                     RequireCharacterSelected = contextMenuLuaAction.RequireCharacterSelected,
-                    // TODO This could be done via a lambda, but it always uses the same space of memory, thus if 2 actions are performed, the same action will be produced for each.
                     Action = InvokeContextMenuLuaAction,
-                    // Note that this is only in place because of the problem with the previous statement.
-                    Parameter = contextMenuLuaAction.LuaFunction
+                    Parameter = contextMenuLuaAction.LuaFunction    // Note that this is only in place because of the problem with the previous statement.
                 };
             }
         }
