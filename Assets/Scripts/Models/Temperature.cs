@@ -300,7 +300,7 @@ public class Temperature
                     temp_curr[index] = temp_old[index];
 
                     // TODO: If empty space, set temperature to 0.
-                    if (WorldController.Instance.GetTileAtWorldCoord(new Vector3(x, y, z)).Room == null) {
+                    if (World.Current.GetTileAt(x, y, z).Room.IsOutsideRoom()) {
                         temp_curr[index] = 0f;
                     }
 
