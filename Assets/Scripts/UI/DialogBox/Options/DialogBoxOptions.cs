@@ -47,7 +47,7 @@ public class DialogBoxOptions : DialogBox
 
     private void RenderButtons()
     {
-        Object buttonPrefab = Resources.Load("UI/Components/MenuButton");
+        UnityEngine.Object buttonPrefab = Resources.Load("UI/Components/MenuButton");
 
         GameObject resumeButton = CreateButtonGO(buttonPrefab, "Resume", "menu_resume");
         resumeButton.GetComponent<Button>().onClick.AddListener(delegate
@@ -86,7 +86,7 @@ public class DialogBoxOptions : DialogBox
         });
     }
 
-    private GameObject CreateButtonGO(Object buttonPrefab, string name, string localizationCode)
+    private GameObject CreateButtonGO(UnityEngine.Object buttonPrefab, string name, string localizationCode)
     {
         GameObject buttonGameObject = (GameObject)Instantiate(buttonPrefab);
         buttonGameObject.transform.SetParent(this.transform, false);
