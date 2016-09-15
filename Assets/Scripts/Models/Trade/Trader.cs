@@ -8,9 +8,24 @@
 #endregion
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
+
+public enum RequestLevel
+{
+        None = 0,
+        Desired = 1,
+        Needed = 2,
+        Desperate = 3
+}
 
 public class Trader
 {
+    public List<TraderPotentialInventory> possibleStock;
+
+    public Dictionary<TraderPotentialInventory, RequestLevel> requests;
+
+    public float requestChanceModifier = 0.2f;
+
     public string Name { get; set; }
 
     public Currency Currency { get; set; }
@@ -51,5 +66,89 @@ public class Trader
         }
         
         return trader;
+    }
+
+    // <summary>
+    // Function allows to request items which have a higher 
+    // chance to be brought the next time this trader comes
+    // </summary>
+    public void RequestItems(Dictionary<TraderPotentialInventory, RequestLevel> requests)
+    {
+        if (this.requests == null)
+        {
+            this.requests = new Dictionary<TraderPotentialInventory, RequestLevel>();
+        }
+        
+        this.requests.Union(requests);
+    }
+
+    public void RefreshInventory()
+    {
+        List<TraderPotentialInventory> stockExceptRequests;
+        if (requests == null)
+        {
+            stockExceptRequests = possibleStock;
+        }
+        else
+        {
+            stockExceptRequests = possibleStock.Except(requests.Keys).ToList();
+        }
+
+        // Maybe change different attributes(sales margins, possible stocks, traded currencies, etc.)
+        // based on a relationship / time element?
+        foreach (TraderPotentialInventory potentialStock in stockExceptRequests)
+        {
+            bool itemIsInStock = Random.Range(0f, 1f) > potentialStock.Rarity;
+
+            if (itemIsInStock)
+            {
+                AddItemToStock(potentialStock);
+            }
+        }
+
+        // TODO make requests cost more based on how much you want them
+        if (requests == null)
+            return;
+
+        foreach (KeyValuePair<TraderPotentialInventory, RequestLevel> requestAndLevel in requests)
+        {
+            bool itemIsInStock = Random.Range(0f, 1f) + (requestChanceModifier * (int)requestAndLevel.Value) > requestAndLevel.Key.Rarity;
+
+            if (itemIsInStock)
+            {
+                AddItemToStock(requestAndLevel.Key);
+                requests.Remove(requestAndLevel.Key);
+            }
+        }
+    }
+    
+    private void AddItemToStock(TraderPotentialInventory inventory)
+    {
+        if (!string.IsNullOrEmpty(inventory.Type))
+        {
+            Inventory newInventory = new Inventory(
+                inventory.Type,
+                Random.Range(inventory.MinQuantity, inventory.MaxQuantity));
+
+            Stock.Add(newInventory);
+        }
+        else if (!string.IsNullOrEmpty(inventory.Category))
+        {
+            List<InventoryCommon> potentialObjects = GetInventoryCommonWithCategory(inventory.Category);
+
+            foreach (InventoryCommon potentialObject in potentialObjects)
+            {
+                Inventory newInventory = new Inventory(
+                    potentialObject.type,
+                    Random.Range(inventory.MinQuantity, inventory.MaxQuantity));
+
+                Stock.Add(newInventory);
+            }
+        }
+    }
+
+    private List<InventoryCommon> GetInventoryCommonWithCategory(string category)
+    {
+        return PrototypeManager.Inventory.Values.Where(i => i.category == category).ToList();
     }
 }

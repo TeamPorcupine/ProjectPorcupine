@@ -35,6 +35,8 @@ public class WorldController : MonoBehaviour
     public SpawnInventoryController spawnInventoryController;
     public AutosaveManager autosaveManager;
     public TradeController TradeController;
+    public TradersController tradersController;
+
     public ModsManager modsManager;
     public GameObject inventoryUI;
     public GameObject circleCursorPrefab;
@@ -121,6 +123,8 @@ public class WorldController : MonoBehaviour
         questController = new QuestController();
         cameraController = new CameraController();
         TradeController = new TradeController();
+        tradersController = new TradersController();
+
         autosaveManager = new AutosaveManager();
 
         // Register inputs actions

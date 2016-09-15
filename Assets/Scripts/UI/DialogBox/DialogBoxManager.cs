@@ -1,4 +1,4 @@
-#region License
+﻿#region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
 // This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
@@ -46,6 +46,7 @@ public class DialogBoxManager : MonoBehaviour
 
         tempGoObj = CreateDialogGO("DB_Trade", "Trade");
         dialogBoxTrade = tempGoObj.GetComponent<DialogBoxTrade>();
+        dialogBoxTrade.DoTradingTestWithMockTraders();
 
         tempGoObj = CreateDialogGO("DB_AreYouSure", "Are You Sure");
         dialogBoxAreYouSure = tempGoObj.GetComponent<DialogBoxAreYouSure>();

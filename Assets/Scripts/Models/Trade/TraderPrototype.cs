@@ -29,6 +29,8 @@ public class TraderPrototype : IPrototypable
 
     public float MaxSaleMarginMultiplier { get; set; }
 
+    public float RequestChanceModifier { get; set; }
+
     public List<TraderPotentialInventory> PotentialStock { get; set; }
 
     /// <summary>
@@ -90,7 +92,12 @@ public class TraderPrototype : IPrototypable
                     reader.Read();
                     MaxSaleMarginMultiplier = reader.ReadContentAsFloat();
                     break;
-                
+
+                case "requestChanceModifier":
+                    reader.Read();
+                    RequestChanceModifier = reader.ReadContentAsFloat();
+                    break;
+                    
                 case "potentialStock":
                     PotentialStock = new List<TraderPotentialInventory>();
                     XmlReader invs_reader = reader.ReadSubtree();
@@ -110,7 +117,7 @@ public class TraderPrototype : IPrototypable
                             });
                         }
                     }
-
+                    
                     break;
             }
         }
@@ -121,54 +128,23 @@ public class TraderPrototype : IPrototypable
     /// </summary>
     public Trader CreateTrader()
     {
-        Trader t = new Trader
+        Trader trader = new Trader
         {
             Currency = new Currency
             {
                 Name = CurrencyName,
-                Balance = Random.Range(MinCurrencyBalance, MaxCurrencyBalance),   
+                
                 ShortName = World.Current.Wallet.Currencies[CurrencyName].ShortName
             },
             Name = PotentialNames[Random.Range(0, PotentialNames.Count - 1)],
             SaleMarginMultiplier = Random.Range(MinSaleMarginMultiplier, MaxSaleMarginMultiplier),
-            Stock = new List<Inventory>()
+            Stock = new List<Inventory>(),
+            possibleStock = PotentialStock,
+            requestChanceModifier = RequestChanceModifier
         };
 
-        foreach (TraderPotentialInventory potentialStock in PotentialStock)
-        {
-            bool itemIsInStock = Random.Range(0f, 1f) > potentialStock.Rarity;
-
-            if (itemIsInStock)
-            {
-                if (!string.IsNullOrEmpty(potentialStock.Type))
-                {
-                    Inventory inventory = new Inventory(
-                        potentialStock.Type,
-                        Random.Range(potentialStock.MinQuantity, potentialStock.MaxQuantity));
-
-                    t.Stock.Add(inventory);
-                }
-                else if (!string.IsNullOrEmpty(potentialStock.Category))
-                {
-                    List<InventoryCommon> potentialObjects = GetInventoryCommonWithCategory(potentialStock.Category);
-
-                    foreach (InventoryCommon potentialObject in potentialObjects)
-                    {
-                        Inventory inventory = new Inventory(
-                            potentialObject.type,
-                            Random.Range(potentialStock.MinQuantity, potentialStock.MaxQuantity));
-
-                        t.Stock.Add(inventory);
-                    }
-                }
-            }
-        }
-
-        return t;
-    }
-
-    private List<InventoryCommon> GetInventoryCommonWithCategory(string category)
-    {
-        return PrototypeManager.Inventory.Values.Where(i => i.category == category).ToList();
+        trader.RefreshInventory();
+        WorldController.Instance.tradersController.AddTrader(trader);
+        return trader;
     }
 }

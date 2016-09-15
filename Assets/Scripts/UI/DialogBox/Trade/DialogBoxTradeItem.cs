@@ -18,7 +18,6 @@ public class DialogBoxTradeItem : MonoBehaviour
     public Text TraderStockText;
     public Text TraderSellItemPriceText;
     public InputField TradeAmountText;
-
     private TradeItem item;
 
     public event Action<TradeItem> OnTradeAmountChangedEvent;
