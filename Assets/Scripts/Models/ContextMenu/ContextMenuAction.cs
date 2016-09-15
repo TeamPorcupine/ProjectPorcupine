@@ -16,6 +16,8 @@ public class ContextMenuAction
 
     public string Text { get; set; }
 
+    public string Parameter;
+
     public void OnClick(MouseController mouseController)
     {
         if (Action != null)

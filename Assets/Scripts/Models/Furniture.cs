@@ -617,7 +617,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                     {
                         LuaFunction = reader.GetAttribute("FunctionName"),
                         Text = reader.GetAttribute("Text"),
-                        RequiereCharacterSelected = bool.Parse(reader.GetAttribute("RequiereCharacterSelected")),
+                        RequireCharacterSelected = bool.Parse(reader.GetAttribute("RequireCharacterSelected")),
                         DevModeOnly = bool.Parse(reader.GetAttribute("DevModeOnly") ?? "false")
                     });
                     break;
@@ -964,8 +964,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                 yield return new ContextMenuAction
                 {
                     Text = contextMenuLuaAction.Text,
-                    RequireCharacterSelected = contextMenuLuaAction.RequiereCharacterSelected,
-                    Action = (cma, c) => InvokeContextMenuLuaAction(contextMenuLuaAction.LuaFunction, c)
+                    RequireCharacterSelected = contextMenuLuaAction.RequireCharacterSelected,
+                    Action = InvokeContextMenuLuaAction,
+                    Parameter = contextMenuLuaAction.LuaFunction
                 };
             }
         }
@@ -1051,9 +1052,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         function(this, arg);
     }
 
-    private void InvokeContextMenuLuaAction(string luaFunction, Character character)
+    private void InvokeContextMenuLuaAction(ContextMenuAction action, Character character)
     {
-        FunctionsManager.Furniture.Call(luaFunction, this, character);
+        FunctionsManager.Furniture.Call(action.Parameter, this, character);
     }
 
     [MoonSharpVisible(true)]
