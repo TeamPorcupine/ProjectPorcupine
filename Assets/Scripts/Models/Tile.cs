@@ -40,6 +40,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         Z = z;
         Characters = new List<Character>();
         MovementModifier = 1;
+        Utilities = new Dictionary<string, Utility>();
     }
 
     // The function we callback any time our tile's data changes
@@ -78,6 +79,9 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
 
     // Furniture is something like a wall, door, or sofa.
     public Furniture Furniture { get; private set; }
+
+    // Utility is something like a Power Cables or Water Pipes.
+    public Dictionary<string, Utility> Utilities { get; private set; }
 
     /// <summary>
     /// The total pathfinding cost of entering this tile.
@@ -183,6 +187,37 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
                 t.Furniture = objInstance;
             }
         }
+
+        return true;
+    }
+
+    public bool UnplaceUtility()
+    {
+        // Just uninstalling.
+        if (Utilities == null)
+        {
+            return false;
+        }
+
+        Utilities = null;
+
+        return true;
+    }
+
+    public bool PlaceUtility(Utility objInstance)
+    {
+        if (objInstance == null)
+        {
+            return UnplaceUtility();
+        }
+
+        if (objInstance.IsValidPosition(this) == false)
+        {
+            Debug.ULogErrorChannel("Tile", "Trying to assign a furniture to a tile that isn't valid!");
+            return false;
+        }
+
+        Utilities.Add(objInstance.Name, objInstance);
 
         return true;
     }
