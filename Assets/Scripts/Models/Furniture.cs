@@ -103,7 +103,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         LinksToNeighbour = other.LinksToNeighbour;
 
         Parameters = new Parameter(other.Parameters);
-        Jobs = new BuildableJobs(this, other);
+        Jobs = new BuildableJobs(this, other.Jobs);
         workshop = other.workshop; // don't need to clone here, as all are prototype things (not changing)
 
         if (other.Animation != null)

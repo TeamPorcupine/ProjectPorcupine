@@ -137,10 +137,7 @@ public class BuildModeController
                             // flags that prevent conflicts. It's too easy to forget to set/clear them!
                             Tile offsetTile = WorldController.Instance.World.GetTileAt(xOffset, yOffset, tile.Z);
                             offsetTile.PendingBuildJob = job;
-                            job.OnJobStopped += (theJob) =>
-                                {
-                                    offsetTile.PendingBuildJob = null;
-                                };
+                            job.OnJobStopped += (theJob) => offsetTile.PendingBuildJob = null;
                         }
                     }
 
@@ -194,6 +191,7 @@ public class BuildModeController
                     Tile offsetTile = WorldController.Instance.World.GetTileAt(tile.X, tile.Y, tile.Z);
                     offsetTile.PendingBuildJob = job;
                     job.OnJobStopped += (theJob) => offsetTile.PendingBuildJob = null;
+
                     WorldController.Instance.World.jobQueue.Enqueue(job);
                 }
             }

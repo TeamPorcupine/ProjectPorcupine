@@ -331,7 +331,8 @@
         <BuildingJob jobTime="0" />
 
         <JobInputSpotOffset X="0" Y="0" />
-        <JobOutputSpotTile X="1" Y="0" />
+        <JobWorkSpotOffset X="1" Y="0" />
+        <JobOutputSpotOffset X="2" Y="0" />
 
         <Params>
             <Param name="smelttime" value="0" />

@@ -78,7 +78,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         Tint = other.Tint;
 
         Parameters = new Parameter(other.Parameters);
-        Jobs = new BuildableJobs(this, other);
+        Jobs = new BuildableJobs(this, other.Jobs);
 
         if (other.EventActions != null)
         {
@@ -172,12 +172,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     {
         get
         {
-            if (string.IsNullOrEmpty(name))
-            {
-                return Type;
-            }
-
-            return name;
+            return string.IsNullOrEmpty(name) ? Type : name;
         }
 
         private set
