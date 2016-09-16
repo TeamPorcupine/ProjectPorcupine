@@ -8,6 +8,7 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using ProjectPorcupine.Jobs;
 
 public class JobQueue
 {
@@ -60,9 +61,9 @@ public class JobQueue
         }
 
         // If the job requres material but there is nothing available, store it in jobsWaitingForInventory
-        if (job.inventoryRequirements.Count > 0 && job.GetFirstFulfillableInventoryRequirement() == null)
+        if (job.RequestedItems.Count > 0 && job.GetFirstFulfillableInventoryRequirement() == null)
         {
-            string missing = job.acceptsAny ? "*" : job.GetFirstDesiredInventory().Type;
+            string missing = job.acceptsAny ? "*" : job.GetFirstDesiredItem().Type;
             Debug.ULogChannel("FSM", " - missingInventory {0}", missing);
             if (jobsWaitingForInventory.ContainsKey(missing) == false)
             {
@@ -79,9 +80,9 @@ public class JobQueue
         else
         {
             Debug.ULogChannel("FSM", " - {0}", job.acceptsAny ? "Any" : "All");
-            foreach (Inventory inventory in job.inventoryRequirements.Values)
+            foreach (RequestedItem item in job.RequestedItems.Values)
             {
-                Debug.ULogChannel("FSM", "   - {0} {1}", inventory.MaxStackSize - inventory.StackSize, inventory.Type);
+                Debug.ULogChannel("FSM", "   - {0} Min: {1}, Max: {2}", item.Type, item.MinAmountRequested, item.MaxAmountRequested);
             }
             Debug.ULogChannel("FSM", " - job ok");
             jobQueue.Add(job.Priority, job);

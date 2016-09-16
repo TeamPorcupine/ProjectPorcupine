@@ -41,7 +41,7 @@ namespace ProjectPorcupine.State
                     // Find material somewhere
                     string[] inventoryTypes = character.inventory != null ?
                         new string[] { character.inventory.Type } :
-                        Job.inventoryRequirements.Keys.ToArray();
+                        Job.RequestedItems.Keys.ToArray();
 
                     path = World.Current.inventoryManager.GetPathToClosestInventoryOfType(inventoryTypes, character.CurrTile, Job.canTakeFromStockpile);
                     if (path != null && path.Count > 0)
@@ -96,13 +96,13 @@ namespace ProjectPorcupine.State
         {
             Inventory tileInventory = character.CurrTile.Inventory;
             bool jobWantsTileInventory = InventoryManager.InventoryCanBePickedUp(tileInventory, Job.canTakeFromStockpile) &&
-                                         Job.AmountDesiredOfInventoryType(tileInventory) > 0;
+                                         Job.AmountDesiredOfInventoryType(tileInventory.Type) > 0;
 
             if (noMoreMaterialFound && character.inventory != null)
             {
                 return Job.IsTileAtJobSite(character.CurrTile) ? HaulAction.DropOffmaterial : HaulAction.DeliverMaterial;
             }
-            else if (character.inventory != null && Job.AmountDesiredOfInventoryType(character.inventory) == 0)
+            else if (character.inventory != null && Job.AmountDesiredOfInventoryType(character.inventory.Type) == 0)
             {
                 return HaulAction.DumpMaterial;
             }
@@ -112,7 +112,7 @@ namespace ProjectPorcupine.State
             }
             else
             {
-                int amountWanted = Job.AmountDesiredOfInventoryType(character.inventory);
+                int amountWanted = Job.AmountDesiredOfInventoryType(character.inventory.Type);
                 int currentlyCarrying = character.inventory.StackSize;
                 int spaceAvailable = character.inventory.MaxStackSize - currentlyCarrying;
 

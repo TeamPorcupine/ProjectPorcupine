@@ -15,6 +15,7 @@ using System.Xml.Serialization;
 using Animation;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
+using ProjectPorcupine.Jobs;
 using ProjectPorcupine.PowerNetwork;
 using UnityEngine;
 
@@ -421,7 +422,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         {
             if (prevUpdatePowerOn)
             {
-                EventActions.Trigger("OnPowerOff", this, deltaTime);                
+                EventActions.Trigger("OnPowerOff", this, deltaTime);
             }
 
             Jobs.PauseAll();
@@ -702,7 +703,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     public void ReadXmlBuildingJob(XmlReader reader)
     {
         float jobTime = float.Parse(reader.GetAttribute("jobTime"));
-        List<Inventory> invs = new List<Inventory>();
+        List<RequestedItem> items = new List<RequestedItem>();
         XmlReader inventoryReader = reader.ReadSubtree();
 
         while (inventoryReader.Read())
@@ -710,20 +711,18 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             if (inventoryReader.Name == "Inventory")
             {
                 // Found an inventory requirement, so add it to the list!
-                invs.Add(new Inventory(
-                    inventoryReader.GetAttribute("type"),
-                    int.Parse(inventoryReader.GetAttribute("amount")),
-                    0));
+                int amount = int.Parse(inventoryReader.GetAttribute("amount"));
+                items.Add(new RequestedItem(inventoryReader.GetAttribute("type"), amount));
             }
         }
 
         Job job = new Job(
-            null,
-            Type,
-            FunctionsManager.JobComplete_FurnitureBuilding,
-            jobTime,
-            invs.ToArray(),
-            Job.JobPriority.High);
+                      null,
+                      Type,
+                      FunctionsManager.JobComplete_FurnitureBuilding,
+                      jobTime,
+                      items.ToArray(),
+                      Job.JobPriority.High);
         job.JobDescription = "job_build_" + Type + "_desc";
         job.adjacent = true;
 
@@ -734,7 +733,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// Accepts for storage.
     /// </summary>
     /// <returns>A list of Inventory which the Furniture accepts for storage.</returns>
-    public Inventory[] AcceptsForStorage()
+    public RequestedItem[] AcceptsForStorage()
     {
         if (HasTypeTag("Storage") == false)
         {
@@ -743,15 +742,13 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         }
 
         // TODO: read this from furniture params
-        Dictionary<string, Inventory> invsDict = new Dictionary<string, Inventory>();
-        foreach (string type in PrototypeManager.Inventory.Keys)
+        Dictionary<string, RequestedItem> itemsDict = new Dictionary<string, RequestedItem>();
+        foreach (InventoryCommon inventoryProto in PrototypeManager.Inventory.Values)
         {
-            invsDict[type] = new Inventory(type, 0);
+            itemsDict[inventoryProto.type] = new RequestedItem(inventoryProto.type, 1, inventoryProto.maxStackSize);
         }
 
-        Inventory[] invs = new Inventory[invsDict.Count];
-        invsDict.Values.CopyTo(invs, 0);
-        return invs;
+        return itemsDict.Values.ToArray();
     }
 
     /// <summary>

@@ -51,7 +51,7 @@ namespace ProjectPorcupine.Pathfinding
             List<Tile> path = resolver.GetList();
             if (adjacent)
             {
-                DebugLogIf(path.Count > 0, "FindPathToTile adjacent from: {0, to: {1}, found {2} [Length: {3}", start, end, path.Last(), path.Count);
+                DebugLogIf(path.Count > 0, "FindPathToTile adjacent from: {0}, to: {1}, found {2} [Length: {3}", start, end, path.Last(), path.Count);
 //                DebugLogIf(path.Count > 0, "Searched adjacent from: " + start.X + "," + start.Y + ", to: " + end.X + "," + end.Y + " found: " + path.Last().X + "," + path.Last().Y + " [Length: " + path.Count + "]");
             }
             else

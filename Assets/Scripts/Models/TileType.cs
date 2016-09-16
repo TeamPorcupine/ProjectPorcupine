@@ -14,6 +14,7 @@ using System.Xml;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
 using UnityEngine;
+using ProjectPorcupine.Jobs;
 
 [MoonSharpUserData]
 public class TileType : IXmlSerializable, IEquatable<TileType>
@@ -282,7 +283,7 @@ public class TileType : IXmlSerializable, IEquatable<TileType>
             return;
         }
 
-        List<Inventory> inventoryRequirements = new List<Inventory>();
+        List<RequestedItem> requestedItems = new List<RequestedItem>();
         XmlReader inventoryReader = parentReader.ReadSubtree();
         while (inventoryReader.Read())
         {
@@ -296,7 +297,7 @@ public class TileType : IXmlSerializable, IEquatable<TileType>
             string type = inventoryReader.GetAttribute("type");
             if (int.TryParse(inventoryReader.GetAttribute("amount"), out amount))
             {
-                inventoryRequirements.Add(new Inventory(type, amount));
+                requestedItems.Add(new RequestedItem(type, amount));
             }
             else
             {
@@ -309,7 +310,7 @@ public class TileType : IXmlSerializable, IEquatable<TileType>
             this,
             Tile.ChangeTileTypeJobComplete,
             jobTimeValue,
-            inventoryRequirements.ToArray(),
+            requestedItems.ToArray(),
             Job.JobPriority.High,
             false,
             true)

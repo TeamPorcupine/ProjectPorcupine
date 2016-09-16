@@ -56,25 +56,26 @@ public class InventoryManager
 
     public bool PlaceInventory(Job job, Character character)
     {
-        Inventory inventory = character.inventory;
+        Inventory sourceInventory = character.inventory;
 
-        if (job.inventoryRequirements.ContainsKey(inventory.Type) == false)
+        // Check that it's wanted by the job
+        if (job.RequestedItems.ContainsKey(sourceInventory.Type) == false)
         {
             Debug.ULogErrorChannel(InventoryManagerLogChanel, "Trying to add inventory to a job that it doesn't want.");
             return false;
         }
 
-        job.inventoryRequirements[inventory.Type].StackSize += inventory.StackSize;
+        // Check that there is a target to transfer to
+        if (job.HeldInventory.ContainsKey(sourceInventory.Type) == false)
+        {
+            job.HeldInventory[sourceInventory.Type] = new Inventory(sourceInventory.Type, 0, sourceInventory.MaxStackSize);
+        }
 
-        if (job.inventoryRequirements[inventory.Type].MaxStackSize < job.inventoryRequirements[inventory.Type].StackSize)
-        {
-            inventory.StackSize = job.inventoryRequirements[inventory.Type].StackSize - job.inventoryRequirements[inventory.Type].MaxStackSize;
-            job.inventoryRequirements[inventory.Type].StackSize = job.inventoryRequirements[inventory.Type].MaxStackSize;
-        }
-        else
-        {
-            inventory.StackSize = 0;
-        }
+        Inventory targetInventory = job.HeldInventory[sourceInventory.Type];
+        int transferAmount = Mathf.Min(targetInventory.MaxStackSize - targetInventory.StackSize, sourceInventory.StackSize);
+
+        sourceInventory.StackSize -= transferAmount;
+        targetInventory.StackSize += transferAmount;
 
         CleanupInventory(character);
 

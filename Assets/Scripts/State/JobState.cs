@@ -28,7 +28,7 @@ namespace ProjectPorcupine.State
             job.OnJobStopped += OnJobStopped;
             job.IsBeingWorked = true;
 
-            FSMLog("created {0}", job.GetName());
+            FSMLog("created {0}", job.JobObjectType ?? "Unnamed Job");
         }
 
         public Job Job { get; private set; }

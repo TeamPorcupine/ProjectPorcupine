@@ -63,7 +63,7 @@ public class JobSpriteController : BaseSpriteController<Job>
 
     protected override void OnCreated(Job job)
     {
-        if (job.JobObjectType == null && job.JobTileType == null)
+        if (job.JobTileType == null && job.buildablePrototype == null)
         {
             // This job doesn't really have an associated sprite with it, so no need to render.
             return;

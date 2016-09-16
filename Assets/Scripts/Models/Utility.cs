@@ -1,8 +1,8 @@
 #region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
-// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
-// and you are welcome to redistribute it under certain conditions; See 
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
@@ -11,10 +11,9 @@ using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
-using Animation;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
-using ProjectPorcupine.PowerNetwork;
+using ProjectPorcupine.Jobs;
 using UnityEngine;
 
 /// <summary>
@@ -122,16 +121,16 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     /// <summary>
     /// Gets the width of the utility.
     /// </summary>
-    public int Width 
-    { 
+    public int Width
+    {
         get { return 1; }
     }
 
     /// <summary>
     /// Gets the height of the utility.
     /// </summary>
-    public int Height 
-    { 
+    public int Height
+    {
         get { return 1; }
     }
 
@@ -163,7 +162,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     public Tile Tile { get; private set; }
 
     /// <summary>
-    /// Gets the string that defines the type of object the utility is. This gets queried by the visual system to 
+    /// Gets the string that defines the type of object the utility is. This gets queried by the visual system to
     /// know what sprite to render for this utility.
     /// </summary>
     /// <value>The type of the utility.</value>
@@ -205,8 +204,8 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     /// Gets a value indicating whether this utility is next to any utility of the same type.
     /// This is used to check what sprite to use if utility is next to each other.
     /// </summary>
-    public bool LinksToNeighbour 
-    { 
+    public bool LinksToNeighbour
+    {
         get
         {
             return true;
@@ -214,11 +213,11 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     }
 
     /// <summary>
-    /// Gets the type of dragging that is used to build multiples of this utility. 
+    /// Gets the type of dragging that is used to build multiples of this utility.
     /// e.g walls.
     /// </summary>
-    public string DragType 
-    { 
+    public string DragType
+    {
         get
         {
             return "path";
@@ -298,7 +297,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         {
             ResumeJobs();
         }
-            
+
         if (EventActions != null)
         {
             // updateActions(this, deltaTime);
@@ -386,7 +385,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
                 case "BuildingJob":
                     float jobTime = float.Parse(reader.GetAttribute("jobTime"));
 
-                    List<Inventory> invs = new List<Inventory>();
+                    List<RequestedItem> invs = new List<RequestedItem>();
 
                     XmlReader inventoryReader = reader.ReadSubtree();
 
@@ -395,20 +394,19 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
                         if (inventoryReader.Name == "Inventory")
                         {
                             // Found an inventory requirement, so add it to the list!
-                            invs.Add(new Inventory(
+                            invs.Add(new RequestedItem(
                                     inventoryReader.GetAttribute("type"),
-                                    int.Parse(inventoryReader.GetAttribute("amount")),
-                                    0));
+                                    int.Parse(inventoryReader.GetAttribute("amount"))));
                         }
                     }
 
                     Job job = new Job(
-                                null,
-                                Type,
-                                FunctionsManager.JobComplete_UtilityBuilding,
-                                jobTime,
-                                invs.ToArray(),
-                                Job.JobPriority.High);
+                                  null,
+                                  Type,
+                                  FunctionsManager.JobComplete_UtilityBuilding,
+                                  jobTime,
+                                  invs.ToArray(),
+                                  Job.JobPriority.High);
                     job.JobDescription = "job_build_" + Type + "_desc";
                     PrototypeManager.UtilityJob.Set(Type, job);
                     break;
@@ -423,12 +421,12 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
                     break;
                 case "ContextMenuAction":
                     contextMenuLuaActions.Add(new ContextMenuLuaAction
-                    {
-                        LuaFunction = reader.GetAttribute("FunctionName"),
-                        Text = reader.GetAttribute("Text"),
-                        RequireCharacterSelected = bool.Parse(reader.GetAttribute("RequiereCharacterSelected")),
-                        DevModeOnly = bool.Parse(reader.GetAttribute("DevModeOnly") ?? "false")
-                    });
+                        {
+                            LuaFunction = reader.GetAttribute("FunctionName"),
+                            Text = reader.GetAttribute("Text"),
+                            RequireCharacterSelected = bool.Parse(reader.GetAttribute("RequiereCharacterSelected")),
+                            DevModeOnly = bool.Parse(reader.GetAttribute("DevModeOnly") ?? "false")
+                        });
                     break;
                 case "GetSpriteName":
                     getSpriteNameAction = reader.GetAttribute("FunctionName");
@@ -447,7 +445,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
             }
         }
     }
-    
+
     /// <summary>
     /// Reads the specified XMLReader (pass it to <see cref="ReadXmlParams(XmlReader)"/>)
     /// This is used to load utility from a save file.
@@ -551,8 +549,8 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         }
 
         // We should inform our neighbours that they have just lost a
-        // neighbour regardless of type.  
-        // Just trigger their OnChangedCallback. 
+        // neighbour regardless of type.
+        // Just trigger their OnChangedCallback.
         for (int xpos = x - 1; xpos < x + 2; xpos++)
         {
             for (int ypos = y - 1; ypos < y + 2; ypos++)

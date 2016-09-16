@@ -164,56 +164,55 @@ function Stockpile_UpdateAction( furniture, deltaTime )
     end
 
 
-	-- TODO: In the future, stockpiles -- rather than being a bunch of individual
-	-- 1x1 tiles -- should manifest themselves as single, large objects.  This
-	-- would respresent our first and probably only VARIABLE sized "furniture" --
-	-- at what happenes if there's a "hole" in our stockpile because we have an
-	-- actual piece of furniture (like a cooking stating) installed in the middle
-	-- of our stockpile?
-	-- In any case, once we implement "mega stockpiles", then the job-creation system
-	-- could be a lot smarter, in that even if the stockpile has some stuff in it, it
-	-- can also still be requestion different object types in its job creation.
+  	-- TODO: In the future, stockpiles -- rather than being a bunch of individual
+  	-- 1x1 tiles -- should manifest themselves as single, large objects.  This
+  	-- would respresent our first and probably only VARIABLE sized "furniture" --
+  	-- at what happenes if there's a "hole" in our stockpile because we have an
+  	-- actual piece of furniture (like a cooking stating) installed in the middle
+  	-- of our stockpile?
+  	-- In any case, once we implement "mega stockpiles", then the job-creation system
+  	-- could be a lot smarter, in that even if the stockpile has some stuff in it, it
+  	-- can also still be requestion different object types in its job creation.
 
     local itemsDesired = {}
 
-	if( furniture.Tile.Inventory == nil ) then
-		--ModUtils.ULog("Creating job for new stack.")
-		itemsDesired = Stockpile_GetItemsFromFilter( furniture )
-	else
-		--ModUtils.ULog("Creating job for existing stack.")
-		desInv = furniture.Tile.Inventory.Clone()
-		desInv.MaxStackSize = desInv.MaxStackSize - desInv.StackSize
-		desInv.StackSize = 0
+  	if( furniture.Tile.Inventory == nil ) then
+    		--ModUtils.ULog("Creating job for new stack.")
+    		itemsDesired = Stockpile_GetItemsFromFilter( furniture )
+  	else
+    		--ModUtils.ULog("Creating job for existing stack.")
+        local currentInventory = furniture.Tile.Inventory
+    		desInv = RequestedItem.__new(currentInventory.Type, 1, currentInventory.MaxStackSize - currentInventory.StackSize)
 
         itemsDesired = { desInv }
     end
 
-	local job = Job.__new(
-		furniture.Tile,
-		"Stockpile_UpdateAction",
-		nil,
-		0,
-		itemsDesired,
-		Job.JobPriority.Low,
-		false
-	)
-	job.JobDescription = "job_stockpile_moving_desc"
-	job.acceptsAny = true
+  	local job = Job.__new(
+    		furniture.Tile,
+    		"Stockpile_UpdateAction",
+    		nil,
+    		0,
+    		itemsDesired,
+    		Job.JobPriority.Low,
+    		false
+  	)
+  	job.JobDescription = "job_stockpile_moving_desc"
+  	job.acceptsAny = true
 
-	-- TODO: Later on, add stockpile priorities, so that we can take from a lower
-	-- priority stockpile for a higher priority one.
-	job.canTakeFromStockpile = false
+  	-- TODO: Later on, add stockpile priorities, so that we can take from a lower
+  	-- priority stockpile for a higher priority one.
+  	job.canTakeFromStockpile = false
 
-	job.RegisterJobWorkedCallback("Stockpile_JobWorked")
-	furniture.Jobs.Add(job)
+  	job.RegisterJobWorkedCallback("Stockpile_JobWorked")
+  	furniture.Jobs.Add(job)
 end
 
 function Stockpile_JobWorked(job)
     job.CancelJob()
 
     -- TODO: Change this when we figure out what we're doing for the all/any pickup job.
-    --values = job.GetInventoryRequirementValues();
-    for k, inv in pairs(job.inventoryRequirements) do
+    --values = j.GetInventoryRequirementValues();
+    for k, inv in pairs(j.HeldInventory) do
         if(inv.StackSize > 0) then
             World.Current.inventoryManager.PlaceInventory(job.tile, inv)
             return -- There should be no way that we ever end up with more than on inventory requirement with StackSize > 0
@@ -315,11 +314,10 @@ function MetalSmelter_UpdateAction(furniture, deltaTime)
 
     -- Create job depending on the already available stack size.
     local desiredStackSize = 50
-    local itemsDesired = { Inventory.__new("Raw Iron", 0, desiredStackSize) }
     if(spawnSpot.Inventory ~= nil and spawnSpot.Inventory.StackSize < spawnSpot.Inventory.MaxStackSize) then
         desiredStackSize = spawnSpot.Inventory.MaxStackSize - spawnSpot.Inventory.StackSize
-        itemsDesired[1].MaxStackSize = desiredStackSize
     end
+    local itemsDesired = { RequestedItem.__new("Raw Iron", desiredStackSize) }
     ModUtils.ULog("MetalSmelter: Creating job for " .. desiredStackSize .. " raw iron.")
 
     local jobSpot = furniture.Jobs.GetWorkSpotTile()
@@ -385,7 +383,7 @@ end
 function PowerGenerator_UpdateAction(furniture, deltatime)
     if (furniture.Jobs.Count() < 1 and furniture.Parameters["burnTime"].ToFloat() == 0) then
         furniture.PowerConnection.OutputRate = 0
-        local itemsDesired = {Inventory.__new("Uranium", 0, 5)}
+        local itemsDesired = {RequestedItem.__new("Uranium", 1, 5)}
 
         local job = Job.__new(
             furniture.Jobs.GetWorkSpotTile(),
