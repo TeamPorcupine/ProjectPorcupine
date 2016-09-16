@@ -591,9 +591,7 @@ public class MouseController
 
         Furniture proto = PrototypeManager.Furniture.Get(furnitureType);
 
-        float protoX = t.X + ((sr.sprite.pivot.x / sr.sprite.pixelsPerUnit) - 0.5f);
-        float protoY = t.Y + ((sr.sprite.pivot.y / sr.sprite.pixelsPerUnit) - 0.5f);
-        go.transform.position = new Vector3(protoX, protoY, WorldController.Instance.cameraController.CurrentLayer);
+        go.transform.position = new Vector3(t.X, t.Y, WorldController.Instance.cameraController.CurrentLayer) + ImageUtils.SpritePivotOffset(sr.sprite);
     }
 
     private void ShowUtilitySpriteAtTile(string furnitureType, Tile tile)
