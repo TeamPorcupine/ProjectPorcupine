@@ -30,8 +30,6 @@ public class KeyboardManager
         ReadXmlOrJsonAfterWeDecide();
     }
 
-    public List<InputField> ModalInputFields { get; set; }
-
     public static KeyboardManager Instance
     {
         get
@@ -49,6 +47,8 @@ public class KeyboardManager
             instance = value;
         }
     }
+
+    public List<InputField> ModalInputFields { get; set; }
 
     public void RegisterModalInputField(InputField filterField)
     {
