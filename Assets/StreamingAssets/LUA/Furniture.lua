@@ -565,6 +565,32 @@ function AirPump_GetSpriteName(furniture)
     return furniture.Type .. suffix
 end
 
+function Vent_OnUpdate(furniture, deltaTime)
+    furniture.SetAnimationProgressValue(furniture.Parameters["openness"].ToFloat(), 1)
+    furniture.Tile.EqualiseGas(deltaTime * furniture.Parameters["gas_throughput"].ToFloat() * furniture.Parameters["openness"].ToInt())
+end
+
+function Vent_SetOrientationState(furniture)
+    if (furniture.Tile == nil) then
+        return
+    end
+    
+    local tile = furniture.Tile
+    if (tile.North().Room != nil and tile.South().Room != nil) then
+        furniture.SetAnimationState("vertical")
+    elseif (tile.West().Room != nil and tile.East().Room != nil) then
+        furniture.SetAnimationState("horizontal")
+    end
+end
+
+function Vent_Open(furniture)
+    furniture.Parameters["openness"].SetValue("1")
+end
+
+function Vent_Close(furniture)
+    furniture.Parameters["openness"].SetValue("0")
+end
+
 function AirPump_FlipDirection(furniture, character)
     if (furniture.Parameters["flow_direction_up"].ToFloat() > 0) then
         furniture.Parameters["flow_direction_up"].SetValue(0)

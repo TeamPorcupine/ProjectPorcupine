@@ -130,9 +130,10 @@ public class WorldController : MonoBehaviour
         // Hiding Dev Mode spawn inventory controller if devmode is off.
         spawnInventoryController.SetUIVisibility(Settings.GetSetting("DialogBoxSettings_developerModeToggle", false));
 
+        cameraController.Initialize();
+
         // Initialising controllers.
         GameObject controllers = GameObject.Find("Controllers");
-        Instantiate(Resources.Load("UIController"), controllers.transform);
 
         GameObject canvas = GameObject.Find("Canvas");
         go = Instantiate(Resources.Load("UI/ContextMenu"), canvas.transform.position, canvas.transform.rotation, canvas.transform) as GameObject;
@@ -231,8 +232,5 @@ public class WorldController : MonoBehaviour
         Debug.Log(reader.ToString());
         World = (World)serializer.Deserialize(reader);
         reader.Close();
-
-        // Center the Camera.
-        Camera.main.transform.position = new Vector3(World.Width / 2, World.Height / 2, Camera.main.transform.position.z);
     }
 }

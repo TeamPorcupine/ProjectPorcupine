@@ -45,7 +45,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
 
     private Func<Tile, bool> funcPositionValidation;
 
-    private HashSet<TileType> tileTypeBuildPermissions;
+    private HashSet<string> tileTypeBuildPermissions;
 
     /// TODO: Implement object rotation
     /// <summary>
@@ -61,7 +61,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         Jobs = new BuildableJobs(this);
         typeTags = new HashSet<string>();
         funcPositionValidation = DefaultIsValidPosition;
-        tileTypeBuildPermissions = new HashSet<TileType>();
+        tileTypeBuildPermissions = new HashSet<string>();
     }
 
     /// <summary>
@@ -97,7 +97,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
             funcPositionValidation = (Func<Tile, bool>)other.funcPositionValidation.Clone();
         }
 
-        tileTypeBuildPermissions = other.tileTypeBuildPermissions;
+        tileTypeBuildPermissions = new HashSet<string>(other.tileTypeBuildPermissions);
 
         LocalizationCode = other.LocalizationCode;
         UnlocalizedDescription = other.UnlocalizedDescription;
@@ -371,8 +371,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
                     ReadXmlBuildingJob(reader);
                     break;
                 case "CanBeBuiltOn":
-                    TileType tileType = TileType.GetTileType(reader.GetAttribute("tileType"));
-                    tileTypeBuildPermissions.Add(tileType);
+                    tileTypeBuildPermissions.Add(reader.GetAttribute("tileType"));
                     break;
                 case "Action":
                     XmlReader subtree = reader.ReadSubtree();
@@ -634,7 +633,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         }
 
         // Make sure tile is FLOOR
-        if (tile.Type != TileType.Floor && tileTypeBuildPermissions.Contains(tile.Type) == false)
+        if (tile.Type != TileType.Floor && tileTypeBuildPermissions.Contains(tile.Type.Type) == false)
         {
             return false;
         }

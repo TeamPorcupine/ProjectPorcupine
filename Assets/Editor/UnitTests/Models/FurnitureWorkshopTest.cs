@@ -11,7 +11,7 @@ using System.Text;
 using System.Xml.Serialization;
 using NUnit.Framework;
 
-public class WorkshopTest
+public class FurnitureWorkshopTest
 {
     [Test]
     public void TestSerialization()

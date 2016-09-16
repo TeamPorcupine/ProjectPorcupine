@@ -10,6 +10,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Animation;
 using MoonSharp.Interpreter;
 using Scheduler;
 using UnityEngine;
@@ -61,8 +62,11 @@ public class TradeController
         controller.LeavingCoordinates = new Vector3(100, 50, 0);
         go.transform.localScale = new Vector3(1, 1, 1);
         SpriteRenderer spriteRenderer = go.AddComponent<SpriteRenderer>();
-        spriteRenderer.sprite = SpriteManager.GetSprite("Trader", "BasicHaulShip");
+        spriteRenderer.sprite = SpriteManager.GetSprite("Trader", prototype.AnimationIdle.CurrentFrameName);
         spriteRenderer.sortingLayerName = "TradeShip";
+        controller.AnimationFlying = prototype.AnimationFlying.Clone();
+        controller.AnimationIdle = prototype.AnimationIdle.Clone();
+        controller.Renderer = spriteRenderer;
     }
 
     /// <summary>

@@ -29,10 +29,11 @@ public class ModsManager
         LoadFunctions("Utility.lua", "Utility");
         LoadFunctions("Need.lua", "Need");
         LoadFunctions("GameEvent.lua", "GameEvent");
-        LoadFunctions("TileType.lua", "Tiles");
+        LoadFunctions("Tiles.lua", "TileType");
         LoadFunctions("Quest.lua", "Quest");
         LoadFunctions("ScheduledEvent.lua", "ScheduledEvent");
 
+        LoadPrototypes("Tiles.xml", (text) => PrototypeManager.TileType.LoadPrototypes(text));
         LoadPrototypes("Furniture.xml", (text) => PrototypeManager.Furniture.LoadPrototypes(text));
         LoadPrototypes("Utility.xml", (text) => PrototypeManager.Utility.LoadPrototypes(text));
         LoadPrototypes("Inventory.xml", (text) => PrototypeManager.Inventory.LoadPrototypes(text));
