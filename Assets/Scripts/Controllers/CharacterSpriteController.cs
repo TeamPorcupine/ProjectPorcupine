@@ -128,6 +128,7 @@ public class CharacterSpriteController : BaseSpriteController<Character>
 
     protected override void OnRemoved(Character character)
     {
+        character.OnCharacterChanged -= OnChanged;
         GameObject char_go = objectGameObjectMap[character];
         objectGameObjectMap.Remove(character);
         GameObject.Destroy(char_go);
