@@ -181,9 +181,7 @@ public class ConstructionMenu : MonoBehaviour
 
         BuildModeController buildModeController = WorldController.Instance.buildModeController;
 
-        TileType[] tileTypes = TileType.LoadedTileTypes;
-
-        foreach (TileType item in tileTypes)
+        foreach (TileType item in PrototypeManager.TileType.Values)
         {
             TileType tileType = item;
             string key = tileType.Type;

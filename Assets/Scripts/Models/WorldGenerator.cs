@@ -32,7 +32,7 @@ public class WorldGenerator
 
     public static void Generate(World world, int seed)
     {
-        AsteroidFloorType = TileType.GetTileType("Floor");
+        AsteroidFloorType = PrototypeManager.TileType.Get("Floor");
 
         ReadXML();
         Random.InitState(seed);
@@ -58,7 +58,7 @@ public class WorldGenerator
                 int worldY = (height / 2) + startAreaCenterY - y;
 
                 Tile tile = world.GetTileAt(worldX, worldY, 0);
-                tile.Type = TileType.LoadedTileTypes[startAreaTiles[x, y]];
+                tile.Type = PrototypeManager.TileType[startAreaTiles[x, y]];
             }
         }
 

@@ -17,7 +17,7 @@ ENTERABILITY_SOON = 2
 -- ModUtils.ULogError("Testing ModUtils.ULogErrorChannel") -- Note: pauses the game
 
 -------------------------------- Furniture Actions --------------------------------
-function OnUpdate_GasGenerator( furniture, deltaTime )
+function OxygenGenerator_OnUpdate( furniture, deltaTime )
     if ( furniture.Tile.Room == nil ) then
 		return "Furniture's room was null."
 	end
@@ -31,7 +31,13 @@ function OnUpdate_GasGenerator( furniture, deltaTime )
         end
     end
 	return
+	furniture.SetAnimationState("running")
 end
+
+function OxygenGenerator_OnPowerOff( furniture, deltaTime )
+	furniture.SetAnimationState("idle")
+end
+
 
 function OnUpdate_Door( furniture, deltaTime )
 	if (furniture.Parameters["is_opening"].ToFloat() >= 1.0) then
@@ -467,16 +473,18 @@ function OxygenCompressor_OnUpdate(furniture, deltaTime)
             furniture.UpdateOnChanged(furniture)
         end
     end
+    furniture.SetAnimationState("running")
+    furniture.SetAnimationProgressValue(furniture.Parameters["gas_content"].ToFloat(), furniture.Parameters["max_gas_content"].ToFloat());
 end
 
-function OxygenCompressor_GetSpriteName(furniture)
-    local baseName = furniture.Type
-    local suffix = 0
-    if (furniture.Parameters["gas_content"].ToFloat() > 0) then
-        idxAsFloat = 8 * (furniture.Parameters["gas_content"].ToFloat() / furniture.Parameters["max_gas_content"].ToFloat())
-        suffix = ModUtils.FloorToInt(idxAsFloat)
+function OxygenCompressor_OnPowerOff(furniture, deltaTime)
+    -- lose half of gas, in case of blackout
+	local gasContent = furniture.Parameters["gas_content"].ToFloat()
+	if (gasContent > 0) then
+            furniture.Parameters["gas_content"].ChangeFloatValue(-gasContent/2)
+            furniture.UpdateOnChanged(furniture)
     end
-    return baseName .. "_" .. suffix
+    furniture.SetAnimationProgressValue(furniture.Parameters["gas_content"].ToFloat(), furniture.Parameters["max_gas_content"].ToFloat());
 end
 
 function SolarPanel_OnUpdate(furniture, deltaTime)
