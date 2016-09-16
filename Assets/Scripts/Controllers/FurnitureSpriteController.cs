@@ -124,6 +124,7 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
         SpriteRenderer sr = furn_go.AddComponent<SpriteRenderer>();
         sr.sprite = GetSpriteForFurniture(furniture);
         sr.sortingLayerName = "Furniture";
+        sr.sortingOrder = Mathf.RoundToInt(furn_go.transform.position.y * -1);
         sr.color = furniture.Tint;
 
         if (furniture.PowerConnection != null && furniture.PowerConnection.IsPowerConsumer)
