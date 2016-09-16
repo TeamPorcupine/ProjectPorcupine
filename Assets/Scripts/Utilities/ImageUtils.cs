@@ -13,6 +13,6 @@ public static class ImageUtils
 {
     public static Vector3 SpritePivotOffset(Sprite sprite)
     {
-        return new Vector3((sprite.pivot.x / sprite.pixelsPerUnit) - 0.5f, (sprite.pivot.x / sprite.pixelsPerUnit) - 0.5f, 0);
+        return new Vector3((sprite.pivot.x / sprite.pixelsPerUnit) - 0.5f, (sprite.pivot.y / sprite.pixelsPerUnit) - 0.5f, 0);
     }
 }
