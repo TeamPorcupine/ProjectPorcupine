@@ -386,6 +386,7 @@ public class MouseController
                         if (IsPartOfDrag(t, dragParams, proto.DragType))
                         {
                             ShowFurnitureSpriteAtTile(bmc.buildModeType, t);
+                            ShowWorkSpotSpriteAtTile(bmc.buildModeType, t);
                         }
                     }
                     else if (bmc.buildMode == BuildMode.UTILITY)
@@ -580,6 +581,7 @@ public class MouseController
         sr.sprite = fsc.GetSpriteForFurniture(furnitureType);
 
         if (WorldController.Instance.World.IsFurniturePlacementValid(furnitureType, t) &&
+            WorldController.Instance.World.IsFurnitureWorkSpotClear(furnitureType, t) && 
             bmc.DoesBuildJobOverlapExistingBuildJob(t, furnitureType) == false)
         {
             sr.color = new Color(0.5f, 1f, 0.5f, 0.25f);
@@ -592,6 +594,37 @@ public class MouseController
         Furniture proto = PrototypeManager.Furniture.Get(furnitureType);
 
         go.transform.position = new Vector3(t.X + ((proto.Width - 1) / 2f), t.Y + ((proto.Height - 1) / 2f), WorldController.Instance.cameraController.CurrentLayer);
+    }
+
+    private void ShowWorkSpotSpriteAtTile(string furnitureType, Tile t)
+    {
+        Furniture proto = PrototypeManager.Furniture.Get(furnitureType);
+
+        // if the workspot is inside the furniture, there's no reason to show it separately
+        if(proto.Jobs.WorkSpotOffset.x >= 0 && proto.Jobs.WorkSpotOffset.x < proto.Width && proto.Jobs.WorkSpotOffset.y >= 0 && proto.Jobs.WorkSpotOffset.y < proto.Height)
+        {
+            return;
+        }
+        GameObject go = new GameObject();
+        go.transform.SetParent(furnitureParent.transform, true);
+        dragPreviewGameObjects.Add(go);
+
+        SpriteRenderer sr = go.AddComponent<SpriteRenderer>();
+        sr.sortingLayerName = "Jobs";
+        sr.sprite = SpriteManager.GetSprite("UI", "WorkSpotIndicator");
+
+        if (WorldController.Instance.World.IsFurniturePlacementValid(furnitureType, t) &&
+            WorldController.Instance.World.IsFurnitureWorkSpotClear(furnitureType, t) && 
+            bmc.DoesBuildJobOverlapExistingBuildJob(t, furnitureType) == false)
+        {
+            sr.color = new Color(0.5f, 1f, 0.5f, 0.25f);
+        }
+        else
+        {
+            sr.color = new Color(1f, 0.5f, 0.5f, 0.25f);
+        }
+
+        go.transform.position = new Vector3(t.X + proto.Jobs.WorkSpotOffset.x, t.Y + proto.Jobs.WorkSpotOffset.y, WorldController.Instance.cameraController.CurrentLayer);
     }
 
     private void ShowUtilitySpriteAtTile(string furnitureType, Tile tile)

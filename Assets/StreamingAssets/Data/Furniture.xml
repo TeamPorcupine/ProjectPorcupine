@@ -220,7 +220,7 @@
         <PathfindingModifier>0</PathfindingModifier>
         <PathfindingWeight>2</PathfindingWeight>
         <Width>3</Width>
-        <Height>3</Height>
+        <Height>2</Height>
         <PowerConnection inputRate="1" outputRate="" capacity=""/>
 
         <BuildingJob jobTime="0" />

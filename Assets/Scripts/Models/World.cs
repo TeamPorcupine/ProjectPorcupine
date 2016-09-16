@@ -342,6 +342,44 @@ public class World : IXmlSerializable
         return PlaceUtility(util, tile, doRoomFloodFill);
     }
 
+    /// <summary>
+    /// Reserves the furniture's work spot, preventing it from being built on.
+    /// </summary>
+    /// <param name="furn">The furniture whose workspot will be reserved.</param>
+    /// <param name="tile">The tile on which the furniture is located, for furnitures which don't have a tile, such as prototypes.</param>
+    public void ReserveTileAsWorkSpot(Furniture furn, Tile tile = null)
+    {
+        if (tile == null)
+        {
+            tile = furn.Tile;
+        }
+
+        World.Current.GetTileAt(
+            tile.X + (int)furn.Jobs.WorkSpotOffset.x, 
+            tile.Y + (int)furn.Jobs.WorkSpotOffset.y, 
+            tile.Z
+        ).ReservedAsWorkSpotBy.Add(furn);
+    }
+
+    /// <summary>
+    /// Unreserves the furniture's work spot, allowing it to be built on.
+    /// </summary>
+    /// <param name="furn">The furniture whose workspot will be unreserved.</param>
+    /// <param name="tile">The tile on which the furniture is located, for furnitures which don't have a tile, such as prototypes.</param>
+    public void UnreserveTileAsWorkSpot(Furniture furn, Tile tile = null)
+    {
+        if (tile == null)
+        {
+            tile = furn.Tile;
+        }
+
+        World.Current.GetTileAt(
+            tile.X + (int)furn.Jobs.WorkSpotOffset.x, 
+            tile.Y + (int)furn.Jobs.WorkSpotOffset.y,
+            tile.Z
+        ).ReservedAsWorkSpotBy.Remove(furn);
+    }
+
     public Furniture PlaceFurniture(Furniture furniture, Tile t, bool doRoomFloodFill = true)
     {
         Furniture furn = Furniture.PlaceInstance(furniture, t);
@@ -413,6 +451,16 @@ public class World : IXmlSerializable
     public bool IsFurniturePlacementValid(string furnitureType, Tile t)
     {
         return PrototypeManager.Furniture.Get(furnitureType).IsValidPosition(t);
+    }
+
+    public bool IsFurnitureWorkSpotClear(string furnitureType, Tile tile)
+    {
+        Furniture proto = PrototypeManager.Furniture.Get(furnitureType);
+        if (proto.Jobs != null && GetTileAt((int)(tile.X + proto.Jobs.WorkSpotOffset.x), (int)(tile.Y + proto.Jobs.WorkSpotOffset.y), (int)tile.Z).Furniture != null)
+        {
+            return false;
+        }
+        return true;
     }
 
     public bool IsUtilityPlacementValid(string furnitureType, Tile tile)

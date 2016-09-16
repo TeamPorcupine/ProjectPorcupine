@@ -395,6 +395,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             }
         }
 
+        // Let our workspot tile know it is reserved for us
+        World.Current.ReserveTileAsWorkSpot(obj);
+
         // Call LUA install scripts
         obj.EventActions.Trigger("OnInstall", obj);
 
@@ -778,6 +781,10 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         // Update thermalDiffusifity to default value
         World.Current.temperature.SetThermalDiffusivity(Tile.X, Tile.Y, Temperature.defaultThermalDiffusivity);
 
+
+        // Let our workspot tile know it is no longer reserved for us
+        WorldController.Instance.World.UnreserveTileAsWorkSpot(this);
+
         Tile.UnplaceFurniture();
 
         if (PowerConnection != null)
@@ -1009,11 +1016,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             return false;
         }
 
-        if (Jobs != null && World.Current.GetTileAt((int)(tile.X + Jobs.WorkSpotOffset.x), (int)(tile.Y + Jobs.WorkSpotOffset.y), (int)tile.Z).Furniture != null)
-        {
-            return false;
-        }
-
         if (HasTypeTag("OutdoorOnly"))
         {
             if (tile.Room == null || !tile.Room.IsOutsideRoom())
@@ -1045,6 +1047,12 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
 
                 // Make sure tile doesn't already have furniture
                 if (t2.Furniture != null && isReplaceable == false)
+                {
+                    return false;
+                }
+
+                // Make sure we're not building on another furniture's workspot
+                if(t2.IsReservedWorkSpot())
                 {
                     return false;
                 }
