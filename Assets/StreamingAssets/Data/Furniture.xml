@@ -672,23 +672,25 @@
     </Furniture>
 
     <Furniture type="astro_wall">
-    <Name>Rock Wall</Name>
-    <Description>This is a wall of rock!</Description>
-    <TypeTag>Wall</TypeTag>
-    <TypeTag>Non-buildable</TypeTag>
-    <TypeTag>Non-deconstructible</TypeTag>
-    <MovementCost>0</MovementCost>
-    <Width>1</Width>
-    <Height>1</Height>
-    <LinksToNeighbours>true</LinksToNeighbours>
-    <EnclosesRooms>true</EnclosesRooms>
-    
-    <Params>
-     <Param name="ore_type" value="None" />
-    </Params>
+        <Name>Rock Wall</Name>
+        <Description>This is a wall of rock!</Description>
+        <TypeTag>Wall</TypeTag>
+        <TypeTag>Non-buildable</TypeTag>
+        <TypeTag>Non-deconstructible</TypeTag>
+        <MovementCost>0</MovementCost>
+        <Width>1</Width>
+        <Height>1</Height>
+        <LinksToNeighbours>true</LinksToNeighbours>
+        <EnclosesRooms>true</EnclosesRooms>
+        
+        <Params>
+         <Param name="ore_type" value="None" />
+        </Params>
 
-    <ContextMenuAction FunctionName="OreMine_CreateMiningJob" Text="Mine Ore" RequireCharacterSelected="false" />
+        <ContextMenuAction FunctionName="OreMine_CreateMiningJob" Text="Mine Ore" RequireCharacterSelected="false" />
 
+        <LocalizationCode>furn_astro_wall</LocalizationCode>
+        <UnlocalizedDescription>furn_astro_wall_desc</UnlocalizedDescription>
     </Furniture>
 
 </Furnitures>
