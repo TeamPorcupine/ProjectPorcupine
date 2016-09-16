@@ -52,7 +52,7 @@ public class AudioManager
     {
         AudioClip clip = new AudioClip();
 
-        string audioNameAndCategory = categoryName + "/" + audioName;
+        string audioNameAndCategory = categoryName + "/" + audioName + ".ogg";
 
         if (audioClips.ContainsKey(audioNameAndCategory))
         {
@@ -60,8 +60,16 @@ public class AudioManager
         }
         else
         {
-            Debug.LogWarning("No audio available called: " + audioNameAndCategory);
-            clip = audioClips["Sound/Error.wav"];
+            try
+            {
+                Debug.LogWarning("No audio available called: " + audioNameAndCategory);
+                clip = audioClips["Sound/Error.ogg"];
+            }
+            catch
+            {
+                throw new FileNotFoundException("Sound/Error.ogg not found");
+            }
+
         }
 
         return clip;

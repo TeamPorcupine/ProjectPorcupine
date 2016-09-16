@@ -51,7 +51,7 @@ public class SoundController
 
         if (tileData.ForceTileUpdate)
         {  
-            AudioClip ac = AudioManager.GetAudio("Sound", "Floor_OnCreated.wav");
+            AudioClip ac = AudioManager.GetAudio("Sound", "Floor_OnCreated");
             AudioSource.PlayClipAtPoint(ac, Camera.main.transform.position);
             soundCooldown = 0.1f;
         }
