@@ -32,7 +32,7 @@ public class WorldGenerator
 
     public static void Generate(World world, int seed)
     {
-        AsteroidFloorType = TileType.GetTileType("Floor");
+        AsteroidFloorType = PrototypeManager.TileType.Get("Floor");
 
         ReadXML();
         Random.InitState(seed);
@@ -58,7 +58,7 @@ public class WorldGenerator
                 int worldY = (height / 2) + startAreaCenterY - y;
 
                 Tile tile = world.GetTileAt(worldX, worldY, 0);
-                tile.Type = TileType.LoadedTileTypes[startAreaTiles[x, y]];
+                tile.Type = PrototypeManager.TileType[startAreaTiles[x, y]];
             }
         }
 
@@ -116,22 +116,22 @@ public class WorldGenerator
                                     if (randomweight <= currentweight)
                                     {
                                         if (inv.Type == "Raw Iron" || inv.Type == "Uranium")
-                                    {
-                                        Furniture mine = PrototypeManager.Furniture.Get("mine").Clone();
-                                        mine.Parameters["ore_type"].SetValue(inv.Type.ToString());
-                                        world.PlaceFurniture(mine, tile, false);
+                                        {
+                                            Furniture mine = PrototypeManager.Furniture.Get("mine").Clone();
+                                            mine.Parameters["ore_type"].SetValue(inv.Type.ToString());
+                                            world.PlaceFurniture(mine, tile, false);
+                                            break;
+                                        }
+
+                                        int stackSize = Random.Range(resourceMin[i], resourceMax[i]);
+
+                                        if (stackSize > inv.MaxStackSize)
+                                        {
+                                            stackSize = inv.MaxStackSize;
+                                        }
+
+                                        world.inventoryManager.PlaceInventory(tile, new Inventory(inv.Type, stackSize, inv.MaxStackSize));
                                         break;
-                                    }
-
-                                    int stackSize = Random.Range(resourceMin[i], resourceMax[i]);
-
-                                    if (stackSize > inv.MaxStackSize)
-                                    {
-                                        stackSize = inv.MaxStackSize;
-                                    }
-
-                                    world.inventoryManager.PlaceInventory(tile, new Inventory(inv.Type, stackSize, inv.MaxStackSize));
-                                    break;
                                     }
                                 }
                             }
