@@ -54,7 +54,7 @@ public class OverlayMap : MonoBehaviour
     /// You can set any function, overlay will display value of func at point (x,y)
     /// Depending on how many colors the ColorMapSG has, the displayed values will cycle.
     /// </summary>
-    public Func<int, int, int> valueAt;
+    public Func<int, int, int, int> valueAt;
 
     /// <summary>
     /// Name of xml file containing overlay prototypes.
@@ -69,6 +69,8 @@ public class OverlayMap : MonoBehaviour
     public GameObject parentPanel;
 
     private static List<Color32> randomColors;
+
+    private int currentLayer = 0;
 
     /// <summary>
     /// Starting left corner (x,y) and z-coordinate of mesh and (3d left corner).
@@ -271,14 +273,14 @@ public class OverlayMap : MonoBehaviour
                 return;
             }
 
-            valueAt = (x, y) =>
+            valueAt = (x, y, z) =>
             {
                 if (WorldController.Instance == null)
                 {
                     return 0;
                 }
 
-                Tile tile = WorldController.Instance.GetTileAtWorldCoord(new Vector3(x, y, 0));
+                Tile tile = WorldController.Instance.GetTileAtWorldCoord(new Vector3(x, y, z));
                 return (int)script.Call(handle, new object[] { tile, World.Current }).ToScalar().CastToNumber();
             };
 
@@ -351,11 +353,18 @@ public class OverlayMap : MonoBehaviour
             elapsed = 0f;
         }
 
+        if (currentOverlay != "None" && currentLayer != WorldController.Instance.cameraController.CurrentLayer)
+        {
+            Bake();
+            currentLayer = WorldController.Instance.cameraController.CurrentLayer;
+            elapsed = 0f;
+        }
+
         // TODO: Prettify.
         Vector2 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         if (valueAt != null)
         {
-            textView.GetComponent<UnityEngine.UI.Text>().text = string.Format("[DEBUG] Currently over: {0}", valueAt((int)(pos.x + 0.5f), (int)(pos.y + 0.5f)));
+            textView.GetComponent<UnityEngine.UI.Text>().text = string.Format("[DEBUG] Currently over: {0}", valueAt((int)(pos.x + 0.5f), (int)(pos.y + 0.5f), WorldController.Instance.cameraController.CurrentLayer));
         }
     }
 
@@ -447,7 +456,7 @@ public class OverlayMap : MonoBehaviour
         {
             for (int x = 0; x < sizeX; x++)
             {
-                float v = valueAt(x, y);
+                float v = valueAt(x, y, WorldController.Instance.cameraController.CurrentLayer);
                 Debug.Assert(v >= 0 && v < 256, "v >= 0 && v < 256");
 
                 int sampleX = ((int)v % 256) * colorMapWidth;
