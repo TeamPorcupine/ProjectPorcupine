@@ -357,8 +357,8 @@ public class World : IXmlSerializable
         World.Current.GetTileAt(
             tile.X + (int)furn.Jobs.WorkSpotOffset.x, 
             tile.Y + (int)furn.Jobs.WorkSpotOffset.y, 
-            tile.Z
-        ).ReservedAsWorkSpotBy.Add(furn);
+            tile.Z)
+            .ReservedAsWorkSpotBy.Add(furn);
     }
 
     /// <summary>
@@ -376,8 +376,8 @@ public class World : IXmlSerializable
         World.Current.GetTileAt(
             tile.X + (int)furn.Jobs.WorkSpotOffset.x, 
             tile.Y + (int)furn.Jobs.WorkSpotOffset.y,
-            tile.Z
-        ).ReservedAsWorkSpotBy.Remove(furn);
+            tile.Z)
+            .ReservedAsWorkSpotBy.Remove(furn);
     }
 
     public Furniture PlaceFurniture(Furniture furniture, Tile t, bool doRoomFloodFill = true)
@@ -460,6 +460,7 @@ public class World : IXmlSerializable
         {
             return false;
         }
+
         return true;
     }
 

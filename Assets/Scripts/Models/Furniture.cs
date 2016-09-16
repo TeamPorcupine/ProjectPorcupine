@@ -781,7 +781,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         // Update thermalDiffusifity to default value
         World.Current.temperature.SetThermalDiffusivity(Tile.X, Tile.Y, Temperature.defaultThermalDiffusivity);
 
-
         // Let our workspot tile know it is no longer reserved for us
         WorldController.Instance.World.UnreserveTileAsWorkSpot(this);
 
@@ -1028,31 +1027,31 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         {
             for (int y_off = tile.Y; y_off < tile.Y + Height; y_off++)
             {
-                Tile t2 = World.Current.GetTileAt(x_off, y_off, tile.Z);
+                Tile tile2 = World.Current.GetTileAt(x_off, y_off, tile.Z);
 
                 // Check to see if there is furniture which is replaceable
                 bool isReplaceable = false;
 
-                if (t2.Furniture != null)
+                if (tile2.Furniture != null)
                 {
                     // Furniture can be replaced, if its typeTags share elements with ReplaceableFurniture
-                    isReplaceable = t2.Furniture.typeTags.Overlaps(ReplaceableFurniture);
+                    isReplaceable = tile2.Furniture.typeTags.Overlaps(ReplaceableFurniture);
                 }
 
                 // Make sure tile is FLOOR
-                if (t2.Type != TileType.Floor && tileTypeBuildPermissions.Contains(t2.Type.Type) == false)
+                if (tile2.Type != TileType.Floor && tileTypeBuildPermissions.Contains(tile2.Type.Type) == false)
                 {
                     return false;
                 }
 
                 // Make sure tile doesn't already have furniture
-                if (t2.Furniture != null && isReplaceable == false)
+                if (tile2.Furniture != null && isReplaceable == false)
                 {
                     return false;
                 }
 
                 // Make sure we're not building on another furniture's workspot
-                if(t2.IsReservedWorkSpot())
+                if (tile2.IsReservedWorkSpot())
                 {
                     return false;
                 }

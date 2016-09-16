@@ -28,7 +28,6 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
 {
     private TileType type = TileType.Empty;
 
-
     /// <summary>
     /// Initializes a new instance of the <see cref="Tile"/> class.
     /// </summary>
@@ -512,15 +511,6 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         return ReservedAsWorkSpotBy.Count > 0;
     }
 
-    public void thing(string X)
-    {
-
-    }
-
-    private void thing(int X)
-    {
-
-    }
     private void ReportTileChanged()
     {
         // Call the callback and let things know we've changed.

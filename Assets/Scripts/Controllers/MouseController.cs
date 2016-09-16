@@ -601,10 +601,11 @@ public class MouseController
         Furniture proto = PrototypeManager.Furniture.Get(furnitureType);
 
         // if the workspot is inside the furniture, there's no reason to show it separately
-        if(proto.Jobs.WorkSpotOffset.x >= 0 && proto.Jobs.WorkSpotOffset.x < proto.Width && proto.Jobs.WorkSpotOffset.y >= 0 && proto.Jobs.WorkSpotOffset.y < proto.Height)
+        if (proto.Jobs.WorkSpotOffset.x >= 0 && proto.Jobs.WorkSpotOffset.x < proto.Width && proto.Jobs.WorkSpotOffset.y >= 0 && proto.Jobs.WorkSpotOffset.y < proto.Height)
         {
             return;
         }
+
         GameObject go = new GameObject();
         go.transform.SetParent(furnitureParent.transform, true);
         dragPreviewGameObjects.Add(go);
