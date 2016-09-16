@@ -13,6 +13,15 @@
         <potentialStock>
             <Inventory category="inv_cat_raw" rarity="0" minQuantity="100" maxQuantity="150"/>
         </potentialStock>
+      <Animations>
+        <Animation state="idle" fps="1" looping="false">
+          <Frame name="BasicHaulShip" />
+        </Animation>
+        <Animation state="flying" fps="4" looping="true">
+          <Frame name="BasicHaulShip_01" />
+          <Frame name="BasicHaulShip_02" />
+        </Animation>
+      </Animations>
     </Trader>
 
     <Trader type="Raw Depot">
