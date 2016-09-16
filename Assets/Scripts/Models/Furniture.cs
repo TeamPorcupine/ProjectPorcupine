@@ -24,6 +24,8 @@ using UnityEngine;
 [MoonSharpUserData]
 public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextActionProvider, IBuildable
 {
+    public bool OnlyUseDefaultSpriteName { get { return !string.IsNullOrEmpty(getSpriteNameAction); } }
+
     // Prevent construction too close to the world's edge
     private const int MinEdgeDistance = 5;
 
@@ -83,6 +85,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         Height = 1;
         Width = 1;
         DragType = "single";
+        LinksToNeighbour = "";
     }
 
     // Copy Constructor -- don't call this directly, unless we never
@@ -318,7 +321,12 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// Gets a value indicating whether this furniture is next to any furniture of the same type.
     /// This is used to check what sprite to use if furniture is next to each other.
     /// </summary>
-    public bool LinksToNeighbour { get; private set; }
+    public string LinksToNeighbour { get; private set; }
+
+    /// <summary>
+    /// Defines the type of link types.
+    /// </summary>
+    public string LinkType { get; private set; }
 
     /// <summary>
     /// Gets the type of dragging that is used to build multiples of this furniture. 
@@ -373,8 +381,8 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             // (It will be garbage collected.)
             return null;
         }
-
-        if (obj.LinksToNeighbour)
+        
+        if (obj.LinksToNeighbour!="")
         {
             // This type of furniture links itself to its neighbours,
             // so we should inform our neighbours that they have a new
@@ -595,7 +603,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                     break;
                 case "LinksToNeighbours":
                     reader.Read();
-                    LinksToNeighbour = reader.ReadContentAsBoolean();
+                    LinksToNeighbour = reader.ReadContentAsString();
                     break;
                 case "EnclosesRooms":
                     reader.Read();
@@ -762,7 +770,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         int y = Tile.Y;
         int fwidth = 1;
         int fheight = 1;
-        bool linksToNeighbour = false;
+        string linksToNeighbour = "";
         if (Tile.Furniture != null)
         {
             Furniture furniture = Tile.Furniture;
@@ -807,7 +815,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         // We should inform our neighbours that they have just lost a
         // neighbour regardless of type.  
         // Just trigger their OnChangedCallback. 
-        if (linksToNeighbour == true)
+        if (linksToNeighbour != "")
         {
             for (int xpos = x - 1; xpos < x + fwidth + 1; xpos++)
             {
