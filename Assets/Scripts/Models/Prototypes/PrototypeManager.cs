@@ -20,10 +20,11 @@ public class PrototypeManager
     public PrototypeManager()
     {
         Inventory = new PrototypeMap<InventoryCommon>("Inventories", "Inventory");
-        FurnitureJob = new PrototypeMap<Job>();
+        TileType = new PrototypeMap<TileType>("Tiles", "Tile");
         Furniture = new PrototypeMap<Furniture>("Furnitures", "Furniture");
-        UtilityJob = new PrototypeMap<Job>();
+        FurnitureJob = new PrototypeMap<Job>();
         Utility = new PrototypeMap<Utility>("Utilities", "Utility");
+        UtilityJob = new PrototypeMap<Job>();
         Need = new PrototypeMap<Need>("Needs", "Need");
         Trader = new PrototypeMap<TraderPrototype>("Traders", "Trader");
         Quest = new PrototypeMap<Quest>("Quests", "Quest");
@@ -32,10 +33,10 @@ public class PrototypeManager
     }
 
     /// <summary>
-    /// Gets the furniture job prototype map.
+    /// Gets the tile type prototype map.
     /// </summary>
-    /// <value>The furniture job prototype map.</value>
-    public static PrototypeMap<Job> FurnitureJob { get; private set; }
+    /// <value>The furniture prototype map.</value>
+    public static PrototypeMap<TileType> TileType { get; private set; }
 
     /// <summary>
     /// Gets the furniture prototype map.
@@ -47,13 +48,18 @@ public class PrototypeManager
     /// Gets the furniture job prototype map.
     /// </summary>
     /// <value>The furniture job prototype map.</value>
-    public static PrototypeMap<Job> UtilityJob { get; private set; }
+    public static PrototypeMap<Job> FurnitureJob { get; private set; }
 
     /// <summary>
-    /// Gets the furniture prototype map.
+    /// Gets the utility prototype map.
     /// </summary>
-    /// <value>The furniture prototype map.</value>
+    /// <value>The utility prototype map.</value>
     public static PrototypeMap<Utility> Utility { get; private set; }
+
+    /// Gets the furniture job prototype map.
+    /// </summary>
+    /// <value>The furniture job prototype map.</value>
+    public static PrototypeMap<Job> UtilityJob { get; private set; }
 
     /// <summary>
     /// Gets the inventory prototype map.

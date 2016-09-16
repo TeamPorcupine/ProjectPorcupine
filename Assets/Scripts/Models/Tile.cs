@@ -440,7 +440,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
             Room.AssignTile(this);
         }
 
-        Type = TileType.GetTileType(reader.GetAttribute("Type"));
+        Type = PrototypeManager.TileType.Get(reader.GetAttribute("Type"));
         WalkCount = int.Parse(reader.GetAttribute("timesWalked"));
         ForceTileUpdate = true;
     }
