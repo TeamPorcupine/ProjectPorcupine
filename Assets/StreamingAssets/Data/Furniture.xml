@@ -57,8 +57,8 @@
         <DeconstructJob>
             <Inventory type="Steel Plate" amount="1" />
         </DeconstructJob>
-		
-		<GetSpriteName FunctionName="Door_GetSpriteName" />
+        
+        <GetSpriteName FunctionName="Door_GetSpriteName" />
 
         <Animations>
           <Animation state="horizontal" valuebased="true">
@@ -107,8 +107,8 @@
         <EnclosesRooms>true</EnclosesRooms>
         <CanReplaceFurniture typeTag="Wall" />
         <CanReplaceFurniture typeTag="Door" />
-		
-		<GetSpriteName FunctionName="Door_GetSpriteName" />
+        
+        <GetSpriteName FunctionName="Door_GetSpriteName" />
 
         <BuildingJob jobTime="5">
             <Inventory type="Steel Plate" amount="10" />
@@ -563,7 +563,7 @@
 
         <BuildingJob jobTime="1" />
         <CanReplaceFurniture typeTag="Wall" />
-		<LinksToNeighbours>wall</LinksToNeighbours>
+        <LinksToNeighbours>wall</LinksToNeighbours>
 
         <Params>
             <Param name="gas_throughput" value="0.5" />
