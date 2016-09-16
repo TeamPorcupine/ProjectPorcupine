@@ -60,16 +60,16 @@ public class KeyboardManager
         RegisterInputMapping("MoveCameraUp", KeyboardInputModifier.None, KeyCode.Home);
         RegisterInputMapping("MoveCameraDown", KeyboardInputModifier.None, KeyCode.End);
 
-        RegisterInputMapping("GoToPresetCameraPosition1", KeyboardInputModifier.None, KeyCode.F1);
-        RegisterInputMapping("GoToPresetCameraPosition2", KeyboardInputModifier.None, KeyCode.F2);
-        RegisterInputMapping("GoToPresetCameraPosition3", KeyboardInputModifier.None, KeyCode.F3);
-        RegisterInputMapping("GoToPresetCameraPosition4", KeyboardInputModifier.None, KeyCode.F4);
-        RegisterInputMapping("GoToPresetCameraPosition5", KeyboardInputModifier.None, KeyCode.F5);
-        RegisterInputMapping("SavePresetCameraPosition1", KeyboardInputModifier.Control, KeyCode.F1);
-        RegisterInputMapping("SavePresetCameraPosition2", KeyboardInputModifier.Control, KeyCode.F2);
-        RegisterInputMapping("SavePresetCameraPosition3", KeyboardInputModifier.Control, KeyCode.F3);
-        RegisterInputMapping("SavePresetCameraPosition4", KeyboardInputModifier.Control, KeyCode.F4);
-        RegisterInputMapping("SavePresetCameraPosition5", KeyboardInputModifier.Control, KeyCode.F5);
+        RegisterInputMapping("ApplyCameraPreset1", KeyboardInputModifier.None, KeyCode.F1);
+        RegisterInputMapping("ApplyCameraPreset2", KeyboardInputModifier.None, KeyCode.F2);
+        RegisterInputMapping("ApplyCameraPreset3", KeyboardInputModifier.None, KeyCode.F3);
+        RegisterInputMapping("ApplyCameraPreset4", KeyboardInputModifier.None, KeyCode.F4);
+        RegisterInputMapping("ApplyCameraPreset5", KeyboardInputModifier.None, KeyCode.F5);
+        RegisterInputMapping("AssignCameraPreset1", KeyboardInputModifier.Control, KeyCode.F1);
+        RegisterInputMapping("AssignCameraPreset2", KeyboardInputModifier.Control, KeyCode.F2);
+        RegisterInputMapping("AssignCameraPreset3", KeyboardInputModifier.Control, KeyCode.F3);
+        RegisterInputMapping("AssignCameraPreset4", KeyboardInputModifier.Control, KeyCode.F4);
+        RegisterInputMapping("AssignCameraPreset5", KeyboardInputModifier.Control, KeyCode.F5);
 
         RegisterInputMapping("SetSpeed1", KeyboardInputModifier.None, KeyCode.Alpha1, KeyCode.Keypad1);
         RegisterInputMapping("SetSpeed2", KeyboardInputModifier.None, KeyCode.Alpha2, KeyCode.Keypad2);
