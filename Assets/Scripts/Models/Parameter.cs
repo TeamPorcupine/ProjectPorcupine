@@ -171,6 +171,7 @@ public class Parameter
     {
         int returnValue = 0;
         int.TryParse(value, out returnValue);
+
         return returnValue;
     }
 
