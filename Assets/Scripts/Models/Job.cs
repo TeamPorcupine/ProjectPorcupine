@@ -362,7 +362,7 @@ public class Job : ISelectable, IPrototypable
     /// Fulfillable inventory requirements for job.
     /// </summary>
     /// <returns>A list of (string) Type for job inventory requirements that can be met. Returns null if the job requires materials which do not exist on the map.</returns>
-    public List<string> FulfillableInventoryRequirements()
+    public List<string> FulfillableInventoryRequirements(bool canTakeFromStockpiles)
     {
         List<string> fulfillableInventoryRequirements = new List<string>();
 
@@ -370,7 +370,7 @@ public class Job : ISelectable, IPrototypable
         {
             if (this.acceptsAny == false)
             {
-                if (World.Current.inventoryManager.HasInventoryOfType(inventory.Type) == false)
+                if (World.Current.inventoryManager.HasInventoryOfType(inventory.Type, canTakeFromStockpiles) == false)
                 {
                     // the job requires ALL inventory requirements to be met, and there is no source of a desired Type
                     return null;
@@ -380,7 +380,7 @@ public class Job : ISelectable, IPrototypable
                     fulfillableInventoryRequirements.Add(inventory.Type);
                 }
             }
-            else if (World.Current.inventoryManager.HasInventoryOfType(inventory.Type))
+            else if (World.Current.inventoryManager.HasInventoryOfType(inventory.Type, canTakeFromStockpiles))
             {
                 // there is a source for a desired Type that the job will accept
                 fulfillableInventoryRequirements.Add(inventory.Type);

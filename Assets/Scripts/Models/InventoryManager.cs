@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MoonSharp.Interpreter;
+using UnityEngine;
+using ProjectPorcupine.Pathfinding;
 
 [MoonSharpUserData]
 public class InventoryManager
@@ -52,27 +54,24 @@ public class InventoryManager
         return true;
     }
 
-    public bool PlaceInventory(Job job, Inventory inventory)
+    public bool PlaceInventory(Job job, Character character)
     {
-        if (job.inventoryRequirements.ContainsKey(inventory.Type) == false)
+        Inventory sourceInventory = character.inventory;
+
+        // Check that it's wanted by the job
+        if (job.inventoryRequirements.ContainsKey(sourceInventory.Type) == false)
         {
             Debug.ULogErrorChannel(InventoryManagerLogChanel, "Trying to add inventory to a job that it doesn't want.");
             return false;
         }
 
-        job.inventoryRequirements[inventory.Type].StackSize += inventory.StackSize;
+        Inventory targetInventory = job.inventoryRequirements[sourceInventory.Type];
+        int transferAmount = Mathf.Min(targetInventory.MaxStackSize - targetInventory.StackSize, sourceInventory.StackSize);
 
-        if (job.inventoryRequirements[inventory.Type].MaxStackSize < job.inventoryRequirements[inventory.Type].StackSize)
-        {
-            inventory.StackSize = job.inventoryRequirements[inventory.Type].StackSize - job.inventoryRequirements[inventory.Type].MaxStackSize;
-            job.inventoryRequirements[inventory.Type].StackSize = job.inventoryRequirements[inventory.Type].MaxStackSize;
-        }
-        else
-        {
-            inventory.StackSize = 0;
-        }
+        sourceInventory.StackSize -= transferAmount;
+        targetInventory.StackSize += transferAmount;
 
-        CleanupInventory(inventory);
+        CleanupInventory(character);
 
         return true;
     }
@@ -114,20 +113,27 @@ public class InventoryManager
     /// Gets <see cref="Inventory"/> closest to <see cref="startTile"/>.
     /// </summary>
     /// <returns>The closest inventory of type.</returns>
-    public Inventory GetClosestInventoryOfType(string type, Tile startTile, int desiredAmount, bool canTakeFromStockpile)
+    public Inventory GetClosestInventoryOfType(string objectType, Tile tile, bool canTakeFromStockpile)
     {
-        Path_AStar path = GetPathToClosestInventoryOfType(type, startTile, desiredAmount, canTakeFromStockpile);
-        return path.EndTile().Inventory;
+        List<Tile> path = GetPathToClosestInventoryOfType(objectType, tile, canTakeFromStockpile);
+        return path != null ? path.Last().Inventory : null;
     }
 
-    public bool HasInventoryOfType(string type)
+    public static bool InventoryCanBePickedUp(Inventory inventory, bool canTakeFromStockpile)
     {
-        return Inventories.ContainsKey(type) && Inventories[type].Count != 0;
+        // You can't pick up stuff that isn't on a tile or if it's locked
+        if (inventory == null || inventory.Tile == null || inventory.Locked)
+        {
+            return false;
+        }
+
+        Furniture furniture = inventory.Tile.Furniture;
+        return furniture == null || canTakeFromStockpile == true || furniture.HasTypeTag("Storage") == false;
     }
 
     public bool RemoveInventoryOfType(string type, int quantity, bool onlyFromStockpiles)
     {
-        if (!HasInventoryOfType(type))
+        if (!HasInventoryOfType(type, true))
         {
             return quantity == 0;
         }
@@ -159,34 +165,59 @@ public class InventoryManager
         return quantity == 0;
     }
 
-    public Path_AStar GetPathToClosestInventoryOfType(string type, Tile tile, int desiredAmount, bool canTakeFromStockpile)
+    public bool HasInventoryOfType(string type, bool canTakeFromStockpile)
     {
-        HasInventoryOfType(type);
-
-        // We can also avoid going through the A* construction if we know
-        // that all available inventories are stockpiles and we are not allowed
-        // to touch those
-        if (!canTakeFromStockpile && Inventories[type].TrueForAll(i => i.Tile != null && i.Tile.Furniture != null && i.Tile.Furniture.HasTypeTag("Storage")))
+        if (Inventories.ContainsKey(type) == false || Inventories[type].Count == 0)
         {
-            return null;
+            return false;
         }
 
-        // We shouldn't search if all inventories are locked.
-        if (Inventories[type].TrueForAll(i => i.Tile != null && i.Tile.Furniture != null && i.Tile.Inventory != null && i.Tile.Inventory.Locked))
+        return Inventories[type].Find(inventory => InventoryCanBePickedUp(inventory, canTakeFromStockpile)) != null;
+    }
+
+    public bool HasInventoryOfType(string[] objectTypes, bool canTakeFromStockpile)
+    {
+        // Test that we have records for any of the types
+        List<string> filteredTypes = objectTypes
+            .ToList()
+            .FindAll(type => Inventories.ContainsKey(type) && Inventories[type].Count > 0);
+
+        if (filteredTypes.Count == 0)
         {
-            return null;
+            return false;
         }
 
-        // Test that there is at least one stack on the floor, otherwise the
-        // search below might cause a full map search for nothing.
-        if (Inventories[type].Find(i => i.Tile != null) == null)
+        foreach (string objectType in filteredTypes)
+        {
+            if (Inventories[objectType].Find(inventory => InventoryCanBePickedUp(inventory, canTakeFromStockpile)) != null)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public List<Tile> GetPathToClosestInventoryOfType(string type, Tile tile, bool canTakeFromStockpile)
+    {
+        if (HasInventoryOfType(type, canTakeFromStockpile) == false)
         {
             return null;
         }
 
         // We know the objects are out there, now find the closest.
-        Path_AStar path = new Path_AStar(World.Current, tile, null, type, desiredAmount, canTakeFromStockpile);
-        return path;
+        return Pathfinder.FindPathToInventory(tile, type, canTakeFromStockpile);
+    }
+
+    public List<Tile> GetPathToClosestInventoryOfType(string[] objectTypes, Tile tile, bool canTakeFromStockpile)
+    {
+        if (HasInventoryOfType(objectTypes, canTakeFromStockpile) == false)
+        {
+            return null;
+        }
+
+        // We know the objects are out there, now find the closest.
+        return Pathfinder.FindPathToInventory(tile, objectTypes, canTakeFromStockpile);
     }
 
     private void CleanupInventory(Inventory inventory)
@@ -205,6 +236,16 @@ public class InventoryManager
         {
             inventory.Tile.Inventory = null;
             inventory.Tile = null;
+        }
+    }
+
+    private void CleanupInventory(Character character)
+    {
+        CleanupInventory(character.inventory);
+
+        if (character.inventory.StackSize == 0)
+        {
+            character.inventory = null;
         }
     }
 
