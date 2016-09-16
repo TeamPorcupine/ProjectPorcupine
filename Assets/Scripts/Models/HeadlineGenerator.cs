@@ -14,18 +14,20 @@ using Scheduler;
 
 public class HeadlineGenerator 
 {
-    private List<string> headlines = new List<string>();
-    private float minInterval, maxInterval;
+    private const float minInterval = 50f;
+    private const float maxInterval = 100f;
+
+    private List<string> headlines;
+
     private ScheduledEvent scheduledEvent;
 
-    public HeadlineGenerator(XmlNode baseNode)
+    public HeadlineGenerator()
     {
-        // TODO Consider default values for these. Also consider reasonable limits
-        minInterval = float.Parse(baseNode.Attributes.GetNamedItem("minInterval").Value);
-        maxInterval = float.Parse(baseNode.Attributes.GetNamedItem("maxInterval").Value);
-        foreach (XmlNode node in baseNode.SelectNodes("Headline"))
+        headlines = new List<string>();
+
+        foreach (Headline headline in PrototypeManager.Headline.Values)
         {
-            headlines.Add(node.InnerText);
+            headlines.Add(headline.Text);
         }
 
         OnUpdatedHeadline();

@@ -42,6 +42,7 @@ public class ModsManager
         LoadPrototypes("Events.xml", (text) => PrototypeManager.SchedulerEvent.LoadPrototypes(text));
         LoadPrototypes("Stats.xml", (text) => PrototypeManager.Stat.LoadPrototypes(text));
         LoadPrototypes("Quest.xml", (text) => PrototypeManager.Quest.LoadPrototypes(text));
+        LoadPrototypes("Headlines.xml", (text) => PrototypeManager.Headline.LoadPrototypes(text));
 
         LoadCharacterNames("CharacterNames.txt");
 
