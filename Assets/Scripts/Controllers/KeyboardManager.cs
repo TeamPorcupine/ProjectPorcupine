@@ -17,7 +17,7 @@ public class KeyboardManager
     private static KeyboardManager instance;
 
     private Dictionary<string, KeyboadMappedInput> mapping;
-    
+  
     public KeyboardManager()
     {
         instance = this;
@@ -49,28 +49,44 @@ public class KeyboardManager
     public void ReadXmlOrJsonAfterWeDecide()
     {
         // mock data for now until xml vs json is decided
-        RegisterInputMapping("MoveCameraEast", KeyCode.D, KeyCode.RightArrow);
-        RegisterInputMapping("MoveCameraWest", KeyCode.A, KeyCode.LeftArrow);
-        RegisterInputMapping("MoveCameraNorth", KeyCode.W, KeyCode.UpArrow);
-        RegisterInputMapping("MoveCameraSouth", KeyCode.S, KeyCode.DownArrow);
-        RegisterInputMapping("ZoomOut", KeyCode.PageUp);
-        RegisterInputMapping("ZoomIn", KeyCode.PageDown);
-        RegisterInputMapping("MoveCameraUp", KeyCode.Home);
-        RegisterInputMapping("MoveCameraDown", KeyCode.End);
-        RegisterInputMapping("SetSpeed1", KeyCode.Alpha1, KeyCode.Keypad1);
-        RegisterInputMapping("SetSpeed2", KeyCode.Alpha2, KeyCode.Keypad2);
-        RegisterInputMapping("SetSpeed3", KeyCode.Alpha3, KeyCode.Keypad3);
-        RegisterInputMapping("DecreaseSpeed", KeyCode.Minus, KeyCode.KeypadMinus);
-        RegisterInputMapping("IncreaseSpeed", KeyCode.Plus, KeyCode.KeypadPlus);
-        RegisterInputMapping("Pause", KeyCode.Space, KeyCode.Pause);
-        RegisterInputMapping("DevMode", KeyCode.F12);
+        RegisterInputMapping("MoveCameraEast", KeyboardInputModifier.None, KeyCode.D, KeyCode.RightArrow);
+        RegisterInputMapping("MoveCameraWest", KeyboardInputModifier.None, KeyCode.A, KeyCode.LeftArrow);
+        RegisterInputMapping("MoveCameraNorth", KeyboardInputModifier.None, KeyCode.W, KeyCode.UpArrow);
+        RegisterInputMapping("MoveCameraSouth", KeyboardInputModifier.None, KeyCode.S, KeyCode.DownArrow);
+
+        RegisterInputMapping("ZoomOut", KeyboardInputModifier.None, KeyCode.PageUp);
+        RegisterInputMapping("ZoomIn", KeyboardInputModifier.None, KeyCode.PageDown);
+
+        RegisterInputMapping("MoveCameraUp", KeyboardInputModifier.None, KeyCode.Home);
+        RegisterInputMapping("MoveCameraDown", KeyboardInputModifier.None, KeyCode.End);
+
+        RegisterInputMapping("GoToPresetCameraPosition1", KeyboardInputModifier.None, KeyCode.F1);
+        RegisterInputMapping("GoToPresetCameraPosition2", KeyboardInputModifier.None, KeyCode.F2);
+        RegisterInputMapping("GoToPresetCameraPosition3", KeyboardInputModifier.None, KeyCode.F3);
+        RegisterInputMapping("GoToPresetCameraPosition4", KeyboardInputModifier.None, KeyCode.F4);
+        RegisterInputMapping("GoToPresetCameraPosition5", KeyboardInputModifier.None, KeyCode.F5);
+        RegisterInputMapping("SavePresetCameraPosition1", KeyboardInputModifier.Control, KeyCode.F1);
+        RegisterInputMapping("SavePresetCameraPosition2", KeyboardInputModifier.Control, KeyCode.F2);
+        RegisterInputMapping("SavePresetCameraPosition3", KeyboardInputModifier.Control, KeyCode.F3);
+        RegisterInputMapping("SavePresetCameraPosition4", KeyboardInputModifier.Control, KeyCode.F4);
+        RegisterInputMapping("SavePresetCameraPosition5", KeyboardInputModifier.Control, KeyCode.F5);
+
+        RegisterInputMapping("SetSpeed1", KeyboardInputModifier.None, KeyCode.Alpha1, KeyCode.Keypad1);
+        RegisterInputMapping("SetSpeed2", KeyboardInputModifier.None, KeyCode.Alpha2, KeyCode.Keypad2);
+        RegisterInputMapping("SetSpeed3", KeyboardInputModifier.None, KeyCode.Alpha3, KeyCode.Keypad3);
+        RegisterInputMapping("DecreaseSpeed", KeyboardInputModifier.None, KeyCode.Minus, KeyCode.KeypadMinus);
+        RegisterInputMapping("IncreaseSpeed", KeyboardInputModifier.None, KeyCode.Plus, KeyCode.KeypadPlus);
+
+        RegisterInputMapping("Pause", KeyboardInputModifier.None, KeyCode.Space, KeyCode.Pause);
+
+        RegisterInputMapping("DevMode", KeyboardInputModifier.None, KeyCode.F12);
     }
 
     public void Update()
     {
         foreach (KeyboadMappedInput input in mapping.Values)
         {
-            input.TrigerActionIfInputValid();
+            input.TriggerActionIfInputValid();
         }
     }
 
@@ -78,7 +94,7 @@ public class KeyboardManager
     {
         if (mapping.ContainsKey(inputName))
         {
-            mapping[inputName].OnTriger = onTrigger;
+            mapping[inputName].OnTrigger = onTrigger;
             mapping[inputName].Type = inputType;
         }
         else
@@ -88,16 +104,17 @@ public class KeyboardManager
                 new KeyboadMappedInput
                 {
                     InputName = inputName,
-                    OnTriger = onTrigger,
+                    OnTrigger = onTrigger,
                     Type = inputType
                 });
         }
     }
 
-    public void RegisterInputMapping(string inputName, params KeyCode[] keyCodes)
+    public void RegisterInputMapping(string inputName, KeyboardInputModifier inputModifiers, params KeyCode[] keyCodes)
     {
         if (mapping.ContainsKey(inputName))
         {
+            mapping[inputName].Modifiers = inputModifiers;
             mapping[inputName].AddKeyCodes(keyCodes);
         }
         else
@@ -107,6 +124,7 @@ public class KeyboardManager
                 new KeyboadMappedInput
                 {
                     InputName = inputName,
+                    Modifiers = inputModifiers,
                     KeyCodes = keyCodes.ToList()
                 });
         }

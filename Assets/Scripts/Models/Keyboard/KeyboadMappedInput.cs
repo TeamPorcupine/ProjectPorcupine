@@ -25,7 +25,9 @@ public class KeyboadMappedInput
 
     public KeyboardMappedInputType Type { get; set; }
 
-    public Action OnTriger { get; set; }
+    public KeyboardInputModifier Modifiers { get; set; }
+
+    public Action OnTrigger { get; set; }
 
     public void AddKeyCodes(KeyCode[] keycodes)
     {
@@ -38,30 +40,72 @@ public class KeyboadMappedInput
         }
     }
 
-    public void TrigerActionIfInputValid()
+    public void TriggerActionIfInputValid()
     {
         if (UserUsedInputThisFrame())
         {
-            if (OnTriger != null)
+            if (OnTrigger != null)
             {
-                OnTriger();
+                OnTrigger();
             }
         }
     }
 
     private bool UserUsedInputThisFrame()
     {
-        switch (Type)
+        if (ModifiersActive())
         {
-            case KeyboardMappedInputType.Key:
-                return GetKey();
-            case KeyboardMappedInputType.KeyUp:
-                return GetKeyUp();
-            case KeyboardMappedInputType.KeyDown:
-                return GetKeyDown();
+            switch (Type)
+            {
+                case KeyboardMappedInputType.Key:
+                    return GetKey();
+                case KeyboardMappedInputType.KeyUp:
+                    return GetKeyUp();
+                case KeyboardMappedInputType.KeyDown:
+                    return GetKeyDown();
+            } 
         }
 
         return false;
+    }
+
+    private bool ModifiersActive()
+    {
+        KeyboardInputModifier currentlyPressed = KeyboardInputModifier.None;
+
+        if (GetKeyModifier(KeyboardInputModifier.Shift))
+        {
+            currentlyPressed = currentlyPressed | KeyboardInputModifier.Shift;
+        }
+
+        if (GetKeyModifier(KeyboardInputModifier.Control))
+        {
+            currentlyPressed = currentlyPressed | KeyboardInputModifier.Control;
+        }
+
+        if (GetKeyModifier(KeyboardInputModifier.Alt))
+        {
+            currentlyPressed = currentlyPressed | KeyboardInputModifier.Alt;
+        }
+
+        return currentlyPressed == Modifiers;
+    }
+
+    private bool GetKeyModifier(KeyboardInputModifier modifier)
+    {
+        switch (modifier)
+        {
+            case KeyboardInputModifier.None:
+                return !(GetKeyModifier(KeyboardInputModifier.Shift) || GetKeyModifier(KeyboardInputModifier.Control) || GetKeyModifier(KeyboardInputModifier.Alt));
+            case KeyboardInputModifier.Shift:
+                return Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+            case KeyboardInputModifier.Control:
+                return Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
+            case KeyboardInputModifier.Alt:
+                return Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt);
+            default:
+                return false;
+        }
     }
 
     private bool GetKey()
