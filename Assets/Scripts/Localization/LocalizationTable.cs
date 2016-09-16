@@ -69,6 +69,8 @@ namespace ProjectPorcupine.Localization
             string[] languages = GetLanguages();
             currentLanguage = languages[lang];
             Settings.SetSetting("localization", languages[lang]);
+            LocalizationLoader loader = GameObject.Find("Controllers").GetComponent(typeof(LocalizationLoader)) as LocalizationLoader;
+            loader.UpdateLocalizationTable();
         }
 
         public static void LoadingLanguagesFinished()
@@ -103,18 +105,22 @@ namespace ProjectPorcupine.Localization
                 {
                     localizationTable[localizationCode] = new Dictionary<string, string>();
                 }
-                
-                string[] lines = File.ReadAllLines(path);
-                foreach (string line in lines)
-                {
-                    string[] keyValuePair = line.Split(new char[] { '=' }, 2);
-                    if (keyValuePair.Length != 2)
-                    {
-                        Debug.ULogErrorChannel("LocalizationTable", string.Format("Invalid format of localization string. Actual {0}", line));
-                        continue;
-                    }
 
-                    localizationTable[localizationCode][keyValuePair[0]] = keyValuePair[1];
+                // Only the current and default languages translations will be loaded in memory.
+                if (localizationCode == DefaultLanguage || localizationCode == currentLanguage)
+                {
+                    string[] lines = File.ReadAllLines(path);
+                    foreach (string line in lines)
+                    {
+                        string[] keyValuePair = line.Split(new char[] { '=' }, 2);
+                        if (keyValuePair.Length != 2)
+                        {
+                            Debug.ULogErrorChannel("LocalizationTable", string.Format("Invalid format of localization string. Actual {0}", line));
+                            continue;
+                        }
+
+                        localizationTable[localizationCode][keyValuePair[0]] = keyValuePair[1];
+                    }
                 }
             }
             catch (FileNotFoundException exception)
