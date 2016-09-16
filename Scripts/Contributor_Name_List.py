@@ -27,13 +27,19 @@ def get_jsonparsed_data(url):
     return json.loads(data)
 
 
-url = 'https://api.github.com/repos/TeamPorcupine/ProjectPorcupine/stats/contributors'
-output=get_jsonparsed_data(url)
-
+url = 'https://api.github.com/repos/TeamPorcupine/ProjectPorcupine/contributors'
+page=1
 names=[]
-for row in output:
-	names+=[row["author"]["login"].capitalize()]
+while True:
+	output=get_jsonparsed_data(url+"?page=%i"%page)
+	if len(output)==0:
+		break;
 
+	for row in output:
+		temp=row["login"]
+		names+=[temp[0].upper()+temp[1:]]
+	page+=1
+	
 names.sort()
 for name in names:
 	print (name)

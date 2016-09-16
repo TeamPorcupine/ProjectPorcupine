@@ -48,21 +48,25 @@ Pull in the latest upstream changes: `git pull upstream master`
 Find out what files have a conflict: `git status`
 
 Edit the conflicting file(s) and look for a block that looks like this:
-    `<<<<<<< HEAD`
-    `my awesome change`
-    `=======`
-    `some other person's less awesome change`
-    `>>>>>>> some-branch`
+```
+<<<<<<< HEAD
+my awesome change
+=======
+some other person's less awesome change
+>>>>>>> some-branch
+```
 
 Replace all five (or more) lines with the correct version (yours, theirs, or
 a combination of the two).  ONLY the correct content should remain (none of
-that "<<<<< HEAD" stuff.)
+that `<<<<< HEAD` stuff.)
 
 Then re-commit and re-push the file.
 
-  `git add the-changed-file.cs`
-  `git commit -m "Resolved conflict between this and PR #123"`
-  `git push origin my-feature-branch-name`
+```
+git add the-changed-file.cs
+git commit -m "Resolved conflict between this and PR #123"
+git push origin my-feature-branch-name
+```
 
 The pull request should automatically update to reflect your changes.
 
