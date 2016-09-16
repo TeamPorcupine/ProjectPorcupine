@@ -23,7 +23,11 @@ public class HeadlineGeneratorTest
     [SetUp]
     public void SetUp()
     {
-        new PrototypeManager();
+        if (PrototypeManager.Headline == null)
+        {
+            new PrototypeManager();
+        }
+
         PrototypeManager.Headline.LoadPrototypes(testHeadlineXml);
 
         gen = new HeadlineGenerator();

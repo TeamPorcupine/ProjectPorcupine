@@ -14,8 +14,8 @@ using Scheduler;
 
 public class HeadlineGenerator 
 {
-    private const float minInterval = 50f;
-    private const float maxInterval = 100f;
+    private const float MinInterval = 50f;
+    private const float MaxInterval = 100f;
 
     private List<string> headlines;
 
@@ -71,7 +71,7 @@ public class HeadlineGenerator
     private void ResetNextTime()
     {
         Scheduler.Scheduler.Current.DeregisterEvent(scheduledEvent);
-        float nextTime = UnityEngine.Random.Range(minInterval, maxInterval);
+        float nextTime = UnityEngine.Random.Range(MinInterval, MaxInterval);
         scheduledEvent = new ScheduledEvent(ToString(), (incomingEvent) => OnUpdatedHeadline(), nextTime);
         Scheduler.Scheduler.Current.RegisterEvent(scheduledEvent);
     }
