@@ -378,7 +378,7 @@ function CloningPod_JobRunning(job)
 end
 
 function CloningPod_JobComplete(job)
-    World.Current.CreateCharacter(job.buildable.Jobs.GetSpawnSpotTile())
+    World.Current.CharacterManager.Create(job.buildable.Jobs.GetSpawnSpotTile())
     job.buildable.Deconstruct()
 end
 

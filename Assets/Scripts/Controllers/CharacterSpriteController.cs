@@ -44,20 +44,20 @@ public class CharacterSpriteController : BaseSpriteController<Character>
 
         // Register our callback so that our GameObject gets updated whenever
         // the tile's type changes.
-        world.OnCharacterCreated += OnCreated;
+        world.CharacterManager.CharacterCreated += OnCreated;
 
         // Check for pre-existing characters, which won't do the callback.
-        foreach (Character c in world.characters)
+        foreach (Character character in world.CharacterManager.Characters)
         {
-            OnCreated(c);
+            OnCreated(character);
         }
     }   
 
     public override void RemoveAll()
     {
-        world.OnCharacterCreated -= OnCreated;
+        world.CharacterManager.CharacterCreated -= OnCreated;
 
-        foreach (Character c in world.characters)
+        foreach (Character c in world.CharacterManager.Characters)
         {
             c.OnCharacterChanged -= OnChanged; 
         }
@@ -65,24 +65,24 @@ public class CharacterSpriteController : BaseSpriteController<Character>
         base.RemoveAll();
     }
 
-    protected override void OnCreated(Character c)
+    protected override void OnCreated(Character character)
     {
         // This creates a new GameObject and adds it to our scene.
         GameObject char_go = new GameObject();
 
         // Add our tile/GO pair to the dictionary.
-        objectGameObjectMap.Add(c, char_go);
+        objectGameObjectMap.Add(character, char_go);
 
         char_go.name = "Character";
-        char_go.transform.position = new Vector3(c.X, c.Y, c.Z);
+        char_go.transform.position = new Vector3(character.X, character.Y, character.Z);
         char_go.transform.SetParent(objectParent.transform, true);
 
         SpriteRenderer sr = char_go.AddComponent<SpriteRenderer>();
         sr.sortingLayerName = "Characters";
 
         // Add material with color replacement shader, and generate color replacement texture
-        sr.material = GetMaterial(c);
-        c.animation = new Animation.CharacterAnimation(c, sr);
+        sr.material = GetMaterial(character);
+        character.animation = new Animation.CharacterAnimation(character, sr);
 
         // Add the inventory sprite onto the character
         GameObject inv_go = new GameObject("Inventory");
@@ -95,19 +95,19 @@ public class CharacterSpriteController : BaseSpriteController<Character>
 
         // Register our callback so that our GameObject gets updated whenever
         // the object's into changes.
-        c.OnCharacterChanged += OnChanged;        
+        character.OnCharacterChanged += OnChanged;
     }
 
-    protected override void OnChanged(Character c)
+    protected override void OnChanged(Character character)
     {
         // Make sure the furniture's graphics are correct.
-        SpriteRenderer inv_sr = objectGameObjectMap[c].transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>();
+        SpriteRenderer inv_sr = objectGameObjectMap[character].transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>();
 
         // Important to set the characters SortOrder first.
-        int charSortOrder = c.animation.SetAndGetSortOrder();
-        if (c.inventory != null)
+        int charSortOrder = character.animation.SetAndGetSortOrder();
+        if (character.inventory != null)
         {
-            inv_sr.sprite = SpriteManager.GetSprite("Inventory", c.inventory.GetName());
+            inv_sr.sprite = SpriteManager.GetSprite("Inventory", character.inventory.GetName());
             inv_sr.sortingOrder = charSortOrder + 1;
         }
         else
@@ -115,27 +115,26 @@ public class CharacterSpriteController : BaseSpriteController<Character>
             inv_sr.sprite = null;
         }
 
-        if (objectGameObjectMap.ContainsKey(c) == false)
+        if (objectGameObjectMap.ContainsKey(character) == false)
         {
             Debug.ULogErrorChannel("CharacterSpriteController", "OnCharacterChanged -- trying to change visuals for character not in our map.");
             return;
         }
 
-        GameObject char_go = objectGameObjectMap[c];
+        GameObject char_go = objectGameObjectMap[character];
 
-        char_go.transform.position = new Vector3(c.X, c.Y, 0);
+        char_go.transform.position = new Vector3(character.X, character.Y, 0);
     }
 
-    protected override void OnRemoved(Character c)
+    protected override void OnRemoved(Character character)
     {
-        c.OnCharacterChanged -= OnChanged;  
-        GameObject char_go = objectGameObjectMap[c];
-        objectGameObjectMap.Remove(c);
+        GameObject char_go = objectGameObjectMap[character];
+        objectGameObjectMap.Remove(character);
         GameObject.Destroy(char_go);
     }
 
     // Add material with color replacement shader, and generate color replacement texture
-    private Material GetMaterial(Character c)
+    private Material GetMaterial(Character character)
     {
         // this 256x1 texture is transparent. Each pixel represents the red color value to replace.
         // if pixel 10 is not transparent, every color with r=10 will be replaced by the color of the pixel
@@ -151,11 +150,11 @@ public class CharacterSpriteController : BaseSpriteController<Character>
         colorSwapTex.Apply();
 
         // Define the swapping colors. Add white to highlights and black to shadows        
-        Color newColorLight = Color.Lerp(c.GetCharacterColor(), ColorUtilities.ColorFromIntRGB(255, 255, 255), 0.5f);
-        Color newColorDark = Color.Lerp(c.GetCharacterColor(), ColorUtilities.ColorFromIntRGB(0, 0, 0), 0.5f);
-        Color newSkinColor = c.GetCharacterSkinColor();
+        Color newColorLight = Color.Lerp(character.GetCharacterColor(), ColorUtilities.ColorFromIntRGB(255, 255, 255), 0.5f);
+        Color newColorDark = Color.Lerp(character.GetCharacterColor(), ColorUtilities.ColorFromIntRGB(0, 0, 0), 0.5f);
+        Color newSkinColor = character.GetCharacterSkinColor();
         Color newSkinColorDark = Color.Lerp(newSkinColor, ColorUtilities.ColorFromIntRGB(0, 0, 0), 0.2f);        
-        Color newUniformColor = c.GetCharacterUniformColor();
+        Color newUniformColor = character.GetCharacterUniformColor();
         Color newUniformColorLight = Color.Lerp(newUniformColor, ColorUtilities.ColorFromIntRGB(255, 255, 255), 0.5f);
         Color newUniformColorDark = Color.Lerp(newUniformColor, ColorUtilities.ColorFromIntRGB(0, 0, 0), 0.2f);
 
@@ -164,7 +163,7 @@ public class CharacterSpriteController : BaseSpriteController<Character>
         colorSwapTex = SwapColor(colorSwapTex, SpriteSwapRedColor.UNIFORMCOLOR, newUniformColor);
         colorSwapTex = SwapColor(colorSwapTex, SpriteSwapRedColor.UNIFORMCOLORLIGHT, newUniformColorLight);
         colorSwapTex = SwapColor(colorSwapTex, SpriteSwapRedColor.UNIFORMCOLORDARK, newUniformColorDark);
-        colorSwapTex = SwapColor(colorSwapTex, SpriteSwapRedColor.UNIFORMSTRIPECOLOR, c.GetCharacterColor());
+        colorSwapTex = SwapColor(colorSwapTex, SpriteSwapRedColor.UNIFORMSTRIPECOLOR, character.GetCharacterColor());
         colorSwapTex = SwapColor(colorSwapTex, SpriteSwapRedColor.UNIFORMSTRIPECOLORLIGHT, newColorLight);
         colorSwapTex = SwapColor(colorSwapTex, SpriteSwapRedColor.UNIFORMSTRIPECOLORDARK, newColorDark);
         colorSwapTex = SwapColor(colorSwapTex, SpriteSwapRedColor.SKINCOLOR, newSkinColor);
