@@ -123,7 +123,7 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
         sr.color = furniture.Tint;
 
         furn_go.name = furniture.Type + "_" + furniture.Tile.X + "_" + furniture.Tile.Y;
-        furn_go.transform.position = new Vector3(furniture.Tile.X + (sr.sprite.pivot.x/sr.sprite.pixelsPerUnit-0.5f), furniture.Tile.Y + (sr.sprite.pivot.y / sr.sprite.pixelsPerUnit - 0.5f), furniture.Tile.Z);
+        furn_go.transform.position = new Vector3(furniture.Tile.X + sr.sprite.pivot.x/sr.sprite.pixelsPerUnit-0.5f, furniture.Tile.Y + sr.sprite.pivot.y / sr.sprite.pixelsPerUnit - 0.5f, furniture.Tile.Z);
         furn_go.transform.SetParent(objectParent.transform, true);
 
         if (furniture.PowerConnection != null && furniture.PowerConnection.IsPowerConsumer)
