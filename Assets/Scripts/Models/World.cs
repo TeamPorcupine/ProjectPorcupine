@@ -663,8 +663,6 @@ public class World : IXmlSerializable
         Height = height;
         Depth = depth;
 
-        TileType.LoadTileTypes();
-
         tiles = new Tile[Width, Height, Depth];
 
         rooms = new List<Room>();
