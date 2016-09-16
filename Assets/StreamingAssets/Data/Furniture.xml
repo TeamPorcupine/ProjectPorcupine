@@ -575,6 +575,43 @@
         <UnlocalizedDescription>furn_pump_air_desc</UnlocalizedDescription>
     </Furniture>
 
+    <Furniture type="vent">
+        <Name>Vent</Name>
+        <MovementCost>0</MovementCost>
+        <Width>1</Width>
+        <Height>1</Height>
+        <EnclosesRooms>true</EnclosesRooms>
+
+        <BuildingJob jobTime="1" />
+        <CanReplaceFurniture typeTag="Wall" />
+
+        <Params>
+            <Param name="gas_throughput" value="0.5" />
+            <Param name="openness" value="1" />
+        </Params>
+
+        <Action event="OnUpdate" functionName="Vent_OnUpdate" />
+        <Action event="OnChange" functionName="Vent_SetOrientationState" />
+        <Action event="OnInstall" functionName="Vent_SetOrientationState" />
+
+        <ContextMenuAction FunctionName="Vent_Open" Text="Open Vent" RequireCharacterSelected="false" />
+        <ContextMenuAction FunctionName="Vent_Close" Text="Close Vent" RequireCharacterSelected="false" />
+
+        <Animations>
+            <Animation state="horizontal" valuebased="true">
+                <Frame name="vent_EW_Opened" />
+                <Frame name="vent_EW_Closed" />
+            </Animation>  
+            <Animation state="vertical" valuebased="true">
+                <Frame name="vent_NS_Opened" />
+                <Frame name="vent_NS_Closed" />             
+            </Animation>                      
+        </Animations>
+        
+        <LocalizationCode>furn_vent</LocalizationCode>
+        <UnlocalizedDescription>furn_vent_desc</UnlocalizedDescription>
+    </Furniture>
+
     <Furniture type="simple_bed">
         <Name>Simple Bed</Name>
         <Description>A simple bed</Description>
