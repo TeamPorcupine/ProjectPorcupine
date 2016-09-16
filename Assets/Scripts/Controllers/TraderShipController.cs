@@ -19,7 +19,8 @@ public class TraderShipController : MonoBehaviour
     public bool DestinationReached;
     public bool TradeCompleted;
     public Trader Trader;
-    public SpritenameAnimation Animation;
+    public SpritenameAnimation AnimationIdle;
+    public SpritenameAnimation AnimationFlying;
     public SpriteRenderer Renderer;
 
     public void FixedUpdate()
@@ -40,9 +41,7 @@ public class TraderShipController : MonoBehaviour
         {
             destination = LeavingCoordinates;
         }
-
-        Animation.Update(Time.fixedDeltaTime);
-
+        
         float distance = Vector3.Distance(transform.position, destination);
 
         if (distance > DestinationReachedThreshold * TimeManager.Instance.TimeScale)
@@ -58,7 +57,8 @@ public class TraderShipController : MonoBehaviour
             dir *= Speed * Time.fixedDeltaTime * TimeManager.Instance.TimeScale;
 
             transform.position = transform.position + dir;
-            ShowSprite(Animation.CurrentFrameName);
+            AnimationFlying.Update(Time.fixedDeltaTime);
+            ShowSprite(AnimationFlying.CurrentFrameName);
         }
         else
         {
@@ -70,16 +70,9 @@ public class TraderShipController : MonoBehaviour
             else
             {
                 WorldController.Instance.TradeController.ShowTradeDialogBox(this);
-                ShowLandedSprite();
+                AnimationIdle.Update(Time.fixedDeltaTime);
+                ShowSprite(AnimationIdle.CurrentFrameName);
             }
-        }
-    }
-
-    private void ShowLandedSprite()
-    {
-        if (Renderer != null)
-        {
-            Renderer.sprite = SpriteManager.GetSprite("Trader", "BasicHaulShip");
         }
     }
 

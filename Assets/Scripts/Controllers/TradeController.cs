@@ -62,9 +62,10 @@ public class TradeController
         controller.LeavingCoordinates = new Vector3(100, 50, 0);
         go.transform.localScale = new Vector3(1, 1, 1);
         SpriteRenderer spriteRenderer = go.AddComponent<SpriteRenderer>();
-        spriteRenderer.sprite = SpriteManager.GetSprite("Trader", "BasicHaulShip");
+        spriteRenderer.sprite = SpriteManager.GetSprite("Trader", prototype.AnimationIdle.CurrentFrameName);
         spriteRenderer.sortingLayerName = "TradeShip";
-        controller.Animation = new SpritenameAnimation("flying", new string[] { "BasicHaulShip_01", "BasicHaulShip_02" }, 1 / 4);
+        controller.AnimationFlying = prototype.AnimationFlying.Clone();
+        controller.AnimationIdle = prototype.AnimationIdle.Clone();
         controller.Renderer = spriteRenderer;
     }
 
