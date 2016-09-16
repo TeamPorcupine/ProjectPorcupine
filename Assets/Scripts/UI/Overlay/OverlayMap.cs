@@ -22,7 +22,7 @@ using UnityEngine;
 public class OverlayMap : MonoBehaviour
 {
     public Dictionary<string, OverlayDescriptor> overlays;
-
+    
     /// <summary>
     /// Transparency of overlay.
     /// </summary>
@@ -67,6 +67,12 @@ public class OverlayMap : MonoBehaviour
     public string LUAFileName = "overlay_functions.lua";
 
     public GameObject parentPanel;
+
+    /// <summary>
+    /// In memory color map lookup per overlay to speed up the overlay texture generation
+    /// and avoid too much call to the GetPixel method.
+    /// </summary>
+    public Dictionary<string, Dictionary<int, Color>> overlayColorMapLookup;
 
     private static List<Color32> randomColors;
 
@@ -319,6 +325,8 @@ public class OverlayMap : MonoBehaviour
         // Read xml prototypes.
         overlays = OverlayDescriptor.ReadPrototypes(xmlFileName);
 
+        overlayColorMapLookup = new Dictionary<string, Dictionary<int, Color>>();
+
         // Read LUA.
         UserData.RegisterAssembly();
         string scriptFile = System.IO.Path.Combine(
@@ -445,7 +453,12 @@ public class OverlayMap : MonoBehaviour
             Debug.ULogErrorChannel("OverlayMap", "No color map texture setted!");
         }
         
-        Dictionary<int, Color> colorMapLookup = new Dictionary<int, Color>();
+        if (!overlayColorMapLookup.ContainsKey(currentOverlay))
+        {
+            overlayColorMapLookup.Add(currentOverlay, new Dictionary<int, Color>());
+        }
+
+        Dictionary<int, Color> colorMapLookup = overlayColorMapLookup[currentOverlay];
 
         // Size in pixels of overlay texture and create texture.
         int textureWidth = sizeX;
