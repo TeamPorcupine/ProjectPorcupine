@@ -9,6 +9,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using MoonSharp.Interpreter;
 using UnityEngine;
 
@@ -32,18 +33,17 @@ public class OverlayMap : MonoBehaviour
     /// Update interval (0 for every Update, inf for never).
     /// </summary>
     public float updateInterval = 5f;
-    
-    /// <summary>
-    /// Resolution of tile for the overlay.
-    /// </summary>
-    public int pixelsPerTileX = 20;
-    public int pixelsPerTileY = 20;
 
     /// <summary>
     /// Internal storage of size of map.
     /// </summary>
     public int sizeX = 10;
     public int sizeY = 10;
+
+    /// <summary>
+    /// Internal storage of color map width.
+    /// </summary>
+    public int colorMapWidth = 20;
 
     /// <summary>
     /// Current Overlay.
@@ -376,21 +376,13 @@ public class OverlayMap : MonoBehaviour
         GenerateMesh();
         GenerateColorMap();
 
-        // Size in pixels of overlay texture and create texture.
-        int textureWidth = sizeX * pixelsPerTileX;
-        int textureHeight = sizeY * pixelsPerTileY;
-        texture = new Texture2D(textureWidth, textureHeight);
-        texture.wrapMode = TextureWrapMode.Clamp;
-
         // Set material.
         Material mat = Resources.Load<Material>("Shaders/Transparent-Diffuse");
         meshRenderer.material = mat;
-        if (mat == null || meshRenderer == null || texture == null)
+        if (mat == null || meshRenderer == null)
         {
             Debug.ULogErrorChannel("OverlayMap", "Material or renderer is null. Failing.");
         }
-
-        meshRenderer.material.mainTexture = texture;
 
         initialized = true;
     }
@@ -404,17 +396,17 @@ public class OverlayMap : MonoBehaviour
         colorMapArray = ColorMap(ColorMapSG, 255);
 
         // Colormap texture.
-        int textureWidth = colorMapArray.Length * pixelsPerTileX;
-        int textureHeight = pixelsPerTileY;
+        int textureWidth = colorMapArray.Length * colorMapWidth;
+        int textureHeight = colorMapWidth;
         colorMapTexture = new Texture2D(textureWidth, textureHeight);
         
         // Loop over each color in the palette and build a noisy texture.
         int n = 0;
         foreach (Color32 baseColor in colorMapArray)
         {
-            for (int y = 0; y < pixelsPerTileY; y++)
+            for (int y = 0; y < colorMapWidth; y++)
             {
-                for (int x = 0; x < pixelsPerTileX; x++)
+                for (int x = 0; x < colorMapWidth; x++)
                 {
                     Color colorCopy = baseColor;
                     colorCopy.a = transparency;
@@ -423,7 +415,7 @@ public class OverlayMap : MonoBehaviour
                     colorCopy.r += UnityEngine.Random.Range(-0.03f, 0.03f);
                     colorCopy.b += UnityEngine.Random.Range(-0.03f, 0.03f);
                     colorCopy.g += UnityEngine.Random.Range(-0.03f, 0.03f);
-                    colorMapTexture.SetPixel((n * pixelsPerTileX) + x, y, colorCopy);
+                    colorMapTexture.SetPixel((n * colorMapWidth) + x, y, colorCopy);
                 }
             }
 
@@ -443,30 +435,43 @@ public class OverlayMap : MonoBehaviour
         {
             Debug.ULogErrorChannel("OverlayMap", "No color map texture setted!");
         }
+        
+        Dictionary<int, Color> colorMapLookup = new Dictionary<int, Color>();
 
+        // Size in pixels of overlay texture and create texture.
+        int textureWidth = sizeX;
+        int textureHeight = sizeY;
+        Color[] pixels = new Color[textureHeight * textureWidth];
+        
         for (int y = 0; y < sizeY; y++)
         {
             for (int x = 0; x < sizeX; x++)
             {
                 float v = valueAt(x, y);
                 Debug.Assert(v >= 0 && v < 256, "v >= 0 && v < 256");
-                Graphics.CopyTexture(
-                    colorMapTexture,
-                    0,
-                    0,
-                    ((int)v % 256) * pixelsPerTileX,
-                    0,
-                    pixelsPerTileX,
-                    pixelsPerTileY,
-                    texture,
-                    0,
-                    0,
-                    x * pixelsPerTileX,
-                    y * pixelsPerTileY);
+
+                int sampleX = ((int)v % 256) * colorMapWidth;
+
+                if (!colorMapLookup.ContainsKey(sampleX))
+                {
+                    colorMapLookup.Add(sampleX, colorMapTexture.GetPixel(sampleX, 0));
+                }
+
+                Color pixel = colorMapLookup[sampleX];
+                int tilePixelIndex = (y * sizeX) + x;
+                pixels[tilePixelIndex] = pixel;
             }
         }
 
-        texture.Apply(true);
+        texture = new Texture2D(textureWidth, textureHeight)
+        {
+            filterMode = FilterMode.Point,
+            wrapMode = TextureWrapMode.Clamp
+        };
+
+        texture.SetPixels(pixels);
+        texture.Apply();
+        meshRenderer.material.mainTexture = texture;
     }
 
     /// <summary>
