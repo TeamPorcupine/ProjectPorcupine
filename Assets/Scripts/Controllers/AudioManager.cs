@@ -12,15 +12,65 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 
+/// <summary>
+/// The Manager that handles the loading and storing of audio form streamingAssets.
+/// </summary>
 public class AudioManager
 {
     private static Dictionary<string, AudioClip> audioClips;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AudioManager"/> class.
+    /// </summary>
     public AudioManager()
     {
         audioClips = new Dictionary<string, AudioClip>();
     }
 
+    /// <summary>
+    /// Creates a human readable string of the audioClips Dictionary.
+    /// Used for debugging.
+    /// </summary>
+    /// <returns>String containing the information of audioClips.</returns>
+    public static string GetAudioDictionaryString()
+    {
+        Dictionary<string, AudioClip> dictionary = audioClips;
+        return "{" + string.Join(",", dictionary.Select(kv => kv.Key + "=" + kv.Value.length).ToArray()) + "}";
+    }
+
+    /// <summary>
+    /// Gets an AudioCLip from the specified category, with the specified name.
+    /// Throws a LogWarning and returns an Error sound if the AudioClip does not exist.
+    /// </summary>
+    /// <param name="categoryName">
+    /// The category that the AudioClip is in. Usually the same as the 
+    /// directory that the audio file was load from.
+    /// </param>
+    /// <param name="audioName">The name of the AudioClip.</param>
+    /// <returns>AudioClip form the specified category with the specified name.</returns>
+    public static AudioClip GetAudio(string categoryName, string audioName)
+    {
+        AudioClip clip = new AudioClip();
+
+        string audioNameAndCategory = categoryName + "/" + audioName;
+
+        if (audioClips.ContainsKey(audioNameAndCategory))
+        {
+            clip = audioClips[audioNameAndCategory];
+        }
+        else
+        {
+            Debug.LogWarning("No audio available called: " + audioNameAndCategory);
+            clip = audioClips["Sound/Error.wav"];
+        }
+
+        return clip;
+    }
+
+    /// <summary>
+    /// Loads all the audio files from the specified directory.
+    /// </summary>
+    /// <param name="directoryPath">The path of the directory you want to load the audio files from.</param>
     public static void LoadAudioFiles(string directoryPath)
     {
         string[] subDirectories = Directory.GetDirectories(directoryPath);
@@ -64,45 +114,9 @@ public class AudioManager
 
             string filename = new FileInfo(filePath).Name;
 
+            filename = audioCategory + "/" + filename;
+
             audioClips[filename] = clip;
-
-            // filename = audioCategory + "/" + filename;
-
         }
     }
-
-    public static string GetDebugString(Dictionary<string, AudioClip> dictionary)
-    {
-        return "{" + string.Join(",", dictionary.Select(kv => kv.Key + "=" + kv.Value.length).ToArray()) + "}";
-    }
-
-    public static AudioClip GetAudio(string categoryName, string audioName)
-    {
-        AudioClip clip = new AudioClip();
-
-        //string audioNameAndCategory = categoryName + "/" + audioName;
-
-        if (audioClips.ContainsKey(audioName))
-        {
-            clip = audioClips[audioName];
-        }
-        else
-        {
-            try
-            {
-                clip = audioClips["Sound/Error.wav"];
-            }
-            catch
-            {
-                string str = GetDebugString(audioClips);
-                throw new UnityException(str);
-            }
-
-
-           }
-
-
-        return clip;
-    }
-
 }
