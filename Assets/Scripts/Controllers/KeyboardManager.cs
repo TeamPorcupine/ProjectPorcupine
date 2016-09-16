@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class KeyboardManager
 {
@@ -22,6 +23,7 @@ public class KeyboardManager
     {
         instance = this;
         mapping = new Dictionary<string, KeyboadMappedInput>();
+        ModalInputFields = new List<InputField>();
 
         TimeManager.Instance.EveryFrameNotModal += (time) => Update();
 
@@ -43,6 +45,16 @@ public class KeyboardManager
         set
         {
             instance = value;
+        }
+    }
+
+    public List<InputField> ModalInputFields { get; set; }
+
+    public void RegisterModalInputField(InputField filterField)
+    {
+        if (!ModalInputFields.Contains(filterField))
+        {
+            ModalInputFields.Add(filterField);
         }
     }
 
@@ -84,6 +96,11 @@ public class KeyboardManager
 
     public void Update()
     {
+        if (ModalInputFields.Any(f => f.isFocused))
+        {
+            return;
+        }
+
         foreach (KeyboadMappedInput input in mapping.Values)
         {
             input.TriggerActionIfInputValid();
