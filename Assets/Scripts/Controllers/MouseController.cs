@@ -219,22 +219,11 @@ public class MouseController
         {
             Furniture proto = PrototypeManager.Furniture.Get(bmc.buildModeType);
 
-            // If the furniture has af jobSpot set we would like to use that.
-//            if (proto.Jobs.WorkSpotOffset.Equals(Vector2.zero) == false)
-//            {
-//                currPlacingPosition = new Vector3(
-//                    currFramePosition.x - proto.Jobs.WorkSpotOffset.x,
-//                    currFramePosition.y - proto.Jobs.WorkSpotOffset.y,
-//                    WorldController.Instance.cameraController.CurrentLayer);
-//            }
-//            else
-            {   
-                // Otherwise we use the center.
-                currPlacingPosition = new Vector3(
-                    currFramePosition.x - ((proto.Width - 1f) / 2f),
-                    currFramePosition.y - ((proto.Height - 1f) / 2f),
-                    WorldController.Instance.cameraController.CurrentLayer);
-            }
+            // Otherwise we use the center.
+            currPlacingPosition = new Vector3(
+                currFramePosition.x - ((proto.Width - 1f) / 2f),
+                currFramePosition.y - ((proto.Height - 1f) / 2f),
+                WorldController.Instance.cameraController.CurrentLayer);
         }
         else
         {
