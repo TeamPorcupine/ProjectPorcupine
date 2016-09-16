@@ -30,39 +30,45 @@ public class AudioManager
         }
 
         string[] filesInDir = Directory.GetFiles(directoryPath);
-        foreach (string filePath in filesInDir)
+        IEnumerable<WWW> audioFiles = LoadAudioFile(filesInDir, directoryPath);
+        IEnumerator<WWW> e = audioFiles.GetEnumerator();
+        while (e.MoveNext())
         {
-            string audioCategory = new DirectoryInfo(directoryPath).Name;
-            string filename = new FileInfo(filePath).Name;
-            IEnumerator e = LoadAudioFile(audioCategory, filePath);
-            e.MoveNext();
+            Debug.Log("Type: " + e.Current.GetType());
         }
     }
 
-    private static IEnumerator LoadAudioFile(string audioCategory, string filePath)
+    private static IEnumerable<WWW> LoadAudioFile(string[] filesInDir, string directoryPath)
     {
-        if (filePath.Contains(".xml") || filePath.Contains(".meta") || filePath.Contains(".db"))
+        foreach (string file in filesInDir)
         {
-            yield break;
+            string audioCategory = new DirectoryInfo(directoryPath).Name;
+            string filePath = new FileInfo(file).FullName;
+
+            if (filePath.Contains(".xml") || filePath.Contains(".meta") || filePath.Contains(".db"))
+            {
+                continue;
+            }
+
+            WWW www = new WWW(@"file://" + filePath);
+
+            Debug.Log("before - " + www.error);
+
+            yield return www;
+
+            Debug.Log("After - " + www.error);
+
+            AudioClip clip = www.GetAudioClip(false, false);
+
+            Debug.Log(clip.name + "Downloaded");
+
+            string filename = new FileInfo(filePath).Name;
+
+            audioClips[filename] = clip;
+
+            // filename = audioCategory + "/" + filename;
+
         }
-        WWW www = new WWW(@"file://" + filePath);
-
-        Debug.Log("before - " + www.error);
-
-        yield return www;
-
-        Debug.Log("After - " + www.error);
-
-        AudioClip clip = www.GetAudioClip(false, true);
-
-        Debug.Log(clip.name + "Downloaded");
-
-        string filename = new FileInfo(filePath).Name;
-
-        audioClips[filename] = clip;
-        // filename = audioCategory + "/" + filename;
-
-
     }
 
     public static string GetDebugString(Dictionary<string, AudioClip> dictionary)
