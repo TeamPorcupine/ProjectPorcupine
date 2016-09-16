@@ -137,7 +137,6 @@ public class WorldController : MonoBehaviour
 
         // Initialising controllers.
         GameObject controllers = GameObject.Find("Controllers");
-        Instantiate(Resources.Load("UIController"), controllers.transform);
 
         GameObject canvas = GameObject.Find("Canvas");
         go = Instantiate(Resources.Load("UI/ContextMenu"), canvas.transform.position, canvas.transform.rotation, canvas.transform) as GameObject;
