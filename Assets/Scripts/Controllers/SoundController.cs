@@ -36,17 +36,28 @@ public class SoundController
             return;
         }
 
-        AudioClip ac = Resources.Load<AudioClip>("Sounds/" + furn.Type + "_OnCreated");
+        // AudioClip ac = Resources.Load<AudioClip>("Sounds/" + furn.Type + "_OnCreated");
+        AudioClip ac = AudioManager.GetAudio("Sound", "Wall_OnCareated.wav");
 
-        if (ac == null)
+        /*if (ac == null)
         {
             // WTF?  What do we do?
             // Since there's no specific sound for whatever Furniture this is, just
             // use a default sound -- i.e. the Wall_OnCreated sound.
-            ac = Resources.Load<AudioClip>("Sounds/Wall_OnCreated");
-        }
+            // ac = Resources.Load<AudioClip>("Sounds/Wall_OnCreated");
+        }*/
+        ac.LoadAudioData();
 
-        AudioSource.PlayClipAtPoint(ac, Camera.main.transform.position);
+        if (ac.loadState == AudioDataLoadState.Loaded)
+        {
+            AudioSource.PlayClipAtPoint(ac, Camera.main.transform.position);
+        }
+        else if (ac.loadState == AudioDataLoadState.Failed)
+        {
+            throw new UnityException("Load Failed");
+        }
+        //AudioSource.PlayClipAtPoint(ac, Camera.main.transform.position);
+        ac.UnloadAudioData();
         soundCooldown = 0.1f;
     }
 
