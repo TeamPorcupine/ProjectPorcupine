@@ -19,7 +19,6 @@ public class MenuController : MonoBehaviour
     public Button buttonWorld;
     public Button buttonWork;
     public Button buttonOptions;
-    public Button buttonSettings;
     public Button buttonQuests;
 
     private DialogBoxManager dialogBoxManager;
@@ -91,15 +90,6 @@ public class MenuController : MonoBehaviour
         }
     }
 
-    public void OnButtonSettings()
-    {
-        if (!WorldController.Instance.IsModal)
-        {
-            DeactivateAll();
-            dialogBoxManager.dialogBoxSettings.ShowDialog();
-        }
-    }
-
     // Use this for initialization.
     private void Start()
     {
@@ -125,11 +115,6 @@ public class MenuController : MonoBehaviour
         buttonOptions.onClick.AddListener(delegate
         {
             OnButtonOptions();
-        });
-
-        buttonSettings.onClick.AddListener(delegate
-        {
-            OnButtonSettings();
         });
 
         buttonQuests = CreateButton("menu_quests");
