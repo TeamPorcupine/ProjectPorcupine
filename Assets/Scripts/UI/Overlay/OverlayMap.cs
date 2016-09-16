@@ -353,12 +353,13 @@ public class OverlayMap : MonoBehaviour
             elapsed = 0f;
         }
 
-        if(currentOverlay != "None" && currentLayer != WorldController.Instance.cameraController.CurrentLayer)
+        if (currentOverlay != "None" && currentLayer != WorldController.Instance.cameraController.CurrentLayer)
         {
             Bake();
             currentLayer = WorldController.Instance.cameraController.CurrentLayer;
             elapsed = 0f;
         }
+
         // TODO: Prettify.
         Vector2 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         if (valueAt != null)
