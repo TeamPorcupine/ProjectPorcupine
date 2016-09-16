@@ -29,12 +29,6 @@ public interface IBuildable
     Tile Tile { get; }
 
     /// <summary>
-    /// Gets a component that handles the jobs linked to the buildable.
-    /// </summary>
-    /// <value>The component that handles the jobs linked to the buildable.</value>
-    BuildableJobs Jobs { get; }
-
-    /// <summary>
     /// Checks whether the buildable has a certain tag.
     /// </summary>
     /// <param name="typeTag">Tag to check for.</param>
