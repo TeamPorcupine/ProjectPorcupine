@@ -643,6 +643,33 @@
         <LocalizationCode>furn_mine</LocalizationCode>
         <UnlocalizedDescription>furn_mine_desc</UnlocalizedDescription>
     </Furniture>
+  
+  
+    <Furniture objectType="fire" skipBuildMenu="true">
+        <Name>Fire</Name>
+        <Description>Warms up the otherwise cold empty space.</Description>
+        <MovementCost>5</MovementCost>
+        <Width>1</Width>
+        <Height>1</Height>
+      
+        <BuildingJob jobTime="2" />
+          
+        <Params>
+            <!-- <Param name="gas_name" value="O2" /> -->
+            <Param name="spread_chance" value="0.05" />
+            <Param name="strength" value="4" />
+            <Param name="animation_frame" value="0" />
+            <Param name="num_frames" value="5" />
+        </Params>
+
+        <Action event="OnPostUpdate" functionName="Fire_OnPostUpdate" />
+        <Action event="OnTemperatureUpdate" functionName="Fire_OnTemperatureUpdate" />
+        <GetSpriteName FunctionName="Fire_GetSpriteName" />
+
+        <LocalizationCode>fire</LocalizationCode>
+        <UnlocalizedDescription>fire_desc</UnlocalizedDescription>
+
+    </Furniture>
 
     <Furniture type="RTG">
         <Name>RTG</Name>

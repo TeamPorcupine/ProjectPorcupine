@@ -20,5 +20,25 @@ function Execute_Event_NewCrewMember( gameEvent )
 	ModUtils.ULog("GameEvent: New Crew Member spawned named '" .. c.GetName() .. "'.")
 end
 
+
+function Precondition_Event_Fire( gameEvent, deltaTime )
+	gameEvent.AddTimer(deltaTime)
+	local timer = gameEvent.GetTimer()
+	if ( math.random() <=  math.min(- 1 / timer + 1, 0.01 ) ) then
+		gameEvent.ResetTimer()
+		return true
+	end
+end
+
+function Execute_Event_Fire( gameEvent )
+	local tile = World.Current.GetTileAt(
+		math.floor(math.random() * World.Current.Width),
+		math.floor(math.random() * World.Current.Height))
+	if tile != nil then
+		World.Current.PlaceFurniture("fire", tile, false)
+		ModUtils.ULog("GameEvent: fire spread '" .. tile.X .. "," .. tile.Y .. "'.")
+	end
+end
+
 ModUtils.ULog("GameEvent.lua loaded")
 return "Event LUA Script Parsed!"
