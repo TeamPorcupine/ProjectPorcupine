@@ -24,8 +24,6 @@ using UnityEngine;
 [MoonSharpUserData]
 public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextActionProvider, IBuildable
 {
-    public bool OnlyUseDefaultSpriteName { get { return !string.IsNullOrEmpty(getSpriteNameAction); } }
-
     // Prevent construction too close to the world's edge
     private const int MinEdgeDistance = 5;
 
@@ -85,7 +83,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         Height = 1;
         Width = 1;
         DragType = "single";
-        LinksToNeighbour = "";
+        LinksToNeighbour = string.Empty;
     }
 
     // Copy Constructor -- don't call this directly, unless we never
@@ -324,11 +322,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     public string LinksToNeighbour { get; private set; }
 
     /// <summary>
-    /// Defines the type of link types.
-    /// </summary>
-    public string LinkType { get; private set; }
-
-    /// <summary>
     /// Gets the type of dragging that is used to build multiples of this furniture. 
     /// e.g walls.
     /// </summary>
@@ -348,6 +341,17 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// Gets a component that handles the jobs linked to the furniture.
     /// </summary>
     public FurnitureJobs Jobs { get; private set; }
+
+    /// <summary>
+    /// Should we only use the default name? If not, then more complex logic is tested, such as walls.
+    /// </summary>
+    public bool OnlyUseDefaultSpriteName
+    {
+        get
+        {
+            return !string.IsNullOrEmpty(getSpriteNameAction);
+        }
+    }
 
     /// <summary>
     /// Used to place furniture in a certain position.
@@ -382,7 +386,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             return null;
         }
         
-        if (obj.LinksToNeighbour!="")
+        if (obj.LinksToNeighbour != string.Empty)
         {
             // This type of furniture links itself to its neighbours,
             // so we should inform our neighbours that they have a new
@@ -770,7 +774,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         int y = Tile.Y;
         int fwidth = 1;
         int fheight = 1;
-        string linksToNeighbour = "";
+        string linksToNeighbour = string.Empty;
         if (Tile.Furniture != null)
         {
             Furniture furniture = Tile.Furniture;
@@ -815,7 +819,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         // We should inform our neighbours that they have just lost a
         // neighbour regardless of type.  
         // Just trigger their OnChangedCallback. 
-        if (linksToNeighbour != "")
+        if (linksToNeighbour != string.Empty)
         {
             for (int xpos = x - 1; xpos < x + fwidth + 1; xpos++)
             {

@@ -54,7 +54,7 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
     {
         Furniture proto = PrototypeManager.Furniture.Get(type);
         string spriteName = proto.GetSpriteName();
-        Sprite s = SpriteManager.GetSprite("Furniture", spriteName + (proto.LinksToNeighbour!="" && !proto.OnlyUseDefaultSpriteName ? "_" : string.Empty));
+        Sprite s = SpriteManager.GetSprite("Furniture", spriteName + (proto.LinksToNeighbour != string.Empty && !proto.OnlyUseDefaultSpriteName ? "_" : string.Empty));
 
         return s;
     }
@@ -63,7 +63,7 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
     {
         string spriteName = furn.GetSpriteName();
 
-        if (furn.LinksToNeighbour == "" || furn.OnlyUseDefaultSpriteName)
+        if (furn.LinksToNeighbour == string.Empty || furn.OnlyUseDefaultSpriteName)
         {
             return SpriteManager.GetSprite("Furniture", spriteName);
         }

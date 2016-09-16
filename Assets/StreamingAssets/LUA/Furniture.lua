@@ -611,7 +611,7 @@ end
 
 function Door_GetSpriteName(furniture)
 	if (furniture.verticalDoor) then
-	    return furniture.Type .. " Vertical_0"
+	    return furniture.Type .. "Vertical_0"
 	else
 	    return furniture.Type .. "Horizontal_0"
 	end
