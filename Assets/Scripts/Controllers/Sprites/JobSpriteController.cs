@@ -114,7 +114,8 @@ public class JobSpriteController : BaseSpriteController<Job>
             {
                 sr.sprite = usc.GetSpriteForUtility(job.JobObjectType);
             }
-            job_go.transform.position = new Vector3(job.tile.X + sr.sprite.pivot.x / sr.sprite.pixelsPerUnit - 0.5f, job.tile.Y + sr.sprite.pivot.y / sr.sprite.pixelsPerUnit - 0.5f, job.tile.Z);
+
+            job_go.transform.position = new Vector3(job.tile.X + ((sr.sprite.pivot.x / sr.sprite.pixelsPerUnit) - 0.5f), job.tile.Y + ((sr.sprite.pivot.y / sr.sprite.pixelsPerUnit) - 0.5f), job.tile.Z);
         }
 
         sr.color = new Color(0.5f, 1f, 0.5f, 0.25f);
