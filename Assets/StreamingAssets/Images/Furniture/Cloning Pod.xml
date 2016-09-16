@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Sprites>
-	<Sprite name="Cloning Pod 0"	x="0"	y="4"	w="2"	h="3"	pixelPerUnit="32" />
-	<Sprite name="Cloning Pod 1"	x="2"	y="4"	w="2"	h="3"	pixelPerUnit="32" />
-	<Sprite name="Cloning Pod"	x="0"	y="0"	w="2"	h="3"	pixelPerUnit="32" />
-</Sprites>

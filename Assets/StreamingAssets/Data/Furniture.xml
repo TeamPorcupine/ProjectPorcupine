@@ -275,7 +275,7 @@
         <UnlocalizedDescription>furn_power_generator_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture type="Cloning Pod">
+    <Furniture type="cloning_pod">
         <Name>Cloning Pod</Name>
         <Description>Creates an additional worker, then is destroyed.</Description>
         <MovementCost>2</MovementCost>
@@ -295,11 +295,11 @@
 
         <Animations>
             <Animation state="idle" looping="false">
-                <Frame name="Cloning Pod" />
+                <Frame name="cloning_pod" />
             </Animation>
             <Animation state="running" fps="1" looping="true">
-                <Frame name="Cloning Pod 0" />
-                <Frame name="Cloning Pod 1" />
+                <Frame name="cloning_pod_0" />
+                <Frame name="cloning_pod_1" />
             </Animation>
         </Animations>
 
