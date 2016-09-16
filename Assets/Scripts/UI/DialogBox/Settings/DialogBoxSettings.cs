@@ -60,7 +60,9 @@ public class DialogBoxSettings : DialogBox
 
     public void OnResolutionChange()
     {
-        /// TODO : Implement Resolution changes.
+        ResolutionOption selectedOption = (ResolutionOption)resolutionDropdown.options[resolutionDropdown.value];
+        Resolution resolution = selectedOption.Resolution;
+        Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen, resolution.refreshRate);
     }
 
     public void OnMusicChange()
@@ -120,6 +122,32 @@ public class DialogBoxSettings : DialogBox
         {
             OnFullScreenToggle();
         });
+
+        resolutionDropdown.ClearOptions();
+        List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
+        options.Add(new ResolutionOption
+        {
+            text = string.Format(
+                "{0} x {1} @ {2}",
+                Screen.currentResolution.width,
+                Screen.currentResolution.height,
+                Screen.currentResolution.refreshRate),
+            Resolution = Screen.currentResolution
+        });
+        foreach (var resolution in Screen.resolutions)
+        {
+            options.Add(new ResolutionOption
+            {
+                text = string.Format(
+                    "{0} x {1} @ {2}",
+                    resolution.width,
+                    resolution.height,
+                    resolution.refreshRate),
+                Resolution = resolution
+            });
+        }
+
+        resolutionDropdown.AddOptions(options);
         resolutionDropdown.onValueChanged.AddListener(delegate
         {
             OnResolutionChange();
@@ -178,5 +206,10 @@ public class DialogBoxSettings : DialogBox
         {
             this.CloseDialog();
         }
+    }
+
+    private class ResolutionOption : Dropdown.OptionData
+    {
+        public Resolution Resolution { get; set; }
     }
 }
