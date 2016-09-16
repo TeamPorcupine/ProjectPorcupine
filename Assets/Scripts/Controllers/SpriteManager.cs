@@ -44,7 +44,7 @@ public class SpriteManager
     /// <param name="spriteName">Sprite name.</param>
     public static Sprite GetSprite(string categoryName, string spriteName)
     {
-        Sprite sprite = new Sprite();
+        Sprite sprite = null;
 
         string spriteNamePlaceHolder = categoryName + "/" + PlaceHolderPrefix + spriteName;
         spriteName = categoryName + "/" + spriteName;
