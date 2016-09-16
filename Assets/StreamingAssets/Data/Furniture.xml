@@ -46,7 +46,7 @@
         <PathfindingWeight>1</PathfindingWeight>
         <Width>1</Width>
         <Height>1</Height>
-        <LinksToNeighbours>wall</LinksToNeighbours>
+        <LinksToNeighbours></LinksToNeighbours>
         <EnclosesRooms>true</EnclosesRooms>
         <CanReplaceFurniture typeTag="Wall" />
 
@@ -103,7 +103,7 @@
         <PathfindingWeight>1</PathfindingWeight>
         <Width>1</Width>
         <Height>1</Height>
-        <LinksToNeighbours>wall</LinksToNeighbours>
+        <LinksToNeighbours></LinksToNeighbours>
         <EnclosesRooms>true</EnclosesRooms>
         <CanReplaceFurniture typeTag="Wall" />
         <CanReplaceFurniture typeTag="Door" />
