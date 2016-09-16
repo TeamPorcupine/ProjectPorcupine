@@ -687,10 +687,11 @@
          <Param name="ore_type" value="None" />
         </Params>
 
-        <ContextMenuAction FunctionName="OreMine_CreateMiningJob" Text="Mine Ore" RequireCharacterSelected="false" />
+    <ContextMenuAction FunctionName="OreMine_CreateMiningJob" Text="Mine Ore" RequireCharacterSelected="false" />
+    <GetSpriteName FunctionName="OreMine_GetSpriteName" />
 
-        <LocalizationCode>furn_astro_wall</LocalizationCode>
-        <UnlocalizedDescription>furn_astro_wall_desc</UnlocalizedDescription>
+    <LocalizationCode>furn_astro_wall</LocalizationCode>
+    <UnlocalizedDescription>furn_astro_wall_desc</UnlocalizedDescription>
     </Furniture>
 
 </Furnitures>

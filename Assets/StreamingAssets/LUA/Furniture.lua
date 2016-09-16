@@ -636,7 +636,11 @@ function OreMine_OreMined(job)
 end
 
 function OreMine_GetSpriteName(furniture)
-    return "mine_" .. furniture.Parameters["ore_type"].ToString()
+    if ( furniture.Parameters["ore_type"].ToString() == "Raw Iron-") then
+        return "astro_wall_" .. furniture.Parameters["ore_type"].ToString()
+    end
+
+    return "astro_wall"
 end
 
 -- This function gets called once, when the furniture is installed
