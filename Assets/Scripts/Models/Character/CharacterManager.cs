@@ -58,7 +58,7 @@ public class CharacterManager
     /// <summary>
     /// Create a Character in the specified tile.
     /// </summary>
-    /// <param name="tile">The tile.</param>
+    /// <param name="tile">The tile where the Character is placed.</param>
     public Character Create(Tile tile)
     {
         return Create(tile, ColorUtilities.RandomColor(), ColorUtilities.RandomGrayColor(), ColorUtilities.RandomSkinColor());
@@ -67,10 +67,10 @@ public class CharacterManager
     /// <summary>
     /// Create a Character in the specified tile, with the specified color, uniform color and skin color.
     /// </summary>
-    /// <param name="tile">The tile.</param>
-    /// <param name="color">The color.</param>
-    /// <param name="uniformColor">The  uniform color.</param>
-    /// <param name="skinColor">The  skin color.</param>
+    /// <param name="tile">The tile where the Character is placed.</param>
+    /// <param name="color">The uniform strip color.</param>
+    /// <param name="uniformColor">The uniform color.</param>
+    /// <param name="skinColor">The skin color.</param>
     public Character Create(Tile tile, Color color, Color uniformColor, Color skinColor)
     {
         Character character = new Character(tile, color, uniformColor, skinColor);
