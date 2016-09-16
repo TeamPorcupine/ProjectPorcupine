@@ -70,6 +70,8 @@ public class OverlayMap : MonoBehaviour
 
     private static List<Color32> randomColors;
 
+    private int currentLayer = 0;
+
     /// <summary>
     /// Starting left corner (x,y) and z-coordinate of mesh and (3d left corner).
     /// </summary>
@@ -351,6 +353,12 @@ public class OverlayMap : MonoBehaviour
             elapsed = 0f;
         }
 
+        if(currentOverlay != "None" && currentLayer != WorldController.Instance.cameraController.CurrentLayer)
+        {
+            Bake();
+            currentLayer = WorldController.Instance.cameraController.CurrentLayer;
+            elapsed = 0f;
+        }
         // TODO: Prettify.
         Vector2 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         if (valueAt != null)
