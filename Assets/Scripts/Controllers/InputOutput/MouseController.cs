@@ -219,7 +219,7 @@ public class MouseController
         {
             Furniture proto = PrototypeManager.Furniture.Get(bmc.buildModeType);
 
-            // Otherwise we use the center.
+            // Use the center of the Furniture.
             currPlacingPosition = new Vector3(
                 currFramePosition.x - ((proto.Width - 1f) / 2f),
                 currFramePosition.y - ((proto.Height - 1f) / 2f),

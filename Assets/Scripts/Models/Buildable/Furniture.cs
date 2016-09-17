@@ -782,7 +782,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         World.Current.temperature.SetThermalDiffusivity(Tile.X, Tile.Y, Temperature.defaultThermalDiffusivity);
 
         // Let our workspot tile know it is no longer reserved for us
-        WorldController.Instance.World.UnreserveTileAsWorkSpot(this);
+        World.Current.UnreserveTileAsWorkSpot(this);
 
         Tile.UnplaceFurniture();
 
