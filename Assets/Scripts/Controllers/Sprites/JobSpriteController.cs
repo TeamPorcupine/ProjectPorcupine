@@ -103,6 +103,10 @@ public class JobSpriteController : BaseSpriteController<Job>
             job_go.transform.position = new Vector3(job.tile.X, job.tile.Y, job.tile.Z);
             sr.sprite = SpriteManager.GetSprite("Tile", "Solid");
         }
+        else if (job.JobDescription.Contains("deconstruct"))
+        {
+            //For now, do nothing
+        }
         else
         {
             // This is a normal furniture job.

@@ -59,6 +59,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
 
     private bool isOperating;
 
+    private float deconstructJobTime;
+    private List<Inventory> deconstructInventory;
+
     // did we have power in the last update?
     private bool prevUpdatePowerOn;
 
@@ -611,6 +614,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                 case "BuildingJob":
                     ReadXmlBuildingJob(reader);
                     break;
+                case "DeconstructJob":
+                    ReadXmlDeconstructJob(reader);
+                    break;
                 case "CanBeBuiltOn":
                     tileTypeBuildPermissions.Add(reader.GetAttribute("tileType"));
                     break;
@@ -730,6 +736,30 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     }
 
     /// <summary>
+    /// Reads the XML building job.
+    /// </summary>
+    /// <param name="reader">The XML reader to read from.</param>
+    public void ReadXmlDeconstructJob(XmlReader reader)
+    {
+        deconstructJobTime = 0;
+        float.TryParse(reader.GetAttribute("jobTime"),out deconstructJobTime);
+        deconstructInventory = new List<Inventory>();
+        XmlReader inventoryReader = reader.ReadSubtree();
+
+        while (inventoryReader.Read())
+        {
+            if (inventoryReader.Name == "Inventory")
+            {
+                // Found an inventory requirement, so add it to the list!
+                deconstructInventory.Add(new Inventory(
+                    inventoryReader.GetAttribute("type"),
+                    int.Parse(inventoryReader.GetAttribute("amount")),
+                    0));
+            }
+        }
+    }
+
+    /// <summary>
     /// Accepts for storage.
     /// </summary>
     /// <returns>A list of Inventory which the Furniture accepts for storage.</returns>
@@ -756,8 +786,25 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// <summary>
     /// Deconstructs the furniture.
     /// </summary>
-    public void Deconstruct()
+    public void SetDeconstructJob()
     {
+        Jobs.CancelAll();
+
+        Job job = new Job(
+            Tile,
+            Type,
+            (inJob)=>Deconstruct(),
+            deconstructJobTime,
+            null,
+            Job.JobPriority.High);
+        job.JobDescription = "job_deconstruct_" + Type + "_desc";
+        job.adjacent = true;
+
+        World.Current.jobQueue.Enqueue( job);
+    }
+
+    public void Deconstruct()
+    { 
         int x = Tile.X;
         int y = Tile.Y;
         int fwidth = 1;
@@ -770,6 +817,14 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             fheight = furniture.Height;
             linksToNeighbour = furniture.LinksToNeighbour;
             furniture.Jobs.CancelAll();
+        }
+
+        if (deconstructInventory != null)
+        {
+            foreach (Inventory inv in deconstructInventory)
+            {
+                World.Current.inventoryManager.PlaceInventory(Tile, inv);
+            }
         }
 
         // We call lua to decostruct
@@ -941,7 +996,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             {
                 Text = "Deconstruct " + Name,
                 RequireCharacterSelected = false,
-                Action = (ca, c) => Deconstruct()
+                Action = (ca, c) => SetDeconstructJob()
             };
         }
 
