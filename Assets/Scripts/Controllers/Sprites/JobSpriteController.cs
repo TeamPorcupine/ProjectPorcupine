@@ -105,7 +105,9 @@ public class JobSpriteController : BaseSpriteController<Job>
         }
         else if (job.JobDescription.Contains("deconstruct"))
         {
-            // TODO: Place indication of furniture about to be destroyed!
+            sr.sprite = SpriteManager.GetSprite("UI", "CursorCircle");
+            sr.color=Color.red;
+            job_go.transform.position = job.tile.Vector3;
         }
         else
         {
