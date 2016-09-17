@@ -15,6 +15,7 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
+using ProjectPorcupine.Jobs;
 using ProjectPorcupine.Localization;
 using UnityEngine;
 
@@ -296,7 +297,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         if the character is carrying materials but is not used in the new job, then drop them
         on the current tile for now.*/
 
-        if (inventory != null && !job.inventoryRequirements.ContainsKey(inventory.Type))
+        if (inventory != null && !job.HeldInventory.ContainsKey(inventory.Type))
         {
             World.Current.inventoryManager.PlaceInventory(CurrTile, inventory);
             DumpExcessInventory();
@@ -910,7 +911,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 if (CurrTile == JobTile)
                 {
                     // We are at the job's site, so drop the inventory
-                    World.Current.inventoryManager.PlaceInventory(MyJob, inventory);
+                    World.Current.inventoryManager.PlaceInventory(MyJob, this);
                     MyJob.DoWork(0); // This will call all cbJobWorked callbacks, because even though
                     // we aren't progressing, it might want to do something with the fact
                     // that the requirements are being met.
@@ -966,15 +967,15 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 }
                 else
                 {
-                    Inventory desired = null;
+                    RequestedItem desired = null;
                     Path_AStar newPath = null;
                     foreach (string itemType in fulfillableInventoryRequirements)
                     {
-                        desired = MyJob.inventoryRequirements[itemType];
+                        desired = MyJob.RequestedItems[itemType];
                         newPath = World.Current.inventoryManager.GetPathToClosestInventoryOfType(
                             desired.Type,
                             CurrTile,
-                            desired.MaxStackSize - desired.StackSize,
+                            desired.AmountDesired(),
                             MyJob.canTakeFromStockpile);
 
                         if (newPath == null || newPath.Length() < 1)

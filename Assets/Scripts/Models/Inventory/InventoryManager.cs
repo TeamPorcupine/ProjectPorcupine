@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MoonSharp.Interpreter;
+using UnityEngine;
 
 [MoonSharpUserData]
 public class InventoryManager
@@ -52,27 +53,30 @@ public class InventoryManager
         return true;
     }
 
-    public bool PlaceInventory(Job job, Inventory inventory)
+    public bool PlaceInventory(Job job, Character character)
     {
-        if (job.inventoryRequirements.ContainsKey(inventory.Type) == false)
+        Inventory sourceInventory = character.inventory;
+
+        // Check that it's wanted by the job
+        if (job.RequestedItems.ContainsKey(sourceInventory.Type) == false)
         {
             Debug.ULogErrorChannel(InventoryManagerLogChanel, "Trying to add inventory to a job that it doesn't want.");
             return false;
         }
 
-        job.inventoryRequirements[inventory.Type].StackSize += inventory.StackSize;
-
-        if (job.inventoryRequirements[inventory.Type].MaxStackSize < job.inventoryRequirements[inventory.Type].StackSize)
+        // Check that there is a target to transfer to
+        if (job.HeldInventory.ContainsKey(sourceInventory.Type) == false)
         {
-            inventory.StackSize = job.inventoryRequirements[inventory.Type].StackSize - job.inventoryRequirements[inventory.Type].MaxStackSize;
-            job.inventoryRequirements[inventory.Type].StackSize = job.inventoryRequirements[inventory.Type].MaxStackSize;
-        }
-        else
-        {
-            inventory.StackSize = 0;
+            job.HeldInventory[sourceInventory.Type] = new Inventory(sourceInventory.Type, 0, sourceInventory.MaxStackSize);
         }
 
-        CleanupInventory(inventory);
+        Inventory targetInventory = job.HeldInventory[sourceInventory.Type];
+        int transferAmount = Mathf.Min(targetInventory.MaxStackSize - targetInventory.StackSize, sourceInventory.StackSize);
+
+        sourceInventory.StackSize -= transferAmount;
+        targetInventory.StackSize += transferAmount;
+
+        CleanupInventory(character);
 
         return true;
     }
@@ -205,6 +209,16 @@ public class InventoryManager
         {
             inventory.Tile.Inventory = null;
             inventory.Tile = null;
+        }
+    }
+
+    private void CleanupInventory(Character character)
+    {
+        CleanupInventory(character.inventory);
+
+        if (character.inventory.StackSize == 0)
+        {
+            character.inventory = null;
         }
     }
 

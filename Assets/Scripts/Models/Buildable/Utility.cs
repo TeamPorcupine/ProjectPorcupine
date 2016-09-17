@@ -11,10 +11,9 @@ using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
-using Animation;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
-using ProjectPorcupine.PowerNetwork;
+using ProjectPorcupine.Jobs;
 using UnityEngine;
 
 /// <summary>
@@ -386,7 +385,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
                 case "BuildingJob":
                     float jobTime = float.Parse(reader.GetAttribute("jobTime"));
 
-                    List<Inventory> invs = new List<Inventory>();
+                    List<RequestedItem> items = new List<RequestedItem>();
 
                     XmlReader inventoryReader = reader.ReadSubtree();
 
@@ -395,20 +394,18 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
                         if (inventoryReader.Name == "Inventory")
                         {
                             // Found an inventory requirement, so add it to the list!
-                            invs.Add(new Inventory(
-                                inventoryReader.GetAttribute("type"),
-                                0,
-                                int.Parse(inventoryReader.GetAttribute("amount"))));
+                            int amount = int.Parse(inventoryReader.GetAttribute("amount"));
+                            items.Add(new RequestedItem(inventoryReader.GetAttribute("type"), amount));
                         }
                     }
 
                     Job job = new Job(
-                                null,
-                                Type,
-                                FunctionsManager.JobComplete_UtilityBuilding,
-                                jobTime,
-                                invs.ToArray(),
-                                Job.JobPriority.High);
+                                  null,
+                                  Type,
+                                  FunctionsManager.JobComplete_UtilityBuilding,
+                                  jobTime,
+                                  items.ToArray(),
+                                  Job.JobPriority.High);
                     job.JobDescription = "job_build_" + Type + "_desc";
                     PrototypeManager.UtilityJob.Set(Type, job);
                     break;

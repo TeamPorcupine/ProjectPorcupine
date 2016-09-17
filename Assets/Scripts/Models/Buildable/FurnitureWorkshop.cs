@@ -12,7 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
-using UnityEngine;
+using ProjectPorcupine.Jobs;
 
 [Serializable]
 [XmlRoot("Workshop")]
@@ -217,12 +217,12 @@ public class FurnitureWorkshop
     private static void PlaceInventoryToWorkshopInput(Job job)
     {
         job.CancelJob();
-        foreach (KeyValuePair<string, Inventory> jobInvReq in job.inventoryRequirements)
+        foreach (KeyValuePair<string, Inventory> heldInventory in job.HeldInventory)
         {
-            Inventory inv = jobInvReq.Value;
+            Inventory inv = heldInventory.Value;
             if (inv != null && inv.StackSize > 0)
             {
-                World.Current.inventoryManager.PlaceInventory(job.tile, jobInvReq.Value);
+                World.Current.inventoryManager.PlaceInventory(job.tile, heldInventory.Value);
                 job.tile.Inventory.Locked = true;
             }
         }
@@ -251,13 +251,13 @@ public class FurnitureWorkshop
             // if there is no hauling job for input object type, create one
             Job furnJob;
             string requiredType = reqInputItem.ObjectType;
-            bool existingHaulingJob = furniture.Jobs.HasJobWithPredicate(x => x.inventoryRequirements.ContainsKey(requiredType), out furnJob);
+            bool existingHaulingJob = furniture.Jobs.HasJobWithPredicate(x => x.RequestedItems.ContainsKey(requiredType), out furnJob);
             if (!existingHaulingJob)
             {
                 Tile inTile = World.Current.GetTileAt(
-                    furniture.Tile.X + reqInputItem.SlotPosX,
-                    furniture.Tile.Y + reqInputItem.SlotPosY,
-                    furniture.Tile.Z);
+                                  furniture.Tile.X + reqInputItem.SlotPosX,
+                                  furniture.Tile.Y + reqInputItem.SlotPosY,
+                                  furniture.Tile.Z);
 
                 //// TODO: this is from LUA .. looks like some hack
                 if (inTile.Inventory != null && inTile.Inventory.StackSize == inTile.Inventory.MaxStackSize)
@@ -277,15 +277,15 @@ public class FurnitureWorkshop
                 if (desiredAmount > 0)
                 {
                     var jb = new Job(
-                        inTile, 
-                        null,  // beware: passed jobObjectType is expected Furniture only !!
-                        null, 
-                        0.4f,
-                        new Inventory[] { new Inventory(desiredInv, 0, desiredAmount) },
-                        Job.JobPriority.Medium,
-                        false,
-                        false,
-                        false);
+                                 inTile, 
+                                 null,  // beware: passed jobObjectType is expected Furniture only !!
+                                 null, 
+                                 0.4f,
+                                 new RequestedItem[] { new RequestedItem(desiredInv, desiredAmount) },
+                                 Job.JobPriority.Medium,
+                                 false,
+                                 false,
+                                 false);
                     jb.JobDescription = string.Format("Hauling '{0}' to '{1}'", desiredInv, furniture.Name);
                     jb.OnJobWorked += PlaceInventoryToWorkshopInput;
                     furniture.Jobs.Add(jb);
