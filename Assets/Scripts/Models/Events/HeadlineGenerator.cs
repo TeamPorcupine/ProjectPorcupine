@@ -17,9 +17,12 @@ public class HeadlineGenerator
     private List<string> headlines = new List<string>();
     private float minInterval, maxInterval;
     private ScheduledEvent scheduledEvent;
+    private Random random;
 
     public HeadlineGenerator(XmlNode baseNode)
     {
+        random = new System.Random();
+
         // TODO Consider default values for these. Also consider reasonable limits
         minInterval = float.Parse(baseNode.Attributes.GetNamedItem("minInterval").Value);
         maxInterval = float.Parse(baseNode.Attributes.GetNamedItem("maxInterval").Value);
@@ -51,7 +54,7 @@ public class HeadlineGenerator
 
     private void OnUpdatedHeadline()
     {
-        OnUpdatedHeadline(headlines[UnityEngine.Random.Range(0, headlines.Count)]);
+        OnUpdatedHeadline(headlines[random.Next(0, headlines.Count)]);
     }
 
     private void OnUpdatedHeadline(string headline)
@@ -68,8 +71,9 @@ public class HeadlineGenerator
 
     private void ResetNextTime()
     {
+        double range = (double)maxInterval - (double)minInterval;
+        float nextTime = (float)(range * random.NextDouble() + (double)minInterval);
         Scheduler.Scheduler.Current.DeregisterEvent(scheduledEvent);
-        float nextTime = UnityEngine.Random.Range(minInterval, maxInterval);
         scheduledEvent = new ScheduledEvent(ToString(), (incomingEvent) => OnUpdatedHeadline(), nextTime);
         Scheduler.Scheduler.Current.RegisterEvent(scheduledEvent);
     }
