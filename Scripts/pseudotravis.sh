@@ -1,7 +1,6 @@
 #! /bin/sh
 
 localUnity="C:\\Program Files\\Unity\\Editor\\Unity.exe"
-endTestsFold=0 #stores whether the travis_fold:end:tests has been echoed yet
 
 echo "Attempting Unit Tests"
 "$localUnity" -batchmode -runEditorTests -nographics -EditorTestResultFile $(pwd)/EditorTestResults.xml -projectPath $(pwd) -logFile unity.log 
@@ -9,7 +8,7 @@ echo "Attempting Unit Tests"
 
 if [ ! -f $(pwd)/EditorTestResults.xml ]; then
     echo "Results file not found!"
-    $endTestsFold=1
+    echo "Make sure that there are no Unity processes already open and try again."
 
     # at this point we know that the build has failed due to compilation errors
     # lets try to parse them out of unity.log and display them
