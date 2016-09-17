@@ -105,7 +105,7 @@ public class JobSpriteController : BaseSpriteController<Job>
         }
         else if (job.JobDescription.Contains("deconstruct"))
         {
-            //For now, do nothing
+            // TODO: Place indication of furniture about to be destroyed!
         }
         else
         {

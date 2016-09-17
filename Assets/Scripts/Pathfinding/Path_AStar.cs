@@ -25,7 +25,7 @@ public class Path_AStar
         this.path = path;
     }
 
-    public Path_AStar(World world, Tile tileStart, Tile tileEnd, string type = null, int desiredAmount = 0, bool canTakeFromStockpile = false, bool lookingForFurn = false, bool adjacentOkay=false)
+    public Path_AStar(World world, Tile tileStart, Tile tileEnd, string type = null, int desiredAmount = 0, bool canTakeFromStockpile = false, bool lookingForFurn = false, bool adjacentOkay = false)
     {
         // if tileEnd is null, then we are simply scanning for the nearest Type.
         // We can do this by ignoring the heuristic component of AStar, which basically
@@ -67,6 +67,7 @@ public class Path_AStar
                 Debug.ULogErrorChannel("Path_AStar", "The ending tile isn't in the list of nodes!");
                 return;
             }
+
             if (adjacentOkay)
             {
                 foreach (Tile tile in tileEnd.GetNeighbours())

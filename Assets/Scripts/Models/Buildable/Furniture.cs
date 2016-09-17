@@ -104,6 +104,8 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         Height = other.Height;
         Tint = other.Tint;
         LinksToNeighbour = other.LinksToNeighbour;
+        deconstructInventory = new List<Inventory>(other.deconstructInventory);
+        deconstructJobTime = other.deconstructJobTime;
 
         Parameters = new Parameter(other.Parameters);
         Jobs = new FurnitureJobs(this, other);
@@ -742,7 +744,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     public void ReadXmlDeconstructJob(XmlReader reader)
     {
         deconstructJobTime = 0;
-        float.TryParse(reader.GetAttribute("jobTime"),out deconstructJobTime);
+        float.TryParse(reader.GetAttribute("jobTime"), out deconstructJobTime);
         deconstructInventory = new List<Inventory>();
         XmlReader inventoryReader = reader.ReadSubtree();
 
@@ -793,14 +795,14 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         Job job = new Job(
             Tile,
             Type,
-            (inJob)=>Deconstruct(),
+            (inJob) => Deconstruct(),
             deconstructJobTime,
             null,
             Job.JobPriority.High);
         job.JobDescription = "job_deconstruct_" + Type + "_desc";
         job.adjacent = true;
 
-        World.Current.jobQueue.Enqueue( job);
+        World.Current.jobQueue.Enqueue(job);
     }
 
     public void Deconstruct()

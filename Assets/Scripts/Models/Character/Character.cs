@@ -657,7 +657,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         }
         else
         {
-            pathAStar = new Path_AStar(World.Current, CurrTile, DestTile, null, 0, false, false,MyJob.adjacent);
+            pathAStar = new Path_AStar(World.Current, CurrTile, DestTile, null, 0, false, false, MyJob.adjacent);
         }
 
         Profiler.EndSample();
@@ -671,9 +671,6 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         if (MyJob.adjacent)
         {
-            IEnumerable<Tile> reversed = pathAStar.Reverse();
-            reversed = reversed.Skip(1);
-            pathAStar = new Path_AStar(new Queue<Tile>(reversed.Reverse()));
             DestTile = pathAStar.EndTile();
             jobTile = DestTile;
         }
