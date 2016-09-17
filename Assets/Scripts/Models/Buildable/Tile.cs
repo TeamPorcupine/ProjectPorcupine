@@ -503,6 +503,11 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         }
     }
 
+    public override string ToString()
+    {
+        return string.Format("[Tile {0}, {1},{2},{3}]", Type, X, Y, Z);
+    }
+
     private void ReportTileChanged()
     {
         // Call the callback and let things know we've changed.

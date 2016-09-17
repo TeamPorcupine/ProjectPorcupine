@@ -18,13 +18,11 @@ namespace ProjectPorcupine.Pathfinding
         /// <summary>
         /// Delegate called to determine the distance from this tile to destination according to custom heuristics.
         /// </summary>
-        /// <param name="tile">Tile to evalute.</param>
         public delegate float PathfindingHeuristic(Tile tile);
 
         /// <summary>
         /// Delegate called to determine if we've reached the goal.
         /// </summary>
-        /// <param name="tile">Tile to evaluate.</param>
         public delegate bool GoalEvaluator(Tile tile);
 
         public static List<Tile> FindPath(Tile start, GoalEvaluator isGoal, PathfindingHeuristic costHeuristic)
@@ -36,10 +34,6 @@ namespace ProjectPorcupine.Pathfinding
         /// <summary>
         /// Finds the path to tile.
         /// </summary>
-        /// <returns>The path to tile.</returns>
-        /// <param name="start">Start tile.</param>
-        /// <param name="end">Final tile.</param>
-        /// <param name="adjacent">If set to <c>true</c> adjacent tiles can be targetted.</param>
         public static List<Tile> FindPathToTile(Tile start, Tile end, bool adjacent = false)
         {
             if (start == null || end == null)
@@ -49,92 +43,111 @@ namespace ProjectPorcupine.Pathfinding
 
             Path_AStar resolver = new Path_AStar(World.Current, start, GoalTileEvaluator(end, adjacent), ManhattanDistance(end));
             List<Tile> path = resolver.GetList();
-            if (adjacent)
-            {
-                DebugLogIf(path.Count > 0, "FindPathToTile adjacent from: {0}, to: {1}, found {2} [Length: {3}", start, end, path.Last(), path.Count);
-                //                DebugLogIf(path.Count > 0, "Searched adjacent from: " + start.X + "," + start.Y + ", to: " + end.X + "," + end.Y + " found: " + path.Last().X + "," + path.Last().Y + " [Length: " + path.Count + "]");
-            }
-            else
-            {
-                DebugLogIf(path.Count > 0, "FindPathToTile from: " + start.X + "," + start.Y + ", to: " + end.X + "," + end.Y + " found: " + path.Last().X + "," + path.Last().Y + " [Length: " + path.Count + "]");
-            }
-            DebugLogIf(path == null, "Failed to find path to tile {0}", start);
 
-            return path;
-        }
+            DebugLogIf(path.Count > 0, "FindPathToTile{4} from: {0}, to: {1}, found {2} [Length: {3}, took: {5}ms]", start, end, path.LastOrDefault(), path.Count, adjacent ? " adjacent" : string.Empty, (int)(resolver.Duration * 1000));
 
-        public static List<Tile> FindPathToInventory(Tile start, string[] objectTypes, bool canTakeFromStockpile = true)
-        {
-            if (start == null || objectTypes == null || objectTypes.Length == 0)
-            {
-                return null;
-            }
-
-            Path_AStar resolver = new Path_AStar(World.Current, start, GoalInventoryEvaluator(objectTypes, canTakeFromStockpile), DijkstraDistance());
-            List<Tile> path = resolver.GetList();
-            if (path.Count > 0)
-                DebugLog("FindPathToInventory from: " + start.X + "," + start.Y + ", for: " + string.Join(",", objectTypes) + " found: " + path.Last().X + "," + path.Last().Y + " [Length: " + path.Count + "]");
-            DebugLogIf(path == null, "Failed to find path to inventory of type {0}", string.Join(",", objectTypes));
             return path;
         }
 
         /// <summary>
-        /// Finds the path to an inventory.
+        /// Finds the path to any inventory with type in <paramref name="types"/>
         /// </summary>
-        public static List<Tile> FindPathToInventory(Tile start, string objectType, bool canTakeFromStockpile = true)
+        public static List<Tile> FindPathToInventory(Tile start, string[] types, bool canTakeFromStockpile = true)
         {
-            if (start == null || objectType == null)
+            if (start == null || types == null || types.Length == 0)
             {
                 return null;
             }
 
-            Path_AStar resolver = new Path_AStar(World.Current, start, GoalInventoryEvaluator(objectType, canTakeFromStockpile), DijkstraDistance());
+            Path_AStar resolver = new Path_AStar(World.Current, start, GoalInventoryEvaluator(types, canTakeFromStockpile), DijkstraDistance());
             List<Tile> path = resolver.GetList();
-            if (path.Count > 0)
-                DebugLog("FindPathToInventory from: " + start.X + "," + start.Y + ", for: " + objectType + " found: " + path.Last().X + "," + path.Last().Y + " [Length: " + path.Count + "]");
-            DebugLogIf(path == null, "Failed to find path to inventory of type {0}", objectType);
+
+            DebugLogIf(path.Count > 0, "FindPathToInventory from: {0}, to: {1}, found {2} [Length: {3}, took: {4}ms]", start, string.Join(",", types), path.LastOrDefault(), path.Count, (int)(resolver.Duration * 1000));
+
             return path;
         }
 
         /// <summary>
-        /// Finds the path to furniture.
+        /// Finds the path to an inventory of type <paramref name="type"/>.
         /// </summary>
-        /// <returns>The path to furniture.</returns>
-        /// <param name="start">Start tile.</param>
-        /// <param name="objectType">Object type of the furniture.</param>
-        public static List<Tile> FindPathToFurniture(Tile start, string objectType)
+        public static List<Tile> FindPathToInventory(Tile start, string type, bool canTakeFromStockpile = true)
         {
-            if (start == null || objectType == null)
+            if (start == null || type == null)
             {
                 return null;
             }
 
-            Path_AStar resolver = new Path_AStar(World.Current, start, GoalFurnitureEvaluator(objectType), DijkstraDistance());
+            Path_AStar resolver = new Path_AStar(World.Current, start, GoalInventoryEvaluator(type, canTakeFromStockpile), DijkstraDistance());
             List<Tile> path = resolver.GetList();
-            DebugLogIf(path.Count > 0, "FindPathToFurniture from: " + start.X + "," + start.Y + ", for: " + objectType + " found: " + path.Last().X + "," + path.Last().Y + " [Length: " + path.Count + "]");
-            DebugLogIf(path == null, "Failed to find path to furniture of type {0}", objectType);
+
+            DebugLogIf(path.Count > 0, "FindPathToInventory from: {0}, to: {1}, found {2} [Length: {3}, took: {4}ms]", start, type, path.LastOrDefault(), path.Count, (int)(resolver.Duration * 1000));
+
             return path;
         }
 
-        public static List<Tile> FindPathToDumpInventory(Tile start, string objectType, int amount)
+        /// <summary>
+        /// Finds the path to furniture of type <paramref name="type"/>.
+        /// </summary>
+        public static List<Tile> FindPathToFurniture(Tile start, string type)
         {
-            if (start == null || objectType == null || amount <= 0)
+            if (start == null || type == null)
             {
                 return null;
             }
 
-            Path_AStar resolver = new Path_AStar(World.Current, start, GoalCanFitInventoryEvaluator(objectType, amount), DijkstraDistance());
+            Path_AStar resolver = new Path_AStar(World.Current, start, GoalFurnitureEvaluator(type), DijkstraDistance());
             List<Tile> path = resolver.GetList();
-            DebugLogIf(path.Count > 0, "FindPathToDumpInventory from: " + start.X + "," + start.Y + ", for: " + objectType + " found: " + path.Last().X + "," + path.Last().Y + " [Length: " + path.Count + "]");
-            DebugLogIf(path == null, "Failed to find path to furniture of type {0}", objectType);
+
+            DebugLogIf(path.Count > 0, "FindPathToFurniture from: {0}, to: {1}, found {2} [Length: {3}, took: {4}ms]", start, type, path.LastOrDefault(), path.Count, (int)(resolver.Duration * 1000));
+
             return path;
+        }
+
+        /// <summary>
+        /// Finds the path to a nearby tile where inventory of type <paramref name="type"/> can be dumped.
+        /// </summary>
+        public static List<Tile> FindPathToDumpInventory(Tile start, string type, int amount)
+        {
+            if (start == null || type == null || amount <= 0)
+            {
+                return null;
+            }
+
+            Path_AStar resolver = new Path_AStar(World.Current, start, GoalCanFitInventoryEvaluator(type, amount), DijkstraDistance());
+            List<Tile> path = resolver.GetList();
+
+            DebugLogIf(path.Count > 0, "FindPathToDumpInventory from: {0}, to: {1}, found {2} [Length: {3}, took: {4}ms]", start, type, path.LastOrDefault(), path.Count, (int)(resolver.Duration * 1000));
+
+            return path;
+        }
+
+        /// <summary>
+        /// A good choice for a quick route to the target.
+        /// </summary>
+        public static PathfindingHeuristic DefaultDistanceHeuristic(Tile goalTile)
+        {
+            return ManhattanDistance(goalTile);
+        }
+
+        /// <summary>
+        /// ManhattanDistance measurement.
+        /// </summary>
+        public static PathfindingHeuristic ManhattanDistance(Tile goalTile)
+        {
+            return tile => Mathf.Abs(tile.X - goalTile.X) + Mathf.Abs(tile.Y - goalTile.Y);
+        }
+
+        /// <summary>
+        /// Dijkstra's algorithm. Searches in an ever expanding circle from the start position.
+        /// </summary>
+        public static PathfindingHeuristic DijkstraDistance()
+        {
+            return tile => 0f;
         }
 
         /// <summary>
         /// Simple reusable goal heuristic. Will match for specific tiles or adjacent tiles.
         /// </summary>
-        /// <param name="goalTile">Goal tile.</param>
-        /// <param name="adjacent">If set to <c>true</c> adjacent tiles are matched.</param>
         public static GoalEvaluator GoalTileEvaluator(Tile goalTile, bool adjacent)
         {
             if (adjacent)
@@ -154,67 +167,47 @@ namespace ProjectPorcupine.Pathfinding
             }
         }
 
-        public static PathfindingHeuristic DefaultDistanceHeuristic(Tile goalTile)
+        /// <summary>
+        /// Evaluates if the goal is an inventory of any of the types in <paramref name="types"/>.
+        /// </summary>
+        public static GoalEvaluator GoalInventoryEvaluator(string[] types, bool canTakeFromStockpile = true)
         {
-            return ManhattanDistance(goalTile);
+            return tile => tile.Inventory != null && tile.Inventory.CanBePickedUp(canTakeFromStockpile) && types.Contains(tile.Inventory.Type);
         }
 
         /// <summary>
-        /// ManhattanDistance measurement.
+        /// Evaluates if the goal is an inventory of type <paramref name="type"/>.
         /// </summary>
-        /// <param name="goalTile">Goal tile.</param>
-        public static PathfindingHeuristic ManhattanDistance(Tile goalTile)
+        public static GoalEvaluator GoalInventoryEvaluator(string type, bool canTakeFromStockpile = true)
         {
-            return tile => Mathf.Abs(tile.X - goalTile.X) + Mathf.Abs(tile.Y - goalTile.Y);
-        }
-
-        public static GoalEvaluator GoalInventoryEvaluator(string[] objectTypes, bool canTakeFromStockpile = true)
-        {
-            return tile => InventoryManager.InventoryCanBePickedUp(tile.Inventory, canTakeFromStockpile) && objectTypes.Contains(tile.Inventory.Type);
+            return tile => tile.Inventory != null && tile.Inventory.CanBePickedUp(canTakeFromStockpile) && type == tile.Inventory.Type;
         }
 
         /// <summary>
-        /// Evaluates if the goal is an inventory of the right type.
+        /// Evaluates if the goal is a furniture of type <paramref name="type"/>.
         /// </summary>
-        /// <param name="objectType">Inventory's object type.</param>
-        /// <param name="canTakeFromStockpile">If set to <c>true</c> can take from stockpile.</param>
-        public static GoalEvaluator GoalInventoryEvaluator(string objectType, bool canTakeFromStockpile = true)
+        public static GoalEvaluator GoalFurnitureEvaluator(string type)
         {
-            return tile => InventoryManager.InventoryCanBePickedUp(tile.Inventory, canTakeFromStockpile) && objectType == tile.Inventory.Type;
+            return current => current.Furniture != null && current.Furniture.Type == type;
         }
 
         /// <summary>
-        /// Evaluates if the goal is a furniture of the right type.
+        /// Evaluates if it is an appropriate place to dump inventory of type <paramref name="type"/> and <paramref name="amount"/>.
         /// </summary>
-        /// <param name="objectType">Inventory's object type.</param>
-        public static GoalEvaluator GoalFurnitureEvaluator(string objectType)
-        {
-            return current => current.Furniture != null && current.Furniture.Type == objectType;
-        }
-
-        /// <summary>
-        /// Evaluates if it is an appropriate place to dump objectType of amount
-        /// </summary>
-        public static GoalEvaluator GoalCanFitInventoryEvaluator(string objectType, int amount)
+        public static GoalEvaluator GoalCanFitInventoryEvaluator(string type, int amount)
         {
             return tile => tile.Type == TileType.Floor && (
                 tile.Inventory == null ||
-                tile.Inventory.Type == objectType && (tile.Inventory.StackSize + amount) <= tile.Inventory.MaxStackSize);
+                (tile.Inventory.Type == type && (tile.Inventory.StackSize + amount) <= tile.Inventory.MaxStackSize));
         }
 
-        /// <summary>
-        /// Dijkstra's algorithm.
-        /// </summary>
-        public static PathfindingHeuristic DijkstraDistance()
-        {
-            return tile => 0f;
-        }
-
+        [System.Diagnostics.Conditional("PATHFINDER_DEBUG_LOG")]
         private static void DebugLog(string message, params object[] par)
         {
             Debug.ULogChannel("Pathfinding", message, par);
         }
 
+        [System.Diagnostics.Conditional("PATHFINDER_DEBUG_LOG")]
         private static void DebugLogIf(bool condition, string message, params object[] par)
         {
             if (condition)

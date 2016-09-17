@@ -10,8 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MoonSharp.Interpreter;
-using UnityEngine;
 using ProjectPorcupine.Pathfinding;
+using UnityEngine;
 
 [MoonSharpUserData]
 public class InventoryManager
@@ -110,25 +110,13 @@ public class InventoryManager
     }
 
     /// <summary>
-    /// Gets <see cref="Inventory"/> closest to <see cref="startTile"/>.
+    /// Gets <see cref="Inventory"/> closest to <see cref="tile"/>.
     /// </summary>
     /// <returns>The closest inventory of type.</returns>
-    public Inventory GetClosestInventoryOfType(string objectType, Tile tile, bool canTakeFromStockpile)
+    public Inventory GetClosestInventoryOfType(string type, Tile tile, bool canTakeFromStockpile)
     {
-        List<Tile> path = GetPathToClosestInventoryOfType(objectType, tile, canTakeFromStockpile);
+        List<Tile> path = GetPathToClosestInventoryOfType(type, tile, canTakeFromStockpile);
         return path != null ? path.Last().Inventory : null;
-    }
-
-    public static bool InventoryCanBePickedUp(Inventory inventory, bool canTakeFromStockpile)
-    {
-        // You can't pick up stuff that isn't on a tile or if it's locked
-        if (inventory == null || inventory.Tile == null || inventory.Locked)
-        {
-            return false;
-        }
-
-        Furniture furniture = inventory.Tile.Furniture;
-        return furniture == null || canTakeFromStockpile == true || furniture.HasTypeTag("Storage") == false;
     }
 
     public bool RemoveInventoryOfType(string type, int quantity, bool onlyFromStockpiles)
@@ -172,13 +160,13 @@ public class InventoryManager
             return false;
         }
 
-        return Inventories[type].Find(inventory => InventoryCanBePickedUp(inventory, canTakeFromStockpile)) != null;
+        return Inventories[type].Find(inventory => inventory.CanBePickedUp(canTakeFromStockpile)) != null;
     }
 
-    public bool HasInventoryOfType(string[] objectTypes, bool canTakeFromStockpile)
+    public bool HasInventoryOfType(string[] types, bool canTakeFromStockpile)
     {
         // Test that we have records for any of the types
-        List<string> filteredTypes = objectTypes
+        List<string> filteredTypes = types
             .ToList()
             .FindAll(type => Inventories.ContainsKey(type) && Inventories[type].Count > 0);
 
@@ -189,7 +177,7 @@ public class InventoryManager
 
         foreach (string objectType in filteredTypes)
         {
-            if (Inventories[objectType].Find(inventory => InventoryCanBePickedUp(inventory, canTakeFromStockpile)) != null)
+            if (Inventories[objectType].Find(inventory => inventory.CanBePickedUp(canTakeFromStockpile)) != null)
             {
                 return true;
             }

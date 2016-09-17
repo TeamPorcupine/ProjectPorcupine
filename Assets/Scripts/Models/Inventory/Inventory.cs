@@ -144,6 +144,17 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
         };
     }
 
+    public bool CanBePickedUp(bool canTakeFromStockpile)
+    {
+        // You can't pick up stuff that isn't on a tile or if it's locked
+        if (Tile == null || Locked)
+        {
+            return false;
+        }
+
+        return Tile.Furniture == null || canTakeFromStockpile == true || Tile.Furniture.HasTypeTag("Storage") == false;
+    }
+
     private void ImportPrototypeSettings(int defaulMaxStackSize, float defaultBasePrice, string defaultCategory)
     {
         if (PrototypeManager.Inventory.Has(Type))

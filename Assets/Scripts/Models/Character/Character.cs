@@ -977,8 +977,6 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                         return false;
                     }
 
-                    Debug.ULogChannel("Character", "pathAStar returned with length of: " + newPath.Count);
-
                     DestTile = newPath.Last();
 
                     // Since we already have a path calculated, let's just save that.
@@ -999,7 +997,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
     private bool WalkingToUsableInventory()
     {
-        bool destHasInventory = movementPath != null && movementPath.Last() != null && movementPath.Last().Inventory != null;
+        bool destHasInventory = movementPath != null && movementPath.LastOrDefault() != null && movementPath.Last().Inventory != null;
         return destHasInventory &&
         !(movementPath.Last().Furniture != null && (MyJob.canTakeFromStockpile == false && movementPath.Last().Furniture.HasTypeTag("Storage") == true));
     }
