@@ -21,10 +21,22 @@ public class Headline : IPrototypable
     }
 
     /// <summary>
-    /// Gets the headline type.
+    /// Initializes a new instance of the <see cref="Headline"/> class.
+    /// </summary>
+    /// <param name="text">The headline text.</param>
+    public Headline(string text)
+    {
+        Text = text;
+    }
+
+    /// <summary>
+    /// A key that is used in the Protptype map. For now is just the text.
     /// </summary>
     /// <value>The headline type.</value>
-    public string Type { get; private set; }
+    public string Type
+    {
+        get { return Text; }
+    }
 
     /// <summary>
     /// Gets the headline text.
@@ -38,7 +50,6 @@ public class Headline : IPrototypable
     /// <param name="Reader">The XML reader to read from.</param>
     public void ReadXmlPrototype(XmlReader reader)
     {
-        Type = reader.GetAttribute("type");
         reader.Read();
         Text = reader.ReadContentAsString();
     }

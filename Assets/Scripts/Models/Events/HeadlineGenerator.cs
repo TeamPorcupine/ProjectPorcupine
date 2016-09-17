@@ -17,19 +17,10 @@ public class HeadlineGenerator
     private const float MinInterval = 50f;
     private const float MaxInterval = 100f;
 
-    private List<string> headlines;
-
     private ScheduledEvent scheduledEvent;
 
     public HeadlineGenerator()
     {
-        headlines = new List<string>();
-
-        foreach (Headline headline in PrototypeManager.Headline.Values)
-        {
-            headlines.Add(headline.Text);
-        }
-
         OnUpdatedHeadline();
         ResetNextTime();
     }
@@ -42,7 +33,7 @@ public class HeadlineGenerator
     {
         if (keepInQueue)
         {
-            headlines.Add(headline);
+            PrototypeManager.Headline.Add(new Headline(headline));
         }
 
         if (displayImmediately)
@@ -53,16 +44,18 @@ public class HeadlineGenerator
 
     private void OnUpdatedHeadline()
     {
-        OnUpdatedHeadline(headlines[UnityEngine.Random.Range(0, headlines.Count)]);
+        int index = UnityEngine.Random.Range(0, PrototypeManager.Headline.Count);
+        string text = PrototypeManager.Headline[index].Text;
+        OnUpdatedHeadline(text);
     }
 
     private void OnUpdatedHeadline(string headline)
     {
         CurrentDisplayText = headline;
-        Action<string> handler = UpdatedHeadline;
-        if (handler != null)
+
+        if (UpdatedHeadline != null)
         {
-            handler(headline);
+            UpdatedHeadline(headline);
         }
 
         ResetNextTime();

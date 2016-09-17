@@ -47,9 +47,7 @@ public class SchedulerEditorTest
             new PrototypeManager();
         }
 
-        PrototypeManager.SchedulerEvent.Add(
-            "ping_log",
-            new ScheduledEvent("ping_log", evt => Debug.ULogChannel("Scheduler", "Event {0} fired", evt.Name)));
+        PrototypeManager.SchedulerEvent.Add(new ScheduledEvent("ping_log", evt => Debug.ULogChannel("Scheduler", "Event {0} fired", evt.Name)));
         PrototypeManager.SchedulerEvent.LoadPrototypes(XmlPrototypeString);
 
         // The problem with unit testing singletons

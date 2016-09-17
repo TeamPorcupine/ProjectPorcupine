@@ -16,8 +16,8 @@ public class HeadlineGeneratorTest
 
     private string testHeadlineXml = @"
 <Headlines>
-    <Headline type=""CEO"">The CEO of Quillcorp, has announced that it main and only shareholder is still the main and only shareholder, Quill18.</Headline>
-    <Headline type=""Chairs"">Notice: Quillcorp has placed an embargo on ""Chairs"", any Quillcorp Basic Utility Station found in possession of this illegal contraband will be fined 2 million Quillbucks.</Headline>
+    <Headline>The CEO of Quillcorp, has announced that it main and only shareholder is still the main and only shareholder, Quill18.</Headline>
+    <Headline>Notice: Quillcorp has placed an embargo on ""Chairs"", any Quillcorp Basic Utility Station found in possession of this illegal contraband will be fined 2 million Quillbucks.</Headline>
 </Headlines>";
 
     [SetUp]
