@@ -657,7 +657,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         }
         else
         {
-            pathAStar = new Path_AStar(World.Current, CurrTile, DestTile);
+            pathAStar = new Path_AStar(World.Current, CurrTile, DestTile, null, 0, false, false,MyJob.adjacent);
         }
 
         Profiler.EndSample();
