@@ -17,7 +17,7 @@ public class FurnitureWorkshopTest
     {
         FurnitureWorkshop fi = new FurnitureWorkshop();        
         fi.PossibleProductions = new System.Collections.Generic.List<FurnitureWorkshop.ProductionChain>();
-        var chain1 = new FurnitureWorkshop.ProductionChain()
+        FurnitureWorkshop.ProductionChain chain1 = new FurnitureWorkshop.ProductionChain()
             {
             Name = "Iron smelting", ProcessingTime = 4.0f
             };
@@ -34,7 +34,7 @@ public class FurnitureWorkshopTest
 
         fi.PossibleProductions.Add(chain1);
 
-        var chain2 = new FurnitureWorkshop.ProductionChain()
+        FurnitureWorkshop.ProductionChain chain2 = new FurnitureWorkshop.ProductionChain()
             {
             Name = "Copper smelting", ProcessingTime = 3.0f
         };
@@ -68,7 +68,7 @@ public class FurnitureWorkshopTest
         ////File.WriteAllText("Workshop.xml", writer.ToString());
         
         // deserialize
-        var dfi = (FurnitureWorkshop)serializer.Deserialize(sr);
+        FurnitureWorkshop dfi = (FurnitureWorkshop)serializer.Deserialize(sr);
         
         Assert.NotNull(dfi);
         Assert.AreEqual("Raw Iron", dfi.PossibleProductions[0].Input[0].ObjectType);
