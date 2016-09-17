@@ -13,7 +13,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// The Manager that handles the loading and storing of audio form streamingAssets.
+/// The Manager that handles the loading and storing of audio from streamingAssets.
 /// </summary>
 public class AudioManager
 {
@@ -69,7 +69,6 @@ public class AudioManager
             {
                 throw new FileNotFoundException("Sound/Error.ogg not found");
             }
-
         }
 
         return clip;
@@ -110,19 +109,15 @@ public class AudioManager
 
             WWW www = new WWW(@"file://" + filePath);
 
-            Debug.Log("before - " + www.error);
-
             yield return www;
 
-            Debug.Log("After - " + www.error);
-
             AudioClip clip = www.GetAudioClip(false, false);
-
-            Debug.Log(clip.name + "Downloaded");
 
             string filename = new FileInfo(filePath).Name;
 
             filename = audioCategory + "/" + filename;
+
+            Debug.Log(filename + " Downloaded");
 
             audioClips[filename] = clip;
         }
