@@ -14,6 +14,9 @@ namespace ProjectPorcupine
 {
     public class RoomManager : IEnumerable<Room>
     {
+        /// <summary>
+        /// A all the currently managed rooms.
+        /// </summary>
         private List<Room> rooms;
 
         public RoomManager()
@@ -23,34 +26,58 @@ namespace ProjectPorcupine
             // Create the outside room.
             OutsideRoom = new Room();
 
-            // Add it to the list just in case.
+            // Add the outside rooom to the list just in case.
             rooms.Add(OutsideRoom);
-
-            // TODO REMOVE THIS
-            Adding += (room) => { Debug.ULogError("Adding New Room! " + room); };
-            Added += (room) => { Debug.ULogError("Added a New Room! with id: " + room.ID); };
-            Split += (oldRoom, newRoom) => { Debug.ULogError("Spliting " + oldRoom.ID + " into: " + newRoom.ID); };
-            Joined += (oldRoom, newRoom) => { Debug.ULogError("Joining " + oldRoom.ID + " into: " + newRoom.ID); };
-            Removing += (room) => { Debug.ULogError("Removing a Room! with id: " + room.ID); };
-            Removed += (room) => { Debug.ULogError("Removed a Room! " + room); };
         }
 
         #region Events
-
+        /// <summary>
+        /// Occurs when adding a new room to the manager, 
+        /// before the room is actually added.
+        /// </summary>
         public event Action<Room> Adding;
 
+        /// <summary>
+        /// Occurs after the room has been added to the manager.
+        /// </summary>
         public event Action<Room> Added;
 
+        /// <summary>
+        /// Occurs when a room is split.
+        /// The first room is the old one, 
+        /// the second is the new one.
+        /// </summary>
         public event Action<Room, Room> Split;
 
+        /// <summary>
+        /// Occurs when two rooms are joined.
+        /// The first room is the old one, 
+        /// the second is the new one.
+        /// 
+        /// Warning, the old room has already been removed from
+        /// the manager, and most of its data can be considered
+        /// stale. This is a possible FIXME.
+        /// </summary>
         public event Action<Room, Room> Joined;
 
+        /// <summary>
+        /// Occurs when removing a room from the manager, 
+        /// before the room is actually removed.
+        /// </summary>
         public event Action<Room> Removing;
 
+        /// <summary>
+        /// Occurs after the room has been removed 
+        /// from the manager.
+        /// </summary>
         public event Action<Room> Removed;
 
         #endregion
 
+        /// <summary>
+        /// Gets the amount of rooms.
+        /// </summary>
+        /// <value>The number of rooms managed.</value>
         public int Rooms 
         {
             get 
@@ -59,17 +86,31 @@ namespace ProjectPorcupine
             }
         }
 
+        /// <summary>
+        /// Gets the outside room.
+        /// </summary>
+        /// <value>The outside room.</value>
         public Room OutsideRoom
         {
             get;
             private set;
         }
 
+        /// <summary>
+        /// Gets the room ID.
+        /// </summary>
+        /// <returns>The room ID.</returns>
+        /// <param name="room">What Room to check for ID.</param>
         public int GetRoomID(Room room)
         {
             return rooms.IndexOf(room);
         }
 
+        /// <summary>
+        /// Gets the room from an ID.
+        /// </summary>
+        /// <returns>The room based on the ID.</returns>
+        /// <param name="index">The ID of the room. Possibly the index.</param>
         public Room GetRoomFromID(int index)
         {
             if (index < 0 || index > Rooms - 1)
@@ -80,6 +121,10 @@ namespace ProjectPorcupine
             return rooms[index];
         }
 
+        /// <summary>
+        /// Add a room to the manager.
+        /// </summary>
+        /// <param name="room">A room to be managed.</param>
         public void Add(Room room)
         {
             World.Current.roomGraph = null;
@@ -99,6 +144,10 @@ namespace ProjectPorcupine
             }
         }
 
+        /// <summary>
+        /// Remove a room from the manager.
+        /// </summary>
+        /// <param name="room">The room to remove.</param>
         public void Remove(Room room)
         {
             if (room.IsOutsideRoom())
@@ -129,6 +178,11 @@ namespace ProjectPorcupine
             }
         }
 
+        /// <summary>
+        /// Equalises the gas by tile.
+        /// </summary>
+        /// <param name="tile">Tile.</param>
+        /// <param name="leakFactor">Leak factor.</param>
         public void EqualiseGasByTile(Tile tile, float leakFactor)
         {
             List<Room> roomsDone = new List<Room>();
@@ -154,6 +208,13 @@ namespace ProjectPorcupine
             }
         }
 
+        /// <summary>
+        /// Does a room flood fill.
+        /// </summary>
+        /// <param name="sourceTile">Source tile.</param>
+        /// <param name="splitting">If set to <c>true</c> it will perform a split action.
+        /// This is for when a room could be logically subdivided into more rooms.
+        /// If set to <c>false</c> then it will try to join rooms.</param>
         public void DoRoomFloodFill(Tile sourceTile, bool splitting)
         {
             // SourceFurniture is the piece of furniture that may be
