@@ -599,12 +599,12 @@
 
         <Animations>
             <Animation state="horizontal" valuebased="true">
-                <Frame name="vent_EW_Opened" />
                 <Frame name="vent_EW_Closed" />
+                <Frame name="vent_EW_Opened" />
             </Animation>  
             <Animation state="vertical" valuebased="true">
-                <Frame name="vent_NS_Opened" />
                 <Frame name="vent_NS_Closed" />             
+                <Frame name="vent_NS_Opened" />
             </Animation>                      
         </Animations>
         
