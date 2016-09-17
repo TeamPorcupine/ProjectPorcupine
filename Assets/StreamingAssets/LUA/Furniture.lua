@@ -378,7 +378,7 @@ function CloningPod_JobRunning(job)
 end
 
 function CloningPod_JobComplete(job)
-    World.Current.CreateCharacter(job.buildable.Jobs.GetSpawnSpotTile())
+    World.Current.CharacterManager.Create(job.buildable.Jobs.GetSpawnSpotTile())
     job.buildable.Deconstruct()
 end
 
@@ -566,6 +566,32 @@ function AirPump_GetSpriteName(furniture)
     end
     
     return furniture.Type .. suffix
+end
+
+function Vent_OnUpdate(furniture, deltaTime)
+    furniture.SetAnimationProgressValue(furniture.Parameters["openness"].ToFloat(), 1)
+    furniture.Tile.EqualiseGas(deltaTime * furniture.Parameters["gas_throughput"].ToFloat() * furniture.Parameters["openness"].ToInt())
+end
+
+function Vent_SetOrientationState(furniture)
+    if (furniture.Tile == nil) then
+        return
+    end
+    
+    local tile = furniture.Tile
+    if (tile.North().Room != nil and tile.South().Room != nil) then
+        furniture.SetAnimationState("vertical")
+    elseif (tile.West().Room != nil and tile.East().Room != nil) then
+        furniture.SetAnimationState("horizontal")
+    end
+end
+
+function Vent_Open(furniture)
+    furniture.Parameters["openness"].SetValue("1")
+end
+
+function Vent_Close(furniture)
+    furniture.Parameters["openness"].SetValue("0")
 end
 
 function AirPump_FlipDirection(furniture, character)
