@@ -252,9 +252,7 @@ public class Room : IXmlSerializable
     // Changes gas by an amount in preasure(in atm) multiplyed by number of tiles
     public void ChangeGas(string name, float amount, float pressureLimit)
     {
-
-//        (room, Mathf.Min(amount, room.GetSize() * pressureLimit - room.GetTotalGas()));
-        ChangeGas(name, Mathf.Min(amount, GetSize() * pressureLimit - GetGasAmount(name)));
+        ChangeGas(name, Mathf.Min(amount, (GetSize() * pressureLimit) - GetGasAmount(name)));
     }
 
     // Changes gas by an amount in preasure(in atm) multiplyed by number of tiles
@@ -397,7 +395,7 @@ public class Room : IXmlSerializable
 
     public void MoveGasTo(Room room, float amount, float pressureLimit)
     {
-        MoveGasTo(room, Mathf.Min(amount, room.GetSize() * pressureLimit - room.GetTotalGas()));
+        MoveGasTo(room, Mathf.Min(amount, (room.GetSize() * pressureLimit) - room.GetTotalGas()));
     }
 
     public void MoveGasTo(Room room, float amount)
