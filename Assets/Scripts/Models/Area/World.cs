@@ -22,7 +22,7 @@ public class World : IXmlSerializable
     // TODO: Should this be also saved with the world data?
     // If so - beginner task!
     public readonly string GameVersion = "Someone_will_come_up_with_a_proper_naming_scheme_later";
-    public List<Character> characters;
+
     public List<Furniture> furnitures;
     public List<Utility> utilities;
     public List<Room> rooms;
@@ -78,7 +78,7 @@ public class World : IXmlSerializable
         }
 
         // Make one character.
-        CreateCharacter(GetTileAt(Width / 2, Height / 2, 0));
+        CharacterManager.Create(GetTileAt(Width / 2, Height / 2, 0));
 
         TestRoomGraphGeneration(this);
     }
@@ -103,8 +103,6 @@ public class World : IXmlSerializable
 
     public event Action<Utility> OnUtilityCreated;
 
-    public event Action<Character> OnCharacterCreated;
-
     public event Action<Tile> OnTileChanged;
 
     public static World Current { get; protected set; }
@@ -117,6 +115,12 @@ public class World : IXmlSerializable
 
     // The tile depth of the world
     public int Depth { get; protected set; }
+
+    /// <summary>
+    /// Gets or sets the character manager.
+    /// </summary>
+    /// <value>The character manager.</value>
+    public CharacterManager CharacterManager { get; protected set; }
 
     public ProjectPorcupine.PowerNetwork.PowerNetwork PowerNetwork { get; private set; }
 
@@ -182,11 +186,7 @@ public class World : IXmlSerializable
 
     public void TickEveryFrame(float deltaTime)
     {
-        // Change from a foreach due to the collection being modified while its being looped through
-        for (int i = 0; i < characters.Count; i++)
-        {
-            characters[i].Update(deltaTime);
-        }
+        CharacterManager.Update(deltaTime);
     }
 
     public void TickFixedFrequency(float deltaTime)
@@ -200,45 +200,6 @@ public class World : IXmlSerializable
         // Progress temperature modelling
         temperature.Update();
         PowerNetwork.Update(deltaTime);
-    }
-
-    public Character CreateCharacter(Tile t)
-    {
-        return CreateCharacter(t, ColorUtilities.RandomColor(), ColorUtilities.RandomGrayColor(), ColorUtilities.RandomSkinColor());
-    }
-
-    public Character CreateCharacter(Tile t, Color color, Color uniformColor, Color skinColor)
-    {
-        Debug.ULogChannel("World", "CreateCharacter");
-        Character c = new Character(t, color, uniformColor, skinColor);
-
-        c.name = CharacterNameManager.GetNewName();
-        characters.Add(c);
-
-        if (OnCharacterCreated != null)
-        {
-            OnCharacterCreated(c);
-        }
-
-        return c;
-    }
-
-    /// <summary>
-    /// A function to return the Character object from the character's name.
-    /// </summary>
-    /// <param name="name">The name of the character.</param>
-    /// <returns>The character with that name.</returns>
-    public Character GetCharacterFromName(string name)
-    {
-        foreach (Character character in characters)
-        {
-            if (character.name == name)
-            {
-                return character;
-            }
-        }
-
-        return null;
     }
 
     /// <summary>
@@ -503,13 +464,7 @@ public class World : IXmlSerializable
         writer.WriteEndElement();
 
         writer.WriteStartElement("Characters");
-        foreach (Character c in characters)
-        {
-            writer.WriteStartElement("Character");
-            c.WriteXml(writer);
-            writer.WriteEndElement();
-        }
-
+        CharacterManager.WriteXml(writer);
         writer.WriteEndElement();
 
         writer.WriteStartElement("CameraData");
@@ -683,16 +638,16 @@ public class World : IXmlSerializable
 
         CreateWallet();
 
-        characters = new List<Character>();
         furnitures = new List<Furniture>();
         utilities = new List<Utility>();
+        CharacterManager = new CharacterManager();
         inventoryManager = new InventoryManager();
         cameraData = new CameraData();
         PowerNetwork = new ProjectPorcupine.PowerNetwork.PowerNetwork();
         temperature = new Temperature(Width, Height);
 
-        AddEventListeners();
         LoadSkybox();
+        AddEventListeners();
     }
 
     private void CreateWallet()
@@ -863,16 +818,17 @@ public class World : IXmlSerializable
                 int x = int.Parse(reader.GetAttribute("X"));
                 int y = int.Parse(reader.GetAttribute("Y"));
                 int z = int.Parse(reader.GetAttribute("Z"));
+
                 if (reader.GetAttribute("r") != null)
                 {
                     Color color = ColorUtilities.ParseColorFromString(reader.GetAttribute("r"), reader.GetAttribute("g"), reader.GetAttribute("b"));
                     Color colorUni = ColorUtilities.ParseColorFromString(reader.GetAttribute("rUni"), reader.GetAttribute("gUni"), reader.GetAttribute("bUni"));
                     Color colorSkin = ColorUtilities.ParseColorFromString(reader.GetAttribute("rSkin"), reader.GetAttribute("gSkin"), reader.GetAttribute("bSkin"));
-                    character = CreateCharacter(tiles[x, y, z], color, colorUni, colorSkin);
+                    character = CharacterManager.Create(tiles[x, y, z], color, colorUni, colorSkin);
                 }
                 else
                 {
-                    character = CreateCharacter(tiles[x, y, z]);
+                    character = CharacterManager.Create(tiles[x, y, z]);
                 }
 
                 character.name = reader.GetAttribute("name");
