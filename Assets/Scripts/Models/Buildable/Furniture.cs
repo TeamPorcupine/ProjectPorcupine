@@ -59,6 +59,8 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
 
     private bool isOperating;
 
+    private bool isBeingDestroyed = false;
+
     private float deconstructJobTime;
     private List<Inventory> deconstructInventory;
 
@@ -422,6 +424,11 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// <param name="deltaTime">The time since the last update was called.</param>
     public void Update(float deltaTime)
     {
+        if (isBeingDestroyed)
+        {
+            return;
+        }
+
         if (PowerConnection != null && PowerConnection.IsPowerConsumer && HasPower() == false)
         {
             if (prevUpdatePowerOn)
@@ -790,6 +797,12 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// </summary>
     public void SetDeconstructJob()
     {
+        if (isBeingDestroyed)
+        {
+            return; // Already being destroyed, don't do anything more
+        }
+
+        isBeingDestroyed = true;
         Jobs.CancelAll();
 
         Job job = new Job(
