@@ -50,6 +50,7 @@ public class Room : IXmlSerializable
 
     public static void EqualiseGasByTile(Tile tile, float leakFactor)
     {
+        
         List<Room> roomsDone = new List<Room>();
         foreach (Tile t in tile.GetNeighbours())
         {
@@ -375,6 +376,18 @@ public class Room : IXmlSerializable
         return t;
     }
 
+    public float GetTotalGas()
+    {
+        float t = 0;
+
+        foreach (string n in atmosphericGasses.Keys)
+        {
+            t += atmosphericGasses[n];
+        }
+
+        return t;
+    }
+
     public void MoveGasTo(Room room, float amount)
     {
         List<string> names = new List<string>(atmosphericGasses.Keys);
@@ -404,6 +417,11 @@ public class Room : IXmlSerializable
     public string[] GetGasNames()
     {
         return atmosphericGasses.Keys.ToArray();
+    }
+
+    public int getRoomSize()
+    {
+        return tiles.Count;
     }
 
     public XmlSchema GetSchema()
