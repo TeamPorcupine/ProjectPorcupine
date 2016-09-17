@@ -102,10 +102,6 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
         // Add our tile/GO pair to the dictionary.
         objectGameObjectMap.Add(furniture, furn_go);
 
-        furn_go.name = furniture.Type + "_" + furniture.Tile.X + "_" + furniture.Tile.Y;
-        furn_go.transform.position = new Vector3(furniture.Tile.X + ((furniture.Width - 1) / 2f), furniture.Tile.Y + ((furniture.Height - 1) / 2f), furniture.Tile.Z);
-        furn_go.transform.SetParent(objectParent.transform, true);
-
         // FIXME: This hardcoding is not ideal!
         if (furniture.HasTypeTag("Door"))
         {
@@ -124,7 +120,12 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
         SpriteRenderer sr = furn_go.AddComponent<SpriteRenderer>();
         sr.sprite = GetSpriteForFurniture(furniture);
         sr.sortingLayerName = "Furniture";
+        sr.sortingOrder = Mathf.RoundToInt(furn_go.transform.position.y * -1);
         sr.color = furniture.Tint;
+
+        furn_go.name = furniture.Type + "_" + furniture.Tile.X + "_" + furniture.Tile.Y;
+        furn_go.transform.position = furniture.Tile.Vector3 + ImageUtils.SpritePivotOffset(sr.sprite);
+        furn_go.transform.SetParent(objectParent.transform, true);
 
         if (furniture.PowerConnection != null && furniture.PowerConnection.IsPowerConsumer)
         {
