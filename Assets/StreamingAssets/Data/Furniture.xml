@@ -66,6 +66,8 @@
             <Frame name="DoorHorizontal_3" />
             <Frame name="DoorHorizontal_4" />
             <Frame name="DoorHorizontal_5" />
+            <Frame name="DoorHorizontal_5" />
+            <Frame name="DoorHorizontal_5" />
           </Animation>  
           <Animation state="vertical" valuebased="true">
             <Frame name="DoorVertical_0" />
@@ -73,6 +75,8 @@
             <Frame name="DoorVertical_2" />
             <Frame name="DoorVertical_3" />
             <Frame name="DoorVertical_4" />
+            <Frame name="DoorVertical_5" />
+            <Frame name="DoorVertical_5" />
             <Frame name="DoorVertical_5" />                
           </Animation>                      
         </Animations>
@@ -122,6 +126,8 @@
             <Frame name="AirlockHorizontal_3" />
             <Frame name="AirlockHorizontal_4" />
             <Frame name="AirlockHorizontal_5" />
+            <Frame name="AirlockHorizontal_5" />
+            <Frame name="AirlockHorizontal_5" />
           </Animation>
           <Animation state="vertical" valuebased="true">
             <Frame name="AirlockVertical_0" />
@@ -129,6 +135,8 @@
             <Frame name="AirlockVertical_2" />
             <Frame name="AirlockVertical_3" />
             <Frame name="AirlockVertical_4" />
+            <Frame name="AirlockVertical_5" />
+            <Frame name="AirlockVertical_5" />
             <Frame name="AirlockVertical_5" />
           </Animation>
         </Animations>
@@ -599,12 +607,12 @@
 
         <Animations>
             <Animation state="horizontal" valuebased="true">
-                <Frame name="vent_EW_Opened" />
                 <Frame name="vent_EW_Closed" />
+                <Frame name="vent_EW_Opened" />
             </Animation>  
             <Animation state="vertical" valuebased="true">
-                <Frame name="vent_NS_Opened" />
-                <Frame name="vent_NS_Closed" />             
+                <Frame name="vent_NS_Closed" />  
+                <Frame name="vent_NS_Opened" />           
             </Animation>                      
         </Animations>
         
