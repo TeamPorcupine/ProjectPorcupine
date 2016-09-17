@@ -283,7 +283,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
     #region Manage Gas
     public void EqualiseGas(float leakFactor)
     {
-        Room.EqualiseGasByTile(this, leakFactor);
+        World.Current.RoomManager.EqualiseGasByTile(this, leakFactor);
     }
 
     public float GetGasPressure(string gas)
@@ -445,7 +445,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
     public void ReadXml(XmlReader reader)
     {
         // X and Y have already been read/processed
-        Room = World.Current.GetRoomFromID(int.Parse(reader.GetAttribute("RoomID")));
+        Room = World.Current.RoomManager.GetRoomFromID(int.Parse(reader.GetAttribute("RoomID")));
         if (Room != null)
         {
             Room.AssignTile(this);

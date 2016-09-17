@@ -812,7 +812,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         // Do we need to recalculate our rooms?
         if (RoomEnclosure)
         {
-            Room.DoRoomFloodFill(Tile);
+            World.Current.RoomManager.DoRoomFloodFill(Tile, false);
         }
 
         ////World.current.InvalidateTileGraph();

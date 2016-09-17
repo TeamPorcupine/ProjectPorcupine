@@ -25,7 +25,6 @@ public class World : IXmlSerializable
 
     public List<Furniture> furnitures;
     public List<Utility> utilities;
-    public List<Room> rooms;
     public InventoryManager inventoryManager;
     public Material skybox;
 
@@ -68,12 +67,12 @@ public class World : IXmlSerializable
         Debug.Log("Generated World");
 
         // Adding air to enclosed rooms
-        foreach (Room room in this.rooms)
+        foreach (Room room in this.RoomManager)
         {
             if (room.ID > 0)
             {
-                room.ChangeGas("O2", 0.2f * room.GetSize());
-                room.ChangeGas("N2", 0.8f * room.GetSize());
+                room.ChangeGas("O2", 0.2f * room.Tiles);
+                room.ChangeGas("N2", 0.8f * room.Tiles);
             }
         }
 
@@ -124,58 +123,12 @@ public class World : IXmlSerializable
 
     public ProjectPorcupine.PowerNetwork.PowerNetwork PowerNetwork { get; private set; }
 
-    public Room GetOutsideRoom()
-    {
-        return rooms[0];
-    }
-
-    public int GetRoomID(Room r)
-    {
-        return rooms.IndexOf(r);
-    }
-
-    public Room GetRoomFromID(int i)
-    {
-        if (i < 0 || i > rooms.Count - 1)
-        {
-            return null;
-        }
-
-        return rooms[i];
-    }
-
-    public void AddRoom(Room r)
-    {
-        rooms.Add(r);
-        roomGraph = null;
-
-        Debug.ULogChannel("Rooms", "creating room:" + r.ID);
-    }
+    public ProjectPorcupine.RoomManager RoomManager { get; private set; }
 
     public int CountFurnitureType(string type)
     {
         int count = furnitures.Count(f => f.Type == type);
         return count;
-    }
-
-    public void DeleteRoom(Room r)
-    {
-        if (r.IsOutsideRoom())
-        {
-            Debug.ULogErrorChannel("World", "Tried to delete the outside room.");
-            return;
-        }
-
-        Debug.ULogChannel("Rooms", "Deleting room:" + r.ID);
-
-        roomGraph = null;
-
-        // Remove this room from our rooms list.
-        rooms.Remove(r);
-
-        // All tiles that belonged to this room should be re-assigned to
-        // the outside.
-        r.ReturnTilesToOutsideRoom();
     }
 
     public void AddEventListeners()
@@ -357,7 +310,7 @@ public class World : IXmlSerializable
         // Do we need to recalculate our rooms?
         if (doRoomFloodFill && furn.RoomEnclosure)
         {
-            Room.DoRoomFloodFill(furn.Tile);
+            RoomManager.DoRoomFloodFill(furn.Tile, true);
         }
 
         if (OnFurnitureCreated != null)
@@ -443,9 +396,9 @@ public class World : IXmlSerializable
         writer.WriteAttributeString("Depth", Depth.ToString());
 
         writer.WriteStartElement("Rooms");
-        foreach (Room r in rooms)
+        foreach (Room r in RoomManager)
         {
-            if (GetOutsideRoom() == r)
+            if (RoomManager.OutsideRoom == r)
             {
                 // Skip the outside room. Alternatively, should SetupWorld be changed to not create one?
                 continue;
@@ -669,8 +622,7 @@ public class World : IXmlSerializable
 
         tiles = new Tile[Width, Height, Depth];
 
-        rooms = new List<Room>();
-        rooms.Add(new Room()); // Create the outside?
+        RoomManager = new ProjectPorcupine.RoomManager();
 
         for (int x = 0; x < Width; x++)
         {
@@ -680,7 +632,7 @@ public class World : IXmlSerializable
                 {
                     tiles[x, y, z] = new Tile(x, y, z);
                     tiles[x, y, z].TileChanged += OnTileChangedCallback;
-                    tiles[x, y, z].Room = GetOutsideRoom(); // Rooms 0 is always going to be outside, and that is our default room
+                    tiles[x, y, z].Room = RoomManager.OutsideRoom; // Rooms 0 is always going to be outside, and that is our default room
                 }
             }
         }
@@ -844,7 +796,7 @@ public class World : IXmlSerializable
             do
             {
                 Room r = new Room();
-                rooms.Add(r);
+                RoomManager.Add(r);
                 r.ReadXml(reader);
             }
             while (reader.ReadToNextSibling("Room"));
@@ -946,7 +898,7 @@ public class World : IXmlSerializable
             errorCount++;
         }
 
-        foreach (Room r in world.rooms)
+        foreach (Room r in world.RoomManager)
         {
             if (roomGraph.nodes.ContainsKey(r) == false)
             {
@@ -967,7 +919,7 @@ public class World : IXmlSerializable
                             continue;
                         }
 
-                        if (node.edges[0].node.data != world.rooms[2] || node.edges[1].node.data != world.rooms[2])
+                        if (node.edges[0].node.data != world.RoomManager.GetRoomFromID(2) || node.edges[1].node.data != world.RoomManager.GetRoomFromID(2))
                         {
                             Debug.ULogErrorChannel("Path_RoomGraph", "Room 0 supposed to have edges to Room 2.");
                             Debug.ULogErrorChannel(
@@ -988,7 +940,7 @@ public class World : IXmlSerializable
                             continue;
                         }
 
-                        if (node.edges[0].node.data != world.rooms[2])
+                        if (node.edges[0].node.data != world.RoomManager.GetRoomFromID(2))
                         {
                             Debug.ULogErrorChannel("Path_RoomGraph", "Room 1 supposed to have edge to Room 2.");
                             Debug.ULogErrorChannel("Path_RoomGraph", "Instead has: " + node.edges[0].node.data.ID.ToString());
@@ -1070,7 +1022,7 @@ public class World : IXmlSerializable
                             continue;
                         }
 
-                        if (node.edges[0].node.data != world.rooms[2])
+                        if (node.edges[0].node.data != world.RoomManager.GetRoomFromID(2))
                         {
                             Debug.ULogErrorChannel("Path_RoomGraph", "Room 5 supposed to have edge to Room 2.");
                             Debug.ULogErrorChannel("Path_RoomGraph", "Instead has: " + node.edges[0].node.data.ID.ToString());
