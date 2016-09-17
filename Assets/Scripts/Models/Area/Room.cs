@@ -250,6 +250,14 @@ public class Room : IXmlSerializable
     }
 
     // Changes gas by an amount in preasure(in atm) multiplyed by number of tiles
+    public void ChangeGas(string name, float amount, float pressureLimit)
+    {
+
+//        (room, Mathf.Min(amount, room.GetSize() * pressureLimit - room.GetTotalGas()));
+        ChangeGas(name, Mathf.Min(amount, GetSize() * pressureLimit - GetGasAmount(name)));
+    }
+
+    // Changes gas by an amount in preasure(in atm) multiplyed by number of tiles
     public void ChangeGas(string name, float amount)
     {
         if (IsOutsideRoom())
@@ -387,6 +395,11 @@ public class Room : IXmlSerializable
         return t;
     }
 
+    public void MoveGasTo(Room room, float amount, float pressureLimit)
+    {
+        MoveGasTo(room, Mathf.Min(amount, room.GetSize() * pressureLimit - room.GetTotalGas()));
+    }
+
     public void MoveGasTo(Room room, float amount)
     {
         List<string> names = new List<string>(atmosphericGasses.Keys);
@@ -416,11 +429,6 @@ public class Room : IXmlSerializable
     public string[] GetGasNames()
     {
         return atmosphericGasses.Keys.ToArray();
-    }
-
-    public int GetRoomSize()
-    {
-        return tiles.Count;
     }
 
     public XmlSchema GetSchema()
