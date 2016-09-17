@@ -448,8 +448,8 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
                 // Found an inventory requirement, so add it to the list!
                 invs.Add(new Inventory(
                     inventoryReader.GetAttribute("type"),
-                    int.Parse(inventoryReader.GetAttribute("amount")),
-                    0));
+                    0,
+                    int.Parse(inventoryReader.GetAttribute("amount"))));
             }
         }
 
