@@ -136,8 +136,6 @@ public class WorldController : MonoBehaviour
         cameraController.Initialize();
 
         // Initialising controllers.
-        GameObject controllers = GameObject.Find("Controllers");
-
         GameObject canvas = GameObject.Find("Canvas");
         go = Instantiate(Resources.Load("UI/ContextMenu"), canvas.transform.position, canvas.transform.rotation, canvas.transform) as GameObject;
         go.name = "ContextMenu";
