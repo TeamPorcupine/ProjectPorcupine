@@ -589,9 +589,8 @@ public class MouseController
             sr.color = new Color(1f, 0.5f, 0.5f, 0.25f);
         }
 
-        Furniture proto = PrototypeManager.Furniture.Get(furnitureType);
-
-        go.transform.position = new Vector3(t.X + ((proto.Width - 1) / 2f), t.Y + ((proto.Height - 1) / 2f), WorldController.Instance.cameraController.CurrentLayer);
+        go.name = furnitureType + "_p_" + t.X + "_" + t.Y + "_" + t.Z;
+        go.transform.position = t.Vector3 + ImageUtils.SpritePivotOffset(sr.sprite);
     }
 
     private void ShowUtilitySpriteAtTile(string furnitureType, Tile tile)
@@ -613,8 +612,6 @@ public class MouseController
         {
             sr.color = new Color(1f, 0.5f, 0.5f, 0.25f);
         }
-
-        Utility proto = PrototypeManager.Utility.Get(furnitureType);
 
         go.transform.position = new Vector3(tile.X, tile.Y, WorldController.Instance.cameraController.CurrentLayer);
     }
