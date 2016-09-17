@@ -72,7 +72,7 @@ function OnUpdate_AirlockDoor( furniture, deltaTime )
                 adjacentRooms[count] = tile.Room
             end
         end
-        if(ModUtils.Round(adjacentRooms[1].GetTotalGasPressure(),3) == ModUtils.Round(adjacentRooms[2].GetTotalGasPressure(),3)) then
+        if(math.abs(ModUtils.Round(adjacentRooms[1].GetTotalGasPressure(),3) - ModUtils.Round(adjacentRooms[2].GetTotalGasPressure(),3)) < 0.005 ) then
             OnUpdate_Door(furniture, deltaTime)
         end
     else
