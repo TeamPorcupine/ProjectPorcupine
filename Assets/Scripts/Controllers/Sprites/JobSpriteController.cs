@@ -34,7 +34,7 @@ public class JobSpriteController : BaseSpriteController<Job>
             OnCreated(job);
         }
 
-        foreach (Character character in world.CharacterManager.Characters)
+        foreach (Character character in world.CharacterManager)
         {
             if (character.MyJob != null)
             {
@@ -59,7 +59,7 @@ public class JobSpriteController : BaseSpriteController<Job>
             job.OnJobStopped -= OnRemoved;
         }
 
-        foreach (Character character in world.CharacterManager.Characters)
+        foreach (Character character in world.CharacterManager)
         {
             if (character.MyJob != null)
             {
