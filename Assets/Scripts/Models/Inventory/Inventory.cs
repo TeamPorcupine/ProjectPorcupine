@@ -100,7 +100,7 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
 
     public bool CanAccept(Inventory inv)
     {
-        return inv.Type == Type && inv.StackSize + stackSize < MaxStackSize;
+        return inv.Type == Type && inv.StackSize + stackSize <= MaxStackSize;
     }
 
     public IEnumerable<string> GetAdditionalInfo()
