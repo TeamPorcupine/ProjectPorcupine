@@ -51,6 +51,10 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
 
     private HashSet<string> tileTypeBuildPermissions;
 
+    private bool isBeingDestroyed=false;
+    private int deconstructJobTime;
+    private List<Inventory> deconstructInventory;
+
     /// TODO: Implement object rotation
     /// <summary>
     /// Initializes a new instance of the <see cref="Utility"/> class.
@@ -294,7 +298,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     /// <param name="deltaTime">The time since the last update was called.</param>
     public void Update(float deltaTime)
     {
-        if (pausedJobs.Count > 0)
+        if (pausedJobs.Count > 0 && isBeingDestroyed==false)
         {
             ResumeJobs();
         }
@@ -529,6 +533,32 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     }
 
     /// <summary>
+    /// Deconstructs the furniture.
+    /// </summary>
+    public void SetDeconstructJob(Utility utility)
+    {
+        if (isBeingDestroyed)
+        {
+            return; // Already being destroyed, don't do anything more
+        }
+
+        isBeingDestroyed = true;
+        utility.CancelJobs();
+
+        Job job = new Job(
+            Tile,
+            Type,
+            (inJob) => Deconstruct(utility),
+            deconstructJobTime,
+            null,
+            Job.JobPriority.High);
+        job.JobDescription = "job_deconstruct_" + Type + "_desc";
+        job.adjacent = true;
+
+        World.Current.jobQueue.Enqueue(job);
+    }
+
+    /// <summary>
     /// Deconstructs the utility.
     /// </summary>
     public void Deconstruct(Utility utility)
@@ -627,7 +657,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         {
             Text = "Deconstruct " + Name,
             RequireCharacterSelected = false,
-            Action = (contextMenuAction, character) => Deconstruct(this)
+            Action = (contextMenuAction, character) => SetDeconstructJob(this)
         };
         if (jobs.Count > 0)
         {
