@@ -59,8 +59,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
 
     private bool isOperating;
 
-    private bool isBeingDestroyed = false;
-
     private List<Inventory> deconstructInventory;
 
     // did we have power in the last update?
@@ -347,6 +345,11 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     public FurnitureJobs Jobs { get; private set; }
 
     /// <summary>
+    /// This flag is set if the furniture is tasked to be destroyed
+    /// </summary>
+    public bool isBeingDestroyed { get; protected set; }
+
+    /// <summary>
     /// Used to place furniture in a certain position.
     /// </summary>
     /// <param name="proto">The prototype furniture to place.</param>
@@ -422,23 +425,20 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// <param name="deltaTime">The time since the last update was called.</param>
     public void Update(float deltaTime)
     {
-        if (isBeingDestroyed == false)
+        if (PowerConnection != null && PowerConnection.IsPowerConsumer && HasPower() == false)
         {
-            if (PowerConnection != null && PowerConnection.IsPowerConsumer && HasPower() == false)
+            if (prevUpdatePowerOn)
             {
-                if (prevUpdatePowerOn)
-                {
-                    EventActions.Trigger("OnPowerOff", this, deltaTime);
-                }
-
-                Jobs.PauseAll();
-                prevUpdatePowerOn = false;
-                return;
+                EventActions.Trigger("OnPowerOff", this, deltaTime);
             }
 
-            prevUpdatePowerOn = true;
-            Jobs.ResumeAll();
+            Jobs.PauseAll();
+            prevUpdatePowerOn = false;
+            return;
         }
+
+        prevUpdatePowerOn = true;
+        Jobs.ResumeAll();
 
         // TODO: some weird thing happens
         if (EventActions != null)
@@ -800,7 +800,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     }
 
     /// <summary>
-    /// Deconstructs the furniture.
+    /// Sets the furniture to be deconstructed.
     /// </summary>
     public void SetDeconstructJob()
     {
@@ -819,6 +819,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         World.Current.jobQueue.Enqueue(job);
     }
 
+    /// <summary>
+    /// Deconstructs the furniture
+    /// </summary>
     public void Deconstruct()
     { 
         int x = Tile.X;

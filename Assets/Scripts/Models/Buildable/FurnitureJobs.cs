@@ -141,6 +141,10 @@ public class FurnitureJobs
     /// <param name="job">The job that you want to link to the furniture.</param>
     public void Add(Job job)
     {
+        if (furniture.isBeingDestroyed)
+        {
+            return;
+        }
         job.buildable = furniture;
         activeJobs.Add(job);
         job.OnJobStopped += OnJobStopped;
