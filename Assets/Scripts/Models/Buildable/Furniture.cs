@@ -106,7 +106,11 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         Height = other.Height;
         Tint = other.Tint;
         LinksToNeighbour = other.LinksToNeighbour;
-        deconstructInventory = new List<Inventory>(other.deconstructInventory);
+        deconstructInventory = new List<Inventory>();
+        foreach (Inventory inv in other.deconstructInventory)
+        {
+            deconstructInventory.Add(inv.Clone());
+        }
         deconstructJobTime = other.deconstructJobTime;
 
         Parameters = new Parameter(other.Parameters);
