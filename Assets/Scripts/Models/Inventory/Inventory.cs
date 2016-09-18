@@ -98,6 +98,11 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
         return string.Empty;
     }
 
+    public bool CanAccept(Inventory inv)
+    {
+        return inv.Type == Type && inv.StackSize + stackSize < MaxStackSize;
+    }
+
     public IEnumerable<string> GetAdditionalInfo()
     {
         // Does inventory have hitpoints? How does it get destroyed? Maybe it's just a percentage chance based on damage.

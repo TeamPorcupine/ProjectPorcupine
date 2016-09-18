@@ -25,13 +25,67 @@ public class InventoryManager
 
     public Dictionary<string, List<Inventory>> Inventories { get; private set; }
 
-    public bool PlaceInventory(Tile tile, Inventory inventory)
+    public Tile GetFirstTileWithValidInventoryPlacement(int maxOffset, Tile inTile, Inventory inv)
     {
-        tile = World.Current.GetFirstTileWithValidInventoryPlacement(3, tile.X, tile.Y, tile.Z);
-        if (tile==null)
+        for (int offset = 0; offset <= maxOffset; offset++)
+        {
+            int offsetX = 0;
+            int offsetY = 0;
+            Tile tile;
+
+            // searching top & bottom line of the square
+            for (offsetX = -offset; offsetX <= offset; offsetX++)
+            {
+                offsetY = offset;
+                tile = World.Current.GetTileAt(inTile.X + offsetX, inTile.Y + offsetY, inTile.Z);
+                if ((tile.Inventory == null && tile.Furniture == null && tile.IsEnterable()==Enterability.Yes) || 
+                    (tile.Inventory!=null && tile.Inventory.CanAccept(inv)))
+                {
+                    return tile;
+                }
+
+                offsetY = -offset;
+                tile = World.Current.GetTileAt(inTile.X + offsetX, inTile.Y + offsetY, inTile.Z);
+                if (tile.Inventory == null && tile.Furniture == null)
+                {
+                    return tile;
+                }
+            }
+
+            // searching left & right line of the square
+            for (offsetY = -offset; offsetY <= offset; offsetY++)
+            {
+                offsetX = offset;
+                tile = World.Current.GetTileAt(inTile.X + offsetX, inTile.Y + offsetY, inTile.Z);
+                if (tile.Inventory == null)
+                {
+                    return tile;
+                }
+
+                offsetX = -offset;
+                tile = World.Current.GetTileAt(inTile.X + offsetX, inTile.Y + offsetY, inTile.Z);
+                if (tile.Inventory == null)
+                {
+                    return tile;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public bool PlaceInventoryAround(Tile tile, Inventory inventory)
+    {
+        tile = GetFirstTileWithValidInventoryPlacement(3, tile,inventory);
+        if (tile == null)
         {
             return false;
         }
+        return PlaceInventory(tile, inventory);
+    }
+
+    public bool PlaceInventory(Tile tile, Inventory inventory)
+    {
         bool tileWasEmpty = tile.Inventory == null;
 
         if (tile.PlaceInventory(inventory) == false)

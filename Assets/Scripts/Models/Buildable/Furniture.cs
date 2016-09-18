@@ -838,7 +838,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         {
             foreach (Inventory inv in deconstructInventory)
             {
-                World.Current.inventoryManager.PlaceInventory(Tile, inv);
+                World.Current.inventoryManager.PlaceInventoryAround(Tile, inv);
             }
         }
 
