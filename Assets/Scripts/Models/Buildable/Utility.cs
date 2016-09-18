@@ -407,7 +407,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
                     {
                         LuaFunction = reader.GetAttribute("FunctionName"),
                         Text = reader.GetAttribute("Text"),
-                        RequireCharacterSelected = bool.Parse(reader.GetAttribute("RequiereCharacterSelected")),
+                        RequireCharacterSelected = bool.Parse(reader.GetAttribute("RequireCharacterSelected")),
                         DevModeOnly = bool.Parse(reader.GetAttribute("DevModeOnly") ?? "false")
                     });
                     break;
@@ -664,11 +664,13 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
             if (!contextMenuLuaAction.DevModeOnly ||
                 Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
             {
+                // TODO The Action could be done via a lambda, but it always uses the same space of memory, thus if 2 actions are performed, the same action will be produced for each.
                 yield return new ContextMenuAction
                 {
                     Text = contextMenuLuaAction.Text,
                     RequireCharacterSelected = contextMenuLuaAction.RequireCharacterSelected,
-                    Action = (cma, c) => InvokeContextMenuLuaAction(contextMenuLuaAction.LuaFunction, c)
+                    Action = InvokeContextMenuLuaAction,
+                    Parameter = contextMenuLuaAction.LuaFunction    // Note that this is only in place because of the problem with the previous statement.
                 };
             }
         }
@@ -687,6 +689,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
 
     private void ReadXmlBuildingJob(XmlReader reader)
     {
+
         float jobTime = float.Parse(reader.GetAttribute("jobTime"));
 
         List<Inventory> invs = new List<Inventory>();
@@ -713,6 +716,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
                     invs.ToArray(),
                     Job.JobPriority.High);
         job.JobDescription = "job_build_" + Type + "_desc";
+
         PrototypeManager.UtilityConstructJob.Set(job);
     }
 
@@ -796,9 +800,9 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         }
     }
 
-    private void InvokeContextMenuLuaAction(string luaFunction, Character character)
+    private void InvokeContextMenuLuaAction(ContextMenuAction action, Character character)
     {
-        FunctionsManager.Utility.Call(luaFunction, this, character);
+        FunctionsManager.Utility.Call(action.Parameter, this, character);
     }
 
     [MoonSharpVisible(true)]
