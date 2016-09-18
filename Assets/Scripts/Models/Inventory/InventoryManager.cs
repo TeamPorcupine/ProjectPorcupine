@@ -73,9 +73,9 @@ public class InventoryManager
         return null;
     }
 
-    public bool PlaceInventoryAround(Tile tile, Inventory inventory)
+    public bool PlaceInventoryAround(Tile tile, Inventory inventory, int radius=3)
     {
-        tile = GetFirstTileWithValidInventoryPlacement(3, tile, inventory);
+        tile = GetFirstTileWithValidInventoryPlacement(radius, tile, inventory);
         if (tile == null)
         {
             return false;
