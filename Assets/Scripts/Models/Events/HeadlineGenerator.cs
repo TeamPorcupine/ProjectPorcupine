@@ -14,22 +14,19 @@ using Scheduler;
 
 public class HeadlineGenerator 
 {
-    private List<string> headlines = new List<string>();
-    private float minInterval, maxInterval;
+    private const float MinInterval = 50f;
+    private const float MaxInterval = 100f;
+
+    private Queue<Headline> headlinesQueue;
+
     private ScheduledEvent scheduledEvent;
     private Random random;
 
-    public HeadlineGenerator(XmlNode baseNode)
+    public HeadlineGenerator()
     {
         random = new System.Random();
 
-        // TODO Consider default values for these. Also consider reasonable limits
-        minInterval = float.Parse(baseNode.Attributes.GetNamedItem("minInterval").Value);
-        maxInterval = float.Parse(baseNode.Attributes.GetNamedItem("maxInterval").Value);
-        foreach (XmlNode node in baseNode.SelectNodes("Headline"))
-        {
-            headlines.Add(node.InnerText);
-        }
+        headlinesQueue = new Queue<Headline>();
 
         OnUpdatedHeadline();
         ResetNextTime();
@@ -39,31 +36,43 @@ public class HeadlineGenerator
 
     public string CurrentDisplayText { get; protected set; }
 
-    public void AddHeadline(string headline, bool displayImmediately = true, bool keepInQueue = true)
+    public void AddHeadline(string headline, bool displayImmediately = true)
     {
-        if (keepInQueue)
-        {
-            headlines.Add(headline);
-        }
-
         if (displayImmediately)
         {
             OnUpdatedHeadline(headline);
+        }
+        else
+        {
+            headlinesQueue.Enqueue(new Headline(headline));
         }
     }
 
     private void OnUpdatedHeadline()
     {
-        OnUpdatedHeadline(headlines[random.Next(0, headlines.Count)]);
+        int index = random.Next(0, PrototypeManager.Headline.Count + headlinesQueue.Count);
+        string text;
+
+        if (index > PrototypeManager.Headline.Count)
+        {
+            Headline headline = headlinesQueue.Dequeue();
+            text = headline.Text;
+        }
+        else
+        {
+            text = PrototypeManager.Headline[index].Text;
+        }
+
+        OnUpdatedHeadline(text);
     }
 
     private void OnUpdatedHeadline(string headline)
     {
         CurrentDisplayText = headline;
-        Action<string> handler = UpdatedHeadline;
-        if (handler != null)
+
+        if (UpdatedHeadline != null)
         {
-            handler(headline);
+            UpdatedHeadline(headline);
         }
 
         ResetNextTime();
@@ -71,8 +80,8 @@ public class HeadlineGenerator
 
     private void ResetNextTime()
     {
-        double range = (double)maxInterval - (double)minInterval;
-        float nextTime = (float)(range * random.NextDouble() + (double)minInterval);
+        double range = (double)MaxInterval - (double)MinInterval;
+        float nextTime = (float)((range * random.NextDouble()) + (double)MinInterval);
         Scheduler.Scheduler.Current.DeregisterEvent(scheduledEvent);
         scheduledEvent = new ScheduledEvent(ToString(), (incomingEvent) => OnUpdatedHeadline(), nextTime);
         Scheduler.Scheduler.Current.RegisterEvent(scheduledEvent);

@@ -101,7 +101,6 @@ public class DialogBoxOptions : DialogBox
     private void Start()
     {
         dialogManager = GameObject.FindObjectOfType<DialogBoxManager>();
-        WorldController wc = GameObject.FindObjectOfType<WorldController>();
 
         RenderButtons();
     }
