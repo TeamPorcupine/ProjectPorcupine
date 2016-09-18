@@ -62,6 +62,7 @@ end
 
 function OnUpdate_AirlockDoor( furniture, deltaTime )
     if (furniture.Parameters["pressure_locked"].ToFloat() >= 1.0) then
+        local tolerance = 0.005
         local neighbors = furniture.Tile.GetNeighbours(false)
         local adjacentRooms = {}
         local pressureEqual = true;
@@ -72,7 +73,7 @@ function OnUpdate_AirlockDoor( furniture, deltaTime )
                 adjacentRooms[count] = tile.Room
             end
         end
-        if(math.abs(ModUtils.Round(adjacentRooms[1].GetTotalGasPressure(),3) - ModUtils.Round(adjacentRooms[2].GetTotalGasPressure(),3)) < 0.005 ) then
+        if(math.abs(ModUtils.Round(adjacentRooms[1].GetTotalGasPressure(),3) - ModUtils.Round(adjacentRooms[2].GetTotalGasPressure(),3)) < tolerance ) then
             OnUpdate_Door(furniture, deltaTime)
         end
     else
