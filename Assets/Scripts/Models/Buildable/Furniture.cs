@@ -424,25 +424,23 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// <param name="deltaTime">The time since the last update was called.</param>
     public void Update(float deltaTime)
     {
-        if (isBeingDestroyed)
+        if (isBeingDestroyed == false)
         {
-            return;
-        }
-
-        if (PowerConnection != null && PowerConnection.IsPowerConsumer && HasPower() == false)
-        {
-            if (prevUpdatePowerOn)
+            if (PowerConnection != null && PowerConnection.IsPowerConsumer && HasPower() == false)
             {
-                EventActions.Trigger("OnPowerOff", this, deltaTime);                
+                if (prevUpdatePowerOn)
+                {
+                    EventActions.Trigger("OnPowerOff", this, deltaTime);
+                }
+
+                Jobs.PauseAll();
+                prevUpdatePowerOn = false;
+                return;
             }
 
-            Jobs.PauseAll();
-            prevUpdatePowerOn = false;
-            return;
+            prevUpdatePowerOn = true;
+            Jobs.ResumeAll();
         }
-
-        prevUpdatePowerOn = true;
-        Jobs.ResumeAll();
 
         // TODO: some weird thing happens
         if (EventActions != null)
@@ -450,7 +448,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             EventActions.Trigger("OnUpdate", this, deltaTime);
         }
 
-        if (IsWorkshop)
+        if (IsWorkshop && isBeingDestroyed == false)
         {
             workshop.Update(deltaTime);
         }
@@ -762,8 +760,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                 // Found an inventory requirement, so add it to the list!
                 deconstructInventory.Add(new Inventory(
                     inventoryReader.GetAttribute("type"),
-                    int.Parse(inventoryReader.GetAttribute("amount")),
-                    0));
+                    int.Parse(inventoryReader.GetAttribute("amount"))));
             }
         }
     }
