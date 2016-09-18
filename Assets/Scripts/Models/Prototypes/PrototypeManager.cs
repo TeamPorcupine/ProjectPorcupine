@@ -22,9 +22,11 @@ public class PrototypeManager
         Inventory = new PrototypeMap<InventoryCommon>("Inventories", "Inventory");
         TileType = new PrototypeMap<TileType>("Tiles", "Tile");
         Furniture = new PrototypeMap<Furniture>("Furnitures", "Furniture");
-        FurnitureJob = new PrototypeMap<Job>();
+        FurnitureBuildJob = new PrototypeMap<Job>();
+        FurnitureDeconstructJob = new PrototypeMap<Job>();
         Utility = new PrototypeMap<Utility>("Utilities", "Utility");
-        UtilityJob = new PrototypeMap<Job>();
+        UtilityConstructJob = new PrototypeMap<Job>();
+        UtilityDeconstructJob = new PrototypeMap<Job>();
         Need = new PrototypeMap<Need>("Needs", "Need");
         Trader = new PrototypeMap<TraderPrototype>("Traders", "Trader");
         Quest = new PrototypeMap<Quest>("Quests", "Quest");
@@ -46,10 +48,16 @@ public class PrototypeManager
     public static PrototypeMap<Furniture> Furniture { get; private set; }
 
     /// <summary>
-    /// Gets the furniture job prototype map.
+    /// Gets the furniture job build prototype map.
     /// </summary>
-    /// <value>The furniture job prototype map.</value>
-    public static PrototypeMap<Job> FurnitureJob { get; private set; }
+    /// <value>The furniture job construct prototype map.</value>
+    public static PrototypeMap<Job> FurnitureBuildJob { get; private set; }
+
+    /// <summary>
+    /// Gets the furniture job deconstruct prototype map.
+    /// </summary>
+    /// <value>The furniture job deconstruct prototype map.</value>
+    public static PrototypeMap<Job> FurnitureDeconstructJob { get; private set; }
 
     /// <summary>
     /// Gets the utility prototype map.
@@ -57,10 +65,15 @@ public class PrototypeManager
     /// <value>The utility prototype map.</value>
     public static PrototypeMap<Utility> Utility { get; private set; }
 
-    /// Gets the furniture job prototype map.
+    /// Gets the furniture construct job prototype map.
     /// </summary>
-    /// <value>The furniture job prototype map.</value>
-    public static PrototypeMap<Job> UtilityJob { get; private set; }
+    /// <value>The furniture construct job prototype map.</value>
+    public static PrototypeMap<Job> UtilityConstructJob { get; private set; }
+
+    /// Gets the furniture deconstruct job prototype map.
+    /// </summary>
+    /// <value>The furniture deconstructjob prototype map.</value>
+    public static PrototypeMap<Job> UtilityDeconstructJob { get; private set; }
 
     /// <summary>
     /// Gets the inventory prototype map.

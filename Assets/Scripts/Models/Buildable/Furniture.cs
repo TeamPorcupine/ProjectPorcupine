@@ -61,7 +61,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
 
     private bool isBeingDestroyed = false;
 
-    private float deconstructJobTime;
     private List<Inventory> deconstructInventory;
 
     // did we have power in the last update?
@@ -106,13 +105,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         Height = other.Height;
         Tint = other.Tint;
         LinksToNeighbour = other.LinksToNeighbour;
-        deconstructInventory = new List<Inventory>();
-        foreach (Inventory inv in other.deconstructInventory)
-        {
-            deconstructInventory.Add(inv.Clone());
-        }
-
-        deconstructJobTime = other.deconstructJobTime;
+        deconstructInventory = other.deconstructInventory;
 
         Parameters = new Parameter(other.Parameters);
         Jobs = new FurnitureJobs(this, other);
@@ -744,7 +737,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             Job.JobPriority.High);
         job.JobDescription = "job_build_" + Type + "_desc";
 
-        PrototypeManager.FurnitureJob.Set(job);
+        PrototypeManager.FurnitureBuildJob.Set(job);
     }
 
     /// <summary>
@@ -753,8 +746,8 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// <param name="reader">The XML reader to read from.</param>
     public void ReadXmlDeconstructJob(XmlReader reader)
     {
-        deconstructJobTime = 0;
-        float.TryParse(reader.GetAttribute("jobTime"), out deconstructJobTime);
+        float jobTime = 0;
+        float.TryParse(reader.GetAttribute("jobTime"), out jobTime);
         deconstructInventory = new List<Inventory>();
         XmlReader inventoryReader = reader.ReadSubtree();
 
@@ -768,6 +761,18 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                     int.Parse(inventoryReader.GetAttribute("amount"))));
             }
         }
+
+        Job job = new Job(
+            null,
+            Type,
+            null,
+            jobTime,
+            null,
+            Job.JobPriority.High);
+        job.JobDescription = "job_deconstruct_" + Type + "_desc";
+        job.adjacent = true;
+
+        PrototypeManager.FurnitureDeconstructJob.Set(job);
     }
 
     /// <summary>
@@ -807,15 +812,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         isBeingDestroyed = true;
         Jobs.CancelAll();
 
-        Job job = new Job(
-            Tile,
-            Type,
-            (inJob) => Deconstruct(),
-            deconstructJobTime,
-            null,
-            Job.JobPriority.High);
-        job.JobDescription = "job_deconstruct_" + Type + "_desc";
-        job.adjacent = true;
+        Job job = PrototypeManager.FurnitureDeconstructJob.Get(Type).Clone();
+        job.tile = Tile;
+        job.OnJobCompleted += (inJob) => Deconstruct();
 
         World.Current.jobQueue.Enqueue(job);
     }
@@ -848,7 +847,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         {
             foreach (Inventory inv in deconstructInventory)
             {
-                World.Current.inventoryManager.PlaceInventoryAround(Tile, inv);
+                World.Current.inventoryManager.PlaceInventoryAround(Tile, inv.Clone());
             }
         }
 
