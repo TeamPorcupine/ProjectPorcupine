@@ -84,6 +84,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         typeTags = new HashSet<string>(other.typeTags);
         description = other.description;
         Tint = other.Tint;
+        deconstructInventory = other.deconstructInventory;
 
         Parameters = new Parameter(other.Parameters);
         jobs = new List<Job>();
@@ -729,7 +730,6 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
                 // Found an inventory requirement, so add it to the list!
                 deconstructInventory.Add(new Inventory(
                     inventoryReader.GetAttribute("type"),
-                    0,
                     int.Parse(inventoryReader.GetAttribute("amount"))));
             }
         }
@@ -741,7 +741,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
                     jobTime,
                     null,
                     Job.JobPriority.High);
-        job.JobDescription = "job_build_" + Type + "_desc";
+        job.JobDescription = "job_deconstruct_" + Type + "_desc";
         PrototypeManager.UtilityDeconstructJob.Set(job);
     }
 
