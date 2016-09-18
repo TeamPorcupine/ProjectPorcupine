@@ -120,12 +120,13 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
         SpriteRenderer sr = furn_go.AddComponent<SpriteRenderer>();
         sr.sprite = GetSpriteForFurniture(furniture);
         sr.sortingLayerName = "Furniture";
-        sr.sortingOrder = Mathf.RoundToInt(furn_go.transform.position.y * -1);
         sr.color = furniture.Tint;
 
         furn_go.name = furniture.Type + "_" + furniture.Tile.X + "_" + furniture.Tile.Y;
         furn_go.transform.position = furniture.Tile.Vector3 + ImageUtils.SpritePivotOffset(sr.sprite);
         furn_go.transform.SetParent(objectParent.transform, true);
+
+        sr.sortingOrder = Mathf.RoundToInt(furn_go.transform.position.y * -1);
 
         if (furniture.PowerConnection != null && furniture.PowerConnection.IsPowerConsumer)
         {
