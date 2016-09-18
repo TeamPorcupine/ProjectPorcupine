@@ -41,6 +41,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         Characters = new List<Character>();
         MovementModifier = 1;
         Utilities = new Dictionary<string, Utility>();
+        ReservedAsWorkSpotBy = new HashSet<Furniture>();
     }
 
     // The function we callback any time our tile's data changes
@@ -67,6 +68,8 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
             OnTileClean();
         }
     }
+
+    public HashSet<Furniture> ReservedAsWorkSpotBy { get; private set; }
 
     // LooseObject is something like a drill or a stack of metal sitting on the floor
     public Inventory Inventory { get; set; }
@@ -509,6 +512,11 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
                 };
             }
         }
+    }
+
+    public bool IsReservedWorkSpot()
+    {
+        return ReservedAsWorkSpotBy.Count > 0;
     }
 
     private void ReportTileChanged()

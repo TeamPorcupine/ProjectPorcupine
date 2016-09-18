@@ -54,7 +54,7 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
     {
         Furniture proto = PrototypeManager.Furniture.Get(type);
         string spriteName = proto.GetSpriteName();
-        Sprite s = SpriteManager.GetSprite("Furniture", spriteName + (proto.LinksToNeighbour ? "_" : string.Empty));
+        Sprite s = SpriteManager.GetSprite("Furniture", spriteName + (proto.LinksToNeighbour != string.Empty && !proto.OnlyUseDefaultSpriteName ? "_" : string.Empty));
 
         return s;
     }
@@ -63,7 +63,7 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
     {
         string spriteName = furn.GetSpriteName();
 
-        if (furn.LinksToNeighbour == false)
+        if (furn.LinksToNeighbour == string.Empty || furn.OnlyUseDefaultSpriteName)
         {
             return SpriteManager.GetSprite("Furniture", spriteName);
         }
@@ -254,7 +254,7 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
     private string GetSuffixForNeighbour(Furniture furn, int x, int y, int z, string suffix)
     {
          Tile t = world.GetTileAt(x, y, z);
-         if (t != null && t.Furniture != null && t.Furniture.Type == furn.Type)
+         if (t != null && t.Furniture != null && t.Furniture.LinksToNeighbour == furn.LinksToNeighbour)
          {
              return suffix;
          }
