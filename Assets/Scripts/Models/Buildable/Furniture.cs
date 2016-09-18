@@ -71,6 +71,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         Tint = Color.white;
         VerticalDoor = false;
         EventActions = new EventActions();
+        FrameActions = new EventActions();
         
         contextMenuLuaActions = new List<ContextMenuLuaAction>();
         Parameters = new Parameter();
@@ -115,6 +116,11 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         if (other.EventActions != null)
         {
             EventActions = other.EventActions.Clone();
+        }
+
+        if (other.FrameActions != null)
+        {
+            FrameActions = other.FrameActions.Clone();
         }
         
         if (other.contextMenuLuaActions != null)
@@ -201,6 +207,15 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// </summary>
     /// <value>The event actions that is called on update.</value>
     public EventActions EventActions { get; private set; }
+
+    /// <summary>
+    /// Use lightly
+    /// Gets the FrameAction for the current furniture.
+    /// These actions are called every frame. They get passed the furniture
+    /// they belong to, plus a deltaTime (which defaults to 0).
+    /// </summary>
+    /// <value>The event actions that is called on update.</value>
+    public EventActions FrameActions { get; private set; }
 
     /// <summary>
     /// Gets the Connection that the furniture has to the power system.
@@ -425,12 +440,20 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         return obj;
     }
 
+    public void EveryFrameUpdate(float deltaTime)
+    {
+        if (FrameActions != null)
+        {
+            FrameActions.Trigger("OnUpdate", this, deltaTime);
+        }
+    }
+
     /// <summary>
     /// This function is called to update the furniture. This will also trigger EventsActions.
     /// This checks if the furniture is a PowerConsumer, and if it does not have power it cancels its job.
     /// </summary>
     /// <param name="deltaTime">The time since the last update was called.</param>
-    public void Update(float deltaTime)
+    public void FixedFrequencyUpdate(float deltaTime)
     {
         if (PowerConnection != null && PowerConnection.IsPowerConsumer && HasPower() == false)
         {
@@ -637,6 +660,11 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                     XmlReader subtree = reader.ReadSubtree();
                     EventActions.ReadXml(subtree);
                     subtree.Close();
+                    break;
+                case "FrameAction":
+                    XmlReader frame_subtree = reader.ReadSubtree();
+                    FrameActions.ReadXml(frame_subtree);
+                    frame_subtree.Close();
                     break;
                 case "ContextMenuAction":
                     contextMenuLuaActions.Add(new ContextMenuLuaAction

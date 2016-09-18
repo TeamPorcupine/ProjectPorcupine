@@ -46,9 +46,9 @@ public class EventActions : IXmlSerializable
     public void ReadXml(XmlReader reader)
     {
         reader.Read();
-        if (reader.Name != "Action")
+        if (reader.Name != "Action" && reader.Name != "FrameAction")
         {
-            Debug.ULogErrorChannel("EventActions", string.Format("The element is not an Action, but a \"{0}\"", reader.Name));
+            Debug.ULogErrorChannel("EventActions", string.Format("The element is not an Action or a FrameAction, but a \"{0}\"", reader.Name));
         }
 
         string name = reader.GetAttribute("event");
