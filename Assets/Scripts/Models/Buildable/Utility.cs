@@ -555,6 +555,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         {
             foreach (Inventory inv in deconstructInventory)
             {
+                inv.MaxStackSize = PrototypeManager.Inventory.Get(inv.Type).maxStackSize;
                 World.Current.inventoryManager.PlaceInventoryAround(Tile, inv.Clone());
             }
         }

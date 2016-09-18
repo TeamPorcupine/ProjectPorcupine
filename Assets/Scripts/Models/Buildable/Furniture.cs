@@ -847,6 +847,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         {
             foreach (Inventory inv in deconstructInventory)
             {
+                inv.MaxStackSize = PrototypeManager.Inventory.Get(inv.Type).maxStackSize;
                 World.Current.inventoryManager.PlaceInventoryAround(Tile, inv.Clone());
             }
         }
