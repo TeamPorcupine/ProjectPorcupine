@@ -311,8 +311,27 @@ public class BuildModeController
         return tile.Utilities.ContainsKey(proto.Name);
     }
 
+    private void rotateFurnitireLeft()
+    {
+        if (buildMode == BuildMode.FURNITURE)
+        {
+
+        }
+    }
+
+
+    private void rotateFurnitireRight()
+    {
+        if (buildMode == BuildMode.FURNITURE)
+        {
+
+        }
+    }
+
     // Use this for initialization
     private void Start()
     {
+        KeyboardManager.Instance.RegisterInputAction("RotateFurnitureLeft", KeyboardMappedInputType.KeyUp, rotateFurnitireLeft);
+        KeyboardManager.Instance.RegisterInputAction("RotateFurnitureRight", KeyboardMappedInputType.KeyUp, rotateFurnitireRight);
     }
 }
