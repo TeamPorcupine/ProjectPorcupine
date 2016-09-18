@@ -50,7 +50,7 @@ public class HeadlineGeneratorTest
     }
 
     [Test]
-    public void T02_10s_Generated()
+    public void T02_100s_Generated()
     {
         stringPrinted = false;
         Scheduler.Scheduler.Current.Update(100);
