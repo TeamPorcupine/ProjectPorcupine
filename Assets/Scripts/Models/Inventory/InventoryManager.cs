@@ -38,15 +38,14 @@ public class InventoryManager
             {
                 offsetY = offset;
                 tile = World.Current.GetTileAt(inTile.X + offsetX, inTile.Y + offsetY, inTile.Z);
-                if ((tile.Inventory == null && tile.Furniture == null && tile.IsEnterable()==Enterability.Yes) || 
-                    (tile.Inventory!=null && tile.Inventory.CanAccept(inv)))
+                if (CanPlaceInventoryAt(tile, inv))
                 {
                     return tile;
                 }
 
                 offsetY = -offset;
                 tile = World.Current.GetTileAt(inTile.X + offsetX, inTile.Y + offsetY, inTile.Z);
-                if (tile.Inventory == null && tile.Furniture == null)
+                if (CanPlaceInventoryAt(tile, inv))
                 {
                     return tile;
                 }
@@ -57,14 +56,14 @@ public class InventoryManager
             {
                 offsetX = offset;
                 tile = World.Current.GetTileAt(inTile.X + offsetX, inTile.Y + offsetY, inTile.Z);
-                if (tile.Inventory == null)
+                if (CanPlaceInventoryAt(tile, inv))
                 {
                     return tile;
                 }
 
                 offsetX = -offset;
                 tile = World.Current.GetTileAt(inTile.X + offsetX, inTile.Y + offsetY, inTile.Z);
-                if (tile.Inventory == null)
+                if (CanPlaceInventoryAt(tile, inv))
                 {
                     return tile;
                 }
@@ -76,11 +75,12 @@ public class InventoryManager
 
     public bool PlaceInventoryAround(Tile tile, Inventory inventory)
     {
-        tile = GetFirstTileWithValidInventoryPlacement(3, tile,inventory);
+        tile = GetFirstTileWithValidInventoryPlacement(3, tile, inventory);
         if (tile == null)
         {
             return false;
         }
+
         return PlaceInventory(tile, inventory);
     }
 
@@ -274,5 +274,11 @@ public class InventoryManager
         {
             handler(inventory);
         }
+    }
+
+    private bool CanPlaceInventoryAt(Tile tile, Inventory inv)
+    {
+        return (tile.Inventory == null && tile.Furniture == null && tile.IsEnterable() == Enterability.Yes) ||
+                    (tile.Inventory != null && tile.Inventory.CanAccept(inv));
     }
 }
