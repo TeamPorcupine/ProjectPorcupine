@@ -609,6 +609,14 @@ function Accumulator_GetSpriteName(furniture)
 	return baseName .. "_" .. suffix
 end
 
+function Door_GetSpriteName(furniture)
+	if (furniture.verticalDoor) then
+	    return furniture.Type .. "Vertical_0"
+	else
+	    return furniture.Type .. "Horizontal_0"
+	end
+end
+
 function OreMine_CreateMiningJob(furniture, character)
     -- Creates job for a character to go and "mine" the Ore
     local job = Job.__new(
