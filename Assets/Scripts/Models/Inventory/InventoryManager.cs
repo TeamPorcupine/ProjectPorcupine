@@ -27,6 +27,11 @@ public class InventoryManager
 
     public bool PlaceInventory(Tile tile, Inventory inventory)
     {
+        tile = World.Current.GetFirstTileWithValidInventoryPlacement(3, tile.X, tile.Y, tile.Z);
+        if (tile==null)
+        {
+            return false;
+        }
         bool tileWasEmpty = tile.Inventory == null;
 
         if (tile.PlaceInventory(inventory) == false)
