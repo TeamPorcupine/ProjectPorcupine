@@ -30,6 +30,7 @@ public class PrototypeManager
         Quest = new PrototypeMap<Quest>("Quests", "Quest");
         Stat = new PrototypeMap<Stat>("Stats", "Stat");
         SchedulerEvent = new PrototypeMap<ScheduledEvent>("Events", "Event");
+        Headline = new PrototypeMap<Headline>("Headlines", "Headline");
     }
 
     /// <summary>
@@ -96,4 +97,10 @@ public class PrototypeManager
     /// </summary>
     /// <value>The scheduler event prototype map.</value>
     public static PrototypeMap<ScheduledEvent> SchedulerEvent { get; private set; }
+
+    /// <summary>
+    /// Gets the headline prototype map.
+    /// </summary>
+    /// <value>The scheduler event prototype map.</value>
+    public static PrototypeMap<Headline> Headline { get; private set; }
 }
