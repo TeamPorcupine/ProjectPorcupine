@@ -461,7 +461,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
             invs.ToArray(),
             Job.JobPriority.High);
         job.JobDescription = "job_build_" + Type + "_desc";
-        PrototypeManager.UtilityJob.Set(Type, job);
+        PrototypeManager.UtilityJob.Set(job);
     }
 
     /// <summary>

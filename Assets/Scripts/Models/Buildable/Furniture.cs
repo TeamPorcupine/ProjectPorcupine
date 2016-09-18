@@ -725,7 +725,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             Job.JobPriority.High);
         job.JobDescription = "job_build_" + Type + "_desc";
 
-        PrototypeManager.FurnitureJob.Set(Type, job);
+        PrototypeManager.FurnitureJob.Set(job);
     }
 
     /// <summary>
