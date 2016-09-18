@@ -42,7 +42,7 @@ namespace ProjectPorcupine.Rooms
             }
         }
 
-        public int Tiles
+        public int TileCount
         {
             get
             {
@@ -96,7 +96,7 @@ namespace ProjectPorcupine.Rooms
                 tiles[i].Room = World.Current.RoomManager.OutsideRoom;
             }
 
-            tiles = new List<Tile>();
+            tiles.Clear();
         }
 
         public bool IsOutsideRoom()
@@ -121,7 +121,7 @@ namespace ProjectPorcupine.Rooms
             }
         }
 
-        public Tile[] FindExits()
+        public List<Tile> FindExits()
         {
             List<Tile> exits = new List<Tile>();
             foreach (Tile tile in tiles)
@@ -136,18 +136,18 @@ namespace ProjectPorcupine.Rooms
                             // We have found an exit
                             exits.Add(tile2);
                         }
-                    }      
+                    } 
                 }
             }
 
-            return exits.ToArray();
+            return exits;
         }
 
         public Dictionary<Tile, Room> GetNeighbours()
         {
             Dictionary<Tile, Room> neighboursRooms = new Dictionary<Tile, Room>();
 
-            Tile[] exits = this.FindExits();
+            List<Tile> exits = this.FindExits();
 
             foreach (Tile tile in exits)
             {
@@ -172,6 +172,7 @@ namespace ProjectPorcupine.Rooms
         }
 
         // Changes gas by an amount in preasure(in atm) multiplyed by number of tiles
+        // TODO check this method, it doesn't seem like the above comment is accurate.
         public void ChangeGas(string name, float amount)
         {
             if (IsOutsideRoom())
@@ -207,7 +208,7 @@ namespace ProjectPorcupine.Rooms
             }
         }
 
-        public string ChangedGases(string name)
+        public string ChangeInGas(string name)
         {
             if (deltaGas.ContainsKey(name))
             {
@@ -262,7 +263,7 @@ namespace ProjectPorcupine.Rooms
         {
             if (atmosphericGasses.ContainsKey(name))
             {
-                return atmosphericGasses[name] / Tiles;
+                return atmosphericGasses[name] / TileCount;
             }
 
             return 0;
@@ -286,7 +287,7 @@ namespace ProjectPorcupine.Rooms
 
             foreach (float pressure in atmosphericGasses.Values)
             {
-                totalPressure += pressure / Tiles;
+                totalPressure += pressure / TileCount;
             }
 
             return totalPressure;
@@ -359,7 +360,7 @@ namespace ProjectPorcupine.Rooms
         {
             foreach (string n in other.atmosphericGasses.Keys)
             {
-                this.atmosphericGasses[n] = other.atmosphericGasses[n] / sizeOfOtherRoom * this.Tiles;
+                this.atmosphericGasses[n] = other.atmosphericGasses[n] / sizeOfOtherRoom * this.TileCount;
             }
         }
 

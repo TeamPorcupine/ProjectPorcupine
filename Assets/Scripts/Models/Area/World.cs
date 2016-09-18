@@ -73,8 +73,8 @@ public class World : IXmlSerializable
         {
             if (room.ID > 0)
             {
-                room.ChangeGas("O2", 0.2f * room.Tiles);
-                room.ChangeGas("N2", 0.8f * room.Tiles);
+                room.ChangeGas("O2", 0.2f * room.TileCount);
+                room.ChangeGas("N2", 0.8f * room.TileCount);
             }
         }
 
@@ -625,6 +625,8 @@ public class World : IXmlSerializable
         tiles = new Tile[Width, Height, Depth];
 
         RoomManager = new RoomManager();
+        RoomManager.Adding += (room) => roomGraph = null;
+        RoomManager.Removing += (room) => roomGraph = null;
 
         for (int x = 0; x < Width; x++)
         {

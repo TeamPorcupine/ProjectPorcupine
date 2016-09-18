@@ -15,7 +15,7 @@ namespace ProjectPorcupine.Rooms
     public class RoomManager : IEnumerable<Room>
     {
         /// <summary>
-        /// A all the currently managed rooms.
+        /// A list of all the currently managed rooms.
         /// </summary>
         private List<Room> rooms;
 
@@ -29,8 +29,6 @@ namespace ProjectPorcupine.Rooms
             // Add the outside rooom to the list just in case.
             rooms.Add(OutsideRoom);
         }
-
-        #region Events
 
         /// <summary>
         /// Occurs when adding a new room to the manager, 
@@ -73,8 +71,6 @@ namespace ProjectPorcupine.Rooms
         /// </summary>
         public event Action<Room> Removed;
 
-        #endregion
-
         /// <summary>
         /// Gets the amount of rooms.
         /// </summary>
@@ -97,7 +93,7 @@ namespace ProjectPorcupine.Rooms
         /// Gets a managed room from an ID.
         /// </summary>
         /// <param name="index">The ID of the room.</param>
-        public Room this [int index]
+        public Room this[int index]
         {
             get
             { 
@@ -126,16 +122,12 @@ namespace ProjectPorcupine.Rooms
         /// <param name="room">A room to be managed.</param>
         public void Add(Room room)
         {
-            World.Current.roomGraph = null;
-
             if (Adding != null)
             {
                 Adding(room);
             }
 
             rooms.Add(room);
-
-            Debug.ULogChannel("Rooms", "added room:" + room.ID);
 
             if (Added != null)
             {
@@ -154,10 +146,6 @@ namespace ProjectPorcupine.Rooms
                 Debug.ULogErrorChannel("World", "Tried to delete the outside room.");
                 return;
             }
-
-            Debug.ULogChannel("Rooms", "Removing room:" + room.ID);
-
-            World.Current.roomGraph = null;
 
             if (Removing != null)
             {
@@ -230,7 +218,7 @@ namespace ProjectPorcupine.Rooms
 
                 // Save the size of old room before we start removing tiles.
                 // Needed for gas calculations.
-                int sizeOfOldRoom = oldRoom.Tiles;
+                int sizeOfOldRoom = oldRoom.TileCount;
 
                 // Try building new rooms for each of our NESW directions.
                 foreach (Tile t in sourceTile.GetNeighbours())
@@ -258,7 +246,7 @@ namespace ProjectPorcupine.Rooms
                     // At this point, oldRoom shouldn't have any more tiles left in it,
                     // so in practice this "DeleteRoom" should mostly only need
                     // to remove the room from the world's list.
-                    if (oldRoom.Tiles > 0)
+                    if (oldRoom.TileCount > 0)
                     {
                         Debug.ULogErrorChannel("Room", "'oldRoom' still has tiles assigned to it. This is clearly wrong.");
                     }
