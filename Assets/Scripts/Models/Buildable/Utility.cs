@@ -728,7 +728,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
 
     private void InvokeContextMenuLuaAction(ContextMenuAction action, Character character)
     {
-        FunctionsManager.Furniture.Call(action.Parameter, this, character);
+        FunctionsManager.Utility.Call(action.Parameter, this, character);
     }
 
     [MoonSharpVisible(true)]
