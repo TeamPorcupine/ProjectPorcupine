@@ -14,6 +14,7 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
+using ProjectPorcupine.Rooms;
 using UnityEngine;
 
 public enum Enterability
@@ -445,7 +446,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
     public void ReadXml(XmlReader reader)
     {
         // X and Y have already been read/processed
-        Room = World.Current.RoomManager.GetRoomFromID(int.Parse(reader.GetAttribute("RoomID")));
+        Room = World.Current.RoomManager[int.Parse(reader.GetAttribute("RoomID"))];
         if (Room != null)
         {
             Room.AssignTile(this);

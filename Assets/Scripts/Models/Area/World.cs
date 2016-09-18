@@ -14,6 +14,8 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
+using ProjectPorcupine.PowerNetwork;
+using ProjectPorcupine.Rooms;
 using UnityEngine;
 
 [MoonSharpUserData]
@@ -121,9 +123,9 @@ public class World : IXmlSerializable
     /// <value>The character manager.</value>
     public CharacterManager CharacterManager { get; protected set; }
 
-    public ProjectPorcupine.PowerNetwork.PowerNetwork PowerNetwork { get; private set; }
+    public PowerNetwork PowerNetwork { get; private set; }
 
-    public ProjectPorcupine.RoomManager RoomManager { get; private set; }
+    public RoomManager RoomManager { get; private set; }
 
     public int CountFurnitureType(string type)
     {
@@ -622,7 +624,7 @@ public class World : IXmlSerializable
 
         tiles = new Tile[Width, Height, Depth];
 
-        RoomManager = new ProjectPorcupine.RoomManager();
+        RoomManager = new RoomManager();
 
         for (int x = 0; x < Width; x++)
         {
@@ -919,7 +921,7 @@ public class World : IXmlSerializable
                             continue;
                         }
 
-                        if (node.edges[0].node.data != world.RoomManager.GetRoomFromID(2) || node.edges[1].node.data != world.RoomManager.GetRoomFromID(2))
+                        if (node.edges[0].node.data != world.RoomManager[2] || node.edges[1].node.data != world.RoomManager[2])
                         {
                             Debug.ULogErrorChannel("Path_RoomGraph", "Room 0 supposed to have edges to Room 2.");
                             Debug.ULogErrorChannel(
@@ -940,7 +942,7 @@ public class World : IXmlSerializable
                             continue;
                         }
 
-                        if (node.edges[0].node.data != world.RoomManager.GetRoomFromID(2))
+                        if (node.edges[0].node.data != world.RoomManager[2])
                         {
                             Debug.ULogErrorChannel("Path_RoomGraph", "Room 1 supposed to have edge to Room 2.");
                             Debug.ULogErrorChannel("Path_RoomGraph", "Instead has: " + node.edges[0].node.data.ID.ToString());
@@ -1022,7 +1024,7 @@ public class World : IXmlSerializable
                             continue;
                         }
 
-                        if (node.edges[0].node.data != world.RoomManager.GetRoomFromID(2))
+                        if (node.edges[0].node.data != world.RoomManager[2])
                         {
                             Debug.ULogErrorChannel("Path_RoomGraph", "Room 5 supposed to have edge to Room 2.");
                             Debug.ULogErrorChannel("Path_RoomGraph", "Instead has: " + node.edges[0].node.data.ID.ToString());

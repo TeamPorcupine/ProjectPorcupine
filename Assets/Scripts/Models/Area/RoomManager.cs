@@ -10,7 +10,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace ProjectPorcupine
+namespace ProjectPorcupine.Rooms
 {
     public class RoomManager : IEnumerable<Room>
     {
@@ -31,6 +31,7 @@ namespace ProjectPorcupine
         }
 
         #region Events
+
         /// <summary>
         /// Occurs when adding a new room to the manager, 
         /// before the room is actually added.
@@ -78,9 +79,9 @@ namespace ProjectPorcupine
         /// Gets the amount of rooms.
         /// </summary>
         /// <value>The number of rooms managed.</value>
-        public int Rooms 
+        public int Count
         {
-            get 
+            get
             { 
                 return rooms.Count;
             }
@@ -97,6 +98,23 @@ namespace ProjectPorcupine
         }
 
         /// <summary>
+        /// Gets a managed room from an ID.
+        /// </summary>
+        /// <param name="index">The ID of the room.</param>
+        public Room this [int index]
+        {
+            get
+            { 
+                if (index < 0 || index > Count - 1)
+                {
+                    return null;
+                }
+
+                return rooms[index];
+            }
+        }
+
+        /// <summary>
         /// Gets the room ID.
         /// </summary>
         /// <returns>The room ID.</returns>
@@ -104,21 +122,6 @@ namespace ProjectPorcupine
         public int GetRoomID(Room room)
         {
             return rooms.IndexOf(room);
-        }
-
-        /// <summary>
-        /// Gets the room from an ID.
-        /// </summary>
-        /// <returns>The room based on the ID.</returns>
-        /// <param name="index">The ID of the room. Possibly the index.</param>
-        public Room GetRoomFromID(int index)
-        {
-            if (index < 0 || index > Rooms - 1)
-            {
-                return null;
-            }
-
-            return rooms[index];
         }
 
         /// <summary>
@@ -181,8 +184,8 @@ namespace ProjectPorcupine
         /// <summary>
         /// Equalises the gas by tile.
         /// </summary>
-        /// <param name="tile">Tile.</param>
-        /// <param name="leakFactor">Leak factor.</param>
+        /// <param name="tile">The tile to begin the check from.</param>
+        /// <param name="leakFactor">How leaky should the equalization be.</param>
         public void EqualiseGasByTile(Tile tile, float leakFactor)
         {
             List<Room> roomsDone = new List<Room>();
@@ -426,4 +429,3 @@ namespace ProjectPorcupine
         }
     }
 }
-

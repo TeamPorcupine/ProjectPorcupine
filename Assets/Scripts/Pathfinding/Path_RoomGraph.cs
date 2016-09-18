@@ -7,6 +7,7 @@
 // ====================================================
 #endregion
 using System.Collections.Generic;
+using ProjectPorcupine.Rooms;
 using UnityEngine;
 
 public class Path_RoomGraph
@@ -20,7 +21,7 @@ public class Path_RoomGraph
         // Loop through all rooms of the world
         // For each room, create a node
         nodes = new Dictionary<Room, Path_Node<Room>>();
-        Debug.ULogChannel("Path_RoomGraph", "There are " + world.RoomManager.Rooms + " Rooms");
+        Debug.ULogChannel("Path_RoomGraph", "There are " + world.RoomManager.Count + " Rooms");
         foreach (Room room in world.RoomManager)
         {
             Path_Node<Room> n = new Path_Node<Room>();
