@@ -136,6 +136,14 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
     public bool IsSelected { get; set; }
 
     public bool ForceTileUpdate { get; protected set; }
+
+    public Vector3 Vector3
+    {
+        get
+        {
+            return new Vector3(X, Y, Z);
+        }
+    }
     #endregion
 
     #region Manage Objects
