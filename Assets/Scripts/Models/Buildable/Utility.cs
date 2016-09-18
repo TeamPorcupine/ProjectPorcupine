@@ -425,7 +425,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
                     {
                         LuaFunction = reader.GetAttribute("FunctionName"),
                         Text = reader.GetAttribute("Text"),
-                        RequireCharacterSelected = bool.Parse(reader.GetAttribute("RequiereCharacterSelected")),
+                        RequireCharacterSelected = bool.Parse(reader.GetAttribute("RequireCharacterSelected")),
                         DevModeOnly = bool.Parse(reader.GetAttribute("DevModeOnly") ?? "false")
                     });
                     break;
