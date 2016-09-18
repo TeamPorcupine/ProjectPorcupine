@@ -91,11 +91,7 @@ namespace ProjectPorcupine.Rooms
         /// Gets the outside room.
         /// </summary>
         /// <value>The outside room.</value>
-        public Room OutsideRoom
-        {
-            get;
-            private set;
-        }
+        public Room OutsideRoom { get; private set; }
 
         /// <summary>
         /// Gets a managed room from an ID.
