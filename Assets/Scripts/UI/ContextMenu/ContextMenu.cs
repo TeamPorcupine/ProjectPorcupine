@@ -93,9 +93,9 @@ public class ContextMenu : MonoBehaviour
 
         if (tile.Utilities != null)
         {
-            foreach (Utility util in tile.Utilities.Values)
+            foreach (Utility utility in tile.Utilities.Values)
             {
-                providers.Add(util);
+                providers.Add(utility);
             }
         }
 
