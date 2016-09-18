@@ -111,6 +111,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         {
             deconstructInventory.Add(inv.Clone());
         }
+
         deconstructJobTime = other.deconstructJobTime;
 
         Parameters = new Parameter(other.Parameters);
@@ -834,7 +835,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             linksToNeighbour = furniture.LinksToNeighbour;
             furniture.Jobs.CancelAll();
         }
-
 
         // We call lua to decostruct
         EventActions.Trigger("OnUninstall", this);
