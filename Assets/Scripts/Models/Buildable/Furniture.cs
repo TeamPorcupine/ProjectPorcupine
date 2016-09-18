@@ -835,13 +835,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             furniture.Jobs.CancelAll();
         }
 
-        if (deconstructInventory != null)
-        {
-            foreach (Inventory inv in deconstructInventory)
-            {
-                World.Current.inventoryManager.PlaceInventoryAround(Tile, inv);
-            }
-        }
 
         // We call lua to decostruct
         EventActions.Trigger("OnUninstall", this);
@@ -850,6 +843,14 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         World.Current.temperature.SetThermalDiffusivity(Tile.X, Tile.Y, Temperature.defaultThermalDiffusivity);
 
         Tile.UnplaceFurniture();
+
+        if (deconstructInventory != null)
+        {
+            foreach (Inventory inv in deconstructInventory)
+            {
+                World.Current.inventoryManager.PlaceInventoryAround(Tile, inv);
+            }
+        }
 
         if (PowerConnection != null)
         {
