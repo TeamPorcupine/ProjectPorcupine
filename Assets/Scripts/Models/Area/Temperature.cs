@@ -284,17 +284,6 @@ public class Temperature
         // Make sure c is always between 0 and 0.5*0.25 (not included) or things will blow up
         // in your face.
         float c = 0.23f * 0.5f;
-        //int x = -1;
-        //int y = -1;
-        //int z = -1;
-
-        //Calculation for only rooms
-        //foreach (Room room in World.Current.RoomManager) {
-        //    if (room.ID > 0) {
-        //      foreach (Tile tile in room.getTiles) {
-        //            x = tile.X;
-        //            y = tile.Y;
-        //            z = tile.Z;
 
         //calculates for all tiles.     
         for (int z = 0; z < sizeZ; z++) {
