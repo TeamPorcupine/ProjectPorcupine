@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Threading;
 using MoonSharp.Interpreter;
 using UnityEngine;
+using ProjectPorcupine.Rooms;
 
 /// <summary>
 /// A  Temperature management system. Temperature is stored at each tile and evolved using
@@ -64,14 +65,6 @@ public class Temperature
     /// </summary>
     public Temperature()
     {
-       
-        //int totalSize = 0;
-        //if (rooms.Count == 1) { return; }
-        //for (int x = 1; x < rooms.Count; x++) {
-
-        //    totalSize += rooms[x].getTiles.count;
-            
-        //}
 
         temperature = new float[2][]
          {
@@ -284,9 +277,24 @@ public class Temperature
         // Make sure c is always between 0 and 0.5*0.25 (not included) or things will blow up
         // in your face.
         float c = 0.23f * 0.5f;
-        for (int z = 0; z < sizeZ; z++) {
-            for (int y = 0; y < sizeY; y++) {
-                for (int x = 0; x < sizeX; x++) {
+        int x = -1;
+        int y = -1;
+        int z = -1;
+
+        //Calculation for only rooms
+        foreach (Room room in World.Current.RoomManager) {
+            if (room.ID > 0) {
+              foreach (Tile tile in room.getTiles) {
+                    x = tile.X;
+                    y = tile.Y;
+                    z = tile.Z;
+         
+        // TODO: Remove the commented lines below if the calculations per room ends up working.
+        ////calculates for all tiles.     
+        //for (int z = 0; z < sizeZ; z++) {
+        //    for (int y = 0; y < sizeY; y++) {
+        //        for (int x = 0; x < sizeX; x++) {
+
                     int index = GetIndex(x, y, z);
                     int index_N = GetIndex(x, y + 1, z);
                     int index_S = GetIndex(x, y - 1, z);
@@ -299,9 +307,10 @@ public class Temperature
                     // U^{n+1} = U^n + dt*(\Div alpha \Grad U^n).
                     temp_curr[index] = temp_old[index];
 
-                    // TODO: If empty space, set temperature to 0.
+                    // If empty space, set temperature to 0. THIS SHOULD NEVER HAPPEN.
                     if (World.Current.GetTileAt(x, y, z).Room.IsOutsideRoom()) {
                         temp_curr[index] = 0f;
+                        Debug.ULogErrorChannel("Temperature.cs", "Somehow we are calculating the temperature for tiles in room ID =0.");
                     }
 
                     if (x > 0) {
