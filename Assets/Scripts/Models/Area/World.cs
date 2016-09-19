@@ -271,8 +271,7 @@ public class World : IXmlSerializable
         }
 
         // if it's an internal workspot bail before reserving.
-        if (furn.Jobs.WorkSpotOffset.x >= 0 && furn.Jobs.WorkSpotOffset.x < furn.Width &&
-            furn.Jobs.WorkSpotOffset.y >= 0 && furn.Jobs.WorkSpotOffset.y < furn.Height)
+        if (furn.WorkspotIsInternal())
         {
             return;
         }
@@ -379,6 +378,14 @@ public class World : IXmlSerializable
     public bool IsFurnitureWorkSpotClear(string furnitureType, Tile tile)
     {
         Furniture proto = PrototypeManager.Furniture.Get(furnitureType);
+
+        // If the workspot is internal, we don't care about furniture blocking it, this will be stopped or allowed
+        //      elsewhere depending on if the furniture being placed can replace the furniture already in this tile.
+        if (proto.WorkspotIsInternal())
+        {
+            return true;
+        }
+
         if (proto.Jobs != null && GetTileAt((int)(tile.X + proto.Jobs.WorkSpotOffset.x), (int)(tile.Y + proto.Jobs.WorkSpotOffset.y), (int)tile.Z).Furniture != null)
         {
             return false;

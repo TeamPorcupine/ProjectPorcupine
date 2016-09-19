@@ -425,6 +425,11 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         return obj;
     }
 
+    public bool WorkspotIsInternal()
+    {
+        return Jobs.WorkSpotOffset.x >= 0 && Jobs.WorkSpotOffset.x < Width && Jobs.WorkSpotOffset.y >= 0 && Jobs.WorkSpotOffset.y < Height;
+    }
+
     /// <summary>
     /// This function is called to update the furniture. This will also trigger EventsActions.
     /// This checks if the furniture is a PowerConsumer, and if it does not have power it cancels its job.
