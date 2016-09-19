@@ -196,6 +196,29 @@ public class Job : ISelectable, IPrototypable
         get; set;
     }
 
+    public bool IsTileAtJobSite(Tile otherTile)
+    {
+        if (tile == null || otherTile == null)
+        {
+            return false;
+        }
+
+        // TODO: This doesn't handle multi-tile furniture
+        if (adjacent)
+        {
+            return (
+                tile.Z == otherTile.Z &&
+                (tile.X - 1) <= otherTile.X && (tile.X + 1) >= otherTile.X &&
+                (tile.Y - 1) <= otherTile.Y && (tile.Y + 1) >= otherTile.Y &&
+                tile.IsClippingCorner(otherTile) == false
+            );
+        }
+        else
+        {
+            return tile.Equals(otherTile);
+        }
+    }
+
     public Inventory[] GetInventoryRequirementValues()
     {
         return inventoryRequirements.Values.ToArray();

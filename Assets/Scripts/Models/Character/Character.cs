@@ -702,7 +702,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             DestTile = JobTile;
 
             // Check if we have reached the destination tiles.
-            if (CurrTile == DestTile)
+            if (MyJob.IsTileAtJobSite(CurrTile))
             {
                 // We are at the correct tile for our job, so
                 // execute the job's "DoWork", which is mostly
@@ -724,7 +724,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
     private void Update_DoMovement(float deltaTime)
     {
-        if (CurrTile == DestTile)
+        if (MyJob != null && MyJob.IsTileAtJobSite(CurrTile) || DestTile == CurrTile)
         {
             // We're already were we want to be.
             movementPath = null;
@@ -760,9 +760,12 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
             IsWalking = true;
 
-            // Grab the next waypoint from the pathing system!
-            nextTile = movementPath[0];
-            movementPath.RemoveAt(0);
+            if (movementPath.Count > 0)
+            {
+                // Grab the next waypoint from the pathing system!
+                nextTile = movementPath[0];
+                movementPath.RemoveAt(0);
+            }
 
             if (nextTile == CurrTile)
             {
@@ -889,7 +892,8 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             {
                 // If so, deliver the goods.
                 // Walk to the job tile, then drop off the stack into the job.
-                if (CurrTile == JobTile)
+                Pathfinder.GoalEvaluator isAtJobSize = Pathfinder.GoalTileEvaluator(jobTile, MyJob.adjacent);
+                if (isAtJobSize(CurrTile))
                 {
                     // We are at the job's site, so drop the inventory
                     World.Current.inventoryManager.PlaceInventory(MyJob, this);

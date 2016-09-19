@@ -25,7 +25,8 @@ public enum Enterability
 }
 
 [MoonSharpUserData]
-public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
+[System.Diagnostics.DebuggerDisplay("Tile {X},{Y},{Z}")]
+public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IEquatable<Tile>
 {
     private TileType type = TileType.Empty;
 
@@ -377,6 +378,35 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         return GetNeighbours(checkDiagonals).Any(tile => tile != null && tile.MovementCost > 0);
     }
 
+    public bool IsClippingCorner(Tile neigh)
+    {
+        // If the movement from curr to neigh is diagonal (e.g. N-E)
+        // Then check to make sure we aren't clipping (e.g. N and E are both walkable)
+        int dX = X - neigh.X;
+        int dY = Y - neigh.Y;
+
+        if (Mathf.Abs(dX) + Mathf.Abs(dY) == 2)
+        {
+            // We are diagonal
+            if (World.Current.GetTileAt(X - dX, Y, Z).PathfindingCost == 0)
+            {
+                // East or West is unwalkable, therefore this would be a clipped movement.
+                return true;
+            }
+
+            if (World.Current.GetTileAt(X, Y - dY, Z).PathfindingCost == 0)
+            {
+                // North or South is unwalkable, therefore this would be a clipped movement.
+                return true;
+            }
+
+            // If we reach here, we are diagonal, but not clipping
+        }
+
+        // If we are here, we are either not clipping, or not diagonal
+        return false;
+    }
+
     public Tile North()
     {
         return World.Current.GetTileAt(X, Y + 1, Z);
@@ -513,6 +543,16 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
                 };
             }
         }
+    }
+
+    public bool Equals(Tile otherTile)
+    {
+        if (otherTile == null)
+        {
+            return false;
+        }
+
+        return X == otherTile.X && Y == otherTile.Y && Z == otherTile.Z;
     }
 
     public override string ToString()

@@ -159,7 +159,9 @@ namespace ProjectPorcupine.Pathfinding
 
                 return tile => (
                     tile.X >= minX && tile.X <= maxX &&
-                    tile.Y >= minY && tile.Y <= maxY);
+                    tile.Y >= minY && tile.Y <= maxY &&
+                    goalTile.IsClippingCorner(tile) == false
+                );
             }
             else
             {

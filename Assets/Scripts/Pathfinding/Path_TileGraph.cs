@@ -61,35 +61,6 @@ public class Path_TileGraph
         }
     }
 
-    private bool IsClippingCorner(Tile curr, Tile neigh)
-    {
-        // If the movement from curr to neigh is diagonal (e.g. N-E)
-        // Then check to make sure we aren't clipping (e.g. N and E are both walkable)
-        int dX = curr.X - neigh.X;
-        int dY = curr.Y - neigh.Y;
-
-        if (Mathf.Abs(dX) + Mathf.Abs(dY) == 2)
-        {
-            // We are diagonal
-            if (World.Current.GetTileAt(curr.X - dX, curr.Y, curr.Z).PathfindingCost == 0)
-            {
-                // East or West is unwalkable, therefore this would be a clipped movement.
-                return true;
-            }
-
-            if (World.Current.GetTileAt(curr.X, curr.Y - dY, curr.Z).PathfindingCost == 0)
-            {
-                // North or South is unwalkable, therefore this would be a clipped movement.
-                return true;
-            }
-
-            // If we reach here, we are diagonal, but not clipping
-        }
-
-        // If we are here, we are either not clipping, or not diagonal
-        return false;
-    }
-
     private void GenerateEdgesByTile(Tile t)
     {
         if (t == null)
@@ -107,7 +78,7 @@ public class Path_TileGraph
         // If neighbour is walkable, create an edge to the relevant node.
         for (int i = 0; i < neighbours.Length; i++)
         {
-            if (neighbours[i] != null && neighbours[i].PathfindingCost > 0 && IsClippingCorner(t, neighbours[i]) == false)
+            if (neighbours[i] != null && neighbours[i].PathfindingCost > 0 && t.IsClippingCorner(neighbours[i]) == false)
             {
                 // This neighbour exists, is walkable, and doesn't requiring clipping a corner --> so create an edge.
                 Path_Edge<Tile> e = new Path_Edge<Tile>();
