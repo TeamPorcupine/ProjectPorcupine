@@ -285,8 +285,6 @@ namespace ProjectPorcupine.Rooms
             }
 
             float totalGasses = GetTotalGas();
-            Debug.Log(name+ ": " + atmosphericGasses[name] +"/"+ totalGasses + "="+(atmosphericGasses[name] / totalGasses));
-
             return totalGasses == 0 ? 0 : atmosphericGasses[name] / totalGasses;
         }
 
