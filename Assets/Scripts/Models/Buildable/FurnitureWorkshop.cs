@@ -259,13 +259,7 @@ public class FurnitureWorkshop
                     furniture.Tile.Y + reqInputItem.SlotPosY,
                     furniture.Tile.Z);
 
-                //// TODO: this is from LUA .. looks like some hack
-                if (inTile.Inventory != null && inTile.Inventory.StackSize == inTile.Inventory.MaxStackSize)
-                {
-                    furniture.Jobs.CancelAll();
-                    return;
-                }
-
+                // create job for desired input resource
                 string desiredInv = reqInputItem.ObjectType;
                 int desiredAmount = PrototypeManager.Inventory.Get(desiredInv).maxStackSize;
                 if (inTile.Inventory != null && inTile.Inventory.Type == reqInputItem.ObjectType &&

@@ -123,7 +123,7 @@ public class LuaFunctions
                 result = Call(fn, instance);
             }
 
-            if (result.Type == DataType.String)
+            if (result != null && result.Type == DataType.String)
             {
                 Debug.ULogErrorChannel("Lua", result.String);
             }

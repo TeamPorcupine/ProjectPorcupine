@@ -76,7 +76,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         
         contextMenuLuaActions = new List<ContextMenuLuaAction>();
         Parameters = new Parameter();
-        Jobs = new FurnitureJobs(this);
+        Jobs = new BuildableJobs(this);
         typeTags = new HashSet<string>();
         funcPositionValidation = DefaultIsValidPosition;
         tileTypeBuildPermissions = new HashSet<string>();
@@ -107,7 +107,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         deconstructInventory = other.deconstructInventory;
 
         Parameters = new Parameter(other.Parameters);
-        Jobs = new FurnitureJobs(this, other);
+        Jobs = new BuildableJobs(this, other.Jobs);
         workshop = other.workshop; // don't need to clone here, as all are prototype things (not changing)
 
         if (other.Animation != null)
@@ -278,10 +278,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// <value>A list of furniture that this furniture can be replaced with.</value>
     public List<string> ReplaceableFurniture
     {
-        get
-        {
-            return replaceableFurniture;
-        }
+        get { return replaceableFurniture; }
     }
 
     /// <summary>
@@ -343,7 +340,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// <summary>
     /// Gets a component that handles the jobs linked to the furniture.
     /// </summary>
-    public FurnitureJobs Jobs { get; private set; }
+    public BuildableJobs Jobs { get; private set; }
 
     /// <summary>
     /// This flag is set if the furniture is tasked to be destroyed.
@@ -663,11 +660,14 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                 case "GetSpriteName":
                     getSpriteNameAction = reader.GetAttribute("FunctionName");
                     break;
-                case "JobSpotOffset":
+                case "JobWorkSpotOffset":
                     Jobs.ReadWorkSpotOffset(reader);
                     break;
-                case "JobSpawnSpotOffset":
-                    Jobs.ReadSpawnSpotOffset(reader);
+                case "JobInputSpotOffset":
+                    Jobs.ReadInputSpotOffset(reader);
+                    break;
+                case "JobOutputSpotOffset":
+                    Jobs.ReadOutputSpotOffset(reader);
                     break;
                 case "PowerConnection":
                     PowerConnection = new Connection();
@@ -684,7 +684,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                     reader.Read();
                     UnlocalizedDescription = reader.ReadContentAsString();
                     break;
-
                 case "Workshop":                   
                     workshop = FurnitureWorkshop.Deserialize(reader);
                     workshop.SetParentFurniture(this);
@@ -745,7 +744,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         Job job = new Job(
             null,
             Type,
-            FunctionsManager.JobComplete_FurnitureBuilding,
+            (theJob) => World.Current.JobComplete_FurnitureBuilding(theJob),
             jobTime,
             invs.ToArray(),
             Job.JobPriority.High);
@@ -886,7 +885,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         // Do we need to recalculate our rooms?
         if (RoomEnclosure)
         {
-            Room.DoRoomFloodFill(Tile);
+            World.Current.RoomManager.DoRoomFloodFill(Tile, false);
         }
 
         ////World.current.InvalidateTileGraph();
@@ -1037,7 +1036,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             };
         }
 
-        for (int i = 0; i < Jobs.Count(); i++)
+        for (int i = 0; i < Jobs.Count; i++)
         {
             if (!Jobs[i].IsBeingWorked)
             {

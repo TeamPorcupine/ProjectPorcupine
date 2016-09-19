@@ -14,6 +14,8 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
+using ProjectPorcupine.PowerNetwork;
+using ProjectPorcupine.Rooms;
 using UnityEngine;
 
 [MoonSharpUserData]
@@ -25,7 +27,6 @@ public class World : IXmlSerializable
 
     public List<Furniture> furnitures;
     public List<Utility> utilities;
-    public List<Room> rooms;
     public InventoryManager inventoryManager;
     public Material skybox;
 
@@ -68,12 +69,12 @@ public class World : IXmlSerializable
         Debug.Log("Generated World");
 
         // Adding air to enclosed rooms
-        foreach (Room room in this.rooms)
+        foreach (Room room in this.RoomManager)
         {
             if (room.ID > 0)
             {
-                room.ChangeGas("O2", 0.2f * room.GetSize());
-                room.ChangeGas("N2", 0.8f * room.GetSize());
+                room.ChangeGas("O2", 0.2f * room.TileCount);
+                room.ChangeGas("N2", 0.8f * room.TileCount);
             }
         }
 
@@ -122,60 +123,14 @@ public class World : IXmlSerializable
     /// <value>The character manager.</value>
     public CharacterManager CharacterManager { get; protected set; }
 
-    public ProjectPorcupine.PowerNetwork.PowerNetwork PowerNetwork { get; private set; }
+    public PowerNetwork PowerNetwork { get; private set; }
 
-    public Room GetOutsideRoom()
-    {
-        return rooms[0];
-    }
-
-    public int GetRoomID(Room r)
-    {
-        return rooms.IndexOf(r);
-    }
-
-    public Room GetRoomFromID(int i)
-    {
-        if (i < 0 || i > rooms.Count - 1)
-        {
-            return null;
-        }
-
-        return rooms[i];
-    }
-
-    public void AddRoom(Room r)
-    {
-        rooms.Add(r);
-        roomGraph = null;
-
-        Debug.ULogChannel("Rooms", "creating room:" + r.ID);
-    }
+    public RoomManager RoomManager { get; private set; }
 
     public int CountFurnitureType(string type)
     {
         int count = furnitures.Count(f => f.Type == type);
         return count;
-    }
-
-    public void DeleteRoom(Room r)
-    {
-        if (r.IsOutsideRoom())
-        {
-            Debug.ULogErrorChannel("World", "Tried to delete the outside room.");
-            return;
-        }
-
-        Debug.ULogChannel("Rooms", "Deleting room:" + r.ID);
-
-        roomGraph = null;
-
-        // Remove this room from our rooms list.
-        rooms.Remove(r);
-
-        // All tiles that belonged to this room should be re-assigned to
-        // the outside.
-        r.ReturnTilesToOutsideRoom();
     }
 
     public void AddEventListeners()
@@ -237,6 +192,58 @@ public class World : IXmlSerializable
         return PlaceFurniture(furn, t, doRoomFloodFill);
     }
 
+    public Furniture PlaceFurniture(Furniture furniture, Tile t, bool doRoomFloodFill = true)
+    {
+        Furniture furn = Furniture.PlaceInstance(furniture, t);
+
+        if (furn == null)
+        {
+            // Failed to place object -- most likely there was already something there.
+            return null;
+        }
+
+        furn.Removed += OnFurnitureRemoved;
+        furnitures.Add(furn);
+
+        // Do we need to recalculate our rooms?
+        if (doRoomFloodFill && furn.RoomEnclosure)
+        {
+            RoomManager.DoRoomFloodFill(furn.Tile, true);
+        }
+
+        if (OnFurnitureCreated != null)
+        {
+            OnFurnitureCreated(furn);
+
+            if (furn.MovementCost != 1)
+            {
+                // Since tiles return movement cost as their base cost multiplied
+                // by the furniture's movement cost, a furniture movement cost
+                // of exactly 1 doesn't impact our pathfinding system, so we can
+                // occasionally avoid invalidating pathfinding graphs.
+                // InvalidateTileGraph();    // Reset the pathfinding system
+                if (tileGraph != null)
+                {
+                    tileGraph.RegenerateGraphAtTile(t);
+                }
+            }
+        }
+
+        return furn;
+    }
+
+    public void JobComplete_FurnitureBuilding(Job theJob)
+    {
+        // Let our workspot tile know it is no longer reserved for us
+        UnreserveTileAsWorkSpot((Furniture)theJob.buildablePrototype, theJob.tile);
+
+        PlaceFurniture(theJob.JobObjectType, theJob.tile);
+
+        // FIXME: I don't like having to manually and explicitly set
+        // flags that prevent conflicts. It's too easy to forget to set/clear them!
+        theJob.tile.PendingBuildJob = null;
+    }
+
     public Utility PlaceUtility(string objectType, Tile tile, bool doRoomFloodFill = false)
     {
         if (PrototypeManager.Utility.Has(objectType) == false)
@@ -248,6 +255,36 @@ public class World : IXmlSerializable
         Utility util = PrototypeManager.Utility.Get(objectType);
 
         return PlaceUtility(util, tile, doRoomFloodFill);
+    }
+
+    public Utility PlaceUtility(Utility proto, Tile tile, bool doRoomFloodFill = true)
+    {
+        Utility utility = Utility.PlaceInstance(proto, tile);
+
+        if (utility == null)
+        {
+            // Failed to place object -- most likely there was already something there.
+            return null;
+        }
+
+        utility.Removed += OnUtilityRemoved;
+        utilities.Add(utility);
+
+        if (OnUtilityCreated != null)
+        {
+            OnUtilityCreated(utility);
+        }
+
+        return utility;
+    }
+
+    public void JobComplete_UtilityBuilding(Job theJob)
+    {
+        PlaceUtility(theJob.JobObjectType, theJob.tile);
+
+        // FIXME: I don't like having to manually and explicitly set
+        // flags that preven conflicts. It's too easy to forget to set/clear them!
+        theJob.tile.PendingBuildJob = null;
     }
 
     /// <summary>
@@ -286,67 +323,6 @@ public class World : IXmlSerializable
             tile.Y + (int)furn.Jobs.WorkSpotOffset.y,
             tile.Z)
             .ReservedAsWorkSpotBy.Remove(furn);
-    }
-
-    public Furniture PlaceFurniture(Furniture furniture, Tile t, bool doRoomFloodFill = true)
-    {
-        Furniture furn = Furniture.PlaceInstance(furniture, t);
-
-        if (furn == null)
-        {
-            // Failed to place object -- most likely there was already something there.
-            return null;
-        }
-
-        furn.Removed += OnFurnitureRemoved;
-        furnitures.Add(furn);
-
-        // Do we need to recalculate our rooms?
-        if (doRoomFloodFill && furn.RoomEnclosure)
-        {
-            Room.DoRoomFloodFill(furn.Tile);
-        }
-
-        if (OnFurnitureCreated != null)
-        {
-            OnFurnitureCreated(furn);
-
-            if (furn.MovementCost != 1)
-            {
-                // Since tiles return movement cost as their base cost multiplied
-                // by the furniture's movement cost, a furniture movement cost
-                // of exactly 1 doesn't impact our pathfinding system, so we can
-                // occasionally avoid invalidating pathfinding graphs.
-                // InvalidateTileGraph();    // Reset the pathfinding system
-                if (tileGraph != null)
-                {
-                    tileGraph.RegenerateGraphAtTile(t);
-                }
-            }
-        }
-
-        return furn;
-    }
-
-    public Utility PlaceUtility(Utility proto, Tile tile, bool doRoomFloodFill = true)
-    {
-        Utility utility = Utility.PlaceInstance(proto, tile);
-
-        if (utility == null)
-        {
-            // Failed to place object -- most likely there was already something there.
-            return null;
-        }
-
-        utility.Removed += OnUtilityRemoved;
-        utilities.Add(utility);
-
-        if (OnUtilityCreated != null)
-        {
-            OnUtilityCreated(utility);
-        }
-
-        return utility;
     }
 
     // This should be called whenever a change to the world
@@ -390,9 +366,9 @@ public class World : IXmlSerializable
         writer.WriteAttributeString("Depth", Depth.ToString());
 
         writer.WriteStartElement("Rooms");
-        foreach (Room r in rooms)
+        foreach (Room r in RoomManager)
         {
-            if (GetOutsideRoom() == r)
+            if (RoomManager.OutsideRoom == r)
             {
                 // Skip the outside room. Alternatively, should SetupWorld be changed to not create one?
                 continue;
@@ -616,8 +592,9 @@ public class World : IXmlSerializable
 
         tiles = new Tile[Width, Height, Depth];
 
-        rooms = new List<Room>();
-        rooms.Add(new Room()); // Create the outside?
+        RoomManager = new RoomManager();
+        RoomManager.Adding += (room) => roomGraph = null;
+        RoomManager.Removing += (room) => roomGraph = null;
 
         for (int x = 0; x < Width; x++)
         {
@@ -627,7 +604,7 @@ public class World : IXmlSerializable
                 {
                     tiles[x, y, z] = new Tile(x, y, z);
                     tiles[x, y, z].TileChanged += OnTileChangedCallback;
-                    tiles[x, y, z].Room = GetOutsideRoom(); // Rooms 0 is always going to be outside, and that is our default room
+                    tiles[x, y, z].Room = RoomManager.OutsideRoom; // Rooms 0 is always going to be outside, and that is our default room
                 }
             }
         }
@@ -791,7 +768,7 @@ public class World : IXmlSerializable
             do
             {
                 Room r = new Room();
-                rooms.Add(r);
+                RoomManager.Add(r);
                 r.ReadXml(reader);
             }
             while (reader.ReadToNextSibling("Room"));
@@ -893,7 +870,7 @@ public class World : IXmlSerializable
             errorCount++;
         }
 
-        foreach (Room r in world.rooms)
+        foreach (Room r in world.RoomManager)
         {
             if (roomGraph.nodes.ContainsKey(r) == false)
             {
@@ -914,7 +891,7 @@ public class World : IXmlSerializable
                             continue;
                         }
 
-                        if (node.edges[0].node.data != world.rooms[2] || node.edges[1].node.data != world.rooms[2])
+                        if (node.edges[0].node.data != world.RoomManager[2] || node.edges[1].node.data != world.RoomManager[2])
                         {
                             Debug.ULogErrorChannel("Path_RoomGraph", "Room 0 supposed to have edges to Room 2.");
                             Debug.ULogErrorChannel(
@@ -935,7 +912,7 @@ public class World : IXmlSerializable
                             continue;
                         }
 
-                        if (node.edges[0].node.data != world.rooms[2])
+                        if (node.edges[0].node.data != world.RoomManager[2])
                         {
                             Debug.ULogErrorChannel("Path_RoomGraph", "Room 1 supposed to have edge to Room 2.");
                             Debug.ULogErrorChannel("Path_RoomGraph", "Instead has: " + node.edges[0].node.data.ID.ToString());
@@ -1017,7 +994,7 @@ public class World : IXmlSerializable
                             continue;
                         }
 
-                        if (node.edges[0].node.data != world.rooms[2])
+                        if (node.edges[0].node.data != world.RoomManager[2])
                         {
                             Debug.ULogErrorChannel("Path_RoomGraph", "Room 5 supposed to have edge to Room 2.");
                             Debug.ULogErrorChannel("Path_RoomGraph", "Instead has: " + node.edges[0].node.data.ID.ToString());
