@@ -482,7 +482,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     {
         if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
         {
-            Deconstruct();
+            Deconstruct(utility);
             return;
         }
 
