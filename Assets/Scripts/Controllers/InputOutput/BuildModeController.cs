@@ -97,19 +97,18 @@ public class BuildModeController
                 // This tile position is valid for this furniture
 
                 // Check if there is existing furniture in this tile. If so delete it.
-                // TODO Possibly return resources. Will the Deconstruct() method handle that? If so what will happen if resources drop ontop of new non-passable structure.
                 if (tile.Furniture != null)
                 {
-                    tile.Furniture.Deconstruct();
+                    tile.Furniture.SetDeconstructJob();
                 }
 
                 // Create a job for it to be build
                 Job job;
 
-                if (PrototypeManager.FurnitureJob.Has(furnitureType))
+                if (PrototypeManager.FurnitureConstructJob.Has(furnitureType))
                 {
                     // Make a clone of the job prototype
-                    job = PrototypeManager.FurnitureJob.Get(furnitureType).Clone();
+                    job = PrototypeManager.FurnitureConstructJob.Get(furnitureType).Clone();
 
                     // Assign the correct tile.
                     job.tile = tile;
@@ -166,10 +165,10 @@ public class BuildModeController
                 // Create a job for it to be build
                 Job job;
 
-                if (PrototypeManager.UtilityJob.Has(utilityType))
+                if (PrototypeManager.UtilityConstructJob.Has(utilityType))
                 {
                     // Make a clone of the job prototype
-                    job = PrototypeManager.UtilityJob.Get(utilityType).Clone();
+                    job = PrototypeManager.UtilityConstructJob.Get(utilityType).Clone();
 
                     // Assign the correct tile.
                     job.tile = tile;
@@ -270,7 +269,7 @@ public class BuildModeController
                     }
                 }
 
-                tile.Furniture.Deconstruct();
+                tile.Furniture.SetDeconstructJob();
             }
             else if (tile.PendingBuildJob != null)
             {
