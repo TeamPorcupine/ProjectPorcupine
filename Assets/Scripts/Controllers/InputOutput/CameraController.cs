@@ -24,6 +24,7 @@ public class CameraController
     private float frameMoveVertical = 0;
 
     private Vector3 positionTarget;
+    private Vector3 prevPositionTarget;
 
     private CameraData cameraData;
 
@@ -114,6 +115,13 @@ public class CameraController
             Camera.main.transform.Translate(pushedAmount);
             positionTarget = Camera.main.transform.position;
         }
+
+        if (prevPositionTarget != positionTarget)
+        {
+            WorldController.Instance.World.CameraMoved(GetCameraBounds());            
+        }
+
+        prevPositionTarget = positionTarget;
     }
 
     public void ChangeZoom(float amount)
@@ -180,6 +188,20 @@ public class CameraController
             zoomTarget = cameraData.zoomLevel;
             Camera.main.orthographicSize = zoomTarget;
         }
+    }
+
+    /// <summary>
+    /// Get the bounds of the main camera.
+    /// </summary>    
+    private Bounds GetCameraBounds()
+    {
+        var x = Camera.main.transform.position.x;
+        var y = Camera.main.transform.position.y;
+        var size = Camera.main.orthographicSize * 2;
+        var width = size * (float)Screen.width / Screen.height;
+        var height = size;
+
+        return new Bounds(new Vector3(x, y, 0), new Vector3(width, height, 0));
     }
 
     private void ApplyPreset(Preset preset)

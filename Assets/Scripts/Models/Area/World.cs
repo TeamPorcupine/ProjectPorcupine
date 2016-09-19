@@ -51,6 +51,9 @@ public class World : IXmlSerializable
     // A three-dimensional array to hold our tile data.
     private Tile[,,] tiles;
 
+    private List<Furniture> furnituresVisible;
+    private List<Furniture> furnituresInvisible;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="World"/> class.
     /// </summary>
@@ -142,12 +145,20 @@ public class World : IXmlSerializable
     public void TickEveryFrame(float deltaTime)
     {
         CharacterManager.Update(deltaTime);
+
+        // Update Furniture in camera view
+        foreach (Furniture f in furnituresVisible)
+        {
+            f.Update(deltaTime);
+        }
     }
 
     public void TickFixedFrequency(float deltaTime)
     {
-        // Update Furniture
-        foreach (Furniture f in furnitures)
+        // Update Furniture outside of the camera view
+        // TODO: Further optimization could divide furnituresInvisible in multiple lists
+        //       and update one of the lists each frame
+        foreach (Furniture f in furnituresInvisible)
         {
             f.Update(deltaTime);
         }
@@ -155,6 +166,44 @@ public class World : IXmlSerializable
         // Progress temperature modelling
         temperature.Update();
         PowerNetwork.Update(deltaTime);
+    }
+
+    /// <summary>
+    /// Notify world that the camera moved, so we can check which entities are visible to the camera.
+    /// The invisible enities can be updated less frequent for better performance.
+    /// </summary>
+    public void CameraMoved(Bounds cameraBounds)
+    {
+        // Expand bounds to include tiles on the edge where the centre isn't inside the bounds
+        cameraBounds.Expand(1);
+
+        foreach (Furniture furn in furnitures)
+        {
+            // Multitile furniture base tile is bottom left - so add width and height 
+            Bounds furnitureBounds = new Bounds(
+                new Vector3(furn.Tile.X - 0.5f + (furn.Width / 2), furn.Tile.Y - 0.5f + (furn.Height / 2), 0),
+                new Vector3(furn.Width, furn.Height));
+
+            if (cameraBounds.Intersects(furnitureBounds))
+            {
+                if (furnituresInvisible.Contains(furn))
+                {
+                    furnituresInvisible.Remove(furn);
+                    furnituresVisible.Add(furn);
+                }
+            }
+            else
+            {
+                if (furnituresVisible.Contains(furn))
+                {
+                    furnituresVisible.Remove(furn);
+                    furnituresInvisible.Add(furn);
+                }
+            }
+        }
+
+        // Debug.ULogChannel("VisibleFurn","Visible furn: "+ furnituresVisible.Count.ToString());
+        // Debug.ULogChannel("VisibleFurn", "Visible furn: " + furnituresInvisible.Count.ToString());
     }
 
     /// <summary>
@@ -204,6 +253,7 @@ public class World : IXmlSerializable
 
         furn.Removed += OnFurnitureRemoved;
         furnitures.Add(furn);
+        furnituresVisible.Add(furn);
 
         // Do we need to recalculate our rooms?
         if (doRoomFloodFill && furn.RoomEnclosure)
@@ -508,13 +558,21 @@ public class World : IXmlSerializable
     public void OnFurnitureRemoved(Furniture furn)
     {
         furnitures.Remove(furn);
+        if (furnituresInvisible.Contains(furn))
+        {
+            furnituresInvisible.Remove(furn);            
+        }
+        else if (furnituresVisible.Contains(furn))
+        {
+            furnituresVisible.Remove(furn);
+        }
     }
 
     public void OnUtilityRemoved(Utility util)
     {
         utilities.Remove(util);
     }
-
+    
     private void ReadXml_Wallet(XmlReader reader)
     {
         if (reader.ReadToDescendant("Currency"))
@@ -612,6 +670,9 @@ public class World : IXmlSerializable
         CreateWallet();
 
         furnitures = new List<Furniture>();
+        furnituresVisible = new List<Furniture>();
+        furnituresInvisible = new List<Furniture>();
+
         utilities = new List<Utility>();
         CharacterManager = new CharacterManager();
         inventoryManager = new InventoryManager();
