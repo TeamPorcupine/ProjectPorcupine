@@ -110,6 +110,9 @@ public class FunctionsManager
     // TODO: Move this function to a better place
     public static void JobComplete_FurnitureBuilding(Job theJob)
     {
+        // Let our workspot tile know it is no longer reserved for us
+        WorldController.Instance.World.UnreserveTileAsWorkSpot((Furniture)theJob.buildablePrototype, theJob.tile);
+
         WorldController.Instance.World.PlaceFurniture(theJob.JobObjectType, theJob.tile);
 
         // FIXME: I don't like having to manually and explicitly set

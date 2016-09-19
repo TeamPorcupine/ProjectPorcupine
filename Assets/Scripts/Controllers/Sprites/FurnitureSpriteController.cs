@@ -54,7 +54,7 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
     {
         Furniture proto = PrototypeManager.Furniture.Get(type);
         string spriteName = proto.GetSpriteName();
-        Sprite s = SpriteManager.GetSprite("Furniture", spriteName + (proto.LinksToNeighbour ? "_" : string.Empty));
+        Sprite s = SpriteManager.GetSprite("Furniture", spriteName + (proto.LinksToNeighbour != string.Empty && !proto.OnlyUseDefaultSpriteName ? "_" : string.Empty));
 
         return s;
     }
@@ -63,7 +63,7 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
     {
         string spriteName = furn.GetSpriteName();
 
-        if (furn.LinksToNeighbour == false)
+        if (furn.LinksToNeighbour == string.Empty || furn.OnlyUseDefaultSpriteName)
         {
             return SpriteManager.GetSprite("Furniture", spriteName);
         }
@@ -102,10 +102,6 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
         // Add our tile/GO pair to the dictionary.
         objectGameObjectMap.Add(furniture, furn_go);
 
-        furn_go.name = furniture.Type + "_" + furniture.Tile.X + "_" + furniture.Tile.Y;
-        furn_go.transform.position = new Vector3(furniture.Tile.X + ((furniture.Width - 1) / 2f), furniture.Tile.Y + ((furniture.Height - 1) / 2f), furniture.Tile.Z);
-        furn_go.transform.SetParent(objectParent.transform, true);
-
         // FIXME: This hardcoding is not ideal!
         if (furniture.HasTypeTag("Door"))
         {
@@ -125,6 +121,12 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
         sr.sprite = GetSpriteForFurniture(furniture);
         sr.sortingLayerName = "Furniture";
         sr.color = furniture.Tint;
+
+        furn_go.name = furniture.Type + "_" + furniture.Tile.X + "_" + furniture.Tile.Y;
+        furn_go.transform.position = furniture.Tile.Vector3 + ImageUtils.SpritePivotOffset(sr.sprite);
+        furn_go.transform.SetParent(objectParent.transform, true);
+
+        sr.sortingOrder = Mathf.RoundToInt(furn_go.transform.position.y * -1);
 
         if (furniture.PowerConnection != null && furniture.PowerConnection.IsPowerConsumer)
         {
@@ -252,7 +254,7 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
     private string GetSuffixForNeighbour(Furniture furn, int x, int y, int z, string suffix)
     {
          Tile t = world.GetTileAt(x, y, z);
-         if (t != null && t.Furniture != null && t.Furniture.Type == furn.Type)
+         if (t != null && t.Furniture != null && t.Furniture.LinksToNeighbour == furn.LinksToNeighbour)
          {
              return suffix;
          }

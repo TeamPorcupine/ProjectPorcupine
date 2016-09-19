@@ -47,7 +47,7 @@ public class CharacterSpriteController : BaseSpriteController<Character>
         world.CharacterManager.CharacterCreated += OnCreated;
 
         // Check for pre-existing characters, which won't do the callback.
-        foreach (Character character in world.CharacterManager.Characters)
+        foreach (Character character in world.CharacterManager)
         {
             OnCreated(character);
         }
@@ -57,7 +57,7 @@ public class CharacterSpriteController : BaseSpriteController<Character>
     {
         world.CharacterManager.CharacterCreated -= OnCreated;
 
-        foreach (Character c in world.CharacterManager.Characters)
+        foreach (Character c in world.CharacterManager)
         {
             c.OnCharacterChanged -= OnChanged; 
         }
