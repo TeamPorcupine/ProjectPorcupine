@@ -223,7 +223,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     public BuildableJobs Jobs { get; private set; }
 
     /// <summary>
-    /// Is this tasked for destruction?
+    /// Details if this is tasked for destruction.
     /// </summary>
     public bool IsBeingDestroyed { get; protected set; }
 
