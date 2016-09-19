@@ -73,7 +73,7 @@ public class WorldGenerator
 
                 if (startAreaFurnitures[x, y] != null && startAreaFurnitures[x, y] != string.Empty)
                 {
-                    world.PlaceFurniture(startAreaFurnitures[x, y], tile, true);
+                    world.FurnitureManager.PlaceFurniture(startAreaFurnitures[x, y], tile, true);
                 }
             }
         }
@@ -119,7 +119,7 @@ public class WorldGenerator
                                         {
                                             Furniture mine = PrototypeManager.Furniture.Get("mine").Clone();
                                             mine.Parameters["ore_type"].SetValue(inv.Type.ToString());
-                                            world.PlaceFurniture(mine, tile, false);
+                                            world.FurnitureManager.PlaceFurniture(mine, tile, false);
                                             break;
                                         }
 
@@ -130,7 +130,7 @@ public class WorldGenerator
                                             stackSize = inv.MaxStackSize;
                                         }
 
-                                        world.inventoryManager.PlaceInventory(tile, new Inventory(inv.Type, stackSize, inv.MaxStackSize));
+                                        world.InventoryManager.PlaceInventory(tile, new Inventory(inv.Type, stackSize, inv.MaxStackSize));
                                         break;
                                     }
                                 }

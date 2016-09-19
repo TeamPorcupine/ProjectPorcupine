@@ -32,7 +32,7 @@ public class CameraController
         // Main camera handles UI only
         Camera.main.farClipPlane = 9;
 
-        cameraData = WorldController.Instance.World.cameraData;
+        cameraData = World.Current.CameraData;
 
         KeyboardManager keyboardManager = KeyboardManager.Instance;
         keyboardManager.RegisterInputAction("MoveCameraEast", KeyboardMappedInputType.Key, () => { frameMoveHorizontal++; });

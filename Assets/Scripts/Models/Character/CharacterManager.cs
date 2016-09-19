@@ -32,20 +32,7 @@ public class CharacterManager : IEnumerable<Character>
     /// <summary>
     /// Occurs when a character is created.
     /// </summary>
-    public event Action<Character> CharacterCreated;
-
-    /// <summary>
-    /// Updates all the characters.
-    /// </summary>
-    /// <param name="deltaTime">Delta time.</param>
-    public void Update(float deltaTime)
-    {
-        // Change from a foreach due to the collection being modified while its being looped through
-        for (int i = characters.Count - 1; i >= 0; i--)
-        {
-            characters[i].Update(deltaTime);
-        }
-    }
+    public event Action<Character> Created;
 
     /// <summary>
     /// Create a Character in the specified tile.
@@ -70,9 +57,9 @@ public class CharacterManager : IEnumerable<Character>
         character.name = CharacterNameManager.GetNewName();
         characters.Add(character);
 
-        if (CharacterCreated != null)
+        if (Created != null)
         {
-            CharacterCreated(character);
+            Created(character);
         }
 
         return character;
@@ -94,6 +81,19 @@ public class CharacterManager : IEnumerable<Character>
         }
 
         return null;
+    }
+
+    /// <summary>
+    /// Calls the update function of each character with the given delta time.
+    /// </summary>
+    /// <param name="deltaTime">Delta time.</param>
+    public void Update(float deltaTime)
+    {
+        // Change from a foreach due to the collection being modified while its being looped through
+        for (int i = characters.Count - 1; i >= 0; i--)
+        {
+            characters[i].Update(deltaTime);
+        }
     }
 
     /// <summary>

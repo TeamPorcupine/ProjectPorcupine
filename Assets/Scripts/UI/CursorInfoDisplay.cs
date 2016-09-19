@@ -46,7 +46,7 @@ public class CursorInfoDisplay
         for (int i = 0; i < mc.GetDragObjects().Count; i++)
         {
             Tile t1 = GetTileUnderDrag(mc.GetDragObjects()[i].transform.position);
-            if (WorldController.Instance.World.IsFurniturePlacementValid(bmc.buildModeType, t1) && t1.PendingBuildJob == null)
+            if (World.Current.FurnitureManager.IsPlacementValid(bmc.buildModeType, t1) && t1.PendingBuildJob == null)
             {
                 validPostionCount++;
             }

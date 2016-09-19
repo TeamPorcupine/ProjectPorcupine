@@ -192,7 +192,7 @@ public class FurnitureWorkshop
         {
             if (outPlace.IsEmpty)
             {
-                World.Current.inventoryManager.PlaceInventory(outPlace.Tile, new Inventory(outPlace.ObjectType, outPlace.Amount));
+                World.Current.InventoryManager.PlaceInventory(outPlace.Tile, new Inventory(outPlace.ObjectType, outPlace.Amount));
             }
             else
             {
@@ -222,7 +222,7 @@ public class FurnitureWorkshop
             Inventory inv = jobInvReq.Value;
             if (inv != null && inv.StackSize > 0)
             {
-                World.Current.inventoryManager.PlaceInventory(job.tile, jobInvReq.Value);
+                World.Current.InventoryManager.PlaceInventory(job.tile, jobInvReq.Value);
                 job.tile.Inventory.Locked = true;
             }
         }

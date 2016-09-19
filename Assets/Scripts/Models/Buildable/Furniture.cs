@@ -72,6 +72,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// TODO: Implement object rotation
     /// <summary>
     /// Initializes a new instance of the <see cref="Furniture"/> class.
+    /// This constructor is used to create prototypes and should never be used ouside the Prototype Manager.
     /// </summary>
     public Furniture()
     {
@@ -93,8 +94,10 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         LinksToNeighbour = string.Empty;
     }
 
-    // Copy Constructor -- don't call this directly, unless we never
-    // do ANY sub-classing. Instead use Clone(), which is more virtual.
+    /// <summary>
+    /// Copy Constructor -- don't call this directly, unless we never
+    /// do ANY sub-classing. Instead use Clone(), which is more virtual.
+    /// </summary>
     private Furniture(Furniture other)
     {
         Type = other.Type;
@@ -753,7 +756,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         Job job = new Job(
             null,
             Type,
-            (theJob) => World.Current.JobComplete_FurnitureBuilding(theJob),
+            (theJob) => World.Current.FurnitureManager.ConstructJobCompleted(theJob),
             jobTime,
             invs.ToArray(),
             Job.JobPriority.High);
@@ -882,7 +885,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             foreach (Inventory inv in deconstructInventory)
             {
                 inv.MaxStackSize = PrototypeManager.Inventory.Get(inv.Type).maxStackSize;
-                World.Current.inventoryManager.PlaceInventoryAround(Tile, inv.Clone());
+                World.Current.InventoryManager.PlaceInventoryAround(Tile, inv.Clone());
             }
         }
 

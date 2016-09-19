@@ -21,29 +21,29 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
 
         // Register our callback so that our GameObject gets updated whenever
         // the tile's type changes.
-        world.OnFurnitureCreated += OnCreated;
+        world.FurnitureManager.Created += OnCreated;
 
         // Go through any EXISTING furniture (i.e. from a save that was loaded OnEnable) and call the OnCreated event manually.
-        foreach (Furniture furn in world.furnitures)
+        foreach (Furniture furniture in world.FurnitureManager)
         {
-            OnCreated(furn);
+            OnCreated(furniture);
         }
     }
 
     public override void RemoveAll()
     {
-        world.OnFurnitureCreated -= OnCreated;
+        world.FurnitureManager.Created -= OnCreated;
 
-        foreach (Furniture furn in world.furnitures)
+        foreach (Furniture furniture in world.FurnitureManager)
         {
-            furn.Changed -= OnChanged;
-            furn.Removed -= OnRemoved;
-            furn.IsOperatingChanged -= OnIsOperatingChanged;
+            furniture.Changed -= OnChanged;
+            furniture.Removed -= OnRemoved;
+            furniture.IsOperatingChanged -= OnIsOperatingChanged;
         }
 
-        foreach (Furniture furn in powerStatusGameObjectMap.Keys)
+        foreach (Furniture furniture in powerStatusGameObjectMap.Keys)
         {
-            GameObject.Destroy(powerStatusGameObjectMap[furn]);
+            GameObject.Destroy(powerStatusGameObjectMap[furniture]);
         }
             
         powerStatusGameObjectMap.Clear();
@@ -59,11 +59,11 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
         return s;
     }
 
-    public Sprite GetSpriteForFurniture(Furniture furn)
+    public Sprite GetSpriteForFurniture(Furniture furniture)
     {
-        string spriteName = furn.GetSpriteName();
+        string spriteName = furniture.GetSpriteName();
 
-        if (furn.LinksToNeighbour == string.Empty || furn.OnlyUseDefaultSpriteName)
+        if (furniture.LinksToNeighbour == string.Empty || furniture.OnlyUseDefaultSpriteName)
         {
             return SpriteManager.GetSprite("Furniture", spriteName);
         }
@@ -72,21 +72,21 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
         spriteName += "_";
 
         // Check for neighbours North, East, South, West, Northeast, Southeast, Southwest, Northwest
-        int x = furn.Tile.X;
-        int y = furn.Tile.Y;
+        int x = furniture.Tile.X;
+        int y = furniture.Tile.Y;
         string suffix = string.Empty;
 
-        suffix += GetSuffixForNeighbour(furn, x, y + 1, furn.Tile.Z, "N");
-        suffix += GetSuffixForNeighbour(furn, x + 1, y, furn.Tile.Z, "E");
-        suffix += GetSuffixForNeighbour(furn, x, y - 1, furn.Tile.Z, "S");
-        suffix += GetSuffixForNeighbour(furn, x - 1, y, furn.Tile.Z, "W");
+        suffix += GetSuffixForNeighbour(furniture, x, y + 1, furniture.Tile.Z, "N");
+        suffix += GetSuffixForNeighbour(furniture, x + 1, y, furniture.Tile.Z, "E");
+        suffix += GetSuffixForNeighbour(furniture, x, y - 1, furniture.Tile.Z, "S");
+        suffix += GetSuffixForNeighbour(furniture, x - 1, y, furniture.Tile.Z, "W");
 
         // Now we check if we have the neighbours in the cardinal directions next to the respective diagonals
         // because pure diagonal checking would leave us with diagonal walls and stockpiles, which make no sense.
-        suffix += GetSuffixForDiagonalNeighbour(suffix, "N", "E", furn, x + 1, y + 1, furn.Tile.Z);
-        suffix += GetSuffixForDiagonalNeighbour(suffix, "S", "E", furn, x + 1, y - 1, furn.Tile.Z);
-        suffix += GetSuffixForDiagonalNeighbour(suffix, "S", "W", furn, x - 1, y - 1, furn.Tile.Z);
-        suffix += GetSuffixForDiagonalNeighbour(suffix, "N", "W", furn, x - 1, y + 1, furn.Tile.Z);
+        suffix += GetSuffixForDiagonalNeighbour(suffix, "N", "E", furniture, x + 1, y + 1, furniture.Tile.Z);
+        suffix += GetSuffixForDiagonalNeighbour(suffix, "S", "E", furniture, x + 1, y - 1, furniture.Tile.Z);
+        suffix += GetSuffixForDiagonalNeighbour(suffix, "S", "W", furniture, x - 1, y - 1, furniture.Tile.Z);
+        suffix += GetSuffixForDiagonalNeighbour(suffix, "N", "W", furniture, x - 1, y + 1, furniture.Tile.Z);
 
         // For example, if this object has all eight neighbours of
         // the same type, then the string will look like:

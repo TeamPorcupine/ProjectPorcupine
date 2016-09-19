@@ -16,23 +16,23 @@ public class UtilitySpriteController : BaseSpriteController<Utility>
     {
         // Register our callback so that our GameObject gets updated whenever
         // the tile's type changes.
-        world.OnUtilityCreated += OnCreated;
+        world.UtilityManager.Created += OnCreated;
 
         // Go through any EXISTING utility (i.e. from a save that was loaded OnEnable) and call the OnCreated event manually.
-        foreach (Utility util in world.utilities)
+        foreach (Utility utility in world.UtilityManager)
         {
-            OnCreated(util);
+            OnCreated(utility);
         }
     }
 
     public override void RemoveAll()
     {
-        world.OnUtilityCreated -= OnCreated;
+        world.UtilityManager.Created -= OnCreated;
 
-        foreach (Utility util in world.utilities)
+        foreach (Utility utility in world.UtilityManager)
         {
-            util.Changed -= OnChanged;
-            util.Removed -= OnRemoved;
+            utility.Changed -= OnChanged;
+            utility.Removed -= OnRemoved;
         }
 
         base.RemoveAll();
