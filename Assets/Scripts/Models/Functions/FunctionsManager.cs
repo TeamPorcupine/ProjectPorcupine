@@ -115,7 +115,6 @@ public class FunctionsManager
 
         WorldController.Instance.World.PlaceFurniture(theJob.JobObjectType, theJob.tile);
 
-
         // FIXME: I don't like having to manually and explicitly set
         // flags that prevent conflicts. It's too easy to forget to set/clear them!
         theJob.tile.PendingBuildJob = null;
