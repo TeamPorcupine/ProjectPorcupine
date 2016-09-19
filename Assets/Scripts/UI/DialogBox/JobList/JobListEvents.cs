@@ -21,13 +21,13 @@ public class JobListEvents : MonoBehaviour
     public Text jobText;
 
     /// <summary>
-    /// Deletes the job list item after cancelling the job.
+    /// Deletes the job list item after canceling the job.
     /// </summary>
     public void DeleteSelf()
     {
         string charName = GetNameFromItem();
         
-        World.Current.GetCharacterFromName(charName).AbandonJob(true);
+        World.Current.CharacterManager.GetFromName(charName).AbandonJob(true);
         JobListItem.SetParent(null);
         GameObject.Destroy(JobListItem.gameObject);
     }
@@ -40,14 +40,14 @@ public class JobListEvents : MonoBehaviour
     {
         string charName = GetNameFromItem();
         Vector3 charPosition;
-        Character currentCharacter = World.Current.GetCharacterFromName(charName);
+        Character currentCharacter = World.Current.CharacterManager.GetFromName(charName);
 
         charPosition = new Vector3(currentCharacter.X, currentCharacter.Y, -10); 
         GameObject.Find("Main Camera").transform.position = charPosition;
     }
 
     /// <summary>
-    /// Util function to return the name of the character that's in the item.
+    /// Utility function to return the name of the character that's in the item.
     /// </summary>
     /// <returns>The character's name.</returns>
     private string GetNameFromItem()

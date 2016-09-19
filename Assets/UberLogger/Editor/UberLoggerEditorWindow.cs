@@ -184,8 +184,11 @@ public class UberLoggerEditorWindow : EditorWindow
             }
         }
 
-        currentChannelIndex = GUILayout.SelectionGrid(currentChannelIndex, channels.ToArray(), channels.Count);
-        if(CurrentChannel!=channels[currentChannelIndex])
+        //Changed SelectionGrid to Popup
+        currentChannelIndex = EditorGUILayout.Popup(currentChannelIndex, channels.ToArray());
+
+        //currentChannelIndex = GUILayout.SelectionGrid(currentChannelIndex, channels.ToArray(), channels.Count);
+        if (CurrentChannel!=channels[currentChannelIndex])
         {
             CurrentChannel = channels[currentChannelIndex];
             ClearSelectedMessage();

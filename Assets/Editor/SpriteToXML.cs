@@ -26,7 +26,7 @@ public class SpriteToXML : EditorWindow
     private Version version = Version.v1;
 
     private string[] pixelPerUnitOptions = new string[] { "16", "32", "64", "128", "256", "512", "1024" };
-    private int index = 1;
+    private int index = 2;
 
     private string[] columnRowOptions = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10" };
     private int columnIndex = 0;
@@ -138,6 +138,24 @@ public class SpriteToXML : EditorWindow
             EditorGUILayout.EndVertical();
             EditorGUILayout.Space();            
         }
+        
+        EditorGUILayout.BeginVertical("Box");
+        GUILayout.Label("Image must be in this folder: " + spriteToXmlPath);
+        if (GUILayout.Button("Open Image Folder"))
+        {
+            if (Directory.Exists(spriteToXmlPath))
+            {
+                EditorUtility.RevealInFinder(spriteToXmlPath);
+            }
+            else
+            {
+                Directory.CreateDirectory(spriteToXmlPath);
+                EditorUtility.RevealInFinder(spriteToXmlPath);
+            }            
+        }
+
+        EditorGUILayout.EndVertical();
+        EditorGUILayout.Space();
 
         if (GUILayout.Button("Set Output Folder"))
         {
@@ -348,19 +366,14 @@ public class SpriteToXML : EditorWindow
         if (textureLoaded == true)
         {            
             GUILayout.Label(imageName + " Preview:", EditorStyles.boldLabel);
-        }
-        else
-        {            
-            GUILayout.Label("Preview:", EditorStyles.boldLabel);
-        }
+            EditorGUILayout.BeginVertical("Box");
 
-        EditorGUILayout.BeginVertical("Box");
+            scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition, GUILayout.Width(446), GUILayout.Height(210));
+            GUILayout.Label(myTexture);
 
-        scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition, GUILayout.Width(446), GUILayout.Height(210));
-        GUILayout.Label(myTexture);
-
-        EditorGUILayout.EndScrollView();        
-        EditorGUILayout.EndVertical();        
+            EditorGUILayout.EndScrollView();
+            EditorGUILayout.EndVertical();
+        }                 
 
         if (textureLoaded == true && outputDirPath != string.Empty)
         {
@@ -412,8 +425,7 @@ public class SpriteToXML : EditorWindow
             imageName = Path.GetFileNameWithoutExtension(filePath);
             imageExt = Path.GetExtension(filePath);
             Debug.ULogChannel("SpriteToXML", imageName + " Loaded");
-            textureLoaded = true;
-            ////GenerateXML(filePath, imageTexture);
+            textureLoaded = true;            
         }        
     }
 

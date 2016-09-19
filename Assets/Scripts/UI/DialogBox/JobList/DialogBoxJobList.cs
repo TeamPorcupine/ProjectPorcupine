@@ -25,14 +25,9 @@ public class DialogBoxJobList : DialogBox
     // Also, it seems that if this "sleep" period isn't here, you wouldn't be able to
     // click on the delete button, as well as it keeps those buttons well aligned (try
     // to remove it and you'll get what I mean).
-    private int waitPeriod = 5;
+    private const int WaitPeriod = 5;
 
     private int currentWait = 0;
-
-    public override void ShowDialog()
-    {
-        gameObject.SetActive(true);
-    }
 
     public override void CloseDialog()
     {
@@ -49,7 +44,7 @@ public class DialogBoxJobList : DialogBox
 
     private void Update()
     {
-        if (currentWait == 5)
+        if (currentWait == WaitPeriod)
         {
             currentWait = 0;
             while (JobList.childCount > 0)
@@ -62,10 +57,11 @@ public class DialogBoxJobList : DialogBox
             // Localization
             string[] formatValues;
             formatValues = new string[0];
-            foreach (Character c in World.Current.characters)
+
+            foreach (Character character in World.Current.CharacterManager)
             {
                 GameObject go = (GameObject)Instantiate(JobListItemPrefab, JobList);
-                go.GetComponentInChildren<Text>().text = c.GetName() + " - " + LocalizationTable.GetLocalization(c.GetJobDescription(), formatValues);
+                go.GetComponentInChildren<Text>().text = character.GetName() + " - " + LocalizationTable.GetLocalization(character.GetJobDescription(), formatValues);
             }
 
             JobList.GetComponentInParent<ScrollRect>().scrollSensitivity = JobList.childCount / 2;

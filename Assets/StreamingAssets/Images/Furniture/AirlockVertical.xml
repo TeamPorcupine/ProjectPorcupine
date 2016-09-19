@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Sprites>
+	<Sprite name="AirlockVertical_0"	x="0"	y="2"	w="1"	h="2"	pivotY="0.25" pixelPerUnit="64" />
+	<Sprite name="AirlockVertical_1"	x="1"	y="2"	w="1"	h="2"	pivotY="0.25" pixelPerUnit="64" />
+	<Sprite name="AirlockVertical_2"	x="2"	y="2"	w="1"	h="2"	pivotY="0.25" pixelPerUnit="64" />
+	<Sprite name="AirlockVertical_3"	x="0"	y="0"	w="1"	h="2"	pivotY="0.25" pixelPerUnit="64" />
+	<Sprite name="AirlockVertical_4"	x="1"	y="0"	w="1"	h="2"	pivotY="0.25" pixelPerUnit="64" />
+	<Sprite name="AirlockVertical_5"	x="2"	y="0"	w="1"	h="2"	pivotY="0.25" pixelPerUnit="64" />
+</Sprites>

@@ -12,6 +12,9 @@ using UnityEngine;
 
 namespace Animation
 {
+    /// <summary>
+    /// Animations for furniture. Can have several "states" that can be switched using SetState.
+    /// </summary>
     public class FurnitureAnimation
     {
         // current shown frame
@@ -24,7 +27,7 @@ namespace Animation
         private Dictionary<string, SpritenameAnimation> animations;
         private SpritenameAnimation currentAnimation;
         private string currentAnimationState;
-        
+
         public FurnitureAnimation()
         {            
             animations = new Dictionary<string, SpritenameAnimation>();
@@ -52,46 +55,86 @@ namespace Animation
         public void Update(float deltaTime)
         {
             currentAnimation.Update(deltaTime);
-
-            if (prevFrameIndex != currentAnimation.CurrentFrame)
-            {
-                ShowSprite(currentAnimation.CurrentFrameName);
-                prevFrameIndex = currentAnimation.CurrentFrame;
-            }            
+            CheckFrameChange();
         }
-        
+
+        /// <summary>
+        /// Furniture has changed, so make sure the sprite is updated.
+        /// </summary>
+        public void OnFurnitureChanged()
+        {
+            ShowSprite(GetSpriteName());
+        }
+
+        /// <summary>
+        /// Set the animation frame depending on a value. The currentvalue percent of the maxvalue will determine which frame is shown.
+        /// </summary>
+        public void SetProgressValue(float percent)
+        {
+            currentAnimation.SetProgressValue(percent);
+            CheckFrameChange();
+        }
+
+        /// <summary>
+        /// Set the animation state. Will only have an effect if stateName is different from current animation stateName.
+        /// </summary>
         public void SetState(string stateName)
         {
             if (animations.ContainsKey(stateName) == false)
             {
-                Debug.ULogErrorChannel("Animation", "SetState tries to set " + stateName + " which doesn't exist.");
                 return;
             }
 
-            if (stateName != currentAnimationState)
+            if (stateName == currentAnimationState)
             {
-                Debug.ULogChannel("ani", "setstate " + stateName);
-                currentAnimationState = stateName;
-                currentAnimation = animations[currentAnimationState];
-                currentAnimation.Play();
-                ShowSprite(currentAnimation.CurrentFrameName);
-            }            
-        }
+                return;
+            }
 
-        public void AddAnimation(string state, List<string> spriteNames, float fps, bool looping)
-        {
-            animations.Add(state, new SpritenameAnimation(state, spriteNames.ToArray(), 1 / fps, looping));
-
-            currentAnimationState = state;
+            currentAnimationState = stateName;
             currentAnimation = animations[currentAnimationState];
-            prevFrameIndex = 0;
+            currentAnimation.Play();
+            ShowSprite(currentAnimation.CurrentFrameName);                       
         }
 
+        /// <summary>
+        /// Get spritename from the current animation.
+        /// </summary>
+        public string GetSpriteName()
+        {            
+            return currentAnimation.CurrentFrameName;
+        }
+
+        /// <summary>
+        /// Add animation to furniture. First animation added will be default for sprites e.g. ghost image when placing furniture.
+        /// </summary>
+        public void AddAnimation(string state, List<string> spriteNames, float fps, bool looping, bool valueBased)
+        {
+            animations.Add(state, new SpritenameAnimation(state, spriteNames.ToArray(), 1 / fps, looping, false, valueBased));
+
+            // set default state to first state entered - most likely "idle"
+            if (string.IsNullOrEmpty(currentAnimationState))
+            {
+                currentAnimationState = state;
+                currentAnimation = animations[currentAnimationState];
+                prevFrameIndex = 0;
+            }
+        }
+
+        // check if time or value requires us to show a new animationframe
+        private void CheckFrameChange()
+        {
+            if (prevFrameIndex != currentAnimation.CurrentFrame)
+            {
+                ShowSprite(currentAnimation.CurrentFrameName);
+                prevFrameIndex = currentAnimation.CurrentFrame;
+            }
+        }
+        
         private void ShowSprite(string spriteName)
         {
             if (Renderer != null)
             {
-                Renderer.sprite = SpriteManager.current.GetSprite("Furniture", spriteName);
+                Renderer.sprite = SpriteManager.GetSprite("Furniture", spriteName);
             }
         }
     }

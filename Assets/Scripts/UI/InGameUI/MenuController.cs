@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
 // This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
@@ -15,35 +15,21 @@ public class MenuController : MonoBehaviour
 {
     public static MenuController Instance;
 
-    // The sub menus of the build menu (furniture, floor..... later - power, security, drones).
-    public GameObject furnitureMenu;
-    public GameObject floorMenu;
-    
     public Button buttonConstructor;
     public Button buttonWorld;
     public Button buttonWork;
     public Button buttonOptions;
-    public Button buttonSettings;
     public Button buttonQuests;
 
-    private DialogBoxManager dbm;
+    private DialogBoxManager dialogBoxManager;
 
-    // The left build menu.
-    private GameObject constructorMenu;
+    private MenuLeft menuLeft;
 
     // Deactivates All Menus.
     public void DeactivateAll()
     {
-        constructorMenu.SetActive(false);
-        DeactivateSubs();
-    }
-
-    // Deactivates any sub menu of the constrution options.
-    public void DeactivateSubs()
-    {
+        menuLeft.CloseMenu();
         WorldController.Instance.mouseController.ClearMouseMode(true);
-        furnitureMenu.SetActive(false);
-        floorMenu.SetActive(false);
     }
 
     // Toggles whether menu is active.
@@ -54,21 +40,23 @@ public class MenuController : MonoBehaviour
 
     public void OnButtonConstruction()
     {
-        if (constructorMenu.activeSelf)
+        if (menuLeft.CurrentlyOpen != null && menuLeft.CurrentlyOpen.gameObject.name == "ConstructionMenu")
         {
-            DeactivateAll();
-        } 
-        else 
-        { 
-            DeactivateAll();
-            constructorMenu.SetActive(true);
+            menuLeft.CloseMenu();
+        }
+        else
+        {
+            menuLeft.OpenMenu("ConstructionMenu");
         }
     }
 
     public void OnButtonWork()
     {
-        DeactivateAll();
-        dbm.dialogBoxJobList.ShowDialog();
+        if (!WorldController.Instance.IsModal)
+        {
+            DeactivateAll();
+            dialogBoxManager.dialogBoxJobList.ShowDialog();
+        }
     }
 
     public void OnButtonWorld()
@@ -84,7 +72,7 @@ public class MenuController : MonoBehaviour
         if (!WorldController.Instance.IsModal)
         {
             DeactivateAll();
-            dbm.dialogBoxQuests.ShowDialog();
+            dialogBoxManager.dialogBoxQuests.ShowDialog();
         }
     }
 
@@ -93,29 +81,22 @@ public class MenuController : MonoBehaviour
         if (!WorldController.Instance.IsModal)
         {
             DeactivateAll();
-            dbm.dialogBoxOptions.ShowDialog();
-        }
-    }
+            if (dialogBoxManager.dialogBoxSettings.isActiveAndEnabled)
+            {
+                dialogBoxManager.dialogBoxSettings.CloseDialog();
+            }
 
-    public void OnButtonSettings()
-    {
-        if (!WorldController.Instance.IsModal)
-        {
-            DeactivateAll();
-            dbm.dialogBoxSettings.ShowDialog();
+            dialogBoxManager.dialogBoxOptions.ShowDialog();
         }
     }
 
     // Use this for initialization.
     private void Start()
     {
-        dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
+        dialogBoxManager = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
+        menuLeft = GameObject.Find("MenuLeft").GetComponent<MenuLeft>();
 
-        furnitureMenu = GameObject.Find("MenuFurniture");
-        floorMenu = GameObject.Find("MenuFloor");
-        constructorMenu = GameObject.Find("MenuConstruction");
-
-        // Add liseners here.
+        // Add listeners here.
         buttonConstructor.onClick.AddListener(delegate
         {
             OnButtonConstruction();
@@ -134,11 +115,6 @@ public class MenuController : MonoBehaviour
         buttonOptions.onClick.AddListener(delegate
         {
             OnButtonOptions();
-        });
-
-        buttonSettings.onClick.AddListener(delegate
-        {
-            OnButtonSettings();
         });
 
         buttonQuests = CreateButton("menu_quests");

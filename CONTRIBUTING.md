@@ -25,10 +25,10 @@ If you would like to contribute to this project by modifying/adding to the progr
 6. Make your changes.
  * Avoid making changes to more files than necessary for your feature (i.e. refrain from combining your "real" pull request with incidental bug fixes). This will simplify the merging process and make your changes clearer.
  * Very much avoid making changes to the Unity-specific files, like the scene and the project settings unless absolutely necessary. Changes here are very likely to cause difficult to merge conflicts. Work in code as much as possible. (We will be trying to change the UI to be more code-driven in the future.) Making changes to prefabs should generally be safe -- but create a copy of the main scene and work there instead (then delete your copy of the scene before committing).
-7. Commit your changes. From the command line:  
- * `git add Assets/my-changed-file.cs`  
- * `git add Assets/my-other-changed-file.cs`  
- * `git commit -m "A descriptive commit message"`  
+7. Commit your changes. From the command line:
+ * `git add Assets/my-changed-file.cs`
+ * `git add Assets/my-other-changed-file.cs`
+ * `git commit -m "A descriptive commit message"`
 8. While you were working some other pull request might have gone in the breaks your stuff or vice versa. This can be a *merge conflict* but also conflicting game logic or code. Before you test, merge with master.
  * `git fetch upstream`
  * `git merge upstream/master`
@@ -41,34 +41,38 @@ If you would like to contribute to this project by modifying/adding to the progr
 
 # Resolving Merge Conflicts
 
-Depending on the order that Pull Requests get processed, your PR may result in a conflict and become un-mergable.  To correct this, do the following from the command line:  
+Depending on the order that Pull Requests get processed, your PR may result in a conflict and become un-mergable.  To correct this, do the following from the command line:
 
-Switch to your branch: `git checkout my-feature-branch-name`  
-Pull in the lastest upstream changes: `git pull upstream master`  
-Find out what files have a conflict: `git status`  
+Switch to your branch: `git checkout my-feature-branch-name`
+Pull in the latest upstream changes: `git pull upstream master`
+Find out what files have a conflict: `git status`
 
-Edit the conflicting file(s) and look for a block that looks like this:  
-    `<<<<<<< HEAD`  
-    `my awesome change`  
-    `=======`  
-    `some other person's less awesome change`  
-    `>>>>>>> some-branch`  
+Edit the conflicting file(s) and look for a block that looks like this:
+```
+<<<<<<< HEAD
+my awesome change
+=======
+some other person's less awesome change
+>>>>>>> some-branch
+```
 
 Replace all five (or more) lines with the correct version (yours, theirs, or
 a combination of the two).  ONLY the correct content should remain (none of
-that "<<<<< HEAD" stuff.)
+that `<<<<< HEAD` stuff.)
 
-Then re-commit and re-push the file.  
+Then re-commit and re-push the file.
 
-  `git add the-changed-file.cs`  
-  `git commit -m "Resolved conflict between this and PR #123"`  
-  `git push origin my-feature-branch-name`  
+```
+git add the-changed-file.cs
+git commit -m "Resolved conflict between this and PR #123"
+git push origin my-feature-branch-name
+```
 
 The pull request should automatically update to reflect your changes.
 
 # Unity Version
-We are using Unity version 5.4 .  
-All pull requests must build in 5.4 to be a valid patch.  
+We are using Unity version 5.4.
+All pull requests must build in 5.4 to be a valid patch.
 
 # General resources
 * [Github Tutorial by Quill18](https://www.youtube.com/watch?v=R2fl17eEpwI)
@@ -85,26 +89,53 @@ We have standardized on Microsoft's [C# Coding Conventions](https://msdn.microso
 
 * Avoid using 'var', even when the type would be clear from context. Verbose typing is best typing.
 
-As a TL;DR on our coding practises, adhere to the following example:
+As a TL;DR on our coding practices, adhere to the following example:
 
 ```c#
+// All files begin with the following license header (remove this line):
+#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
+
+using System; // System usings go first
+using UnityEngine; // followed by any other using directives
+
 // Use camelCasing unless stated otherwise.
 // Descriptive names for variables/methods should be used.
 // Fields, properties and methods should always specify their scope, aka private/protected/internal/public.
 
 // Interfaces start with an I and should use PascalCasing.
-interface IInterfaceable { }
+public interface IInterfaceable
+{
+}
 
 // Class names should use PascalCasing.
 // Braces are on a new line. ;)
-class Class
-{
-    // Properties should use PascalCasing.
-    public int MemberProperty { get; set; }
 
-    // Private fields should be camelCased. 
+/// <summary>
+/// Xml documentation comments are encouraged. Describe public APIs and the intent of code, not implementation details.
+/// </summary>
+public class Class
+{
+    // Private fields should be camelCased.
     // Use properties for any field that needs access levels other than private
     private string someField;
+
+    // Events should use PascalCasing as well.
+    // ✓ DO name events with a verb or a verb phrase.
+    // Examples include Clicked, Painting, DroppedDown, and so on.
+    // ✓ DO give events names with a concept of before and after, using the present and past tenses.
+    // For example, a close event that is raised before a window is closed would be called Closing,
+    // and one that is raised after the window is closed would be called Closed.
+    public event EventHandler<EventArgs> SomeEvent;
+
+    // Properties should use PascalCasing.
+    public int MemberProperty { get; set; }
 
     // Methods should use PascalCasing.
     // Method parameters should be camelCased.
@@ -113,14 +144,6 @@ class Class
         // Local variables should also be camelCased.
         int myLocalVariable = 0;
     }
-
-    // Events should use PascalCasing as well.
-    // ✓ DO name events with a verb or a verb phrase.
-    // Examples include Clicked, Painting, DroppedDown, and so on.
-    // ✓ DO give events names with a concept of before and after, using the present and past tenses.
-    // For example, a close event that is raised before a window is closed would be called Closing, and one that is raised 
-    // after the window is closed would be called Closed.
-    public event SomeEvent;
 }
 ```
 
@@ -133,9 +156,9 @@ It is also highly recommended that you install [StyleCop](https://github.com/Tea
 
 ## Adding Furniture and Inventory
 
-We have standardized the objectTypes of Furniture and Inventory to match `type_material`, such as `wall_steel` and `generator_oxygen` or `generator_power`, for localization a matching prefix is added automaticly to objectType such as `inv` and `furn`. This means a few things:
+We have standardized the Types of Furniture and Inventory to match `type_material`, such as `wall_steel` and `generator_oxygen` or `generator_power`, for localization a matching prefix is added automatically to Type such as `inv` and `furn`. This means a few things:
 
-* When adding a new Furniture or inventory the files should have the objectType "type_material", you could give it the more english sounding name, as of now name is not used for anything.
+* When adding a new Furniture or inventory the files should have the Type "type_material", you could give it the more english sounding name, as of now name is not used for anything.
 
 * For machines the convention will be `whatItDoes_whatItMakes`.
 
@@ -145,16 +168,16 @@ We have standardized the objectTypes of Furniture and Inventory to match `type_m
 
 * In Localization the description can be set with `inv_type_material_desc=Some cool description.` and `furn_type_material_desc=Some awesome description`.
 
-* For image files and their xml files use the objectType as the name.
+* For image files and their xml files use the Type as the name.
 
 ## Best Practices for Contributing
 [Best Practices for Contributing]: #best-practices-for-contributing
 * Before you start coding, open an issue so that the community can discuss your change to ensure it is in line with the goals of the project and not being worked on by someone else. This allows for discussion and fine tuning of your feature and results in a more succent and focused additions.
     * If you are fixing a small glitch or bug, you may make a PR without opening an issue.
-    * If you are adding a large feaure, create an issue prefixed with "Discussion:" and be sure to take community feedback and get general approval before making your change and submitting a PR.
+    * If you are adding a large feature, create an issue prefixed with "Discussion:" and be sure to take community feedback and get general approval before making your change and submitting a PR.
 
 * Pull Requests represent final code. Please ensure they are:
-     * Well tested by the author. It is the author's job to ensure their code works as expected.  
+     * Well tested by the author. It is the author's job to ensure their code works as expected.
      * Be free of unnecessary log calls. Logging is great for debugging, but when a PR is made, log calls should only be present when there is an actual error or to warn of an unimplemented feature.
 
    If your code is untested, log heavy, or incomplete, prefix your PR with "WIP", so others know it is still being tested and shouldn't be considered for merging yet.

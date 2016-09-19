@@ -69,7 +69,7 @@ public class DialogBoxTradeItem : MonoBehaviour
 
     private void BindInterface()
     {
-        ItemNameText.text = item.ObjectType;
+        ItemNameText.text = item.Type;
         PlayerStockText.text = (item.PlayerStock + item.TradeAmount).ToString();
         PlayerSellItemPriceText.text = item.PlayerSellItemPrice.ToString("N2");
         TraderStockText.text = (item.TraderStock - item.TradeAmount).ToString();

@@ -5,19 +5,19 @@
 -- file LICENSE, which is part of this source code package, for details.
 -------------------------------------------------------
 
-function Precondition_Event_NewCrewMember( gameEvent, deltaTime )
-	gameEvent.AddTimer(deltaTime)
-	local timer = gameEvent.GetTimer()
-	if (timer >= 30.0) then
-		gameEvent.ResetTimer()
-		return true
-	end
+function Precondition_Event_NewCrewMember(gameEvent, deltaTime)
+    gameEvent.AddTimer(deltaTime)
+    local timer = gameEvent.GetTimer()
+    if (timer >= 30.0) then
+        gameEvent.ResetTimer()
+        return true
+    end
 end
 
 function Execute_Event_NewCrewMember( gameEvent )
-	local tile = World.Current.GetTileAt(World.Current.Width / 2, World.Current.Height / 2, 0)
-	c = World.Current.CreateCharacter(tile)
-	ModUtils.ULog("GameEvent: New Crew Member spawned named '" .. c.GetName() .. "'.")
+    local tile = World.Current.GetTileAt(World.Current.Width / 2, World.Current.Height / 2, 0)
+    local character = World.Current.CharacterManager.Create(tile)
+    ModUtils.ULog("GameEvent: New Crew Member spawned named '" .. character.GetName() .. "'.")
 end
 
 ModUtils.ULog("GameEvent.lua loaded")

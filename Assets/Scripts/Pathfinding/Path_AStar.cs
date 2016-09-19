@@ -25,9 +25,9 @@ public class Path_AStar
         this.path = path;
     }
 
-    public Path_AStar(World world, Tile tileStart, Tile tileEnd, string objectType = null, int desiredAmount = 0, bool canTakeFromStockpile = false, bool lookingForFurn = false)
+    public Path_AStar(World world, Tile tileStart, Tile tileEnd, string type = null, int desiredAmount = 0, bool canTakeFromStockpile = false, bool lookingForFurn = false)
     {
-        // if tileEnd is null, then we are simply scanning for the nearest objectType.
+        // if tileEnd is null, then we are simply scanning for the nearest Type.
         // We can do this by ignoring the heuristic component of AStar, which basically
         // just turns this into an over-engineered Dijkstra's algo
 
@@ -109,10 +109,10 @@ public class Path_AStar
             {
                 // We don't have a POSITIONAL goal, we're just trying to find
                 // some kind of inventory or furniture.  Have we reached it?
-                if (current.data.Inventory != null && current.data.Inventory.ObjectType == objectType && lookingForFurn == false && current.data.Inventory.Locked == false)
+                if (current.data.Inventory != null && current.data.Inventory.Type == type && lookingForFurn == false && current.data.Inventory.Locked == false)
                 {
                     // Type is correct and we are allowed to pick it up
-                    if (canTakeFromStockpile || current.data.Furniture == null || current.data.Furniture.IsStockpile() == false)
+                    if (canTakeFromStockpile || current.data.Furniture == null || current.data.Furniture.HasTypeTag("Storage") == false)
                     {
                         // Stockpile status is fine
                         Reconstruct_path(came_From, current);
@@ -120,7 +120,7 @@ public class Path_AStar
                     }
                 }
 
-                if (current.data.Furniture != null && current.data.Furniture.ObjectType == objectType && lookingForFurn)
+                if (current.data.Furniture != null && current.data.Furniture.Type == type && lookingForFurn)
                 {
                     // Type is correct
                     Reconstruct_path(came_From, current);
