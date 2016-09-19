@@ -148,6 +148,8 @@ public class BuildModeController
                     WorldController.Instance.World.jobQueue.Enqueue(job);
 
                     // Let our workspot tile know it is reserved for us
+                    // FIXME This was commented out because it breaks the validity check when trying to build most furniture. 
+                    // It specifically breaks tile2.IsReservedWorkSpot() in Furniture:DefaultIsValidPosition
                     //World.Current.ReserveTileAsWorkSpot((Furniture)job.buildablePrototype, job.tile);
                 }
             }
