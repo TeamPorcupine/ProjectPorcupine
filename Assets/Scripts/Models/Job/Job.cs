@@ -285,6 +285,12 @@ public class Job : ISelectable, IPrototypable
             OnJobStopped(this);
         }
 
+        // If we are a furniture building job, Let our workspot tile know it is no longer reserved for us.
+        if (buildablePrototype != null)
+        {
+            WorldController.Instance.World.UnreserveTileAsWorkSpot((Furniture)buildablePrototype, tile);
+        }
+
         // Remove the job out of both job queues.
         World.Current.jobWaitingQueue.Remove(this);
         World.Current.jobQueue.Remove(this);

@@ -42,10 +42,12 @@ public class ModsManager
         LoadPrototypes("Events.xml", (text) => PrototypeManager.SchedulerEvent.LoadPrototypes(text));
         LoadPrototypes("Stats.xml", (text) => PrototypeManager.Stat.LoadPrototypes(text));
         LoadPrototypes("Quest.xml", (text) => PrototypeManager.Quest.LoadPrototypes(text));
+        LoadPrototypes("Headlines.xml", (text) => PrototypeManager.Headline.LoadPrototypes(text));
 
         LoadCharacterNames("CharacterNames.txt");
 
-        LoadSprites();
+        LoadDirectoryAssets("Images", (path) => SpriteManager.LoadSpriteFiles(path));
+        LoadDirectoryAssets("Audio", (path) => AudioManager.LoadAudioFiles(path));
     }
 
     public DirectoryInfo[] GetMods()
@@ -107,12 +109,12 @@ public class ModsManager
     /// Loads the given file from the given folder in the base and inside the mods and
     /// calls the Action with the file path.
     /// </summary>
-    /// <param name="folderName">Folder name.</param>
+    /// <param name="directoryName">Directory name.</param>
     /// <param name="fileName">File name.</param>
     /// <param name="readText">Called to handle the text reading and actual loading.</param>
-    private void LoadTextFile(string folderName, string fileName, Action<string> readText)
+    private void LoadTextFile(string directoryName, string fileName, Action<string> readText)
     {
-        string filePath = Path.Combine(Application.streamingAssetsPath, folderName);
+        string filePath = Path.Combine(Application.streamingAssetsPath, directoryName);
         filePath = Path.Combine(filePath, fileName);
         if (File.Exists(filePath))
         {
@@ -130,19 +132,24 @@ public class ModsManager
     }
 
     /// <summary>
-    /// Loads the all the sprites.
+    /// Loads the all the assets from the given directory.
     /// </summary>
-    private void LoadSprites()
+    /// <param name="directoryName">Directory name.</param>
+    /// <param name="readDirectory">Called to handle the loading of each file in the given directory.</param>
+    private void LoadDirectoryAssets(string directoryName, Action<string> readDirectory)
     {
-        string filePath = Path.Combine(Application.streamingAssetsPath, "Images");
-        SpriteManager.LoadSprites(filePath);
+        string directoryPath = Path.Combine(Application.streamingAssetsPath, directoryName);
+        if (Directory.Exists(directoryPath))
+        {
+            readDirectory(directoryPath);
+        }
 
         foreach (DirectoryInfo mod in mods)
         {
-            filePath = Path.Combine(mod.FullName, "Images");
-            if (Directory.Exists(filePath))
+            directoryPath = Path.Combine(mod.FullName, directoryName);
+            if (Directory.Exists(directoryPath))
             {
-                SpriteManager.LoadSprites(filePath);
+                readDirectory(directoryPath);
             }
         }
     }

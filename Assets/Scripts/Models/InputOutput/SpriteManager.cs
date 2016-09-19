@@ -44,7 +44,7 @@ public class SpriteManager
     /// <param name="spriteName">Sprite name.</param>
     public static Sprite GetSprite(string categoryName, string spriteName)
     {
-        Sprite sprite = new Sprite();
+        Sprite sprite = null;
 
         string spriteNamePlaceHolder = categoryName + "/" + PlaceHolderPrefix + spriteName;
         spriteName = categoryName + "/" + spriteName;
@@ -65,6 +65,12 @@ public class SpriteManager
         return sprite;
     }
 
+    /// <summary>
+    /// Determines if there is a sprite with the specified category and name.
+    /// </summary>
+    /// <returns><c>true</c> if there is a sprite with the specified category and name; otherwise, <c>false</c>.</returns>
+    /// <param name="categoryName">Category name.</param>
+    /// <param name="spriteName">Sprite name.</param>
     public static bool HasSprite(string categoryName, string spriteName)
     {
         string spriteNamePlaceHolder = categoryName + "/" + PlaceHolderPrefix + spriteName;
@@ -76,14 +82,14 @@ public class SpriteManager
     /// Loads the sprites from the given directory path.
     /// </summary>
     /// <param name="directoryPath">Directory path.</param>
-    public static void LoadSprites(string directoryPath)
+    public static void LoadSpriteFiles(string directoryPath)
     {
         // First, we're going to see if we have any more sub-directories,
         // if so -- call LoadSpritesFromDirectory on that.
         string[] subDirectories = Directory.GetDirectories(directoryPath);
         foreach (string subDirectory in subDirectories)
         {
-            LoadSprites(subDirectory);
+            LoadSpriteFiles(subDirectory);
         }
 
         string[] filesInDir = Directory.GetFiles(directoryPath);
@@ -141,7 +147,7 @@ public class SpriteManager
             {
                 string xmlText = File.ReadAllText(xmlPath);
 
-                // TODO: Loop through the xml file finding all the <sprite> tags
+                // Loop through the xml file finding all the <sprite> tags
                 // and calling LoadSprite once for each of them.
                 XmlTextReader reader = new XmlTextReader(new StringReader(xmlText));
 
