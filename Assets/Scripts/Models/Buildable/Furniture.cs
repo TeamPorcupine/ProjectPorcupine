@@ -82,6 +82,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         PathfindingModifier = 0f;
         Height = 1;
         Width = 1;
+        Rotation = 0f;
         DragType = "single";
     }
 
@@ -99,6 +100,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         RoomEnclosure = other.RoomEnclosure;
         Width = other.Width;
         Height = other.Height;
+        Rotation = other.Rotation;
         Tint = other.Tint;
         LinksToNeighbour = other.LinksToNeighbour;
 
@@ -303,6 +305,11 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// Gets the height of the furniture.
     /// </summary>
     public int Height { get; private set; }
+
+    /// <summary>
+    /// Gets/Set the rotation of the furniture.
+    /// </summary>
+    public float Rotation { get; set; }
 
     /// <summary>
     /// Gets the code used for Localization of the furniture.

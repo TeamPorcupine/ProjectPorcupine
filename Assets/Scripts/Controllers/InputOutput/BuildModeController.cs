@@ -134,7 +134,9 @@ public class BuildModeController
                     j.JobDescription = "job_build_" + furnitureType + "_desc";
                 }
 
-                j.buildablePrototype = PrototypeManager.Furniture.Get(furnitureType);
+                Furniture proto = PrototypeManager.Furniture.Get(furnitureType);
+                proto.Rotation = currentPreviewRotation;
+                j.buildablePrototype = proto;
 
                 // Add the job to the queue or build immediately if in Dev mode
                 if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
