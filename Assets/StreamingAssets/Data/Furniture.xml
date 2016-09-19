@@ -733,10 +733,6 @@
 
         <BuildingJob jobTime="1" />
         
-        <DeconstructJob jobTime="1">
-            <Inventory type="Steel Plate" amount="1" />
-        </DeconstructJob>
-
         <Params>
             <Param name="ore_type" value="Raw Iron" />
         </Params>
