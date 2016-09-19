@@ -179,59 +179,6 @@ public class World : IXmlSerializable
         return GetTileAt(Width / 2, Height / 2, 0);
     }
 
-    public Tile GetFirstCenterTileWithNoInventory(int maxOffset)
-    {
-        return GetFirstTileWithNoInventoryAround(maxOffset, Width / 2, Height / 2, 0);
-    }
-
-    public Tile GetFirstTileWithNoInventoryAround(int maxOffset, int centerX, int centerY, int centerZ)
-    {
-        for (int offset = 0; offset <= maxOffset; offset++)
-        {
-            int offsetX = 0;
-            int offsetY = 0;
-            Tile tile;
-
-            // searching top & bottom line of the square
-            for (offsetX = -offset; offsetX <= offset; offsetX++)
-            {
-                offsetY = offset;
-                tile = GetTileAt(centerX + offsetX, centerY + offsetY, centerZ);
-                if (tile.Inventory == null)
-                {
-                    return tile;
-                }
-
-                offsetY = -offset;
-                tile = GetTileAt(centerX + offsetX, centerY + offsetY, centerZ);
-                if (tile.Inventory == null)
-                {
-                    return tile;
-                }
-            }
-
-            // searching left & right line of the square
-            for (offsetY = -offset; offsetY <= offset; offsetY++)
-            {
-                offsetX = offset;
-                tile = GetTileAt(centerX + offsetX, centerY + offsetY, centerZ);
-                if (tile.Inventory == null)
-                {
-                    return tile;
-                }
-
-                offsetX = -offset;
-                tile = GetTileAt(centerX + offsetX, centerY + offsetY, centerZ);
-                if (tile.Inventory == null)
-                {
-                    return tile;
-                }
-            }
-        }
-
-        return null;
-    }
-
     public Furniture PlaceFurniture(string type, Tile t, bool doRoomFloodFill = true)
     {
         if (PrototypeManager.Furniture.Has(type) == false)
