@@ -467,18 +467,18 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     /// <summary>
     /// Deconstructs the utility.
     /// </summary>
-    public void Deconstruct(Utility utility)
+    public void Deconstruct()
     {
         int x = Tile.X;
         int y = Tile.Y;
         if (Tile.Utilities != null)
         {
-            utility.Jobs.CancelAll();
+            Jobs.CancelAll();
         }
 
         // We call lua to decostruct
         EventActions.Trigger("OnUninstall", this);
-        Tile.UnplaceUtility();
+        Tile.UnplaceUtility(this);
 
         if (Removed != null)
         {
@@ -499,7 +499,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
                     {
                         if (neighborUtility.Changed != null)
                         {
-                            neighborUtility.Changed(utility);
+                            neighborUtility.Changed(neighborUtility);
                         }
                     }
                 }
@@ -563,7 +563,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         {
             Text = "Deconstruct " + Name,
             RequireCharacterSelected = false,
-            Action = (contextMenuAction, character) => Deconstruct(this)
+            Action = (contextMenuAction, character) => Deconstruct()
         };
         if (Jobs.Count > 0)
         {

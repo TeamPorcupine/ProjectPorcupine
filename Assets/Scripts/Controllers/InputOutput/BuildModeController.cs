@@ -276,6 +276,10 @@ public class BuildModeController
             {
                 tile.PendingBuildJob.CancelJob();
             }
+            else if (tile.Utilities.Count > 0)
+            {
+                tile.Utilities.Last().Value.Deconstruct();
+            }
         }
         else
         {
