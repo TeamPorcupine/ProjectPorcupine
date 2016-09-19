@@ -270,8 +270,9 @@ public class World : IXmlSerializable
             tile = furn.Tile;
         }
 
-        if (furn.Jobs.WorkSpotOffset.x < 0 || furn.Jobs.WorkSpotOffset.x >= furn.Width ||
-            furn.Jobs.WorkSpotOffset.y < 0 || furn.Jobs.WorkSpotOffset.y >= furn.Height)
+        // if it's an internal workspot bail before reserving.
+        if (furn.Jobs.WorkSpotOffset.x >= 0 && furn.Jobs.WorkSpotOffset.x < furn.Width &&
+            furn.Jobs.WorkSpotOffset.y >= 0 && furn.Jobs.WorkSpotOffset.y < furn.Height)
         {
             return;
         }
