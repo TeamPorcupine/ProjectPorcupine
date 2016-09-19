@@ -27,6 +27,8 @@ public class BuildModeController
     private MouseController mouseController;
     private TileType buildModeTile = TileType.Floor;
 
+    private float currentPreviewRotation = 0f;
+
     public BuildModeController()
     {
         KeyboardManager.Instance.RegisterInputAction("RotateFurnitureLeft", KeyboardMappedInputType.KeyUp, rotateFurnitireLeft);
@@ -55,6 +57,11 @@ public class BuildModeController
     public string GetFloorTile()
     {
         return buildModeTile.ToString();
+    }
+
+    public float getCurrentPreviewRotation()
+    {
+        return currentPreviewRotation;
     }
 
     public void SetModeBuildTile(TileType type)
@@ -320,11 +327,10 @@ public class BuildModeController
 
     private void rotateFurnitireLeft()
     {
-        Debug.LogWarning("B");
         if (buildMode == BuildMode.FURNITURE)
         {
             // Debug.LogWarning(mouseController.GetDragObjects().First());
-            mouseController.GetDragObjects().First().transform.Rotate(0, 0, -90);
+            currentPreviewRotation = currentPreviewRotation - 90;
 
         }
     }
@@ -334,7 +340,7 @@ public class BuildModeController
         Debug.LogWarning("N");
         if (buildMode == BuildMode.FURNITURE)
         {
-            mouseController.GetDragObjects().First().transform.Rotate(0,0,90);
+            currentPreviewRotation = currentPreviewRotation + 90;
         }
     }
 }

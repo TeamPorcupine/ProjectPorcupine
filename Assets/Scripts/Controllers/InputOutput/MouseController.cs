@@ -591,7 +591,7 @@ public class MouseController
 
         go.name = furnitureType + "_p_" + t.X + "_" + t.Y + "_" + t.Z;
         go.transform.position = t.Vector3 + ImageUtils.SpritePivotOffset(sr.sprite);
-        go.transform.Rotate(0, 0, 90);
+        go.transform.Rotate(0, 0, bmc.getCurrentPreviewRotation());
     }
 
     private void ShowUtilitySpriteAtTile(string furnitureType, Tile tile)
