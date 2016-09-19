@@ -25,9 +25,11 @@ while [ $# -gt 0 ]; do    # Until you run out of parameters . . .
         echo "Unity executable you want to run. Otherwise an OS based default is chosen."
         exit 0 ;;
     *)
-        echo "${0##*/}: unknown option -- $1."
+        # could be being run as a git hook in which case it might have args
+        # but we don't care about them
+        echo "${0##*/}: unknown option -- $1. Ignoring for now. If this being run as a git hook this is okay."
         echo "Try '${0##*/} --help' for more information."
-        exit 1 ;;
+        ;;
   esac
   shift       # Check next set of parameters.
 done
