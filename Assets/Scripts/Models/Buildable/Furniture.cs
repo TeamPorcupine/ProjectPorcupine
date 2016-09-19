@@ -82,6 +82,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         PathfindingModifier = 0f;
         Height = 1;
         Width = 1;
+        CanRotate = false;
         Rotation = 0f;
         DragType = "single";
     }
@@ -100,6 +101,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         RoomEnclosure = other.RoomEnclosure;
         Width = other.Width;
         Height = other.Height;
+        CanRotate = other.CanRotate;
         Rotation = other.Rotation;
         Tint = other.Tint;
         LinksToNeighbour = other.LinksToNeighbour;
@@ -305,6 +307,11 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// Gets the height of the furniture.
     /// </summary>
     public int Height { get; private set; }
+
+    /// <summary>
+    /// Gets/Set the rotation of the furniture.
+    /// </summary>
+    public Boolean CanRotate { get; private set; }
 
     /// <summary>
     /// Gets/Set the rotation of the furniture.
@@ -610,6 +617,10 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                     break;
                 case "CanReplaceFurniture":
                     replaceableFurniture.Add(reader.GetAttribute("typeTag").ToString());
+                    break;
+                case "CanRotate":
+                    reader.Read();
+                    CanRotate = reader.ReadContentAsBoolean();
                     break;
                 case "DragType":
                     reader.Read();
