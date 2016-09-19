@@ -511,7 +511,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     }
 
     /// <summary>
-    /// Deconstructs the furniture.
+    /// Sets up a job to deconstruct the utility.
     /// </summary>
     public void SetDeconstructJob(Utility utility)
     {
@@ -689,7 +689,6 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
 
     private void ReadXmlBuildingJob(XmlReader reader)
     {
-
         float jobTime = float.Parse(reader.GetAttribute("jobTime"));
 
         List<Inventory> invs = new List<Inventory>();

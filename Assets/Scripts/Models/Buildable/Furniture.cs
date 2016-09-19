@@ -346,10 +346,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     public FurnitureJobs Jobs { get; private set; }
 
     /// <summary>
-
-    /// This flag is set if the furniture is tasked to be destroyed
+    /// This flag is set if the furniture is tasked to be destroyed.
     /// </summary>
-    public bool isBeingDestroyed { get; protected set; }
+    public bool IsBeingDestroyed { get; protected set; }
 
     /// Should we only use the default name? If not, then more complex logic is tested, such as walls.
     /// </summary>
@@ -461,7 +460,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             EventActions.Trigger("OnUpdate", this, deltaTime);
         }
 
-        if (IsWorkshop && isBeingDestroyed == false)
+        if (IsWorkshop && IsBeingDestroyed == false)
         {
             workshop.Update(deltaTime);
         }
@@ -819,12 +818,12 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// </summary>
     public void SetDeconstructJob()
     {
-        if (isBeingDestroyed)
+        if (IsBeingDestroyed)
         {
             return; // Already being destroyed, don't do anything more
         }
 
-        isBeingDestroyed = true;
+        IsBeingDestroyed = true;
         Jobs.CancelAll();
 
         Job job = PrototypeManager.FurnitureDeconstructJob.Get(Type).Clone();
@@ -835,7 +834,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     }
 
     /// <summary>
-    /// Deconstructs the furniture
+    /// Deconstructs the furniture.
     /// </summary>
     public void Deconstruct()
     { 
