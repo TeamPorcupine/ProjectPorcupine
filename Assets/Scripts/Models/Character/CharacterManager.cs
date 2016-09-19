@@ -7,6 +7,7 @@
 // ====================================================
 #endregion
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Xml;
 using MoonSharp.Interpreter;
@@ -16,7 +17,7 @@ using UnityEngine;
 /// Character manager that holds all the characters.
 /// </summary>
 [MoonSharpUserData]
-public class CharacterManager
+public class CharacterManager : IEnumerable<Character>
 {
     private List<Character> characters;
 
@@ -32,15 +33,6 @@ public class CharacterManager
     /// Occurs when a character is created.
     /// </summary>
     public event Action<Character> CharacterCreated;
-
-    /// <summary>
-    /// Gets the characters.
-    /// </summary>
-    /// <value>An array of characters.</value>
-    public Character[] Characters
-    {
-        get { return characters.ToArray(); }
-    }
 
     /// <summary>
     /// Updates all the characters.
@@ -102,6 +94,27 @@ public class CharacterManager
         }
 
         return null;
+    }
+
+    /// <summary>
+    /// Gets the characters enumerator.
+    /// </summary>
+    /// <returns>The enumerator.</returns>
+    public IEnumerator GetEnumerator()
+    {
+        return characters.GetEnumerator();
+    }
+
+    /// <summary>
+    /// Gets each character.
+    /// </summary>
+    /// <returns>Each character.</returns>
+    IEnumerator<Character> IEnumerable<Character>.GetEnumerator()
+    {
+        foreach (Character character in characters)
+        {
+            yield return character;
+        }
     }
 
     /// <summary>
