@@ -643,23 +643,17 @@ public class World : IXmlSerializable
 
         CreateWallet();
 
-<<<<<<< HEAD:Assets/Scripts/Models/World.cs
         characters = new List<Character>();
         temperature = new Temperature();
-=======
->>>>>>> 5d2e2b210efb02018a64e115801df4f639da47cd:Assets/Scripts/Models/Area/World.cs
         furnitures = new List<Furniture>();
         utilities = new List<Utility>();
         CharacterManager = new CharacterManager();
         inventoryManager = new InventoryManager();
         cameraData = new CameraData();
         PowerNetwork = new ProjectPorcupine.PowerNetwork.PowerNetwork();
-<<<<<<< HEAD:Assets/Scripts/Models/World.cs
         AddEventListeners();
-=======
-        temperature = new Temperature(Width, Height);
+        temperature = new Temperature();
 
->>>>>>> 5d2e2b210efb02018a64e115801df4f639da47cd:Assets/Scripts/Models/Area/World.cs
         LoadSkybox();
         AddEventListeners();
     }
