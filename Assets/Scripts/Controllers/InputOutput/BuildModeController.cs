@@ -76,6 +76,7 @@ public class BuildModeController
         // Wall is not a Tile!  Wall is an "Furniture" that exists on TOP of a tile.
         buildMode = BuildMode.FURNITURE;
         buildModeType = type;
+        currentPreviewRotation = 0f;
         mouseController.StartBuildMode();
     }
 
