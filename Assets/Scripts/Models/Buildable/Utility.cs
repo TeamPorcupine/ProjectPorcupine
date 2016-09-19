@@ -36,10 +36,6 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     /// </summary>
     private List<ContextMenuLuaAction> contextMenuLuaActions;
 
-    private List<Job> jobs;
-
-    private List<Job> pausedJobs;
-
     // This is the generic type of object this is, allowing things to interact with it based on it's generic type
     private HashSet<string> typeTags;
 
@@ -50,6 +46,8 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     private Func<Tile, bool> funcPositionValidation;
 
     private HashSet<string> tileTypeBuildPermissions;
+
+    private List<Inventory> deconstructInventory;
 
     /// TODO: Implement object rotation
     /// <summary>
@@ -62,7 +60,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
 
         contextMenuLuaActions = new List<ContextMenuLuaAction>();
         Parameters = new Parameter();
-        jobs = new List<Job>();
+        Jobs = new BuildableJobs(this);
         typeTags = new HashSet<string>();
         funcPositionValidation = DefaultIsValidPosition;
         tileTypeBuildPermissions = new HashSet<string>();
@@ -80,10 +78,10 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         typeTags = new HashSet<string>(other.typeTags);
         description = other.description;
         Tint = other.Tint;
+        deconstructInventory = other.deconstructInventory;
 
         Parameters = new Parameter(other.Parameters);
-        jobs = new List<Job>();
-        pausedJobs = new List<Job>();
+        Jobs = new BuildableJobs(this, other.Jobs);
 
         if (other.EventActions != null)
         {
@@ -177,12 +175,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     {
         get
         {
-            if (string.IsNullOrEmpty(name))
-            {
-                return Type;
-            }
-
-            return name;
+            return string.IsNullOrEmpty(name) ? Type : name;
         }
 
         private set
@@ -207,10 +200,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     /// </summary>
     public bool LinksToNeighbour 
     { 
-        get
-        {
-            return true;
-        }
+        get { return true; }
     }
 
     /// <summary>
@@ -219,16 +209,23 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     /// </summary>
     public string DragType 
     { 
-        get
-        {
-            return "path";
-        }
+        get { return "path"; }
     }
 
     /// <summary>
     /// Gets or sets the parameters that is tied to the utility.
     /// </summary>
     public Parameter Parameters { get; private set; }
+
+    /// <summary>
+    /// Gets a component that handles the jobs linked to the furniture.
+    /// </summary>
+    public BuildableJobs Jobs { get; private set; }
+
+    /// <summary>
+    /// Details if this is tasked for destruction.
+    /// </summary>
+    public bool IsBeingDestroyed { get; protected set; }
 
     /// <summary>
     /// Used to place utility in a certain position.
@@ -294,11 +291,6 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     /// <param name="deltaTime">The time since the last update was called.</param>
     public void Update(float deltaTime)
     {
-        if (pausedJobs.Count > 0)
-        {
-            ResumeJobs();
-        }
-            
         if (EventActions != null)
         {
             // updateActions(this, deltaTime);
@@ -384,33 +376,10 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
                     description = reader.ReadContentAsString();
                     break;
                 case "BuildingJob":
-                    float jobTime = float.Parse(reader.GetAttribute("jobTime"));
-
-                    List<Inventory> invs = new List<Inventory>();
-
-                    XmlReader inventoryReader = reader.ReadSubtree();
-
-                    while (inventoryReader.Read())
-                    {
-                        if (inventoryReader.Name == "Inventory")
-                        {
-                            // Found an inventory requirement, so add it to the list!
-                            invs.Add(new Inventory(
-                                    inventoryReader.GetAttribute("type"),
-                                    int.Parse(inventoryReader.GetAttribute("amount")),
-                                    0));
-                        }
-                    }
-
-                    Job job = new Job(
-                                null,
-                                Type,
-                                FunctionsManager.JobComplete_UtilityBuilding,
-                                jobTime,
-                                invs.ToArray(),
-                                Job.JobPriority.High);
-                    job.JobDescription = "job_build_" + Type + "_desc";
-                    PrototypeManager.UtilityJob.Set(job);
+                    ReadXmlBuildingJob(reader);
+                    break;
+                case "DeconstructJob":
+                    ReadXmlDeconstructJob(reader);
                     break;
                 case "CanBeBuiltOn":
                     tileTypeBuildPermissions.Add(reader.GetAttribute("tileType"));
@@ -446,7 +415,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
             }
         }
     }
-    
+
     /// <summary>
     /// Reads the specified XMLReader (pass it to <see cref="ReadXmlParams(XmlReader)"/>)
     /// This is used to load utility from a save file.
@@ -474,58 +443,62 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     }
 
     /// <summary>
-    /// How many jobs are linked to this utility.
+    /// Reads the XML building job.
     /// </summary>
-    /// <returns>The number of jobs linked to this utility.</returns>
-    public int JobCount()
+    /// <param name="reader">The XML reader to read from.</param>
+    public void ReadXmlBuildingJob(XmlReader reader)
     {
-        return jobs.Count;
+        float jobTime = float.Parse(reader.GetAttribute("jobTime"));
+        List<Inventory> invs = new List<Inventory>();
+        XmlReader inventoryReader = reader.ReadSubtree();
+
+        while (inventoryReader.Read())
+        {
+            if (inventoryReader.Name == "Inventory")
+            {
+                // Found an inventory requirement, so add it to the list!
+                invs.Add(new Inventory(
+                    inventoryReader.GetAttribute("type"),
+                    0,
+                    int.Parse(inventoryReader.GetAttribute("amount"))));
+            }
+        }
+
+        Job job = new Job(
+            null,
+            Type,
+            (theJob) => World.Current.JobComplete_UtilityBuilding(theJob),
+            jobTime,
+            invs.ToArray(),
+            Job.JobPriority.High);
+        job.JobDescription = "job_build_" + Type + "_desc";
+        PrototypeManager.UtilityConstructJob.Set(job);
     }
 
     /// <summary>
-    /// Link a job to the current utility.
+    /// Sets up a job to deconstruct the utility.
     /// </summary>
-    /// <param name="job">The job that you want to link to the utility.</param>
-    public void AddJob(Job job)
+    public void SetDeconstructJob(Utility utility)
     {
-        job.buildable = this;
-        jobs.Add(job);
-        job.OnJobStopped += OnJobStopped;
+        if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
+        {
+            Deconstruct(utility);
+            return;
+        }
+
+        if (IsBeingDestroyed)
+        {
+            return; // Already being destroyed, don't do anything more
+        }
+
+        IsBeingDestroyed = true;
+        utility.Jobs.CancelAll();
+
+        Job job = PrototypeManager.UtilityDeconstructJob.Get(Type).Clone();
+        job.tile = Tile;
+        job.OnJobCompleted += (inJob) => Deconstruct(utility);
+
         World.Current.jobQueue.Enqueue(job);
-    }
-
-    /// <summary>
-    /// Cancel all the jobs linked to this utility.
-    /// </summary>
-    public void CancelJobs()
-    {
-        Job[] jobsArray = jobs.ToArray();
-        foreach (Job job in jobsArray)
-        {
-            job.CancelJob();
-        }
-    }
-
-    /// TODO: Refactor this when the new job system is implemented
-    public void ResumeJobs()
-    {
-        Job[] jobsArray = pausedJobs.ToArray();
-        foreach (Job job in jobsArray)
-        {
-            AddJob(job);
-            pausedJobs.Remove(job);
-        }
-    }
-
-    /// TODO: Refactor this when the new job system is implemented
-    public void PauseJobs()
-    {
-        Job[] jobsArray = jobs.ToArray();
-        foreach (Job job in jobsArray)
-        {
-            pausedJobs.Add(job);
-            job.CancelJob();
-        }
     }
 
     /// <summary>
@@ -537,7 +510,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         int y = Tile.Y;
         if (Tile.Utilities != null)
         {
-            utility.CancelJobs();
+            utility.Jobs.CancelAll();
         }
 
         // We call lua to decostruct
@@ -547,6 +520,15 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         if (Removed != null)
         {
             Removed(this);
+        }
+
+        if (deconstructInventory != null)
+        {
+            foreach (Inventory inv in deconstructInventory)
+            {
+                inv.MaxStackSize = PrototypeManager.Inventory.Get(inv.Type).maxStackSize;
+                World.Current.inventoryManager.PlaceInventoryAround(Tile, inv.Clone());
+            }
         }
 
         // We should inform our neighbours that they have just lost a
@@ -627,22 +609,19 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         {
             Text = "Deconstruct " + Name,
             RequireCharacterSelected = false,
-            Action = (contextMenuAction, character) => Deconstruct(this)
+            Action = (contextMenuAction, character) => SetDeconstructJob(this)
         };
-        if (jobs.Count > 0)
+        if (Jobs.Count > 0)
         {
-            for (int i = 0; i < jobs.Count; i++)
+            for (int i = 0; i < Jobs.Count; i++)
             {
-                if (!jobs[i].IsBeingWorked)
+                if (!Jobs[i].IsBeingWorked)
                 {
                     yield return new ContextMenuAction
                     {
                         Text = "Prioritize " + Name,
                         RequireCharacterSelected = true,
-                        Action = (contextMenuAcion, character) =>
-                        {
-                            character.PrioritizeJob(jobs[0]);
-                        }
+                        Action = (contextMenuAcion, character) => character.PrioritizeJob(Jobs[0])
                     };
                 }
             }
@@ -674,6 +653,36 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     public Utility Clone()
     {
         return new Utility(this);
+    }
+
+    private void ReadXmlDeconstructJob(XmlReader reader)
+    {
+        float jobTime = float.Parse(reader.GetAttribute("jobTime"));
+
+        deconstructInventory = new List<Inventory>();
+
+        XmlReader inventoryReader = reader.ReadSubtree();
+
+        while (inventoryReader.Read())
+        {
+            if (inventoryReader.Name == "Inventory")
+            {
+                // Found an inventory requirement, so add it to the list!
+                deconstructInventory.Add(new Inventory(
+                    inventoryReader.GetAttribute("type"),
+                    int.Parse(inventoryReader.GetAttribute("amount"))));
+            }
+        }
+
+        Job job = new Job(
+                    null,
+                    Type,
+                    null,
+                    jobTime,
+                    null,
+                    Job.JobPriority.High);
+        job.JobDescription = "job_deconstruct_" + Type + "_desc";
+        PrototypeManager.UtilityDeconstructJob.Set(job);
     }
 
     // FIXME: These functions should never be called directly,
@@ -710,22 +719,6 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         return true;
     }
 
-    private void RemoveJob(Job job)
-    {
-        job.OnJobStopped -= OnJobStopped;
-        jobs.Remove(job);
-        job.buildable = null;
-    }
-
-    private void ClearJobs()
-    {
-        Job[] jobsArray = jobs.ToArray();
-        foreach (Job job in jobsArray)
-        {
-            RemoveJob(job);
-        }
-    }
-
     private void InvokeContextMenuLuaAction(ContextMenuAction action, Character character)
     {
         FunctionsManager.Utility.Call(action.Parameter, this, character);
@@ -738,10 +731,5 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         {
             Changed(util);
         }
-    }
-
-    private void OnJobStopped(Job job)
-    {
-        RemoveJob(job);
     }
 }

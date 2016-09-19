@@ -165,50 +165,6 @@ public class World : IXmlSerializable {
         return GetTileAt(Width / 2, Height / 2, 0);
     }
 
-    public Tile GetFirstCenterTileWithNoInventory(int maxOffset) {
-        return GetFirstTileWithNoInventoryAround(maxOffset, Width / 2, Height / 2, 0);
-    }
-
-    public Tile GetFirstTileWithNoInventoryAround(int maxOffset, int centerX, int centerY, int centerZ) {
-        for (int offset = 0; offset <= maxOffset; offset++) {
-            int offsetX = 0;
-            int offsetY = 0;
-            Tile tile;
-
-            // searching top & bottom line of the square
-            for (offsetX = -offset; offsetX <= offset; offsetX++) {
-                offsetY = offset;
-                tile = GetTileAt(centerX + offsetX, centerY + offsetY, centerZ);
-                if (tile.Inventory == null) {
-                    return tile;
-                }
-
-                offsetY = -offset;
-                tile = GetTileAt(centerX + offsetX, centerY + offsetY, centerZ);
-                if (tile.Inventory == null) {
-                    return tile;
-                }
-            }
-
-            // searching left & right line of the square
-            for (offsetY = -offset; offsetY <= offset; offsetY++) {
-                offsetX = offset;
-                tile = GetTileAt(centerX + offsetX, centerY + offsetY, centerZ);
-                if (tile.Inventory == null) {
-                    return tile;
-                }
-
-                offsetX = -offset;
-                tile = GetTileAt(centerX + offsetX, centerY + offsetY, centerZ);
-                if (tile.Inventory == null) {
-                    return tile;
-                }
-            }
-        }
-
-        return null;
-    }
-
     public Furniture PlaceFurniture(string type, Tile t, bool doRoomFloodFill = true) {
         if (PrototypeManager.Furniture.Has(type) == false) {
             Debug.ULogErrorChannel("World", "furniturePrototypes doesn't contain a proto for key: " + type);
@@ -218,51 +174,6 @@ public class World : IXmlSerializable {
         Furniture furn = PrototypeManager.Furniture.Get(type);
 
         return PlaceFurniture(furn, t, doRoomFloodFill);
-    }
-
-    public Utility PlaceUtility(string objectType, Tile tile, bool doRoomFloodFill = false) {
-        if (PrototypeManager.Utility.Has(objectType) == false) {
-            Debug.ULogErrorChannel("World", "PrototypeManager.Utility doesn't contain a proto for key: " + objectType);
-            return null;
-        }
-
-        Utility util = PrototypeManager.Utility.Get(objectType);
-
-        return PlaceUtility(util, tile, doRoomFloodFill);
-    }
-
-    /// <summary>
-    /// Reserves the furniture's work spot, preventing it from being built on.
-    /// </summary>
-    /// <param name="furn">The furniture whose workspot will be reserved.</param>
-    /// <param name="tile">The tile on which the furniture is located, for furnitures which don't have a tile, such as prototypes.</param>
-    public void ReserveTileAsWorkSpot(Furniture furn, Tile tile = null) {
-        if (tile == null) {
-            tile = furn.Tile;
-        }
-
-        World.Current.GetTileAt(
-            tile.X + (int)furn.Jobs.WorkSpotOffset.x,
-            tile.Y + (int)furn.Jobs.WorkSpotOffset.y,
-            tile.Z)
-            .ReservedAsWorkSpotBy.Add(furn);
-    }
-
-    /// <summary>
-    /// Unreserves the furniture's work spot, allowing it to be built on.
-    /// </summary>
-    /// <param name="furn">The furniture whose workspot will be unreserved.</param>
-    /// <param name="tile">The tile on which the furniture is located, for furnitures which don't have a tile, such as prototypes.</param>
-    public void UnreserveTileAsWorkSpot(Furniture furn, Tile tile = null) {
-        if (tile == null) {
-            tile = furn.Tile;
-        }
-
-        World.Current.GetTileAt(
-            tile.X + (int)furn.Jobs.WorkSpotOffset.x,
-            tile.Y + (int)furn.Jobs.WorkSpotOffset.y,
-            tile.Z)
-            .ReservedAsWorkSpotBy.Remove(furn);
     }
 
     public Furniture PlaceFurniture(Furniture furniture, Tile t, bool doRoomFloodFill = true) {
@@ -299,6 +210,28 @@ public class World : IXmlSerializable {
         return furn;
     }
 
+    public void JobComplete_FurnitureBuilding(Job theJob) {
+        // Let our workspot tile know it is no longer reserved for us
+        UnreserveTileAsWorkSpot((Furniture)theJob.buildablePrototype, theJob.tile);
+
+        PlaceFurniture(theJob.JobObjectType, theJob.tile);
+
+        // FIXME: I don't like having to manually and explicitly set
+        // flags that prevent conflicts. It's too easy to forget to set/clear them!
+        theJob.tile.PendingBuildJob = null;
+    }
+
+    public Utility PlaceUtility(string objectType, Tile tile, bool doRoomFloodFill = false) {
+        if (PrototypeManager.Utility.Has(objectType) == false) {
+            Debug.ULogErrorChannel("World", "PrototypeManager.Utility doesn't contain a proto for key: " + objectType);
+            return null;
+        }
+
+        Utility util = PrototypeManager.Utility.Get(objectType);
+
+        return PlaceUtility(util, tile, doRoomFloodFill);
+    }
+
     public Utility PlaceUtility(Utility proto, Tile tile, bool doRoomFloodFill = true) {
         Utility utility = Utility.PlaceInstance(proto, tile);
 
@@ -315,6 +248,48 @@ public class World : IXmlSerializable {
         }
 
         return utility;
+    }
+
+    public void JobComplete_UtilityBuilding(Job theJob) {
+        PlaceUtility(theJob.JobObjectType, theJob.tile);
+
+        // FIXME: I don't like having to manually and explicitly set
+        // flags that preven conflicts. It's too easy to forget to set/clear them!
+        theJob.tile.PendingBuildJob = null;
+    }
+
+    /// <summary>
+    /// Reserves the furniture's work spot, preventing it from being built on.
+    /// </summary>
+    /// <param name="furn">The furniture whose workspot will be reserved.</param>
+    /// <param name="tile">The tile on which the furniture is located, for furnitures which don't have a tile, such as prototypes.</param>
+    public void ReserveTileAsWorkSpot(Furniture furn, Tile tile = null) {
+        if (tile == null) {
+            tile = furn.Tile;
+        }
+
+        World.Current.GetTileAt(
+            tile.X + (int)furn.Jobs.WorkSpotOffset.x,
+            tile.Y + (int)furn.Jobs.WorkSpotOffset.y,
+            tile.Z)
+            .ReservedAsWorkSpotBy.Add(furn);
+    }
+
+    /// <summary>
+    /// Unreserves the furniture's work spot, allowing it to be built on.
+    /// </summary>
+    /// <param name="furn">The furniture whose workspot will be unreserved.</param>
+    /// <param name="tile">The tile on which the furniture is located, for furnitures which don't have a tile, such as prototypes.</param>
+    public void UnreserveTileAsWorkSpot(Furniture furn, Tile tile = null) {
+        if (tile == null) {
+            tile = furn.Tile;
+        }
+
+        World.Current.GetTileAt(
+            tile.X + (int)furn.Jobs.WorkSpotOffset.x,
+            tile.Y + (int)furn.Jobs.WorkSpotOffset.y,
+            tile.Z)
+            .ReservedAsWorkSpotBy.Remove(furn);
     }
 
     // This should be called whenever a change to the world
