@@ -36,7 +36,6 @@ if [ -z "$RUN_AS_TRAVIS" ];
 then
     if [ -z "$unityPath" ]; # user did not specify a special unity path to run locally
     then
-        echo "Here!"
         case $(uname -o) in # TODO: Add more systems!!!
             Msys)
                 unityPath="C:\\Program Files\\Unity\\Editor\\Unity.exe"
