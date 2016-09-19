@@ -125,6 +125,10 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
 
         furn_go.name = furniture.Type + "_" + furniture.Tile.X + "_" + furniture.Tile.Y;
         furn_go.transform.position = furniture.Tile.Vector3 + ImageUtils.SpritePivotOffset(sr.sprite);
+        if (BuildModeController.Instance != null)
+        {
+            furn_go.transform.Rotate(0, 0, BuildModeController.Instance.getCurrentPreviewRotation());
+        }
         furn_go.transform.SetParent(objectParent.transform, true);
 
         if (furniture.PowerConnection != null && furniture.PowerConnection.IsPowerConsumer)
