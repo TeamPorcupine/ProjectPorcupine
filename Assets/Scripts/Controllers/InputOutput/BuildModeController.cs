@@ -91,6 +91,7 @@ public class BuildModeController
 
             if ( 
                 WorldController.Instance.World.IsFurniturePlacementValid(furnitureType, tile) &&
+                WorldController.Instance.World.IsFurnitureWorkSpotClear(furnitureType, tile) && 
                 DoesBuildJobOverlapExistingBuildJob(tile, furnitureType) == false)
             {
                 // This tile position is valid for this furniture
@@ -129,19 +130,24 @@ public class BuildModeController
                 }
                 else
                 {
-                    for (int xOffset = tile.X; xOffset < (tile.X + job.buildablePrototype.Width); xOffset++)
+                    for (int x_off = tile.X; x_off < (tile.X + job.buildablePrototype.Width); x_off++)
                     {
-                        for (int yOffset = tile.Y; yOffset < (tile.Y + job.buildablePrototype.Height); yOffset++)
+                        for (int y_off = tile.Y; y_off < (tile.Y + job.buildablePrototype.Height); y_off++)
                         {
                             // FIXME: I don't like having to manually and explicitly set
                             // flags that prevent conflicts. It's too easy to forget to set/clear them!
-                            Tile offsetTile = WorldController.Instance.World.GetTileAt(xOffset, yOffset, tile.Z);
+                            Tile offsetTile = WorldController.Instance.World.GetTileAt(x_off, y_off, tile.Z);
                             offsetTile.PendingBuildJob = job;
                             job.OnJobStopped += (theJob) => offsetTile.PendingBuildJob = null;
                         }
                     }
 
                     WorldController.Instance.World.jobQueue.Enqueue(job);
+
+                    // Let our workspot tile know it is reserved for us
+                    // FIXME This was commented out because it breaks the validity check when trying to build most furniture. 
+                    // It specifically breaks tile2.IsReservedWorkSpot() in Furniture:DefaultIsValidPosition
+                    //World.Current.ReserveTileAsWorkSpot((Furniture)job.buildablePrototype, job.tile);
                 }
             }
         }

@@ -83,6 +83,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         Height = 1;
         Width = 1;
         DragType = "single";
+        LinksToNeighbour = string.Empty;
     }
 
     // Copy Constructor -- don't call this directly, unless we never
@@ -315,7 +316,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// Gets a value indicating whether this furniture is next to any furniture of the same type.
     /// This is used to check what sprite to use if furniture is next to each other.
     /// </summary>
-    public bool LinksToNeighbour { get; private set; }
+    public string LinksToNeighbour { get; private set; }
 
     /// <summary>
     /// Gets the type of dragging that is used to build multiples of this furniture. 
@@ -337,6 +338,17 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// Gets a component that handles the jobs linked to the furniture.
     /// </summary>
     public BuildableJobs Jobs { get; private set; }
+
+    /// <summary>
+    /// Should we only use the default name? If not, then more complex logic is tested, such as walls.
+    /// </summary>
+    public bool OnlyUseDefaultSpriteName
+    {
+        get
+        {
+            return !string.IsNullOrEmpty(getSpriteNameAction);
+        }
+    }
 
     /// <summary>
     /// Used to place furniture in a certain position.
@@ -370,8 +382,8 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             // (It will be garbage collected.)
             return null;
         }
-
-        if (obj.LinksToNeighbour)
+        
+        if (obj.LinksToNeighbour != string.Empty)
         {
             // This type of furniture links itself to its neighbours,
             // so we should inform our neighbours that they have a new
@@ -391,6 +403,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                 }
             }
         }
+
+        // Let our workspot tile know it is reserved for us
+        World.Current.ReserveTileAsWorkSpot(obj);
 
         // Call LUA install scripts
         obj.EventActions.Trigger("OnInstall", obj);
@@ -592,7 +607,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                     break;
                 case "LinksToNeighbours":
                     reader.Read();
-                    LinksToNeighbour = reader.ReadContentAsBoolean();
+                    LinksToNeighbour = reader.ReadContentAsString();
                     break;
                 case "EnclosesRooms":
                     reader.Read();
@@ -761,7 +776,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         int y = Tile.Y;
         int fwidth = 1;
         int fheight = 1;
-        bool linksToNeighbour = false;
+        string linksToNeighbour = string.Empty;
         if (Tile.Furniture != null)
         {
             Furniture furniture = Tile.Furniture;
@@ -776,6 +791,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
 
         // Update thermalDiffusifity to default value
         World.Current.temperature.SetThermalDiffusivity(Tile.X, Tile.Y, Temperature.defaultThermalDiffusivity);
+
+        // Let our workspot tile know it is no longer reserved for us
+        World.Current.UnreserveTileAsWorkSpot(this);
 
         Tile.UnplaceFurniture();
 
@@ -793,7 +811,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         // Do we need to recalculate our rooms?
         if (RoomEnclosure)
         {
-            Room.DoRoomFloodFill(Tile);
+            World.Current.RoomManager.DoRoomFloodFill(Tile, false);
         }
 
         ////World.current.InvalidateTileGraph();
@@ -806,7 +824,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         // We should inform our neighbours that they have just lost a
         // neighbour regardless of type.  
         // Just trigger their OnChangedCallback. 
-        if (linksToNeighbour == true)
+        if (linksToNeighbour != string.Empty)
         {
             for (int xpos = x - 1; xpos < x + fwidth + 1; xpos++)
             {
@@ -1020,25 +1038,32 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         {
             for (int y_off = tile.Y; y_off < tile.Y + Height; y_off++)
             {
-                Tile t2 = World.Current.GetTileAt(x_off, y_off, tile.Z);
+                Tile tile2 = World.Current.GetTileAt(x_off, y_off, tile.Z);
 
                 // Check to see if there is furniture which is replaceable
                 bool isReplaceable = false;
 
-                if (t2.Furniture != null)
+                if (tile2.Furniture != null)
                 {
                     // Furniture can be replaced, if its typeTags share elements with ReplaceableFurniture
-                    isReplaceable = t2.Furniture.typeTags.Overlaps(ReplaceableFurniture);
+                    isReplaceable = tile2.Furniture.typeTags.Overlaps(ReplaceableFurniture);
                 }
 
                 // Make sure tile is FLOOR
-                if (t2.Type != TileType.Floor && tileTypeBuildPermissions.Contains(t2.Type.Type) == false)
+                if (tile2.Type != TileType.Floor && tileTypeBuildPermissions.Contains(tile2.Type.Type) == false)
                 {
                     return false;
                 }
 
                 // Make sure tile doesn't already have furniture
-                if (t2.Furniture != null && isReplaceable == false)
+                if (tile2.Furniture != null && isReplaceable == false)
+                {
+                    return false;
+                }
+
+                // FIXME This line breaks the validity checks if the tile is reserved to build this piece of furniture!
+                // Make sure we're not building on another furniture's workspot
+                if (tile2.IsReservedWorkSpot())
                 {
                     return false;
                 }

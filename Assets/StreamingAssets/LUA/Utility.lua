@@ -11,3 +11,11 @@
 -- ModUtils.ULogError("Testing ModUtils.ULogErrorChannel") -- Note: pauses the game
 
 -------------------------------- Utility Actions --------------------------------
+
+function UtilityContextTest1(utility, character)
+    ModUtils.ULog("Utiliy Context Menu Test 1")
+end
+
+function UtilityContextTest2(utility, character)
+    ModUtils.ULog("Utiliy Context Menu Test 2")
+end
