@@ -9,6 +9,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using MoonSharp.Interpreter;
 using UnityEngine;
 
@@ -21,7 +22,7 @@ using UnityEngine;
 public class OverlayMap : MonoBehaviour
 {
     public Dictionary<string, OverlayDescriptor> overlays;
-
+    
     /// <summary>
     /// Transparency of overlay.
     /// </summary>
@@ -32,18 +33,17 @@ public class OverlayMap : MonoBehaviour
     /// Update interval (0 for every Update, inf for never).
     /// </summary>
     public float updateInterval = 5f;
-    
-    /// <summary>
-    /// Resolution of tile for the overlay.
-    /// </summary>
-    public int pixelsPerTileX = 20;
-    public int pixelsPerTileY = 20;
 
     /// <summary>
     /// Internal storage of size of map.
     /// </summary>
     public int sizeX = 10;
     public int sizeY = 10;
+
+    /// <summary>
+    /// Internal storage of color map width.
+    /// </summary>
+    public int colorMapWidth = 20;
 
     /// <summary>
     /// Current Overlay.
@@ -54,7 +54,7 @@ public class OverlayMap : MonoBehaviour
     /// You can set any function, overlay will display value of func at point (x,y)
     /// Depending on how many colors the ColorMapSG has, the displayed values will cycle.
     /// </summary>
-    public Func<int, int, int> valueAt;
+    public Func<int, int, int, int> valueAt;
 
     /// <summary>
     /// Name of xml file containing overlay prototypes.
@@ -68,7 +68,15 @@ public class OverlayMap : MonoBehaviour
 
     public GameObject parentPanel;
 
+    /// <summary>
+    /// In memory color map lookup per overlay to speed up the overlay texture generation
+    /// and avoid too much call to the GetPixel method.
+    /// </summary>
+    public Dictionary<string, Dictionary<int, Color>> overlayColorMapLookup;
+
     private static List<Color32> randomColors;
+
+    private int currentLayer = 0;
 
     /// <summary>
     /// Starting left corner (x,y) and z-coordinate of mesh and (3d left corner).
@@ -271,14 +279,14 @@ public class OverlayMap : MonoBehaviour
                 return;
             }
 
-            valueAt = (x, y) =>
+            valueAt = (x, y, z) =>
             {
                 if (WorldController.Instance == null)
                 {
                     return 0;
                 }
 
-                Tile tile = WorldController.Instance.GetTileAtWorldCoord(new Vector3(x, y, 0));
+                Tile tile = WorldController.Instance.GetTileAtWorldCoord(new Vector3(x, y, z));
                 return (int)script.Call(handle, new object[] { tile, World.Current }).ToScalar().CastToNumber();
             };
 
@@ -317,6 +325,8 @@ public class OverlayMap : MonoBehaviour
         // Read xml prototypes.
         overlays = OverlayDescriptor.ReadPrototypes(xmlFileName);
 
+        overlayColorMapLookup = new Dictionary<string, Dictionary<int, Color>>();
+
         // Read LUA.
         UserData.RegisterAssembly();
         string scriptFile = System.IO.Path.Combine(
@@ -351,11 +361,18 @@ public class OverlayMap : MonoBehaviour
             elapsed = 0f;
         }
 
+        if (currentOverlay != "None" && currentLayer != WorldController.Instance.cameraController.CurrentLayer)
+        {
+            Bake();
+            currentLayer = WorldController.Instance.cameraController.CurrentLayer;
+            elapsed = 0f;
+        }
+
         // TODO: Prettify.
         Vector2 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         if (valueAt != null)
         {
-            textView.GetComponent<UnityEngine.UI.Text>().text = string.Format("[DEBUG] Currently over: {0}", valueAt((int)(pos.x + 0.5f), (int)(pos.y + 0.5f)));
+            textView.GetComponent<UnityEngine.UI.Text>().text = string.Format("[DEBUG] Currently over: {0}", valueAt((int)(pos.x + 0.5f), (int)(pos.y + 0.5f), WorldController.Instance.cameraController.CurrentLayer));
         }
     }
 
@@ -376,21 +393,13 @@ public class OverlayMap : MonoBehaviour
         GenerateMesh();
         GenerateColorMap();
 
-        // Size in pixels of overlay texture and create texture.
-        int textureWidth = sizeX * pixelsPerTileX;
-        int textureHeight = sizeY * pixelsPerTileY;
-        texture = new Texture2D(textureWidth, textureHeight);
-        texture.wrapMode = TextureWrapMode.Clamp;
-
         // Set material.
         Material mat = Resources.Load<Material>("Shaders/Transparent-Diffuse");
         meshRenderer.material = mat;
-        if (mat == null || meshRenderer == null || texture == null)
+        if (mat == null || meshRenderer == null)
         {
             Debug.ULogErrorChannel("OverlayMap", "Material or renderer is null. Failing.");
         }
-
-        meshRenderer.material.mainTexture = texture;
 
         initialized = true;
     }
@@ -404,17 +413,17 @@ public class OverlayMap : MonoBehaviour
         colorMapArray = ColorMap(ColorMapSG, 255);
 
         // Colormap texture.
-        int textureWidth = colorMapArray.Length * pixelsPerTileX;
-        int textureHeight = pixelsPerTileY;
+        int textureWidth = colorMapArray.Length * colorMapWidth;
+        int textureHeight = colorMapWidth;
         colorMapTexture = new Texture2D(textureWidth, textureHeight);
         
         // Loop over each color in the palette and build a noisy texture.
         int n = 0;
         foreach (Color32 baseColor in colorMapArray)
         {
-            for (int y = 0; y < pixelsPerTileY; y++)
+            for (int y = 0; y < colorMapWidth; y++)
             {
-                for (int x = 0; x < pixelsPerTileX; x++)
+                for (int x = 0; x < colorMapWidth; x++)
                 {
                     Color colorCopy = baseColor;
                     colorCopy.a = transparency;
@@ -423,7 +432,7 @@ public class OverlayMap : MonoBehaviour
                     colorCopy.r += UnityEngine.Random.Range(-0.03f, 0.03f);
                     colorCopy.b += UnityEngine.Random.Range(-0.03f, 0.03f);
                     colorCopy.g += UnityEngine.Random.Range(-0.03f, 0.03f);
-                    colorMapTexture.SetPixel((n * pixelsPerTileX) + x, y, colorCopy);
+                    colorMapTexture.SetPixel((n * colorMapWidth) + x, y, colorCopy);
                 }
             }
 
@@ -443,30 +452,48 @@ public class OverlayMap : MonoBehaviour
         {
             Debug.ULogErrorChannel("OverlayMap", "No color map texture setted!");
         }
+        
+        if (!overlayColorMapLookup.ContainsKey(currentOverlay))
+        {
+            overlayColorMapLookup.Add(currentOverlay, new Dictionary<int, Color>());
+        }
 
+        Dictionary<int, Color> colorMapLookup = overlayColorMapLookup[currentOverlay];
+
+        // Size in pixels of overlay texture and create texture.
+        int textureWidth = sizeX;
+        int textureHeight = sizeY;
+        Color[] pixels = new Color[textureHeight * textureWidth];
+        
         for (int y = 0; y < sizeY; y++)
         {
             for (int x = 0; x < sizeX; x++)
             {
-                float v = valueAt(x, y);
+                float v = valueAt(x, y, WorldController.Instance.cameraController.CurrentLayer);
                 Debug.Assert(v >= 0 && v < 256, "v >= 0 && v < 256");
-                Graphics.CopyTexture(
-                    colorMapTexture,
-                    0,
-                    0,
-                    ((int)v % 256) * pixelsPerTileX,
-                    0,
-                    pixelsPerTileX,
-                    pixelsPerTileY,
-                    texture,
-                    0,
-                    0,
-                    x * pixelsPerTileX,
-                    y * pixelsPerTileY);
+
+                int sampleX = ((int)v % 256) * colorMapWidth;
+
+                if (!colorMapLookup.ContainsKey(sampleX))
+                {
+                    colorMapLookup.Add(sampleX, colorMapTexture.GetPixel(sampleX, 0));
+                }
+
+                Color pixel = colorMapLookup[sampleX];
+                int tilePixelIndex = (y * sizeX) + x;
+                pixels[tilePixelIndex] = pixel;
             }
         }
 
-        texture.Apply(true);
+        texture = new Texture2D(textureWidth, textureHeight)
+        {
+            filterMode = FilterMode.Point,
+            wrapMode = TextureWrapMode.Clamp
+        };
+
+        texture.SetPixels(pixels);
+        texture.Apply();
+        meshRenderer.material.mainTexture = texture;
     }
 
     /// <summary>
