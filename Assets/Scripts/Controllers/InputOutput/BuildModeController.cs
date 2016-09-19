@@ -135,7 +135,7 @@ public class BuildModeController
                 }
 
                 Furniture proto = PrototypeManager.Furniture.Get(furnitureType);
-                proto.Rotation = currentPreviewRotation;
+                proto.SetRotation(currentPreviewRotation);
                 job.buildablePrototype = proto;
 
                 // Add the job to the queue or build immediately if in Dev mode

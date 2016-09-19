@@ -64,7 +64,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     // did we have power in the last update?
     private bool prevUpdatePowerOn;
 
-    /// TODO: Implement object rotation
     /// <summary>
     /// Initializes a new instance of the <see cref="Furniture"/> class.
     /// </summary>
@@ -317,7 +316,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// <summary>
     /// Gets/Set the rotation of the furniture.
     /// </summary>
-    public float Rotation { get; set; }
+    public float Rotation { get; private set; }
 
     /// <summary>
     /// Gets the code used for Localization of the furniture.
@@ -1096,6 +1095,17 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                     Parameter = contextMenuLuaAction.LuaFunction    // Note that this is only in place because of the problem with the previous statement.
                 };
             }
+        }
+    }
+
+    public void SetRotation(float rotation)
+    {
+        Rotation = rotation;
+        if (rotation == 90 || rotation == -90 || rotation == -270 || rotation == 270)
+        {
+            int tmp = Height;
+            Height = Width;
+            Width = Height;
         }
     }
     
