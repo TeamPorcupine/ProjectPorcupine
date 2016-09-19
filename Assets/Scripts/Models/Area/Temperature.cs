@@ -121,7 +121,8 @@ public class Temperature
     /// </summary>
     /// <param name="x">X coordinates.</param>
     /// <param name="y">Y coordinates.</param>
-    /// <returns>Temperature at x,y.</returns>
+    /// <param name="z">Z coordinates.</param>
+    /// <returns>Temperature at x,y,z.</returns>
     public float GetTemperature(int x, int y, int z)
     {
         return temperature[offset][GetIndex(x, y, z)];
@@ -132,7 +133,8 @@ public class Temperature
     /// </summary>
     /// <param name="x">X coordinates.</param>
     /// <param name="y">Y coordinates.</param>
-    /// <param name="temp">Temperature to set at x,y.</param>
+    /// <param name="z">Z coordinates.</param>
+    /// <returns>Temperature to set at x,y,z.</returns>
     public void SetTemperature(int x, int y, int z, float temp)
     {
         if (IsWithinTemperatureBounds(temp))
@@ -146,7 +148,8 @@ public class Temperature
     /// </summary>
     /// <param name="x">X coordinates.</param>
     /// <param name="y">Y coordinates.</param>
-    /// <param name="incr">Temperature to increase at x,y.</param>
+    /// <param name="z">Z coordinates.</param>
+    /// <param name="incr">Temperature to increase at x,y, z.</param>
     public void ChangeTemperature(int x, int y, int z, float incr)
     {
         if (IsWithinTemperatureBounds(temperature[offset][GetIndex(x, y, z)] + incr))
@@ -163,7 +166,8 @@ public class Temperature
     /// </summary>
     /// <param name="x">X coordinates.</param>
     /// <param name="y">Y coordinates.</param>
-    /// <returns>Thermal diffusivity alpha at x,y.</returns>
+    /// <param name="z">Z coordinates.</param>
+    /// <returns>Thermal diffusivity alpha at x,y,z.</returns>
     public float GetThermalDiffusivity(int x, int y, int z)
     {
         return thermalDiffusivity[GetIndex(x, y, z)];
@@ -174,7 +178,8 @@ public class Temperature
     /// </summary>
     /// <param name="x">X coordinates.</param>
     /// <param name="y">Y coordinates.</param>
-    /// <param name="coeff">Thermal diffusifity to set at x,y.</param>
+    /// <param name="z">Z coordinates.</param>
+    /// <param name="coeff">Thermal diffusivity to set at x,y, z.</param>
     public void SetThermalDiffusivity(int x, int y, int z,  float coeff)
     {
         if (IsWithinThermalDiffusivityBounds(coeff))
@@ -188,7 +193,8 @@ public class Temperature
     /// </summary>
     /// <param name="x">X coordinates.</param>
     /// <param name="y">Y coordinates.</param>
-    /// <param name="incr">Thermal diffusifity to increase at x,y.</param>
+    /// <param name="z">Z coordinates.</param>
+    /// <param name="incr">Thermal diffusifity to increase at x,y,z.</param>
     public void ChangeThermalDiffusivity(int x, int y, int z, float incr)
     {
         if (IsWithinThermalDiffusivityBounds(thermalDiffusivity[GetIndex(x, y, z)] + incr))
@@ -239,6 +245,7 @@ public class Temperature
     /// </summary>
     /// <param name="x">X coordinates.</param>
     /// <param name="y">Y coordinates.</param>
+    /// <param name="z">Z coordinates.</param>
     /// <returns>Actual index for array access.</returns>
     private int GetIndex(int x, int y, int z)
     {
@@ -277,23 +284,22 @@ public class Temperature
         // Make sure c is always between 0 and 0.5*0.25 (not included) or things will blow up
         // in your face.
         float c = 0.23f * 0.5f;
-        int x = -1;
-        int y = -1;
-        int z = -1;
+        //int x = -1;
+        //int y = -1;
+        //int z = -1;
 
         //Calculation for only rooms
-        foreach (Room room in World.Current.RoomManager) {
-            if (room.ID > 0) {
-              foreach (Tile tile in room.getTiles) {
-                    x = tile.X;
-                    y = tile.Y;
-                    z = tile.Z;
-         
-        // TODO: Remove the commented lines below if the calculations per room ends up working.
-        ////calculates for all tiles.     
-        //for (int z = 0; z < sizeZ; z++) {
-        //    for (int y = 0; y < sizeY; y++) {
-        //        for (int x = 0; x < sizeX; x++) {
+        //foreach (Room room in World.Current.RoomManager) {
+        //    if (room.ID > 0) {
+        //      foreach (Tile tile in room.getTiles) {
+        //            x = tile.X;
+        //            y = tile.Y;
+        //            z = tile.Z;
+
+        //calculates for all tiles.     
+        for (int z = 0; z < sizeZ; z++) {
+            for (int y = 0; y < sizeY; y++) {
+                for (int x = 0; x < sizeX; x++) {
 
                     int index = GetIndex(x, y, z);
                     int index_N = GetIndex(x, y + 1, z);
@@ -310,7 +316,6 @@ public class Temperature
                     // If empty space, set temperature to 0. THIS SHOULD NEVER HAPPEN.
                     if (World.Current.GetTileAt(x, y, z).Room.IsOutsideRoom()) {
                         temp_curr[index] = 0f;
-                        Debug.ULogErrorChannel("Temperature.cs", "Somehow we are calculating the temperature for tiles in room ID =0.");
                     }
 
                     if (x > 0) {

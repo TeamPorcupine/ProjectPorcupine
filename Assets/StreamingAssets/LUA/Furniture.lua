@@ -442,7 +442,7 @@ function Heater_UpdateTemperature( furniture, deltaTime)
     end
     
     tile = furniture.tile
-    pressure = tile.Room.GetGasPressure() / tile.Room.GetSize()
+    pressure = tile.Room.GetGasPressure() / tile.Room.TileCount
     efficiency = ModUtils.Clamp01(pressure / furniture.Parameters["pressure_threshold"].ToFloat())
     temperatureChangePerSecond = furniture.Parameters["base_heating"].ToFloat() * efficiency
     temperatureChange = temperatureChangePerSecond * deltaTime
@@ -462,14 +462,14 @@ function OxygenCompressor_OnUpdate(furniture, deltaTime)
         -- Expel gas if available
         if (furniture.Parameters["gas_content"].ToFloat() > 0) then
             furniture.Parameters["gas_content"].ChangeFloatValue(-gasAmount)
-            room.ChangeGas("O2", gasAmount / room.GetSize())
+            room.ChangeGas("O2", gasAmount / room.TileCount)
             furniture.UpdateOnChanged(furniture)
         end
     elseif (pressure > furniture.Parameters["take_threshold"].ToFloat()) then
         -- Suck in gas if not full
         if (furniture.Parameters["gas_content"].ToFloat() < furniture.Parameters["max_gas_content"].ToFloat()) then
             furniture.Parameters["gas_content"].ChangeFloatValue(gasAmount)
-            room.ChangeGas("O2", -gasAmount / room.GetSize())
+            room.ChangeGas("O2", -gasAmount / room.TileCount)
             furniture.UpdateOnChanged(furniture)
         end
     end
@@ -670,7 +670,7 @@ function Rtg_UpdateTemperature( furniture, deltaTime)
     end
     
     tile = furniture.tile
-    pressure = tile.Room.GetGasPressure() / tile.Room.GetSize()
+    pressure = tile.Room.GetGasPressure() / tile.Room.TileCount
     efficiency = ModUtils.Clamp01(pressure / furniture.Parameters["pressure_threshold"].ToFloat())
     temperatureChangePerSecond = furniture.Parameters["base_heating"].ToFloat() * efficiency
     temperatureChange = temperatureChangePerSecond * deltaTime
