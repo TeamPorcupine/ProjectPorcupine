@@ -1062,6 +1062,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                     return false;
                 }
 
+                // FIXME This line breaks the validity checks if the tile is reserved to build this piece of furniture!
                 // Make sure we're not building on another furniture's workspot
                 if (tile2.IsReservedWorkSpot())
                 {
