@@ -34,6 +34,11 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// </summary>
     private string getSpriteNameAction;
 
+    /// <summary>
+    /// This action is called to get the progress info based on the furniture parameters.
+    /// </summary>
+    private string getProgressInfoNameAction;
+
     private List<string> replaceableFurniture = new List<string>();
 
     /// <summary>
@@ -127,6 +132,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
 
         isEnterableAction = other.isEnterableAction;
         getSpriteNameAction = other.getSpriteNameAction;
+        getProgressInfoNameAction = other.getProgressInfoNameAction;
 
         if (other.PowerConnection != null)
         {
@@ -660,6 +666,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                 case "GetSpriteName":
                     getSpriteNameAction = reader.GetAttribute("FunctionName");
                     break;
+                case "GetProgressInfo":
+                    getProgressInfoNameAction = reader.GetAttribute("functionName");
+                    break;
                 case "JobWorkSpotOffset":
                     Jobs.ReadWorkSpotOffset(reader);
                     break;
@@ -960,6 +969,19 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         return string.Empty;
     }
 
+    public string GetProgressInfo()
+    {
+        if (string.IsNullOrEmpty(getProgressInfoNameAction))
+        {
+            return string.Empty;
+        }
+        else
+        {
+            DynValue ret = FunctionsManager.Furniture.Call(getProgressInfoNameAction, this);
+            return ret.String;
+        }
+    }
+
     public IEnumerable<string> GetAdditionalInfo()
     {
         if (IsWorkshop)
@@ -991,6 +1013,8 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                 yield return string.Format("Power Accumulated: {0} / {1}", PowerConnection.AccumulatedPower, PowerConnection.Capacity);
             }
         }
+
+        yield return GetProgressInfo();
     }
 
     /// <summary>
