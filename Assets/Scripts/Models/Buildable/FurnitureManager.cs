@@ -148,14 +148,26 @@ public class FurnitureManager : IEnumerable<Furniture>
     }
 
     /// <summary>
-    /// Calls the update function of each furniture with the given delta time.
+    /// Calls the furnitures update function on every frame.
     /// </summary>
     /// <param name="deltaTime">Delta time.</param>
-    public void Update(float deltaTime)
+    public void TickEveryFrame(float deltaTime)
     {
         foreach (Furniture furniture in furnitures)
         {
-            furniture.Update(deltaTime);
+            furniture.EveryFrameUpdate(deltaTime);
+        }
+    }
+
+    /// <summary>
+    /// Calls the furnitures update function of a fixed frequency.
+    /// </summary>
+    /// <param name="deltaTime">Delta time.</param>
+    public void TickFixedFrequency(float deltaTime)
+    {
+        foreach (Furniture furniture in furnitures)
+        {
+            furniture.FixedFrequencyUpdate(deltaTime);
         }
     }
 

@@ -525,6 +525,7 @@ public class World : IXmlSerializable
     private void TickEveryFrame(float deltaTime)
     {
         CharacterManager.Update(deltaTime);
+        FurnitureManager.TickEveryFrame(deltaTime);
     }
 
     /// <summary>
@@ -533,7 +534,7 @@ public class World : IXmlSerializable
     /// <param name="deltaTime">Delta time.</param>
     private void TickFixedFrequency(float deltaTime)
     {
-        FurnitureManager.Update(deltaTime);
+        FurnitureManager.TickFixedFrequency(deltaTime);
 
         // Progress temperature modelling
         temperature.Update();
