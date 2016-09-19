@@ -7,7 +7,7 @@
         <MovementCost>0</MovementCost>
         <Width>1</Width>
         <Height>1</Height>
-        <LinksToNeighbours>true</LinksToNeighbours>
+        <LinksToNeighbours>wall</LinksToNeighbours>
         <EnclosesRooms>true</EnclosesRooms>
         <DragType>path</DragType>
 
@@ -46,7 +46,6 @@
         <PathfindingWeight>1</PathfindingWeight>
         <Width>1</Width>
         <Height>1</Height>
-        <LinksToNeighbours>false</LinksToNeighbours>
         <EnclosesRooms>true</EnclosesRooms>
         <CanReplaceFurniture typeTag="Wall" />
 
@@ -57,6 +56,8 @@
         <DeconstructJob>
             <Inventory type="Steel Plate" amount="1" />
         </DeconstructJob>
+        
+        <GetSpriteName FunctionName="Door_GetSpriteName" />
 
         <Animations>
           <Animation state="horizontal" valuebased="true">
@@ -105,10 +106,11 @@
         <PathfindingWeight>1</PathfindingWeight>
         <Width>1</Width>
         <Height>1</Height>
-        <LinksToNeighbours>false</LinksToNeighbours>
         <EnclosesRooms>true</EnclosesRooms>
         <CanReplaceFurniture typeTag="Wall" />
         <CanReplaceFurniture typeTag="Door" />
+        
+        <GetSpriteName FunctionName="Door_GetSpriteName" />
 
         <BuildingJob jobTime="5">
             <Inventory type="Steel Plate" amount="10" />
@@ -164,7 +166,7 @@
         <Description>Characters will brings inventory here for storage.</Description>
         <TypeTag>Storage</TypeTag>
         <MovementCost>1</MovementCost>
-        <LinksToNeighbours>true</LinksToNeighbours>
+        <LinksToNeighbours>stockpile</LinksToNeighbours>
 
         <BuildingJob jobTime="0" />
 
@@ -228,7 +230,7 @@
         <PathfindingModifier>0</PathfindingModifier>
         <PathfindingWeight>2</PathfindingWeight>
         <Width>3</Width>
-        <Height>3</Height>
+        <Height>2</Height>
         <PowerConnection inputRate="1" outputRate="" capacity=""/>
 
         <BuildingJob jobTime="0" />
@@ -237,7 +239,7 @@
             <Param name="mine_type" value="Raw Iron" />
         </Params>
 
-        <JobSpotOffset X="1" Y="0" />
+        <JobSpotOffset X="1" Y="-1" />
         <JobSpawnSpotOffset X="0" Y="0" />
 
         <Action event="OnUpdate" functionName="MiningDroneStation_UpdateAction" />
@@ -567,6 +569,7 @@
 
         <BuildingJob jobTime="1" />
         <CanReplaceFurniture typeTag="Wall" />
+        <LinksToNeighbours>wall</LinksToNeighbours>
 
         <Params>
             <Param name="gas_throughput" value="0.5" />

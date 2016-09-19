@@ -91,6 +91,7 @@ public class BuildModeController
 
             if ( 
                 WorldController.Instance.World.IsFurniturePlacementValid(furnitureType, tile) &&
+                WorldController.Instance.World.IsFurnitureWorkSpotClear(furnitureType, tile) && 
                 DoesBuildJobOverlapExistingBuildJob(tile, furnitureType) == false)
             {
                 // This tile position is valid for this furniture
@@ -103,48 +104,51 @@ public class BuildModeController
                 }
 
                 // Create a job for it to be build
-                Job j;
+                Job job;
 
                 if (PrototypeManager.FurnitureJob.Has(furnitureType))
                 {
                     // Make a clone of the job prototype
-                    j = PrototypeManager.FurnitureJob.Get(furnitureType).Clone();
+                    job = PrototypeManager.FurnitureJob.Get(furnitureType).Clone();
 
                     // Assign the correct tile.
-                    j.tile = tile;
+                    job.tile = tile;
                 }
                 else
                 {
                     Debug.ULogErrorChannel("BuildModeController", "There is no furniture job prototype for '" + furnitureType + "'");
-                    j = new Job(tile, furnitureType, FunctionsManager.JobComplete_FurnitureBuilding, 0.1f, null, Job.JobPriority.High);
-                    j.JobDescription = "job_build_" + furnitureType + "_desc";
+                    job = new Job(tile, furnitureType, FunctionsManager.JobComplete_FurnitureBuilding, 0.1f, null, Job.JobPriority.High);
+                    job.JobDescription = "job_build_" + furnitureType + "_desc";
                 }
 
-                j.buildablePrototype = PrototypeManager.Furniture.Get(furnitureType);
+                job.buildablePrototype = PrototypeManager.Furniture.Get(furnitureType);
 
                 // Add the job to the queue or build immediately if in Dev mode
                 if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
                 {
-                    WorldController.Instance.World.PlaceFurniture(j.JobObjectType, j.tile);
+                    WorldController.Instance.World.PlaceFurniture(job.JobObjectType, job.tile);
                 }
                 else
                 {
-                    for (int x_off = tile.X; x_off < (tile.X + j.buildablePrototype.Width); x_off++)
+                    for (int x_off = tile.X; x_off < (tile.X + job.buildablePrototype.Width); x_off++)
                     {
-                        for (int y_off = tile.Y; y_off < (tile.Y + j.buildablePrototype.Height); y_off++)
+                        for (int y_off = tile.Y; y_off < (tile.Y + job.buildablePrototype.Height); y_off++)
                         {
                             // FIXME: I don't like having to manually and explicitly set
                             // flags that prevent conflicts. It's too easy to forget to set/clear them!
                             Tile offsetTile = WorldController.Instance.World.GetTileAt(x_off, y_off, tile.Z);
-                            offsetTile.PendingBuildJob = j;
-                            j.OnJobStopped += (theJob) =>
+                            offsetTile.PendingBuildJob = job;
+                            job.OnJobStopped += (theJob) =>
                                 {
                                     offsetTile.PendingBuildJob = null;
                                 };
                         }
                     }
 
-                    WorldController.Instance.World.jobQueue.Enqueue(j);
+                    WorldController.Instance.World.jobQueue.Enqueue(job);
+
+                    // Let our workspot tile know it is reserved for us
+                    World.Current.ReserveTileAsWorkSpot((Furniture)job.buildablePrototype, job.tile);
                 }
             }
         }
