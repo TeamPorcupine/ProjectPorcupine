@@ -7,6 +7,7 @@
 // ====================================================
 #endregion
 using System.Linq;
+using System.Collections.Generic;
 using MoonSharp.Interpreter;
 using UnityEngine;
 
@@ -64,6 +65,9 @@ public class BuildModeController
         buildMode = BuildMode.FURNITURE;
         buildModeType = type;
         mouseController.StartBuildMode();
+
+        KeyboardManager.Instance.RegisterInputAction("RotateFurnitureLeft", KeyboardMappedInputType.KeyUp, rotateFurnitireLeft);
+        KeyboardManager.Instance.RegisterInputAction("RotateFurnitureRight", KeyboardMappedInputType.KeyUp, rotateFurnitireRight);
     }
 
     public void SetMode_BuildUtility(string type)
@@ -315,6 +319,8 @@ public class BuildModeController
     {
         if (buildMode == BuildMode.FURNITURE)
         {
+            Debug.LogWarning(mouseController.GetDragObjects().First());
+            mouseController.GetDragObjects().First().transform.Rotate(90, 90, -90);
 
         }
     }
@@ -324,6 +330,7 @@ public class BuildModeController
     {
         if (buildMode == BuildMode.FURNITURE)
         {
+            mouseController.GetDragObjects().First().transform.Rotate(0,0,90);
 
         }
     }
@@ -331,7 +338,6 @@ public class BuildModeController
     // Use this for initialization
     private void Start()
     {
-        KeyboardManager.Instance.RegisterInputAction("RotateFurnitureLeft", KeyboardMappedInputType.KeyUp, rotateFurnitireLeft);
-        KeyboardManager.Instance.RegisterInputAction("RotateFurnitureRight", KeyboardMappedInputType.KeyUp, rotateFurnitireRight);
+        
     }
 }
