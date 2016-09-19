@@ -284,9 +284,10 @@ namespace ProjectPorcupine.Rooms
                 return 0;
             }
 
-            float totalPressure = GetTotalGasPressure();
+            float totalGasses = GetTotalGas();
+            Debug.Log(name+ ": " + atmosphericGasses[name] +"/"+ totalGasses + "="+(atmosphericGasses[name] / totalGasses));
 
-            return totalPressure == 0 ? 0 : atmosphericGasses[name] / totalPressure;
+            return totalGasses == 0 ? 0 : atmosphericGasses[name] / totalGasses;
         }
 
         public float GetTotalGasPressure()
@@ -307,7 +308,7 @@ namespace ProjectPorcupine.Rooms
 
             foreach (string n in atmosphericGasses.Keys)
             {
-                totalGas = atmosphericGasses[n];
+                totalGas += atmosphericGasses[n];
             }
 
             return totalGas;
