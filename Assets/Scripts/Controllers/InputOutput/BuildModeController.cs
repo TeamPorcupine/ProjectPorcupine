@@ -24,6 +24,8 @@ public class BuildModeController
     public BuildMode buildMode = BuildMode.FLOOR;
     public string buildModeType;
 
+    public static BuildModeController Instance { get; protected set; }
+
     private MouseController mouseController;
     private TileType buildModeTile = TileType.Floor;
 
@@ -33,6 +35,7 @@ public class BuildModeController
     public void SetMouseController(MouseController currentMouseController)
     {
         mouseController = currentMouseController;
+        Instance = this;
         KeyboardManager.Instance.RegisterInputAction("RotateFurnitureLeft", KeyboardMappedInputType.KeyUp, rotateFurnitireLeft);
         KeyboardManager.Instance.RegisterInputAction("RotateFurnitureRight", KeyboardMappedInputType.KeyUp, rotateFurnitireRight);
     }
@@ -135,7 +138,7 @@ public class BuildModeController
                 // Add the job to the queue or build immediately if in Dev mode
                 if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
                 {
-                    WorldController.Instance.World.PlaceFurniture(j.JobObjectType, j.tile);
+                    WorldController.Instance.World.PlaceFurniture(j.JobObjectType, j.tile, true, currentPreviewRotation);
                 }
                 else
                 {
