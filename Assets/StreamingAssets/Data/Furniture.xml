@@ -88,7 +88,7 @@
             <Param name="thermal_diffusivity" value="0.0001" />
         </Params>
 
-        <FrameAction event="OnUpdate" functionName="OnUpdate_Door" />
+        <Action event="OnFastUpdate" functionName="OnUpdate_Door" />
         <Action event="OnUpdate" functionName="OnUpdate_Leak_Door" />
 
         <IsEnterable FunctionName="IsEnterable_Door" />
@@ -150,7 +150,7 @@
             <Param name="pressure_locked" value="0" />
         </Params>
 
-        <FrameAction event="OnUpdate" functionName="OnUpdate_AirlockDoor" />
+        <Action event="OnFastUpdate" functionName="OnUpdate_AirlockDoor" />
         <Action event="OnUpdate" functionName="OnUpdate_Leak_Airlock" />
 
         <ContextMenuAction FunctionName="AirlockDoor_Toggle_Pressure_Lock" Text="Toggle Pressure Lock" RequireCharacterSelected="false"/>
