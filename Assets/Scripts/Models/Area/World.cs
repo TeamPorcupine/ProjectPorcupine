@@ -245,6 +245,58 @@ public class World : IXmlSerializable
         return PlaceFurniture(furn, t, doRoomFloodFill);
     }
 
+    public Furniture PlaceFurniture(Furniture furniture, Tile t, bool doRoomFloodFill = true)
+    {
+        Furniture furn = Furniture.PlaceInstance(furniture, t);
+
+        if (furn == null)
+        {
+            // Failed to place object -- most likely there was already something there.
+            return null;
+        }
+
+        furn.Removed += OnFurnitureRemoved;
+        furnitures.Add(furn);
+
+        // Do we need to recalculate our rooms?
+        if (doRoomFloodFill && furn.RoomEnclosure)
+        {
+            RoomManager.DoRoomFloodFill(furn.Tile, true);
+        }
+
+        if (OnFurnitureCreated != null)
+        {
+            OnFurnitureCreated(furn);
+
+            if (furn.MovementCost != 1)
+            {
+                // Since tiles return movement cost as their base cost multiplied
+                // by the furniture's movement cost, a furniture movement cost
+                // of exactly 1 doesn't impact our pathfinding system, so we can
+                // occasionally avoid invalidating pathfinding graphs.
+                // InvalidateTileGraph();    // Reset the pathfinding system
+                if (tileGraph != null)
+                {
+                    tileGraph.RegenerateGraphAtTile(t);
+                }
+            }
+        }
+
+        return furn;
+    }
+
+    public void JobComplete_FurnitureBuilding(Job theJob)
+    {
+        // Let our workspot tile know it is no longer reserved for us
+        UnreserveTileAsWorkSpot((Furniture)theJob.buildablePrototype, theJob.tile);
+
+        PlaceFurniture(theJob.JobObjectType, theJob.tile);
+
+        // FIXME: I don't like having to manually and explicitly set
+        // flags that prevent conflicts. It's too easy to forget to set/clear them!
+        theJob.tile.PendingBuildJob = null;
+    }
+
     public Utility PlaceUtility(string objectType, Tile tile, bool doRoomFloodFill = false)
     {
         if (PrototypeManager.Utility.Has(objectType) == false)
@@ -256,6 +308,36 @@ public class World : IXmlSerializable
         Utility util = PrototypeManager.Utility.Get(objectType);
 
         return PlaceUtility(util, tile, doRoomFloodFill);
+    }
+
+    public Utility PlaceUtility(Utility proto, Tile tile, bool doRoomFloodFill = true)
+    {
+        Utility utility = Utility.PlaceInstance(proto, tile);
+
+        if (utility == null)
+        {
+            // Failed to place object -- most likely there was already something there.
+            return null;
+        }
+
+        utility.Removed += OnUtilityRemoved;
+        utilities.Add(utility);
+
+        if (OnUtilityCreated != null)
+        {
+            OnUtilityCreated(utility);
+        }
+
+        return utility;
+    }
+
+    public void JobComplete_UtilityBuilding(Job theJob)
+    {
+        PlaceUtility(theJob.JobObjectType, theJob.tile);
+
+        // FIXME: I don't like having to manually and explicitly set
+        // flags that preven conflicts. It's too easy to forget to set/clear them!
+        theJob.tile.PendingBuildJob = null;
     }
 
     /// <summary>
@@ -300,67 +382,6 @@ public class World : IXmlSerializable
             tile.Y + (int)furn.Jobs.WorkSpotOffset.y,
             tile.Z)
             .ReservedAsWorkSpotBy.Remove(furn);
-    }
-
-    public Furniture PlaceFurniture(Furniture furniture, Tile t, bool doRoomFloodFill = true)
-    {
-        Furniture furn = Furniture.PlaceInstance(furniture, t);
-
-        if (furn == null)
-        {
-            // Failed to place object -- most likely there was already something there.
-            return null;
-        }
-
-        furn.Removed += OnFurnitureRemoved;
-        furnitures.Add(furn);
-
-        // Do we need to recalculate our rooms?
-        if (doRoomFloodFill && furn.RoomEnclosure)
-        {
-            RoomManager.DoRoomFloodFill(furn.Tile, true);
-        }
-
-        if (OnFurnitureCreated != null)
-        {
-            OnFurnitureCreated(furn);
-
-            if (furn.MovementCost != 1)
-            {
-                // Since tiles return movement cost as their base cost multiplied
-                // by the furniture's movement cost, a furniture movement cost
-                // of exactly 1 doesn't impact our pathfinding system, so we can
-                // occasionally avoid invalidating pathfinding graphs.
-                // InvalidateTileGraph();    // Reset the pathfinding system
-                if (tileGraph != null)
-                {
-                    tileGraph.RegenerateGraphAtTile(t);
-                }
-            }
-        }
-
-        return furn;
-    }
-
-    public Utility PlaceUtility(Utility proto, Tile tile, bool doRoomFloodFill = true)
-    {
-        Utility utility = Utility.PlaceInstance(proto, tile);
-
-        if (utility == null)
-        {
-            // Failed to place object -- most likely there was already something there.
-            return null;
-        }
-
-        utility.Removed += OnUtilityRemoved;
-        utilities.Add(utility);
-
-        if (OnUtilityCreated != null)
-        {
-            OnUtilityCreated(utility);
-        }
-
-        return utility;
     }
 
     // This should be called whenever a change to the world

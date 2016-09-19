@@ -149,7 +149,7 @@ function Stockpile_UpdateAction( furniture, deltaTime )
     end
 
     -- Maybe we already have a job queued up?
-    if( furniture.Jobs.Count() > 0 ) then
+    if( furniture.Jobs.Count > 0 ) then
         -- Cool, all done.
         return
     end
@@ -222,11 +222,11 @@ function Stockpile_JobWorked(job)
 end
 
 function MiningDroneStation_UpdateAction( furniture, deltaTime )
-    local spawnSpot = furniture.Jobs.GetSpawnSpotTile()
+    local outputSpot = furniture.Jobs.OutputSpotTile
 
-	if( furniture.Jobs.Count() > 0 ) then
+	if (furniture.Jobs.Count > 0) then
 		-- Check to see if the Metal Plate destination tile is full.
-		if( spawnSpot.Inventory != nil and spawnSpot.Inventory.StackSize >= spawnSpot.Inventory.MaxStackSize ) then
+		if (outputSpot.Inventory != nil and outputSpot.Inventory.StackSize >= outputSpot.Inventory.MaxStackSize) then
 			-- We should stop this job, because it's impossible to make any more items.
 			furniture.Jobs.CancelAll()
 		end
@@ -234,19 +234,18 @@ function MiningDroneStation_UpdateAction( furniture, deltaTime )
 	end
 
 	-- If we get here, then we have no Current job. Check to see if our destination is full.
-	if( spawnSpot.Inventory != nil and spawnSpot.Inventory.StackSize >= spawnSpot.Inventory.MaxStackSize ) then
+	if (outputSpot.Inventory != nil and outputSpot.Inventory.StackSize >= outputSpot.Inventory.MaxStackSize) then
 		-- We are full! Don't make a job!
 		return
 	end
 
-	if(furniture.Jobs.GetSpawnSpotTile().Inventory != nil and furniture.Jobs.GetSpawnSpotTile().Inventory.Type != furniture.Parameters["mine_type"].ToString()) then
+	if (outputSpot.Inventory != nil and outputSpot.Inventory.Type != furniture.Parameters["mine_type"].ToString()) then
 		return
 	end
 
 	-- If we get here, we need to CREATE a new job.
-	local jobSpot = furniture.Jobs.GetWorkSpotTile()
 	local job = Job.__new(
-		jobSpot,
+		furniture.Jobs.WorkSpotTile,
 		nil,
 		nil,
 		1,
@@ -261,8 +260,8 @@ function MiningDroneStation_UpdateAction( furniture, deltaTime )
 end
 
 function MiningDroneStation_JobComplete(job)
-	if (job.buildable.Jobs.GetSpawnSpotTile().Inventory == nil or job.buildable.Jobs.GetSpawnSpotTile().Inventory.Type == job.buildable.Parameters["mine_type"].ToString()) then
-		World.Current.inventoryManager.PlaceInventory( job.buildable.Jobs.GetSpawnSpotTile(), Inventory.__new(job.buildable.Parameters["mine_type"].ToString(), 2))
+	if (job.buildable.Jobs.OutputSpotTile.Inventory == nil or job.buildable.Jobs.OutputSpotTile.Inventory.Type == job.buildable.Parameters["mine_type"].ToString()) then
+		World.Current.inventoryManager.PlaceInventory(job.buildable.Jobs.OutputSpotTile, Inventory.__new(job.buildable.Parameters["mine_type"].ToString(), 2))
 	else
 		job.CancelJob()
 	end
@@ -277,31 +276,31 @@ function MiningDroneStation_Change_to_Raw_Copper(furniture, character)
 end
 
 function MetalSmelter_UpdateAction(furniture, deltaTime)
-    local spawnSpot = furniture.Jobs.GetSpawnSpotTile()
+    local inputSpot = furniture.Jobs.InputSpotTile
+    local outputSpot = furniture.Jobs.OutputSpotTile
 
-    if(spawnSpot.Inventory ~= nil and spawnSpot.Inventory.StackSize >= 5) then
+    if (inputSpot.Inventory ~= nil and inputSpot.Inventory.StackSize >= 5) then
         furniture.Parameters["smelttime"].ChangeFloatValue(deltaTime)
-        if(furniture.Parameters["smelttime"].ToFloat() >= furniture.Parameters["smelttime_required"].ToFloat()) then
+        if (furniture.Parameters["smelttime"].ToFloat() >= furniture.Parameters["smelttime_required"].ToFloat()) then
             furniture.Parameters["smelttime"].SetValue(0)
-            local outputSpot = World.Current.GetTileAt(spawnSpot.X+2, spawnSpot.Y, spawnSpot.Z)
 
-            if(outputSpot.Inventory == nil) then
+            ModUtils.LogError("MetalSmelter: Placing inventory at :" .. outputSpot.x .. ":" .. outputSpot.y)
+            if (outputSpot.Inventory == nil) then
                 World.Current.inventoryManager.PlaceInventory(outputSpot, Inventory.__new("Steel Plate", 5))
-                spawnSpot.Inventory.StackSize = spawnSpot.Inventory.StackSize - 5
-            else
-                if(outputSpot.Inventory.StackSize <= 45) then
-                    outputSpot.Inventory.StackSize = outputSpot.Inventory.StackSize + 5
-                    spawnSpot.Inventory.StackSize = spawnSpot.Inventory.StackSize - 5
-                end
+                inputSpot.Inventory.StackSize = inputSpot.Inventory.StackSize - 5
+
+            elseif (outputSpot.Inventory.StackSize <= outputSpot.Inventory.MaxStackSize - 5) then
+                outputSpot.Inventory.StackSize = outputSpot.Inventory.StackSize + 5
+                inputSpot.Inventory.StackSize = inputSpot.Inventory.StackSize - 5
             end
 
-            if(spawnSpot.Inventory.StackSize <= 0) then
-                spawnSpot.Inventory = nil
+            if (inputSpot.Inventory.StackSize <= 0) then
+                inputSpot.Inventory = nil
             end
         end
     end
 
-    if(spawnSpot.Inventory ~= nil and spawnSpot.Inventory.StackSize == spawnSpot.Inventory.MaxStackSize) then
+    if (inputSpot.Inventory ~= nil and inputSpot.Inventory.StackSize == inputSpot.Inventory.MaxStackSize) then
         -- We have the max amount of resources, cancel the job.
         -- This check exists mainly, because the job completed callback doesn't
         -- seem to be reliable.
@@ -309,22 +308,21 @@ function MetalSmelter_UpdateAction(furniture, deltaTime)
         return
     end
 
-    if(furniture.Jobs.Count() > 0) then
+    if (furniture.Jobs.Count > 0) then
         return
     end
 
     -- Create job depending on the already available stack size.
     local desiredStackSize = 50
     local itemsDesired = { Inventory.__new("Raw Iron", 0, desiredStackSize) }
-    if(spawnSpot.Inventory ~= nil and spawnSpot.Inventory.StackSize < spawnSpot.Inventory.MaxStackSize) then
-        desiredStackSize = spawnSpot.Inventory.MaxStackSize - spawnSpot.Inventory.StackSize
+    if (inputSpot.Inventory ~= nil and inputSpot.Inventory.StackSize < inputSpot.Inventory.MaxStackSize) then
+        desiredStackSize = inputSpot.Inventory.MaxStackSize - inputSpot.Inventory.StackSize
         itemsDesired[1].MaxStackSize = desiredStackSize
     end
-    ModUtils.ULog("MetalSmelter: Creating job for " .. desiredStackSize .. " raw iron.")
+    ModUtils.ULog("MetalSmelter: Creating job for " .. desiredStackSize .. " raw iron." .. inputSpot.x .. ":" .. inputSpot.y)
 
-    local jobSpot = furniture.Jobs.GetWorkSpotTile()
     local job = Job.__new(
-        jobSpot,
+        furniture.Jobs.WorkSpotTile,
         nil,
         nil,
         0.4,
@@ -340,24 +338,23 @@ end
 
 function MetalSmelter_JobWorked(job)
     job.CancelJob()
-    local spawnSpot = job.tile.Furniture.Jobs.GetSpawnSpotTile()
+    local inputSpot = job.tile.Furniture.Jobs.InputSpotTile
     for k, inv in pairs(job.inventoryRequirements) do
-        if(inv ~= nil and inv.StackSize > 0) then
-            World.Current.inventoryManager.PlaceInventory(spawnSpot, inv)
-            spawnSpot.Inventory.Locked = true
+        if (inv ~= nil and inv.StackSize > 0) then
+            World.Current.inventoryManager.PlaceInventory(inputSpot, inv)
+            inputSpot.Inventory.Locked = true
             return
         end
     end
 end
 
 function CloningPod_UpdateAction(furniture, deltaTime)
-	
-    if( furniture.Jobs.Count() > 0 ) then
+    if (furniture.JobWorkSpotOffset > 0) then
         return
     end
 
     local job = Job.__new(
-        furniture.Jobs.GetWorkSpotTile(),
+        furniture.Jobs.WorkSpotTile,
         nil,
         nil,
         10,
@@ -378,17 +375,17 @@ function CloningPod_JobRunning(job)
 end
 
 function CloningPod_JobComplete(job)
-    World.Current.CharacterManager.Create(job.buildable.Jobs.GetSpawnSpotTile())
+    World.Current.CharacterManager.Create(job.buildable.Jobs.OutputSpotTile())
     job.buildable.Deconstruct()
 end
 
 function PowerGenerator_UpdateAction(furniture, deltatime)
-    if (furniture.Jobs.Count() < 1 and furniture.Parameters["burnTime"].ToFloat() == 0) then
+    if (furniture.Jobs.Count < 1 and furniture.Parameters["burnTime"].ToFloat() == 0) then
         furniture.PowerConnection.OutputRate = 0
         local itemsDesired = {Inventory.__new("Uranium", 0, 5)}
 
         local job = Job.__new(
-            furniture.Jobs.GetWorkSpotTile(),
+            furniture.Jobs.WorkSpotTile,
             nil,
             nil,
             0.5,
