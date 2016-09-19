@@ -276,9 +276,10 @@
 
         <Params>
             <Param name="burnTime" value="0" />
-            <Param name="burnTimeRequired" value="10" />
+            <Param name="burnTimeRequired" value="30" />
         </Params>
 
+        <GetProgressInfo functionName="PowerGenerator_FuelInfo" />
         <Action event="OnUpdate" functionName="PowerGenerator_UpdateAction" />
 
         <LocalizationCode>furn_power_generator</LocalizationCode>
