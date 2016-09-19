@@ -58,6 +58,9 @@ namespace ProjectPorcupine.Rooms
             }
         }
 
+        // RoomBehavior is something like an airlock or office.
+        public Dictionary<string, RoomBehavior> RoomBehaviors { get; private set; }
+
         public void AssignTile(Tile tile)
         {
             if (tiles.Contains(tile))
@@ -370,6 +373,37 @@ namespace ProjectPorcupine.Rooms
             {
                 this.ChangeGas(n, other.atmosphericGasses[n]);
             }
+        }
+
+        public bool DesignateRoomBehavior(RoomBehavior objInstance)
+        {
+            if (objInstance == null)
+            {
+                return false;
+            }
+
+            if (objInstance.IsValidPosition(this) == false)
+            {
+                Debug.ULogErrorChannel("Tile", "Trying to assign a furniture to a tile that isn't valid!");
+                return false;
+            }
+
+            RoomBehaviors.Add(objInstance.Name, objInstance);
+
+            return true;
+        }
+
+        public bool UndesignateRoomBehavior(RoomBehavior roomBehavior)
+        {
+            // Just uninstalling.
+            if (RoomBehaviors == null)
+            {
+                return false;
+            }
+
+            RoomBehaviors = null;
+
+            return true;
         }
     }
 }
