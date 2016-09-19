@@ -581,7 +581,7 @@ public class MouseController
         }
 
         go.name = furnitureType + "_p_" + t.X + "_" + t.Y + "_" + t.Z;
-        go.transform.position = t.Vector3 + ImageUtils.SpritePivotOffset(sr.sprite);
+        go.transform.position = t.Vector3 + ImageUtils.SpritePivotOffset(sr.sprite) + ImageUtils.SpriteRotationOffset(sr.sprite, bmc.GetCurrentPreviewRotation());
         go.transform.Rotate(0, 0, bmc.GetCurrentPreviewRotation());
     }
 

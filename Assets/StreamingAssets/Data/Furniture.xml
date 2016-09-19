@@ -189,7 +189,6 @@
         <Width>2</Width>
         <Height>2</Height>
         <PowerConnection inputRate="1" outputRate="" capacity=""/>
-        <CanRotate>true</CanRotate>
 
         <BuildingJob jobTime="0" />
         
@@ -271,7 +270,6 @@
         <Width>2</Width>
         <Height>2</Height>
         <PowerConnection inputRate="" outputRate="5" capacity=""/>
-        <CanRotate>true</CanRotate>
 
         <Animations>
             <Animation state="idle" looping="false">
@@ -504,7 +502,6 @@
         <PathfindingWeight>2</PathfindingWeight>
         <Width>3</Width>
         <Height>3</Height>
-        <CanRotate>true</CanRotate>
 
         <BuildingJob jobTime="5">
             <Inventory type="Steel Plate" amount="20" />
@@ -537,7 +534,6 @@
         <PowerConnection inputRate="1" outputRate="" capacity=""/>
 
         <BuildingJob jobTime="2" />
-        <CanRotate>true</CanRotate>
         
         <DeconstructJob jobTime="1">
             <Inventory type="Steel Plate" amount="1" />
@@ -611,7 +607,6 @@
         <Height>1</Height>
         <EnclosesRooms>true</EnclosesRooms>
         <PowerConnection inputRate="1" outputRate="" capacity=""/>
-        <CanRotate>true</CanRotate>
 
         <BuildingJob jobTime="1" />
         <CanReplaceFurniture typeTag="Wall" />
@@ -645,7 +640,6 @@
 
         <BuildingJob jobTime="1" />
         <CanReplaceFurniture typeTag="Wall" />
-        <CanRotate>true</CanRotate>
         
         <DeconstructJob jobTime="1">
             <Inventory type="Steel Plate" amount="1" />
@@ -713,7 +707,6 @@
         <Width>1</Width>
         <Height>1</Height>
         <PowerConnection inputRate="5" outputRate="10" capacity="50"/>
-        <CanRotate>true</CanRotate>
 
         <BuildingJob jobTime="2" />
         
@@ -767,7 +760,6 @@
         <Width>1</Width>
         <Height>1</Height>
         <PowerConnection inputRate="" outputRate="2" capacity=""/>
-        <CanRotate>true</CanRotate>
 
         <BuildingJob jobTime="0" />
         

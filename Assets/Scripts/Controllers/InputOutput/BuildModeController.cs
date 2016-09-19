@@ -329,7 +329,7 @@ public class BuildModeController
     {
         if (buildMode == BuildMode.FURNITURE && PrototypeManager.Furniture.Get(buildModeType).CanRotate)
         {
-            currentPreviewRotation = currentPreviewRotation - 90;
+            currentPreviewRotation = (currentPreviewRotation + 90) % 360;
         }
     }
 
@@ -337,7 +337,7 @@ public class BuildModeController
     {
         if (buildMode == BuildMode.FURNITURE && PrototypeManager.Furniture.Get(buildModeType).CanRotate)
         {
-            currentPreviewRotation = currentPreviewRotation + 90;
+            currentPreviewRotation = (currentPreviewRotation - 90) % 360;
         }
     }
 }
