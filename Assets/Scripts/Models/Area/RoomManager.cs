@@ -222,7 +222,7 @@ namespace ProjectPorcupine.Rooms
                 // Try building new rooms for each of our NESW directions.
                 foreach (Tile t in sourceTile.GetNeighbours())
                 {
-                    if (t != null && t.Room != null && t.Room.IsOutsideRoom())
+                    if (t != null && t.Room != null)
                     {
                         Room newRoom = ActualFloodFill(t, oldRoom, sizeOfOldRoom);
 
