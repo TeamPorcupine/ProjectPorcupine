@@ -143,7 +143,6 @@ namespace ProjectPorcupine.Rooms
         {
             if (room.IsOutsideRoom())
             {
-                Debug.ULogErrorChannel("World", "Tried to delete the outside room.");
                 return;
             }
 
