@@ -259,7 +259,7 @@ public class World : IXmlSerializable
     }
 
     /// <summary>
-    /// Reserves the furniture's work spot, preventing it from being built on.
+    /// Reserves the furniture's work spot, preventing it from being built on. Will not reserve a workspot inside of the furniture.
     /// </summary>
     /// <param name="furn">The furniture whose workspot will be reserved.</param>
     /// <param name="tile">The tile on which the furniture is located, for furnitures which don't have a tile, such as prototypes.</param>
@@ -268,6 +268,12 @@ public class World : IXmlSerializable
         if (tile == null)
         {
             tile = furn.Tile;
+        }
+
+        if (furn.Jobs.WorkSpotOffset.x < 0 || furn.Jobs.WorkSpotOffset.x >= furn.Width ||
+            furn.Jobs.WorkSpotOffset.y < 0 || furn.Jobs.WorkSpotOffset.y >= furn.Height)
+        {
+            return;
         }
 
         World.Current.GetTileAt(
