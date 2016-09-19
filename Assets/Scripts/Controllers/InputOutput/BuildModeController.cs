@@ -6,8 +6,8 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using MoonSharp.Interpreter;
 using UnityEngine;
 
@@ -24,20 +24,20 @@ public class BuildModeController
     public BuildMode buildMode = BuildMode.FLOOR;
     public string buildModeType;
 
-    public static BuildModeController Instance { get; protected set; }
-
     private MouseController mouseController;
     private TileType buildModeTile = TileType.Floor;
 
     private float currentPreviewRotation = 0f;
+
+    public static BuildModeController Instance { get; protected set; }
 
     // Use this for initialization
     public void SetMouseController(MouseController currentMouseController)
     {
         mouseController = currentMouseController;
         Instance = this;
-        KeyboardManager.Instance.RegisterInputAction("RotateFurnitureLeft", KeyboardMappedInputType.KeyUp, rotateFurnitireLeft);
-        KeyboardManager.Instance.RegisterInputAction("RotateFurnitureRight", KeyboardMappedInputType.KeyUp, rotateFurnitireRight);
+        KeyboardManager.Instance.RegisterInputAction("RotateFurnitureLeft", KeyboardMappedInputType.KeyUp, RotateFurnitireLeft);
+        KeyboardManager.Instance.RegisterInputAction("RotateFurnitureRight", KeyboardMappedInputType.KeyUp, RotateFurnitireRight);
     }
 
     public bool IsObjectDraggable()
@@ -58,7 +58,7 @@ public class BuildModeController
         return buildModeTile.ToString();
     }
 
-    public float getCurrentPreviewRotation()
+    public float GetCurrentPreviewRotation()
     {
         return currentPreviewRotation;
     }
@@ -326,7 +326,7 @@ public class BuildModeController
         return tile.Utilities.ContainsKey(proto.Name);
     }
 
-    private void rotateFurnitireLeft()
+    private void RotateFurnitireLeft()
     {
         if (buildMode == BuildMode.FURNITURE && PrototypeManager.Furniture.Get(buildModeType).CanRotate)
         {
@@ -334,7 +334,7 @@ public class BuildModeController
         }
     }
 
-    private void rotateFurnitireRight()
+    private void RotateFurnitireRight()
     {
         if (buildMode == BuildMode.FURNITURE && PrototypeManager.Furniture.Get(buildModeType).CanRotate)
         {

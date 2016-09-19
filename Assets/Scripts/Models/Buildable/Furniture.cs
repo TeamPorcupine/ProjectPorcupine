@@ -307,9 +307,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     public int Height { get; private set; }
 
     /// <summary>
-    /// Gets/Set the rotation of the furniture.
+    /// If true player is allowed to rotate the furniture.
     /// </summary>
-    public Boolean CanRotate { get; private set; }
+    public bool CanRotate { get; private set; }
 
     /// <summary>
     /// Gets/Set the rotation of the furniture.

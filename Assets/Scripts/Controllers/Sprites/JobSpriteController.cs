@@ -116,7 +116,7 @@ public class JobSpriteController : BaseSpriteController<Job>
             }
 
             job_go.transform.position = job.tile.Vector3 + ImageUtils.SpritePivotOffset(sr.sprite);
-            job_go.transform.Rotate(0, 0, BuildModeController.Instance.getCurrentPreviewRotation());
+            job_go.transform.Rotate(0, 0, BuildModeController.Instance.GetCurrentPreviewRotation());
         }
 
         sr.color = new Color(0.5f, 1f, 0.5f, 0.25f);
