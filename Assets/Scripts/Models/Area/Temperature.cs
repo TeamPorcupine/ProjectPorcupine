@@ -64,7 +64,7 @@ public class Temperature
     /// </summary>
     public Temperature()
     {
-        List<Room> rooms = World.Current.rooms;
+       
         //int totalSize = 0;
         //if (rooms.Count == 1) { return; }
         //for (int x = 1; x < rooms.Count; x++) {
