@@ -663,8 +663,8 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                     break;
                 case "FrameAction":
                     XmlReader frameSubtree = reader.ReadSubtree();
-                    FrameActions.ReadXml(frame_subtree);
-                    frame_subtree.Close();
+                    FrameActions.ReadXml(frameSubtree);
+                    frameSubtree.Close();
                     break;
                 case "ContextMenuAction":
                     contextMenuLuaActions.Add(new ContextMenuLuaAction
