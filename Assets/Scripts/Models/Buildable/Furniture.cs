@@ -175,7 +175,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// Gets the tint used to change the color of the furniture.
     /// </summary>
     /// <value>The Color of the furniture.</value>
-    public Color Tint { get; private set; }
+    public Color Tint { get; set; }
 
     /// <summary>
     /// Returns whether this instance is workshop or not.

@@ -99,7 +99,9 @@ public class WorldGenerator
 
                         tile.Type = AsteroidFloorType;
 
-                        if (Random.value <= asteroidResourceChance && tile.Furniture == null)
+                        world.PlaceFurniture("astro_wall", tile, false);
+
+                        if (Random.value <= asteroidResourceChance && tile.Furniture.Name == "Rock Wall")
                         {
                             if (resources.Length > 0)
                             {
@@ -115,22 +117,28 @@ public class WorldGenerator
 
                                     if (randomweight <= currentweight)
                                     {
-                                        if (inv.Type == "Raw Iron" || inv.Type == "Uranium")
+                                        tile.Furniture.Deconstruct();
+
+                                        Furniture oreWall = PrototypeManager.Furniture.Get("astro_wall").Clone();
+                                        oreWall.Parameters["ore_type"].SetValue(inv.Type.ToString());
+
+                                        switch (inv.Type)
                                         {
-                                            Furniture mine = PrototypeManager.Furniture.Get("mine").Clone();
-                                            mine.Parameters["ore_type"].SetValue(inv.Type.ToString());
-                                            world.PlaceFurniture(mine, tile, false);
-                                            break;
+                                            case "Raw Iron":
+                                                oreWall.Tint = new Color32(131, 109,109, 255);
+                                                break;
+                                            case "Uranium":
+                                                oreWall.Tint = new Color32(71, 120, 84, 255);
+                                                break;
+                                            case "Ice":
+                                                oreWall.Tint = new Color32(0, 255, 255, 255);
+                                                break;
+                                            default:
+                                                oreWall.Tint = Color.gray;
+                                                break;
                                         }
 
-                                        int stackSize = Random.Range(resourceMin[i], resourceMax[i]);
-
-                                        if (stackSize > inv.MaxStackSize)
-                                        {
-                                            stackSize = inv.MaxStackSize;
-                                        }
-
-                                        world.inventoryManager.PlaceInventory(tile, new Inventory(inv.Type, stackSize, inv.MaxStackSize));
+                                        world.PlaceFurniture(oreWall, tile, false);
                                         break;
                                     }
                                 }

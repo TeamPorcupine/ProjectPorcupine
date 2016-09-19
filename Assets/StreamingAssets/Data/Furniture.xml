@@ -738,7 +738,7 @@
         </Params>
 
     <ContextMenuAction FunctionName="OreMine_CreateMiningJob" Text="Mine Ore" RequireCharacterSelected="false" />
-    <GetSpriteName FunctionName="OreMine_GetSpriteName" />
+    <!-- <GetSpriteName FunctionName="OreMine_GetSpriteName" /> -->
 
     <LocalizationCode>furn_astro_wall</LocalizationCode>
     <UnlocalizedDescription>furn_astro_wall_desc</UnlocalizedDescription>
