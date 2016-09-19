@@ -29,16 +29,12 @@ public class BuildModeController
 
     private float currentPreviewRotation = 0f;
 
-    public BuildModeController()
-    {
-        KeyboardManager.Instance.RegisterInputAction("RotateFurnitureLeft", KeyboardMappedInputType.KeyUp, rotateFurnitireLeft);
-        KeyboardManager.Instance.RegisterInputAction("RotateFurnitureRight", KeyboardMappedInputType.KeyUp, rotateFurnitireRight);
-    }
-
     // Use this for initialization
     public void SetMouseController(MouseController currentMouseController)
     {
         mouseController = currentMouseController;
+        KeyboardManager.Instance.RegisterInputAction("RotateFurnitureLeft", KeyboardMappedInputType.KeyUp, rotateFurnitireLeft);
+        KeyboardManager.Instance.RegisterInputAction("RotateFurnitureRight", KeyboardMappedInputType.KeyUp, rotateFurnitireRight);
     }
 
     public bool IsObjectDraggable()
@@ -329,15 +325,12 @@ public class BuildModeController
     {
         if (buildMode == BuildMode.FURNITURE)
         {
-            // Debug.LogWarning(mouseController.GetDragObjects().First());
             currentPreviewRotation = currentPreviewRotation - 90;
-
         }
     }
 
     private void rotateFurnitireRight()
     {
-        Debug.LogWarning("N");
         if (buildMode == BuildMode.FURNITURE)
         {
             currentPreviewRotation = currentPreviewRotation + 90;
