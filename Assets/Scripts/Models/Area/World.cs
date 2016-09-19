@@ -287,10 +287,10 @@ public class World : IXmlSerializable
 
     public void JobComplete_FurnitureBuilding(Job theJob)
     {
-        PlaceFurniture(theJob.JobObjectType, theJob.tile);
-
         // Let our workspot tile know it is no longer reserved for us
         UnreserveTileAsWorkSpot((Furniture)theJob.buildablePrototype, theJob.tile);
+
+        PlaceFurniture(theJob.JobObjectType, theJob.tile);
 
         // FIXME: I don't like having to manually and explicitly set
         // flags that prevent conflicts. It's too easy to forget to set/clear them!
