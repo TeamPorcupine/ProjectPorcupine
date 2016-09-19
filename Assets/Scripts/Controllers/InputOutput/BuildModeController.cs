@@ -277,7 +277,7 @@ public class BuildModeController
             }
             else if (tile.Utilities.Count > 0)
             {
-                tile.Utilities.Last().Value.Deconstruct();
+                tile.Utilities.Last().Value.SetDeconstructJob();
             }
         }
         else
