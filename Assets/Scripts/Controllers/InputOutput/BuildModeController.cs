@@ -27,6 +27,12 @@ public class BuildModeController
     private MouseController mouseController;
     private TileType buildModeTile = TileType.Floor;
 
+    public BuildModeController()
+    {
+        KeyboardManager.Instance.RegisterInputAction("RotateFurnitureLeft", KeyboardMappedInputType.KeyUp, rotateFurnitireLeft);
+        KeyboardManager.Instance.RegisterInputAction("RotateFurnitureRight", KeyboardMappedInputType.KeyUp, rotateFurnitireRight);
+    }
+
     // Use this for initialization
     public void SetMouseController(MouseController currentMouseController)
     {
@@ -65,9 +71,6 @@ public class BuildModeController
         buildMode = BuildMode.FURNITURE;
         buildModeType = type;
         mouseController.StartBuildMode();
-
-        KeyboardManager.Instance.RegisterInputAction("RotateFurnitureLeft", KeyboardMappedInputType.KeyUp, rotateFurnitireLeft);
-        KeyboardManager.Instance.RegisterInputAction("RotateFurnitureRight", KeyboardMappedInputType.KeyUp, rotateFurnitireRight);
     }
 
     public void SetMode_BuildUtility(string type)
@@ -317,27 +320,21 @@ public class BuildModeController
 
     private void rotateFurnitireLeft()
     {
+        Debug.LogWarning("B");
         if (buildMode == BuildMode.FURNITURE)
         {
-            Debug.LogWarning(mouseController.GetDragObjects().First());
-            mouseController.GetDragObjects().First().transform.Rotate(90, 90, -90);
+            // Debug.LogWarning(mouseController.GetDragObjects().First());
+            mouseController.GetDragObjects().First().transform.Rotate(0, 0, -90);
 
         }
     }
-
 
     private void rotateFurnitireRight()
     {
+        Debug.LogWarning("N");
         if (buildMode == BuildMode.FURNITURE)
         {
             mouseController.GetDragObjects().First().transform.Rotate(0,0,90);
-
         }
-    }
-
-    // Use this for initialization
-    private void Start()
-    {
-        
     }
 }

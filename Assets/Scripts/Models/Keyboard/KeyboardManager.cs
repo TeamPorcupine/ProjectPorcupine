@@ -89,7 +89,7 @@ public class KeyboardManager
         RegisterInputMapping("DecreaseSpeed", KeyboardInputModifier.None, KeyCode.Minus, KeyCode.KeypadMinus);
         RegisterInputMapping("IncreaseSpeed", KeyboardInputModifier.None, KeyCode.Plus, KeyCode.KeypadPlus);
 
-        RegisterInputMapping("*", KeyboardInputModifier.None, KeyCode.B);
+        RegisterInputMapping("RotateFurnitureLeft", KeyboardInputModifier.None, KeyCode.B);
         RegisterInputMapping("RotateFurnitureRight", KeyboardInputModifier.None, KeyCode.N);
 
         RegisterInputMapping("Pause", KeyboardInputModifier.None, KeyCode.Space, KeyCode.Pause);
