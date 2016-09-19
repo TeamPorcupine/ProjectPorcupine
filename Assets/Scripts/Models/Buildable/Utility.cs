@@ -480,6 +480,12 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     /// </summary>
     public void SetDeconstructJob(Utility utility)
     {
+        if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
+        {
+            Deconstruct();
+            return;
+        }
+
         if (IsBeingDestroyed)
         {
             return; // Already being destroyed, don't do anything more

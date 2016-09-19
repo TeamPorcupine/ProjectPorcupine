@@ -817,6 +817,12 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// </summary>
     public void SetDeconstructJob()
     {
+        if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
+        {
+            Deconstruct();
+            return;
+        }
+
         if (IsBeingDestroyed)
         {
             return; // Already being destroyed, don't do anything more
