@@ -36,16 +36,7 @@ public class SoundController
             return;
         }
 
-        AudioClip ac = Resources.Load<AudioClip>("Sounds/" + furn.Type + "_OnCreated");
-
-        if (ac == null)
-        {
-            // WTF?  What do we do?
-            // Since there's no specific sound for whatever Furniture this is, just
-            // use a default sound -- i.e. the Wall_OnCreated sound.
-            ac = Resources.Load<AudioClip>("Sounds/Wall_OnCreated");
-        }
-
+        AudioClip ac = AudioManager.GetAudio("Sound", furn.Type + "_OnCreated");
         AudioSource.PlayClipAtPoint(ac, Camera.main.transform.position);
         soundCooldown = 0.1f;
     }
@@ -60,7 +51,7 @@ public class SoundController
 
         if (tileData.ForceTileUpdate)
         {  
-            AudioClip ac = Resources.Load<AudioClip>("Sounds/Floor_OnCreated");
+            AudioClip ac = AudioManager.GetAudio("Sound", "Floor_OnCreated");
             AudioSource.PlayClipAtPoint(ac, Camera.main.transform.position);
             soundCooldown = 0.1f;
         }
