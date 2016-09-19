@@ -148,7 +148,7 @@ public class BuildModeController
                     WorldController.Instance.World.jobQueue.Enqueue(job);
 
                     // Let our workspot tile know it is reserved for us
-                    World.Current.ReserveTileAsWorkSpot((Furniture)job.buildablePrototype, job.tile);
+                    //World.Current.ReserveTileAsWorkSpot((Furniture)job.buildablePrototype, job.tile);
                 }
             }
         }
