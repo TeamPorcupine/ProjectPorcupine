@@ -635,6 +635,7 @@
         <Width>1</Width>
         <Height>2</Height>
         <PathfindingModifier>1</PathfindingModifier>
+        <PathfindingWeight>1</PathfindingWeight>
         <CanRotate>true</CanRotate>
 
         <BuildingJob jobTime="1">
