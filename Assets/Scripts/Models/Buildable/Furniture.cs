@@ -593,6 +593,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         writer.WriteAttributeString("Y", Tile.Y.ToString());
         writer.WriteAttributeString("Z", Tile.Z.ToString());
         writer.WriteAttributeString("type", Type);
+        writer.WriteAttributeString("Rotation", Rotation.ToString());
 
         // Let the Parameters handle their own xml
         Parameters.WriteXml(writer);
@@ -739,6 +740,8 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// <param name="reader">The XML reader to read from.</param>
     public void ReadXml(XmlReader reader)
     {
+        SetRotation(float.Parse(reader.GetAttribute("Rotation")));
+
         // X, Y, and type have already been set, and we should already
         // be assigned to a tile.  So just read extra data if we have any.
         if (!reader.IsEmptyElement)
