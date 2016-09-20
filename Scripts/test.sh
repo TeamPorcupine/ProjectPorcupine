@@ -43,8 +43,8 @@ then
                 unityPath="C:\\Program Files\\Unity\\Editor\\Unity.exe"
                 ;;
             *)
-                echo "Don't know the path to your local Unity! Bailing."
-                exit 1
+                echo "Don't know the path to your local Unity! Assuming OS X and crossing fingers."
+		unityPath="/Applications/Unity/Unity.app/Contents/MacOS/Unity"
                 ;;
         esac
     fi
