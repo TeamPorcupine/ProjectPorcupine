@@ -205,7 +205,8 @@ public class ConstructionMenu : MonoBehaviour
         foreach (TileType item in PrototypeManager.TileType.Values)
         {
             TileType tileType = item;
-            string key = tileType.Type;
+
+            string key = LocalizationTable.GetLocalization(tileType.LocalizationCode);
 
             GameObject gameObject = (GameObject)Instantiate(buttonPrefab);
             gameObject.transform.SetParent(contentTransform);
