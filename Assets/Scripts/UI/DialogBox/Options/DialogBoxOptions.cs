@@ -15,6 +15,66 @@ public class DialogBoxOptions : DialogBox
 {
     private DialogBoxManager dialogManager;
 
+    public void OnButtonNewWorld()
+    {
+        StartCoroutine(OnButtonNewWorldCoroutine());
+    }
+
+    public IEnumerator OnButtonNewWorldCoroutine()
+    {
+        bool saveGame = false;
+        bool cancel = false;
+
+        DialogBoxManager dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
+
+        dbm.dialogBoxPromptOrInfo.SetPrompt("Would you like to save the game before loading a new world?");
+        dbm.dialogBoxPromptOrInfo.SetButtons(DialogBoxResult.Yes | DialogBoxResult.No | DialogBoxResult.Cancel);
+
+        dbm.dialogBoxPromptOrInfo.Closed = () =>
+        {
+            if (dbm.dialogBoxPromptOrInfo.Result == DialogBoxResult.Yes)
+            {
+                saveGame = true;
+            }
+
+            if (dbm.dialogBoxPromptOrInfo.Result == DialogBoxResult.No)
+            {
+            }
+
+            if (dbm.dialogBoxPromptOrInfo.Result == DialogBoxResult.Cancel)
+            {
+                cancel = true;
+            }
+        };
+
+        dbm.dialogBoxPromptOrInfo.ShowDialog();
+
+        while (dbm.dialogBoxPromptOrInfo.gameObject.activeSelf)
+        {
+            yield return null;
+        }
+
+        if (saveGame)
+        {
+            dbm.dialogBoxSaveGame.ShowDialog();
+            
+            while (dbm.dialogBoxSaveGame.gameObject.activeSelf)
+            {
+                yield return null;
+            }
+        }
+
+        if (!cancel)
+        {
+            this.CloseDialog();
+
+            dbm.dialogBoxPromptOrInfo.SetPrompt("Creating new world...");
+            dbm.dialogBoxPromptOrInfo.ShowDialog();
+
+            WorldController.Instance.LoadWorld(null);
+        }
+    }
+
     public void OnButtonSaveGame()
     {
         this.CloseDialog();
@@ -58,7 +118,7 @@ public class DialogBoxOptions : DialogBox
         GameObject newWorldButton = CreateButtonGO(buttonPrefab, "New World", "new_world");
         newWorldButton.GetComponent<Button>().onClick.AddListener(delegate
         {
-            OnButtonSaveGame();
+            OnButtonNewWorld();
         });
 
         GameObject saveButton = CreateButtonGO(buttonPrefab, "Save", "save");
