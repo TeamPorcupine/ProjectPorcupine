@@ -11,6 +11,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using MoonSharp.Interpreter;
+using ProjectPorcupine.Localization;
 using UnityEngine;
 
 /// <summary>
@@ -262,6 +263,7 @@ public class OverlayMap : MonoBehaviour
                 return;
             }
 
+            bool loggedOnce = false;
             valueAt = (x, y, z) =>
             {
                 if (WorldController.Instance == null)
@@ -274,7 +276,12 @@ public class OverlayMap : MonoBehaviour
                 double? value = result.CastToNumber();
                 if (value == null)
                 {
-                    Debug.ULogErrorChannel("OverlayMap", string.Format("The return value from the function named '{0}' was null", descr.LuaFunctionName));
+                    if (loggedOnce == false)
+                    {
+                        Debug.ULogErrorChannel("OverlayMap", string.Format("The return value from the function named '{0}' was null for tile at ({1}, {2}, {3})", descr.LuaFunctionName, x, y, z));
+                        loggedOnce = true;
+                    }
+                    
                     return 0;
                 }
                 
@@ -552,7 +559,7 @@ public class OverlayMap : MonoBehaviour
         textView.GetComponent<UnityEngine.UI.Text>().fontSize = 14;
         textView.GetComponent<UnityEngine.UI.Text>().font = Resources.GetBuiltinResource<Font>("Arial.ttf");
 
-        List<string> options = new List<string> { "None" };
+        List<string> options = new List<string> { LocalizationTable.GetLocalization("overlay_none") };
         List<string> types = new List<string> { "None" };
         foreach (OverlayDescriptor descr in PrototypeManager.Overlay.Values)
         {
