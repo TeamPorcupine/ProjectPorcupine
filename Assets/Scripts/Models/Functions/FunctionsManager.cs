@@ -23,6 +23,7 @@ public class FunctionsManager
         actions.Add("TileType", new LuaFunctions());
         actions.Add("Quest", new LuaFunctions());
         actions.Add("ScheduledEvent", new LuaFunctions());
+        actions.Add("Overlay", new LuaFunctions());
     }
 
     /// <summary>
@@ -86,6 +87,15 @@ public class FunctionsManager
     public static LuaFunctions ScheduledEvent
     {
         get { return Get("ScheduledEvent"); }
+    }
+
+    /// <summary>
+    /// Gets the overlay Lua Functions.
+    /// </summary>
+    /// <value>The overlay Lua Functions.</value>
+    public static LuaFunctions Overlay
+    {
+        get { return Get("Overlay"); }
     }
 
     /// <summary>
