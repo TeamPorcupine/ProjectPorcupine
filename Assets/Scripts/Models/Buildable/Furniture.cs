@@ -1100,9 +1100,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
 
     public void SetRotation(float rotation)
     {
-        Rotation = rotation;
-        if (rotation == 90 || rotation == -90 || rotation == -270 || rotation == 270)
+        if(Rotation != rotation)
         {
+            Rotation = rotation;
             int tmp = Height;
             Height = Width;
             Width = tmp;
@@ -1140,6 +1140,11 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             {
                 return false;
             }
+        }
+
+        if (BuildModeController.Instance != null)
+        {
+            SetRotation(BuildModeController.Instance.GetCurrentPreviewRotation());
         }
 
         for (int x_off = tile.X; x_off < tile.X + Width; x_off++)

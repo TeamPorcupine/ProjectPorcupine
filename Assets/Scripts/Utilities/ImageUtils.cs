@@ -6,7 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-
+using System;
 using UnityEngine;
 
 public static class ImageUtils
@@ -15,7 +15,7 @@ public static class ImageUtils
     {
         Vector3 offset;
 
-        if (rotation == 90 || rotation == -90 || rotation == -270 || rotation == 270)
+        if (Math.Abs(rotation) == 90 || Math.Abs(rotation) == 270)
         {
             offset = new Vector3((sprite.pivot.y / sprite.pixelsPerUnit) - 0.5f, (sprite.pivot.x / sprite.pixelsPerUnit) - 0.5f, 0);
         }
