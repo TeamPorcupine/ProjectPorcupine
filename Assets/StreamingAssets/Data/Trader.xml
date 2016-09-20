@@ -15,15 +15,15 @@
         </potentialStock>
         <Animations>
             <Animation state="idle" fps="1" looping="false">
-            <Frame name="BasicHaulShip" />
-            </Animation>
-            <Animation state="flying" fps="4" looping="true">
-            <Frame name="BasicHaulShip_01" />
-            <Frame name="BasicHaulShip_02" />
+	            <Frame name="BasicHaulShip" />
+	        </Animation>
+	        <Animation state="flying" fps="4" looping="true">
+	            <Frame name="BasicHaulShip_01" />
+	            <Frame name="BasicHaulShip_02" />
             </Animation>
         </Animations>
     </Trader>
-
+    
     <Trader type="Raw Depot">
         <potentialNames>
             <name>Raw Depot</name>
@@ -41,11 +41,11 @@
         </potentialStock>
         <Animations>
             <Animation state="idle" fps="1" looping="false">
-            <Frame name="BasicHaulShip" />
+                <Frame name="BasicHaulShip" />
             </Animation>
             <Animation state="flying" fps="4" looping="true">
-            <Frame name="BasicHaulShip_01" />
-            <Frame name="BasicHaulShip_02" />
+                <Frame name="BasicHaulShip_01" />
+                <Frame name="BasicHaulShip_02" />
             </Animation>
         </Animations>        
     </Trader>

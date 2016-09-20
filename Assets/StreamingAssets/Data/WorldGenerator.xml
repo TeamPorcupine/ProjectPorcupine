@@ -126,4 +126,8 @@
             <Furniture x="17" y="14" name="furn_SteelWall" />
         </Furnitures>
     </StartArea>
+    <Wallet>
+       <Currency name="Quill Corp Bucks" startingBalance="150" />
+       <Currency name="Inter-Galactic Credits" startingBalance="0" />
+    </Wallet>
 </WorldGenerator>

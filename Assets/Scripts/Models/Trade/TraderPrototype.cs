@@ -130,14 +130,12 @@ public class TraderPrototype : IPrototypable
     /// </summary>
     public Trader CreateTrader()
     {
+        Currency curency = PrototypeManager.Currency.Get(CurrencyName).Clone();
+        curency.Balance = Random.Range(MinCurrencyBalance, MaxCurrencyBalance);
+
         Trader t = new Trader
         {
-            Currency = new Currency
-            {
-                Name = CurrencyName,
-                Balance = Random.Range(MinCurrencyBalance, MaxCurrencyBalance),   
-                ShortName = World.Current.Wallet.Currencies[CurrencyName].ShortName
-            },
+            Currency = curency,
             Name = PotentialNames[Random.Range(0, PotentialNames.Count - 1)],
             SaleMarginMultiplier = Random.Range(MinSaleMarginMultiplier, MaxSaleMarginMultiplier),
             Stock = new List<Inventory>()

@@ -29,6 +29,7 @@ public class PrototypeManager
         UtilityDeconstructJob = new PrototypeMap<Job>();
         Need = new PrototypeMap<Need>("Needs", "Need");
         Trader = new PrototypeMap<TraderPrototype>("Traders", "Trader");
+        Currency = new PrototypeMap<Currency>("Currencies", "Currency");
         Quest = new PrototypeMap<Quest>("Quests", "Quest");
         Stat = new PrototypeMap<Stat>("Stats", "Stat");
         SchedulerEvent = new PrototypeMap<ScheduledEvent>("Events", "Event");
@@ -92,6 +93,12 @@ public class PrototypeManager
     /// </summary>
     /// <value>The trader prototype map.</value>
     public static PrototypeMap<TraderPrototype> Trader { get; private set; }
+
+    /// <summary>
+    /// Gets the currency prototype map.
+    /// </summary>
+    /// <value>The trader prototype map.</value>
+    public static PrototypeMap<Currency> Currency { get; private set; }
 
     /// <summary>
     /// Gets the quest prototype map.

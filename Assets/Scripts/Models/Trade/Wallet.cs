@@ -11,27 +11,59 @@ using System.Xml;
 
 public class Wallet
 {
-    public Dictionary<string, Currency> Currencies;
-    
-    public void ReadXmlPrototype(XmlReader reader_parent)
-    {
-        XmlReader reader = reader_parent.ReadSubtree();
-        Currencies = new Dictionary<string, Currency>();
+    private Dictionary<string, Currency> currencies;
 
-        while (reader.Read())
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Wallet"/> class.
+    /// </summary>
+    public Wallet()
+    {
+        currencies = new Dictionary<string, Currency>(); 
+    }
+
+    /// <summary>
+    /// Gets the <see cref="Currency"/> with the specified name.
+    /// </summary>
+    /// <param name="name">The currency name.</param>
+    public Currency this[string name]
+    {
+        get
         {
-            switch (reader.Name)
+            if (currencies.ContainsKey(name))
             {
-                case "Currency":
-                    Currency c = new Currency
-                    {
-                        Name = reader.GetAttribute("Name"),
-                        ShortName = reader.GetAttribute("ShortName"),
-                        Balance = float.Parse(reader.GetAttribute("StartingBalance"))
-                    };
-                    Currencies.Add(c.Name, c);
-                    break;
+                return currencies[name];
             }
+
+            return null;
+        }
+    } 
+
+    /// <summary>
+    /// Adds a currency with the given name and balance.
+    /// </summary>
+    /// <param name="name">The currency name.</param>
+    /// <param name="balance">The starting balance.</param>
+    public void AddCurrency(string name, float balance)
+    {
+        if (PrototypeManager.Currency.Has(name))
+        {
+            Currency currency = PrototypeManager.Currency.Get(name).Clone();
+            currency.Balance = balance;
+            currencies[currency.Name] = currency;
+        }
+    }
+
+    /// <summary>
+    /// Writes the Wallet to the Xml.
+    /// </summary>
+    /// <param name="writer">The Xml writer.</param>
+    public void WriteXml(XmlWriter writer)
+    {
+        foreach (Currency currency in currencies.Values)
+        {
+            writer.WriteStartElement("Currency");
+            currency.WriteXml(writer);
+            writer.WriteEndElement();
         }
     }
 }

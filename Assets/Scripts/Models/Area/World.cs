@@ -38,9 +38,7 @@ public class World : IXmlSerializable
     // The pathfinding graph used to navigate our world map.
     public Path_TileGraph tileGraph;
     public Path_RoomGraph roomGraph;
-
-    public Wallet Wallet;
-
+    
     // TODO: Most likely this will be replaced with a dedicated
     // class for managing job queues (plural!) that might also
     // be semi-static or self initializing or some damn thing.
@@ -126,6 +124,12 @@ public class World : IXmlSerializable
     public PowerNetwork PowerNetwork { get; private set; }
 
     public RoomManager RoomManager { get; private set; }
+
+    /// <summary>
+    /// Gets the wallet.
+    /// </summary>
+    /// <value>The wallet.</value>
+    public Wallet Wallet { get; private set; }
 
     public int CountFurnitureType(string type)
     {
@@ -446,13 +450,7 @@ public class World : IXmlSerializable
         writer.WriteElementString("Skybox", skybox.name);
 
         writer.WriteStartElement("Wallet");
-        foreach (Currency currency in Wallet.Currencies.Values)
-        {
-            writer.WriteStartElement("Currency");
-            currency.WriteXml(writer);
-            writer.WriteEndElement();
-        }
-
+        Wallet.WriteXml(writer);
         writer.WriteEndElement();
 
         Scheduler.Scheduler.Current.WriteXml(writer);
@@ -515,23 +513,49 @@ public class World : IXmlSerializable
         utilities.Remove(util);
     }
 
-    private void ReadXml_Wallet(XmlReader reader)
+    private void SetupWorld(int width, int height, int depth)
     {
-        if (reader.ReadToDescendant("Currency"))
-        {
-            do
-            {
-                Currency c = new Currency
-                {
-                    Name = reader.GetAttribute("Name"),
-                    ShortName = reader.GetAttribute("ShortName"),
-                    Balance = float.Parse(reader.GetAttribute("Balance"))
-                };
+        jobQueue = new JobQueue();
+        jobWaitingQueue = new JobQueue();
 
-                Wallet.Currencies[c.Name] = c;
+        // Set the current world to be this world.
+        // TODO: Do we need to do any cleanup of the old world?
+        Current = this;
+
+        Width = width;
+        Height = height;
+        Depth = depth;
+
+        tiles = new Tile[Width, Height, Depth];
+
+        RoomManager = new RoomManager();
+        RoomManager.Adding += (room) => roomGraph = null;
+        RoomManager.Removing += (room) => roomGraph = null;
+
+        for (int x = 0; x < Width; x++)
+        {
+            for (int y = 0; y < Height; y++)
+            {
+                for (int z = 0; z < Depth; z++)
+                {
+                    tiles[x, y, z] = new Tile(x, y, z);
+                    tiles[x, y, z].TileChanged += OnTileChangedCallback;
+                    tiles[x, y, z].Room = RoomManager.OutsideRoom; // Rooms 0 is always going to be outside, and that is our default room
+                }
             }
-            while (reader.ReadToNextSibling("Character"));
         }
+
+        furnitures = new List<Furniture>();
+        utilities = new List<Utility>();
+        CharacterManager = new CharacterManager();
+        inventoryManager = new InventoryManager();
+        cameraData = new CameraData();
+        PowerNetwork = new ProjectPorcupine.PowerNetwork.PowerNetwork();
+        temperature = new Temperature(Width, Height);
+        Wallet = new Wallet();
+
+        LoadSkybox();
+        AddEventListeners();
     }
 
     private void LoadSkybox(string name = null)
@@ -574,94 +598,6 @@ public class World : IXmlSerializable
         else
         {
             Debug.ULogWarningChannel("World", "No skyboxes detected! Falling back to black.");
-        }
-    }
-
-    private void SetupWorld(int width, int height, int depth)
-    {
-        jobQueue = new JobQueue();
-        jobWaitingQueue = new JobQueue();
-
-        // Set the current world to be this world.
-        // TODO: Do we need to do any cleanup of the old world?
-        Current = this;
-
-        Width = width;
-        Height = height;
-        Depth = depth;
-
-        tiles = new Tile[Width, Height, Depth];
-
-        RoomManager = new RoomManager();
-        RoomManager.Adding += (room) => roomGraph = null;
-        RoomManager.Removing += (room) => roomGraph = null;
-
-        for (int x = 0; x < Width; x++)
-        {
-            for (int y = 0; y < Height; y++)
-            {
-                for (int z = 0; z < Depth; z++)
-                {
-                    tiles[x, y, z] = new Tile(x, y, z);
-                    tiles[x, y, z].TileChanged += OnTileChangedCallback;
-                    tiles[x, y, z].Room = RoomManager.OutsideRoom; // Rooms 0 is always going to be outside, and that is our default room
-                }
-            }
-        }
-
-        CreateWallet();
-
-        furnitures = new List<Furniture>();
-        utilities = new List<Utility>();
-        CharacterManager = new CharacterManager();
-        inventoryManager = new InventoryManager();
-        cameraData = new CameraData();
-        PowerNetwork = new ProjectPorcupine.PowerNetwork.PowerNetwork();
-        temperature = new Temperature(Width, Height);
-
-        LoadSkybox();
-        AddEventListeners();
-    }
-
-    private void CreateWallet()
-    {
-        Wallet = new Wallet();
-
-        string dataPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
-        string filePath = System.IO.Path.Combine(dataPath, "Currency.xml");
-        string xmlText = System.IO.File.ReadAllText(filePath);
-        LoadCurrencyFromFile(xmlText);
-
-        DirectoryInfo[] mods = WorldController.Instance.modsManager.GetMods();
-        foreach (DirectoryInfo mod in mods)
-        {
-            string xmlModFile = System.IO.Path.Combine(mod.FullName, "Currency.xml");
-            if (File.Exists(xmlModFile))
-            {
-                string xmlModText = System.IO.File.ReadAllText(xmlModFile);
-                LoadCurrencyFromFile(xmlModText);
-            }
-        }
-    }
-
-    private void LoadCurrencyFromFile(string xmlText)
-    {
-        XmlTextReader reader = new XmlTextReader(new StringReader(xmlText));
-
-        if (reader.ReadToDescendant("Currencies"))
-        {
-            try
-            {
-                Wallet.ReadXmlPrototype(reader);
-            }
-            catch (Exception e)
-            {
-                Debug.LogError("Error reading Currency " + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
-            }
-        }
-        else
-        {
-            Debug.LogError("Did not find a 'Currencies' element in the prototype definition file.");
         }
     }
 
@@ -846,6 +782,20 @@ public class World : IXmlSerializable
                 }
             }
             while (reader.ReadToNextSibling("Character"));
+        }
+    }
+
+    private void ReadXml_Wallet(XmlReader reader)
+    {
+        if (reader.ReadToDescendant("Currency"))
+        {
+            do
+            {
+                Wallet.AddCurrency(
+                    reader.GetAttribute("Name"),
+                    float.Parse(reader.GetAttribute("Balance")));
+            }
+            while (reader.ReadToNextSibling("Currency"));
         }
     }
 
