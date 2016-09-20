@@ -28,10 +28,23 @@ public class OverlayDescriptor : IPrototypable
     }
 
     /// <summary>
+    /// Select the type of color map (coloring scheme) you want to use.
+    /// TODO: More color maps.
+    /// </summary>
+    public enum ColorMapOption
+    {
+        Jet,
+        Random
+    }
+
+    /// <summary>
     /// Unique identifier.
     /// </summary>
     public string Type { get; private set; }
 
+    /// <summary>
+    /// Gets the localized name.
+    /// </summary>
     public string Name
     {
         get { return LocalizationTable.GetLocalization("overlay_" + Type); }
@@ -48,26 +61,19 @@ public class OverlayDescriptor : IPrototypable
     public string LuaFunctionName { get; private set; }
 
     /// <summary>
-    /// Bounds for clipping coloring.
+    /// Gets the min bound for clipping coloring.
     /// </summary>
     public int Min { get; private set; }
-    public int Max { get; private set; }
 
     /// <summary>
-    /// Select the type of color map (coloring scheme) you want to use.
-    /// TODO: More color maps.
+    /// Gets the max bound for clipping coloring.
     /// </summary>
-    public enum ColorMapOption
-    {
-        Jet,
-        Random
-    }
+    public int Max { get; private set; }
 
     /// <summary>
     /// Creates an OverlayDescriptor form a xml subtree with node \<Overlay></Overlay>\.
     /// </summary>
     /// <param name="xmlReader">The subtree pointing to Overlay.</param>
-    /// <returns></returns>
     public void ReadXmlPrototype(XmlReader xmlReader)
     {
         Type = xmlReader.GetAttribute("type");

@@ -271,7 +271,14 @@ public class OverlayMap : MonoBehaviour
 
                 Tile tile = WorldController.Instance.GetTileAtWorldCoord(new Vector3(x, y, z));
                 DynValue result = FunctionsManager.Overlay.Call(descr.LuaFunctionName, new object[] { tile, World.Current });
-                return (int)result.ToScalar().CastToNumber();
+                double? value = result.CastToNumber();
+                if (value == null)
+                {
+                    Debug.ULogErrorChannel("OverlayMap", string.Format("The return value from the function named '{0}' was null", descr.LuaFunctionName));
+                    return 0;
+                }
+                
+                return (int)value;
             };
 
             ColorMapSG = descr.ColorMap;

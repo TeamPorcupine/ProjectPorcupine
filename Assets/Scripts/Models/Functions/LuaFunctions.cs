@@ -52,7 +52,7 @@ public class LuaFunctions
     /// <param name="name">The global name.</param>
     public bool HasGlobal(string name)
     {
-        return script.Globals[name] != null;
+        return name != null && script.Globals[name] != null;
     }
 
     /// <summary>
