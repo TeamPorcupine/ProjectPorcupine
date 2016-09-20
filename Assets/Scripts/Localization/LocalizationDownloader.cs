@@ -86,9 +86,9 @@ namespace ProjectPorcupine.Localization
             {
                 latestCommitHash = GetHashOfLastCommitFromAPIResponse(versionChecker.text);
             }
-            catch
+            catch (Exception e)
             {
-                yield break;
+                Debug.ULogErrorChannel("LocalizationDownloader", e.Message);
             }
 
             if (latestCommitHash != currentLocalizationVersion)
@@ -226,9 +226,12 @@ namespace ProjectPorcupine.Localization
                 // called ProjectPorcupineLocalization-*branch name*. Now we need to move all files from that directory
                 // to Application.streamingAssetsPath/Localization.
                 FileInfo[] fileInfo = localizationFolderInfo.GetFiles();
-                if (fileInfo.Length > 2)
+                foreach (FileInfo file in fileInfo)
                 {
-                    Debug.ULogErrorChannel("LocalizationDownloader", "There should only be en_US.lang and en_US.lang.meta.");
+                    if (file.Name != "en_US.lang" && file.Name != "en_US.lang.meta")
+                    {
+                        Debug.ULogErrorChannel("LocalizationDownloader", "There should only be en_US.lang and en_US.lang.meta. Instead there is: " + file.Name);
+                    }
                 }
 
                 DirectoryInfo[] dirInfo = localizationFolderInfo.GetDirectories();
@@ -277,7 +280,7 @@ namespace ProjectPorcupine.Localization
                     Debug.ULogErrorChannel("LocalizationDownloader", "SOMETHING WENT HORRIBLY WRONG AT DOWNLOADING LOCALIZATION!");
                     throw new Exception("SOMETHING WENT HORRIBLY WRONG AT DOWNLOADING LOCALIZATION!");
                 }
-                
+
                 if (file.Name != "en_US.lang")
                 {
                     file.Delete();
