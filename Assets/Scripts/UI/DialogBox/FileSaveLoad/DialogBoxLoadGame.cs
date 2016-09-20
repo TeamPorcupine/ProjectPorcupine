@@ -62,8 +62,13 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
         if (File.Exists(filePath) == false)
         {
             // TODO: Do file overwrite dialog box.
-            Debug.ULogErrorChannel("DialogBoxLoadGame", "File doesn't exist.  What?");
-            CloseDialog();
+
+            DialogBoxManager dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
+            dbm.dialogBoxPromptOrInfo.SetAsInfo("File doesn't exist!");
+            dbm.dialogBoxPromptOrInfo.ShowDialog();
+
+            // Debug.ULogErrorChannel("DialogBoxLoadGame", "File doesn't exist.  What?");
+            // CloseDialog();
             return;
         }
 
@@ -92,8 +97,11 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
 
         if (File.Exists(filePath) == false)
         {
-            Debug.ULogErrorChannel("DialogBoxLoadGame", "File doesn't exist.  What?");
-            CloseDialog();
+            //Debug.ULogErrorChannel("DialogBoxLoadGame", "File doesn't exist.  What?");
+
+            DialogBoxManager dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
+            dbm.dialogBoxPromptOrInfo.SetAsInfo("File doesn't exist!");
+            // CloseDialog();
             return;
         }
 
@@ -105,14 +113,16 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
     public void DeleteWasClicked()
     {
         DialogBoxManager dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
-        dbm.dialogBoxAreYouSure.Closed = () =>
+        dbm.dialogBoxPromptOrInfo.Closed = () =>
         {
-            if (dbm.dialogBoxAreYouSure.Result == DialogBoxResult.Yes)
+            if (dbm.dialogBoxPromptOrInfo.Result == DialogBoxResult.Yes)
             {
                 DeleteFile();
             }
         };
-        dbm.dialogBoxAreYouSure.ShowDialog();
+        dbm.dialogBoxPromptOrInfo.SetPrompt("Delete File?\nYou cannot revert this action.");
+        dbm.dialogBoxPromptOrInfo.SetButtons(DialogBoxResult.Yes | DialogBoxResult.No);
+        dbm.dialogBoxPromptOrInfo.ShowDialog();
     }
 
     public void LoadWorld(string filePath)
@@ -122,6 +132,10 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
 
         // Get the file name from the save file dialog box.
         Debug.ULogChannel("DialogBoxLoadGame", "LoadWorld button was clicked.");
+
+        DialogBoxManager dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
+        dbm.dialogBoxPromptOrInfo.SetPrompt("Loading game...");
+        dbm.dialogBoxPromptOrInfo.ShowDialog();
 
         WorldController.Instance.LoadWorld(filePath);
     }
