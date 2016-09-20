@@ -27,7 +27,15 @@ public class BuildModeController
     private MouseController mouseController;
     private TileType buildModeTile = TileType.Floor;
 
+    // The rotation applied to the object.
     private float currentPreviewRotation = 0f;
+
+    public BuildModeController()
+    {
+        Instance = this;
+        KeyboardManager.Instance.RegisterInputAction("RotateFurnitureLeft", KeyboardMappedInputType.KeyUp, RotateFurnitireLeft);
+        KeyboardManager.Instance.RegisterInputAction("RotateFurnitureRight", KeyboardMappedInputType.KeyUp, RotateFurnitireRight);
+    }
 
     public static BuildModeController Instance { get; protected set; }
 
@@ -35,9 +43,6 @@ public class BuildModeController
     public void SetMouseController(MouseController currentMouseController)
     {
         mouseController = currentMouseController;
-        Instance = this;
-        KeyboardManager.Instance.RegisterInputAction("RotateFurnitureLeft", KeyboardMappedInputType.KeyUp, RotateFurnitireLeft);
-        KeyboardManager.Instance.RegisterInputAction("RotateFurnitureRight", KeyboardMappedInputType.KeyUp, RotateFurnitireRight);
     }
 
     public bool IsObjectDraggable()
@@ -58,6 +63,7 @@ public class BuildModeController
         return buildModeTile.ToString();
     }
 
+    // Return the current z rotation applied to the buildable object.
     public float GetCurrentPreviewRotation()
     {
         return currentPreviewRotation;
@@ -325,6 +331,7 @@ public class BuildModeController
         return tile.Utilities.ContainsKey(proto.Name);
     }
 
+    // Rotate the preview furniture to the left.
     private void RotateFurnitireLeft()
     {
         if (buildMode == BuildMode.FURNITURE && PrototypeManager.Furniture.Get(buildModeType).CanRotate)
@@ -333,6 +340,7 @@ public class BuildModeController
         }
     }
 
+    // Rotate the preview furniture to the right.
     private void RotateFurnitireRight()
     {
         if (buildMode == BuildMode.FURNITURE && PrototypeManager.Furniture.Get(buildModeType).CanRotate)

@@ -1138,6 +1138,10 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         }
     }
 
+    // <summary>
+    // Set rotation on a furniture. It will swap height and width.
+    // </summary>
+    // <param name="rotation">The z rotation.</param>
     public void SetRotation(float rotation)
     {
         if (Rotation != rotation)

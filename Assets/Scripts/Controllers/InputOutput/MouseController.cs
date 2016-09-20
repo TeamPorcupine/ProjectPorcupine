@@ -218,8 +218,8 @@ public class MouseController
             || PrototypeManager.Furniture.Get(bmc.buildModeType).Height > 1))
         {
             Furniture proto = PrototypeManager.Furniture.Get(bmc.buildModeType);
-            Sprite sprite = fsc.GetSpriteForFurniture(proto.Type);
             proto.SetRotation(bmc.GetCurrentPreviewRotation());
+            Sprite sprite = fsc.GetSpriteForFurniture(proto.Type);
 
             // Use the center of the Furniture.
             currPlacingPosition = currFramePosition - ImageUtils.SpritePivotOffset(sprite, bmc.GetCurrentPreviewRotation());
