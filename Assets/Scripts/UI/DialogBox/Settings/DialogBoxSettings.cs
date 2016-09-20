@@ -7,15 +7,12 @@
 // ====================================================
 #endregion
 using System.Collections.Generic;
+using ProjectPorcupine.Localization;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class DialogBoxSettings : DialogBox
 {
-    // Language Option.
-    public Toggle langToggle;
-    public GameObject langDropDown;
-
     // FPS Option.
     public Toggle fpsToggle;
     public GameObject fpsObject;
@@ -29,16 +26,12 @@ public class DialogBoxSettings : DialogBox
     public Resolution[] resolutions;
     public Dropdown resolutionDropdown;
 
+    public Dropdown languageDropdown;
     public Dropdown vsyncDropdown;
     public Dropdown qualityDropdown;
 
     public Button closeButton;
     public Button saveButton;
-
-    public void OnLangageToggle()
-    {
-        langDropDown.SetActive(langToggle.isOn);
-    }
 
     public void OnFPSToggle()
     {
@@ -47,7 +40,7 @@ public class DialogBoxSettings : DialogBox
 
     public void OnFullScreenToggle()
     {
-        /// TODO : implement full screen toggle.
+        Screen.fullScreen = fullScreenToggle.isOn;
     }
 
     public void OnQualityChange()
@@ -84,7 +77,7 @@ public class DialogBoxSettings : DialogBox
     {
         this.CloseDialog();
         WorldController.Instance.spawnInventoryController.SetUIVisibility(developerModeToggle.isOn);
-        FurnitureBuildMenu.instance.RebuildMenuButtons(developerModeToggle.isOn);
+        LocalizationTable.SetLocalization(languageDropdown.value);
         SaveSetting();
     }
 
@@ -95,7 +88,6 @@ public class DialogBoxSettings : DialogBox
     {
         Settings.SetSetting("DialogBoxSettings_musicVolume", musicVolume.normalizedValue);
 
-        Settings.SetSetting("DialogBoxSettings_langToggle", langToggle.isOn);
         Settings.SetSetting("DialogBoxSettings_fpsToggle", fpsToggle.isOn);
         Settings.SetSetting("DialogBoxSettings_fullScreenToggle", fullScreenToggle.isOn);
         Settings.SetSetting("DialogBoxSettings_developerModeToggle", developerModeToggle.isOn);
@@ -124,10 +116,8 @@ public class DialogBoxSettings : DialogBox
         {
             OnFPSToggle();
         });
-        langToggle.onValueChanged.AddListener(delegate
-        {
-            OnLangageToggle();
-        });
+
+        fullScreenToggle.isOn = Screen.fullScreen;
         fullScreenToggle.onValueChanged.AddListener(delegate
         {
             OnFullScreenToggle();
@@ -164,7 +154,6 @@ public class DialogBoxSettings : DialogBox
     {
         musicVolume.normalizedValue = Settings.GetSetting("DialogBoxSettings_musicVolume", 0.5f);
 
-        langToggle.isOn = Settings.GetSetting("DialogBoxSettings_langToggle", true);
         fpsToggle.isOn = Settings.GetSetting("DialogBoxSettings_fpsToggle", true);
         fullScreenToggle.isOn = Settings.GetSetting("DialogBoxSettings_fullScreenToggle", true);
         developerModeToggle.isOn = Settings.GetSetting("DialogBoxSettings_developerModeToggle", false);

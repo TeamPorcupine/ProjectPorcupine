@@ -7,16 +7,12 @@
 // ====================================================
 #endregion
 using System.Collections;
+using ProjectPorcupine.Localization;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class DialogBoxOptions : DialogBox
 {
-    public Button buttonResume;
-    public Button buttonNewWorld;
-    public Button buttonSave;
-    public Button buttonLoad;
-    public Button buttonQuit;
     private DialogBoxManager dialogManager;
 
     public void OnButtonSaveGame()
@@ -31,45 +27,82 @@ public class DialogBoxOptions : DialogBox
         dialogManager.dialogBoxLoadGame.ShowDialog();
     }
 
+    public void OnButtonOpenSettings()
+    {
+        this.CloseDialog();
+        dialogManager.dialogBoxSettings.ShowDialog();
+    }
+
     // Quit the app whether in editor or a build version.
     public void OnButtonQuitGame()
     {
         // Maybe ask the user if he want to save or is sure they want to quit??
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
         // Allows you to quit in the editor.
         UnityEditor.EditorApplication.isPlaying = false;
-        #else
+#else
         Application.Quit();
-        #endif
+#endif
+    }
+
+    private void RenderButtons()
+    {
+        UnityEngine.Object buttonPrefab = Resources.Load("UI/Components/MenuButton");
+
+        GameObject resumeButton = CreateButtonGO(buttonPrefab, "Resume", "menu_resume");
+        resumeButton.GetComponent<Button>().onClick.AddListener(delegate
+        {
+            this.CloseDialog();
+        });
+
+        GameObject newWorldButton = CreateButtonGO(buttonPrefab, "New World", "new_world");
+        newWorldButton.GetComponent<Button>().onClick.AddListener(delegate
+        {
+            OnButtonSaveGame();
+        });
+
+        GameObject saveButton = CreateButtonGO(buttonPrefab, "Save", "save");
+        saveButton.GetComponent<Button>().onClick.AddListener(delegate
+        {
+            OnButtonSaveGame();
+        });
+
+        GameObject loadButton = CreateButtonGO(buttonPrefab, "Load", "load");
+        loadButton.GetComponent<Button>().onClick.AddListener(delegate
+        {
+            OnButtonLoadGame();
+        });
+
+        GameObject settingsButton = CreateButtonGO(buttonPrefab, "Settings", "menu_settings");
+        settingsButton.GetComponent<Button>().onClick.AddListener(delegate
+        {
+            OnButtonOpenSettings();
+        });
+
+        GameObject quitButton = CreateButtonGO(buttonPrefab, "Quit", "menu_quit");
+        quitButton.GetComponent<Button>().onClick.AddListener(delegate
+        {
+            OnButtonQuitGame();
+        });
+    }
+
+    private GameObject CreateButtonGO(UnityEngine.Object buttonPrefab, string name, string localizationCode)
+    {
+        GameObject buttonGameObject = (GameObject)Instantiate(buttonPrefab);
+        buttonGameObject.transform.SetParent(this.transform, false);
+        buttonGameObject.name = "Button " + name;
+
+        string localLocalizationCode = localizationCode;
+        buttonGameObject.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(localLocalizationCode) };
+
+        return buttonGameObject;
     }
 
     private void Start()
     {
         dialogManager = GameObject.FindObjectOfType<DialogBoxManager>();
-        WorldController wc = GameObject.FindObjectOfType<WorldController>();
 
-        // Add listeners here.
-        buttonQuit.onClick.AddListener(delegate
-        {
-            OnButtonQuitGame();
-        });
-        buttonResume.onClick.AddListener(delegate
-        {
-            this.CloseDialog();
-        });
-        buttonNewWorld.onClick.AddListener(delegate
-        {
-            wc.NewWorld();
-        });
-
-        buttonSave.onClick.AddListener(delegate
-        {
-            OnButtonSaveGame();
-        });
-        buttonLoad.onClick.AddListener(delegate
-        {
-            OnButtonLoadGame();
-        });
+        RenderButtons();
     }
 
     private void Update()

@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
 // This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
@@ -35,6 +35,10 @@ public class MenuLeft : MonoBehaviour
 
         menu.SetActive(true);
         CurrentlyOpen = menu;
+        if (CurrentlyOpen.name == "ConstructionMenu")
+        {
+            WorldController.Instance.spawnInventoryController.SetUIVisibility(false);
+        }
     }
 
     public void CloseMenu()
@@ -42,6 +46,12 @@ public class MenuLeft : MonoBehaviour
         if (CurrentlyOpen != null)
         {
             CurrentlyOpen.SetActive(false);
+
+            if (CurrentlyOpen.name == "ConstructionMenu")
+            {
+                WorldController.Instance.spawnInventoryController.SetUIVisibility(Settings.GetSetting("DialogBoxSettings_developerModeToggle", false));
+            }
+
             CurrentlyOpen = null;
         }
     }

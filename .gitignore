@@ -40,7 +40,8 @@ sysinfo.txt
 
 # Localization files
 /Assets/StreamingAssets/Localization/*
-/Assets/StreamingAssets/Localization.meta
+!/Assets/StreamingAssets/Localization/en_US.lang
+!/Assets/StreamingAssets/Localization/en_US.lang.meta
 
 # SpriteToXML Image folders
 /Assets/Resources/Editor/SpriteToXML/*

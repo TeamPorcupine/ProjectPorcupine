@@ -9,9 +9,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
+using Animation;
 using UnityEngine;
 
-public class TraderPrototype
+public class TraderPrototype : IPrototypable
 {
     private float rarity;
 
@@ -30,6 +31,10 @@ public class TraderPrototype
     public float MaxSaleMarginMultiplier { get; set; }
 
     public List<TraderPotentialInventory> PotentialStock { get; set; }
+
+    public SpritenameAnimation AnimationIdle { get; set; }
+
+    public SpritenameAnimation AnimationFlying { get; set; }
 
     /// <summary>
     /// Value from 0 to 1, higher value represent higher availability of the trade resource.
@@ -112,10 +117,14 @@ public class TraderPrototype
                     }
 
                     break;
+                case "Animations":
+                    XmlReader animationReader = reader.ReadSubtree();
+                    ReadAnimationXml(animationReader);
+                    break;
             }
         }
     }
-
+    
     /// <summary>
     /// Create a random Trader out of this TraderPrototype.
     /// </summary>
@@ -165,6 +174,47 @@ public class TraderPrototype
         }
 
         return t;
+    }
+
+    /// <summary>
+    /// Reads and creates Animations from the prototype xml. 
+    /// For now, this requires an idle animation and a flying animation state.
+    /// </summary>
+    private void ReadAnimationXml(XmlReader animationReader)
+    {
+        while (animationReader.Read())
+        {
+            if (animationReader.Name == "Animation")
+            {
+                string state = animationReader.GetAttribute("state");
+                float fps = 1;
+                float.TryParse(animationReader.GetAttribute("fps"), out fps);
+                bool looping = true;
+                bool.TryParse(animationReader.GetAttribute("looping"), out looping);
+                bool valueBased = false;
+
+                // read frames
+                XmlReader frameReader = animationReader.ReadSubtree();
+                List<string> framesSpriteNames = new List<string>();
+                while (frameReader.Read())
+                {
+                    if (frameReader.Name == "Frame")
+                    {
+                        framesSpriteNames.Add(frameReader.GetAttribute("name"));
+                    }
+                }
+
+                switch (state)
+                {
+                    case "idle":
+                        AnimationIdle = new SpritenameAnimation(state, framesSpriteNames.ToArray(), fps, looping, valueBased);
+                        break;
+                    case "flying":
+                        AnimationFlying = new SpritenameAnimation(state, framesSpriteNames.ToArray(), fps, looping, valueBased);
+                        break;
+                }
+            }
+        }
     }
 
     private List<InventoryCommon> GetInventoryCommonWithCategory(string category)

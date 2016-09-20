@@ -7,7 +7,7 @@
         <MovementCost>0</MovementCost>
         <Width>1</Width>
         <Height>1</Height>
-        <LinksToNeighbours>true</LinksToNeighbours>
+        <LinksToNeighbours>wall</LinksToNeighbours>
         <EnclosesRooms>true</EnclosesRooms>
         <DragType>path</DragType>
 
@@ -15,7 +15,7 @@
             <Inventory type="Steel Plate" amount="5" />
         </BuildingJob>
 
-        <DeconstructJob>
+        <DeconstructJob jobTime="1">
             <Inventory type="Steel Plate" amount="3" />
         </DeconstructJob>
 
@@ -46,7 +46,6 @@
         <PathfindingWeight>1</PathfindingWeight>
         <Width>1</Width>
         <Height>1</Height>
-        <LinksToNeighbours>false</LinksToNeighbours>
         <EnclosesRooms>true</EnclosesRooms>
         <CanReplaceFurniture typeTag="Wall" />
 
@@ -54,9 +53,34 @@
             <Inventory type="Steel Plate" amount="2" />
         </BuildingJob>
 
-        <DeconstructJob>
+        <DeconstructJob jobTime="1">
             <Inventory type="Steel Plate" amount="1" />
         </DeconstructJob>
+        
+        <GetSpriteName FunctionName="Door_GetSpriteName" />
+
+        <Animations>
+          <Animation state="horizontal" valuebased="true">
+            <Frame name="DoorHorizontal_0" />
+            <Frame name="DoorHorizontal_1" />
+            <Frame name="DoorHorizontal_2" />
+            <Frame name="DoorHorizontal_3" />
+            <Frame name="DoorHorizontal_4" />
+            <Frame name="DoorHorizontal_5" />
+            <Frame name="DoorHorizontal_5" />
+            <Frame name="DoorHorizontal_5" />
+          </Animation>  
+          <Animation state="vertical" valuebased="true">
+            <Frame name="DoorVertical_0" />
+            <Frame name="DoorVertical_1" />
+            <Frame name="DoorVertical_2" />
+            <Frame name="DoorVertical_3" />
+            <Frame name="DoorVertical_4" />
+            <Frame name="DoorVertical_5" />
+            <Frame name="DoorVertical_5" />
+            <Frame name="DoorVertical_5" />                
+          </Animation>                      
+        </Animations>
 
         <Params>
             <Param name="openness" value="0" />
@@ -64,11 +88,10 @@
             <Param name="thermal_diffusivity" value="0.0001" />
         </Params>
 
-        <Action event="OnUpdate" functionName="OnUpdate_Door" />
+        <Action event="OnFastUpdate" functionName="OnUpdate_Door" />
         <Action event="OnUpdate" functionName="OnUpdate_Leak_Door" />
 
         <IsEnterable FunctionName="IsEnterable_Door" />
-        <GetSpriteName FunctionName="GetSpriteName_Door" />
 
         <LocalizationCode>furn_door</LocalizationCode>
         <UnlocalizedDescription>furn_door_desc</UnlocalizedDescription>
@@ -83,10 +106,11 @@
         <PathfindingWeight>1</PathfindingWeight>
         <Width>1</Width>
         <Height>1</Height>
-        <LinksToNeighbours>false</LinksToNeighbours>
         <EnclosesRooms>true</EnclosesRooms>
         <CanReplaceFurniture typeTag="Wall" />
         <CanReplaceFurniture typeTag="Door" />
+        
+        <GetSpriteName FunctionName="Door_GetSpriteName" />
 
         <BuildingJob jobTime="5">
             <Inventory type="Steel Plate" amount="10" />
@@ -96,6 +120,29 @@
             <Inventory type="Steel Plate" amount="7" />
         </DeconstructJob>
 
+        <Animations>
+          <Animation state="horizontal" valuebased="true">
+            <Frame name="AirlockHorizontal_0" />
+            <Frame name="AirlockHorizontal_1" />
+            <Frame name="AirlockHorizontal_2" />
+            <Frame name="AirlockHorizontal_3" />
+            <Frame name="AirlockHorizontal_4" />
+            <Frame name="AirlockHorizontal_5" />
+            <Frame name="AirlockHorizontal_5" />
+            <Frame name="AirlockHorizontal_5" />
+          </Animation>
+          <Animation state="vertical" valuebased="true">
+            <Frame name="AirlockVertical_0" />
+            <Frame name="AirlockVertical_1" />
+            <Frame name="AirlockVertical_2" />
+            <Frame name="AirlockVertical_3" />
+            <Frame name="AirlockVertical_4" />
+            <Frame name="AirlockVertical_5" />
+            <Frame name="AirlockVertical_5" />
+            <Frame name="AirlockVertical_5" />
+          </Animation>
+        </Animations>
+      
         <Params>
             <Param name="openness" value="0" />
             <Param name="is_opening" value="0" />
@@ -103,14 +150,13 @@
             <Param name="pressure_locked" value="0" />
         </Params>
 
-        <Action event="OnUpdate" functionName="OnUpdate_AirlockDoor" />
+        <Action event="OnFastUpdate" functionName="OnUpdate_AirlockDoor" />
         <Action event="OnUpdate" functionName="OnUpdate_Leak_Airlock" />
 
-        <ContextMenuAction FunctionName="AirlockDoor_Toggle_Pressure_Lock" Text="Toggle Pressure Lock" RequiereCharacterSelected="false"/>
+        <ContextMenuAction FunctionName="AirlockDoor_Toggle_Pressure_Lock" Text="Toggle Pressure Lock" RequireCharacterSelected="false"/>
 
         <IsEnterable FunctionName="IsEnterable_Door" />
-        <GetSpriteName FunctionName="GetSpriteName_Airlock" />
-
+        
         <LocalizationCode>furn_airlock</LocalizationCode>
         <UnlocalizedDescription>furn_airlock_desc</UnlocalizedDescription>
     </Furniture>
@@ -120,11 +166,14 @@
         <Description>Characters will brings inventory here for storage.</Description>
         <TypeTag>Storage</TypeTag>
         <MovementCost>1</MovementCost>
-        <LinksToNeighbours>true</LinksToNeighbours>
+        <LinksToNeighbours>stockpile</LinksToNeighbours>
 
         <BuildingJob jobTime="0" />
+        
+        <DeconstructJob jobTime="0"/>
 
         <Action event="OnUpdate" functionName="Stockpile_UpdateAction" />
+        <DragType>area</DragType>
 
         <LocalizationCode>furn_stockpile</LocalizationCode>
         <UnlocalizedDescription>furn_stockpile_desc</UnlocalizedDescription>
@@ -142,7 +191,22 @@
         <PowerConnection inputRate="1" outputRate="" capacity=""/>
 
         <BuildingJob jobTime="0" />
+        
+        <DeconstructJob jobTime="2">
+            <Inventory type="Steel Plate" amount="1" />
+        </DeconstructJob>
 
+        <Animations>
+          <Animation state="idle" looping="false">
+            <Frame name="Oxygen Generator" />
+          </Animation>
+          <Animation state="running" fps="8" looping="true">
+            <Frame name="Oxygen_Generator_Running1" />
+            <Frame name="Oxygen_Generator_Running2" />
+            <Frame name="Oxygen_Generator_Running3" />
+          </Animation>
+        </Animations>
+      
         <Params>
             <!-- <Param name="gas_name" value="O2" /> -->
             <Param name="gas_limit" value="0.2" />
@@ -157,8 +221,9 @@
             </Param>
         </Params>
 
-        <Action event="OnUpdate" functionName="OnUpdate_GasGenerator" />
-
+        <Action event="OnUpdate" functionName="OxygenGenerator_OnUpdate" />
+        <Action event="OnPowerOff" functionName="OxygenGenerator_OnPowerOff" />
+      
         <LocalizationCode>furn_oxygen_generator</LocalizationCode>
         <UnlocalizedDescription>furn_oxygen_generator_desc</UnlocalizedDescription>
     </Furniture>
@@ -171,22 +236,26 @@
         <PathfindingModifier>0</PathfindingModifier>
         <PathfindingWeight>2</PathfindingWeight>
         <Width>3</Width>
-        <Height>3</Height>
+        <Height>2</Height>
         <PowerConnection inputRate="1" outputRate="" capacity=""/>
 
         <BuildingJob jobTime="0" />
+        
+        <DeconstructJob jobTime="1">
+            <Inventory type="Steel Plate" amount="1" />
+        </DeconstructJob>
 
         <Params>
             <Param name="mine_type" value="Raw Iron" />
         </Params>
 
-        <JobSpotOffset X="1" Y="0" />
-        <JobSpawnSpotOffset X="0" Y="0" />
+        <JobWorkSpotOffset X="1" Y="-1" />
+        <JobOutputSpotOffset X="0" Y="0" />
 
         <Action event="OnUpdate" functionName="MiningDroneStation_UpdateAction" />
 
-        <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Iron" Text="change to raw iron" RequiereCharacterSelected="false"/>
-        <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Copper" Text="change to raw copper" RequiereCharacterSelected="false"/>
+        <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Iron" Text="Change to Raw Iron" RequireCharacterSelected="false"/>
+        <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Copper" Text="Change to Raw Copper" RequireCharacterSelected="false"/>
 
         <LocalizationCode>furn_mining_drone_station</LocalizationCode>
         <UnlocalizedDescription>furn_mining_drone_station_desc</UnlocalizedDescription>
@@ -203,7 +272,7 @@
         <PowerConnection inputRate="" outputRate="5" capacity=""/>
 
         <Animations>
-            <Animation state="idle" fps="2" looping="false">
+            <Animation state="idle" looping="false">
                 <Frame name="Power-Generator-01" />
             </Animation>
             <Animation state="running" fps="6" looping="true">
@@ -214,12 +283,17 @@
         </Animations>
 
         <BuildingJob jobTime="0" />
+        
+        <DeconstructJob jobTime="1">
+            <Inventory type="Steel Plate" amount="1" />
+        </DeconstructJob>
 
         <Params>
             <Param name="burnTime" value="0" />
-            <Param name="burnTimeRequired" value="10" />
+            <Param name="burnTimeRequired" value="60" />
         </Params>
 
+        <GetProgressInfo functionName="PowerGenerator_FuelInfo" />
         <Action event="OnUpdate" functionName="PowerGenerator_UpdateAction" />
 
         <LocalizationCode>furn_power_generator</LocalizationCode>
@@ -240,12 +314,12 @@
             <Inventory type="Steel Plate" amount="50" />
         </BuildingJob>
 
-        <DeconstructJob>
+        <DeconstructJob jobTime="8">
             <Inventory type="Steel Plate" amount="15" />
         </DeconstructJob>
 
         <Animations>
-            <Animation state="idle" fps="1" looping="false">
+            <Animation state="idle" looping="false">
                 <Frame name="cloning_pod" />
             </Animation>
             <Animation state="running" fps="1" looping="true">
@@ -259,8 +333,8 @@
             <Param name="animationStep" value="0" />
         </Params>
 
-        <JobSpotOffset X="0" Y="-1" />
-        <JobSpawnSpotOffset X="1" Y="-1" />
+        <JobWorkSpotOffset X="0" Y="0" />
+        <JobOutputSpotOffset X="1" Y="0" />
 
         <Action event="OnUpdate" functionName="CloningPod_UpdateAction" />
 
@@ -280,8 +354,14 @@
         <PowerConnection inputRate="5" outputRate="" capacity=""/>
 
         <BuildingJob jobTime="0" />
+        
+        <DeconstructJob jobTime="1">
+            <Inventory type="Steel Plate" amount="1" />
+        </DeconstructJob>
 
-        <JobSpotOffset X="1" Y="0" />
+        <JobInputSpotOffset X="0" Y="0" />
+        <JobWorkSpotOffset X="1" Y="0" />
+        <JobOutputSpotOffset X="2" Y="0" />
 
         <Params>
             <Param name="smelttime" value="0" />
@@ -292,6 +372,61 @@
 
         <LocalizationCode>furn_metal_smelter</LocalizationCode>
         <UnlocalizedDescription>furn_metal_smelter_desc</UnlocalizedDescription>
+    </Furniture>
+
+    <Furniture type="Metal Furnace">
+        <Name>Metal Furnace</Name>
+        <Description>Smelts your raw ores into metal.</Description>
+        <TypeTag>Processor</TypeTag>
+        <MovementCost>1</MovementCost>
+        <PathfindingModifier>1.5</PathfindingModifier>
+        <PathfindingWeight>2</PathfindingWeight>
+        <Width>3</Width>
+        <Height>3</Height>
+
+        <BuildingJob jobTime="0" />
+        
+        <DeconstructJob jobTime="1">
+            <Inventory type="Steel Plate" amount="1" />
+        </DeconstructJob>
+
+        <JobWorkSpotOffset X="1" Y="0" />
+
+        <Workshop>
+            <ProductionChain name="Copper smelting" processingTime="3">
+                <Input>
+                    <Item objectType="Raw Copper" amount="2" slotPosX="0" slotPosY="0" />
+                </Input>
+                <Output>
+                    <Item objectType="Copper Plate" amount="1" slotPosX="2" slotPosY="0" />
+                </Output>
+            </ProductionChain>
+            <ProductionChain name="Iron smelting" processingTime="4">
+                <Input>
+                    <Item objectType="Raw Iron" amount="2" slotPosX="0" slotPosY="0" />
+                </Input>
+                <Output>
+                    <Item objectType="Steel Plate" amount="1" slotPosX="2" slotPosY="0" />
+                </Output>
+            </ProductionChain>
+            <UsedAnimations idle="idle" running="running" />
+        </Workshop>
+
+        <Animations>
+            <Animation state="idle" fps="2" looping="false">
+                <Frame name="Metal Furnace" />
+            </Animation>
+            <Animation state="running" fps="6" looping="true">
+                <Frame name="Metal_Furnace_Running_1" />
+                <Frame name="Metal_Furnace_Running_2" />
+                <Frame name="Metal_Furnace_Running_3" />
+                <Frame name="Metal_Furnace_Running_4" />
+                <Frame name="Metal_Furnace_Running_5" />
+            </Animation>
+        </Animations>
+
+        <LocalizationCode>furn_metal_furnace</LocalizationCode>
+        <UnlocalizedDescription>furn_metal_furnace_desc</UnlocalizedDescription>
     </Furniture>
 
     <Furniture type="Heater">
@@ -306,6 +441,10 @@
         <PowerConnection inputRate="4" outputRate="" capacity=""/>
 
         <BuildingJob jobTime="0" />
+        
+        <DeconstructJob jobTime="1">
+            <Inventory type="Steel Plate" amount="1" />
+        </DeconstructJob>
 
         <!-- This method gets called on Install -->
         <Action event="OnInstall" functionName="Heater_InstallAction"></Action>
@@ -333,13 +472,22 @@
         <PowerConnection inputRate="1" outputRate="" capacity=""/>
 
         <BuildingJob jobTime="1" />
+        
+        <DeconstructJob jobTime="1">
+            <Inventory type="Uranium" amount="1" />
+        </DeconstructJob>
 
-        <Params>
-            <Param name="presstime" value="0" />
-            <Param name="presstime_required" value="15" />
-        </Params>
-
-        <Action event="OnUpdate" functionName="PowerCellPress_UpdateAction" />
+      <Workshop>
+          <ProductionChain name="Power Cell Pressing" processingTime="5">
+              <Input>
+                  <Item objectType="Uranium" amount="3" slotPosX="0" slotPosY="0" />
+                  <Item objectType="Steel Plate" amount="2" slotPosX="1" slotPosY="0" />
+              </Input>
+              <Output>
+                  <Item objectType="Power Cell" amount="1" slotPosX="2" slotPosY="1" />
+              </Output>
+          </ProductionChain>
+      </Workshop>
 
         <LocalizationCode>furn_power_cell_press</LocalizationCode>
         <UnlocalizedDescription>furn_power_cell_press_desc</UnlocalizedDescription>
@@ -360,16 +508,16 @@
             <Inventory type="Steel Plate" amount="20" />
         </BuildingJob>
 
-        <DeconstructJob>
+        <DeconstructJob jobTime="3">
             <Inventory type="Steel Plate" amount="10" />
         </DeconstructJob>
 
-        <JobSpotOffset X="0" Y="0" />
-        <JobSpawnSpotOffset X="1" Y="-1" />
+        <JobWorkSpotOffset X="0" Y="0" />
+        <JobOutputSpotOffset X="1" Y="-1" />
 
         <ContextMenuAction FunctionName="LandingPad_Test_CallTradeShip"
                            Text="Call Trade Ship Test"
-                           RequiereCharacterSelected="false"
+                           RequireCharacterSelected="false"
                            DevModeOnly="true"/>
 
         <LocalizationCode>furn_small_landing_pad</LocalizationCode>
@@ -387,7 +535,26 @@
         <PowerConnection inputRate="1" outputRate="" capacity=""/>
 
         <BuildingJob jobTime="2" />
+        
+        <DeconstructJob jobTime="1">
+            <Inventory type="Steel Plate" amount="1" />
+        </DeconstructJob>
 
+        <Animations>
+          <Animation state="running" valuebased="true">
+            <Frame name="compressor_oxygen" />
+            <Frame name="compressor_oxygen_0" />
+            <Frame name="compressor_oxygen_1" />
+            <Frame name="compressor_oxygen_2" />
+            <Frame name="compressor_oxygen_3" />
+            <Frame name="compressor_oxygen_4" />
+            <Frame name="compressor_oxygen_5" />
+            <Frame name="compressor_oxygen_6" />
+            <Frame name="compressor_oxygen_7" />
+            <Frame name="compressor_oxygen_8" />
+          </Animation>
+        </Animations>
+      
         <Params>
             <!-- <Param name="gas_name" value="O2" /> -->
             <Param name="max_gas_content" value="5" />
@@ -398,8 +565,8 @@
         </Params>
 
         <Action event="OnUpdate" functionName="OxygenCompressor_OnUpdate" />
-        <GetSpriteName FunctionName="OxygenCompressor_GetSpriteName" />
-
+        <Action event="OnPowerOff" functionName="OxygenCompressor_OnPowerOff" />
+      
         <LocalizationCode>furn_oxygen_compressor</LocalizationCode>
         <UnlocalizedDescription>furn_oxygen_compressor_desc</UnlocalizedDescription>
     </Furniture>
@@ -417,6 +584,10 @@
 
         <BuildingJob jobTime="1" />
         <CanBeBuiltOn tileType="Ladder" />
+        
+        <DeconstructJob jobTime="1">
+            <Inventory type="Steel Plate" amount="1" />
+        </DeconstructJob>
 
         <Params>
             <Param name="base_output" value="3" />
@@ -439,6 +610,11 @@
 
         <BuildingJob jobTime="1" />
         <CanReplaceFurniture typeTag="Wall" />
+        <LinksToNeighbours>wall</LinksToNeighbours>
+
+        <DeconstructJob jobTime="1">
+            <Inventory type="Steel Plate" amount="1" />
+        </DeconstructJob>
 
         <Params>
             <Param name="gas_throughput" value="0.5" />
@@ -449,10 +625,51 @@
 
         <Action event="OnUpdate" functionName="AirPump_OnUpdate" />
         <GetSpriteName FunctionName="AirPump_GetSpriteName" />
-        <ContextMenuAction FunctionName="AirPump_FlipDirection" Text="Flip Direction" RequiereCharacterSelected="false" />
+        <ContextMenuAction FunctionName="AirPump_FlipDirection" Text="Flip Direction" RequireCharacterSelected="false" />
 
         <LocalizationCode>furn_pump_air</LocalizationCode>
         <UnlocalizedDescription>furn_pump_air_desc</UnlocalizedDescription>
+    </Furniture>
+
+    <Furniture type="vent">
+        <Name>Vent</Name>
+        <MovementCost>0</MovementCost>
+        <Width>1</Width>
+        <Height>1</Height>
+        <EnclosesRooms>true</EnclosesRooms>
+
+        <BuildingJob jobTime="1" />
+        <CanReplaceFurniture typeTag="Wall" />
+        
+        <DeconstructJob jobTime="1">
+            <Inventory type="Steel Plate" amount="1" />
+        </DeconstructJob>
+
+        <Params>
+            <Param name="gas_throughput" value="0.5" />
+            <Param name="openness" value="1" />
+        </Params>
+
+        <Action event="OnUpdate" functionName="Vent_OnUpdate" />
+        <Action event="OnChange" functionName="Vent_SetOrientationState" />
+        <Action event="OnInstall" functionName="Vent_SetOrientationState" />
+
+        <ContextMenuAction FunctionName="Vent_Open" Text="Open Vent" RequireCharacterSelected="false" />
+        <ContextMenuAction FunctionName="Vent_Close" Text="Close Vent" RequireCharacterSelected="false" />
+
+        <Animations>
+            <Animation state="horizontal" valuebased="true">
+                <Frame name="vent_EW_Closed" />
+                <Frame name="vent_EW_Opened" />
+            </Animation>  
+            <Animation state="vertical" valuebased="true">
+                <Frame name="vent_NS_Closed" />  
+                <Frame name="vent_NS_Opened" />           
+            </Animation>                      
+        </Animations>
+        
+        <LocalizationCode>furn_vent</LocalizationCode>
+        <UnlocalizedDescription>furn_vent_desc</UnlocalizedDescription>
     </Furniture>
 
     <Furniture type="simple_bed">
@@ -469,7 +686,7 @@
             <Inventory type="Steel Plate" amount="2" />
         </BuildingJob>
 
-        <DeconstructJob>
+        <DeconstructJob jobTime="1">
             <Inventory type="Steel Plate" amount="1" />
         </DeconstructJob>
 
@@ -491,6 +708,10 @@
         <PowerConnection inputRate="5" outputRate="10" capacity="50"/>
 
         <BuildingJob jobTime="2" />
+        
+       <DeconstructJob jobTime="1">
+            <Inventory type="Steel Plate" amount="1" />
+        </DeconstructJob>
 
         <GetSpriteName FunctionName="Accumulator_GetSpriteName" />
 
@@ -512,12 +733,12 @@
         <Height>1</Height>
 
         <BuildingJob jobTime="1" />
-
+        
         <Params>
             <Param name="ore_type" value="Raw Iron" />
         </Params>
 
-        <ContextMenuAction FunctionName="OreMine_CreateMiningJob" Text="Mine Ore" RequiereCharacterSelected="false" />
+        <ContextMenuAction FunctionName="OreMine_CreateMiningJob" Text="Mine Ore" RequireCharacterSelected="false" />
         <GetSpriteName FunctionName="OreMine_GetSpriteName" />
 
         <LocalizationCode>furn_mine</LocalizationCode>
@@ -536,6 +757,10 @@
         <PowerConnection inputRate="" outputRate="2" capacity=""/>
 
         <BuildingJob jobTime="0" />
+        
+       <DeconstructJob jobTime="1">
+            <Inventory type="Uranium" amount="3" />
+        </DeconstructJob>
 
         <!-- This method gets called on Install -->
         <Action event="OnInstall" functionName="Rtg_InstallAction"></Action>

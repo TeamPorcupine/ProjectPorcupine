@@ -91,6 +91,14 @@ public class ContextMenu : MonoBehaviour
             providers.Add(tile.Furniture);
         }
 
+        if (tile.Utilities != null)
+        {
+            foreach (Utility utility in tile.Utilities.Values)
+            {
+                providers.Add(utility);
+            }
+        }
+
         if (tile.Characters != null)
         {
             foreach (Character character in tile.Characters)
@@ -119,8 +127,7 @@ public class ContextMenu : MonoBehaviour
         {
             contextualActions.AddRange(contextualActionProvider.GetContextMenuActions(this));
         }
-
-        contextualActions = contextualActions.OrderBy(c => c.Text).ToList();
+        
         return contextualActions;
     }
 }
