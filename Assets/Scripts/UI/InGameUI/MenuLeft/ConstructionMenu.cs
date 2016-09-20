@@ -206,7 +206,7 @@ public class ConstructionMenu : MonoBehaviour
         {
             TileType tileType = item;
 
-            string key = LocalizationTable.GetLocalization(tileType.LocalizationCode);
+            string key = tileType.LocalizationCode;
 
             GameObject gameObject = (GameObject)Instantiate(buttonPrefab);
             gameObject.transform.SetParent(contentTransform);
