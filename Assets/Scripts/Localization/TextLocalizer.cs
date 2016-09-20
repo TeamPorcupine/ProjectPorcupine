@@ -61,6 +61,7 @@ namespace ProjectPorcupine.Localization
         {
             lastLanguage = LocalizationTable.currentLanguage;
             this.formatValues = formatValues;
+            Debug.ULogWarningChannel("UpdateText", "Found: {0}: [ {1} ]", defaultText, string.Join(",",formatValues));
             text.text = LocalizationTable.GetLocalization(defaultText, formatValues);
         }
 
