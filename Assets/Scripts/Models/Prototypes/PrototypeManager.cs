@@ -34,6 +34,7 @@ public class PrototypeManager
         Stat = new PrototypeMap<Stat>("Stats", "Stat");
         SchedulerEvent = new PrototypeMap<ScheduledEvent>("Events", "Event");
         Headline = new PrototypeMap<Headline>("Headlines", "Headline");
+        Overlay = new PrototypeMap<OverlayDescriptor>("Overlays", "Overlay");
     }
 
     /// <summary>
@@ -121,6 +122,12 @@ public class PrototypeManager
     /// <summary>
     /// Gets the headline prototype map.
     /// </summary>
-    /// <value>The scheduler event prototype map.</value>
+    /// <value>The headline prototype map.</value>
     public static PrototypeMap<Headline> Headline { get; private set; }
+
+    /// <summary>
+    /// Gets the overlay prototype map.
+    /// </summary>
+    /// <value>The overlay prototype map.</value>
+    public static PrototypeMap<OverlayDescriptor> Overlay { get; private set; }
 }

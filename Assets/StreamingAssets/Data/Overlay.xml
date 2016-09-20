@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Overlays>
+    <!-- List of overlay prototypes -->
+    <!-- id attribute is mandatory and must be unique -->
+    <!-- min: minimal value attained by funtion (data will be clipped) -->
+    <!-- max: maximal value attained by funtion (data will be clipped) -->
+    <!-- colorMap: selection of coloring scheme for overlay (defaults to "jet") -->
+    <!-- content: lua function name, called on each tile, must return int -->
+    <Overlay type="oxygen" min="0" max="1" colorMap="Jet">oxygenValueAt</Overlay>
+    <Overlay type="room" min="0" max="1" colorMap="Random">roomNumberValueAt</Overlay>
+    <Overlay type="power" min="0" max="1" colorMap="Jet">powerValueAt</Overlay>
+    <Overlay type="temperature" min="0" max="1" colorMap="Jet">temperatureValueAt</Overlay>
+    <Overlay type="debug_thermal_diffusivity" min="0" max="1" colorMap="Jet">thermalDiffusivityValueAt</Overlay>
+    <Overlay type="debug_heat_generation" min="0" max="1" colorMap="Jet">heatGenerationValueAt</Overlay>
+</Overlays>

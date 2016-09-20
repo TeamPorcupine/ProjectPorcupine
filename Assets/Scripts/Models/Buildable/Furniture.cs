@@ -210,7 +210,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// </summary>
     /// <value>The event actions that is called on update.</value>
     public EventActions EventActions { get; private set; }
-
+    
     /// <summary>
     /// Gets the Connection that the furniture has to the power system.
     /// </summary>
@@ -436,11 +436,24 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     }
 
     /// <summary>
+    /// This function is called to update the furniture animation in lua.
+    /// This will be called every frame and should be used carefully.
+    /// </summary>
+    /// <param name="deltaTime">The time since the last update was called.</param>
+    public void EveryFrameUpdate(float deltaTime)
+    {
+        if (EventActions != null)
+        {
+            EventActions.Trigger("OnFastUpdate", this, deltaTime);
+        }
+    }
+
+    /// <summary>
     /// This function is called to update the furniture. This will also trigger EventsActions.
     /// This checks if the furniture is a PowerConsumer, and if it does not have power it cancels its job.
     /// </summary>
     /// <param name="deltaTime">The time since the last update was called.</param>
-    public void Update(float deltaTime)
+    public void FixedFrequencyUpdate(float deltaTime)
     {
         if (PowerConnection != null && PowerConnection.IsPowerConsumer && HasPower() == false)
         {

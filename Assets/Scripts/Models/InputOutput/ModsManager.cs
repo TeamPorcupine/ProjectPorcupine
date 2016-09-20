@@ -32,23 +32,25 @@ public class ModsManager
         LoadFunctions("Tiles.lua", "TileType");
         LoadFunctions("Quest.lua", "Quest");
         LoadFunctions("ScheduledEvent.lua", "ScheduledEvent");
+        LoadFunctions("Overlay.lua", "Overlay");
 
-        LoadPrototypes("Tiles.xml", (text) => PrototypeManager.TileType.LoadPrototypes(text));
-        LoadPrototypes("Furniture.xml", (text) => PrototypeManager.Furniture.LoadPrototypes(text));
-        LoadPrototypes("Utility.xml", (text) => PrototypeManager.Utility.LoadPrototypes(text));
-        LoadPrototypes("Inventory.xml", (text) => PrototypeManager.Inventory.LoadPrototypes(text));
-        LoadPrototypes("Need.xml", (text) => PrototypeManager.Need.LoadPrototypes(text));
-        LoadPrototypes("Trader.xml", (text) => PrototypeManager.Trader.LoadPrototypes(text));
-        LoadPrototypes("Currency.xml", (text) => PrototypeManager.Currency.LoadPrototypes(text));
-        LoadPrototypes("Events.xml", (text) => PrototypeManager.SchedulerEvent.LoadPrototypes(text));
-        LoadPrototypes("Stats.xml", (text) => PrototypeManager.Stat.LoadPrototypes(text));
-        LoadPrototypes("Quest.xml", (text) => PrototypeManager.Quest.LoadPrototypes(text));
-        LoadPrototypes("Headlines.xml", (text) => PrototypeManager.Headline.LoadPrototypes(text));
-
+        LoadPrototypes("Tiles.xml", PrototypeManager.TileType.LoadPrototypes);
+        LoadPrototypes("Furniture.xml", PrototypeManager.Furniture.LoadPrototypes);
+        LoadPrototypes("Utility.xml", PrototypeManager.Utility.LoadPrototypes);
+        LoadPrototypes("Inventory.xml", PrototypeManager.Inventory.LoadPrototypes);
+        LoadPrototypes("Need.xml", PrototypeManager.Need.LoadPrototypes);
+        LoadPrototypes("Trader.xml", PrototypeManager.Trader.LoadPrototypes);
+        LoadPrototypes("Currency.xml", PrototypeManager.Currency.LoadPrototypes);
+        LoadPrototypes("Events.xml", PrototypeManager.SchedulerEvent.LoadPrototypes);
+        LoadPrototypes("Stats.xml", PrototypeManager.Stat.LoadPrototypes);
+        LoadPrototypes("Quest.xml", PrototypeManager.Quest.LoadPrototypes);
+        LoadPrototypes("Headlines.xml", PrototypeManager.Headline.LoadPrototypes);
+        LoadPrototypes("Overlay.xml", PrototypeManager.Overlay.LoadPrototypes);
+        
         LoadCharacterNames("CharacterNames.txt");
-
-        LoadDirectoryAssets("Images", (path) => SpriteManager.LoadSpriteFiles(path));
-        LoadDirectoryAssets("Audio", (path) => AudioManager.LoadAudioFiles(path));
+        
+        LoadDirectoryAssets("Images", SpriteManager.LoadSpriteFiles);
+        LoadDirectoryAssets("Audio", AudioManager.LoadAudioFiles);
     }
 
     public DirectoryInfo[] GetMods()

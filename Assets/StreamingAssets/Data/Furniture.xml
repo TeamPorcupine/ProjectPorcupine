@@ -88,7 +88,7 @@
             <Param name="thermal_diffusivity" value="0.0001" />
         </Params>
 
-        <Action event="OnUpdate" functionName="OnUpdate_Door" />
+        <Action event="OnFastUpdate" functionName="OnUpdate_Door" />
         <Action event="OnUpdate" functionName="OnUpdate_Leak_Door" />
 
         <IsEnterable FunctionName="IsEnterable_Door" />
@@ -150,7 +150,7 @@
             <Param name="pressure_locked" value="0" />
         </Params>
 
-        <Action event="OnUpdate" functionName="OnUpdate_AirlockDoor" />
+        <Action event="OnFastUpdate" functionName="OnUpdate_AirlockDoor" />
         <Action event="OnUpdate" functionName="OnUpdate_Leak_Airlock" />
 
         <ContextMenuAction FunctionName="AirlockDoor_Toggle_Pressure_Lock" Text="Toggle Pressure Lock" RequireCharacterSelected="false"/>
@@ -734,10 +734,6 @@
 
         <BuildingJob jobTime="1" />
         
-        <DeconstructJob jobTime="1">
-            <Inventory type="Steel Plate" amount="1" />
-        </DeconstructJob>
-
         <Params>
             <Param name="ore_type" value="Raw Iron" />
         </Params>

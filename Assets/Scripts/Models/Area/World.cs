@@ -146,6 +146,12 @@ public class World : IXmlSerializable
     public void TickEveryFrame(float deltaTime)
     {
         CharacterManager.Update(deltaTime);
+
+        // Update Furniture (fast track)
+        foreach (Furniture furniture in furnitures)
+        {
+            furniture.EveryFrameUpdate(deltaTime);
+        }
     }
 
     public void TickFixedFrequency(float deltaTime)
@@ -153,7 +159,7 @@ public class World : IXmlSerializable
         // Update Furniture
         foreach (Furniture f in furnitures)
         {
-            f.Update(deltaTime);
+            f.FixedFrequencyUpdate(deltaTime);
         }
 
         // Progress temperature modelling
