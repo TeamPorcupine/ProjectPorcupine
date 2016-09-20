@@ -51,6 +51,8 @@ public class World : IXmlSerializable
     // A three-dimensional array to hold our tile data.
     private Tile[,,] tiles;
 
+    // Holds all furnitures with eventactions, and distributes them between visible and invisible
+    private List<Furniture> furnituresWithEventsAction;
     private List<Furniture> furnituresVisible;
     private List<Furniture> furnituresInvisible;
 
@@ -146,10 +148,10 @@ public class World : IXmlSerializable
     {
         CharacterManager.Update(deltaTime);
 
-        // Update Furniture in camera view
-        foreach (Furniture f in furnituresVisible)
+        // Update Furniture (fast track)
+        foreach (Furniture furniture in furnituresVisible)
         {
-            f.Update(deltaTime);
+            furniture.EveryFrameUpdate(deltaTime);
         }
     }
 
@@ -158,9 +160,10 @@ public class World : IXmlSerializable
         // Update Furniture outside of the camera view
         // TODO: Further optimization could divide furnituresInvisible in multiple lists
         //       and update one of the lists each frame
-        foreach (Furniture f in furnituresInvisible)
+        foreach (Furniture furniture in furnituresInvisible)
         {
-            f.Update(deltaTime);
+            furniture.EveryFrameUpdate(deltaTime);
+            furniture.FixedFrequencyUpdate(deltaTime);
         }
 
         // Progress temperature modelling
@@ -177,7 +180,7 @@ public class World : IXmlSerializable
         // Expand bounds to include tiles on the edge where the centre isn't inside the bounds
         cameraBounds.Expand(1);
 
-        foreach (Furniture furn in furnitures)
+        foreach (Furniture furn in furnituresWithEventsAction)
         {
             // Multitile furniture base tile is bottom left - so add width and height 
             Bounds furnitureBounds = new Bounds(
@@ -202,8 +205,10 @@ public class World : IXmlSerializable
             }
         }
 
-        // Debug.ULogChannel("VisibleFurn","Visible furn: "+ furnituresVisible.Count.ToString());
-        // Debug.ULogChannel("VisibleFurn", "Visible furn: " + furnituresInvisible.Count.ToString());
+         Debug.ULogChannel("VisibleFurn","All furn: "+ furnitures.Count.ToString());
+         Debug.ULogChannel("VisibleFurn","EventAction furn: "+ furnituresWithEventsAction.Count.ToString());
+         Debug.ULogChannel("VisibleFurn","Visible furn: "+ furnituresVisible.Count.ToString());
+         Debug.ULogChannel("VisibleFurn", "Invisible furn: " + furnituresInvisible.Count.ToString());
     }
 
     /// <summary>
@@ -253,8 +258,13 @@ public class World : IXmlSerializable
 
         furn.Removed += OnFurnitureRemoved;
         furnitures.Add(furn);
-        furnituresVisible.Add(furn);
 
+        if (furn.EventActions.HasEvents())
+        {
+            furnituresWithEventsAction.Add(furn);
+            furnituresVisible.Add(furn);
+        }
+        
         // Do we need to recalculate our rooms?
         if (doRoomFloodFill && furn.RoomEnclosure)
         {
@@ -558,6 +568,10 @@ public class World : IXmlSerializable
     public void OnFurnitureRemoved(Furniture furn)
     {
         furnitures.Remove(furn);
+        if (furnituresWithEventsAction.Contains(furn))
+        {
+            furnituresWithEventsAction.Remove(furn);
+        }
         if (furnituresInvisible.Contains(furn))
         {
             furnituresInvisible.Remove(furn);            
@@ -670,6 +684,7 @@ public class World : IXmlSerializable
         CreateWallet();
 
         furnitures = new List<Furniture>();
+        furnituresWithEventsAction = new List<Furniture>();
         furnituresVisible = new List<Furniture>();
         furnituresInvisible = new List<Furniture>();
 

@@ -144,4 +144,12 @@ public class EventActions : IXmlSerializable
     {
         return actionsList.ContainsKey(actionName);
     }
+
+    /// <summary>
+    /// Determines whether this instance has any events.
+    /// </summary>    
+    public bool HasEvents()
+    {
+        return actionsList.Count > 0;
+    }
 }
