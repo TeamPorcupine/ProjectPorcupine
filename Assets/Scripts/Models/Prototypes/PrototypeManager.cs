@@ -97,7 +97,7 @@ public class PrototypeManager
     /// <summary>
     /// Gets the currency prototype map.
     /// </summary>
-    /// <value>The trader prototype map.</value>
+    /// <value>The currency prototype map.</value>
     public static PrototypeMap<Currency> Currency { get; private set; }
 
     /// <summary>
