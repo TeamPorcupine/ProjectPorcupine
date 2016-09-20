@@ -1,4 +1,4 @@
-﻿menu_construction=Construction
+menu_construction=Construction
 menu_work=Work
 menu_world=World
 menu_options=Options
@@ -78,3 +78,10 @@ tile_Ladder_desc=High-tech space movement system. Effectiveness reduced when hel
 need_oxygen=Oxygen {0}
 need_sleep=Sleep {0}
 job_stockpile_moving_desc=Hauling to Stockpile
+overlay_none=None
+overlay_oxygen=Oxygen
+overlay_room=Room
+overlay_power=Power
+overlay_temperature=Temperature
+overlay_debug_thermal_diffusivity=Debug: Thermal Diffusivity
+overlay_debug_heat_generation=Debug: Heat Generation
