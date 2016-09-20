@@ -34,6 +34,11 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// </summary>
     private string getSpriteNameAction;
 
+    /// <summary>
+    /// This action is called to get the progress info based on the furniture parameters.
+    /// </summary>
+    private string getProgressInfoNameAction;
+
     private List<string> replaceableFurniture = new List<string>();
 
     /// <summary>
@@ -59,6 +64,8 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
 
     private bool isOperating;
 
+    private List<Inventory> deconstructInventory;
+
     // did we have power in the last update?
     private bool prevUpdatePowerOn;
 
@@ -74,7 +81,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         
         contextMenuLuaActions = new List<ContextMenuLuaAction>();
         Parameters = new Parameter();
-        Jobs = new FurnitureJobs(this);
+        Jobs = new BuildableJobs(this);
         typeTags = new HashSet<string>();
         funcPositionValidation = DefaultIsValidPosition;
         tileTypeBuildPermissions = new HashSet<string>();
@@ -83,6 +90,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         Height = 1;
         Width = 1;
         DragType = "single";
+        LinksToNeighbour = string.Empty;
     }
 
     // Copy Constructor -- don't call this directly, unless we never
@@ -101,9 +109,10 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         Height = other.Height;
         Tint = other.Tint;
         LinksToNeighbour = other.LinksToNeighbour;
+        deconstructInventory = other.deconstructInventory;
 
         Parameters = new Parameter(other.Parameters);
-        Jobs = new FurnitureJobs(this, other);
+        Jobs = new BuildableJobs(this, other.Jobs);
         workshop = other.workshop; // don't need to clone here, as all are prototype things (not changing)
 
         if (other.Animation != null)
@@ -123,6 +132,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
 
         isEnterableAction = other.isEnterableAction;
         getSpriteNameAction = other.getSpriteNameAction;
+        getProgressInfoNameAction = other.getProgressInfoNameAction;
 
         if (other.PowerConnection != null)
         {
@@ -200,7 +210,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// </summary>
     /// <value>The event actions that is called on update.</value>
     public EventActions EventActions { get; private set; }
-
+    
     /// <summary>
     /// Gets the Connection that the furniture has to the power system.
     /// </summary>
@@ -274,10 +284,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// <value>A list of furniture that this furniture can be replaced with.</value>
     public List<string> ReplaceableFurniture
     {
-        get
-        {
-            return replaceableFurniture;
-        }
+        get { return replaceableFurniture; }
     }
 
     /// <summary>
@@ -318,7 +325,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// Gets a value indicating whether this furniture is next to any furniture of the same type.
     /// This is used to check what sprite to use if furniture is next to each other.
     /// </summary>
-    public bool LinksToNeighbour { get; private set; }
+    public string LinksToNeighbour { get; private set; }
 
     /// <summary>
     /// Gets the type of dragging that is used to build multiples of this furniture. 
@@ -339,7 +346,22 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// <summary>
     /// Gets a component that handles the jobs linked to the furniture.
     /// </summary>
-    public FurnitureJobs Jobs { get; private set; }
+    public BuildableJobs Jobs { get; private set; }
+
+    /// <summary>
+    /// This flag is set if the furniture is tasked to be destroyed.
+    /// </summary>
+    public bool IsBeingDestroyed { get; protected set; }
+
+    /// Should we only use the default name? If not, then more complex logic is tested, such as walls.
+    /// </summary>
+    public bool OnlyUseDefaultSpriteName
+    {
+        get
+        {
+            return !string.IsNullOrEmpty(getSpriteNameAction);
+        }
+    }
 
     /// <summary>
     /// Used to place furniture in a certain position.
@@ -373,8 +395,8 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             // (It will be garbage collected.)
             return null;
         }
-
-        if (obj.LinksToNeighbour)
+        
+        if (obj.LinksToNeighbour != string.Empty)
         {
             // This type of furniture links itself to its neighbours,
             // so we should inform our neighbours that they have a new
@@ -395,6 +417,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             }
         }
 
+        // Let our workspot tile know it is reserved for us
+        World.Current.ReserveTileAsWorkSpot(obj);
+
         // Call LUA install scripts
         obj.EventActions.Trigger("OnInstall", obj);
 
@@ -411,17 +436,30 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     }
 
     /// <summary>
+    /// This function is called to update the furniture animation in lua.
+    /// This will be called every frame and should be used carefully.
+    /// </summary>
+    /// <param name="deltaTime">The time since the last update was called.</param>
+    public void EveryFrameUpdate(float deltaTime)
+    {
+        if (EventActions != null)
+        {
+            EventActions.Trigger("OnFastUpdate", this, deltaTime);
+        }
+    }
+
+    /// <summary>
     /// This function is called to update the furniture. This will also trigger EventsActions.
     /// This checks if the furniture is a PowerConsumer, and if it does not have power it cancels its job.
     /// </summary>
     /// <param name="deltaTime">The time since the last update was called.</param>
-    public void Update(float deltaTime)
+    public void FixedFrequencyUpdate(float deltaTime)
     {
         if (PowerConnection != null && PowerConnection.IsPowerConsumer && HasPower() == false)
         {
             if (prevUpdatePowerOn)
             {
-                EventActions.Trigger("OnPowerOff", this, deltaTime);                
+                EventActions.Trigger("OnPowerOff", this, deltaTime);
             }
 
             Jobs.PauseAll();
@@ -438,7 +476,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             EventActions.Trigger("OnUpdate", this, deltaTime);
         }
 
-        if (IsWorkshop)
+        if (IsWorkshop && IsBeingDestroyed == false)
         {
             workshop.Update(deltaTime);
         }
@@ -595,7 +633,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                     break;
                 case "LinksToNeighbours":
                     reader.Read();
-                    LinksToNeighbour = reader.ReadContentAsBoolean();
+                    LinksToNeighbour = reader.ReadContentAsString();
                     break;
                 case "EnclosesRooms":
                     reader.Read();
@@ -610,6 +648,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                     break;
                 case "BuildingJob":
                     ReadXmlBuildingJob(reader);
+                    break;
+                case "DeconstructJob":
+                    ReadXmlDeconstructJob(reader);
                     break;
                 case "CanBeBuiltOn":
                     tileTypeBuildPermissions.Add(reader.GetAttribute("tileType"));
@@ -638,11 +679,17 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                 case "GetSpriteName":
                     getSpriteNameAction = reader.GetAttribute("FunctionName");
                     break;
-                case "JobSpotOffset":
+                case "GetProgressInfo":
+                    getProgressInfoNameAction = reader.GetAttribute("functionName");
+                    break;
+                case "JobWorkSpotOffset":
                     Jobs.ReadWorkSpotOffset(reader);
                     break;
-                case "JobSpawnSpotOffset":
-                    Jobs.ReadSpawnSpotOffset(reader);
+                case "JobInputSpotOffset":
+                    Jobs.ReadInputSpotOffset(reader);
+                    break;
+                case "JobOutputSpotOffset":
+                    Jobs.ReadOutputSpotOffset(reader);
                     break;
                 case "PowerConnection":
                     PowerConnection = new Connection();
@@ -659,7 +706,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                     reader.Read();
                     UnlocalizedDescription = reader.ReadContentAsString();
                     break;
-
                 case "Workshop":                   
                     workshop = FurnitureWorkshop.Deserialize(reader);
                     workshop.SetParentFurniture(this);
@@ -720,13 +766,48 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         Job job = new Job(
             null,
             Type,
-            FunctionsManager.JobComplete_FurnitureBuilding,
+            (theJob) => World.Current.JobComplete_FurnitureBuilding(theJob),
             jobTime,
             invs.ToArray(),
             Job.JobPriority.High);
         job.JobDescription = "job_build_" + Type + "_desc";
 
-        PrototypeManager.FurnitureJob.Set(job);
+        PrototypeManager.FurnitureConstructJob.Set(job);
+    }
+
+    /// <summary>
+    /// Reads the XML building job.
+    /// </summary>
+    /// <param name="reader">The XML reader to read from.</param>
+    public void ReadXmlDeconstructJob(XmlReader reader)
+    {
+        float jobTime = 0;
+        float.TryParse(reader.GetAttribute("jobTime"), out jobTime);
+        deconstructInventory = new List<Inventory>();
+        XmlReader inventoryReader = reader.ReadSubtree();
+
+        while (inventoryReader.Read())
+        {
+            if (inventoryReader.Name == "Inventory")
+            {
+                // Found an inventory requirement, so add it to the list!
+                deconstructInventory.Add(new Inventory(
+                    inventoryReader.GetAttribute("type"),
+                    int.Parse(inventoryReader.GetAttribute("amount"))));
+            }
+        }
+
+        Job job = new Job(
+            null,
+            Type,
+            null,
+            jobTime,
+            null,
+            Job.JobPriority.High);
+        job.JobDescription = "job_deconstruct_" + Type + "_desc";
+        job.adjacent = true;
+
+        PrototypeManager.FurnitureDeconstructJob.Set(job);
     }
 
     /// <summary>
@@ -754,15 +835,41 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     }
 
     /// <summary>
+    /// Sets the furniture to be deconstructed.
+    /// </summary>
+    public void SetDeconstructJob()
+    {
+        if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
+        {
+            Deconstruct();
+            return;
+        }
+
+        if (IsBeingDestroyed)
+        {
+            return; // Already being destroyed, don't do anything more
+        }
+
+        IsBeingDestroyed = true;
+        Jobs.CancelAll();
+
+        Job job = PrototypeManager.FurnitureDeconstructJob.Get(Type).Clone();
+        job.tile = Tile;
+        job.OnJobCompleted += (inJob) => Deconstruct();
+
+        World.Current.jobQueue.Enqueue(job);
+    }
+
+    /// <summary>
     /// Deconstructs the furniture.
     /// </summary>
     public void Deconstruct()
-    {
+    { 
         int x = Tile.X;
         int y = Tile.Y;
         int fwidth = 1;
         int fheight = 1;
-        bool linksToNeighbour = false;
+        string linksToNeighbour = string.Empty;
         if (Tile.Furniture != null)
         {
             Furniture furniture = Tile.Furniture;
@@ -778,7 +885,19 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         // Update thermalDiffusifity to default value
         World.Current.temperature.SetThermalDiffusivity(Tile.X, Tile.Y, Temperature.defaultThermalDiffusivity);
 
+        // Let our workspot tile know it is no longer reserved for us
+        World.Current.UnreserveTileAsWorkSpot(this);
+
         Tile.UnplaceFurniture();
+
+        if (deconstructInventory != null)
+        {
+            foreach (Inventory inv in deconstructInventory)
+            {
+                inv.MaxStackSize = PrototypeManager.Inventory.Get(inv.Type).maxStackSize;
+                World.Current.inventoryManager.PlaceInventoryAround(Tile, inv.Clone());
+            }
+        }
 
         if (PowerConnection != null)
         {
@@ -794,7 +913,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         // Do we need to recalculate our rooms?
         if (RoomEnclosure)
         {
-            Room.DoRoomFloodFill(Tile);
+            World.Current.RoomManager.DoRoomFloodFill(Tile, false);
         }
 
         ////World.current.InvalidateTileGraph();
@@ -807,7 +926,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         // We should inform our neighbours that they have just lost a
         // neighbour regardless of type.  
         // Just trigger their OnChangedCallback. 
-        if (linksToNeighbour == true)
+        if (linksToNeighbour != string.Empty)
         {
             for (int xpos = x - 1; xpos < x + fwidth + 1; xpos++)
             {
@@ -863,6 +982,19 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         return string.Empty;
     }
 
+    public string GetProgressInfo()
+    {
+        if (string.IsNullOrEmpty(getProgressInfoNameAction))
+        {
+            return string.Empty;
+        }
+        else
+        {
+            DynValue ret = FunctionsManager.Furniture.Call(getProgressInfoNameAction, this);
+            return ret.String;
+        }
+    }
+
     public IEnumerable<string> GetAdditionalInfo()
     {
         if (IsWorkshop)
@@ -894,6 +1026,8 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                 yield return string.Format("Power Accumulated: {0} / {1}", PowerConnection.AccumulatedPower, PowerConnection.Capacity);
             }
         }
+
+        yield return GetProgressInfo();
     }
 
     /// <summary>
@@ -941,11 +1075,11 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             {
                 Text = "Deconstruct " + Name,
                 RequireCharacterSelected = false,
-                Action = (ca, c) => Deconstruct()
+                Action = (ca, c) => SetDeconstructJob()
             };
         }
 
-        for (int i = 0; i < Jobs.Count(); i++)
+        for (int i = 0; i < Jobs.Count; i++)
         {
             if (!Jobs[i].IsBeingWorked)
             {
@@ -1021,25 +1155,31 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         {
             for (int y_off = tile.Y; y_off < tile.Y + Height; y_off++)
             {
-                Tile t2 = World.Current.GetTileAt(x_off, y_off, tile.Z);
+                Tile tile2 = World.Current.GetTileAt(x_off, y_off, tile.Z);
 
                 // Check to see if there is furniture which is replaceable
                 bool isReplaceable = false;
 
-                if (t2.Furniture != null)
+                if (tile2.Furniture != null)
                 {
                     // Furniture can be replaced, if its typeTags share elements with ReplaceableFurniture
-                    isReplaceable = t2.Furniture.typeTags.Overlaps(ReplaceableFurniture);
+                    isReplaceable = tile2.Furniture.typeTags.Overlaps(ReplaceableFurniture);
                 }
 
                 // Make sure tile is FLOOR
-                if (t2.Type != TileType.Floor && tileTypeBuildPermissions.Contains(t2.Type.Type) == false)
+                if (tile2.Type != TileType.Floor && tileTypeBuildPermissions.Contains(tile2.Type.Type) == false)
                 {
                     return false;
                 }
 
                 // Make sure tile doesn't already have furniture
-                if (t2.Furniture != null && isReplaceable == false)
+                if (tile2.Furniture != null && isReplaceable == false)
+                {
+                    return false;
+                }
+
+                // Make sure we're not building on another furniture's workspot
+                if (tile2.IsReservedWorkSpot())
                 {
                     return false;
                 }

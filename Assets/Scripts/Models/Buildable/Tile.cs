@@ -14,6 +14,7 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
+using ProjectPorcupine.Rooms;
 using UnityEngine;
 
 public enum Enterability
@@ -41,6 +42,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         Characters = new List<Character>();
         MovementModifier = 1;
         Utilities = new Dictionary<string, Utility>();
+        ReservedAsWorkSpotBy = new HashSet<Furniture>();
     }
 
     // The function we callback any time our tile's data changes
@@ -67,6 +69,8 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
             OnTileClean();
         }
     }
+
+    public HashSet<Furniture> ReservedAsWorkSpotBy { get; private set; }
 
     // LooseObject is something like a drill or a stack of metal sitting on the floor
     public Inventory Inventory { get; set; }
@@ -280,7 +284,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
     #region Manage Gas
     public void EqualiseGas(float leakFactor)
     {
-        Room.EqualiseGasByTile(this, leakFactor);
+        World.Current.RoomManager.EqualiseGasByTile(this, leakFactor);
     }
 
     public float GetGasPressure(string gas)
@@ -442,7 +446,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
     public void ReadXml(XmlReader reader)
     {
         // X and Y have already been read/processed
-        Room = World.Current.GetRoomFromID(int.Parse(reader.GetAttribute("RoomID")));
+        Room = World.Current.RoomManager[int.Parse(reader.GetAttribute("RoomID"))];
         if (Room != null)
         {
             Room.AssignTile(this);
@@ -509,6 +513,11 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
                 };
             }
         }
+    }
+
+    public bool IsReservedWorkSpot()
+    {
+        return ReservedAsWorkSpotBy.Count > 0;
     }
 
     private void ReportTileChanged()

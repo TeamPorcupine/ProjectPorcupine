@@ -48,6 +48,11 @@ public class HeadlineController : MonoBehaviour
 
     private void UpdateHeadline(string newHeadline)
     {
+        if (canvasGroup == null)
+        {
+            return;
+        }
+
         canvasGroup.alpha = 1;
         canvasGroup.interactable = true;
         canvasGroup.blocksRaycasts = true;

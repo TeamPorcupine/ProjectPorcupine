@@ -14,6 +14,8 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
+using ProjectPorcupine.PowerNetwork;
+using ProjectPorcupine.Rooms;
 using UnityEngine;
 
 [MoonSharpUserData]
@@ -25,7 +27,6 @@ public class World : IXmlSerializable
 
     public List<Furniture> furnitures;
     public List<Utility> utilities;
-    public List<Room> rooms;
     public InventoryManager inventoryManager;
     public Material skybox;
 
@@ -68,12 +69,12 @@ public class World : IXmlSerializable
         Debug.Log("Generated World");
 
         // Adding air to enclosed rooms
-        foreach (Room room in this.rooms)
+        foreach (Room room in this.RoomManager)
         {
             if (room.ID > 0)
             {
-                room.ChangeGas("O2", 0.2f * room.GetSize());
-                room.ChangeGas("N2", 0.8f * room.GetSize());
+                room.ChangeGas("O2", 0.2f * room.TileCount);
+                room.ChangeGas("N2", 0.8f * room.TileCount);
             }
         }
 
@@ -122,60 +123,14 @@ public class World : IXmlSerializable
     /// <value>The character manager.</value>
     public CharacterManager CharacterManager { get; protected set; }
 
-    public ProjectPorcupine.PowerNetwork.PowerNetwork PowerNetwork { get; private set; }
+    public PowerNetwork PowerNetwork { get; private set; }
 
-    public Room GetOutsideRoom()
-    {
-        return rooms[0];
-    }
-
-    public int GetRoomID(Room r)
-    {
-        return rooms.IndexOf(r);
-    }
-
-    public Room GetRoomFromID(int i)
-    {
-        if (i < 0 || i > rooms.Count - 1)
-        {
-            return null;
-        }
-
-        return rooms[i];
-    }
-
-    public void AddRoom(Room r)
-    {
-        rooms.Add(r);
-        roomGraph = null;
-
-        Debug.ULogChannel("Rooms", "creating room:" + r.ID);
-    }
+    public RoomManager RoomManager { get; private set; }
 
     public int CountFurnitureType(string type)
     {
         int count = furnitures.Count(f => f.Type == type);
         return count;
-    }
-
-    public void DeleteRoom(Room r)
-    {
-        if (r.IsOutsideRoom())
-        {
-            Debug.ULogErrorChannel("World", "Tried to delete the outside room.");
-            return;
-        }
-
-        Debug.ULogChannel("Rooms", "Deleting room:" + r.ID);
-
-        roomGraph = null;
-
-        // Remove this room from our rooms list.
-        rooms.Remove(r);
-
-        // All tiles that belonged to this room should be re-assigned to
-        // the outside.
-        r.ReturnTilesToOutsideRoom();
     }
 
     public void AddEventListeners()
@@ -187,6 +142,12 @@ public class World : IXmlSerializable
     public void TickEveryFrame(float deltaTime)
     {
         CharacterManager.Update(deltaTime);
+
+        // Update Furniture (fast track)
+        foreach (Furniture furniture in furnitures)
+        {
+            furniture.EveryFrameUpdate(deltaTime);
+        }
     }
 
     public void TickFixedFrequency(float deltaTime)
@@ -194,7 +155,7 @@ public class World : IXmlSerializable
         // Update Furniture
         foreach (Furniture f in furnitures)
         {
-            f.Update(deltaTime);
+            f.FixedFrequencyUpdate(deltaTime);
         }
 
         // Progress temperature modelling
@@ -224,59 +185,6 @@ public class World : IXmlSerializable
         return GetTileAt(Width / 2, Height / 2, 0);
     }
 
-    public Tile GetFirstCenterTileWithNoInventory(int maxOffset)
-    {
-        return GetFirstTileWithNoInventoryAround(maxOffset, Width / 2, Height / 2, 0);
-    }
-
-    public Tile GetFirstTileWithNoInventoryAround(int maxOffset, int centerX, int centerY, int centerZ)
-    {
-        for (int offset = 0; offset <= maxOffset; offset++)
-        {
-            int offsetX = 0;
-            int offsetY = 0;
-            Tile tile;
-
-            // searching top & bottom line of the square
-            for (offsetX = -offset; offsetX <= offset; offsetX++)
-            {
-                offsetY = offset;
-                tile = GetTileAt(centerX + offsetX, centerY + offsetY, centerZ);
-                if (tile.Inventory == null)
-                {
-                    return tile;
-                }
-
-                offsetY = -offset;
-                tile = GetTileAt(centerX + offsetX, centerY + offsetY, centerZ);
-                if (tile.Inventory == null)
-                {
-                    return tile;
-                }
-            }
-
-            // searching left & right line of the square
-            for (offsetY = -offset; offsetY <= offset; offsetY++)
-            {
-                offsetX = offset;
-                tile = GetTileAt(centerX + offsetX, centerY + offsetY, centerZ);
-                if (tile.Inventory == null)
-                {
-                    return tile;
-                }
-
-                offsetX = -offset;
-                tile = GetTileAt(centerX + offsetX, centerY + offsetY, centerZ);
-                if (tile.Inventory == null)
-                {
-                    return tile;
-                }
-            }
-        }
-
-        return null;
-    }
-
     public Furniture PlaceFurniture(string type, Tile t, bool doRoomFloodFill = true)
     {
         if (PrototypeManager.Furniture.Has(type) == false)
@@ -288,19 +196,6 @@ public class World : IXmlSerializable
         Furniture furn = PrototypeManager.Furniture.Get(type);
 
         return PlaceFurniture(furn, t, doRoomFloodFill);
-    }
-
-    public Utility PlaceUtility(string objectType, Tile tile, bool doRoomFloodFill = false)
-    {
-        if (PrototypeManager.Utility.Has(objectType) == false)
-        {
-            Debug.ULogErrorChannel("World", "PrototypeManager.Utility doesn't contain a proto for key: " + objectType);
-            return null;
-        }
-
-        Utility util = PrototypeManager.Utility.Get(objectType);
-
-        return PlaceUtility(util, tile, doRoomFloodFill);
     }
 
     public Furniture PlaceFurniture(Furniture furniture, Tile t, bool doRoomFloodFill = true)
@@ -319,7 +214,7 @@ public class World : IXmlSerializable
         // Do we need to recalculate our rooms?
         if (doRoomFloodFill && furn.RoomEnclosure)
         {
-            Room.DoRoomFloodFill(furn.Tile);
+            RoomManager.DoRoomFloodFill(furn.Tile, true);
         }
 
         if (OnFurnitureCreated != null)
@@ -343,6 +238,31 @@ public class World : IXmlSerializable
         return furn;
     }
 
+    public void JobComplete_FurnitureBuilding(Job theJob)
+    {
+        // Let our workspot tile know it is no longer reserved for us
+        UnreserveTileAsWorkSpot((Furniture)theJob.buildablePrototype, theJob.tile);
+
+        PlaceFurniture(theJob.JobObjectType, theJob.tile);
+
+        // FIXME: I don't like having to manually and explicitly set
+        // flags that prevent conflicts. It's too easy to forget to set/clear them!
+        theJob.tile.PendingBuildJob = null;
+    }
+
+    public Utility PlaceUtility(string objectType, Tile tile, bool doRoomFloodFill = false)
+    {
+        if (PrototypeManager.Utility.Has(objectType) == false)
+        {
+            Debug.ULogErrorChannel("World", "PrototypeManager.Utility doesn't contain a proto for key: " + objectType);
+            return null;
+        }
+
+        Utility util = PrototypeManager.Utility.Get(objectType);
+
+        return PlaceUtility(util, tile, doRoomFloodFill);
+    }
+
     public Utility PlaceUtility(Utility proto, Tile tile, bool doRoomFloodFill = true)
     {
         Utility utility = Utility.PlaceInstance(proto, tile);
@@ -364,6 +284,53 @@ public class World : IXmlSerializable
         return utility;
     }
 
+    public void JobComplete_UtilityBuilding(Job theJob)
+    {
+        PlaceUtility(theJob.JobObjectType, theJob.tile);
+
+        // FIXME: I don't like having to manually and explicitly set
+        // flags that preven conflicts. It's too easy to forget to set/clear them!
+        theJob.tile.PendingBuildJob = null;
+    }
+
+    /// <summary>
+    /// Reserves the furniture's work spot, preventing it from being built on.
+    /// </summary>
+    /// <param name="furn">The furniture whose workspot will be reserved.</param>
+    /// <param name="tile">The tile on which the furniture is located, for furnitures which don't have a tile, such as prototypes.</param>
+    public void ReserveTileAsWorkSpot(Furniture furn, Tile tile = null)
+    {
+        if (tile == null)
+        {
+            tile = furn.Tile;
+        }
+
+        World.Current.GetTileAt(
+            tile.X + (int)furn.Jobs.WorkSpotOffset.x, 
+            tile.Y + (int)furn.Jobs.WorkSpotOffset.y, 
+            tile.Z)
+            .ReservedAsWorkSpotBy.Add(furn);
+    }
+
+    /// <summary>
+    /// Unreserves the furniture's work spot, allowing it to be built on.
+    /// </summary>
+    /// <param name="furn">The furniture whose workspot will be unreserved.</param>
+    /// <param name="tile">The tile on which the furniture is located, for furnitures which don't have a tile, such as prototypes.</param>
+    public void UnreserveTileAsWorkSpot(Furniture furn, Tile tile = null)
+    {
+        if (tile == null)
+        {
+            tile = furn.Tile;
+        }
+
+        World.Current.GetTileAt(
+            tile.X + (int)furn.Jobs.WorkSpotOffset.x, 
+            tile.Y + (int)furn.Jobs.WorkSpotOffset.y,
+            tile.Z)
+            .ReservedAsWorkSpotBy.Remove(furn);
+    }
+
     // This should be called whenever a change to the world
     // means that our old pathfinding info is invalid.
     public void InvalidateTileGraph()
@@ -374,6 +341,17 @@ public class World : IXmlSerializable
     public bool IsFurniturePlacementValid(string furnitureType, Tile t)
     {
         return PrototypeManager.Furniture.Get(furnitureType).IsValidPosition(t);
+    }
+
+    public bool IsFurnitureWorkSpotClear(string furnitureType, Tile tile)
+    {
+        Furniture proto = PrototypeManager.Furniture.Get(furnitureType);
+        if (proto.Jobs != null && GetTileAt((int)(tile.X + proto.Jobs.WorkSpotOffset.x), (int)(tile.Y + proto.Jobs.WorkSpotOffset.y), (int)tile.Z).Furniture != null)
+        {
+            return false;
+        }
+
+        return true;
     }
 
     public bool IsUtilityPlacementValid(string furnitureType, Tile tile)
@@ -394,9 +372,9 @@ public class World : IXmlSerializable
         writer.WriteAttributeString("Depth", Depth.ToString());
 
         writer.WriteStartElement("Rooms");
-        foreach (Room r in rooms)
+        foreach (Room r in RoomManager)
         {
-            if (GetOutsideRoom() == r)
+            if (RoomManager.OutsideRoom == r)
             {
                 // Skip the outside room. Alternatively, should SetupWorld be changed to not create one?
                 continue;
@@ -620,8 +598,9 @@ public class World : IXmlSerializable
 
         tiles = new Tile[Width, Height, Depth];
 
-        rooms = new List<Room>();
-        rooms.Add(new Room()); // Create the outside?
+        RoomManager = new RoomManager();
+        RoomManager.Adding += (room) => roomGraph = null;
+        RoomManager.Removing += (room) => roomGraph = null;
 
         for (int x = 0; x < Width; x++)
         {
@@ -631,7 +610,7 @@ public class World : IXmlSerializable
                 {
                     tiles[x, y, z] = new Tile(x, y, z);
                     tiles[x, y, z].TileChanged += OnTileChangedCallback;
-                    tiles[x, y, z].Room = GetOutsideRoom(); // Rooms 0 is always going to be outside, and that is our default room
+                    tiles[x, y, z].Room = RoomManager.OutsideRoom; // Rooms 0 is always going to be outside, and that is our default room
                 }
             }
         }
@@ -795,7 +774,7 @@ public class World : IXmlSerializable
             do
             {
                 Room r = new Room();
-                rooms.Add(r);
+                RoomManager.Add(r);
                 r.ReadXml(reader);
             }
             while (reader.ReadToNextSibling("Room"));
@@ -897,7 +876,7 @@ public class World : IXmlSerializable
             errorCount++;
         }
 
-        foreach (Room r in world.rooms)
+        foreach (Room r in world.RoomManager)
         {
             if (roomGraph.nodes.ContainsKey(r) == false)
             {
@@ -918,7 +897,7 @@ public class World : IXmlSerializable
                             continue;
                         }
 
-                        if (node.edges[0].node.data != world.rooms[2] || node.edges[1].node.data != world.rooms[2])
+                        if (node.edges[0].node.data != world.RoomManager[2] || node.edges[1].node.data != world.RoomManager[2])
                         {
                             Debug.ULogErrorChannel("Path_RoomGraph", "Room 0 supposed to have edges to Room 2.");
                             Debug.ULogErrorChannel(
@@ -939,7 +918,7 @@ public class World : IXmlSerializable
                             continue;
                         }
 
-                        if (node.edges[0].node.data != world.rooms[2])
+                        if (node.edges[0].node.data != world.RoomManager[2])
                         {
                             Debug.ULogErrorChannel("Path_RoomGraph", "Room 1 supposed to have edge to Room 2.");
                             Debug.ULogErrorChannel("Path_RoomGraph", "Instead has: " + node.edges[0].node.data.ID.ToString());
@@ -1021,7 +1000,7 @@ public class World : IXmlSerializable
                             continue;
                         }
 
-                        if (node.edges[0].node.data != world.rooms[2])
+                        if (node.edges[0].node.data != world.RoomManager[2])
                         {
                             Debug.ULogErrorChannel("Path_RoomGraph", "Room 5 supposed to have edge to Room 2.");
                             Debug.ULogErrorChannel("Path_RoomGraph", "Instead has: " + node.edges[0].node.data.ID.ToString());
