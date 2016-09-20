@@ -41,18 +41,18 @@ public class HeadlineController : MonoBehaviour
 
     public void Start()
     {
-        string filePath = System.IO.Path.Combine(UnityEngine.Application.streamingAssetsPath, "Data");
-        filePath = System.IO.Path.Combine(filePath, "Headlines.xml");
-        string xmlText = System.IO.File.ReadAllText(filePath);
-        XmlDocument doc = new XmlDocument();
-        doc.Load(new StringReader(xmlText));
-        HeadlineGenerator headlineGenerator = new HeadlineGenerator(doc.SelectSingleNode("Headlines"));
+        HeadlineGenerator headlineGenerator = new HeadlineGenerator();
         headlineGenerator.UpdatedHeadline += UpdateHeadline;
         UpdateHeadline(headlineGenerator.CurrentDisplayText);
     }
 
     private void UpdateHeadline(string newHeadline)
     {
+        if (canvasGroup == null)
+        {
+            return;
+        }
+
         canvasGroup.alpha = 1;
         canvasGroup.interactable = true;
         canvasGroup.blocksRaycasts = true;

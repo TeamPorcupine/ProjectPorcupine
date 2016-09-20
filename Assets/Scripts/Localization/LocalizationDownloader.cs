@@ -198,7 +198,7 @@ namespace ProjectPorcupine.Localization
 
                         // Read files from stream to files on HDD.
                         // 2048 buffer should be plenty.
-                        if (string.IsNullOrEmpty(fileName) == false)
+                        if (string.IsNullOrEmpty(fileName) == false && !fileName.StartsWith("en_US.lang"))
                         {
                             string fullFilePath = Path.Combine(LocalizationFolderPath, theEntry.Name);
                             using (FileStream fileWriter = File.Create(fullFilePath))

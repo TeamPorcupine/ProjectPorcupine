@@ -9,7 +9,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using MoonSharp.Interpreter;
+using ProjectPorcupine.Localization;
 using UnityEngine;
 
 /// <summary>
@@ -19,9 +21,7 @@ using UnityEngine;
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]
 public class OverlayMap : MonoBehaviour
-{
-    public Dictionary<string, OverlayDescriptor> overlays;
-
+{   
     /// <summary>
     /// Transparency of overlay.
     /// </summary>
@@ -32,18 +32,17 @@ public class OverlayMap : MonoBehaviour
     /// Update interval (0 for every Update, inf for never).
     /// </summary>
     public float updateInterval = 5f;
-    
-    /// <summary>
-    /// Resolution of tile for the overlay.
-    /// </summary>
-    public int pixelsPerTileX = 20;
-    public int pixelsPerTileY = 20;
 
     /// <summary>
     /// Internal storage of size of map.
     /// </summary>
     public int sizeX = 10;
     public int sizeY = 10;
+
+    /// <summary>
+    /// Internal storage of color map width.
+    /// </summary>
+    public int colorMapWidth = 20;
 
     /// <summary>
     /// Current Overlay.
@@ -56,17 +55,13 @@ public class OverlayMap : MonoBehaviour
     /// </summary>
     public Func<int, int, int, int> valueAt;
 
-    /// <summary>
-    /// Name of xml file containing overlay prototypes.
-    /// </summary>
-    public string xmlFileName = "overlay_prototypes.xml";
-
-    /// <summary>
-    /// Name of lua script containing overlay prototypes functions.
-    /// </summary>
-    public string LUAFileName = "overlay_functions.lua";
-
     public GameObject parentPanel;
+
+    /// <summary>
+    /// In memory color map lookup per overlay to speed up the overlay texture generation
+    /// and avoid too much call to the GetPixel method.
+    /// </summary>
+    public Dictionary<string, Dictionary<int, Color>> overlayColorMapLookup;
 
     private static List<Color32> randomColors;
 
@@ -83,14 +78,9 @@ public class OverlayMap : MonoBehaviour
     private float elapsed = 0f;
 
     /// <summary>
-    /// Script with user-defined lua valueAt functions.
-    /// </summary>
-    private Script script;
-
-    /// <summary>
     /// Current color map, setting the map causes the colorMapArray to be recreated.
     /// </summary>
-    private OverlayDescriptor.ColorMap colorMap;
+    private OverlayDescriptor.ColorMapOption colorMap;
 
     /// <summary>
     /// Storage for color map as texture, copied from using copyTexture on GPUs.
@@ -129,7 +119,7 @@ public class OverlayMap : MonoBehaviour
     // The texture applied to the entire overlay map.
     private Texture2D texture;
 
-    public OverlayDescriptor.ColorMap ColorMapSG
+    public OverlayDescriptor.ColorMapOption ColorMapSG
     {
         get
         {
@@ -152,7 +142,7 @@ public class OverlayMap : MonoBehaviour
     /// <param name="alpha">Alpha channel of color.</param>
     /// <returns></returns>
     public static Color32[] ColorMap(
-        OverlayDescriptor.ColorMap colorMap,
+        OverlayDescriptor.ColorMapOption colorMap,
         int size = 256,
         byte alpha = 128)
     {
@@ -162,7 +152,7 @@ public class OverlayMap : MonoBehaviour
         switch (colorMap)
         {
             default:
-            case OverlayDescriptor.ColorMap.Jet:
+            case OverlayDescriptor.ColorMapOption.Jet:
                 map = (int v) =>
                 {
                     Color32 c = new Color32(255, 255, 255, alpha);
@@ -205,7 +195,7 @@ public class OverlayMap : MonoBehaviour
                     return c;
                 };
                 break;
-            case OverlayDescriptor.ColorMap.Random:
+            case OverlayDescriptor.ColorMapOption.Random:
                 GenerateRandomColors(size);
                 map = (int v) =>
                 {
@@ -261,18 +251,19 @@ public class OverlayMap : MonoBehaviour
             HideGUITooltip();
             return;
         }
-        else if (overlays.ContainsKey(name))
+        else if (PrototypeManager.Overlay.Has(name))
         {
             meshRenderer.enabled = true;
             currentOverlay = name;
-            OverlayDescriptor descr = overlays[name];
-            object handle = script.Globals[descr.luaFunctionName];
-            if (handle == null)
+            OverlayDescriptor descr = PrototypeManager.Overlay.Get(name);
+
+            if (FunctionsManager.Overlay.HasGlobal(descr.LuaFunctionName) == false)
             {
-                Debug.ULogErrorChannel("OverlayMap", string.Format("Couldn't find a function named '{0}' in '{1}'", descr.luaFunctionName));
+                Debug.ULogErrorChannel("OverlayMap", string.Format("Couldn't find a function named '{0}' in '{1}'", descr.LuaFunctionName));
                 return;
             }
 
+            bool loggedOnce = false;
             valueAt = (x, y, z) =>
             {
                 if (WorldController.Instance == null)
@@ -281,10 +272,23 @@ public class OverlayMap : MonoBehaviour
                 }
 
                 Tile tile = WorldController.Instance.GetTileAtWorldCoord(new Vector3(x, y, z));
-                return (int)script.Call(handle, new object[] { tile, World.Current }).ToScalar().CastToNumber();
+                DynValue result = FunctionsManager.Overlay.Call(descr.LuaFunctionName, new object[] { tile, World.Current });
+                double? value = result.CastToNumber();
+                if (value == null)
+                {
+                    if (loggedOnce == false)
+                    {
+                        Debug.ULogErrorChannel("OverlayMap", string.Format("The return value from the function named '{0}' was null for tile at ({1}, {2}, {3})", descr.LuaFunctionName, x, y, z));
+                        loggedOnce = true;
+                    }
+                    
+                    return 0;
+                }
+                
+                return (int)value;
             };
 
-            ColorMapSG = descr.colorMap;
+            ColorMapSG = descr.ColorMap;
             Bake();
             ShowGUITooltip();
         }
@@ -316,22 +320,7 @@ public class OverlayMap : MonoBehaviour
         meshRenderer = GetComponent<MeshRenderer>();
         meshFilter = GetComponent<MeshFilter>();
 
-        // Read xml prototypes.
-        overlays = OverlayDescriptor.ReadPrototypes(xmlFileName);
-
-        // Read LUA.
-        UserData.RegisterAssembly();
-        string scriptFile = System.IO.Path.Combine(
-            UnityEngine.Application.streamingAssetsPath,
-            System.IO.Path.Combine("Overlay", LUAFileName));
-        string scriptTxt = System.IO.File.ReadAllText(scriptFile);
-        
-        script = new Script();
-        script.DoString(scriptTxt);
-
-        // TODO: Code needs rework
-        Type type = typeof(ModUtils);
-        script.Globals[type.Name] = type;
+        overlayColorMapLookup = new Dictionary<string, Dictionary<int, Color>>();
 
         // Build GUI.
         CreateGUI();
@@ -385,21 +374,13 @@ public class OverlayMap : MonoBehaviour
         GenerateMesh();
         GenerateColorMap();
 
-        // Size in pixels of overlay texture and create texture.
-        int textureWidth = sizeX * pixelsPerTileX;
-        int textureHeight = sizeY * pixelsPerTileY;
-        texture = new Texture2D(textureWidth, textureHeight);
-        texture.wrapMode = TextureWrapMode.Clamp;
-
         // Set material.
         Material mat = Resources.Load<Material>("Shaders/Transparent-Diffuse");
         meshRenderer.material = mat;
-        if (mat == null || meshRenderer == null || texture == null)
+        if (mat == null || meshRenderer == null)
         {
             Debug.ULogErrorChannel("OverlayMap", "Material or renderer is null. Failing.");
         }
-
-        meshRenderer.material.mainTexture = texture;
 
         initialized = true;
     }
@@ -413,17 +394,17 @@ public class OverlayMap : MonoBehaviour
         colorMapArray = ColorMap(ColorMapSG, 255);
 
         // Colormap texture.
-        int textureWidth = colorMapArray.Length * pixelsPerTileX;
-        int textureHeight = pixelsPerTileY;
+        int textureWidth = colorMapArray.Length * colorMapWidth;
+        int textureHeight = colorMapWidth;
         colorMapTexture = new Texture2D(textureWidth, textureHeight);
         
         // Loop over each color in the palette and build a noisy texture.
         int n = 0;
         foreach (Color32 baseColor in colorMapArray)
         {
-            for (int y = 0; y < pixelsPerTileY; y++)
+            for (int y = 0; y < colorMapWidth; y++)
             {
-                for (int x = 0; x < pixelsPerTileX; x++)
+                for (int x = 0; x < colorMapWidth; x++)
                 {
                     Color colorCopy = baseColor;
                     colorCopy.a = transparency;
@@ -432,7 +413,7 @@ public class OverlayMap : MonoBehaviour
                     colorCopy.r += UnityEngine.Random.Range(-0.03f, 0.03f);
                     colorCopy.b += UnityEngine.Random.Range(-0.03f, 0.03f);
                     colorCopy.g += UnityEngine.Random.Range(-0.03f, 0.03f);
-                    colorMapTexture.SetPixel((n * pixelsPerTileX) + x, y, colorCopy);
+                    colorMapTexture.SetPixel((n * colorMapWidth) + x, y, colorCopy);
                 }
             }
 
@@ -452,30 +433,48 @@ public class OverlayMap : MonoBehaviour
         {
             Debug.ULogErrorChannel("OverlayMap", "No color map texture setted!");
         }
+        
+        if (!overlayColorMapLookup.ContainsKey(currentOverlay))
+        {
+            overlayColorMapLookup.Add(currentOverlay, new Dictionary<int, Color>());
+        }
 
+        Dictionary<int, Color> colorMapLookup = overlayColorMapLookup[currentOverlay];
+
+        // Size in pixels of overlay texture and create texture.
+        int textureWidth = sizeX;
+        int textureHeight = sizeY;
+        Color[] pixels = new Color[textureHeight * textureWidth];
+        
         for (int y = 0; y < sizeY; y++)
         {
             for (int x = 0; x < sizeX; x++)
             {
                 float v = valueAt(x, y, WorldController.Instance.cameraController.CurrentLayer);
                 Debug.Assert(v >= 0 && v < 256, "v >= 0 && v < 256");
-                Graphics.CopyTexture(
-                    colorMapTexture,
-                    0,
-                    0,
-                    ((int)v % 256) * pixelsPerTileX,
-                    0,
-                    pixelsPerTileX,
-                    pixelsPerTileY,
-                    texture,
-                    0,
-                    0,
-                    x * pixelsPerTileX,
-                    y * pixelsPerTileY);
+
+                int sampleX = ((int)v % 256) * colorMapWidth;
+
+                if (!colorMapLookup.ContainsKey(sampleX))
+                {
+                    colorMapLookup.Add(sampleX, colorMapTexture.GetPixel(sampleX, 0));
+                }
+
+                Color pixel = colorMapLookup[sampleX];
+                int tilePixelIndex = (y * sizeX) + x;
+                pixels[tilePixelIndex] = pixel;
             }
         }
 
-        texture.Apply(true);
+        texture = new Texture2D(textureWidth, textureHeight)
+        {
+            filterMode = FilterMode.Point,
+            wrapMode = TextureWrapMode.Clamp
+        };
+
+        texture.SetPixels(pixels);
+        texture.Apply();
+        meshRenderer.material.mainTexture = texture;
     }
 
     /// <summary>
@@ -560,12 +559,16 @@ public class OverlayMap : MonoBehaviour
         textView.GetComponent<UnityEngine.UI.Text>().fontSize = 14;
         textView.GetComponent<UnityEngine.UI.Text>().font = Resources.GetBuiltinResource<Font>("Arial.ttf");
 
-        List<string> options = new List<string> { "None" };
-        options.AddRange(overlays.Keys);
+        List<string> options = new List<string> { LocalizationTable.GetLocalization("overlay_none") };
+        List<string> types = new List<string> { "None" };
+        foreach (OverlayDescriptor descr in PrototypeManager.Overlay.Values)
+        {
+            options.Add(descr.Name);
+            types.Add(descr.Type);
+        }
 
         dropdown.AddOptions(options);
-        dropdown.onValueChanged.AddListener(
-            (int idx) => { SetOverlay(dropdown.captionText.text); });
+        dropdown.onValueChanged.AddListener((index) => { SetOverlay(types[index]); });
     }
 
     private void HideGUITooltip()

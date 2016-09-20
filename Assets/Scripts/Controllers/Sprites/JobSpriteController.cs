@@ -34,7 +34,7 @@ public class JobSpriteController : BaseSpriteController<Job>
             OnCreated(job);
         }
 
-        foreach (Character character in world.characters)
+        foreach (Character character in world.CharacterManager)
         {
             if (character.MyJob != null)
             {
@@ -59,7 +59,7 @@ public class JobSpriteController : BaseSpriteController<Job>
             job.OnJobStopped -= OnRemoved;
         }
 
-        foreach (Character character in world.characters)
+        foreach (Character character in world.CharacterManager)
         {
             if (character.MyJob != null)
             {
@@ -100,13 +100,19 @@ public class JobSpriteController : BaseSpriteController<Job>
             // This job is for building a tile.
             // For now, the only tile that could be is the floor, so just show a floor sprite
             // until the graphics system for tiles is fleshed out further.
-            job_go.transform.position = new Vector3(job.tile.X, job.tile.Y, job.tile.Z);
+            job_go.transform.position = job.tile.Vector3;
             sr.sprite = SpriteManager.GetSprite("Tile", "Solid");
+            sr.color = new Color32(128, 255, 128, 192);
+        }
+        else if (job.JobDescription.Contains("deconstruct"))
+        {
+            sr.sprite = SpriteManager.GetSprite("UI", "CursorCircle");
+            sr.color = Color.red;
+            job_go.transform.position = job.tile.Vector3;
         }
         else
         {
             // This is a normal furniture job.
-            job_go.transform.position = new Vector3(job.tile.X + ((job.buildablePrototype.Width - 1) / 2f), job.tile.Y + ((job.buildablePrototype.Height - 1) / 2f), job.tile.Z);
             if (job.buildablePrototype.GetType().ToString() == "Furniture")
             {
                 sr.sprite = fsc.GetSpriteForFurniture(job.JobObjectType);
@@ -115,9 +121,11 @@ public class JobSpriteController : BaseSpriteController<Job>
             {
                 sr.sprite = usc.GetSpriteForUtility(job.JobObjectType);
             }
+
+            job_go.transform.position = job.tile.Vector3 + ImageUtils.SpritePivotOffset(sr.sprite);
+            sr.color = new Color32(128, 255, 128, 64);
         }
 
-        sr.color = new Color(0.5f, 1f, 0.5f, 0.25f);
         sr.sortingLayerName = "Jobs";
 
         // FIXME: This hardcoding is not ideal!  <== Understatement

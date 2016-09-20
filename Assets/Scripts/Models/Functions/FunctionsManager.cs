@@ -23,6 +23,7 @@ public class FunctionsManager
         actions.Add("TileType", new LuaFunctions());
         actions.Add("Quest", new LuaFunctions());
         actions.Add("ScheduledEvent", new LuaFunctions());
+        actions.Add("Overlay", new LuaFunctions());
     }
 
     /// <summary>
@@ -89,6 +90,15 @@ public class FunctionsManager
     }
 
     /// <summary>
+    /// Gets the overlay Lua Functions.
+    /// </summary>
+    /// <value>The overlay Lua Functions.</value>
+    public static LuaFunctions Overlay
+    {
+        get { return Get("Overlay"); }
+    }
+
+    /// <summary>
     /// Get the Lua Functions for the specified name.
     /// </summary>
     /// <param name="name">The functions key.</param>
@@ -105,25 +115,5 @@ public class FunctionsManager
         }
 
         return null;
-    }
-
-    // TODO: Move this function to a better place
-    public static void JobComplete_FurnitureBuilding(Job theJob)
-    {
-        WorldController.Instance.World.PlaceFurniture(theJob.JobObjectType, theJob.tile);
-
-        // FIXME: I don't like having to manually and explicitly set
-        // flags that prevent conflicts. It's too easy to forget to set/clear them!
-        theJob.tile.PendingBuildJob = null;
-    }
-
-    // TODO: Move this function to a better place
-    public static void JobComplete_UtilityBuilding(Job theJob)
-    {
-        WorldController.Instance.World.PlaceUtility(theJob.JobObjectType, theJob.tile);
-
-        // FIXME: I don't like having to manually and explicitly set
-        // flags that preven conflicts. It's too easy to forget to set/clear them!
-        theJob.tile.PendingBuildJob = null;
     }
 }

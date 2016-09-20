@@ -159,7 +159,7 @@ namespace ProjectPorcupine.PowerNetwork
         private bool IsNewThresholdReached(float oldAccumulatedPower)
         {
             int thresholdMovingDirection = oldAccumulatedPower < accumulatedPower ? 1 : -1;
-            int nextThesholdIndex = (currentThresholdIndex + thresholdMovingDirection).Clamp(0, capacityThresholds.Length);
+            int nextThesholdIndex = (currentThresholdIndex + thresholdMovingDirection).Clamp(0, capacityThresholds.Length - 1);
             double nextThreshold = capacityThresholds[nextThesholdIndex];
 
             if ((thresholdMovingDirection > 0 && accumulatedPower >= nextThreshold * Capacity) ||

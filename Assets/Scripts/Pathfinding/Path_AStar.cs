@@ -25,7 +25,7 @@ public class Path_AStar
         this.path = path;
     }
 
-    public Path_AStar(World world, Tile tileStart, Tile tileEnd, string type = null, int desiredAmount = 0, bool canTakeFromStockpile = false, bool lookingForFurn = false)
+    public Path_AStar(World world, Tile tileStart, Tile tileEnd, string type = null, int desiredAmount = 0, bool canTakeFromStockpile = false, bool lookingForFurn = false, bool adjacentOkay = false)
     {
         // if tileEnd is null, then we are simply scanning for the nearest Type.
         // We can do this by ignoring the heuristic component of AStar, which basically
@@ -59,12 +59,21 @@ public class Path_AStar
         // if tileEnd is null, then we are simply looking for an inventory object
         // so just set goal to null.
         Path_Node<Tile> goal = null;
+        List<Path_Node<Tile>> neighbors = new List<Path_Node<Tile>>();
         if (tileEnd != null)
         {
             if (nodes.ContainsKey(tileEnd) == false)
             {
                 Debug.ULogErrorChannel("Path_AStar", "The ending tile isn't in the list of nodes!");
                 return;
+            }
+
+            if (adjacentOkay)
+            {
+                foreach (Tile tile in tileEnd.GetNeighbours())
+                {
+                    neighbors.Add(nodes[tile]);
+                }
             }
 
             goal = nodes[tileEnd];
@@ -99,7 +108,7 @@ public class Path_AStar
             // If we have a POSITIONAL goal, check to see if we are there.
             if (goal != null)
             {
-                if (current == goal)
+                if (current == goal || (adjacentOkay && neighbors.Contains(current)))
                 {
                     Reconstruct_path(came_From, current);
                     return;
