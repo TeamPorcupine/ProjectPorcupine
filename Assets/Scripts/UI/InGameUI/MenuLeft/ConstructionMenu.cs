@@ -228,7 +228,7 @@ public class ConstructionMenu : MonoBehaviour
             };
 
             Image image = gameObject.transform.GetChild(0).GetComponentsInChildren<Image>().First();
-            image.sprite = SpriteManager.GetSprite("Tile", tileType.Type);
+            image.sprite = SpriteManager.GetSprite("Tile", tileType.Name);
         }
     }
 
