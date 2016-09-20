@@ -51,9 +51,13 @@ public class World : IXmlSerializable
     // A three-dimensional array to hold our tile data.
     private Tile[,,] tiles;
 
-    // Holds all furnitures with eventactions, and distributes them between visible and invisible
+    // Holds all furnitures with eventactions, and distributes them between visible and invisible.
     private List<Furniture> eventFurnitures;
+
+    // A temporary list of all visible furniture. Gets updated when camera moves.
     private List<Furniture> eventFurnituresVisible;
+
+    // A temporary list of all invisible furniture. Gets updated when camera moves.
     private List<Furniture> eventFurnituresInvisible;
 
     /// <summary>
@@ -144,25 +148,41 @@ public class World : IXmlSerializable
         TimeManager.Instance.FixedFrequencyUnpaused += TickFixedFrequency;
     }
 
+    /// <summary>
+    /// Calls update on characters.
+    /// Also calls "OnFastUpdate" EventActions on visible furniture.
+    /// </summary>
     public void TickEveryFrame(float deltaTime)
     {
         CharacterManager.Update(deltaTime);
 
-        // Update Furniture (fast track)
+        // Update Furniture (fast track) but only if visible to the camera
         foreach (Furniture furniture in eventFurnituresVisible)
         {
             furniture.EveryFrameUpdate(deltaTime);
         }
     }
 
+    /// <summary>
+    /// Fixed update that runs at 5 FPS.
+    /// Calls update on temperature and powernetwork.
+    /// Also calls "OnUpdate" EventActions on all furniture and 
+    /// "OnFastUpdate" EventActions on invisible furniture.
+    /// </summary>
     public void TickFixedFrequency(float deltaTime)
     {
-        // Update Furniture outside of the camera view
-        // TODO: Further optimization could divide furnituresInvisible in multiple lists
+        // TODO: Further optimization could divide eventFurnitures in multiple lists
         //       and update one of the lists each frame
+
+        // Update furniture outside of the camera view
         foreach (Furniture furniture in eventFurnituresInvisible)
         {
             furniture.EveryFrameUpdate(deltaTime);
+        }
+
+        // Update all furniture with EventActions
+        foreach (Furniture furniture in eventFurnitures)
+        {
             furniture.FixedFrequencyUpdate(deltaTime);
         }
 
