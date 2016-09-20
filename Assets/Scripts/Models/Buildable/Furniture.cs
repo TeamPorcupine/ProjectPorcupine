@@ -34,6 +34,11 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// </summary>
     private string getSpriteNameAction;
 
+    /// <summary>
+    /// This action is called to get the progress info based on the furniture parameters.
+    /// </summary>
+    private string getProgressInfoNameAction;
+
     private List<string> replaceableFurniture = new List<string>();
 
     /// <summary>
@@ -130,6 +135,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
 
         isEnterableAction = other.isEnterableAction;
         getSpriteNameAction = other.getSpriteNameAction;
+        getProgressInfoNameAction = other.getProgressInfoNameAction;
 
         if (other.PowerConnection != null)
         {
@@ -207,7 +213,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// </summary>
     /// <value>The event actions that is called on update.</value>
     public EventActions EventActions { get; private set; }
-
+    
     /// <summary>
     /// Gets the Connection that the furniture has to the power system.
     /// </summary>
@@ -443,11 +449,24 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     }
 
     /// <summary>
+    /// This function is called to update the furniture animation in lua.
+    /// This will be called every frame and should be used carefully.
+    /// </summary>
+    /// <param name="deltaTime">The time since the last update was called.</param>
+    public void EveryFrameUpdate(float deltaTime)
+    {
+        if (EventActions != null)
+        {
+            EventActions.Trigger("OnFastUpdate", this, deltaTime);
+        }
+    }
+
+    /// <summary>
     /// This function is called to update the furniture. This will also trigger EventsActions.
     /// This checks if the furniture is a PowerConsumer, and if it does not have power it cancels its job.
     /// </summary>
     /// <param name="deltaTime">The time since the last update was called.</param>
-    public void Update(float deltaTime)
+    public void FixedFrequencyUpdate(float deltaTime)
     {
         if (PowerConnection != null && PowerConnection.IsPowerConsumer && HasPower() == false)
         {
@@ -676,6 +695,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                     break;
                 case "GetSpriteName":
                     getSpriteNameAction = reader.GetAttribute("FunctionName");
+                    break;
+                case "GetProgressInfo":
+                    getProgressInfoNameAction = reader.GetAttribute("functionName");
                     break;
                 case "JobWorkSpotOffset":
                     Jobs.ReadWorkSpotOffset(reader);
@@ -977,6 +999,19 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         return string.Empty;
     }
 
+    public string GetProgressInfo()
+    {
+        if (string.IsNullOrEmpty(getProgressInfoNameAction))
+        {
+            return string.Empty;
+        }
+        else
+        {
+            DynValue ret = FunctionsManager.Furniture.Call(getProgressInfoNameAction, this);
+            return ret.String;
+        }
+    }
+
     public IEnumerable<string> GetAdditionalInfo()
     {
         if (IsWorkshop)
@@ -1008,6 +1043,8 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                 yield return string.Format("Power Accumulated: {0} / {1}", PowerConnection.AccumulatedPower, PowerConnection.Capacity);
             }
         }
+
+        yield return GetProgressInfo();
     }
 
     /// <summary>

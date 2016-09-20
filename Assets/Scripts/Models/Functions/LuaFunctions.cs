@@ -46,6 +46,16 @@ public class LuaFunctions
     }
 
     /// <summary>
+    /// Determines whether there is a Lua global with the given name.
+    /// </summary>
+    /// <returns><c>true</c> if there is a global with the given name; otherwise, <c>false</c>.</returns>
+    /// <param name="name">The global name.</param>
+    public bool HasGlobal(string name)
+    {
+        return name != null && script.Globals[name] != null;
+    }
+
+    /// <summary>
     /// Loads the script from the specified text.
     /// </summary>
     /// <param name="text">The code text.</param>

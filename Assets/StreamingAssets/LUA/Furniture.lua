@@ -382,7 +382,7 @@ end
 function PowerGenerator_UpdateAction(furniture, deltatime)
     if (furniture.Jobs.Count < 1 and furniture.Parameters["burnTime"].ToFloat() == 0) then
         furniture.PowerConnection.OutputRate = 0
-        local itemsDesired = {Inventory.__new("Uranium", 0, 5)}
+        local itemsDesired = {Inventory.__new("Power Cell", 0, 1)}
 
         local job = Job.__new(
             furniture.Jobs.WorkSpotTile,
@@ -413,6 +413,18 @@ end
 function PowerGenerator_JobComplete(job)
     job.buildable.Parameters["burnTime"].SetValue(job.buildable.Parameters["burnTimeRequired"].ToFloat())
     job.buildable.PowerConnection.OutputRate = 5
+end
+
+function PowerGenerator_FuelInfo(furniture)
+    local curBurn = furniture.Parameters["burnTime"].ToFloat()
+	local maxBurn = furniture.Parameters["burnTimeRequired"].ToFloat()
+
+	local perc = 0
+	if (maxBurn != 0) then
+		perc = curBurn * 100 / maxBurn
+	end
+
+    return "Fuel: " .. string.format("%.1f", perc) .. "%"
 end
 
 function LandingPad_Test_CallTradeShip(furniture, character)
