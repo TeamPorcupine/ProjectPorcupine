@@ -1105,7 +1105,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         {
             int tmp = Height;
             Height = Width;
-            Width = Height;
+            Width = tmp;
         }
     }
     

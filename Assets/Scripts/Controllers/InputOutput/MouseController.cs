@@ -218,12 +218,11 @@ public class MouseController
             || PrototypeManager.Furniture.Get(bmc.buildModeType).Height > 1))
         {
             Furniture proto = PrototypeManager.Furniture.Get(bmc.buildModeType);
+            Sprite sprite = fsc.GetSpriteForFurniture(proto.Type);
+            proto.SetRotation(bmc.GetCurrentPreviewRotation());
 
             // Use the center of the Furniture.
-            currPlacingPosition = new Vector3(
-                currFramePosition.x - ((proto.Width - 1f) / 2f),
-                currFramePosition.y - ((proto.Height - 1f) / 2f),
-                WorldController.Instance.cameraController.CurrentLayer);
+            currPlacingPosition = currFramePosition - ImageUtils.SpritePivotOffset(sprite, bmc.GetCurrentPreviewRotation());
         }
         else
         {
@@ -581,7 +580,7 @@ public class MouseController
         }
 
         go.name = furnitureType + "_p_" + t.X + "_" + t.Y + "_" + t.Z;
-        go.transform.position = t.Vector3 + ImageUtils.SpritePivotOffset(sr.sprite) + ImageUtils.SpriteRotationOffset(sr.sprite, bmc.GetCurrentPreviewRotation());
+        go.transform.position = t.Vector3 + ImageUtils.SpritePivotOffset(sr.sprite, bmc.GetCurrentPreviewRotation());
         go.transform.Rotate(0, 0, bmc.GetCurrentPreviewRotation());
     }
 

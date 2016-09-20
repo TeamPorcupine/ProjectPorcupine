@@ -11,23 +11,19 @@ using UnityEngine;
 
 public static class ImageUtils
 {
-    public static Vector3 SpritePivotOffset(Sprite sprite)
+    public static Vector3 SpritePivotOffset(Sprite sprite, float rotation)
     {
-        return new Vector3((sprite.pivot.x / sprite.pixelsPerUnit) - 0.5f, (sprite.pivot.y / sprite.pixelsPerUnit) - 0.5f, 0);
-    }
+        Vector3 offset;
 
-    // Used to adjust postion of the sprite when the spirte rotate to fit to the grid.
-    public static Vector3 SpriteRotationOffset(Sprite sprite, float rotation)
-    {
-        Vector3 rotationOffset = new Vector3(0, 0, 0);
-        if (sprite.rect.width != sprite.rect.height)
+        if (rotation == 90 || rotation == -90 || rotation == -270 || rotation == 270)
         {
-            if (rotation == 90 || rotation == -90 || rotation == -270 || rotation == 270)
-            {
-                rotationOffset = new Vector3(0.5f, 0.5f, 0);
-            }
+            offset = new Vector3((sprite.pivot.y / sprite.pixelsPerUnit) - 0.5f, (sprite.pivot.x / sprite.pixelsPerUnit) - 0.5f, 0);
+        }
+        else
+        {
+            offset = new Vector3((sprite.pivot.x / sprite.pixelsPerUnit) - 0.5f, (sprite.pivot.y / sprite.pixelsPerUnit) - 0.5f, 0);
         }
 
-        return rotationOffset;
+        return offset;
     }
 }
