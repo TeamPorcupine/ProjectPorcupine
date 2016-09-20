@@ -281,7 +281,7 @@ namespace ProjectPorcupine.Localization
                     throw new Exception("SOMETHING WENT HORRIBLY WRONG AT DOWNLOADING LOCALIZATION!");
                 }
 
-                if (file.Name != "en_US.lang")
+                if (file.Name != "en_US.lang" && file.Name != "en_US.lang.meta")
                 {
                     file.Delete();
                 }
