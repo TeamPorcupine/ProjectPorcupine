@@ -15,46 +15,59 @@ using System.Xml.Serialization;
 using MoonSharp.Interpreter;
 using UnityEngine;
 
-namespace ProjectPorcupine.Rooms {
+namespace ProjectPorcupine.Rooms
+{
     [MoonSharpUserData]
-    public class Room : IXmlSerializable {
+    public class Room : IXmlSerializable
+    {
         // Dictionary with the amount of gas in room stored in preasure(in atm) multiplyed by number of tiles.
         private Dictionary<string, float> atmosphericGasses;
         private Dictionary<string, string> deltaGas;
 
         private List<Tile> tiles;
-       
-        public Room() {
+        private float temperature;
+
+        public Room()
+        {
             tiles = new List<Tile>();
             atmosphericGasses = new Dictionary<string, float>();
             deltaGas = new Dictionary<string, string>();
         }
 
-        public int ID {
-            get {
+        public int ID
+        {
+            get
+            {
                 return World.Current.RoomManager.GetRoomID(this);
             }
         }
 
-        public List<Tile> getTiles {
-            get {
-                return tiles;
-            }
-        }
-
-        public int TileCount {
-            get {
+        public int TileCount
+        {
+            get
+            {
                 return tiles.Count;
             }
         }
 
-        public void AssignTile(Tile tile) {
-            if (tiles.Contains(tile)) {
+        public float Temperature
+        {
+            get
+            {
+                return temperature;
+            }
+        }
+
+        public void AssignTile(Tile tile)
+        {
+            if (tiles.Contains(tile))
+            {
                 // This tile already in this room.
                 return;
             }
 
-            if (tile.Room != null) {
+            if (tile.Room != null)
+            {
                 // Belongs to some other room.
                 tile.Room.tiles.Remove(tile);
             }
@@ -63,8 +76,10 @@ namespace ProjectPorcupine.Rooms {
             tiles.Add(tile);
         }
 
-        public void UnassignTile(Tile tile) {
-            if (tiles.Contains(tile)) {
+        public void UnassignTile(Tile tile)
+        {
+            if (tiles.Contains(tile))
+            {
                 // This tile in not in this room.
                 return;
             }
@@ -73,8 +88,10 @@ namespace ProjectPorcupine.Rooms {
             tiles.Remove(tile);
         }
 
-        public void ReturnTilesToOutsideRoom() {
-            for (int i = 0; i < tiles.Count; i++) {
+        public void ReturnTilesToOutsideRoom()
+        {
+            for (int i = 0; i < tiles.Count; i++)
+            {
                 // Assign to outside.
                 tiles[i].Room = World.Current.RoomManager.OutsideRoom;
             }
@@ -82,56 +99,70 @@ namespace ProjectPorcupine.Rooms {
             tiles.Clear();
         }
 
-        public bool IsOutsideRoom() {
+        public bool IsOutsideRoom()
+        {
             return this == World.Current.RoomManager.OutsideRoom;
         }
 
         // Changes gas by amount in pressure (atm) per tile, evenly distributed over all gases present
         // Possibly deprecated. Use MoveGasTo(room, amount)
-        public void ChangeGas(float amount) {
-            if (IsOutsideRoom()) {
+        public void ChangeGas(float amount)
+        {
+            if (IsOutsideRoom())
+            {
                 return;
             }
 
             List<string> names = new List<string>(atmosphericGasses.Keys);
-            foreach (string name in names) {
+            foreach (string name in names)
+            {
                 float fraction = GetGasFraction(name);
                 ChangeGas(name, amount * fraction);
             }
         }
 
-        public List<Tile> FindExits() {
+        public List<Tile> FindExits()
+        {
             List<Tile> exits = new List<Tile>();
-            foreach (Tile tile in tiles) {
+            foreach (Tile tile in tiles)
+            {
                 Tile[] neighbours = tile.GetNeighbours();
-                foreach (Tile tile2 in neighbours) {
-                    if (tile2 != null && tile2.Furniture != null) {
-                        if (tile2.Furniture.IsExit()) {
+                foreach (Tile tile2 in neighbours)
+                {
+                    if (tile2 != null && tile2.Furniture != null)
+                    {
+                        if (tile2.Furniture.IsExit())
+                        {
                             // We have found an exit
                             exits.Add(tile2);
                         }
-                    }
+                    } 
                 }
             }
 
             return exits;
         }
 
-        public Dictionary<Tile, Room> GetNeighbours() {
+        public Dictionary<Tile, Room> GetNeighbours()
+        {
             Dictionary<Tile, Room> neighboursRooms = new Dictionary<Tile, Room>();
 
             List<Tile> exits = this.FindExits();
 
-            foreach (Tile tile in exits) {
+            foreach (Tile tile in exits)
+            {
                 // Loop over the exits to find a different room
                 Tile[] neighbours = tile.GetNeighbours();
-                foreach (Tile neighbor in neighbours) {
-                    if (neighbor == null || neighbor.Room == null) {
+                foreach (Tile neighbor in neighbours)
+                {
+                    if (neighbor == null || neighbor.Room == null)
+                    {
                         continue;
                     }
 
                     // We have found a room
-                    if (neighbor.Room != this) {
+                    if (neighbor.Room != this)
+                    {
                         neighboursRooms[neighbor] = neighbor.Room;
                     }
                 }
@@ -142,49 +173,62 @@ namespace ProjectPorcupine.Rooms {
 
         // Changes gas by an amount in preasure(in atm) multiplyed by number of tiles
         // TODO check this method, it doesn't seem like the above comment is accurate.
-        public void ChangeGas(string name, float amount) {
-            if (IsOutsideRoom()) {
+        public void ChangeGas(string name, float amount)
+        {
+            if (IsOutsideRoom())
+            {
                 return;
             }
 
-            if (atmosphericGasses.ContainsKey(name)) {
+            if (atmosphericGasses.ContainsKey(name))
+            {
                 atmosphericGasses[name] += amount;
-                if (amount.IsZero()) {
+                if (amount.IsZero())
+                {
                     deltaGas[name] = "=";
                 }
-                else if (Mathf.Sign(amount) == 1) {
+                else if (Mathf.Sign(amount) == 1)
+                {
                     deltaGas[name] = "+";
                 }
-                else {
+                else
+                {
                     deltaGas[name] = "-";
                 }
             }
-            else {
+            else
+            {
                 atmosphericGasses[name] = amount;
                 deltaGas[name] = "=";
             }
 
-            if (atmosphericGasses[name] < 0) {
+            if (atmosphericGasses[name] < 0)
+            {
                 atmosphericGasses[name] = 0;
             }
         }
 
-        public string ChangeInGas(string name) {
-            if (deltaGas.ContainsKey(name)) {
+        public string ChangeInGas(string name)
+        {
+            if (deltaGas.ContainsKey(name))
+            {
                 return deltaGas[name];
             }
 
             return "=";
         }
 
-        public void EqualiseGas(Room otherRoom, float leakFactor) {
-            if (otherRoom == null) {
+        public void EqualiseGas(Room otherRoom, float leakFactor)
+        {
+            if (otherRoom == null)
+            {
                 return;
             }
 
             List<string> gasses = this.GetGasNames().ToList();
             gasses = gasses.Union(otherRoom.GetGasNames().ToList()).ToList();
-            foreach (string gas in gasses) {
+            foreach (string gas in gasses)
+            {
                 float pressureDifference = this.GetGasPressure(gas) - otherRoom.GetGasPressure(gas);
                 this.ChangeGas(gas, (-1) * pressureDifference * leakFactor);
                 otherRoom.ChangeGas(gas, pressureDifference * leakFactor);
@@ -192,8 +236,10 @@ namespace ProjectPorcupine.Rooms {
         }
 
         // Gets absolute gas amount in pressure(in atm) multiplied by number of tiles.
-        public float GetGasAmount(string name) {
-            if (atmosphericGasses.ContainsKey(name)) {
+        public float GetGasAmount(string name)
+        {
+            if (atmosphericGasses.ContainsKey(name))
+            {
                 return atmosphericGasses[name];
             }
 
@@ -201,9 +247,11 @@ namespace ProjectPorcupine.Rooms {
         }
 
         // Gets gas amount in pressure(in atm).
-        public float GetGasPressure() {
+        public float GetGasPressure()
+        {
             float pressure = 0;
-            foreach (float p in atmosphericGasses.Values) {
+            foreach (float p in atmosphericGasses.Values)
+            {
                 pressure += p;
             }
 
@@ -211,16 +259,20 @@ namespace ProjectPorcupine.Rooms {
         }
 
         // Gets gas amount in pressure (in atm).
-        public float GetGasPressure(string name) {
-            if (atmosphericGasses.ContainsKey(name)) {
+        public float GetGasPressure(string name)
+        {
+            if (atmosphericGasses.ContainsKey(name))
+            {
                 return atmosphericGasses[name] / TileCount;
             }
 
             return 0;
         }
 
-        public float GetGasFraction(string name) {
-            if (atmosphericGasses.ContainsKey(name) == false) {
+        public float GetGasFraction(string name)
+        {
+            if (atmosphericGasses.ContainsKey(name) == false)
+            {
                 return 0;
             }
 
@@ -229,40 +281,59 @@ namespace ProjectPorcupine.Rooms {
             return totalPressure == 0 ? 0 : atmosphericGasses[name] / totalPressure;
         }
 
-        public float GetTotalGasPressure() {
+        public float GetTotalGasPressure()
+        {
             float totalPressure = 0;
 
-            foreach (float pressure in atmosphericGasses.Values) {
+            foreach (float pressure in atmosphericGasses.Values)
+            {
                 totalPressure += pressure / TileCount;
             }
 
             return totalPressure;
         }
 
-        public void MoveGasTo(Room room, float amount) {
+        public void MoveGasTo(Room room, float amount)
+        {
             List<string> names = new List<string>(atmosphericGasses.Keys);
-            foreach (string name in names) {
+            foreach (string name in names)
+            {
                 MoveGasTo(room, name, amount * GetGasFraction(name));
             }
         }
 
-        public void MoveGasTo(Room room, string name, float amount) {
+        public void MoveGasTo(Room room, string name, float amount)
+        {
             float amountMoved = Mathf.Min(amount, GetGasAmount(name));
             this.ChangeGas(name, -amountMoved);
             room.ChangeGas(name, amountMoved);
         }
 
-        public string[] GetGasNames() {
+        public float GetTemperature()
+        {
+            return temperature;
+        }
+
+        public void ChangeTemperature(float change)
+        {
+            temperature += change;
+        }
+
+        public string[] GetGasNames()
+        {
             return atmosphericGasses.Keys.ToArray();
         }
 
-        public XmlSchema GetSchema() {
+        public XmlSchema GetSchema()
+        {
             return null;
         }
 
-        public void WriteXml(XmlWriter writer) {
+        public void WriteXml(XmlWriter writer)
+        {
             // Write out gas info.
-            foreach (string k in atmosphericGasses.Keys) {
+            foreach (string k in atmosphericGasses.Keys)
+            {
                 writer.WriteStartElement("Param");
                 writer.WriteAttributeString("name", k);
                 writer.WriteAttributeString("value", atmosphericGasses[k].ToString());
@@ -270,10 +341,13 @@ namespace ProjectPorcupine.Rooms {
             }
         }
 
-        public void ReadXml(XmlReader reader) {
+        public void ReadXml(XmlReader reader)
+        {
             // Read gas info.
-            if (reader.ReadToDescendant("Param")) {
-                do {
+            if (reader.ReadToDescendant("Param"))
+            {
+                do
+                {
                     string k = reader.GetAttribute("name");
                     float v = float.Parse(reader.GetAttribute("value"));
                     atmosphericGasses[k] = v;
@@ -282,14 +356,18 @@ namespace ProjectPorcupine.Rooms {
             }
         }
 
-        public void CopyGasPreasure(Room other, int sizeOfOtherRoom) {
-            foreach (string n in other.atmosphericGasses.Keys) {
+        public void CopyGasPreasure(Room other, int sizeOfOtherRoom)
+        {
+            foreach (string n in other.atmosphericGasses.Keys)
+            {
                 this.atmosphericGasses[n] = other.atmosphericGasses[n] / sizeOfOtherRoom * this.TileCount;
             }
         }
 
-        public void MoveGas(Room other) {
-            foreach (string n in other.atmosphericGasses.Keys) {
+        public void MoveGas(Room other)
+        {
+            foreach (string n in other.atmosphericGasses.Keys)
+            {
                 this.ChangeGas(n, other.atmosphericGasses[n]);
             }
         }
