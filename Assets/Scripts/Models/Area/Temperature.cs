@@ -250,7 +250,7 @@ public class Temperature
     /// <returns>Actual index for array access.</returns>
     private int GetIndex(int x, int y, int z) 
     {
-        return (z * sizeX * sizeY) + y * sizeX + x;
+        return (z * sizeX * sizeY) + (y * sizeX) + x;
     }
 
     /// <summary>
