@@ -1144,7 +1144,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     // <param name="rotation">The z rotation.</param>
     public void SetRotation(float rotation)
     {
-        if (Rotation != rotation)
+        if (Math.Abs(Rotation - rotation) == 90 || Math.Abs(Rotation - rotation) == 270)
         {
             Rotation = rotation;
             int tmp = Height;
