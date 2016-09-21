@@ -110,6 +110,11 @@ public class JobSpriteController : BaseSpriteController<Job>
             sr.color = Color.red;
             job_go.transform.position = job.tile.Vector3;
         }
+        else if (job.JobDescription.Contains("mine"))
+        {
+            sr.sprite = SpriteManager.GetSprite("UI", "MiningIcon");
+            job_go.transform.position = job.tile.Vector3;
+        }
         else
         {
             // This is a normal furniture job.

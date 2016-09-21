@@ -627,38 +627,20 @@ function Door_GetSpriteName(furniture)
 end
 
 function OreMine_CreateMiningJob(furniture, character)
-    -- Get tiles that could be worked on
-    local tiles = furniture.tile.GetNeighbours(false)
-    local tile = furniture.tile
-
-    -- Check to see if the object's tile can be entered and if not
-    -- find a neighboring tile that can.
-    if (tile.MovementCost == 0) then
-        for k, t in pairs(tiles) do
-            if (t.MovementCost ~= 0) then
-                tile = t
-                break
-            end
-        end
-    end
-
-    if (tile.MovementCost == 0) then
-        -- There is still no way to get to the object
-        ModUtils.ULog("Create Mining Job - Unable to reach object to mine")
-        return
-    end
-
-    -- Creates job for a character to go and "mine" the Ore
     local job = Job.__new(
-		tile,
-		nil,
+		furniture.tile,
+		"astro_wall",
 		nil,
 		0,
 		nil,
 		Job.JobPriority.High,
-		false
+		false,
+        false,
+        false,
+        true
 	)
 
+    job.JobDescription = "mine ore"
     job.RegisterJobWorkedCallback("OreMine_OreMined")
     furniture.Jobs.Add(job)
     ModUtils.ULog("Create Mining Job - Mining Job Created")

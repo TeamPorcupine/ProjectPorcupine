@@ -59,7 +59,7 @@ public class Job : ISelectable, IPrototypable
     {
     }
 
-    public Job(Tile tile, string jobObjectType, Action<Job> jobComplete, float jobTime, Inventory[] inventoryRequirements, Job.JobPriority jobPriority, bool jobRepeats = false, bool need = false, bool critical = false)
+    public Job(Tile tile, string jobObjectType, Action<Job> jobComplete, float jobTime, Inventory[] inventoryRequirements, Job.JobPriority jobPriority, bool jobRepeats = false, bool need = false, bool critical = false, bool adjacent = false)
     {
         this.tile = tile;
         this.JobObjectType = jobObjectType;
@@ -69,6 +69,7 @@ public class Job : ISelectable, IPrototypable
         this.IsNeed = need;
         this.Critical = critical;
         this.Priority = jobPriority;
+        this.adjacent = adjacent;
         this.JobDescription = "job_error_missing_desc";
 
         jobWorkedLua = new List<string>();
