@@ -110,9 +110,9 @@ public class BuildModeController
             string furnitureType = buildModeType;
 
             if ( 
-                WorldController.Instance.World.IsFurniturePlacementValid(furnitureType, tile) &&
+                WorldController.Instance.World.IsFurniturePlacementValid(furnitureType, tile, currentPreviewRotation) &&
                 WorldController.Instance.World.IsFurnitureWorkSpotClear(furnitureType, tile) && 
-                DoesBuildJobOverlapExistingBuildJob(tile, furnitureType) == false)
+                DoesBuildJobOverlapExistingBuildJob(tile, furnitureType, currentPreviewRotation) == false)
             {
                 // This tile position is valid for this furniture
 
@@ -147,7 +147,7 @@ public class BuildModeController
                 // Add the job to the queue or build immediately if in Dev mode
                 if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
                 {
-                    WorldController.Instance.World.PlaceFurniture(job.JobObjectType, job.tile);
+                    WorldController.Instance.World.PlaceFurniture(job.JobObjectType, job.tile, true, currentPreviewRotation);
                 }
                 else
                 {
@@ -304,9 +304,10 @@ public class BuildModeController
         }
     }
 
-    public bool DoesBuildJobOverlapExistingBuildJob(Tile t, string furnitureType)
+    public bool DoesBuildJobOverlapExistingBuildJob(Tile t, string furnitureType, float rotation = 0)
     {
         Furniture proto = PrototypeManager.Furniture.Get(furnitureType);
+        proto.SetRotation(rotation);
 
         for (int x_off = t.X; x_off < (t.X + proto.Width); x_off++)
         {

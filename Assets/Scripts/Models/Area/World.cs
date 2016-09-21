@@ -241,10 +241,11 @@ public class World : IXmlSerializable
 
     public void JobComplete_FurnitureBuilding(Job theJob)
     {
-        // Let our workspot tile know it is no longer reserved for us
-        UnreserveTileAsWorkSpot((Furniture)theJob.buildablePrototype, theJob.tile);
+        Furniture furn = (Furniture)theJob.buildablePrototype;
 
-        PlaceFurniture(theJob.JobObjectType, theJob.tile);
+        // Let our workspot tile know it is no longer reserved for us
+        UnreserveTileAsWorkSpot(furn, theJob.tile);
+        PlaceFurniture(theJob.JobObjectType, theJob.tile, true, furn.Rotation);
 
         // FIXME: I don't like having to manually and explicitly set
         // flags that prevent conflicts. It's too easy to forget to set/clear them!
@@ -339,9 +340,11 @@ public class World : IXmlSerializable
         tileGraph = null;
     }
 
-    public bool IsFurniturePlacementValid(string furnitureType, Tile t)
+    public bool IsFurniturePlacementValid(string furnitureType, Tile t, float rotation = 0)
     {
-        return PrototypeManager.Furniture.Get(furnitureType).IsValidPosition(t);
+        Furniture furn = PrototypeManager.Furniture.Get(furnitureType);
+        furn.SetRotation(rotation);
+        return furn.IsValidPosition(t);
     }
 
     public bool IsFurnitureWorkSpotClear(string furnitureType, Tile tile)

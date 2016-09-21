@@ -568,9 +568,9 @@ public class MouseController
         sr.sortingLayerName = "Jobs";
         sr.sprite = fsc.GetSpriteForFurniture(furnitureType);
 
-        if (WorldController.Instance.World.IsFurniturePlacementValid(furnitureType, t) &&
+        if (WorldController.Instance.World.IsFurniturePlacementValid(furnitureType, t, bmc.GetCurrentPreviewRotation()) &&
             WorldController.Instance.World.IsFurnitureWorkSpotClear(furnitureType, t) && 
-            bmc.DoesBuildJobOverlapExistingBuildJob(t, furnitureType) == false)
+            bmc.DoesBuildJobOverlapExistingBuildJob(t, furnitureType, bmc.GetCurrentPreviewRotation()) == false)
         {
             sr.color = new Color(0.5f, 1f, 0.5f, 0.25f);
         }
