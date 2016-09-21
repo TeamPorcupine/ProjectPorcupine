@@ -436,5 +436,10 @@ namespace ProjectPorcupine.Rooms
 
             return borderingTiles;
         }
+
+        public bool HasRoomBehavior(string behaviorKey)
+        {
+            return RoomBehaviors.ContainsKey(behaviorKey);
+        }
     }
 }

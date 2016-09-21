@@ -14,6 +14,7 @@
 function OnControl_Airlock( roomBehavior, deltaTime )
     for discard, pressureDoor in pairs(roomBehavior.ControlledFurniture["Pressure Door"]) do
         pressureDoor.Parameters["pressure_locked"].SetValue(1)
+        ModUtils.ULogWarning("Locked an Airlock Door")
         pressureDoor.UpdateOnChanged(pressureDoor)
     end
     
@@ -24,6 +25,20 @@ function OnControl_Airlock( roomBehavior, deltaTime )
             pump.Parameters["out_direction"].SetValue(0)
         end
         pump.Parameters["flow_direction_up"].SetValue(pump.Parameters["out_direction"].ToFloat())
+        pump.UpdateOnChanged(pump)
+    end
+end
+
+function PumpOut_Airlock( roomBehavior, deltaTime )
+    for discard, pump in pairs(roomBehavior.ControlledFurniture["pump_air"]) do
+        pump.Parameters["flow_direction_up"].SetValue(pump.Parameters["out_direction"].ToFloat())
+        pump.UpdateOnChanged(pump)
+    end
+end
+
+function PumpIn_Airlock( roomBehavior, deltaTime )
+    for discard, pump in pairs(roomBehavior.ControlledFurniture["pump_air"]) do
+        pump.Parameters["flow_direction_up"].SetValue(1 - pump.Parameters["out_direction"].ToFloat())
         pump.UpdateOnChanged(pump)
     end
 end

@@ -156,7 +156,7 @@
 
         <ContextMenuAction FunctionName="AirlockDoor_Toggle_Pressure_Lock" Text="Toggle Pressure Lock" RequireCharacterSelected="false"/>
 
-        <IsEnterable FunctionName="IsEnterable_Door" />
+        <IsEnterable FunctionName="IsEnterable_AirlockDoor" />
         
         <LocalizationCode>furn_airlock</LocalizationCode>
         <UnlocalizedDescription>furn_airlock_desc</UnlocalizedDescription>

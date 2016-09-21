@@ -422,6 +422,12 @@ namespace ProjectPorcupine.Rooms
             EventActions.Trigger("OnControl", this);
         }
 
+        [MoonSharpVisible(true)]
+        private void CallEventAction(string actionName)
+        {
+            EventActions.Trigger(actionName, this);
+        }
+
         private bool DefaultIsValidRoom(Room room)
         {
             if (room.TileCount < requiredSize) 

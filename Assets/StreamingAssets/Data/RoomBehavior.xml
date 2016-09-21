@@ -10,6 +10,8 @@
     </Requirements>
     
     <Action event="OnControl" functionName="OnControl_Airlock" />
+    <Action event="PumpOut" functionName="PumpOut_Airlock" />
+    <Action event="PumpIn" functionName="PumpIn_Airlock" />
     
     <LocalizationCode>roombehavior_airlock</LocalizationCode>
     <UnlocalizedDescription>roombehavior_airlock_desc</UnlocalizedDescription>

@@ -72,12 +72,48 @@ function OnUpdate_AirlockDoor( furniture, deltaTime )
                 adjacentRooms[count] = tile.Room
             end
         end
-        if(ModUtils.Round(adjacentRooms[1].GetTotalGasPressure(),3) == ModUtils.Round(adjacentRooms[2].GetTotalGasPressure(),3)) then
+        if (ModUtils.Round(adjacentRooms[1].GetTotalGasPressure(),3) == ModUtils.Round(adjacentRooms[2].GetTotalGasPressure(),3)) then
             OnUpdate_Door(furniture, deltaTime)
         end
     else
         OnUpdate_Door(furniture, deltaTime)
     end
+end
+
+function IsEnterable_AirlockDoor( furniture )
+	furniture.Parameters["is_opening"].SetValue(1)
+
+	if (furniture.Parameters["openness"].ToFloat() >= 1) then
+		return ENTERABILITY_YES --ENTERABILITY.Yes
+	end
+    local neighbors = furniture.Tile.GetNeighbours(false)
+    local adjacentRooms = {}
+    local pressureEqual = true;
+    local count = 0
+    for k, tile in pairs(neighbors) do
+        if (tile.Room != nil) then
+            count = count + 1
+            adjacentRooms[count] = tile.Room
+        end
+    end
+
+    if (adjacentRooms[1].HasRoomBehavior("roombehavior_airlock") or adjacentRooms[2].HasRoomBehavior("roombehavior_airlock")) then
+        local insideRoom
+        local outsideRoom
+        if(adjacentRooms[1].HasRoomBehavior("roombehavior_airlock")) then
+            insideRoom = adjacentRooms[1]
+            outsideRoom = adjacentRooms[2]
+        else
+            insideRoom = adjacentRooms[2]
+            outsideRoom = adjacentRooms[1]
+        end
+        if (insideRoom.GetTotalGasPressure() < outsideRoom.GetTotalGasPressure()) then
+            insideRoom.RoomBehaviors["roombehavior_airlock"].CallEventAction("PumpIn")
+        else
+            insideRoom.RoomBehaviors["roombehavior_airlock"].CallEventAction("PumpOut")
+        end
+    end
+    return ENTERABILITY_SOON --ENTERABILITY.Soon
 end
         
     
