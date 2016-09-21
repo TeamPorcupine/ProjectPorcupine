@@ -35,7 +35,7 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
     public void SetButtonLocation(Component item)
     {
         GameObject go = GameObject.FindGameObjectWithTag("DeleteButton");
-        go.transform.position = new Vector3(item.transform.position.x + 110f, item.transform.position.y - 8f);
+        go.transform.position = new Vector3(item.transform.position.x + 102f, item.transform.position.y - 6f);
     }
 
     public void OkayWasClicked()
