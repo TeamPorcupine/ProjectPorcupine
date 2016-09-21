@@ -19,8 +19,7 @@ using ProjectPorcupine.Rooms;
 /// https://en.wikipedia.org/wiki/Heat_equation.
 /// </summary>
 [MoonSharpUserData]
-public class Temperature
-{
+public class Temperature {
     /// <summary>
     /// Default value assigned to thermalDIffusivity at "empty" tile.
     /// DO NOT TOUCH UNLESS YOU KNOW WHAT YOU ARE DOING: MUST BE BETWEEN 0 and 1.
@@ -63,8 +62,7 @@ public class Temperature
     /// <summary>
     /// Create and Initialize arrays with default values.
     /// </summary>
-    public Temperature()
-    {
+    public Temperature() {
 
         temperature = new float[2][]
          {
@@ -87,20 +85,17 @@ public class Temperature
     /// <summary>
     /// If needed, progress physics.
     /// </summary>
-    public void Update()
-    {
+    public void Update(float deltaTime) {
         // Progress physical time (should me linked to TIme.dt at some point)
-        elapsed += Time.deltaTime;
+        elapsed += deltaTime;
 
-        if (elapsed >= updateInterval)
-        {
+        if (elapsed >= updateInterval) {
             ProgressTemperature(updateInterval);
             elapsed = elapsed - updateInterval;
         }
     }
 
-    public void RegisterSinkOrSource(Furniture provider)
-    {
+    public void RegisterSinkOrSource(Furniture provider) {
         // TODO: This need to be implemented.
         sinksAndSources[provider] = (float deltaTime) =>
         {
@@ -108,10 +103,8 @@ public class Temperature
         };
     }
 
-    public void DeregisterSinkOrSource(Furniture provider)
-    {
-        if (sinksAndSources.ContainsKey(provider))
-        {
+    public void DeregisterSinkOrSource(Furniture provider) {
+        if (sinksAndSources.ContainsKey(provider)) {
             sinksAndSources.Remove(provider);
         }
     }
@@ -123,8 +116,7 @@ public class Temperature
     /// <param name="y">Y coordinates.</param>
     /// <param name="z">Z coordinates.</param>
     /// <returns>Temperature at x,y,z.</returns>
-    public float GetTemperature(int x, int y, int z)
-    {
+    public float GetTemperature(int x, int y, int z) {
         return temperature[offset][GetIndex(x, y, z)];
     }
 
@@ -135,10 +127,8 @@ public class Temperature
     /// <param name="y">Y coordinates.</param>
     /// <param name="z">Z coordinates.</param>
     /// <returns>Temperature to set at x,y,z.</returns>
-    public void SetTemperature(int x, int y, int z, float temp)
-    {
-        if (IsWithinTemperatureBounds(temp))
-        {
+    public void SetTemperature(int x, int y, int z, float temp) {
+        if (IsWithinTemperatureBounds(temp)) {
             temperature[offset][GetIndex(x, y, z)] = temp;
         }
     }
@@ -150,10 +140,8 @@ public class Temperature
     /// <param name="y">Y coordinates.</param>
     /// <param name="z">Z coordinates.</param>
     /// <param name="incr">Temperature to increase at x,y, z.</param>
-    public void ChangeTemperature(int x, int y, int z, float incr)
-    {
-        if (IsWithinTemperatureBounds(temperature[offset][GetIndex(x, y, z)] + incr))
-        {
+    public void ChangeTemperature(int x, int y, int z, float incr) {
+        if (IsWithinTemperatureBounds(temperature[offset][GetIndex(x, y, z)] + incr)) {
             temperature[offset][GetIndex(x, y, z)] += incr;
         }
     }
@@ -168,8 +156,7 @@ public class Temperature
     /// <param name="y">Y coordinates.</param>
     /// <param name="z">Z coordinates.</param>
     /// <returns>Thermal diffusivity alpha at x,y,z.</returns>
-    public float GetThermalDiffusivity(int x, int y, int z)
-    {
+    public float GetThermalDiffusivity(int x, int y, int z) {
         return thermalDiffusivity[GetIndex(x, y, z)];
     }
 
@@ -180,10 +167,8 @@ public class Temperature
     /// <param name="y">Y coordinates.</param>
     /// <param name="z">Z coordinates.</param>
     /// <param name="coeff">Thermal diffusivity to set at x,y, z.</param>
-    public void SetThermalDiffusivity(int x, int y, int z,  float coeff)
-    {
-        if (IsWithinThermalDiffusivityBounds(coeff))
-        {
+    public void SetThermalDiffusivity(int x, int y, int z, float coeff) {
+        if (IsWithinThermalDiffusivityBounds(coeff)) {
             thermalDiffusivity[GetIndex(x, y, z)] = coeff;
         }
     }
@@ -195,10 +180,8 @@ public class Temperature
     /// <param name="y">Y coordinates.</param>
     /// <param name="z">Z coordinates.</param>
     /// <param name="incr">Thermal diffusifity to increase at x,y,z.</param>
-    public void ChangeThermalDiffusivity(int x, int y, int z, float incr)
-    {
-        if (IsWithinThermalDiffusivityBounds(thermalDiffusivity[GetIndex(x, y, z)] + incr))
-        {
+    public void ChangeThermalDiffusivity(int x, int y, int z, float incr) {
+        if (IsWithinThermalDiffusivityBounds(thermalDiffusivity[GetIndex(x, y, z)] + incr)) {
             thermalDiffusivity[GetIndex(x, y, z)] += incr;
         }
     }
@@ -208,14 +191,11 @@ public class Temperature
     /// </summary>
     /// <param name="temp">Wanted temperature.</param>
     /// <returns>True if temperature is ok, false and a formal complaint if it's not ok.</returns>
-    public bool IsWithinTemperatureBounds(float temp)
-    {
-        if (temp >= 0 && temp < Mathf.Infinity)
-        {
+    public bool IsWithinTemperatureBounds(float temp) {
+        if (temp >= 0 && temp < Mathf.Infinity) {
             return true;
         }
-        else
-        {
+        else {
             // string.format not needed with UberLogger.
             Debug.ULogWarningChannel("Temperature", "Yep, something is wrong with your temperature: {0}.", temp);
             return false;
@@ -227,14 +207,11 @@ public class Temperature
     /// </summary>
     /// <param name="thermal_diff">Wanted thermal diff.</param>
     /// <returns>True if thermal diff. is ok, false and a formal complaint if it's not ok.</returns>
-    public bool IsWithinThermalDiffusivityBounds(float thermal_diff)
-    {
-        if (thermal_diff >= 0 && thermal_diff <= 1)
-        {
+    public bool IsWithinThermalDiffusivityBounds(float thermal_diff) {
+        if (thermal_diff >= 0 && thermal_diff <= 1) {
             return true;
         }
-        else
-        {
+        else {
             Debug.ULogWarningChannel("Temperature", "Trying to set a thermal diffusivity that may break the world: {0}.", thermal_diff);
             return false;
         }
@@ -247,21 +224,17 @@ public class Temperature
     /// <param name="y">Y coordinates.</param>
     /// <param name="z">Z coordinates.</param>
     /// <returns>Actual index for array access.</returns>
-    private int GetIndex(int x, int y, int z)
-    {
+    private int GetIndex(int x, int y, int z) {
         return (z * sizeX * sizeY) + y * sizeX + x;
     }
 
     /// <summary>
     /// Evolve the temperature model. Loops over all tiles.
     /// </summary>
-    private void ProgressTemperature(float deltaT)
-    {
+    private void ProgressTemperature(float deltaT) {
         // TODO: Compute temperature sources.
-        if (sinksAndSources != null)
-        {
-            foreach (Action<float> act in sinksAndSources.Values)
-            {
+        if (sinksAndSources != null) {
+            foreach (Action<float> act in sinksAndSources.Values) {
                 act(deltaT);
             }
         }
@@ -273,12 +246,11 @@ public class Temperature
     /// <summary>
     /// Update temperature using a forward method.
     /// </summary>
-    private void ForwardTemp()
-    {
+    private void ForwardTemp() {
         // Store references.
         float[] temp_curr = temperature[1 - offset];
         float[] temp_old = temperature[offset];
-        
+
         // Compute a constant:
         // delta.Time * magic_coefficient * 0.5 (avg for thermalDiffusivity).
         // Make sure c is always between 0 and 0.5*0.25 (not included) or things will blow up
@@ -297,14 +269,14 @@ public class Temperature
                     int index_E = GetIndex(x + 1, y, z);
                     int index_above = GetIndex(x, y, z + 1);
                     int index_below = GetIndex(x, y, z - 1);
-
+                        
                     // Update temperature using finite difference and forward method:
                     // U^{n+1} = U^n + dt*(\Div alpha \Grad U^n).
                     temp_curr[index] = temp_old[index];
 
-                    // If empty space, set temperature to 0. THIS SHOULD NEVER HAPPEN.
-                    if (World.Current.GetTileAt(x, y, z).Room.IsOutsideRoom()) {
-                        temp_curr[index] = 0f;
+                    // If empty space, set temperature to 0.                 
+                    if (WorldController.Instance.GetTileAtWorldCoord(new Vector3(x, y, z)).Room == null) { 
+                        temp_old[index] = 0f;
                     }
 
                     if (x > 0) {
@@ -333,15 +305,14 @@ public class Temperature
 
                     if (z > 0) {
                         temp_curr[index] +=
-                            c * Mathf.Min(thermalDiffusivity[index], thermalDiffusivity[index_below]) *
-                            (temp_old[index_below] - temp_old[index]);
+                            c * 0.5f * (temp_old[index_below] - temp_old[index]);
                     }
 
                     if (z < sizeZ - 1) {
                         temp_curr[index] +=
-                            c * Mathf.Min(thermalDiffusivity[index], thermalDiffusivity[index_above]) *
-                            (temp_old[index_above] - temp_old[index]);
+                           c * 0.5f * (temp_old[index_above] - temp_old[index]);
                     }
+                    
                 }
             }
         }
