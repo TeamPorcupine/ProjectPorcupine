@@ -51,14 +51,11 @@ public class World : IXmlSerializable
     // A three-dimensional array to hold our tile data.
     private Tile[,,] tiles;
 
-    // Holds all furnitures with eventactions, and distributes them between visible and invisible.
-    private List<Furniture> eventFurnitures;
-
     // A temporary list of all visible furniture. Gets updated when camera moves.
-    private List<Furniture> eventFurnituresVisible;
+    private List<Furniture> furnituresVisible;
 
     // A temporary list of all invisible furniture. Gets updated when camera moves.
-    private List<Furniture> eventFurnituresInvisible;
+    private List<Furniture> furnituresInvisible;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="World"/> class.
@@ -157,7 +154,7 @@ public class World : IXmlSerializable
         CharacterManager.Update(deltaTime);
 
         // Update Furniture (fast track) but only if visible to the camera
-        foreach (Furniture furniture in eventFurnituresVisible)
+        foreach (Furniture furniture in furnituresVisible)
         {
             furniture.EveryFrameUpdate(deltaTime);
         }
@@ -176,13 +173,13 @@ public class World : IXmlSerializable
         //       FixedFrequencyUpdate on invisible furniture could also be even slower.
 
         // Update furniture outside of the camera view
-        foreach (Furniture furniture in eventFurnituresInvisible)
+        foreach (Furniture furniture in furnituresInvisible)
         {
             furniture.EveryFrameUpdate(deltaTime);
         }
 
         // Update all furniture with EventActions
-        foreach (Furniture furniture in eventFurnitures)
+        foreach (Furniture furniture in furnitures)
         {
             furniture.FixedFrequencyUpdate(deltaTime);
         }
@@ -201,7 +198,7 @@ public class World : IXmlSerializable
         // Expand bounds to include tiles on the edge where the centre isn't inside the bounds
         cameraBounds.Expand(1);
 
-        foreach (Furniture furn in eventFurnitures)
+        foreach (Furniture furn in furnitures)
         {
             // Multitile furniture base tile is bottom left - so add width and height 
             Bounds furnitureBounds = new Bounds(
@@ -210,20 +207,20 @@ public class World : IXmlSerializable
 
             if (cameraBounds.Intersects(furnitureBounds))
             {
-                if (eventFurnituresInvisible.Contains(furn))
+                if (furnituresInvisible.Contains(furn))
                 {
-                    eventFurnituresInvisible.Remove(furn);
-                    eventFurnituresVisible.Add(furn);
+                    furnituresInvisible.Remove(furn);
+                    furnituresVisible.Add(furn);
                 }
             }
             else
             {
-                if (eventFurnituresVisible.Contains(furn))
+                if (furnituresVisible.Contains(furn))
                 {
-                    eventFurnituresVisible.Remove(furn);
-                    eventFurnituresInvisible.Add(furn);
+                    furnituresVisible.Remove(furn);
+                    furnituresInvisible.Add(furn);
                 }
-            }
+            }            
         }
     }
 
@@ -274,12 +271,7 @@ public class World : IXmlSerializable
 
         furn.Removed += OnFurnitureRemoved;
         furnitures.Add(furn);
-
-        if (furn.EventActions.HasEvents())
-        {
-            eventFurnitures.Add(furn);
-            eventFurnituresVisible.Add(furn);
-        }
+        furnituresVisible.Add(furn);
         
         // Do we need to recalculate our rooms?
         if (doRoomFloodFill && furn.RoomEnclosure)
@@ -584,18 +576,14 @@ public class World : IXmlSerializable
     public void OnFurnitureRemoved(Furniture furn)
     {
         furnitures.Remove(furn);
-        if (eventFurnitures.Contains(furn))
-        {
-            eventFurnitures.Remove(furn);
-        }
 
-        if (eventFurnituresInvisible.Contains(furn))
+        if (furnituresInvisible.Contains(furn))
         {
-            eventFurnituresInvisible.Remove(furn);            
+            furnituresInvisible.Remove(furn);            
         }
-        else if (eventFurnituresVisible.Contains(furn))
+        else if (furnituresVisible.Contains(furn))
         {
-            eventFurnituresVisible.Remove(furn);
+            furnituresVisible.Remove(furn);
         }
     }
 
@@ -701,9 +689,8 @@ public class World : IXmlSerializable
         CreateWallet();
 
         furnitures = new List<Furniture>();
-        eventFurnitures = new List<Furniture>();
-        eventFurnituresVisible = new List<Furniture>();
-        eventFurnituresInvisible = new List<Furniture>();
+        furnituresVisible = new List<Furniture>();
+        furnituresInvisible = new List<Furniture>();
 
         utilities = new List<Utility>();
         CharacterManager = new CharacterManager();
