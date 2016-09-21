@@ -7,8 +7,10 @@
 // ====================================================
 #endregion
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Xml;
+using System.Xml.Linq;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using Animation;
@@ -257,6 +259,9 @@ namespace ProjectPorcupine.Rooms
                         reader.Read();
                         description = reader.ReadContentAsString();
                         break;
+                    case "Requirements":
+                        ReadXmlRequirements(reader);
+                        break;
                     case "Action":
                         XmlReader subtree = reader.ReadSubtree();
                         EventActions.ReadXml(subtree);
@@ -439,5 +444,38 @@ namespace ProjectPorcupine.Rooms
                 Changed(util);
             }
         }
+
+        private void ReadXmlRequirements(XmlReader readerParent)
+        {
+            XmlReader reader = readerParent.ReadSubtree();
+            reader.Read();
+
+            while (reader.Read())
+            {
+                switch (reader.Name)
+                {
+                    case "Furniture":
+                        // Furniture must have either Type or TypeTag, try both, check for null later
+                        string type = reader.GetAttribute("type");
+                        string typeTag = reader.GetAttribute("type");
+                        int count = 1;
+                        int.TryParse(reader.GetAttribute("count"), count);
+                        break;
+                    case "Size":
+                        reader.Read();
+                        typeTags.Add(reader.ReadContentAsString());
+                        break;
+                }
+            }
+        }
+
+        private struct FurnitureRequirements
+        {
+            public string type, typeTag;
+            public int count;
+
+
+        }
     }
+
 }
