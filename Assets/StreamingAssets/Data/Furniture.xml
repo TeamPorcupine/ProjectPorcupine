@@ -101,6 +101,7 @@
         <Name>Door</Name>
         <Description>An Airlock prevents air from leaving the base</Description>
         <TypeTag>Door</TypeTag>
+        <TypeTag>Pressure Door</TypeTag>
         <MovementCost>1</MovementCost>
         <PathfindingModifier>3</PathfindingModifier>
         <PathfindingWeight>1</PathfindingWeight>

@@ -10,13 +10,10 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Xml;
-using System.Xml.Linq;
 using System.Xml.Schema;
 using System.Xml.Serialization;
-using Animation;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
-using ProjectPorcupine.PowerNetwork;
 using UnityEngine;
 
 namespace ProjectPorcupine.Rooms
@@ -433,8 +430,26 @@ namespace ProjectPorcupine.Rooms
         {
             if (room.TileCount < requiredSize) 
             {
-                Debug.Log("Denied");
                 return false;
+            }
+
+            List<Tile> innerTiles = room.getInnerTiles();
+            List<Tile> borderTiles = room.getBorderingTiles();
+
+            List<Tile> allTiles = innerTiles.Union(borderTiles).ToList();
+            Debug.Log(furnitureRequirements.Count);
+            foreach (FurnitureRequirement requirement in furnitureRequirements)
+            {
+                Debug.Log("*" + requirement.type + "* *" + requirement.typeTag + "*");
+                if (allTiles.Count(tile => (tile.Furniture != null && (tile.Furniture.Type == requirement.type || tile.Furniture.HasTypeTag(requirement.typeTag)))) < requirement.count) 
+                {
+                    if(!(string.IsNullOrEmpty(requirement.type))) {
+                        Debug.Log("Not enough " + requirement.type);
+                    } else {
+                        Debug.Log("Not enough " + requirement.typeTag + " typeTag" + requirement.type);
+                    }
+                    return false;
+                }
             }
             return true;
         }
@@ -465,7 +480,7 @@ namespace ProjectPorcupine.Rooms
                     case "Furniture":
                         // Furniture must have either Type or TypeTag, try both, check for null later
                         string type = reader.GetAttribute("type");
-                        string typeTag = reader.GetAttribute("type");
+                        string typeTag = reader.GetAttribute("typeTag");
                         int count = 1;
                         int.TryParse(reader.GetAttribute("count"), out count);
                         furnitureRequirements.Add(new FurnitureRequirement(type, typeTag, count));
