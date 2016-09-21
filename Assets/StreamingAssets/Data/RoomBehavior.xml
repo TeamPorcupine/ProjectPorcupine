@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RoomBehaviors>
+  <RoomBehavior type="roombehavior_airlock">
+    <Name>Airlock</Name>
+    <Description>This is an airlock.</Description>
+    <Requirements>
+        <Furniture typeTag="Pressure Door" count="2" />
+        <Furniture type="pump_air" count="1" />
+        <Size tiles="3" />
+    </Requirements>
+    
+    <LocalizationCode>roombehavior_airlock</LocalizationCode>
+    <UnlocalizedDescription>roombehavior_airlock_desc</UnlocalizedDescription>
+  </RoomBehavior>
+</RoomBehaviors>

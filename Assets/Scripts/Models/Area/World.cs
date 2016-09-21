@@ -385,6 +385,11 @@ public class World : IXmlSerializable
         tileGraph = null;
     }
 
+    public bool IsRoomBehaviorValidForRoom(string roomBehaviorType, Room room)
+    {
+        return PrototypeManager.RoomBehavior.Get(roomBehaviorType).IsValidRoom(room);
+    }
+
     public bool IsFurniturePlacementValid(string furnitureType, Tile t)
     {
         return PrototypeManager.Furniture.Get(furnitureType).IsValidPosition(t);

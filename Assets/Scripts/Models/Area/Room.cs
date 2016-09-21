@@ -32,6 +32,7 @@ namespace ProjectPorcupine.Rooms
             tiles = new List<Tile>();
             atmosphericGasses = new Dictionary<string, float>();
             deltaGas = new Dictionary<string, string>();
+            RoomBehaviors = new Dictionary<string, RoomBehavior>();
         }
 
         public int ID
@@ -382,9 +383,9 @@ namespace ProjectPorcupine.Rooms
                 return false;
             }
 
-            if (objInstance.IsValidPosition(this) == false)
+            if (objInstance.IsValidRoom(this) == false)
             {
-                Debug.ULogErrorChannel("Tile", "Trying to assign a furniture to a tile that isn't valid!");
+                Debug.ULogErrorChannel("Tile", "Trying to assign a RoomBehavior to a room that isn't valid!");
                 return false;
             }
 
@@ -401,9 +402,37 @@ namespace ProjectPorcupine.Rooms
                 return false;
             }
 
-            RoomBehaviors = null;
+            RoomBehaviors.Remove(roomBehavior.Name);
 
             return true;
+        }
+
+        public List<Tile> getInnerTiles()
+        {
+            return tiles;
+        }
+
+        public List<Tile> getBorderingTiles()
+        {
+
+            List<Tile> borderingTiles = new List<Tile>();
+            foreach (Tile tile in tiles)
+            {
+                Tile[] neighbours = tile.GetNeighbours();
+                foreach (Tile tile2 in neighbours)
+                {
+                    if (tile2 != null && tile2.Furniture != null)
+                    {
+                        if (tile2.Furniture.RoomEnclosure)
+                        {
+                            // We have found an enclosing furniture, which means it is on our border
+                            borderingTiles.Add(tile2);
+                        }
+                    } 
+                }
+            }
+
+            return borderingTiles;
         }
     }
 }

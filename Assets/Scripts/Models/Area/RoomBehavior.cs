@@ -36,11 +36,15 @@ namespace ProjectPorcupine.Rooms
         // This is the generic type of object this is, allowing things to interact with it based on it's generic type
         private HashSet<string> typeTags;
 
+        private List<FurnitureRequirement> furnitureRequirements;
+
+        private int requiredSize = 0;
+
         private string name = null;
 
         private string description = string.Empty;
 
-        private Func<Room, bool> funcPositionValidation;
+        private Func<Room, bool> funcRoomValidation;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RoomBehavior"/> class.
@@ -52,7 +56,8 @@ namespace ProjectPorcupine.Rooms
             contextMenuLuaActions = new List<ContextMenuLuaAction>();
             Parameters = new Parameter();
             typeTags = new HashSet<string>();
-            funcPositionValidation = DefaultIsValidPosition;
+            funcRoomValidation = DefaultIsValidRoom;
+            furnitureRequirements = new List<FurnitureRequirement>();
         }
 
         /// <summary>
@@ -79,9 +84,14 @@ namespace ProjectPorcupine.Rooms
                 contextMenuLuaActions = new List<ContextMenuLuaAction>(other.contextMenuLuaActions);
             }
 
-            if (other.funcPositionValidation != null)
+            if (other.funcRoomValidation != null)
             {
-                funcPositionValidation = (Func<Room, bool>)other.funcPositionValidation.Clone();
+                funcRoomValidation = (Func<Room, bool>)other.funcRoomValidation.Clone();
+            }
+
+            if (other.furnitureRequirements != null)
+            {
+                furnitureRequirements = new List<FurnitureRequirement>(other.furnitureRequirements);
             }
 
             LocalizationCode = other.LocalizationCode;
@@ -160,7 +170,7 @@ namespace ProjectPorcupine.Rooms
         /// <returns>Utility object.</returns>
         public static RoomBehavior PlaceInstance(RoomBehavior proto, Room room)
         {
-            if (proto.funcPositionValidation(room) == false)
+            if (proto.funcRoomValidation(room) == false)
             {
                 Debug.ULogErrorChannel("RoomBehavior", "PlaceInstance -- Position Validity Function returned FALSE. " + proto.Name + " " + room.ID);
                 return null;
@@ -205,9 +215,9 @@ namespace ProjectPorcupine.Rooms
         /// </summary>
         /// <param name="tile">The base tile.</param>
         /// <returns>True if the tile is valid for the placement of the utility.</returns>
-        public bool IsValidPosition(Room room)
+        public bool IsValidRoom(Room room)
         {
-            return funcPositionValidation(room);
+            return funcRoomValidation(room);
         }
 
         /// <summary>
@@ -419,15 +429,13 @@ namespace ProjectPorcupine.Rooms
             return new RoomBehavior(this);
         }
 
-        // FIXME: These functions should never be called directly,
-        // so they probably shouldn't be public functions of Utility
-        // This will be replaced by validation checks fed to use from
-        // LUA files that will be customizable for each piece of utility.
-        // For example, a door might specific that it needs two walls to
-        // connect to.
-        private bool DefaultIsValidPosition(Room room)
+        private bool DefaultIsValidRoom(Room room)
         {
-            
+            if (room.TileCount < requiredSize) 
+            {
+                Debug.Log("Denied");
+                return false;
+            }
             return true;
         }
 
@@ -459,22 +467,27 @@ namespace ProjectPorcupine.Rooms
                         string type = reader.GetAttribute("type");
                         string typeTag = reader.GetAttribute("type");
                         int count = 1;
-                        int.TryParse(reader.GetAttribute("count"), count);
+                        int.TryParse(reader.GetAttribute("count"), out count);
+                        furnitureRequirements.Add(new FurnitureRequirement(type, typeTag, count));
                         break;
                     case "Size":
-                        reader.Read();
-                        typeTags.Add(reader.ReadContentAsString());
+                        int.TryParse(reader.GetAttribute("tiles"), out requiredSize);
                         break;
                 }
             }
         }
 
-        private struct FurnitureRequirements
+        private struct FurnitureRequirement
         {
             public string type, typeTag;
             public int count;
 
-
+            public FurnitureRequirement(string type, string typeTag, int count)
+            {
+                this.type = type;
+                this.typeTag = typeTag;
+                this.count = count;
+            }
         }
     }
 

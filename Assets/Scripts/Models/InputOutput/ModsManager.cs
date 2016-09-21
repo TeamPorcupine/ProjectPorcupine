@@ -36,6 +36,7 @@ public class ModsManager
         LoadPrototypes("Tiles.xml", (text) => PrototypeManager.TileType.LoadPrototypes(text));
         LoadPrototypes("Furniture.xml", (text) => PrototypeManager.Furniture.LoadPrototypes(text));
         LoadPrototypes("Utility.xml", (text) => PrototypeManager.Utility.LoadPrototypes(text));
+        LoadPrototypes("RoomBehavior.xml", (text) => PrototypeManager.RoomBehavior.LoadPrototypes(text));
         LoadPrototypes("Inventory.xml", (text) => PrototypeManager.Inventory.LoadPrototypes(text));
         LoadPrototypes("Need.xml", (text) => PrototypeManager.Need.LoadPrototypes(text));
         LoadPrototypes("Trader.xml", (text) => PrototypeManager.Trader.LoadPrototypes(text));
