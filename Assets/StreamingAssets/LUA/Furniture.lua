@@ -628,13 +628,13 @@ end
 
 function OreMine_CreateMiningJob(furniture, character)
     local job = Job.__new(
-		furniture.tile,
-		"astro_wall",
-		nil,
-		0,
-		nil,
-		Job.JobPriority.High,
-		false,
+        furniture.tile,
+        "astro_wall",
+        nil,
+        0,
+        nil,
+        Job.JobPriority.High,
+        false,
         false,
         false,
         true
