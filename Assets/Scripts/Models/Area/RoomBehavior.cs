@@ -437,17 +437,11 @@ namespace ProjectPorcupine.Rooms
             List<Tile> borderTiles = room.getBorderingTiles();
 
             List<Tile> allTiles = innerTiles.Union(borderTiles).ToList();
-            Debug.Log(furnitureRequirements.Count);
+
             foreach (FurnitureRequirement requirement in furnitureRequirements)
             {
-                Debug.Log("*" + requirement.type + "* *" + requirement.typeTag + "*");
                 if (allTiles.Count(tile => (tile.Furniture != null && (tile.Furniture.Type == requirement.type || tile.Furniture.HasTypeTag(requirement.typeTag)))) < requirement.count) 
                 {
-                    if(!(string.IsNullOrEmpty(requirement.type))) {
-                        Debug.Log("Not enough " + requirement.type);
-                    } else {
-                        Debug.Log("Not enough " + requirement.typeTag + " typeTag" + requirement.type);
-                    }
                     return false;
                 }
             }
