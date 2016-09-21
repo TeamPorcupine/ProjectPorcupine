@@ -147,7 +147,7 @@ public class World : IXmlSerializable {
         }
 
         // Progress temperature modelling
-        temperature.Update();
+        temperature.Update(deltaTime);
         PowerNetwork.Update(deltaTime);
     }
 
