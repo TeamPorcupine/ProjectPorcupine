@@ -107,9 +107,9 @@ public class TradeController
         {
             if (tradeItem.TradeAmount > 0)
             {
-                Tile tile = WorldController.Instance.World.GetFirstTileWithNoInventoryAround(6, (int)tradingCoordinates.x, (int)tradingCoordinates.y, (int)tradingCoordinates.z);
+                Tile tile = WorldController.Instance.World.GetTileAt((int)tradingCoordinates.x, (int)tradingCoordinates.y, (int)tradingCoordinates.z);
                 Inventory inv = new Inventory(tradeItem.Type, tradeItem.TradeAmount, tradeItem.TradeAmount);
-                WorldController.Instance.World.inventoryManager.PlaceInventory(tile, inv);
+                WorldController.Instance.World.inventoryManager.PlaceInventoryAround(tile, inv, 6);
             }
             else if (tradeItem.TradeAmount < 0)
             {

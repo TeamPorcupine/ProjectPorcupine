@@ -29,6 +29,11 @@ public interface IBuildable
     Tile Tile { get; }
 
     /// <summary>
+    /// Details if this is tasked for destruction.
+    /// </summary>
+    bool IsBeingDestroyed { get; }
+
+    /// <summary>
     /// Checks whether the buildable has a certain tag.
     /// </summary>
     /// <param name="typeTag">Tag to check for.</param>

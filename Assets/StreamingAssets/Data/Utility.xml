@@ -9,7 +9,7 @@
       <Inventory type="Copper Wire" amount="2" />
     </BuildingJob>
 
-    <DeconstructJob>
+    <DeconstructJob jobTime="1">
       <Inventory type="Copper Wire" amount="1" />
     </DeconstructJob>
     
@@ -29,7 +29,7 @@
       <Inventory type="Steel Plate" amount="2" />
     </BuildingJob>
 
-    <DeconstructJob>
+    <DeconstructJob jobTime="1">
       <Inventory type="Steel Plate" amount="1" />
     </DeconstructJob>
     <LocalizationCode>util_water_pipe</LocalizationCode>

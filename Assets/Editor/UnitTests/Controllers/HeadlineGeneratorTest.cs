@@ -33,6 +33,7 @@ public class HeadlineGeneratorTest
         gen = new HeadlineGenerator();
         gen.UpdatedHeadline += StringPrinted;
         stringPrinted = false;
+        Debug.IsLogEnabled = false;
     }
 
     public void StringPrinted(string headline)
