@@ -386,7 +386,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     {
         if (proto.funcPositionValidation(tile) == false)
         {
-            Debug.ULogErrorChannel("Furniture", proto.Rotation.ToString() + proto.Width.ToString() + proto.Height.ToString());
             Debug.ULogErrorChannel("Furniture", "PlaceInstance -- Position Validity Function returned FALSE. " + proto.Name + " " + tile.X + ", " + tile.Y + ", " + tile.Z);
             return null;
         }
