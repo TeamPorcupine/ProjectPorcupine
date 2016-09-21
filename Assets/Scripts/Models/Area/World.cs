@@ -172,7 +172,8 @@ public class World : IXmlSerializable
     public void TickFixedFrequency(float deltaTime)
     {
         // TODO: Further optimization could divide eventFurnitures in multiple lists
-        //       and update one of the lists each frame
+        //       and update one of the lists each frame.
+        //       FixedFrequencyUpdate on invisible furniture could also be even slower.
 
         // Update furniture outside of the camera view
         foreach (Furniture furniture in eventFurnituresInvisible)
@@ -195,8 +196,8 @@ public class World : IXmlSerializable
     /// Notify world that the camera moved, so we can check which entities are visible to the camera.
     /// The invisible enities can be updated less frequent for better performance.
     /// </summary>
-    public void CameraMoved(Bounds cameraBounds)
-    {
+    public void OnCameraMoved(Bounds cameraBounds)
+    {        
         // Expand bounds to include tiles on the edge where the centre isn't inside the bounds
         cameraBounds.Expand(1);
 
@@ -224,13 +225,6 @@ public class World : IXmlSerializable
                 }
             }
         }
-
-        /*
-         Debug.ULogChannel("VisibleFurn","All furn: "+ furnitures.Count.ToString());
-         Debug.ULogChannel("VisibleFurn","EventAction furn: "+ eventFurnitures.Count.ToString());
-         Debug.ULogChannel("VisibleFurn","Visible furn: "+ eventFurnituresVisible.Count.ToString());
-         Debug.ULogChannel("VisibleFurn", "Invisible furn: " + eventFurnituresInvisible.Count.ToString());
-         */
     }
 
     /// <summary>

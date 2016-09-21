@@ -6,6 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using System;
 using UnityEngine;
 
 public class CameraController
@@ -64,6 +65,8 @@ public class CameraController
         TimeManager.Instance.EveryFrameNotModal += (time) => Update();
     }
 
+    public event Action<Bounds> Moved;
+
     public int CurrentLayer
     {
         get
@@ -116,9 +119,9 @@ public class CameraController
             positionTarget = Camera.main.transform.position;
         }
 
-        if (prevPositionTarget != positionTarget)
+        if (prevPositionTarget != positionTarget && Moved != null)
         {
-            WorldController.Instance.World.CameraMoved(GetCameraBounds());            
+            Moved(GetCameraBounds());
         }
 
         prevPositionTarget = positionTarget;
