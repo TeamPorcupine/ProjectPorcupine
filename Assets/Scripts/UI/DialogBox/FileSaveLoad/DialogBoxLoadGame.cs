@@ -42,6 +42,14 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
     {
         string fileName = gameObject.GetComponentInChildren<InputField>().text;
 
+        if (fileName == "" || fileName == string.Empty)
+        {
+            DialogBoxManager dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
+            dbm.dialogBoxPromptOrInfo.SetAsInfo("You must select a file!");
+            dbm.dialogBoxPromptOrInfo.ShowDialog();
+            return;
+        }
+
         // TODO: Is the filename valid?  I.E. we may want to ban path-delimiters (/ \ or :) and
         // maybe periods?      ../../some_important_file
 
@@ -97,21 +105,23 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
 
         if (File.Exists(filePath) == false)
         {
-            //Debug.ULogErrorChannel("DialogBoxLoadGame", "File doesn't exist.  What?");
-
             DialogBoxManager dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
             dbm.dialogBoxPromptOrInfo.SetAsInfo("File doesn't exist!");
-            // CloseDialog();
             return;
         }
 
         File.Delete(filePath);
+
+        gameObject.GetComponentInChildren<InputField>().text = string.Empty;
+
         CloseDialog();
         ShowDialog();
     }
 
     public void DeleteWasClicked()
     {
+        string fileName = gameObject.GetComponentInChildren<InputField>().text;
+
         DialogBoxManager dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
         dbm.dialogBoxPromptOrInfo.Closed = () =>
         {
@@ -120,7 +130,7 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
                 DeleteFile();
             }
         };
-        dbm.dialogBoxPromptOrInfo.SetPrompt("Delete File?\nYou cannot revert this action.");
+        dbm.dialogBoxPromptOrInfo.SetPrompt("Delete file " + fileName + "?\nYou cannot revert this action.");
         dbm.dialogBoxPromptOrInfo.SetButtons(DialogBoxResult.Yes | DialogBoxResult.No);
         dbm.dialogBoxPromptOrInfo.ShowDialog();
     }

@@ -41,6 +41,15 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
         // TODO: Is the filename valid?  I.E. we may want to ban path-delimiters (/ \ or :) and 
         // maybe periods?      ../../some_important_file
 
+        DialogBoxManager dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
+
+        if (fileName == "" || fileName == string.Empty)
+        {
+            dbm.dialogBoxPromptOrInfo.SetAsInfo("You must enter a name or select a file to overwrite!");
+            dbm.dialogBoxPromptOrInfo.ShowDialog();
+            yield break;
+        }
+
         // Right now fileName is just what was in the dialog box.  We need to pad this out to the full
         // path, plus an extension!
         // In the end, we're looking for something that's going to be similar to this (depending on OS)
@@ -51,8 +60,6 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
 
         // At this point, filePath should look very much like
         ////     C:\Users\Quill18\ApplicationData\MyCompanyName\MyGameName\Saves\SaveGameName123.sav
-
-        DialogBoxManager dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
 
         if (File.Exists(filePath) == true)
         {
