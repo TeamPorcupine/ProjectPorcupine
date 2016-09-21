@@ -27,6 +27,7 @@ public class ModsManager
     {
         LoadFunctions("Furniture.lua", "Furniture");
         LoadFunctions("Utility.lua", "Utility");
+        LoadFunctions("RoomBehavior.lua", "RoomBehavior");
         LoadFunctions("Need.lua", "Need");
         LoadFunctions("GameEvent.lua", "GameEvent");
         LoadFunctions("Tiles.lua", "TileType");

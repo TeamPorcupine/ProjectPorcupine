@@ -12,11 +12,18 @@
 
 -------------------------------- RoomBehavior Actions --------------------------------
 function OnControl_Airlock( roomBehavior, deltaTime )
-    for discard, pressureDoor in pairs(roomBehavior["Pressure Door"]) do
+    for discard, pressureDoor in pairs(roomBehavior.ControlledFurniture["Pressure Door"]) do
         pressureDoor.Parameters["pressure_locked"].SetValue(1)
+        pressureDoor.UpdateOnChanged(pressureDoor)
     end
     
-    for discard, pump in pairs(roomBehavior["pump_air"]) do
-        pump.Parameters["flow_direction_up"].SetValue(1 - pump.Parameters["flow_direction_up"].ToFloat())
+    for discard, pump in pairs(roomBehavior.ControlledFurniture["pump_air"]) do
+        if (pump.Tile.South().Room == roomBehavior.room or pump.Tile.West().Room == roomBehavior.room ) then
+            pump.Parameters["out_direction"].SetValue(1)
+        else
+            pump.Parameters["out_direction"].SetValue(0)
+        end
+        pump.Parameters["flow_direction_up"].SetValue(pump.Parameters["out_direction"].ToFloat())
+        pump.UpdateOnChanged(pump)
     end
 end
