@@ -8,6 +8,7 @@
 #endregion
 using System;
 using System.Collections;
+using ProjectPorcupine.Rooms;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -60,9 +61,17 @@ public class MouseOverRoomDetails : MonoBehaviour
         if (t.Room.RoomBehaviors.Count > 0)
         {
             s += "Behaviors:\n";
-            foreach (string behaviorName in t.Room.RoomBehaviors.Keys)
+            foreach (RoomBehavior behavior in t.Room.RoomBehaviors.Values)
             {
-                s += behaviorName + "\n";
+                s += behavior.Name + "\n";
+//                foreach (string key in behavior.ControlledFurniture.Keys)
+//                {
+//                    s += key + "\t\n";
+//                    foreach (Furniture furniture in behavior.ControlledFurniture[key])
+//                    {
+//                        s += furniture.Name + "\t\t\n";
+//                    }
+//                }
             }
         }
         text.text = s;

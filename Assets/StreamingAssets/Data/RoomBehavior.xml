@@ -9,6 +9,8 @@
         <Size tiles="3" />
     </Requirements>
     
+    <Action event="OnControl" functionName="OnControl_Airlock" />
+    
     <LocalizationCode>roombehavior_airlock</LocalizationCode>
     <UnlocalizedDescription>roombehavior_airlock_desc</UnlocalizedDescription>
   </RoomBehavior>

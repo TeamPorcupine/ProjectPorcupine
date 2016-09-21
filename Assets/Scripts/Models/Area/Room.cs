@@ -389,7 +389,9 @@ namespace ProjectPorcupine.Rooms
                 return false;
             }
 
-            RoomBehaviors.Add(objInstance.Name, objInstance);
+            objInstance.Control(this);
+
+            RoomBehaviors.Add(objInstance.Type, objInstance);
 
             return true;
         }
@@ -402,7 +404,7 @@ namespace ProjectPorcupine.Rooms
                 return false;
             }
 
-            RoomBehaviors.Remove(roomBehavior.Name);
+            RoomBehaviors.Remove(roomBehavior.Type);
 
             return true;
         }

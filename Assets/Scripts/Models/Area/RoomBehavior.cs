@@ -24,7 +24,7 @@ namespace ProjectPorcupine.Rooms
     [MoonSharpUserData]
     public class RoomBehavior : IXmlSerializable, ISelectable, IPrototypable, IContextActionProvider
     {
-        public Room Room;
+        public Room room;
         /// <summary>
         /// These context menu lua action are used to build the context menu of the utility.
         /// </summary>
@@ -55,6 +55,7 @@ namespace ProjectPorcupine.Rooms
             typeTags = new HashSet<string>();
             funcRoomValidation = DefaultIsValidRoom;
             furnitureRequirements = new List<FurnitureRequirement>();
+            ControlledFurniture = new Dictionary<string, List<Furniture>>();
         }
 
         /// <summary>
@@ -89,6 +90,11 @@ namespace ProjectPorcupine.Rooms
             if (other.furnitureRequirements != null)
             {
                 furnitureRequirements = new List<FurnitureRequirement>(other.furnitureRequirements);
+            }
+
+            if (other.ControlledFurniture != null) 
+            {
+                ControlledFurniture = new Dictionary<string, List<Furniture>>(other.ControlledFurniture);
             }
 
             LocalizationCode = other.LocalizationCode;
@@ -159,38 +165,7 @@ namespace ProjectPorcupine.Rooms
         /// </summary>
         public Parameter Parameters { get; private set; }
 
-        /// <summary>
-        /// Used to place utility in a certain position.
-        /// </summary>
-        /// <param name="proto">The prototype utility to place.</param>
-        /// <param name="tile">The base tile to place the utility on, The tile will be the bottom left corner of the utility (to check).</param>
-        /// <returns>Utility object.</returns>
-        public static RoomBehavior PlaceInstance(RoomBehavior proto, Room room)
-        {
-            if (proto.funcRoomValidation(room) == false)
-            {
-                Debug.ULogErrorChannel("RoomBehavior", "PlaceInstance -- Position Validity Function returned FALSE. " + proto.Name + " " + room.ID);
-                return null;
-            }
-
-            // We know our placement destination is valid.
-            RoomBehavior obj = proto.Clone();
-            obj.Room = room;
-
-            if (room.DesignateRoomBehavior(obj) == false)
-            {
-                // For some reason, we weren't able to place our object in this tile.
-                // (Probably it was already occupied.)
-
-                // Do NOT return our newly instantiated object.
-                // (It will be garbage collected.)
-                return null;
-            }
-
-            // Call LUA install scripts
-            obj.EventActions.Trigger("OnInstall", obj);
-            return obj;
-        }
+        public Dictionary<string, List<Furniture>> ControlledFurniture { get; private set; }
 
         /// <summary>
         /// This function is called to update the utility. This will also trigger EventsActions.
@@ -233,7 +208,7 @@ namespace ProjectPorcupine.Rooms
         /// <param name="writer">The XML writer to write to.</param>
         public void WriteXml(XmlWriter writer)
         {
-            writer.WriteAttributeString("Room", Room.ID.ToString());
+            writer.WriteAttributeString("Room", room.ID.ToString());
             writer.WriteAttributeString("type", Type);
 
             // Let the Parameters handle their own xml
@@ -331,7 +306,7 @@ namespace ProjectPorcupine.Rooms
         {
             // We call lua to decostruct
             EventActions.Trigger("OnUninstall", this);
-            Room.UndesignateRoomBehavior(roomBehavior);
+            room.UndesignateRoomBehavior(roomBehavior);
 
             if (Removed != null)
             {
@@ -424,6 +399,27 @@ namespace ProjectPorcupine.Rooms
         public RoomBehavior Clone()
         {
             return new RoomBehavior(this);
+        }
+
+        public void Control(Room room) 
+        {
+            this.room = room;
+            List<Tile> innerTiles = room.getInnerTiles();
+            List<Tile> borderTiles = room.getBorderingTiles();
+
+            List<Tile> allTiles = innerTiles.Union(borderTiles).ToList();
+
+            foreach (FurnitureRequirement requirement in furnitureRequirements)
+            {
+                string furnitureKey = (requirement.type ?? requirement.typeTag);
+                ControlledFurniture.Add(furnitureKey, new List<Furniture>());
+                foreach (Tile tile in allTiles.FindAll(tile => (tile.Furniture != null && (tile.Furniture.Type == requirement.type || tile.Furniture.HasTypeTag(requirement.typeTag))))) 
+                {
+                    ControlledFurniture[furnitureKey].Add(tile.Furniture);
+                }
+            }
+
+            EventActions.Trigger("OnControl", this);
         }
 
         private bool DefaultIsValidRoom(Room room)
