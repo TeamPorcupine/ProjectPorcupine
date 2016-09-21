@@ -741,9 +741,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// <param name="reader">The XML reader to read from.</param>
     public void ReadXml(XmlReader reader)
     {
-        SetRotation(float.Parse(reader.GetAttribute("Rotation")));
-
-        // X, Y, and type have already been set, and we should already
+        // X, Y, type and rotation have already been set, and we should already
         // be assigned to a tile.  So just read extra data if we have any.
         if (!reader.IsEmptyElement)
         {
@@ -757,8 +755,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// <param name="reader">The reader to read the parameters from.</param>
     public void ReadXmlParams(XmlReader reader)
     {
-        // X, Y, and type have already been set, and we should already
-        // be assigned to a tile.  So just read extra data.
         Parameters = Parameter.ReadXml(reader);
     }
 
@@ -1145,13 +1141,14 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     // <param name="rotation">The z rotation.</param>
     public void SetRotation(float rotation)
     {
-        Rotation = rotation;
         if (Math.Abs(Rotation - rotation) == 90 || Math.Abs(Rotation - rotation) == 270)
         {
             int tmp = Height;
             Height = Width;
             Width = tmp;
         }
+
+        Rotation = rotation;
     }
     
     // Make a copy of the current furniture.  Sub-classed should
