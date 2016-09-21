@@ -386,6 +386,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     {
         if (proto.funcPositionValidation(tile) == false)
         {
+            Debug.ULogErrorChannel("Furniture", proto.Rotation.ToString() + proto.Width.ToString() + proto.Height.ToString());
             Debug.ULogErrorChannel("Furniture", "PlaceInstance -- Position Validity Function returned FALSE. " + proto.Name + " " + tile.X + ", " + tile.Y + ", " + tile.Z);
             return null;
         }
@@ -1144,9 +1145,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     // <param name="rotation">The z rotation.</param>
     public void SetRotation(float rotation)
     {
+        Rotation = rotation;
         if (Math.Abs(Rotation - rotation) == 90 || Math.Abs(Rotation - rotation) == 270)
         {
-            Rotation = rotation;
             int tmp = Height;
             Height = Width;
             Width = tmp;
