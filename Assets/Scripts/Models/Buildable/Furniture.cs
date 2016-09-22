@@ -514,6 +514,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         }
 
         DynValue ret = FunctionsManager.Furniture.Call(isEnterableAction, this);
+//        Debug.Log(this.Name + " Enterability: " + ret.Number);
         return (Enterability)ret.Number;
     }
 

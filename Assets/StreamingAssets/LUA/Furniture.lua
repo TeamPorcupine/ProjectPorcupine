@@ -57,11 +57,26 @@ function OnUpdate_Door( furniture, deltaTime )
 		furniture.SetAnimationState("horizontal")
 	end
     furniture.SetAnimationProgressValue(furniture.Parameters["openness"].ToFloat(), 1)
-
 end
 
 function OnUpdate_AirlockDoor( furniture, deltaTime )
-    if (furniture.Parameters["pressure_locked"].ToFloat() >= 1.0) then
+    
+    OnUpdate_Door(furniture, deltaTime)
+    return
+end
+
+function IsEnterable_AirlockDoor( furniture )
+    -- If we're not pressure locked we ignore everything else, and act like a normal door
+    if (furniture.Parameters["pressure_locked"].ToBool() == false) then
+        
+        furniture.Parameters["is_opening"].SetValue(1)
+
+        if (furniture.Parameters["openness"].ToFloat() >= 1) then
+            return ENTERABILITY_YES --ENTERABILITY.Yes
+        end
+        
+        return ENTERABILITY_SOON --ENTERABILITY.Soon
+    else
         local neighbors = furniture.Tile.GetNeighbours(false)
         local adjacentRooms = {}
         local pressureEqual = true;
@@ -72,48 +87,49 @@ function OnUpdate_AirlockDoor( furniture, deltaTime )
                 adjacentRooms[count] = tile.Room
             end
         end
-        if (ModUtils.Round(adjacentRooms[1].GetTotalGasPressure(),3) == ModUtils.Round(adjacentRooms[2].GetTotalGasPressure(),3)) then
-            OnUpdate_Door(furniture, deltaTime)
-        end
-    else
-        OnUpdate_Door(furniture, deltaTime)
-    end
-end
-
-function IsEnterable_AirlockDoor( furniture )
-	furniture.Parameters["is_opening"].SetValue(1)
-
-	if (furniture.Parameters["openness"].ToFloat() >= 1) then
-		return ENTERABILITY_YES --ENTERABILITY.Yes
-	end
-    local neighbors = furniture.Tile.GetNeighbours(false)
-    local adjacentRooms = {}
-    local pressureEqual = true;
-    local count = 0
-    for k, tile in pairs(neighbors) do
-        if (tile.Room != nil) then
-            count = count + 1
-            adjacentRooms[count] = tile.Room
-        end
-    end
-
-    if (adjacentRooms[1].HasRoomBehavior("roombehavior_airlock") or adjacentRooms[2].HasRoomBehavior("roombehavior_airlock")) then
-        local insideRoom
-        local outsideRoom
-        if(adjacentRooms[1].HasRoomBehavior("roombehavior_airlock")) then
-            insideRoom = adjacentRooms[1]
-            outsideRoom = adjacentRooms[2]
+        -- Pressure locked but not controlled by an airlock we only open 
+        if(furniture.Parameters["airlock_controlled"].ToBool() == false) then
+            if (ModUtils.Round(adjacentRooms[1].GetTotalGasPressure(),3) == ModUtils.Round(adjacentRooms[2].GetTotalGasPressure(),3)) then
+                furniture.Parameters["is_opening"].SetValue(1)
+                return ENTERABILITY_SOON
+            else
+            -- I don't think responding with no here actually makes a difference, but let's make the door close immediately just in case
+                furniture.Parameters["is_opening"].SetValue(0)
+                return ENTERABILITY_NO
+            end
         else
-            insideRoom = adjacentRooms[2]
-            outsideRoom = adjacentRooms[1]
-        end
-        if (insideRoom.GetTotalGasPressure() < outsideRoom.GetTotalGasPressure()) then
-            insideRoom.RoomBehaviors["roombehavior_airlock"].CallEventAction("PumpIn")
-        else
-            insideRoom.RoomBehaviors["roombehavior_airlock"].CallEventAction("PumpOut")
+            if (adjacentRooms[1].HasRoomBehavior("roombehavior_airlock") or adjacentRooms[2].HasRoomBehavior("roombehavior_airlock")) then
+                -- Figure out what's inside and what's outside.
+                local insideRoom
+                local outsideRoom
+                if(adjacentRooms[1].HasRoomBehavior("roombehavior_airlock")) then
+                    insideRoom = adjacentRooms[1]
+                    outsideRoom = adjacentRooms[2]
+                else
+                    insideRoom = adjacentRooms[2]
+                    outsideRoom = adjacentRooms[1]
+                end
+                -- Pressure's different, pump to equalize
+--if(math.abs(ModUtils.Round(adjacentRooms[1].GetTotalGasPressure(),3) - ModUtils.Round(adjacentRooms[2].GetTotalGasPressure(),3)) < tolerance ) then
+                if(math.abs(ModUtils.Round(insideRoom.GetTotalGasPressure(),3) - ModUtils.Round(outsideRoom.GetTotalGasPressure(),3)) > 0.005) then
+                    if (insideRoom.GetTotalGasPressure() < outsideRoom.GetTotalGasPressure()) then
+                        insideRoom.RoomBehaviors["roombehavior_airlock"].CallEventAction("PumpIn")
+                    else
+                        insideRoom.RoomBehaviors["roombehavior_airlock"].CallEventAction("PumpOut")
+                    end
+                    return ENTERABILITY_SOON
+                else
+                    if (furniture.Parameters["openness"].ToFloat() >= 1) then
+                        -- We're fully open deactivate pumps and let the room know we're done pumping
+                        insideRoom.RoomBehaviors["roombehavior_airlock"].CallEventAction("PumpOff")
+                        return ENTERABILITY_YES --ENTERABILITY.Yes
+                    end
+                    furniture.Parameters["is_opening"].SetValue(1)
+                    return ENTERABILITY_SOON --ENTERABILITY.Soon
+                end
+            end
         end
     end
-    return ENTERABILITY_SOON --ENTERABILITY.Soon
 end
         
     
@@ -121,13 +137,9 @@ function AirlockDoor_Toggle_Pressure_Lock(furniture, character)
 
     ModUtils.ULog("Toggling Pressure Lock")
     
-	if (furniture.Parameters["pressure_locked"].ToFloat() == 1) then
-        furniture.Parameters["pressure_locked"].SetValue(0)
-    else
-        furniture.Parameters["pressure_locked"].SetValue(1)
-    end
+	furniture.Parameters["pressure_locked"].SetValue(not furniture.Parameters["pressure_locked"].ToBool())
     
-    ModUtils.ULog(furniture.Parameters["pressure_locked"].ToFloat())
+    ModUtils.ULog(furniture.Parameters["pressure_locked"].ToBool())
 end
 
 
@@ -544,44 +556,46 @@ function AirPump_OnUpdate(furniture, deltaTime)
         return
     end
 
-    local t = furniture.Tile
-    local north = World.Current.GetTileAt(t.X, t.Y + 1, t.Z)
-    local south = World.Current.GetTileAt(t.X, t.Y - 1, t.Z)
-    local west = World.Current.GetTileAt(t.X - 1, t.Y, t.Z)
-    local east = World.Current.GetTileAt(t.X + 1, t.Y, t.Z)
-    
-    -- Find the correct rooms for source and target
-    -- Maybe in future this could be cached. it only changes when the direction changes
-    local sourceRoom = nil
-    local targetRoom = nil
-    if (north.Room != nil and south.Room != nil) then
-        if (furniture.Parameters["flow_direction_up"].ToFloat() > 0) then
-            sourceRoom = south.Room
-            targetRoom = north.Room
+    if (furniture.Parameters["active"].ToBool()) then
+        local t = furniture.Tile
+        local north = World.Current.GetTileAt(t.X, t.Y + 1, t.Z)
+        local south = World.Current.GetTileAt(t.X, t.Y - 1, t.Z)
+        local west = World.Current.GetTileAt(t.X - 1, t.Y, t.Z)
+        local east = World.Current.GetTileAt(t.X + 1, t.Y, t.Z)
+        
+        -- Find the correct rooms for source and target
+        -- Maybe in future this could be cached. it only changes when the direction changes
+        local sourceRoom = nil
+        local targetRoom = nil
+        if (north.Room != nil and south.Room != nil) then
+            if (furniture.Parameters["flow_direction_up"].ToFloat() > 0) then
+                sourceRoom = south.Room
+                targetRoom = north.Room
+            else
+                sourceRoom = north.Room
+                targetRoom = south.Room
+            end
+        elseif (west.Room != nil and east.Room != nil) then
+            if (furniture.Parameters["flow_direction_up"].ToFloat() > 0) then
+                sourceRoom = west.Room
+                targetRoom = east.Room
+            else
+                sourceRoom = east.Room
+                targetRoom = west.Room
+            end
         else
-            sourceRoom = north.Room
-            targetRoom = south.Room
+            ModUtils.UChannelLogWarning("Furniture", "Air Pump blocked. Direction unclear")
+            return
         end
-    elseif (west.Room != nil and east.Room != nil) then
-        if (furniture.Parameters["flow_direction_up"].ToFloat() > 0) then
-            sourceRoom = west.Room
-            targetRoom = east.Room
-        else
-            sourceRoom = east.Room
-            targetRoom = west.Room
+        
+        local sourcePressureLimit = furniture.Parameters["source_pressure_limit"].ToFloat()
+        local targetPressureLimit = furniture.Parameters["target_pressure_limit"].ToFloat()
+        local flow = furniture.Parameters["gas_throughput"].ToFloat() * deltaTime
+        
+        -- Only transfer gas if the pressures are within the defined bounds
+        if (sourceRoom.GetTotalGasPressure() > sourcePressureLimit and targetRoom.GetTotalGasPressure() < targetPressureLimit) then
+            sourceRoom.MoveGasTo(targetRoom, flow)
         end
-    else
-        ModUtils.UChannelLogWarning("Furniture", "Air Pump blocked. Direction unclear")
-        return
-    end
-    
-    local sourcePressureLimit = furniture.Parameters["source_pressure_limit"].ToFloat()
-    local targetPressureLimit = furniture.Parameters["target_pressure_limit"].ToFloat()
-    local flow = furniture.Parameters["gas_throughput"].ToFloat() * deltaTime
-    
-    -- Only transfer gas if the pressures are within the defined bounds
-    if (sourceRoom.GetTotalGasPressure() > sourcePressureLimit and targetRoom.GetTotalGasPressure() < targetPressureLimit) then
-        sourceRoom.MoveGasTo(targetRoom, flow)
     end
 end
 
