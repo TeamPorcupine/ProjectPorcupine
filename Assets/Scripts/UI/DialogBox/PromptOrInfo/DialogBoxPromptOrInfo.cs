@@ -8,6 +8,7 @@
 #endregion
 
 using System;
+using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
@@ -20,6 +21,8 @@ public class DialogBoxPromptOrInfo : DialogBox
 
     public DialogBoxResult Buttons { get; set; }
 
+    private float standardWidth = 320f;
+
     public Action Closed { get; set; }
 
     /// <summary>
@@ -28,6 +31,8 @@ public class DialogBoxPromptOrInfo : DialogBox
     /// <param name="buttonsToSet">An combination enum built with bitwise ORs to define the buttons.</param>
     public void SetButtons(DialogBoxResult buttonsToSet)
     {
+        gameObject.transform.Find("Buttons").gameObject.SetActive(true);
+
         if ((buttonsToSet & DialogBoxResult.Yes) == DialogBoxResult.Yes)
         {
             gameObject.transform.Find("Buttons/Button - Yes").gameObject.SetActive(true);
@@ -50,6 +55,8 @@ public class DialogBoxPromptOrInfo : DialogBox
     /// <param name="infoText">Text to show.</param>
     public void SetAsInfo(string infoText)
     {
+        gameObject.transform.Find("Buttons").gameObject.SetActive(true);
+
         SetPrompt(infoText);
         gameObject.transform.Find("Buttons/Button - Ok").gameObject.SetActive(true);
     }
@@ -79,18 +86,21 @@ public class DialogBoxPromptOrInfo : DialogBox
 
     public override void CloseDialog()
     {
+        SetWidth(standardWidth);
+
         gameObject.transform.Find("Prompt").GetComponent<Text>().text = "Set prompt text with SetPrompt() !!!";
 
         gameObject.transform.Find("Buttons/Button - Yes").gameObject.SetActive(false);
         gameObject.transform.Find("Buttons/Button - No").gameObject.SetActive(false);
         gameObject.transform.Find("Buttons/Button - Cancel").gameObject.SetActive(false);
         gameObject.transform.Find("Buttons/Button - Ok").gameObject.SetActive(false);
+        gameObject.transform.Find("Buttons").gameObject.SetActive(false);
 
         base.CloseDialog();
 
         InvokeClosed();
 
-        Closed = () => { };
+        Closed = null;
     }
 
     /// <summary>
@@ -100,6 +110,12 @@ public class DialogBoxPromptOrInfo : DialogBox
     public void SetPrompt(string prompt)
     {
         gameObject.transform.Find("Prompt").GetComponent<Text>().text = prompt;
+    }
+
+    public void SetWidth(float width)
+    {
+        Vector2 size = gameObject.GetComponent<RectTransform>().sizeDelta;
+        gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(width, size.y);
     }
 
     private void InvokeClosed()
