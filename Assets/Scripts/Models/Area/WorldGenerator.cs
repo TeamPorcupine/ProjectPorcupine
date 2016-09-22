@@ -125,13 +125,13 @@ public class WorldGenerator
                                         switch (inv.Type)
                                         {
                                             case "Raw Iron":
-                                                oreWall.Tint = new Color32(131, 109,109, 255);
+                                                oreWall.Tint = new Color32(72, 209, 204, 255);
                                                 break;
                                             case "Uranium":
-                                                oreWall.Tint = new Color32(71, 120, 84, 255);
+                                                oreWall.Tint = new Color32(48, 128, 20, 255);
                                                 break;
                                             case "Ice":
-                                                oreWall.Tint = new Color32(0, 255, 255, 255);
+                                                oreWall.Tint = new Color32(202, 225, 255, 255);
                                                 break;
                                             default:
                                                 oreWall.Tint = Color.gray;
