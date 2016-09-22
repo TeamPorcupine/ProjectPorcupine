@@ -25,40 +25,38 @@ public class DialogBoxOptions : DialogBox
         bool saveGame = false;
         bool cancel = false;
 
-        DialogBoxManager dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
+        dialogManager.dialogBoxPromptOrInfo.SetPrompt("Would you like to save the game before loading a new world?");
+        dialogManager.dialogBoxPromptOrInfo.SetButtons(DialogBoxResult.Yes | DialogBoxResult.No | DialogBoxResult.Cancel);
 
-        dbm.dialogBoxPromptOrInfo.SetPrompt("Would you like to save the game before loading a new world?");
-        dbm.dialogBoxPromptOrInfo.SetButtons(DialogBoxResult.Yes | DialogBoxResult.No | DialogBoxResult.Cancel);
-
-        dbm.dialogBoxPromptOrInfo.Closed = () =>
+        dialogManager.dialogBoxPromptOrInfo.Closed = () =>
         {
-            if (dbm.dialogBoxPromptOrInfo.Result == DialogBoxResult.Yes)
+            if (dialogManager.dialogBoxPromptOrInfo.Result == DialogBoxResult.Yes)
             {
                 saveGame = true;
             }
 
-            if (dbm.dialogBoxPromptOrInfo.Result == DialogBoxResult.No)
+            if (dialogManager.dialogBoxPromptOrInfo.Result == DialogBoxResult.No)
             {
             }
 
-            if (dbm.dialogBoxPromptOrInfo.Result == DialogBoxResult.Cancel)
+            if (dialogManager.dialogBoxPromptOrInfo.Result == DialogBoxResult.Cancel)
             {
                 cancel = true;
             }
         };
 
-        dbm.dialogBoxPromptOrInfo.ShowDialog();
+        dialogManager.dialogBoxPromptOrInfo.ShowDialog();
 
-        while (dbm.dialogBoxPromptOrInfo.gameObject.activeSelf)
+        while (dialogManager.dialogBoxPromptOrInfo.gameObject.activeSelf)
         {
             yield return null;
         }
 
         if (saveGame)
         {
-            dbm.dialogBoxSaveGame.ShowDialog();
+            dialogManager.dialogBoxSaveGame.ShowDialog();
             
-            while (dbm.dialogBoxSaveGame.gameObject.activeSelf)
+            while (dialogManager.dialogBoxSaveGame.gameObject.activeSelf)
             {
                 yield return null;
             }
@@ -68,8 +66,8 @@ public class DialogBoxOptions : DialogBox
         {
             this.CloseDialog();
 
-            dbm.dialogBoxPromptOrInfo.SetPrompt("Creating new world...");
-            dbm.dialogBoxPromptOrInfo.ShowDialog();
+            dialogManager.dialogBoxPromptOrInfo.SetPrompt("Creating new world...");
+            dialogManager.dialogBoxPromptOrInfo.ShowDialog();
 
             WorldController.Instance.LoadWorld(null);
         }
