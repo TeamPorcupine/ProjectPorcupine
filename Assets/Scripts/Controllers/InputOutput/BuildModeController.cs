@@ -306,7 +306,7 @@ public class BuildModeController
 
     public bool DoesBuildJobOverlapExistingBuildJob(Tile t, string furnitureType, float rotation = 0)
     {
-        Furniture proto = PrototypeManager.Furniture.Get(furnitureType);
+        Furniture proto = PrototypeManager.Furniture.Get(furnitureType).Clone();
         proto.SetRotation(rotation);
 
         for (int x_off = t.X; x_off < (t.X + proto.Width); x_off++)

@@ -193,7 +193,7 @@ public class World : IXmlSerializable
             return null;
         }
 
-        Furniture furn = PrototypeManager.Furniture.Get(type);
+        Furniture furn = PrototypeManager.Furniture.Get(type).Clone();
         furn.SetRotation(rotation);
 
         return PlaceFurniture(furn, t, doRoomFloodFill);
@@ -342,7 +342,7 @@ public class World : IXmlSerializable
 
     public bool IsFurniturePlacementValid(string furnitureType, Tile t, float rotation = 0)
     {
-        Furniture furn = PrototypeManager.Furniture.Get(furnitureType);
+        Furniture furn = PrototypeManager.Furniture.Get(furnitureType).Clone();
         furn.SetRotation(rotation);
         return furn.IsValidPosition(t);
     }

@@ -217,7 +217,7 @@ public class MouseController
             && (PrototypeManager.Furniture.Get(bmc.buildModeType).Width > 1
             || PrototypeManager.Furniture.Get(bmc.buildModeType).Height > 1))
         {
-            Furniture proto = PrototypeManager.Furniture.Get(bmc.buildModeType);
+            Furniture proto = PrototypeManager.Furniture.Get(bmc.buildModeType).Clone();
             proto.SetRotation(bmc.GetCurrentPreviewRotation());
             Sprite sprite = fsc.GetSpriteForFurniture(proto.Type);
 
