@@ -409,14 +409,13 @@ namespace ProjectPorcupine.Rooms
             return true;
         }
 
-        public List<Tile> getInnerTiles()
+        public List<Tile> GetInnerTiles()
         {
             return tiles;
         }
 
-        public List<Tile> getBorderingTiles()
+        public List<Tile> GetBorderingTiles()
         {
-
             List<Tile> borderingTiles = new List<Tile>();
             foreach (Tile tile in tiles)
             {

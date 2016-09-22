@@ -7,8 +7,8 @@
 // ====================================================
 #endregion
 using System.Collections.Generic;
-using Scheduler;
 using ProjectPorcupine.Rooms;
+using Scheduler;
 
 /// <summary>
 /// A class that holds the Prototype Maps of each entity that requires it.

@@ -64,16 +64,18 @@ public class MouseOverRoomDetails : MonoBehaviour
             foreach (RoomBehavior behavior in t.Room.RoomBehaviors.Values)
             {
                 s += behavior.Name + "\n";
-//                foreach (string key in behavior.ControlledFurniture.Keys)
-//                {
-//                    s += key + "\t\n";
-//                    foreach (Furniture furniture in behavior.ControlledFurniture[key])
-//                    {
-//                        s += furniture.Name + "\t\t\n";
-//                    }
-//                }
+
+///                foreach (string key in behavior.ControlledFurniture.Keys)
+///                {
+///                    s += key + "\t\n";
+///                    foreach (Furniture furniture in behavior.ControlledFurniture[key])
+///                    {
+///                        s += furniture.Name + "\t\t\n";
+///                    }
+///                }
             }
         }
+
         text.text = s;
     }
 }

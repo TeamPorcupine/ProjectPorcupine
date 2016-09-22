@@ -100,8 +100,8 @@ public class BuildModeController
         if (buildMode == BuildMode.ROOMBEHAVIOR)
         {
             string roomBehaviorType = buildModeType;
-            // Validation goes here.
-            if(tile.Room != null && WorldController.Instance.World.IsRoomBehaviorValidForRoom(roomBehaviorType, tile.Room))
+
+            if (tile.Room != null && WorldController.Instance.World.IsRoomBehaviorValidForRoom(roomBehaviorType, tile.Room))
             {
                 RoomBehavior proto = PrototypeManager.RoomBehavior.Get(roomBehaviorType); 
                 tile.Room.DesignateRoomBehavior(proto.Clone());

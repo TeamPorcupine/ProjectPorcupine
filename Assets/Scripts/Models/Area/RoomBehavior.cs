@@ -7,8 +7,8 @@
 // ====================================================
 #endregion
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
@@ -19,12 +19,13 @@ using UnityEngine;
 namespace ProjectPorcupine.Rooms
 {
     /// <summary>
-    /// Room Behaviors are functions added to specific rooms, such as an airlock, a dining room, or an abattoir
+    /// Room Behaviors are functions added to specific rooms, such as an airlock, a dining room, or an abattoir.
     /// </summary>
     [MoonSharpUserData]
     public class RoomBehavior : IXmlSerializable, ISelectable, IPrototypable, IContextActionProvider
     {
         public Room room;
+
         /// <summary>
         /// These context menu lua action are used to build the context menu of the utility.
         /// </summary>
@@ -404,14 +405,14 @@ namespace ProjectPorcupine.Rooms
         public void Control(Room room) 
         {
             this.room = room;
-            List<Tile> innerTiles = room.getInnerTiles();
-            List<Tile> borderTiles = room.getBorderingTiles();
+            List<Tile> innerTiles = room.GetInnerTiles();
+            List<Tile> borderTiles = room.GetBorderingTiles();
 
             List<Tile> allTiles = innerTiles.Union(borderTiles).ToList();
 
             foreach (FurnitureRequirement requirement in furnitureRequirements)
             {
-                string furnitureKey = (requirement.type ?? requirement.typeTag);
+                string furnitureKey = requirement.type ?? requirement.typeTag;
                 ControlledFurniture.Add(furnitureKey, new List<Furniture>());
                 foreach (Tile tile in allTiles.FindAll(tile => (tile.Furniture != null && (tile.Furniture.Type == requirement.type || tile.Furniture.HasTypeTag(requirement.typeTag))))) 
                 {
@@ -435,8 +436,8 @@ namespace ProjectPorcupine.Rooms
                 return false;
             }
 
-            List<Tile> innerTiles = room.getInnerTiles();
-            List<Tile> borderTiles = room.getBorderingTiles();
+            List<Tile> innerTiles = room.GetInnerTiles();
+            List<Tile> borderTiles = room.GetBorderingTiles();
 
             List<Tile> allTiles = innerTiles.Union(borderTiles).ToList();
 
@@ -447,6 +448,7 @@ namespace ProjectPorcupine.Rooms
                     return false;
                 }
             }
+
             return true;
         }
 
@@ -501,5 +503,4 @@ namespace ProjectPorcupine.Rooms
             }
         }
     }
-
 }
