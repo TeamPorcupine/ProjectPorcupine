@@ -33,7 +33,7 @@ public class DialogListItem : MonoBehaviour, IPointerClickHandler
             listItem.GetComponent<Image>().color = listItem.currentColor;
         }
 
-        GetComponent<Image>().color = new Color(0f, 0.67f, 1f);
+        GetComponent<Image>().color = new Color(0f, 0.227f, 0.337f, 0.6f);
 
         GameObject go = GameObject.FindGameObjectWithTag("DeleteButton");
         if (go != null)

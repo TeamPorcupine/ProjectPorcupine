@@ -96,14 +96,14 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
 
             SaveWorld(filePath);
 
+            CloseDialog();
+
             dbm.dialogBoxPromptOrInfo.SetAsInfo("Game saved!");
 
             while (dbm.dialogBoxPromptOrInfo.gameObject.activeSelf)
             {
                 yield return null;
             }
-
-            CloseDialog();
         }
     }
 

@@ -35,10 +35,6 @@ public class DialogBoxOptions : DialogBox
                 saveGame = true;
             }
 
-            if (dialogManager.dialogBoxPromptOrInfo.Result == DialogBoxResult.No)
-            {
-            }
-
             if (dialogManager.dialogBoxPromptOrInfo.Result == DialogBoxResult.Cancel)
             {
                 cancel = true;
@@ -52,6 +48,11 @@ public class DialogBoxOptions : DialogBox
             yield return null;
         }
 
+        if (!cancel)
+        {
+            //this.CloseDialog();
+        }
+
         if (saveGame)
         {
             dialogManager.dialogBoxSaveGame.ShowDialog();
@@ -62,10 +63,15 @@ public class DialogBoxOptions : DialogBox
             }
         }
 
+        // If the current game is saved we are presented with a save confirmation dialog
+        while (dialogManager.dialogBoxPromptOrInfo.gameObject.activeSelf)
+        {
+            yield return null;
+        }
+
         if (!cancel)
         {
             this.CloseDialog();
-
             dialogManager.dialogBoxPromptOrInfo.SetPrompt("Creating new world...");
             dialogManager.dialogBoxPromptOrInfo.ShowDialog();
 
