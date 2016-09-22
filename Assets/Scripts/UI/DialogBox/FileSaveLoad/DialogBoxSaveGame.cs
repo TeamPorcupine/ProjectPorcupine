@@ -39,11 +39,11 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
         string fileName = gameObject.GetComponentInChildren<InputField>().text;
 
         // TODO: Is the filename valid?  I.E. we may want to ban path-delimiters (/ \ or :) and 
-        // maybe periods?      ../../some_important_file
+        //// maybe periods?      ../../some_important_file
 
         DialogBoxManager dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
 
-        if (fileName == "" || fileName == string.Empty)
+        if (fileName == string.Empty)
         {
             dbm.dialogBoxPromptOrInfo.SetAsInfo("You must enter a name or select a file to overwrite!");
             dbm.dialogBoxPromptOrInfo.ShowDialog();

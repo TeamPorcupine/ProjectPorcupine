@@ -42,7 +42,7 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
     {
         string fileName = gameObject.GetComponentInChildren<InputField>().text;
 
-        if (fileName == "" || fileName == string.Empty)
+        if (fileName == string.Empty)
         {
             DialogBoxManager dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
             dbm.dialogBoxPromptOrInfo.SetAsInfo("You must select a file!");
@@ -69,14 +69,11 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
         //     C:\Users\Quill18\ApplicationData\MyCompanyName\MyGameName\Saves\SaveGameName123.sav
         if (File.Exists(filePath) == false)
         {
-            // TODO: Do file overwrite dialog box.
+            //// TODO: Do file overwrite dialog box.
 
             DialogBoxManager dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
             dbm.dialogBoxPromptOrInfo.SetAsInfo("File doesn't exist!");
             dbm.dialogBoxPromptOrInfo.ShowDialog();
-
-            // Debug.ULogErrorChannel("DialogBoxLoadGame", "File doesn't exist.  What?");
-            // CloseDialog();
             return;
         }
 

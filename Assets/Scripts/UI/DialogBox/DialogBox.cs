@@ -11,7 +11,7 @@ using UnityEngine;
 
 public class DialogBox : MonoBehaviour
 {
-    bool openedWhileModal = false;
+    private bool openedWhileModal = false;
 
     public virtual void ShowDialog()
     {
