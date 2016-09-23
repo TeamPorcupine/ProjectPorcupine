@@ -27,18 +27,18 @@ public class BuildModeController
     private MouseController mouseController;
     private TileType buildModeTile = TileType.Floor;
 
-    // The rotation applied to the object.
-    public float currentPreviewRotation { get; private set; }
-
     public BuildModeController()
     {
         Instance = this;
-        currentPreviewRotation = 0f;
+        CurrentPreviewRotation = 0f;
         KeyboardManager.Instance.RegisterInputAction("RotateFurnitureLeft", KeyboardMappedInputType.KeyUp, RotateFurnitireLeft);
         KeyboardManager.Instance.RegisterInputAction("RotateFurnitureRight", KeyboardMappedInputType.KeyUp, RotateFurnitireRight);
     }
 
     public static BuildModeController Instance { get; protected set; }
+
+    // The rotation applied to the object.
+    public float CurrentPreviewRotation { get; private set; }
 
     // Use this for initialization
     public void SetMouseController(MouseController currentMouseController)
@@ -77,7 +77,7 @@ public class BuildModeController
         // Wall is not a Tile!  Wall is an "Furniture" that exists on TOP of a tile.
         buildMode = BuildMode.FURNITURE;
         buildModeType = type;
-        currentPreviewRotation = 0f;
+        CurrentPreviewRotation = 0f;
         mouseController.StartBuildMode();
     }
 
@@ -105,9 +105,9 @@ public class BuildModeController
             string furnitureType = buildModeType;
 
             if ( 
-                WorldController.Instance.World.IsFurniturePlacementValid(furnitureType, tile, currentPreviewRotation) &&
+                WorldController.Instance.World.IsFurniturePlacementValid(furnitureType, tile, CurrentPreviewRotation) &&
                 WorldController.Instance.World.IsFurnitureWorkSpotClear(furnitureType, tile) && 
-                DoesBuildJobOverlapExistingBuildJob(tile, furnitureType, currentPreviewRotation) == false)
+                DoesBuildJobOverlapExistingBuildJob(tile, furnitureType, CurrentPreviewRotation) == false)
             {
                 // This tile position is valid for this furniture
 
@@ -136,7 +136,7 @@ public class BuildModeController
                 }
 
                 Furniture furnituteToBuild = PrototypeManager.Furniture.Get(furnitureType).Clone();
-                furnituteToBuild.SetRotation(currentPreviewRotation);
+                furnituteToBuild.SetRotation(CurrentPreviewRotation);
                 job.buildablePrototype = furnituteToBuild;
 
                 // Add the job to the queue or build immediately if in Dev mode
@@ -332,7 +332,7 @@ public class BuildModeController
     {
         if (buildMode == BuildMode.FURNITURE && PrototypeManager.Furniture.Get(buildModeType).CanRotate)
         {
-            currentPreviewRotation = (currentPreviewRotation + 90) % 360;
+            CurrentPreviewRotation = (CurrentPreviewRotation + 90) % 360;
         }
     }
 
@@ -341,7 +341,7 @@ public class BuildModeController
     {
         if (buildMode == BuildMode.FURNITURE && PrototypeManager.Furniture.Get(buildModeType).CanRotate)
         {
-            currentPreviewRotation = (currentPreviewRotation - 90) % 360;
+            CurrentPreviewRotation = (CurrentPreviewRotation - 90) % 360;
         }
     }
 }

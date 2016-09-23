@@ -11,7 +11,7 @@ using UnityEngine;
 
 public static class ImageUtils
 {
-    public static Vector3 SpritePivotOffset(Sprite sprite, float rotation)
+    public static Vector3 SpritePivotOffset(Sprite sprite, float rotation = 0f)
     {
         Vector3 offset;
 

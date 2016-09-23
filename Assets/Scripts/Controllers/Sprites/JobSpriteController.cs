@@ -115,15 +115,17 @@ public class JobSpriteController : BaseSpriteController<Job>
             // This is a normal furniture job.
             if (job.buildablePrototype.GetType().ToString() == "Furniture")
             {
+                Furniture furnitureToBuild = (Furniture)job.buildablePrototype;
                 sr.sprite = fsc.GetSpriteForFurniture(job.JobObjectType);
+                job_go.transform.position = job.tile.Vector3 + ImageUtils.SpritePivotOffset(sr.sprite, furnitureToBuild.Rotation);
+                job_go.transform.Rotate(0, 0, furnitureToBuild.Rotation);
             }
             else if (job.buildablePrototype.GetType().ToString() == "Utility")
             {
                 sr.sprite = usc.GetSpriteForUtility(job.JobObjectType);
+                job_go.transform.position = job.tile.Vector3 + ImageUtils.SpritePivotOffset(sr.sprite);
             }
 
-            job_go.transform.position = job.tile.Vector3 + ImageUtils.SpritePivotOffset(sr.sprite, BuildModeController.Instance.currentPreviewRotation);
-            job_go.transform.Rotate(0, 0, BuildModeController.Instance.currentPreviewRotation);
             sr.color = new Color32(128, 255, 128, 64);
         }
 

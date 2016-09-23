@@ -218,11 +218,11 @@ public class MouseController
             || PrototypeManager.Furniture.Get(bmc.buildModeType).Height > 1))
         {
             Furniture furnitureToBuild = PrototypeManager.Furniture.Get(bmc.buildModeType).Clone();
-            furnitureToBuild.SetRotation(bmc.currentPreviewRotation);
+            furnitureToBuild.SetRotation(bmc.CurrentPreviewRotation);
             Sprite sprite = fsc.GetSpriteForFurniture(furnitureToBuild.Type);
 
             // Use the center of the Furniture.
-            currPlacingPosition = currFramePosition - ImageUtils.SpritePivotOffset(sprite, bmc.currentPreviewRotation);
+            currPlacingPosition = currFramePosition - ImageUtils.SpritePivotOffset(sprite, bmc.CurrentPreviewRotation);
         }
         else
         {
@@ -568,9 +568,9 @@ public class MouseController
         sr.sortingLayerName = "Jobs";
         sr.sprite = fsc.GetSpriteForFurniture(furnitureType);
 
-        if (WorldController.Instance.World.IsFurniturePlacementValid(furnitureType, t, bmc.currentPreviewRotation) &&
+        if (WorldController.Instance.World.IsFurniturePlacementValid(furnitureType, t, bmc.CurrentPreviewRotation) &&
             WorldController.Instance.World.IsFurnitureWorkSpotClear(furnitureType, t) && 
-            bmc.DoesBuildJobOverlapExistingBuildJob(t, furnitureType, bmc.currentPreviewRotation) == false)
+            bmc.DoesBuildJobOverlapExistingBuildJob(t, furnitureType, bmc.CurrentPreviewRotation) == false)
         {
             sr.color = new Color(0.5f, 1f, 0.5f, 0.25f);
         }
@@ -580,8 +580,8 @@ public class MouseController
         }
 
         go.name = furnitureType + "_p_" + t.X + "_" + t.Y + "_" + t.Z;
-        go.transform.position = t.Vector3 + ImageUtils.SpritePivotOffset(sr.sprite, bmc.currentPreviewRotation);
-        go.transform.Rotate(0, 0, bmc.currentPreviewRotation);
+        go.transform.position = t.Vector3 + ImageUtils.SpritePivotOffset(sr.sprite, bmc.CurrentPreviewRotation);
+        go.transform.Rotate(0, 0, bmc.CurrentPreviewRotation);
     }
 
     private void ShowWorkSpotSpriteAtTile(string furnitureType, Tile t)
