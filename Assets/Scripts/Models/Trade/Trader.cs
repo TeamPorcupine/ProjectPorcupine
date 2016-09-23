@@ -34,8 +34,7 @@ public class Trader
             Currency = currency
         };
 
-        List<List<Inventory>> worldInventories =
-            WorldController.Instance.World.inventoryManager.Inventories.Values.Select(i => i.ToList()).ToList();
+        List<List<Inventory>> worldInventories = World.Current.InventoryManager.Inventories.Values.Select(i => i.ToList()).ToList();
         
         foreach (List<Inventory> worldInventory in worldInventories)
         {
