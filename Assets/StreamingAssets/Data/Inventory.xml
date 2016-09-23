@@ -7,4 +7,5 @@
     <Inventory type="Steel Plate" maxStackSize="50" basePrice="1.5" category="inv_cat_refined"/>
     <Inventory type="Power Cell" maxStackSize="5" basePrice="5" category="inv_cat_crafted"/>
     <Inventory type="Copper Plate" maxStackSize="50" basePrice="1.5" category="inv_cat_refined"/>
+    <Inventory type="Copper Wire" maxStackSize="50" basePrice="2" category="inv_cat_refined"/>
 </Inventories>

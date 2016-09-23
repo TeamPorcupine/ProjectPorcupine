@@ -11,10 +11,17 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
+using UnityEngine;
 
 public class FurnitureManager : IEnumerable<Furniture>
 {
     private List<Furniture> furnitures;
+
+    // A temporary list of all visible furniture. Gets updated when camera moves.
+    private List<Furniture> furnituresVisible;
+
+    // A temporary list of all invisible furniture. Gets updated when camera moves.
+    private List<Furniture> furnituresInvisible;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FurnitureManager"/> class.
@@ -22,6 +29,8 @@ public class FurnitureManager : IEnumerable<Furniture>
     public FurnitureManager()
     {
         furnitures = new List<Furniture>();
+        furnituresVisible = new List<Furniture>();
+        furnituresInvisible = new List<Furniture>();
     }
 
     /// <summary>
@@ -67,7 +76,9 @@ public class FurnitureManager : IEnumerable<Furniture>
         }
 
         furniture.Removed += OnRemoved;
+
         furnitures.Add(furniture);
+        furnituresVisible.Add(furniture);
 
         // Do we need to recalculate our rooms?
         if (doRoomFloodFill && furniture.RoomEnclosure)
@@ -153,18 +164,29 @@ public class FurnitureManager : IEnumerable<Furniture>
     /// <param name="deltaTime">Delta time.</param>
     public void TickEveryFrame(float deltaTime)
     {
-        foreach (Furniture furniture in furnitures)
+        foreach (Furniture furniture in furnituresVisible)
         {
             furniture.EveryFrameUpdate(deltaTime);
         }
     }
 
     /// <summary>
-    /// Calls the furnitures update function of a fixed frequency.
+    /// Calls the furnitures update function on a fixed frequency.
     /// </summary>
     /// <param name="deltaTime">Delta time.</param>
     public void TickFixedFrequency(float deltaTime)
     {
+        // TODO: Further optimization could divide eventFurnitures in multiple lists
+        //       and update one of the lists each frame.
+        //       FixedFrequencyUpdate on invisible furniture could also be even slower.
+
+        // Update furniture outside of the camera view
+        foreach (Furniture furniture in furnituresInvisible)
+        {
+            furniture.EveryFrameUpdate(deltaTime);
+        }
+
+        // Update all furniture with EventActions
         foreach (Furniture furniture in furnitures)
         {
             furniture.FixedFrequencyUpdate(deltaTime);
@@ -193,6 +215,41 @@ public class FurnitureManager : IEnumerable<Furniture>
     }
 
     /// <summary>
+    /// Notify world that the camera moved, so we can check which entities are visible to the camera.
+    /// The invisible enities can be updated less frequent for better performance.
+    /// </summary>
+    public void OnCameraMoved(Bounds cameraBounds)
+    {        
+        // Expand bounds to include tiles on the edge where the centre isn't inside the bounds
+        cameraBounds.Expand(1);
+
+        foreach (Furniture furn in furnitures)
+        {
+            // Multitile furniture base tile is bottom left - so add width and height 
+            Bounds furnitureBounds = new Bounds(
+                new Vector3(furn.Tile.X - 0.5f + (furn.Width / 2), furn.Tile.Y - 0.5f + (furn.Height / 2), 0),
+                new Vector3(furn.Width, furn.Height));
+
+            if (cameraBounds.Intersects(furnitureBounds))
+            {
+                if (furnituresInvisible.Contains(furn))
+                {
+                    furnituresInvisible.Remove(furn);
+                    furnituresVisible.Add(furn);
+                }
+            }
+            else
+            {
+                if (furnituresVisible.Contains(furn))
+                {
+                    furnituresVisible.Remove(furn);
+                    furnituresInvisible.Add(furn);
+                }
+            }            
+        }
+    }
+
+    /// <summary>
     /// Writes the furniture to the XML.
     /// </summary>
     /// <param name="writer">The Xml Writer.</param>
@@ -213,5 +270,14 @@ public class FurnitureManager : IEnumerable<Furniture>
     private void OnRemoved(Furniture furniture)
     {
         furnitures.Remove(furniture);
+
+        if (furnituresInvisible.Contains(furniture))
+        {
+            furnituresInvisible.Remove(furniture);            
+        }
+        else if (furnituresVisible.Contains(furniture))
+        {
+            furnituresVisible.Remove(furniture);
+        }
     }
 }

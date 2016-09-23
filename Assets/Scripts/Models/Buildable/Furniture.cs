@@ -426,14 +426,14 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         // Call LUA install scripts
         obj.EventActions.Trigger("OnInstall", obj);
 
-        // Update thermalDiffusifity using coefficient
+        // Update thermalDiffusivity using coefficient
         float thermalDiffusivity = Temperature.defaultThermalDiffusivity;
         if (obj.Parameters.ContainsKey("thermal_diffusivity"))
         {
             thermalDiffusivity = obj.Parameters["thermal_diffusivity"].ToFloat();
         }
 
-        World.Current.temperature.SetThermalDiffusivity(tile.X, tile.Y, thermalDiffusivity);
+        World.Current.temperature.SetThermalDiffusivity(tile.X, tile.Y, tile.Z, thermalDiffusivity);
 
         return obj;
     }
@@ -886,7 +886,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         EventActions.Trigger("OnUninstall", this);
 
         // Update thermalDiffusifity to default value
-        World.Current.temperature.SetThermalDiffusivity(Tile.X, Tile.Y, Temperature.defaultThermalDiffusivity);
+        World.Current.temperature.SetThermalDiffusivity(Tile.X, Tile.Y, Tile.Z, Temperature.defaultThermalDiffusivity);
 
         // Let our workspot tile know it is no longer reserved for us
         World.Current.UnreserveTileAsWorkSpot(this);
