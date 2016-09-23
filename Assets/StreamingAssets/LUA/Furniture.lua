@@ -504,7 +504,7 @@ function Heater_UpdateTemperature( furniture, deltaTime)
     temperatureChangePerSecond = furniture.Parameters["base_heating"].ToFloat() * efficiency
     temperatureChange = temperatureChangePerSecond * deltaTime
     
-    World.Current.temperature.ChangeTemperature(tile.X, tile.Y, temperatureChange)
+    World.Current.temperature.ChangeTemperature(tile.X, tile.Y, tile.Z, temperatureChange)
     --ModUtils.ULogChannel("Temperature", "Heat change: " .. temperatureChangePerSecond .. " => " .. World.current.temperature.GetTemperature(tile.X, tile.Y))
 end
 
@@ -734,7 +734,7 @@ function Rtg_UpdateTemperature( furniture, deltaTime)
     temperatureChangePerSecond = furniture.Parameters["base_heating"].ToFloat() * efficiency
     temperatureChange = temperatureChangePerSecond * deltaTime
     
-    World.Current.temperature.ChangeTemperature(tile.X, tile.Y, temperatureChange)
+    World.Current.temperature.ChangeTemperature(tile.X, tile.Y, tile.Z, temperatureChange)
     --ModUtils.ULogChannel("Temperature", "Heat change: " .. temperatureChangePerSecond .. " => " .. World.current.temperature.GetTemperature(tile.X, tile.Y))
 end
 

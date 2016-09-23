@@ -263,7 +263,8 @@ public class ConstructionMenu : MonoBehaviour
         foreach (TileType item in PrototypeManager.TileType.Values)
         {
             TileType tileType = item;
-            string key = tileType.Type;
+
+            string key = tileType.LocalizationCode;
 
             GameObject gameObject = (GameObject)Instantiate(buttonPrefab);
             gameObject.transform.SetParent(contentTransform);
@@ -285,7 +286,7 @@ public class ConstructionMenu : MonoBehaviour
             };
 
             Image image = gameObject.transform.GetChild(0).GetComponentsInChildren<Image>().First();
-            image.sprite = SpriteManager.GetSprite("Tile", key);
+            image.sprite = SpriteManager.GetSprite("Tile", tileType.Type);
         }
     }
 
