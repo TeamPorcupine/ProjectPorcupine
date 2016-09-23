@@ -26,7 +26,7 @@ public class DialogBoxOptions : DialogBox
         bool cancel = false;
 
         dialogManager.dialogBoxPromptOrInfo.SetPrompt("prompt_save_before_loading_new_world");
-        dialogManager.dialogBoxPromptOrInfo.SetButtons(DialogBoxResult.Yes | DialogBoxResult.No | DialogBoxResult.Cancel);
+        dialogManager.dialogBoxPromptOrInfo.SetButtons(DialogBoxResult.Yes, DialogBoxResult.No, DialogBoxResult.Cancel);
 
         dialogManager.dialogBoxPromptOrInfo.Closed = () =>
         {

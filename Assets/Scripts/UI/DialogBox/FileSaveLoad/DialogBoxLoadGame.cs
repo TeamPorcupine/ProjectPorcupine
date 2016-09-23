@@ -128,7 +128,7 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
             }
         };
         dbm.dialogBoxPromptOrInfo.SetPrompt("prompt_delete_file", fileName);
-        dbm.dialogBoxPromptOrInfo.SetButtons(DialogBoxResult.Yes | DialogBoxResult.No);
+        dbm.dialogBoxPromptOrInfo.SetButtons(DialogBoxResult.Yes, DialogBoxResult.No);
         dbm.dialogBoxPromptOrInfo.ShowDialog();
     }
 

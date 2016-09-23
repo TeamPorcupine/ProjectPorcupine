@@ -28,22 +28,27 @@ public class DialogBoxPromptOrInfo : DialogBox
     /// <summary>
     /// Define the buttons that should appear in the dialog (yes, no, cancel).
     /// </summary>
-    /// <param name="buttonsToSet">An combination enum built with bitwise ORs to define the buttons.</param>
-    public void SetButtons(DialogBoxResult buttonsToSet)
+    public void SetButtons(params DialogBoxResult[] buttonsToSet)
     {
-        gameObject.transform.Find("Buttons").gameObject.SetActive(true);
+        Transform buttons = gameObject.transform.Find("Buttons");
+        buttons.gameObject.SetActive(true);
 
-        if ((buttonsToSet & DialogBoxResult.Yes) == DialogBoxResult.Yes)
+        foreach (Transform button in buttons)
+        {
+            button.gameObject.SetActive(false);
+        }
+
+        if (Array.Exists(buttonsToSet, element => element == DialogBoxResult.Yes))
         {
             gameObject.transform.Find("Buttons/Button - Yes").gameObject.SetActive(true);
         }
 
-        if ((buttonsToSet & DialogBoxResult.No) == DialogBoxResult.No)
+        if (Array.Exists(buttonsToSet, element => element == DialogBoxResult.No))
         {
             gameObject.transform.Find("Buttons/Button - No").gameObject.SetActive(true);
         }
 
-        if ((buttonsToSet & DialogBoxResult.Cancel) == DialogBoxResult.Cancel)
+        if (Array.Exists(buttonsToSet, element => element == DialogBoxResult.Cancel))
         {
             gameObject.transform.Find("Buttons/Button - Cancel").gameObject.SetActive(true);
         }
@@ -55,9 +60,16 @@ public class DialogBoxPromptOrInfo : DialogBox
     /// <param name="infoText">Text to show.</param>
     public void SetAsInfo(string infoText)
     {
-        gameObject.transform.Find("Buttons").gameObject.SetActive(true);
-
         SetPrompt(infoText);
+
+        Transform buttons = gameObject.transform.Find("Buttons");
+        buttons.gameObject.SetActive(true);
+
+        foreach (Transform button in buttons)
+        {
+            button.gameObject.SetActive(false);
+        }
+
         gameObject.transform.Find("Buttons/Button - Okay").gameObject.SetActive(true);
     }
 

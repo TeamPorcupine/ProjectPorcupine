@@ -66,7 +66,7 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
             isOkToSave = false;
 
             dbm.dialogBoxPromptOrInfo.SetPrompt("prompt_overwrite_existing_file", new string[] { fileName });
-            dbm.dialogBoxPromptOrInfo.SetButtons(DialogBoxResult.Yes | DialogBoxResult.No);
+            dbm.dialogBoxPromptOrInfo.SetButtons(DialogBoxResult.Yes, DialogBoxResult.No);
 
             dbm.dialogBoxPromptOrInfo.Closed = () =>
             {

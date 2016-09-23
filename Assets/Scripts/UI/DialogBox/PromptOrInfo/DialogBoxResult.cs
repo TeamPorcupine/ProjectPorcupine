@@ -8,7 +8,7 @@
 #endregion
 public enum DialogBoxResult
 {
-    Yes = 1,
-    No = 2,
-    Cancel = 4
+    Yes,
+    No,
+    Cancel
 }
