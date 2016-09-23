@@ -383,6 +383,11 @@ namespace ProjectPorcupine.Rooms
                 return false;
             }
 
+            if (RoomBehaviors.ContainsKey(objInstance.Type))
+            {
+                return false;
+            }
+
             if (objInstance.IsValidRoom(this) == false)
             {
                 Debug.ULogErrorChannel("Tile", "Trying to assign a RoomBehavior to a room that isn't valid!");
