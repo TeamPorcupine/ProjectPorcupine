@@ -14,18 +14,48 @@ using UnityEngine.UI;
 public class DialogBoxOptions : DialogBox
 {
     private DialogBoxManager dialogManager;
+    private bool cancel;
 
     public void OnButtonNewWorld()
     {
         StartCoroutine(OnButtonNewWorldCoroutine());
     }
 
-    public IEnumerator OnButtonNewWorldCoroutine()
+    public void OnButtonSaveGame()
+    {
+        this.CloseDialog();
+        dialogManager.dialogBoxSaveGame.ShowDialog();
+    }
+
+    public void OnButtonLoadGame()
+    {
+        StartCoroutine(OnButtonLoadGameCoroutine());
+    }
+
+    public void OnButtonOpenSettings()
+    {
+        this.CloseDialog();
+        dialogManager.dialogBoxSettings.ShowDialog();
+    }
+
+    // Quit the app whether in editor or a build version.
+    public void OnButtonQuitGame()
+    {
+        // Maybe ask the user if he want to save or is sure they want to quit??
+#if UNITY_EDITOR
+        // Allows you to quit in the editor.
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
+    }
+
+    private IEnumerator CheckIfSaveGameBefore(string prompt)
     {
         bool saveGame = false;
-        bool cancel = false;
+        cancel = false;
 
-        dialogManager.dialogBoxPromptOrInfo.SetPrompt("prompt_save_before_loading_new_world");
+        dialogManager.dialogBoxPromptOrInfo.SetPrompt(prompt);
         dialogManager.dialogBoxPromptOrInfo.SetButtons(DialogBoxResult.Yes, DialogBoxResult.No, DialogBoxResult.Cancel);
 
         dialogManager.dialogBoxPromptOrInfo.Closed = () =>
@@ -51,15 +81,14 @@ public class DialogBoxOptions : DialogBox
         if (saveGame)
         {
             dialogManager.dialogBoxSaveGame.ShowDialog();
-            
-            while (dialogManager.dialogBoxSaveGame.gameObject.activeSelf)
-            {
-                yield return null;
-            }
         }
+    }
 
-        // If the current game is saved we are presented with a save confirmation dialog
-        while (dialogManager.dialogBoxPromptOrInfo.gameObject.activeSelf)
+    private IEnumerator OnButtonNewWorldCoroutine()
+    {
+        StartCoroutine(CheckIfSaveGameBefore("prompt_save_before_creating_new_world"));
+
+        while (dialogManager.dialogBoxSaveGame.gameObject.activeSelf || dialogManager.dialogBoxPromptOrInfo.gameObject.activeSelf)
         {
             yield return null;
         }
@@ -74,34 +103,20 @@ public class DialogBoxOptions : DialogBox
         }
     }
 
-    public void OnButtonSaveGame()
+    private IEnumerator OnButtonLoadGameCoroutine()
     {
-        this.CloseDialog();
-        dialogManager.dialogBoxSaveGame.ShowDialog();
-    }
+        StartCoroutine(CheckIfSaveGameBefore("prompt_save_before_loading_new_game"));
 
-    public void OnButtonLoadGame()
-    {
-        this.CloseDialog();
-        dialogManager.dialogBoxLoadGame.ShowDialog();
-    }
+        while (dialogManager.dialogBoxSaveGame.gameObject.activeSelf || dialogManager.dialogBoxPromptOrInfo.gameObject.activeSelf)
+        {
+            yield return null;
+        }
 
-    public void OnButtonOpenSettings()
-    {
-        this.CloseDialog();
-        dialogManager.dialogBoxSettings.ShowDialog();
-    }
-
-    // Quit the app whether in editor or a build version.
-    public void OnButtonQuitGame()
-    {
-        // Maybe ask the user if he want to save or is sure they want to quit??
-#if UNITY_EDITOR
-        // Allows you to quit in the editor.
-        UnityEditor.EditorApplication.isPlaying = false;
-#else
-        Application.Quit();
-#endif
+        if (!cancel)
+        {
+            this.CloseDialog();
+            dialogManager.dialogBoxLoadGame.ShowDialog();
+        }
     }
 
     private void RenderButtons()
