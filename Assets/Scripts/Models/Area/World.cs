@@ -623,7 +623,7 @@ public class World : IXmlSerializable
         inventoryManager = new InventoryManager();
         cameraData = new CameraData();
         PowerNetwork = new ProjectPorcupine.PowerNetwork.PowerNetwork();
-        temperature = new Temperature(Width, Height);
+        temperature = new Temperature();
 
         LoadSkybox();
         AddEventListeners();
