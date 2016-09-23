@@ -28,7 +28,7 @@ public class DialogListItem : MonoBehaviour, IPointerClickHandler
         inputField.text = fileName;
 
         DialogListItem[] listItems = transform.parent.GetComponentsInChildren<DialogListItem>();
-        foreach(DialogListItem listItem in listItems)
+        foreach (DialogListItem listItem in listItems)
         {
             listItem.GetComponent<Image>().color = listItem.currentColor;
         }

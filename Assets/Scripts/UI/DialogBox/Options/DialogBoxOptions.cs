@@ -48,11 +48,6 @@ public class DialogBoxOptions : DialogBox
             yield return null;
         }
 
-        if (!cancel)
-        {
-            //this.CloseDialog();
-        }
-
         if (saveGame)
         {
             dialogManager.dialogBoxSaveGame.ShowDialog();

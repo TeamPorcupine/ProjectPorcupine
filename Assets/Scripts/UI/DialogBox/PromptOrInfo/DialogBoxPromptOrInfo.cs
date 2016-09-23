@@ -17,11 +17,11 @@ using UnityEngine.UI;
 /// </summary>
 public class DialogBoxPromptOrInfo : DialogBox
 {
+    private float standardWidth = 320f;
+
     public DialogBoxResult Result { get; set; }
 
     public DialogBoxResult Buttons { get; set; }
-
-    private float standardWidth = 320f;
 
     public Action Closed { get; set; }
 
