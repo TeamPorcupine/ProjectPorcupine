@@ -19,8 +19,8 @@ using UnityEngine.UI;
 
 public class DialogBoxLoadSaveGame : DialogBox
 {
-    public static readonly Color PrimaryColor = new Color(0.545f, 0.855f, 1f, 0.6f);
-    public static readonly Color SecondaryColor = new Color(0.325f, 0.784f, 1f, 0.6f);
+    public static readonly Color PrimaryColor = new Color32(0, 149, 217, 80);
+    public static readonly Color SecondaryColor = new Color32(0, 149, 217, 160);
 
     public GameObject fileListItemPrefab;
     public Transform fileList;
@@ -81,6 +81,8 @@ public class DialogBoxLoadSaveGame : DialogBox
 
         // Set scroll sensitivity based on the save-item count
         fileList.GetComponentInParent<ScrollRect>().scrollSensitivity = fileList.childCount / 2;
+
+        fileList.GetComponent<AutomaticVerticalSize>().AdjustSize();
     }
 
     public override void CloseDialog()
