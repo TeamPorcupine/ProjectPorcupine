@@ -105,8 +105,8 @@ public class BuildModeController
             string furnitureType = buildModeType;
 
             if ( 
-                WorldController.Instance.World.IsFurniturePlacementValid(furnitureType, tile, CurrentPreviewRotation) &&
-                WorldController.Instance.World.IsFurnitureWorkSpotClear(furnitureType, tile) && 
+                World.Current.FurnitureManager.IsPlacementValid(furnitureType, tile, CurrentPreviewRotation) &&
+                World.Current.FurnitureManager.IsWorkSpotClear(furnitureType, tile) && 
                 DoesBuildJobOverlapExistingBuildJob(tile, furnitureType, CurrentPreviewRotation) == false)
             {
                 // This tile position is valid for this furniture
@@ -131,7 +131,7 @@ public class BuildModeController
                 else
                 {
                     Debug.ULogErrorChannel("BuildModeController", "There is no furniture job prototype for '" + furnitureType + "'");
-                    job = new Job(tile, furnitureType, World.Current.JobComplete_FurnitureBuilding, 0.1f, null, Job.JobPriority.High);
+                    job = new Job(tile, furnitureType, World.Current.FurnitureManager.ConstructJobCompleted, 0.1f, null, Job.JobPriority.High);
                     job.JobDescription = "job_build_" + furnitureType + "_desc";
                 }
 
@@ -142,7 +142,7 @@ public class BuildModeController
                 // Add the job to the queue or build immediately if in Dev mode
                 if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
                 {
-                    WorldController.Instance.World.PlaceFurniture(furnituteToBuild, job.tile);
+                    World.Current.FurnitureManager.PlaceFurniture(furnituteToBuild, job.tile);
                 }
                 else
                 {
@@ -152,13 +152,13 @@ public class BuildModeController
                         {
                             // FIXME: I don't like having to manually and explicitly set
                             // flags that prevent conflicts. It's too easy to forget to set/clear them!
-                            Tile offsetTile = WorldController.Instance.World.GetTileAt(x_off, y_off, tile.Z);
+                            Tile offsetTile = World.Current.GetTileAt(x_off, y_off, tile.Z);
                             offsetTile.PendingBuildJob = job;
                             job.OnJobStopped += (theJob) => offsetTile.PendingBuildJob = null;
                         }
                     }
 
-                    WorldController.Instance.World.jobQueue.Enqueue(job);
+                    World.Current.jobQueue.Enqueue(job);
 
                     // Let our workspot tile know it is reserved for us
                     World.Current.ReserveTileAsWorkSpot((Furniture)job.buildablePrototype, job.tile);
@@ -174,7 +174,7 @@ public class BuildModeController
 
             // TODO: Reimplement this later: DoesBuildJobOverlapExistingBuildJob(t, furnitureType) == false)
             if ( 
-                WorldController.Instance.World.IsUtilityPlacementValid(utilityType, tile)  &&
+                World.Current.UtilityManager.IsPlacementValid(utilityType, tile)  &&
                 DoesSameUtilityTypeAlreadyExist(tile, utilityType) == false)
             {
                 // This tile position is valid for this furniture
@@ -193,7 +193,7 @@ public class BuildModeController
                 else
                 {
                     Debug.ULogErrorChannel("BuildModeController", "There is no furniture job prototype for '" + utilityType + "'");
-                    job = new Job(tile, utilityType, World.Current.JobComplete_UtilityBuilding, 0.1f, null, Job.JobPriority.High);
+                    job = new Job(tile, utilityType, World.Current.UtilityManager.ConstructJobCompleted, 0.1f, null, Job.JobPriority.High);
                     job.JobDescription = "job_build_" + utilityType + "_desc";
                 }
 
@@ -202,17 +202,17 @@ public class BuildModeController
                 // Add the job to the queue or build immediately if in dev mode
                 if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
                 {
-                    WorldController.Instance.World.PlaceUtility(job.JobObjectType, job.tile);
+                    World.Current.UtilityManager.PlaceUtility(job.JobObjectType, job.tile);
                 }
                 else
                 {
                     // FIXME: I don't like having to manually and explicitly set
                     // flags that preven conflicts. It's too easy to forget to set/clear them!
-                    Tile offsetTile = WorldController.Instance.World.GetTileAt(tile.X, tile.Y, tile.Z);
+                    Tile offsetTile = World.Current.GetTileAt(tile.X, tile.Y, tile.Z);
                     offsetTile.PendingBuildJob = job;
                     job.OnJobStopped += (theJob) => offsetTile.PendingBuildJob = null;
 
-                    WorldController.Instance.World.jobQueue.Enqueue(job);
+                    World.Current.jobQueue.Enqueue(job);
                 }
             }
         }

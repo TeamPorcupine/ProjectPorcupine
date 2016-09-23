@@ -51,7 +51,7 @@ function temperatureValueAt(tile, world)
     --if tile == nil then
     --	return -2
     --end
-    return math.max(math.min(world.temperature.GetTemperature(tile.X, tile.Y) / 3, 254), 0)
+    return math.max(math.min(world.temperature.GetTemperature(tile.X, tile.Y, tile.Z) / 3, 254), 0)
 end
 
 
@@ -60,7 +60,7 @@ function thermalDiffusivityValueAt(tile, world)
     if tile == nil then
         return 255
     else
-        return math.max(math.min(254*world.temperature.GetThermalDiffusivity(tile.X, tile.Y)))
+        return math.max(math.min(254*world.temperature.GetThermalDiffusivity(tile.X, tile.Y, tile.Z)))
     end
 end
 

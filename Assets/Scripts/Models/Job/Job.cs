@@ -288,7 +288,7 @@ public class Job : ISelectable, IPrototypable
         // If we are a furniture building job, Let our workspot tile know it is no longer reserved for us.
         if (buildablePrototype != null)
         {
-            WorldController.Instance.World.UnreserveTileAsWorkSpot((Furniture)buildablePrototype, tile);
+            World.Current.UnreserveTileAsWorkSpot((Furniture)buildablePrototype, tile);
         }
 
         // Remove the job out of both job queues.
@@ -376,7 +376,7 @@ public class Job : ISelectable, IPrototypable
         {
             if (this.acceptsAny == false)
             {
-                if (World.Current.inventoryManager.HasInventoryOfType(inventory.Type) == false)
+                if (World.Current.InventoryManager.HasInventoryOfType(inventory.Type) == false)
                 {
                     // the job requires ALL inventory requirements to be met, and there is no source of a desired Type
                     return null;
@@ -386,7 +386,7 @@ public class Job : ISelectable, IPrototypable
                     fulfillableInventoryRequirements.Add(inventory.Type);
                 }
             }
-            else if (World.Current.inventoryManager.HasInventoryOfType(inventory.Type))
+            else if (World.Current.InventoryManager.HasInventoryOfType(inventory.Type))
             {
                 // there is a source for a desired Type that the job will accept
                 fulfillableInventoryRequirements.Add(inventory.Type);

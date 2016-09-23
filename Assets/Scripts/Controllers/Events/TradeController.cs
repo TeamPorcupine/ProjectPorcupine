@@ -107,13 +107,13 @@ public class TradeController
         {
             if (tradeItem.TradeAmount > 0)
             {
-                Tile tile = WorldController.Instance.World.GetTileAt((int)tradingCoordinates.x, (int)tradingCoordinates.y, (int)tradingCoordinates.z);
+                Tile tile = World.Current.GetTileAt((int)tradingCoordinates.x, (int)tradingCoordinates.y, (int)tradingCoordinates.z);
                 Inventory inv = new Inventory(tradeItem.Type, tradeItem.TradeAmount, tradeItem.TradeAmount);
-                WorldController.Instance.World.inventoryManager.PlaceInventoryAround(tile, inv, 6);
+                World.Current.InventoryManager.PlaceInventoryAround(tile, inv, 6);
             }
             else if (tradeItem.TradeAmount < 0)
             {
-                World.Current.inventoryManager.RemoveInventoryOfType(tradeItem.Type, -tradeItem.TradeAmount, true);
+                World.Current.InventoryManager.RemoveInventoryOfType(tradeItem.Type, -tradeItem.TradeAmount, true);
             }
         }
     }
@@ -140,7 +140,7 @@ public class TradeController
     /// <returns></returns>
     private Furniture FindRandomLandingPadWithouTrader()
     {
-        List<Furniture> landingPads = World.Current.furnitures.Where(f => f.HasTypeTag("LandingPad")).ToList();
+        List<Furniture> landingPads = World.Current.FurnitureManager.Find(f => f.HasTypeTag("LandingPad"));
 
         if (landingPads.Any())
         {
