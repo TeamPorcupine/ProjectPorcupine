@@ -25,6 +25,65 @@ public class InventoryManager
 
     public Dictionary<string, List<Inventory>> Inventories { get; private set; }
 
+    public Tile GetFirstTileWithValidInventoryPlacement(int maxOffset, Tile inTile, Inventory inv)
+    {
+        for (int offset = 0; offset <= maxOffset; offset++)
+        {
+            int offsetX = 0;
+            int offsetY = 0;
+            Tile tile;
+
+            // searching top & bottom line of the square
+            for (offsetX = -offset; offsetX <= offset; offsetX++)
+            {
+                offsetY = offset;
+                tile = World.Current.GetTileAt(inTile.X + offsetX, inTile.Y + offsetY, inTile.Z);
+                if (CanPlaceInventoryAt(tile, inv))
+                {
+                    return tile;
+                }
+
+                offsetY = -offset;
+                tile = World.Current.GetTileAt(inTile.X + offsetX, inTile.Y + offsetY, inTile.Z);
+                if (CanPlaceInventoryAt(tile, inv))
+                {
+                    return tile;
+                }
+            }
+
+            // searching left & right line of the square
+            for (offsetY = -offset; offsetY <= offset; offsetY++)
+            {
+                offsetX = offset;
+                tile = World.Current.GetTileAt(inTile.X + offsetX, inTile.Y + offsetY, inTile.Z);
+                if (CanPlaceInventoryAt(tile, inv))
+                {
+                    return tile;
+                }
+
+                offsetX = -offset;
+                tile = World.Current.GetTileAt(inTile.X + offsetX, inTile.Y + offsetY, inTile.Z);
+                if (CanPlaceInventoryAt(tile, inv))
+                {
+                    return tile;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public bool PlaceInventoryAround(Tile tile, Inventory inventory, int radius = 3)
+    {
+        tile = GetFirstTileWithValidInventoryPlacement(radius, tile, inventory);
+        if (tile == null)
+        {
+            return false;
+        }
+
+        return PlaceInventory(tile, inventory);
+    }
+
     public bool PlaceInventory(Tile tile, Inventory inventory)
     {
         bool tileWasEmpty = tile.Inventory == null;
@@ -215,5 +274,11 @@ public class InventoryManager
         {
             handler(inventory);
         }
+    }
+
+    private bool CanPlaceInventoryAt(Tile tile, Inventory inv)
+    {
+        return (tile.Inventory == null && tile.Furniture == null && tile.IsEnterable() == Enterability.Yes) ||
+                    (tile.Inventory != null && tile.Inventory.CanAccept(inv));
     }
 }

@@ -12,6 +12,6 @@ before_install:
 install:
 - ./Scripts/install.sh
 script:
-- ./Scripts/test.sh
+- ./Scripts/test.sh --travis
 notifications:
   email: false

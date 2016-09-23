@@ -160,6 +160,11 @@ public class BuildableJobs
     /// <param name="job">The job that you want to link to the buildable.</param>
     public void Add(Job job)
     {
+        if (buildable.IsBeingDestroyed)
+        {
+            return;
+        }
+
         job.buildable = buildable;
         activeJobs.Add(job);
         job.OnJobStopped += OnJobStopped;
