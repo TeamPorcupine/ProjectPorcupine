@@ -34,7 +34,7 @@ namespace ProjectPorcupine.Rooms
         // This is the generic type of object this is, allowing things to interact with it based on it's generic type
         private HashSet<string> typeTags;
 
-        private List<FurnitureRequirement> furnitureRequirements;
+        private List<FurnitureRequirement> requiredFurniture;
 
         private int requiredSize = 0;
 
@@ -55,7 +55,7 @@ namespace ProjectPorcupine.Rooms
             Parameters = new Parameter();
             typeTags = new HashSet<string>();
             funcRoomValidation = DefaultIsValidRoom;
-            furnitureRequirements = new List<FurnitureRequirement>();
+            requiredFurniture = new List<FurnitureRequirement>();
             ControlledFurniture = new Dictionary<string, List<Furniture>>();
         }
 
@@ -88,9 +88,9 @@ namespace ProjectPorcupine.Rooms
                 funcRoomValidation = (Func<Room, bool>)other.funcRoomValidation.Clone();
             }
 
-            if (other.furnitureRequirements != null)
+            if (other.requiredFurniture != null)
             {
-                furnitureRequirements = new List<FurnitureRequirement>(other.furnitureRequirements);
+                requiredFurniture = new List<FurnitureRequirement>(other.requiredFurniture);
             }
 
             if (other.ControlledFurniture != null) 
@@ -244,6 +244,9 @@ namespace ProjectPorcupine.Rooms
                         break;
                     case "Requirements":
                         ReadXmlRequirements(reader);
+                        break;
+                    case "Optional":
+                        ReadXmlRequirements(reader, true);
                         break;
                     case "Action":
                         XmlReader subtree = reader.ReadSubtree();
@@ -410,7 +413,7 @@ namespace ProjectPorcupine.Rooms
 
             List<Tile> allTiles = innerTiles.Union(borderTiles).ToList();
 
-            foreach (FurnitureRequirement requirement in furnitureRequirements)
+            foreach (FurnitureRequirement requirement in requiredFurniture)
             {
                 string furnitureKey = requirement.type ?? requirement.typeTag;
                 ControlledFurniture.Add(furnitureKey, new List<Furniture>());
@@ -441,7 +444,7 @@ namespace ProjectPorcupine.Rooms
 
             List<Tile> allTiles = innerTiles.Union(borderTiles).ToList();
 
-            foreach (FurnitureRequirement requirement in furnitureRequirements)
+            foreach (FurnitureRequirement requirement in requiredFurniture)
             {
                 if (allTiles.Count(tile => (tile.Furniture != null && (tile.Furniture.Type == requirement.type || tile.Furniture.HasTypeTag(requirement.typeTag)))) < requirement.count) 
                 {
@@ -466,7 +469,7 @@ namespace ProjectPorcupine.Rooms
             }
         }
 
-        private void ReadXmlRequirements(XmlReader readerParent)
+        private void ReadXmlRequirements(XmlReader readerParent, bool isOptional = false)
         {
             XmlReader reader = readerParent.ReadSubtree();
             reader.Read();
@@ -479,12 +482,18 @@ namespace ProjectPorcupine.Rooms
                         // Furniture must have either Type or TypeTag, try both, check for null later
                         string type = reader.GetAttribute("type");
                         string typeTag = reader.GetAttribute("typeTag");
-                        int count = 1;
-                        int.TryParse(reader.GetAttribute("count"), out count);
-                        furnitureRequirements.Add(new FurnitureRequirement(type, typeTag, count));
+                        int count = 0;
+                        if (!isOptional)
+                        {
+                            int.TryParse(reader.GetAttribute("count"), out count);
+                        }
+                        requiredFurniture.Add(new FurnitureRequirement(type, typeTag, count));
                         break;
                     case "Size":
-                        int.TryParse(reader.GetAttribute("tiles"), out requiredSize);
+                        if (!isOptional)
+                        {
+                            int.TryParse(reader.GetAttribute("tiles"), out requiredSize);
+                        }
                         break;
                 }
             }
