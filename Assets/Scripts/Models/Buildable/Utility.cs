@@ -636,40 +636,10 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         return new Utility(this);
     }
 
-    private void ReadXmlDeconstructJob(XmlReader reader)
-    {
-        float jobTime = float.Parse(reader.GetAttribute("jobTime"));
-
-        deconstructInventory = new List<Inventory>();
-
-        XmlReader inventoryReader = reader.ReadSubtree();
-
-        while (inventoryReader.Read())
-        {
-            if (inventoryReader.Name == "Inventory")
-            {
-                // Found an inventory requirement, so add it to the list!
-                deconstructInventory.Add(new Inventory(
-                    inventoryReader.GetAttribute("type"),
-                    int.Parse(inventoryReader.GetAttribute("amount"))));
-            }
-        }
-
-        Job job = new Job(
-                    null,
-                    Type,
-                    null,
-                    jobTime,
-                    null,
-                    Job.JobPriority.High);
-        job.JobDescription = "job_deconstruct_" + Type + "_desc";
-        PrototypeManager.UtilityDeconstructJob.Set(job);
-    }
-
     /// <summary>
     /// Check if the position of the utility is valid or not.
     /// This is called when placing the utility.
-    /// TODO : Add some LUA special requierments
+    /// TODO : Add some LUA special requierments.
     /// </summary>
     /// <param name="tile">The base tile.</param>
     /// <returns>True if the tile is valid for the placement of the utility.</returns>
@@ -699,6 +669,36 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         }
 
         return true;
+    }
+
+    private void ReadXmlDeconstructJob(XmlReader reader)
+    {
+        float jobTime = float.Parse(reader.GetAttribute("jobTime"));
+
+        deconstructInventory = new List<Inventory>();
+
+        XmlReader inventoryReader = reader.ReadSubtree();
+
+        while (inventoryReader.Read())
+        {
+            if (inventoryReader.Name == "Inventory")
+            {
+                // Found an inventory requirement, so add it to the list!
+                deconstructInventory.Add(new Inventory(
+                    inventoryReader.GetAttribute("type"),
+                    int.Parse(inventoryReader.GetAttribute("amount"))));
+            }
+        }
+
+        Job job = new Job(
+                    null,
+                    Type,
+                    null,
+                    jobTime,
+                    null,
+                    Job.JobPriority.High);
+        job.JobDescription = "job_deconstruct_" + Type + "_desc";
+        PrototypeManager.UtilityDeconstructJob.Set(job);
     }
 
     private void InvokeContextMenuLuaAction(ContextMenuAction action, Character character)

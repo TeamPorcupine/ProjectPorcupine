@@ -1142,7 +1142,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// <summary>
     /// Check if the position of the furniture is valid or not.
     /// This is called when placing the furniture.
-    /// TODO : Add some LUA special requierments
+    /// TODO : Add some LUA special requierments.
     /// </summary>
     /// <param name="t">The base tile.</param>
     /// <returns>True if the tile is valid for the placement of the furniture.</returns>
