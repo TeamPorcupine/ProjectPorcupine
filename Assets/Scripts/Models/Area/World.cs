@@ -51,6 +51,12 @@ public class World : IXmlSerializable
     // A three-dimensional array to hold our tile data.
     private Tile[,,] tiles;
 
+    // A temporary list of all visible furniture. Gets updated when camera moves.
+    private List<Furniture> furnituresVisible;
+
+    // A temporary list of all invisible furniture. Gets updated when camera moves.
+    private List<Furniture> furnituresInvisible;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="World"/> class.
     /// </summary>
@@ -139,28 +145,83 @@ public class World : IXmlSerializable
         TimeManager.Instance.FixedFrequencyUnpaused += TickFixedFrequency;
     }
 
+    /// <summary>
+    /// Calls update on characters.
+    /// Also calls "OnFastUpdate" EventActions on visible furniture.
+    /// </summary>
     public void TickEveryFrame(float deltaTime)
     {
         CharacterManager.Update(deltaTime);
 
-        // Update Furniture (fast track)
-        foreach (Furniture furniture in furnitures)
+        // Update Furniture (fast track) but only if visible to the camera
+        foreach (Furniture furniture in furnituresVisible)
         {
             furniture.EveryFrameUpdate(deltaTime);
         }
     }
 
+    /// <summary>
+    /// Fixed update that runs at 5 FPS.
+    /// Calls update on temperature and powernetwork.
+    /// Also calls "OnUpdate" EventActions on all furniture and 
+    /// "OnFastUpdate" EventActions on invisible furniture.
+    /// </summary>
     public void TickFixedFrequency(float deltaTime)
     {
-        // Update Furniture
-        foreach (Furniture f in furnitures)
+        // TODO: Further optimization could divide eventFurnitures in multiple lists
+        //       and update one of the lists each frame.
+        //       FixedFrequencyUpdate on invisible furniture could also be even slower.
+
+        // Update furniture outside of the camera view
+        foreach (Furniture furniture in furnituresInvisible)
         {
-            f.FixedFrequencyUpdate(deltaTime);
+            furniture.EveryFrameUpdate(deltaTime);
+        }
+
+        // Update all furniture with EventActions
+        foreach (Furniture furniture in furnitures)
+        {
+            furniture.FixedFrequencyUpdate(deltaTime);
         }
 
         // Progress temperature modelling
         temperature.Update();
         PowerNetwork.Update(deltaTime);
+    }
+
+    /// <summary>
+    /// Notify world that the camera moved, so we can check which entities are visible to the camera.
+    /// The invisible enities can be updated less frequent for better performance.
+    /// </summary>
+    public void OnCameraMoved(Bounds cameraBounds)
+    {        
+        // Expand bounds to include tiles on the edge where the centre isn't inside the bounds
+        cameraBounds.Expand(1);
+
+        foreach (Furniture furn in furnitures)
+        {
+            // Multitile furniture base tile is bottom left - so add width and height 
+            Bounds furnitureBounds = new Bounds(
+                new Vector3(furn.Tile.X - 0.5f + (furn.Width / 2), furn.Tile.Y - 0.5f + (furn.Height / 2), 0),
+                new Vector3(furn.Width, furn.Height));
+
+            if (cameraBounds.Intersects(furnitureBounds))
+            {
+                if (furnituresInvisible.Contains(furn))
+                {
+                    furnituresInvisible.Remove(furn);
+                    furnituresVisible.Add(furn);
+                }
+            }
+            else
+            {
+                if (furnituresVisible.Contains(furn))
+                {
+                    furnituresVisible.Remove(furn);
+                    furnituresInvisible.Add(furn);
+                }
+            }            
+        }
     }
 
     /// <summary>
@@ -210,7 +271,8 @@ public class World : IXmlSerializable
 
         furn.Removed += OnFurnitureRemoved;
         furnitures.Add(furn);
-
+        furnituresVisible.Add(furn);
+        
         // Do we need to recalculate our rooms?
         if (doRoomFloodFill && furn.RoomEnclosure)
         {
@@ -514,13 +576,22 @@ public class World : IXmlSerializable
     public void OnFurnitureRemoved(Furniture furn)
     {
         furnitures.Remove(furn);
+
+        if (furnituresInvisible.Contains(furn))
+        {
+            furnituresInvisible.Remove(furn);            
+        }
+        else if (furnituresVisible.Contains(furn))
+        {
+            furnituresVisible.Remove(furn);
+        }
     }
 
     public void OnUtilityRemoved(Utility util)
     {
         utilities.Remove(util);
     }
-
+    
     private void ReadXml_Wallet(XmlReader reader)
     {
         if (reader.ReadToDescendant("Currency"))
@@ -618,6 +689,9 @@ public class World : IXmlSerializable
         CreateWallet();
 
         furnitures = new List<Furniture>();
+        furnituresVisible = new List<Furniture>();
+        furnituresInvisible = new List<Furniture>();
+
         utilities = new List<Utility>();
         CharacterManager = new CharacterManager();
         inventoryManager = new InventoryManager();
