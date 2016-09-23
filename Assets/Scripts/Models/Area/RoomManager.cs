@@ -154,10 +154,6 @@ namespace ProjectPorcupine.Rooms
             // Remove this room from our rooms list.
             rooms.Remove(room);
 
-            // All tiles that belonged to this room should be re-assigned to
-            // the outside.
-            room.ReturnTilesToOutsideRoom();
-
             if (Removed != null)
             {
                 Removed(room);
