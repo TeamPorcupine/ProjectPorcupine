@@ -272,7 +272,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             // Also create a callback for when an inventory gets created.
             // Lastly, remove the job from "MyJob".
             World.Current.jobWaitingQueue.Enqueue(MyJob);
-            World.Current.inventoryManager.InventoryCreated += OnInventoryCreated;
+            World.Current.InventoryManager.InventoryCreated += OnInventoryCreated;
             MyJob.OnJobStopped -= OnJobStopped;
             MyJob = null;
         }
@@ -298,7 +298,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         if (inventory != null && !job.inventoryRequirements.ContainsKey(inventory.Type))
         {
-            World.Current.inventoryManager.PlaceInventory(CurrTile, inventory);
+            World.Current.InventoryManager.PlaceInventory(CurrTile, inventory);
             DumpExcessInventory();
         }
 
@@ -586,7 +586,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         if (needPercent > 50 && needPercent < 100 && need.RestoreNeedFurn != null)
         {
-            if (World.Current.CountFurnitureType(need.RestoreNeedFurn.Type) > 0)
+            if (World.Current.FurnitureManager.CountWithType(need.RestoreNeedFurn.Type) > 0)
             {
                 MyJob = new Job(null, need.RestoreNeedFurn.Type, need.CompleteJobNorm, need.RestoreNeedTime, null, Job.JobPriority.High, false, true, false);
             }
@@ -907,7 +907,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 if (CurrTile == JobTile)
                 {
                     // We are at the job's site, so drop the inventory
-                    World.Current.inventoryManager.PlaceInventory(MyJob, inventory);
+                    World.Current.InventoryManager.PlaceInventory(MyJob, inventory);
                     MyJob.DoWork(0); // This will call all cbJobWorked callbacks, because even though
                     // we aren't progressing, it might want to do something with the fact
                     // that the requirements are being met.
@@ -938,7 +938,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 (MyJob.canTakeFromStockpile || CurrTile.Furniture == null || CurrTile.Furniture.HasTypeTag("Storage") == false))
             {
                 // Pick up the stuff!
-                World.Current.inventoryManager.PlaceInventory(
+                World.Current.InventoryManager.PlaceInventory(
                     this,
                     CurrTile.Inventory,
                     MyJob.AmountDesiredOfInventoryType(CurrTile.Inventory));
@@ -968,7 +968,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                     foreach (string itemType in fulfillableInventoryRequirements)
                     {
                         desired = MyJob.inventoryRequirements[itemType];
-                        newPath = World.Current.inventoryManager.GetPathToClosestInventoryOfType(
+                        newPath = World.Current.InventoryManager.GetPathToClosestInventoryOfType(
                             desired.Type,
                             CurrTile,
                             desired.MaxStackSize - desired.StackSize,
@@ -1044,7 +1044,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     private void OnInventoryCreated(Inventory inv)
     {
         // First remove the callback.
-        World.Current.inventoryManager.InventoryCreated -= OnInventoryCreated;
+        World.Current.InventoryManager.InventoryCreated -= OnInventoryCreated;
 
         // Get the relevant job and dequeue it from the waiting queue.
         Job job = World.Current.jobWaitingQueue.Dequeue();
@@ -1068,7 +1068,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 // If not, (re)enqueue the job onto the waiting queue
                 // and also register a callback for the future.
                 World.Current.jobWaitingQueue.Enqueue(job);
-                World.Current.inventoryManager.InventoryCreated += OnInventoryCreated;
+                World.Current.InventoryManager.InventoryCreated += OnInventoryCreated;
             }
         }
     }

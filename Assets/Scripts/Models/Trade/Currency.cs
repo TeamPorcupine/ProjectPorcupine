@@ -28,7 +28,7 @@ public class Currency : IPrototypable
     public Currency(Currency other)
     {
         Name = other.Name;
-        ShortName = other.Name;
+        ShortName = other.ShortName;
     }
 
     /// <summary>
