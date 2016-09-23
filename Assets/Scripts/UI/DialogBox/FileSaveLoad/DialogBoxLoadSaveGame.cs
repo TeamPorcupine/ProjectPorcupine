@@ -49,7 +49,7 @@ public class DialogBoxLoadSaveGame : DialogBox
 
         DirectoryInfo saveDir = new DirectoryInfo(saveDirectoryPath);
 
-        FileInfo[] saveGames = saveDir.GetFiles().OrderByDescending(f => f.CreationTime).ToArray();
+        FileInfo[] saveGames = saveDir.GetFiles("*.sav").OrderByDescending(f => f.CreationTime).ToArray();
 
         // Our save dialog has an input field, which the fileListItems fill out for
         // us when we click on them
