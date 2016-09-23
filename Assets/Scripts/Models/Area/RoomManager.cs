@@ -401,7 +401,9 @@ namespace ProjectPorcupine.Rooms
             {
                 // In this case we are splitting one room into two or more,
                 // so we can just copy the old gas ratios.
-                newRoom.CopyGasPreasure(oldRoom, sizeOfOldRoom);
+                // 1 is subtracted from size of old room to account for tile being filled by furniture,
+                // this prevents gas from being lost
+                newRoom.SplitGas(oldRoom, sizeOfOldRoom - 1);
             }
 
             // Tell the world that a new room has been formed.
