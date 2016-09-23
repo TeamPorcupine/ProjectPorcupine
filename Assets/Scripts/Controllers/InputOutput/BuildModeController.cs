@@ -142,7 +142,7 @@ public class BuildModeController
                 // Add the job to the queue or build immediately if in Dev mode
                 if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
                 {
-                    WorldController.Instance.World.PlaceFurniture(job.JobObjectType, job.tile, true, currentPreviewRotation);
+                    WorldController.Instance.World.PlaceFurniture(furnituteToBuild, job.tile);
                 }
                 else
                 {
@@ -301,19 +301,19 @@ public class BuildModeController
 
     public bool DoesBuildJobOverlapExistingBuildJob(Tile t, string furnitureType, float rotation = 0)
     {
-        Furniture proto = PrototypeManager.Furniture.Get(furnitureType).Clone();
-        proto.SetRotation(rotation);
+        Furniture furnitureToBuild = PrototypeManager.Furniture.Get(furnitureType).Clone();
+        furnitureToBuild.SetRotation(rotation);
 
-        for (int x_off = t.X; x_off < (t.X + proto.Width); x_off++)
+        for (int x_off = t.X; x_off < (t.X + furnitureToBuild.Width); x_off++)
         {
-            for (int y_off = t.Y; y_off < (t.Y + proto.Height); y_off++)
+            for (int y_off = t.Y; y_off < (t.Y + furnitureToBuild.Height); y_off++)
             {
                 Job pendingBuildJob = WorldController.Instance.World.GetTileAt(x_off, y_off, t.Z).PendingBuildJob;
                 if (pendingBuildJob != null)
                 {
                     // if the existing buildJobs furniture is replaceable by the current furnitureType,
                     // we can pretend it does not overlap with the new build
-                    return !proto.ReplaceableFurniture.Any(pendingBuildJob.buildablePrototype.HasTypeTag);
+                    return !furnitureToBuild.ReplaceableFurniture.Any(pendingBuildJob.buildablePrototype.HasTypeTag);
                 }
             }
         }
