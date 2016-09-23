@@ -25,7 +25,7 @@ public class DialogBoxOptions : DialogBox
         bool saveGame = false;
         bool cancel = false;
 
-        dialogManager.dialogBoxPromptOrInfo.SetPrompt("Would you like to save the game before loading a new world?");
+        dialogManager.dialogBoxPromptOrInfo.SetPrompt("prompt_save_before_loading_new_world");
         dialogManager.dialogBoxPromptOrInfo.SetButtons(DialogBoxResult.Yes | DialogBoxResult.No | DialogBoxResult.Cancel);
 
         dialogManager.dialogBoxPromptOrInfo.Closed = () =>
@@ -72,7 +72,7 @@ public class DialogBoxOptions : DialogBox
         if (!cancel)
         {
             this.CloseDialog();
-            dialogManager.dialogBoxPromptOrInfo.SetPrompt("Creating new world...");
+            dialogManager.dialogBoxPromptOrInfo.SetPrompt("message_creating_new_world");
             dialogManager.dialogBoxPromptOrInfo.ShowDialog();
 
             WorldController.Instance.LoadWorld(null);

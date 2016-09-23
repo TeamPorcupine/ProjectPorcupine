@@ -339,7 +339,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Ok
+  m_Text: button_okay
 --- !u!114 &114000010347723694
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -387,7 +387,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Filename
+  m_Text: filename
 --- !u!114 &114000010644752718
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -772,7 +772,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Save
+  m_Text: save
 --- !u!114 &114000012687566652
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -877,9 +877,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Cancel
-
-'
+  m_Text: button_cancel
 --- !u!114 &114000013745105110
 MonoBehaviour:
   m_ObjectHideFlags: 1

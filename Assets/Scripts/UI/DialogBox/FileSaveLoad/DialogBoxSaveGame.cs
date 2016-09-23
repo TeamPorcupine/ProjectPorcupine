@@ -45,7 +45,7 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
 
         if (fileName == string.Empty)
         {
-            dbm.dialogBoxPromptOrInfo.SetAsInfo("You must enter a name or select a file to overwrite!");
+            dbm.dialogBoxPromptOrInfo.SetAsInfo("message_name_or_file_needed_for_save");
             dbm.dialogBoxPromptOrInfo.ShowDialog();
             yield break;
         }
@@ -65,7 +65,7 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
         {
             isOkToSave = false;
 
-            dbm.dialogBoxPromptOrInfo.SetPrompt("File " + fileName + " already exists!\nWould you like to overwrite it?");
+            dbm.dialogBoxPromptOrInfo.SetPrompt("prompt_overwrite_existing_file", new string[] { fileName });
             dbm.dialogBoxPromptOrInfo.SetButtons(DialogBoxResult.Yes | DialogBoxResult.No);
 
             dbm.dialogBoxPromptOrInfo.Closed = () =>
@@ -89,16 +89,19 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
 
         if (isOkToSave)
         {
-            dbm.dialogBoxPromptOrInfo.SetPrompt("Saving game...");
+            dbm.dialogBoxPromptOrInfo.SetPrompt("message_saving_game");
             dbm.dialogBoxPromptOrInfo.ShowDialog();
 
             yield return new WaitForSecondsRealtime(.05f);
 
             SaveWorld(filePath);
 
-            CloseDialog();
+            dbm.dialogBoxPromptOrInfo.CloseDialog();
 
-            dbm.dialogBoxPromptOrInfo.SetAsInfo("Game saved!");
+            this.CloseDialog();
+
+            dbm.dialogBoxPromptOrInfo.SetAsInfo("message_game_saved");
+            dbm.dialogBoxPromptOrInfo.ShowDialog();
 
             while (dbm.dialogBoxPromptOrInfo.gameObject.activeSelf)
             {

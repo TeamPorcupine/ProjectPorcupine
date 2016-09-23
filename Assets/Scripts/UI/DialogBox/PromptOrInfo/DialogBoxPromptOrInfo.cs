@@ -58,7 +58,7 @@ public class DialogBoxPromptOrInfo : DialogBox
         gameObject.transform.Find("Buttons").gameObject.SetActive(true);
 
         SetPrompt(infoText);
-        gameObject.transform.Find("Buttons/Button - Ok").gameObject.SetActive(true);
+        gameObject.transform.Find("Buttons/Button - Okay").gameObject.SetActive(true);
     }
 
     public void YesButtonClick()
@@ -88,12 +88,12 @@ public class DialogBoxPromptOrInfo : DialogBox
     {
         SetWidth(standardWidth);
 
-        gameObject.transform.Find("Prompt").GetComponent<Text>().text = "Set prompt text with SetPrompt() !!!";
+        gameObject.transform.Find("Prompt").GetComponent<Text>().text = "dummy_message_text";
 
         gameObject.transform.Find("Buttons/Button - Yes").gameObject.SetActive(false);
         gameObject.transform.Find("Buttons/Button - No").gameObject.SetActive(false);
         gameObject.transform.Find("Buttons/Button - Cancel").gameObject.SetActive(false);
-        gameObject.transform.Find("Buttons/Button - Ok").gameObject.SetActive(false);
+        gameObject.transform.Find("Buttons/Button - Okay").gameObject.SetActive(false);
         gameObject.transform.Find("Buttons").gameObject.SetActive(false);
 
         base.CloseDialog();
@@ -107,9 +107,11 @@ public class DialogBoxPromptOrInfo : DialogBox
     /// Sets the text to show in the dialog.
     /// </summary>
     /// <param name="prompt"></param>
-    public void SetPrompt(string prompt)
+    public void SetPrompt(string prompt, params string[] additionalValues)
     {
-        gameObject.transform.Find("Prompt").GetComponent<Text>().text = prompt;
+        string localized = ProjectPorcupine.Localization.LocalizationTable.GetLocalization(prompt, additionalValues);
+
+        gameObject.transform.Find("Prompt").GetComponent<Text>().text = localized;
     }
 
     public void SetWidth(float width)

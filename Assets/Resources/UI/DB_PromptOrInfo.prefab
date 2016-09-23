@@ -169,7 +169,7 @@ GameObject:
   - 114: {fileID: 114000010405805204}
   - 114: {fileID: 114000012862825632}
   m_Layer: 5
-  m_Name: Button - Ok
+  m_Name: Button - Okay
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -413,7 +413,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Yes
+  m_Text: button_yes
 --- !u!114 &114000011348673528
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -446,7 +446,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Ok
+  m_Text: button_okay
 --- !u!114 &114000011473744028
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -590,7 +590,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Cancel
+  m_Text: button_cancel
 --- !u!114 &114000012138153058
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -638,7 +638,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Set prompt text with SetPrompt() !!!
+  m_Text: dummy_message_text
 --- !u!114 &114000012439179298
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1045,7 +1045,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: No
+  m_Text: button_no
 --- !u!222 &222000010096810316
 CanvasRenderer:
   m_ObjectHideFlags: 1

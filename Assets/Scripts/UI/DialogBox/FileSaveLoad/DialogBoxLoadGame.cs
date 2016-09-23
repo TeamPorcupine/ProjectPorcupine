@@ -45,7 +45,7 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
         if (fileName == string.Empty)
         {
             DialogBoxManager dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
-            dbm.dialogBoxPromptOrInfo.SetAsInfo("You must select a file!");
+            dbm.dialogBoxPromptOrInfo.SetAsInfo("message_file_needed_for_load");
             dbm.dialogBoxPromptOrInfo.ShowDialog();
             return;
         }
@@ -72,7 +72,7 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
             //// TODO: Do file overwrite dialog box.
 
             DialogBoxManager dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
-            dbm.dialogBoxPromptOrInfo.SetAsInfo("File doesn't exist!");
+            dbm.dialogBoxPromptOrInfo.SetAsInfo("message_file_doesn't_exist");
             dbm.dialogBoxPromptOrInfo.ShowDialog();
             return;
         }
@@ -103,7 +103,7 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
         if (File.Exists(filePath) == false)
         {
             DialogBoxManager dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
-            dbm.dialogBoxPromptOrInfo.SetAsInfo("File doesn't exist!");
+            dbm.dialogBoxPromptOrInfo.SetAsInfo("message_file_doesn't_exist");
             return;
         }
 
@@ -127,7 +127,7 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
                 DeleteFile();
             }
         };
-        dbm.dialogBoxPromptOrInfo.SetPrompt("Delete file " + fileName + "?\nYou cannot revert this action.");
+        dbm.dialogBoxPromptOrInfo.SetPrompt("prompt_delete_file", fileName);
         dbm.dialogBoxPromptOrInfo.SetButtons(DialogBoxResult.Yes | DialogBoxResult.No);
         dbm.dialogBoxPromptOrInfo.ShowDialog();
     }
@@ -141,7 +141,7 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
         Debug.ULogChannel("DialogBoxLoadGame", "LoadWorld button was clicked.");
 
         DialogBoxManager dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
-        dbm.dialogBoxPromptOrInfo.SetPrompt("Loading game...");
+        dbm.dialogBoxPromptOrInfo.SetPrompt("message_loading_game");
         dbm.dialogBoxPromptOrInfo.ShowDialog();
 
         WorldController.Instance.LoadWorld(filePath);
