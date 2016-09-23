@@ -339,7 +339,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: button_okay
+  m_Text: okay
 --- !u!114 &114000010347723694
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -877,7 +877,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: button_cancel
+  m_Text: cancel
 --- !u!114 &114000013745105110
 MonoBehaviour:
   m_ObjectHideFlags: 1
