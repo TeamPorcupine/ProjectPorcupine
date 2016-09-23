@@ -58,8 +58,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
 
     private string description = string.Empty;
 
-    private Func<Tile, bool> funcPositionValidation;
-
     private HashSet<string> tileTypeBuildPermissions;
 
     private bool isOperating;
@@ -82,7 +80,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         Parameters = new Parameter();
         Jobs = new BuildableJobs(this);
         typeTags = new HashSet<string>();
-        funcPositionValidation = DefaultIsValidPosition;
         tileTypeBuildPermissions = new HashSet<string>();
         PathfindingWeight = 1f;
         PathfindingModifier = 0f;
@@ -142,11 +139,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             PowerConnection = other.PowerConnection.Clone() as Connection;
             World.Current.PowerNetwork.PlugIn(PowerConnection);
             PowerConnection.NewThresholdReached += OnNewThresholdReached;
-        }
-
-        if (other.funcPositionValidation != null)
-        {
-            funcPositionValidation = (Func<Tile, bool>)other.funcPositionValidation.Clone();
         }
 
         tileTypeBuildPermissions = new HashSet<string>(other.tileTypeBuildPermissions);
@@ -384,7 +376,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// <returns>Furniture object.</returns>
     public static Furniture PlaceInstance(Furniture proto, Tile tile)
     {
-        if (proto.funcPositionValidation(tile) == false)
+        if (proto.IsValidPosition(tile) == false)
         {
             Debug.ULogErrorChannel("Furniture", "PlaceInstance -- Position Validity Function returned FALSE. " + proto.Name + " " + tile.X + ", " + tile.Y + ", " + tile.Z);
             return null;
@@ -550,17 +542,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
 
         // Else return default Type string
         return Type;
-    }
-
-    /// <summary>
-    /// Check if the position of the furniture is valid or not.
-    /// This is called when placing the furniture.
-    /// </summary>
-    /// <param name="t">The base tile.</param>
-    /// <returns>True if the tile is valid for the placement of the furniture.</returns>
-    public bool IsValidPosition(Tile t)
-    {
-        return funcPositionValidation(t);
     }
 
     /// <summary>
@@ -1158,13 +1139,14 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         return new Furniture(this);
     }
 
-    // FIXME: These functions should never be called directly,
-    // so they probably shouldn't be public functions of Furniture
-    // This will be replaced by validation checks fed to use from
-    // LUA files that will be customizable for each piece of furniture.
-    // For example, a door might specific that it needs two walls to
-    // connect to.
-    private bool DefaultIsValidPosition(Tile tile)
+    /// <summary>
+    /// Check if the position of the furniture is valid or not.
+    /// This is called when placing the furniture.
+    /// TODO : Add some LUA special requierments
+    /// </summary>
+    /// <param name="t">The base tile.</param>
+    /// <returns>True if the tile is valid for the placement of the furniture.</returns>
+    public bool IsValidPosition(Tile tile)
     {
         bool tooCloseToEdge = tile.X < MinEdgeDistance || tile.Y < MinEdgeDistance ||
                               World.Current.Width - tile.X <= MinEdgeDistance ||
