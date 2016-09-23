@@ -28,11 +28,12 @@ public class BuildModeController
     private TileType buildModeTile = TileType.Floor;
 
     // The rotation applied to the object.
-    private float currentPreviewRotation = 0f;
+    public float currentPreviewRotation { get; private set; }
 
     public BuildModeController()
     {
         Instance = this;
+        currentPreviewRotation = 0f;
         KeyboardManager.Instance.RegisterInputAction("RotateFurnitureLeft", KeyboardMappedInputType.KeyUp, RotateFurnitireLeft);
         KeyboardManager.Instance.RegisterInputAction("RotateFurnitureRight", KeyboardMappedInputType.KeyUp, RotateFurnitireRight);
     }
@@ -61,12 +62,6 @@ public class BuildModeController
     public string GetFloorTile()
     {
         return buildModeTile.ToString();
-    }
-
-    // Return the current z rotation applied to the buildable object.
-    public float GetCurrentPreviewRotation()
-    {
-        return currentPreviewRotation;
     }
 
     public void SetModeBuildTile(TileType type)
