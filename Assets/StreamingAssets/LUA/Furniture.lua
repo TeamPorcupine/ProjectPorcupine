@@ -349,7 +349,7 @@ function MetalSmelter_JobWorked(job)
 end
 
 function CloningPod_UpdateAction(furniture, deltaTime)
-    if (furniture.JobWorkSpotOffset > 0) then
+    if (furniture.Jobs.Count > 0) then
         return
     end
 
@@ -375,7 +375,7 @@ function CloningPod_JobRunning(job)
 end
 
 function CloningPod_JobComplete(job)
-    World.Current.CharacterManager.Create(job.buildable.Jobs.OutputSpotTile())
+    World.Current.CharacterManager.Create(job.buildable.Jobs.OutputSpotTile)
     job.buildable.Deconstruct()
 end
 
