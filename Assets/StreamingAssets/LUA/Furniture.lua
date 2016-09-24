@@ -181,11 +181,9 @@ function Stockpile_UpdateAction( furniture, deltaTime )
 		itemsDesired = Stockpile_GetItemsFromFilter( furniture )
 	else
 		--ModUtils.ULog("Creating job for existing stack.")
-		desInv = furniture.Tile.Inventory.Clone()
-		desInv.MaxStackSize = desInv.MaxStackSize - desInv.StackSize
-		desInv.StackSize = 0
-
-        itemsDesired = { desInv }
+		local inventory = furniture.Tile.Inventory
+		local item = RequestedItem.__new(inventory.Type, 1, inventory.MaxStackSize - inventory.StackSize)
+        itemsDesired = { item }
     end
 
 	local job = Job.__new(
@@ -213,7 +211,7 @@ function Stockpile_JobWorked(job)
 
     -- TODO: Change this when we figure out what we're doing for the all/any pickup job.
     --values = job.GetInventoryRequirementValues();
-    for k, inv in pairs(job.inventoryRequirements) do
+    for k, inv in pairs(job.HeldInventory) do
         if(inv.StackSize > 0) then
             World.Current.inventoryManager.PlaceInventory(job.tile, inv)
             return -- There should be no way that we ever end up with more than on inventory requirement with StackSize > 0
@@ -314,12 +312,11 @@ function MetalSmelter_UpdateAction(furniture, deltaTime)
 
     -- Create job depending on the already available stack size.
     local desiredStackSize = 50
-    local itemsDesired = { Inventory.__new("Raw Iron", 0, desiredStackSize) }
-    if (inputSpot.Inventory ~= nil and inputSpot.Inventory.StackSize < inputSpot.Inventory.MaxStackSize) then
+    local itemsDesired = { RequestedItem.__new("Raw Iron", ModUtils.Min(5, desiredStackSize), desiredStackSize) }
+    if(inputSpot.Inventory ~= nil and inputSpot.Inventory.StackSize < inputSpot.Inventory.MaxStackSize) then
         desiredStackSize = inputSpot.Inventory.MaxStackSize - inputSpot.Inventory.StackSize
-        itemsDesired[1].MaxStackSize = desiredStackSize
     end
-    ModUtils.ULog("MetalSmelter: Creating job for " .. desiredStackSize .. " raw iron." .. inputSpot.x .. ":" .. inputSpot.y)
+    ModUtils.ULog("MetalSmelter: Creating job for " .. desiredStackSize .. " raw iron.")
 
     local job = Job.__new(
         furniture.Jobs.WorkSpotTile,
@@ -339,10 +336,10 @@ end
 function MetalSmelter_JobWorked(job)
     job.CancelJob()
     local inputSpot = job.tile.Furniture.Jobs.InputSpotTile
-    for k, inv in pairs(job.inventoryRequirements) do
-        if (inv ~= nil and inv.StackSize > 0) then
+    for k, inv in pairs(job.HeldInventory) do
+        if(inv ~= nil and inv.StackSize > 0) then
             World.Current.inventoryManager.PlaceInventory(inputSpot, inv)
-            inputSpot.Inventory.Locked = true
+            spawnSpot.Inventory.Locked = true
             return
         end
     end
@@ -382,7 +379,7 @@ end
 function PowerGenerator_UpdateAction(furniture, deltatime)
     if (furniture.Jobs.Count < 1 and furniture.Parameters["burnTime"].ToFloat() == 0) then
         furniture.PowerConnection.OutputRate = 0
-        local itemsDesired = {Inventory.__new("Power Cell", 0, 1)}
+        local itemsDesired = {RequestedItem.__new("Power Cell", 1, 1)}
 
         local job = Job.__new(
             furniture.Jobs.WorkSpotTile,
