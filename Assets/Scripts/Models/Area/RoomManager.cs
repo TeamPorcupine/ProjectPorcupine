@@ -154,10 +154,6 @@ namespace ProjectPorcupine.Rooms
             // Remove this room from our rooms list.
             rooms.Remove(room);
 
-            // All tiles that belonged to this room should be re-assigned to
-            // the outside.
-            room.ReturnTilesToOutsideRoom();
-
             if (Removed != null)
             {
                 Removed(room);
@@ -222,7 +218,7 @@ namespace ProjectPorcupine.Rooms
                 // Try building new rooms for each of our NESW directions.
                 foreach (Tile t in sourceTile.GetNeighbours())
                 {
-                    if (t != null && t.Room != null && t.Room.IsOutsideRoom())
+                    if (t != null && t.Room != null)
                     {
                         Room newRoom = ActualFloodFill(t, oldRoom, sizeOfOldRoom);
 

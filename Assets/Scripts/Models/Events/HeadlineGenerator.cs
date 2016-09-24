@@ -20,9 +20,12 @@ public class HeadlineGenerator
     private Queue<Headline> headlinesQueue;
 
     private ScheduledEvent scheduledEvent;
+    private Random random;
 
     public HeadlineGenerator()
     {
+        random = new System.Random();
+
         headlinesQueue = new Queue<Headline>();
 
         OnUpdatedHeadline();
@@ -47,7 +50,7 @@ public class HeadlineGenerator
 
     private void OnUpdatedHeadline()
     {
-        int index = UnityEngine.Random.Range(0, PrototypeManager.Headline.Count + headlinesQueue.Count);
+        int index = random.Next(0, PrototypeManager.Headline.Count + headlinesQueue.Count);
         string text;
 
         if (index > PrototypeManager.Headline.Count)
@@ -77,8 +80,9 @@ public class HeadlineGenerator
 
     private void ResetNextTime()
     {
+        double range = (double)MaxInterval - (double)MinInterval;
+        float nextTime = (float)((range * random.NextDouble()) + (double)MinInterval);
         Scheduler.Scheduler.Current.DeregisterEvent(scheduledEvent);
-        float nextTime = UnityEngine.Random.Range(MinInterval, MaxInterval);
         scheduledEvent = new ScheduledEvent(ToString(), (incomingEvent) => OnUpdatedHeadline(), nextTime);
         Scheduler.Scheduler.Current.RegisterEvent(scheduledEvent);
     }
