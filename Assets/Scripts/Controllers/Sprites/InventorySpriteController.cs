@@ -22,10 +22,10 @@ public sealed class InventorySpriteController : BaseSpriteController<Inventory>
 
         // Register our callback so that our GameObject gets updated whenever
         // the tile's type changes.
-        world.inventoryManager.InventoryCreated += OnCreated;
+        world.InventoryManager.InventoryCreated += OnCreated;
 
         // Check for pre-existing inventory, which won't do the callback.
-        foreach (Inventory inventory in world.inventoryManager.Inventories.SelectMany(pair => pair.Value))
+        foreach (Inventory inventory in world.InventoryManager.Inventories.SelectMany(pair => pair.Value))
         {
             OnCreated(inventory);
         }
@@ -33,8 +33,8 @@ public sealed class InventorySpriteController : BaseSpriteController<Inventory>
 
     public override void RemoveAll()
     {
-        world.inventoryManager.InventoryCreated -= OnCreated;
-        foreach (Inventory inventory in world.inventoryManager.Inventories.SelectMany(pair => pair.Value))
+        world.InventoryManager.InventoryCreated -= OnCreated;
+        foreach (Inventory inventory in world.InventoryManager.Inventories.SelectMany(pair => pair.Value))
         {
             inventory.StackSizeChanged -= OnChanged;
         }

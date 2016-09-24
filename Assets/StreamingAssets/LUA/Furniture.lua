@@ -349,7 +349,7 @@ function MetalSmelter_JobWorked(job)
 end
 
 function CloningPod_UpdateAction(furniture, deltaTime)
-    if (furniture.JobWorkSpotOffset > 0) then
+    if (furniture.Jobs.Count > 0) then
         return
     end
 
@@ -375,7 +375,7 @@ function CloningPod_JobRunning(job)
 end
 
 function CloningPod_JobComplete(job)
-    World.Current.CharacterManager.Create(job.buildable.Jobs.OutputSpotTile())
+    World.Current.CharacterManager.Create(job.buildable.Jobs.OutputSpotTile)
     job.buildable.Deconstruct()
 end
 
@@ -456,7 +456,7 @@ function Heater_UpdateTemperature( furniture, deltaTime)
     temperatureChangePerSecond = furniture.Parameters["base_heating"].ToFloat() * efficiency
     temperatureChange = temperatureChangePerSecond * deltaTime
     
-    World.Current.temperature.ChangeTemperature(tile.X, tile.Y, temperatureChange)
+    World.Current.temperature.ChangeTemperature(tile.X, tile.Y, tile.Z, temperatureChange)
     --ModUtils.ULogChannel("Temperature", "Heat change: " .. temperatureChangePerSecond .. " => " .. World.current.temperature.GetTemperature(tile.X, tile.Y))
 end
 
@@ -684,7 +684,7 @@ function Rtg_UpdateTemperature( furniture, deltaTime)
     temperatureChangePerSecond = furniture.Parameters["base_heating"].ToFloat() * efficiency
     temperatureChange = temperatureChangePerSecond * deltaTime
     
-    World.Current.temperature.ChangeTemperature(tile.X, tile.Y, temperatureChange)
+    World.Current.temperature.ChangeTemperature(tile.X, tile.Y, tile.Z, temperatureChange)
     --ModUtils.ULogChannel("Temperature", "Heat change: " .. temperatureChangePerSecond .. " => " .. World.current.temperature.GetTemperature(tile.X, tile.Y))
 end
 
