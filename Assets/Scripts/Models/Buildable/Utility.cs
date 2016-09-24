@@ -466,7 +466,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         Job job = new Job(
             null,
             Type,
-            World.Current.FurnitureManager.ConstructJobCompleted,
+            (theJob) => World.Current.UtilityManager.ConstructJobCompleted(theJob),
             jobTime,
             items.ToArray(),
             Job.JobPriority.High);
