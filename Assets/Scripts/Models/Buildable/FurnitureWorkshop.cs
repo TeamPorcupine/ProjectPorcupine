@@ -192,7 +192,7 @@ public class FurnitureWorkshop
         {
             if (outPlace.IsEmpty)
             {
-                World.Current.inventoryManager.PlaceInventory(outPlace.Tile, new Inventory(outPlace.ObjectType, outPlace.Amount));
+                World.Current.InventoryManager.PlaceInventory(outPlace.Tile, new Inventory(outPlace.ObjectType, outPlace.Amount));
             }
             else
             {
@@ -222,7 +222,7 @@ public class FurnitureWorkshop
             Inventory inv = jobInvReq.Value;
             if (inv != null && inv.StackSize > 0)
             {
-                World.Current.inventoryManager.PlaceInventory(job.tile, jobInvReq.Value);
+                World.Current.InventoryManager.PlaceInventory(job.tile, jobInvReq.Value);
                 job.tile.Inventory.Locked = true;
             }
         }
@@ -259,13 +259,7 @@ public class FurnitureWorkshop
                     furniture.Tile.Y + reqInputItem.SlotPosY,
                     furniture.Tile.Z);
 
-                //// TODO: this is from LUA .. looks like some hack
-                if (inTile.Inventory != null && inTile.Inventory.StackSize == inTile.Inventory.MaxStackSize)
-                {
-                    furniture.Jobs.CancelAll();
-                    return;
-                }
-
+                // create job for desired input resource
                 string desiredInv = reqInputItem.ObjectType;
                 int desiredAmount = PrototypeManager.Inventory.Get(desiredInv).maxStackSize;
                 if (inTile.Inventory != null && inTile.Inventory.Type == reqInputItem.ObjectType &&
