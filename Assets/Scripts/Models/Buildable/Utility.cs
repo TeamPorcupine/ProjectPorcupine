@@ -11,10 +11,9 @@ using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
-using Animation;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
-using ProjectPorcupine.PowerNetwork;
+using ProjectPorcupine.Jobs;
 using UnityEngine;
 
 /// <summary>
@@ -449,7 +448,9 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     public void ReadXmlBuildingJob(XmlReader reader)
     {
         float jobTime = float.Parse(reader.GetAttribute("jobTime"));
-        List<Inventory> invs = new List<Inventory>();
+
+        List<RequestedItem> items = new List<RequestedItem>();
+
         XmlReader inventoryReader = reader.ReadSubtree();
 
         while (inventoryReader.Read())
@@ -457,10 +458,8 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
             if (inventoryReader.Name == "Inventory")
             {
                 // Found an inventory requirement, so add it to the list!
-                invs.Add(new Inventory(
-                    inventoryReader.GetAttribute("type"),
-                    0,
-                    int.Parse(inventoryReader.GetAttribute("amount"))));
+                int amount = int.Parse(inventoryReader.GetAttribute("amount"));
+                items.Add(new RequestedItem(inventoryReader.GetAttribute("type"), amount));
             }
         }
 
@@ -469,7 +468,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
             Type,
             (theJob) => World.Current.UtilityManager.ConstructJobCompleted(theJob),
             jobTime,
-            invs.ToArray(),
+            items.ToArray(),
             Job.JobPriority.High);
         job.JobDescription = "job_build_" + Type + "_desc";
         PrototypeManager.UtilityConstructJob.Set(job);
