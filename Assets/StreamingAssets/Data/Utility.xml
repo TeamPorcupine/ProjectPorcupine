@@ -9,12 +9,17 @@
       <Inventory type="Copper Wire" amount="2" />
     </BuildingJob>
 
-    <DeconstructJob>
+    <DeconstructJob jobTime="1">
       <Inventory type="Copper Wire" amount="1" />
     </DeconstructJob>
+    
+    <ContextMenuAction FunctionName="UtilityContextTest1" Text="Test Context 1" RequireCharacterSelected="false"/>
+    <ContextMenuAction FunctionName="UtilityContextTest2" Text="Test Context 2" RequireCharacterSelected="false"/>
+    
     <LocalizationCode>util_power_cable</LocalizationCode>
     <UnlocalizedDescription>util_power_cable_desc</UnlocalizedDescription>
   </Utility>
+  
   <Utility type="util_water_pipe">
     <Name>Water Pipe</Name>
     <Description>This is a water pipe.</Description>
@@ -24,7 +29,7 @@
       <Inventory type="Steel Plate" amount="2" />
     </BuildingJob>
 
-    <DeconstructJob>
+    <DeconstructJob jobTime="1">
       <Inventory type="Steel Plate" amount="1" />
     </DeconstructJob>
     <LocalizationCode>util_water_pipe</LocalizationCode>

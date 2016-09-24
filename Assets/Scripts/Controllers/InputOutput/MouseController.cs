@@ -219,22 +219,11 @@ public class MouseController
         {
             Furniture proto = PrototypeManager.Furniture.Get(bmc.buildModeType);
 
-            // If the furniture has af jobSpot set we would like to use that.
-            if (proto.Jobs.WorkSpotOffset.Equals(Vector2.zero) == false)
-            {
-                currPlacingPosition = new Vector3(
-                    currFramePosition.x - proto.Jobs.WorkSpotOffset.x,
-                    currFramePosition.y - proto.Jobs.WorkSpotOffset.y,
-                    WorldController.Instance.cameraController.CurrentLayer);
-            }
-            else
-            {   
-                // Otherwise we use the center.
-                currPlacingPosition = new Vector3(
-                    currFramePosition.x - ((proto.Width - 1f) / 2f),
-                    currFramePosition.y - ((proto.Height - 1f) / 2f),
-                    WorldController.Instance.cameraController.CurrentLayer);
-            }
+            // Use the center of the Furniture.
+            currPlacingPosition = new Vector3(
+                currFramePosition.x - ((proto.Width - 1f) / 2f),
+                currFramePosition.y - ((proto.Height - 1f) / 2f),
+                WorldController.Instance.cameraController.CurrentLayer);
         }
         else
         {
@@ -386,6 +375,7 @@ public class MouseController
                         if (IsPartOfDrag(t, dragParams, proto.DragType))
                         {
                             ShowFurnitureSpriteAtTile(bmc.buildModeType, t);
+                            ShowWorkSpotSpriteAtTile(bmc.buildModeType, t);
                         }
                     }
                     else if (bmc.buildMode == BuildMode.UTILITY)
@@ -569,7 +559,7 @@ public class MouseController
         Camera.main.transform.position = oldPos;
     }
 
-    private void ShowFurnitureSpriteAtTile(string furnitureType, Tile t)
+    private void ShowFurnitureSpriteAtTile(string furnitureType, Tile tile)
     {
         GameObject go = new GameObject();
         go.transform.SetParent(furnitureParent.transform, true);
@@ -579,8 +569,9 @@ public class MouseController
         sr.sortingLayerName = "Jobs";
         sr.sprite = fsc.GetSpriteForFurniture(furnitureType);
 
-        if (WorldController.Instance.World.IsFurniturePlacementValid(furnitureType, t) &&
-            bmc.DoesBuildJobOverlapExistingBuildJob(t, furnitureType) == false)
+        if (World.Current.FurnitureManager.IsPlacementValid(furnitureType, tile) &&
+            World.Current.FurnitureManager.IsWorkSpotClear(furnitureType, tile) && 
+            bmc.DoesBuildJobOverlapExistingBuildJob(tile, furnitureType) == false)
         {
             sr.color = new Color(0.5f, 1f, 0.5f, 0.25f);
         }
@@ -589,9 +580,40 @@ public class MouseController
             sr.color = new Color(1f, 0.5f, 0.5f, 0.25f);
         }
 
+        go.name = furnitureType + "_p_" + tile.X + "_" + tile.Y + "_" + tile.Z;
+        go.transform.position = tile.Vector3 + ImageUtils.SpritePivotOffset(sr.sprite);
+    }
+
+    private void ShowWorkSpotSpriteAtTile(string furnitureType, Tile tile)
+    {
         Furniture proto = PrototypeManager.Furniture.Get(furnitureType);
 
-        go.transform.position = new Vector3(t.X + ((proto.Width - 1) / 2f), t.Y + ((proto.Height - 1) / 2f), WorldController.Instance.cameraController.CurrentLayer);
+        // if the workspot is inside the furniture, there's no reason to show it separately
+        if (proto.Jobs.WorkSpotOffset.x >= 0 && proto.Jobs.WorkSpotOffset.x < proto.Width && proto.Jobs.WorkSpotOffset.y >= 0 && proto.Jobs.WorkSpotOffset.y < proto.Height)
+        {
+            return;
+        }
+
+        GameObject go = new GameObject();
+        go.transform.SetParent(furnitureParent.transform, true);
+        dragPreviewGameObjects.Add(go);
+
+        SpriteRenderer sr = go.AddComponent<SpriteRenderer>();
+        sr.sortingLayerName = "Jobs";
+        sr.sprite = SpriteManager.GetSprite("UI", "WorkSpotIndicator");
+
+        if (World.Current.FurnitureManager.IsPlacementValid(furnitureType, tile) &&
+            World.Current.FurnitureManager.IsWorkSpotClear(furnitureType, tile) && 
+            bmc.DoesBuildJobOverlapExistingBuildJob(tile, furnitureType) == false)
+        {
+            sr.color = new Color(0.5f, 1f, 0.5f, 0.25f);
+        }
+        else
+        {
+            sr.color = new Color(1f, 0.5f, 0.5f, 0.25f);
+        }
+
+        go.transform.position = new Vector3(tile.X + proto.Jobs.WorkSpotOffset.x, tile.Y + proto.Jobs.WorkSpotOffset.y, WorldController.Instance.cameraController.CurrentLayer);
     }
 
     private void ShowUtilitySpriteAtTile(string furnitureType, Tile tile)
@@ -605,7 +627,7 @@ public class MouseController
         sr.sprite = usc.GetSpriteForUtility(furnitureType);
 
         // TODO: reimplement this for utilities: bmc.DoesBuildJobOverlapExistingBuildJob(t, furnitureType) == false)
-        if (WorldController.Instance.World.IsUtilityPlacementValid(furnitureType, tile)) 
+        if (World.Current.UtilityManager.IsPlacementValid(furnitureType, tile)) 
         {
             sr.color = new Color(0.5f, 1f, 0.5f, 0.25f);
         }
@@ -613,8 +635,6 @@ public class MouseController
         {
             sr.color = new Color(1f, 0.5f, 0.5f, 0.25f);
         }
-
-        Utility proto = PrototypeManager.Utility.Get(furnitureType);
 
         go.transform.position = new Vector3(tile.X, tile.Y, WorldController.Instance.cameraController.CurrentLayer);
     }

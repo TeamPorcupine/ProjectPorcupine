@@ -191,9 +191,9 @@ namespace Scheduler
         /// <summary>
         /// Registers an event prototype with PrototypeManager.
         /// </summary>
-        public void RegisterEventPrototype(string name, ScheduledEvent eventPrototype)
+        public void RegisterEventPrototype(ScheduledEvent eventPrototype)
         {
-            PrototypeManager.SchedulerEvent.Add(name, eventPrototype);
+            PrototypeManager.SchedulerEvent.Add(eventPrototype);
         }
 
         #region IXmlSerializable implementation

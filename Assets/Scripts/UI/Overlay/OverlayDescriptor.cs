@@ -11,98 +11,88 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Xml;
 using MoonSharp.Interpreter;
+using ProjectPorcupine.Localization;
 using UnityEngine;
 
 /// <summary>
 /// Contains the description of a single overlay type. Contains LUA function name, id and coloring details.
 /// </summary>
 [MoonSharpUserData]
-public class OverlayDescriptor
+public class OverlayDescriptor : IPrototypable
 {
-    /// <summary>
-    /// Unique identifier.
-    /// TODO: l10n.
-    /// </summary>
-    public string id;
-
-    /// <summary>
-    /// Type of color map used by this descriptor.
-    /// </summary>
-    public ColorMap colorMap = ColorMap.Jet;
-
-    /// <summary>
-    /// Name of function returning int (index of color) given a tile t.
-    /// </summary>
-    public string luaFunctionName;
-
-    /// <summary>
-    /// Bounds for clipping coloring.
-    /// </summary>
-    public int min = 0, max = 255;
+    public OverlayDescriptor()
+    {
+        ColorMap = ColorMapOption.Jet;
+        Min = 0;
+        Max = 255;
+    }
 
     /// <summary>
     /// Select the type of color map (coloring scheme) you want to use.
     /// TODO: More color maps.
     /// </summary>
-    public enum ColorMap
+    public enum ColorMapOption
     {
         Jet,
         Random
     }
 
     /// <summary>
-    /// Read an xml file containing a list of protorypes of overlays descriptors.
+    /// Unique identifier.
     /// </summary>
-    /// <param name="fileName">Name of xml file.</param>
-    /// <returns></returns>
-    public static Dictionary<string, OverlayDescriptor> ReadPrototypes(string fileName)
+    public string Type { get; private set; }
+
+    /// <summary>
+    /// Gets the localized name.
+    /// </summary>
+    public string Name
     {
-        string xmlFile = System.IO.Path.Combine(UnityEngine.Application.streamingAssetsPath, System.IO.Path.Combine("Overlay", fileName));
-        XmlReader xmlReader = XmlReader.Create(xmlFile);
-
-        Dictionary<string, OverlayDescriptor> descriptionsDict = new Dictionary<string, OverlayDescriptor>();
-
-        while (xmlReader.ReadToFollowing("Overlay"))
-        {
-            if (!xmlReader.IsStartElement() || xmlReader.GetAttribute("id") == null)
-            {
-                continue;
-            }
-
-            XmlReader overlayReader = xmlReader.ReadSubtree();
-            descriptionsDict[xmlReader.GetAttribute("id")] = ReadFromXml(overlayReader);
-            overlayReader.Close();
-        }
-
-        return descriptionsDict;
+        get { return LocalizationTable.GetLocalization("overlay_" + Type); }
     }
+
+    /// <summary>
+    /// Type of color map used by this descriptor.
+    /// </summary>
+    public ColorMapOption ColorMap { get; private set; }
+
+    /// <summary>
+    /// Name of function returning int (index of color) given a tile t.
+    /// </summary>
+    public string LuaFunctionName { get; private set; }
+
+    /// <summary>
+    /// Gets the min bound for clipping coloring.
+    /// </summary>
+    public int Min { get; private set; }
+
+    /// <summary>
+    /// Gets the max bound for clipping coloring.
+    /// </summary>
+    public int Max { get; private set; }
 
     /// <summary>
     /// Creates an OverlayDescriptor form a xml subtree with node \<Overlay></Overlay>\.
     /// </summary>
     /// <param name="xmlReader">The subtree pointing to Overlay.</param>
-    /// <returns></returns>
-    private static OverlayDescriptor ReadFromXml(XmlReader xmlReader)
+    public void ReadXmlPrototype(XmlReader xmlReader)
     {
-        xmlReader.Read();
-        Debug.Assert(xmlReader.Name == "Overlay", "xmlReader.Name == 'Overlay'");
-        OverlayDescriptor ret = new OverlayDescriptor();
-        ret.id = xmlReader.GetAttribute("id");
+        Type = xmlReader.GetAttribute("type");
+
         if (xmlReader.GetAttribute("min") != null)
         {
-            ret.min = XmlConvert.ToInt32(xmlReader.GetAttribute("min"));
+            Min = XmlConvert.ToInt32(xmlReader.GetAttribute("min"));
         }
 
         if (xmlReader.GetAttribute("max") != null)
         {
-            ret.max = XmlConvert.ToInt32(xmlReader.GetAttribute("max"));
+            Max = XmlConvert.ToInt32(xmlReader.GetAttribute("max"));
         }
 
-        if (xmlReader.GetAttribute("color_map") != null)
+        if (xmlReader.GetAttribute("colorMap") != null)
         {
             try
             {
-                ret.colorMap = (ColorMap)System.Enum.Parse(typeof(ColorMap), xmlReader.GetAttribute("color_map"));
+                ColorMap = (ColorMapOption)Enum.Parse(typeof(ColorMapOption), xmlReader.GetAttribute("colorMap"));
             }
             catch (ArgumentException e)
             {
@@ -111,7 +101,6 @@ public class OverlayDescriptor
         }
 
         xmlReader.Read();
-        ret.luaFunctionName = xmlReader.ReadContentAsString();
-        return ret;
+        LuaFunctionName = xmlReader.ReadContentAsString();
     }
 }

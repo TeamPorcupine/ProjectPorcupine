@@ -32,20 +32,24 @@ public class ModsManager
         LoadFunctions("Tiles.lua", "TileType");
         LoadFunctions("Quest.lua", "Quest");
         LoadFunctions("ScheduledEvent.lua", "ScheduledEvent");
+        LoadFunctions("Overlay.lua", "Overlay");
 
-        LoadPrototypes("Tiles.xml", (text) => PrototypeManager.TileType.LoadPrototypes(text));
-        LoadPrototypes("Furniture.xml", (text) => PrototypeManager.Furniture.LoadPrototypes(text));
-        LoadPrototypes("Utility.xml", (text) => PrototypeManager.Utility.LoadPrototypes(text));
-        LoadPrototypes("Inventory.xml", (text) => PrototypeManager.Inventory.LoadPrototypes(text));
-        LoadPrototypes("Need.xml", (text) => PrototypeManager.Need.LoadPrototypes(text));
-        LoadPrototypes("Trader.xml", (text) => PrototypeManager.Trader.LoadPrototypes(text));
-        LoadPrototypes("Events.xml", (text) => PrototypeManager.SchedulerEvent.LoadPrototypes(text));
-        LoadPrototypes("Stats.xml", (text) => PrototypeManager.Stat.LoadPrototypes(text));
-        LoadPrototypes("Quest.xml", (text) => PrototypeManager.Quest.LoadPrototypes(text));
+        LoadPrototypes("Tiles.xml", PrototypeManager.TileType.LoadPrototypes);
+        LoadPrototypes("Furniture.xml", PrototypeManager.Furniture.LoadPrototypes);
+        LoadPrototypes("Utility.xml", PrototypeManager.Utility.LoadPrototypes);
+        LoadPrototypes("Inventory.xml", PrototypeManager.Inventory.LoadPrototypes);
+        LoadPrototypes("Need.xml", PrototypeManager.Need.LoadPrototypes);
+        LoadPrototypes("Trader.xml", PrototypeManager.Trader.LoadPrototypes);
+        LoadPrototypes("Events.xml", PrototypeManager.SchedulerEvent.LoadPrototypes);
+        LoadPrototypes("Stats.xml", PrototypeManager.Stat.LoadPrototypes);
+        LoadPrototypes("Quest.xml", PrototypeManager.Quest.LoadPrototypes);
+        LoadPrototypes("Headlines.xml", PrototypeManager.Headline.LoadPrototypes);
+        LoadPrototypes("Overlay.xml", PrototypeManager.Overlay.LoadPrototypes);
 
         LoadCharacterNames("CharacterNames.txt");
 
-        LoadSprites();
+        LoadDirectoryAssets("Images", SpriteManager.LoadSpriteFiles);
+        LoadDirectoryAssets("Audio", AudioManager.LoadAudioFiles);
     }
 
     public DirectoryInfo[] GetMods()
@@ -107,12 +111,12 @@ public class ModsManager
     /// Loads the given file from the given folder in the base and inside the mods and
     /// calls the Action with the file path.
     /// </summary>
-    /// <param name="folderName">Folder name.</param>
+    /// <param name="directoryName">Directory name.</param>
     /// <param name="fileName">File name.</param>
     /// <param name="readText">Called to handle the text reading and actual loading.</param>
-    private void LoadTextFile(string folderName, string fileName, Action<string> readText)
+    private void LoadTextFile(string directoryName, string fileName, Action<string> readText)
     {
-        string filePath = Path.Combine(Application.streamingAssetsPath, folderName);
+        string filePath = Path.Combine(Application.streamingAssetsPath, directoryName);
         filePath = Path.Combine(filePath, fileName);
         if (File.Exists(filePath))
         {
@@ -130,19 +134,24 @@ public class ModsManager
     }
 
     /// <summary>
-    /// Loads the all the sprites.
+    /// Loads the all the assets from the given directory.
     /// </summary>
-    private void LoadSprites()
+    /// <param name="directoryName">Directory name.</param>
+    /// <param name="readDirectory">Called to handle the loading of each file in the given directory.</param>
+    private void LoadDirectoryAssets(string directoryName, Action<string> readDirectory)
     {
-        string filePath = Path.Combine(Application.streamingAssetsPath, "Images");
-        SpriteManager.LoadSprites(filePath);
+        string directoryPath = Path.Combine(Application.streamingAssetsPath, directoryName);
+        if (Directory.Exists(directoryPath))
+        {
+            readDirectory(directoryPath);
+        }
 
         foreach (DirectoryInfo mod in mods)
         {
-            filePath = Path.Combine(mod.FullName, "Images");
-            if (Directory.Exists(filePath))
+            directoryPath = Path.Combine(mod.FullName, directoryName);
+            if (Directory.Exists(directoryPath))
             {
-                SpriteManager.LoadSprites(filePath);
+                readDirectory(directoryPath);
             }
         }
     }

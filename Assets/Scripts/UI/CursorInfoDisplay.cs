@@ -48,7 +48,7 @@ public class CursorInfoDisplay
         for (int i = 0; i < mc.GetDragObjects().Count; i++)
         {
             Tile t1 = GetTileUnderDrag(mc.GetDragObjects()[i].transform.position);
-            if (WorldController.Instance.World.IsFurniturePlacementValid(bmc.buildModeType, t1) && t1.PendingBuildJob == null)
+            if (World.Current.FurnitureManager.IsPlacementValid(bmc.buildModeType, t1) && t1.PendingBuildJob == null)
             {
                 validPostionCount++;
             }
@@ -72,8 +72,8 @@ public class CursorInfoDisplay
     public string GetCurrentBuildRequirements()
     {
         string temp = string.Empty;
-        bool manyItems = PrototypeManager.FurnitureJob.Get(bmc.buildModeType).RequestedItems.Count > 1;
-        foreach (RequestedItem item in PrototypeManager.FurnitureJob.Get(bmc.buildModeType).RequestedItems.Values)
+        bool manyItems = PrototypeManager.FurnitureConstructJob.Get(bmc.buildModeType).RequestedItems.Count > 1;
+        foreach (RequestedItem item in PrototypeManager.FurnitureConstructJob.Get(bmc.buildModeType).RequestedItems.Values)
         {
             string requiredMaterialCount = (item.MaxAmountRequested * validPostionCount).ToString();
             if (manyItems)

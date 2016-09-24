@@ -7,6 +7,7 @@
 // ====================================================
 #endregion
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Xml;
 using MoonSharp.Interpreter;
@@ -16,7 +17,7 @@ using UnityEngine;
 /// Character manager that holds all the characters.
 /// </summary>
 [MoonSharpUserData]
-public class CharacterManager
+public class CharacterManager : IEnumerable<Character>
 {
     private List<Character> characters;
 
@@ -31,29 +32,7 @@ public class CharacterManager
     /// <summary>
     /// Occurs when a character is created.
     /// </summary>
-    public event Action<Character> CharacterCreated;
-
-    /// <summary>
-    /// Gets the characters.
-    /// </summary>
-    /// <value>An array of characters.</value>
-    public Character[] Characters
-    {
-        get { return characters.ToArray(); }
-    }
-
-    /// <summary>
-    /// Updates all the characters.
-    /// </summary>
-    /// <param name="deltaTime">Delta time.</param>
-    public void Update(float deltaTime)
-    {
-        // Change from a foreach due to the collection being modified while its being looped through
-        for (int i = characters.Count - 1; i >= 0; i--)
-        {
-            characters[i].Update(deltaTime);
-        }
-    }
+    public event Action<Character> Created;
 
     /// <summary>
     /// Create a Character in the specified tile.
@@ -78,9 +57,9 @@ public class CharacterManager
         character.name = CharacterNameManager.GetNewName();
         characters.Add(character);
 
-        if (CharacterCreated != null)
+        if (Created != null)
         {
-            CharacterCreated(character);
+            Created(character);
         }
 
         return character;
@@ -102,6 +81,40 @@ public class CharacterManager
         }
 
         return null;
+    }
+
+    /// <summary>
+    /// Calls the update function of each character with the given delta time.
+    /// </summary>
+    /// <param name="deltaTime">Delta time.</param>
+    public void Update(float deltaTime)
+    {
+        // Change from a foreach due to the collection being modified while its being looped through
+        for (int i = characters.Count - 1; i >= 0; i--)
+        {
+            characters[i].Update(deltaTime);
+        }
+    }
+
+    /// <summary>
+    /// Gets the characters enumerator.
+    /// </summary>
+    /// <returns>The enumerator.</returns>
+    public IEnumerator GetEnumerator()
+    {
+        return characters.GetEnumerator();
+    }
+
+    /// <summary>
+    /// Gets each character.
+    /// </summary>
+    /// <returns>Each character.</returns>
+    IEnumerator<Character> IEnumerable<Character>.GetEnumerator()
+    {
+        foreach (Character character in characters)
+        {
+            yield return character;
+        }
     }
 
     /// <summary>

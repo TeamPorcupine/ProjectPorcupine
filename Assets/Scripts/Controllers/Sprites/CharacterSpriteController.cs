@@ -44,10 +44,10 @@ public class CharacterSpriteController : BaseSpriteController<Character>
 
         // Register our callback so that our GameObject gets updated whenever
         // the tile's type changes.
-        world.CharacterManager.CharacterCreated += OnCreated;
+        world.CharacterManager.Created += OnCreated;
 
         // Check for pre-existing characters, which won't do the callback.
-        foreach (Character character in world.CharacterManager.Characters)
+        foreach (Character character in world.CharacterManager)
         {
             OnCreated(character);
         }
@@ -55,9 +55,9 @@ public class CharacterSpriteController : BaseSpriteController<Character>
 
     public override void RemoveAll()
     {
-        world.CharacterManager.CharacterCreated -= OnCreated;
+        world.CharacterManager.Created -= OnCreated;
 
-        foreach (Character c in world.CharacterManager.Characters)
+        foreach (Character c in world.CharacterManager)
         {
             c.OnCharacterChanged -= OnChanged; 
         }
