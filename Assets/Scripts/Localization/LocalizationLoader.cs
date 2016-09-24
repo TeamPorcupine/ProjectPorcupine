@@ -35,7 +35,7 @@ namespace ProjectPorcupine.Localization
             }
 
             // Attempt to get setting of currently selected language. (Will default to English).
-            string lang = Settings.GetSetting("localization", "en_US");
+            string lang = Settings.GetSettingWithOverwrite("localization", "en_US");
 
             // Setup LocalizationTable with either loaded or defaulted language
             LocalizationTable.currentLanguage = lang;

@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Stats>
+    <Stat type="Strength" name="Strength" />
+    <Stat type="Dexterity" name="Dexterity" />
+    <Stat type="Constitution" name="Constitution" />
+    <Stat type="Intelligence" name="Intelligence" />
+    <Stat type="Wisdom" name="Wisdom" />
+    <Stat type="Charisma" name="Charisma" />
+</Stats>

@@ -11,5 +11,5 @@ EditorSettings:
   m_DefaultBehaviorMode: 1
   m_SpritePackerMode: 2
   m_SpritePackerPaddingPower: 1
-  m_ProjectGenerationIncludedExtensions: txt;xml;fnt;cd
+  m_ProjectGenerationIncludedExtensions: txt;xml;fnt;cd;lua
   m_ProjectGenerationRootNamespace: 

@@ -32,13 +32,13 @@
   <Sprite name="furn_SteelWall_W"            x="4" y="5" w="1" h="1" pixelPerUnit="64" /> 
   <Sprite name="furn_SteelWall_NESWsw"       x="5" y="0" w="1" h="1" pixelPerUnit="64" /> 
   <Sprite name="furn_SteelWall_NESWseswnw"   x="5" y="1" w="1" h="1" pixelPerUnit="64" /> 
-  <Sprite name="furn_SteelWall_NESWswnw"     x="5" y="2" w="1" h="1" pixelPerUnit="64" /> 
+  <Sprite name="furn_SteelWall_NESWsesw"     x="5" y="2" w="1" h="1" pixelPerUnit="64" /> 
   <Sprite name="furn_SteelWall_NEne"         x="5" y="3" w="1" h="1" pixelPerUnit="64" /> 
   <Sprite name="furn_SteelWall_NESnese"      x="5" y="4" w="1" h="1" pixelPerUnit="64" /> 
   <Sprite name="furn_SteelWall_ESse"         x="5" y="5" w="1" h="1" pixelPerUnit="64" /> 
   <Sprite name="furn_SteelWall_NESWne"       x="6" y="0" w="1" h="1" pixelPerUnit="64" /> 
   <Sprite name="furn_SteelWall_NESWneswnw"   x="6" y="1" w="1" h="1" pixelPerUnit="64" /> 
-  <Sprite name="furn_SteelWall_NESWsesw"     x="6" y="2" w="1" h="1" pixelPerUnit="64" /> 
+  <Sprite name="furn_SteelWall_NESWswnw"     x="6" y="2" w="1" h="1" pixelPerUnit="64" /> 
   <Sprite name="furn_SteelWall_NEWnenw"      x="6" y="3" w="1" h="1" pixelPerUnit="64" /> 
   <Sprite name="furn_SteelWall_NESWneseswnw" x="6" y="4" w="1" h="1" pixelPerUnit="64" /> 
   <Sprite name="furn_SteelWall_ESWsesw"      x="6" y="5" w="1" h="1" pixelPerUnit="64" /> 

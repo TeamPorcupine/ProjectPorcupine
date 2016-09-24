@@ -34,7 +34,7 @@ namespace ProjectPorcupine.Localization
     /// <summary>
     /// This class makes sure that your localization is up to date. It does that by comparing latest know commit hash
     /// (which is stored in Application.streamingAssetsPath/Localization/curr.ver) to the latest hash available through
-    /// GitHub. If the hashes don't match, curr.ver doesn't exist, or curr.ver != GitHub hash a new zip containing
+    /// GitHub. If the hashes don't match or curr.ver doesn't exist a new zip containing
     /// localization will be downloaded from GitHub repo. Then, the zip is stored in the memory and waits for
     /// Application.streamingAssetsPath/Localization to be cleaned. When It's empty the zip gets unpacked and saved
     /// to hard drive using ICSharpCode.SharpZipLib.Zip library. Every GitHub zip download has a folder with
@@ -86,9 +86,9 @@ namespace ProjectPorcupine.Localization
             {
                 latestCommitHash = GetHashOfLastCommitFromAPIResponse(versionChecker.text);
             }
-            catch
+            catch (Exception e)
             {
-                yield break;
+                Debug.ULogErrorChannel("LocalizationDownloader", e.Message);
             }
 
             if (latestCommitHash != currentLocalizationVersion)
@@ -198,7 +198,7 @@ namespace ProjectPorcupine.Localization
 
                         // Read files from stream to files on HDD.
                         // 2048 buffer should be plenty.
-                        if (string.IsNullOrEmpty(fileName) == false)
+                        if (string.IsNullOrEmpty(fileName) == false && !fileName.StartsWith("en_US.lang"))
                         {
                             string fullFilePath = Path.Combine(LocalizationFolderPath, theEntry.Name);
                             using (FileStream fileWriter = File.Create(fullFilePath))
@@ -226,9 +226,12 @@ namespace ProjectPorcupine.Localization
                 // called ProjectPorcupineLocalization-*branch name*. Now we need to move all files from that directory
                 // to Application.streamingAssetsPath/Localization.
                 FileInfo[] fileInfo = localizationFolderInfo.GetFiles();
-                if (fileInfo.Length > 0)
+                foreach (FileInfo file in fileInfo)
                 {
-                    Debug.ULogErrorChannel("LocalizationDownloader", "There should be no files here.");
+                    if (file.Name != "en_US.lang" && file.Name != "en_US.lang.meta")
+                    {
+                        Debug.ULogErrorChannel("LocalizationDownloader", "There should only be en_US.lang and en_US.lang.meta. Instead there is: " + file.Name);
+                    }
                 }
 
                 DirectoryInfo[] dirInfo = localizationFolderInfo.GetDirectories();
@@ -278,7 +281,10 @@ namespace ProjectPorcupine.Localization
                     throw new Exception("SOMETHING WENT HORRIBLY WRONG AT DOWNLOADING LOCALIZATION!");
                 }
 
-                file.Delete();
+                if (file.Name != "en_US.lang" && file.Name != "en_US.lang.meta")
+                {
+                    file.Delete();
+                }
             }
 
             foreach (DirectoryInfo dir in localizationFolderInfo.GetDirectories())

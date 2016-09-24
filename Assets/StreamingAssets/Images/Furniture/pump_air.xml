@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Sprites>
+	<Sprite name="pump_air"    x="0" y="0" w="1" h="1" pixelPerUnit="64" />
+    <Sprite name="pump_air_SN" x="1" y="1" w="1" h="1" pixelPerUnit="64" />
+    <Sprite name="pump_air_WE" x="1" y="0" w="1" h="1" pixelPerUnit="64" />
+    <Sprite name="pump_air_NS" x="0" y="1" w="1" h="1" pixelPerUnit="64" />
+    <Sprite name="pump_air_EW" x="0" y="0" w="1" h="1" pixelPerUnit="64" />
+</Sprites>

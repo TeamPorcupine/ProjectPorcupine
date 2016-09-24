@@ -22,9 +22,9 @@ public class UIMenuController : MonoBehaviour
 
         // Add the menus.
         AddMenu("MenuTop");
-        AddMenu("MenuSubHolder");
         AddMenu("MenuBottom");
-        AddMenu("MenuConstruction");
+        AddMenu("MenuLeft");
+        AddMenu("Headlines");
     }
 
     private void Start()

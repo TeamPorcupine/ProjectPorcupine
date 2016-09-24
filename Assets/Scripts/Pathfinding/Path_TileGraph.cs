@@ -32,7 +32,7 @@ public class Path_TileGraph
         {
             for (int y = 0; y < world.Height; y++)
             {
-                Tile t = world.GetTileAt(x, y);
+                Tile t = world.GetTileAt(x, y, 0);
 
                 ////if(t.movementCost > 0) {    // Tiles with a move cost of 0 are unwalkable
                 Path_Node<Tile> n = new Path_Node<Tile>();
@@ -71,13 +71,13 @@ public class Path_TileGraph
         if (Mathf.Abs(dX) + Mathf.Abs(dY) == 2)
         {
             // We are diagonal
-            if (World.Current.GetTileAt(curr.X - dX, curr.Y).PathfindingCost == 0)
+            if (World.Current.GetTileAt(curr.X - dX, curr.Y, curr.Z).PathfindingCost == 0)
             {
                 // East or West is unwalkable, therefore this would be a clipped movement.
                 return true;
             }
 
-            if (World.Current.GetTileAt(curr.X, curr.Y - dY).PathfindingCost == 0)
+            if (World.Current.GetTileAt(curr.X, curr.Y - dY, curr.Z).PathfindingCost == 0)
             {
                 // North or South is unwalkable, therefore this would be a clipped movement.
                 return true;
@@ -92,6 +92,11 @@ public class Path_TileGraph
 
     private void GenerateEdgesByTile(Tile t)
     {
+        if (t == null)
+        {
+            return;
+        }
+
         Path_Node<Tile> n = nodes[t];
         List<Path_Edge<Tile>> edges = new List<Path_Edge<Tile>>();
 

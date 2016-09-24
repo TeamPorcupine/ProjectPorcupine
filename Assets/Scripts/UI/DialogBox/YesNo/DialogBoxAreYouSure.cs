@@ -6,18 +6,46 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System.Collections;
-using UnityEngine;
 
-public class DialogBoxAreYouSure : MonoBehaviour
+using System;
+
+public class DialogBoxAreYouSure : DialogBox
 {
-    // Use this for initialization
-    private void Start()
+    public DialogBoxResult Result { get; set; }
+
+    public Action Closed { get; set; }
+
+    public void YesButtonClick()
     {
+        Result = DialogBoxResult.Yes;
+        CloseDialog();
     }
 
-    // Update is called once per frame
-    private void Update()
+    public void NoButtonClick()
     {
+        Result = DialogBoxResult.No;
+        CloseDialog();
+    }
+
+    public void CancelButtonClick()
+    {
+        Result = DialogBoxResult.Cancel;
+        CloseDialog();
+    }
+
+    public override void CloseDialog()
+    {
+        InvokeClosed();
+        base.CloseDialog();
+    }
+
+    private void InvokeClosed()
+    {
+        Action closed = Closed;
+        if (closed != null)
+        {
+            closed();
+            Closed = null;
+        }
     }
 }

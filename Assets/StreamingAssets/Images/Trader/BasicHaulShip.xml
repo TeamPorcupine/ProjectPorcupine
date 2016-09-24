@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Sprites>
+	<Sprite name="BasicHaulShip" x="0" y="0" w="3" h="3" pixelPerUnit="64" />
+	<Sprite name="BasicHaulShip_01" x="3" y="0" w="3" h="3" pixelPerUnit="64" />
+	<Sprite name="BasicHaulShip_02" x="6" y="0" w="3" h="3" pixelPerUnit="64" />
+</Sprites>

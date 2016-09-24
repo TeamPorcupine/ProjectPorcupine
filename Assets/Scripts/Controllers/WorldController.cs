@@ -11,10 +11,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
+using MoonSharp.Interpreter;
+using Scheduler;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
+[MoonSharpUserData]
 public class WorldController : MonoBehaviour
 {
     public SoundController soundController;
@@ -23,28 +26,23 @@ public class WorldController : MonoBehaviour
     public JobSpriteController jobSpriteController;
     public InventorySpriteController inventorySpriteController;
     public FurnitureSpriteController furnitureSpriteController;
+    public UtilitySpriteController utilitySpriteController;
     public QuestController questController;
     public BuildModeController buildModeController;
     public MouseController mouseController;
-    public KeyboardController keyboardController;
+    public KeyboardManager keyboardManager;
     public CameraController cameraController;
     public SpawnInventoryController spawnInventoryController;
+    public AutosaveManager autosaveManager;
+    public TradeController TradeController;
     public ModsManager modsManager;
-    public float GameTickPerSecond = 5;
     public GameObject inventoryUI;
     public GameObject circleCursorPrefab;
 
-    // If true, a modal dialog box is open so normal inputs should be ignored.
+    // If true, a modal dialog box is open, so normal inputs should be ignored.
     public bool IsModal;
 
     private static string loadWorldFromFile = null;
-
-    private float gameTickDelay;
-    private float totalDeltaTime;
-    private bool isPaused = false;
-
-    // Multiplier of Time.deltaTime.
-    private float timeScale = 1f;
 
     public static WorldController Instance { get; protected set; }
 
@@ -55,18 +53,19 @@ public class WorldController : MonoBehaviour
     {
         get
         {
-            return isPaused || IsModal;
+            return TimeManager.Instance.IsPaused || IsModal;
         }
 
         set
         {
-            isPaused = value;
+            TimeManager.Instance.IsPaused = value;
         }
     }
 
     // Use this for initialization.
     public void OnEnable()
     {
+        Debug.IsLogEnabled = true;
         if (Instance != null)
         {
             Debug.ULogErrorChannel("WorldController", "There should never be two world controllers.");
@@ -74,8 +73,17 @@ public class WorldController : MonoBehaviour
 
         Instance = this;
 
-        new FurnitureActions();
+        new FunctionsManager();
         new PrototypeManager();
+        new CharacterNameManager();
+        new SpriteManager();
+        new AudioManager();
+
+        // FIXME: Do something real here. This is just to show how to register a C# event prototype for the Scheduler.
+        PrototypeManager.SchedulerEvent.Add(
+            new ScheduledEvent(
+                "ping_log",
+                (evt) => Debug.ULogChannel("Scheduler", "Event {0} fired", evt.Name)));
 
         string dataPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
         modsManager = new ModsManager(dataPath);
@@ -91,36 +99,41 @@ public class WorldController : MonoBehaviour
         }
 
         soundController = new SoundController(World);
-
-        gameTickDelay = 1f / GameTickPerSecond;
     }
 
     public void Start()
     {
-        // Create gameobject so we can have access to a tranform thats position is "Vector3.zero".
-        GameObject mat = new GameObject("VisualPath", typeof(VisualPath));
+        // Create GameObject so we can have access to a transform which has a position of "Vector3.zero".
+        new GameObject("VisualPath", typeof(VisualPath));
         GameObject go;
 
         tileSpriteController = new TileSpriteController(World);
         characterSpriteController = new CharacterSpriteController(World);
         furnitureSpriteController = new FurnitureSpriteController(World);
-        jobSpriteController = new JobSpriteController(World, furnitureSpriteController);
+        utilitySpriteController = new UtilitySpriteController(World);
+        jobSpriteController = new JobSpriteController(World, furnitureSpriteController, utilitySpriteController);
         inventorySpriteController = new InventorySpriteController(World, inventoryUI);
 
         buildModeController = new BuildModeController();
         spawnInventoryController = new SpawnInventoryController();
-        mouseController = new MouseController(buildModeController, furnitureSpriteController, circleCursorPrefab);
-        keyboardController = new KeyboardController(buildModeController, Instance);
+        mouseController = new MouseController(buildModeController, furnitureSpriteController, utilitySpriteController, circleCursorPrefab);
+        keyboardManager = KeyboardManager.Instance;
         questController = new QuestController();
         cameraController = new CameraController();
+        TradeController = new TradeController();
+        autosaveManager = new AutosaveManager();
+
+        // Register inputs actions
+        keyboardManager.RegisterInputAction("Pause", KeyboardMappedInputType.KeyUp, () => { IsPaused = !IsPaused; });
+        keyboardManager.RegisterInputAction("DevMode", KeyboardMappedInputType.KeyDown, ChangeDevMode);
 
         // Hiding Dev Mode spawn inventory controller if devmode is off.
-        spawnInventoryController.SetUIVisibility(Settings.GetSettingAsBool("DialogBoxSettings_developerModeToggle", false));
+        spawnInventoryController.SetUIVisibility(Settings.GetSetting("DialogBoxSettings_developerModeToggle", false));
+
+        cameraController.Initialize();
+        cameraController.Moved += this.World.OnCameraMoved;
 
         // Initialising controllers.
-        GameObject controllers = GameObject.Find("Controllers");
-        Instantiate(Resources.Load("UIController"), controllers.transform);
-
         GameObject canvas = GameObject.Find("Canvas");
         go = Instantiate(Resources.Load("UI/ContextMenu"), canvas.transform.position, canvas.transform.rotation, canvas.transform) as GameObject;
         go.name = "ContextMenu";
@@ -128,49 +141,11 @@ public class WorldController : MonoBehaviour
 
     public void Update()
     {
-        // Systems that update every frame.
-        mouseController.Update(IsModal);
-        keyboardController.Update(IsModal);
-        cameraController.Update(IsModal);
-
-        float deltaTime = Time.deltaTime * timeScale;
-
-        // Systems that update every frame when not paused.
-        if (IsPaused == false)
-        {
-            World.UpdateCharacters(deltaTime);
-        }
-
-        totalDeltaTime += deltaTime;
-
-        if (totalDeltaTime >= gameTickDelay)
-        {
-            // Systems that update at fixed frequency. 
-            if (IsPaused == false)
-            {
-                // Systems that update at fixed frequency when not paused.
-                World.Tick(totalDeltaTime);
-                questController.Update(totalDeltaTime);
-            }
-
-            totalDeltaTime = 0f;
-        }
-
-        soundController.Update(Time.deltaTime);
+        TimeManager.Instance.Update(Time.deltaTime);
     }
 
     /// <summary>
-    /// Set's game speed (it's a multiplier so 1 == normal game speed).
-    /// </summary>
-    /// <param name="timeScale">Desired time scale.</param>
-    public void SetTimeScale(float timeScale)
-    {
-        this.timeScale = timeScale;
-        Debug.ULogChannel("Game speed", "Game speed set to " + timeScale + "x");
-    }
-
-    /// <summary>
-    /// Gets the tile at the unity-space coordinates.
+    /// Gets the tile at the Unity-space coordinates.
     /// </summary>
     /// <returns>The tile at world coordinate.</returns>
     /// <param name="coord">Unity World-Space coordinates.</param>
@@ -179,19 +154,20 @@ public class WorldController : MonoBehaviour
         int x = Mathf.FloorToInt(coord.x + 0.5f);
         int y = Mathf.FloorToInt(coord.y + 0.5f);
 
-        return World.GetTileAt(x, y);
+        return World.GetTileAt(x, y, (int)coord.z);
+    }
+
+    public string FileSaveBasePath()
+    {
+        return System.IO.Path.Combine(Application.persistentDataPath, "Saves");
     }
 
     public void NewWorld()
     {
         Debug.ULogChannel("WorldController", "NewWorld button was clicked.");
 
+        Destroy();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
-
-    public string FileSaveBasePath()
-    {
-        return System.IO.Path.Combine(Application.persistentDataPath, "Saves");
     }
 
     public void LoadWorld(string fileName)
@@ -200,17 +176,39 @@ public class WorldController : MonoBehaviour
 
         // Reload the scene to reset all data (and purge old references)
         loadWorldFromFile = fileName;
+        Destroy();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void Destroy()
+    {
+        TimeManager.Instance.Destroy();
+        KeyboardManager.Instance.Destroy();
+        Scheduler.Scheduler.Current.Destroy();
+    }
+
+    /// <summary>
+    /// Change the developper mode.
+    /// </summary>
+    public void ChangeDevMode()
+    {
+        bool developerMode = !Settings.GetSetting("DialogBoxSettings_developerModeToggle", false);
+        Settings.SetSetting("DialogBoxSettings_developerModeToggle", developerMode);
+        spawnInventoryController.SetUIVisibility(developerMode);
+        ///FurnitureBuildMenu.instance.RebuildMenuButtons(developerMode);
     }
 
     private void CreateEmptyWorld()
     {
         // get world size from settings
-        int width = Settings.GetSettingAsInt("worldWidth", 100);
-        int height = Settings.GetSettingAsInt("worldHeight", 100);
+        int width = Settings.GetSetting("worldWidth", 100);
+        int height = Settings.GetSetting("worldHeight", 100);
+
+        // FIXME: Need to read this from settings.
+        int depth = 5;
 
         // Create a world with Empty tiles
-        World = new World(width, height);
+        World = new World(width, height, depth);
 
         // Center the Camera
         Camera.main.transform.position = new Vector3(World.Width / 2, World.Height / 2, Camera.main.transform.position.z);
@@ -229,12 +227,9 @@ public class WorldController : MonoBehaviour
 
         TextReader reader = new StringReader(saveGameText);
 
-        // Leaving this for Unitys console because UberLogger mangles multiline messages.
+        // Leaving this for Unity's console because UberLogger mangles multiline messages.
         Debug.Log(reader.ToString());
         World = (World)serializer.Deserialize(reader);
         reader.Close();
-
-        // Center the Camera.
-        Camera.main.transform.position = new Vector3(World.Width / 2, World.Height / 2, Camera.main.transform.position.z);
     }
 }

@@ -6,7 +6,11 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+
+using System;
 using System.Collections;
+using System.Linq;
+using System.Text;
 using ProjectPorcupine.Localization;
 using UnityEngine;
 using UnityEngine.UI;
@@ -42,15 +46,24 @@ public class SelectionInfoTextField : MonoBehaviour
 
         ISelectable actualSelection = mc.mySelection.GetSelectedStuff();
 
+        string additionalInfoText = string.Join(Environment.NewLine, actualSelection.GetAdditionalInfo().ToArray());
+
         if (actualSelection.GetType() == typeof(Character))
         {
             // TODO: Change the hitpoint stuff.
-            txt.text = actualSelection.GetName() + "\n" + actualSelection.GetDescription() + "\n" + actualSelection.GetHitPointString() + "\n" + LocalizationTable.GetLocalization(actualSelection.GetJobDescription());
+            txt.text = 
+                actualSelection.GetName() + "\n" + 
+                actualSelection.GetDescription() + "\n" +
+                LocalizationTable.GetLocalization(actualSelection.GetJobDescription()) + "\n" + 
+                additionalInfoText;
         }
         else
         {
             // TODO: Change the hitpoint stuff.
-            txt.text = LocalizationTable.GetLocalization(actualSelection.GetName()) + "\n" + LocalizationTable.GetLocalization(actualSelection.GetDescription()) + "\n" + actualSelection.GetHitPointString();
+            txt.text = 
+                LocalizationTable.GetLocalization(actualSelection.GetName()) + "\n" + 
+                LocalizationTable.GetLocalization(actualSelection.GetDescription()) + "\n" +
+                additionalInfoText;
         }
     }
 }

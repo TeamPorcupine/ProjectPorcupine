@@ -45,8 +45,8 @@ public class MainScreenQuestList : MonoBehaviour
     private void ClearInterface()
     {
         List<Quest> quests = PrototypeManager.Quest.Values.Where(q => q.IsAccepted && !q.IsCompleted).ToList();
-        var childrens = QuestItemListPanel.Cast<Transform>().ToList();
-        foreach (var child in childrens)
+        List<Transform> childrens = QuestItemListPanel.Cast<Transform>().ToList();
+        foreach (Transform child in childrens)
         {
             DialogBoxQuestItem qi = child.GetComponent<DialogBoxQuestItem>();
             if (!quests.Contains(qi.Quest))
@@ -61,14 +61,14 @@ public class MainScreenQuestList : MonoBehaviour
     {
         List<Quest> quests = PrototypeManager.Quest.Values.Where(q => q.IsAccepted && !q.IsCompleted).ToList();
 
-        foreach (var quest in quests)
+        foreach (Quest quest in quests)
         {
             if (!visibleQuests.Contains(quest))
             {
-                var go = (GameObject)Instantiate(QuestItemPrefab);
+                GameObject go = (GameObject)Instantiate(QuestItemPrefab);
                 go.transform.SetParent(QuestItemListPanel);
 
-                var questItemBehaviour = go.GetComponent<DialogBoxQuestItem>();
+                DialogBoxQuestItem questItemBehaviour = go.GetComponent<DialogBoxQuestItem>();
                 questItemBehaviour.SetupQuest(quest);
                 visibleQuests.Add(quest);
             }
