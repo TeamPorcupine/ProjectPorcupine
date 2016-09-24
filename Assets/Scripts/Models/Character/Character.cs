@@ -15,6 +15,7 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
+using ProjectPorcupine.Jobs;
 using ProjectPorcupine.Localization;
 using ProjectPorcupine.Pathfinding;
 using UnityEngine;
@@ -297,7 +298,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         if the character is carrying materials but is not used in the new job, then drop them
         on the current tile for now.*/
 
-        if (inventory != null && !job.inventoryRequirements.ContainsKey(inventory.Type))
+        if (inventory != null && !job.HeldInventory.ContainsKey(inventory.Type))
         {
             World.Current.InventoryManager.PlaceInventory(CurrTile, inventory);
             DumpExcessInventory();
@@ -952,11 +953,11 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 }
                 else
                 {
-                    Inventory desired = null;
+                    RequestedItem desired = null;
                     List<Tile> newPath = null;
                     foreach (string itemType in fulfillableInventoryRequirements)
                     {
-                        desired = MyJob.inventoryRequirements[itemType];
+                        desired = MyJob.RequestedItems[itemType];
                         newPath = World.Current.InventoryManager.GetPathToClosestInventoryOfType(
                             desired.Type,
                             CurrTile,

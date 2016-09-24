@@ -118,13 +118,18 @@ public class InventoryManager
         Inventory sourceInventory = character.inventory;
 
         // Check that it's wanted by the job
-        if (job.inventoryRequirements.ContainsKey(sourceInventory.Type) == false)
+        if (job.RequestedItems.ContainsKey(sourceInventory.Type) == false)
         {
             Debug.ULogErrorChannel(InventoryManagerLogChanel, "Trying to add inventory to a job that it doesn't want.");
             return false;
         }
+        // Check that there is a target to transfer to
+        if (job.HeldInventory.ContainsKey(sourceInventory.Type) == false)
+        {
+            job.HeldInventory[sourceInventory.Type] = new Inventory(sourceInventory.Type, 0, sourceInventory.MaxStackSize);
+        }
 
-        Inventory targetInventory = job.inventoryRequirements[sourceInventory.Type];
+        Inventory targetInventory = job.HeldInventory[sourceInventory.Type];
         int transferAmount = Mathf.Min(targetInventory.MaxStackSize - targetInventory.StackSize, sourceInventory.StackSize);
 
         sourceInventory.StackSize -= transferAmount;
