@@ -118,26 +118,24 @@ public class PrototypeMap<T> where T : IPrototypable, new()
     /// <summary>
     /// Adds the given prototype. If the protptype exists it is overwirten.
     /// </summary>
-    /// <param name="type">The prototype type.</param>
     /// <param name="proto">The prototype instance.</param>
-    public void Set(string type, T proto)
+    public void Set(T proto)
     {
-        prototypes[type] = proto;
+        prototypes[proto.Type] = proto;
     }
 
     /// <summary>
     /// Add the given prototype. If a prototype of the given type is already registered, overwrite the old one while logging a warning.
     /// </summary>
-    /// <param name="type">The prototype type.</param>
     /// <param name="proto">The prototype instance.</param>
-    public void Add(string type, T proto)
+    public void Add(T proto)
     {
-        if (Has(type))
+        if (Has(proto.Type))
         {
-            Debug.ULogWarningChannel("BasePrototypes<T>.Add", "Trying to register a prototype of type '{0}' which already exists. Overwriting.", type);
+            Debug.ULogWarningChannel("PrototypeMap", "Trying to register a prototype of type '{0}' which already exists. Overwriting.", proto.Type);
         }
 
-        Set(type, proto);
+        Set(proto);
     }
 
     /// <summary>
@@ -160,12 +158,12 @@ public class PrototypeMap<T> where T : IPrototypable, new()
             }
             else
             {
-                Debug.ULogErrorChannel("XmlPrototypes", "The furniture prototype definition file doesn't have any '" + elementTag + "' elements.");
+                Debug.ULogErrorChannel("PrototypeMap", "The '" + listTag + "' prototype definition file doesn't have any '" + elementTag + "' elements.");
             }
         }
         else
         {
-            Debug.ULogErrorChannel("XmlPrototypes", "Did not find a '" + listTag + "' element in the prototype definition file.");
+            Debug.ULogErrorChannel("PrototypeMap", "Did not find a '" + listTag + "' element in the prototype definition file.");
         }
     }
 
@@ -183,9 +181,9 @@ public class PrototypeMap<T> where T : IPrototypable, new()
         catch (Exception e)
         {
             // Leaving this for Unitys console because UberLogger doesn't show multiline messages correctly.
-            Debug.LogError("Error reading furniture prototype for: " + listTag + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
+            Debug.LogError("Error reading '" + elementTag + "' prototype for: " + listTag + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
         }
 
-        Set(prototype.Type, prototype);
+        Set(prototype);
     }
 }
