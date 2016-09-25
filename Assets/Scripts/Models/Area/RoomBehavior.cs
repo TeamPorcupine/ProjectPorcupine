@@ -14,7 +14,6 @@ using System.Xml.Schema;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
-using UnityEngine;
 
 namespace ProjectPorcupine.Rooms
 {
@@ -24,10 +23,8 @@ namespace ProjectPorcupine.Rooms
     [MoonSharpUserData]
     public class RoomBehavior : IXmlSerializable, ISelectable, IPrototypable, IContextActionProvider
     {
-        public Room room;
-
         /// <summary>
-        /// These context menu lua action are used to build the context menu of the utility.
+        /// These context menu lua action are used to build the context menu of the room behavior.
         /// </summary>
         private List<ContextMenuLuaAction> contextMenuLuaActions;
 
@@ -124,15 +121,21 @@ namespace ProjectPorcupine.Rooms
         /// <summary>
         /// Gets or sets a value indicating whether the RoomBehavior is selected by the player or not.
         /// </summary>
-        /// <value>Whether the utility is selected or not.</value>
+        /// <value>Whether the room behavior is selected or not.</value>
         public bool IsSelected { get; set; }
 
         /// <summary>
-        /// Gets the string that defines the type of object the utility is. This gets queried by the visual system to 
+        /// Gets the string that defines the type of object the room behavior is. This gets queried by the visual system to 
         /// know what sprite to render for this RoomBehavior.
         /// </summary>
         /// <value>The type of the RoomBehavior.</value>
         public string Type { get; private set; }
+
+        /// <summary>
+        /// Gets the room this Behavior is attached to.
+        /// </summary>
+        /// <value>The room.</value>
+        public Room Room { get; private set; }
 
         /// <summary>
         /// Gets the name of the RoomBehavior. The name is the object type by default.
@@ -152,25 +155,24 @@ namespace ProjectPorcupine.Rooms
         }
 
         /// <summary>
-        /// Gets the code used for Localization of the utility.
+        /// Gets the code used for Localization of the room behavior.
         /// </summary>
         public string LocalizationCode { get; private set; }
 
         /// <summary>
-        /// Gets the description of the utility. This is used by localization.
+        /// Gets the description of the room behavior. This is used by localization.
         /// </summary>
         public string UnlocalizedDescription { get; private set; }
 
         /// <summary>
-        /// Gets or sets the parameters that is tied to the utility.
+        /// Gets or sets the parameters that is tied to the room behavior.
         /// </summary>
         public Parameter Parameters { get; private set; }
 
         public Dictionary<string, List<Furniture>> ControlledFurniture { get; private set; }
 
         /// <summary>
-        /// This function is called to update the utility. This will also trigger EventsActions.
-        /// This checks if the utility is a PowerConsumer, and if it does not have power it cancels its job.
+        /// This function is called to update the room behavior. This will also trigger EventsActions.
         /// </summary>
         /// <param name="deltaTime">The time since the last update was called.</param>
         public void Update(float deltaTime)
@@ -183,11 +185,11 @@ namespace ProjectPorcupine.Rooms
         }
 
         /// <summary>
-        /// Check if the position of the RoomBehavior is valid or not.
-        /// This is called when placing the utility.
+        /// Check if the room is valid for the room behavior.
+        /// This is called when assigning the room behavior.
         /// </summary>
-        /// <param name="tile">The base tile.</param>
-        /// <returns>True if the tile is valid for the placement of the utility.</returns>
+        /// <param name = "room">The room to be validated.</param>
+        /// <returns>True if the room is valid for the the room behavior.</returns>
         public bool IsValidRoom(Room room)
         {
             return funcRoomValidation(room);
@@ -204,12 +206,12 @@ namespace ProjectPorcupine.Rooms
         }
 
         /// <summary>
-        /// Writes the utility to XML.
+        /// Writes the room behavior to XML.
         /// </summary>
         /// <param name="writer">The XML writer to write to.</param>
         public void WriteXml(XmlWriter writer)
         {
-            writer.WriteAttributeString("Room", room.ID.ToString());
+            writer.WriteAttributeString("Room", Room.ID.ToString());
             writer.WriteAttributeString("type", Type);
 
             // Let the Parameters handle their own xml
@@ -217,7 +219,7 @@ namespace ProjectPorcupine.Rooms
         }
 
         /// <summary>
-        /// Reads the prototype utility from XML.
+        /// Reads the prototype room behavior from XML.
         /// </summary>
         /// <param name="readerParent">The XML reader to read from.</param>
         public void ReadXmlPrototype(XmlReader readerParent)
@@ -279,7 +281,7 @@ namespace ProjectPorcupine.Rooms
 
         /// <summary>
         /// Reads the specified XMLReader (pass it to <see cref="ReadXmlParams(XmlReader)"/>)
-        /// This is used to load utility from a save file.
+        /// This is used to load room behavior from a save file.
         /// </summary>
         /// <param name="reader">The XML reader to read from.</param>
         public void ReadXml(XmlReader reader)
@@ -293,7 +295,7 @@ namespace ProjectPorcupine.Rooms
         }
 
         /// <summary>
-        /// Reads the XML for parameters that this utility has and assign it to the utility.
+        /// Reads the XML for parameters that this room behavior has and assign it to the room behavior.
         /// </summary>
         /// <param name="reader">The reader to read the parameters from.</param>
         public void ReadXmlParams(XmlReader reader)
@@ -304,13 +306,13 @@ namespace ProjectPorcupine.Rooms
         }
 
         /// <summary>
-        /// Deconstructs the utility.
+        /// Deconstructs the room behavior.
         /// </summary>
         public void Deconstruct(RoomBehavior roomBehavior)
         {
             // We call lua to decostruct
             EventActions.Trigger("OnUninstall", this);
-            room.UndesignateRoomBehavior(roomBehavior);
+            Room.UndesignateRoomBehavior(roomBehavior);
 
             if (Removed != null)
             {
@@ -322,28 +324,28 @@ namespace ProjectPorcupine.Rooms
         }
 
         /// <summary>
-        /// Checks whether the utility has a certain tag.
+        /// Checks whether the room behavior has a certain tag.
         /// </summary>
         /// <param name="typeTag">Tag to check for.</param>
-        /// <returns>True if utility has specified tag.</returns>
+        /// <returns>True if room behavior has specified tag.</returns>
         public bool HasTypeTag(string typeTag)
         {
             return typeTags.Contains(typeTag);
         }
 
         /// <summary>
-        /// Returns LocalizationCode name for the utility.
+        /// Returns LocalizationCode name for the room behavior.
         /// </summary>
-        /// <returns>LocalizationCode for the name of the utility.</returns>
+        /// <returns>LocalizationCode for the name of the room behavior.</returns>
         public string GetName()
         {
             return LocalizationCode; // this.Name;
         }
 
         /// <summary>
-        /// Returns the UnlocalizedDescription of the utility.
+        /// Returns the UnlocalizedDescription of the room behavior.
         /// </summary>
-        /// <returns>Description of the utility.</returns>
+        /// <returns>Description of the room behavior.</returns>
         public string GetDescription()
         {
             return UnlocalizedDescription;
@@ -355,9 +357,9 @@ namespace ProjectPorcupine.Rooms
         }
 
         /// <summary>
-        /// Returns the description of the job linked to the utility. NOT INMPLEMENTED.
+        /// Returns the description of the job linked to the room behavior. NOT INMPLEMENTED.
         /// </summary>
-        /// <returns>Job description of the job linked to the utility.</returns>
+        /// <returns>Job description of the job linked to the room behavior.</returns>
         public string GetJobDescription()
         {
             return string.Empty;
@@ -395,11 +397,11 @@ namespace ProjectPorcupine.Rooms
         }
 
         /// <summary>
-        /// Make a copy of the current utility.  Sub-classes should
+        /// Make a copy of the current room behavior.  Sub-classes should
         /// override this Clone() if a different (sub-classed) copy
         /// constructor should be run.
         /// </summary>
-        /// <returns>A clone of the utility.</returns>
+        /// <returns>A clone of the room behavior.</returns>
         public RoomBehavior Clone()
         {
             return new RoomBehavior(this);
@@ -407,7 +409,7 @@ namespace ProjectPorcupine.Rooms
 
         public void Control(Room room) 
         {
-            this.room = room;
+            this.Room = room;
             List<Tile> innerTiles = room.GetInnerTiles();
             List<Tile> borderTiles = room.GetBorderingTiles();
 
