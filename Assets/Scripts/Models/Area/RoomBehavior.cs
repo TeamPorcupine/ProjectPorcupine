@@ -134,7 +134,6 @@ namespace ProjectPorcupine.Rooms
         /// <summary>
         /// Gets the room this Behavior is attached to.
         /// </summary>
-        /// <value>The room.</value>
         public Room Room { get; private set; }
 
         /// <summary>
