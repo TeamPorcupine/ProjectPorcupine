@@ -894,18 +894,6 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             // We can return early.
             return true;
         }
-        else
-        {
-            fulfillableInventoryRequirements = MyJob.FulfillableInventoryRequirements(MyJob.canTakeFromStockpile);
-
-            // If we somehow get here and fulfillableInventoryRequirements is empty then there is a problem!
-            if (fulfillableInventoryRequirements == null || fulfillableInventoryRequirements.Count() == 0)
-            {
-                Debug.ULogChannel("Character", "CheckForJobMaterials: no fulfillable inventory requirements");
-                AbandonJob(true);
-                return false;
-            }
-        }
 
         // At this point we know that the job still needs materials and these needs are satisfiable.
         // First we check if we carry any materials the job wants by chance.
@@ -943,6 +931,17 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         }
         else
         {
+
+            fulfillableInventoryRequirements = MyJob.FulfillableInventoryRequirements(MyJob.canTakeFromStockpile);
+
+            // If we somehow get here and fulfillableInventoryRequirements is empty then there is a problem!
+            if ((fulfillableInventoryRequirements == null || fulfillableInventoryRequirements.Count() == 0))
+            {
+                Debug.ULogChannel("Character", "CheckForJobMaterials: no fulfillable inventory requirements");
+                AbandonJob(true);
+                return false;
+            }
+
             // At this point, the job still requires inventory, but we aren't carrying it!
             // Are we standing on a tile with goods that are desired by the job?
             if (CurrTile.Inventory != null &&
