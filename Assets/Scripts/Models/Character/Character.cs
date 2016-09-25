@@ -319,7 +319,17 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         MyJob.OnJobStopped += OnJobStopped;
 
-        movementPath = Pathfinder.FindPathToTile(CurrTile, DestTile, MyJob.adjacent);
+        if (MyJob.IsNeed)
+        {
+            // This will calculate a path from current tile to destination tile.
+            movementPath = Pathfinder.FindPathToFurniture(CurrTile, MyJob.Type);
+        }
+        else
+        {
+            movementPath = Pathfinder.FindPathToTile(CurrTile, DestTile, MyJob.adjacent);
+        }
+
+//        movementPath = Pathfinder.FindPathToTile(CurrTile, DestTile, MyJob.adjacent);
 
         if (movementPath != null && movementPath.Count == 0)
         {
@@ -575,19 +585,24 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             }
         }
 
-        if (needPercent > 50 && needPercent < 100 && need.RestoreNeedFurn != null)
+        // If we are already working on a need job, don't replace it, this prevents constantly getting a new need job
+        if (MyJob == null || MyJob.IsNeed == false)
         {
-            if (World.Current.FurnitureManager.CountWithType(need.RestoreNeedFurn.Type) > 0)
+            if (needPercent > 50 && needPercent < 100 && need.RestoreNeedFurn != null)
             {
-                MyJob = new Job(null, need.RestoreNeedFurn.Type, need.CompleteJobNorm, need.RestoreNeedTime, null, Job.JobPriority.High, false, true, false);
+                if (World.Current.FurnitureManager.CountWithType(need.RestoreNeedFurn.Type) > 0)
+                {
+                    MyJob = new Job(null, need.RestoreNeedFurn.Type, need.CompleteJobNorm, need.RestoreNeedTime, null, Job.JobPriority.High, false, true, false);
+                    Debug.ULog("Character", "Getting New Need Job");
+                    MyJob.SetTileFromNeedFurniture(CurrTile, need.RestoreNeedFurn.Type);
+                }
+            }
+
+            if (needPercent.AreEqual(100.0f) && need != null && need.CompleteOnFail)
+            {
+                MyJob = new Job(CurrTile, null, need.CompleteJobCrit, need.RestoreNeedTime * 10, null, Job.JobPriority.High, false, true, true);
             }
         }
-
-        if (needPercent.AreEqual(100.0f) && need != null && need.CompleteOnFail)
-        {
-            MyJob = new Job(CurrTile, null, need.CompleteJobCrit, need.RestoreNeedTime * 10, null, Job.JobPriority.High, false, true, true);
-        }
-
         // Get the first job on the queue.
         if (MyJob == null)
         {
@@ -740,7 +755,15 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             {
                 // Generate a path to our destination.
                 // This will calculate a path from current tile to destination tile.
-                movementPath = Pathfinder.FindPathToTile(CurrTile, DestTile, MyJob != null ? MyJob.adjacent : false);
+                if (MyJob != null && MyJob.IsNeed)
+                {
+                    // This will calculate a path from current tile to destination tile.
+                    movementPath = Pathfinder.FindPathToFurniture(CurrTile, MyJob.Type);
+                }
+                else
+                {
+                    movementPath = Pathfinder.FindPathToTile(CurrTile, DestTile, MyJob != null ? MyJob.adjacent : false);
+                }
                 if (movementPath == null || movementPath.Count == 0)
                 {
                     Debug.ULogErrorChannel("Character", "Path_AStar returned no path to destination!");
