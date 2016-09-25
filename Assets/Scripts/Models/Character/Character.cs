@@ -710,8 +710,8 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             }
         }
 
-        // Make sure all materials are in place.
-        if (CheckForJobMaterials())
+        // Make sure all materials are in place, we can skip it if we're a needs job
+        if (MyJob.IsNeed || CheckForJobMaterials())
         {
             // If we get here, then the job has all the material that it needs.
             // Lets make sure that our destination tile is the job site tile.
