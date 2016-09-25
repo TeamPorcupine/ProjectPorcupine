@@ -202,6 +202,11 @@ public class Job : ISelectable, IPrototypable
         get; set;
     }
 
+    public void SetTileFromNeedFurniture(Tile currentTile, string needFurniture)
+    {
+        tile = ProjectPorcupine.Pathfinding.Pathfinder.FindPathToFurniture(currentTile, needFurniture).Last();
+    }
+
     public bool IsTileAtJobSite(Tile otherTile)
     {
         if (tile == null || otherTile == null)
