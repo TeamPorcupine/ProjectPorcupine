@@ -79,6 +79,7 @@ public class Job : ISelectable, IPrototypable
 
         this.HeldInventory = new Dictionary<string, Inventory>();
         this.RequestedItems = new Dictionary<string, RequestedItem>();
+
         if (requestedItems != null)
         {
             foreach (RequestedItem item in requestedItems)
@@ -217,12 +218,11 @@ public class Job : ISelectable, IPrototypable
         // TODO: This doesn't handle multi-tile furniture
         if (adjacent)
         {
-            return (
+            return 
                 tile.Z == otherTile.Z &&
                 (tile.X - 1) <= otherTile.X && (tile.X + 1) >= otherTile.X &&
                 (tile.Y - 1) <= otherTile.Y && (tile.Y + 1) >= otherTile.Y &&
-                tile.IsClippingCorner(otherTile) == false
-            );
+                tile.IsClippingCorner(otherTile) == false;
         }
         else
         {

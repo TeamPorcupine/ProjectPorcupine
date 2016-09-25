@@ -881,6 +881,11 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     /// <returns></returns>
     private bool CheckForJobMaterials()
     {
+        Debug.Log(inventory + " ***");
+        if(inventory != null) 
+        {
+            Debug.Log(inventory.GetName());
+        }
         List<string> fulfillableInventoryRequirements = new List<string>();
 
         if (MyJob != null && MyJob.IsNeed && MyJob.Critical == false)
@@ -891,20 +896,9 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         if (MyJob == null || MyJob.MaterialNeedsMet())
         {
+            Debug.Log((MyJob == null) + " %%% " + MyJob.MaterialNeedsMet());
             // We can return early.
             return true;
-        }
-        else
-        {
-            fulfillableInventoryRequirements = MyJob.FulfillableInventoryRequirements(MyJob.canTakeFromStockpile);
-
-            // If we somehow get here and fulfillableInventoryRequirements is empty then there is a problem!
-            if (fulfillableInventoryRequirements == null || fulfillableInventoryRequirements.Count() == 0)
-            {
-                Debug.ULogChannel("Character", "CheckForJobMaterials: no fulfillable inventory requirements");
-                AbandonJob(true);
-                return false;
-            }
         }
 
         // At this point we know that the job still needs materials and these needs are satisfiable.
@@ -943,6 +937,17 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         }
         else
         {
+
+            fulfillableInventoryRequirements = MyJob.FulfillableInventoryRequirements(MyJob.canTakeFromStockpile);
+
+            // If we somehow get here and fulfillableInventoryRequirements is empty then there is a problem!
+            if ((fulfillableInventoryRequirements == null || fulfillableInventoryRequirements.Count() == 0))
+            {
+                Debug.ULogChannel("Character", "CheckForJobMaterials: no fulfillable inventory requirements");
+                AbandonJob(true);
+                return false;
+            }
+
             // At this point, the job still requires inventory, but we aren't carrying it!
             // Are we standing on a tile with goods that are desired by the job?
             if (CurrTile.Inventory != null &&
