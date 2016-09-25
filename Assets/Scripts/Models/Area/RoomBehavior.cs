@@ -487,6 +487,7 @@ namespace ProjectPorcupine.Rooms
                         {
                             int.TryParse(reader.GetAttribute("count"), out count);
                         }
+
                         requiredFurniture.Add(new FurnitureRequirement(type, typeTag, count));
                         break;
                     case "Size":
@@ -494,6 +495,7 @@ namespace ProjectPorcupine.Rooms
                         {
                             int.TryParse(reader.GetAttribute("tiles"), out requiredSize);
                         }
+
                         break;
                 }
             }

@@ -768,7 +768,6 @@ public class World : IXmlSerializable
         // doing this explicitly here to make sure we have one now
         roomGraph = new Path_RoomGraph(world);
 
-
         int errorCount = 0;
 
         if (roomGraph.nodes.Count() != 8)
@@ -831,6 +830,7 @@ public class World : IXmlSerializable
                             errorCount++;
                             continue;
                         }
+
                         if (node.edges[0].node.data != world.RoomManager[3] || node.edges[1].node.data != world.RoomManager[0])
                         {
                             Debug.ULogErrorChannel("Path_RoomGraph", "Room 2 supposed to have edges to Room 3 and Room 0.");
@@ -853,12 +853,16 @@ public class World : IXmlSerializable
                             node.edges[2].node.data != world.RoomManager[1] || node.edges[3].node.data != world.RoomManager[2])
                         {
                             Debug.ULogErrorChannel("Path_RoomGraph", "Room 3 supposed to have edges to Rooms 4, 7, 1, and 2");
-                            Debug.ULogErrorChannel(
-                                "Path_RoomGraph",
-                                string.Format("Instead has: {0}, {1}, {2}, and {3}", node.edges[0].node.data.ID, node.edges[1].node.data.ID, 
-                                    node.edges[2].node.data.ID, node.edges[3].node.data.ID));
+                            string errorMessage = string.Format(
+                                "Instead has: {0}, {1}, {2}, and {3}", 
+                                node.edges[0].node.data.ID, 
+                                node.edges[1].node.data.ID, 
+                                node.edges[2].node.data.ID, 
+                                node.edges[3].node.data.ID);
+                            Debug.ULogErrorChannel("Path_RoomGraph", errorMessage);
                             errorCount++;
                         }
+
                         break;
                     case 4: // Room 2 has two edges both connecting to the outside room, one connecting to room 1 and one connecting to room 5
                         if (edgeCount != 2)
