@@ -725,7 +725,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
     private void Update_DoMovement(float deltaTime)
     {
-        if (MyJob != null && MyJob.IsTileAtJobSite(CurrTile) || DestTile == CurrTile)
+        if ((nextTile == null || nextTile == CurrTile) && (MyJob != null && MyJob.IsTileAtJobSite(CurrTile) && MyJob.MaterialNeedsMet() || DestTile == CurrTile))
         {
             // We're already were we want to be.
             movementPath = null;
@@ -733,7 +733,6 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             VisualPath.Instance.RemoveVisualPoints(name);
             return;
         }
-
         if (nextTile == null || nextTile == CurrTile)
         {
             // Get the next tile from the pathfinder.
