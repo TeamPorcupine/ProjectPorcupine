@@ -881,11 +881,6 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     /// <returns></returns>
     private bool CheckForJobMaterials()
     {
-        Debug.Log(inventory + " ***");
-        if(inventory != null) 
-        {
-            Debug.Log(inventory.GetName());
-        }
         List<string> fulfillableInventoryRequirements = new List<string>();
 
         if (MyJob != null && MyJob.IsNeed && MyJob.Critical == false)
@@ -896,7 +891,6 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         if (MyJob == null || MyJob.MaterialNeedsMet())
         {
-            Debug.Log((MyJob == null) + " %%% " + MyJob.MaterialNeedsMet());
             // We can return early.
             return true;
         }
