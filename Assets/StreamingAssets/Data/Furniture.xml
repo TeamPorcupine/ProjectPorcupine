@@ -622,6 +622,7 @@
             <Param name="source_pressure_limit" value="0" />
             <Param name="target_pressure_limit" value="1" />
             <Param name="flow_direction_up" value="1" />
+            <Param name="active" value="true" />
         </Params>
 
         <Action event="OnUpdate" functionName="AirPump_OnUpdate" />
