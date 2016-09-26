@@ -282,7 +282,7 @@ function MetalSmelter_UpdateAction(furniture, deltaTime)
         if (furniture.Parameters["smelttime"].ToFloat() >= furniture.Parameters["smelttime_required"].ToFloat()) then
             furniture.Parameters["smelttime"].SetValue(0)
 
-            ModUtils.LogError("MetalSmelter: Placing inventory at :" .. outputSpot.x .. ":" .. outputSpot.y)
+            ModUtils.ULog("MetalSmelter: Placing inventory at :" .. outputSpot.x .. ":" .. outputSpot.y)
             if (outputSpot.Inventory == nil) then
                 World.Current.inventoryManager.PlaceInventory(outputSpot, Inventory.__new("Steel Plate", 5))
                 inputSpot.Inventory.StackSize = inputSpot.Inventory.StackSize - 5
@@ -339,7 +339,7 @@ function MetalSmelter_JobWorked(job)
     for k, inv in pairs(job.HeldInventory) do
         if(inv ~= nil and inv.StackSize > 0) then
             World.Current.inventoryManager.PlaceInventory(inputSpot, inv)
-            spawnSpot.Inventory.Locked = true
+            inputSpot.Inventory.Locked = true
             return
         end
     end
