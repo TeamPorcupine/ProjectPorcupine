@@ -209,15 +209,16 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IEqua
         return true;
     }
 
-    public bool UnplaceUtility()
+    public bool UnplaceUtility(Utility utility)
     {
         // Just uninstalling.
         if (Utilities == null)
         {
+            Debug.ULogErrorChannel("Tile", "Utilities null when trying to unplace a Utility, this should never happen!");
             return false;
         }
 
-        Utilities = null;
+        Utilities.Remove(utility.Name);
 
         return true;
     }
@@ -226,7 +227,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IEqua
     {
         if (objInstance == null)
         {
-            return UnplaceUtility();
+            return false;
         }
 
         if (objInstance.IsValidPosition(this) == false)

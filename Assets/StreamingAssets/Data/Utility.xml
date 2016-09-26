@@ -32,6 +32,7 @@
     <DeconstructJob jobTime="1">
       <Inventory type="Steel Plate" amount="1" />
     </DeconstructJob>
+    
     <LocalizationCode>util_water_pipe</LocalizationCode>
     <UnlocalizedDescription>util_water_pipe_desc</UnlocalizedDescription>
   </Utility>

@@ -477,11 +477,11 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     /// <summary>
     /// Sets up a job to deconstruct the utility.
     /// </summary>
-    public void SetDeconstructJob(Utility utility)
+    public void SetDeconstructJob()
     {
         if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
         {
-            Deconstruct(utility);
+            Deconstruct();
             return;
         }
 
@@ -491,11 +491,11 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         }
 
         IsBeingDestroyed = true;
-        utility.Jobs.CancelAll();
+        Jobs.CancelAll();
 
         Job job = PrototypeManager.UtilityDeconstructJob.Get(Type).Clone();
         job.tile = Tile;
-        job.OnJobCompleted += (inJob) => Deconstruct(utility);
+        job.OnJobCompleted += (inJob) => Deconstruct();
 
         World.Current.jobQueue.Enqueue(job);
     }
@@ -503,18 +503,18 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     /// <summary>
     /// Deconstructs the utility.
     /// </summary>
-    public void Deconstruct(Utility utility)
+    public void Deconstruct()
     {
         int x = Tile.X;
         int y = Tile.Y;
         if (Tile.Utilities != null)
         {
-            utility.Jobs.CancelAll();
+            Jobs.CancelAll();
         }
 
         // We call lua to decostruct
         EventActions.Trigger("OnUninstall", this);
-        Tile.UnplaceUtility();
+        Tile.UnplaceUtility(this);
 
         if (Removed != null)
         {
@@ -544,7 +544,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
                     {
                         if (neighborUtility.Changed != null)
                         {
-                            neighborUtility.Changed(utility);
+                            neighborUtility.Changed(neighborUtility);
                         }
                     }
                 }
@@ -608,7 +608,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         {
             Text = "Deconstruct " + Name,
             RequireCharacterSelected = false,
-            Action = (contextMenuAction, character) => SetDeconstructJob(this)
+            Action = (contextMenuAction, character) => SetDeconstructJob()
         };
         if (Jobs.Count > 0)
         {
