@@ -63,7 +63,7 @@ public class JobSpriteController : BaseSpriteController<Job>
 
     protected override void OnCreated(Job job)
     {
-        if (job.JobTileType == null && job.buildablePrototype == null)
+        if (job.JobTileType == null && job.JobObjectType == null)
         {
             // This job doesn't really have an associated sprite with it, so no need to render.
             return;
@@ -108,6 +108,11 @@ public class JobSpriteController : BaseSpriteController<Job>
         }
         else
         {
+            // If we get this far we need a buildable prototype, bail if we don't have one
+            if(job.buildablePrototype == null)
+            {
+                return;
+            }
             // This is a normal furniture job.
             if (job.buildablePrototype.GetType().ToString() == "Furniture")
             {
