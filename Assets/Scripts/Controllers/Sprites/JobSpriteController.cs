@@ -113,7 +113,7 @@ public class JobSpriteController : BaseSpriteController<Job>
         else if (job.JobDescription.Contains("mine"))
         {
             sr.sprite = SpriteManager.GetSprite("UI", "MiningIcon");
-            sr.color = new Color(1,1,1,0.25f);
+            sr.color = new Color(1, 1, 1, 0.25f);
             job_go.transform.position = job.tile.Vector3;
         }
         else
