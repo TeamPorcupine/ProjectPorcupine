@@ -34,6 +34,7 @@ public class LuaFunctions
         RegisterGlobal(typeof(Connection));
         RegisterGlobal(typeof(Scheduler.Scheduler));
         RegisterGlobal(typeof(Scheduler.ScheduledEvent));
+        RegisterGlobal(typeof(ProjectPorcupine.Jobs.RequestedItem));
     }
 
     /// <summary>

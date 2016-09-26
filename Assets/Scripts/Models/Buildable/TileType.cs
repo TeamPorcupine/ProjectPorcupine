@@ -10,7 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Xml;
 using MoonSharp.Interpreter;
-using UnityEngine;
+using ProjectPorcupine.Jobs;
 
 [MoonSharpUserData]
 public class TileType : IPrototypable, IEquatable<TileType>
@@ -236,7 +236,7 @@ public class TileType : IPrototypable, IEquatable<TileType>
             return;
         }
 
-        List<Inventory> inventoryRequirements = new List<Inventory>();
+        List<RequestedItem> requiredItems = new List<RequestedItem>();
         XmlReader inventoryReader = parentReader.ReadSubtree();
 
         while (inventoryReader.Read())
@@ -251,7 +251,7 @@ public class TileType : IPrototypable, IEquatable<TileType>
             string type = inventoryReader.GetAttribute("type");
             if (int.TryParse(inventoryReader.GetAttribute("amount"), out amount))
             {
-                inventoryRequirements.Add(new Inventory(type, 0, amount));
+                requiredItems.Add(new RequestedItem(type, amount));
             }
             else
             {
@@ -264,7 +264,7 @@ public class TileType : IPrototypable, IEquatable<TileType>
             this,
             Tile.ChangeTileTypeJobComplete,
             jobTimeValue,
-            inventoryRequirements.ToArray(),
+            requiredItems.ToArray(),
             Job.JobPriority.High,
             false,
             true)

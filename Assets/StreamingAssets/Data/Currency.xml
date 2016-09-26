@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Currencies>
-    <Currency Name="Quill Corp Bucks" ShortName="QCB" StartingBalance="150"/>
-    <Currency Name="Inter-Galactic Credits" ShortName="ICB" StartingBalance="0"/>
+    <Currency Name="Quill Corp Bucks" ShortName="QCB" />
+    <Currency Name="Inter-Galactic Credits" ShortName="ICB" />
 </Currencies>
