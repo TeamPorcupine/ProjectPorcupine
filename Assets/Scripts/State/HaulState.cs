@@ -51,6 +51,7 @@ namespace ProjectPorcupine.State
                     else if (character.inventory == null)
                     {
                         // The character has no inventory and can't find anything to haul.
+                        Interrupt();
                         FSMLog(" - Nothing to haul");
                         Finished();
                     }
