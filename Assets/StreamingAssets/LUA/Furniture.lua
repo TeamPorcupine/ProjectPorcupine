@@ -282,7 +282,6 @@ function MetalSmelter_UpdateAction(furniture, deltaTime)
         if (furniture.Parameters["smelttime"].ToFloat() >= furniture.Parameters["smelttime_required"].ToFloat()) then
             furniture.Parameters["smelttime"].SetValue(0)
 
-            ModUtils.ULog("MetalSmelter: Placing inventory at :" .. outputSpot.x .. ":" .. outputSpot.y)
             if (outputSpot.Inventory == nil) then
                 World.Current.inventoryManager.PlaceInventory(outputSpot, Inventory.__new("Steel Plate", 5))
                 inputSpot.Inventory.StackSize = inputSpot.Inventory.StackSize - 5
