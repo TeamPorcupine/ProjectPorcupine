@@ -17,6 +17,7 @@ using System.Xml.Serialization;
 using MoonSharp.Interpreter;
 using ProjectPorcupine.Jobs;
 using ProjectPorcupine.Localization;
+using ProjectPorcupine.Pathfinding;
 using UnityEngine;
 
 public enum Facing
@@ -67,7 +68,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     private float movementPercentage;
 
     /// Holds the path to reach DestTile.
-    private Path_AStar pathAStar;
+    private List<Tile> movementPath;
 
     /// Tiles per second.
     private float speed = 5f;
@@ -228,7 +229,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             if (destTile != value)
             {
                 destTile = value;
-                pathAStar = null;   // If this is a new destination, then we need to invalidate pathfinding.
+                movementPath = null;   // If this is a new destination, then we need to invalidate pathfinding.
             }
         }
     }
@@ -318,27 +319,26 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         MyJob.OnJobStopped += OnJobStopped;
 
-        pathAStar = new Path_AStar(World.Current, CurrTile, DestTile);
+        if (MyJob.IsNeed)
+        {
+            // This will calculate a path from current tile to destination tile.
+            movementPath = Pathfinder.FindPathToFurniture(CurrTile, MyJob.Type);
+        }
+        else
+        {
+            movementPath = Pathfinder.FindPathToTile(CurrTile, DestTile, MyJob.adjacent);
+        }
 
-        if (pathAStar != null && pathAStar.Length() == 0)
+//        movementPath = Pathfinder.FindPathToTile(CurrTile, DestTile, MyJob.adjacent);
+
+        if (movementPath != null && movementPath.Count == 0)
         {
             Debug.ULogChannel("Character", "Path_AStar returned no path to target job tile!");
             AbandonJob(false);
             return;
         }
 
-        if (MyJob.adjacent)
-        {
-            IEnumerable<Tile> reversed = pathAStar.Reverse();
-            reversed = reversed.Skip(1);
-            pathAStar = new Path_AStar(new Queue<Tile>(reversed.Reverse()));
-            DestTile = pathAStar.EndTile();
-            jobTile = DestTile;
-        }
-        else
-        {
-            jobTile = MyJob.tile;
-        }
+        jobTile = MyJob.tile;
     }
 
     /// Runs every "frame" while the simulation is not paused
@@ -585,19 +585,24 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             }
         }
 
-        if (needPercent > 50 && needPercent < 100 && need.RestoreNeedFurn != null)
+        // If we are already working on a need job, don't replace it, this prevents constantly getting a new need job
+        if (MyJob == null || MyJob.IsNeed == false)
         {
-            if (World.Current.FurnitureManager.CountWithType(need.RestoreNeedFurn.Type) > 0)
+            if (needPercent > 50 && needPercent < 100 && need.RestoreNeedFurn != null)
             {
-                MyJob = new Job(null, need.RestoreNeedFurn.Type, need.CompleteJobNorm, need.RestoreNeedTime, null, Job.JobPriority.High, false, true, false);
+                if (World.Current.FurnitureManager.CountWithType(need.RestoreNeedFurn.Type) > 0)
+                {
+                    MyJob = new Job(null, need.RestoreNeedFurn.Type, need.CompleteJobNorm, need.RestoreNeedTime, null, Job.JobPriority.High, false, true, false);
+                    Debug.ULogChannel("Character", "Getting New Need Job");
+                    MyJob.SetTileFromNeedFurniture(CurrTile, need.RestoreNeedFurn.Type);
+                }
+            }
+
+            if (needPercent.AreEqual(100.0f) && need != null && need.CompleteOnFail)
+            {
+                MyJob = new Job(CurrTile, null, need.CompleteJobCrit, need.RestoreNeedTime * 10, null, Job.JobPriority.High, false, true, true);
             }
         }
-
-        if (needPercent.AreEqual(100.0f) && need != null && need.CompleteOnFail)
-        {
-            MyJob = new Job(CurrTile, null, need.CompleteJobCrit, need.RestoreNeedTime * 10, null, Job.JobPriority.High, false, true, true);
-        }
-
         // Get the first job on the queue.
         if (MyJob == null)
         {
@@ -654,31 +659,23 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         if (MyJob.IsNeed)
         {
             // This will calculate a path from current tile to destination tile.
-            pathAStar = new Path_AStar(World.Current, CurrTile, DestTile, need.RestoreNeedFurn.Type, 0, false, true);
+            movementPath = Pathfinder.FindPathToFurniture(CurrTile, need.RestoreNeedFurn.Type);
         }
         else
         {
-            pathAStar = new Path_AStar(World.Current, CurrTile, DestTile, null, 0, false, false, MyJob.adjacent);
+            movementPath = Pathfinder.FindPathToTile(CurrTile, DestTile, MyJob.adjacent);
         }
 
         Profiler.EndSample();
 
-        if (pathAStar != null && pathAStar.Length() == 0)
+        if (movementPath != null && movementPath.Count == 0)
         {
             Debug.ULogChannel("Character", "Path_AStar returned no path to target job tile!");
             AbandonJob(false);
             return;
         }
 
-        if (MyJob.adjacent)
-        {
-            DestTile = pathAStar.EndTile();
-            jobTile = DestTile;
-        }
-        else
-        {
-            jobTile = MyJob.tile;
-        }
+        jobTile = MyJob.tile;
 
         MyJob.IsBeingWorked = true;
     }
@@ -713,15 +710,15 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             }
         }
 
-        // Make sure all materials are in place.
-        if (CheckForJobMaterials())
+        // Make sure all materials are in place, we can skip it if we're a needs job
+        if (MyJob.IsNeed || CheckForJobMaterials())
         {
             // If we get here, then the job has all the material that it needs.
             // Lets make sure that our destination tile is the job site tile.
             DestTile = JobTile;
 
             // Check if we have reached the destination tiles.
-            if (CurrTile == DestTile)
+            if (MyJob.IsTileAtJobSite(CurrTile))
             {
                 // We are at the correct tile for our job, so
                 // execute the job's "DoWork", which is mostly
@@ -743,24 +740,31 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
     private void Update_DoMovement(float deltaTime)
     {
-        if (CurrTile == DestTile)
+        if ((nextTile == null || nextTile == CurrTile) && (MyJob != null && MyJob.IsTileAtJobSite(CurrTile) && MyJob.MaterialNeedsMet() || DestTile == CurrTile))
         {
             // We're already were we want to be.
-            pathAStar = null;
+            movementPath = null;
             IsWalking = false;
             VisualPath.Instance.RemoveVisualPoints(name);
             return;
         }
-
         if (nextTile == null || nextTile == CurrTile)
         {
             // Get the next tile from the pathfinder.
-            if (pathAStar == null || pathAStar.Length() == 0)
+            if (movementPath == null || movementPath.Count == 0)
             {
                 // Generate a path to our destination.
                 // This will calculate a path from current tile to destination tile.
-                pathAStar = new Path_AStar(World.Current, CurrTile, DestTile);
-                if (pathAStar.Length() == 0)
+                if (MyJob != null && MyJob.IsNeed)
+                {
+                    // This will calculate a path from current tile to destination tile.
+                    movementPath = Pathfinder.FindPathToFurniture(CurrTile, MyJob.Type);
+                }
+                else
+                {
+                    movementPath = Pathfinder.FindPathToTile(CurrTile, DestTile, MyJob != null ? MyJob.adjacent : false);
+                }
+                if (movementPath == null || movementPath.Count == 0)
                 {
                     Debug.ULogErrorChannel("Character", "Path_AStar returned no path to destination!");
                     AbandonJob(false);
@@ -768,18 +772,23 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 }
 
                 // Let's ignore the first tile, because that's the tile we're currently in.
-                nextTile = pathAStar.Dequeue();
+                nextTile = movementPath[0];
+                movementPath.RemoveAt(0);
             }
 
             if (IsSelected)
             {
-                VisualPath.Instance.SetVisualPoints(name, pathAStar.GetList());
+                VisualPath.Instance.SetVisualPoints(name, movementPath);
             }
 
             IsWalking = true;
 
-            // Grab the next waypoint from the pathing system!
-            nextTile = pathAStar.Dequeue();
+            if (movementPath.Count > 0)
+            {
+                // Grab the next waypoint from the pathing system!
+                nextTile = movementPath[0];
+                movementPath.RemoveAt(0);
+            }
 
             if (nextTile == CurrTile)
             {
@@ -798,7 +807,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             ////            Or maybe we should register a callback to the OnTileChanged event?
             //// Debug.ULogErrorChannel("FIXME", "A character was trying to enter an unwalkable tile.");
             nextTile = null;    // our next tile is a no-go
-            pathAStar = null;   // clearly our pathfinding info is out of date.
+            movementPath = null;   // clearly our pathfinding info is out of date.
             return;
         }
         else if (nextTile.IsEnterable() == Enterability.Soon)
@@ -816,8 +825,8 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         // But when we do the pathfinding system, we'll likely
         // switch to something like Manhattan or Chebyshev distance
         float distToTravel = Mathf.Sqrt(
-            Mathf.Pow(CurrTile.X - nextTile.X, 2) +
-            Mathf.Pow(CurrTile.Y - nextTile.Y, 2));
+                                 Mathf.Pow(CurrTile.X - nextTile.X, 2) +
+                                 Mathf.Pow(CurrTile.Y - nextTile.Y, 2));
 
         // How much distance can be travel this Update?
         float distThisFrame = speed / nextTile.MovementCost * deltaTime;
@@ -876,25 +885,14 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         if (MyJob != null && MyJob.IsNeed && MyJob.Critical == false)
         {
-            MyJob.tile = jobTile = new Path_AStar(World.Current, CurrTile, null, MyJob.JobObjectType, 0, false, true).EndTile();
+            List<Tile> path = Pathfinder.FindPathToInventory(CurrTile, MyJob.JobObjectType);
+            MyJob.tile = jobTile = path != null && path.Count > 0 ? path.Last() : null;
         }
 
         if (MyJob == null || MyJob.MaterialNeedsMet())
         {
             // We can return early.
             return true;
-        }
-        else
-        {
-            fulfillableInventoryRequirements = MyJob.FulfillableInventoryRequirements();
-
-            // If we somehow get here and fulfillableInventoryRequirements is empty then there is a problem!
-            if (fulfillableInventoryRequirements == null || fulfillableInventoryRequirements.Count() == 0)
-            {
-                Debug.ULogChannel("Character", "CheckForJobMaterials: no fulfillable inventory requirements");
-                AbandonJob(true);
-                return false;
-            }
         }
 
         // At this point we know that the job still needs materials and these needs are satisfiable.
@@ -905,7 +903,8 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             {
                 // If so, deliver the goods.
                 // Walk to the job tile, then drop off the stack into the job.
-                if (CurrTile == JobTile)
+                Pathfinder.GoalEvaluator isAtJobSize = Pathfinder.GoalTileEvaluator(jobTile, MyJob.adjacent);
+                if (isAtJobSize(CurrTile))
                 {
                     // We are at the job's site, so drop the inventory
                     World.Current.InventoryManager.PlaceInventory(MyJob, this);
@@ -932,11 +931,22 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         }
         else
         {
+
+            fulfillableInventoryRequirements = MyJob.FulfillableInventoryRequirements(MyJob.canTakeFromStockpile);
+
+            // If we somehow get here and fulfillableInventoryRequirements is empty then there is a problem!
+            if ((fulfillableInventoryRequirements == null || fulfillableInventoryRequirements.Count() == 0))
+            {
+                Debug.ULogChannel("Character", "CheckForJobMaterials: no fulfillable inventory requirements");
+                AbandonJob(true);
+                return false;
+            }
+
             // At this point, the job still requires inventory, but we aren't carrying it!
             // Are we standing on a tile with goods that are desired by the job?
             if (CurrTile.Inventory != null &&
-                MyJob.AmountDesiredOfInventoryType(CurrTile.Inventory) > 0 && !CurrTile.Inventory.Locked &&
-                (MyJob.canTakeFromStockpile || CurrTile.Furniture == null || CurrTile.Furniture.HasTypeTag("Storage") == false))
+                MyJob.AmountDesiredOfInventoryType(CurrTile.Inventory) > 0 &&
+                CurrTile.Inventory.CanBePickedUp(MyJob.canTakeFromStockpile))
             {
                 // Pick up the stuff!
                 World.Current.InventoryManager.PlaceInventory(
@@ -956,7 +966,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 // Any chance we already have a path that leads to the items we want?
                 // Check that we have an end tile and that it has content.
                 // Check if contains the desired type.
-                if (WalkingToUsableInventory() && fulfillableInventoryRequirements.Contains(pathAStar.EndTile().Inventory.Type))
+                if (WalkingToUsableInventory() && fulfillableInventoryRequirements.Contains(movementPath.Last().Inventory.Type))
                 {
                     // We are already moving towards a tile that contains what we want!
                     // so....do nothing?
@@ -965,17 +975,16 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 else
                 {
                     RequestedItem desired = null;
-                    Path_AStar newPath = null;
+                    List<Tile> newPath = null;
                     foreach (string itemType in fulfillableInventoryRequirements)
                     {
                         desired = MyJob.RequestedItems[itemType];
                         newPath = World.Current.InventoryManager.GetPathToClosestInventoryOfType(
                             desired.Type,
                             CurrTile,
-                            desired.AmountDesired(),
                             MyJob.canTakeFromStockpile);
 
-                        if (newPath == null || newPath.Length() < 1)
+                        if (newPath == null || newPath.Count < 1)
                         {
                             // Try the next requirement
                             Debug.ULogChannel("Character", "No tile contains objects of type '" + desired.Type + "' to satisfy job requirements.");
@@ -986,7 +995,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                         break;
                     }
 
-                    if (newPath == null || newPath.Length() < 1)
+                    if (newPath == null || newPath.Count < 1)
                     {
                         // tried all requirements and found no path
                         Debug.ULogChannel("Character", "No reachable tile contains objects able to satisfy job requirements.");
@@ -994,15 +1003,14 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                         return false;
                     }
 
-                    Debug.ULogChannel("Character", "pathAStar returned with length of: " + newPath.Length());
-
-                    DestTile = newPath.EndTile();
+                    DestTile = newPath.Last();
 
                     // Since we already have a path calculated, let's just save that.
-                    pathAStar = newPath;
+                    movementPath = newPath;
 
                     // Ignore first tile, because that's what we're already in.
-                    nextTile = newPath.Dequeue();
+                    nextTile = newPath[0];
+                    newPath.RemoveAt(0);
                 }
 
                 // One way or the other, we are now on route to an object of the right type.
@@ -1015,9 +1023,8 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
     private bool WalkingToUsableInventory()
     {
-        bool destHasInventory = pathAStar != null && pathAStar.EndTile() != null && pathAStar.EndTile().Inventory != null;
-        return destHasInventory &&
-        !(pathAStar.EndTile().Furniture != null && (MyJob.canTakeFromStockpile == false && pathAStar.EndTile().Furniture.HasTypeTag("Storage") == true));
+        bool destHasInventory = movementPath != null && movementPath.LastOrDefault() != null && movementPath.Last().Inventory != null;
+        return destHasInventory && movementPath.Last().Inventory.CanBePickedUp(MyJob.canTakeFromStockpile);
     }
 
     /// <summary>
@@ -1055,7 +1062,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         // canceling the job manually.
         if (job != null)
         {
-            List<string> desired = job.FulfillableInventoryRequirements();
+            List<string> desired = job.FulfillableInventoryRequirements(job.canTakeFromStockpile);
 
             // Check if the created inventory can fulfill the waiting job requirements.
             if (desired != null && desired.Contains(inv.Type))

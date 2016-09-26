@@ -79,6 +79,7 @@ public class Job : ISelectable, IPrototypable
 
         this.HeldInventory = new Dictionary<string, Inventory>();
         this.RequestedItems = new Dictionary<string, RequestedItem>();
+
         if (requestedItems != null)
         {
             foreach (RequestedItem item in requestedItems)
@@ -200,6 +201,33 @@ public class Job : ISelectable, IPrototypable
     public bool IsSelected
     {
         get; set;
+    }
+
+    public void SetTileFromNeedFurniture(Tile currentTile, string needFurniture)
+    {
+        tile = ProjectPorcupine.Pathfinding.Pathfinder.FindPathToFurniture(currentTile, needFurniture).Last();
+    }
+
+    public bool IsTileAtJobSite(Tile otherTile)
+    {
+        if (tile == null || otherTile == null)
+        {
+            return false;
+        }
+
+        // TODO: This doesn't handle multi-tile furniture
+        if (adjacent)
+        {
+            return 
+                tile.Z == otherTile.Z &&
+                (tile.X - 1) <= otherTile.X && (tile.X + 1) >= otherTile.X &&
+                (tile.Y - 1) <= otherTile.Y && (tile.Y + 1) >= otherTile.Y &&
+                tile.IsClippingCorner(otherTile) == false;
+        }
+        else
+        {
+            return tile.Equals(otherTile);
+        }
     }
 
     public virtual Job Clone()
@@ -355,7 +383,7 @@ public class Job : ISelectable, IPrototypable
     /// Fulfillable inventory requirements for job.
     /// </summary>
     /// <returns>A list of (string) Type for job inventory requirements that can be met. Returns null if the job requires materials which do not exist on the map.</returns>
-    public List<string> FulfillableInventoryRequirements()
+    public List<string> FulfillableInventoryRequirements(bool canTakeFromStockpiles)
     {
         List<string> fulfillableInventoryRequirements = new List<string>();
 
@@ -363,7 +391,7 @@ public class Job : ISelectable, IPrototypable
         {
             if (this.acceptsAny == false)
             {
-                if (World.Current.InventoryManager.HasInventoryOfType(item.Type) == false)
+                if (World.Current.InventoryManager.HasInventoryOfType(item.Type, canTakeFromStockpiles) == false)
                 {
                     // the job requires ALL inventory requirements to be met, and there is no source of a desired Type
                     return null;
@@ -373,7 +401,7 @@ public class Job : ISelectable, IPrototypable
                     fulfillableInventoryRequirements.Add(item.Type);
                 }
             }
-            else if (World.Current.InventoryManager.HasInventoryOfType(item.Type))
+            else if (World.Current.InventoryManager.HasInventoryOfType(item.Type, canTakeFromStockpiles))
             {
                 // there is a source for a desired Type that the job will accept
                 fulfillableInventoryRequirements.Add(item.Type);
