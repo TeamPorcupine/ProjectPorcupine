@@ -83,6 +83,7 @@ namespace ProjectPorcupine.Localization
         {
             lastLanguage = LocalizationTable.currentLanguage;
             this.formatValues = formatValues;
+            defaultText = text;
             this.text.text = LocalizationTable.GetLocalization(text, formatValues);
         }
 
