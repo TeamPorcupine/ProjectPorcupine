@@ -7,8 +7,8 @@
 // ====================================================
 #endregion
 using System.Collections.Generic;
-using ProjectPorcupine.Jobs;
 using UnityEngine;
+using ProjectPorcupine.Jobs;
 
 public class CursorInfoDisplay
 {
@@ -48,7 +48,7 @@ public class CursorInfoDisplay
         for (int i = 0; i < mc.GetDragObjects().Count; i++)
         {
             Tile t1 = GetTileUnderDrag(mc.GetDragObjects()[i].transform.position);
-            if (World.Current.FurnitureManager.IsPlacementValid(bmc.buildModeType, t1) && t1.PendingBuildJob == null)
+            if (WorldController.Instance.World.IsFurniturePlacementValid(bmc.buildModeType, t1) && t1.PendingBuildJob == null)
             {
                 validPostionCount++;
             }
@@ -72,7 +72,7 @@ public class CursorInfoDisplay
     public string GetCurrentBuildRequirements()
     {
         string temp = string.Empty;
-        Dictionary<string, RequestedItem> items = PrototypeManager.FurnitureConstructJob.Get(bmc.buildModeType).RequestedItems;
+        Dictionary<string, RequestedItem> items = PrototypeManager.FurnitureJob.Get(bmc.buildModeType).RequestedItems;
         foreach (RequestedItem item in items.Values)
         {
             string requiredMaterialCount = (item.MinAmountRequested * validPostionCount).ToString();

@@ -19,7 +19,7 @@ namespace ProjectPorcupine.State
             if (tileInventory == null)
             {
                 FSMLog(" - Dumping");
-                World.Current.InventoryManager.PlaceInventory(character.CurrTile, character.inventory);
+                World.Current.inventoryManager.PlaceInventory(character.CurrTile, character.inventory);
                 Finished();
                 return;
             }
@@ -28,7 +28,7 @@ namespace ProjectPorcupine.State
             if (tileInventory.Type == character.inventory.Type && (tileInventory.StackSize + character.inventory.StackSize) <= tileInventory.MaxStackSize)
             {
                 FSMLog(" - Dumping");
-                World.Current.InventoryManager.PlaceInventory(character.CurrTile, character.inventory);
+                World.Current.inventoryManager.PlaceInventory(character.CurrTile, character.inventory);
                 Finished();
                 return;
             }

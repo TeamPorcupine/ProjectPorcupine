@@ -11,25 +11,15 @@ using UnityEngine;
 
 public class DialogBox : MonoBehaviour
 {
-    private bool openedWhileModal = false;
-
     public virtual void ShowDialog()
     {
-        openedWhileModal = WorldController.Instance.IsModal ? true : false;
-
         WorldController.Instance.IsModal = true;
-
-        gameObject.transform.SetAsLastSibling();
         gameObject.SetActive(true);
     }
 
     public virtual void CloseDialog()
     {
-        if (!openedWhileModal)
-        {
-            WorldController.Instance.IsModal = false;
-        }
-
+        WorldController.Instance.IsModal = false;
         gameObject.SetActive(false);
     }
 }

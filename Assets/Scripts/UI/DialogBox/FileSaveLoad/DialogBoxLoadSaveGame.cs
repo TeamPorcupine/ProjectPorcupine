@@ -19,8 +19,7 @@ using UnityEngine.UI;
 
 public class DialogBoxLoadSaveGame : DialogBox
 {
-    public static readonly Color PrimaryColor = new Color32(0, 149, 217, 80);
-    public static readonly Color SecondaryColor = new Color32(0, 149, 217, 160);
+    public static readonly Color SecondaryColor = new Color(0.9f, 0.9f, 0.9f);
 
     public GameObject fileListItemPrefab;
     public Transform fileList;
@@ -49,7 +48,7 @@ public class DialogBoxLoadSaveGame : DialogBox
 
         DirectoryInfo saveDir = new DirectoryInfo(saveDirectoryPath);
 
-        FileInfo[] saveGames = saveDir.GetFiles("*.sav").OrderByDescending(f => f.CreationTime).ToArray();
+        FileInfo[] saveGames = saveDir.GetFiles().OrderByDescending(f => f.CreationTime).ToArray();
 
         // Our save dialog has an input field, which the fileListItems fill out for
         // us when we click on them
@@ -74,15 +73,12 @@ public class DialogBoxLoadSaveGame : DialogBox
             DialogListItem listItem = go.GetComponent<DialogListItem>();
             listItem.fileName = fileName;
             listItem.inputField = inputField;
-            listItem.currentColor = i % 2 == 0 ? PrimaryColor : SecondaryColor;
 
-            go.GetComponent<Image>().color = listItem.currentColor;
+            go.GetComponent<Image>().color = i % 2 == 0 ? Color.white : SecondaryColor;
         }
 
         // Set scroll sensitivity based on the save-item count
         fileList.GetComponentInParent<ScrollRect>().scrollSensitivity = fileList.childCount / 2;
-
-        fileList.GetComponent<AutomaticVerticalSize>().AdjustSize();
     }
 
     public override void CloseDialog()

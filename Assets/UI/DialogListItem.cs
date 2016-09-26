@@ -15,7 +15,6 @@ public class DialogListItem : MonoBehaviour, IPointerClickHandler
     public string fileName;
     public InputField inputField;
     public DoubleClickAction doubleclick;
-    public Color currentColor;
 
     public delegate void DoubleClickAction();
 
@@ -26,15 +25,6 @@ public class DialogListItem : MonoBehaviour, IPointerClickHandler
         // Our job is to take our text label and 
         // copy it into a target field.
         inputField.text = fileName;
-
-        DialogListItem[] listItems = transform.parent.GetComponentsInChildren<DialogListItem>();
-        foreach (DialogListItem listItem in listItems)
-        {
-            listItem.GetComponent<Image>().color = listItem.currentColor;
-        }
-
-        GetComponent<Image>().color = new Color32(0, 68, 101, 153);
-
         GameObject go = GameObject.FindGameObjectWithTag("DeleteButton");
         if (go != null)
         {

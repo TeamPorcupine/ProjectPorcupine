@@ -77,10 +77,10 @@ public class WorldController : MonoBehaviour
         new PrototypeManager();
         new CharacterNameManager();
         new SpriteManager();
-        new AudioManager();
 
         // FIXME: Do something real here. This is just to show how to register a C# event prototype for the Scheduler.
         PrototypeManager.SchedulerEvent.Add(
+            "ping_log",
             new ScheduledEvent(
                 "ping_log",
                 (evt) => Debug.ULogChannel("Scheduler", "Event {0} fired", evt.Name)));
@@ -131,9 +131,11 @@ public class WorldController : MonoBehaviour
         spawnInventoryController.SetUIVisibility(Settings.GetSetting("DialogBoxSettings_developerModeToggle", false));
 
         cameraController.Initialize();
-        cameraController.Moved += this.World.OnCameraMoved;
 
         // Initialising controllers.
+        GameObject controllers = GameObject.Find("Controllers");
+        Instantiate(Resources.Load("UIController"), controllers.transform);
+
         GameObject canvas = GameObject.Find("Canvas");
         go = Instantiate(Resources.Load("UI/ContextMenu"), canvas.transform.position, canvas.transform.rotation, canvas.transform) as GameObject;
         go.name = "ContextMenu";
