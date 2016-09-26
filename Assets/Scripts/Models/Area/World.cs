@@ -210,7 +210,7 @@ public class World : IXmlSerializable
         }
 
         // if it's an internal workspot bail before reserving.
-        if (furniture.Jobs.WorkspotIsInternal())
+        if (furniture.Jobs.WorkSpotIsInternal())
         {
             return;
         }
