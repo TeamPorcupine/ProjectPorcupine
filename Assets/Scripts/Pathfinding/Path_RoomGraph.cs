@@ -7,7 +7,6 @@
 // ====================================================
 #endregion
 using System.Collections.Generic;
-using ProjectPorcupine.Rooms;
 using UnityEngine;
 
 public class Path_RoomGraph
@@ -21,8 +20,8 @@ public class Path_RoomGraph
         // Loop through all rooms of the world
         // For each room, create a node
         nodes = new Dictionary<Room, Path_Node<Room>>();
-        Debug.ULogChannel("Path_RoomGraph", "There are " + world.RoomManager.Count + " Rooms");
-        foreach (Room room in world.RoomManager)
+        Debug.ULogChannel("Path_RoomGraph", "There are " + world.rooms.Count + " Rooms");
+        foreach (Room room in world.rooms)
         {
             Path_Node<Room> n = new Path_Node<Room>();
             n.data = room;
@@ -82,7 +81,7 @@ public class Path_RoomGraph
     private void GenerateEdgesOutside()
     {   
         List<Path_Edge<Room>> outsideEdges = new List<Path_Edge<Room>>();
-        Room outsideRoom = World.Current.RoomManager.OutsideRoom;
+        Room outsideRoom = World.Current.GetOutsideRoom();
         foreach (Room room in nodes.Keys)
         {
             if (room.IsOutsideRoom())

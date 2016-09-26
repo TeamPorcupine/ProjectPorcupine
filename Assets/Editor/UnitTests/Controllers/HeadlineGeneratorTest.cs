@@ -14,8 +14,8 @@ public class HeadlineGeneratorTest
     private HeadlineGenerator gen;
     private bool stringPrinted;
 
-    private string testHeadlineXml = @"
-<Headlines>
+    private string testHadlineXml = @"
+<Headlines minInterval=""5"" maxInterval=""10"">
     <Headline>The CEO of Quillcorp, has announced that it main and only shareholder is still the main and only shareholder, Quill18.</Headline>
     <Headline>Notice: Quillcorp has placed an embargo on ""Chairs"", any Quillcorp Basic Utility Station found in possession of this illegal contraband will be fined 2 million Quillbucks.</Headline>
 </Headlines>";
@@ -23,17 +23,11 @@ public class HeadlineGeneratorTest
     [SetUp]
     public void SetUp()
     {
-        if (PrototypeManager.Headline == null)
-        {
-            new PrototypeManager();
-        }
-
-        PrototypeManager.Headline.LoadPrototypes(testHeadlineXml);
-
-        gen = new HeadlineGenerator();
+        XmlDocument doc = new XmlDocument();
+        doc.LoadXml(testHadlineXml);
+        gen = new HeadlineGenerator(doc.SelectSingleNode("Headlines"));
         gen.UpdatedHeadline += StringPrinted;
         stringPrinted = false;
-        Debug.IsLogEnabled = false;
     }
 
     public void StringPrinted(string headline)
@@ -51,10 +45,10 @@ public class HeadlineGeneratorTest
     }
 
     [Test]
-    public void T02_100s_Generated()
+    public void T02_10s_Generated()
     {
         stringPrinted = false;
-        Scheduler.Scheduler.Current.Update(100);
+        Scheduler.Scheduler.Current.Update(10);
         Assert.AreEqual(true, stringPrinted);
     }
 

@@ -26,29 +26,13 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
 
     public void OkayWasClicked()
     {
-        StartCoroutine(OkayWasClickedCoroutine());
-    }
-
-    public IEnumerator OkayWasClickedCoroutine()
-    {
-        bool isOkToSave = true;
-
         // TODO:
         // check to see if the file already exists
         // if so, ask for overwrite confirmation.
         string fileName = gameObject.GetComponentInChildren<InputField>().text;
 
         // TODO: Is the filename valid?  I.E. we may want to ban path-delimiters (/ \ or :) and 
-        //// maybe periods?      ../../some_important_file
-
-        DialogBoxManager dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
-
-        if (fileName == string.Empty)
-        {
-            dbm.dialogBoxPromptOrInfo.SetAsInfo("message_name_or_file_needed_for_save");
-            dbm.dialogBoxPromptOrInfo.ShowDialog();
-            yield break;
-        }
+        // maybe periods?      ../../some_important_file
 
         // Right now fileName is just what was in the dialog box.  We need to pad this out to the full
         // path, plus an extension!
@@ -59,55 +43,16 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
         string filePath = System.IO.Path.Combine(WorldController.Instance.FileSaveBasePath(), fileName + ".sav");
 
         // At this point, filePath should look very much like
-        ////     C:\Users\Quill18\ApplicationData\MyCompanyName\MyGameName\Saves\SaveGameName123.sav
-
+        //     C:\Users\Quill18\ApplicationData\MyCompanyName\MyGameName\Saves\SaveGameName123.sav
         if (File.Exists(filePath) == true)
         {
-            isOkToSave = false;
-
-            dbm.dialogBoxPromptOrInfo.SetPrompt("prompt_overwrite_existing_file", new string[] { fileName });
-            dbm.dialogBoxPromptOrInfo.SetButtons(DialogBoxResult.Yes, DialogBoxResult.No);
-
-            dbm.dialogBoxPromptOrInfo.Closed = () =>
-            {
-                if (dbm.dialogBoxPromptOrInfo.Result == DialogBoxResult.Yes)
-                {
-                    isOkToSave = true;
-                }
-            };
-
-            dbm.dialogBoxPromptOrInfo.ShowDialog();
-
-            if (!isOkToSave)
-            {
-                while (dbm.dialogBoxPromptOrInfo.gameObject.activeSelf)
-                {
-                    yield return null;
-                } 
-            }
+            // TODO: Do file overwrite dialog box.
+            Debug.ULogErrorChannel("DialogBoxSaveGame", "File already exists -- overwriting the file for now.");
         }
 
-        if (isOkToSave)
-        {
-            dbm.dialogBoxPromptOrInfo.SetPrompt("message_saving_game");
-            dbm.dialogBoxPromptOrInfo.ShowDialog();
+        CloseDialog();
 
-            yield return new WaitForSecondsRealtime(.05f);
-
-            SaveWorld(filePath);
-
-            dbm.dialogBoxPromptOrInfo.CloseDialog();
-
-            this.CloseDialog();
-
-            dbm.dialogBoxPromptOrInfo.SetAsInfo("message_game_saved");
-            dbm.dialogBoxPromptOrInfo.ShowDialog();
-
-            while (dbm.dialogBoxPromptOrInfo.gameObject.activeSelf)
-            {
-                yield return null;
-            }
-        }
+        SaveWorld(filePath);
     }
 
     public void SaveWorld(string filePath)
@@ -116,7 +61,7 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
         // from the save dialog box.
 
         // Get the file name from the save file dialog box.
-        Debug.ULogChannel("DialogBoxSaveGame", "SaveWorld button was clicked.");
+        Debug.ULogErrorChannel("DialogBoxSaveGame", "SaveWorld button was clicked.");
 
         XmlSerializer serializer = new XmlSerializer(typeof(World));
         TextWriter writer = new StringWriter();

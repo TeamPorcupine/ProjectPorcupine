@@ -57,11 +57,10 @@ public class DialogBoxJobList : DialogBox
             // Localization
             string[] formatValues;
             formatValues = new string[0];
-
-            foreach (Character character in World.Current.CharacterManager)
+            foreach (Character c in World.Current.characters)
             {
                 GameObject go = (GameObject)Instantiate(JobListItemPrefab, JobList);
-                go.GetComponentInChildren<Text>().text = character.GetName() + " - " + LocalizationTable.GetLocalization(character.GetJobDescription(), formatValues);
+                go.GetComponentInChildren<Text>().text = c.GetName() + " - " + LocalizationTable.GetLocalization(c.GetJobDescription(), formatValues);
             }
 
             JobList.GetComponentInParent<ScrollRect>().scrollSensitivity = JobList.childCount / 2;

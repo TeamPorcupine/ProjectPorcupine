@@ -80,14 +80,4 @@ public static class ModUtils
     {
         return value.Clamp(min, max);
     }
-
-    public static int Min(int a, int b)
-    {
-        return Mathf.Min(a, b);
-    }
-
-    public static int Max(int a, int b)
-    {
-        return Mathf.Max(a, b);
-    }
 }

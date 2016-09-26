@@ -40,14 +40,14 @@ public class DialogBoxTrade : DialogBox
 
     public void DoTradingTestWithMockTraders()
     {
-        Currency currency = PrototypeManager.Currency.Get("Quill Corp Bucks");
-
-        Currency playerCurrency = currency.Clone();
-        playerCurrency.Balance = 1000f;
-
         Trader mockPlayer = new Trader
         {
-            Currency = playerCurrency,
+            Currency = new Currency
+            {
+                Balance = 1000f,
+                Name = "Test Currency",
+                ShortName = "TC"
+            },
             Name = "Player",
             SaleMarginMultiplier = 1f,
             Stock = new List<Inventory>
@@ -57,12 +57,14 @@ public class DialogBoxTrade : DialogBox
             }
         };
 
-        Currency traderCurrency = currency.Clone();
-        traderCurrency.Balance = 1000f;
-
         Trader mockTrader = new Trader
         {
-            Currency = traderCurrency,
+            Currency = new Currency
+            {
+                Balance = 1000f,
+                Name = "Test Currency",
+                ShortName = "TC"
+            },
             Name = "Trader",
             SaleMarginMultiplier = 1.23f,
             Stock = new List<Inventory>

@@ -40,7 +40,7 @@ public class DialogBoxSettings : DialogBox
 
     public void OnFullScreenToggle()
     {
-        Screen.fullScreen = fullScreenToggle.isOn;
+        /// TODO : implement full screen toggle.
     }
 
     public void OnQualityChange()
@@ -116,8 +116,6 @@ public class DialogBoxSettings : DialogBox
         {
             OnFPSToggle();
         });
-
-        fullScreenToggle.isOn = Screen.fullScreen;
         fullScreenToggle.onValueChanged.AddListener(delegate
         {
             OnFullScreenToggle();

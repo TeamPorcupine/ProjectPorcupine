@@ -13,7 +13,6 @@ using UnityEngine;
 
 public class Path_AStar
 {
-    /// This will contain the built path.
     private Queue<Tile> path;
 
     public Path_AStar(Queue<Tile> path)
@@ -28,8 +27,6 @@ public class Path_AStar
 
     public Path_AStar(World world, Tile tileStart, Pathfinder.GoalEvaluator isGoal, Pathfinder.PathfindingHeuristic costEstimate)
     {
-        float startTime = Time.realtimeSinceStartup;
-
         // Set path to empty Queue so that there always is something to check count on
         path = new Queue<Tile>();
 
@@ -91,7 +88,6 @@ public class Path_AStar
             // Check to see if we are there.
             if (isGoal(current.data))
             {
-                Duration = Time.realtimeSinceStartup - startTime;
                 Reconstruct_path(came_From, current);
                 return;
             }
@@ -131,11 +127,7 @@ public class Path_AStar
 
         // We don't have a failure state, maybe? It's just that the
         // path list will be null.
-        Duration = Time.realtimeSinceStartup - startTime;
     }
-
-    /// Contains the time it took to find the path
-    public float Duration { get; private set; }
 
     public Tile Dequeue()
     {
