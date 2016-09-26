@@ -22,10 +22,9 @@ public class JobQueue
         jobsWaitingForInventory = new Dictionary<string, List<Job>>();
         unreachableJobs = new Queue<Job>();
 
-        World.Current.inventoryManager.InventoryCreated += ReevaluateWaitingQueue;
+        World.Current.InventoryManager.InventoryCreated += ReevaluateWaitingQueue;
 
         PrototypeManager.SchedulerEvent.Add(
-            "JobQueue_ReevaluateReachability",
             new Scheduler.ScheduledEvent(
                 "JobQueue_ReevaluateReachability",
                 (evt) => ReevaluateReachability()
