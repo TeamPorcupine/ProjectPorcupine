@@ -29,7 +29,7 @@ namespace ProjectPorcupine.State
             // At this point we want to do something about the need, but we let the current state finish first
             if (needPercent > 50 && needPercent < 100 && biggestNeed.RestoreNeedFurn != null)
             {
-                if (World.Current.CountFurnitureType(biggestNeed.RestoreNeedFurn.Type) > 0)
+                if (World.Current.FurnitureManager.CountWithType(biggestNeed.RestoreNeedFurn.Type) > 0)
                 {
                     Job job = new Job(null, biggestNeed.RestoreNeedFurn.Type, biggestNeed.CompleteJobNorm, biggestNeed.RestoreNeedTime, null, Job.JobPriority.High, false, true, false);
                     character.QueueState(new JobState(character, job));

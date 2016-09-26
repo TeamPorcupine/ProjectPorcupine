@@ -13,8 +13,17 @@
         <potentialStock>
             <Inventory category="inv_cat_raw" rarity="0" minQuantity="100" maxQuantity="150"/>
         </potentialStock>
+        <Animations>
+            <Animation state="idle" fps="1" looping="false">
+	            <Frame name="BasicHaulShip" />
+	        </Animation>
+	        <Animation state="flying" fps="4" looping="true">
+	            <Frame name="BasicHaulShip_01" />
+	            <Frame name="BasicHaulShip_02" />
+            </Animation>
+        </Animations>
     </Trader>
-
+    
     <Trader type="Raw Depot">
         <potentialNames>
             <name>Raw Depot</name>
@@ -30,5 +39,14 @@
             <Inventory type="Raw Iron" rarity="0.3" minQuantity="2000" maxQuantity="3000"/>
             <Inventory type="Ice" rarity="0.8" minQuantity="1000" maxQuantity="2500"/>
         </potentialStock>
+        <Animations>
+            <Animation state="idle" fps="1" looping="false">
+                <Frame name="BasicHaulShip" />
+            </Animation>
+            <Animation state="flying" fps="4" looping="true">
+                <Frame name="BasicHaulShip_01" />
+                <Frame name="BasicHaulShip_02" />
+            </Animation>
+        </Animations>        
     </Trader>
 </Traders>

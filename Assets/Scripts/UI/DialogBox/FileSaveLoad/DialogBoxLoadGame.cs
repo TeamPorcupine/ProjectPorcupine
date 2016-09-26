@@ -35,12 +35,20 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
     public void SetButtonLocation(Component item)
     {
         GameObject go = GameObject.FindGameObjectWithTag("DeleteButton");
-        go.transform.position = new Vector3(item.transform.position.x + 110f, item.transform.position.y - 8f);
+        go.transform.position = new Vector3(item.transform.position.x + 140f, item.transform.position.y - 8f);
     }
 
     public void OkayWasClicked()
     {
         string fileName = gameObject.GetComponentInChildren<InputField>().text;
+
+        if (fileName == string.Empty)
+        {
+            DialogBoxManager dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
+            dbm.dialogBoxPromptOrInfo.SetAsInfo("message_file_needed_for_load");
+            dbm.dialogBoxPromptOrInfo.ShowDialog();
+            return;
+        }
 
         // TODO: Is the filename valid?  I.E. we may want to ban path-delimiters (/ \ or :) and
         // maybe periods?      ../../some_important_file
@@ -61,9 +69,11 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
         //     C:\Users\Quill18\ApplicationData\MyCompanyName\MyGameName\Saves\SaveGameName123.sav
         if (File.Exists(filePath) == false)
         {
-            // TODO: Do file overwrite dialog box.
-            Debug.ULogErrorChannel("DialogBoxLoadGame", "File doesn't exist.  What?");
-            CloseDialog();
+            //// TODO: Do file overwrite dialog box.
+
+            DialogBoxManager dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
+            dbm.dialogBoxPromptOrInfo.SetAsInfo("message_file_doesn't_exist");
+            dbm.dialogBoxPromptOrInfo.ShowDialog();
             return;
         }
 
@@ -92,27 +102,34 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
 
         if (File.Exists(filePath) == false)
         {
-            Debug.ULogErrorChannel("DialogBoxLoadGame", "File doesn't exist.  What?");
-            CloseDialog();
+            DialogBoxManager dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
+            dbm.dialogBoxPromptOrInfo.SetAsInfo("message_file_doesn't_exist");
             return;
         }
 
         File.Delete(filePath);
+
+        gameObject.GetComponentInChildren<InputField>().text = string.Empty;
+
         CloseDialog();
         ShowDialog();
     }
 
     public void DeleteWasClicked()
     {
+        string fileName = gameObject.GetComponentInChildren<InputField>().text;
+
         DialogBoxManager dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
-        dbm.dialogBoxAreYouSure.Closed = () =>
+        dbm.dialogBoxPromptOrInfo.Closed = () =>
         {
-            if (dbm.dialogBoxAreYouSure.Result == DialogBoxResult.Yes)
+            if (dbm.dialogBoxPromptOrInfo.Result == DialogBoxResult.Yes)
             {
                 DeleteFile();
             }
         };
-        dbm.dialogBoxAreYouSure.ShowDialog();
+        dbm.dialogBoxPromptOrInfo.SetPrompt("prompt_delete_file", fileName);
+        dbm.dialogBoxPromptOrInfo.SetButtons(DialogBoxResult.Yes, DialogBoxResult.No);
+        dbm.dialogBoxPromptOrInfo.ShowDialog();
     }
 
     public void LoadWorld(string filePath)
@@ -122,6 +139,10 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
 
         // Get the file name from the save file dialog box.
         Debug.ULogChannel("DialogBoxLoadGame", "LoadWorld button was clicked.");
+
+        DialogBoxManager dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
+        dbm.dialogBoxPromptOrInfo.SetPrompt("message_loading_game");
+        dbm.dialogBoxPromptOrInfo.ShowDialog();
 
         WorldController.Instance.LoadWorld(filePath);
     }

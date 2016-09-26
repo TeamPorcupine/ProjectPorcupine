@@ -26,8 +26,8 @@ public class JobListEvents : MonoBehaviour
     public void DeleteSelf()
     {
         string charName = GetNameFromItem();
-        
-        World.Current.GetCharacterFromName(charName).InterruptState();
+
+        World.Current.CharacterManager.GetFromName(charName).InterruptState();
         JobListItem.SetParent(null);
         GameObject.Destroy(JobListItem.gameObject);
     }
@@ -40,7 +40,7 @@ public class JobListEvents : MonoBehaviour
     {
         string charName = GetNameFromItem();
         Vector3 charPosition;
-        Character currentCharacter = World.Current.GetCharacterFromName(charName);
+        Character currentCharacter = World.Current.CharacterManager.GetFromName(charName);
 
         charPosition = new Vector3(currentCharacter.X, currentCharacter.Y, -10); 
         GameObject.Find("Main Camera").transform.position = charPosition;
