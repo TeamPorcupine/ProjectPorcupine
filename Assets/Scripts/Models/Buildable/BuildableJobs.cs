@@ -154,7 +154,11 @@ public class BuildableJobs
         return job != null;
     }
 
-    public bool WorkspotIsInternal()
+    /// <summary>
+    /// Checks if the work spot is contained within the buildable's height and width.
+    /// </summary>
+    /// <returns><c>true</c>, if the work spot is internal to the buildable, <c>false</c> otherwise.</returns>
+    public bool WorkSpotIsInternal()
     {
         return WorkSpotOffset.x >= 0 && WorkSpotOffset.x < buildable.Width && WorkSpotOffset.y >= 0 && WorkSpotOffset.y < buildable.Height;
     }
