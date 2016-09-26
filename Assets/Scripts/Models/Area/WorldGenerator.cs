@@ -170,52 +170,7 @@ public class WorldGenerator
             {
                 try
                 {
-                    XmlReader asteroid = reader.ReadSubtree();
-
-                    while (asteroid.Read())
-                    {
-                        switch (asteroid.Name)
-                        {
-                            case "NoiseScale":
-                                reader.Read();
-                                asteroidNoiseScale = asteroid.ReadContentAsFloat();
-                                break;
-                            case "NoiseThreshhold":
-                                reader.Read();
-                                asteroidNoiseThreshhold = asteroid.ReadContentAsFloat();
-                                break;
-                            case "ResourceChance":
-                                reader.Read();
-                                asteroidResourceChance = asteroid.ReadContentAsFloat();
-                                break;
-                            case "Resources":
-                                XmlReader res_reader = reader.ReadSubtree();
-
-                                List<Inventory> res = new List<Inventory>();
-                                List<int> resMin = new List<int>();
-                                List<int> resMax = new List<int>();
-
-                                while (res_reader.Read())
-                                {
-                                    if (res_reader.Name == "Resource")
-                                    {
-                                        res.Add(new Inventory(
-                                                res_reader.GetAttribute("type"),
-                                                Mathf.CeilToInt(float.Parse(res_reader.GetAttribute("weightedChance"))),
-                                                int.Parse(res_reader.GetAttribute("maxStack"))));
-
-                                        resMin.Add(int.Parse(res_reader.GetAttribute("min")));
-                                        resMax.Add(int.Parse(res_reader.GetAttribute("max")));
-                                    }
-                                }
-
-                                resources = res.ToArray();
-                                resourceMin = resMin.ToArray();
-                                resourceMax = resMax.ToArray();
-
-                                break;
-                        }
-                    }
+                    ReadXmlAsteroid(reader);
                 }
                 catch (System.Exception e)
                 {
@@ -232,57 +187,7 @@ public class WorldGenerator
             {
                 try
                 {
-                    startAreaWidth = int.Parse(reader.GetAttribute("width"));
-                    startAreaHeight = int.Parse(reader.GetAttribute("height"));
-                    startAreaCenterX = int.Parse(reader.GetAttribute("centerX"));
-                    startAreaCenterY = int.Parse(reader.GetAttribute("centerY"));
-
-                    startAreaTiles = new int[startAreaWidth, startAreaHeight];
-
-                    XmlReader startArea = reader.ReadSubtree();
-
-                    while (startArea.Read())
-                    {
-                        switch (startArea.Name)
-                        {
-                            case "Tiles":
-                                reader.Read();
-                                string tilesString = startArea.ReadContentAsString();
-                                string[] splittedString = tilesString.Split(","[0]);
-
-                                if (splittedString.Length < startAreaWidth * startAreaHeight)
-                                {
-                                    Debug.ULogErrorChannel("WorldGenerator", "Error reading 'Tiles' array to short: " + splittedString.Length + " !");
-                                    break;
-                                }
-
-                                for (int x = 0; x < startAreaWidth; x++)
-                                {
-                                    for (int y = 0; y < startAreaHeight; y++)
-                                    {
-                                        startAreaTiles[x, y] = int.Parse(splittedString[x + (y * startAreaWidth)]);
-                                    }
-                                }
-
-                                break; 
-                            case "Furnitures":
-                                XmlReader furn_reader = reader.ReadSubtree();
-
-                                startAreaFurnitures = new string[startAreaWidth, startAreaHeight];
-
-                                while (furn_reader.Read())
-                                {
-                                    if (furn_reader.Name == "Furniture")
-                                    {
-                                        int x = int.Parse(furn_reader.GetAttribute("x"));
-                                        int y = int.Parse(furn_reader.GetAttribute("y"));
-                                        startAreaFurnitures[x, y] = furn_reader.GetAttribute("name");
-                                    }
-                                }
-
-                                break;
-                        }
-                    }
+                    ReadXmlStartArea(reader);
                 }
                 catch (System.Exception e)
                 {
@@ -293,10 +198,146 @@ public class WorldGenerator
             {
                 Debug.ULogErrorChannel("WorldGenerator", "Did not find a 'StartArea' element in the WorldGenerator definition file.");
             }
+
+            if (reader.ReadToNextSibling("Wallet"))
+            {
+                try
+                {
+                    ReadXmlWallet(reader);
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogError("Error reading WorldGenerator/Wallet" + System.Environment.NewLine + "Exception: " + e.Message + System.Environment.NewLine + "StackTrace: " + e.StackTrace);
+                }
+            }
+            else
+            {
+                Debug.ULogErrorChannel("WorldGenerator", "Did not find a 'Wallet' element in the WorldGenerator definition file.");
+            }
         }
         else
         {
             Debug.ULogErrorChannel("WorldGenerator", "Did not find a 'WorldGenerator' element in the WorldGenerator definition file.");
+        }
+    }
+
+    private static void ReadXmlAsteroid(XmlReader reader)
+    {
+        XmlReader asteroid = reader.ReadSubtree();
+
+        while (asteroid.Read())
+        {
+            switch (asteroid.Name)
+            {
+                case "NoiseScale":
+                    reader.Read();
+                    asteroidNoiseScale = asteroid.ReadContentAsFloat();
+                    break;
+                case "NoiseThreshhold":
+                    reader.Read();
+                    asteroidNoiseThreshhold = asteroid.ReadContentAsFloat();
+                    break;
+                case "ResourceChance":
+                    reader.Read();
+                    asteroidResourceChance = asteroid.ReadContentAsFloat();
+                    break;
+                case "Resources":
+                    XmlReader res_reader = reader.ReadSubtree();
+
+                    List<Inventory> res = new List<Inventory>();
+                    List<int> resMin = new List<int>();
+                    List<int> resMax = new List<int>();
+
+                    while (res_reader.Read())
+                    {
+                        if (res_reader.Name == "Resource")
+                        {
+                            res.Add(new Inventory(
+                                res_reader.GetAttribute("type"),
+                                Mathf.CeilToInt(float.Parse(res_reader.GetAttribute("weightedChance"))),
+                                int.Parse(res_reader.GetAttribute("maxStack"))));
+
+                            resMin.Add(int.Parse(res_reader.GetAttribute("min")));
+                            resMax.Add(int.Parse(res_reader.GetAttribute("max")));
+                        }
+                    }
+
+                    resources = res.ToArray();
+                    resourceMin = resMin.ToArray();
+                    resourceMax = resMax.ToArray();
+
+                    break;
+            }
+        }
+    }
+
+    private static void ReadXmlStartArea(XmlReader reader)
+    {
+        startAreaWidth = int.Parse(reader.GetAttribute("width"));
+        startAreaHeight = int.Parse(reader.GetAttribute("height"));
+        startAreaCenterX = int.Parse(reader.GetAttribute("centerX"));
+        startAreaCenterY = int.Parse(reader.GetAttribute("centerY"));
+
+        startAreaTiles = new int[startAreaWidth, startAreaHeight];
+
+        XmlReader startArea = reader.ReadSubtree();
+
+        while (startArea.Read())
+        {
+            switch (startArea.Name)
+            {
+                case "Tiles":
+                    reader.Read();
+                    string tilesString = startArea.ReadContentAsString();
+                    string[] splittedString = tilesString.Split(","[0]);
+
+                    if (splittedString.Length < startAreaWidth * startAreaHeight)
+                    {
+                        Debug.ULogErrorChannel("WorldGenerator", "Error reading 'Tiles' array to short: " + splittedString.Length + " !");
+                        break;
+                    }
+
+                    for (int x = 0; x < startAreaWidth; x++)
+                    {
+                        for (int y = 0; y < startAreaHeight; y++)
+                        {
+                            startAreaTiles[x, y] = int.Parse(splittedString[x + (y * startAreaWidth)]);
+                        }
+                    }
+
+                    break; 
+                case "Furnitures":
+                    XmlReader furnReader = reader.ReadSubtree();
+
+                    startAreaFurnitures = new string[startAreaWidth, startAreaHeight];
+
+                    while (furnReader.Read())
+                    {
+                        if (furnReader.Name == "Furniture")
+                        {
+                            int x = int.Parse(furnReader.GetAttribute("x"));
+                            int y = int.Parse(furnReader.GetAttribute("y"));
+                            startAreaFurnitures[x, y] = furnReader.GetAttribute("name");
+                        }
+                    }
+
+                    break;
+            }
+        }
+    }
+
+    private static void ReadXmlWallet(XmlReader reader)
+    {
+        XmlReader wallet = reader.ReadSubtree();
+
+        while (wallet.Read())
+        {
+            if (wallet.Name == "Currency")
+            {
+                World.Current.Wallet.AddCurrency(
+                    wallet.GetAttribute("name"),
+                    float.Parse(wallet.GetAttribute("startingBalance")));
+            }
         }
     }
 }
