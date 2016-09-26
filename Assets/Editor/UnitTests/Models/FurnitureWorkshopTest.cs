@@ -7,7 +7,6 @@
 // ====================================================
 #endregion
 using System.IO;
-using System.Text;
 using System.Xml.Serialization;
 using NUnit.Framework;
 
@@ -18,7 +17,7 @@ public class FurnitureWorkshopTest
     {
         FurnitureWorkshop fi = new FurnitureWorkshop();        
         fi.PossibleProductions = new System.Collections.Generic.List<FurnitureWorkshop.ProductionChain>();
-        var chain1 = new FurnitureWorkshop.ProductionChain()
+        FurnitureWorkshop.ProductionChain chain1 = new FurnitureWorkshop.ProductionChain()
             {
             Name = "Iron smelting", ProcessingTime = 4.0f
             };
@@ -35,7 +34,7 @@ public class FurnitureWorkshopTest
 
         fi.PossibleProductions.Add(chain1);
 
-        var chain2 = new FurnitureWorkshop.ProductionChain()
+        FurnitureWorkshop.ProductionChain chain2 = new FurnitureWorkshop.ProductionChain()
             {
             Name = "Copper smelting", ProcessingTime = 3.0f
         };
@@ -57,18 +56,22 @@ public class FurnitureWorkshopTest
             Idle = "idle",
             Running = "running"
         };
-
-        FileStream fs = new FileStream("Workshop.xml", FileMode.Create);
-        TextWriter writer = new StreamWriter(fs, new UTF8Encoding());
-
+        
+        // serialize
+        StringWriter writer = new StringWriter();
         XmlSerializer serializer = new XmlSerializer(typeof(FurnitureWorkshop));
-        serializer.Serialize(writer, fi);
-        writer.Close();
+        serializer.Serialize(writer, fi);        
 
-        FileStream fr = new FileStream("Workshop.xml", FileMode.Open);
-        var dfi = (FurnitureWorkshop)serializer.Deserialize(fr);
+        StringReader sr = new StringReader(writer.ToString());
 
+        // if you want to dump file to disk for visual check, uncomment this
+        ////File.WriteAllText("Workshop.xml", writer.ToString());
+        
+        // deserialize
+        FurnitureWorkshop dfi = (FurnitureWorkshop)serializer.Deserialize(sr);
+        
         Assert.NotNull(dfi);
         Assert.AreEqual("Raw Iron", dfi.PossibleProductions[0].Input[0].ObjectType);
+        Assert.AreEqual("running", dfi.UsedAnimation.Running);
     }
 }

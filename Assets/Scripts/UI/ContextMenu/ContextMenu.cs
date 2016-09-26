@@ -91,6 +91,14 @@ public class ContextMenu : MonoBehaviour
             providers.Add(tile.Furniture);
         }
 
+        if (tile.Utilities != null)
+        {
+            foreach (Utility utility in tile.Utilities.Values)
+            {
+                providers.Add(utility);
+            }
+        }
+
         if (tile.Characters != null)
         {
             foreach (Character character in tile.Characters)

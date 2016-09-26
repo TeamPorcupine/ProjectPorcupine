@@ -57,6 +57,24 @@ public class ConstructionMenu : MonoBehaviour
         RenderUtilityButtons();
     }
 
+    public void FilterTextChanged(string filterText)
+    {
+        Transform contentTransform = this.transform.FindChild("Scroll View").FindChild("Viewport").FindChild("Content");
+
+        List<Transform> childs = contentTransform.Cast<Transform>().ToList();
+
+        foreach (Transform child in childs)
+        {
+            Text buttonText = child.gameObject.transform.GetComponentInChildren<Text>();
+
+            string buildableName = buttonText.text;
+
+            bool nameMatchFilter = string.IsNullOrEmpty(filterText) || buildableName.ToLower().Contains(filterText.ToLower());
+
+            child.gameObject.SetActive(nameMatchFilter);
+        }
+    }
+
     private void Start()
     {
         menuLeft = this.transform.GetComponentInParent<MenuLeft>();
@@ -72,6 +90,9 @@ public class ConstructionMenu : MonoBehaviour
         RenderUtilityButtons();
 
         lastLanguage = LocalizationTable.currentLanguage;
+
+        InputField filterField = GetComponentInChildren<InputField>();
+        KeyboardManager.Instance.RegisterModalInputField(filterField);
     }
 
     private void RenderFurnitureButtons()
@@ -181,12 +202,11 @@ public class ConstructionMenu : MonoBehaviour
 
         BuildModeController buildModeController = WorldController.Instance.buildModeController;
 
-        TileType[] tileTypes = TileType.LoadedTileTypes;
-
-        foreach (TileType item in tileTypes)
+        foreach (TileType item in PrototypeManager.TileType.Values)
         {
             TileType tileType = item;
-            string key = tileType.Type;
+
+            string key = tileType.LocalizationCode;
 
             GameObject gameObject = (GameObject)Instantiate(buttonPrefab);
             gameObject.transform.SetParent(contentTransform);
@@ -208,7 +228,7 @@ public class ConstructionMenu : MonoBehaviour
             };
 
             Image image = gameObject.transform.GetChild(0).GetComponentsInChildren<Image>().First();
-            image.sprite = SpriteManager.GetSprite("Tile", key);
+            image.sprite = SpriteManager.GetSprite("Tile", tileType.Type);
         }
     }
 
