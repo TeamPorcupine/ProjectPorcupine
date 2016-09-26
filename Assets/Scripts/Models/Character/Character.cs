@@ -593,7 +593,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 if (World.Current.FurnitureManager.CountWithType(need.RestoreNeedFurn.Type) > 0)
                 {
                     MyJob = new Job(null, need.RestoreNeedFurn.Type, need.CompleteJobNorm, need.RestoreNeedTime, null, Job.JobPriority.High, false, true, false);
-                    Debug.ULog("Character", "Getting New Need Job");
+                    Debug.ULogChannel("Character", "Getting New Need Job");
                     MyJob.SetTileFromNeedFurniture(CurrTile, need.RestoreNeedFurn.Type);
                 }
             }
