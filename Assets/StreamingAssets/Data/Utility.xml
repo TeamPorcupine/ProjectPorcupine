@@ -6,11 +6,11 @@
     <TypeTag>Power</TypeTag>
 
     <BuildingJob jobTime="1">
-      <Inventory type="Copper Plate" amount="2" />
+      <Inventory type="Copper Wire" amount="2" />
     </BuildingJob>
 
     <DeconstructJob jobTime="1">
-      <Inventory type="Copper Plate" amount="1" />
+      <Inventory type="Copper Wire" amount="1" />
     </DeconstructJob>
     
     <ContextMenuAction FunctionName="UtilityContextTest1" Text="Test Context 1" RequireCharacterSelected="false"/>
