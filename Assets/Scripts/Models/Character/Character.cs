@@ -329,8 +329,6 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             movementPath = Pathfinder.FindPathToTile(CurrTile, DestTile, MyJob.adjacent);
         }
 
-//        movementPath = Pathfinder.FindPathToTile(CurrTile, DestTile, MyJob.adjacent);
-
         if (movementPath != null && movementPath.Count == 0)
         {
             Debug.ULogChannel("Character", "Path_AStar returned no path to target job tile!");
@@ -603,6 +601,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 MyJob = new Job(CurrTile, null, need.CompleteJobCrit, need.RestoreNeedTime * 10, null, Job.JobPriority.High, false, true, true);
             }
         }
+
         // Get the first job on the queue.
         if (MyJob == null)
         {
@@ -740,7 +739,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
     private void Update_DoMovement(float deltaTime)
     {
-        if ((nextTile == null || nextTile == CurrTile) && (MyJob != null && MyJob.IsTileAtJobSite(CurrTile) && MyJob.MaterialNeedsMet() || DestTile == CurrTile))
+        if ((nextTile == null || nextTile == CurrTile) && ((MyJob != null && MyJob.IsTileAtJobSite(CurrTile) && MyJob.MaterialNeedsMet()) || DestTile == CurrTile))
         {
             // We're already were we want to be.
             movementPath = null;
@@ -748,6 +747,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             VisualPath.Instance.RemoveVisualPoints(name);
             return;
         }
+
         if (nextTile == null || nextTile == CurrTile)
         {
             // Get the next tile from the pathfinder.
@@ -764,6 +764,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 {
                     movementPath = Pathfinder.FindPathToTile(CurrTile, DestTile, MyJob != null ? MyJob.adjacent : false);
                 }
+
                 if (movementPath == null || movementPath.Count == 0)
                 {
                     Debug.ULogErrorChannel("Character", "Path_AStar returned no path to destination!");
@@ -931,11 +932,10 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         }
         else
         {
-
             fulfillableInventoryRequirements = MyJob.FulfillableInventoryRequirements(MyJob.canTakeFromStockpile);
 
             // If we somehow get here and fulfillableInventoryRequirements is empty then there is a problem!
-            if ((fulfillableInventoryRequirements == null || fulfillableInventoryRequirements.Count() == 0))
+            if (fulfillableInventoryRequirements == null || fulfillableInventoryRequirements.Count() == 0)
             {
                 Debug.ULogChannel("Character", "CheckForJobMaterials: no fulfillable inventory requirements");
                 AbandonJob(true);

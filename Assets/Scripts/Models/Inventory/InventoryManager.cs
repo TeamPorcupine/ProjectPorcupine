@@ -123,6 +123,7 @@ public class InventoryManager
             Debug.ULogErrorChannel(InventoryManagerLogChanel, "Trying to add inventory to a job that it doesn't want.");
             return false;
         }
+
         // Check that there is a target to transfer to
         if (job.HeldInventory.ContainsKey(sourceInventory.Type) == false)
         {
