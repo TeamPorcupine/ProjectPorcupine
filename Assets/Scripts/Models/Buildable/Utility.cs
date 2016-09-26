@@ -15,6 +15,7 @@ using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
 using ProjectPorcupine.Jobs;
 using UnityEngine;
+using ProjectPorcupine.PowerNetwork;
 
 /// <summary>
 /// InstalledObjects are things like walls, doors, and utility (e.g. a sofa).
@@ -22,6 +23,8 @@ using UnityEngine;
 [MoonSharpUserData]
 public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextActionProvider, IBuildable
 {
+    public Grid grid;
+
     // Prevent construction too close to the world's edge
     private const int MinEdgeDistance = 5;
 
@@ -60,6 +63,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         Jobs = new BuildableJobs(this);
         typeTags = new HashSet<string>();
         tileTypeBuildPermissions = new HashSet<string>();
+        grid = new Grid();
     }
 
     /// <summary>
@@ -95,6 +99,8 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
 
         LocalizationCode = other.LocalizationCode;
         UnlocalizedDescription = other.UnlocalizedDescription;
+
+        grid = new Grid();
     }
 
     /// <summary>
