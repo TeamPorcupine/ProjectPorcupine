@@ -133,7 +133,7 @@ public class FurnitureManager : IEnumerable<Furniture>
 
         // If the workspot is internal, we don't care about furniture blocking it, this will be stopped or allowed
         //      elsewhere depending on if the furniture being placed can replace the furniture already in this tile.
-        if (proto.WorkspotIsInternal())
+        if (proto.Jobs.WorkspotIsInternal())
         {
             return true;
         }

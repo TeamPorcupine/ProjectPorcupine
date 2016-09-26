@@ -438,11 +438,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         return obj;
     }
 
-    public bool WorkspotIsInternal()
-    {
-        return Jobs.WorkSpotOffset.x >= 0 && Jobs.WorkSpotOffset.x < Width && Jobs.WorkSpotOffset.y >= 0 && Jobs.WorkSpotOffset.y < Height;
-    }
-
     /// <summary>
     /// This function is called to update the furniture animation in lua.
     /// This will be called every frame and should be used carefully.

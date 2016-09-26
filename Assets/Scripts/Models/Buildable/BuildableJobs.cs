@@ -154,6 +154,11 @@ public class BuildableJobs
         return job != null;
     }
 
+    public bool WorkspotIsInternal()
+    {
+        return WorkSpotOffset.x >= 0 && WorkSpotOffset.x < buildable.Width && WorkSpotOffset.y >= 0 && WorkSpotOffset.y < buildable.Height;
+    }
+
     /// <summary>
     /// Link a job to the current buildable.
     /// </summary>
