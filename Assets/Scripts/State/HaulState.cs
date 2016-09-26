@@ -43,7 +43,7 @@ namespace ProjectPorcupine.State
                         new string[] { character.inventory.Type } :
                         Job.RequestedItems.Keys.ToArray();
 
-                    path = World.Current.inventoryManager.GetPathToClosestInventoryOfType(inventoryTypes, character.CurrTile, Job.canTakeFromStockpile);
+                    path = World.Current.InventoryManager.GetPathToClosestInventoryOfType(inventoryTypes, character.CurrTile, Job.canTakeFromStockpile);
                     if (path != null && path.Count > 0)
                     {
                         character.SetState(new MoveState(character, Pathfinder.GoalTileEvaluator(path.Last(), false), path, this));
@@ -51,6 +51,7 @@ namespace ProjectPorcupine.State
                     else if (character.inventory == null)
                     {
                         // The character has no inventory and can't find anything to haul.
+                        Interrupt();
                         FSMLog(" - Nothing to haul");
                         Finished();
                     }
@@ -65,7 +66,7 @@ namespace ProjectPorcupine.State
                     int amountCarried = character.inventory != null ? character.inventory.StackSize : 0;
                     int amount = Mathf.Min(Job.AmountDesiredOfInventoryType(tileInventory.Type) - amountCarried, tileInventory.StackSize);
                     FSMLog(" - Picked up {0} {1}", amount, tileInventory.Type);
-                    World.Current.inventoryManager.PlaceInventory(character, tileInventory, amount);
+                    World.Current.InventoryManager.PlaceInventory(character, tileInventory, amount);
                     break;
 
                 case HaulAction.DeliverMaterial:
@@ -82,7 +83,7 @@ namespace ProjectPorcupine.State
 
                 case HaulAction.DropOffmaterial:
                     FSMLog(" - Delivering {0} {1}", character.inventory.StackSize, character.inventory.Type);
-                    World.Current.inventoryManager.PlaceInventory(Job, character);
+                    World.Current.InventoryManager.PlaceInventory(Job, character);
 
                     // Ping the Job system
                     Job.DoWork(0);
@@ -95,7 +96,7 @@ namespace ProjectPorcupine.State
         private HaulAction NextAction()
         {
             Inventory tileInventory = character.CurrTile.Inventory;
-            bool jobWantsTileInventory = InventoryManager.InventoryCanBePickedUp(tileInventory, Job.canTakeFromStockpile) &&
+            bool jobWantsTileInventory = InventoryManager.CanBePickedUp(tileInventory, Job.canTakeFromStockpile) &&
                                          Job.AmountDesiredOfInventoryType(tileInventory.Type) > 0;
 
             if (noMoreMaterialFound && character.inventory != null)
