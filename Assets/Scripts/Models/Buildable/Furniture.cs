@@ -15,6 +15,7 @@ using System.Xml.Serialization;
 using Animation;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
+using ProjectPorcupine.Jobs;
 using ProjectPorcupine.PowerNetwork;
 using UnityEngine;
 
@@ -75,6 +76,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// TODO: Implement object rotation
     /// <summary>
     /// Initializes a new instance of the <see cref="Furniture"/> class.
+    /// This constructor is used to create prototypes and should never be used ouside the Prototype Manager.
     /// </summary>
     public Furniture()
     {
@@ -96,8 +98,10 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         LinksToNeighbour = string.Empty;
     }
 
-    // Copy Constructor -- don't call this directly, unless we never
-    // do ANY sub-classing. Instead use Clone(), which is more virtual.
+    /// <summary>
+    /// Copy Constructor -- don't call this directly, unless we never
+    /// do ANY sub-classing. Instead use Clone(), which is more virtual.
+    /// </summary>
     private Furniture(Furniture other)
     {
         Type = other.Type;
@@ -189,7 +193,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// Gets the tint used to change the color of the furniture.
     /// </summary>
     /// <value>The Color of the furniture.</value>
-    public Color Tint { get; private set; }
+    public Color Tint { get; set; }
 
     /// <summary>
     /// Returns whether this instance is workshop or not.
@@ -429,14 +433,14 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         // Call LUA install scripts
         obj.EventActions.Trigger("OnInstall", obj);
 
-        // Update thermalDiffusifity using coefficient
+        // Update thermalDiffusivity using coefficient
         float thermalDiffusivity = Temperature.defaultThermalDiffusivity;
         if (obj.Parameters.ContainsKey("thermal_diffusivity"))
         {
             thermalDiffusivity = obj.Parameters["thermal_diffusivity"].ToFloat();
         }
 
-        World.Current.temperature.SetThermalDiffusivity(tile.X, tile.Y, thermalDiffusivity);
+        World.Current.temperature.SetThermalDiffusivity(tile.X, tile.Y, tile.Z, thermalDiffusivity);
 
         return obj;
     }
@@ -793,7 +797,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     public void ReadXmlBuildingJob(XmlReader reader)
     {
         float jobTime = float.Parse(reader.GetAttribute("jobTime"));
-        List<Inventory> invs = new List<Inventory>();
+        List<RequestedItem> items = new List<RequestedItem>();
         XmlReader inventoryReader = reader.ReadSubtree();
 
         while (inventoryReader.Read())
@@ -801,20 +805,18 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             if (inventoryReader.Name == "Inventory")
             {
                 // Found an inventory requirement, so add it to the list!
-                invs.Add(new Inventory(
-                    inventoryReader.GetAttribute("type"),
-                    0,
-                    int.Parse(inventoryReader.GetAttribute("amount"))));
+                int amount = int.Parse(inventoryReader.GetAttribute("amount"));
+                items.Add(new RequestedItem(inventoryReader.GetAttribute("type"), amount));
             }
         }
 
         Job job = new Job(
-            null,
-            Type,
-            (theJob) => World.Current.JobComplete_FurnitureBuilding(theJob),
-            jobTime,
-            invs.ToArray(),
-            Job.JobPriority.High);
+                      null,
+                      Type,
+                      (theJob) => World.Current.FurnitureManager.ConstructJobCompleted(theJob),
+                      jobTime,
+                      items.ToArray(),
+                      Job.JobPriority.High);
         job.JobDescription = "job_build_" + Type + "_desc";
 
         PrototypeManager.FurnitureConstructJob.Set(job);
@@ -859,8 +861,8 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// <summary>
     /// Accepts for storage.
     /// </summary>
-    /// <returns>A list of Inventory which the Furniture accepts for storage.</returns>
-    public Inventory[] AcceptsForStorage()
+    /// <returns>A list of RequestedItem which the Furniture accepts for storage.</returns>
+    public RequestedItem[] AcceptsForStorage()
     {
         if (HasTypeTag("Storage") == false)
         {
@@ -869,15 +871,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         }
 
         // TODO: read this from furniture params
-        Dictionary<string, Inventory> invsDict = new Dictionary<string, Inventory>();
-        foreach (string type in PrototypeManager.Inventory.Keys)
-        {
-            invsDict[type] = new Inventory(type, 0);
-        }
-
-        Inventory[] invs = new Inventory[invsDict.Count];
-        invsDict.Values.CopyTo(invs, 0);
-        return invs;
+        return PrototypeManager.Inventory.Values.Select(inventory => new RequestedItem(inventory.Type, 1, inventory.maxStackSize)).ToArray();
     }
 
     #region Deconstruct
@@ -930,7 +924,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         EventActions.Trigger("OnUninstall", this);
 
         // Update thermalDiffusifity to default value
-        World.Current.temperature.SetThermalDiffusivity(Tile.X, Tile.Y, Temperature.defaultThermalDiffusivity);
+        World.Current.temperature.SetThermalDiffusivity(Tile.X, Tile.Y, Tile.Z, Temperature.defaultThermalDiffusivity);
 
         // Let our workspot tile know it is no longer reserved for us
         World.Current.UnreserveTileAsWorkSpot(this);
@@ -942,7 +936,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             foreach (Inventory inv in deconstructInventory)
             {
                 inv.MaxStackSize = PrototypeManager.Inventory.Get(inv.Type).maxStackSize;
-                World.Current.inventoryManager.PlaceInventoryAround(Tile, inv.Clone());
+                World.Current.InventoryManager.PlaceInventoryAround(Tile, inv.Clone());
             }
         }
 

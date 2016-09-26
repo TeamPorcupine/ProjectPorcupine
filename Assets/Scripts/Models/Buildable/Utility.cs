@@ -11,10 +11,9 @@ using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
-using Animation;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
-using ProjectPorcupine.PowerNetwork;
+using ProjectPorcupine.Jobs;
 using UnityEngine;
 
 /// <summary>
@@ -449,7 +448,9 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     public void ReadXmlBuildingJob(XmlReader reader)
     {
         float jobTime = float.Parse(reader.GetAttribute("jobTime"));
-        List<Inventory> invs = new List<Inventory>();
+
+        List<RequestedItem> items = new List<RequestedItem>();
+
         XmlReader inventoryReader = reader.ReadSubtree();
 
         while (inventoryReader.Read())
@@ -457,19 +458,17 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
             if (inventoryReader.Name == "Inventory")
             {
                 // Found an inventory requirement, so add it to the list!
-                invs.Add(new Inventory(
-                    inventoryReader.GetAttribute("type"),
-                    0,
-                    int.Parse(inventoryReader.GetAttribute("amount"))));
+                int amount = int.Parse(inventoryReader.GetAttribute("amount"));
+                items.Add(new RequestedItem(inventoryReader.GetAttribute("type"), amount));
             }
         }
 
         Job job = new Job(
             null,
             Type,
-            (theJob) => World.Current.JobComplete_UtilityBuilding(theJob),
+            (theJob) => World.Current.UtilityManager.ConstructJobCompleted(theJob),
             jobTime,
-            invs.ToArray(),
+            items.ToArray(),
             Job.JobPriority.High);
         job.JobDescription = "job_build_" + Type + "_desc";
         PrototypeManager.UtilityConstructJob.Set(job);
@@ -478,11 +477,11 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     /// <summary>
     /// Sets up a job to deconstruct the utility.
     /// </summary>
-    public void SetDeconstructJob(Utility utility)
+    public void SetDeconstructJob()
     {
         if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
         {
-            Deconstruct(utility);
+            Deconstruct();
             return;
         }
 
@@ -492,11 +491,11 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         }
 
         IsBeingDestroyed = true;
-        utility.Jobs.CancelAll();
+        Jobs.CancelAll();
 
         Job job = PrototypeManager.UtilityDeconstructJob.Get(Type).Clone();
         job.tile = Tile;
-        job.OnJobCompleted += (inJob) => Deconstruct(utility);
+        job.OnJobCompleted += (inJob) => Deconstruct();
 
         World.Current.jobQueue.Enqueue(job);
     }
@@ -504,18 +503,18 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     /// <summary>
     /// Deconstructs the utility.
     /// </summary>
-    public void Deconstruct(Utility utility)
+    public void Deconstruct()
     {
         int x = Tile.X;
         int y = Tile.Y;
         if (Tile.Utilities != null)
         {
-            utility.Jobs.CancelAll();
+            Jobs.CancelAll();
         }
 
         // We call lua to decostruct
         EventActions.Trigger("OnUninstall", this);
-        Tile.UnplaceUtility();
+        Tile.UnplaceUtility(this);
 
         if (Removed != null)
         {
@@ -527,7 +526,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
             foreach (Inventory inv in deconstructInventory)
             {
                 inv.MaxStackSize = PrototypeManager.Inventory.Get(inv.Type).maxStackSize;
-                World.Current.inventoryManager.PlaceInventoryAround(Tile, inv.Clone());
+                World.Current.InventoryManager.PlaceInventoryAround(Tile, inv.Clone());
             }
         }
 
@@ -545,7 +544,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
                     {
                         if (neighborUtility.Changed != null)
                         {
-                            neighborUtility.Changed(utility);
+                            neighborUtility.Changed(neighborUtility);
                         }
                     }
                 }
@@ -609,7 +608,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         {
             Text = "Deconstruct " + Name,
             RequireCharacterSelected = false,
-            Action = (contextMenuAction, character) => SetDeconstructJob(this)
+            Action = (contextMenuAction, character) => SetDeconstructJob()
         };
         if (Jobs.Count > 0)
         {

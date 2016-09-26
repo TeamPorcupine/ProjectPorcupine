@@ -154,10 +154,6 @@ namespace ProjectPorcupine.Rooms
             // Remove this room from our rooms list.
             rooms.Remove(room);
 
-            // All tiles that belonged to this room should be re-assigned to
-            // the outside.
-            room.ReturnTilesToOutsideRoom();
-
             if (Removed != null)
             {
                 Removed(room);
@@ -266,10 +262,9 @@ namespace ProjectPorcupine.Rooms
                 List<Room> oldRooms = new List<Room>();
 
                 // You need to delete the surrounding rooms so a new room can be created
-                // FIXME: This doesn't work for the gas calculations and needs to be fixed.
                 foreach (Tile t in sourceTile.GetNeighbours())
                 {
-                    if (t != null && t.Room != null && t.Room.IsOutsideRoom())
+                    if (t != null && t.Room != null && !t.Room.IsOutsideRoom())
                     {
                         oldRooms.Add(t.Room);
 
@@ -402,7 +397,9 @@ namespace ProjectPorcupine.Rooms
             {
                 // In this case we are splitting one room into two or more,
                 // so we can just copy the old gas ratios.
-                newRoom.CopyGasPreasure(oldRoom, sizeOfOldRoom);
+                // 1 is subtracted from size of old room to account for tile being filled by furniture,
+                // this prevents gas from being lost
+                newRoom.SplitGas(oldRoom, sizeOfOldRoom - 1);
             }
 
             // Tell the world that a new room has been formed.

@@ -6,6 +6,8 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+
+using ProjectPorcupine.Jobs;
 using UnityEngine;
 
 public class CursorInfoDisplay
@@ -46,7 +48,7 @@ public class CursorInfoDisplay
         for (int i = 0; i < mc.GetDragObjects().Count; i++)
         {
             Tile t1 = GetTileUnderDrag(mc.GetDragObjects()[i].transform.position);
-            if (WorldController.Instance.World.IsFurniturePlacementValid(bmc.buildModeType, t1) && t1.PendingBuildJob == null)
+            if (World.Current.FurnitureManager.IsPlacementValid(bmc.buildModeType, t1) && t1.PendingBuildJob == null)
             {
                 validPostionCount++;
             }
@@ -70,16 +72,17 @@ public class CursorInfoDisplay
     public string GetCurrentBuildRequirements()
     {
         string temp = string.Empty;
-        foreach (string itemName in PrototypeManager.FurnitureConstructJob.Get(bmc.buildModeType).inventoryRequirements.Keys)
+        bool manyItems = PrototypeManager.FurnitureConstructJob.Get(bmc.buildModeType).RequestedItems.Count > 1;
+        foreach (RequestedItem item in PrototypeManager.FurnitureConstructJob.Get(bmc.buildModeType).RequestedItems.Values)
         {
-            string requiredMaterialCount = (PrototypeManager.FurnitureConstructJob.Get(bmc.buildModeType).inventoryRequirements[itemName].MaxStackSize * validPostionCount).ToString();
-            if (PrototypeManager.FurnitureConstructJob.Get(bmc.buildModeType).inventoryRequirements.Count > 1)
+            string requiredMaterialCount = (item.MaxAmountRequested * validPostionCount).ToString();
+            if (manyItems)
             {
-                return temp += requiredMaterialCount + " " + itemName + "\n";
+                return temp += requiredMaterialCount + " " + item.Type + "\n";
             }
             else
             {
-                return temp += requiredMaterialCount + " " + itemName;
+                return temp += requiredMaterialCount + " " + item.Type;
             }
         }
 

@@ -16,7 +16,7 @@ public class SoundController
     // Use this for initialization
     public SoundController(World world)
     {
-        world.OnFurnitureCreated += OnFurnitureCreated;
+        world.FurnitureManager.Created += OnFurnitureCreated;
         world.OnTileChanged += OnTileChanged;
 
         TimeManager.Instance.EveryFrame += Update;
@@ -28,7 +28,7 @@ public class SoundController
         soundCooldown -= deltaTime;
     }
 
-    public void OnFurnitureCreated(Furniture furn)
+    public void OnFurnitureCreated(Furniture furniture)
     {
         // FIXME
         if (soundCooldown > 0)
@@ -36,7 +36,7 @@ public class SoundController
             return;
         }
 
-        AudioClip ac = AudioManager.GetAudio("Sound", furn.Type + "_OnCreated");
+        AudioClip ac = AudioManager.GetAudio("Sound", furniture.Type + "_OnCreated");
         AudioSource.PlayClipAtPoint(ac, Camera.main.transform.position);
         soundCooldown = 0.1f;
     }
