@@ -77,7 +77,7 @@ public class TradeController
     {
         DialogBoxManager dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
 
-        Trader playerTrader = Trader.FromPlayer(World.Current.Wallet.Currencies[tradeShip.Trader.Currency.Name]);
+        Trader playerTrader = Trader.FromPlayer(World.Current.Wallet[tradeShip.Trader.Currency.Name]);
         Trade trade = new Trade(playerTrader, tradeShip.Trader);
         dbm.dialogBoxTrade.SetupTrade(trade);
         dbm.dialogBoxTrade.TradeCancelled = () =>

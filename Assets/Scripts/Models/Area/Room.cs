@@ -356,11 +356,11 @@ namespace ProjectPorcupine.Rooms
             }
         }
 
-        public void CopyGasPreasure(Room other, int sizeOfOtherRoom)
+        public void SplitGas(Room other, int sizeOfOtherRoom)
         {
             foreach (string n in other.atmosphericGasses.Keys)
             {
-                this.atmosphericGasses[n] = other.atmosphericGasses[n] / sizeOfOtherRoom * this.TileCount;
+                this.atmosphericGasses[n] = other.atmosphericGasses[n] * TileCount / sizeOfOtherRoom;
             }
         }
 
