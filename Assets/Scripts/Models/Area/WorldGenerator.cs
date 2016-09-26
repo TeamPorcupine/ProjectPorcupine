@@ -99,7 +99,7 @@ public class WorldGenerator
 
                         tile.Type = AsteroidFloorType;
 
-                        world.PlaceFurniture("astro_wall", tile, false);
+                        world.FurnitureManager.PlaceFurniture("astro_wall", tile, false);
 
                         if (Random.value <= asteroidResourceChance && tile.Furniture.Name == "Rock Wall")
                         {
@@ -138,7 +138,7 @@ public class WorldGenerator
                                                 break;
                                         }
 
-                                        world.PlaceFurniture(oreWall, tile, false);
+                                        world.FurnitureManager.PlaceFurniture(oreWall, tile, false);
                                         break;
                                     }
                                 }
