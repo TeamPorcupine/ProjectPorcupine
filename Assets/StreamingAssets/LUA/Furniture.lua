@@ -623,36 +623,45 @@ function Door_GetSpriteName(furniture)
 end
 
 function OreMine_CreateMiningJob(furniture, character)
-    -- Creates job for a character to go and "mine" the Ore
     local job = Job.__new(
-		furniture.Tile,
-		nil,
-		nil,
-		0,
-		nil,
-		Job.JobPriority.High,
-		false
+        furniture.tile,
+        "astro_wall",
+        nil,
+        0,
+        nil,
+        Job.JobPriority.High,
+        false,
+        false,
+        false,
+        true
 	)
 
+    job.JobDescription = "mine ore"
     job.RegisterJobWorkedCallback("OreMine_OreMined")
     furniture.Jobs.Add(job)
-    ModUtils.ULog("Ore Mine - Mining Job Created")
+    ModUtils.ULog("Create Mining Job - Mining Job Created")
 end
 
 function OreMine_OreMined(job)
     -- Defines the ore to be spawned by the mine
     local inventory = Inventory.__new(job.buildable.Parameters["ore_type"], 10)
 
-    -- Place the "mined" ore on the tile
-    World.Current.inventoryManager.PlaceInventory(job.tile, inventory)
-
-    -- Deconstruct the ore mine
+    if (inventory.Type ~= "None") then
+        -- Place the "mined" ore on the tile
+        World.Current.inventoryManager.PlaceInventory(job.tile, inventory)
+    end
+    
+    -- Deconstruct the mined object
     job.buildable.Deconstruct()
     job.CancelJob()
 end
 
 function OreMine_GetSpriteName(furniture)
-    return "mine_" .. furniture.Parameters["ore_type"].ToString()
+    if ( furniture.Parameters["ore_type"].ToString() == "Raw Iron-") then
+        return "astro_wall_" .. furniture.Parameters["ore_type"].ToString()
+    end
+
+    return "astro_wall"
 end
 
 -- This function gets called once, when the furniture is installed
