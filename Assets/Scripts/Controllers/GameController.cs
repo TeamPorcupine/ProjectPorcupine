@@ -9,29 +9,33 @@
 
 using UnityEngine;
 
-class GameController : MonoBehaviour
+public class GameController : MonoBehaviour
 {
+    public KeyboardManager keyboardManager;
+
     public static GameController Instance { get; private set; }
 
-    void Awake()
+    private void Awake()
     {
-        enableDontDestroyOnLoad();
-
-        // Load Settings
-
-        // Load Keyboard Mapping
+        EnableDontDestroyOnLoad();
     }
 
-    void Start()
+    private void Start()
     {
-           
+        // Load settings.
+        Settings.LoadSettings();
 
+        // Load Keyboard Mapping.
+        keyboardManager = KeyboardManager.Instance;
     }
 
-    private void enableDontDestroyOnLoad()
+    private void Update()
     {
-        DontDestroyOnLoad(this);
+        TimeManager.Instance.Update(Time.deltaTime);
+    }
 
+    private void EnableDontDestroyOnLoad()
+    {
         if (Instance == null)
         {
             Instance = this;
@@ -39,6 +43,9 @@ class GameController : MonoBehaviour
         else
         {
             Destroy(this.gameObject);
+            Destroy(this);
         }
-    }         
+
+        DontDestroyOnLoad(this);
+    }
 }

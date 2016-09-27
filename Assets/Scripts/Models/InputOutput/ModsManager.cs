@@ -20,6 +20,15 @@ public class ModsManager
         LoadFiles();
     }
 
+    /// <summary>
+    /// Return directory info of the mod folder.
+    /// </summary>
+    public static DirectoryInfo[] GetModsFiles()
+    {
+        DirectoryInfo modsDir = new DirectoryInfo(GetPathToModsFolder());
+        return modsDir.GetDirectories();
+    }
+
     public void LoadFiles()
     {
         LoadFunctions("Furniture.lua", "Furniture");
@@ -51,20 +60,11 @@ public class ModsManager
     }
 
     /// <summary>
-    /// Return directory info of the mod folder
-    /// </summary>
-    public static DirectoryInfo[] GetModsFiles()
-    {
-        DirectoryInfo modsDir = new DirectoryInfo(GetPathToModsFolder());
-        return modsDir.GetDirectories();
-    }
-
-    /// <summary>
-    /// Return the path to the mod folder
+    /// Return the path to the mod folder.
     /// </summary>
     private static string GetPathToModsFolder()
     {
-        return  System.IO.Path.Combine(System.IO.Path.Combine(Application.streamingAssetsPath, "Data"), "Mods");
+        return System.IO.Path.Combine(System.IO.Path.Combine(Application.streamingAssetsPath, "Data"), "Mods");
     }
 
     /// <summary>

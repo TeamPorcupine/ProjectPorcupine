@@ -138,11 +138,6 @@ public class WorldController : MonoBehaviour
         go.name = "ContextMenu";
     }
 
-    public void Update()
-    {
-        TimeManager.Instance.Update(Time.deltaTime);
-    }
-
     /// <summary>
     /// Gets the tile at the Unity-space coordinates.
     /// </summary>

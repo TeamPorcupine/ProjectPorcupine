@@ -10,18 +10,16 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace ProjectPorcupine.Controllers
+public class MainMenuController : MonoBehaviour
 {
-    class MainMenuController : MonoBehaviour
+    public void Start()
     {
-        KeyCode key = KeyCode.R;
+        // Register inputs actions
+        KeyboardManager.Instance.RegisterInputAction("Return", KeyboardMappedInputType.KeyDown, LoadNewWorld);
+    }
 
-        void Update()
-        {
-            if (Input.GetKeyDown(key))
-            {
-                SceneManager.LoadScene("_SCENE_");
-            }
-        }
+    public void LoadNewWorld()
+    {
+        SceneManager.LoadScene("_SCENE_");
     }
 }

@@ -121,41 +121,7 @@ public static class Settings
         return defaultValue;
     }
 
-    private static void SaveSettings()
-    {
-        // Create an xml document.
-        XmlDocument doc = new XmlDocument();
-
-        // Create main settings node.
-        XmlNode settingsNode = doc.CreateElement("Settings");
-
-        foreach (KeyValuePair<string, string> pair in settingsDict)
-        {
-            // Create a new element for each pair in the dict.
-            XmlElement settingElement = doc.CreateElement(pair.Key);
-            settingElement.InnerText = pair.Value;
-            Debug.ULogChannel("Settings", pair.Key + " : " + pair.Value);
-
-            // Add this element inside the Settings element.
-            settingsNode.AppendChild(settingElement);
-        }
-
-        // Apend Settings node to the document.
-        doc.AppendChild(settingsNode);
-
-        // Save the document.
-        try
-        {
-            doc.Save(userSettingsFilePath);
-        }
-        catch (Exception e)
-        {
-            Debug.ULogWarningChannel("Settings", "Settings could not be saved to " + userSettingsFilePath);
-            Debug.ULogWarningChannel("Settings", e.Message);
-        }
-    }
-
-    private static void LoadSettings()
+    public static void LoadSettings()
     {
         // Initialize the settings dict.
         settingsDict = new Dictionary<string, string>();
@@ -206,6 +172,40 @@ public static class Settings
                 settingsDict.Add(node.Name, node.InnerText);
                 Debug.ULogChannel("Settings", node.Name + " : " + node.InnerText);
             }
+        }
+    }
+
+    private static void SaveSettings()
+    {
+        // Create an xml document.
+        XmlDocument doc = new XmlDocument();
+
+        // Create main settings node.
+        XmlNode settingsNode = doc.CreateElement("Settings");
+
+        foreach (KeyValuePair<string, string> pair in settingsDict)
+        {
+            // Create a new element for each pair in the dict.
+            XmlElement settingElement = doc.CreateElement(pair.Key);
+            settingElement.InnerText = pair.Value;
+            Debug.ULogChannel("Settings", pair.Key + " : " + pair.Value);
+
+            // Add this element inside the Settings element.
+            settingsNode.AppendChild(settingElement);
+        }
+
+        // Apend Settings node to the document.
+        doc.AppendChild(settingsNode);
+
+        // Save the document.
+        try
+        {
+            doc.Save(userSettingsFilePath);
+        }
+        catch (Exception e)
+        {
+            Debug.ULogWarningChannel("Settings", "Settings could not be saved to " + userSettingsFilePath);
+            Debug.ULogWarningChannel("Settings", e.Message);
         }
     }
 

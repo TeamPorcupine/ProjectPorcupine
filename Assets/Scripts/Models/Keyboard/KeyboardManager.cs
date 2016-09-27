@@ -90,6 +90,7 @@ public class KeyboardManager
         RegisterInputMapping("IncreaseSpeed", KeyboardInputModifier.None, KeyCode.Plus, KeyCode.KeypadPlus);
 
         RegisterInputMapping("Pause", KeyboardInputModifier.None, KeyCode.Space, KeyCode.Pause);
+        RegisterInputMapping("Return", KeyboardInputModifier.None, KeyCode.Return);
 
         RegisterInputMapping("DevMode", KeyboardInputModifier.None, KeyCode.F12);
     }

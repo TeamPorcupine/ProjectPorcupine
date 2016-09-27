@@ -73,7 +73,6 @@ namespace ProjectPorcupine.Localization
         // Used to ensure that the TextLocalizer scripts won't throw errors.
         private void Awake()
         {
-
             // Check if the languages have already been loaded before.
             if (LocalizationTable.initialized)
             {
