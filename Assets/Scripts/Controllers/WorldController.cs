@@ -85,8 +85,7 @@ public class WorldController : MonoBehaviour
                 "ping_log",
                 (evt) => Debug.ULogChannel("Scheduler", "Event {0} fired", evt.Name)));
 
-        string dataPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
-        modsManager = new ModsManager(dataPath);
+        modsManager = new ModsManager();
 
         if (loadWorldFromFile != null)
         {

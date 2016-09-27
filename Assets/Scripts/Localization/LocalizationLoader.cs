@@ -16,9 +16,25 @@ namespace ProjectPorcupine.Localization
      * This class will load all localizations inside the /../StreamingAssets/Localization folder.
      * </summary>
      */
-    [AddComponentMenu("Localization/Localization Loader")]
-    public class LocalizationLoader : MonoBehaviour
+    public class LocalizationLoader
     {
+        // Initialize the localization files before Unity loads the scene entirely.
+        // Used to ensure that the TextLocalizer scripts won't throw errors.
+        public LocalizationLoader()
+        {
+            // Check if the languages have already been loaded before.
+            if (LocalizationTable.initialized)
+            {
+                // Return in this case.
+                return;
+            }
+
+            // Update localization from the internet.
+            StartCoroutine(LocalizationDownloader.CheckIfCurrentLocalizationIsUpToDate(delegate { UpdateLocalizationTable(); }));
+
+            UpdateLocalizationTable();
+        }
+
         /// <summary>
         /// Scans Application.streamingAssetsPath/Localization folder in search for .lang files and load's them
         /// to the LocalizationTable.
@@ -29,7 +45,7 @@ namespace ProjectPorcupine.Localization
             LoadLocalizationInDirectory(Application.streamingAssetsPath);
 
             // Load mods localization files
-            foreach (DirectoryInfo mod in WorldController.Instance.modsManager.GetMods())
+            foreach (DirectoryInfo mod in ModsManager.GetModsFiles())
             {
                 LoadLocalizationInDirectory(mod.FullName);
             }
@@ -70,21 +86,6 @@ namespace ProjectPorcupine.Localization
             }
         }
 
-        // Initialize the localization files before Unity loads the scene entirely.
-        // Used to ensure that the TextLocalizer scripts won't throw errors.
-        private void Awake()
-        {
-            // Check if the languages have already been loaded before.
-            if (LocalizationTable.initialized)
-            {
-                // Return in this case.
-                return;
-            }
 
-            // Update localization from the internet.
-            StartCoroutine(LocalizationDownloader.CheckIfCurrentLocalizationIsUpToDate(delegate { UpdateLocalizationTable(); }));
-
-            UpdateLocalizationTable();
-        }
     }
 }
