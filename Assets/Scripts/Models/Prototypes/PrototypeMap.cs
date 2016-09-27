@@ -121,8 +121,6 @@ public class PrototypeMap<T> where T : IPrototypable, new()
     /// <param name="proto">The prototype instance.</param>
     public void Set(T proto)
     {
-        Debug.Log(proto.ToString());
-        Debug.Log(proto.Type.ToString());
         prototypes[proto.Type] = proto;
     }
 
