@@ -168,39 +168,6 @@ public class World : IXmlSerializable
         FurnitureManager.OnCameraMoved(cameraBounds);
     }
 
-    public void TickEveryFrame(float deltaTime)
-    {
-        CharacterManager.Update(deltaTime);
-    }
-
-    public void TickFixedFrequency(float deltaTime)
-    {
-        // Update Furniture
-        foreach (Furniture f in furnitures)
-        {
-            f.Update(deltaTime);
-        }
-
-        // This portion calls the post update scripts of the furntirue
-        // It is used if the furniture needs to do something after all
-        // other furnitures are Updated, it is also the place to delete
-        // and construct furniture
-        for (int i = 0; i < furnitures.Count; i++)
-        {
-            if (furnitures[i] == null)
-            {
-                continue;
-            }
-            else if (furnitures[i].EventActions != null)
-            {
-                furnitures[i].EventActions.Trigger("OnPostUpdate", furnitures[i], deltaTime);
-            }
-        }
-
-        // Progress temperature modelling
-        temperature.Update();
-        PowerNetwork.Update(deltaTime);
-    }
 
     /// <summary>
     /// Gets the tile data at x and y.
@@ -511,6 +478,24 @@ public class World : IXmlSerializable
     private void TickFixedFrequency(float deltaTime)
     {
         FurnitureManager.TickFixedFrequency(deltaTime);
+
+        // This portion calls the post update scripts of the furntirue
+        // It is used if the furniture needs to do something after all
+        // other furnitures are Updated, it is also the place to delete
+        // and construct furniture
+        List<Furniture> furnitures = new List<Furniture>();
+        furnitures = FurnitureManager.Find(
+            (Furniture furniture) => 
+            {
+            return (furniture != null && furniture.EventActions != null);
+            }
+        );
+
+        for (int i = 0; i < furnitures.Count; i++)
+        { 
+                furnitures[i].EventActions.Trigger("OnPostUpdate", furnitures[i], deltaTime);
+            
+        }
 
         // Progress temperature modelling
         temperature.Update();
