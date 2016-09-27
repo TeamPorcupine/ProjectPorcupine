@@ -71,7 +71,7 @@ namespace ProjectPorcupine.Localization
 
         // Initialize the localization files before Unity loads the scene entirely.
         // Used to ensure that the TextLocalizer scripts won't throw errors.
-        public LocalizationLoader()
+        private void Awake()
         {
             // Check if the languages have already been loaded before.
             if (LocalizationTable.initialized)
@@ -82,7 +82,6 @@ namespace ProjectPorcupine.Localization
 
             // Update localization from the internet.
             StartCoroutine(LocalizationDownloader.CheckIfCurrentLocalizationIsUpToDate(delegate { UpdateLocalizationTable(); }));
-
             UpdateLocalizationTable();
         }
     }
