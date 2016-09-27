@@ -475,6 +475,7 @@ public class World : IXmlSerializable
     {
         CharacterManager.Update(deltaTime);
         FurnitureManager.TickEveryFrame(deltaTime);
+        ShipManager.Update(deltaTime);
     }
 
     /// <summary>

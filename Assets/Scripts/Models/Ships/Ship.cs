@@ -294,7 +294,7 @@ public class Ship : IPrototypable
         {
             for (int y = 0; y < Height; y++)
             {
-                Tile tile = GetTile(World.Current, x, y, 0);
+                Tile tile = GetTile(World.Current, Berth, x, y, 0);
 
                 // Change tile to defined contents
                 if (tile.Type.Equals(TileType.Empty) == false || tile.Furniture != null)
@@ -321,7 +321,7 @@ public class Ship : IPrototypable
         {
             for (int y = 0; y < Height; y++)
             {
-                Tile tile = GetTile(World.Current, x, y, 0);
+                Tile tile = GetTile(World.Current, Berth, x, y, 0);
 
                 // Change tile to empty
                 // Order reversed in case furniture on an empty tile leads to problems
@@ -371,6 +371,29 @@ public class Ship : IPrototypable
         }
     }
 
+    /// <summary>
+    /// Checks if there is enough room around the given berth for the ship to fit into.
+    /// </summary>
+    /// <returns><c>true</c>, if all potentially occupied tiles are indeed empty, <c>false</c> otherwise.</returns>
+    /// <param name="berth">The berth to test on.</param>
+    public bool WouldFitInBerth(Furniture berth)
+    {
+        for (int x = 0; x < Width; x++)
+        {
+            for (int y = 0; y < Height; y++)
+            {
+                Tile tile = GetTile(World.Current, berth, x, y, 0);
+
+                if (tile.Type.Equals(TileType.Empty) == false)
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
     // Moves the ship by a fixed 5 tiles per second towards its destination, or to its destination if it is within reach.
     private void Move(float deltaTime)
     {
@@ -383,12 +406,12 @@ public class Ship : IPrototypable
     /// Gets tile in world that corresponds to the relative coordinates in the ship definition
     /// counted from the berth.
     /// </summary>
-    private Tile GetTile(World world, int x, int y, int z)
+    private Tile GetTile(World world, Furniture berth, int x, int y, int z)
     {
         int relative_x = x - BerthPointX;
         int relative_y = y - BerthPointY;
-        int berth_x = Berth.Tile.X + 1;
-        int berth_y = Berth.Tile.Y;
+        int berth_x = berth.Tile.X + 1;
+        int berth_y = berth.Tile.Y;
         int worldX, worldY;
         switch (BerthDirection)
         {

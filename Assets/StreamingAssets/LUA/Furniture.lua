@@ -730,12 +730,17 @@ end
 
 function Berth_SummonShip(furniture, character)
     --ModUtils.ULogChannel("Ships", "Summoning ship")
-    local ship = World.Current.shipManager.AddShip("essentia", 0, 0)
-    ship.SetDestination(furniture)
+    local ship = World.Current.ShipManager.AddShip("essentia", 0, 0)
+    if (ship.WouldFitInBerth(furniture)) then
+    	ship.SetDestination(furniture)
+    else
+		World.Current.ShipManager.RemoveShip(ship)
+		furniture.Parameters["occupied"].SetValue(0)
+    end
 end
 
 function Berth_DismissShip(furniture, character)
-    local shipManager = World.Current.shipManager
+    local shipManager = World.Current.ShipManager
     if (shipManager.IsOccupied(furniture)) then
         local ship = shipManager.GetBerthedShip(furniture)
         shipManager.DeberthShip(furniture)

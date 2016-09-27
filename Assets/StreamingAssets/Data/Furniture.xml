@@ -744,7 +744,7 @@
         <UnlocalizedDescription>furn_mine_desc</UnlocalizedDescription>
     </Furniture>
     
-    <Furniture objectType="berth">
+    <Furniture type="berth">
         <Name>Ship Berth</Name>
         <MovementCost>1</MovementCost>
         <PathfindingModifier>1</PathfindingModifier>
