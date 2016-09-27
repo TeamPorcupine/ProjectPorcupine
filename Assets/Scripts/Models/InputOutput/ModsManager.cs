@@ -40,14 +40,15 @@ public class ModsManager
         LoadPrototypes("Inventory.xml", PrototypeManager.Inventory.LoadPrototypes);
         LoadPrototypes("Need.xml", PrototypeManager.Need.LoadPrototypes);
         LoadPrototypes("Trader.xml", PrototypeManager.Trader.LoadPrototypes);
+        LoadPrototypes("Currency.xml", PrototypeManager.Currency.LoadPrototypes);
         LoadPrototypes("Events.xml", PrototypeManager.SchedulerEvent.LoadPrototypes);
         LoadPrototypes("Stats.xml", PrototypeManager.Stat.LoadPrototypes);
         LoadPrototypes("Quest.xml", PrototypeManager.Quest.LoadPrototypes);
         LoadPrototypes("Headlines.xml", PrototypeManager.Headline.LoadPrototypes);
         LoadPrototypes("Overlay.xml", PrototypeManager.Overlay.LoadPrototypes);
-
+        
         LoadCharacterNames("CharacterNames.txt");
-
+        
         LoadDirectoryAssets("Images", SpriteManager.LoadSpriteFiles);
         LoadDirectoryAssets("Audio", AudioManager.LoadAudioFiles);
     }

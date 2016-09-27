@@ -53,7 +53,7 @@ then
 fi
 
 # Only echos if $RUN_AS_TRAVIS is true. Used to suppress log spam when run locally.
-function travecho()
+travecho()
 {
     if [ -n "$RUN_AS_TRAVIS" ];
     then
@@ -65,36 +65,38 @@ endTestsFold=0 #stores whether the travis_fold:end:tests has been echoed yet
 
 travecho 'travis_fold:start:compile'
 echo "Attempting Unit Tests"
-"$unityPath" -batchmode -runEditorTests -nographics -EditorTestResultFile $(pwd)/EditorTestResults.xml -projectPath $(pwd) -logFile unity.log 
-travecho "$(cat $(pwd)/unity.log)"
+"$unityPath" -batchmode -runEditorTests -nographics -EditorTestResultFile "$(pwd)"/EditorTestResults.xml -projectPath "$(pwd)" -logFile unity.log
+logFile="$(pwd)"/unity.log
+travecho "$(cat "$logFile")"
 travecho 'travis_fold:end:compile'
 
 travecho 'travis_fold:start:tests'
 travecho 'Show Results from Tests'
-if [ ! -f $(pwd)/EditorTestResults.xml ]; then
+if [ ! -f "$(pwd)"/EditorTestResults.xml ]; then
     echo "Results file not found!"
     echo "Make sure that there are no Unity processes already open and try again."
     travecho "travis_fold:end:tests"
-    $endTestsFold=1
+    endTestsFold=1
 
     # at this point we know that the build has failed due to compilation errors
     # lets try to parse them out of unity.log and display them
-    if [ -f $(pwd)/unity.log ]; then
+    if [ -f "$(pwd)"/unity.log ]; then
         out=$(grep "CompilerOutput" unity.log)
         if [ "$out" != "" ]; then
 
-            echo '\nBuild Failed! \nThe compiler generated the following messages:'
-            echo | awk '/CompilerOutput:/,/EndCompilerOutput/' < unity.log #show lines in between compiler output "tags" including tags 
+            printf '\nBuild Failed! \nThe compiler generated the following messages:'
+            echo | awk '/CompilerOutput:/,/EndCompilerOutput/' < unity.log #show lines in between compiler output "tags" including tags
 
         fi
     fi
-    rm $(pwd)/unity.log
+    rm "$(pwd)"/unity.log
     exit 1
 fi
-rm $(pwd)/unity.log
+rm "$(pwd)"/unity.log
 
-travecho "$(cat $(pwd)/EditorTestResults.xml)"
-if [ "$endTestsFold" == 0 ]; then
+resultsFile="$(pwd)/EditorTestResults.xml"
+travecho "$(cat "$resultsFile")"
+if [ "$endTestsFold" = 0 ]; then
     travecho 'travis_fold:end:tests'
 fi
 
@@ -102,31 +104,31 @@ fi
 errorCount=$(grep "failures" EditorTestResults.xml | awk -F"\"" '{print $8}') #find line with 'failures' and returns characters between quotation mark 8 and 9
 
 if [ "$errorCount" != "0" ]; then
-    echo $errorCount ' unit tests failed!'
-     
+    echo "$errorCount" ' unit tests failed!'
+
      #show the exact unit test failure
-    echo '\nThe following unit tests failed:'
+    printf '\nThe following unit tests failed:'
     echo | grep 'success="False"' EditorTestResults.xml | grep 'test-case'
 
-    rm $(pwd)/EditorTestResults.xml
+    rm "$(pwd)"/EditorTestResults.xml
     exit 1
 fi
 
 errorCount=$(grep "failures" EditorTestResults.xml | awk -F"\"" '{print $6}') #now for errors
 
 if [ "$errorCount" != "0" ]; then
-    echo $errorCount ' unit tests threw errors!'
+    echo "$errorCount" ' unit tests threw errors!'
 
-    rm $(pwd)/EditorTestResults.xml
+    rm "$(pwd)"/EditorTestResults.xml
     exit 1
 fi
 
 errorCount=$(grep "failures" EditorTestResults.xml | awk -F"\"" '{print $12}') #inconlusive tests
 
 if [ "$errorCount" != "0" ]; then
-    echo $errorCount ' unit tests were inconlusive!'
+    echo "$errorCount" ' unit tests were inconlusive!'
 
-    rm $(pwd)/EditorTestResults.xml
+    rm "$(pwd)"/EditorTestResults.xml
     exit 1
 fi
 
@@ -134,11 +136,11 @@ fi
 errorCount=$(grep "failures" EditorTestResults.xml | awk -F"\"" '{print $18}') #finally for invalid tests
 
 if [ "$errorCount" != "0" ]; then
-    echo $errorCount ' unit tests were invalid!'
+    echo "$errorCount" ' unit tests were invalid!'
 
-    rm $(pwd)/EditorTestResults.xml
+    rm "$(pwd)"/EditorTestResults.xml
     exit 1
 fi
 #end of unit test checks. at this point the test have suceeded or exited with an error code.
 
-rm $(pwd)/EditorTestResults.xml
+rm "$(pwd)"/EditorTestResults.xml
