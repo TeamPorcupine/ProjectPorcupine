@@ -11,9 +11,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-public class WorkshopContextMenu
+public class ComponentContextMenu
 {
-    public string ProductionChainName { get; set; }
+    public string Name { get; set; }
 
     public Action<Furniture, string> Function { get; set; }
 }
