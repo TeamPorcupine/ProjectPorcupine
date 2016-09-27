@@ -94,8 +94,8 @@ public class DialogBoxSettings : DialogBox
         fullScreenToggle.isOn = Screen.fullScreen;
 
         fpsObject = FindObjectOfType<FPSCounter>().gameObject;
-        
-        CreateResolitionDropdown();
+
+        CreateResolutionDropdown();
 
         // Load the setting.
         LoadSetting();
@@ -128,7 +128,7 @@ public class DialogBoxSettings : DialogBox
     /// <summary>
     /// Create the differents option for the resolution dropdown.
     /// </summary>
-    private void CreateResolitionDropdown()
+    private void CreateResolutionDropdown()
     {
         resolutionDropdown.ClearOptions();
         List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
