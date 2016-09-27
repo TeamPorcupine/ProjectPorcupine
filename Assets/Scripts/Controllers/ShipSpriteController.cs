@@ -15,13 +15,13 @@ public class ShipSpriteController : BaseSpriteController<Ship>
 {
     public ShipSpriteController(World world) : base(world, "Ships")
     {
-        world.shipManager.ShipCreated += OnCreated;
-        world.shipManager.ShipRemoved += OnRemoved;
+        world.ShipManager.ShipCreated += OnCreated;
+        world.ShipManager.ShipRemoved += OnRemoved;
     }
 
     protected override void OnCreated(Ship ship)
     {
-        Debug.ULogChannel("Ships", "Ship created: " + ship.ShipType);
+        Debug.ULogChannel("Ships", "Ship created: " + ship.Type);
 
         GameObject ship_go = new GameObject();
 
@@ -33,7 +33,7 @@ public class ShipSpriteController : BaseSpriteController<Ship>
 
         SpriteRenderer sr = ship_go.AddComponent<SpriteRenderer>();
         sr.sortingLayerName = "Characters";
-        sr.sprite = SpriteManager.current.GetSprite("Ship", ship.ShipType);
+        sr.sprite = SpriteManager.GetSprite("Ship", ship.Type);
 
         ship.ShipChanged += OnChanged;
     }

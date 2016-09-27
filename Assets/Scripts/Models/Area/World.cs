@@ -24,7 +24,6 @@ public class World : IXmlSerializable
     // TODO: Should this be also saved with the world data?
     // If so - beginner task!
     public readonly string GameVersion = "Someone_will_come_up_with_a_proper_naming_scheme_later";
-    // TODO Add ShipManager
     public Material skybox;
 
     // Store all temperature information
@@ -143,6 +142,12 @@ public class World : IXmlSerializable
     /// </summary>
     /// <value>The room manager.</value>
     public RoomManager RoomManager { get; private set; }
+
+    /// <summary>
+    /// Gets the ship manager.
+    /// </summary>
+    /// <value>The ship manager.</value>
+    public ShipManager ShipManager { get; private set; }
 
     /// <summary>
     /// Gets the camera data.
@@ -403,6 +408,8 @@ public class World : IXmlSerializable
 
         FurnitureManager = new FurnitureManager();
         FurnitureManager.Created += OnFurnitureCreated;
+
+        ShipManager = new ShipManager();
 
         UtilityManager = new UtilityManager();
         CharacterManager = new CharacterManager();

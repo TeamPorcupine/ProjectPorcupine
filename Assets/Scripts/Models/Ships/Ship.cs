@@ -26,7 +26,7 @@ public enum ShipState
 }
 
 [MoonSharpUserData]
-public class Ship
+public class Ship : IPrototypable
 {
     private ShipManager shipManager;
     private List<ShipStorage> storages;
@@ -44,7 +44,7 @@ public class Ship
     /// </summary>
     public Ship()
     {
-        ShipType = null;
+        Type = null;
         Width = 0;
         Height = 0;
         BerthPointX = 0;
@@ -65,7 +65,7 @@ public class Ship
     public Ship(ShipManager shipManager, Ship proto)
     {
         this.shipManager = shipManager;
-        ShipType = proto.ShipType;
+        Type = proto.Type;
         Width = proto.Width;
         Height = proto.Height;
         BerthPointX = proto.BerthPointX;
@@ -99,7 +99,7 @@ public class Ship
     /// <summary>
     /// The type of the ship. All ships with the same type share their type-specific variables.
     /// </summary>
-    public string ShipType { get; private set; }
+    public string Type { get; private set; }
 
     /// <summary>
     /// The width of the ship in tiles when unwrapped.
@@ -302,10 +302,10 @@ public class Ship
                     Debug.ULogErrorChannel("Ships", "Tile " + tile.X + "," + tile.Y + " is not empty. Replacing anyway.");
                 }
 
-                tile.Type = TileType.GetTileType(tileTypes[x, y]);
+                tile.Type = PrototypeManager.TileType.Get(tileTypes[x, y]);
                 if (furnitureTypes[x, y] != null)
                 {
-                    World.Current.PlaceFurniture(furnitureTypes[x, y], tile, false);
+                    World.Current.FurnitureManager.PlaceFurniture(furnitureTypes[x, y], tile, false);
                 }
             }
         }
@@ -341,7 +341,7 @@ public class Ship
     /// <param name="parentReader">The parent reader that reads the bigger file.</param>
     public void ReadXmlPrototype(XmlReader parentReader)
     {
-        ShipType = parentReader.GetAttribute("type");
+        Type = parentReader.GetAttribute("type");
         Width = int.Parse(parentReader.GetAttribute("width"));
         Height = int.Parse(parentReader.GetAttribute("height"));
 
