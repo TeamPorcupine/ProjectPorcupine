@@ -115,6 +115,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
 
         Parameters = new Parameter(other.Parameters);
         Jobs = new BuildableJobs(this, other.Jobs);
+
         // don't need to clone here, as all are prototype things (not changing)
         components = new HashSet<ProjectPorcupine.Buildable.Components.Component>(other.components);
 
@@ -712,6 +713,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                         cmp.Initialize();
                         components.Add(cmp);
                     }
+
                     break;
             }
         }
@@ -990,10 +992,10 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     public IEnumerable<string> GetAdditionalInfo()
     {
         // try to get some info from components
-        foreach(var comp in components)
+        foreach (var comp in components)
         {
             string desc = comp.GetDescription();
-            if(!string.IsNullOrEmpty(desc))
+            if (!string.IsNullOrEmpty(desc))
             {
                 yield return desc;
             }
@@ -1090,7 +1092,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         }
 
         // check for context menus of components
-        foreach(var comp in components)
+        foreach (var comp in components)
         {
             var compContextMenu = comp.GetContextMenu();
             if (compContextMenu != null)

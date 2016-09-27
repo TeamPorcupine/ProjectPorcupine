@@ -6,12 +6,12 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using System;
 using System.IO;
+using System.Xml;
 using System.Xml.Serialization;
 using NUnit.Framework;
-using System.Xml;
 using ProjectPorcupine.Buildable.Components;
-using System;
 
 public class ComponentTest
 {
@@ -86,8 +86,8 @@ public class ComponentTest
                
         // serialize
         StringWriter writer = new StringWriter();
-        XmlSerializer serializer = new XmlSerializer(typeof(Component), new Type[] { typeof(Workshop) } );
-        
+        XmlSerializer serializer = new XmlSerializer(typeof(Component), new Type[] { typeof(Workshop) });
+
         serializer.Serialize(writer, fi);        
 
         StringReader sr = new StringReader(writer.ToString());

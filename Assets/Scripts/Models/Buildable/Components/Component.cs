@@ -1,4 +1,12 @@
-﻿using System;
+﻿#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,7 +19,7 @@ namespace ProjectPorcupine.Buildable.Components
     public abstract class Component
     {
         // TODO: use ComponentNameAttribute and fetch names from assembly
-        static Dictionary<string, Type> componentTypes = new Dictionary<string, Type>
+        private static Dictionary<string, Type> componentTypes = new Dictionary<string, Type>
         {
             { "Workshop", typeof(Workshop) }
         };
@@ -28,16 +36,6 @@ namespace ProjectPorcupine.Buildable.Components
         [XmlIgnore]
         public string Type { get; set; }
 
-        public virtual void Initialize() { }
-        public virtual void Update(float deltaTime) { }
-
-        public virtual List<ComponentContextMenu> GetContextMenu() { return null; }
-
-        public virtual string GetDescription()
-        { 
-            return null;
-        }
-               
         public static Component Deserialize(XmlReader xmlReader)
         {
             string componentTypeName = xmlReader.GetAttribute("type");
@@ -58,6 +56,24 @@ namespace ProjectPorcupine.Buildable.Components
             }
         }
 
+        public virtual void Initialize()
+        {
+        }
+
+        public virtual void Update(float deltaTime)
+        {
+        }
+
+        public virtual List<ComponentContextMenu> GetContextMenu()
+        {
+            return null;
+        }
+
+        public virtual string GetDescription()
+        { 
+            return null;
+        }
+        
         public override string ToString()
         {
             return Type;

@@ -1,10 +1,18 @@
-﻿using ProjectPorcupine.Jobs;
+﻿#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
+using ProjectPorcupine.Jobs;
 
 namespace ProjectPorcupine.Buildable.Components
 {
@@ -25,10 +33,7 @@ namespace ProjectPorcupine.Buildable.Components
 
         [XmlElement("UsedAnimations")]
         public UsedAnimations UsedAnimation { get; set; }
-
-        [XmlIgnore]
-        List<ComponentContextMenu> WorkshopMenuActions { get; set; }
-
+        
         [XmlIgnore]
         public bool IsRunning { get; private set; }
 
@@ -36,7 +41,10 @@ namespace ProjectPorcupine.Buildable.Components
         {
             get { return ParentFurniture.Parameters; }
         }
-        
+
+        [XmlIgnore]
+        private List<ComponentContextMenu> WorkshopMenuActions { get; set; }
+
         public override string GetDescription()
         {
             StringBuilder sb = new StringBuilder();
