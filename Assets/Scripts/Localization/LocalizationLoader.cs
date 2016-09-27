@@ -16,25 +16,8 @@ namespace ProjectPorcupine.Localization
      * This class will load all localizations inside the /../StreamingAssets/Localization folder.
      * </summary>
      */
-    public class LocalizationLoader
+    public class LocalizationLoader : MonoBehaviour
     {
-        // Initialize the localization files before Unity loads the scene entirely.
-        // Used to ensure that the TextLocalizer scripts won't throw errors.
-        public LocalizationLoader()
-        {
-            // Check if the languages have already been loaded before.
-            if (LocalizationTable.initialized)
-            {
-                // Return in this case.
-                return;
-            }
-
-            // Update localization from the internet.
-            StartCoroutine(LocalizationDownloader.CheckIfCurrentLocalizationIsUpToDate(delegate { UpdateLocalizationTable(); }));
-
-            UpdateLocalizationTable();
-        }
-
         /// <summary>
         /// Scans Application.streamingAssetsPath/Localization folder in search for .lang files and load's them
         /// to the LocalizationTable.
@@ -86,6 +69,21 @@ namespace ProjectPorcupine.Localization
             }
         }
 
+        // Initialize the localization files before Unity loads the scene entirely.
+        // Used to ensure that the TextLocalizer scripts won't throw errors.
+        public LocalizationLoader()
+        {
+            // Check if the languages have already been loaded before.
+            if (LocalizationTable.initialized)
+            {
+                // Return in this case.
+                return;
+            }
 
+            // Update localization from the internet.
+            StartCoroutine(LocalizationDownloader.CheckIfCurrentLocalizationIsUpToDate(delegate { UpdateLocalizationTable(); }));
+
+            UpdateLocalizationTable();
+        }
     }
 }

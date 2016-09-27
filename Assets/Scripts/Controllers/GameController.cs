@@ -20,7 +20,6 @@ namespace ProjectPorcupine.Controllers
             DontDestroyOnLoad(this);
 
             // Load Localization
-            LocalizationLoader localizationLoader = new LocalizationLoader();
 
             // Load Settings
 
