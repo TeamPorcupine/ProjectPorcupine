@@ -16,6 +16,9 @@ public class MainMenuController : MonoBehaviour
     {
         // Register inputs actions
         KeyboardManager.Instance.RegisterInputAction("Return", KeyboardMappedInputType.KeyDown, LoadNewWorld);
+
+        //Display Main Menu
+        UIManager.Instance.RenderMainMenu();
     }
 
     public void LoadNewWorld()

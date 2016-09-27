@@ -11,13 +11,17 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
-    public KeyboardManager keyboardManager;
+    public KeyboardManager KeyboardManager;
+    public UIManager UIManager;
 
     public static GameController Instance { get; private set; }
 
     private void Awake()
     {
         EnableDontDestroyOnLoad();
+
+        this.gameObject.AddComponent<UIManager>();
+
     }
 
     private void Start()
@@ -26,7 +30,7 @@ public class GameController : MonoBehaviour
         Settings.LoadSettings();
 
         // Load Keyboard Mapping.
-        keyboardManager = KeyboardManager.Instance;
+        KeyboardManager = KeyboardManager.Instance;
     }
 
     private void Update()
