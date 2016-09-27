@@ -164,8 +164,42 @@ public class World : IXmlSerializable
     /// The invisible enities can be updated less frequent for better performance.
     /// </summary>
     public void OnCameraMoved(Bounds cameraBounds)
-    {        
+    {
         FurnitureManager.OnCameraMoved(cameraBounds);
+    }
+
+    public void TickEveryFrame(float deltaTime)
+    {
+        CharacterManager.Update(deltaTime);
+    }
+
+    public void TickFixedFrequency(float deltaTime)
+    {
+        // Update Furniture
+        foreach (Furniture f in furnitures)
+        {
+            f.Update(deltaTime);
+        }
+
+        // This portion calls the post update scripts of the furntirue
+        // It is used if the furniture needs to do something after all
+        // other furnitures are Updated, it is also the place to delete
+        // and construct furniture
+        for (int i = 0; i < furnitures.Count; i++)
+        {
+            if (furnitures[i] == null)
+            {
+                continue;
+            }
+            else if (furnitures[i].EventActions != null)
+            {
+                furnitures[i].EventActions.Trigger("OnPostUpdate", furnitures[i], deltaTime);
+            }
+        }
+
+        // Progress temperature modelling
+        temperature.Update();
+        PowerNetwork.Update(deltaTime);
     }
 
     /// <summary>
