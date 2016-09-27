@@ -19,7 +19,9 @@ public class MainMenuController : MonoBehaviour
 
         // Display Main Menu.
         GameObject canvas = GameObject.Find("Canvas");
-        GameObject mainMenu = (GameObject)Instantiate(Resources.Load("UI/MainMenu"), canvas.transform.position, canvas.transform.rotation, canvas.transform);
+        GameObject mainMenuPrefab = (GameObject)Resources.Load("UI/MainMenu");
+        GameObject mainMenu = (GameObject)Instantiate(mainMenuPrefab);
+        mainMenu.transform.SetParent(canvas.transform, false);
         mainMenu.SetActive(true);
     }
 }
