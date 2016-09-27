@@ -8,11 +8,20 @@
 #endregion
 
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace ProjectPorcupine.Controllers
 {
     class MainMenuController : MonoBehaviour
     {
+        KeyCode key = KeyCode.R;
 
+        void Update()
+        {
+            if (Input.GetKeyDown(key))
+            {
+                SceneManager.LoadScene("_SCENE_");
+            }
+        }
     }
 }

@@ -9,28 +9,36 @@
 
 using UnityEngine;
 
-namespace ProjectPorcupine.Controllers
+class GameController : MonoBehaviour
 {
-    class GameController : MonoBehaviour
+    public static GameController Instance { get; private set; }
+
+    void Awake()
     {
-        public ModsManager modsManager;
+        enableDontDestroyOnLoad();
 
-        void Awake()
-        {
-            DontDestroyOnLoad(this);
+        // Load Settings
 
-            // Load Localization
+        // Load Keyboard Mapping
+    }
 
-            // Load Settings
-
-            // Load Keyboard Mapping
-        }
-
-        void Start()
-        {
-
-
-        }
+    void Start()
+    {
+           
 
     }
+
+    private void enableDontDestroyOnLoad()
+    {
+        DontDestroyOnLoad(this);
+
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(this.gameObject);
+        }
+    }         
 }
