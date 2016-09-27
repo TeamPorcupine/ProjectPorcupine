@@ -16,6 +16,7 @@ namespace ProjectPorcupine.Localization
      * This class will load all localizations inside the /../StreamingAssets/Localization folder.
      * </summary>
      */
+    [AddComponentMenu("Localization/Localization Loader")]
     public class LocalizationLoader : MonoBehaviour
     {
         /// <summary>
