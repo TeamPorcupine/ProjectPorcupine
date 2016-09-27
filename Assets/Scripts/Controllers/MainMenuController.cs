@@ -8,21 +8,18 @@
 #endregion
 
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class MainMenuController : MonoBehaviour
 {
+    public static MainMenuController Instance { get; protected set; }
+
     public void Start()
     {
-        // Register inputs actions
-        KeyboardManager.Instance.RegisterInputAction("Return", KeyboardMappedInputType.KeyDown, LoadNewWorld);
+        Instance = this;
 
-        //Display Main Menu
-        UIManager.Instance.RenderMainMenu();
-    }
-
-    public void LoadNewWorld()
-    {
-        SceneManager.LoadScene("_SCENE_");
+        // Display Main Menu.
+        GameObject canvas = GameObject.Find("Canvas");
+        GameObject mainMenu = (GameObject)Instantiate(Resources.Load("UI/MainMenu"), canvas.transform.position, canvas.transform.rotation, canvas.transform);
+        mainMenu.SetActive(true);
     }
 }

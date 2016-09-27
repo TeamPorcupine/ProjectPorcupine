@@ -7,21 +7,39 @@
 // ====================================================
 #endregion
 
+using ProjectPorcupine.Localization;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
     public KeyboardManager KeyboardManager;
-    public UIManager UIManager;
 
-    public static GameController Instance { get; private set; }
+    public static GameController Instance { get; protected set; }
+
+    // Load the main scene.
+    public void LoadNewWorld()
+    {
+        SceneManager.LoadScene("_SCENE_");
+    }
+
+    // Quit the app whether in editor or a build version.
+    public void QuitGame()
+    {
+        // Maybe ask the user if he want to save or is sure they want to quit??
+        #if UNITY_EDITOR
+        // Allows you to quit in the editor.
+        UnityEditor.EditorApplication.isPlaying = false;
+        #else
+        Application.Quit();
+        #endif
+    }
 
     private void Awake()
     {
         EnableDontDestroyOnLoad();
 
-        this.gameObject.AddComponent<UIManager>();
-
+        this.gameObject.AddComponent<LocalizationLoader>();
     }
 
     private void Start()

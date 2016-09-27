@@ -1,40 +1,21 @@
-﻿using UnityEngine;
+﻿#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
+
 using ProjectPorcupine.Localization;
-using UnityEngine.SceneManagement;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
-    private DialogBoxManager dialogManager;
-
     public void Start()
     {
         RenderButtons();
-    }
-
-    public void OnButtonNewWorld()
-    {
-       // dialogManager.dialogBoxPromptOrInfo.SetPrompt("message_creating_new_world");
-      //  dialogManager.dialogBoxPromptOrInfo.ShowDialog();
-        SceneManager.LoadScene("_SCENE_");
-    }
-
-    public void OnButtonLoadGame()
-    {
-        // dialogManager.dialogBoxLoadGame.ShowDialog();
-    }
-
-
-    // Quit the app whether in editor or a build version.
-    public void OnButtonQuitGame()
-    {
-        // Maybe ask the user if he want to save or is sure they want to quit??
-#if UNITY_EDITOR
-        // Allows you to quit in the editor.
-        UnityEditor.EditorApplication.isPlaying = false;
-#else
-        Application.Quit();
-#endif
     }
 
     private void RenderButtons()
@@ -44,19 +25,13 @@ public class MainMenu : MonoBehaviour
         GameObject newWorldButton = CreateButtonGO(buttonPrefab, "New World", "new_world");
         newWorldButton.GetComponent<Button>().onClick.AddListener(delegate
         {
-            OnButtonNewWorld();
-        });
-
-        GameObject loadButton = CreateButtonGO(buttonPrefab, "Load", "load");
-        loadButton.GetComponent<Button>().onClick.AddListener(delegate
-        {
-            OnButtonLoadGame();
+            GameController.Instance.LoadNewWorld();
         });
 
         GameObject quitButton = CreateButtonGO(buttonPrefab, "Quit", "menu_quit");
         quitButton.GetComponent<Button>().onClick.AddListener(delegate
         {
-            OnButtonQuitGame();
+            GameController.Instance.QuitGame();
         });
     }
 
