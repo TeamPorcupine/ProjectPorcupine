@@ -17,8 +17,11 @@ namespace Animation
     /// </summary>
     public class SpritenameAnimation
     {
-        private int frameCount;
+        public bool FlipX;
+        public bool ValueBased;
 
+        private int frameCount;
+                
         // delay between frames in seconds
         private float delay;
         private bool finished;
@@ -26,12 +29,14 @@ namespace Animation
         private string[] frames;
         private float timer = 0;
         
-        public SpritenameAnimation(string state, string[] frames, float delay = .5f, bool loops = true)
+        public SpritenameAnimation(string state, string[] frames, float delay, bool loops = true, bool flipX = false, bool valueBased = false)
         {
             this.State = state;
             this.frames = frames;
             this.delay = delay;
             this.loops = loops;
+            this.FlipX = flipX;
+            this.ValueBased = valueBased;
 
             frameCount = this.frames.Length;
             CurrentFrame = 0;
@@ -48,7 +53,7 @@ namespace Animation
 
         public SpritenameAnimation Clone()
         {
-            SpritenameAnimation returnFA = new SpritenameAnimation(State, frames, delay, loops);
+            SpritenameAnimation returnFA = new SpritenameAnimation(State, frames, delay, loops, FlipX, ValueBased);
             return returnFA;
         }
         
@@ -61,19 +66,31 @@ namespace Animation
 
         public void SetFrame(int frame)
         {
-            if (frame > frameCount)
+            if (frame >= frameCount)
             {
                 Debug.ULogErrorChannel("Animation", "SetFrame frame " + frame + " int is larger than array length " + frameCount + ".");
+                return;
             }
 
             finished = false;
             CurrentFrame = frame;
-            CurrentFrameName = frames[CurrentFrame];
+            CurrentFrameName = frames[CurrentFrame];            
+        }
+
+        public void SetProgressValue(float percent)
+        {
+            int frame = (int)Math.Round((frameCount - 1) * percent, 0);
+            if (frame == CurrentFrame)
+            {
+                return;
+            }
+
+            SetFrame(frame);
         }
 
         public void Update(float deltaTime)
         {
-            if (finished)
+            if (finished || ValueBased)
             {
                 return;
             }

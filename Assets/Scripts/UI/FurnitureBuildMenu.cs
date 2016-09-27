@@ -49,7 +49,7 @@ public class FurnitureBuildMenu : MonoBehaviour
 
             for (int i = 0; i < localizers.Length; i++)
             {
-                localizers[i].UpdateText(LocalizationTable.GetLocalization(PrototypeManager.Furniture.Get(i).GetName()));
+                localizers[i].UpdateText(LocalizationTable.GetLocalization(PrototypeManager.Furniture[i].GetName()));
             }
         }
     }

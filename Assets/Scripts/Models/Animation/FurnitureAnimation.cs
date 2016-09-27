@@ -27,7 +27,7 @@ namespace Animation
         private Dictionary<string, SpritenameAnimation> animations;
         private SpritenameAnimation currentAnimation;
         private string currentAnimationState;
-        
+
         public FurnitureAnimation()
         {            
             animations = new Dictionary<string, SpritenameAnimation>();
@@ -55,12 +55,24 @@ namespace Animation
         public void Update(float deltaTime)
         {
             currentAnimation.Update(deltaTime);
+            CheckFrameChange();
+        }
 
-            if (prevFrameIndex != currentAnimation.CurrentFrame)
-            {
-                ShowSprite(currentAnimation.CurrentFrameName);
-                prevFrameIndex = currentAnimation.CurrentFrame;
-            }            
+        /// <summary>
+        /// Furniture has changed, so make sure the sprite is updated.
+        /// </summary>
+        public void OnFurnitureChanged()
+        {
+            ShowSprite(GetSpriteName());
+        }
+
+        /// <summary>
+        /// Set the animation frame depending on a value. The currentvalue percent of the maxvalue will determine which frame is shown.
+        /// </summary>
+        public void SetProgressValue(float percent)
+        {
+            currentAnimation.SetProgressValue(percent);
+            CheckFrameChange();
         }
 
         /// <summary>
@@ -70,17 +82,18 @@ namespace Animation
         {
             if (animations.ContainsKey(stateName) == false)
             {
-                Debug.ULogErrorChannel("Animation", "SetState tries to set " + stateName + " which doesn't exist.");
                 return;
             }
 
-            if (stateName != currentAnimationState)
+            if (stateName == currentAnimationState)
             {
-                currentAnimationState = stateName;
-                currentAnimation = animations[currentAnimationState];
-                currentAnimation.Play();
-                ShowSprite(currentAnimation.CurrentFrameName);
-            }            
+                return;
+            }
+
+            currentAnimationState = stateName;
+            currentAnimation = animations[currentAnimationState];
+            currentAnimation.Play();
+            ShowSprite(currentAnimation.CurrentFrameName);                       
         }
 
         /// <summary>
@@ -94,9 +107,9 @@ namespace Animation
         /// <summary>
         /// Add animation to furniture. First animation added will be default for sprites e.g. ghost image when placing furniture.
         /// </summary>
-        public void AddAnimation(string state, List<string> spriteNames, float fps, bool looping)
+        public void AddAnimation(string state, List<string> spriteNames, float fps, bool looping, bool valueBased)
         {
-            animations.Add(state, new SpritenameAnimation(state, spriteNames.ToArray(), 1 / fps, looping));
+            animations.Add(state, new SpritenameAnimation(state, spriteNames.ToArray(), 1 / fps, looping, false, valueBased));
 
             // set default state to first state entered - most likely "idle"
             if (string.IsNullOrEmpty(currentAnimationState))
@@ -107,11 +120,21 @@ namespace Animation
             }
         }
 
+        // check if time or value requires us to show a new animationframe
+        private void CheckFrameChange()
+        {
+            if (prevFrameIndex != currentAnimation.CurrentFrame)
+            {
+                ShowSprite(currentAnimation.CurrentFrameName);
+                prevFrameIndex = currentAnimation.CurrentFrame;
+            }
+        }
+        
         private void ShowSprite(string spriteName)
         {
             if (Renderer != null)
             {
-                Renderer.sprite = SpriteManager.current.GetSprite("Furniture", spriteName);
+                Renderer.sprite = SpriteManager.GetSprite("Furniture", spriteName);
             }
         }
     }

@@ -40,38 +40,36 @@ public class DialogBoxTrade : DialogBox
 
     public void DoTradingTestWithMockTraders()
     {
+        Currency currency = PrototypeManager.Currency.Get("Quill Corp Bucks");
+
+        Currency playerCurrency = currency.Clone();
+        playerCurrency.Balance = 1000f;
+
         Trader mockPlayer = new Trader
         {
-            Currency = new Currency
-            {
-                Balance = 1000f,
-                Name = "Test Currency",
-                ShortName = "TC"
-            },
+            Currency = playerCurrency,
             Name = "Player",
             SaleMarginMultiplier = 1f,
             Stock = new List<Inventory>
             {
-                new Inventory("Steel Plate", 50, 10) { BasePrice = 3f },
-                new Inventory("Raw Iron", 100, 90) { BasePrice = 0.2f },
+                new Inventory("Steel Plate", 10) { BasePrice = 3f },
+                new Inventory("Raw Iron", 90) { BasePrice = 0.2f },
             }
         };
 
+        Currency traderCurrency = currency.Clone();
+        traderCurrency.Balance = 1000f;
+
         Trader mockTrader = new Trader
         {
-            Currency = new Currency
-            {
-                Balance = 1000f,
-                Name = "Test Currency",
-                ShortName = "TC"
-            },
+            Currency = traderCurrency,
             Name = "Trader",
             SaleMarginMultiplier = 1.23f,
             Stock = new List<Inventory>
             {
-                new Inventory("Steel Plate", 50, 40) { BasePrice = 3f },
-                new Inventory("Steel Plate", 50, 40) { BasePrice = 3f },
-                new Inventory("Oxygen Bottle", 10, 10) { BasePrice = 50f },
+                new Inventory("Steel Plate", 40) { BasePrice = 3f },
+                new Inventory("Steel Plate", 40) { BasePrice = 3f },
+                new Inventory("Oxygen Bottle", 10) { BasePrice = 50f },
             }
         };
         SetupTrade(new Trade(mockPlayer, mockTrader));

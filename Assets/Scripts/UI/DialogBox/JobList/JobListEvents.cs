@@ -27,7 +27,7 @@ public class JobListEvents : MonoBehaviour
     {
         string charName = GetNameFromItem();
         
-        World.Current.GetCharacterFromName(charName).AbandonJob(true);
+        World.Current.CharacterManager.GetFromName(charName).AbandonJob(true);
         JobListItem.SetParent(null);
         GameObject.Destroy(JobListItem.gameObject);
     }
@@ -40,7 +40,7 @@ public class JobListEvents : MonoBehaviour
     {
         string charName = GetNameFromItem();
         Vector3 charPosition;
-        Character currentCharacter = World.Current.GetCharacterFromName(charName);
+        Character currentCharacter = World.Current.CharacterManager.GetFromName(charName);
 
         charPosition = new Vector3(currentCharacter.X, currentCharacter.Y, -10); 
         GameObject.Find("Main Camera").transform.position = charPosition;
