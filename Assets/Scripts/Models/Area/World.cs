@@ -1,8 +1,8 @@
 #region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
-// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
-// and you are welcome to redistribute it under certain conditions; See 
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
@@ -24,7 +24,6 @@ public class World : IXmlSerializable
     // TODO: Should this be also saved with the world data?
     // If so - beginner task!
     public readonly string GameVersion = "Someone_will_come_up_with_a_proper_naming_scheme_later";
-
     public Material skybox;
 
     // Store all temperature information
@@ -39,7 +38,6 @@ public class World : IXmlSerializable
     // be semi-static or self initializing or some damn thing.
     // For now, this is just a PUBLIC member of World
     public JobQueue jobQueue;
-    public JobQueue jobWaitingQueue;
 
     // A three-dimensional array to hold our tile data.
     private Tile[,,] tiles;
@@ -102,7 +100,7 @@ public class World : IXmlSerializable
 
     // The tile depth of the world
     public int Depth { get; protected set; }
-
+    
     /// <summary>
     /// Gets the inventory manager.
     /// </summary>
@@ -143,6 +141,12 @@ public class World : IXmlSerializable
     /// </summary>
     /// <value>The room manager.</value>
     public RoomManager RoomManager { get; private set; }
+
+    /// <summary>
+    /// Gets the ship manager.
+    /// </summary>
+    /// <value>The ship manager.</value>
+    public ShipManager ShipManager { get; private set; }
 
     /// <summary>
     /// Gets the camera data.
@@ -371,9 +375,6 @@ public class World : IXmlSerializable
 
     private void SetupWorld(int width, int height, int depth)
     {
-        jobQueue = new JobQueue();
-        jobWaitingQueue = new JobQueue();
-
         // Set the current world to be this world.
         // TODO: Do we need to do any cleanup of the old world?
         Current = this;
@@ -404,9 +405,12 @@ public class World : IXmlSerializable
         FurnitureManager = new FurnitureManager();
         FurnitureManager.Created += OnFurnitureCreated;
 
+        ShipManager = new ShipManager();
+
         UtilityManager = new UtilityManager();
         CharacterManager = new CharacterManager();
         InventoryManager = new InventoryManager();
+        jobQueue = new JobQueue();
         CameraData = new CameraData();
         PowerNetwork = new ProjectPorcupine.PowerNetwork.PowerNetwork();
         temperature = new Temperature();
@@ -468,6 +472,7 @@ public class World : IXmlSerializable
     {
         CharacterManager.Update(deltaTime);
         FurnitureManager.TickEveryFrame(deltaTime);
+        ShipManager.Update(deltaTime);
     }
 
     /// <summary>
@@ -552,9 +557,9 @@ public class World : IXmlSerializable
 
                 // Create our inventory from the file
                 Inventory inv = new Inventory(
-                    reader.GetAttribute("type"),
-                    int.Parse(reader.GetAttribute("stackSize")),
-                    int.Parse(reader.GetAttribute("maxStackSize")))
+                                    reader.GetAttribute("type"),
+                                    int.Parse(reader.GetAttribute("stackSize")),
+                                    int.Parse(reader.GetAttribute("maxStackSize")))
                 {
                     Locked = bool.Parse(reader.GetAttribute("locked"))
                 };
@@ -663,9 +668,9 @@ public class World : IXmlSerializable
                                 {
                                     // Create our inventory from the file
                                     Inventory inv = new Inventory(
-                                        reader.GetAttribute("type"),
-                                        int.Parse(reader.GetAttribute("stackSize")),
-                                        int.Parse(reader.GetAttribute("maxStackSize")))
+                                                        reader.GetAttribute("type"),
+                                                        int.Parse(reader.GetAttribute("stackSize")),
+                                                        int.Parse(reader.GetAttribute("maxStackSize")))
                                     {
                                         Locked = bool.Parse(reader.GetAttribute("locked"))
                                     };
@@ -698,6 +703,7 @@ public class World : IXmlSerializable
     }
 
     #region TestFunctions
+
     /// <summary>
     /// Tests the room graph generation for the default world.
     /// </summary>
@@ -863,5 +869,6 @@ public class World : IXmlSerializable
             Debug.ULogChannel("Path_RoomGraph", "TestRoomGraphGeneration completed without errors!");
         }
     }
+
     #endregion
 }

@@ -6,7 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-
+using System.Collections.Generic;
 using ProjectPorcupine.Jobs;
 using UnityEngine;
 
@@ -72,11 +72,11 @@ public class CursorInfoDisplay
     public string GetCurrentBuildRequirements()
     {
         string temp = string.Empty;
-        bool manyItems = PrototypeManager.FurnitureConstructJob.Get(bmc.buildModeType).RequestedItems.Count > 1;
-        foreach (RequestedItem item in PrototypeManager.FurnitureConstructJob.Get(bmc.buildModeType).RequestedItems.Values)
+        Dictionary<string, RequestedItem> items = PrototypeManager.FurnitureConstructJob.Get(bmc.buildModeType).RequestedItems;
+        foreach (RequestedItem item in items.Values)
         {
-            string requiredMaterialCount = (item.MaxAmountRequested * validPostionCount).ToString();
-            if (manyItems)
+            string requiredMaterialCount = (item.MinAmountRequested * validPostionCount).ToString();
+            if (items.Count > 1)
             {
                 return temp += requiredMaterialCount + " " + item.Type + "\n";
             }

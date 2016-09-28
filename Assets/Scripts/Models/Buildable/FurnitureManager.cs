@@ -167,11 +167,13 @@ public class FurnitureManager : IEnumerable<Furniture>
 
     /// <summary>
     /// Calls the furnitures update function on every frame.
+    /// The list needs to be copied temporarily in case furnitures are added or removed during the update.
     /// </summary>
     /// <param name="deltaTime">Delta time.</param>
     public void TickEveryFrame(float deltaTime)
     {
-        foreach (Furniture furniture in furnituresVisible)
+        List<Furniture> tempFurnituresVisible = new List<Furniture>(furnituresVisible);
+        foreach (Furniture furniture in tempFurnituresVisible)
         {
             furniture.EveryFrameUpdate(deltaTime);
         }
@@ -179,6 +181,7 @@ public class FurnitureManager : IEnumerable<Furniture>
 
     /// <summary>
     /// Calls the furnitures update function on a fixed frequency.
+    /// The list needs to be copied temporarily in case furnitures are added or removed during the update.
     /// </summary>
     /// <param name="deltaTime">Delta time.</param>
     public void TickFixedFrequency(float deltaTime)
@@ -188,13 +191,15 @@ public class FurnitureManager : IEnumerable<Furniture>
         //       FixedFrequencyUpdate on invisible furniture could also be even slower.
 
         // Update furniture outside of the camera view
-        foreach (Furniture furniture in furnituresInvisible)
+        List<Furniture> tempFurnituresInvisible = new List<Furniture>(furnituresInvisible);
+        foreach (Furniture furniture in tempFurnituresInvisible)
         {
             furniture.EveryFrameUpdate(deltaTime);
         }
 
         // Update all furniture with EventActions
-        foreach (Furniture furniture in furnitures)
+        List<Furniture> tempFurnitures = new List<Furniture>(furnitures);
+        foreach (Furniture furniture in tempFurnitures)
         {
             furniture.FixedFrequencyUpdate(deltaTime);
         }
