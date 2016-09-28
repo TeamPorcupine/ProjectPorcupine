@@ -225,28 +225,7 @@ public class Job : ISelectable, IPrototypable
             }
 
             // TODO: This doesn't handle multi-tile furniture
-            if (adjacent)
-            {
-                int minX = tile.X - 1;
-                int maxX = tile.X + 1;
-                int minY = tile.Y - 1;
-                int maxY = tile.Y + 1;
-                int minZ = tile.Z - 1;
-                int maxZ = tile.Z + 1;
-
-                return otherTile => (
-                    (otherTile.X >= minX && otherTile.X <= maxX &&
-                        otherTile.Y >= minY && otherTile.Y <= maxY &&
-                        otherTile.Z == tile.Z &&
-                        tile.IsClippingCorner(otherTile) == false) || 
-                    (otherTile.Z >= minZ && otherTile.Z <= maxZ &&
-                        otherTile.X == tile.X &&
-                        otherTile.Y == tile.Y));
-            }
-            else
-            {
-                return otherTile => tile == otherTile;
-            }
+            return Pathfinder.GoalTileEvaluator(tile, adjacent);
         }
     }
 
