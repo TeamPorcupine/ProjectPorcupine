@@ -204,7 +204,7 @@ namespace ProjectPorcupine.Pathfinding
         {
             return tile => tile.Type == TileType.Floor && (
                 tile.Inventory == null ||
-                (tile.Inventory.Type == type && (tile.Inventory.StackSize + amount)) <= tile.Inventory.MaxStackSize);
+                (tile.Inventory.Type == type && (tile.Inventory.StackSize + amount) <= tile.Inventory.MaxStackSize));
         }
 
         /// <summary>
