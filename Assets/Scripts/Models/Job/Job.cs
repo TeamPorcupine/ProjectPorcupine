@@ -224,6 +224,7 @@ public class Job : ISelectable, IPrototypable
                 return null;
             }
 
+            // TODO: This doesn't handle multi-tile furniture
             if (adjacent)
             {
                 int minX = tile.X - 1;
@@ -233,20 +234,18 @@ public class Job : ISelectable, IPrototypable
                 int minZ = tile.Z - 1;
                 int maxZ = tile.Z + 1;
 
-
-                return otherTIle => (
-
-                    (otherTIle.X >= minX && otherTIle.X <= maxX &&
-                        otherTIle.Y >= minY && otherTIle.Y <= maxY &&
-                        otherTIle.Z == tile.Z &&
-                        tile.IsClippingCorner(otherTIle) == false) || 
-                    (otherTIle.Z >= minZ && otherTIle.Z <= maxZ &&
-                        otherTIle.X == tile.X &&
-                        otherTIle.Y == tile.Y));
+                return otherTile => (
+                    (otherTile.X >= minX && otherTile.X <= maxX &&
+                        otherTile.Y >= minY && otherTile.Y <= maxY &&
+                        otherTile.Z == tile.Z &&
+                        tile.IsClippingCorner(otherTile) == false) || 
+                    (otherTile.Z >= minZ && otherTile.Z <= maxZ &&
+                        otherTile.X == tile.X &&
+                        otherTile.Y == tile.Y));
             }
             else
             {
-                return tile => tile.CompareTo(tile) == 0;
+                return otherTile => tile.CompareTo(otherTile) == 0;
             }
         }
     }

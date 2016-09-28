@@ -180,9 +180,7 @@ namespace ProjectPorcupine.Pathfinding
                 int minZ = goalTile.Z - 1;
                 int maxZ = goalTile.Z + 1;
 
-
                 return tile => (
-                    
                     (tile.X >= minX && tile.X <= maxX &&
                     tile.Y >= minY && tile.Y <= maxY &&
                     tile.Z == goalTile.Z &&
