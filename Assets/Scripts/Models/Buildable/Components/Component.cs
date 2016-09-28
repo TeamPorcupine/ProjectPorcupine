@@ -18,9 +18,11 @@ namespace ProjectPorcupine.Buildable.Components
 {
     [Serializable]
     public abstract class Component
-    {        
-        private static Dictionary<string, Type> componentTypes;
+    {
+        protected static readonly string ComponentLogChannel = "FurnitureComponents";
 
+        private static Dictionary<string, Type> componentTypes;
+        
         public Component()
         {
             // need to set it, for some reason GetHashCode is called during serialization (when Name is still null)
@@ -53,7 +55,7 @@ namespace ProjectPorcupine.Buildable.Components
             }
             else
             {
-                Debug.ULogError("There is no deserializer for component '{0}'", componentTypeName);
+                Debug.ULogErrorChannel(ComponentLogChannel, "There is no deserializer for component '{0}'", componentTypeName);
                 return null;
             }
         }
@@ -62,7 +64,7 @@ namespace ProjectPorcupine.Buildable.Components
         {
         }
 
-        public virtual void Update(float deltaTime)
+        public virtual void FixedFrequencyUpdate(float deltaTime)
         {
         }
 
@@ -105,7 +107,7 @@ namespace ProjectPorcupine.Buildable.Components
                         foreach (ComponentNameAttribute compNameAttr in attribs)
                         {
                             componentTypes.Add(compNameAttr.ComponentName, type);
-                            Debug.ULogChannel("FurnitureComponents", "Found component in assembly: {0}", compNameAttr.ComponentName);
+                            Debug.ULogChannel(ComponentLogChannel, "Found component in assembly: {0}", compNameAttr.ComponentName);
                         }
                     }
                 }

@@ -382,10 +382,11 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         Furniture obj = proto.Clone();
         obj.Tile = tile;
 
-        // need to update reference to furniture
+        // need to update reference to furniture and call Initialize (so components can place hooks on events there)
         foreach (var comp in obj.components)
         {
             comp.ParentFurniture = obj;
+            comp.Initialize();
         }
       
         if (tile.PlaceFurniture(obj) == false)
@@ -483,7 +484,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         {
             foreach (var cmp in components)
             {
-                cmp.Update(deltaTime);
+                cmp.FixedFrequencyUpdate(deltaTime);
             }
         }
         
@@ -755,8 +756,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                     var cmp = ProjectPorcupine.Buildable.Components.Component.Deserialize(reader);
                     if (cmp != null)
                     {
-                        cmp.ParentFurniture = this;
-                        cmp.Initialize();
                         components.Add(cmp);
                     }
 

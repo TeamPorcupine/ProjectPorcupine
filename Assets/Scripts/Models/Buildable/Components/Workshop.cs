@@ -56,11 +56,11 @@ namespace ProjectPorcupine.Buildable.Components
 
         public override void Initialize()
         {
-            WorkshopMenuActions = new List<ComponentContextMenu>();
-
             // check if context menu is needed
             if (PossibleProductions.Count > 1)
             {
+                WorkshopMenuActions = new List<ComponentContextMenu>();
+
                 FurnitureParams.AddParameter(new Parameter(CurProductionChainParamName, null));
                 foreach (var chain in PossibleProductions)
                 {
@@ -80,7 +80,7 @@ namespace ProjectPorcupine.Buildable.Components
                 }
                 else
                 {
-                    Debug.ULogWarning("Furniture {0} is marked as factory, but has no production chain", ParentFurniture.Name);
+                    Debug.ULogWarningChannel(ComponentLogChannel, "Furniture {0} is marked as factory, but has no production chain", ParentFurniture.Name);
                 }
             }
 
@@ -90,9 +90,10 @@ namespace ProjectPorcupine.Buildable.Components
             FurnitureParams.AddParameter(new Parameter(CurProcessedInvParamName, 0));
             IsRunning = false;
             OnRunningStateChanged += RunningStateChanged;
+            ParentFurniture.Removed += WorkshopRemoved;
         }
         
-        public override void Update(float deltaTime)
+        public override void FixedFrequencyUpdate(float deltaTime)
         {
             //// if there is enough input, do the processing and store item to output
             //// - remove items from input
@@ -164,22 +165,7 @@ namespace ProjectPorcupine.Buildable.Components
         {
             return WorkshopMenuActions;
         }
-
-        private static void ChangeCurrentProductionChain(Furniture furniture, string newProductionChainName)
-        {
-            Parameter oldProductionChainName = furniture.Parameters[CurProductionChainParamName];
-            bool isProcessing = furniture.Parameters[CurProcessedInvParamName].ToInt() > 0;
-
-            // if selected production really changes and nothing is being processed now
-            if (isProcessing || newProductionChainName.Equals(oldProductionChainName))
-            {
-                return;
-            }
-
-            furniture.Jobs.CancelAll();
-            furniture.Parameters[CurProductionChainParamName].SetValue(newProductionChainName);
-        }
-
+        
         private static void PlaceInventories(List<TileObjectTypeAmount> outPlacement)
         {
             foreach (var outPlace in outPlacement)
@@ -221,6 +207,32 @@ namespace ProjectPorcupine.Buildable.Components
             }
         }
 
+        private static void UnlockInventoryAtInput(Furniture furniture, ProductionChain prodChain)
+        {
+            foreach (Item inputItem in prodChain.Input)
+            {
+                // check input slots for req. item:                        
+                Tile tile = World.Current.GetTileAt(
+                    furniture.Tile.X + inputItem.SlotPosX,
+                    furniture.Tile.Y + inputItem.SlotPosY,
+                    furniture.Tile.Z);
+
+                if (tile.Inventory != null && tile.Inventory.Locked)
+                {
+                    tile.Inventory.Locked = false;
+                    Debug.ULogChannel(ComponentLogChannel, "Inventory {0} at tile {1} is unlocked", tile.Inventory, tile);
+                }
+            }
+        }
+
+        private void WorkshopRemoved(Furniture furniture)
+        {
+            string oldProductionChainName = furniture.Parameters[CurProductionChainParamName].Value;
+
+            // unlock all inventories at input if there is something left
+            UnlockInventoryAtInput(ParentFurniture, GetProductionChainByName(oldProductionChainName));
+        }
+
         private void RunningStateChanged(bool newIsRunningState)
         {
             if (UsedAnimation != null)
@@ -233,6 +245,32 @@ namespace ProjectPorcupine.Buildable.Components
                 {
                     ParentFurniture.Animation.SetState(UsedAnimation.Idle);
                 }
+            }
+        }
+
+        private void ChangeCurrentProductionChain(Furniture furniture, string newProductionChainName)
+        {
+            string oldProductionChainName = furniture.Parameters[CurProductionChainParamName].Value;
+            bool isProcessing = furniture.Parameters[CurProcessedInvParamName].ToInt() > 0;
+
+            // if selected production really changes and nothing is being processed now
+            if (isProcessing || newProductionChainName.Equals(oldProductionChainName))
+            {
+                return;
+            }
+
+            furniture.Jobs.CancelAll();
+            furniture.Parameters[CurProductionChainParamName].SetValue(newProductionChainName);
+
+            // unlock all inventories at input if there is something left
+            ProductionChain oldProdChain = GetProductionChainByName(oldProductionChainName);
+            if (oldProdChain != null)
+            {
+                UnlockInventoryAtInput(furniture, oldProdChain);
+            }
+            else
+            {
+                Debug.ULogWarningChannel(ComponentLogChannel, "Workshop old production chain is null for some reason.");
             }
         }
 
@@ -315,11 +353,11 @@ namespace ProjectPorcupine.Buildable.Components
 
             return outPlacement;
         }
-
+        
         private List<KeyValuePair<Tile, int>> CheckForInventoryAtInput(ProductionChain prodChain)
         {
             var flaggedForTaking = new List<KeyValuePair<Tile, int>>();
-            foreach (var reqInputItem in prodChain.Input)
+            foreach (Item reqInputItem in prodChain.Input)
             {
                 // check input slots for req. item:                        
                 Tile tile = World.Current.GetTileAt(
