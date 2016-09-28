@@ -52,12 +52,12 @@ namespace ProjectPorcupine.Pathfinding
             if (adjacent)
             {
                 DebugLogIf(path.Count > 0, "FindPathToTile adjacent from: {0}, to: {1}, found {2} [Length: {3}", start, end, path.Last(), path.Count);
-//                DebugLogIf(path.Count > 0, "Searched adjacent from: " + start.X + "," + start.Y + ", to: " + end.X + "," + end.Y + " found: " + path.Last().X + "," + path.Last().Y + " [Length: " + path.Count + "]");
             }
             else
             {
                 DebugLogIf(path.Count > 0, "FindPathToTile from: " + start.X + "," + start.Y + ", to: " + end.X + "," + end.Y + " found: " + path.Last().X + "," + path.Last().Y + " [Length: " + path.Count + "]");
             }
+
             DebugLogIf(path == null, "Failed to find path to tile {0}", start);
 
             return path;
@@ -204,7 +204,7 @@ namespace ProjectPorcupine.Pathfinding
         {
             return tile => tile.Type == TileType.Floor && (
                 tile.Inventory == null ||
-                tile.Inventory.Type == type && (tile.Inventory.StackSize + amount) <= tile.Inventory.MaxStackSize);
+                (tile.Inventory.Type == type && (tile.Inventory.StackSize + amount)) <= tile.Inventory.MaxStackSize);
         }
 
         /// <summary>

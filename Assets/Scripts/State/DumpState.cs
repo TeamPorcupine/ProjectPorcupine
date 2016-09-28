@@ -1,4 +1,12 @@
-﻿using System.Collections.Generic;
+﻿#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
+using System.Collections.Generic;
 using System.Linq;
 using ProjectPorcupine.Pathfinding;
 
@@ -18,7 +26,7 @@ namespace ProjectPorcupine.State
             // Current tile is empty
             if (tileInventory == null)
             {
-                FSMLog(" - Dumping");
+                DebugLog(" - Dumping");
                 World.Current.InventoryManager.PlaceInventory(character.CurrTile, character.inventory);
                 Finished();
                 return;
@@ -27,7 +35,7 @@ namespace ProjectPorcupine.State
             // Current tile contains the same type and there is room
             if (tileInventory.Type == character.inventory.Type && (tileInventory.StackSize + character.inventory.StackSize) <= tileInventory.MaxStackSize)
             {
-                FSMLog(" - Dumping");
+                DebugLog(" - Dumping");
                 World.Current.InventoryManager.PlaceInventory(character.CurrTile, character.inventory);
                 Finished();
                 return;
@@ -40,10 +48,9 @@ namespace ProjectPorcupine.State
             }
             else
             {
-                FSMLog(" - Can't find any place to dump inventory!");
+                DebugLog(" - Can't find any place to dump inventory!");
                 Finished();
             }
         }
     }
 }
-

@@ -24,7 +24,6 @@ public class World : IXmlSerializable
     // TODO: Should this be also saved with the world data?
     // If so - beginner task!
     public readonly string GameVersion = "Someone_will_come_up_with_a_proper_naming_scheme_later";
-
     public Material skybox;
 
     // Store all temperature information
@@ -101,7 +100,7 @@ public class World : IXmlSerializable
 
     // The tile depth of the world
     public int Depth { get; protected set; }
-
+    
     /// <summary>
     /// Gets the inventory manager.
     /// </summary>
@@ -142,6 +141,12 @@ public class World : IXmlSerializable
     /// </summary>
     /// <value>The room manager.</value>
     public RoomManager RoomManager { get; private set; }
+
+    /// <summary>
+    /// Gets the ship manager.
+    /// </summary>
+    /// <value>The ship manager.</value>
+    public ShipManager ShipManager { get; private set; }
 
     /// <summary>
     /// Gets the camera data.
@@ -370,8 +375,6 @@ public class World : IXmlSerializable
 
     private void SetupWorld(int width, int height, int depth)
     {
-//        jobWaitingQueue = new JobQueue();
-
         // Set the current world to be this world.
         // TODO: Do we need to do any cleanup of the old world?
         Current = this;
@@ -401,6 +404,8 @@ public class World : IXmlSerializable
 
         FurnitureManager = new FurnitureManager();
         FurnitureManager.Created += OnFurnitureCreated;
+
+        ShipManager = new ShipManager();
 
         UtilityManager = new UtilityManager();
         CharacterManager = new CharacterManager();
@@ -467,6 +472,7 @@ public class World : IXmlSerializable
     {
         CharacterManager.Update(deltaTime);
         FurnitureManager.TickEveryFrame(deltaTime);
+        ShipManager.Update(deltaTime);
     }
 
     /// <summary>

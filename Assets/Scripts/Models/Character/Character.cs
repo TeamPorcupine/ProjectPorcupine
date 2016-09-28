@@ -7,17 +7,13 @@
 // ====================================================
 #endregion
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
-using ProjectPorcupine.Jobs;
 using ProjectPorcupine.Localization;
 using ProjectPorcupine.State;
-using ProjectPorcupine.Pathfinding;
 using UnityEngine;
 
 public enum Facing
@@ -219,27 +215,6 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         }
     }
 
-//    /// <summary>
-//    /// The Character's current goal tile (not necessarily the next one
-//    /// he or she will be entering). If we aren't moving, then destTile = currTile .
-//    /// </summary>
-//    private Tile DestTile
-//    {
-//        get
-//        {
-//            return destTile;
-//        }
-//
-//        set
-//        {
-//            if (destTile != value)
-//            {
-//                destTile = value;
-//                movementPath = null;   // If this is a new destination, then we need to invalidate pathfinding.
-//            }
-//        }
-//    }
-
     public IEnumerable<ContextMenuAction> GetContextMenuActions(ContextMenu contextMenu)
     {
         yield return new ContextMenuAction
@@ -277,7 +252,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     }
 
     /// <summary>
-    /// Removes all the queued up states
+    /// Removes all the queued up states.
     /// </summary>
     public void ClearStateQueue()
     {
@@ -329,7 +304,6 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             }
             else
             {
-                Debug.ULogChannel("FSM", "---");
                 Job job = World.Current.jobQueue.GetJob(this);
                 if (job != null)
                 {
@@ -520,6 +494,39 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         }
     }
 
+    public void ReadStatsFromSave(XmlReader reader)
+    {
+        // Protection vs. empty stats
+        if (reader.IsEmptyElement)
+        {
+            return;
+        }
+
+        while (reader.Read())
+        {
+            if (reader.NodeType == XmlNodeType.EndElement)
+            {
+                break;
+            }
+
+            string statType = reader.GetAttribute("type");
+            Stat stat = GetStat(statType);
+            if (stat == null)
+            {
+                continue;
+            }
+
+            int statValue;
+            if (!int.TryParse(reader.GetAttribute("value"), out statValue))
+            {
+                Debug.ULogErrorChannel("Character", "Stat element did not have a value!");
+                continue;
+            }
+
+            stat.Value = statValue;
+        }
+    }
+
     private State FindInitiatingState()
     {
         if (state == null)
@@ -569,38 +576,5 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         }
 
         Debug.ULogChannel("Character", "Initialized " + stats.Count + " Stats.");
-    }
-
-    public void ReadStatsFromSave(XmlReader reader)
-    {
-        // Protection vs. empty stats
-        if (reader.IsEmptyElement)
-        {
-            return;
-        }
-
-        while (reader.Read())
-        {
-            if (reader.NodeType == XmlNodeType.EndElement)
-            {
-                break;
-            }
-
-            string statType = reader.GetAttribute("type");
-            Stat stat = GetStat(statType);
-            if (stat == null)
-            {
-                continue;
-            }
-
-            int statValue;
-            if (!int.TryParse(reader.GetAttribute("value"), out statValue))
-            {
-                Debug.ULogErrorChannel("Character", "Stat element did not have a value!");
-                continue;
-            }
-
-            stat.Value = statValue;
-        }
     }
 }

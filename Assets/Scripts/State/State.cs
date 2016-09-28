@@ -28,19 +28,19 @@ namespace ProjectPorcupine.State
 
         public virtual void Enter()
         {
-            FSMLog(" - Enter");
+            DebugLog(" - Enter");
         }
 
         public abstract void Update(float deltaTime);
 
         public virtual void Exit()
         {
-            FSMLog(" - Exit");
+            DebugLog(" - Exit");
         }
 
         public virtual void Interrupt()
         {
-            FSMLog(" - Interrupt");
+            DebugLog(" - Interrupt");
 
             if (NextState != null)
             {
@@ -56,15 +56,22 @@ namespace ProjectPorcupine.State
 
         protected void Finished()
         {
-            FSMLog(" - Finished");
+            DebugLog(" - Finished");
             character.SetState(NextState);
         }
 
         #region Debug
 
+        [System.Diagnostics.Conditional("FSM_DEBUG_LOG")]
+        protected void DebugLog(string message, params object[] par)
+        {
+            string prefixedMessage = string.Format("{0} {1}: {2}", character.GetName(), StateStack(), message);
+            Debug.ULogChannel("FSM", prefixedMessage, par);
+        }
+
         private string StateStack()
         {
-            List<string> names = new List<string>{ Name };
+            List<string> names = new List<string> { Name };
             State state = this;
             while (state.NextState != null)
             {
@@ -73,13 +80,6 @@ namespace ProjectPorcupine.State
             }
 
             return string.Join(".", names.ToArray());
-        }
-
-        [UberLogger.StackTraceIgnore]
-        protected void FSMLog(string message, params object[] par)
-        {
-            string prefixedMessage = string.Format("{0} {1}: {2}", character.GetName(), StateStack(), message);
-            Debug.ULogChannel("FSM", prefixedMessage, par);
         }
 
         #endregion

@@ -743,6 +743,26 @@
         <LocalizationCode>furn_mine</LocalizationCode>
         <UnlocalizedDescription>furn_mine_desc</UnlocalizedDescription>
     </Furniture>
+    
+    <Furniture type="berth">
+        <Name>Ship Berth</Name>
+        <MovementCost>1</MovementCost>
+        <PathfindingModifier>1</PathfindingModifier>
+        <PathfindingWeight>0</PathfindingWeight>
+        <Width>3</Width>
+        <Height>1</Height>
+
+        <BuildingJob jobTime="1" />
+
+        <Params>
+            <Param name="occupied" value="0" />
+        </Params>
+    
+        <Action event="OnUpdate" functionName="Berth_TestSummoning" />
+
+        <LocalizationCode>furn_berth</LocalizationCode>
+        <UnlocalizedDescription>furn_berth_desc</UnlocalizedDescription>
+    </Furniture>
 
     <Furniture type="RTG">
         <Name>RTG</Name>

@@ -27,9 +27,7 @@ public class JobQueue
         PrototypeManager.SchedulerEvent.Add(
             new Scheduler.ScheduledEvent(
                 "JobQueue_ReevaluateReachability",
-                (evt) => ReevaluateReachability()
-            )
-        );
+                (evt) => ReevaluateReachability()));
 
         Scheduler.Scheduler.Current.ScheduleEvent("JobQueue_ReevaluateReachability", 60f, true);
     }
@@ -50,7 +48,7 @@ public class JobQueue
 
     public void Enqueue(Job job)
     {
-        Debug.ULogChannel("FSM", "Enqueue({0})", job.JobObjectType);
+        DebugLog("Enqueue({0})", job.JobObjectType);
         if (job.JobTime < 0)
         {
             // Job has a negative job time, so it's not actually
@@ -63,7 +61,7 @@ public class JobQueue
         if (job.RequestedItems.Count > 0 && job.GetFirstFulfillableInventoryRequirement() == null)
         {
             string missing = job.acceptsAny ? "*" : job.GetFirstDesiredItem().Type;
-            Debug.ULogChannel("FSM", " - missingInventory {0}", missing);
+            DebugLog(" - missingInventory {0}", missing);
             if (jobsWaitingForInventory.ContainsKey(missing) == false)
             {
                 jobsWaitingForInventory[missing] = new List<Job>();
@@ -73,17 +71,18 @@ public class JobQueue
         }
         else if (job.tile != null && job.tile.IsReachableFromAnyNeighbor(true) == false)
         {
-            Debug.ULogChannel("FSM", " - Job can't be reached");
+            DebugLog(" - Job can't be reached");
             unreachableJobs.Enqueue(job);
         }
         else
         {
-            Debug.ULogChannel("FSM", " - {0}", job.acceptsAny ? "Any" : "All");
+            DebugLog(" - {0}", job.acceptsAny ? "Any" : "All");
             foreach (RequestedItem item in job.RequestedItems.Values)
             {
-                Debug.ULogChannel("FSM", "   - {0} Min: {1}, Max: {2}", item.Type, item.MinAmountRequested, item.MaxAmountRequested);
+                DebugLog("   - {0} Min: {1}, Max: {2}", item.Type, item.MinAmountRequested, item.MaxAmountRequested);
             }
-            Debug.ULogChannel("FSM", " - job ok");
+
+            DebugLog(" - job ok");
             jobQueue.Add(job.Priority, job);
         }
 
@@ -110,7 +109,7 @@ public class JobQueue
     /// </summary>
     public Job GetJob(Character character)
     {
-        Debug.ULogChannel("FSM", "{0} GetJob() (Queue size: {1})", character.GetName(), jobQueue.Count);
+        DebugLog("{0} GetJob() (Queue size: {1})", character.GetName(), jobQueue.Count);
         if (jobQueue.Count == 0)
         {
             return null;
@@ -129,7 +128,7 @@ public class JobQueue
                 return job;
             }
 
-            Debug.ULogChannel("FSM", " - job failed requirements, test the next.");
+            DebugLog(" - job failed requirements, test the next.");
         }
 
         return null;
@@ -174,7 +173,7 @@ public class JobQueue
 
     private void ReevaluateWaitingQueue(Inventory inv)
     {
-        Debug.ULogChannel("FSM", "ReevaluateWaitingQueue() new resource: {0}, count: {1}", inv.Type, inv.StackSize);
+        DebugLog("ReevaluateWaitingQueue() new resource: {0}, count: {1}", inv.Type, inv.StackSize);
 
         List<Job> waitingJobs = null;
 
@@ -209,7 +208,7 @@ public class JobQueue
 
     private void ReevaluateReachability()
     {
-        Debug.ULogChannel("FSM", " - Reevaluate reachability of {0} jobs", unreachableJobs.Count);
+        DebugLog(" - Reevaluate reachability of {0} jobs", unreachableJobs.Count);
         Queue<Job> jobsToReevaluate = unreachableJobs;
         unreachableJobs = new Queue<Job>();
 
@@ -217,5 +216,11 @@ public class JobQueue
         {
             Enqueue(job);
         }
+    }
+
+    [System.Diagnostics.Conditional("FSM_DEBUG_LOG")]
+    private void DebugLog(string message, params object[] par)
+    {
+        Debug.ULogChannel("FSM", message, par);
     }
 }

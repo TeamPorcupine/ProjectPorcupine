@@ -1,21 +1,29 @@
-﻿using System.Collections.Generic;
+﻿#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
+using System.Collections.Generic;
 using System.Linq;
 using ProjectPorcupine.Pathfinding;
 using UnityEngine;
 
 namespace ProjectPorcupine.State
 {
-    enum HaulAction {
+    public enum HaulAction 
+    {
         DumpMaterial,
         FindMaterial,
         PickupMaterial,
         DeliverMaterial,
-        DropOffmaterial}
-;
+        DropOffmaterial
+    }
 
-    public class HaulState: State
+    public class HaulState : State
     {
-        private Job Job;
         private bool noMoreMaterialFound = false;
 
         public HaulState(Character character, Job job, State nextState = null)
@@ -24,12 +32,14 @@ namespace ProjectPorcupine.State
             Job = job;
         }
 
+        private Job Job { get; set; }
+
         public override void Update(float deltaTime)
         {
             List<Tile> path = null;
             HaulAction nextAction = NextAction();
 
-            FSMLog(" - next action: {0}", nextAction);
+            DebugLog(" - next action: {0}", nextAction);
 
             switch (nextAction)
             {
@@ -52,20 +62,21 @@ namespace ProjectPorcupine.State
                     {
                         // The character has no inventory and can't find anything to haul.
                         Interrupt();
-                        FSMLog(" - Nothing to haul");
+                        DebugLog(" - Nothing to haul");
                         Finished();
                     }
                     else
                     {
                         noMoreMaterialFound = true;
                     }
+
                     break;
 
                 case HaulAction.PickupMaterial:
                     Inventory tileInventory = character.CurrTile.Inventory;
                     int amountCarried = character.inventory != null ? character.inventory.StackSize : 0;
                     int amount = Mathf.Min(Job.AmountDesiredOfInventoryType(tileInventory.Type) - amountCarried, tileInventory.StackSize);
-                    FSMLog(" - Picked up {0} {1}", amount, tileInventory.Type);
+                    DebugLog(" - Picked up {0} {1}", amount, tileInventory.Type);
                     World.Current.InventoryManager.PlaceInventory(character, tileInventory, amount);
                     break;
 
@@ -79,10 +90,11 @@ namespace ProjectPorcupine.State
                     {
                         character.InterruptState();
                     }
+
                     break;
 
                 case HaulAction.DropOffmaterial:
-                    FSMLog(" - Delivering {0} {1}", character.inventory.StackSize, character.inventory.Type);
+                    DebugLog(" - Delivering {0} {1}", character.inventory.StackSize, character.inventory.Type);
                     World.Current.InventoryManager.PlaceInventory(Job, character);
 
                     // Ping the Job system
@@ -122,13 +134,12 @@ namespace ProjectPorcupine.State
                 {
                     return Job.IsTileAtJobSite(character.CurrTile) ? HaulAction.DropOffmaterial : HaulAction.DeliverMaterial;
                 }
-                // Can carry more and want more
                 else
                 {
+                    // Can carry more and want more
                     return jobWantsTileInventory ? HaulAction.PickupMaterial : HaulAction.FindMaterial;
                 }
             }
         }
     }
 }
-

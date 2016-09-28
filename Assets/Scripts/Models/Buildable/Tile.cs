@@ -371,7 +371,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
     }
 
     /// <summary>
-    /// Returns true if any of the neighours can reach this tile. Checks for clipping of diagonal paths
+    /// Returns true if any of the neighours can reach this tile. Checks for clipping of diagonal paths.
     /// </summary>
     /// <param name="checkDiagonals">Will test diagonals as well if true.</param>
     public bool IsReachableFromAnyNeighbor(bool checkDiagonals = false)
@@ -551,17 +551,6 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
         return ReservedAsWorkSpotBy.Count > 0;
     }
 
-    private void ReportTileChanged()
-    {
-        // Call the callback and let things know we've changed.
-        if (TileChanged != null)
-        {
-            TileChanged(this);
-        }
-
-        ForceTileUpdate = false;
-    }
-
     #region IComparable
 
     public int CompareTo(object other)
@@ -612,5 +601,16 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
     public override string ToString()
     {
         return string.Format("[{0} {1}, {2}, {3}]", Type, X, Y, Z);
+    }
+
+    private void ReportTileChanged()
+    {
+        // Call the callback and let things know we've changed.
+        if (TileChanged != null)
+        {
+            TileChanged(this);
+        }
+
+        ForceTileUpdate = false;
     }
 }

@@ -29,7 +29,7 @@ namespace ProjectPorcupine.State
             hasReachedDestination = goalEvaluator;
             this.path = path;
 
-            FSMLog("created with path length: {0}", path.Count);
+            DebugLog("created with path length: {0}", path.Count);
         }
 
         public override void Update(float deltaTime)
@@ -126,7 +126,7 @@ namespace ProjectPorcupine.State
 
                 if (path.Count == 0)
                 {
-                    FSMLog(" - Ran out of path to walk");
+                    DebugLog(" - Ran out of path to walk");
 
                     // We've either arrived, or we need to find a new path to the target
                     Finished();
