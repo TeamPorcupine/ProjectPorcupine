@@ -25,6 +25,7 @@ public class WorldController : MonoBehaviour
     public CharacterSpriteController characterSpriteController;
     public JobSpriteController jobSpriteController;
     public InventorySpriteController inventorySpriteController;
+    public ShipSpriteController shipSpriteController;
     public FurnitureSpriteController furnitureSpriteController;
     public UtilitySpriteController utilitySpriteController;
     public QuestController questController;
@@ -113,6 +114,7 @@ public class WorldController : MonoBehaviour
         utilitySpriteController = new UtilitySpriteController(World);
         jobSpriteController = new JobSpriteController(World, furnitureSpriteController, utilitySpriteController);
         inventorySpriteController = new InventorySpriteController(World, inventoryUI);
+        shipSpriteController = new ShipSpriteController(World);
 
         buildModeController = new BuildModeController();
         spawnInventoryController = new SpawnInventoryController();
