@@ -1,8 +1,8 @@
 #region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
-// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
-// and you are welcome to redistribute it under certain conditions; See 
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
@@ -38,7 +38,6 @@ public class World : IXmlSerializable
     // be semi-static or self initializing or some damn thing.
     // For now, this is just a PUBLIC member of World
     public JobQueue jobQueue;
-    public JobQueue jobWaitingQueue;
 
     // A three-dimensional array to hold our tile data.
     private Tile[,,] tiles;
@@ -203,7 +202,7 @@ public class World : IXmlSerializable
     }
 
     /// <summary>
-    /// Reserves the furniture's work spot, preventing it from being built on.
+    /// Reserves the furniture's work spot, preventing it from being built on. Will not reserve a workspot inside of the furniture.
     /// </summary>
     /// <param name="furniture">The furniture whose workspot will be reserved.</param>
     /// <param name="tile">The tile on which the furniture is located, for furnitures which don't have a tile, such as prototypes.</param>
@@ -212,6 +211,12 @@ public class World : IXmlSerializable
         if (tile == null)
         {
             tile = furniture.Tile;
+        }
+
+        // if it's an internal workspot bail before reserving.
+        if (furniture.Jobs.WorkSpotIsInternal())
+        {
+            return;
         }
 
         GetTileAt(
@@ -376,9 +381,6 @@ public class World : IXmlSerializable
 
     private void SetupWorld(int width, int height, int depth)
     {
-        jobQueue = new JobQueue();
-        jobWaitingQueue = new JobQueue();
-
         // Set the current world to be this world.
         // TODO: Do we need to do any cleanup of the old world?
         Current = this;
@@ -414,6 +416,7 @@ public class World : IXmlSerializable
         UtilityManager = new UtilityManager();
         CharacterManager = new CharacterManager();
         InventoryManager = new InventoryManager();
+        jobQueue = new JobQueue();
         CameraData = new CameraData();
         PowerNetwork = new ProjectPorcupine.PowerNetwork.PowerNetwork();
         temperature = new Temperature();
@@ -560,9 +563,9 @@ public class World : IXmlSerializable
 
                 // Create our inventory from the file
                 Inventory inv = new Inventory(
-                    reader.GetAttribute("type"),
-                    int.Parse(reader.GetAttribute("stackSize")),
-                    int.Parse(reader.GetAttribute("maxStackSize")))
+                                    reader.GetAttribute("type"),
+                                    int.Parse(reader.GetAttribute("stackSize")),
+                                    int.Parse(reader.GetAttribute("maxStackSize")))
                 {
                     Locked = bool.Parse(reader.GetAttribute("locked"))
                 };
@@ -670,9 +673,9 @@ public class World : IXmlSerializable
                                 {
                                     // Create our inventory from the file
                                     Inventory inv = new Inventory(
-                                        reader.GetAttribute("type"),
-                                        int.Parse(reader.GetAttribute("stackSize")),
-                                        int.Parse(reader.GetAttribute("maxStackSize")))
+                                                        reader.GetAttribute("type"),
+                                                        int.Parse(reader.GetAttribute("stackSize")),
+                                                        int.Parse(reader.GetAttribute("maxStackSize")))
                                     {
                                         Locked = bool.Parse(reader.GetAttribute("locked"))
                                     };
@@ -705,6 +708,7 @@ public class World : IXmlSerializable
     }
 
     #region TestFunctions
+
     /// <summary>
     /// Tests the room graph generation for the default world.
     /// </summary>
@@ -870,5 +874,6 @@ public class World : IXmlSerializable
             Debug.ULogChannel("Path_RoomGraph", "TestRoomGraphGeneration completed without errors!");
         }
     }
+
     #endregion
 }

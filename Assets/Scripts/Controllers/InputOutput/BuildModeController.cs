@@ -1,8 +1,8 @@
 #region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
-// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
-// and you are welcome to redistribute it under certain conditions; See 
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
@@ -57,7 +57,7 @@ public class BuildModeController
 
         mouseController.StartBuildMode();
     }
-    
+
     public void SetMode_BuildFurniture(string type)
     {
         // Wall is not a Tile!  Wall is an "Furniture" that exists on TOP of a tile.
@@ -117,6 +117,7 @@ public class BuildModeController
                 {
                     Debug.ULogErrorChannel("BuildModeController", "There is no furniture job prototype for '" + furnitureType + "'");
                     job = new Job(tile, furnitureType, World.Current.FurnitureManager.ConstructJobCompleted, 0.1f, null, Job.JobPriority.High);
+                    job.adjacent = true;
                     job.JobDescription = "job_build_" + furnitureType + "_desc";
                 }
 
@@ -206,8 +207,8 @@ public class BuildModeController
 
             TileType tileType = buildModeTile;
 
-            if ( 
-                tile.Type != tileType && 
+            if (
+                tile.Type != tileType &&
                 tile.Furniture == null &&
                 tile.PendingBuildJob == null &&
                 tileType.CanBuildHere(tile))
@@ -216,7 +217,7 @@ public class BuildModeController
 
                 // Create a job for it to be build
                 Job buildingJob = tileType.BuildingJob;
-                
+
                 buildingJob.tile = tile;
 
                 // Add the job to the queue or build immediately if in Dev mode

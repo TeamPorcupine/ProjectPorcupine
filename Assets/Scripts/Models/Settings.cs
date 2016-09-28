@@ -27,6 +27,7 @@ public static class Settings
   <DialogBoxSettings_musicVolume>1</DialogBoxSettings_musicVolume>
   <ZoomLerp>10</ZoomLerp>
   <ZoomSensitivity>3</ZoomSensitivity>
+  <AutosaveInterval>10<AutosaveInterval>
 </Settings>
 ";
 

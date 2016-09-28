@@ -130,6 +130,14 @@ public class FurnitureManager : IEnumerable<Furniture>
     public bool IsWorkSpotClear(string type, Tile tile)
     {
         Furniture proto = PrototypeManager.Furniture.Get(type);
+
+        // If the workspot is internal, we don't care about furniture blocking it, this will be stopped or allowed
+        //      elsewhere depending on if the furniture being placed can replace the furniture already in this tile.
+        if (proto.Jobs.WorkSpotIsInternal())
+        {
+            return true;
+        }
+
         if (proto.Jobs != null && World.Current.GetTileAt((int)(tile.X + proto.Jobs.WorkSpotOffset.x), (int)(tile.Y + proto.Jobs.WorkSpotOffset.y), (int)tile.Z).Furniture != null)
         {
             return false;
