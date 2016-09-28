@@ -224,18 +224,29 @@ public class Job : ISelectable, IPrototypable
                 return null;
             }
 
-            // TODO: This doesn't handle multi-tile furniture
             if (adjacent)
             {
-                return otherTile => (
-                    tile.Z == otherTile.Z &&
-                    (tile.X - 1) <= otherTile.X && (tile.X + 1) >= otherTile.X &&
-                    (tile.Y - 1) <= otherTile.Y && (tile.Y + 1) >= otherTile.Y &&
-                    tile.IsClippingCorner(otherTile) == false);
+                int minX = tile.X - 1;
+                int maxX = tile.X + 1;
+                int minY = tile.Y - 1;
+                int maxY = tile.Y + 1;
+                int minZ = tile.Z - 1;
+                int maxZ = tile.Z + 1;
+
+
+                return otherTIle => (
+
+                    (otherTIle.X >= minX && otherTIle.X <= maxX &&
+                        otherTIle.Y >= minY && otherTIle.Y <= maxY &&
+                        otherTIle.Z == tile.Z &&
+                        tile.IsClippingCorner(otherTIle) == false) || 
+                    (otherTIle.Z >= minZ && otherTIle.Z <= maxZ &&
+                        otherTIle.X == tile.X &&
+                        otherTIle.Y == tile.Y));
             }
             else
             {
-                return otherTile => this.tile.CompareTo(otherTile) == 0;
+                return tile => tile.CompareTo(tile) == 0;
             }
         }
     }

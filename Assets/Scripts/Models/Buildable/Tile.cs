@@ -345,18 +345,30 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
     /// <param name="diagOkay">Is diagonal movement okay?.</param>
     public Tile[] GetNeighbours(bool diagOkay = false)
     {
-        Tile[] tiles = diagOkay == false ? new Tile[4] : new Tile[8];
+        Tile[] tiles = diagOkay == false ? new Tile[6] : new Tile[10];
         tiles[0] = World.Current.GetTileAt(X, Y + 1, Z);
         tiles[1] = World.Current.GetTileAt(X + 1, Y, Z);
         tiles[2] = World.Current.GetTileAt(X, Y - 1, Z);
         tiles[3] = World.Current.GetTileAt(X - 1, Y, Z);
 
+        // FIXME: This is a bit of a dirty hack, but it works for preventing characters from phasing through the floor for now.
+        Tile tileup = World.Current.GetTileAt(X, Y, Z - 1);
+        if (tileup != null && tileup.Type == TileType.Empty)
+        {
+            tiles[4] = World.Current.GetTileAt(X, Y, Z - 1);
+        }
+
+        if (Type == TileType.Empty)
+        {
+            tiles[5] = World.Current.GetTileAt(X, Y, Z + 1);
+        }
+
         if (diagOkay == true)
         {
-            tiles[4] = World.Current.GetTileAt(X + 1, Y + 1, Z);
-            tiles[5] = World.Current.GetTileAt(X + 1, Y - 1, Z);
-            tiles[6] = World.Current.GetTileAt(X - 1, Y - 1, Z);
-            tiles[7] = World.Current.GetTileAt(X - 1, Y + 1, Z);
+            tiles[6] = World.Current.GetTileAt(X + 1, Y + 1, Z);
+            tiles[7] = World.Current.GetTileAt(X + 1, Y - 1, Z);
+            tiles[8] = World.Current.GetTileAt(X - 1, Y - 1, Z);
+            tiles[9] = World.Current.GetTileAt(X - 1, Y + 1, Z);
         }
 
         return tiles.Where(tile => tile != null).ToArray();
