@@ -1,8 +1,8 @@
 #region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
-// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
-// and you are welcome to redistribute it under certain conditions; See 
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
@@ -25,6 +25,7 @@ using UnityEngine;
 [MoonSharpUserData]
 public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextActionProvider, IBuildable
 {
+    #region Private Variables
     // Prevent construction too close to the world's edge
     private const int MinEdgeDistance = 5;
 
@@ -66,7 +67,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
 
     // did we have power in the last update?
     private bool prevUpdatePowerOn;
+    #endregion
 
+    #region Constructors
     /// TODO: Implement object rotation
     /// <summary>
     /// Initializes a new instance of the <see cref="Furniture"/> class.
@@ -77,7 +80,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         Tint = Color.white;
         VerticalDoor = false;
         EventActions = new EventActions();
-        
+
         contextMenuLuaActions = new List<ContextMenuLuaAction>();
         Parameters = new Parameter();
         Jobs = new BuildableJobs(this);
@@ -128,7 +131,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         {
             EventActions = other.EventActions.Clone();
         }
-        
+
         if (other.contextMenuLuaActions != null)
         {
             contextMenuLuaActions = new List<ContextMenuLuaAction>(other.contextMenuLuaActions);
@@ -155,7 +158,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         LocalizationCode = other.LocalizationCode;
         UnlocalizedDescription = other.UnlocalizedDescription;
     }
+    #endregion
 
+    #region Accessors
     /// <summary>
     /// This event will trigger when the furniture has been changed.
     /// This is means that any change (parameters, job state etc) to the furniture will trigger this.
@@ -171,7 +176,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// This event will trigger if <see cref="IsOperating"/> has been changed.
     /// </summary>
     public event Action<Furniture> IsOperatingChanged;
-    
+
     /// <summary>
     /// Gets or sets the Furniture's <see cref="PathfindingModifier"/> which is added into the Tile's final PathfindingCost.
     /// </summary>
@@ -249,7 +254,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     public Tile Tile { get; private set; }
 
     /// <summary>
-    /// Gets the string that defines the type of object the furniture is. This gets queried by the visual system to 
+    /// Gets the string that defines the type of object the furniture is. This gets queried by the visual system to
     /// know what sprite to render for this furniture.
     /// </summary>
     /// <value>The type of the furniture.</value>
@@ -323,7 +328,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     public string LinksToNeighbour { get; private set; }
 
     /// <summary>
-    /// Gets the type of dragging that is used to build multiples of this furniture. 
+    /// Gets the type of dragging that is used to build multiples of this furniture.
     /// e.g walls.
     /// </summary>
     public string DragType { get; private set; }
@@ -357,6 +362,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             return !string.IsNullOrEmpty(getSpriteNameAction);
         }
     }
+    #endregion
 
     /// <summary>
     /// Used to place furniture in a certain position.
@@ -431,6 +437,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         return obj;
     }
 
+    #region Update and Animation
     /// <summary>
     /// This function is called to update the furniture animation in lua.
     /// This will be called every frame and should be used carefully.
@@ -485,7 +492,41 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             Animation.Update(deltaTime);
         }
     }
-    
+
+    /// <summary>
+    /// Set the animation state. Will only have an effect if stateName is different from current animation stateName.
+    /// </summary>
+    public void SetAnimationState(string stateName)
+    {
+        if (Animation == null)
+        {
+            return;
+        }
+
+        Animation.SetState(stateName);
+    }
+
+    /// <summary>
+    /// Set the animation frame depending on a value. The currentvalue percent of the maxvalue will determine which frame is shown.
+    /// </summary>
+    public void SetAnimationProgressValue(float currentValue, float maxValue)
+    {
+        if (Animation == null)
+        {
+            return;
+        }
+
+        if (maxValue == 0)
+        {
+            Debug.ULogError("SetAnimationProgressValue maxValue is zero");
+        }
+
+        float percent = Mathf.Clamp01(currentValue / maxValue);
+        Animation.SetProgressValue(percent);
+    }
+    #endregion
+
+    #region Get Status
     /// <summary>
     /// Whether this furniture is an exit for a room.
     /// </summary>
@@ -503,7 +544,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// <summary>
     /// Checks if the furniture can be Entered.
     /// </summary>
-    /// <returns>Enterability state Yes if furniture can be entered, Soon if it can be entered after a bit and No 
+    /// <returns>Enterability state Yes if furniture can be entered, Soon if it can be entered after a bit and No
     /// if it cannot be entered.</returns>
     public Enterability IsEnterable()
     {
@@ -558,7 +599,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         IsOperating = PowerConnection == null || World.Current.PowerNetwork.HasPower(PowerConnection);
         return IsOperating;
     }
+    #endregion
 
+    #region Save Load
     /// <summary>
     /// This does absolutely nothing.
     /// This is required to implement IXmlSerializable.
@@ -584,6 +627,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         Parameters.WriteXml(writer);
     }
 
+    #endregion
+
+    #region Read Prototype
     /// <summary>
     /// Reads the prototype furniture from XML.
     /// </summary>
@@ -718,7 +764,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             }
         }
     }
-    
+
     /// <summary>
     /// Reads the specified XMLReader (pass it to <see cref="ReadXmlParams(XmlReader)"/>)
     /// This is used to load furniture from a save file.
@@ -766,12 +812,12 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         }
 
         Job job = new Job(
-                      null,
-                      Type,
-                      (theJob) => World.Current.FurnitureManager.ConstructJobCompleted(theJob),
-                      jobTime,
-                      items.ToArray(),
-                      Job.JobPriority.High);
+            null,
+            Type,
+            (theJob) => World.Current.FurnitureManager.ConstructJobCompleted(theJob),
+            jobTime,
+            items.ToArray(),
+            Job.JobPriority.High);
         job.JobDescription = "job_build_" + Type + "_desc";
 
         PrototypeManager.FurnitureConstructJob.Set(job);
@@ -811,6 +857,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
 
         PrototypeManager.FurnitureDeconstructJob.Set(job);
     }
+    #endregion
 
     /// <summary>
     /// Accepts for storage.
@@ -825,9 +872,16 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         }
 
         // TODO: read this from furniture params
-        return PrototypeManager.Inventory.Values.Select(inventory => new RequestedItem(inventory.Type, 1, inventory.maxStackSize)).ToArray();
+        Dictionary<string, RequestedItem> itemsDict = new Dictionary<string, RequestedItem>();
+        foreach (InventoryCommon inventoryProto in PrototypeManager.Inventory.Values)
+        {
+            itemsDict[inventoryProto.type] = new RequestedItem(inventoryProto.type, 1, inventoryProto.maxStackSize);
+        }
+
+        return itemsDict.Values.ToArray();
     }
 
+    #region Deconstruct
     /// <summary>
     /// Sets the furniture to be deconstructed.
     /// </summary>
@@ -938,7 +992,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         // At this point, no DATA structures should be pointing to us, so we
         // should get garbage-collected.
     }
+    #endregion
 
+    #region Get Description Information
     /// <summary>
     /// Checks whether the furniture has a certain tag.
     /// </summary>
@@ -964,7 +1020,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// <returns>Description of the furniture.</returns>
     public string GetDescription()
     {
-        return UnlocalizedDescription;        
+        return UnlocalizedDescription;
     }
 
     /// <summary>
@@ -1014,7 +1070,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             {
                 yield return string.Format("Power Input: <color={0}>{1}</color>", powerColor, PowerConnection.InputRate);
             }
-            
+
             if (PowerConnection.IsPowerProducer)
             {
                 yield return string.Format("Power Output: <color={0}>{1}</color>", powerColor, PowerConnection.OutputRate);
@@ -1028,39 +1084,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
 
         yield return GetProgressInfo();
     }
+    #endregion
 
-    /// <summary>
-    /// Set the animation state. Will only have an effect if stateName is different from current animation stateName.
-    /// </summary>
-    public void SetAnimationState(string stateName)
-    {
-        if (Animation == null)
-        {
-            return;
-        }
-
-        Animation.SetState(stateName);
-    }
-
-    /// <summary>
-    /// Set the animation frame depending on a value. The currentvalue percent of the maxvalue will determine which frame is shown.
-    /// </summary>
-    public void SetAnimationProgressValue(float currentValue, float maxValue)
-    {
-        if (Animation == null)
-        {
-            return;
-        }
-
-        if (maxValue == 0)
-        {
-            Debug.ULogError("SetAnimationProgressValue maxValue is zero");
-        }
-
-        float percent = Mathf.Clamp01(currentValue / maxValue);
-        Animation.SetProgressValue(percent);        
-    }
-
+    #region Context Menu
     /// <summary>
     /// Gets the Context Menu Actions.
     /// </summary>
@@ -1120,7 +1146,8 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             }
         }
     }
-    
+    #endregion
+
     // Make a copy of the current furniture.  Sub-classed should
     // override this Clone() if a different (sub-classed) copy
     // constructor should be run.
@@ -1192,6 +1219,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         return true;
     }
 
+    #region Private Context Menu
     private ContextMenuAction CreateWorkshopContextMenuItem(ComponentContextMenu componentContextMenuAction)
     {
         return new ContextMenuAction
@@ -1211,7 +1239,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     {
         FunctionsManager.Furniture.Call(action.Parameter, this, character);
     }
+    #endregion
 
+    #region OnChanges
     [MoonSharpVisible(true)]
     private void UpdateOnChanged(Furniture furn)
     {
@@ -1234,9 +1264,10 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     {
         UpdateOnChanged(this);
     }
+    #endregion
 
     /// <summary>
-    /// Reads and creates FurnitureAnimation from the prototype xml. 
+    /// Reads and creates FurnitureAnimation from the prototype xml.
     /// </summary>
     private void ReadAnimationXml(XmlReader animationReader)
     {

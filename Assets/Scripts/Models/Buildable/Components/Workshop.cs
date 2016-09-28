@@ -210,12 +210,11 @@ namespace ProjectPorcupine.Buildable.Components
         private static void PlaceInventoryToWorkshopInput(Job job)
         {
             job.CancelJob();
-            foreach (KeyValuePair<string, Inventory> heldInventory in job.HeldInventory)
+            foreach (Inventory heldInventory in job.HeldInventory.Values)
             {
-                Inventory inv = heldInventory.Value;
-                if (inv != null && inv.StackSize > 0)
+                if (heldInventory.StackSize > 0)
                 {
-                    World.Current.InventoryManager.PlaceInventory(job.tile, heldInventory.Value);
+                    World.Current.InventoryManager.PlaceInventory(job.tile, heldInventory);
                     job.tile.Inventory.Locked = true;
                 }
             }
