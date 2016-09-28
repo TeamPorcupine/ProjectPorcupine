@@ -25,7 +25,7 @@ function OxygenGenerator_OnUpdate( furniture, deltaTime )
     local keys = furniture.Parameters["gas_gen"].Keys()
     for discard, key in pairs(keys) do
         if ( furniture.Tile.Room.GetGasPressure(key) < furniture.Parameters["gas_gen"][key]["gas_limit"].ToFloat()) then
-            furniture.Tile.Room.ChangeGas(key, furniture.Parameters["gas_per_second"].ToFloat() * deltaTime * furniture.Parameters["gas_gen"][key]["gas_limit"].ToFloat())
+            furniture.Tile.Room.ChangeGas(key, furniture.Parameters["gas_per_second"].ToFloat() * deltaTime * furniture.Parameters["gas_gen"][key]["gas_limit"].ToFloat(), furniture.Parameters["gas_gen"][key]["gas_limit"].ToFloat())
         else
             -- Do we go into a standby mode to save power?
         end
@@ -62,6 +62,7 @@ end
 
 function OnUpdate_AirlockDoor( furniture, deltaTime )
     if (furniture.Parameters["pressure_locked"].ToFloat() >= 1.0) then
+        local tolerance = 0.005
         local neighbors = furniture.Tile.GetNeighbours(false)
         local adjacentRooms = {}
         local pressureEqual = true;
@@ -72,7 +73,7 @@ function OnUpdate_AirlockDoor( furniture, deltaTime )
                 adjacentRooms[count] = tile.Room
             end
         end
-        if(ModUtils.Round(adjacentRooms[1].GetTotalGasPressure(),3) == ModUtils.Round(adjacentRooms[2].GetTotalGasPressure(),3)) then
+        if(math.abs(ModUtils.Round(adjacentRooms[1].GetTotalGasPressure(),3) - ModUtils.Round(adjacentRooms[2].GetTotalGasPressure(),3)) < tolerance ) then
             OnUpdate_Door(furniture, deltaTime)
         end
     else
@@ -542,7 +543,7 @@ function AirPump_OnUpdate(furniture, deltaTime)
 
     -- Only transfer gas if the pressures are within the defined bounds
     if (sourceRoom.GetTotalGasPressure() > sourcePressureLimit and targetRoom.GetTotalGasPressure() < targetPressureLimit) then
-        sourceRoom.MoveGasTo(targetRoom, flow)
+        sourceRoom.MoveGasTo(targetRoom, flow, targetPressureLimit)
     end
 end
 
