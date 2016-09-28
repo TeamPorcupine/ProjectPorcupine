@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Xml;
 using MoonSharp.Interpreter;
-using UnityEngine;
 using ProjectPorcupine.Jobs;
 
 [MoonSharpUserData]

@@ -62,9 +62,16 @@ namespace ProjectPorcupine.State
 
         #region Debug
 
+        [System.Diagnostics.Conditional("FSM_DEBUG_LOG")]
+        protected void DebugLog(string message, params object[] par)
+        {
+            string prefixedMessage = string.Format("{0} {1}: {2}", character.GetName(), StateStack(), message);
+            Debug.ULogChannel("FSM", prefixedMessage, par);
+        }
+
         private string StateStack()
         {
-            List<string> names = new List<string>{ Name };
+            List<string> names = new List<string> { Name };
             State state = this;
             while (state.NextState != null)
             {
@@ -73,13 +80,6 @@ namespace ProjectPorcupine.State
             }
 
             return string.Join(".", names.ToArray());
-        }
-
-        [System.Diagnostics.Conditional("FSM_DEBUG_LOG")]
-        protected void DebugLog(string message, params object[] par)
-        {
-            string prefixedMessage = string.Format("{0} {1}: {2}", character.GetName(), StateStack(), message);
-            Debug.ULogChannel("FSM", prefixedMessage, par);
         }
 
         #endregion

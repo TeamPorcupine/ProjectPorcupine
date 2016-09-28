@@ -1,21 +1,29 @@
-﻿using System.Collections.Generic;
+﻿#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
+using System.Collections.Generic;
 using System.Linq;
 using ProjectPorcupine.Pathfinding;
 using UnityEngine;
 
 namespace ProjectPorcupine.State
 {
-    enum HaulAction {
+    public enum HaulAction 
+    {
         DumpMaterial,
         FindMaterial,
         PickupMaterial,
         DeliverMaterial,
-        DropOffmaterial}
-;
+        DropOffmaterial
+    }
 
-    public class HaulState: State
+    public class HaulState : State
     {
-        private Job Job;
         private bool noMoreMaterialFound = false;
 
         public HaulState(Character character, Job job, State nextState = null)
@@ -23,6 +31,8 @@ namespace ProjectPorcupine.State
         {
             Job = job;
         }
+
+        private Job Job { get; set; }
 
         public override void Update(float deltaTime)
         {
@@ -59,6 +69,7 @@ namespace ProjectPorcupine.State
                     {
                         noMoreMaterialFound = true;
                     }
+
                     break;
 
                 case HaulAction.PickupMaterial:
@@ -79,6 +90,7 @@ namespace ProjectPorcupine.State
                     {
                         character.InterruptState();
                     }
+
                     break;
 
                 case HaulAction.DropOffmaterial:
@@ -122,13 +134,12 @@ namespace ProjectPorcupine.State
                 {
                     return Job.IsTileAtJobSite(character.CurrTile) ? HaulAction.DropOffmaterial : HaulAction.DeliverMaterial;
                 }
-                // Can carry more and want more
                 else
                 {
+                    // Can carry more and want more
                     return jobWantsTileInventory ? HaulAction.PickupMaterial : HaulAction.FindMaterial;
                 }
             }
         }
     }
 }
-

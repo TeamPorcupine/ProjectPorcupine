@@ -109,10 +109,11 @@ public class JobSpriteController : BaseSpriteController<Job>
         else
         {
             // If we get this far we need a buildable prototype, bail if we don't have one
-            if(job.buildablePrototype == null)
+            if (job.buildablePrototype == null)
             {
                 return;
             }
+
             // This is a normal furniture job.
             if (job.buildablePrototype.GetType().ToString() == "Furniture")
             {

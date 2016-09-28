@@ -27,9 +27,7 @@ public class JobQueue
         PrototypeManager.SchedulerEvent.Add(
             new Scheduler.ScheduledEvent(
                 "JobQueue_ReevaluateReachability",
-                (evt) => ReevaluateReachability()
-            )
-        );
+                (evt) => ReevaluateReachability()));
 
         Scheduler.Scheduler.Current.ScheduleEvent("JobQueue_ReevaluateReachability", 60f, true);
     }
@@ -83,6 +81,7 @@ public class JobQueue
             {
                 DebugLog("   - {0} Min: {1}, Max: {2}", item.Type, item.MinAmountRequested, item.MaxAmountRequested);
             }
+
             DebugLog(" - job ok");
             jobQueue.Add(job.Priority, job);
         }
@@ -220,10 +219,8 @@ public class JobQueue
     }
 
     [System.Diagnostics.Conditional("FSM_DEBUG_LOG")]
-    private static void DebugLog(string message, params object[] par)
+    private void DebugLog(string message, params object[] par)
     {
         Debug.ULogChannel("FSM", message, par);
     }
-
-
 }

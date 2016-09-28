@@ -32,10 +32,6 @@ public class Job : ISelectable, IPrototypable
 
     public bool canTakeFromStockpile = true;
 
-    public Dictionary<string, RequestedItem> RequestedItems { get; set; }
-
-    public Dictionary<string, Inventory> HeldInventory { get; set; }
-
     /// <summary>
     /// If true, the work will be carried out on any adjacent tile of the target tile rather than on it.
     /// </summary>
@@ -164,6 +160,10 @@ public class Job : ISelectable, IPrototypable
         Low
     }
 
+    public Dictionary<string, RequestedItem> RequestedItems { get; set; }
+
+    public Dictionary<string, Inventory> HeldInventory { get; set; }
+
     public string JobDescription { get; set; }
 
     public string JobObjectType
@@ -215,30 +215,6 @@ public class Job : ISelectable, IPrototypable
         set;
     }
 
-
-
-//    public bool IsTileAtJobSite(Tile otherTile)
-//    {
-//        if (tile == null || otherTile == null)
-//        {
-//            return false;
-//        }
-//
-//        // TODO: This doesn't handle multi-tile furniture
-//        if (adjacent)
-//        {
-//            return 
-//                tile.Z == otherTile.Z &&
-//                (tile.X - 1) <= otherTile.X && (tile.X + 1) >= otherTile.X &&
-//                (tile.Y - 1) <= otherTile.Y && (tile.Y + 1) >= otherTile.Y &&
-//                tile.IsClippingCorner(otherTile) == false;
-//        }
-//        else
-//        {
-//            return tile.Equals(otherTile);
-//        }
-//    }
-
     public Pathfinder.GoalEvaluator IsTileAtJobSite
     {
         get
@@ -255,8 +231,7 @@ public class Job : ISelectable, IPrototypable
                     tile.Z == otherTile.Z &&
                     (tile.X - 1) <= otherTile.X && (tile.X + 1) >= otherTile.X &&
                     (tile.Y - 1) <= otherTile.Y && (tile.Y + 1) >= otherTile.Y &&
-                    tile.IsClippingCorner(otherTile) == false
-                );
+                    tile.IsClippingCorner(otherTile) == false);
             }
             else
             {

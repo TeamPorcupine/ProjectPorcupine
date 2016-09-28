@@ -27,6 +27,18 @@ public class InventoryManager
 
     public Dictionary<string, List<Inventory>> Inventories { get; private set; }
 
+    public static bool CanBePickedUp(Inventory inventory, bool canTakeFromStockpile)
+    {
+        // You can't pick up stuff that isn't on a tile or if it's locked
+        if (inventory == null || inventory.Tile == null || inventory.Locked)
+        {
+            return false;
+        }
+
+        Furniture furniture = inventory.Tile.Furniture;
+        return furniture == null || canTakeFromStockpile == true || furniture.HasTypeTag("Storage") == false;
+    }
+
     public Tile GetFirstTileWithValidInventoryPlacement(int maxOffset, Tile inTile, Inventory inv)
     {
         for (int offset = 0; offset <= maxOffset; offset++)
@@ -111,18 +123,6 @@ public class InventoryManager
         }
 
         return true;
-    }
-    
-    public static bool CanBePickedUp(Inventory inventory, bool canTakeFromStockpile)
-    {
-        // You can't pick up stuff that isn't on a tile or if it's locked
-        if (inventory == null || inventory.Tile == null || inventory.Locked)
-        {
-            return false;
-        }
-
-        Furniture furniture = inventory.Tile.Furniture;
-        return furniture == null || canTakeFromStockpile == true || furniture.HasTypeTag("Storage") == false;
     }
 
     public bool PlaceInventory(Job job, Character character)

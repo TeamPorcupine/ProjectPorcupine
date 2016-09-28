@@ -290,11 +290,6 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     /// <param name="deltaTime">The time since the last update was called.</param>
     public void Update(float deltaTime)
     {
-//        if (pausedJobs.Count > 0)
-//        {
-//            ResumeJobs();
-//        }
-
         if (EventActions != null)
         {
             // updateActions(this, deltaTime);
@@ -478,9 +473,6 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         job.JobDescription = "job_build_" + Type + "_desc";
         PrototypeManager.UtilityConstructJob.Set(job);
     }
-
-
-
 
     /// <summary>
     /// Sets up a job to deconstruct the utility.
