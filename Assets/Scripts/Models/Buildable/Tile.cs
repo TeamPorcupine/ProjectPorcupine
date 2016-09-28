@@ -26,7 +26,7 @@ public enum Enterability
 
 [MoonSharpUserData]
 [System.Diagnostics.DebuggerDisplay("Tile {X},{Y},{Z}")]
-public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IEquatable<Tile>
+public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComparable, IEquatable<Tile>
 {
     private TileType type = TileType.Empty;
 
@@ -371,31 +371,31 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IEqua
     }
 
     /// <summary>
-    /// Returns true if any of the neighours is walkable.
+    /// Returns true if any of the neighours can reach this tile. Checks for clipping of diagonal paths.
     /// </summary>
     /// <param name="checkDiagonals">Will test diagonals as well if true.</param>
-    public bool HasWalkableNeighbours(bool checkDiagonals = false)
+    public bool IsReachableFromAnyNeighbor(bool checkDiagonals = false)
     {
-        return GetNeighbours(checkDiagonals).Any(tile => tile != null && tile.MovementCost > 0);
+        return GetNeighbours(checkDiagonals).Any(tile => tile != null && tile.MovementCost > 0 && (checkDiagonals == false || IsClippingCorner(tile) == false));
     }
 
-    public bool IsClippingCorner(Tile neigh)
+    public bool IsClippingCorner(Tile neighborTile)
     {
         // If the movement from curr to neigh is diagonal (e.g. N-E)
         // Then check to make sure we aren't clipping (e.g. N and E are both walkable)
-        int dX = X - neigh.X;
-        int dY = Y - neigh.Y;
+        int dX = this.X - neighborTile.X;
+        int dY = this.Y - neighborTile.Y;
 
         if (Mathf.Abs(dX) + Mathf.Abs(dY) == 2)
         {
             // We are diagonal
-            if (World.Current.GetTileAt(X - dX, Y, Z).PathfindingCost == 0)
+            if (World.Current.GetTileAt(X - dX, Y, Z).PathfindingCost.AreEqual(0f))
             {
                 // East or West is unwalkable, therefore this would be a clipped movement.
                 return true;
             }
 
-            if (World.Current.GetTileAt(X, Y - dY, Z).PathfindingCost == 0)
+            if (World.Current.GetTileAt(X, Y - dY, Z).PathfindingCost.AreEqual(0f))
             {
                 // North or South is unwalkable, therefore this would be a clipped movement.
                 return true;
@@ -546,6 +546,47 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IEqua
         }
     }
 
+    public bool IsReservedWorkSpot()
+    {
+        return ReservedAsWorkSpotBy.Count > 0;
+    }
+
+    #region IComparable
+
+    public int CompareTo(object other)
+    {
+        if (other == null)
+        {
+            return 1;
+        }
+
+        Tile otherTile = other as Tile;
+        if (otherTile != null)
+        {
+            int result = this.Z.CompareTo(otherTile.Z);
+            if (result != 0)
+            {
+                return result;
+            }
+
+            result = this.Y.CompareTo(otherTile.Y);
+            if (result != 0)
+            {
+                return result;
+            }
+
+            return this.X.CompareTo(otherTile.X);
+        }
+        else
+        {
+            throw new ArgumentException("Object is not a Tile");
+        }
+    }
+
+    #endregion
+
+    #region IEquatable<T>
+
     public bool Equals(Tile otherTile)
     {
         if (otherTile == null)
@@ -555,15 +596,11 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IEqua
 
         return X == otherTile.X && Y == otherTile.Y && Z == otherTile.Z;
     }
+    #endregion
 
     public override string ToString()
     {
-        return string.Format("[Tile {0}, {1},{2},{3}]", Type, X, Y, Z);
-    }
-
-    public bool IsReservedWorkSpot()
-    {
-        return ReservedAsWorkSpotBy.Count > 0;
+        return string.Format("[{0} {1}, {2}, {3}]", Type, X, Y, Z);
     }
 
     private void ReportTileChanged()

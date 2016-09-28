@@ -1,8 +1,8 @@
 #region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
-// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
-// and you are welcome to redistribute it under certain conditions; See 
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
@@ -18,18 +18,14 @@ public class JobSpriteController : BaseSpriteController<Job>
     private UtilitySpriteController usc;
 
     // Use this for initialization
-    public JobSpriteController(World world, FurnitureSpriteController furnitureSpriteController, UtilitySpriteController utilitySpriteController) : base(world, "Jobs")
+    public JobSpriteController(World world, FurnitureSpriteController furnitureSpriteController, UtilitySpriteController utilitySpriteController)
+        : base(world, "Jobs")
     {
         fsc = furnitureSpriteController;
         usc = utilitySpriteController;
         world.jobQueue.OnJobCreated += OnCreated;
 
-        foreach (Job job in world.jobQueue.PeekJobs())
-        {
-            OnCreated(job);
-        }
-
-        foreach (Job job in world.jobWaitingQueue.PeekJobs())
+        foreach (Job job in world.jobQueue.PeekAllJobs())
         {
             OnCreated(job);
         }
@@ -47,13 +43,7 @@ public class JobSpriteController : BaseSpriteController<Job>
     {
         world.jobQueue.OnJobCreated -= OnCreated;
 
-        foreach (Job job in world.jobQueue.PeekJobs())
-        {
-            job.OnJobCompleted -= OnRemoved;
-            job.OnJobStopped -= OnRemoved;
-        }
-
-        foreach (Job job in world.jobWaitingQueue.PeekJobs())
+        foreach (Job job in world.jobQueue.PeekAllJobs())
         {
             job.OnJobCompleted -= OnRemoved;
             job.OnJobStopped -= OnRemoved;
@@ -73,7 +63,7 @@ public class JobSpriteController : BaseSpriteController<Job>
 
     protected override void OnCreated(Job job)
     {
-        if (job.JobObjectType == null && job.JobTileType == null)
+        if (job.JobTileType == null && job.JobObjectType == null)
         {
             // This job doesn't really have an associated sprite with it, so no need to render.
             return;
@@ -118,6 +108,12 @@ public class JobSpriteController : BaseSpriteController<Job>
         }
         else
         {
+            // If we get this far we need a buildable prototype, bail if we don't have one
+            if (job.buildablePrototype == null)
+            {
+                return;
+            }
+
             // This is a normal furniture job.
             if (job.buildablePrototype.GetType().ToString() == "Furniture")
             {
@@ -144,18 +140,18 @@ public class JobSpriteController : BaseSpriteController<Job>
             Tile southTile = world.GetTileAt(job.tile.X, job.tile.Y - 1, job.tile.Z);
 
             if (northTile != null && southTile != null && northTile.Furniture != null && southTile.Furniture != null &&
-            northTile.Furniture.HasTypeTag("Wall") && southTile.Furniture.HasTypeTag("Wall"))
+                northTile.Furniture.HasTypeTag("Wall") && southTile.Furniture.HasTypeTag("Wall"))
             {
                 job_go.transform.rotation = Quaternion.Euler(0, 0, 90);
             }
         }
-            
+
         job.OnJobCompleted += OnRemoved;
         job.OnJobStopped += OnRemoved;
     }
 
-    protected override void OnChanged(Job job) 
-    { 
+    protected override void OnChanged(Job job)
+    {
     }
 
     protected override void OnRemoved(Job job)
