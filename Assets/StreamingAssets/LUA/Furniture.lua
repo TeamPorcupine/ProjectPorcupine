@@ -135,21 +135,10 @@ end
 function AirlockDoor_Toggle_Pressure_Lock(furniture, character)
 
     ModUtils.ULog("Toggling Pressure Lock")
-<<<<<<< HEAD
     
 	furniture.Parameters["pressure_locked"].SetValue(not furniture.Parameters["pressure_locked"].ToBool())
     
     ModUtils.ULog(furniture.Parameters["pressure_locked"].ToBool())
-=======
-
-	if (furniture.Parameters["pressure_locked"].ToFloat() == 1) then
-        furniture.Parameters["pressure_locked"].SetValue(0)
-    else
-        furniture.Parameters["pressure_locked"].SetValue(1)
-    end
-
-    ModUtils.ULog(furniture.Parameters["pressure_locked"].ToFloat())
->>>>>>> 412cb4e013c99ae7e8dda6da5c63a0eb73c805f6
 end
 
 
@@ -563,7 +552,6 @@ function AirPump_OnUpdate(furniture, deltaTime)
         return
     end
 
-<<<<<<< HEAD
     if (furniture.Parameters["active"].ToBool()) then
         local t = furniture.Tile
         local north = World.Current.GetTileAt(t.X, t.Y + 1, t.Z)
@@ -591,22 +579,6 @@ function AirPump_OnUpdate(furniture, deltaTime)
                 sourceRoom = east.Room
                 targetRoom = west.Room
             end
-=======
-    local t = furniture.Tile
-    local north = World.Current.GetTileAt(t.X, t.Y + 1, t.Z)
-    local south = World.Current.GetTileAt(t.X, t.Y - 1, t.Z)
-    local west = World.Current.GetTileAt(t.X - 1, t.Y, t.Z)
-    local east = World.Current.GetTileAt(t.X + 1, t.Y, t.Z)
-
-    -- Find the correct rooms for source and target
-    -- Maybe in future this could be cached. it only changes when the direction changes
-    local sourceRoom = nil
-    local targetRoom = nil
-    if (north.Room != nil and south.Room != nil) then
-        if (furniture.Parameters["flow_direction_up"].ToFloat() > 0) then
-            sourceRoom = south.Room
-            targetRoom = north.Room
->>>>>>> 412cb4e013c99ae7e8dda6da5c63a0eb73c805f6
         else
             ModUtils.UChannelLogWarning("Furniture", "Air Pump blocked. Direction unclear")
             return
@@ -620,21 +592,6 @@ function AirPump_OnUpdate(furniture, deltaTime)
         if (sourceRoom.GetTotalGasPressure() > sourcePressureLimit and targetRoom.GetTotalGasPressure() < targetPressureLimit) then
             sourceRoom.MoveGasTo(targetRoom, flow)
         end
-<<<<<<< HEAD
-=======
-    else
-        ModUtils.UChannelLogWarning("Furniture", "Air Pump blocked. Direction unclear")
-        return
-    end
-
-    local sourcePressureLimit = furniture.Parameters["source_pressure_limit"].ToFloat()
-    local targetPressureLimit = furniture.Parameters["target_pressure_limit"].ToFloat()
-    local flow = furniture.Parameters["gas_throughput"].ToFloat() * deltaTime
-
-    -- Only transfer gas if the pressures are within the defined bounds
-    if (sourceRoom.GetTotalGasPressure() > sourcePressureLimit and targetRoom.GetTotalGasPressure() < targetPressureLimit) then
-        sourceRoom.MoveGasTo(targetRoom, flow, targetPressureLimit)
->>>>>>> 412cb4e013c99ae7e8dda6da5c63a0eb73c805f6
     end
 end
 
