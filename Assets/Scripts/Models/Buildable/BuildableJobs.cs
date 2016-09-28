@@ -155,6 +155,15 @@ public class BuildableJobs
     }
 
     /// <summary>
+    /// Checks if the work spot is contained within the buildable's height and width.
+    /// </summary>
+    /// <returns><c>true</c>, if the work spot is internal to the buildable, <c>false</c> otherwise.</returns>
+    public bool WorkSpotIsInternal()
+    {
+        return WorkSpotOffset.x >= 0 && WorkSpotOffset.x < buildable.Width && WorkSpotOffset.y >= 0 && WorkSpotOffset.y < buildable.Height;
+    }
+
+    /// <summary>
     /// Link a job to the current buildable.
     /// </summary>
     /// <param name="job">The job that you want to link to the buildable.</param>

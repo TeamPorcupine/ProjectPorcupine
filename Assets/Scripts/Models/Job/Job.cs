@@ -311,7 +311,7 @@ public class Job : ISelectable, IPrototypable
                 OnJobCompleted(this);
             }
 
-            if (jobRepeats == false)
+            if (jobRepeats != true)
             {
                 // Let everyone know that the job is officially concluded
                 if (OnJobStopped != null)
