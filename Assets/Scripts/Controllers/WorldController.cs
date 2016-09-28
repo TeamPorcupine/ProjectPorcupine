@@ -40,9 +40,6 @@ public class WorldController : MonoBehaviour
     public GameObject inventoryUI;
     public GameObject circleCursorPrefab;
 
-    // If true, a modal dialog box is open, so normal inputs should be ignored.
-    public bool IsModal;
-
     private static string loadWorldFromFile = null;
 
     public static WorldController Instance { get; protected set; }
@@ -54,7 +51,7 @@ public class WorldController : MonoBehaviour
     {
         get
         {
-            return TimeManager.Instance.IsPaused || IsModal;
+            return TimeManager.Instance.IsPaused || GameController.Instance.IsModal;
         }
 
         set
@@ -138,6 +135,8 @@ public class WorldController : MonoBehaviour
         GameObject canvas = GameObject.Find("Canvas");
         go = Instantiate(Resources.Load("UI/ContextMenu"), canvas.transform.position, canvas.transform.rotation, canvas.transform) as GameObject;
         go.name = "ContextMenu";
+
+        IsPaused = false;
     }
 
     /// <summary>

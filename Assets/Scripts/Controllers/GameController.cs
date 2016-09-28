@@ -15,6 +15,9 @@ public class GameController : MonoBehaviour
 {
     public KeyboardManager KeyboardManager;
 
+    // If true, a modal dialog box is open, so normal inputs should be ignored.
+    public bool IsModal;
+
     public static GameController Instance { get; protected set; }
 
     // Load the main scene.

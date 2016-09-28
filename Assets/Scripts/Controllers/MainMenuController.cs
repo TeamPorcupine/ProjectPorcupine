@@ -17,6 +17,8 @@ public class MainMenuController : MonoBehaviour
     {
         Instance = this;
 
+        TimeManager.Instance.IsPaused = true;
+
         // Display Main Menu.
         GameObject canvas = GameObject.Find("Canvas");
         GameObject mainMenuPrefab = (GameObject)Resources.Load("UI/MainMenu");
