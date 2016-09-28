@@ -1,8 +1,8 @@
 #region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
-// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
-// and you are welcome to redistribute it under certain conditions; See 
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
@@ -119,16 +119,16 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     /// <summary>
     /// Gets the width of the utility.
     /// </summary>
-    public int Width 
-    { 
+    public int Width
+    {
         get { return 1; }
     }
 
     /// <summary>
     /// Gets the height of the utility.
     /// </summary>
-    public int Height 
-    { 
+    public int Height
+    {
         get { return 1; }
     }
 
@@ -160,7 +160,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     public Tile Tile { get; private set; }
 
     /// <summary>
-    /// Gets the string that defines the type of object the utility is. This gets queried by the visual system to 
+    /// Gets the string that defines the type of object the utility is. This gets queried by the visual system to
     /// know what sprite to render for this utility.
     /// </summary>
     /// <value>The type of the utility.</value>
@@ -203,7 +203,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     }
 
     /// <summary>
-    /// Gets the type of dragging that is used to build multiples of this utility. 
+    /// Gets the type of dragging that is used to build multiples of this utility.
     /// e.g walls.
     /// </summary>
     public string DragType 
@@ -531,8 +531,8 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         }
 
         // We should inform our neighbours that they have just lost a
-        // neighbour regardless of type.  
-        // Just trigger their OnChangedCallback. 
+        // neighbour regardless of type.
+        // Just trigger their OnChangedCallback.
         for (int xpos = x - 1; xpos < x + 2; xpos++)
         {
             for (int ypos = y - 1; ypos < y + 2; ypos++)

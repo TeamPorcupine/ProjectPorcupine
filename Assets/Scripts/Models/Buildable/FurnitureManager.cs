@@ -130,6 +130,14 @@ public class FurnitureManager : IEnumerable<Furniture>
     public bool IsWorkSpotClear(string type, Tile tile)
     {
         Furniture proto = PrototypeManager.Furniture.Get(type);
+
+        // If the workspot is internal, we don't care about furniture blocking it, this will be stopped or allowed
+        //      elsewhere depending on if the furniture being placed can replace the furniture already in this tile.
+        if (proto.Jobs.WorkSpotIsInternal())
+        {
+            return true;
+        }
+
         if (proto.Jobs != null && World.Current.GetTileAt((int)(tile.X + proto.Jobs.WorkSpotOffset.x), (int)(tile.Y + proto.Jobs.WorkSpotOffset.y), (int)tile.Z).Furniture != null)
         {
             return false;
@@ -160,11 +168,13 @@ public class FurnitureManager : IEnumerable<Furniture>
 
     /// <summary>
     /// Calls the furnitures update function on every frame.
+    /// The list needs to be copied temporarily in case furnitures are added or removed during the update.
     /// </summary>
     /// <param name="deltaTime">Delta time.</param>
     public void TickEveryFrame(float deltaTime)
     {
-        foreach (Furniture furniture in furnituresVisible)
+        List<Furniture> tempFurnituresVisible = new List<Furniture>(furnituresVisible);
+        foreach (Furniture furniture in tempFurnituresVisible)
         {
             furniture.EveryFrameUpdate(deltaTime);
         }
@@ -172,6 +182,7 @@ public class FurnitureManager : IEnumerable<Furniture>
 
     /// <summary>
     /// Calls the furnitures update function on a fixed frequency.
+    /// The list needs to be copied temporarily in case furnitures are added or removed during the update.
     /// </summary>
     /// <param name="deltaTime">Delta time.</param>
     public void TickFixedFrequency(float deltaTime)
@@ -181,13 +192,15 @@ public class FurnitureManager : IEnumerable<Furniture>
         //       FixedFrequencyUpdate on invisible furniture could also be even slower.
 
         // Update furniture outside of the camera view
-        foreach (Furniture furniture in furnituresInvisible)
+        List<Furniture> tempFurnituresInvisible = new List<Furniture>(furnituresInvisible);
+        foreach (Furniture furniture in tempFurnituresInvisible)
         {
             furniture.EveryFrameUpdate(deltaTime);
         }
 
         // Update all furniture with EventActions
-        foreach (Furniture furniture in furnitures)
+        List<Furniture> tempFurnitures = new List<Furniture>(furnitures);
+        foreach (Furniture furniture in tempFurnitures)
         {
             furniture.FixedFrequencyUpdate(deltaTime);
         }

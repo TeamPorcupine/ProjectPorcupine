@@ -1,3 +1,4 @@
+menu_apply=Apply
 menu_construction=Construction
 menu_work=Work
 menu_world=World
@@ -11,7 +12,7 @@ load=Load
 menu_resume=Resume
 menu_quests=Quests
 menu_quit=Quit
-button_construction_menu={0}
+button_menu={0}
 furniture=Furniture
 deconstruct_furniture=Deconstruct Furniture
 new_world=New World

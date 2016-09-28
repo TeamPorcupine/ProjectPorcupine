@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Sprites>
+	<Sprite name="berth" x="0" y="0" w="3" h="1" pixelPerUnit="64" />
+</Sprites>

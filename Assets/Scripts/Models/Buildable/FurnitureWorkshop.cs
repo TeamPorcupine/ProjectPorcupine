@@ -1,8 +1,8 @@
 ﻿#region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
-// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
-// and you are welcome to redistribute it under certain conditions; See 
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
@@ -39,12 +39,12 @@ public class FurnitureWorkshop
 
     [XmlIgnore]
     public bool IsRunning { get; private set; }
-    
+
     protected Parameter FurnitureParams
     {
         get { return furniture.Parameters; }
     }
-    
+
     public static FurnitureWorkshop Deserialize(XmlReader xmlReader)
     {
         // deserialize FActoryINfo into factoryData
@@ -72,10 +72,10 @@ public class FurnitureWorkshop
             {
                 string prodChainName = chain.Name;
                 WorkshopMenuActions.Add(new WorkshopContextMenu()
-                {
-                    ProductionChainName = prodChainName,
-                    Function = ChangeCurrentProductionChain
-                });
+                    {
+                        ProductionChainName = prodChainName,
+                        Function = ChangeCurrentProductionChain
+                    });
             }
         }
         else
@@ -119,8 +119,8 @@ public class FurnitureWorkshop
             ProductionChain prodChain = GetProductionChainByName(curSetupChainName);
             //// if there is no processing in progress
             if (FurnitureParams[CurProcessedInvParamName].ToInt() == 0)
-            {                
-                // check input slots for input inventory               
+            {
+                // check input slots for input inventory
                 List<KeyValuePair<Tile, int>> flaggedForTaking = CheckForInventoryAtInput(prodChain);
 
                 // if all the input requirements are ok, you can start processing:
@@ -133,7 +133,7 @@ public class FurnitureWorkshop
 
                     // reset processing timer and set max time for processing for this prod. chain
                     FurnitureParams[CurProcessingTimeParamName].SetValue(0f);
-                    FurnitureParams[MaxProcessingTimeParamName].SetValue(prodChain.ProcessingTime);                    
+                    FurnitureParams[MaxProcessingTimeParamName].SetValue(prodChain.ProcessingTime);
                 }
                 //// trigger running state change
                 if (IsRunning)
@@ -142,7 +142,7 @@ public class FurnitureWorkshop
                 }
             }
             else
-            {                
+            {
                 // processing is in progress
                 FurnitureParams[CurProcessingTimeParamName].ChangeFloatValue(deltaTime);
 
@@ -170,7 +170,7 @@ public class FurnitureWorkshop
             HaulingJobForInputs(prodChain);
         }
     }
-    
+
     private static void ChangeCurrentProductionChain(Furniture furniture, string newProductionChainName)
     {
         Parameter oldProductionChainName = furniture.Parameters[CurProductionChainParamName];
@@ -200,7 +200,7 @@ public class FurnitureWorkshop
             }
         }
     }
-    
+
     private static void ConsumeInventories(List<KeyValuePair<Tile, int>> flaggedForTaking)
     {
         foreach (KeyValuePair<Tile, int> toConsume in flaggedForTaking)
@@ -217,12 +217,11 @@ public class FurnitureWorkshop
     private static void PlaceInventoryToWorkshopInput(Job job)
     {
         job.CancelJob();
-        foreach (KeyValuePair<string, Inventory> heldInventory in job.HeldInventory)
+        foreach (Inventory inventory in job.HeldInventory.Values)
         {
-            Inventory inv = heldInventory.Value;
-            if (inv != null && inv.StackSize > 0)
+            if (inventory.StackSize > 0)
             {
-                World.Current.InventoryManager.PlaceInventory(job.tile, heldInventory.Value);
+                World.Current.InventoryManager.PlaceInventory(job.tile, inventory);
                 job.tile.Inventory.Locked = true;
             }
         }
@@ -287,7 +286,7 @@ public class FurnitureWorkshop
             }
         }
     }
-    
+
     private List<TileObjectTypeAmount> CheckForInventoryAtOutput(ProductionChain prodChain)
     {
         var outPlacement = new List<TileObjectTypeAmount>();
@@ -297,26 +296,26 @@ public class FurnitureWorkshop
         {
             int amount = outObjType.Amount;
 
-            // check ouput slots for products:                        
+            // check ouput slots for products:
             Tile tt = World.Current.GetTileAt(
-                furniture.Tile.X + outObjType.SlotPosX,
-                furniture.Tile.Y + outObjType.SlotPosY,
-                furniture.Tile.Z);
+                          furniture.Tile.X + outObjType.SlotPosX,
+                          furniture.Tile.Y + outObjType.SlotPosY,
+                          furniture.Tile.Z);
 
             bool tileHasOtherFurniture = tt.Furniture != null && tt.Furniture != furniture;
 
-            if (!tileHasOtherFurniture && 
-                (tt.Inventory == null || 
+            if (!tileHasOtherFurniture &&
+                (tt.Inventory == null ||
                 (tt.Inventory.Type == outObjType.ObjectType && tt.Inventory.StackSize + amount <= tt.Inventory.MaxStackSize)))
             {
                 // out product can be placed here
                 outPlacement.Add(new TileObjectTypeAmount()
-                {
-                    Tile = tt,
-                    IsEmpty = tt.Inventory == null,
-                    ObjectType = outObjType.ObjectType,
-                    Amount = outObjType.Amount
-                });
+                    {
+                        Tile = tt,
+                        IsEmpty = tt.Inventory == null,
+                        ObjectType = outObjType.ObjectType,
+                        Amount = outObjType.Amount
+                    });
             }
         }
 
@@ -328,11 +327,11 @@ public class FurnitureWorkshop
         var flaggedForTaking = new List<KeyValuePair<Tile, int>>();
         foreach (var reqInputItem in prodChain.Input)
         {
-            // check input slots for req. item:                        
+            // check input slots for req. item:
             Tile tile = World.Current.GetTileAt(
-                furniture.Tile.X + reqInputItem.SlotPosX,
-                furniture.Tile.Y + reqInputItem.SlotPosY,
-                furniture.Tile.Z);
+                            furniture.Tile.X + reqInputItem.SlotPosX,
+                            furniture.Tile.Y + reqInputItem.SlotPosY,
+                            furniture.Tile.Z);
 
             if (tile.Inventory != null && tile.Inventory.Type == reqInputItem.ObjectType
                 && tile.Inventory.StackSize >= reqInputItem.Amount)
@@ -346,18 +345,21 @@ public class FurnitureWorkshop
 
     private ProductionChain GetProductionChainByName(string productionChainName)
     {
-        return PossibleProductions.FirstOrDefault(chain => chain.Name.Equals(productionChainName));        
+        return PossibleProductions.FirstOrDefault(chain => chain.Name.Equals(productionChainName));
     }
-   
+
     [Serializable]
     public class Item
     {
         [XmlAttribute("objectType")]
         public string ObjectType { get; set; }
+
         [XmlAttribute("amount")]
         public int Amount { get; set; }
+
         [XmlAttribute("slotPosX")]
         public int SlotPosX { get; set; }
+
         [XmlAttribute("slotPosY")]
         public int SlotPosY { get; set; }
     }
@@ -367,6 +369,7 @@ public class FurnitureWorkshop
     {
         [XmlAttribute("name")]
         public string Name { get; set; }
+
         [XmlAttribute("processingTime")]
         public float ProcessingTime { get; set; }
 
@@ -384,7 +387,7 @@ public class FurnitureWorkshop
         [XmlAttribute("running")]
         public string Running { get; set; }
     }
-    
+
     private class TileObjectTypeAmount
     {
         public Tile Tile { get; set; }
