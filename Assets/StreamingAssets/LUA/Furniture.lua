@@ -615,6 +615,31 @@ function Accumulator_GetSpriteName(furniture)
 	return baseName .. "_" .. suffix
 end
 
+function Berth_TestSummoning(furniture, deltaTime)
+    if (furniture.Parameters["occupied"].ToFloat() <= 0) then
+        Berth_SummonShip(furniture, nil)
+        furniture.Parameters["occupied"].SetValue(1)
+    elseif (World.Current.shipManager.IsOccupied(furniture)) then
+        Berth_DismissShip(furniture, nil)
+        furniture.Parameters["occupied"].SetValue(0)
+    end
+end
+
+function Berth_SummonShip(furniture, character)
+    --ModUtils.ULogChannel("Ships", "Summoning ship")
+    local ship = World.Current.shipManager.AddShip("essentia", 0, 0)
+    ship.SetDestination(furniture)
+end
+
+function Berth_DismissShip(furniture, character)
+    local shipManager = World.Current.shipManager
+    if (shipManager.IsOccupied(furniture)) then
+        local ship = shipManager.GetBerthedShip(furniture)
+        shipManager.DeberthShip(furniture)
+        ship.SetDestination(0, 0)
+    end
+end
+
 function Door_GetSpriteName(furniture)
 	if (furniture.verticalDoor) then
 	    return furniture.Type .. "Vertical_0"
@@ -692,6 +717,36 @@ function Rtg_UpdateTemperature( furniture, deltaTime)
 
     World.Current.temperature.ChangeTemperature(tile.X, tile.Y, tile.Z, temperatureChange)
     --ModUtils.ULogChannel("Temperature", "Heat change: " .. temperatureChangePerSecond .. " => " .. World.current.temperature.GetTemperature(tile.X, tile.Y))
+end
+
+function Berth_TestSummoning(furniture, deltaTime)
+    if (furniture.Parameters["occupied"].ToFloat() <= 0) then
+        Berth_SummonShip(furniture, nil)
+        furniture.Parameters["occupied"].SetValue(1)
+    elseif (World.Current.shipManager.IsOccupied(furniture)) then
+        Berth_DismissShip(furniture, nil)
+        furniture.Parameters["occupied"].SetValue(0)
+    end
+end
+
+function Berth_SummonShip(furniture, character)
+    --ModUtils.ULogChannel("Ships", "Summoning ship")
+    local ship = World.Current.ShipManager.AddShip("essentia", 0, 0)
+    if (ship.WouldFitInBerth(furniture)) then
+    	ship.SetDestination(furniture)
+    else
+		World.Current.ShipManager.RemoveShip(ship)
+		furniture.Parameters["occupied"].SetValue(0)
+    end
+end
+
+function Berth_DismissShip(furniture, character)
+    local shipManager = World.Current.ShipManager
+    if (shipManager.IsOccupied(furniture)) then
+        local ship = shipManager.GetBerthedShip(furniture)
+        shipManager.DeberthShip(furniture)
+        ship.SetDestination(0, 0)
+    end
 end
 
 ModUtils.ULog("Furniture.lua loaded")
