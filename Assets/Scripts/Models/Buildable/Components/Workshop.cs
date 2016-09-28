@@ -18,6 +18,7 @@ namespace ProjectPorcupine.Buildable.Components
 {
     [Serializable]
     [XmlRoot("Component")]
+    [ComponentName("Workshop")]
     public class Workshop : Component
     {
         // constants for parameters
