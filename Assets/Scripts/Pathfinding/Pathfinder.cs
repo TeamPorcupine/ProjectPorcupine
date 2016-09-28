@@ -191,7 +191,7 @@ namespace ProjectPorcupine.Pathfinding
             }
             else
             {
-                return tile => goalTile.CompareTo(tile) == 0;
+                return tile => tile == goalTile;
             }
         }
 

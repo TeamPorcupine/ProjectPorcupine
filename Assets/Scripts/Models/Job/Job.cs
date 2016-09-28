@@ -245,7 +245,7 @@ public class Job : ISelectable, IPrototypable
             }
             else
             {
-                return otherTile => tile.CompareTo(otherTile) == 0;
+                return otherTile => tile == otherTile;
             }
         }
     }
