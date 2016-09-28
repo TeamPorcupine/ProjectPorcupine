@@ -1,21 +1,23 @@
 #region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
-// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
-// and you are welcome to redistribute it under certain conditions; See 
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using MoonSharp.Interpreter;
+using ProjectPorcupine.Jobs;
 using ProjectPorcupine.Localization;
+using ProjectPorcupine.Pathfinding;
 using UnityEngine;
 
 [MoonSharpUserData]
+[System.Diagnostics.DebuggerDisplay("Job {JobObjectType}")]
 public class Job : ISelectable, IPrototypable
 {
     // This class holds info for a queued up job, which can include
@@ -29,8 +31,6 @@ public class Job : ISelectable, IPrototypable
     public IBuildable buildable;
 
     public bool canTakeFromStockpile = true;
-
-    public Dictionary<string, Inventory> inventoryRequirements;
 
     /// <summary>
     /// If true, the work will be carried out on any adjacent tile of the target tile rather than on it.
@@ -50,7 +50,7 @@ public class Job : ISelectable, IPrototypable
     protected bool jobRepeats = false;
 
     private List<string> jobWorkedLua;
-   
+
     // The job has been stopped, either because it's non-repeating or was canceled.
     private List<string> jobCompletedLua;
 
@@ -59,7 +59,7 @@ public class Job : ISelectable, IPrototypable
     {
     }
 
-    public Job(Tile tile, string jobObjectType, Action<Job> jobComplete, float jobTime, Inventory[] inventoryRequirements, Job.JobPriority jobPriority, bool jobRepeats = false, bool need = false, bool critical = false)
+    public Job(Tile tile, string jobObjectType, Action<Job> jobComplete, float jobTime, RequestedItem[] requestedItems, Job.JobPriority jobPriority, bool jobRepeats = false, bool need = false, bool critical = false, bool adjacent = false)
     {
         this.tile = tile;
         this.JobObjectType = jobObjectType;
@@ -69,25 +69,31 @@ public class Job : ISelectable, IPrototypable
         this.IsNeed = need;
         this.Critical = critical;
         this.Priority = jobPriority;
+        this.adjacent = adjacent;
         this.JobDescription = "job_error_missing_desc";
 
         jobWorkedLua = new List<string>();
         jobCompletedLua = new List<string>();
 
-        this.inventoryRequirements = new Dictionary<string, Inventory>();
-        if (inventoryRequirements != null)
+        this.HeldInventory = new Dictionary<string, Inventory>();
+        this.RequestedItems = new Dictionary<string, RequestedItem>();
+
+        if (requestedItems != null)
         {
-            foreach (Inventory inv in inventoryRequirements)
+            foreach (RequestedItem item in requestedItems)
             {
-                this.inventoryRequirements[inv.Type] = inv.Clone();
+                this.RequestedItems[item.Type] = item.Clone();
             }
         }
+
+        this.HeldInventory = new Dictionary<string, Inventory>();
     }
 
-    public Job(Tile tile, TileType jobTileType, Action<Job> jobCompleted, float jobTime, Inventory[] inventoryRequirements, Job.JobPriority jobPriority, bool jobRepeats = false, bool adjacent = false)
+    public Job(Tile tile, TileType jobTileType, Action<Job> jobCompleted, float jobTime, RequestedItem[] requestedItems, Job.JobPriority jobPriority, bool jobRepeats = false, bool adjacent = false)
     {
         this.tile = tile;
         this.JobTileType = jobTileType;
+        this.JobObjectType = "tile_" + jobTileType.Name;
         this.OnJobCompleted += jobCompleted;
         this.jobTimeRequired = this.JobTime = jobTime;
         this.jobRepeats = jobRepeats;
@@ -98,14 +104,17 @@ public class Job : ISelectable, IPrototypable
         jobWorkedLua = new List<string>();
         jobCompletedLua = new List<string>();
 
-        this.inventoryRequirements = new Dictionary<string, Inventory>();
-        if (inventoryRequirements != null)
+        this.HeldInventory = new Dictionary<string, Inventory>();
+        this.RequestedItems = new Dictionary<string, RequestedItem>();
+        if (requestedItems != null)
         {
-            foreach (Inventory inv in inventoryRequirements)
+            foreach (RequestedItem item in requestedItems)
             {
-                this.inventoryRequirements[inv.Type] = inv.Clone();
+                this.RequestedItems[item.Type] = item.Clone();
             }
         }
+
+        this.HeldInventory = new Dictionary<string, Inventory>();
     }
 
     protected Job(Job other)
@@ -123,14 +132,17 @@ public class Job : ISelectable, IPrototypable
         jobWorkedLua = new List<string>(other.jobWorkedLua);
         jobCompletedLua = new List<string>(other.jobWorkedLua);
 
-        this.inventoryRequirements = new Dictionary<string, Inventory>();
-        if (inventoryRequirements != null)
+        this.HeldInventory = new Dictionary<string, Inventory>();
+        this.RequestedItems = new Dictionary<string, RequestedItem>();
+        if (other.RequestedItems != null)
         {
-            foreach (Inventory inv in other.inventoryRequirements.Values)
+            foreach (RequestedItem item in other.RequestedItems.Values)
             {
-                this.inventoryRequirements[inv.Type] = inv.Clone();
+                this.RequestedItems[item.Type] = item.Clone();
             }
         }
+
+        this.HeldInventory = new Dictionary<string, Inventory>();
     }
 
     // We have finished the work cycle and so things should probably get built or whatever.
@@ -143,8 +155,14 @@ public class Job : ISelectable, IPrototypable
 
     public enum JobPriority
     {
-        High, Medium, Low
+        High,
+        Medium,
+        Low
     }
+
+    public Dictionary<string, RequestedItem> RequestedItems { get; set; }
+
+    public Dictionary<string, Inventory> HeldInventory { get; set; }
 
     public string JobDescription { get; set; }
 
@@ -193,19 +211,50 @@ public class Job : ISelectable, IPrototypable
 
     public bool IsSelected
     {
-        get; set;
+        get;
+        set;
     }
 
-    public Inventory[] GetInventoryRequirementValues()
+    public Pathfinder.GoalEvaluator IsTileAtJobSite
     {
-        return inventoryRequirements.Values.ToArray();
+        get
+        {
+            if (tile == null)
+            {
+                return null;
+            }
+
+            // TODO: This doesn't handle multi-tile furniture
+            if (adjacent)
+            {
+                return otherTile => (
+                    tile.Z == otherTile.Z &&
+                    (tile.X - 1) <= otherTile.X && (tile.X + 1) >= otherTile.X &&
+                    (tile.Y - 1) <= otherTile.Y && (tile.Y + 1) >= otherTile.Y &&
+                    tile.IsClippingCorner(otherTile) == false);
+            }
+            else
+            {
+                return otherTile => this.tile.CompareTo(otherTile) == 0;
+            }
+        }
+    }
+
+    public RequestedItem[] GetInventoryRequirementValues()
+    {
+        return RequestedItems.Values.ToArray();
+    }
+
+    public void SetTileFromNeedFurniture(Tile currentTile, string needFurniture)
+    {
+        tile = ProjectPorcupine.Pathfinding.Pathfinder.FindPathToFurniture(currentTile, needFurniture).Last();
     }
 
     public virtual Job Clone()
     {
         return new Job(this);
     }
-    
+
     public void RegisterJobCompletedCallback(string cb)
     {
         jobCompletedLua.Add(cb);
@@ -215,7 +264,7 @@ public class Job : ISelectable, IPrototypable
     {
         jobCompletedLua.Remove(cb);
     }
-    
+
     public void RegisterJobWorkedCallback(string cb)
     {
         jobWorkedLua.Add(cb);
@@ -240,7 +289,7 @@ public class Job : ISelectable, IPrototypable
             FunctionsManager.Furniture.Call(luaFunction, this);
         }
 
-        // Check to make sure we actually have everything we need. 
+        // Check to make sure we actually have everything we need.
         // If not, don't register the work time.
         if (MaterialNeedsMet() == false)
         {
@@ -248,7 +297,7 @@ public class Job : ISelectable, IPrototypable
         }
 
         JobTime -= workTime;
-        
+
         if (JobTime <= 0)
         {
             foreach (string luaFunction in jobCompletedLua.ToList())
@@ -262,7 +311,7 @@ public class Job : ISelectable, IPrototypable
                 OnJobCompleted(this);
             }
 
-            if (jobRepeats == false)
+            if (jobRepeats != true)
             {
                 // Let everyone know that the job is officially concluded
                 if (OnJobStopped != null)
@@ -292,7 +341,7 @@ public class Job : ISelectable, IPrototypable
         }
 
         // Remove the job out of both job queues.
-        World.Current.jobWaitingQueue.Remove(this);
+//        World.Current.jobWaitingQueue.Remove(this);
         World.Current.jobQueue.Remove(this);
     }
 
@@ -313,14 +362,14 @@ public class Job : ISelectable, IPrototypable
 
     public bool HasAllMaterial()
     {
-        if (inventoryRequirements == null)
+        if (RequestedItems == null)
         {
             return true;
         }
 
-        foreach (Inventory inv in inventoryRequirements.Values)
+        foreach (RequestedItem item in RequestedItems.Values)
         {
-            if (inv.MaxStackSize > inv.StackSize)
+            if (HeldInventory.ContainsKey(item.Type) == false || item.AmountNeeded(HeldInventory[item.Type]) > 0)
             {
                 return false;
             }
@@ -331,37 +380,39 @@ public class Job : ISelectable, IPrototypable
 
     public bool HasAnyMaterial()
     {
-        foreach (Inventory inv in inventoryRequirements.Values)
-        {
-            if (inv.StackSize > 0)
-            {
-                return true;
-            }
-        }
-
-        return false;
+        return HeldInventory.Count > 0 && HeldInventory.First().Value.StackSize > 0;
     }
 
     public int AmountDesiredOfInventoryType(string type)
     {
-        if (inventoryRequirements.ContainsKey(type) == false)
+        if (RequestedItems.ContainsKey(type) == false)
         {
             return 0;
         }
 
-        if (inventoryRequirements[type].StackSize >= inventoryRequirements[type].MaxStackSize)
-        {
-            // We already have all that we need!
-            return 0;
-        }
-
-        // The inventory is of a type we want, and we still need more.
-        return inventoryRequirements[type].MaxStackSize - inventoryRequirements[type].StackSize;
+        Inventory inventory = HeldInventory.ContainsKey(type) ? HeldInventory[type] : null;
+        return RequestedItems[type].AmountDesired(inventory);
     }
 
-    public int AmountDesiredOfInventoryType(Inventory inv)
+    public bool IsRequiredInventoriesAvailable()
     {
-        return AmountDesiredOfInventoryType(inv.Type);
+        return FulfillableInventoryRequirements() != null;
+    }
+
+    /// <summary>
+    /// Returns the first fulfillable requirement of this job. Especially useful for jobs that has a long list of materials and can use any of them.
+    /// </summary>
+    public RequestedItem GetFirstFulfillableInventoryRequirement()
+    {
+        foreach (RequestedItem item in GetInventoryRequirementValues())
+        {
+            if (World.Current.InventoryManager.HasInventoryOfType(item.Type, canTakeFromStockpile))
+            {
+                return item;
+            }
+        }
+
+        return null;
     }
 
     /// <summary>
@@ -372,37 +423,39 @@ public class Job : ISelectable, IPrototypable
     {
         List<string> fulfillableInventoryRequirements = new List<string>();
 
-        foreach (Inventory inventory in this.GetInventoryRequirementValues())
+        foreach (RequestedItem item in this.GetInventoryRequirementValues())
         {
             if (this.acceptsAny == false)
             {
-                if (World.Current.InventoryManager.HasInventoryOfType(inventory.Type) == false)
+                if (World.Current.InventoryManager.HasInventoryOfType(item.Type, canTakeFromStockpile) == false)
                 {
                     // the job requires ALL inventory requirements to be met, and there is no source of a desired Type
                     return null;
                 }
                 else
                 {
-                    fulfillableInventoryRequirements.Add(inventory.Type);
+                    fulfillableInventoryRequirements.Add(item.Type);
                 }
             }
-            else if (World.Current.InventoryManager.HasInventoryOfType(inventory.Type))
+            else if (World.Current.InventoryManager.HasInventoryOfType(item.Type, canTakeFromStockpile))
             {
                 // there is a source for a desired Type that the job will accept
-                fulfillableInventoryRequirements.Add(inventory.Type);
+                fulfillableInventoryRequirements.Add(item.Type);
             }
         }
 
         return fulfillableInventoryRequirements;
     }
 
-    public Inventory GetFirstDesiredInventory()
+    public RequestedItem GetFirstDesiredItem()
     {
-        foreach (Inventory inv in inventoryRequirements.Values)
+        foreach (RequestedItem item in RequestedItems.Values)
         {
-            if (inv.MaxStackSize > inv.StackSize)
+            Inventory inventory = HeldInventory.ContainsKey(item.Type) ? HeldInventory[item.Type] : null;
+
+            if (item.DesiresMore(inventory))
             {
-                return inv;
+                return item;
             }
         }
 
@@ -422,15 +475,15 @@ public class Job : ISelectable, IPrototypable
 
     public string GetDescription()
     {
-        string description = "Requirements:\n\t";
-        foreach (KeyValuePair<string, Inventory> inv in inventoryRequirements)
+        string description = "Requirements:\n";
+        foreach (RequestedItem item in RequestedItems.Values)
         {
-            description += inv.Value.StackSize + "/" + inv.Value.MaxStackSize + "\n\t";
+            description += string.Format("\t{0} {1}..{2}\n", item.Type, item.MinAmountRequested, item.MaxAmountRequested);
         }
 
         return description;
     }
-    
+
     public string GetJobDescription()
     {
         return GetDescription();
@@ -443,5 +496,14 @@ public class Job : ISelectable, IPrototypable
 
     public void ReadXmlPrototype(XmlReader reader)
     {
+    }
+
+    public void FSMLogRequirements()
+    {
+        Debug.ULogChannel("FSM", " - {0} {1}", JobObjectType, acceptsAny ? "Any" : "All");
+        foreach (RequestedItem item in RequestedItems.Values)
+        {
+            Debug.ULogChannel("FSM", "   - {0}, min: {1}, max: {2}", item.Type, item.MinAmountRequested, item.MaxAmountRequested);
+        }
     }
 }

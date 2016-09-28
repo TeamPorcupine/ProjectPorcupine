@@ -1,18 +1,19 @@
 #region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
-// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
-// and you are welcome to redistribute it under certain conditions; See 
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
 using System.Collections.Generic;
 using System.Linq;
-using Priority_Queue;
+using ProjectPorcupine.Pathfinding;
 using UnityEngine;
 
 public class Path_AStar
 {
+    /// This will contain the built path.
     private Queue<Tile> path;
 
     public Path_AStar(Queue<Tile> path)
@@ -25,9 +26,14 @@ public class Path_AStar
         this.path = path;
     }
 
-    public Path_AStar(World world, Tile tileStart, Tile tileEnd, string type = null, int desiredAmount = 0, bool canTakeFromStockpile = false, bool lookingForFurn = false, bool adjacentOkay = false)
+    public Path_AStar(World world, Tile tileStart, Pathfinder.GoalEvaluator isGoal, Pathfinder.PathfindingHeuristic costEstimate)
     {
-        // if tileEnd is null, then we are simply scanning for the nearest Type.
+        float startTime = Time.realtimeSinceStartup;
+
+        // Set path to empty Queue so that there always is something to check count on
+        path = new Queue<Tile>();
+
+        // if tileEnd is null, then we are simply scanning for the nearest objectType.
         // We can do this by ignoring the heuristic component of AStar, which basically
         // just turns this into an over-engineered Dijkstra's algo
 
@@ -56,29 +62,6 @@ public class Path_AStar
 
         Path_Node<Tile> start = nodes[tileStart];
 
-        // if tileEnd is null, then we are simply looking for an inventory object
-        // so just set goal to null.
-        Path_Node<Tile> goal = null;
-        List<Path_Node<Tile>> neighbors = new List<Path_Node<Tile>>();
-        if (tileEnd != null)
-        {
-            if (nodes.ContainsKey(tileEnd) == false)
-            {
-                Debug.ULogErrorChannel("Path_AStar", "The ending tile isn't in the list of nodes!");
-                return;
-            }
-
-            if (adjacentOkay)
-            {
-                foreach (Tile tile in tileEnd.GetNeighbours())
-                {
-                    neighbors.Add(nodes[tile]);
-                }
-            }
-
-            goal = nodes[tileEnd];
-        }
-
         /*
          * Mostly following this pseusocode:
          * https://en.wikipedia.org/wiki/A*_search_algorithm
@@ -99,42 +82,18 @@ public class Path_AStar
         g_score[start] = 0;
 
         Dictionary<Path_Node<Tile>, float> f_score = new Dictionary<Path_Node<Tile>, float>();
-        f_score[start] = Heuristic_cost_estimate(start, goal);
+        f_score[start] = costEstimate(start.data);
 
         while (openSet.Count > 0)
         {
             Path_Node<Tile> current = openSet.Dequeue();
 
-            // If we have a POSITIONAL goal, check to see if we are there.
-            if (goal != null)
+            // Check to see if we are there.
+            if (isGoal(current.data))
             {
-                if (current == goal || (adjacentOkay && neighbors.Contains(current)))
-                {
-                    Reconstruct_path(came_From, current);
-                    return;
-                }
-            }
-            else
-            {
-                // We don't have a POSITIONAL goal, we're just trying to find
-                // some kind of inventory or furniture.  Have we reached it?
-                if (current.data.Inventory != null && current.data.Inventory.Type == type && lookingForFurn == false && current.data.Inventory.Locked == false)
-                {
-                    // Type is correct and we are allowed to pick it up
-                    if (canTakeFromStockpile || current.data.Furniture == null || current.data.Furniture.HasTypeTag("Storage") == false)
-                    {
-                        // Stockpile status is fine
-                        Reconstruct_path(came_From, current);
-                        return;
-                    }
-                }
-
-                if (current.data.Furniture != null && current.data.Furniture.Type == type && lookingForFurn)
-                {
-                    // Type is correct
-                    Reconstruct_path(came_From, current);
-                    return;
-                }
+                Duration = Time.realtimeSinceStartup - startTime;
+                Reconstruct_path(came_From, current);
+                return;
             }
 
             closedSet.Add(current);
@@ -159,7 +118,7 @@ public class Path_AStar
 
                 came_From[neighbor] = current;
                 g_score[neighbor] = tentative_g_score;
-                f_score[neighbor] = g_score[neighbor] + Heuristic_cost_estimate(neighbor, goal);
+                f_score[neighbor] = g_score[neighbor] + costEstimate(neighbor.data);
 
                 openSet.EnqueueOrUpdate(neighbor, f_score[neighbor]);
             } // foreach neighbour
@@ -172,7 +131,11 @@ public class Path_AStar
 
         // We don't have a failure state, maybe? It's just that the
         // path list will be null.
+        Duration = Time.realtimeSinceStartup - startTime;
     }
+
+    /// Contains the time it took to find the path
+    public float Duration { get; private set; }
 
     public Tile Dequeue()
     {
@@ -220,6 +183,11 @@ public class Path_AStar
     public List<Tile> GetList()
     {
         return path.ToList();
+    }
+
+    public Queue<Tile> GetQueue()
+    {
+        return path;
     }
 
     private float Heuristic_cost_estimate(Path_Node<Tile> a, Path_Node<Tile> b)

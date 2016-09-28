@@ -31,11 +31,13 @@ public class PrototypeManager
         RoomBehavior = new PrototypeMap<RoomBehavior>("RoomBehaviors", "RoomBehavior");
         Need = new PrototypeMap<Need>("Needs", "Need");
         Trader = new PrototypeMap<TraderPrototype>("Traders", "Trader");
+        Currency = new PrototypeMap<Currency>("Currencies", "Currency");
         Quest = new PrototypeMap<Quest>("Quests", "Quest");
         Stat = new PrototypeMap<Stat>("Stats", "Stat");
         SchedulerEvent = new PrototypeMap<ScheduledEvent>("Events", "Event");
         Headline = new PrototypeMap<Headline>("Headlines", "Headline");
         Overlay = new PrototypeMap<OverlayDescriptor>("Overlays", "Overlay");
+        Ship = new PrototypeMap<Ship>("Ships", "Ship");
     }
 
     /// <summary>
@@ -102,6 +104,12 @@ public class PrototypeManager
     public static PrototypeMap<TraderPrototype> Trader { get; private set; }
 
     /// <summary>
+    /// Gets the currency prototype map.
+    /// </summary>
+    /// <value>The currency prototype map.</value>
+    public static PrototypeMap<Currency> Currency { get; private set; }
+
+    /// <summary>
     /// Gets the quest prototype map.
     /// </summary>
     /// <value>The quest prototype map.</value>
@@ -130,4 +138,10 @@ public class PrototypeManager
     /// </summary>
     /// <value>The overlay prototype map.</value>
     public static PrototypeMap<OverlayDescriptor> Overlay { get; private set; }
+
+    /// <summary>
+    /// Gets the ship prototype map.
+    /// </summary>
+    /// <value>The ship prototype map.</value>
+    public static PrototypeMap<Ship> Ship { get; private set; }
 }

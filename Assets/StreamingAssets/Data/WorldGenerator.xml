@@ -134,4 +134,8 @@
             <Furniture x="13"  y="10" name="RTG" />
         </Furnitures>
     </StartArea>
+    <Wallet>
+       <Currency name="Quill Corp Bucks" startingBalance="150" />
+       <Currency name="Inter-Galactic Credits" startingBalance="0" />
+    </Wallet>
 </WorldGenerator>

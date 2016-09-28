@@ -1,8 +1,8 @@
 #region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
-// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
-// and you are welcome to redistribute it under certain conditions; See 
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
@@ -11,10 +11,9 @@ using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
-using Animation;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
-using ProjectPorcupine.PowerNetwork;
+using ProjectPorcupine.Jobs;
 using UnityEngine;
 
 /// <summary>
@@ -120,16 +119,16 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     /// <summary>
     /// Gets the width of the utility.
     /// </summary>
-    public int Width 
-    { 
+    public int Width
+    {
         get { return 1; }
     }
 
     /// <summary>
     /// Gets the height of the utility.
     /// </summary>
-    public int Height 
-    { 
+    public int Height
+    {
         get { return 1; }
     }
 
@@ -161,7 +160,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     public Tile Tile { get; private set; }
 
     /// <summary>
-    /// Gets the string that defines the type of object the utility is. This gets queried by the visual system to 
+    /// Gets the string that defines the type of object the utility is. This gets queried by the visual system to
     /// know what sprite to render for this utility.
     /// </summary>
     /// <value>The type of the utility.</value>
@@ -204,7 +203,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     }
 
     /// <summary>
-    /// Gets the type of dragging that is used to build multiples of this utility. 
+    /// Gets the type of dragging that is used to build multiples of this utility.
     /// e.g walls.
     /// </summary>
     public string DragType 
@@ -449,7 +448,9 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     public void ReadXmlBuildingJob(XmlReader reader)
     {
         float jobTime = float.Parse(reader.GetAttribute("jobTime"));
-        List<Inventory> invs = new List<Inventory>();
+
+        List<RequestedItem> items = new List<RequestedItem>();
+
         XmlReader inventoryReader = reader.ReadSubtree();
 
         while (inventoryReader.Read())
@@ -457,10 +458,8 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
             if (inventoryReader.Name == "Inventory")
             {
                 // Found an inventory requirement, so add it to the list!
-                invs.Add(new Inventory(
-                    inventoryReader.GetAttribute("type"),
-                    0,
-                    int.Parse(inventoryReader.GetAttribute("amount"))));
+                int amount = int.Parse(inventoryReader.GetAttribute("amount"));
+                items.Add(new RequestedItem(inventoryReader.GetAttribute("type"), amount));
             }
         }
 
@@ -469,7 +468,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
             Type,
             (theJob) => World.Current.UtilityManager.ConstructJobCompleted(theJob),
             jobTime,
-            invs.ToArray(),
+            items.ToArray(),
             Job.JobPriority.High);
         job.JobDescription = "job_build_" + Type + "_desc";
         PrototypeManager.UtilityConstructJob.Set(job);
@@ -478,11 +477,11 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     /// <summary>
     /// Sets up a job to deconstruct the utility.
     /// </summary>
-    public void SetDeconstructJob(Utility utility)
+    public void SetDeconstructJob()
     {
         if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
         {
-            Deconstruct(utility);
+            Deconstruct();
             return;
         }
 
@@ -492,11 +491,11 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         }
 
         IsBeingDestroyed = true;
-        utility.Jobs.CancelAll();
+        Jobs.CancelAll();
 
         Job job = PrototypeManager.UtilityDeconstructJob.Get(Type).Clone();
         job.tile = Tile;
-        job.OnJobCompleted += (inJob) => Deconstruct(utility);
+        job.OnJobCompleted += (inJob) => Deconstruct();
 
         World.Current.jobQueue.Enqueue(job);
     }
@@ -504,18 +503,18 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     /// <summary>
     /// Deconstructs the utility.
     /// </summary>
-    public void Deconstruct(Utility utility)
+    public void Deconstruct()
     {
         int x = Tile.X;
         int y = Tile.Y;
         if (Tile.Utilities != null)
         {
-            utility.Jobs.CancelAll();
+            Jobs.CancelAll();
         }
 
         // We call lua to decostruct
         EventActions.Trigger("OnUninstall", this);
-        Tile.UnplaceUtility();
+        Tile.UnplaceUtility(this);
 
         if (Removed != null)
         {
@@ -532,8 +531,8 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         }
 
         // We should inform our neighbours that they have just lost a
-        // neighbour regardless of type.  
-        // Just trigger their OnChangedCallback. 
+        // neighbour regardless of type.
+        // Just trigger their OnChangedCallback.
         for (int xpos = x - 1; xpos < x + 2; xpos++)
         {
             for (int ypos = y - 1; ypos < y + 2; ypos++)
@@ -545,7 +544,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
                     {
                         if (neighborUtility.Changed != null)
                         {
-                            neighborUtility.Changed(utility);
+                            neighborUtility.Changed(neighborUtility);
                         }
                     }
                 }
@@ -609,7 +608,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         {
             Text = "Deconstruct " + Name,
             RequireCharacterSelected = false,
-            Action = (contextMenuAction, character) => SetDeconstructJob(this)
+            Action = (contextMenuAction, character) => SetDeconstructJob()
         };
         if (Jobs.Count > 0)
         {

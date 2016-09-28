@@ -175,8 +175,16 @@ namespace ProjectPorcupine.Rooms
             return neighboursRooms;
         }
 
-        // Changes gas by an amount in preasure(in atm) multiplyed by number of tiles
-        // TODO check this method, it doesn't seem like the above comment is accurate.
+        // Changes gas by an amount in preasure(in atm) multiplyed by number of tiles, limited to a pressure
+        public void ChangeGas(string name, float amount, float pressureLimit)
+        {
+            ChangeGas(name, Mathf.Min(amount, (TileCount * pressureLimit) - GetGasAmount(name)));
+        }
+
+        // Changes gas by an amount in pressure(in atm) multiplyed by number of tiles
+        // Note: This description is somewhat misleading. Pressure is stored as the sum total pressure 
+        //       of every tile's pressure, so while it is technically accurate, it implies that
+        //       this method does the multiplication, when it is already stored that way
         public void ChangeGas(string name, float amount)
         {
             if (IsOutsideRoom())
@@ -280,9 +288,8 @@ namespace ProjectPorcupine.Rooms
                 return 0;
             }
 
-            float totalPressure = GetTotalGasPressure();
-
-            return totalPressure == 0 ? 0 : atmosphericGasses[name] / totalPressure;
+            float totalGasses = GetTotalGas();
+            return totalGasses == 0 ? 0 : atmosphericGasses[name] / totalGasses;
         }
 
         public float GetTotalGasPressure()
@@ -295,6 +302,23 @@ namespace ProjectPorcupine.Rooms
             }
 
             return totalPressure;
+        }
+
+        public float GetTotalGas()
+        {
+            float totalGas = 0;
+
+            foreach (string n in atmosphericGasses.Keys)
+            {
+                totalGas += atmosphericGasses[n];
+            }
+
+            return totalGas;
+        }
+
+        public void MoveGasTo(Room room, float amount, float pressureLimit)
+        {
+            MoveGasTo(room, Mathf.Min(amount, (room.TileCount * pressureLimit) - room.GetTotalGas()));
         }
 
         public void MoveGasTo(Room room, float amount)
@@ -360,11 +384,11 @@ namespace ProjectPorcupine.Rooms
             }
         }
 
-        public void CopyGasPreasure(Room other, int sizeOfOtherRoom)
+        public void SplitGas(Room other, int sizeOfOtherRoom)
         {
             foreach (string n in other.atmosphericGasses.Keys)
             {
-                this.atmosphericGasses[n] = other.atmosphericGasses[n] / sizeOfOtherRoom * this.TileCount;
+                this.atmosphericGasses[n] = other.atmosphericGasses[n] * TileCount / sizeOfOtherRoom;
             }
         }
 

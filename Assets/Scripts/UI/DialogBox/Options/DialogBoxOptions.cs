@@ -14,6 +14,12 @@ using UnityEngine.UI;
 public class DialogBoxOptions : DialogBox
 {
     private DialogBoxManager dialogManager;
+    private bool cancel;
+
+    public void OnButtonNewWorld()
+    {
+        StartCoroutine(OnButtonNewWorldCoroutine());
+    }
 
     public void OnButtonSaveGame()
     {
@@ -23,8 +29,7 @@ public class DialogBoxOptions : DialogBox
 
     public void OnButtonLoadGame()
     {
-        this.CloseDialog();
-        dialogManager.dialogBoxLoadGame.ShowDialog();
+        StartCoroutine(OnButtonLoadGameCoroutine());
     }
 
     public void OnButtonOpenSettings()
@@ -45,6 +50,75 @@ public class DialogBoxOptions : DialogBox
 #endif
     }
 
+    private IEnumerator CheckIfSaveGameBefore(string prompt)
+    {
+        bool saveGame = false;
+        cancel = false;
+
+        dialogManager.dialogBoxPromptOrInfo.SetPrompt(prompt);
+        dialogManager.dialogBoxPromptOrInfo.SetButtons(DialogBoxResult.Yes, DialogBoxResult.No, DialogBoxResult.Cancel);
+
+        dialogManager.dialogBoxPromptOrInfo.Closed = () =>
+        {
+            if (dialogManager.dialogBoxPromptOrInfo.Result == DialogBoxResult.Yes)
+            {
+                saveGame = true;
+            }
+
+            if (dialogManager.dialogBoxPromptOrInfo.Result == DialogBoxResult.Cancel)
+            {
+                cancel = true;
+            }
+        };
+
+        dialogManager.dialogBoxPromptOrInfo.ShowDialog();
+
+        while (dialogManager.dialogBoxPromptOrInfo.gameObject.activeSelf)
+        {
+            yield return null;
+        }
+
+        if (saveGame)
+        {
+            dialogManager.dialogBoxSaveGame.ShowDialog();
+        }
+    }
+
+    private IEnumerator OnButtonNewWorldCoroutine()
+    {
+        StartCoroutine(CheckIfSaveGameBefore("prompt_save_before_creating_new_world"));
+
+        while (dialogManager.dialogBoxSaveGame.gameObject.activeSelf || dialogManager.dialogBoxPromptOrInfo.gameObject.activeSelf)
+        {
+            yield return null;
+        }
+
+        if (!cancel)
+        {
+            this.CloseDialog();
+            dialogManager.dialogBoxPromptOrInfo.SetPrompt("message_creating_new_world");
+            dialogManager.dialogBoxPromptOrInfo.ShowDialog();
+
+            WorldController.Instance.LoadWorld(null);
+        }
+    }
+
+    private IEnumerator OnButtonLoadGameCoroutine()
+    {
+        StartCoroutine(CheckIfSaveGameBefore("prompt_save_before_loading_new_game"));
+
+        while (dialogManager.dialogBoxSaveGame.gameObject.activeSelf || dialogManager.dialogBoxPromptOrInfo.gameObject.activeSelf)
+        {
+            yield return null;
+        }
+
+        if (!cancel)
+        {
+            this.CloseDialog();
+            dialogManager.dialogBoxLoadGame.ShowDialog();
+        }
+    }
+
     private void RenderButtons()
     {
         UnityEngine.Object buttonPrefab = Resources.Load("UI/Components/MenuButton");
@@ -58,7 +132,7 @@ public class DialogBoxOptions : DialogBox
         GameObject newWorldButton = CreateButtonGO(buttonPrefab, "New World", "new_world");
         newWorldButton.GetComponent<Button>().onClick.AddListener(delegate
         {
-            OnButtonSaveGame();
+            OnButtonNewWorld();
         });
 
         GameObject saveButton = CreateButtonGO(buttonPrefab, "Save", "save");

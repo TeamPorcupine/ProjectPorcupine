@@ -26,8 +26,8 @@ public class JobListEvents : MonoBehaviour
     public void DeleteSelf()
     {
         string charName = GetNameFromItem();
-        
-        World.Current.CharacterManager.GetFromName(charName).AbandonJob(true);
+
+        World.Current.CharacterManager.GetFromName(charName).InterruptState();
         JobListItem.SetParent(null);
         GameObject.Destroy(JobListItem.gameObject);
     }
