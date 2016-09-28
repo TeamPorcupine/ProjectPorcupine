@@ -28,7 +28,7 @@ namespace ProjectPorcupine.State
             job.OnJobStopped += OnJobStopped;
             job.IsBeingWorked = true;
 
-            FSMLog("created {0}", job.JobObjectType ?? "Unnamed Job");
+            DebugLog("created {0}", job.JobObjectType ?? "Unnamed Job");
         }
 
         public Job Job { get; private set; }
@@ -37,7 +37,7 @@ namespace ProjectPorcupine.State
         {
             if (jobFinished)
             {
-                FSMLog(" - Update called on a finished job");
+                DebugLog(" - Update called on a finished job");
                 Finished();
                 return;
             }
@@ -52,12 +52,12 @@ namespace ProjectPorcupine.State
                     return;
                 }
 
-                FSMLog(" - Next action: Haul material");
+                DebugLog(" - Next action: Haul material");
                 character.SetState(new HaulState(character, Job, this));
             }
             else if (Job.IsTileAtJobSite(character.CurrTile) == false)
             {
-                FSMLog(" - Next action: Go to job");
+                DebugLog(" - Next action: Go to job");
                 List<Tile> path = Pathfinder.FindPathToTile(character.CurrTile, Job.tile, Job.adjacent);
                 if (path != null && path.Count > 0)
                 {
@@ -70,7 +70,7 @@ namespace ProjectPorcupine.State
             }
             else
             {
-                FSMLog(" - Next action: Work");
+                DebugLog(" - Next action: Work");
                 Job.DoWork(deltaTime);
             }
         }
@@ -88,7 +88,7 @@ namespace ProjectPorcupine.State
 
         private void AbandonJob()
         {
-            FSMLog(" - Job abandoned!");
+            DebugLog(" - Job abandoned!");
             Debug.ULogChannel("Character", character.GetName() + " abandoned their job.");
 
             Job.OnJobCompleted -= OnJobCompleted;
@@ -112,7 +112,7 @@ namespace ProjectPorcupine.State
 
         private void OnJobStopped(Job stoppedJob)
         {
-            FSMLog(" - Job stopped");
+            DebugLog(" - Job stopped");
 
             jobFinished = true;
 
@@ -130,7 +130,7 @@ namespace ProjectPorcupine.State
 
         private void OnJobCompleted(Job finishedJob)
         {
-            FSMLog(" - Job finished");
+            DebugLog(" - Job finished");
 
             jobFinished = true;
 

@@ -18,7 +18,7 @@ namespace ProjectPorcupine.State
             // Current tile is empty
             if (tileInventory == null)
             {
-                FSMLog(" - Dumping");
+                DebugLog(" - Dumping");
                 World.Current.InventoryManager.PlaceInventory(character.CurrTile, character.inventory);
                 Finished();
                 return;
@@ -27,7 +27,7 @@ namespace ProjectPorcupine.State
             // Current tile contains the same type and there is room
             if (tileInventory.Type == character.inventory.Type && (tileInventory.StackSize + character.inventory.StackSize) <= tileInventory.MaxStackSize)
             {
-                FSMLog(" - Dumping");
+                DebugLog(" - Dumping");
                 World.Current.InventoryManager.PlaceInventory(character.CurrTile, character.inventory);
                 Finished();
                 return;
@@ -40,7 +40,7 @@ namespace ProjectPorcupine.State
             }
             else
             {
-                FSMLog(" - Can't find any place to dump inventory!");
+                DebugLog(" - Can't find any place to dump inventory!");
                 Finished();
             }
         }

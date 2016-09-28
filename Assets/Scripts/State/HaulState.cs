@@ -29,7 +29,7 @@ namespace ProjectPorcupine.State
             List<Tile> path = null;
             HaulAction nextAction = NextAction();
 
-            FSMLog(" - next action: {0}", nextAction);
+            DebugLog(" - next action: {0}", nextAction);
 
             switch (nextAction)
             {
@@ -52,7 +52,7 @@ namespace ProjectPorcupine.State
                     {
                         // The character has no inventory and can't find anything to haul.
                         Interrupt();
-                        FSMLog(" - Nothing to haul");
+                        DebugLog(" - Nothing to haul");
                         Finished();
                     }
                     else
@@ -65,7 +65,7 @@ namespace ProjectPorcupine.State
                     Inventory tileInventory = character.CurrTile.Inventory;
                     int amountCarried = character.inventory != null ? character.inventory.StackSize : 0;
                     int amount = Mathf.Min(Job.AmountDesiredOfInventoryType(tileInventory.Type) - amountCarried, tileInventory.StackSize);
-                    FSMLog(" - Picked up {0} {1}", amount, tileInventory.Type);
+                    DebugLog(" - Picked up {0} {1}", amount, tileInventory.Type);
                     World.Current.InventoryManager.PlaceInventory(character, tileInventory, amount);
                     break;
 
@@ -82,7 +82,7 @@ namespace ProjectPorcupine.State
                     break;
 
                 case HaulAction.DropOffmaterial:
-                    FSMLog(" - Delivering {0} {1}", character.inventory.StackSize, character.inventory.Type);
+                    DebugLog(" - Delivering {0} {1}", character.inventory.StackSize, character.inventory.Type);
                     World.Current.InventoryManager.PlaceInventory(Job, character);
 
                     // Ping the Job system

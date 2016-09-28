@@ -329,7 +329,6 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             }
             else
             {
-                Debug.ULogChannel("FSM", "---");
                 Job job = World.Current.jobQueue.GetJob(this);
                 if (job != null)
                 {
