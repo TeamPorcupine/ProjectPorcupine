@@ -154,6 +154,7 @@ public class DialogBoxSettings : DialogBox
                 Resolution = resolution
             });
         }
+
         resolutionDropdown.AddOptions(options);
     }
 
