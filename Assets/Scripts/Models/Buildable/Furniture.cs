@@ -1004,6 +1004,10 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
 
         yield return string.Format("Hitpoint 18 / 18");
 
+        if(Parameters.ContainsKey("source_pressure_limit"))
+        {
+            yield return ("Source: " + Parameters["source_pressure_limit"] + "\nTarget: " + Parameters["target_pressure_limit"]);
+        }
         if (PowerConnection != null)
         {
             bool hasPower = HasPower();

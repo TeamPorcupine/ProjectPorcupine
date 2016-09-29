@@ -32,8 +32,9 @@ end
 
 function PumpOut_Airlock( roomBehavior, targetPressure )
 --ModUtils.ULogWarning(os.clock() - roomBehavior.Parameters["pump_off_time"].ToFloat())
-    if (roomBehavior.Parameters["is_pumping"].ToBool() == false and (os.clock() - roomBehavior.Parameters["pump_off_time"].ToFloat()) > 2) then
-        roomBehavior.Parameters["is_pumping"].SetValue(true)
+    if (roomBehavior.Parameters["is_pumping_in"].ToBool() == false and (os.clock() - roomBehavior.Parameters["pump_off_time"].ToFloat()) > 2) then
+        -- ModUtils.ULogWarning("Yes We Are")
+        roomBehavior.Parameters["is_pumping_out"].SetValue(true)
         for discard, pump in pairs(roomBehavior.ControlledFurniture["pump_air"]) do
             pump.Parameters["source_pressure_limit"].SetValue(targetPressure)
             pump.Parameters["target_pressure_limit"].SetValue(3)
@@ -46,8 +47,9 @@ end
 
 function PumpIn_Airlock( roomBehavior, targetPressure )
 --ModUtils.ULogWarning(os.clock() - roomBehavior.Parameters["pump_off_time"].ToFloat())
-    if (roomBehavior.Parameters["is_pumping"].ToBool() == false and (os.clock() - roomBehavior.Parameters["pump_off_time"].ToFloat()) > 2) then
-        roomBehavior.Parameters["is_pumping"].SetValue(true)
+    if (roomBehavior.Parameters["is_pumping_out"].ToBool() == false and (os.clock() - roomBehavior.Parameters["pump_off_time"].ToFloat()) > 2) then
+    -- ModUtils.ULogWarning("Yes We Are")
+        roomBehavior.Parameters["is_pumping_in"].SetValue(true)
         for discard, pump in pairs(roomBehavior.ControlledFurniture["pump_air"]) do
             pump.Parameters["source_pressure_limit"].SetValue(0)
             pump.Parameters["target_pressure_limit"].SetValue(targetPressure)
@@ -60,7 +62,8 @@ end
 
 function PumpOff_Airlock( roomBehavior, deltaTime )
     roomBehavior.Parameters["pump_off_time"].SetValue(os.clock())
-    roomBehavior.Parameters["is_pumping"].SetValue(false)
+    roomBehavior.Parameters["is_pumping_in"].SetValue(false)
+    roomBehavior.Parameters["is_pumping_out"].SetValue(false)
     for discard, pump in pairs(roomBehavior.ControlledFurniture["pump_air"]) do
         pump.Parameters["active"].SetValue(false)
         pump.UpdateOnChanged(pump)

@@ -590,7 +590,7 @@ function AirPump_OnUpdate(furniture, deltaTime)
         
         -- Only transfer gas if the pressures are within the defined bounds
         if (sourceRoom.GetTotalGasPressure() > sourcePressureLimit and targetRoom.GetTotalGasPressure() < targetPressureLimit) then
-            sourceRoom.MoveGasTo(targetRoom, flow)
+            sourceRoom.MoveGasTo(targetRoom, flow, targetPressureLimit)
         end
     end
 end
