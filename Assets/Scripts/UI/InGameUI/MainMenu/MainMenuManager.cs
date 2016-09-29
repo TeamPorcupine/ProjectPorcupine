@@ -13,6 +13,7 @@ using System.Collections.Generic;
 public class MainMenuManager : IEnumerable<MainMenuItem>
 {
     private static MainMenuManager instance;
+
     private List<MainMenuItem> menuItems;
     private Dictionary<string, List<MainMenuItem>> itemsToAdd;
 
@@ -53,6 +54,11 @@ public class MainMenuManager : IEnumerable<MainMenuItem>
         }
     }
 
+    /// <summary>
+    /// Adds the given main menu item at the given position.
+    /// </summary>
+    /// <param name="menuItem">The main menu item to add.</param>
+    /// <param name="position">The position where to place the item.</param>
     public void AddMenuItem(MainMenuItem menuItem, int position = 0)
     {
         menuItems.Insert(position, menuItem);
@@ -127,6 +133,14 @@ public class MainMenuManager : IEnumerable<MainMenuItem>
         {
             yield return menuItem;
         }
+    }
+
+    /// <summary>
+    /// Destroy this instance.
+    /// </summary>
+    public void Destroy()
+    {
+        instance = null;
     }
 
     /// <summary>

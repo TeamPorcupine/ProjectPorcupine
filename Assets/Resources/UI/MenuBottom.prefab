@@ -36,14 +36,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1000013382810672}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fb3d67a6f26e0aa4d801bcd6d9f4cf9d, type: 3}
+  m_Script: {fileID: 11500000, guid: 0f6717a42bda74cfb907979b96697e57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buttonConstructor: {fileID: 0}
-  buttonWorld: {fileID: 0}
-  buttonWork: {fileID: 0}
-  buttonOptions: {fileID: 0}
-  buttonQuests: {fileID: 0}
 --- !u!114 &114000011601594066
 MonoBehaviour:
   m_ObjectHideFlags: 1
