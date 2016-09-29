@@ -25,7 +25,8 @@ public enum Enterability
 }
 
 [MoonSharpUserData]
-public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
+[System.Diagnostics.DebuggerDisplay("Tile {X},{Y},{Z}")]
+public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComparable, IEquatable<Tile>
 {
     private TileType type = TileType.Empty;
 
@@ -208,15 +209,16 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
         return true;
     }
 
-    public bool UnplaceUtility()
+    public bool UnplaceUtility(Utility utility)
     {
         // Just uninstalling.
         if (Utilities == null)
         {
+            Debug.ULogErrorChannel("Tile", "Utilities null when trying to unplace a Utility, this should never happen!");
             return false;
         }
 
-        Utilities = null;
+        Utilities.Remove(utility.Name);
 
         return true;
     }
@@ -225,7 +227,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
     {
         if (objInstance == null)
         {
-            return UnplaceUtility();
+            return false;
         }
 
         if (objInstance.IsValidPosition(this) == false)
@@ -369,12 +371,41 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
     }
 
     /// <summary>
-    /// Returns true if any of the neighours is walkable.
+    /// Returns true if any of the neighours can reach this tile. Checks for clipping of diagonal paths.
     /// </summary>
     /// <param name="checkDiagonals">Will test diagonals as well if true.</param>
-    public bool HasWalkableNeighbours(bool checkDiagonals = false)
+    public bool IsReachableFromAnyNeighbor(bool checkDiagonals = false)
     {
-        return GetNeighbours(checkDiagonals).Any(tile => tile != null && tile.MovementCost > 0);
+        return GetNeighbours(checkDiagonals).Any(tile => tile != null && tile.MovementCost > 0 && (checkDiagonals == false || IsClippingCorner(tile) == false));
+    }
+
+    public bool IsClippingCorner(Tile neighborTile)
+    {
+        // If the movement from curr to neigh is diagonal (e.g. N-E)
+        // Then check to make sure we aren't clipping (e.g. N and E are both walkable)
+        int dX = this.X - neighborTile.X;
+        int dY = this.Y - neighborTile.Y;
+
+        if (Mathf.Abs(dX) + Mathf.Abs(dY) == 2)
+        {
+            // We are diagonal
+            if (World.Current.GetTileAt(X - dX, Y, Z).PathfindingCost.AreEqual(0f))
+            {
+                // East or West is unwalkable, therefore this would be a clipped movement.
+                return true;
+            }
+
+            if (World.Current.GetTileAt(X, Y - dY, Z).PathfindingCost.AreEqual(0f))
+            {
+                // North or South is unwalkable, therefore this would be a clipped movement.
+                return true;
+            }
+
+            // If we reach here, we are diagonal, but not clipping
+        }
+
+        // If we are here, we are either not clipping, or not diagonal
+        return false;
     }
 
     public Tile North()
@@ -518,6 +549,58 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider
     public bool IsReservedWorkSpot()
     {
         return ReservedAsWorkSpotBy.Count > 0;
+    }
+
+    #region IComparable
+
+    public int CompareTo(object other)
+    {
+        if (other == null)
+        {
+            return 1;
+        }
+
+        Tile otherTile = other as Tile;
+        if (otherTile != null)
+        {
+            int result = this.Z.CompareTo(otherTile.Z);
+            if (result != 0)
+            {
+                return result;
+            }
+
+            result = this.Y.CompareTo(otherTile.Y);
+            if (result != 0)
+            {
+                return result;
+            }
+
+            return this.X.CompareTo(otherTile.X);
+        }
+        else
+        {
+            throw new ArgumentException("Object is not a Tile");
+        }
+    }
+
+    #endregion
+
+    #region IEquatable<T>
+
+    public bool Equals(Tile otherTile)
+    {
+        if (otherTile == null)
+        {
+            return false;
+        }
+
+        return X == otherTile.X && Y == otherTile.Y && Z == otherTile.Z;
+    }
+    #endregion
+
+    public override string ToString()
+    {
+        return string.Format("[{0} {1}, {2}, {3}]", Type, X, Y, Z);
     }
 
     private void ReportTileChanged()

@@ -17,6 +17,7 @@ using MoonSharp.Interpreter;
 // Inventory are things that are lying on the floor/stockpile, like a bunch of metal bars
 // or potentially a non-installed copy of furniture (e.g. a cabinet still in the box from Ikea).
 [MoonSharpUserData]
+[System.Diagnostics.DebuggerDisplay("Inventory {ObjectType} {StackSize}/{MaxStackSize}")]
 public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
 {
     private int stackSize = 1;
@@ -147,6 +148,17 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
             RequireCharacterSelected = true,
             Action = (cm, c) => Debug.ULogChannel("Inventory", "Sample menu action")
         };
+    }
+
+    public bool CanBePickedUp(bool canTakeFromStockpile)
+    {
+        // You can't pick up stuff that isn't on a tile or if it's locked
+        if (Tile == null || Locked)
+        {
+            return false;
+        }
+
+        return Tile.Furniture == null || canTakeFromStockpile == true || Tile.Furniture.HasTypeTag("Storage") == false;
     }
 
     private void ImportPrototypeSettings(int defaulMaxStackSize, float defaultBasePrice, string defaultCategory)

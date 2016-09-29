@@ -21,7 +21,7 @@ public class DialogBoxManager : MonoBehaviour
     public DialogBoxOptions dialogBoxOptions;
     public DialogBoxSettings dialogBoxSettings;
     public DialogBoxTrade dialogBoxTrade;
-    public DialogBoxAreYouSure dialogBoxAreYouSure;
+    public DialogBoxPromptOrInfo dialogBoxPromptOrInfo;
     public DialogBoxQuests dialogBoxQuests;
 
     public GameObject DialogBoxGO;
@@ -47,8 +47,8 @@ public class DialogBoxManager : MonoBehaviour
         tempGoObj = CreateDialogGO("DB_Trade", "Trade");
         dialogBoxTrade = tempGoObj.GetComponent<DialogBoxTrade>();
 
-        tempGoObj = CreateDialogGO("DB_AreYouSure", "Are You Sure");
-        dialogBoxAreYouSure = tempGoObj.GetComponent<DialogBoxAreYouSure>();
+        tempGoObj = CreateDialogGO("DB_PromptOrInfo", "Prompt or Info");
+        dialogBoxPromptOrInfo = tempGoObj.GetComponent<DialogBoxPromptOrInfo>();
 
         tempGoObj = CreateDialogGO("DB_JobList", "Job List");
         dialogBoxJobList = tempGoObj.GetComponent<DialogBoxJobList>();

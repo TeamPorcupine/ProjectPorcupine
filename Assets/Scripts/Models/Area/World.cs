@@ -1,8 +1,8 @@
 #region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
-// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
-// and you are welcome to redistribute it under certain conditions; See 
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
@@ -24,7 +24,6 @@ public class World : IXmlSerializable
     // TODO: Should this be also saved with the world data?
     // If so - beginner task!
     public readonly string GameVersion = "Someone_will_come_up_with_a_proper_naming_scheme_later";
-
     public Material skybox;
 
     // Store all temperature information
@@ -33,15 +32,12 @@ public class World : IXmlSerializable
     // The pathfinding graph used to navigate our world map.
     public Path_TileGraph tileGraph;
     public Path_RoomGraph roomGraph;
-
-    public Wallet Wallet;
-
+    
     // TODO: Most likely this will be replaced with a dedicated
     // class for managing job queues (plural!) that might also
     // be semi-static or self initializing or some damn thing.
     // For now, this is just a PUBLIC member of World
     public JobQueue jobQueue;
-    public JobQueue jobWaitingQueue;
 
     // A three-dimensional array to hold our tile data.
     private Tile[,,] tiles;
@@ -59,9 +55,6 @@ public class World : IXmlSerializable
         int seed = UnityEngine.Random.Range(0, int.MaxValue);
         WorldGenerator.Generate(this, seed);
         Debug.ULogChannel("World", "Generated World");
-
-        // Make one character
-        Debug.Log("Generated World");
 
         // Adding air to enclosed rooms
         foreach (Room room in this.RoomManager)
@@ -107,7 +100,7 @@ public class World : IXmlSerializable
 
     // The tile depth of the world
     public int Depth { get; protected set; }
-
+    
     /// <summary>
     /// Gets the inventory manager.
     /// </summary>
@@ -126,11 +119,16 @@ public class World : IXmlSerializable
     /// <value>The furniture manager.</value>
     public FurnitureManager FurnitureManager { get; private set; }
 
-    /// <summary>
     /// Gets the utility manager.
     /// </summary>
     /// <value>The furniture manager.</value>
     public UtilityManager UtilityManager { get; private set; }
+
+    /// <summary>
+    /// Gets the wallet.
+    /// </summary>
+    /// <value>The wallet.</value>
+    public Wallet Wallet { get; private set; }
 
     /// <summary>
     /// Gets the power network.
@@ -143,6 +141,12 @@ public class World : IXmlSerializable
     /// </summary>
     /// <value>The room manager.</value>
     public RoomManager RoomManager { get; private set; }
+
+    /// <summary>
+    /// Gets the ship manager.
+    /// </summary>
+    /// <value>The ship manager.</value>
+    public ShipManager ShipManager { get; private set; }
 
     /// <summary>
     /// Gets the camera data.
@@ -198,7 +202,7 @@ public class World : IXmlSerializable
     }
 
     /// <summary>
-    /// Reserves the furniture's work spot, preventing it from being built on.
+    /// Reserves the furniture's work spot, preventing it from being built on. Will not reserve a workspot inside of the furniture.
     /// </summary>
     /// <param name="furniture">The furniture whose workspot will be reserved.</param>
     /// <param name="tile">The tile on which the furniture is located, for furnitures which don't have a tile, such as prototypes.</param>
@@ -207,6 +211,12 @@ public class World : IXmlSerializable
         if (tile == null)
         {
             tile = furniture.Tile;
+        }
+
+        // if it's an internal workspot bail before reserving.
+        if (furniture.Jobs.WorkSpotIsInternal())
+        {
+            return;
         }
 
         GetTileAt(
@@ -316,13 +326,7 @@ public class World : IXmlSerializable
         writer.WriteElementString("Skybox", skybox.name);
 
         writer.WriteStartElement("Wallet");
-        foreach (Currency currency in Wallet.Currencies.Values)
-        {
-            writer.WriteStartElement("Currency");
-            currency.WriteXml(writer);
-            writer.WriteEndElement();
-        }
-
+        Wallet.WriteXml(writer);
         writer.WriteEndElement();
 
         Scheduler.Scheduler.Current.WriteXml(writer);
@@ -375,23 +379,51 @@ public class World : IXmlSerializable
         }
     }
 
-    private void ReadXml_Wallet(XmlReader reader)
+    private void SetupWorld(int width, int height, int depth)
     {
-        if (reader.ReadToDescendant("Currency"))
-        {
-            do
-            {
-                Currency c = new Currency
-                {
-                    Name = reader.GetAttribute("Name"),
-                    ShortName = reader.GetAttribute("ShortName"),
-                    Balance = float.Parse(reader.GetAttribute("Balance"))
-                };
+        // Set the current world to be this world.
+        // TODO: Do we need to do any cleanup of the old world?
+        Current = this;
 
-                Wallet.Currencies[c.Name] = c;
+        Width = width;
+        Height = height;
+        Depth = depth;
+
+        tiles = new Tile[Width, Height, Depth];
+
+        RoomManager = new RoomManager();
+        RoomManager.Adding += (room) => roomGraph = null;
+        RoomManager.Removing += (room) => roomGraph = null;
+
+        for (int x = 0; x < Width; x++)
+        {
+            for (int y = 0; y < Height; y++)
+            {
+                for (int z = 0; z < Depth; z++)
+                {
+                    tiles[x, y, z] = new Tile(x, y, z);
+                    tiles[x, y, z].TileChanged += OnTileChangedCallback;
+                    tiles[x, y, z].Room = RoomManager.OutsideRoom; // Rooms 0 is always going to be outside, and that is our default room
+                }
             }
-            while (reader.ReadToNextSibling("Character"));
         }
+
+        FurnitureManager = new FurnitureManager();
+        FurnitureManager.Created += OnFurnitureCreated;
+
+        ShipManager = new ShipManager();
+
+        UtilityManager = new UtilityManager();
+        CharacterManager = new CharacterManager();
+        InventoryManager = new InventoryManager();
+        jobQueue = new JobQueue();
+        CameraData = new CameraData();
+        PowerNetwork = new ProjectPorcupine.PowerNetwork.PowerNetwork();
+        temperature = new Temperature();
+        Wallet = new Wallet();
+
+        LoadSkybox();
+        AddEventListeners();
     }
 
     private void LoadSkybox(string name = null)
@@ -437,96 +469,6 @@ public class World : IXmlSerializable
         }
     }
 
-    private void SetupWorld(int width, int height, int depth)
-    {
-        jobQueue = new JobQueue();
-        jobWaitingQueue = new JobQueue();
-
-        // Set the current world to be this world.
-        // TODO: Do we need to do any cleanup of the old world?
-        Current = this;
-
-        Width = width;
-        Height = height;
-        Depth = depth;
-
-        tiles = new Tile[Width, Height, Depth];
-
-        RoomManager = new RoomManager();
-        RoomManager.Adding += (room) => roomGraph = null;
-        RoomManager.Removing += (room) => roomGraph = null;
-
-        for (int x = 0; x < Width; x++)
-        {
-            for (int y = 0; y < Height; y++)
-            {
-                for (int z = 0; z < Depth; z++)
-                {
-                    tiles[x, y, z] = new Tile(x, y, z);
-                    tiles[x, y, z].TileChanged += OnTileChangedCallback;
-                    tiles[x, y, z].Room = RoomManager.OutsideRoom; // Rooms 0 is always going to be outside, and that is our default room
-                }
-            }
-        }
-
-        CreateWallet();
-
-        FurnitureManager = new FurnitureManager();
-        FurnitureManager.Created += OnFurnitureCreated;
-
-        UtilityManager = new UtilityManager();
-        CharacterManager = new CharacterManager();
-        InventoryManager = new InventoryManager();
-        CameraData = new CameraData();
-        PowerNetwork = new ProjectPorcupine.PowerNetwork.PowerNetwork();
-        temperature = new Temperature();
-
-        LoadSkybox();
-        AddEventListeners();
-    }
-
-    private void CreateWallet()
-    {
-        Wallet = new Wallet();
-
-        string dataPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
-        string filePath = System.IO.Path.Combine(dataPath, "Currency.xml");
-        string xmlText = System.IO.File.ReadAllText(filePath);
-        LoadCurrencyFromFile(xmlText);
-
-        DirectoryInfo[] mods = WorldController.Instance.modsManager.GetMods();
-        foreach (DirectoryInfo mod in mods)
-        {
-            string xmlModFile = System.IO.Path.Combine(mod.FullName, "Currency.xml");
-            if (File.Exists(xmlModFile))
-            {
-                string xmlModText = System.IO.File.ReadAllText(xmlModFile);
-                LoadCurrencyFromFile(xmlModText);
-            }
-        }
-    }
-
-    private void LoadCurrencyFromFile(string xmlText)
-    {
-        XmlTextReader reader = new XmlTextReader(new StringReader(xmlText));
-
-        if (reader.ReadToDescendant("Currencies"))
-        {
-            try
-            {
-                Wallet.ReadXmlPrototype(reader);
-            }
-            catch (Exception e)
-            {
-                Debug.LogError("Error reading Currency " + Environment.NewLine + "Exception: " + e.Message + Environment.NewLine + "StackTrace: " + e.StackTrace);
-            }
-        }
-        else
-        {
-            Debug.LogError("Did not find a 'Currencies' element in the prototype definition file.");
-        }
-    }
-
     /// <summary>
     /// Calls update on characters.
     /// Also calls "OnFastUpdate" EventActions on visible furniture.
@@ -536,6 +478,7 @@ public class World : IXmlSerializable
     {
         CharacterManager.Update(deltaTime);
         FurnitureManager.TickEveryFrame(deltaTime);
+        ShipManager.Update(deltaTime);
     }
 
     /// <summary>
@@ -620,9 +563,9 @@ public class World : IXmlSerializable
 
                 // Create our inventory from the file
                 Inventory inv = new Inventory(
-                    reader.GetAttribute("type"),
-                    int.Parse(reader.GetAttribute("stackSize")),
-                    int.Parse(reader.GetAttribute("maxStackSize")))
+                                    reader.GetAttribute("type"),
+                                    int.Parse(reader.GetAttribute("stackSize")),
+                                    int.Parse(reader.GetAttribute("maxStackSize")))
                 {
                     Locked = bool.Parse(reader.GetAttribute("locked"))
                 };
@@ -730,9 +673,9 @@ public class World : IXmlSerializable
                                 {
                                     // Create our inventory from the file
                                     Inventory inv = new Inventory(
-                                        reader.GetAttribute("type"),
-                                        int.Parse(reader.GetAttribute("stackSize")),
-                                        int.Parse(reader.GetAttribute("maxStackSize")))
+                                                        reader.GetAttribute("type"),
+                                                        int.Parse(reader.GetAttribute("stackSize")),
+                                                        int.Parse(reader.GetAttribute("maxStackSize")))
                                     {
                                         Locked = bool.Parse(reader.GetAttribute("locked"))
                                     };
@@ -750,7 +693,22 @@ public class World : IXmlSerializable
         }
     }
 
+    private void ReadXml_Wallet(XmlReader reader)
+    {
+        if (reader.ReadToDescendant("Currency"))
+        {
+            do
+            {
+                Wallet.AddCurrency(
+                    reader.GetAttribute("Name"),
+                    float.Parse(reader.GetAttribute("Balance")));
+            }
+            while (reader.ReadToNextSibling("Currency"));
+        }
+    }
+
     #region TestFunctions
+
     /// <summary>
     /// Tests the room graph generation for the default world.
     /// </summary>
@@ -916,5 +874,6 @@ public class World : IXmlSerializable
             Debug.ULogChannel("Path_RoomGraph", "TestRoomGraphGeneration completed without errors!");
         }
     }
+
     #endregion
 }
