@@ -76,22 +76,22 @@ public class DialogBoxManager : MonoBehaviour
     // Temporary location until we have a better dialog manager
     private void AddMainMenuItems()
     {
-        MainMenu.Instance.AddMenuItem(
+        MainMenuManager.Instance.AddMenuItem(
             "menu_work",
             () => dialogBoxJobList.ShowDialog(),
             "menu_construction");
 
-        MainMenu.Instance.AddMenuItem(
+        MainMenuManager.Instance.AddMenuItem(
             "menu_world",
             null,
             "menu_work");
 
-        MainMenu.Instance.AddMenuItem(
+        MainMenuManager.Instance.AddMenuItem(
             "menu_quests",
             () => dialogBoxQuests.ShowDialog(),
             "menu_world");
 
-        MainMenu.Instance.AddMenuItem(
+        MainMenuManager.Instance.AddMenuItem(
             "menu_options",
             () =>
             {

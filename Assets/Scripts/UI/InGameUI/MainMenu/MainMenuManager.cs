@@ -10,16 +10,16 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-public class MainMenu : IEnumerable<MainMenuItem>
+public class MainMenuManager : IEnumerable<MainMenuItem>
 {
-    private static MainMenu instance;
+    private static MainMenuManager instance;
     private List<MainMenuItem> menuItems;
     private Dictionary<string, List<MainMenuItem>> itemsToAdd;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MainMenu"/> class.
     /// </summary>
-    public MainMenu()
+    public MainMenuManager()
     {
         instance = this;
         menuItems = new List<MainMenuItem>();
@@ -35,13 +35,13 @@ public class MainMenu : IEnumerable<MainMenuItem>
     /// Gets or sets the Main Menu instance.
     /// </summary>
     /// <value>The Main Menu instance.</value>
-    public static MainMenu Instance
+    public static MainMenuManager Instance
     {
         get
         {
             if (instance == null)
             {
-                new MainMenu();
+                new MainMenuManager();
             }
 
             return instance;

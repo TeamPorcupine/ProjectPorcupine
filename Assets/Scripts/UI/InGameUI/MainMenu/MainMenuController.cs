@@ -37,7 +37,7 @@ public class MainMenuController : MonoBehaviour
 
         CreateMainManu();
 
-        MainMenu.Instance.Added += CreateMainManu;
+        MainMenuManager.Instance.Added += CreateMainManu;
     }
 
     private void CreateMainManu()
@@ -50,7 +50,7 @@ public class MainMenuController : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        foreach (MainMenuItem mainMenuItem in MainMenu.Instance)
+        foreach (MainMenuItem mainMenuItem in MainMenuManager.Instance)
         {
             CreateButton(mainMenuItem);
         }
