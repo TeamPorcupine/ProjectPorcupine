@@ -618,7 +618,7 @@
         </DeconstructJob>
 
         <Params>
-            <Param name="gas_throughput" value="0.5" />
+            <Param name="gas_throughput" value="1" />
             <Param name="source_pressure_limit" value="0" />
             <Param name="target_pressure_limit" value="1" />
             <Param name="flow_direction_up" value="1" />

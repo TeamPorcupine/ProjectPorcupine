@@ -318,7 +318,6 @@ namespace ProjectPorcupine.Rooms
 
         public void MoveGasTo(Room room, float amount, float pressureLimit)
         {
-            Debug.LogWarning("Still Moving Gas");
             MoveGasTo(room, Mathf.Min(amount, (room.TileCount * pressureLimit) - room.GetTotalGas()));
         }
 
