@@ -23,9 +23,9 @@ public class SchedulerEditorTest
         end";
     
     private const string XmlPrototypeString = @"
-        <Events>
-            <Event name=""ping_log_lua"" onFire=""ping_log_lua""/>
-        </Events>";
+        <ScheduledEvents>
+            <ScheduledEvent name=""ping_log_lua"" onFire=""ping_log_lua""/>
+        </ScheduledEvents>";
 
     private Scheduler.Scheduler scheduler;
     private Action<ScheduledEvent> callback;
