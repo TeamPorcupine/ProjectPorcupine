@@ -508,12 +508,22 @@ Prefab:
       propertyPath: m_Pivot.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 224000011377820364, guid: b65aa179384139040bb9b7291b4923c5,
+        type: 2}
+      propertyPath: m_RootOrder
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 224000011377820364, guid: b65aa179384139040bb9b7291b4923c5,
+        type: 2}
+      propertyPath: m_SizeDelta.x
+      value: 10
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: b65aa179384139040bb9b7291b4923c5, type: 2}
   m_IsPrefabParent: 0
 --- !u!224 &421907841 stripped
 RectTransform:
-  m_PrefabParentObject: {fileID: 224000011176890212, guid: b65aa179384139040bb9b7291b4923c5,
+  m_PrefabParentObject: {fileID: 224000011377820364, guid: b65aa179384139040bb9b7291b4923c5,
     type: 2}
   m_PrefabInternal: {fileID: 421907840}
 --- !u!1 &462597547
@@ -736,7 +746,6 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 752785403}
-  - 114: {fileID: 752785406}
   - 114: {fileID: 752785405}
   m_Layer: 0
   m_Name: Controllers
@@ -768,17 +777,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5e7a894cc58fce74f8f9919998cfdc22, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &752785406
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 752785402}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dbd5bb9cda53d874cb0c4b093b301c01, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &821802274
@@ -1382,13 +1380,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   transparency: 0.8
   updateInterval: 5
-  pixelsPerTileX: 20
-  pixelsPerTileY: 20
   sizeX: 10
   sizeY: 10
+  colorMapWidth: 20
   currentOverlay: 
-  xmlFileName: overlay_prototypes.xml
-  LUAFileName: overlay_functions.lua
   parentPanel: {fileID: 0}
 --- !u!33 &1495659351
 MeshFilter:
@@ -1626,7 +1621,7 @@ MonoBehaviour:
   dialogBoxOptions: {fileID: 0}
   dialogBoxSettings: {fileID: 0}
   dialogBoxTrade: {fileID: 0}
-  dialogBoxAreYouSure: {fileID: 0}
+  dialogBoxPromptOrInfo: {fileID: 0}
   dialogBoxQuests: {fileID: 0}
   DialogBoxGO: {fileID: 0}
 --- !u!1 &2038247388
