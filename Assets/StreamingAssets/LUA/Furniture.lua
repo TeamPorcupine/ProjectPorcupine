@@ -112,9 +112,9 @@ function IsEnterable_AirlockDoor( furniture )
                 -- Pressure's different, pump to equalize
                 if(math.abs(ModUtils.Round(insideRoom.GetTotalGasPressure(),3) - ModUtils.Round(outsideRoom.GetTotalGasPressure(),3)) > tolerance) then
                     if (insideRoom.GetTotalGasPressure() < outsideRoom.GetTotalGasPressure()) then
-                        insideRoom.RoomBehaviors["roombehavior_airlock"].CallEventAction("PumpIn")
+                        insideRoom.RoomBehaviors["roombehavior_airlock"].CallEventAction("PumpIn",  outsideRoom.GetTotalGasPressure())
                     else
-                        insideRoom.RoomBehaviors["roombehavior_airlock"].CallEventAction("PumpOut")
+                        insideRoom.RoomBehaviors["roombehavior_airlock"].CallEventAction("PumpOut", outsideRoom.GetTotalGasPressure())
                     end
                     return ENTERABILITY_SOON
                 else

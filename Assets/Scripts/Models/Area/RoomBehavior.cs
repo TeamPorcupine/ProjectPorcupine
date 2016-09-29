@@ -428,9 +428,9 @@ namespace ProjectPorcupine.Rooms
         }
 
         [MoonSharpVisible(true)]
-        private void CallEventAction(string actionName)
+        private void CallEventAction(string actionName, params object[] parameters)
         {
-            EventActions.Trigger(actionName, this);
+            EventActions.Trigger(actionName, this, parameters);
         }
 
         private bool DefaultIsValidRoom(Room room)

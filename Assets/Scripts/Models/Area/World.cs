@@ -59,7 +59,7 @@ public class World : IXmlSerializable
         // Adding air to enclosed rooms
         foreach (Room room in this.RoomManager)
         {
-            if (room.ID > 0 && room.ID != 5 && room.ID != 6)
+            if (room.ID > 0)
             {
                 room.ChangeGas("O2", 0.2f * room.TileCount);
                 room.ChangeGas("N2", 0.8f * room.TileCount);

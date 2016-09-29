@@ -30,11 +30,13 @@ function OnControl_Airlock( roomBehavior, deltaTime )
     end
 end
 
-function PumpOut_Airlock( roomBehavior, deltaTime )
+function PumpOut_Airlock( roomBehavior, targetPressure )
 --ModUtils.ULogWarning(os.clock() - roomBehavior.Parameters["pump_off_time"].ToFloat())
     if (roomBehavior.Parameters["is_pumping"].ToBool() == false and (os.clock() - roomBehavior.Parameters["pump_off_time"].ToFloat()) > 2) then
         roomBehavior.Parameters["is_pumping"].SetValue(true)
         for discard, pump in pairs(roomBehavior.ControlledFurniture["pump_air"]) do
+            pump.Parameters["source_pressure_limit"].SetValue(targetPressure)
+            pump.Parameters["target_pressure_limit"].SetValue(3)
             pump.Parameters["active"].SetValue(true)
             pump.Parameters["flow_direction_up"].SetValue(pump.Parameters["out_direction"].ToFloat())
             pump.UpdateOnChanged(pump)
@@ -42,11 +44,13 @@ function PumpOut_Airlock( roomBehavior, deltaTime )
     end
 end
 
-function PumpIn_Airlock( roomBehavior, deltaTime )
+function PumpIn_Airlock( roomBehavior, targetPressure )
 --ModUtils.ULogWarning(os.clock() - roomBehavior.Parameters["pump_off_time"].ToFloat())
     if (roomBehavior.Parameters["is_pumping"].ToBool() == false and (os.clock() - roomBehavior.Parameters["pump_off_time"].ToFloat()) > 2) then
         roomBehavior.Parameters["is_pumping"].SetValue(true)
         for discard, pump in pairs(roomBehavior.ControlledFurniture["pump_air"]) do
+            pump.Parameters["source_pressure_limit"].SetValue(0)
+            pump.Parameters["target_pressure_limit"].SetValue(targetPressure)
             pump.Parameters["active"].SetValue(true)
             pump.Parameters["flow_direction_up"].SetValue(1 - pump.Parameters["out_direction"].ToFloat())
             pump.UpdateOnChanged(pump)
