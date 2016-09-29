@@ -15,6 +15,7 @@ using System.Xml.Serialization;
 using Animation;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
+using ProjectPorcupine.Buildable.Components;
 using ProjectPorcupine.Jobs;
 using ProjectPorcupine.PowerNetwork;
 using UnityEngine;
@@ -48,7 +49,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// </summary>
     private List<ContextMenuLuaAction> contextMenuLuaActions;
     
-    private HashSet<ProjectPorcupine.Buildable.Components.Component> components;
+    private HashSet<BuildableComponent> components;
 
     // This is the generic type of object this is, allowing things to interact with it based on it's generic type
     private HashSet<string> typeTags;
@@ -93,7 +94,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         Width = 1;
         DragType = "single";
         LinksToNeighbour = string.Empty;
-        components = new HashSet<ProjectPorcupine.Buildable.Components.Component>();
+        components = new HashSet<BuildableComponent>();
     }
 
     /// <summary>
@@ -120,7 +121,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         Jobs = new BuildableJobs(this, other.Jobs);
 
         // don't need to clone here, as all are prototype things (not changing)
-        components = new HashSet<ProjectPorcupine.Buildable.Components.Component>(other.components);
+        components = new HashSet<BuildableComponent>(other.components);
 
         if (other.Animation != null)
         {
@@ -385,8 +386,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         // need to update reference to furniture and call Initialize (so components can place hooks on events there)
         foreach (var comp in obj.components)
         {
-            comp.ParentFurniture = obj;
-            comp.Initialize();
+            comp.Initialize(obj);
         }
       
         if (tile.PlaceFurniture(obj) == false)
@@ -450,6 +450,11 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         {
             EventActions.Trigger("OnFastUpdate", this, deltaTime);
         }
+
+        foreach (var cmp in components)
+        {
+            cmp.EveryFrameUpdate(deltaTime);
+        }
     }
 
     /// <summary>
@@ -479,14 +484,11 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         {
             EventActions.Trigger("OnUpdate", this, deltaTime);
         }
-
-        if (!IsBeingDestroyed)
+                
+        foreach (var cmp in components)
         {
-            foreach (var cmp in components)
-            {
-                cmp.FixedFrequencyUpdate(deltaTime);
-            }
-        }
+            cmp.FixedFrequencyUpdate(deltaTime);
+        }        
         
         if (Animation != null)
         {
@@ -753,7 +755,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                     UnlocalizedDescription = reader.ReadContentAsString();
                     break;
                 case "Component":
-                    var cmp = ProjectPorcupine.Buildable.Components.Component.Deserialize(reader);
+                    var cmp = BuildableComponent.Deserialize(reader);
                     if (cmp != null)
                     {
                         components.Add(cmp);
@@ -1122,9 +1124,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             var compContextMenu = comp.GetContextMenu();
             if (compContextMenu != null)
             {
-                foreach (ComponentContextMenu compContextMenuAction in compContextMenu)
+                foreach (ContextMenuAction compContextMenuAction in compContextMenu)
                 {
-                    yield return CreateWorkshopContextMenuItem(compContextMenuAction);
+                    yield return compContextMenuAction;
                 }
             }
         }
@@ -1219,21 +1221,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     }
 
     #region Private Context Menu
-    private ContextMenuAction CreateWorkshopContextMenuItem(ComponentContextMenu componentContextMenuAction)
-    {
-        return new ContextMenuAction
-        {
-            Text = componentContextMenuAction.Name, // TODO: localization here
-            RequireCharacterSelected = false,
-            Action = (cma, c) => InvokeContextMenuAction(componentContextMenuAction.Function, componentContextMenuAction.Name)
-        };
-    }
-
-    private void InvokeContextMenuAction(Action<Furniture, string> function, string arg)
-    {
-        function(this, arg);
-    }
-
     private void InvokeContextMenuLuaAction(ContextMenuAction action, Character character)
     {
         FunctionsManager.Furniture.Call(action.Parameter, this, character);

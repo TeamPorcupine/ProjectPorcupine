@@ -33,7 +33,7 @@ public class ComponentTest
         XmlReader reader = new XmlTextReader(new StringReader(inputXML));
         reader.Read();
                 
-        var cmp = ProjectPorcupine.Buildable.Components.Component.Deserialize(reader);
+        var cmp = ProjectPorcupine.Buildable.Components.BuildableComponent.Deserialize(reader);
 
         Assert.NotNull(cmp);
         Assert.AreEqual("Workshop", cmp.Type);
@@ -86,7 +86,7 @@ public class ComponentTest
                
         // serialize
         StringWriter writer = new StringWriter();
-        XmlSerializer serializer = new XmlSerializer(typeof(Component), new Type[] { typeof(Workshop) });
+        XmlSerializer serializer = new XmlSerializer(typeof(BuildableComponent), new Type[] { typeof(Workshop) });
 
         serializer.Serialize(writer, fi);        
 

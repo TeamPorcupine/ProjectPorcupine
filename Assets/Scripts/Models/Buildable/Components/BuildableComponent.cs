@@ -17,25 +17,31 @@ using System.Xml.Serialization;
 namespace ProjectPorcupine.Buildable.Components
 {
     [Serializable]
-    public abstract class Component
+    public abstract class BuildableComponent
     {
         protected static readonly string ComponentLogChannel = "FurnitureComponents";
 
         private static Dictionary<string, Type> componentTypes;
         
-        public Component()
+        public BuildableComponent()
         {
             // need to set it, for some reason GetHashCode is called during serialization (when Name is still null)
             Type = string.Empty;
         }
-        
-        [XmlIgnore]
-        public Furniture ParentFurniture { get; set; }
-        
+
         [XmlIgnore]
         public string Type { get; set; }
 
-        public static Component Deserialize(XmlReader xmlReader)
+        [XmlIgnore]
+        protected Furniture ParentFurniture { get; set; }
+
+        [XmlIgnore]
+        protected Parameter FurnitureParams
+        {
+            get { return ParentFurniture.Parameters; }
+        }
+        
+        public static BuildableComponent Deserialize(XmlReader xmlReader)
         {
             if (componentTypes == null)
             {
@@ -48,7 +54,7 @@ namespace ProjectPorcupine.Buildable.Components
                 xmlReader = xmlReader.ReadSubtree();
                 Type t = componentTypes[componentTypeName];
                 XmlSerializer serializer = new XmlSerializer(t);
-                var cmp = (Component)serializer.Deserialize(xmlReader);
+                var cmp = (BuildableComponent)serializer.Deserialize(xmlReader);
                 //// need to set name explicitly (not part of deserialization as it's passed in)
                 cmp.Type = componentTypeName;
                 return cmp;
@@ -60,15 +66,21 @@ namespace ProjectPorcupine.Buildable.Components
             }
         }
 
-        public virtual void Initialize()
+        public void Initialize(Furniture parentFurniture)
         {
+            ParentFurniture = parentFurniture;
+            Initialize();
         }
 
         public virtual void FixedFrequencyUpdate(float deltaTime)
         {
         }
 
-        public virtual List<ComponentContextMenu> GetContextMenu()
+        public virtual void EveryFrameUpdate(float deltaTime)
+        {
+        }
+
+        public virtual List<ContextMenuAction> GetContextMenu()
         {
             return null;
         }
@@ -93,6 +105,23 @@ namespace ProjectPorcupine.Buildable.Components
             return Type.Equals(obj);
         }
 
+        protected abstract void Initialize();
+
+        protected ContextMenuAction CreateComponentContextMenuItem(ComponentContextMenu componentContextMenuAction)
+        {
+            return new ContextMenuAction
+            {
+                Text = componentContextMenuAction.Name, // TODO: localization here
+                RequireCharacterSelected = false,
+                Action = (cma, c) => InvokeContextMenuAction(componentContextMenuAction.Function, componentContextMenuAction.Name)
+            };
+        }
+
+        protected void InvokeContextMenuAction(Action<Furniture, string> function, string arg)
+        {
+            function(ParentFurniture, arg);
+        }
+
         private static Dictionary<string, System.Type> FindComponentsInAssembly()
         {
             componentTypes = new Dictionary<string, System.Type>();
@@ -101,10 +130,10 @@ namespace ProjectPorcupine.Buildable.Components
             {
                 foreach (Type type in assembly.GetTypes())
                 {
-                    var attribs = type.GetCustomAttributes(typeof(ComponentNameAttribute), false);
+                    var attribs = type.GetCustomAttributes(typeof(BuildableComponentNameAttribute), false);
                     if (attribs != null && attribs.Length > 0)
                     {
-                        foreach (ComponentNameAttribute compNameAttr in attribs)
+                        foreach (BuildableComponentNameAttribute compNameAttr in attribs)
                         {
                             componentTypes.Add(compNameAttr.ComponentName, type);
                             Debug.ULogChannel(ComponentLogChannel, "Found component in assembly: {0}", compNameAttr.ComponentName);

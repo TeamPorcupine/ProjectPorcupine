@@ -11,11 +11,11 @@ using System;
 namespace ProjectPorcupine.Buildable.Components
 {
     [AttributeUsage(AttributeTargets.Class)]
-    public class ComponentNameAttribute : Attribute
+    public class BuildableComponentNameAttribute : Attribute
     {
         public readonly string ComponentName;
         
-        public ComponentNameAttribute(string componentName)  
+        public BuildableComponentNameAttribute(string componentName)  
         {
             this.ComponentName = componentName;
         }

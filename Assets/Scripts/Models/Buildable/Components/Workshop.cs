@@ -18,8 +18,8 @@ namespace ProjectPorcupine.Buildable.Components
 {
     [Serializable]
     [XmlRoot("Component")]
-    [ComponentName("Workshop")]
-    public class Workshop : Component
+    [BuildableComponentName("Workshop")]
+    public class Workshop : BuildableComponent
     {
         // constants for parameters
         public const string CurProcessingTimeParamName = "cur_processing_time";
@@ -37,12 +37,7 @@ namespace ProjectPorcupine.Buildable.Components
         
         [XmlIgnore]
         public bool IsRunning { get; private set; }
-
-        protected Parameter FurnitureParams
-        {
-            get { return ParentFurniture.Parameters; }
-        }
-
+        
         [XmlIgnore]
         private List<ComponentContextMenu> WorkshopMenuActions { get; set; }
 
@@ -53,45 +48,6 @@ namespace ProjectPorcupine.Buildable.Components
             sb.AppendLine(!string.IsNullOrEmpty(prodChain) ? string.Format("Production: {0}", prodChain) : "No selected production");
             return sb.ToString();
         }
-
-        public override void Initialize()
-        {
-            // check if context menu is needed
-            if (PossibleProductions.Count > 1)
-            {
-                WorkshopMenuActions = new List<ComponentContextMenu>();
-
-                FurnitureParams.AddParameter(new Parameter(CurProductionChainParamName, null));
-                foreach (var chain in PossibleProductions)
-                {
-                    string prodChainName = chain.Name;
-                    WorkshopMenuActions.Add(new ComponentContextMenu()
-                    {
-                        Name = prodChainName,
-                        Function = ChangeCurrentProductionChain
-                    });
-                }
-            }
-            else
-            {
-                if (PossibleProductions.Count == 1)
-                {
-                    FurnitureParams.AddParameter(new Parameter(CurProductionChainParamName, PossibleProductions[0].Name));
-                }
-                else
-                {
-                    Debug.ULogWarningChannel(ComponentLogChannel, "Furniture {0} is marked as factory, but has no production chain", ParentFurniture.Name);
-                }
-            }
-
-            // add dynamic params here
-            FurnitureParams.AddParameter(new Parameter(CurProcessingTimeParamName, 0f));
-            FurnitureParams.AddParameter(new Parameter(MaxProcessingTimeParamName, 0f));
-            FurnitureParams.AddParameter(new Parameter(CurProcessedInvParamName, 0));
-            IsRunning = false;
-            OnRunningStateChanged += RunningStateChanged;
-            ParentFurniture.Removed += WorkshopRemoved;
-        }
         
         public override void FixedFrequencyUpdate(float deltaTime)
         {
@@ -101,6 +57,11 @@ namespace ProjectPorcupine.Buildable.Components
             ////   - as output will be produced after time, it is possible that output spot can be ocupied meanwhile
             //// - process for specified time
             //// - if output slot is free, provide output (if not, keep output 'inside' factory)
+
+            if (ParentFurniture.IsBeingDestroyed)
+            {
+                return;
+            }
 
             var curSetupChainName = FurnitureParams[CurProductionChainParamName].ToString();
 
@@ -161,12 +122,51 @@ namespace ProjectPorcupine.Buildable.Components
             }
         }
 
-        public override List<ComponentContextMenu> GetContextMenu()
+        public override List<ContextMenuAction> GetContextMenu()
         {
-            return WorkshopMenuActions;
+            return WorkshopMenuActions.Select(x => CreateComponentContextMenuItem(x)).ToList();
         }
-        
-        private static void PlaceInventories(List<TileObjectTypeAmount> outPlacement)
+
+        protected override void Initialize()
+        {
+            // check if context menu is needed
+            if (PossibleProductions.Count > 1)
+            {
+                WorkshopMenuActions = new List<ComponentContextMenu>();
+
+                FurnitureParams.AddParameter(new Parameter(CurProductionChainParamName, null));
+                foreach (var chain in PossibleProductions)
+                {
+                    string prodChainName = chain.Name;
+                    WorkshopMenuActions.Add(new ComponentContextMenu()
+                    {
+                        Name = prodChainName,
+                        Function = ChangeCurrentProductionChain
+                    });
+                }
+            }
+            else
+            {
+                if (PossibleProductions.Count == 1)
+                {
+                    FurnitureParams.AddParameter(new Parameter(CurProductionChainParamName, PossibleProductions[0].Name));
+                }
+                else
+                {
+                    Debug.ULogWarningChannel(ComponentLogChannel, "Furniture {0} is marked as factory, but has no production chain", ParentFurniture.Name);
+                }
+            }
+
+            // add dynamic params here
+            FurnitureParams.AddParameter(new Parameter(CurProcessingTimeParamName, 0f));
+            FurnitureParams.AddParameter(new Parameter(MaxProcessingTimeParamName, 0f));
+            FurnitureParams.AddParameter(new Parameter(CurProcessedInvParamName, 0));
+            IsRunning = false;
+            OnRunningStateChanged += RunningStateChanged;
+            ParentFurniture.Removed += WorkshopRemoved;
+        }
+
+        private void PlaceInventories(List<TileObjectTypeAmount> outPlacement)
         {
             foreach (var outPlace in outPlacement)
             {
@@ -181,7 +181,7 @@ namespace ProjectPorcupine.Buildable.Components
             }
         }
 
-        private static void ConsumeInventories(List<KeyValuePair<Tile, int>> flaggedForTaking)
+        private void ConsumeInventories(List<KeyValuePair<Tile, int>> flaggedForTaking)
         {
             foreach (KeyValuePair<Tile, int> toConsume in flaggedForTaking)
             {
@@ -194,7 +194,7 @@ namespace ProjectPorcupine.Buildable.Components
             }
         }
 
-        private static void PlaceInventoryToWorkshopInput(Job job)
+        private void PlaceInventoryToWorkshopInput(Job job)
         {
             job.CancelJob();
             foreach (Inventory heldInventory in job.HeldInventory.Values)
@@ -207,7 +207,7 @@ namespace ProjectPorcupine.Buildable.Components
             }
         }
 
-        private static void UnlockInventoryAtInput(Furniture furniture, ProductionChain prodChain)
+        private void UnlockInventoryAtInput(Furniture furniture, ProductionChain prodChain)
         {
             foreach (Item inputItem in prodChain.Input)
             {
