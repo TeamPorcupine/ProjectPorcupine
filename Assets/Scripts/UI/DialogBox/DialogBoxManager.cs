@@ -119,6 +119,10 @@ public class DialogBoxManager : MonoBehaviour
                     dbLua.LoadFromXML(fInfo);
                     DialogBoxPrefab.name = dbLua.Title;
                     break;
+                case ".lua":
+
+                    break;
+
             }
         }
     }

@@ -1,4 +1,12 @@
-﻿using System.Collections;
+﻿#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
+using System.Collections;
 using System.IO;
 using System.Xml;
 using UnityEngine;
@@ -6,32 +14,37 @@ using UnityEngine.UI;
 
 public class DialogBoxLua : DialogBox
 {
-    public Transform content { get; protected set; }
-    private string _title;
-    public string Title {
-        get{
-            return _title;
+    private string title;
+    private XmlReader reader;
+
+    public Transform Content { get; protected set; }
+
+    public string Title
+    {
+        get
+        {
+            return title;
         }
+
         protected set
         {
-            _title = value;
+            title = value;
             transform.GetChild(0).GetChild(0).GetComponentInChildren<Text>().text = value;
         }
     }
-
-    private XmlReader reader;
-
+    
     public override void ShowDialog()
     {
         base.ShowDialog();
     }
+
     public void LoadFromXML(FileInfo file)
     {
         // TODO: Find a better way to do this. Not user friendly/Expansible.
         // DialogBoxLua -> Dialog Background
         //                 |-> Title
         //                 |-> Content
-        content = transform.GetChild(0).GetChild(1);
+        Content = transform.GetChild(0).GetChild(1);
 
         reader = XmlReader.Create(file.OpenRead());
         while (reader.Read())
@@ -44,16 +57,16 @@ public class DialogBoxLua : DialogBox
                 case "Content":
                     while (reader.Read())
                     {
-                        switch(reader.Name)
+                        switch (reader.Name)
                         {
                             case "Text":
-                                Debug.ULogChannel("DBLua","Text: " + reader.ReadElementContentAsString());
+                                Debug.ULogChannel("DBLua", "Text: " + reader.ReadElementContentAsString());
                                 break;
                         }
                     }
+
                     break;
             }
         }
-
     }
 }
