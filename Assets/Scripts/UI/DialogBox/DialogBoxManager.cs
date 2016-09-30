@@ -7,6 +7,8 @@
 // ====================================================
 #endregion
 using System.Collections;
+using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -24,10 +26,12 @@ public class DialogBoxManager : MonoBehaviour
     public DialogBoxAreYouSure dialogBoxAreYouSure;
     public DialogBoxQuests dialogBoxQuests;
 
+    public Dictionary<string, DialogBox> DialogBoxes;
     public GameObject DialogBoxGO;
 
     public void Awake()
     {
+        DialogBoxes = new Dictionary<string, DialogBox>();
         DialogBoxGO = GameObject.Find("Dialog Boxes");
 
         GameObject tempGoObj;
@@ -56,6 +60,8 @@ public class DialogBoxManager : MonoBehaviour
         tempGoObj = CreateDialogGO("DB_Quests", "Quests");
         dialogBoxQuests = tempGoObj.GetComponent<DialogBoxQuests>();
         AddQuestList();
+
+        LoadDialogBoxesLua();
     }
 
     /// <summary>
@@ -89,5 +95,27 @@ public class DialogBoxManager : MonoBehaviour
         buttonQuestGameObject.name = "ToggleQuestPinButton";
         buttonQuestGameObject.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, -30, 0);
         return buttonQuestGameObject.GetComponent<Toggle>();
+    }
+
+    private void LoadDialogBoxesLua()
+    {
+        Debug.ULogChannel("DBLua", "Loading xml dialog boxes");
+        string DBPath = Path.Combine(Application.streamingAssetsPath, "UI");
+        DBPath = Path.Combine(DBPath, "DialogBoxes");
+        DirectoryInfo DBPathInfo = new DirectoryInfo(DBPath);
+
+        foreach(FileInfo fInfo in DBPathInfo.GetFiles())
+        {
+            switch (fInfo.Extension)
+            {
+                case ".xml":
+                    Debug.ULogChannel("DBLua", "Found xml element:" + fInfo.Name);
+                    GameObject DialogBoxPrefab = CreateDialogGO("DB_LUA", "Lua Dialog Box");
+                    DialogBoxLua dbLua = DialogBoxPrefab.GetComponent<DialogBoxLua>();
+                    dbLua.LoadFromXML(fInfo);
+                    DialogBoxPrefab.name = dbLua.Title;
+                    break;
+            }
+        }
     }
 }
