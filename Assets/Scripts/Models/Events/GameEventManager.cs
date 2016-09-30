@@ -28,11 +28,11 @@ public class GameEventManager
     /// Update the current game events.
     /// </summary>
     /// <param name="deltaTIme">Delta time.</param>
-    public void Update(float deltaTIme)
+    public void Update(float deltaTime)
     {
         foreach (GameEvent gameEvent in currentEvents)
         {
-            gameEvent.Update(deltaTIme);
+            gameEvent.Update(deltaTime);
         }
     }
 }
