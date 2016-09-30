@@ -98,8 +98,8 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
     {
         get
         {
-            // If Tile's BaseMovementCost or Furniture's MovementCost = 0 (i.e. impassable) we should always return 0 (stay impassable)
-            if (Type.BaseMovementCost == 0 || (Furniture != null && Furniture.MovementCost == 0))
+            // If Tile's BaseMovementCost, PathFindingWeight or Furniture's MovementCost, PathFindingWeight = 0 (i.e. impassable) we should always return 0 (stay impassable)
+            if (Type.BaseMovementCost.AreEqual(0) || Type.PathfindingWeight.AreEqual(0) || (Furniture != null && (Furniture.MovementCost.AreEqual(0) || Furniture.PathfindingWeight.AreEqual(0))))
             {
                 return 0f;
             }

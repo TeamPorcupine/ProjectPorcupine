@@ -9,11 +9,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using MoonSharp.Interpreter;
+using ProjectPorcupine.Rooms;
 using UnityEngine;
 
 public enum BuildMode
 {
     FLOOR,
+    ROOMBEHAVIOR,
     FURNITURE,
     UTILITY,
     DECONSTRUCT
@@ -54,6 +56,12 @@ public class BuildModeController
             return true;
         }
 
+        if (buildMode == BuildMode.ROOMBEHAVIOR)
+        {
+            // Room Behaviors are not draggable
+            return false;
+        }
+
         Furniture proto = PrototypeManager.Furniture.Get(buildModeType);
 
         return proto.DragType != "single";
@@ -69,6 +77,13 @@ public class BuildModeController
         buildMode = BuildMode.FLOOR;
         buildModeTile = type;
 
+        mouseController.StartBuildMode();
+    }
+
+    public void SetMode_DesignateRoomBehavior(string type)
+    {
+        buildMode = BuildMode.ROOMBEHAVIOR;
+        buildModeType = type;
         mouseController.StartBuildMode();
     }
 
@@ -97,7 +112,17 @@ public class BuildModeController
 
     public void DoBuild(Tile tile)
     {
-        if (buildMode == BuildMode.FURNITURE)
+        if (buildMode == BuildMode.ROOMBEHAVIOR)
+        {
+            string roomBehaviorType = buildModeType;
+
+            if (tile.Room != null && WorldController.Instance.World.IsRoomBehaviorValidForRoom(roomBehaviorType, tile.Room))
+            {
+                RoomBehavior proto = PrototypeManager.RoomBehavior.Get(roomBehaviorType); 
+                tile.Room.DesignateRoomBehavior(proto.Clone());
+            }
+        }
+        else if (buildMode == BuildMode.FURNITURE)
         {
             // Create the Furniture and assign it to the tile
             // Can we build the furniture in the selected tile?

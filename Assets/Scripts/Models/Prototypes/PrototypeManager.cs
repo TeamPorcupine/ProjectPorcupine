@@ -7,6 +7,7 @@
 // ====================================================
 #endregion
 using System.Collections.Generic;
+using ProjectPorcupine.Rooms;
 using Scheduler;
 
 /// <summary>
@@ -27,6 +28,7 @@ public class PrototypeManager
         Utility = new PrototypeMap<Utility>("Utilities", "Utility");
         UtilityConstructJob = new PrototypeMap<Job>();
         UtilityDeconstructJob = new PrototypeMap<Job>();
+        RoomBehavior = new PrototypeMap<RoomBehavior>("RoomBehaviors", "RoomBehavior");
         Need = new PrototypeMap<Need>("Needs", "Need");
         Trader = new PrototypeMap<TraderPrototype>("Traders", "Trader");
         Currency = new PrototypeMap<Currency>("Currencies", "Currency");
@@ -77,6 +79,11 @@ public class PrototypeManager
     /// </summary>
     /// <value>The furniture deconstructjob prototype map.</value>
     public static PrototypeMap<Job> UtilityDeconstructJob { get; private set; }
+
+    /// Gets the roomBehavior prototype map.
+    /// </summary>
+    /// <value>The roomBehavior prototype map.</value>
+    public static PrototypeMap<RoomBehavior> RoomBehavior { get; private set; }
 
     /// <summary>
     /// Gets the inventory prototype map.

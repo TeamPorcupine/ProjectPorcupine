@@ -175,6 +175,18 @@ public class Parameter
         return returnValue;
     }
 
+    public bool ToBool()
+    {
+        if (string.Equals(value, "true", System.StringComparison.OrdinalIgnoreCase) || ToFloat().AreEqual(1))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     public float ToFloat(float defaultValue) 
     {
         if (value == null)

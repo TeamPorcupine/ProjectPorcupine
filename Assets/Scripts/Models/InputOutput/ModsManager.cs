@@ -27,6 +27,7 @@ public class ModsManager
     {
         LoadFunctions("Furniture.lua", "Furniture");
         LoadFunctions("Utility.lua", "Utility");
+        LoadFunctions("RoomBehavior.lua", "RoomBehavior");
         LoadFunctions("Need.lua", "Need");
         LoadFunctions("GameEvent.lua", "GameEvent");
         LoadFunctions("Tiles.lua", "TileType");
@@ -37,6 +38,7 @@ public class ModsManager
         LoadPrototypes("Tiles.xml", PrototypeManager.TileType.LoadPrototypes);
         LoadPrototypes("Furniture.xml", PrototypeManager.Furniture.LoadPrototypes);
         LoadPrototypes("Utility.xml", PrototypeManager.Utility.LoadPrototypes);
+        LoadPrototypes("RoomBehavior.xml", (text) => PrototypeManager.RoomBehavior.LoadPrototypes(text));
         LoadPrototypes("Inventory.xml", PrototypeManager.Inventory.LoadPrototypes);
         LoadPrototypes("Need.xml", PrototypeManager.Need.LoadPrototypes);
         LoadPrototypes("Trader.xml", PrototypeManager.Trader.LoadPrototypes);

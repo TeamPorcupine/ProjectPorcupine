@@ -101,6 +101,7 @@
         <Name>Door</Name>
         <Description>An Airlock prevents air from leaving the base</Description>
         <TypeTag>Door</TypeTag>
+        <TypeTag>Pressure Door</TypeTag>
         <MovementCost>1</MovementCost>
         <PathfindingModifier>3</PathfindingModifier>
         <PathfindingWeight>1</PathfindingWeight>
@@ -155,7 +156,7 @@
 
         <ContextMenuAction FunctionName="AirlockDoor_Toggle_Pressure_Lock" Text="Toggle Pressure Lock" RequireCharacterSelected="false"/>
 
-        <IsEnterable FunctionName="IsEnterable_Door" />
+        <IsEnterable FunctionName="IsEnterable_AirlockDoor" />
         
         <LocalizationCode>furn_airlock</LocalizationCode>
         <UnlocalizedDescription>furn_airlock_desc</UnlocalizedDescription>
@@ -618,10 +619,11 @@
         </DeconstructJob>
 
         <Params>
-            <Param name="gas_throughput" value="0.5" />
+            <Param name="gas_throughput" value="1" />
             <Param name="source_pressure_limit" value="0" />
             <Param name="target_pressure_limit" value="1" />
             <Param name="flow_direction_up" value="1" />
+            <Param name="active" value="true" />
         </Params>
 
         <Action event="OnUpdate" functionName="AirPump_OnUpdate" />
