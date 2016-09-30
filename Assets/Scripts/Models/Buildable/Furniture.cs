@@ -60,8 +60,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
 
     private string description = string.Empty;
 
-    private Func<Tile, bool> funcPositionValidation;
-
     private HashSet<string> tileTypeBuildPermissions;
 
     private bool isOperating;
@@ -73,7 +71,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     #endregion
 
     #region Constructors
-    /// TODO: Implement object rotation
     /// <summary>
     /// Initializes a new instance of the <see cref="Furniture"/> class.
     /// This constructor is used to create prototypes and should never be used ouside the Prototype Manager.
@@ -88,12 +85,13 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         Parameters = new Parameter();
         Jobs = new BuildableJobs(this);
         typeTags = new HashSet<string>();
-        funcPositionValidation = DefaultIsValidPosition;
         tileTypeBuildPermissions = new HashSet<string>();
         PathfindingWeight = 1f;
         PathfindingModifier = 0f;
         Height = 1;
         Width = 1;
+        CanRotate = false;
+        Rotation = 0f;
         DragType = "single";
         LinksToNeighbour = string.Empty;
     }
@@ -114,6 +112,8 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         RoomEnclosure = other.RoomEnclosure;
         Width = other.Width;
         Height = other.Height;
+        CanRotate = other.CanRotate;
+        Rotation = other.Rotation;
         Tint = other.Tint;
         LinksToNeighbour = other.LinksToNeighbour;
         deconstructInventory = other.deconstructInventory;
@@ -146,11 +146,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             PowerConnection = other.PowerConnection.Clone() as Connection;
             World.Current.PowerNetwork.PlugIn(PowerConnection);
             PowerConnection.NewThresholdReached += OnNewThresholdReached;
-        }
-
-        if (other.funcPositionValidation != null)
-        {
-            funcPositionValidation = (Func<Tile, bool>)other.funcPositionValidation.Clone();
         }
 
         tileTypeBuildPermissions = new HashSet<string>(other.tileTypeBuildPermissions);
@@ -321,6 +316,16 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     public int Height { get; private set; }
 
     /// <summary>
+    /// If true player is allowed to rotate the furniture.
+    /// </summary>
+    public bool CanRotate { get; private set; }
+
+    /// <summary>
+    /// Gets/Set the rotation of the furniture.
+    /// </summary>
+    public float Rotation { get; private set; }
+
+    /// <summary>
     /// Gets the code used for Localization of the furniture.
     /// </summary>
     public string LocalizationCode { get; private set; }
@@ -381,7 +386,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// <returns>Furniture object.</returns>
     public static Furniture PlaceInstance(Furniture proto, Tile tile)
     {
-        if (proto.funcPositionValidation(tile) == false)
+        if (proto.IsValidPosition(tile) == false)
         {
             Debug.ULogErrorChannel("Furniture", "PlaceInstance -- Position Validity Function returned FALSE. " + proto.Name + " " + tile.X + ", " + tile.Y + ", " + tile.Z);
             return null;
@@ -585,17 +590,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     }
 
     /// <summary>
-    /// Check if the position of the furniture is valid or not.
-    /// This is called when placing the furniture.
-    /// </summary>
-    /// <param name="t">The base tile.</param>
-    /// <returns>True if the tile is valid for the placement of the furniture.</returns>
-    public bool IsValidPosition(Tile t)
-    {
-        return funcPositionValidation(t);
-    }
-
-    /// <summary>
     /// Whether the furniture has power or not.
     /// </summary>
     /// <returns>True if the furniture has power.</returns>
@@ -627,6 +621,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         writer.WriteAttributeString("Y", Tile.Y.ToString());
         writer.WriteAttributeString("Z", Tile.Z.ToString());
         writer.WriteAttributeString("type", Type);
+        writer.WriteAttributeString("Rotation", Rotation.ToString());
 
         // Let the Parameters handle their own xml
         Parameters.WriteXml(writer);
@@ -691,6 +686,10 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                     break;
                 case "CanReplaceFurniture":
                     replaceableFurniture.Add(reader.GetAttribute("typeTag").ToString());
+                    break;
+                case "CanRotate":
+                    reader.Read();
+                    CanRotate = reader.ReadContentAsBoolean();
                     break;
                 case "DragType":
                     reader.Read();
@@ -772,7 +771,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// <param name="reader">The XML reader to read from.</param>
     public void ReadXml(XmlReader reader)
     {
-        // X, Y, and type have already been set, and we should already
+        // X, Y, type and rotation have already been set, and we should already
         // be assigned to a tile.  So just read extra data if we have any.
         if (!reader.IsEmptyElement)
         {
@@ -786,8 +785,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// <param name="reader">The reader to read the parameters from.</param>
     public void ReadXmlParams(XmlReader reader)
     {
-        // X, Y, and type have already been set, and we should already
-        // be assigned to a tile.  So just read extra data.
         Parameters = Parameter.ReadXml(reader);
     }
 
@@ -1139,6 +1136,22 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     }
     #endregion
 
+    // <summary>
+    // Set rotation on a furniture. It will swap height and width.
+    // </summary>
+    // <param name="rotation">The z rotation.</param>
+    public void SetRotation(float rotation)
+    {
+        if (Math.Abs(Rotation - rotation) == 90 || Math.Abs(Rotation - rotation) == 270)
+        {
+            int tmp = Height;
+            Height = Width;
+            Width = tmp;
+        }
+
+        Rotation = rotation;
+    }
+    
     // Make a copy of the current furniture.  Sub-classed should
     // override this Clone() if a different (sub-classed) copy
     // constructor should be run.
@@ -1147,13 +1160,14 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         return new Furniture(this);
     }
 
-    // FIXME: These functions should never be called directly,
-    // so they probably shouldn't be public functions of Furniture
-    // This will be replaced by validation checks fed to use from
-    // LUA files that will be customizable for each piece of furniture.
-    // For example, a door might specific that it needs two walls to
-    // connect to.
-    private bool DefaultIsValidPosition(Tile tile)
+    /// <summary>
+    /// Check if the position of the furniture is valid or not.
+    /// This is called when placing the furniture.
+    /// TODO : Add some LUA special requierments.
+    /// </summary>
+    /// <param name="t">The base tile.</param>
+    /// <returns>True if the tile is valid for the placement of the furniture.</returns>
+    public bool IsValidPosition(Tile tile)
     {
         bool tooCloseToEdge = tile.X < MinEdgeDistance || tile.Y < MinEdgeDistance ||
                               World.Current.Width - tile.X <= MinEdgeDistance ||

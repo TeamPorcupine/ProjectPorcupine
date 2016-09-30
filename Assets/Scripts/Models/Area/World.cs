@@ -585,8 +585,9 @@ public class World : IXmlSerializable
                 int x = int.Parse(reader.GetAttribute("X"));
                 int y = int.Parse(reader.GetAttribute("Y"));
                 int z = int.Parse(reader.GetAttribute("Z"));
+                float rotation = float.Parse(reader.GetAttribute("Rotation"));
 
-                Furniture furniture = FurnitureManager.PlaceFurniture(reader.GetAttribute("type"), tiles[x, y, z], false);
+                Furniture furniture = FurnitureManager.PlaceFurniture(reader.GetAttribute("type"), tiles[x, y, z], false, rotation);
                 furniture.ReadXml(reader);
             }
             while (reader.ReadToNextSibling("Furniture"));

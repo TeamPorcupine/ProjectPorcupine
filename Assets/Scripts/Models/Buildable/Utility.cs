@@ -42,8 +42,6 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
 
     private string description = string.Empty;
 
-    private Func<Tile, bool> funcPositionValidation;
-
     private HashSet<string> tileTypeBuildPermissions;
 
     private List<Inventory> deconstructInventory;
@@ -61,7 +59,6 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         Parameters = new Parameter();
         Jobs = new BuildableJobs(this);
         typeTags = new HashSet<string>();
-        funcPositionValidation = DefaultIsValidPosition;
         tileTypeBuildPermissions = new HashSet<string>();
     }
 
@@ -93,11 +90,6 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         }
 
         getSpriteNameAction = other.getSpriteNameAction;
-
-        if (other.funcPositionValidation != null)
-        {
-            funcPositionValidation = (Func<Tile, bool>)other.funcPositionValidation.Clone();
-        }
 
         tileTypeBuildPermissions = new HashSet<string>(other.tileTypeBuildPermissions);
 
@@ -234,7 +226,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     /// <returns>Utility object.</returns>
     public static Utility PlaceInstance(Utility proto, Tile tile)
     {
-        if (proto.funcPositionValidation(tile) == false)
+        if (proto.IsValidPosition(tile) == false)
         {
             Debug.ULogErrorChannel("Utility", "PlaceInstance -- Position Validity Function returned FALSE. " + proto.Name + " " + tile.X + ", " + tile.Y + ", " + tile.Z);
             return null;
@@ -310,17 +302,6 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
 
         DynValue ret = FunctionsManager.Utility.Call(getSpriteNameAction, this);
         return ret.String;
-    }
-
-    /// <summary>
-    /// Check if the position of the utility is valid or not.
-    /// This is called when placing the utility.
-    /// </summary>
-    /// <param name="tile">The base tile.</param>
-    /// <returns>True if the tile is valid for the placement of the utility.</returns>
-    public bool IsValidPosition(Tile tile)
-    {
-        return funcPositionValidation(tile);
     }
 
     /// <summary>
@@ -654,6 +635,41 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         return new Utility(this);
     }
 
+    /// <summary>
+    /// Check if the position of the utility is valid or not.
+    /// This is called when placing the utility.
+    /// TODO : Add some LUA special requierments.
+    /// </summary>
+    /// <param name="tile">The base tile.</param>
+    /// <returns>True if the tile is valid for the placement of the utility.</returns>
+    public bool IsValidPosition(Tile tile)
+    {
+        bool tooCloseToEdge = tile.X < MinEdgeDistance || tile.Y < MinEdgeDistance ||
+                              World.Current.Width - tile.X <= MinEdgeDistance ||
+                              World.Current.Height - tile.Y <= MinEdgeDistance;
+
+        if (tooCloseToEdge)
+        {
+            return false;
+        }
+
+        if (HasTypeTag("OutdoorOnly"))
+        {
+            if (tile.Room == null || !tile.Room.IsOutsideRoom())
+            {
+                return false;
+            }
+        }
+
+        // Make sure tile is FLOOR
+        if (tile.Type != TileType.Floor && tileTypeBuildPermissions.Contains(tile.Type.Type) == false)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
     private void ReadXmlDeconstructJob(XmlReader reader)
     {
         float jobTime = float.Parse(reader.GetAttribute("jobTime"));
@@ -682,40 +698,6 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
                     Job.JobPriority.High);
         job.JobDescription = "job_deconstruct_" + Type + "_desc";
         PrototypeManager.UtilityDeconstructJob.Set(job);
-    }
-
-    // FIXME: These functions should never be called directly,
-    // so they probably shouldn't be public functions of Utility
-    // This will be replaced by validation checks fed to use from
-    // LUA files that will be customizable for each piece of utility.
-    // For example, a door might specific that it needs two walls to
-    // connect to.
-    private bool DefaultIsValidPosition(Tile tile)
-    {
-        bool tooCloseToEdge = tile.X < MinEdgeDistance || tile.Y < MinEdgeDistance ||
-                              World.Current.Width - tile.X <= MinEdgeDistance ||
-                              World.Current.Height - tile.Y <= MinEdgeDistance;
-
-        if (tooCloseToEdge)
-        {
-            return false;
-        }
-
-        if (HasTypeTag("OutdoorOnly"))
-        {
-            if (tile.Room == null || !tile.Room.IsOutsideRoom())
-            {
-                return false;
-            }
-        }
-
-        // Make sure tile is FLOOR
-        if (tile.Type != TileType.Floor && tileTypeBuildPermissions.Contains(tile.Type.Type) == false)
-        {
-            return false;
-        }
-
-        return true;
     }
 
     private void InvokeContextMenuLuaAction(ContextMenuAction action, Character character)

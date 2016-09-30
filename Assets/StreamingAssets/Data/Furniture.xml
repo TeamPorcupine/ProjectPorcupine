@@ -581,6 +581,7 @@
         <Width>2</Width>
         <Height>3</Height>
         <PowerConnection inputRate="" outputRate="3" capacity=""/>
+        <CanRotate>true</CanRotate>
 
         <BuildingJob jobTime="1" />
         <CanBeBuiltOn tileType="Ladder" />
@@ -681,6 +682,7 @@
         <Height>2</Height>
         <PathfindingModifier>1</PathfindingModifier>
         <PathfindingWeight>1</PathfindingWeight>
+        <CanRotate>true</CanRotate>
 
         <BuildingJob jobTime="1">
             <Inventory type="Steel Plate" amount="2" />
@@ -818,5 +820,5 @@
     <LocalizationCode>furn_astro_wall</LocalizationCode>
     <UnlocalizedDescription>furn_astro_wall_desc</UnlocalizedDescription>
     </Furniture>
-
+    
 </Furnitures>
