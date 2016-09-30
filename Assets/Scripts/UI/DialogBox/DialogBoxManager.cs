@@ -26,6 +26,7 @@ public class DialogBoxManager : MonoBehaviour
     public DialogBoxAreYouSure dialogBoxAreYouSure;
     public DialogBoxQuests dialogBoxQuests;
 
+    // This dictionary will hold the DialogBoxes to be called by name.
     public Dictionary<string, DialogBox> DialogBoxes;
     public GameObject DialogBoxGO;
 
@@ -97,6 +98,9 @@ public class DialogBoxManager : MonoBehaviour
         return buttonQuestGameObject.GetComponent<Toggle>();
     }
 
+    /// <summary>
+    /// Loads every Dialog Box in the /StreamingAssets/UI/DialogBoxes/ Folder.
+    /// </summary>
     private void LoadDialogBoxesLua()
     {
         Debug.ULogChannel("DBLua", "Loading xml dialog boxes");

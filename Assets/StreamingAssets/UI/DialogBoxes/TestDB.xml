@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DialogBox>
+	<Title>Test Dialog Box!</Title>
+	<Content>
+		<Text>trying to make a dialog box</Text>
+	</Content>
+</DialogBox>
