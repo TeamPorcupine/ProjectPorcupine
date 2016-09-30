@@ -32,13 +32,15 @@ public class Path_TileGraph
         {
             for (int y = 0; y < world.Height; y++)
             {
-                Tile t = world.GetTileAt(x, y, 0);
+                for (int z = 0; z < world.Depth; z++)
+                {
+                    Tile t = world.GetTileAt(x, y, z);
 
-                ////if(t.movementCost > 0) {    // Tiles with a move cost of 0 are unwalkable
-                Path_Node<Tile> n = new Path_Node<Tile>();
-                n.data = t;
-                nodes.Add(t, n);
-                ////}
+                    ////if(t.movementCost > 0) {    // Tiles with a move cost of 0 are unwalkable
+                    Path_Node<Tile> n = new Path_Node<Tile>();
+                    n.data = t;
+                    nodes.Add(t, n);
+                }
             }
         }
 

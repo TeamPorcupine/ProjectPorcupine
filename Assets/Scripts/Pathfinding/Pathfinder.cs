@@ -155,7 +155,7 @@ namespace ProjectPorcupine.Pathfinding
         /// </summary>
         public static PathfindingHeuristic ManhattanDistance(Tile goalTile)
         {
-            return tile => Mathf.Abs(tile.X - goalTile.X) + Mathf.Abs(tile.Y - goalTile.Y);
+            return tile => Mathf.Abs(tile.X - goalTile.X) + Mathf.Abs(tile.Y - goalTile.Y) + Mathf.Abs(tile.Z - goalTile.Z);
         }
 
         /// <summary>
@@ -177,15 +177,21 @@ namespace ProjectPorcupine.Pathfinding
                 int maxX = goalTile.X + 1;
                 int minY = goalTile.Y - 1;
                 int maxY = goalTile.Y + 1;
+                int minZ = goalTile.Z - 1;
+                int maxZ = goalTile.Z + 1;
 
                 return tile => (
-                    tile.X >= minX && tile.X <= maxX &&
+                    (tile.X >= minX && tile.X <= maxX &&
                     tile.Y >= minY && tile.Y <= maxY &&
-                    goalTile.IsClippingCorner(tile) == false);
+                    tile.Z == goalTile.Z &&
+                    goalTile.IsClippingCorner(tile) == false) || 
+                    (tile.Z >= minZ && tile.Z <= maxZ &&
+                    tile.X == goalTile.X &&
+                    tile.Y == goalTile.Y));
             }
             else
             {
-                return tile => goalTile == tile;
+                return tile => tile == goalTile;
             }
         }
 
