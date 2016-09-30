@@ -393,7 +393,7 @@
 
         <JobWorkSpotOffset X="1" Y="0" />
 
-        <Workshop>
+        <Component type="Workshop">
             <ProductionChain name="Copper smelting" processingTime="3">
                 <Input>
                     <Item objectType="Raw Copper" amount="2" slotPosX="0" slotPosY="0" />
@@ -411,7 +411,7 @@
                 </Output>
             </ProductionChain>
             <UsedAnimations idle="idle" running="running" />
-        </Workshop>
+        </Component>
 
         <Animations>
             <Animation state="idle" fps="2" looping="false">
@@ -478,7 +478,7 @@
             <Inventory type="Uranium" amount="1" />
         </DeconstructJob>
 
-      <Workshop>
+      <Component type="Workshop">
           <ProductionChain name="Power Cell Pressing" processingTime="5">
               <Input>
                   <Item objectType="Uranium" amount="3" slotPosX="0" slotPosY="0" />
@@ -488,7 +488,7 @@
                   <Item objectType="Power Cell" amount="1" slotPosX="2" slotPosY="1" />
               </Output>
           </ProductionChain>
-      </Workshop>
+      </Component>
 
         <LocalizationCode>furn_power_cell_press</LocalizationCode>
         <UnlocalizedDescription>furn_power_cell_press_desc</UnlocalizedDescription>

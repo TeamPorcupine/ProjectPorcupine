@@ -7,13 +7,17 @@
 // ====================================================
 #endregion
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-public class WorkshopContextMenu
+namespace ProjectPorcupine.Buildable.Components
 {
-    public string ProductionChainName { get; set; }
-
-    public Action<Furniture, string> Function { get; set; }
+    [AttributeUsage(AttributeTargets.Class)]
+    public class BuildableComponentNameAttribute : Attribute
+    {
+        public readonly string ComponentName;
+        
+        public BuildableComponentNameAttribute(string componentName)  
+        {
+            this.ComponentName = componentName;
+        }
+    }
 }

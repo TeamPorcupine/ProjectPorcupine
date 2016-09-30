@@ -15,6 +15,7 @@ using System.Xml.Serialization;
 using Animation;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
+using ProjectPorcupine.Buildable.Components;
 using ProjectPorcupine.Jobs;
 using ProjectPorcupine.PowerNetwork;
 using UnityEngine;
@@ -47,11 +48,8 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// These context menu lua action are used to build the context menu of the furniture.
     /// </summary>
     private List<ContextMenuLuaAction> contextMenuLuaActions;
-
-    /// <summary>
-    /// Workshop reference if furniture is consumer/producer (not null).
-    /// </summary>
-    private FurnitureWorkshop workshop;
+    
+    private HashSet<BuildableComponent> components;
 
     // This is the generic type of object this is, allowing things to interact with it based on it's generic type
     private HashSet<string> typeTags;
@@ -94,6 +92,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         Rotation = 0f;
         DragType = "single";
         LinksToNeighbour = string.Empty;
+        components = new HashSet<BuildableComponent>();
     }
 
     /// <summary>
@@ -120,7 +119,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
 
         Parameters = new Parameter(other.Parameters);
         Jobs = new BuildableJobs(this, other.Jobs);
-        workshop = other.workshop; // don't need to clone here, as all are prototype things (not changing)
+
+        // don't need to clone here, as all are prototype things (not changing)
+        components = new HashSet<BuildableComponent>(other.components);
 
         if (other.Animation != null)
         {
@@ -189,16 +190,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// </summary>
     /// <value>The Color of the furniture.</value>
     public Color Tint { get; set; }
-
-    /// <summary>
-    /// Returns whether this instance is workshop or not.
-    /// </summary>
-    /// <value><c>true</c> if this instance is workshop; otherwise, <c>false</c>.</value>
-    public bool IsWorkshop
-    {
-        get { return workshop != null; }
-    }
-
+        
     /// <summary>
     /// Gets or sets a value indicating whether the door is Vertical or not.
     /// Should be false if the furniture is not a door.
@@ -395,12 +387,13 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         // We know our placement destination is valid.
         Furniture obj = proto.Clone();
         obj.Tile = tile;
-        if (obj.IsWorkshop)
-        {
-            // need to update reference to furniture for workshop (is there a nicer way?)
-            obj.workshop.SetParentFurniture(obj);
-        }
 
+        // need to update reference to furniture and call Initialize (so components can place hooks on events there)
+        foreach (var comp in obj.components)
+        {
+            comp.Initialize(obj);
+        }
+      
         if (tile.PlaceFurniture(obj) == false)
         {
             // For some reason, we weren't able to place our object in this tile.
@@ -462,6 +455,11 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         {
             EventActions.Trigger("OnFastUpdate", this, deltaTime);
         }
+
+        foreach (var cmp in components)
+        {
+            cmp.EveryFrameUpdate(deltaTime);
+        }
     }
 
     /// <summary>
@@ -491,12 +489,12 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         {
             EventActions.Trigger("OnUpdate", this, deltaTime);
         }
-
-        if (IsWorkshop && IsBeingDestroyed == false)
+                
+        foreach (var cmp in components)
         {
-            workshop.Update(deltaTime);
-        }
-
+            cmp.FixedFrequencyUpdate(deltaTime);
+        }        
+        
         if (Animation != null)
         {
             Animation.Update(deltaTime);
@@ -755,10 +753,13 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                     reader.Read();
                     UnlocalizedDescription = reader.ReadContentAsString();
                     break;
-                case "Workshop":                   
-                    workshop = FurnitureWorkshop.Deserialize(reader);
-                    workshop.SetParentFurniture(this);
-                    workshop.Initialize();
+                case "Component":
+                    var cmp = BuildableComponent.Deserialize(reader);
+                    if (cmp != null)
+                    {
+                        components.Add(cmp);
+                    }
+
                     break;
             }
         }
@@ -1044,11 +1045,16 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
 
     public IEnumerable<string> GetAdditionalInfo()
     {
-        if (IsWorkshop)
+        // try to get some info from components
+        foreach (var comp in components)
         {
-            yield return workshop.GetDescription();
+            string desc = comp.GetDescription();
+            if (!string.IsNullOrEmpty(desc))
+            {
+                yield return desc;
+            }
         }
-
+        
         yield return string.Format("Hitpoint 18 / 18");
 
         if (PowerConnection != null)
@@ -1109,15 +1115,19 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             }
         }
 
-        // context menu if it's workshop and has multiple production chains
-        if (IsWorkshop && workshop.WorkshopMenuActions != null)
+        // check for context menus of components
+        foreach (var comp in components)
         {
-            foreach (WorkshopContextMenu factoryContextMenuAction in workshop.WorkshopMenuActions)
+            var compContextMenu = comp.GetContextMenu();
+            if (compContextMenu != null)
             {
-                yield return CreateWorkshopContextMenuItem(factoryContextMenuAction);
+                foreach (ContextMenuAction compContextMenuAction in compContextMenu)
+                {
+                    yield return compContextMenuAction;
+                }
             }
         }
-
+       
         foreach (ContextMenuLuaAction contextMenuLuaAction in contextMenuLuaActions)
         {
             if (!contextMenuLuaAction.DevModeOnly ||
@@ -1225,21 +1235,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     }
 
     #region Private Context Menu
-    private ContextMenuAction CreateWorkshopContextMenuItem(WorkshopContextMenu factoryContextMenuAction)
-    {
-        return new ContextMenuAction
-        {
-            Text = factoryContextMenuAction.ProductionChainName, // TODO: localization here
-            RequireCharacterSelected = false,
-            Action = (cma, c) => InvokeContextMenuAction(factoryContextMenuAction.Function, factoryContextMenuAction.ProductionChainName)
-        };
-    }
-
-    private void InvokeContextMenuAction(Action<Furniture, string> function, string arg)
-    {
-        function(this, arg);
-    }
-
     private void InvokeContextMenuLuaAction(ContextMenuAction action, Character character)
     {
         FunctionsManager.Furniture.Call(action.Parameter, this, character);
