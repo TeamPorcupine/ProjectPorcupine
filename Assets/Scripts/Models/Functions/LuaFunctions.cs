@@ -125,19 +125,11 @@ public class LuaFunctions
             }
 
             DynValue result;
-            object[] instanceAndParams = new object[parameters.Length+1];
-            instanceAndParams[0]=instance;
+            object[] instanceAndParams = new object[parameters.Length + 1];
+            instanceAndParams[0] = instance;
             parameters.CopyTo(instanceAndParams, 1);
 
             result = Call(fn, instanceAndParams);
-//            if (deltaTime != 0f)
-//            {
-//                result = Call(fn, instance, deltaTime);
-//            }
-//            else
-//            {
-//                result = Call(fn, instance);
-//            }
 
             if (result != null && result.Type == DataType.String)
             {
