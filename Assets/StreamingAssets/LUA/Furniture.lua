@@ -768,7 +768,6 @@ function Rtg_UpdateTemperature( furniture, deltaTime)
     --ModUtils.ULogChannel("Temperature", "Heat change: " .. temperatureChangePerSecond .. " => " .. World.current.temperature.GetTemperature(tile.X, tile.Y))
 end
 
-<<<<<<< HEAD
 -- Register the temperature update function
 function Fire_InstallAction( furniture, deltaTime)
 	furniture.EventActions.Register("OnUpdateTemperature", "Fire_UpdateTemperature")
