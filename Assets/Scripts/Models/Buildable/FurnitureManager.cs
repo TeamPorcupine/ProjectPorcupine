@@ -45,7 +45,8 @@ public class FurnitureManager : IEnumerable<Furniture>
     /// <param name="type">The type of the furniture.</param>
     /// <param name="tile">The tile to place the furniture at.</param>
     /// <param name="doRoomFloodFill">If set to <c>true</c> do room flood fill.</param>
-    public Furniture PlaceFurniture(string type, Tile tile, bool doRoomFloodFill = true)
+    /// /// <param name="rotation">The rotation applied to te furniture.</param>
+    public Furniture PlaceFurniture(string type, Tile tile, bool doRoomFloodFill = true, float rotation = 0f)
     {
         if (PrototypeManager.Furniture.Has(type) == false)
         {
@@ -53,7 +54,8 @@ public class FurnitureManager : IEnumerable<Furniture>
             return null;
         }
 
-        Furniture furn = PrototypeManager.Furniture.Get(type);
+        Furniture furn = PrototypeManager.Furniture.Get(type).Clone();
+        furn.SetRotation(rotation);
 
         return PlaceFurniture(furn, tile, doRoomFloodFill);
     }
@@ -100,10 +102,12 @@ public class FurnitureManager : IEnumerable<Furniture>
     /// <param name="job">The completed job.</param>
     public void ConstructJobCompleted(Job job)
     {
-        // Let our workspot tile know it is no longer reserved for us
-        World.Current.UnreserveTileAsWorkSpot((Furniture)job.buildablePrototype, job.tile);
+        Furniture furn = (Furniture)job.buildablePrototype;
 
-        PlaceFurniture(job.JobObjectType, job.tile);
+        // Let our workspot tile know it is no longer reserved for us
+        World.Current.UnreserveTileAsWorkSpot(furn, job.tile);
+
+        PlaceFurniture(furn, job.tile);
 
         // FIXME: I don't like having to manually and explicitly set
         // flags that prevent conflicts. It's too easy to forget to set/clear them!
@@ -116,9 +120,12 @@ public class FurnitureManager : IEnumerable<Furniture>
     /// <returns><c>true</c> if the placement is valid; otherwise, <c>false</c>.</returns>
     /// <param name="type">The furniture type.</param>
     /// <param name="tile">The tile where the furniture will be placed.</param>
-    public bool IsPlacementValid(string type, Tile tile)
+    /// <param name="rotation">The rotation applied to the furniture.</param>
+    public bool IsPlacementValid(string type, Tile tile, float rotation = 0f)
     {
-        return PrototypeManager.Furniture.Get(type).IsValidPosition(tile);
+        Furniture furn = PrototypeManager.Furniture.Get(type).Clone();
+        furn.SetRotation(rotation);
+        return furn.IsValidPosition(tile);
     }
 
     /// <summary>
@@ -130,6 +137,14 @@ public class FurnitureManager : IEnumerable<Furniture>
     public bool IsWorkSpotClear(string type, Tile tile)
     {
         Furniture proto = PrototypeManager.Furniture.Get(type);
+
+        // If the workspot is internal, we don't care about furniture blocking it, this will be stopped or allowed
+        //      elsewhere depending on if the furniture being placed can replace the furniture already in this tile.
+        if (proto.Jobs.WorkSpotIsInternal())
+        {
+            return true;
+        }
+
         if (proto.Jobs != null && World.Current.GetTileAt((int)(tile.X + proto.Jobs.WorkSpotOffset.x), (int)(tile.Y + proto.Jobs.WorkSpotOffset.y), (int)tile.Z).Furniture != null)
         {
             return false;
@@ -160,11 +175,13 @@ public class FurnitureManager : IEnumerable<Furniture>
 
     /// <summary>
     /// Calls the furnitures update function on every frame.
+    /// The list needs to be copied temporarily in case furnitures are added or removed during the update.
     /// </summary>
     /// <param name="deltaTime">Delta time.</param>
     public void TickEveryFrame(float deltaTime)
     {
-        foreach (Furniture furniture in furnituresVisible)
+        List<Furniture> tempFurnituresVisible = new List<Furniture>(furnituresVisible);
+        foreach (Furniture furniture in tempFurnituresVisible)
         {
             furniture.EveryFrameUpdate(deltaTime);
         }
@@ -172,6 +189,7 @@ public class FurnitureManager : IEnumerable<Furniture>
 
     /// <summary>
     /// Calls the furnitures update function on a fixed frequency.
+    /// The list needs to be copied temporarily in case furnitures are added or removed during the update.
     /// </summary>
     /// <param name="deltaTime">Delta time.</param>
     public void TickFixedFrequency(float deltaTime)
@@ -181,13 +199,15 @@ public class FurnitureManager : IEnumerable<Furniture>
         //       FixedFrequencyUpdate on invisible furniture could also be even slower.
 
         // Update furniture outside of the camera view
-        foreach (Furniture furniture in furnituresInvisible)
+        List<Furniture> tempFurnituresInvisible = new List<Furniture>(furnituresInvisible);
+        foreach (Furniture furniture in tempFurnituresInvisible)
         {
             furniture.EveryFrameUpdate(deltaTime);
         }
 
         // Update all furniture with EventActions
-        foreach (Furniture furniture in furnitures)
+        List<Furniture> tempFurnitures = new List<Furniture>(furnitures);
+        foreach (Furniture furniture in tempFurnitures)
         {
             furniture.FixedFrequencyUpdate(deltaTime);
         }

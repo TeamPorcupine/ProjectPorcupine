@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ProjectPorcupine.Localization;
+using ProjectPorcupine.Rooms;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,6 +18,7 @@ public class ConstructionMenu : MonoBehaviour
     private const string LocalizationDeconstruct = "deconstruct_furniture";
 
     private List<GameObject> furnitureItems;
+    private List<GameObject> roomBehaviorItems;
     private List<GameObject> utilityItems;
     private List<GameObject> tileItems;
     private List<GameObject> taskItems;
@@ -30,6 +32,11 @@ public class ConstructionMenu : MonoBehaviour
     public void RebuildMenuButtons(bool showAllFurniture = false)
     {
         foreach (GameObject gameObject in furnitureItems)
+        {
+            Destroy(gameObject);
+        }
+
+        foreach (GameObject gameObject in roomBehaviorItems)
         {
             Destroy(gameObject);
         }
@@ -52,6 +59,7 @@ public class ConstructionMenu : MonoBehaviour
         this.showAllFurniture = showAllFurniture;
 
         RenderDeconstructButton();
+        RenderRoomBehaviorButtons();
         RenderTileButtons();
         RenderFurnitureButtons();
         RenderUtilityButtons();
@@ -85,6 +93,7 @@ public class ConstructionMenu : MonoBehaviour
         });
 
         RenderDeconstructButton();
+        RenderRoomBehaviorButtons();
         RenderTileButtons();
         RenderFurnitureButtons();
         RenderUtilityButtons();
@@ -141,6 +150,55 @@ public class ConstructionMenu : MonoBehaviour
 
             Image image = gameObject.transform.GetChild(0).GetComponentsInChildren<Image>().First();
             image.sprite = WorldController.Instance.furnitureSpriteController.GetSpriteForFurniture(furnitureKey);
+        }
+    }
+
+    private void RenderRoomBehaviorButtons()
+    {
+        roomBehaviorItems = new List<GameObject>();
+
+        UnityEngine.Object buttonPrefab = Resources.Load("UI/MenuLeft/ConstructionMenu/Button");
+        Transform contentTransform = this.transform.FindChild("Scroll View").FindChild("Viewport").FindChild("Content");
+
+        BuildModeController buildModeController = WorldController.Instance.buildModeController;
+
+        // For each furniture prototype in our world, create one instance
+        // of the button to be clicked!
+        foreach (string roomBehaviorKey in PrototypeManager.RoomBehavior.Keys)
+        {
+            if (PrototypeManager.RoomBehavior.Get(roomBehaviorKey).HasTypeTag("Non-buildable") && showAllFurniture == false)
+            {
+                continue;
+            }
+
+            GameObject gameObject = (GameObject)Instantiate(buttonPrefab);
+            gameObject.transform.SetParent(contentTransform);
+            roomBehaviorItems.Add(gameObject);
+
+            RoomBehavior proto = PrototypeManager.RoomBehavior.Get(roomBehaviorKey);
+            string objectId = roomBehaviorKey;
+
+            gameObject.name = "Button - Designate " + objectId;
+
+            gameObject.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(proto.LocalizationCode) };
+
+            Button button = gameObject.GetComponent<Button>();
+
+            button.onClick.AddListener(delegate
+                {
+                    buildModeController.SetMode_DesignateRoomBehavior(objectId);
+                    menuLeft.CloseMenu();
+                });
+
+            // http://stackoverflow.com/questions/1757112/anonymous-c-sharp-delegate-within-a-loop
+            string roomBehavior = roomBehaviorKey;
+            LocalizationTable.CBLocalizationFilesChanged += delegate
+                {
+                    gameObject.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(PrototypeManager.RoomBehavior.Get(roomBehavior).LocalizationCode) };
+                };
+
+            Image image = gameObject.transform.GetChild(0).GetComponentsInChildren<Image>().First();
+            image.sprite = SpriteManager.GetSprite("RoomBehavior", roomBehaviorKey);
         }
     }
 

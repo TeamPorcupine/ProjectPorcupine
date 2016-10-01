@@ -8,6 +8,7 @@
 #endregion
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
@@ -123,7 +124,7 @@ public class EventActions : IXmlSerializable
     /// <param name="actionName">Name of the action being triggered.</param>
     /// <param name="target">Object, passed to LUA function as 1-argument.</param>
     /// <param name="deltaTime">Time since last Trigger of this event.</param>
-    public void Trigger<T>(string actionName, T target, float deltaTime = 0f)
+    public void Trigger<T>(string actionName, T target, params object[] parameters)
     {
         if (!actionsList.ContainsKey(actionName) || actionsList[actionName] == null)
         {
@@ -131,7 +132,7 @@ public class EventActions : IXmlSerializable
         }
         else
         {
-            FunctionsManager.Get(target.GetType().ToString()).CallWithInstance(actionsList[actionName].ToArray(), target, deltaTime);
+            FunctionsManager.Get(target.GetType().Name).CallWithInstance(actionsList[actionName].ToArray(), target, parameters);
         }
     }
 

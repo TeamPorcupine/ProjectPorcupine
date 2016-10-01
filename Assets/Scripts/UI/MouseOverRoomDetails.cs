@@ -8,6 +8,7 @@
 #endregion
 using System;
 using System.Collections;
+using ProjectPorcupine.Rooms;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -56,7 +57,25 @@ public class MouseOverRoomDetails : MonoBehaviour
         {
             s += string.Format("{0}: ({1}) {2:0.000} atm ({3:0.0}%)\n", gasName, t.Room.ChangeInGas(gasName), t.Room.GetGasPressure(gasName), t.Room.GetGasFraction(gasName) * 100);
         }
-            
+
+        if (t.Room.RoomBehaviors.Count > 0)
+        {
+            s += "Behaviors:\n";
+            foreach (RoomBehavior behavior in t.Room.RoomBehaviors.Values)
+            {
+                s += behavior.Name + "\n";
+
+///                foreach (string key in behavior.ControlledFurniture.Keys)
+///                {
+///                    s += key + "\t\n";
+///                    foreach (Furniture furniture in behavior.ControlledFurniture[key])
+///                    {
+///                        s += furniture.Name + "\t\t\n";
+///                    }
+///                }
+            }
+        }
+
         text.text = s;
     }
 }

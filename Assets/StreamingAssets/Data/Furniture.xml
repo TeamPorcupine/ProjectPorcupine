@@ -101,6 +101,7 @@
         <Name>Door</Name>
         <Description>An Airlock prevents air from leaving the base</Description>
         <TypeTag>Door</TypeTag>
+        <TypeTag>Pressure Door</TypeTag>
         <MovementCost>1</MovementCost>
         <PathfindingModifier>3</PathfindingModifier>
         <PathfindingWeight>1</PathfindingWeight>
@@ -155,7 +156,7 @@
 
         <ContextMenuAction FunctionName="AirlockDoor_Toggle_Pressure_Lock" Text="Toggle Pressure Lock" RequireCharacterSelected="false"/>
 
-        <IsEnterable FunctionName="IsEnterable_Door" />
+        <IsEnterable FunctionName="IsEnterable_AirlockDoor" />
         
         <LocalizationCode>furn_airlock</LocalizationCode>
         <UnlocalizedDescription>furn_airlock_desc</UnlocalizedDescription>
@@ -392,7 +393,7 @@
 
         <JobWorkSpotOffset X="1" Y="0" />
 
-        <Workshop>
+        <Component type="Workshop">
             <ProductionChain name="Copper smelting" processingTime="3">
                 <Input>
                     <Item objectType="Raw Copper" amount="2" slotPosX="0" slotPosY="0" />
@@ -410,7 +411,7 @@
                 </Output>
             </ProductionChain>
             <UsedAnimations idle="idle" running="running" />
-        </Workshop>
+        </Component>
 
         <Animations>
             <Animation state="idle" fps="2" looping="false">
@@ -477,7 +478,7 @@
             <Inventory type="Uranium" amount="1" />
         </DeconstructJob>
 
-      <Workshop>
+      <Component type="Workshop">
           <ProductionChain name="Power Cell Pressing" processingTime="5">
               <Input>
                   <Item objectType="Uranium" amount="3" slotPosX="0" slotPosY="0" />
@@ -487,7 +488,7 @@
                   <Item objectType="Power Cell" amount="1" slotPosX="2" slotPosY="1" />
               </Output>
           </ProductionChain>
-      </Workshop>
+      </Component>
 
         <LocalizationCode>furn_power_cell_press</LocalizationCode>
         <UnlocalizedDescription>furn_power_cell_press_desc</UnlocalizedDescription>
@@ -581,6 +582,7 @@
         <Width>2</Width>
         <Height>3</Height>
         <PowerConnection inputRate="" outputRate="3" capacity=""/>
+        <CanRotate>true</CanRotate>
 
         <BuildingJob jobTime="1" />
         <CanBeBuiltOn tileType="Ladder" />
@@ -617,10 +619,11 @@
         </DeconstructJob>
 
         <Params>
-            <Param name="gas_throughput" value="0.5" />
+            <Param name="gas_throughput" value="1" />
             <Param name="source_pressure_limit" value="0" />
             <Param name="target_pressure_limit" value="1" />
             <Param name="flow_direction_up" value="1" />
+            <Param name="active" value="true" />
         </Params>
 
         <Action event="OnUpdate" functionName="AirPump_OnUpdate" />
@@ -681,6 +684,7 @@
         <Height>2</Height>
         <PathfindingModifier>1</PathfindingModifier>
         <PathfindingWeight>1</PathfindingWeight>
+        <CanRotate>true</CanRotate>
 
         <BuildingJob jobTime="1">
             <Inventory type="Steel Plate" amount="2" />
@@ -723,7 +727,6 @@
         <Name>A Mining Spot</Name>
         <Description>A spot for mining ore</Description>
         <TypeTag>Ore</TypeTag>
-        <TypeTag>OutdoorOnly</TypeTag>
         <TypeTag>Non-buildable</TypeTag>
         <TypeTag>Non-deconstructible</TypeTag>
         <MovementCost>2</MovementCost>
@@ -743,6 +746,26 @@
 
         <LocalizationCode>furn_mine</LocalizationCode>
         <UnlocalizedDescription>furn_mine_desc</UnlocalizedDescription>
+    </Furniture>
+    
+    <Furniture type="berth">
+        <Name>Ship Berth</Name>
+        <MovementCost>1</MovementCost>
+        <PathfindingModifier>1</PathfindingModifier>
+        <PathfindingWeight>0</PathfindingWeight>
+        <Width>3</Width>
+        <Height>1</Height>
+
+        <BuildingJob jobTime="1" />
+
+        <Params>
+            <Param name="occupied" value="0" />
+        </Params>
+    
+        <Action event="OnUpdate" functionName="Berth_TestSummoning" />
+
+        <LocalizationCode>furn_berth</LocalizationCode>
+        <UnlocalizedDescription>furn_berth_desc</UnlocalizedDescription>
     </Furniture>
 
     <Furniture type="RTG">
@@ -776,4 +799,28 @@
         <LocalizationCode>furn_rt_generator</LocalizationCode>
         <UnlocalizedDescription>furn_rt_generator_desc</UnlocalizedDescription>
     </Furniture>
+
+    <Furniture type="astro_wall">
+        <Name>Rock Wall</Name>
+        <Description>This is a wall of rock!</Description>
+        <TypeTag>Wall</TypeTag>
+        <TypeTag>Non-buildable</TypeTag>
+        <TypeTag>Non-deconstructible</TypeTag>
+        <MovementCost>0</MovementCost>
+        <Width>1</Width>
+        <Height>1</Height>
+        <LinksToNeighbours>true</LinksToNeighbours>
+        <EnclosesRooms>true</EnclosesRooms>
+        
+        <Params>
+         <Param name="ore_type" value="None" />
+        </Params>
+
+    <ContextMenuAction FunctionName="OreMine_CreateMiningJob" Text="Mine Ore" RequireCharacterSelected="false" />
+    <!-- <GetSpriteName FunctionName="OreMine_GetSpriteName" /> -->
+
+    <LocalizationCode>furn_astro_wall</LocalizationCode>
+    <UnlocalizedDescription>furn_astro_wall_desc</UnlocalizedDescription>
+    </Furniture>
+    
 </Furnitures>

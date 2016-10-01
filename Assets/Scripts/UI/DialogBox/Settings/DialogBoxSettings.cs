@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using ProjectPorcupine.Localization;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityStandardAssets.Utility;
 
 public class DialogBoxSettings : DialogBox
 {
@@ -20,6 +21,7 @@ public class DialogBoxSettings : DialogBox
     public Toggle fullScreenToggle;
 
     public Toggle developerModeToggle;
+    public GameObject developerModeObject;
 
     public Slider musicVolume;
 
@@ -32,53 +34,35 @@ public class DialogBoxSettings : DialogBox
 
     public Button closeButton;
     public Button saveButton;
-
-    public void OnFPSToggle()
+    public Button applyButton;
+    
+    public void OnSave()
     {
+        WorldController.Instance.spawnInventoryController.SetUIVisibility(developerModeToggle.isOn);
+        OnApply();
+        SaveSetting();
+        CloseDialog();
+    }
+
+    public void OnApply()
+    {
+        LocalizationTable.SetLocalization(languageDropdown.value);
+        
         fpsObject.SetActive(fpsToggle.isOn);
-    }
+        WorldController.Instance.spawnInventoryController.SetUIVisibility(developerModeToggle.isOn);
 
-    public void OnFullScreenToggle()
-    {
-        Screen.fullScreen = fullScreenToggle.isOn;
-    }
-
-    public void OnQualityChange()
-    {
         // MasterTextureLimit should get 0 for High quality and higher values for lower qualities.
         // For example count is 3 (0:Low, 1:Med, 2:High).
         // For High: count - 1 - value  =  3 - 1 - 2  =  0  (therefore no limit = high quality).
         // For Med:  count - 1 - value  =  3 - 1 - 1  =  1  (therefore a slight limit = medium quality).
         // For Low:  count - 1 - value  =  3 - 1 - 0  =  1  (therefore more limit = low quality).
         QualitySettings.masterTextureLimit = qualityDropdown.options.Count - 1 - qualityDropdown.value;
-    }
 
-    public void OnVSyncChange()
-    {
-        /// TODO : Implement VSync changes.
-    }
+        Screen.fullScreen = fullScreenToggle.isOn;
 
-    public void OnResolutionChange()
-    {
-        /// TODO : Implement Resolution changes.
-    }
-
-    public void OnMusicChange()
-    {
-        /// TODO : Implement Music changes.
-    }
-
-    public void OnClickClose()
-    {
-        this.CloseDialog();
-    }
-
-    public void OnClickSave()
-    {
-        this.CloseDialog();
-        WorldController.Instance.spawnInventoryController.SetUIVisibility(developerModeToggle.isOn);
-        LocalizationTable.SetLocalization(languageDropdown.value);
-        SaveSetting();
+        ResolutionOption selectedOption = (ResolutionOption)resolutionDropdown.options[resolutionDropdown.value];
+        Resolution resolution = selectedOption.Resolution;
+        Screen.SetResolution(resolution.width, resolution.height, fullScreenToggle.isOn, resolution.refreshRate);
     }
 
     /// <summary>
@@ -97,54 +81,32 @@ public class DialogBoxSettings : DialogBox
         Settings.SetSetting("DialogBoxSettings_resolutionDropdown", resolutionDropdown.value);
     }
 
-    private void OnEnable()
+    public void OnEnable()
     {
         // Get all avalible resolution for the display.
         resolutions = Screen.resolutions;
 
         // Add our listeners.
-        closeButton.onClick.AddListener(delegate
-        {
-            OnClickClose();
-        });
-        saveButton.onClick.AddListener(delegate
-        {
-            OnClickSave();
-        });
-
-        fpsToggle.onValueChanged.AddListener(delegate
-        {
-            OnFPSToggle();
-        });
+        closeButton.onClick.AddListener(CloseDialog);
+        saveButton.onClick.AddListener(OnSave);
+        applyButton.onClick.AddListener(OnApply);
 
         fullScreenToggle.isOn = Screen.fullScreen;
-        fullScreenToggle.onValueChanged.AddListener(delegate
-        {
-            OnFullScreenToggle();
-        });
-        resolutionDropdown.onValueChanged.AddListener(delegate
-        {
-            OnResolutionChange();
-        });
-        vsyncDropdown.onValueChanged.AddListener(delegate
-        {
-            OnVSyncChange();
-        });
-        qualityDropdown.onValueChanged.AddListener(delegate
-        {
-            OnQualityChange();
-        });
 
-        musicVolume.onValueChanged.AddListener(delegate
-        {
-            OnMusicChange();
-        });
+        fpsObject = FindObjectOfType<FPSCounter>().gameObject;
 
-        // Create the drop down for resolution.
-        CreateResDropDown();
+        CreateResolutionDropdown();
 
         // Load the setting.
         LoadSetting();
+    }
+
+    public void Update()
+    {
+        if (Input.GetKey(KeyCode.Escape))
+        {
+            CloseDialog();
+        }
     }
 
     /// <summary>
@@ -163,22 +125,41 @@ public class DialogBoxSettings : DialogBox
         resolutionDropdown.value = Settings.GetSetting("DialogBoxSettings_resolutionDropdown", 0);
     }
 
-    private void CreateResDropDown()
+    /// <summary>
+    /// Create the differents option for the resolution dropdown.
+    /// </summary>
+    private void CreateResolutionDropdown()
     {
-        List<string> resolutionStrings = new List<string>();
-        foreach (Resolution r in resolutions)
+        resolutionDropdown.ClearOptions();
+        List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
+        options.Add(new ResolutionOption
         {
-            resolutionStrings.Add(r.ToString());
+            text = string.Format(
+                "{0} x {1} @ {2}",
+                Screen.currentResolution.width,
+                Screen.currentResolution.height,
+                Screen.currentResolution.refreshRate),
+            Resolution = Screen.currentResolution
+        });
+
+        foreach (var resolution in Screen.resolutions)
+        {
+            options.Add(new ResolutionOption
+            {
+                text = string.Format(
+                    "{0} x {1} @ {2}",
+                    resolution.width,
+                    resolution.height,
+                    resolution.refreshRate),
+                Resolution = resolution
+            });
         }
 
-        resolutionDropdown.AddOptions(resolutionStrings);
+        resolutionDropdown.AddOptions(options);
     }
 
-    private void Update()
+    private class ResolutionOption : Dropdown.OptionData
     {
-        if (Input.GetKey(KeyCode.Escape))
-        {
-            this.CloseDialog();
-        }
+        public Resolution Resolution { get; set; }
     }
 }

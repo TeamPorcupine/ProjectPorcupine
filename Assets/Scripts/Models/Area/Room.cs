@@ -32,6 +32,7 @@ namespace ProjectPorcupine.Rooms
             tiles = new List<Tile>();
             atmosphericGasses = new Dictionary<string, float>();
             deltaGas = new Dictionary<string, string>();
+            RoomBehaviors = new Dictionary<string, RoomBehavior>();
         }
 
         public int ID
@@ -57,6 +58,9 @@ namespace ProjectPorcupine.Rooms
                 return temperature;
             }
         }
+
+        // RoomBehavior is something like an airlock or office.
+        public Dictionary<string, RoomBehavior> RoomBehaviors { get; private set; }
 
         public void AssignTile(Tile tile)
         {
@@ -171,8 +175,16 @@ namespace ProjectPorcupine.Rooms
             return neighboursRooms;
         }
 
-        // Changes gas by an amount in preasure(in atm) multiplyed by number of tiles
-        // TODO check this method, it doesn't seem like the above comment is accurate.
+        // Changes gas by an amount in preasure(in atm) multiplyed by number of tiles, limited to a pressure
+        public void ChangeGas(string name, float amount, float pressureLimit)
+        {
+            ChangeGas(name, Mathf.Min(amount, (TileCount * pressureLimit) - GetGasAmount(name)));
+        }
+
+        // Changes gas by an amount in pressure(in atm) multiplyed by number of tiles
+        // Note: This description is somewhat misleading. Pressure is stored as the sum total pressure 
+        //       of every tile's pressure, so while it is technically accurate, it implies that
+        //       this method does the multiplication, when it is already stored that way
         public void ChangeGas(string name, float amount)
         {
             if (IsOutsideRoom())
@@ -276,9 +288,8 @@ namespace ProjectPorcupine.Rooms
                 return 0;
             }
 
-            float totalPressure = GetTotalGasPressure();
-
-            return totalPressure == 0 ? 0 : atmosphericGasses[name] / totalPressure;
+            float totalGasses = GetTotalGas();
+            return totalGasses == 0 ? 0 : atmosphericGasses[name] / totalGasses;
         }
 
         public float GetTotalGasPressure()
@@ -291,6 +302,23 @@ namespace ProjectPorcupine.Rooms
             }
 
             return totalPressure;
+        }
+
+        public float GetTotalGas()
+        {
+            float totalGas = 0;
+
+            foreach (string n in atmosphericGasses.Keys)
+            {
+                totalGas += atmosphericGasses[n];
+            }
+
+            return totalGas;
+        }
+
+        public void MoveGasTo(Room room, float amount, float pressureLimit)
+        {
+            MoveGasTo(room, Mathf.Min(amount, (room.TileCount * pressureLimit) - room.GetTotalGas()));
         }
 
         public void MoveGasTo(Room room, float amount)
@@ -370,6 +398,76 @@ namespace ProjectPorcupine.Rooms
             {
                 this.ChangeGas(n, other.atmosphericGasses[n]);
             }
+        }
+
+        public bool DesignateRoomBehavior(RoomBehavior objInstance)
+        {
+            if (objInstance == null)
+            {
+                return false;
+            }
+
+            if (RoomBehaviors.ContainsKey(objInstance.Type))
+            {
+                return false;
+            }
+
+            if (objInstance.IsValidRoom(this) == false)
+            {
+                Debug.ULogErrorChannel("Tile", "Trying to assign a RoomBehavior to a room that isn't valid!");
+                return false;
+            }
+
+            objInstance.Control(this);
+
+            RoomBehaviors.Add(objInstance.Type, objInstance);
+
+            return true;
+        }
+
+        public bool UndesignateRoomBehavior(RoomBehavior roomBehavior)
+        {
+            // Just uninstalling.
+            if (RoomBehaviors == null)
+            {
+                return false;
+            }
+
+            RoomBehaviors.Remove(roomBehavior.Type);
+
+            return true;
+        }
+
+        public List<Tile> GetInnerTiles()
+        {
+            return tiles;
+        }
+
+        public List<Tile> GetBorderingTiles()
+        {
+            List<Tile> borderingTiles = new List<Tile>();
+            foreach (Tile tile in tiles)
+            {
+                Tile[] neighbours = tile.GetNeighbours();
+                foreach (Tile tile2 in neighbours)
+                {
+                    if (tile2 != null && tile2.Furniture != null)
+                    {
+                        if (tile2.Furniture.RoomEnclosure)
+                        {
+                            // We have found an enclosing furniture, which means it is on our border
+                            borderingTiles.Add(tile2);
+                        }
+                    } 
+                }
+            }
+
+            return borderingTiles;
+        }
+
+        public bool HasRoomBehavior(string behaviorKey)
+        {
+            return RoomBehaviors.ContainsKey(behaviorKey);
         }
     }
 }
