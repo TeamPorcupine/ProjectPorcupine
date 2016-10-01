@@ -109,14 +109,26 @@ namespace ProjectPorcupine.Localization
                 // Only the current and default languages translations will be loaded in memory.
                 if (localizationCode == DefaultLanguage || localizationCode == currentLanguage)
                 {
+                    bool rightToLeftLanguage = false;
                     string[] lines = File.ReadAllLines(path);
                     foreach (string line in lines)
                     {
                         string[] keyValuePair = line.Split(new char[] { '=' }, 2);
+
+                        if (keyValuePair[0] == "rtl" && keyValuePair[1] == "true")
+                        {
+                            rightToLeftLanguage = true;
+                        }                    
+
                         if (keyValuePair.Length != 2)
                         {
                             Debug.ULogErrorChannel("LocalizationTable", string.Format("Invalid format of localization string. Actual {0}", line));
                             continue;
+                        }
+                        if (rightToLeftLanguage)
+                        {
+                            //reverse order of letters in the localization string since unity UI doesn't support RTL languages
+                            keyValuePair[1] = ReverseString(keyValuePair[1]);
                         }
 
                         localizationTable[localizationCode][keyValuePair[0]] = keyValuePair[1];
@@ -156,5 +168,22 @@ namespace ProjectPorcupine.Localization
                     return string.Empty;
             }
         }
+
+        /// <summary>
+        /// Reverses string for Right to Left languages, since UI doesn't do so automatically
+        /// </summary>
+        /// <param name="original">the original and correct RTL text</param>
+        /// <returns></returns>
+        private static string ReverseString(string original)
+        {
+            char[] letterArray = original.ToCharArray();
+            string reverse = String.Empty;
+            for (int i = original.Length - 1; i > -1; i--)
+            {
+                reverse += letterArray[i];
+            }
+            return reverse;
+        }
+    
     }
 }
