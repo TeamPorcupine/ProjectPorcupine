@@ -783,7 +783,7 @@ end
 -- Increase temperature of current tile
 function Fire_UpdateTemperature( furniture, deltaTime)
 	-- Magic numbers for temperature
-	World.Current.temperature.SetTemperature(furniture.Tile.X, furniture.Tile.Y, 700 + furniture.Parameters["strength"].ToFloat() * 100)
+	World.Current.temperature.SetTemperature(furniture.Tile.X, furniture.Tile.Y, furniture.Tile.Z, 700 + furniture.Parameters["strength"].ToFloat() * 100)
 end
 
 -- Called after all Update functions: spreads fire, destroys funriture and update animation
@@ -795,8 +795,8 @@ function Fire_OnPostUpdate( furniture, deltaTime)
 
 	-- Consume o2
 	if furniture.Tile.Room != nil then 
-	    furniture.Tile.Room.ChangeGas("O2", -0.00001)
-	    furniture.Tile.Room.ChangeGas("CO2", 0.00001)
+	    furniture.Tile.Room.ChangeGas("O2", -0.1 * deltaTime)
+	    furniture.Tile.Room.ChangeGas("CO2", 0.1 * deltaTime)
 	end
 	
 	local spreadProbability = furniture.Parameters["spread_chance"].ToFloat() 
@@ -804,7 +804,7 @@ function Fire_OnPostUpdate( furniture, deltaTime)
 	-- Spreads only by chance. the lower the strength, the less the chance
 	if math.random() < spreadProbability * furniture.Parameters["strength"].ToFloat() then
 		-- Random tile in which you want to spread
-		local spreadTiles = furniture.tile.GetNeighbours(true)
+		local spreadTiles = furniture.Tile.GetNeighbours(true)
 		local candidate = math.floor(math.random() * 8) + 1
 		local spreadTile = spreadTiles[candidate]
 		
@@ -815,14 +815,13 @@ function Fire_OnPostUpdate( furniture, deltaTime)
 				spreadTile.Furniture.Deconstruct()
 			end
 			-- Place a new "fire" instance
-			if World.Current.furniturePrototypes["fire"] != nil then
-			    World.Current.PlaceFurniture("fire", spreadTile, false)
-				-- But reduce strength of fire
-				if spreadTile.Furniture != nil then
-					spreadTile.Furniture.Parameters["strength"].ChangeFloatValue( 
-						- spreadTile.Furniture.Parameters["strength"].ToFloat() + furniture.Parameters["strength"].ToFloat() - 1
-					)
-				end
+		    -- This line causes error: 
+            World.Current.FurnitureManager.PlaceFurniture("fire", spreadTile)
+			-- But reduce strength of fire
+			if spreadTile.Furniture != nil then
+				spreadTile.Furniture.Parameters["strength"].ChangeFloatValue( 
+					- spreadTile.Furniture.Parameters["strength"].ToFloat() + furniture.Parameters["strength"].ToFloat() - 1
+				)
 			end
 		end
 	end
