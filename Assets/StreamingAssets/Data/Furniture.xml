@@ -760,14 +760,25 @@
         <Params>
             <!-- <Param name="gas_name" value="O2" /> -->
             <Param name="spread_chance" value="0.15" />
-            <Param name="strength" value="4" />
-            <Param name="animation_frame" value="0" />
-            <Param name="num_frames" value="5" />
+            <Param name="strength" value="0.5" /> <!-- Ranges from 0 to 1 -->
         </Params>
 
         <Action event="OnPostUpdate" functionName="Fire_OnPostUpdate" />
         <Action event="OnTemperatureUpdate" functionName="Fire_OnTemperatureUpdate" />
         <GetSpriteName FunctionName="Fire_GetSpriteName" />
+        <Animations>
+          <Animation state="large" valuebased="false" fps="10">
+            <Frame name="Fire_Large_0" />
+            <Frame name="Fire_Large_1" />
+            <Frame name="Fire_Large_2" />
+          </Animation>
+          <Animation state="small" valuebased="false" fps="10">
+            <Frame name="Fire_Small_0" />
+            <Frame name="Fire_Small_1" />
+            <Frame name="Fire_Small_2" />
+          </Animation>
+        </Animations>
+      
 
         <LocalizationCode>fire</LocalizationCode>
         <UnlocalizedDescription>fire_desc</UnlocalizedDescription>

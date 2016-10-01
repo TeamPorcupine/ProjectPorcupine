@@ -31,6 +31,7 @@ function Precondition_Event_Fire( gameEvent, deltaTime )
 end
 
 function Execute_Event_Fire( gameEvent )
+	-- NOTE: this choosees a random tile in the world, not nessicarily near the base
 	local tile = World.Current.GetTileAt(
 		math.floor(math.random() * World.Current.Width),
 		math.floor(math.random() * World.Current.Height))

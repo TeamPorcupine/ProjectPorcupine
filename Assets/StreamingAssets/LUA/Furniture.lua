@@ -789,11 +789,11 @@ end
 -- Called after all Update functions: spreads fire, destroys funriture and update animation
 function Fire_OnPostUpdate( furniture, deltaTime)
 
-	-- Die off if there is no O2
+	-- Die off if there is no O2 (less than 0.002 atm aka 1/10 of usual O2 concentration)
 	local o2Pressure = furniture.Tile.GetGasPressure("O2")
 	furniture.Parameters["strength"].SetValue( furniture.Parameters["strength"].ToFloat() * math.min(1, o2Pressure * 500) )
 
-	-- Consume o2
+	-- Consume o2 and produce co2
 	if furniture.Tile.Room != nil then 
 	    furniture.Tile.Room.ChangeGas("O2", -0.1 * deltaTime)
 	    furniture.Tile.Room.ChangeGas("CO2", 0.1 * deltaTime)
@@ -802,8 +802,8 @@ function Fire_OnPostUpdate( furniture, deltaTime)
 	local spreadProbability = furniture.Parameters["spread_chance"].ToFloat() 
 	
 	-- Spreads only by chance. the lower the strength, the less the chance
-	if math.random() < spreadProbability * furniture.Parameters["strength"].ToFloat() then
-		-- Random tile in which you want to spread
+	if math.random() < spreadProbability * furniture.Parameters["strength"].ToFloat() * 2 then
+		-- Random tile in which you want to spread (NOTE: ONLY X AND Y SPREAD)
 		local spreadTiles = furniture.Tile.GetNeighbours(true)
 		local candidate = math.floor(math.random() * 8) + 1
 		local spreadTile = spreadTiles[candidate]
@@ -817,36 +817,37 @@ function Fire_OnPostUpdate( furniture, deltaTime)
             spreadTile.Inventory = nil
 			-- Place a new "fire" instance
             World.Current.FurnitureManager.PlaceFurniture("fire", spreadTile)
-			-- But make the strength of the new fire one less than the previous
+			-- But make the strength of the new fire 0.1 less than the previous
 			if spreadTile.Furniture != nil then
 				spreadTile.Furniture.Parameters["strength"].ChangeFloatValue( 
-                - furniture.Parameters["strength"].ToFloat() - 1
+                - (furniture.Parameters["strength"].ToFloat() - 0.1)
 				)
 			end
 		end
 	end
-	-- Get next animation frame
-	furniture.Parameters["animation_frame"].ChangeFloatValue( 1 )
 	
 	-- Decrease strength by chance
 	if math.random() > 0.7 then
 		furniture.Parameters["strength"].ChangeFloatValue( -0.1 )
 	end
-	-- If strength < 0, despawn
+	-- Update animation If strength < 0, despawn (NOTE: is setting this every frame bad???)
 	local strength = furniture.Parameters["strength"].ToFloat()
-	if strength <= 0 then
+	
+    if strength <= 0 then
 		furniture.Deconstruct()
 		return
-	end
-	-- Update animation
-	furniture.UpdateOnChanged(furniture)
+    elseif strength > 0.5 then
+        furniture.SetAnimationState("large")
+    elseif strength < 0.5 then
+        furniture.SetAnimationState("small")
+    end
+
+    ModUtils.ULogChannel("fire","fire at x:" .. furniture.Tile.X .. " , " .. furniture.Tile.Y .. " has strength of " .. strength)
 end
 
 -- Animation AND strength of fire
 function Fire_GetSpriteName(furniture)
-	local animationFrame = ( math.floor( furniture.Parameters["animation_frame"].ToFloat() ) % furniture.Parameters["num_frames"].ToInt() )
-	-- Fire_a_b, where a is the animation frame and b is the strength
-    return "Fire" .. "_" .. animationFrame .. "_" .. math.max( math.floor( furniture.Parameters["strength"].ToFloat() - 0.01 ), 0 )
+    return "Fire"
 end
 
 function Berth_TestSummoning(furniture, deltaTime)
