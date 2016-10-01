@@ -123,7 +123,7 @@ public class CharacterSpriteController : BaseSpriteController<Character>
 
         GameObject char_go = objectGameObjectMap[character];
 
-        char_go.transform.position = new Vector3(character.X, character.Y, 0);
+        char_go.transform.position = new Vector3(character.X, character.Y, character.Z);
     }
 
     protected override void OnRemoved(Character character)

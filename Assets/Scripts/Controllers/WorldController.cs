@@ -1,8 +1,8 @@
 #region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
-// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
-// and you are welcome to redistribute it under certain conditions; See 
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
@@ -25,6 +25,7 @@ public class WorldController : MonoBehaviour
     public CharacterSpriteController characterSpriteController;
     public JobSpriteController jobSpriteController;
     public InventorySpriteController inventorySpriteController;
+    public ShipSpriteController shipSpriteController;
     public FurnitureSpriteController furnitureSpriteController;
     public UtilitySpriteController utilitySpriteController;
     public QuestController questController;
@@ -113,6 +114,7 @@ public class WorldController : MonoBehaviour
         utilitySpriteController = new UtilitySpriteController(World);
         jobSpriteController = new JobSpriteController(World, furnitureSpriteController, utilitySpriteController);
         inventorySpriteController = new InventorySpriteController(World, inventoryUI);
+        shipSpriteController = new ShipSpriteController(World);
 
         buildModeController = new BuildModeController();
         spawnInventoryController = new SpawnInventoryController();

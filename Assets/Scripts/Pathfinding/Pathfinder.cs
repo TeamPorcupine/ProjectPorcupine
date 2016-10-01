@@ -18,11 +18,13 @@ namespace ProjectPorcupine.Pathfinding
         /// <summary>
         /// Delegate called to determine the distance from this tile to destination according to custom heuristics.
         /// </summary>
+        /// <param name="tile">Tile to evalute.</param>
         public delegate float PathfindingHeuristic(Tile tile);
 
         /// <summary>
         /// Delegate called to determine if we've reached the goal.
         /// </summary>
+        /// <param name="tile">Tile to evaluate.</param>
         public delegate bool GoalEvaluator(Tile tile);
 
         public static List<Tile> FindPath(Tile start, GoalEvaluator isGoal, PathfindingHeuristic costHeuristic)
@@ -34,6 +36,10 @@ namespace ProjectPorcupine.Pathfinding
         /// <summary>
         /// Finds the path to tile.
         /// </summary>
+        /// <returns>The path to tile.</returns>
+        /// <param name="start">Start tile.</param>
+        /// <param name="end">Final tile.</param>
+        /// <param name="adjacent">If set to <c>true</c> adjacent tiles can be targetted.</param>
         public static List<Tile> FindPathToTile(Tile start, Tile end, bool adjacent = false)
         {
             if (start == null || end == null)
@@ -43,8 +49,16 @@ namespace ProjectPorcupine.Pathfinding
 
             Path_AStar resolver = new Path_AStar(World.Current, start, GoalTileEvaluator(end, adjacent), ManhattanDistance(end));
             List<Tile> path = resolver.GetList();
+            if (adjacent)
+            {
+                DebugLogIf(path.Count > 0, "FindPathToTile adjacent from: {0}, to: {1}, found {2} [Length: {3}", start, end, path.Last(), path.Count);
+            }
+            else
+            {
+                DebugLogIf(path.Count > 0, "FindPathToTile from: " + start.X + "," + start.Y + ", to: " + end.X + "," + end.Y + " found: " + path.Last().X + "," + path.Last().Y + " [Length: " + path.Count + "]");
+            }
 
-            DebugLogIf(path.Count > 0, "FindPathToTile{4} from: {0}, to: {1}, found {2} [Length: {3}, took: {5}ms]", start, end, path.LastOrDefault(), path.Count, adjacent ? " adjacent" : string.Empty, (int)(resolver.Duration * 1000));
+            DebugLogIf(path == null, "Failed to find path to tile {0}", start);
 
             return path;
         }
@@ -63,6 +77,7 @@ namespace ProjectPorcupine.Pathfinding
             List<Tile> path = resolver.GetList();
 
             DebugLogIf(path.Count > 0, "FindPathToInventory from: {0}, to: {1}, found {2} [Length: {3}, took: {4}ms]", start, string.Join(",", types), path.LastOrDefault(), path.Count, (int)(resolver.Duration * 1000));
+            DebugLogIf(path == null, "Failed to find path to inventory of type {0}", string.Join(",", types));
 
             return path;
         }
@@ -81,13 +96,17 @@ namespace ProjectPorcupine.Pathfinding
             List<Tile> path = resolver.GetList();
 
             DebugLogIf(path.Count > 0, "FindPathToInventory from: {0}, to: {1}, found {2} [Length: {3}, took: {4}ms]", start, type, path.LastOrDefault(), path.Count, (int)(resolver.Duration * 1000));
+            DebugLogIf(path == null, "Failed to find path to inventory of type {0}", type);
 
             return path;
         }
 
         /// <summary>
-        /// Finds the path to furniture of type <paramref name="type"/>.
+        /// Finds the path to furniture.
         /// </summary>
+        /// <returns>The path to furniture.</returns>
+        /// <param name="start">Start tile.</param>
+        /// <param name="objectType">Object type of the furniture.</param>
         public static List<Tile> FindPathToFurniture(Tile start, string type)
         {
             if (start == null || type == null)
@@ -99,6 +118,7 @@ namespace ProjectPorcupine.Pathfinding
             List<Tile> path = resolver.GetList();
 
             DebugLogIf(path.Count > 0, "FindPathToFurniture from: {0}, to: {1}, found {2} [Length: {3}, took: {4}ms]", start, type, path.LastOrDefault(), path.Count, (int)(resolver.Duration * 1000));
+            DebugLogIf(path == null, "Failed to find path to furniture of type {0}", type);
 
             return path;
         }
@@ -117,6 +137,7 @@ namespace ProjectPorcupine.Pathfinding
             List<Tile> path = resolver.GetList();
 
             DebugLogIf(path.Count > 0, "FindPathToDumpInventory from: {0}, to: {1}, found {2} [Length: {3}, took: {4}ms]", start, type, path.LastOrDefault(), path.Count, (int)(resolver.Duration * 1000));
+            DebugLogIf(path == null, "Failed to find path to furniture of type {0}", type);
 
             return path;
         }
@@ -134,7 +155,7 @@ namespace ProjectPorcupine.Pathfinding
         /// </summary>
         public static PathfindingHeuristic ManhattanDistance(Tile goalTile)
         {
-            return tile => Mathf.Abs(tile.X - goalTile.X) + Mathf.Abs(tile.Y - goalTile.Y);
+            return tile => Mathf.Abs(tile.X - goalTile.X) + Mathf.Abs(tile.Y - goalTile.Y) + Mathf.Abs(tile.Z - goalTile.Z);
         }
 
         /// <summary>
@@ -156,32 +177,22 @@ namespace ProjectPorcupine.Pathfinding
                 int maxX = goalTile.X + 1;
                 int minY = goalTile.Y - 1;
                 int maxY = goalTile.Y + 1;
+                int minZ = goalTile.Z - 1;
+                int maxZ = goalTile.Z + 1;
 
                 return tile => (
-                    tile.X >= minX && tile.X <= maxX &&
+                    (tile.X >= minX && tile.X <= maxX &&
                     tile.Y >= minY && tile.Y <= maxY &&
-                    goalTile.IsClippingCorner(tile) == false);
+                    tile.Z == goalTile.Z &&
+                    goalTile.IsClippingCorner(tile) == false) || 
+                    (tile.Z >= minZ && tile.Z <= maxZ &&
+                    tile.X == goalTile.X &&
+                    tile.Y == goalTile.Y));
             }
             else
             {
-                return tile => goalTile == tile;
+                return tile => tile == goalTile;
             }
-        }
-
-        /// <summary>
-        /// Evaluates if the goal is an inventory of any of the types in <paramref name="types"/>.
-        /// </summary>
-        public static GoalEvaluator GoalInventoryEvaluator(string[] types, bool canTakeFromStockpile = true)
-        {
-            return tile => tile.Inventory != null && tile.Inventory.CanBePickedUp(canTakeFromStockpile) && types.Contains(tile.Inventory.Type);
-        }
-
-        /// <summary>
-        /// Evaluates if the goal is an inventory of type <paramref name="type"/>.
-        /// </summary>
-        public static GoalEvaluator GoalInventoryEvaluator(string type, bool canTakeFromStockpile = true)
-        {
-            return tile => tile.Inventory != null && tile.Inventory.CanBePickedUp(canTakeFromStockpile) && type == tile.Inventory.Type;
         }
 
         /// <summary>
@@ -200,6 +211,22 @@ namespace ProjectPorcupine.Pathfinding
             return tile => tile.Type == TileType.Floor && (
                 tile.Inventory == null ||
                 (tile.Inventory.Type == type && (tile.Inventory.StackSize + amount) <= tile.Inventory.MaxStackSize));
+        }
+
+        /// <summary>
+        /// Evaluates if the goal is an inventory of any of the types in <paramref name="types"/>.
+        /// </summary>
+        public static GoalEvaluator GoalInventoryEvaluator(string[] types, bool canTakeFromStockpile = true)
+        {
+            return tile => tile.Inventory != null && tile.Inventory.CanBePickedUp(canTakeFromStockpile) && types.Contains(tile.Inventory.Type);
+        }
+
+        /// <summary>
+        /// Evaluates if the goal is an inventory of type <paramref name="type"/>.
+        /// </summary>
+        public static GoalEvaluator GoalInventoryEvaluator(string type, bool canTakeFromStockpile = true)
+        {
+            return tile => tile.Inventory != null && tile.Inventory.CanBePickedUp(canTakeFromStockpile) && type == tile.Inventory.Type;
         }
 
         [System.Diagnostics.Conditional("PATHFINDER_DEBUG_LOG")]

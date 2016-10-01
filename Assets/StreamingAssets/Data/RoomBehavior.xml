@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RoomBehaviors>
+  <RoomBehavior type="roombehavior_airlock">
+    <Name>Airlock</Name>
+    <Description>This is an airlock.</Description>
+    
+    <!-- Required furniture will be avaliable for control by the roomBehavior -->
+    <Requirements>
+        <Furniture typeTag="Pressure Door" count="2" />
+        <Furniture type="pump_air" count="1" />
+        <Size tiles="3" />
+    </Requirements>
+    
+    <!-- Optional furniture will be available for control by the roomBehavior, but isn't required -->
+    <Optional>
+    
+    </Optional>
+    
+    <Action event="OnControl" functionName="OnControl_Airlock" />
+    <Action event="PumpOut" functionName="PumpOut_Airlock" />
+    <Action event="PumpIn" functionName="PumpIn_Airlock" />
+    <Action event="PumpOff" functionName="PumpOff_Airlock" />
+    
+    <LocalizationCode>roombehavior_airlock</LocalizationCode>
+    <UnlocalizedDescription>roombehavior_airlock_desc</UnlocalizedDescription>
+  </RoomBehavior>
+</RoomBehaviors>

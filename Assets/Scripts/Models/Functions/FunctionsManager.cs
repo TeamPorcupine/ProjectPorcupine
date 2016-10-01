@@ -18,6 +18,7 @@ public class FunctionsManager
 
         actions.Add("Furniture", new LuaFunctions());
         actions.Add("Utility", new LuaFunctions());
+        actions.Add("RoomBehavior", new LuaFunctions());
         actions.Add("Need", new LuaFunctions());
         actions.Add("GameEvent", new LuaFunctions());
         actions.Add("TileType", new LuaFunctions());
@@ -42,6 +43,15 @@ public class FunctionsManager
     public static LuaFunctions Utility
     {
         get { return Get("Utility"); }
+    }
+
+    /// <summary>
+    /// Gets the RoomBehavior Lua Functions.
+    /// </summary>
+    /// <value>The RoomBehavior Lua Functions.</value>
+    public static LuaFunctions RoomBehavior
+    {
+        get { return Get("RoomBehavior"); }
     }
 
     /// <summary>
