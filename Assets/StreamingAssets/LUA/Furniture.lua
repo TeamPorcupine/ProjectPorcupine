@@ -810,16 +810,17 @@ function Fire_OnPostUpdate( furniture, deltaTime)
 		
 		-- If tile is valid
 		if spreadTile != nil then
-			-- Destroy any furniture
+			-- Destroy any furniture and inventory
 			if spreadTile.Furniture != nil and spreadTile.Furniture.name != "fire" then
 				spreadTile.Furniture.Deconstruct()
 			end
+            spreadTile.Inventory = nil
 			-- Place a new "fire" instance
             World.Current.FurnitureManager.PlaceFurniture("fire", spreadTile)
-			-- But reduce strength of fire
+			-- But make the strength of the new fire one less than the previous
 			if spreadTile.Furniture != nil then
 				spreadTile.Furniture.Parameters["strength"].ChangeFloatValue( 
-					- spreadTile.Furniture.Parameters["strength"].ToFloat() + furniture.Parameters["strength"].ToFloat() - 1
+                - furniture.Parameters["strength"].ToFloat() - 1
 				)
 			end
 		end
