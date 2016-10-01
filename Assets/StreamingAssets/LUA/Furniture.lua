@@ -802,7 +802,7 @@ function Fire_OnPostUpdate( furniture, deltaTime)
 	
 	local spreadProbability = furniture.Parameters["spread_chance"].ToFloat() 
 	
-	-- Spreads only by chance. the lower the strength, the less the canche
+	-- Spreads only by chance. the lower the strength, the less the chance
 	if math.random() < spreadProbability * furniture.Parameters["strength"].ToFloat() then
 		-- Random tile in which you want to spread
 		local spreadTiles = furniture.tile.GetNeighbours(true)
