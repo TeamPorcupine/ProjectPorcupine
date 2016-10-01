@@ -11,7 +11,7 @@ using ProjectPorcupine.Localization;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MainMenuController : MonoBehaviour
+public class GameMenuController : MonoBehaviour
 {
     private MenuLeft menuLeft;
     private UnityEngine.Object buttonPrefab;
@@ -35,12 +35,12 @@ public class MainMenuController : MonoBehaviour
         menuLeft = GameObject.Find("MenuLeft").GetComponent<MenuLeft>();
         buttonPrefab = Resources.Load("UI/MenuButton");
 
-        CreateMainManu();
+        CreateGameMenu();
 
-        MainMenuManager.Instance.Added += CreateMainManu;
+        GameMenuManager.Instance.Added += CreateGameMenu;
     }
 
-    private void CreateMainManu()
+    private void CreateGameMenu()
     {
         // Clear out all the children of our file list
         while (this.gameObject.transform.childCount > 0)
@@ -50,7 +50,7 @@ public class MainMenuController : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        foreach (MainMenuItem mainMenuItem in MainMenuManager.Instance)
+        foreach (GameMenuItem mainMenuItem in GameMenuManager.Instance)
         {
             CreateButton(mainMenuItem);
         }
@@ -58,7 +58,7 @@ public class MainMenuController : MonoBehaviour
         DeactivateAll();
     }
 
-    private void CreateButton(MainMenuItem mainMenuItem)
+    private void CreateButton(GameMenuItem mainMenuItem)
     {
         GameObject gameObject = (GameObject)Instantiate(buttonPrefab, this.gameObject.transform);
         gameObject.name = "Button - " + mainMenuItem.Key;

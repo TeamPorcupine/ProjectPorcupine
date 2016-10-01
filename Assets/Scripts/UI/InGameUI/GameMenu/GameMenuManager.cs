@@ -10,21 +10,21 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-public class MainMenuManager : IEnumerable<MainMenuItem>
+public class GameMenuManager : IEnumerable<GameMenuItem>
 {
-    private static MainMenuManager instance;
+    private static GameMenuManager instance;
 
-    private List<MainMenuItem> menuItems;
-    private Dictionary<string, List<MainMenuItem>> itemsToAdd;
+    private List<GameMenuItem> menuItems;
+    private Dictionary<string, List<GameMenuItem>> itemsToAdd;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MainMenu"/> class.
     /// </summary>
-    public MainMenuManager()
+    public GameMenuManager()
     {
         instance = this;
-        menuItems = new List<MainMenuItem>();
-        itemsToAdd = new Dictionary<string, List<MainMenuItem>>();
+        menuItems = new List<GameMenuItem>();
+        itemsToAdd = new Dictionary<string, List<GameMenuItem>>();
     }
 
     /// <summary>
@@ -36,13 +36,13 @@ public class MainMenuManager : IEnumerable<MainMenuItem>
     /// Gets or sets the Main Menu instance.
     /// </summary>
     /// <value>The Main Menu instance.</value>
-    public static MainMenuManager Instance
+    public static GameMenuManager Instance
     {
         get
         {
             if (instance == null)
             {
-                new MainMenuManager();
+                new GameMenuManager();
             }
 
             return instance;
@@ -59,7 +59,7 @@ public class MainMenuManager : IEnumerable<MainMenuItem>
     /// </summary>
     /// <param name="menuItem">The main menu item to add.</param>
     /// <param name="position">The position where to place the item.</param>
-    public void AddMenuItem(MainMenuItem menuItem, int position = 0)
+    public void AddMenuItem(GameMenuItem menuItem, int position = 0)
     {
         menuItems.Insert(position, menuItem);
 
@@ -80,7 +80,7 @@ public class MainMenuManager : IEnumerable<MainMenuItem>
     public void AddMenuItem(string key, Action callback, int position = 0)
     {
         position = MathUtilities.Clamp(position, 0, menuItems.Count);
-        AddMenuItem(new MainMenuItem(key, callback), position);
+        AddMenuItem(new GameMenuItem(key, callback), position);
     }
 
     /// <summary>
@@ -88,7 +88,7 @@ public class MainMenuManager : IEnumerable<MainMenuItem>
     /// </summary>
     /// <param name="key">The menu item key.</param>
     /// <param name="callback">The menu item callback. Called when the menu item is clicked.</param>
-    /// <param name="afterKey">PLace the given menu item after a menu item with this key.</param>
+    /// <param name="afterKey">Place the given menu item after a menu item with this key.</param>
     /// <param name="addLater">If true and if there are no menu items with the given key, the menu item will be added later.</param>
     public void AddMenuItem(string key, Action callback, string afterKey, bool addLater = false)
     {
@@ -104,10 +104,10 @@ public class MainMenuManager : IEnumerable<MainMenuItem>
         }
         else
         {
-            MainMenuItem menuItem = new MainMenuItem(key, callback);
+            GameMenuItem menuItem = new GameMenuItem(key, callback);
             if (itemsToAdd.ContainsKey(afterKey) == false)
             {
-                itemsToAdd[afterKey] = new List<MainMenuItem>();
+                itemsToAdd[afterKey] = new List<GameMenuItem>();
             }
 
             itemsToAdd[afterKey].Add(menuItem);
@@ -127,9 +127,9 @@ public class MainMenuManager : IEnumerable<MainMenuItem>
     /// Gets each menu item.
     /// </summary>
     /// <returns>Each menu item.</returns>
-    IEnumerator<MainMenuItem> IEnumerable<MainMenuItem>.GetEnumerator()
+    IEnumerator<GameMenuItem> IEnumerable<GameMenuItem>.GetEnumerator()
     {
-        foreach (MainMenuItem menuItem in menuItems)
+        foreach (GameMenuItem menuItem in menuItems)
         {
             yield return menuItem;
         }
@@ -152,7 +152,7 @@ public class MainMenuManager : IEnumerable<MainMenuItem>
     {
         if (itemsToAdd.ContainsKey(key) && itemsToAdd[key].Count > 0)
         {
-            foreach (MainMenuItem menuItem in itemsToAdd[key])
+            foreach (GameMenuItem menuItem in itemsToAdd[key])
             {
                 AddMenuItem(menuItem, position + 1);
             }

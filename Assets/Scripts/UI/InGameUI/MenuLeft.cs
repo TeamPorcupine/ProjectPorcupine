@@ -22,7 +22,7 @@ public class MenuLeft : MonoBehaviour
 
         AddMenu("ConstructionMenu");
 
-        MainMenuManager.Instance.AddMenuItem("menu_construction", OnButtonConstruction, 0);
+        GameMenuManager.Instance.AddMenuItem("menu_construction", OnButtonConstruction, 0);
     }
 
     public void OpenMenu(string menuName)

@@ -8,7 +8,7 @@
 #endregion
 using System;
 
-public class MainMenuItem
+public class GameMenuItem
 {
     private Action callback;
 
@@ -17,7 +17,7 @@ public class MainMenuItem
     /// </summary>
     /// <param name="key">The menu item key.</param>
     /// <param name="actionCallback">The menu item callback. Called when is clicked.</param>
-    public MainMenuItem(string key, Action actionCallback)
+    public GameMenuItem(string key, Action actionCallback)
     {
         Key = key;
         callback = actionCallback;
