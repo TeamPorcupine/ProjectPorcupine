@@ -815,7 +815,6 @@ function Fire_OnPostUpdate( furniture, deltaTime)
 				spreadTile.Furniture.Deconstruct()
 			end
 			-- Place a new "fire" instance
-		    -- This line causes error: 
             World.Current.FurnitureManager.PlaceFurniture("fire", spreadTile)
 			-- But reduce strength of fire
 			if spreadTile.Furniture != nil then

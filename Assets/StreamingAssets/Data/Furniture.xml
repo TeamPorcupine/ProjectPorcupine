@@ -759,7 +759,7 @@
           
         <Params>
             <!-- <Param name="gas_name" value="O2" /> -->
-            <Param name="spread_chance" value="0.95" />
+            <Param name="spread_chance" value="0.15" />
             <Param name="strength" value="4" />
             <Param name="animation_frame" value="0" />
             <Param name="num_frames" value="5" />

@@ -11,8 +11,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
+using MoonSharp.Interpreter;
 using UnityEngine;
 
+[MoonSharpUserData]
 public class FurnitureManager : IEnumerable<Furniture>
 {
     private List<Furniture> furnitures;
