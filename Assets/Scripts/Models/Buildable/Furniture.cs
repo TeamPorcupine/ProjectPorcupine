@@ -367,6 +367,18 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             return !string.IsNullOrEmpty(getSpriteNameAction);
         }
     }
+
+    /// <summary>
+    /// Whether the furniture has power or not. Always true if power is not applicable to the furniture.
+    /// </summary>
+    /// <returns>True if the furniture has power or if the furniture doesn't require power to function.</returns>
+    public bool DoesntNeedOrHasPower
+    {
+        get
+        {
+            return PowerConnection == null || World.Current.PowerNetwork.HasPower(PowerConnection);
+        }
+    }
     #endregion
 
     /// <summary>
@@ -474,7 +486,17 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// <param name="deltaTime">The time since the last update was called.</param>
     public void FixedFrequencyUpdate(float deltaTime)
     {
-        if (PowerConnection != null && PowerConnection.IsPowerConsumer && HasPower() == false)
+        // requirements from components (gas, ...)
+        bool canFunction = true;
+        foreach (var cmp in components)
+        {
+            canFunction &= cmp.CanFunction();
+        }
+
+        IsOperating = DoesntNeedOrHasPower && canFunction;
+
+        if ((PowerConnection != null && PowerConnection.IsPowerConsumer && DoesntNeedOrHasPower == false) ||
+            canFunction == false)
         {
             if (prevUpdatePowerOn)
             {
@@ -590,16 +612,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
 
         // Else return default Type string
         return Type;
-    }
-
-    /// <summary>
-    /// Whether the furniture has power or not.
-    /// </summary>
-    /// <returns>True if the furniture has power.</returns>
-    public bool HasPower()
-    {
-        IsOperating = PowerConnection == null || World.Current.PowerNetwork.HasPower(PowerConnection);
-        return IsOperating;
     }
     #endregion
 
@@ -1064,7 +1076,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
 
         if (PowerConnection != null)
         {
-            bool hasPower = HasPower();
+            bool hasPower = DoesntNeedOrHasPower;
             string powerColor = hasPower ? "green" : "red";
 
             yield return string.Format("Power Grid: <color={0}>{1}</color>", powerColor, hasPower ? "Online" : "Offline");
