@@ -370,9 +370,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     }
 
     /// <summary>
-    /// Whether the furniture has power or not.
+    /// Whether the furniture has power or not. Always true if power is not applicable to the furniture.
     /// </summary>
-    /// <returns>True if the furniture has power.</returns>
+    /// <returns>True if the furniture has power or if the furniture doesn't require power to function.</returns>
     public bool DoesntNeedOrHasPower
     {
         get
