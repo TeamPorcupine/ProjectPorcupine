@@ -115,7 +115,7 @@ namespace ProjectPorcupine.Localization
                     {
                         string[] keyValuePair = line.Split(new char[] { '=' }, 2);
 
-                        if (keyValuePair[0] == "rtl" && keyValuePair[1] == "true")
+                        if (keyValuePair[0] == "rtl" && (keyValuePair[1] == "true" || keyValuePair[1] == "1"))
                         {
                             rightToLeftLanguage = true;
                         }                    
@@ -125,9 +125,11 @@ namespace ProjectPorcupine.Localization
                             Debug.ULogErrorChannel("LocalizationTable", string.Format("Invalid format of localization string. Actual {0}", line));
                             continue;
                         }
+
                         if (rightToLeftLanguage)
                         {
-                            //reverse order of letters in the localization string since unity UI doesn't support RTL languages
+                            // reverse order of letters in the localization string since unity UI doesn't support RTL languages
+                            // note the line "rtl=true" must appear first in the file for this to work.
                             keyValuePair[1] = ReverseString(keyValuePair[1]);
                         }
 
@@ -170,20 +172,20 @@ namespace ProjectPorcupine.Localization
         }
 
         /// <summary>
-        /// Reverses string for Right to Left languages, since UI doesn't do so automatically
+        /// Reverses string for Right to Left languages, since UI doesn't do so automatically.
         /// </summary>
-        /// <param name="original">the original and correct RTL text</param>
-        /// <returns></returns>
+        /// <param name="original">The original and correct RTL text.</param>
+        /// <returns>The string in reverse. The text will appear RTL in the UI, but it is actual LTR and inverted.</returns>
         private static string ReverseString(string original)
         {
             char[] letterArray = original.ToCharArray();
-            string reverse = String.Empty;
+            string reverse = string.Empty;
             for (int i = original.Length - 1; i > -1; i--)
             {
                 reverse += letterArray[i];
             }
+
             return reverse;
         }
-    
     }
 }
