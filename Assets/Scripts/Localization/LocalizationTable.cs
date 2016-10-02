@@ -172,20 +172,15 @@ namespace ProjectPorcupine.Localization
         }
 
         /// <summary>
-        /// Reverses string for Right to Left languages, since UI doesn't do so automatically.
+        /// Reverses the order of characters in a string. Used for Right to Left languages, since UI doesn't do so automatically.
         /// </summary>
         /// <param name="original">The original and correct RTL text.</param>
-        /// <returns>The string in reverse. The text will appear RTL in the UI, but it is actual LTR and inverted.</returns>
+        /// <returns>The string with the order of the characters reversed.</returns>
         private static string ReverseString(string original)
         {
             char[] letterArray = original.ToCharArray();
-            string reverse = string.Empty;
-            for (int i = original.Length - 1; i > -1; i--)
-            {
-                reverse += letterArray[i];
-            }
-
-            return reverse;
+            Array.Reverse(letterArray);
+            return new string(letterArray);
         }
     }
 }
