@@ -2,7 +2,7 @@
 Project Porcupine: A Base-Building Game...in Space!
 
 
-![Preview Thumbnail](http://i.imgur.com/t0l6PNk.png)
+![Preview Thumbnail](https://cloud.githubusercontent.com/assets/12616499/19013271/442b24e4-87cc-11e6-87e0-1707585f9dfd.png)
 
 
 [About](#about)  

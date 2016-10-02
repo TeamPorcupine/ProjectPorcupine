@@ -1,7 +1,20 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<DialogBox>
-	<Title>Test Dialog Box!</Title>
-	<Content>
-		<Text>trying to make a dialog box</Text>
-	</Content>
-</DialogBox>
+<?xml version="1.0" encoding="Windows-1252"?>
+<DialogBoxLuaInformation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <title>Testing</title>
+  <content Type="Text">
+    <position>
+      <x>100</x>
+      <y>-50</y>
+      <z>0</z>
+    </position>
+    <data xsi:type="xsd:string">Hello!</data>
+  </content>
+  <content Type="Text">
+    <position>
+      <x>100</x>
+      <y>-100</y>
+      <z>0</z>
+    </position>
+    <data xsi:type="xsd:string">This is just practice.</data>
+  </content>
+</DialogBoxLuaInformation>

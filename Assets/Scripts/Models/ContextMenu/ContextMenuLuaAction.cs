@@ -12,7 +12,7 @@ public class ContextMenuLuaAction
     
     public string Text;
     
-    public bool RequiereCharacterSelected;
+    public bool RequireCharacterSelected;
 
     public bool DevModeOnly;
 }

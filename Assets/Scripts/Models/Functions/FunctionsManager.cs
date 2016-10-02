@@ -17,11 +17,14 @@ public class FunctionsManager
         actions = new Dictionary<string, LuaFunctions>();
 
         actions.Add("Furniture", new LuaFunctions());
+        actions.Add("Utility", new LuaFunctions());
+        actions.Add("RoomBehavior", new LuaFunctions());
         actions.Add("Need", new LuaFunctions());
         actions.Add("GameEvent", new LuaFunctions());
         actions.Add("TileType", new LuaFunctions());
         actions.Add("Quest", new LuaFunctions());
         actions.Add("ScheduledEvent", new LuaFunctions());
+        actions.Add("Overlay", new LuaFunctions());
     }
 
     /// <summary>
@@ -31,6 +34,24 @@ public class FunctionsManager
     public static LuaFunctions Furniture
     {
         get { return Get("Furniture"); }
+    }
+
+    /// <summary>
+    /// Gets the utility Lua Functions.
+    /// </summary>
+    /// <value>The utility Lua Functions.</value>
+    public static LuaFunctions Utility
+    {
+        get { return Get("Utility"); }
+    }
+
+    /// <summary>
+    /// Gets the RoomBehavior Lua Functions.
+    /// </summary>
+    /// <value>The RoomBehavior Lua Functions.</value>
+    public static LuaFunctions RoomBehavior
+    {
+        get { return Get("RoomBehavior"); }
     }
 
     /// <summary>
@@ -79,6 +100,15 @@ public class FunctionsManager
     }
 
     /// <summary>
+    /// Gets the overlay Lua Functions.
+    /// </summary>
+    /// <value>The overlay Lua Functions.</value>
+    public static LuaFunctions Overlay
+    {
+        get { return Get("Overlay"); }
+    }
+
+    /// <summary>
     /// Get the Lua Functions for the specified name.
     /// </summary>
     /// <param name="name">The functions key.</param>
@@ -95,15 +125,5 @@ public class FunctionsManager
         }
 
         return null;
-    }
-
-    // TODO: Move this function to a better place
-    public static void JobComplete_FurnitureBuilding(Job theJob)
-    {
-        WorldController.Instance.World.PlaceFurniture(theJob.JobObjectType, theJob.tile);
-
-        // FIXME: I don't like having to manually and explicitly set
-        // flags that prevent conflicts. It's too easy to forget to set/clear them!
-        theJob.tile.PendingBuildJob = null;
     }
 }

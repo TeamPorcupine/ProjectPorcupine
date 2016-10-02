@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Utilities>
+  <Utility type="util_power_cable">
+    <Name>Power Cables</Name>
+    <Description>This is a power cable.</Description>
+    <TypeTag>Power</TypeTag>
+
+    <BuildingJob jobTime="1">
+      <Inventory type="Copper Wire" amount="2" />
+    </BuildingJob>
+
+    <DeconstructJob jobTime="1">
+      <Inventory type="Copper Wire" amount="1" />
+    </DeconstructJob>
+    
+    <ContextMenuAction FunctionName="UtilityContextTest1" Text="Test Context 1" RequireCharacterSelected="false"/>
+    <ContextMenuAction FunctionName="UtilityContextTest2" Text="Test Context 2" RequireCharacterSelected="false"/>
+    
+    <LocalizationCode>util_power_cable</LocalizationCode>
+    <UnlocalizedDescription>util_power_cable_desc</UnlocalizedDescription>
+  </Utility>
+  
+  <Utility type="util_water_pipe">
+    <Name>Water Pipe</Name>
+    <Description>This is a water pipe.</Description>
+    <TypeTag>Water</TypeTag>
+
+    <BuildingJob jobTime="1">
+      <Inventory type="Steel Plate" amount="2" />
+    </BuildingJob>
+
+    <DeconstructJob jobTime="1">
+      <Inventory type="Steel Plate" amount="1" />
+    </DeconstructJob>
+    
+    <LocalizationCode>util_water_pipe</LocalizationCode>
+    <UnlocalizedDescription>util_water_pipe_desc</UnlocalizedDescription>
+  </Utility>
+</Utilities>

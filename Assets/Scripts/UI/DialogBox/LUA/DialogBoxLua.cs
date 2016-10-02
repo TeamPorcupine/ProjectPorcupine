@@ -7,15 +7,16 @@
 // ====================================================
 #endregion
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml;
+using System.Xml.Serialization;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class DialogBoxLua : DialogBox
 {
     private string title;
-    private XmlReader reader;
 
     public Transform Content { get; protected set; }
 
@@ -46,27 +47,28 @@ public class DialogBoxLua : DialogBox
         //                 |-> Content
         Content = transform.GetChild(0).GetChild(1);
 
-        reader = XmlReader.Create(file.OpenRead());
-        while (reader.Read())
-        {
-            switch (reader.Name)
-            {
-                case "Title":
-                    Title = reader.ReadElementContentAsString();
-                    break;
-                case "Content":
-                    while (reader.Read())
-                    {
-                        switch (reader.Name)
-                        {
-                            case "Text":
-                                Debug.ULogChannel("DBLua", "Text: " + reader.ReadElementContentAsString());
-                                break;
-                        }
-                    }
+        XmlSerializer serializer = new XmlSerializer(typeof(DialogBoxLuaInformation));
 
-                    break;
+        try
+        {
+            DialogBoxLuaInformation DialogBoxInfo = (DialogBoxLuaInformation)serializer.Deserialize(file.OpenRead());
+            Title = DialogBoxInfo.title;
+            foreach (DialogComponent goInfo in DialogBoxInfo.content)
+            {
+                // Implement new DialogComponents in here.
+                switch (goInfo.ObjectType)
+                {
+                    case "Text":
+                        GameObject TextObject = (GameObject)Instantiate(Resources.Load("Prefab/DialogBoxPrefabs/DialogText"), Content);
+                        TextObject.GetComponent<Text>().text = (string)goInfo.data;
+                        TextObject.GetComponent<RectTransform>().anchoredPosition = goInfo.position;
+                        break;
+                }
             }
+        }
+        catch (System.Exception error)
+        {
+            Debug.ULogErrorChannel("DialogBoxLua", "Error deserializing data:" + error.Message);
         }
     }
 }

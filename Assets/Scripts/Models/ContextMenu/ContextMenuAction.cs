@@ -11,6 +11,7 @@ using System;
 public class ContextMenuAction
 {    
     public Action<ContextMenuAction, Character> Action;
+    public string Parameter;
 
     public bool RequireCharacterSelected { get; set; }
 

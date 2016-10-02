@@ -5,7 +5,7 @@
         <Goals>
             <Goal Description="Build 2 Mining Drone Station" IsCompletedLuaFunction="Quest_Have_Furniture_Built">
                 <Params>
-                    <Param name="objectType" value="Mining Drone Station"/>
+                    <Param name="type" value="Mining Drone Station"/>
                     <Param name="amount" value="2"/>
                 </Params>
             </Goal>
@@ -13,7 +13,7 @@
         <Rewards>
             <Reward Description="Receive 50 free Raw Iron" OnRewardLuaFunction="Quest_Spawn_Inventory">
                 <Params>
-                    <Param name="objectType" value="Raw Iron"/>
+                    <Param name="type" value="Raw Iron"/>
                     <Param name="amount" value="50"/>
                 </Params>
             </Reward>
@@ -28,7 +28,7 @@
         <Goals>
             <Goal Description="Build 1 Metal Smelter Station" IsCompletedLuaFunction="Quest_Have_Furniture_Built">
                 <Params>
-                    <Param name="objectType" value="Metal Smelter"/>
+                    <Param name="type" value="Metal Smelter"/>
                     <Param name="amount" value="1"/>
                 </Params>
             </Goal>
@@ -36,7 +36,7 @@
         <Rewards>
             <Reward Description="Receive 50 free Raw Iron" OnRewardLuaFunction="Quest_Spawn_Inventory">
                 <Params>
-                    <Param name="objectType" value="Steel Plate"/>
+                    <Param name="type" value="Steel Plate"/>
                     <Param name="amount" value="15"/>
                 </Params>
             </Reward>
@@ -48,13 +48,13 @@
         <Goals>
             <Goal Description="Build 2 Power Generator" IsCompletedLuaFunction="Quest_Have_Furniture_Built">
                 <Params>
-                    <Param name="objectType" value="Power Generator"/>
+                    <Param name="type" value="Power Generator"/>
                     <Param name="amount" value="2"/>
                 </Params>
             </Goal>
             <Goal Description="Build 2 Oxygen Generator" IsCompletedLuaFunction="Quest_Have_Furniture_Built">
                 <Params>
-                    <Param name="objectType" value="Oxygen Generator"/>
+                    <Param name="type" value="Oxygen Generator"/>
                     <Param name="amount" value="2"/>
                 </Params>
             </Goal>
@@ -62,7 +62,7 @@
         <Rewards>
             <Reward Description="Receive 10 free Power Cell" OnRewardLuaFunction="Quest_Spawn_Inventory">
                 <Params>
-                    <Param name="objectType" value="Raw Iron"/>
+                    <Param name="type" value="Raw Iron"/>
                     <Param name="amount" value="10"/>
                 </Params>
             </Reward>
@@ -77,7 +77,7 @@
         <Goals>
             <Goal Description="Build 1 Heater" IsCompletedLuaFunction="Quest_Have_Furniture_Built">
                 <Params>
-                    <Param name="objectType" value="Heater"/>
+                    <Param name="type" value="Heater"/>
                     <Param name="amount" value="1"/>
                 </Params>
             </Goal>
@@ -85,7 +85,7 @@
         <Rewards>
             <Reward Description="Receive 10 free Power Cell" OnRewardLuaFunction="Quest_Spawn_Inventory">
                 <Params>
-                    <Param name="objectType" value="Ice"/>
+                    <Param name="type" value="Ice"/>
                     <Param name="amount" value="20"/>
                 </Params>
             </Reward>

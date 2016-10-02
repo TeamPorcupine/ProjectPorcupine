@@ -6,6 +6,8 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using System.Collections.Generic;
+using ProjectPorcupine.Jobs;
 using UnityEngine;
 
 public class CursorInfoDisplay
@@ -46,7 +48,7 @@ public class CursorInfoDisplay
         for (int i = 0; i < mc.GetDragObjects().Count; i++)
         {
             Tile t1 = GetTileUnderDrag(mc.GetDragObjects()[i].transform.position);
-            if (WorldController.Instance.World.IsFurniturePlacementValid(bmc.buildModeObjectType, t1) && t1.PendingBuildJob == null)
+            if (World.Current.FurnitureManager.IsPlacementValid(bmc.buildModeType, t1) && t1.PendingBuildJob == null)
             {
                 validPostionCount++;
             }
@@ -70,16 +72,17 @@ public class CursorInfoDisplay
     public string GetCurrentBuildRequirements()
     {
         string temp = string.Empty;
-        foreach (string itemName in PrototypeManager.FurnitureJob.Get(bmc.buildModeObjectType).inventoryRequirements.Keys)
+        Dictionary<string, RequestedItem> items = PrototypeManager.FurnitureConstructJob.Get(bmc.buildModeType).RequestedItems;
+        foreach (RequestedItem item in items.Values)
         {
-            string requiredMaterialCount = (PrototypeManager.FurnitureJob.Get(bmc.buildModeObjectType).inventoryRequirements[itemName].MaxStackSize * validPostionCount).ToString();
-            if (PrototypeManager.FurnitureJob.Get(bmc.buildModeObjectType).inventoryRequirements.Count > 1)
+            string requiredMaterialCount = (item.MinAmountRequested * validPostionCount).ToString();
+            if (items.Count > 1)
             {
-                return temp += requiredMaterialCount + " " + itemName + "\n";
+                return temp += requiredMaterialCount + " " + item.Type + "\n";
             }
             else
             {
-                return temp += requiredMaterialCount + " " + itemName;
+                return temp += requiredMaterialCount + " " + item.Type;
             }
         }
 

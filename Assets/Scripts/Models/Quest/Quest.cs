@@ -11,9 +11,14 @@ using System.Xml;
 using MoonSharp.Interpreter;
 
 [MoonSharpUserData]
-public class Quest
+public class Quest : IPrototypable
 {
     public string Name { get; set; }
+
+    public string Type
+    {
+        get { return Name; }
+    }
 
     public string Description { get; set; }
 
@@ -27,7 +32,7 @@ public class Quest
 
     public List<string> PreRequiredCompletedQuest { get; set; }
 
-    public void ReadXmlPrototype(XmlTextReader reader_parent)
+    public void ReadXmlPrototype(XmlReader reader_parent)
     {
         Name = reader_parent.GetAttribute("Name");
         Goals = new List<QuestGoal>();
