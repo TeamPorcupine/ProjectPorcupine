@@ -145,7 +145,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         if (other.PowerConnection != null)
         {
             PowerConnection = other.PowerConnection.Clone() as Connection;
-            //World.Current.PowerNetwork.PlugIn(PowerConnection);
             PowerConnection.NewThresholdReached += OnNewThresholdReached;
         }
 
