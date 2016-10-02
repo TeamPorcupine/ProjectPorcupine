@@ -22,7 +22,7 @@ public class UIMenuController : MonoBehaviour
 
         // Add the menus.
         AddMenu("MenuTop");
-        AddMenu("MenuBottom");
+        AddMenu("GameMenu");
         AddMenu("MenuLeft");
         AddMenu("Headlines");
     }
