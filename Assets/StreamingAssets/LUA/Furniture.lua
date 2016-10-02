@@ -548,7 +548,7 @@ function SolarPanel_OnUpdate(furniture, deltaTime)
 end
 
 function AirPump_OnUpdate(furniture, deltaTime)
-    if (furniture.HasPower() == false) then
+    if (furniture.HasPower == false) then
         return
     end
 

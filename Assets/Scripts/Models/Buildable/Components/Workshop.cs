@@ -164,6 +164,7 @@ namespace ProjectPorcupine.Buildable.Components
             IsRunning = false;
             OnRunningStateChanged += RunningStateChanged;
             ParentFurniture.Removed += WorkshopRemoved;
+            ParentFurniture.IsOperatingChanged += (furniture) => RunningStateChanged(IsRunning && furniture.IsOperating);
         }
 
         private void PlaceInventories(List<TileObjectTypeAmount> outPlacement)
@@ -405,17 +406,7 @@ namespace ProjectPorcupine.Buildable.Components
 
             public List<Item> Output { get; set; }
         }
-
-        [Serializable]
-        public class UsedAnimations
-        {
-            [XmlAttribute("idle")]
-            public string Idle { get; set; }
-
-            [XmlAttribute("running")]
-            public string Running { get; set; }
-        }
-
+        
         private class TileObjectTypeAmount
         {
             public Tile Tile { get; set; }
