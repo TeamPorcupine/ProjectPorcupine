@@ -373,7 +373,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// Whether the furniture has power or not.
     /// </summary>
     /// <returns>True if the furniture has power.</returns>
-    public bool HasPower
+    public bool DoesntNeedOrHasPower
     {
         get
         {
@@ -488,9 +488,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             canFunction &= cmp.CanFunction();
         }
 
-        IsOperating = HasPower && canFunction;
+        IsOperating = DoesntNeedOrHasPower && canFunction;
 
-        if ((PowerConnection != null && PowerConnection.IsPowerConsumer && HasPower == false) ||
+        if ((PowerConnection != null && PowerConnection.IsPowerConsumer && DoesntNeedOrHasPower == false) ||
             canFunction == false)
         {
             if (prevUpdatePowerOn)
@@ -1071,7 +1071,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
 
         if (PowerConnection != null)
         {
-            bool hasPower = HasPower;
+            bool hasPower = DoesntNeedOrHasPower;
             string powerColor = hasPower ? "green" : "red";
 
             yield return string.Format("Power Grid: <color={0}>{1}</color>", powerColor, hasPower ? "Online" : "Offline");
