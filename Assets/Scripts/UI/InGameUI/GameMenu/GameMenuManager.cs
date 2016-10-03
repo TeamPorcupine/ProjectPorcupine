@@ -152,8 +152,10 @@ public class GameMenuManager : IEnumerable<GameMenuItem>
     {
         if (itemsToAdd.ContainsKey(key) && itemsToAdd[key].Count > 0)
         {
-            foreach (GameMenuItem menuItem in itemsToAdd[key])
+            for (int i = itemsToAdd[key].Count; i >= 0; i--)
             {
+                GameMenuItem menuItem = itemsToAdd[key][i];
+                itemsToAdd[key].RemoveAt(i);
                 AddMenuItem(menuItem, position + 1);
             }
         }
