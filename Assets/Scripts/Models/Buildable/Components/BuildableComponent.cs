@@ -72,6 +72,11 @@ namespace ProjectPorcupine.Buildable.Components
             Initialize();
         }
 
+        public virtual bool CanFunction()
+        {
+            return true;
+        }
+
         public virtual void FixedFrequencyUpdate(float deltaTime)
         {
         }
@@ -144,5 +149,15 @@ namespace ProjectPorcupine.Buildable.Components
 
             return componentTypes;
         }
-    }
+
+        [Serializable]
+        public class UsedAnimations
+        {
+            [XmlAttribute("idle")]
+            public string Idle { get; set; }
+
+            [XmlAttribute("running")]
+            public string Running { get; set; }
+        }
+    }    
 }

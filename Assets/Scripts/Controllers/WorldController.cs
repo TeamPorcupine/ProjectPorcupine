@@ -187,6 +187,7 @@ public class WorldController : MonoBehaviour
         TimeManager.Instance.Destroy();
         KeyboardManager.Instance.Destroy();
         Scheduler.Scheduler.Current.Destroy();
+        GameMenuManager.Instance.Destroy();
     }
 
     /// <summary>

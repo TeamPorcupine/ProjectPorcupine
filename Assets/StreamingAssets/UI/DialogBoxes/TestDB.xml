@@ -1,20 +1,18 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <DialogBoxLuaInformation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <title>Testing</title>
-  <content Type="Text">
-    <position>
+  <Title>Testing</Title>
+  <Content Type="Text">
+    <Position>
       <x>100</x>
       <y>-50</y>
       <z>0</z>
-    </position>
-    <data xsi:type="xsd:string">Hello!</data>
-  </content>
-  <content Type="Text">
-    <position>
-      <x>100</x>
-      <y>-100</y>
-      <z>0</z>
-    </position>
-    <data xsi:type="xsd:string">This is just practice.</data>
-  </content>
+    </Position>
+    <Data xsi:type="xsd:string">Hello!</Data>
+  </Content>
+  <Buttons>Yes</Buttons>
+  <Buttons>No</Buttons>
+  <Buttons>Cancel</Buttons>
+  <Actions>
+    <Action event="OnClosed" functionName="Testing_DialogClosed" />
+  </Actions>
 </DialogBoxLuaInformation>

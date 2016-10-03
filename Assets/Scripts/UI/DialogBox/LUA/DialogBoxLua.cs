@@ -11,14 +11,22 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
+using MoonSharp.Interpreter;
 using UnityEngine;
 using UnityEngine.UI;
 
+[MoonSharpUserData]
 public class DialogBoxLua : DialogBox
 {
     private string title;
 
     public Transform Content { get; protected set; }
+
+    public DialogBoxResult Result { get; set; }
+
+    private object extraData;
+
+    private EventActions events;
 
     public string Title
     {
@@ -39,6 +47,38 @@ public class DialogBoxLua : DialogBox
         base.ShowDialog();
     }
 
+    public void YesButtonClicked()
+    {
+        Result = DialogBoxResult.Yes;
+        CloseDialog();
+    }
+
+    public void NoButtonClicked()
+    {
+        Result = DialogBoxResult.No;
+        CloseDialog();
+    }
+
+    public void CancelButtonClicked()
+    {
+        Result = DialogBoxResult.Cancel;
+        CloseDialog();
+    }
+
+    public void OkButtonClicked()
+    {
+        CloseDialog();
+    }
+
+    public override void CloseDialog()
+    {
+        object[] Args = new object[2];
+        Args[0] = Result;
+        Args[1] = extraData;
+
+        events.Trigger("OnClosed", this);
+        base.CloseDialog();
+    }
     public void LoadFromXML(FileInfo file)
     {
         // TODO: Find a better way to do this. Not user friendly/Expansible.
@@ -65,10 +105,56 @@ public class DialogBoxLua : DialogBox
                         break;
                 }
             }
+            foreach (DialogBoxResult buttons in DialogBoxInfo.buttons)
+            {
+                switch(buttons)
+                {
+                    case DialogBoxResult.Yes:
+                        gameObject.transform.GetChild(0).transform.Find("Buttons/btnYes").gameObject.SetActive(true);
+                        break;
+                    case DialogBoxResult.No:
+                        gameObject.transform.GetChild(0).transform.Find("Buttons/btnNo").gameObject.SetActive(true);
+                        break;
+                    case DialogBoxResult.Cancel:
+                        gameObject.transform.GetChild(0).transform.Find("Buttons/btnCancel").gameObject.SetActive(true);
+                        break;
+                    case DialogBoxResult.OK:
+                        gameObject.transform.GetChild(0).transform.Find("Buttons/btnOK").gameObject.SetActive(true);
+                        break;
+                }
+            }
+            events = DialogBoxInfo.events;
+            FunctionsManager.Get("DialogBoxLua").RegisterGlobal(typeof(DialogBoxLua));
         }
         catch (System.Exception error)
         {
             Debug.ULogErrorChannel("DialogBoxLua", "Error deserializing data:" + error.Message);
         }
+
+
+        // Temporary testing serializer... will remove later
+        /*DialogBoxLuaInformation info = new DialogBoxLuaInformation();
+        info.title = "Testing";
+
+        DialogBoxResult[] buttons = new DialogBoxResult[3];
+        buttons[0] = DialogBoxResult.Yes;
+        buttons[1] = DialogBoxResult.No;
+        buttons[2] = DialogBoxResult.Cancel;
+        info.buttons = buttons;
+
+        DialogComponent[] content = new DialogComponent[1];
+        DialogComponent text = new DialogComponent();
+        text.ObjectType = "Text";
+        text.position = new Vector3(100, -50);
+        text.data = "Hello!";
+        content[0] = text;
+        info.content = content;
+
+        EventActions newEvents = new EventActions();
+        newEvents.Register("OnClosed", "Testing_DialogClosed");
+        info.events = newEvents;
+
+        serializer.Serialize(file.OpenWrite(), info);
+        */
     }
 }

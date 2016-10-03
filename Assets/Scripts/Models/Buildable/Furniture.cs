@@ -145,7 +145,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         if (other.PowerConnection != null)
         {
             PowerConnection = other.PowerConnection.Clone() as Connection;
-            World.Current.PowerNetwork.PlugIn(PowerConnection);
             PowerConnection.NewThresholdReached += OnNewThresholdReached;
         }
 
@@ -368,6 +367,18 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             return !string.IsNullOrEmpty(getSpriteNameAction);
         }
     }
+
+    /// <summary>
+    /// Whether the furniture has power or not. Always true if power is not applicable to the furniture.
+    /// </summary>
+    /// <returns>True if the furniture has power or if the furniture doesn't require power to function.</returns>
+    public bool DoesntNeedOrHasPower
+    {
+        get
+        {
+            return PowerConnection == null || World.Current.PowerNetwork.HasPower(PowerConnection);
+        }
+    }
     #endregion
 
     /// <summary>
@@ -385,16 +396,10 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         }
 
         // We know our placement destination is valid.
-        Furniture obj = proto.Clone();
-        obj.Tile = tile;
-
-        // need to update reference to furniture and call Initialize (so components can place hooks on events there)
-        foreach (var comp in obj.components)
-        {
-            comp.Initialize(obj);
-        }
-      
-        if (tile.PlaceFurniture(obj) == false)
+        Furniture furnObj = proto.Clone();
+        furnObj.Tile = tile;
+        
+        if (tile.PlaceFurniture(furnObj) == false)
         {
             // For some reason, we weren't able to place our object in this tile.
             // (Probably it was already occupied.)
@@ -403,8 +408,20 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             // (It will be garbage collected.)
             return null;
         }
-        
-        if (obj.LinksToNeighbour != string.Empty)
+
+        // plug-in furniture only when it is placed in world
+        if (furnObj.PowerConnection != null)
+        {
+            World.Current.PowerNetwork.PlugIn(furnObj.PowerConnection);
+        }
+
+        // need to update reference to furniture and call Initialize (so components can place hooks on events there)
+        foreach (var comp in furnObj.components)
+        {
+            comp.Initialize(furnObj);
+        }
+
+        if (furnObj.LinksToNeighbour != string.Empty)
         {
             // This type of furniture links itself to its neighbours,
             // so we should inform our neighbours that they have a new
@@ -426,21 +443,21 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         }
 
         // Let our workspot tile know it is reserved for us
-        World.Current.ReserveTileAsWorkSpot(obj);
+        World.Current.ReserveTileAsWorkSpot(furnObj);
 
         // Call LUA install scripts
-        obj.EventActions.Trigger("OnInstall", obj);
+        furnObj.EventActions.Trigger("OnInstall", furnObj);
 
         // Update thermalDiffusivity using coefficient
         float thermalDiffusivity = Temperature.defaultThermalDiffusivity;
-        if (obj.Parameters.ContainsKey("thermal_diffusivity"))
+        if (furnObj.Parameters.ContainsKey("thermal_diffusivity"))
         {
-            thermalDiffusivity = obj.Parameters["thermal_diffusivity"].ToFloat();
+            thermalDiffusivity = furnObj.Parameters["thermal_diffusivity"].ToFloat();
         }
 
         World.Current.temperature.SetThermalDiffusivity(tile.X, tile.Y, tile.Z, thermalDiffusivity);
 
-        return obj;
+        return furnObj;
     }
 
     #region Update and Animation
@@ -469,7 +486,17 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// <param name="deltaTime">The time since the last update was called.</param>
     public void FixedFrequencyUpdate(float deltaTime)
     {
-        if (PowerConnection != null && PowerConnection.IsPowerConsumer && HasPower() == false)
+        // requirements from components (gas, ...)
+        bool canFunction = true;
+        foreach (var cmp in components)
+        {
+            canFunction &= cmp.CanFunction();
+        }
+
+        IsOperating = DoesntNeedOrHasPower && canFunction;
+
+        if ((PowerConnection != null && PowerConnection.IsPowerConsumer && DoesntNeedOrHasPower == false) ||
+            canFunction == false)
         {
             if (prevUpdatePowerOn)
             {
@@ -585,16 +612,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
 
         // Else return default Type string
         return Type;
-    }
-
-    /// <summary>
-    /// Whether the furniture has power or not.
-    /// </summary>
-    /// <returns>True if the furniture has power.</returns>
-    public bool HasPower()
-    {
-        IsOperating = PowerConnection == null || World.Current.PowerNetwork.HasPower(PowerConnection);
-        return IsOperating;
     }
     #endregion
 
@@ -1059,7 +1076,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
 
         if (PowerConnection != null)
         {
-            bool hasPower = HasPower();
+            bool hasPower = DoesntNeedOrHasPower;
             string powerColor = hasPower ? "green" : "red";
 
             yield return string.Format("Power Grid: <color={0}>{1}</color>", powerColor, hasPower ? "Online" : "Offline");

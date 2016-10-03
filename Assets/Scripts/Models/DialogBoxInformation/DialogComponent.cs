@@ -11,9 +11,9 @@ public class DialogComponent
     [XmlAttribute("Type")]
     public string ObjectType;
 
-    [XmlElement]
+    [XmlElement("Position")]
     public Vector3 position;
-
-    [XmlElement]
+    
+    [XmlElement("Data")]
     public object data;
 }

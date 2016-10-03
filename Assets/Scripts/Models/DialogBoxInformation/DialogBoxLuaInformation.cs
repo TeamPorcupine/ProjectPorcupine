@@ -7,9 +7,16 @@ using UnityEngine;
 
 public class DialogBoxLuaInformation
 {
-    [XmlElement]
+    [XmlElement("Title")]
     public string title;
-    [XmlElement]
+
+    [XmlElement("Content")]
     public DialogComponent[] content;
+
+    [XmlElement("Buttons")]
+    public DialogBoxResult[] buttons;
+
+    [XmlElement("Actions")]
+    public EventActions events;
 }
 
