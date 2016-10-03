@@ -6,6 +6,6 @@ DIALOGRESULT_OKAY = 3
 function Testing_DialogClosed( DialogBoxResult, data )
 	ModUtils.ULog("DialogClosed")
 	if (data == DIALOGRESULT_YES) then
-		ModUtils.ULog("You've successfully added LUA to a dialog box.")
+		WorldController.instance.dialogBoxManager.ShowDialogBoxByName("Load File")
 	end
 end
