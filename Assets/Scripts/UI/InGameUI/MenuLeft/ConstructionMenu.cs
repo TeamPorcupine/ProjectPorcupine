@@ -96,8 +96,6 @@ public class ConstructionMenu : MonoBehaviour
         RenderFurnitureButtons();
         RenderUtilityButtons();
 
-        lastLanguage = LocalizationTable.currentLanguage;
-
         InputField filterField = GetComponentInChildren<InputField>();
         KeyboardManager.Instance.RegisterModalInputField(filterField);
     }
