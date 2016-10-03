@@ -29,29 +29,6 @@ public class GameMenuController : MonoBehaviour
         menu.SetActive(!menu.activeSelf);
     }
 
-    public void LocalizationFilesChanged()
-    {
-        Transform tf;
-        try
-        {
-            tf = gameObject.transform;
-        }
-        catch (MissingReferenceException)
-        {
-            // this sometimes gets called when gameObject doesn't exist
-            // if so the gameObject has obviously been destroyed, so deregister
-            // the callback
-            LocalizationTable.CBLocalizationFilesChanged -= LocalizationFilesChanged;
-            return;
-        }
-
-        string menuItemKey = gameObject.name.Replace("Button - ", string.Empty);
-        tf.GetComponentInChildren<TextLocalizer>().formatValues = new string[]
-            {
-                LocalizationTable.GetLocalization(menuItemKey)
-            };
-    }
-
     // Use this for initialization.
     private void Start()
     {
@@ -97,7 +74,30 @@ public class GameMenuController : MonoBehaviour
                 }
             });
 
-        LocalizationTable.CBLocalizationFilesChanged += LocalizationFilesChanged;
+        Action localizationFilesChangedHandler = null;
+        localizationFilesChangedHandler = delegate
+            {
+                Transform tf;
+                try
+                {
+                    tf = gameObject.transform;
+                }
+                catch (MissingReferenceException)
+                {
+                    // this sometimes gets called when gameObject doesn't exist
+                    // if so the gameObject has obviously been destroyed, so deregister
+                    // the callback
+                    LocalizationTable.CBLocalizationFilesChanged -= localizationFilesChangedHandler;
+                    return;
+                }
+
+                string menuItemKey = gameObject.name.Replace("Button - ", string.Empty);
+                tf.GetComponentInChildren<TextLocalizer>().formatValues = new string[]
+                {
+                    LocalizationTable.GetLocalization(menuItemKey)
+                };
+            };
+        LocalizationTable.CBLocalizationFilesChanged += localizationFilesChangedHandler;
     }
 
     private void Update()
