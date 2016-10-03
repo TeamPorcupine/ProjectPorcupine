@@ -39,27 +39,36 @@ public class DialogBoxManager : MonoBehaviour
 
         tempGoObj = CreateDialogGO("DB_SaveFile", "Save File");
         dialogBoxSaveGame = tempGoObj.GetComponent<DialogBoxSaveGame>();
+        DialogBoxes["Save File"] = dialogBoxSaveGame;
 
         tempGoObj = CreateDialogGO("DB_LoadFile", "Load File");
         dialogBoxLoadGame = tempGoObj.GetComponent<DialogBoxLoadGame>();
+        DialogBoxes["Load File"] = dialogBoxSaveGame;
 
         tempGoObj = CreateDialogGO("DB_Options", "Options");
         dialogBoxOptions = tempGoObj.GetComponent<DialogBoxOptions>();
+        DialogBoxes["Options"] = dialogBoxOptions;
 
         tempGoObj = CreateDialogGO("DB_Settings", "Settings");
         dialogBoxSettings = tempGoObj.GetComponent<DialogBoxSettings>();
+        DialogBoxes["Settings"] = dialogBoxSettings;
 
         tempGoObj = CreateDialogGO("DB_Trade", "Trade");
         dialogBoxTrade = tempGoObj.GetComponent<DialogBoxTrade>();
+        DialogBoxes["Trade"] = dialogBoxTrade;
 
         tempGoObj = CreateDialogGO("DB_PromptOrInfo", "Prompt or Info");
         dialogBoxPromptOrInfo = tempGoObj.GetComponent<DialogBoxPromptOrInfo>();
+        DialogBoxes["Prompt or Info"] = dialogBoxPromptOrInfo;
 
         tempGoObj = CreateDialogGO("DB_JobList", "Job List");
         dialogBoxJobList = tempGoObj.GetComponent<DialogBoxJobList>();
+        DialogBoxes["Job List"] = dialogBoxJobList;
 
         tempGoObj = CreateDialogGO("DB_Quests", "Quests");
         dialogBoxQuests = tempGoObj.GetComponent<DialogBoxQuests>();
+        DialogBoxes["Quests"] = dialogBoxQuests;
+
         AddQuestList();
 
         LoadDialogBoxesLua();
@@ -152,6 +161,7 @@ public class DialogBoxManager : MonoBehaviour
                     DialogBoxLua DialogBoxLua = DialogBoxPrefab.GetComponent<DialogBoxLua>();
                     DialogBoxLua.LoadFromXML(fInfo);
                     DialogBoxPrefab.name = DialogBoxLua.Title;
+                    DialogBoxes[DialogBoxLua.Title] = DialogBoxLua;
                     break;
                 case ".lua":
                     Debug.ULogChannel("DialogBoxLua", "Found lua element:" + fInfo.Name);

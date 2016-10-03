@@ -8,7 +8,7 @@ using UnityEngine;
 
 public class DialogComponent
 {
-    [XmlAttribute("Type")]
+    [XmlAttribute("type")]
     public string ObjectType;
 
     [XmlElement("Position")]
