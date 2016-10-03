@@ -6,7 +6,6 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System.Collections;
 using ProjectPorcupine.Localization;
 using UnityEngine;
 using UnityEngine.UI;
@@ -77,7 +76,19 @@ public class GameMenuController : MonoBehaviour
         string menuItemKey = mainMenuItem.Key;
         LocalizationTable.CBLocalizationFilesChanged += delegate
             {
-                gameObject.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(menuItemKey) };
+                Transform tf;
+
+                try
+                {
+                    tf = gameObject.transform;
+                }
+                catch (MissingReferenceException)
+                {
+                    // this sometimes gets called when gameObject doesn't exist
+                    return;
+                }
+
+                tf.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(menuItemKey) };
             };
     }
 
