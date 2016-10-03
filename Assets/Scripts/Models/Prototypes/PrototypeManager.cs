@@ -34,7 +34,8 @@ public class PrototypeManager
         Currency = new PrototypeMap<Currency>("Currencies", "Currency");
         Quest = new PrototypeMap<Quest>("Quests", "Quest");
         Stat = new PrototypeMap<Stat>("Stats", "Stat");
-        SchedulerEvent = new PrototypeMap<ScheduledEvent>("Events", "Event");
+        GameEvent = new PrototypeMap<GameEvent>("GameEvents", "GameEvent");
+        ScheduledEvent = new PrototypeMap<ScheduledEvent>("ScheduledEvents", "ScheduledEvent");
         Headline = new PrototypeMap<Headline>("Headlines", "Headline");
         Overlay = new PrototypeMap<OverlayDescriptor>("Overlays", "Overlay");
         Ship = new PrototypeMap<Ship>("Ships", "Ship");
@@ -122,10 +123,16 @@ public class PrototypeManager
     public static PrototypeMap<Stat> Stat { get; private set; }
 
     /// <summary>
-    /// Gets the scheduler event prototype map.
+    /// Gets the game event prototype map.
     /// </summary>
-    /// <value>The scheduler event prototype map.</value>
-    public static PrototypeMap<ScheduledEvent> SchedulerEvent { get; private set; }
+    /// <value>The game event prototype map.</value>
+    public static PrototypeMap<GameEvent> GameEvent { get; private set; }
+
+    /// <summary>
+    /// Gets the scheduled event prototype map.
+    /// </summary>
+    /// <value>The scheduled event prototype map.</value>
+    public static PrototypeMap<ScheduledEvent> ScheduledEvent { get; private set; }
 
     /// <summary>
     /// Gets the headline prototype map.
