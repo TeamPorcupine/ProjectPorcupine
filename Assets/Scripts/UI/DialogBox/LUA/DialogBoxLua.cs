@@ -50,33 +50,35 @@ public class DialogBoxLua : DialogBox
     public void YesButtonClicked()
     {
         Result = DialogBoxResult.Yes;
+        events.Trigger("OnClosed", this, Result);
         CloseDialog();
     }
 
     public void NoButtonClicked()
     {
         Result = DialogBoxResult.No;
+        events.Trigger("OnClosed", this, Result);
         CloseDialog();
     }
 
     public void CancelButtonClicked()
     {
         Result = DialogBoxResult.Cancel;
+        events.Trigger("OnClosed", this, Result);
         CloseDialog();
     }
 
     public void OkButtonClicked()
     {
+        Result = DialogBoxResult.OK;
+        events.Trigger("OnClosed", this, Result);
         CloseDialog();
     }
 
     public override void CloseDialog()
     {
-        object[] Args = new object[2];
-        Args[0] = Result;
-        Args[1] = extraData;
 
-        events.Trigger("OnClosed", this);
+        events.Trigger("OnClosed", this, Result);
         base.CloseDialog();
     }
     public void LoadFromXML(FileInfo file)
