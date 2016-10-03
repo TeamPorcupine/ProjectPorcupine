@@ -20,13 +20,13 @@ public class DialogBoxLua : DialogBox
 {
     private string title;
 
-    public Transform Content { get; protected set; }
-
-    public DialogBoxResult Result { get; set; }
-
     private object extraData;
 
     private EventActions events;
+
+    public Transform Content { get; protected set; }
+
+    public DialogBoxResult Result { get; set; }
 
     public string Title
     {
@@ -50,37 +50,33 @@ public class DialogBoxLua : DialogBox
     public void YesButtonClicked()
     {
         Result = DialogBoxResult.Yes;
-        events.Trigger("OnClosed", this, Result);
         CloseDialog();
     }
 
     public void NoButtonClicked()
     {
         Result = DialogBoxResult.No;
-        events.Trigger("OnClosed", this, Result);
         CloseDialog();
     }
 
     public void CancelButtonClicked()
     {
         Result = DialogBoxResult.Cancel;
-        events.Trigger("OnClosed", this, Result);
         CloseDialog();
     }
 
     public void OkButtonClicked()
     {
-        Result = DialogBoxResult.OK;
-        events.Trigger("OnClosed", this, Result);
+        Result = DialogBoxResult.Okay;
         CloseDialog();
     }
 
     public override void CloseDialog()
     {
-
         events.Trigger("OnClosed", this, Result);
         base.CloseDialog();
     }
+
     public void LoadFromXML(FileInfo file)
     {
         // TODO: Find a better way to do this. Not user friendly/Expansible.
@@ -93,23 +89,24 @@ public class DialogBoxLua : DialogBox
 
         try
         {
-            DialogBoxLuaInformation DialogBoxInfo = (DialogBoxLuaInformation)serializer.Deserialize(file.OpenRead());
-            Title = DialogBoxInfo.title;
-            foreach (DialogComponent goInfo in DialogBoxInfo.content)
+            DialogBoxLuaInformation dialogBoxInfo = (DialogBoxLuaInformation)serializer.Deserialize(file.OpenRead());
+            Title = dialogBoxInfo.title;
+            foreach (DialogComponent gameObjectInfo in dialogBoxInfo.content)
             {
                 // Implement new DialogComponents in here.
-                switch (goInfo.ObjectType)
+                switch (gameObjectInfo.ObjectType)
                 {
                     case "Text":
-                        GameObject TextObject = (GameObject)Instantiate(Resources.Load("Prefab/DialogBoxPrefabs/DialogText"), Content);
-                        TextObject.GetComponent<Text>().text = (string)goInfo.data;
-                        TextObject.GetComponent<RectTransform>().anchoredPosition = goInfo.position;
+                        GameObject textObject = (GameObject)Instantiate(Resources.Load("Prefab/DialogBoxPrefabs/DialogText"), Content);
+                        textObject.GetComponent<Text>().text = (string)gameObjectInfo.data;
+                        textObject.GetComponent<RectTransform>().anchoredPosition = gameObjectInfo.position;
                         break;
                 }
             }
-            foreach (DialogBoxResult buttons in DialogBoxInfo.buttons)
+
+            foreach (DialogBoxResult buttons in dialogBoxInfo.buttons)
             {
-                switch(buttons)
+                switch (buttons)
                 {
                     case DialogBoxResult.Yes:
                         gameObject.transform.GetChild(0).transform.Find("Buttons/btnYes").gameObject.SetActive(true);
@@ -120,19 +117,19 @@ public class DialogBoxLua : DialogBox
                     case DialogBoxResult.Cancel:
                         gameObject.transform.GetChild(0).transform.Find("Buttons/btnCancel").gameObject.SetActive(true);
                         break;
-                    case DialogBoxResult.OK:
+                    case DialogBoxResult.Okay:
                         gameObject.transform.GetChild(0).transform.Find("Buttons/btnOK").gameObject.SetActive(true);
                         break;
                 }
             }
-            events = DialogBoxInfo.events;
+
+            events = dialogBoxInfo.events;
             FunctionsManager.Get("DialogBoxLua").RegisterGlobal(typeof(DialogBoxLua));
         }
         catch (System.Exception error)
         {
             Debug.ULogErrorChannel("DialogBoxLua", "Error deserializing data:" + error.Message);
         }
-
 
         // Temporary testing serializer... will remove later
         /*DialogBoxLuaInformation info = new DialogBoxLuaInformation();

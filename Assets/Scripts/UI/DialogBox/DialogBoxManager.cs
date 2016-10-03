@@ -73,7 +73,22 @@ public class DialogBoxManager : MonoBehaviour
 
         LoadDialogBoxesLua();
         AddMainMenuItems();
+    }
 
+    /// <summary>
+    /// ShowDialogBoxByName shows the dialog box that has the name given.
+    /// </summary>
+    /// <param name="dialogName">The name of the dialog (a.k.a. the title of the dialog).</param>
+    public void ShowDialogBoxByName(string dialogName)
+    {
+        if (DialogBoxes.ContainsKey(dialogName))
+        {
+            DialogBoxes[dialogName].ShowDialog();
+        }
+        else
+        {
+            Debug.ULogErrorChannel("DialogBoxLua", "Couldn't find dialog box with name" + dialogName);
+        }
     }
 
     /// <summary>
@@ -147,27 +162,26 @@ public class DialogBoxManager : MonoBehaviour
     private void LoadDialogBoxesLua()
     {
         Debug.ULogChannel("DialogBoxLua", "Loading xml dialog boxes");
-        string DBPath = Path.Combine(Application.streamingAssetsPath, "UI");
-        DBPath = Path.Combine(DBPath, "DialogBoxes");
-        DirectoryInfo DBPathInfo = new DirectoryInfo(DBPath);
+        string dialogBoxPath = Path.Combine(Application.streamingAssetsPath, "UI");
+        dialogBoxPath = Path.Combine(dialogBoxPath, "DialogBoxes");
+        DirectoryInfo dialogBoxPathInfo = new DirectoryInfo(dialogBoxPath);
 
-        foreach(FileInfo fInfo in DBPathInfo.GetFiles())
+        foreach (FileInfo fileInfo in dialogBoxPathInfo.GetFiles())
         {
-            switch (fInfo.Extension)
+            switch (fileInfo.Extension)
             {
                 case ".xml":
-                    Debug.ULogChannel("DialogBoxLua", "Found xml element:" + fInfo.Name);
-                    GameObject DialogBoxPrefab = CreateDialogGO("DB_LUA", "Lua Dialog Box");
-                    DialogBoxLua DialogBoxLua = DialogBoxPrefab.GetComponent<DialogBoxLua>();
-                    DialogBoxLua.LoadFromXML(fInfo);
-                    DialogBoxPrefab.name = DialogBoxLua.Title;
-                    DialogBoxes[DialogBoxLua.Title] = DialogBoxLua;
+                    Debug.ULogChannel("DialogBoxLua", "Found xml element:" + fileInfo.Name);
+                    GameObject dialogBoxPrefab = CreateDialogGO("DB_LUA", "Lua Dialog Box");
+                    DialogBoxLua dialogBoxLua = dialogBoxPrefab.GetComponent<DialogBoxLua>();
+                    dialogBoxLua.LoadFromXML(fileInfo);
+                    dialogBoxPrefab.name = dialogBoxLua.Title;
+                    DialogBoxes[dialogBoxLua.Title] = dialogBoxLua;
                     break;
                 case ".lua":
-                    Debug.ULogChannel("DialogBoxLua", "Found lua element:" + fInfo.Name);
-                    WorldController.Instance.modsManager.LoadFunctionsInFile(fInfo, "DialogBoxLua");
+                    Debug.ULogChannel("DialogBoxLua", "Found lua element:" + fileInfo.Name);
+                    WorldController.Instance.modsManager.LoadFunctionsInFile(fileInfo, "DialogBoxLua");
                     break;
-
             }
         }
     }
