@@ -13,11 +13,7 @@ public class MenuLeft : MonoBehaviour
     // This is the parent of the menus.
     private Transform parent;
 
-    public GameObject CurrentlyOpen
-    {
-        get;
-        private set;
-    }
+    public GameObject CurrentlyOpen { get; private set; }
 
     // Use this for initialization
     public void Start()
@@ -25,6 +21,8 @@ public class MenuLeft : MonoBehaviour
         parent = this.gameObject.transform;
 
         AddMenu("ConstructionMenu");
+
+        GameMenuManager.Instance.AddMenuItem("menu_construction", OnButtonConstruction, 0);
     }
 
     public void OpenMenu(string menuName)
@@ -64,4 +62,16 @@ public class MenuLeft : MonoBehaviour
         tempGoObj.name = menuName;
         tempGoObj.transform.SetParent(parent, false);
     }
+
+    private void OnButtonConstruction()
+    {
+        if (CurrentlyOpen != null && CurrentlyOpen.gameObject.name == "ConstructionMenu")
+        {
+            CloseMenu();
+        }
+        else
+        {
+            OpenMenu("ConstructionMenu");
+        }
+    } 
 }
