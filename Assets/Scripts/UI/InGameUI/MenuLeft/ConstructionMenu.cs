@@ -23,8 +23,6 @@ public class ConstructionMenu : MonoBehaviour
     private List<GameObject> tileItems;
     private List<GameObject> taskItems;
 
-    private string lastLanguage;
-
     private bool showAllFurniture;
 
     private MenuLeft menuLeft;
