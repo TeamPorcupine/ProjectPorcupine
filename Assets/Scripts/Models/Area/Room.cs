@@ -82,7 +82,7 @@ namespace ProjectPorcupine.Rooms
 
         public void UnassignTile(Tile tile)
         {
-            if (tiles.Contains(tile))
+            if (tiles.Contains(tile) == false)
             {
                 // This tile in not in this room.
                 return;
