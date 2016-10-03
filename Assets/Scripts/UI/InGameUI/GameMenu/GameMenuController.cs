@@ -6,6 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using System;
 using ProjectPorcupine.Localization;
 using UnityEngine;
 using UnityEngine.UI;
@@ -26,6 +27,29 @@ public class GameMenuController : MonoBehaviour
     public void ToggleMenu(GameObject menu)
     {
         menu.SetActive(!menu.activeSelf);
+    }
+
+    public void LocalizationFilesChanged()
+    {
+        Transform tf;
+        try
+        {
+            tf = gameObject.transform;
+        }
+        catch (MissingReferenceException)
+        {
+            // this sometimes gets called when gameObject doesn't exist
+            // if so the gameObject has obviously been destroyed, so deregister
+            // the callback
+            LocalizationTable.CBLocalizationFilesChanged -= LocalizationFilesChanged;
+            return;
+        }
+
+        string menuItemKey = gameObject.name.Replace("Button - ", string.Empty);
+        tf.GetComponentInChildren<TextLocalizer>().formatValues = new string[]
+            {
+                LocalizationTable.GetLocalization(menuItemKey)
+            };
     }
 
     // Use this for initialization.
@@ -73,23 +97,7 @@ public class GameMenuController : MonoBehaviour
                 }
             });
 
-        string menuItemKey = mainMenuItem.Key;
-        LocalizationTable.CBLocalizationFilesChanged += delegate
-            {
-                Transform tf;
-
-                try
-                {
-                    tf = gameObject.transform;
-                }
-                catch (MissingReferenceException)
-                {
-                    // this sometimes gets called when gameObject doesn't exist
-                    return;
-                }
-
-                tf.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(menuItemKey) };
-            };
+        LocalizationTable.CBLocalizationFilesChanged += LocalizationFilesChanged;
     }
 
     private void Update()
