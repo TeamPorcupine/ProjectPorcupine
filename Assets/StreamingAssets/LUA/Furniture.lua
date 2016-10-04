@@ -751,6 +751,88 @@ function Rtg_UpdateTemperature( furniture, deltaTime)
     --ModUtils.ULogChannel("Temperature", "Heat change: " .. temperatureChangePerSecond .. " => " .. World.current.temperature.GetTemperature(tile.X, tile.Y))
 end
 
+-- Register the temperature update function
+function Fire_InstallAction( furniture, deltaTime)
+	furniture.EventActions.Register("OnUpdateTemperature", "Fire_UpdateTemperature")
+	World.Current.temperature.RegisterSinkOrSource(furniture)
+end
+
+-- Deregister the temperature update function
+function Fire_UninstallAction( furniture, deltaTime)
+	furniture.EventActions.Deregister("OnUpdateTemperature", "Fire_UpdateTemperature")
+	World.Current.temperature.DeregisterSinkOrSource(furniture)
+end
+
+-- Increase temperature of current tile
+function Fire_UpdateTemperature( furniture, deltaTime)
+	-- Magic numbers for temperature
+	World.Current.temperature.SetTemperature(furniture.Tile.X, furniture.Tile.Y, furniture.Tile.Z, 700 + furniture.Parameters["strength"].ToFloat() * 100)
+end
+
+-- Called after all Update functions: spreads fire, destroys funriture and update animation
+function Fire_OnPostUpdate( furniture, deltaTime)
+
+	-- Die off if there is no O2 (less than 0.002 atm aka 1/10 of usual O2 concentration)
+	local o2Pressure = furniture.Tile.GetGasPressure("O2")
+	furniture.Parameters["strength"].SetValue( furniture.Parameters["strength"].ToFloat() * math.min(1, o2Pressure * 500) )
+
+	-- Consume o2 and produce co2
+	if furniture.Tile.Room != nil then 
+	    furniture.Tile.Room.ChangeGas("O2", -0.1 * deltaTime)
+	    furniture.Tile.Room.ChangeGas("CO2", 0.1 * deltaTime)
+	end
+	
+	local spreadProbability = furniture.Parameters["spread_chance"].ToFloat() 
+	
+	-- Spreads only by chance. the lower the strength, the less the chance
+	if math.random() < spreadProbability * furniture.Parameters["strength"].ToFloat() * 2 then
+		-- Random tile in which you want to spread (NOTE: ONLY X AND Y SPREAD)
+		local spreadTiles = furniture.Tile.GetNeighbours(true)
+		local candidate = math.floor(math.random() * 8) + 1
+		local spreadTile = spreadTiles[candidate]
+		
+		-- If tile is valid
+		if spreadTile != nil then
+			-- Destroy any furniture and inventory
+			if spreadTile.Furniture != nil and spreadTile.Furniture.name != "fire" then
+				spreadTile.Furniture.Deconstruct()
+			end
+            spreadTile.Inventory = nil
+			-- Place a new "fire" instance
+            World.Current.FurnitureManager.PlaceFurniture("fire", spreadTile)
+			-- But make the strength of the new fire 0.1 less than the previous
+			if spreadTile.Furniture != nil then
+				spreadTile.Furniture.Parameters["strength"].ChangeFloatValue( 
+                - (furniture.Parameters["strength"].ToFloat() - 0.1)
+				)
+			end
+		end
+	end
+	
+	-- Decrease strength by chance
+	if math.random() > 0.7 then
+		furniture.Parameters["strength"].ChangeFloatValue( -0.1 )
+	end
+	-- Update animation If strength < 0, despawn (NOTE: is setting this every frame bad???)
+	local strength = furniture.Parameters["strength"].ToFloat()
+	
+    if strength <= 0 then
+		furniture.Deconstruct()
+		return
+    elseif strength > 0.5 then
+        furniture.SetAnimationState("large")
+    elseif strength < 0.5 then
+        furniture.SetAnimationState("small")
+    end
+
+    ModUtils.ULogChannel("fire","fire at x:" .. furniture.Tile.X .. " , " .. furniture.Tile.Y .. " has strength of " .. strength)
+end
+
+-- Animation AND strength of fire
+function Fire_GetSpriteName(furniture)
+    return "Fire"
+end
+
 function Berth_TestSummoning(furniture, deltaTime)
     if (furniture.Parameters["occupied"].ToFloat() <= 0) then
         Berth_SummonShip(furniture, nil)

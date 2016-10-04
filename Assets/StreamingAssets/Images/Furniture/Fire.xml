@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- note: some of the sprites in the image are not defined here, only Small and Large fire variants are used-->
+<Sprites>
+
+  <Sprite name="Fire" x="6" y="0" w="1" h="1" pixelPerUnit="64" />
+
+  <Sprite name="Fire_Small_0"	x="1"	y="0"	w="1"	h="1"	pixelPerUnit="64" />
+  <Sprite name="Fire_Small_1"	x="1"	y="1"	w="1"	h="1"	pixelPerUnit="64" />
+  <Sprite name="Fire_Small_2"	x="1"	y="2"	w="1"	h="1"	pixelPerUnit="64" />
+
+  <Sprite name="Fire_Large_0" x="5" y="0" w="1" h="1" pixelPerUnit="64" />
+  <Sprite name="Fire_Large_1" x="5" y="1" w="1" h="1" pixelPerUnit="64" />
+  <Sprite name="Fire_Large_2" x="5" y="2" w="1" h="1" pixelPerUnit="64" />
+</Sprites>

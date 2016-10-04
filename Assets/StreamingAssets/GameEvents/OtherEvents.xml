@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Events>
+    <Event Name = "Fire" >
+      <Precondition FunctionName = "Precondition_Event_Fire" />
+      <OnExecute FunctionName="Execute_Event_Fire" />
+    </Event>
+</Events>

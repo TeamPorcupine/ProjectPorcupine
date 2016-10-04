@@ -174,9 +174,10 @@ public class World : IXmlSerializable
     /// The invisible enities can be updated less frequent for better performance.
     /// </summary>
     public void OnCameraMoved(Bounds cameraBounds)
-    {        
+    {
         FurnitureManager.OnCameraMoved(cameraBounds);
     }
+
 
     /// <summary>
     /// Gets the tile data at x and y.
@@ -500,6 +501,24 @@ public class World : IXmlSerializable
     private void TickFixedFrequency(float deltaTime)
     {
         FurnitureManager.TickFixedFrequency(deltaTime);
+
+        // This portion calls the post update scripts of the furntirue
+        // It is used if the furniture needs to do something after all
+        // other furnitures are Updated, it is also the place to delete
+        // and construct furniture
+        List<Furniture> furnitures = new List<Furniture>();
+        furnitures = FurnitureManager.Find(
+            (Furniture furniture) => 
+            {
+            return (furniture != null && furniture.EventActions != null);
+            }
+        );
+
+        for (int i = 0; i < furnitures.Count; i++)
+        { 
+                furnitures[i].EventActions.Trigger("OnPostUpdate", furnitures[i], deltaTime);
+            
+        }
 
         // Progress temperature modelling
         temperature.Update();
