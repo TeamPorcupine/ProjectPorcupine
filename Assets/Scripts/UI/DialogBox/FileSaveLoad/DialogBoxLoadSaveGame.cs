@@ -19,9 +19,6 @@ using UnityEngine.UI;
 
 public class DialogBoxLoadSaveGame : DialogBox
 {
-    public static readonly Color PrimaryColor = new Color32(0, 149, 217, 80);
-    public static readonly Color SecondaryColor = new Color32(0, 149, 217, 160);
-
     public GameObject fileListItemPrefab;
     public Transform fileList;
 
@@ -74,7 +71,7 @@ public class DialogBoxLoadSaveGame : DialogBox
             DialogListItem listItem = go.GetComponent<DialogListItem>();
             listItem.fileName = fileName;
             listItem.inputField = inputField;
-            listItem.currentColor = i % 2 == 0 ? PrimaryColor : SecondaryColor;
+            listItem.currentColor = i % 2 == 0 ? ListPrimaryColor : ListSecondaryColor;
 
             go.GetComponent<Image>().color = listItem.currentColor;
         }
