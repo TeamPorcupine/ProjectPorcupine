@@ -67,7 +67,7 @@ public static class Settings
 
         settingsDict.Add(key, defaultValue);
 
-        SchedualSave();
+        ScheduleSave();
 
         return defaultValue;
     }
@@ -100,7 +100,7 @@ public static class Settings
             Debug.ULogChannel("Settings", "Created new setting : " + key + " to value of " + value);
         }
 
-        SchedualSave();
+        ScheduleSave();
     }
 
     public static T GetSetting<T>(string key, T defaultValue)
@@ -131,7 +131,7 @@ public static class Settings
         return defaultValue;
     }
 
-    private static void SchedualSave()
+    private static void ScheduleSave()
     {
         // we have justed altered a setting so we have to set the flag saying their are unsaved settings
         if (Settings.unsavedSettings == false)
