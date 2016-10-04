@@ -210,21 +210,28 @@ public class Path_AStar
         // on a grid at this point.
 
         // Hori/Vert neighbours have a distance of 1
-        if (Mathf.Abs(a.data.X - b.data.X) + Mathf.Abs(a.data.Y - b.data.Y) == 1)
+        if (Mathf.Abs(a.data.X - b.data.X) + Mathf.Abs(a.data.Y - b.data.Y) == 1 && a.data.Z == b.data.Z)
         {
             return 1f;
         }
 
         // Diag neighbours have a distance of 1.41421356237
-        if (Mathf.Abs(a.data.X - b.data.X) == 1 && Mathf.Abs(a.data.Y - b.data.Y) == 1)
+        if (Mathf.Abs(a.data.X - b.data.X) == 1 && Mathf.Abs(a.data.Y - b.data.Y) == 1 && a.data.Z == b.data.Z)
         {
             return 1.41421356237f;
+        }
+
+        // Up/Down neighbors have a distance of 1
+        if (a.data.X == b.data.X && a.data.Y == b.data.Y && Mathf.Abs(a.data.Z - b.data.Z) == 1)
+        {
+            return 1f;
         }
 
         // Otherwise, do the actual math.
         return Mathf.Sqrt(
             Mathf.Pow(a.data.X - b.data.X, 2) +
-            Mathf.Pow(a.data.Y - b.data.Y, 2));
+            Mathf.Pow(a.data.Y - b.data.Y, 2) +
+            Mathf.Pow(a.data.Z - b.data.Z, 2));
     }
 
     private void Reconstruct_path(
