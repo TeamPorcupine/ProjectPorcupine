@@ -69,8 +69,6 @@ namespace ProjectPorcupine.Localization
             string[] languages = GetLanguages();
             currentLanguage = languages[lang];
             Settings.SetSetting("localization", languages[lang]);
-            LocalizationLoader loader = GameObject.Find("Controllers").GetComponent(typeof(LocalizationLoader)) as LocalizationLoader;
-            loader.UpdateLocalizationTable();
         }
 
         public static void LoadingLanguagesFinished()
