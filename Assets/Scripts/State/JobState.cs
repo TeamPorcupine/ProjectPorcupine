@@ -71,6 +71,13 @@ namespace ProjectPorcupine.State
             else
             {
                 DebugLog(" - Next action: Work");
+
+                if(Job.tile != character.CurrTile)
+                {
+                    // We aren't standing on the job spot itself, so make sure to face it.
+                    character.FaceTile(Job.tile);
+                }
+
                 Job.DoWork(deltaTime);
             }
         }

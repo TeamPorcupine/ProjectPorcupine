@@ -153,7 +153,6 @@ namespace ProjectPorcupine.State
             path.RemoveAt(0);
 
             character.FaceTile(nextTile);
-
         }
     }
 }
