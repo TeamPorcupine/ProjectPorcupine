@@ -140,7 +140,7 @@ public static class Settings
             Settings.unsavedSettings = true;
         }
 
-        // else we should already be schedualed to save the settings so dont bother scheduling it again 
+        // else we should already be scheduled to save the settings so dont bother Scheduling it again 
     }
 
     private static void SaveSettings()
@@ -148,7 +148,7 @@ public static class Settings
         // if we do not have any unsaved settings then return
         if (Settings.unsavedSettings == false)
         {
-            Debug.ULogChannel("Settings", "No settings have changed, so none to save! (why was there a schedualed event?)");
+            Debug.ULogChannel("Settings", "No settings have changed, so none to save! (why was there a scheduled event?)");
             return;
         }
 
