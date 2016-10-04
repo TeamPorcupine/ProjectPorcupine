@@ -67,11 +67,7 @@ public static class Settings
 
         settingsDict.Add(key, defaultValue);
 
-        // we have justed altered a setting so we have to set the flag saying their are unsaved settings
-        if (Settings.unsavedSettings == false) {
-            Scheduler.Scheduler.Current.ScheduleEvent("Settings_SaveSettings", Time.deltaTime, false);
-            Settings.unsavedSettings = true;
-        } // else we should already be schedualed to save the settings so dont bother scheduling it again 
+        SchedualSave();
 
         return defaultValue;
     }
@@ -104,13 +100,7 @@ public static class Settings
             Debug.ULogChannel("Settings", "Created new setting : " + key + " to value of " + value);
         }
 
-
-        // we have justed altered a setting so we have to set the flag saying their are unsaved settings
-        if (Settings.unsavedSettings == false)
-        {
-            Scheduler.Scheduler.Current.ScheduleEvent("Settings_SaveSettings", Time.deltaTime, false);
-            Settings.unsavedSettings = true;
-        } // else we should already be schedualed to save the settings so dont bother scheduling it again 
+        SchedualSave();
     }
 
     public static T GetSetting<T>(string key, T defaultValue)
@@ -141,6 +131,18 @@ public static class Settings
         return defaultValue;
     }
 
+    private static void SchedualSave()
+    {
+        // we have justed altered a setting so we have to set the flag saying their are unsaved settings
+        if (Settings.unsavedSettings == false)
+        {
+            Scheduler.Scheduler.Current.ScheduleEvent("Settings_SaveSettings", Time.deltaTime, false);
+            Settings.unsavedSettings = true;
+        }
+
+        // else we should already be schedualed to save the settings so dont bother scheduling it again 
+    }
+
     private static void SaveSettings()
     {
         // if we do not have any unsaved settings then return
@@ -149,6 +151,7 @@ public static class Settings
             Debug.ULogChannel("Settings", "No settings have changed, so none to save! (why was there a schedualed event?)");
             return;
         }
+
         Debug.ULogChannel("Settings", "Settings have changed, so there are settings to save!");
 
         // Create an xml document.
