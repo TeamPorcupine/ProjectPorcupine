@@ -45,12 +45,10 @@ public static class Settings
     {
         LoadSettings();
 
-        PrototypeManager.SchedulerEvent.Add(
+        PrototypeManager.ScheduledEvent.Add(
             new Scheduler.ScheduledEvent(
                 "Settings_SaveSettings",
                 (evt) => Settings.SaveSettings()));
-
-        Scheduler.Scheduler.Current.ScheduleEvent("Settings_SaveSettings", 10f, true);
     }
 
     public static string GetSettingWithOverwrite(string key, string defaultValue)
@@ -70,7 +68,10 @@ public static class Settings
         settingsDict.Add(key, defaultValue);
 
         // we have justed altered a setting so we have to set the flag saying their are unsaved settings
-        Settings.unsavedSettings = true;
+        if (Settings.unsavedSettings == false) {
+            Scheduler.Scheduler.Current.ScheduleEvent("Settings_SaveSettings", Time.deltaTime, false);
+            Settings.unsavedSettings = true;
+        } // else we should already be schedualed to save the settings so dont bother scheduling it again 
 
         return defaultValue;
     }
@@ -105,7 +106,11 @@ public static class Settings
 
 
         // we have justed altered a setting so we have to set the flag saying their are unsaved settings
-        Settings.unsavedSettings = true;
+        if (Settings.unsavedSettings == false)
+        {
+            Scheduler.Scheduler.Current.ScheduleEvent("Settings_SaveSettings", Time.deltaTime, false);
+            Settings.unsavedSettings = true;
+        } // else we should already be schedualed to save the settings so dont bother scheduling it again 
     }
 
     public static T GetSetting<T>(string key, T defaultValue)
@@ -141,7 +146,7 @@ public static class Settings
         // if we do not have any unsaved settings then return
         if (Settings.unsavedSettings == false)
         {
-            Debug.ULogChannel("Settings", "No settings have changed, so none to save!");
+            Debug.ULogChannel("Settings", "No settings have changed, so none to save! (why was there a schedualed event?)");
             return;
         }
         Debug.ULogChannel("Settings", "Settings have changed, so there are settings to save!");
