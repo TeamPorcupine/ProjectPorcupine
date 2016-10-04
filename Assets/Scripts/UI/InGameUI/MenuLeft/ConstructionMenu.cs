@@ -23,8 +23,6 @@ public class ConstructionMenu : MonoBehaviour
     private List<GameObject> tileItems;
     private List<GameObject> taskItems;
 
-    private string lastLanguage;
-
     private bool showAllFurniture;
 
     private MenuLeft menuLeft;
@@ -97,8 +95,6 @@ public class ConstructionMenu : MonoBehaviour
         RenderTileButtons();
         RenderFurnitureButtons();
         RenderUtilityButtons();
-
-        lastLanguage = LocalizationTable.currentLanguage;
 
         InputField filterField = GetComponentInChildren<InputField>();
         KeyboardManager.Instance.RegisterModalInputField(filterField);
@@ -321,20 +317,5 @@ public class ConstructionMenu : MonoBehaviour
 
         Image image = gameObject.transform.GetChild(0).GetComponentsInChildren<Image>().First();
         image.sprite = SpriteManager.GetSprite("UI", "Deconstruct");
-    }
-
-    private void Update()
-    {
-        if (lastLanguage != LocalizationTable.currentLanguage)
-        {
-            lastLanguage = LocalizationTable.currentLanguage;
-
-            TextLocalizer[] localizers = GetComponentsInChildren<TextLocalizer>();
-
-            for (int i = 0; i < localizers.Length; i++)
-            {
-                localizers[i].UpdateText(LocalizationTable.GetLocalization(PrototypeManager.Furniture[i].GetName()));
-            }
-        }
     }
 }

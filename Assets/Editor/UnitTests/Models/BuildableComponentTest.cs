@@ -13,7 +13,7 @@ using System.Xml.Serialization;
 using NUnit.Framework;
 using ProjectPorcupine.Buildable.Components;
 
-public class ComponentTest
+public class BuildableComponentTest
 {
     [Test]
     public void TestComponentCreation()
@@ -40,7 +40,7 @@ public class ComponentTest
     }
     
     [Test]
-    public void TestSerialization()
+    public void TestWorkshopSerialization()
     {
         Workshop fi = new Workshop();        
         fi.PossibleProductions = new System.Collections.Generic.List<Workshop.ProductionChain>();
@@ -78,7 +78,7 @@ public class ComponentTest
 
         fi.PossibleProductions.Add(chain2);
 
-        fi.UsedAnimation = new Workshop.UsedAnimations()
+        fi.UsedAnimation = new BuildableComponent.UsedAnimations()
         {
             Idle = "idle",
             Running = "running"
@@ -101,5 +101,52 @@ public class ComponentTest
         Assert.NotNull(dfi);
         Assert.AreEqual("Raw Iron", dfi.PossibleProductions[0].Input[0].ObjectType);
         Assert.AreEqual("running", dfi.UsedAnimation.Running);
+    }
+
+    [Test]
+    public void TestGasConnectionSerialization()
+    {
+        GasConnection gasCon = new GasConnection();
+
+        gasCon.Provides = new System.Collections.Generic.List<GasConnection.GasInfo>()
+        {
+            new GasConnection.GasInfo()
+            {
+                Gas = "O2",
+                Rate = 0.16f,
+                MaxLimit = 0.2f
+            },
+            new GasConnection.GasInfo()
+            {
+                Gas = "N2",
+                Rate = 0.16f,
+                MaxLimit = 0.8f
+            }
+        };
+
+        gasCon.UsedAnimation = new BuildableComponent.UsedAnimations()
+        {
+            Idle = "idle",
+            Running = "running"
+        };
+
+        // serialize
+        StringWriter writer = new StringWriter();
+        XmlSerializer serializer = new XmlSerializer(typeof(BuildableComponent), new Type[] { typeof(GasConnection) });
+
+        serializer.Serialize(writer, gasCon);
+
+        StringReader sr = new StringReader(writer.ToString());
+
+        // if you want to dump file to disk for visual check, uncomment this
+        ////File.WriteAllText("GasConnection.xml", writer.ToString());
+
+        // deserialize
+        GasConnection desGasConn = (GasConnection)serializer.Deserialize(sr);
+
+        Assert.NotNull(desGasConn);
+
+        Assert.AreEqual(2, desGasConn.Provides.Count);
+        Assert.AreEqual("O2", desGasConn.Provides[0].Gas);
     }
 }

@@ -17,27 +17,6 @@ ENTERABILITY_SOON = 2
 -- ModUtils.ULogError("Testing ModUtils.ULogErrorChannel") -- Note: pauses the game
 
 -------------------------------- Furniture Actions --------------------------------
-function OxygenGenerator_OnUpdate( furniture, deltaTime )
-    if ( furniture.Tile.Room == nil ) then
-		return "Furniture's room was null."
-	end
-
-    local keys = furniture.Parameters["gas_gen"].Keys()
-    for discard, key in pairs(keys) do
-        if ( furniture.Tile.Room.GetGasPressure(key) < furniture.Parameters["gas_gen"][key]["gas_limit"].ToFloat()) then
-            furniture.Tile.Room.ChangeGas(key, furniture.Parameters["gas_per_second"].ToFloat() * deltaTime * furniture.Parameters["gas_gen"][key]["gas_limit"].ToFloat(), furniture.Parameters["gas_gen"][key]["gas_limit"].ToFloat())
-        else
-            -- Do we go into a standby mode to save power?
-        end
-    end
-	return
-	furniture.SetAnimationState("running")
-end
-
-function OxygenGenerator_OnPowerOff( furniture, deltaTime )
-	furniture.SetAnimationState("idle")
-end
-
 
 function OnUpdate_Door( furniture, deltaTime )
 	if (furniture.Parameters["is_opening"].ToFloat() >= 1.0) then
@@ -548,7 +527,7 @@ function SolarPanel_OnUpdate(furniture, deltaTime)
 end
 
 function AirPump_OnUpdate(furniture, deltaTime)
-    if (furniture.HasPower() == false) then
+    if (furniture.DoesntNeedOrHasPower == false) then
         return
     end
 
@@ -719,6 +698,10 @@ end
 
 function OreMine_OreMined(job)
     -- Defines the ore to be spawned by the mine
+	if (job.buildable == nil) then
+		return
+	end
+
     local inventory = Inventory.__new(job.buildable.Parameters["ore_type"], 10)
 
     if (inventory.Type ~= "None") then

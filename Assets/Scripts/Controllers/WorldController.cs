@@ -81,7 +81,7 @@ public class WorldController : MonoBehaviour
         new AudioManager();
 
         // FIXME: Do something real here. This is just to show how to register a C# event prototype for the Scheduler.
-        PrototypeManager.SchedulerEvent.Add(
+        PrototypeManager.ScheduledEvent.Add(
             new ScheduledEvent(
                 "ping_log",
                 (evt) => Debug.ULogChannel("Scheduler", "Event {0} fired", evt.Name)));
@@ -187,6 +187,7 @@ public class WorldController : MonoBehaviour
         TimeManager.Instance.Destroy();
         KeyboardManager.Instance.Destroy();
         Scheduler.Scheduler.Current.Destroy();
+        GameMenuManager.Instance.Destroy();
     }
 
     /// <summary>

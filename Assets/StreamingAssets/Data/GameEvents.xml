@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Events>
+<GameEvents>
 
-    <Event Name="NewCrewMember">
+    <GameEvent Name="NewCrewMember">
       <Repeats MaxRepeats="3" />
       <Precondition FunctionName="Precondition_Event_NewCrewMember" />
       <OnExecute FunctionName="Execute_Event_NewCrewMember" />
-    </Event>
+    </GameEvent>
   
-</Events>
+</GameEvents>

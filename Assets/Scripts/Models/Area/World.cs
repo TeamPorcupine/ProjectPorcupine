@@ -143,6 +143,12 @@ public class World : IXmlSerializable
     public RoomManager RoomManager { get; private set; }
 
     /// <summary>
+    /// Gets the game event manager.
+    /// </summary>
+    /// <value>The game event manager.</value>
+    public GameEventManager GameEventManager { get; private set; }
+
+    /// <summary>
     /// Gets the ship manager.
     /// </summary>
     /// <value>The ship manager.</value>
@@ -416,16 +422,16 @@ public class World : IXmlSerializable
         FurnitureManager = new FurnitureManager();
         FurnitureManager.Created += OnFurnitureCreated;
 
-        ShipManager = new ShipManager();
-
         UtilityManager = new UtilityManager();
         CharacterManager = new CharacterManager();
         InventoryManager = new InventoryManager();
         jobQueue = new JobQueue();
-        CameraData = new CameraData();
-        PowerNetwork = new ProjectPorcupine.PowerNetwork.PowerNetwork();
+        GameEventManager = new GameEventManager();
+        PowerNetwork = new PowerNetwork();
         temperature = new Temperature();
+        ShipManager = new ShipManager();
         Wallet = new Wallet();
+        CameraData = new CameraData();
 
         LoadSkybox();
         AddEventListeners();
@@ -483,6 +489,7 @@ public class World : IXmlSerializable
     {
         CharacterManager.Update(deltaTime);
         FurnitureManager.TickEveryFrame(deltaTime);
+        GameEventManager.Update(deltaTime);
         ShipManager.Update(deltaTime);
     }
 

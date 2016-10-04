@@ -207,23 +207,12 @@
             <Frame name="Oxygen_Generator_Running3" />
           </Animation>
         </Animations>
-      
-        <Params>
-            <!-- <Param name="gas_name" value="O2" /> -->
-            <Param name="gas_limit" value="0.2" />
-            <Param name="gas_per_second" value="0.16" />
-            <Param name="gas_gen">
-                <Param name="O2">
-                    <Param name="gas_limit" value="0.2" />
-                </Param>
-                <Param name="N2">
-                    <Param name="gas_limit" value="0.8" />
-                </Param>
-            </Param>
-        </Params>
 
-        <Action event="OnUpdate" functionName="OxygenGenerator_OnUpdate" />
-        <Action event="OnPowerOff" functionName="OxygenGenerator_OnPowerOff" />
+        <Component type="GasConnection">
+            <Provides gas="O2" rate="0.16" minLimit="0" maxLimit="0.2" />
+            <Provides gas="N2" rate="0.16" minLimit="0" maxLimit="0.8" />
+            <UsedAnimations idle="idle" running="running" />
+        </Component>
       
         <LocalizationCode>furn_oxygen_generator</LocalizationCode>
         <UnlocalizedDescription>furn_oxygen_generator_desc</UnlocalizedDescription>
@@ -392,6 +381,10 @@
         </DeconstructJob>
 
         <JobWorkSpotOffset X="1" Y="0" />
+
+        <Component type="GasConnection">
+            <Requires gas="O2" minLimit="0.1" />
+        </Component>
 
         <Component type="Workshop">
             <ProductionChain name="Copper smelting" processingTime="3">
