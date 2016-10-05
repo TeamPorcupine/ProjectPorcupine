@@ -134,7 +134,7 @@ public class ConstructionMenu : MonoBehaviour
             button.onClick.AddListener(delegate
                 {
                     buildModeController.SetMode_BuildFurniture(objectId);
-                    menuLeft.CloseMenu();
+                    //menuLeft.CloseMenu();
                 });
 
             // http://stackoverflow.com/questions/1757112/anonymous-c-sharp-delegate-within-a-loop
@@ -183,7 +183,7 @@ public class ConstructionMenu : MonoBehaviour
             button.onClick.AddListener(delegate
                 {
                     buildModeController.SetMode_DesignateRoomBehavior(objectId);
-                    menuLeft.CloseMenu();
+                    //menuLeft.CloseMenu();
                 });
 
             // http://stackoverflow.com/questions/1757112/anonymous-c-sharp-delegate-within-a-loop
@@ -232,7 +232,7 @@ public class ConstructionMenu : MonoBehaviour
             button.onClick.AddListener(delegate
                 {
                     buildModeController.SetMode_BuildUtility(objectId);
-                    menuLeft.CloseMenu();
+                    //menuLeft.CloseMenu();
                 });
 
             // http://stackoverflow.com/questions/1757112/anonymous-c-sharp-delegate-within-a-loop
