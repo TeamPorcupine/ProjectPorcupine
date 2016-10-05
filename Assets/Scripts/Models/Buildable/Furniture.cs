@@ -375,7 +375,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     public bool DoesntNeedOrHasPower
     {
         get
-        {
+        {   
             return PowerConnection == null || World.Current.PowerNetwork.HasPower(PowerConnection);
         }
     }
