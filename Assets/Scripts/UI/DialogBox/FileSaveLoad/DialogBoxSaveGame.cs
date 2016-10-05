@@ -8,6 +8,7 @@
 #endregion
 using System.Collections;
 using System.IO;
+using System.Threading;
 using System.Xml.Serialization;
 using UnityEngine;
 using UnityEngine.UI;
@@ -83,7 +84,7 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
                 while (dbm.dialogBoxPromptOrInfo.gameObject.activeSelf)
                 {
                     yield return null;
-                } 
+                }
             }
         }
 
@@ -128,8 +129,6 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
 
         // PlayerPrefs.SetString("SaveGame00", writer.ToString());
 
-        // Create/overwrite the save file with the xml text.
-
         // Make sure the save folder exists.
         if (Directory.Exists(WorldController.Instance.FileSaveBasePath()) == false)
         {
@@ -140,6 +139,19 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
             Directory.CreateDirectory(WorldController.Instance.FileSaveBasePath());
         }
 
+        // Launch saving operation in a separate thread.
+        // This reduces lag while saving by a little bit.
+        Thread t = new Thread(new ThreadStart(delegate { SaveWorldToHdd(filePath, writer); }));
+        t.Start();
+    }
+
+    /// <summary>
+    /// Create/overwrite the save file with the xml text.
+    /// </summary>
+    /// <param name="filePath">Full path to file.</param>
+    /// <param name="writer">TextWriter that contains serialized World data.</param>
+    private void SaveWorldToHdd(string filePath, TextWriter writer)
+    {
         File.WriteAllText(filePath, writer.ToString());
     }
 }

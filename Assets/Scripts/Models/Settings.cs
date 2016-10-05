@@ -39,9 +39,16 @@ public static class Settings
     private static string userSettingsFilePath = System.IO.Path.Combine(
         Application.persistentDataPath, "Settings.xml");
 
+    private static bool unsavedSettings = false;
+
     static Settings()
     {
         LoadSettings();
+
+        PrototypeManager.ScheduledEvent.Add(
+            new Scheduler.ScheduledEvent(
+                "Settings_SaveSettings",
+                (evt) => Settings.SaveSettings()));
     }
 
     public static string GetSettingWithOverwrite(string key, string defaultValue)
@@ -59,7 +66,9 @@ public static class Settings
         }
 
         settingsDict.Add(key, defaultValue);
-        SaveSettings();
+
+        ScheduleSave();
+
         return defaultValue;
     }
 
@@ -91,7 +100,7 @@ public static class Settings
             Debug.ULogChannel("Settings", "Created new setting : " + key + " to value of " + value);
         }
 
-        SaveSettings();
+        ScheduleSave();
     }
 
     public static T GetSetting<T>(string key, T defaultValue)
@@ -122,8 +131,29 @@ public static class Settings
         return defaultValue;
     }
 
+    private static void ScheduleSave()
+    {
+        // we have justed altered a setting so we have to set the flag saying their are unsaved settings
+        if (Settings.unsavedSettings == false)
+        {
+            Scheduler.Scheduler.Current.ScheduleEvent("Settings_SaveSettings", Time.deltaTime, false);
+            Settings.unsavedSettings = true;
+        }
+
+        // else we should already be scheduled to save the settings so dont bother Scheduling it again 
+    }
+
     private static void SaveSettings()
     {
+        // if we do not have any unsaved settings then return
+        if (Settings.unsavedSettings == false)
+        {
+            Debug.ULogChannel("Settings", "No settings have changed, so none to save! (why was there a scheduled event?)");
+            return;
+        }
+
+        Debug.ULogChannel("Settings", "Settings have changed, so there are settings to save!");
+
         // Create an xml document.
         XmlDocument doc = new XmlDocument();
 
@@ -135,7 +165,7 @@ public static class Settings
             // Create a new element for each pair in the dict.
             XmlElement settingElement = doc.CreateElement(pair.Key);
             settingElement.InnerText = pair.Value;
-            Debug.ULogChannel("Settings", pair.Key + " : " + pair.Value);
+            Debug.ULogChannel("Settings", "Saving setting :: " + pair.Key + " : " + pair.Value);
 
             // Add this element inside the Settings element.
             settingsNode.AppendChild(settingElement);
@@ -154,13 +184,16 @@ public static class Settings
             Debug.ULogWarningChannel("Settings", "Settings could not be saved to " + userSettingsFilePath);
             Debug.ULogWarningChannel("Settings", e.Message);
         }
+
+        // we have justed saved any unsaved settings so we no longer have any unsaved settings
+        Settings.unsavedSettings = false;
     }
 
     private static void LoadSettings()
     {
         // Initialize the settings dict.
         settingsDict = new Dictionary<string, string>();
-        string furnitureXmlText;
+        string settingsXmlText;
 
         // Load the settings XML file.
         // First try the user's private settings file in userSettingsFilePath.
@@ -170,26 +203,26 @@ public static class Settings
         {
             Debug.ULogChannel("Settings", "User settings file could not be found at '" + userSettingsFilePath + "'. Falling back to defaults.");
 
-            furnitureXmlText = DefaultSettingsXMLFallback();
+            settingsXmlText = DefaultSettingsXMLFallback();
         }
         else
         {
             try
             {
-                furnitureXmlText = System.IO.File.ReadAllText(userSettingsFilePath);
+                settingsXmlText = System.IO.File.ReadAllText(userSettingsFilePath);
             }
             catch (Exception e)
             {
                 Debug.ULogWarningChannel("Settings", "User settings file could not be found at '" + userSettingsFilePath + "'. Falling back to defaults.");
                 Debug.ULogWarningChannel("Settings", e.Message);
 
-                furnitureXmlText = DefaultSettingsXMLFallback();
+                settingsXmlText = DefaultSettingsXMLFallback();
             }
         }
 
         // Create an xml document from the loaded string.
         XmlDocument doc = new XmlDocument();
-        doc.LoadXml(furnitureXmlText);
+        doc.LoadXml(settingsXmlText);
         Debug.ULogChannel("Settings", "Loaded settings");
         Debug.ULogChannel("Settings", doc.InnerText);
 
@@ -205,7 +238,7 @@ public static class Settings
             {
                 // and add setting to the settings dict.
                 settingsDict.Add(node.Name, node.InnerText);
-                Debug.ULogChannel("Settings", node.Name + " : " + node.InnerText);
+                Debug.ULogChannel("Settings", "Setting loaded :: " + node.Name + " : " + node.InnerText);
             }
         }
     }
