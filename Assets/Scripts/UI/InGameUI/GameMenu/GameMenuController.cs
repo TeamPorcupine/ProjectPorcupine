@@ -55,7 +55,7 @@ public class GameMenuController : MonoBehaviour
             CreateButton(mainMenuItem);
         }
 
-        DeactivateAll();
+        //DeactivateAll();
     }
 
     private void CreateButton(GameMenuItem mainMenuItem)
@@ -69,7 +69,7 @@ public class GameMenuController : MonoBehaviour
             {
                 if (!WorldController.Instance.IsModal)
                 {
-                    DeactivateAll();
+                    //DeactivateAll();
                     mainMenuItem.Trigger();
                 }
             });
