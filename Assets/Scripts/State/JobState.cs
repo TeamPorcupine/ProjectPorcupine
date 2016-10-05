@@ -137,17 +137,21 @@ namespace ProjectPorcupine.State
 
         private void OnJobCompleted(Job finishedJob)
         {
-            DebugLog(" - Job finished");
-
-            jobFinished = true;
-
-            finishedJob.OnJobCompleted -= OnJobCompleted;
-            finishedJob.OnJobStopped -= OnJobStopped;
-
-            if (Job != finishedJob)
+            // Finish job, unless it repeats, in which case continue as if nothing happened.
+            if (finishedJob.IsRepeating == false)
             {
-                Debug.ULogErrorChannel("Character", "Character being told about job that isn't his. You forgot to unregister something.");
-                return;
+                DebugLog(" - Job finished");
+
+                jobFinished = true;
+
+                finishedJob.OnJobCompleted -= OnJobCompleted;
+                finishedJob.OnJobStopped -= OnJobStopped;
+
+                if (Job != finishedJob)
+                {
+                    Debug.ULogErrorChannel("Character", "Character being told about job that isn't his. You forgot to unregister something.");
+                    return;
+                }
             }
         }
     }
