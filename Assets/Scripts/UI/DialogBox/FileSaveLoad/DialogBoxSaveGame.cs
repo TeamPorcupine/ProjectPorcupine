@@ -138,7 +138,7 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
         writer.Close();
 
         // Leaving this unchanged as UberLogger doesn't handle multi-line messages well.
-        Debug.Log(writer.ToString());
+        //Debug.Log(writer.ToString());
 
         // PlayerPrefs.SetString("SaveGame00", writer.ToString());
 
