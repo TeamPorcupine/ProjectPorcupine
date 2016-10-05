@@ -56,6 +56,7 @@ public class World : IXmlSerializable
         WorldGenerator.Generate(this, seed);
         Debug.ULogChannel("World", "Generated World");
 
+
         // Adding air to enclosed rooms
         foreach (Room room in this.RoomManager)
         {
@@ -351,6 +352,7 @@ public class World : IXmlSerializable
         Depth = int.Parse(reader.GetAttribute("Depth"));
 
         SetupWorld(Width, Height, Depth);
+        tileGraph = new Path_TileGraph(this);
 
         while (reader.Read())
         {
