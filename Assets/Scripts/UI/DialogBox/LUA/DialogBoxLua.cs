@@ -20,7 +20,7 @@ public class DialogBoxLua : DialogBox
 {
     private string title;
 
-    private object extraData;
+    private List<object> extraData;
 
     private EventActions events;
 
@@ -73,7 +73,14 @@ public class DialogBoxLua : DialogBox
 
     public override void CloseDialog()
     {
-        events.Trigger("OnClosed", this, Result);
+        foreach(GameObject control in Content.transform)
+        {
+            if(control.GetComponent<DialogControl>() == true)
+            {
+                extraData.Add(control.GetComponent<DialogControl>().result);
+            }
+        }
+        events.Trigger("OnClosed", this, Result, extraData);
         base.CloseDialog();
     }
 
@@ -101,6 +108,10 @@ public class DialogBoxLua : DialogBox
                         textObject.GetComponent<Text>().text = (string)gameObjectInfo.data;
                         textObject.GetComponent<RectTransform>().anchoredPosition = gameObjectInfo.position;
                         break;
+                    case "Input":
+                        GameObject inputObject = (GameObject)Instantiate(Resources.Load("Prefab/DialogBoxPrefabs/DialogInput"), Content);
+                        inputObject.GetComponent<RectTransform>().anchoredPosition = gameObjectInfo.position;
+                        break;
                 }
             }
 
@@ -125,6 +136,7 @@ public class DialogBoxLua : DialogBox
 
             events = dialogBoxInfo.events;
             FunctionsManager.Get("DialogBoxLua").RegisterGlobal(typeof(DialogBoxLua));
+            extraData = new List<object>();
         }
         catch (System.Exception error)
         {

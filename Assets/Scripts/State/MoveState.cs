@@ -68,10 +68,7 @@ namespace ProjectPorcupine.State
                     return;
                 }
 
-                nextTile = path[0];
-                path.RemoveAt(0);
-
-                character.FaceTile(nextTile);
+                AdvanceNextTile();
 
                 distToTravel = Mathf.Sqrt(
                     Mathf.Pow(character.CurrTile.X - nextTile.X, 2) +
@@ -134,8 +131,7 @@ namespace ProjectPorcupine.State
                 }
             }
 
-            nextTile = path[0];
-            path.RemoveAt(0);
+            AdvanceNextTile();
 
             distToTravel = Mathf.Sqrt(
                 Mathf.Pow(character.CurrTile.X - nextTile.X, 2) +
@@ -149,6 +145,14 @@ namespace ProjectPorcupine.State
             character.IsWalking = false;
 
             VisualPath.Instance.RemoveVisualPoints(character.name);
+        }
+
+        private void AdvanceNextTile()
+        {
+            nextTile = path[0];
+            path.RemoveAt(0);
+
+            character.FaceTile(nextTile);
         }
     }
 }

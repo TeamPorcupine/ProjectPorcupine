@@ -24,7 +24,7 @@ public class JobQueue
 
         World.Current.InventoryManager.InventoryCreated += ReevaluateWaitingQueue;
 
-        PrototypeManager.SchedulerEvent.Add(
+        PrototypeManager.ScheduledEvent.Add(
             new Scheduler.ScheduledEvent(
                 "JobQueue_ReevaluateReachability",
                 (evt) => ReevaluateReachability()));

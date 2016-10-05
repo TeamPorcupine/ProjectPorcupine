@@ -43,7 +43,8 @@ public class ModsManager
         LoadPrototypes("Need.xml", PrototypeManager.Need.LoadPrototypes);
         LoadPrototypes("Trader.xml", PrototypeManager.Trader.LoadPrototypes);
         LoadPrototypes("Currency.xml", PrototypeManager.Currency.LoadPrototypes);
-        LoadPrototypes("Events.xml", PrototypeManager.SchedulerEvent.LoadPrototypes);
+        LoadPrototypes("GameEvents.xml", PrototypeManager.GameEvent.LoadPrototypes);
+        LoadPrototypes("ScheduledEvents.xml", PrototypeManager.ScheduledEvent.LoadPrototypes);
         LoadPrototypes("Stats.xml", PrototypeManager.Stat.LoadPrototypes);
         LoadPrototypes("Quest.xml", PrototypeManager.Quest.LoadPrototypes);
         LoadPrototypes("Headlines.xml", PrototypeManager.Headline.LoadPrototypes);
