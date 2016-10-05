@@ -215,7 +215,8 @@ public class Job : ISelectable, IPrototypable
         set;
     }
 
-    public bool IsRepeating{
+    public bool IsRepeating
+    {
         get
         {
             return jobRepeats;
