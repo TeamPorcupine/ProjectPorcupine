@@ -62,6 +62,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
 
     private bool isOperating;
 
+    //need to hold the health value.
+    private Health health;
+
     private List<Inventory> deconstructInventory;
 
     // did we have power in the last update?
@@ -93,6 +96,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         DragType = "single";
         LinksToNeighbour = string.Empty;
         components = new HashSet<BuildableComponent>();
+        health = new Health(-1f);
     }
 
     /// <summary>
@@ -116,12 +120,14 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         Tint = other.Tint;
         LinksToNeighbour = other.LinksToNeighbour;
         deconstructInventory = other.deconstructInventory;
+        health = other.health;
 
         Parameters = new Parameter(other.Parameters);
         Jobs = new BuildableJobs(this, other.Jobs);
 
         // don't need to clone here, as all are prototype things (not changing)
         components = new HashSet<BuildableComponent>(other.components);
+
 
         if (other.Animation != null)
         {
@@ -691,6 +697,12 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                     reader.Read();
                     Height = reader.ReadContentAsInt();
                     break;
+                case "Health":
+                    reader.Read();
+                    float temp = reader.ReadContentAsFloat();
+                health.MaxHealth = temp;
+                health.Value = temp;
+                    break;
                 case "LinksToNeighbours":
                     reader.Read();
                     LinksToNeighbour = reader.ReadContentAsString();
@@ -1071,8 +1083,11 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                 yield return desc;
             }
         }
-        
-        yield return string.Format("Hitpoint 18 / 18");
+
+        if (health != null && health.MaxHealth > 0)
+        {
+            yield return string.Format("HitPoints: {0}/{1} ", health.Value, health.MaxHealth);
+        }
 
         if (PowerConnection != null)
         {
