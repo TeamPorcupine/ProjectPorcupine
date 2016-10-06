@@ -215,6 +215,14 @@ public class Job : ISelectable, IPrototypable
         set;
     }
 
+    public bool IsRepeating
+    {
+        get
+        {
+            return jobRepeats;
+        }
+    }
+
     public Pathfinder.GoalEvaluator IsTileAtJobSite
     {
         get

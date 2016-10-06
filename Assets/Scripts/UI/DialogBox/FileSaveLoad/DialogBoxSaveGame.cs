@@ -93,9 +93,16 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
             dbm.dialogBoxPromptOrInfo.SetPrompt("message_saving_game");
             dbm.dialogBoxPromptOrInfo.ShowDialog();
 
-            yield return new WaitForSecondsRealtime(.05f);
+            // Skip a frame so that user will see pop-up
+            yield return null;
 
-            SaveWorld(filePath);
+            Thread t = SaveWorld(filePath);
+
+            // Wait for data to be saved to HDD.
+            while (t.IsAlive)
+            {
+                yield return null;
+            }
 
             dbm.dialogBoxPromptOrInfo.CloseDialog();
 
@@ -111,7 +118,13 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
         }
     }
 
-    public void SaveWorld(string filePath)
+    /// <summary>
+    /// Serializes current Instance of the World and starts a thread
+    /// that actually saves serialized world to HDD.
+    /// </summary>
+    /// <param name="filePath">Where to save (Full path).</param>
+    /// <returns>Returns the thread that is currently saving data to HDD.</returns>
+    public Thread SaveWorld(string filePath)
     {
         // This function gets called when the user confirms a filename
         // from the save dialog box.
@@ -124,10 +137,8 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
         serializer.Serialize(writer, WorldController.Instance.World);
         writer.Close();
 
-        // Leaving this unchanged as UberLogger doesn't handle multi-line messages well.
-        Debug.Log(writer.ToString());
-
-        // PlayerPrefs.SetString("SaveGame00", writer.ToString());
+        // UberLogger doesn't handle multi-line messages well.
+        // Debug.Log(writer.ToString());
 
         // Make sure the save folder exists.
         if (Directory.Exists(WorldController.Instance.FileSaveBasePath()) == false)
@@ -143,10 +154,12 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
         // This reduces lag while saving by a little bit.
         Thread t = new Thread(new ThreadStart(delegate { SaveWorldToHdd(filePath, writer); }));
         t.Start();
+
+        return t;
     }
 
     /// <summary>
-    /// Create/overwrite the save file with the xml text.
+    /// Create/overwrite the save file with the XML text.
     /// </summary>
     /// <param name="filePath">Full path to file.</param>
     /// <param name="writer">TextWriter that contains serialized World data.</param>
