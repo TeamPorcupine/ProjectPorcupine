@@ -700,8 +700,8 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                 case "Health":
                     reader.Read();
                     float temp = reader.ReadContentAsFloat();
-                health.MaxHealth = temp;
-                health.Value = temp;
+                    health.MaxHealth = temp;
+                    health.Value = temp;
                     break;
                 case "LinksToNeighbours":
                     reader.Read();
@@ -1084,9 +1084,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             }
         }
 
-        if (health != null && health.MaxHealth > 0)
+        if (health != null)
         {
-            yield return string.Format("HitPoints: {0}/{1} ", health.Value, health.MaxHealth);
+            yield return health.TextForSelectionPanel();
         }
 
         if (PowerConnection != null)

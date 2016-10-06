@@ -428,7 +428,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
     public IEnumerable<string> GetAdditionalInfo()
     {
-        yield return string.Format("HitPoints: {0}/{1} ", health.Value, health.MaxHealth);
+         yield return health.TextForSelectionPanel();
 
         foreach (Need n in Needs)
         {

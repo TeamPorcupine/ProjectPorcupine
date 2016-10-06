@@ -98,9 +98,9 @@ public class Health
 
     public String TextForSelectionPanel()
     {
-        if (MaxHealth < 0)
+        if (MaxHealth > 0)
         {
-            return string.Format("HitPoints: {0}/{1} ", Value, MaxHealth);
+            return string.Format("HitPoints: {0}/{1} ", currentHealth, MaxHealth);
         }
         else
         {
