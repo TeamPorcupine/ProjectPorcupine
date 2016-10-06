@@ -21,18 +21,15 @@ public class MenuLeft : MonoBehaviour
         parent = this.gameObject.transform;
 
         AddMenu("ConstructionMenu");
-
-        GameMenuManager.Instance.AddMenuItem("menu_construction", OnButtonConstruction, 0);
     }
 
     public void OpenMenu(string menuName)
     {
         GameObject menu = parent.FindChild(menuName).gameObject;
 
-        CloseMenu();
-
         menu.SetActive(true);
         CurrentlyOpen = menu;
+
         if (CurrentlyOpen.name == "ConstructionMenu")
         {
             WorldController.Instance.spawnInventoryController.SetUIVisibility(false);
@@ -62,16 +59,4 @@ public class MenuLeft : MonoBehaviour
         tempGoObj.name = menuName;
         tempGoObj.transform.SetParent(parent, false);
     }
-
-    private void OnButtonConstruction()
-    {
-        if (CurrentlyOpen != null && CurrentlyOpen.gameObject.name == "ConstructionMenu")
-        {
-            CloseMenu();
-        }
-        else
-        {
-            OpenMenu("ConstructionMenu");
-        }
-    } 
 }

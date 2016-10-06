@@ -77,8 +77,36 @@ public class DialogBoxManager : MonoBehaviour
     private void AddMainMenuItems()
     {
         GameMenuManager.Instance.AddMenuItem(
+            "menu_construction",
+            () =>
+            {
+                // seems like the construction menu is different from a dialogBox?
+                // either way, grouped all menumanager.instance.addmenuitem calls here from /UI/InGameUI/MenuLeft.cs
+                MenuLeft menuLeft;
+                menuLeft = GameObject.Find("MenuLeft").GetComponent<MenuLeft>();
+                if (menuLeft.CurrentlyOpen != null && menuLeft.CurrentlyOpen.gameObject.name == "ConstructionMenu")
+                {
+                    menuLeft.CloseMenu();
+                }
+                else
+                {
+                    menuLeft.OpenMenu("ConstructionMenu");
+                }
+            },
+            0);
+
+        GameMenuManager.Instance.AddMenuItem(
             "menu_work",
-            () => dialogBoxJobList.ShowDialog(),
+            () =>
+            {
+                if (dialogBoxJobList.isActiveAndEnabled)
+                {
+                    dialogBoxJobList.CloseDialog();
+                    return;
+                }
+
+                dialogBoxJobList.ShowDialog();
+            },
             "menu_construction");
 
         GameMenuManager.Instance.AddMenuItem(
@@ -88,16 +116,25 @@ public class DialogBoxManager : MonoBehaviour
 
         GameMenuManager.Instance.AddMenuItem(
             "menu_quests",
-            () => dialogBoxQuests.ShowDialog(),
+            () => {
+                if (dialogBoxQuests.isActiveAndEnabled)
+                {
+                    dialogBoxQuests.CloseDialog();
+                    return;
+                }
+
+                dialogBoxQuests.ShowDialog();
+            },
             "menu_world");
 
         GameMenuManager.Instance.AddMenuItem(
             "menu_options",
             () =>
             {
-                if (dialogBoxSettings.isActiveAndEnabled)
+                if (dialogBoxOptions.isActiveAndEnabled)
                 {
-                    dialogBoxSettings.CloseDialog();
+                    dialogBoxOptions.CloseDialog();
+                    return;
                 }
 
                 dialogBoxOptions.ShowDialog();
