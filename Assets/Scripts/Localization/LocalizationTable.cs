@@ -48,7 +48,6 @@ namespace ProjectPorcupine.Localization
         /// <param name="path">The path to the file.</param>
         public static void LoadLocalizationFile(string path)
         {
-
             string localizationCode = Path.GetFileNameWithoutExtension(path);
             LoadLocalizationFile(path, localizationCode);
         }
@@ -186,15 +185,22 @@ namespace ProjectPorcupine.Localization
 
             int throwAway;
             for (int i = 0; i < revArray.Length; i++)
-            {            
+            {
                 if (int.TryParse(revArray[i], out throwAway))
                 {
-                    //this is the middle of a {#} segment of the string so lets add back the {} in the correct order for the parser
+                    // this is the middle of a {#} segment of the string so let's add back the {} in the correct order for the parser
                     revArray[i] = "{" + revArray[i] + "}";
+                }
+                else
+                {
+                    // For now lets assume that passing in { or } without a number in between is likely an error
+                    // why would a string need curly brackets in game?
+                    // Note: this removes the curly braces and cannot replace them since string.split doesn't say whether { or } appeared
+                    Debug.ULogWarningChannel("LocalizationTable", "{ or } exist in localization string '" + original + "' for " + currentLanguage + "but do not enclose a number for string substitution.");
                 }
             }
 
-            //rebuild the reversed string
+            // rebuild the reversed string
             return string.Join(null, revArray);
         }
     }
