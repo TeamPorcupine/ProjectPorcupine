@@ -24,8 +24,9 @@ public enum SpriteSwapRedColor
     HAIRCOLOR = 152,
     HAIRCOLORLIGHT = 202,
     HAIRCOLORDARK = 102,
-    SKINCOLOR = 244,
-    SKINCOLORDARK = 229
+    SKINCOLOR = 238,
+    SKINCOLORDARK = 217,
+    SKINCOLORVERYDARK = 143
 }
 
 public class CharacterSpriteController : BaseSpriteController<Character>
@@ -161,6 +162,7 @@ public class CharacterSpriteController : BaseSpriteController<Character>
         Color newUniformStripeColorVeryDark = Color.Lerp(newUniformStripeColorDark, ColorUtilities.ColorFromIntRGB(0, 0, 0), 0.5f);
         Color newSkinColor = character.GetCharacterSkinColor();
         Color newSkinColorDark = Color.Lerp(newSkinColor, ColorUtilities.ColorFromIntRGB(0, 0, 0), 0.2f);
+        Color newSkinColorVeryDark = Color.Lerp(newSkinColorDark, ColorUtilities.ColorFromIntRGB(0, 0, 0), 0.5f);
         Color newUniformColor = character.GetCharacterUniformColor();
         Color newUniformColorLight = Color.Lerp(newUniformColor, ColorUtilities.ColorFromIntRGB(255, 255, 255), 0.2f);
         Color newUniformColorVeryLight = Color.Lerp(newUniformColorLight, ColorUtilities.ColorFromIntRGB(255, 255, 255), 0.5f);
@@ -181,6 +183,7 @@ public class CharacterSpriteController : BaseSpriteController<Character>
         colorSwapTex = SwapColor(colorSwapTex, SpriteSwapRedColor.UNIFORMSTRIPECOLOVVERYRDARK, newUniformStripeColorVeryDark);
         colorSwapTex = SwapColor(colorSwapTex, SpriteSwapRedColor.SKINCOLOR, newSkinColor);
         colorSwapTex = SwapColor(colorSwapTex, SpriteSwapRedColor.SKINCOLORDARK, newSkinColorDark);
+        colorSwapTex = SwapColor(colorSwapTex, SpriteSwapRedColor.SKINCOLORVERYDARK, newSkinColorVeryDark);
         colorSwapTex.Apply();
 
         // load material and shader
