@@ -106,25 +106,25 @@ namespace ProjectPorcupine.Localization
                     localizationTable[localizationCode] = new Dictionary<string, string>();
                 }
 
-                //Read all lines in advance, we need it to know how the language is called.
+                // Read all lines in advance, we need it to know how the language is called.
                 string[] lines = File.ReadAllLines(path);
 
-                //We assume that A) the key is the first line B) the key is always the localizationCode
-                //If not, we know this language hasn't been updated yet, so insert the localizationCode as key and value
+                // We assume that A) the key is the first line B) the key is always the localizationCode
+                // If not, we know this language hasn't been updated yet, so insert the localizationCode as key and value
                 if (lines.Length > 0) //If this if check will ever return false... we now something is terribly wrong!
                 {
-                    //Split the line
+                    // Split the line
                     string[] line = lines[0].Split(new char[] { '=' }, 2);
 
-                    //Check if the language starts with a valid name.
-                    if(line[0] == "lang")
+                    // Check if the language starts with a valid name.
+                    if (line[0] == "lang")
                     {
-                        //It does, add it to the list, we need it later.
+                        // It does, add it to the list, we need it later.
                         localizationTable[localizationCode]["lang"] = line[1];
                     }
                     else
                     {
-                        //It doesn't, add the localizationCode as a fallback for now.
+                        // It doesn't, add the localizationCode as a fallback for now.
                         localizationTable[localizationCode]["lang"] = localizationCode;
                     }
                 }

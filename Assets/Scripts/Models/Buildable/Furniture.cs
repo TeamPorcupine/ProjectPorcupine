@@ -699,8 +699,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                     break;
                 case "Health":
                     reader.Read();
-                    health.InitialHealth(reader.ReadContentAsFloat());
-                    health.MaxHealth = reader.ReadContentAsFloat();
+                    float temp = reader.ReadContentAsFloat();
+                    health.InitialHealth(temp);
+                    health.MaxHealth = temp;
                     break;
                 case "LinksToNeighbours":
                     reader.Read();
