@@ -117,15 +117,15 @@ namespace ProjectPorcupine.Localization
                     string[] line = lines[0].Split(new char[] { '=' }, 2);
 
                     //Check if the language starts with a valid name.
-                    if(line[0] == localizationCode)
+                    if(line[0] == "lang")
                     {
                         //It does, add it to the list, we need it later.
-                        localizationTable[localizationCode][localizationCode] = line[1];
+                        localizationTable[localizationCode]["lang"] = line[1];
                     }
                     else
                     {
                         //It doesn't, add the localizationCode as a fallback for now.
-                        localizationTable[localizationCode][localizationCode] = localizationCode;
+                        localizationTable[localizationCode]["lang"] = localizationCode;
                     }
                 }
 
