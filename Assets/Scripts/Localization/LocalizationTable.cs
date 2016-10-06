@@ -37,7 +37,7 @@ namespace ProjectPorcupine.Localization
 
         public static event Action CBLocalizationFilesChanged;
 
-        private enum FallbackMode
+        public enum FallbackMode
         {
             ReturnKey, ReturnDefaultLanguage
         }
@@ -106,6 +106,48 @@ namespace ProjectPorcupine.Localization
                     localizationTable[localizationCode] = new Dictionary<string, string>();
                 }
 
+                // Read all lines in advance, we need it to know how the language is called.
+                string[] allLines = File.ReadAllLines(path);
+
+                // We assume that A) the key is the first line or second line if the language is RTL B) the key is always the localizationCode
+                // If not, we know this language hasn't been updated yet, so insert the localizationCode as key and value
+                if (allLines.Length > 0) //If this if check will ever return false... we now something is terribly wrong!
+                {
+                    // Split the line
+                    string[] keyValuePair = allLines[0].Split(new char[] { '=' }, 2);
+
+                    // Check if the language starts with a valid name.
+                    if(keyValuePair[0] == "lang")
+                    {
+                        // It does, add it to the list, we need it later.
+                        localizationTable[localizationCode]["lang"] = keyValuePair[1];
+                    }
+                    // Maybe there is a lang key, but this language has an RTL line first?
+                    else if (keyValuePair[0] == "rtl")
+                    {
+                        // Check the next line down for the lang key
+                        string[] secondLineKeyValuePair = allLines[1].Split(new char[] { '=' }, 2);
+                        if (secondLineKeyValuePair[0] == "lang")
+                        {
+                            // this does have a lang key, so assign it
+                            if (keyValuePair[1] == "true" || keyValuePair[1] == "1")
+                            {
+                                localizationTable[localizationCode]["lang"] = ReverseString(secondLineKeyValuePair[1]);
+                            }
+                            else
+                            {
+                                // There is a lang key, and rtl is explicitly defined as false so just return the key as normal
+                                localizationTable[localizationCode]["lang"] = secondLineKeyValuePair[1];
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //It doesn't, add the localizationCode as a fallback for now.
+                        localizationTable[localizationCode]["lang"] = localizationCode;
+                    }
+                }
+
                 // Only the current and default languages translations will be loaded in memory.
                 if (localizationCode == DefaultLanguage || localizationCode == currentLanguage)
                 {
@@ -146,7 +188,7 @@ namespace ProjectPorcupine.Localization
         /// <summary>
         /// Returns the localization for the given key, or the key itself, if no translation exists.
         /// </summary>
-        private static string GetLocalization(string key, FallbackMode fallbackMode, string language, params string[] additionalValues)
+        public static string GetLocalization(string key, FallbackMode fallbackMode, string language, params string[] additionalValues)
         {
             string value;
             if (localizationTable.ContainsKey(language) && localizationTable[language].TryGetValue(key, out value))

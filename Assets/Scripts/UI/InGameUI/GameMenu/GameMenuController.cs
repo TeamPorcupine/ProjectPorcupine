@@ -36,33 +36,30 @@ public class GameMenuController : MonoBehaviour
         buttonPrefab = Resources.Load("UI/MenuButton");
 
         CreateGameMenu();
+        DeactivateAll();
 
-        GameMenuManager.Instance.Added += CreateGameMenu;
+        GameMenuManager.Instance.Added += OnMenuItemAdded;
     }
 
     private void CreateGameMenu()
     {
-        // Clear out all the children of our file list
-        while (this.gameObject.transform.childCount > 0)
+        foreach (GameMenuItem gameMenuItem in GameMenuManager.Instance)
         {
-            Transform child = this.gameObject.transform.GetChild(0);
-            child.SetParent(null);  // Become Batman
-            Destroy(child.gameObject);
+            CreateButton(gameMenuItem);
         }
-
-        foreach (GameMenuItem mainMenuItem in GameMenuManager.Instance)
-        {
-            CreateButton(mainMenuItem);
-        }
-
-        DeactivateAll();
     }
 
-    private void CreateButton(GameMenuItem mainMenuItem)
+    private void OnMenuItemAdded(GameMenuItem gameMenuItem, int position)
+    {
+        GameObject gameObject = CreateButton(gameMenuItem);
+        gameObject.transform.SetSiblingIndex(position);
+    }
+
+    private GameObject CreateButton(GameMenuItem gameMenuItem)
     {
         GameObject gameObject = (GameObject)Instantiate(buttonPrefab, this.gameObject.transform);
-        gameObject.name = "Button - " + mainMenuItem.Key;
-        gameObject.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(mainMenuItem.Key) };
+        gameObject.name = "Button - " + gameMenuItem.Key;
+        gameObject.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(gameMenuItem.Key) };
 
         Button button = gameObject.GetComponent<Button>();
         button.onClick.AddListener(delegate
@@ -70,17 +67,17 @@ public class GameMenuController : MonoBehaviour
                 if (!WorldController.Instance.IsModal)
                 {
                     DeactivateAll();
-                    mainMenuItem.Trigger();
+                    gameMenuItem.Trigger();
                 }
             });
 
         Action localizationFilesChangedHandler = null;
         localizationFilesChangedHandler = delegate
             {
-                Transform tf;
+                Transform transform;
                 try
                 {
-                    tf = gameObject.transform;
+                    transform = gameObject.transform;
                 }
                 catch (MissingReferenceException)
                 {
@@ -92,12 +89,14 @@ public class GameMenuController : MonoBehaviour
                 }
 
                 string menuItemKey = gameObject.name.Replace("Button - ", string.Empty);
-                tf.GetComponentInChildren<TextLocalizer>().formatValues = new string[]
+                transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[]
                 {
                     LocalizationTable.GetLocalization(menuItemKey)
                 };
             };
         LocalizationTable.CBLocalizationFilesChanged += localizationFilesChangedHandler;
+
+        return gameObject;
     }
 
     private void Update()
