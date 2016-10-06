@@ -30,7 +30,7 @@ public class GameMenuManager : IEnumerable<GameMenuItem>
     /// <summary>
     /// Occurs when a new menu item is added.
     /// </summary>
-    public event Action Added;
+    public event Action<GameMenuItem, int> Added;
 
     /// <summary>
     /// Gets or sets the Main Menu instance.
@@ -63,12 +63,12 @@ public class GameMenuManager : IEnumerable<GameMenuItem>
     {
         menuItems.Insert(position, menuItem);
 
-        AddFromItemsToAdd(menuItem.Key, position);
-
         if (Added != null)
         {
-            Added();
+            Added(menuItem, position);
         }
+
+        AddFromItemsToAdd(menuItem.Key, position);
     }
 
     /// <summary>
@@ -95,7 +95,7 @@ public class GameMenuManager : IEnumerable<GameMenuItem>
         int position = menuItems.FindIndex((mi) => { return mi.Key == afterKey; });
         if (position == -1 && addLater == false)
         {
-            position = menuItems.Count;
+            position = menuItems.Count - 1;
         }
 
         if (position > -1)
@@ -152,8 +152,10 @@ public class GameMenuManager : IEnumerable<GameMenuItem>
     {
         if (itemsToAdd.ContainsKey(key) && itemsToAdd[key].Count > 0)
         {
-            foreach (GameMenuItem menuItem in itemsToAdd[key])
+            for (int i = itemsToAdd[key].Count - 1; i >= 0; i--)
             {
+                GameMenuItem menuItem = itemsToAdd[key][i];
+                itemsToAdd[key].RemoveAt(i);
                 AddMenuItem(menuItem, position + 1);
             }
         }
