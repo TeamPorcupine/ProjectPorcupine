@@ -64,6 +64,34 @@ namespace ProjectPorcupine.Localization
             return GetLocalization(key, FallbackMode.ReturnDefaultLanguage, currentLanguage, additionalValues);
         }
 
+        /// <summary>
+        /// Returns the localization for the given key, or the key itself, if no translation exists.
+        /// </summary>
+        public static string GetLocalization(string key, FallbackMode fallbackMode, string language, params string[] additionalValues)
+        {
+            string value;
+            if (localizationTable.ContainsKey(language) && localizationTable[language].TryGetValue(key, out value))
+            {
+                return string.Format(value, additionalValues);
+            }
+
+            if (!missingKeysLogged.Contains(key))
+            {
+                missingKeysLogged.Add(key);
+                Debug.ULogChannel("LocalizationTable", string.Format("Translation for {0} in {1} language failed: Key not in dictionary.", key, language));
+            }
+
+            switch (fallbackMode)
+            {
+                case FallbackMode.ReturnKey:
+                    return additionalValues != null && additionalValues.Length >= 1 ? key + " " + additionalValues[0] : key;
+                case FallbackMode.ReturnDefaultLanguage:
+                    return GetLocalization(key, FallbackMode.ReturnKey, DefaultLanguage, additionalValues);
+                default:
+                    return string.Empty;
+            }
+        }
+
         public static void SetLocalization(int lang)
         {
             string[] languages = GetLanguages();
@@ -111,18 +139,19 @@ namespace ProjectPorcupine.Localization
 
                 // We assume that A) the key is the first line or second line if the language is RTL B) the key is always the localizationCode
                 // If not, we know this language hasn't been updated yet, so insert the localizationCode as key and value
-                if (allLines.Length > 0) //If this if check will ever return false... we now something is terribly wrong!
+                // If this if check will ever return false... we now something is terribly wrong!
+                if (allLines.Length > 0) 
                 {
                     // Split the line
                     string[] keyValuePair = allLines[0].Split(new char[] { '=' }, 2);
 
                     // Check if the language starts with a valid name.
-                    if(keyValuePair[0] == "lang")
+                    // else: Maybe there is a lang key, but this language has an RTL line first?
+                    if (keyValuePair[0] == "lang")
                     {
                         // It does, add it to the list, we need it later.
                         localizationTable[localizationCode]["lang"] = keyValuePair[1];
                     }
-                    // Maybe there is a lang key, but this language has an RTL line first?
                     else if (keyValuePair[0] == "rtl")
                     {
                         // Check the next line down for the lang key
@@ -143,7 +172,7 @@ namespace ProjectPorcupine.Localization
                     }
                     else
                     {
-                        //It doesn't, add the localizationCode as a fallback for now.
+                        // It doesn't, add the localizationCode as a fallback for now.
                         localizationTable[localizationCode]["lang"] = localizationCode;
                     }
                 }
@@ -182,34 +211,6 @@ namespace ProjectPorcupine.Localization
             catch (FileNotFoundException exception)
             {
                 Debug.ULogErrorChannel("LocalizationTable", new Exception(string.Format("There is no localization file for {0}", localizationCode), exception).ToString());
-            }
-        }
-
-        /// <summary>
-        /// Returns the localization for the given key, or the key itself, if no translation exists.
-        /// </summary>
-        public static string GetLocalization(string key, FallbackMode fallbackMode, string language, params string[] additionalValues)
-        {
-            string value;
-            if (localizationTable.ContainsKey(language) && localizationTable[language].TryGetValue(key, out value))
-            {
-                return string.Format(value, additionalValues);
-            }
-
-            if (!missingKeysLogged.Contains(key))
-            {
-                missingKeysLogged.Add(key);
-                Debug.ULogChannel("LocalizationTable", string.Format("Translation for {0} in {1} language failed: Key not in dictionary.", key, language));
-            }
-
-            switch (fallbackMode)
-            {
-                case FallbackMode.ReturnKey:
-                    return additionalValues != null && additionalValues.Length >= 1 ? key + " " + additionalValues[0] : key;
-                case FallbackMode.ReturnDefaultLanguage:
-                    return GetLocalization(key, FallbackMode.ReturnKey, DefaultLanguage, additionalValues);
-                default:
-                    return string.Empty;
             }
         }
 
