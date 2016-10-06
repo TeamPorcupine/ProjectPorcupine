@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <DialogBoxLuaInformation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Title>Testing</Title>
-  <Content type="Text">
+  <Content type="Input">
     <Position>
       <x>100</x>
       <y>-50</y>
       <z>0</z>
     </Position>
-    <Data xsi:type="xsd:string">Hello!</Data>
+    <Size>
+      <x>200</x>
+      <y>30</y>
+    </Size>
   </Content>
   <Buttons>Yes</Buttons>
   <Buttons>No</Buttons>

@@ -21,7 +21,10 @@ public class DialogComponent
 
     [XmlElement("Position")]
     public Vector3 position;
-    
+
+    [XmlElement("Size")]
+    public Vector2 size;
+
     [XmlElement("Data")]
     public object data;
 

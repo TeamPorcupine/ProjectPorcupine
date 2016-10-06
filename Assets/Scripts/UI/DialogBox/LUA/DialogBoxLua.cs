@@ -73,12 +73,9 @@ public class DialogBoxLua : DialogBox
 
     public override void CloseDialog()
     {
-        foreach(GameObject control in Content.transform)
-        {
-            if(control.GetComponent<DialogControl>() == true)
-            {
-                extraData.Add(control.GetComponent<DialogControl>().result);
-            }
+        foreach(DialogControl control in Content.GetComponentsInChildren<DialogControl>())
+        {            
+            extraData.Add(control.result);
         }
         events.Trigger("OnClosed", this, Result, extraData);
         base.CloseDialog();
@@ -109,8 +106,9 @@ public class DialogBoxLua : DialogBox
                         textObject.GetComponent<RectTransform>().anchoredPosition = gameObjectInfo.position;
                         break;
                     case "Input":
-                        GameObject inputObject = (GameObject)Instantiate(Resources.Load("Prefab/DialogBoxPrefabs/DialogInput"), Content);
+                        GameObject inputObject = (GameObject)Instantiate(Resources.Load("Prefab/DialogBoxPrefabs/DialogInputComponent"), Content);
                         inputObject.GetComponent<RectTransform>().anchoredPosition = gameObjectInfo.position;
+                        inputObject.GetComponent<RectTransform>().sizeDelta = gameObjectInfo.size;
                         break;
                 }
             }

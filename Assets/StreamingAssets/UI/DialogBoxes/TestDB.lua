@@ -3,9 +3,10 @@ DIALOGRESULT_NO = 1
 DIALOGRESULT_CANCEL = 2
 DIALOGRESULT_OKAY = 3
 
-function Testing_DialogClosed( DialogBoxResult, data )
+function Testing_DialogClosed( DialogBoxResult, result, data )
 	ModUtils.ULog("DialogClosed")
-	if (data == DIALOGRESULT_YES) then
-		WorldController.instance.dialogBoxManager.ShowDialogBoxByName("Load File")
+	ModUtils.ULog("Result = " .. result)
+	if (result == DIALOGRESULT_YES) then
+		ModUtils.ULog(data[1])
 	end
 end
