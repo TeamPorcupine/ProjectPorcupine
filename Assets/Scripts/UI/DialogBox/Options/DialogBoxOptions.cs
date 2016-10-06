@@ -36,11 +36,6 @@ public class DialogBoxOptions : DialogBox
     {
         this.CloseDialog();
         dialogManager.dialogBoxSettings.ShowDialog();
-
-		//This is the old way of calling OnButtonCleckedSFX to play the MenuClick sound when the button pressed.
-		//It required to have this call on every and each of the buttons.
-		//It is here just for a reference (this is actually working).
-		WorldController.Instance.soundController.OnButtonClickedSFX();
 	}
 
     // Quit the app whether in editor or a build version.
@@ -148,12 +143,7 @@ public class DialogBoxOptions : DialogBox
     private void RenderButtons()
     {
         UnityEngine.Object buttonPrefab = Resources.Load("UI/Components/MenuButton");
-
-		//This should intercept buttonPrefab and add PlayClick delegate to a new buttonGO "prefab", so every button would have this.
-		GameObject buttonGO = (GameObject)buttonPrefab;
-		buttonGO.GetComponent<Button>().onClick.AddListener(delegate {WorldController.Instance.soundController.PlayClick();});
-
-		GameObject resumeButton = CreateButtonGO(buttonGO, "Resume", "menu_resume");
+		GameObject resumeButton = CreateButtonGO(buttonPrefab, "Resume", "menu_resume");
         resumeButton.GetComponent<Button>().onClick.AddListener(delegate
         {
             this.CloseDialog();

@@ -28,7 +28,7 @@ public class SoundController
         soundCooldown -= deltaTime;
     }
 
-	//This is a delegate to which shoul add OnButtonClickedSFX to all new buttons instantiated from a buttonGO "prefab". 
+	//This is a delegate to play "PlayClick" on ShowDialog and CloseDialog from DialogBox script. 
 	delegate void ClickDelegate();
 		ClickDelegate btnsfx;
 	public void PlayClick()

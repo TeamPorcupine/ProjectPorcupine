@@ -33,6 +33,9 @@ public class MenuLeft : MonoBehaviour
 
         menu.SetActive(true);
         CurrentlyOpen = menu;
+
+		WorldController.Instance.soundController.PlayClick();
+
         if (CurrentlyOpen.name == "ConstructionMenu")
         {
             WorldController.Instance.spawnInventoryController.SetUIVisibility(false);
@@ -49,6 +52,8 @@ public class MenuLeft : MonoBehaviour
             {
                 WorldController.Instance.spawnInventoryController.SetUIVisibility(Settings.GetSetting("DialogBoxSettings_developerModeToggle", false));
             }
+
+			WorldController.Instance.soundController.PlayClick();
 
             CurrentlyOpen = null;
         }
