@@ -28,6 +28,29 @@ public class SoundController
         soundCooldown -= deltaTime;
     }
 
+	//This is a delegate to which shoul add OnButtonClickedSFX to all new buttons instantiated from a buttonGO "prefab". 
+	delegate void ClickDelegate();
+		ClickDelegate btnsfx;
+	public void PlayClick()
+	{
+		btnsfx += OnButtonClickedSFX;
+		btnsfx ();
+	}
+
+	public void OnButtonClickedSFX()
+	{
+		//FIXME
+		if (soundCooldown > 0)
+		{
+			return;
+		}
+
+
+		AudioClip ac = AudioManager.GetAudio("Sound", "MenuClick");
+		AudioSource.PlayClipAtPoint(ac, Camera.main.transform.position);
+		soundCooldown = 0.1f;
+	}
+
     public void OnFurnitureCreated(Furniture furniture)
     {
         // FIXME
