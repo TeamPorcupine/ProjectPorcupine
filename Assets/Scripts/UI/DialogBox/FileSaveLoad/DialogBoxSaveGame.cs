@@ -137,10 +137,8 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
         serializer.Serialize(writer, WorldController.Instance.World);
         writer.Close();
 
-        // Leaving this unchanged as UberLogger doesn't handle multi-line messages well.
-        //Debug.Log(writer.ToString());
-
-        // PlayerPrefs.SetString("SaveGame00", writer.ToString());
+        // UberLogger doesn't handle multi-line messages well.
+        // Debug.Log(writer.ToString());
 
         // Make sure the save folder exists.
         if (Directory.Exists(WorldController.Instance.FileSaveBasePath()) == false)
