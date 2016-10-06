@@ -108,7 +108,7 @@ public class Health
                         healthValue += remainder;
                     }
 
-                    // We have been overhealed weither or not we can apply the amount
+                    // We have been overhealed whether or not we can apply the amount
                     if (Overheal != null)
                     {
                         Overheal();
