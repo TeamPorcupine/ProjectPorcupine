@@ -66,8 +66,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     private float speed = 5f;
 
     /// Used for health system.
-    private float maxHP = 100f;
-    private float currentHP = 100f;
+    private Health health;
 
     /// Tile where job should be carried out, if different from MyJob.tile.
     private Tile jobTile;
@@ -429,7 +428,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
     public IEnumerable<string> GetAdditionalInfo()
     {
-        yield return string.Format("HitPoints: " + currentHP + "/" + maxHP);
+        yield return string.Format("HitPoints: " + health.Value + "/" + health.MaxHealth);
 
         foreach (Need n in Needs)
         {
@@ -592,8 +591,6 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         speed = Convert.ToSingle(stats["Dexterity"].Value) / 2;
 
         // Base character max health on their constitution.
-        maxHP = Convert.ToSingle(stats["Constitution"].Value) * 10;
-        currentHP = maxHP;
-
+        health = new Health(Convert.ToSingle(stats["Constitution"].Value) * 10);
     }
 }
