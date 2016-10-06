@@ -428,7 +428,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
     public IEnumerable<string> GetAdditionalInfo()
     {
-         yield return health.TextForSelectionPanel();
+        yield return health.TextForSelectionPanel();
 
         foreach (Need n in Needs)
         {
@@ -591,6 +591,6 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         speed = Convert.ToSingle(stats["Dexterity"].Value) / 2;
 
         // Base character max health on their constitution.
-        health = new Health(Convert.ToSingle(stats["Constitution"].Value) * 10);
+        health = new Health(50 + (Convert.ToSingle(stats["Constitution"].Value) * 5));
     }
 }

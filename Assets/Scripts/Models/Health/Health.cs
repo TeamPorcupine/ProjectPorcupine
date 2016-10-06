@@ -44,13 +44,14 @@ public class Health
 
     public event Action Heal;
 
+    // TODO: Will be used to notify user if healing using something like a medkit will heal for X amount with some wasted (because we hit maxHP)
     public event Action Overheal;
 
     public event Action Hit;
 
     public event Action Destroyed;
 
-    public float Value
+    public float CurrentHealth
     {
         get
         {
@@ -59,10 +60,12 @@ public class Health
 
         set
         {
+            // New health greater than current health.
             if (value > currentHealth)
             {
                 EvaluateHealthIncrease(value);
             }
+            // New health less than current health.
             else if (value < currentHealth)
             {
                 EvaluateHealthDecrease(value);
@@ -70,6 +73,9 @@ public class Health
         }
     }
 
+    /// <summary>
+    /// Used to determine if the entity is still alive.
+    /// </summary>
     public bool IsAlive
     {
         get { return currentHealth > 0; }
@@ -96,6 +102,22 @@ public class Health
         return new Health(this);
     }
 
+    /// <summary>
+    /// Applies damage to the entity.
+    /// </summary>
+    /// <param name="damage">The number of hitpoints to remove from the entity.</param>
+    /// TODO: Add calculations with resistance.
+    /// TODO: Move to some sort of combat folder/class maybe the LUA?
+    public void DamageEntity(float damage)
+    {
+        CurrentHealth -= damage;
+    }
+
+
+    /// <summary>
+    /// Formats the text for health to be displayed by the Selection Panel.
+    /// </summary>
+    /// <returns>The newly formatted text.</returns>
     public String TextForSelectionPanel()
     {
         if (MaxHealth > 0)
@@ -108,6 +130,16 @@ public class Health
         }
             
     }
+
+    /// <summary>
+    /// Used for object creation.
+    /// </summary>
+    /// <param name="value">The starting hit points of the entity</param>
+    public void InitialHealth(float value)
+    {
+        currentHealth = value;
+    }
+
 
     private void EvaluateHealthIncrease(float value)
     {
