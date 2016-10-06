@@ -48,6 +48,7 @@ namespace ProjectPorcupine.Localization
         /// <param name="path">The path to the file.</param>
         public static void LoadLocalizationFile(string path)
         {
+
             string localizationCode = Path.GetFileNameWithoutExtension(path);
             LoadLocalizationFile(path, localizationCode);
         }
@@ -118,7 +119,7 @@ namespace ProjectPorcupine.Localization
                         if (keyValuePair[0] == "rtl" && (keyValuePair[1] == "true" || keyValuePair[1] == "1"))
                         {
                             rightToLeftLanguage = true;
-                        }                    
+                        }
 
                         if (keyValuePair.Length != 2)
                         {
@@ -180,7 +181,21 @@ namespace ProjectPorcupine.Localization
         {
             char[] letterArray = original.ToCharArray();
             Array.Reverse(letterArray);
-            return new string(letterArray);
+            string reverse = new string(letterArray);
+            string[] revArray = reverse.Split(new char[] { '}', '{' });
+
+            int throwAway;
+            for (int i = 0; i < revArray.Length; i++)
+            {            
+                if (int.TryParse(revArray[i], out throwAway))
+                {
+                    //this is the middle of a {#} segment of the string so lets add back the {} in the correct order for the parser
+                    revArray[i] = "{" + revArray[i] + "}";
+                }
+            }
+
+            //rebuild the reversed string
+            return string.Join(null, revArray);
         }
     }
 }
