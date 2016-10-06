@@ -128,7 +128,7 @@ public class SpriteManager
         byte[] imageBytes = File.ReadAllBytes(filePath);
 
         // Create some kind of dummy instance of Texture2D
-        Texture2D imageTexture = new Texture2D(2, 2);
+        Texture2D imageTexture = new Texture2D(2, 2, TextureFormat.ARGB32, false);
 
         // LoadImage will correctly resize the texture based on the image file
         if (imageTexture.LoadImage(imageBytes))
