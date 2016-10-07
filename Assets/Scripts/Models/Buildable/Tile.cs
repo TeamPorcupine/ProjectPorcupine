@@ -459,6 +459,16 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
         return World.Current.GetTileAt(X - 1, Y, Z);
     }
 
+    public Tile Up()
+    {
+        return World.Current.GetTileAt(X, Y, Z - 1);
+    }
+
+    public Tile Down()
+    {
+        return World.Current.GetTileAt(X, Y, Z + 1);
+    }
+
     public Enterability IsEnterable()
     {
         // This returns true if you can enter this tile right this moment.
