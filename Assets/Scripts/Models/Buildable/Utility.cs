@@ -63,7 +63,6 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         Jobs = new BuildableJobs(this);
         typeTags = new HashSet<string>();
         tileTypeBuildPermissions = new HashSet<string>();
-        grid = new Grid();
     }
 
     /// <summary>
@@ -100,7 +99,6 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         LocalizationCode = other.LocalizationCode;
         UnlocalizedDescription = other.UnlocalizedDescription;
 
-        grid = new Grid();
     }
 
     /// <summary>
@@ -257,7 +255,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         // buddy.  Just trigger their OnChangedCallback.
         int x = tile.X;
         int y = tile.Y;
-
+//        tile.GetNeighbours();
         for (int xpos = x - 1; xpos < x + 2; xpos++)
         {
             for (int ypos = y - 1; ypos < y + 2; ypos++)
@@ -267,6 +265,10 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
                 {
                     foreach (Utility utility in tileAt.Utilities.Values)
                     {
+                        if (utility.grid != null && obj.grid == null)
+                        {
+                            obj.grid = utility.grid;
+                        }
                         if (utility.Changed != null)
                         {
                             utility.Changed(utility);
@@ -276,6 +278,13 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
             }
         }
 
+
+        if (obj.grid == null)
+        {
+            obj.grid = new Grid();
+        }
+
+        World.Current.PowerNetwork.RegisterGrid(obj.grid);
         // Call LUA install scripts
         obj.EventActions.Trigger("OnInstall", obj);
         return obj;
@@ -572,6 +581,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
 
     public IEnumerable<string> GetAdditionalInfo()
     {
+        
         yield return string.Empty;
     }
 

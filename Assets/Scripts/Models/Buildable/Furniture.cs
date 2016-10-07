@@ -433,7 +433,10 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         // plug-in furniture only when it is placed in world
         if (furnObj.PowerConnection != null)
         {
-            World.Current.PowerNetwork.PlugIn(furnObj.PowerConnection);
+            foreach (Utility util in tile.Utilities.Values)
+            {
+                util.grid.PlugIn(furnObj.PowerConnection);
+            }
         }
 
         // need to update reference to furniture and call Initialize (so components can place hooks on events there)

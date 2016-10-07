@@ -114,6 +114,10 @@ namespace ProjectPorcupine.PowerNetwork
             IsOperating = currentPowerLevel >= 0.0f;
         }
 
+        public int GetId()
+        {
+            return World.Current.PowerNetwork.FindId(this);
+        }
         private void ChargeAccumulators(ref float currentPowerLevel)
         {
             foreach (Connection connection in connections.Where(connection => connection.IsPowerAccumulator && !connection.IsFull))
