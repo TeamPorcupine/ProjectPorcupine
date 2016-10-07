@@ -215,6 +215,14 @@ public class Job : ISelectable, IPrototypable
         set;
     }
 
+    public bool IsRepeating
+    {
+        get
+        {
+            return jobRepeats;
+        }
+    }
+
     public Pathfinder.GoalEvaluator IsTileAtJobSite
     {
         get
@@ -225,18 +233,7 @@ public class Job : ISelectable, IPrototypable
             }
 
             // TODO: This doesn't handle multi-tile furniture
-            if (adjacent)
-            {
-                return otherTile => (
-                    tile.Z == otherTile.Z &&
-                    (tile.X - 1) <= otherTile.X && (tile.X + 1) >= otherTile.X &&
-                    (tile.Y - 1) <= otherTile.Y && (tile.Y + 1) >= otherTile.Y &&
-                    tile.IsClippingCorner(otherTile) == false);
-            }
-            else
-            {
-                return otherTile => this.tile.CompareTo(otherTile) == 0;
-            }
+            return Pathfinder.GoalTileEvaluator(tile, adjacent);
         }
     }
 

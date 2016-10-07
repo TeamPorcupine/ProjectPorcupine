@@ -161,6 +161,11 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
         return Tile.Furniture == null || canTakeFromStockpile == true || Tile.Furniture.HasTypeTag("Storage") == false;
     }
 
+    public override string ToString()
+    {
+        return string.Format("{0} [{1}/{2}]", Type, StackSize, MaxStackSize);
+    }
+
     private void ImportPrototypeSettings(int defaulMaxStackSize, float defaultBasePrice, string defaultCategory)
     {
         if (PrototypeManager.Inventory.Has(Type))

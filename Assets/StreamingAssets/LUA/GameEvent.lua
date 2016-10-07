@@ -7,14 +7,14 @@
 
 function Precondition_Event_NewCrewMember(gameEvent, deltaTime)
     gameEvent.AddTimer(deltaTime)
-    local timer = gameEvent.GetTimer()
+    local timer = gameEvent.Timer
     if (timer >= 30.0) then
         gameEvent.ResetTimer()
         return true
     end
 end
 
-function Execute_Event_NewCrewMember( gameEvent )
+function Execute_Event_NewCrewMember(gameEvent)
     local tile = World.Current.GetTileAt(World.Current.Width / 2, World.Current.Height / 2, 0)
     local character = World.Current.CharacterManager.Create(tile)
     ModUtils.ULog("GameEvent: New Crew Member spawned named '" .. character.GetName() .. "'.")

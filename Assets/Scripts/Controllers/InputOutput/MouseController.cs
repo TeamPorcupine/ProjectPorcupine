@@ -217,13 +217,12 @@ public class MouseController
             && (PrototypeManager.Furniture.Get(bmc.buildModeType).Width > 1
             || PrototypeManager.Furniture.Get(bmc.buildModeType).Height > 1))
         {
-            Furniture proto = PrototypeManager.Furniture.Get(bmc.buildModeType);
+            Furniture furnitureToBuild = PrototypeManager.Furniture.Get(bmc.buildModeType).Clone();
+            furnitureToBuild.SetRotation(bmc.CurrentPreviewRotation);
+            Sprite sprite = fsc.GetSpriteForFurniture(furnitureToBuild.Type);
 
             // Use the center of the Furniture.
-            currPlacingPosition = new Vector3(
-                currFramePosition.x - ((proto.Width - 1f) / 2f),
-                currFramePosition.y - ((proto.Height - 1f) / 2f),
-                WorldController.Instance.cameraController.CurrentLayer);
+            currPlacingPosition = currFramePosition - ImageUtils.SpritePivotOffset(sprite, bmc.CurrentPreviewRotation);
         }
         else
         {
@@ -569,9 +568,9 @@ public class MouseController
         sr.sortingLayerName = "Jobs";
         sr.sprite = fsc.GetSpriteForFurniture(furnitureType);
 
-        if (World.Current.FurnitureManager.IsPlacementValid(furnitureType, tile) &&
+        if (World.Current.FurnitureManager.IsPlacementValid(furnitureType, tile, bmc.CurrentPreviewRotation) &&
             World.Current.FurnitureManager.IsWorkSpotClear(furnitureType, tile) && 
-            bmc.DoesBuildJobOverlapExistingBuildJob(tile, furnitureType) == false)
+            bmc.DoesBuildJobOverlapExistingBuildJob(tile, furnitureType, bmc.CurrentPreviewRotation) == false)
         {
             sr.color = new Color(0.5f, 1f, 0.5f, 0.25f);
         }
@@ -581,7 +580,8 @@ public class MouseController
         }
 
         go.name = furnitureType + "_p_" + tile.X + "_" + tile.Y + "_" + tile.Z;
-        go.transform.position = tile.Vector3 + ImageUtils.SpritePivotOffset(sr.sprite);
+        go.transform.position = tile.Vector3 + ImageUtils.SpritePivotOffset(sr.sprite, bmc.CurrentPreviewRotation);
+        go.transform.Rotate(0, 0, bmc.CurrentPreviewRotation);
     }
 
     private void ShowWorkSpotSpriteAtTile(string furnitureType, Tile tile)

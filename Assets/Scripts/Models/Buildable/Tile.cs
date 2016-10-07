@@ -98,8 +98,8 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
     {
         get
         {
-            // If Tile's BaseMovementCost or Furniture's MovementCost = 0 (i.e. impassable) we should always return 0 (stay impassable)
-            if (Type.BaseMovementCost == 0 || (Furniture != null && Furniture.MovementCost == 0))
+            // If Tile's BaseMovementCost, PathFindingWeight or Furniture's MovementCost, PathFindingWeight = 0 (i.e. impassable) we should always return 0 (stay impassable)
+            if (Type.BaseMovementCost.AreEqual(0) || Type.PathfindingWeight.AreEqual(0) || (Furniture != null && (Furniture.MovementCost.AreEqual(0) || Furniture.PathfindingWeight.AreEqual(0))))
             {
                 return 0f;
             }
@@ -345,18 +345,30 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
     /// <param name="diagOkay">Is diagonal movement okay?.</param>
     public Tile[] GetNeighbours(bool diagOkay = false)
     {
-        Tile[] tiles = diagOkay == false ? new Tile[4] : new Tile[8];
+        Tile[] tiles = diagOkay == false ? new Tile[6] : new Tile[10];
         tiles[0] = World.Current.GetTileAt(X, Y + 1, Z);
         tiles[1] = World.Current.GetTileAt(X + 1, Y, Z);
         tiles[2] = World.Current.GetTileAt(X, Y - 1, Z);
         tiles[3] = World.Current.GetTileAt(X - 1, Y, Z);
 
+        // FIXME: This is a bit of a dirty hack, but it works for preventing characters from phasing through the floor for now.
+        Tile tileup = World.Current.GetTileAt(X, Y, Z - 1);
+        if (tileup != null && tileup.Type == TileType.Empty)
+        {
+            tiles[4] = World.Current.GetTileAt(X, Y, Z - 1);
+        }
+
+        if (Type == TileType.Empty)
+        {
+            tiles[5] = World.Current.GetTileAt(X, Y, Z + 1);
+        }
+
         if (diagOkay == true)
         {
-            tiles[4] = World.Current.GetTileAt(X + 1, Y + 1, Z);
-            tiles[5] = World.Current.GetTileAt(X + 1, Y - 1, Z);
-            tiles[6] = World.Current.GetTileAt(X - 1, Y - 1, Z);
-            tiles[7] = World.Current.GetTileAt(X - 1, Y + 1, Z);
+            tiles[6] = World.Current.GetTileAt(X + 1, Y + 1, Z);
+            tiles[7] = World.Current.GetTileAt(X + 1, Y - 1, Z);
+            tiles[8] = World.Current.GetTileAt(X - 1, Y - 1, Z);
+            tiles[9] = World.Current.GetTileAt(X - 1, Y + 1, Z);
         }
 
         return tiles.Where(tile => tile != null).ToArray();

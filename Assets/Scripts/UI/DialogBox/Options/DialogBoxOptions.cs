@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
 // This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
@@ -41,7 +41,28 @@ public class DialogBoxOptions : DialogBox
     // Quit the app whether in editor or a build version.
     public void OnButtonQuitGame()
     {
-        SceneManagerProjectPorcupine.Instance.QuitGame();
+        StartCoroutine(ConfirmQuitDialog());
+    }
+
+    private IEnumerator ConfirmQuitDialog()
+    {
+        dialogManager.dialogBoxPromptOrInfo.SetPrompt("prompt_confirm_quit");
+        dialogManager.dialogBoxPromptOrInfo.SetButtons(DialogBoxResult.Yes, DialogBoxResult.No);
+
+        dialogManager.dialogBoxPromptOrInfo.Closed = () =>
+        {
+            if (dialogManager.dialogBoxPromptOrInfo.Result == DialogBoxResult.Yes)
+            {
+                SceneManagerProjectPorcupine.Instance.QuitGame();
+            }
+        };
+
+        dialogManager.dialogBoxPromptOrInfo.ShowDialog();
+
+        while (dialogManager.dialogBoxPromptOrInfo.gameObject.activeSelf)
+        {
+            yield return null;
+        }
     }
 
     private IEnumerator CheckIfSaveGameBefore(string prompt)

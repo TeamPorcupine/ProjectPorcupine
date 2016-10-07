@@ -94,13 +94,13 @@ namespace Scheduler
         /// <param name="repeats">Number of repeats (default 1). Ignored if repeatsForever=true.</param>
         public void ScheduleEvent(string name, float cooldown, float timeToWait, bool repeatsForever = false, int repeats = 1)
         {
-            if (PrototypeManager.SchedulerEvent.Has(name) == false)
+            if (PrototypeManager.ScheduledEvent.Has(name) == false)
             {
                 Debug.ULogWarningChannel("Scheduler", "Tried to schedule an event from a prototype '{0}' which does not exist. Bailing.", name);
                 return;
             }
 
-            ScheduledEvent ep = PrototypeManager.SchedulerEvent.Get(name);
+            ScheduledEvent ep = PrototypeManager.ScheduledEvent.Get(name);
             ScheduledEvent evt = new ScheduledEvent(ep, cooldown, timeToWait, repeatsForever, repeats);
 
             RegisterEvent(evt);
@@ -193,7 +193,7 @@ namespace Scheduler
         /// </summary>
         public void RegisterEventPrototype(ScheduledEvent eventPrototype)
         {
-            PrototypeManager.SchedulerEvent.Add(eventPrototype);
+            PrototypeManager.ScheduledEvent.Add(eventPrototype);
         }
 
         #region IXmlSerializable implementation

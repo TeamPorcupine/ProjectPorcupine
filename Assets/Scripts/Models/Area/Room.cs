@@ -32,6 +32,7 @@ namespace ProjectPorcupine.Rooms
             tiles = new List<Tile>();
             atmosphericGasses = new Dictionary<string, float>();
             deltaGas = new Dictionary<string, string>();
+            RoomBehaviors = new Dictionary<string, RoomBehavior>();
         }
 
         public int ID
@@ -58,6 +59,9 @@ namespace ProjectPorcupine.Rooms
             }
         }
 
+        // RoomBehavior is something like an airlock or office.
+        public Dictionary<string, RoomBehavior> RoomBehaviors { get; private set; }
+
         public void AssignTile(Tile tile)
         {
             if (tiles.Contains(tile))
@@ -78,7 +82,7 @@ namespace ProjectPorcupine.Rooms
 
         public void UnassignTile(Tile tile)
         {
-            if (tiles.Contains(tile))
+            if (tiles.Contains(tile) == false)
             {
                 // This tile in not in this room.
                 return;
@@ -394,6 +398,76 @@ namespace ProjectPorcupine.Rooms
             {
                 this.ChangeGas(n, other.atmosphericGasses[n]);
             }
+        }
+
+        public bool DesignateRoomBehavior(RoomBehavior objInstance)
+        {
+            if (objInstance == null)
+            {
+                return false;
+            }
+
+            if (RoomBehaviors.ContainsKey(objInstance.Type))
+            {
+                return false;
+            }
+
+            if (objInstance.IsValidRoom(this) == false)
+            {
+                Debug.ULogErrorChannel("Tile", "Trying to assign a RoomBehavior to a room that isn't valid!");
+                return false;
+            }
+
+            objInstance.Control(this);
+
+            RoomBehaviors.Add(objInstance.Type, objInstance);
+
+            return true;
+        }
+
+        public bool UndesignateRoomBehavior(RoomBehavior roomBehavior)
+        {
+            // Just uninstalling.
+            if (RoomBehaviors == null)
+            {
+                return false;
+            }
+
+            RoomBehaviors.Remove(roomBehavior.Type);
+
+            return true;
+        }
+
+        public List<Tile> GetInnerTiles()
+        {
+            return tiles;
+        }
+
+        public List<Tile> GetBorderingTiles()
+        {
+            List<Tile> borderingTiles = new List<Tile>();
+            foreach (Tile tile in tiles)
+            {
+                Tile[] neighbours = tile.GetNeighbours();
+                foreach (Tile tile2 in neighbours)
+                {
+                    if (tile2 != null && tile2.Furniture != null)
+                    {
+                        if (tile2.Furniture.RoomEnclosure)
+                        {
+                            // We have found an enclosing furniture, which means it is on our border
+                            borderingTiles.Add(tile2);
+                        }
+                    } 
+                }
+            }
+
+            return borderingTiles;
+        }
+
+        public bool HasRoomBehavior(string behaviorKey)
+        {
+            return RoomBehaviors.ContainsKey(behaviorKey);
         }
     }
 }

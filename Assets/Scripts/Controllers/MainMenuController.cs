@@ -16,6 +16,12 @@ public class MainMenuController : MonoBehaviour
 
     public static MainMenuController Instance { get; protected set; }
 
+    // Use this for initialization.
+    public void OnEnable()
+    {
+        new PrototypeManager();
+    }
+
     public void Start()
     {
         Instance = this;

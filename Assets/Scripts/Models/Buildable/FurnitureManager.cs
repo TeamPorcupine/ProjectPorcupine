@@ -45,7 +45,8 @@ public class FurnitureManager : IEnumerable<Furniture>
     /// <param name="type">The type of the furniture.</param>
     /// <param name="tile">The tile to place the furniture at.</param>
     /// <param name="doRoomFloodFill">If set to <c>true</c> do room flood fill.</param>
-    public Furniture PlaceFurniture(string type, Tile tile, bool doRoomFloodFill = true)
+    /// /// <param name="rotation">The rotation applied to te furniture.</param>
+    public Furniture PlaceFurniture(string type, Tile tile, bool doRoomFloodFill = true, float rotation = 0f)
     {
         if (PrototypeManager.Furniture.Has(type) == false)
         {
@@ -53,7 +54,8 @@ public class FurnitureManager : IEnumerable<Furniture>
             return null;
         }
 
-        Furniture furn = PrototypeManager.Furniture.Get(type);
+        Furniture furn = PrototypeManager.Furniture.Get(type).Clone();
+        furn.SetRotation(rotation);
 
         return PlaceFurniture(furn, tile, doRoomFloodFill);
     }
@@ -100,10 +102,12 @@ public class FurnitureManager : IEnumerable<Furniture>
     /// <param name="job">The completed job.</param>
     public void ConstructJobCompleted(Job job)
     {
-        // Let our workspot tile know it is no longer reserved for us
-        World.Current.UnreserveTileAsWorkSpot((Furniture)job.buildablePrototype, job.tile);
+        Furniture furn = (Furniture)job.buildablePrototype;
 
-        PlaceFurniture(job.JobObjectType, job.tile);
+        // Let our workspot tile know it is no longer reserved for us
+        World.Current.UnreserveTileAsWorkSpot(furn, job.tile);
+
+        PlaceFurniture(furn, job.tile);
 
         // FIXME: I don't like having to manually and explicitly set
         // flags that prevent conflicts. It's too easy to forget to set/clear them!
@@ -116,9 +120,12 @@ public class FurnitureManager : IEnumerable<Furniture>
     /// <returns><c>true</c> if the placement is valid; otherwise, <c>false</c>.</returns>
     /// <param name="type">The furniture type.</param>
     /// <param name="tile">The tile where the furniture will be placed.</param>
-    public bool IsPlacementValid(string type, Tile tile)
+    /// <param name="rotation">The rotation applied to the furniture.</param>
+    public bool IsPlacementValid(string type, Tile tile, float rotation = 0f)
     {
-        return PrototypeManager.Furniture.Get(type).IsValidPosition(tile);
+        Furniture furn = PrototypeManager.Furniture.Get(type).Clone();
+        furn.SetRotation(rotation);
+        return furn.IsValidPosition(tile);
     }
 
     /// <summary>

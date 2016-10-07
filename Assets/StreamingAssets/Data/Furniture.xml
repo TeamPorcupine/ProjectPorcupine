@@ -101,6 +101,7 @@
         <Name>Door</Name>
         <Description>An Airlock prevents air from leaving the base</Description>
         <TypeTag>Door</TypeTag>
+        <TypeTag>Pressure Door</TypeTag>
         <MovementCost>1</MovementCost>
         <PathfindingModifier>3</PathfindingModifier>
         <PathfindingWeight>1</PathfindingWeight>
@@ -155,7 +156,7 @@
 
         <ContextMenuAction FunctionName="AirlockDoor_Toggle_Pressure_Lock" Text="Toggle Pressure Lock" RequireCharacterSelected="false"/>
 
-        <IsEnterable FunctionName="IsEnterable_Door" />
+        <IsEnterable FunctionName="IsEnterable_AirlockDoor" />
         
         <LocalizationCode>furn_airlock</LocalizationCode>
         <UnlocalizedDescription>furn_airlock_desc</UnlocalizedDescription>
@@ -206,23 +207,12 @@
             <Frame name="Oxygen_Generator_Running3" />
           </Animation>
         </Animations>
-      
-        <Params>
-            <!-- <Param name="gas_name" value="O2" /> -->
-            <Param name="gas_limit" value="0.2" />
-            <Param name="gas_per_second" value="0.16" />
-            <Param name="gas_gen">
-                <Param name="O2">
-                    <Param name="gas_limit" value="0.2" />
-                </Param>
-                <Param name="N2">
-                    <Param name="gas_limit" value="0.8" />
-                </Param>
-            </Param>
-        </Params>
 
-        <Action event="OnUpdate" functionName="OxygenGenerator_OnUpdate" />
-        <Action event="OnPowerOff" functionName="OxygenGenerator_OnPowerOff" />
+        <Component type="GasConnection">
+            <Provides gas="O2" rate="0.16" minLimit="0" maxLimit="0.2" />
+            <Provides gas="N2" rate="0.16" minLimit="0" maxLimit="0.8" />
+            <UsedAnimations idle="idle" running="running" />
+        </Component>
       
         <LocalizationCode>furn_oxygen_generator</LocalizationCode>
         <UnlocalizedDescription>furn_oxygen_generator_desc</UnlocalizedDescription>
@@ -392,7 +382,11 @@
 
         <JobWorkSpotOffset X="1" Y="0" />
 
-        <Workshop>
+        <Component type="GasConnection">
+            <Requires gas="O2" minLimit="0.1" />
+        </Component>
+
+        <Component type="Workshop">
             <ProductionChain name="Copper smelting" processingTime="3">
                 <Input>
                     <Item objectType="Raw Copper" amount="2" slotPosX="0" slotPosY="0" />
@@ -410,7 +404,7 @@
                 </Output>
             </ProductionChain>
             <UsedAnimations idle="idle" running="running" />
-        </Workshop>
+        </Component>
 
         <Animations>
             <Animation state="idle" fps="2" looping="false">
@@ -477,7 +471,7 @@
             <Inventory type="Uranium" amount="1" />
         </DeconstructJob>
 
-      <Workshop>
+      <Component type="Workshop">
           <ProductionChain name="Power Cell Pressing" processingTime="5">
               <Input>
                   <Item objectType="Uranium" amount="3" slotPosX="0" slotPosY="0" />
@@ -487,7 +481,7 @@
                   <Item objectType="Power Cell" amount="1" slotPosX="2" slotPosY="1" />
               </Output>
           </ProductionChain>
-      </Workshop>
+      </Component>
 
         <LocalizationCode>furn_power_cell_press</LocalizationCode>
         <UnlocalizedDescription>furn_power_cell_press_desc</UnlocalizedDescription>
@@ -581,6 +575,7 @@
         <Width>2</Width>
         <Height>3</Height>
         <PowerConnection inputRate="" outputRate="3" capacity=""/>
+        <CanRotate>true</CanRotate>
 
         <BuildingJob jobTime="1" />
         <CanBeBuiltOn tileType="Ladder" />
@@ -617,10 +612,11 @@
         </DeconstructJob>
 
         <Params>
-            <Param name="gas_throughput" value="0.5" />
+            <Param name="gas_throughput" value="1" />
             <Param name="source_pressure_limit" value="0" />
             <Param name="target_pressure_limit" value="1" />
             <Param name="flow_direction_up" value="1" />
+            <Param name="active" value="true" />
         </Params>
 
         <Action event="OnUpdate" functionName="AirPump_OnUpdate" />
@@ -681,6 +677,7 @@
         <Height>2</Height>
         <PathfindingModifier>1</PathfindingModifier>
         <PathfindingWeight>1</PathfindingWeight>
+        <CanRotate>true</CanRotate>
 
         <BuildingJob jobTime="1">
             <Inventory type="Steel Plate" amount="2" />
@@ -818,5 +815,5 @@
     <LocalizationCode>furn_astro_wall</LocalizationCode>
     <UnlocalizedDescription>furn_astro_wall_desc</UnlocalizedDescription>
     </Furniture>
-
+    
 </Furnitures>
