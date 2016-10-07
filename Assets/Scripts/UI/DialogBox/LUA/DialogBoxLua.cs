@@ -18,16 +18,19 @@ using UnityEngine.UI;
 [MoonSharpUserData]
 public class DialogBoxLua : DialogBox
 {
+    public EventActions events;
+
     private string title;
 
     private List<object> extraData;
-
-    public EventActions events;
 
     public Transform Content { get; protected set; }
 
     public DialogBoxResult Result { get; set; }
 
+    /// <summary>
+    /// Gets or sets the title of the DialogBox.
+    /// </summary>
     public string Title
     {
         get
@@ -41,11 +44,11 @@ public class DialogBoxLua : DialogBox
             transform.GetChild(0).GetChild(0).GetComponentInChildren<Text>().text = value;
         }
     }
-    
+
     public override void ShowDialog()
     {
         base.ShowDialog();
-        if(events.HasEvent("OnShow") == true)
+        if (events.HasEvent("OnShow") == true)
         {
             events.Trigger("OnShow", this);
         }
@@ -77,12 +80,12 @@ public class DialogBoxLua : DialogBox
 
     public override void CloseDialog()
     {
-        foreach(DialogControl control in Content.GetComponentsInChildren<DialogControl>())
+        foreach (DialogControl control in Content.GetComponentsInChildren<DialogControl>())
         {            
             extraData.Add(control.result);
         }
 
-        if(events.HasEvent("OnClosed") == true)
+        if (events.HasEvent("OnClosed") == true)
         {
             events.Trigger("OnClosed", this, Result, extraData);
         }
@@ -90,6 +93,10 @@ public class DialogBoxLua : DialogBox
         base.CloseDialog();
     }
 
+    /// <summary>
+    /// Loads the LUA Dialog Box from the XML file.
+    /// </summary>
+    /// <param name="file">The FileInfo object that references to the XML file.</param>
     public void LoadFromXML(FileInfo file)
     {
         // TODO: Find a better way to do this. Not user friendly/Expansible.
@@ -124,8 +131,8 @@ public class DialogBoxLua : DialogBox
                         Texture2D imageTexture = new Texture2D((int)gameObjectInfo.size.x, (int)gameObjectInfo.size.y);
                         try
                         {
-                            imageTexture.LoadImage(File.ReadAllBytes(Path.Combine(Application.streamingAssetsPath,(string)gameObjectInfo.data)));
-                            Sprite imageSprite = Sprite.Create(imageTexture, new Rect(0,0,gameObjectInfo.size.x,gameObjectInfo.size.y), Vector2.zero);
+                            imageTexture.LoadImage(File.ReadAllBytes(Path.Combine(Application.streamingAssetsPath, (string)gameObjectInfo.data)));
+                            Sprite imageSprite = Sprite.Create(imageTexture, new Rect(0, 0, gameObjectInfo.size.x, gameObjectInfo.size.y), Vector2.zero);
 
                             imageObject.GetComponent<Image>().sprite = imageSprite;
                             imageObject.GetComponent<RectTransform>().anchoredPosition = gameObjectInfo.position;
@@ -136,6 +143,7 @@ public class DialogBoxLua : DialogBox
                             Debug.ULogErrorChannel("DialogBoxLua", "Error converting image:" + error.Message);
                             return;                            
                         }
+
                         break;
                     case "Button":
                         GameObject buttonObject = (GameObject)Instantiate(Resources.Load("Prefab/DialogBoxPrefabs/DialogButton"));
@@ -146,6 +154,7 @@ public class DialogBoxLua : DialogBox
                 }
             }
 
+            // Enable dialog buttons from the list of buttons.
             foreach (DialogBoxResult buttons in dialogBoxInfo.buttons)
             {
                 switch (buttons)
@@ -173,31 +182,5 @@ public class DialogBoxLua : DialogBox
         {
             Debug.ULogErrorChannel("DialogBoxLua", "Error deserializing data:" + error.Message);
         }
-        
-        /*
-        // Temporary testing serializer... will remove later
-        DialogBoxLuaInformation info = new DialogBoxLuaInformation();
-        info.title = "Testing";
-
-        DialogBoxResult[] buttons = new DialogBoxResult[3];
-        buttons[0] = DialogBoxResult.Yes;
-        buttons[1] = DialogBoxResult.No;
-        buttons[2] = DialogBoxResult.Cancel;
-        info.buttons = buttons;
-
-        DialogComponent[] content = new DialogComponent[1];
-        DialogComponent image = new DialogComponent();
-        image.ObjectType = "Image";
-        image.position = new Vector3(100, -50);
-        image.data = Path.Combine(Application.streamingAssetsPath, "test.jpg");
-        content[0] = image;
-        info.content = content;
-
-        EventActions newEvents = new EventActions();
-        newEvents.Register("OnClosed", "Testing_DialogClosed");
-        info.events = newEvents;
-
-        serializer.Serialize(file.OpenWrite(), info);
-        */
     }
 }

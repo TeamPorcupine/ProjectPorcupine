@@ -27,5 +27,4 @@ public class DialogComponent
 
     [XmlElement("Data")]
     public object data;
-
 }
