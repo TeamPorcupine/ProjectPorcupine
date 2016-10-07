@@ -17,7 +17,7 @@ public class DialogBox : MonoBehaviour
     {
         openedWhileModal = WorldController.Instance.IsModal ? true : false;
 
-        WorldController.Instance.IsModal = true;
+        
 
         gameObject.transform.SetAsLastSibling();
         gameObject.SetActive(true);

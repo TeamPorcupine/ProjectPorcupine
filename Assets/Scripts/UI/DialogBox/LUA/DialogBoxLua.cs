@@ -45,6 +45,10 @@ public class DialogBoxLua : DialogBox
     public override void ShowDialog()
     {
         base.ShowDialog();
+        if(events.HasEvent("OnShow") == true)
+        {
+            events.Trigger("OnShow", this);
+        }
     }
 
     public void YesButtonClicked()
@@ -77,7 +81,12 @@ public class DialogBoxLua : DialogBox
         {            
             extraData.Add(control.result);
         }
-        events.Trigger("OnClosed", this, Result, extraData);
+
+        if(events.HasEvent("OnClosed") == true)
+        {
+            events.Trigger("OnClosed", this, Result, extraData);
+        }
+
         base.CloseDialog();
     }
 
@@ -90,7 +99,7 @@ public class DialogBoxLua : DialogBox
         Content = transform.GetChild(0).GetChild(1);
 
         XmlSerializer serializer = new XmlSerializer(typeof(DialogBoxLuaInformation));
-
+        
         try
         {
             DialogBoxLuaInformation dialogBoxInfo = (DialogBoxLuaInformation)serializer.Deserialize(file.OpenRead());
@@ -109,6 +118,24 @@ public class DialogBoxLua : DialogBox
                         GameObject inputObject = (GameObject)Instantiate(Resources.Load("Prefab/DialogBoxPrefabs/DialogInputComponent"), Content);
                         inputObject.GetComponent<RectTransform>().anchoredPosition = gameObjectInfo.position;
                         inputObject.GetComponent<RectTransform>().sizeDelta = gameObjectInfo.size;
+                        break;
+                    case "Image":
+                        GameObject imageObject = (GameObject)Instantiate(Resources.Load("Prefab/DialogBoxPrefabs/DialogImage"), Content);
+                        Texture2D imageTexture = new Texture2D((int)gameObjectInfo.size.x, (int)gameObjectInfo.size.y);
+                        try
+                        {
+                            imageTexture.LoadImage(File.ReadAllBytes(Path.Combine(Application.streamingAssetsPath,(string)gameObjectInfo.data)));
+                            Sprite imageSprite = Sprite.Create(imageTexture, new Rect(0,0,gameObjectInfo.size.x,gameObjectInfo.size.y), Vector2.zero);
+
+                            imageObject.GetComponent<Image>().sprite = imageSprite;
+                            imageObject.GetComponent<RectTransform>().anchoredPosition = gameObjectInfo.position;
+                            imageObject.GetComponent<RectTransform>().sizeDelta = gameObjectInfo.size;
+                        }
+                        catch (System.Exception error)
+                        {
+                            Debug.ULogErrorChannel("DialogBoxLua", "Error converting image:" + error.Message);
+                            return;                            
+                        }
                         break;
                 }
             }
@@ -140,9 +167,10 @@ public class DialogBoxLua : DialogBox
         {
             Debug.ULogErrorChannel("DialogBoxLua", "Error deserializing data:" + error.Message);
         }
-
+        
+        /*
         // Temporary testing serializer... will remove later
-        /*DialogBoxLuaInformation info = new DialogBoxLuaInformation();
+        DialogBoxLuaInformation info = new DialogBoxLuaInformation();
         info.title = "Testing";
 
         DialogBoxResult[] buttons = new DialogBoxResult[3];
@@ -152,11 +180,11 @@ public class DialogBoxLua : DialogBox
         info.buttons = buttons;
 
         DialogComponent[] content = new DialogComponent[1];
-        DialogComponent text = new DialogComponent();
-        text.ObjectType = "Text";
-        text.position = new Vector3(100, -50);
-        text.data = "Hello!";
-        content[0] = text;
+        DialogComponent image = new DialogComponent();
+        image.ObjectType = "Image";
+        image.position = new Vector3(100, -50);
+        image.data = Path.Combine(Application.streamingAssetsPath, "test.jpg");
+        content[0] = image;
         info.content = content;
 
         EventActions newEvents = new EventActions();
