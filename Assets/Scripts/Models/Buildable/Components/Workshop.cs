@@ -26,29 +26,56 @@ namespace ProjectPorcupine.Buildable.Components
         public const string MaxProcessingTimeParamName = "max_processing_time";
         public const string CurProcessedInvParamName = "cur_processed_inv";
         public const string CurProductionChainParamName = "cur_production_chain";
+
+        public Workshop()
+        {
+        }
         
-        private event Action<bool> OnRunningStateChanged;
+        private Workshop(Workshop other) : base(other)
+        {
+            PossibleProductions = other.PossibleProductions;
+        }
 
         [XmlElement("ProductionChain")]
         public List<ProductionChain> PossibleProductions { get; set; }
-
-        [XmlElement("UsedAnimations")]
-        public UsedAnimations UsedAnimation { get; set; }
-        
-        [XmlIgnore]
-        public bool IsRunning { get; private set; }
         
         [XmlIgnore]
         private List<ComponentContextMenu> WorkshopMenuActions { get; set; }
 
-        public override string GetDescription()
+        public override BuildableComponent Clone()
         {
-            StringBuilder sb = new StringBuilder();
-            string prodChain = FurnitureParams[CurProductionChainParamName].ToString();
-            sb.AppendLine(!string.IsNullOrEmpty(prodChain) ? string.Format("Production: {0}", prodChain) : "No selected production");
-            return sb.ToString();
+            return new Workshop(this);
         }
-        
+
+        public override IEnumerable<string> GetDescription()
+        {
+            if (PossibleProductions.Count > 1)
+            {
+                StringBuilder sb = new StringBuilder();
+                string prodChain = FurnitureParams[CurProductionChainParamName].ToString();
+                sb.AppendLine(!string.IsNullOrEmpty(prodChain) ? string.Format("Production: {0}", prodChain) : "No selected production");
+                yield return sb.ToString();
+            }
+            else
+            {
+                yield return null;
+            }
+        }
+
+        public override bool CanFunction()
+        {
+            var curSetupChainName = FurnitureParams[CurProductionChainParamName].ToString();
+
+            if (!string.IsNullOrEmpty(curSetupChainName))
+            {
+                ProductionChain prodChain = GetProductionChainByName(curSetupChainName);
+                //// create possible jobs for factory(hauling input)
+                HaulingJobForInputs(prodChain);
+            }
+
+            return true;
+        }
+
         public override void FixedFrequencyUpdate(float deltaTime)
         {
             //// if there is enough input, do the processing and store item to output
@@ -80,17 +107,12 @@ namespace ProjectPorcupine.Buildable.Components
                         // consume input inventory
                         ConsumeInventories(flaggedForTaking);
 
-                        FurnitureParams[CurProcessedInvParamName].SetValue(prodChain.Output.Count);
+                        FurnitureParams[CurProcessedInvParamName].SetValue(1); // check if it can be bool
 
                         // reset processing timer and set max time for processing for this prod. chain
                         FurnitureParams[CurProcessingTimeParamName].SetValue(0f);
                         FurnitureParams[MaxProcessingTimeParamName].SetValue(prodChain.ProcessingTime);
-                    }
-                    //// trigger running state change
-                    if (IsRunning)
-                    {
-                        OnRunningStateChanged(IsRunning = false);
-                    }
+                    }                  
                 }
                 else
                 {
@@ -109,16 +131,8 @@ namespace ProjectPorcupine.Buildable.Components
                             //// processing done, can fetch input for another processing
                             FurnitureParams[CurProcessedInvParamName].SetValue(0);
                         }
-                    }
-                    //// trigger running state change
-                    if (!IsRunning)
-                    {
-                        OnRunningStateChanged(IsRunning = true);
-                    }
+                    }                    
                 }
-
-                // create possible jobs for factory(hauling input)
-                HaulingJobForInputs(prodChain);
             }
         }
 
@@ -161,10 +175,8 @@ namespace ProjectPorcupine.Buildable.Components
             FurnitureParams.AddParameter(new Parameter(CurProcessingTimeParamName, 0f));
             FurnitureParams.AddParameter(new Parameter(MaxProcessingTimeParamName, 0f));
             FurnitureParams.AddParameter(new Parameter(CurProcessedInvParamName, 0));
-            IsRunning = false;
-            OnRunningStateChanged += RunningStateChanged;
+            
             ParentFurniture.Removed += WorkshopRemoved;
-            ParentFurniture.IsOperatingChanged += (furniture) => RunningStateChanged(IsRunning && furniture.IsOperating);
         }
 
         private void PlaceInventories(List<TileObjectTypeAmount> outPlacement)
@@ -234,21 +246,6 @@ namespace ProjectPorcupine.Buildable.Components
             UnlockInventoryAtInput(ParentFurniture, GetProductionChainByName(oldProductionChainName));
         }
 
-        private void RunningStateChanged(bool newIsRunningState)
-        {
-            if (UsedAnimation != null)
-            {
-                if (newIsRunningState == true && !string.IsNullOrEmpty(UsedAnimation.Running))
-                {
-                    ParentFurniture.Animation.SetState(UsedAnimation.Running);
-                }
-                else if (newIsRunningState == false && !string.IsNullOrEmpty(UsedAnimation.Idle))
-                {
-                    ParentFurniture.Animation.SetState(UsedAnimation.Idle);
-                }
-            }
-        }
-
         private void ChangeCurrentProductionChain(Furniture furniture, string newProductionChainName)
         {
             string oldProductionChainName = furniture.Parameters[CurProductionChainParamName].Value;
@@ -263,24 +260,26 @@ namespace ProjectPorcupine.Buildable.Components
             furniture.Jobs.CancelAll();
             furniture.Parameters[CurProductionChainParamName].SetValue(newProductionChainName);
 
-            // unlock all inventories at input if there is something left
-            ProductionChain oldProdChain = GetProductionChainByName(oldProductionChainName);
-            if (oldProdChain != null)
+            // check for null, production chain can be selected for the first time
+            if (oldProductionChainName != null)
             {
+                // unlock all inventories at input if there is something left
+                ProductionChain oldProdChain = GetProductionChainByName(oldProductionChainName);
                 UnlockInventoryAtInput(furniture, oldProdChain);
-            }
-            else
-            {
-                Debug.ULogWarningChannel(ComponentLogChannel, "Workshop old production chain is null for some reason.");
-            }
+            }        
         }
 
         private void HaulingJobForInputs(ProductionChain prodChain)
         {
-            // for all inputs in production chain
+            bool isProcessing = ParentFurniture.Parameters[CurProcessedInvParamName].ToInt() > 0;
+            //// for all inputs in production chain
             foreach (var reqInputItem in prodChain.Input)
             {
-                // if there is no hauling job for input object type, create one
+                if (isProcessing && !reqInputItem.HasHopper)
+                {
+                    continue;
+                }
+                //// if there is no hauling job for input object type, create one
                 Job furnJob;
                 string requiredType = reqInputItem.ObjectType;
                 bool existingHaulingJob = ParentFurniture.Jobs.HasJobWithPredicate(x => x.RequestedItems.ContainsKey(requiredType), out furnJob);
@@ -293,7 +292,13 @@ namespace ProjectPorcupine.Buildable.Components
 
                     // create job for desired input resource
                     string desiredInv = reqInputItem.ObjectType;
-                    int desiredAmount = PrototypeManager.Inventory.Get(desiredInv).maxStackSize;
+                    int desiredAmount = reqInputItem.Amount;
+
+                    if (reqInputItem.HasHopper)
+                    {
+                        desiredAmount = PrototypeManager.Inventory.Get(desiredInv).maxStackSize;
+                    }
+
                     if (inTile.Inventory != null && inTile.Inventory.Type == reqInputItem.ObjectType &&
                         inTile.Inventory.StackSize <= desiredAmount)
                     {
@@ -307,11 +312,12 @@ namespace ProjectPorcupine.Buildable.Components
                                      null,  // beware: passed jobObjectType is expected Furniture only !!
                                      null,
                                      0.4f,
-                                     new RequestedItem[] { new RequestedItem(desiredInv, desiredAmount) },
+                                     new RequestedItem[] { new RequestedItem(desiredInv, desiredAmount, desiredAmount) },
                                      Job.JobPriority.Medium,
                                      false,
                                      false,
                                      false);
+                        
                         jb.JobDescription = string.Format("Hauling '{0}' to '{1}'", desiredInv, ParentFurniture.Name);
                         jb.OnJobWorked += PlaceInventoryToWorkshopInput;
                         ParentFurniture.Jobs.Add(jb);
@@ -392,6 +398,8 @@ namespace ProjectPorcupine.Buildable.Components
             public int SlotPosX { get; set; }
             [XmlAttribute("slotPosY")]
             public int SlotPosY { get; set; }
+            [XmlAttribute("hasHopper")]
+            public bool HasHopper { get; set; }
         }
 
         [Serializable]

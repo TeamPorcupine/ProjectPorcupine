@@ -77,13 +77,7 @@ public class BuildableComponentTest
             });
 
         fi.PossibleProductions.Add(chain2);
-
-        fi.UsedAnimation = new BuildableComponent.UsedAnimations()
-        {
-            Idle = "idle",
-            Running = "running"
-        };
-               
+                       
         // serialize
         StringWriter writer = new StringWriter();
         XmlSerializer serializer = new XmlSerializer(typeof(BuildableComponent), new Type[] { typeof(Workshop) });
@@ -100,7 +94,6 @@ public class BuildableComponentTest
         
         Assert.NotNull(dfi);
         Assert.AreEqual("Raw Iron", dfi.PossibleProductions[0].Input[0].ObjectType);
-        Assert.AreEqual("running", dfi.UsedAnimation.Running);
     }
 
     [Test]
@@ -124,12 +117,6 @@ public class BuildableComponentTest
             }
         };
 
-        gasCon.UsedAnimation = new BuildableComponent.UsedAnimations()
-        {
-            Idle = "idle",
-            Running = "running"
-        };
-
         // serialize
         StringWriter writer = new StringWriter();
         XmlSerializer serializer = new XmlSerializer(typeof(BuildableComponent), new Type[] { typeof(GasConnection) });
@@ -148,5 +135,102 @@ public class BuildableComponentTest
 
         Assert.AreEqual(2, desGasConn.Provides.Count);
         Assert.AreEqual("O2", desGasConn.Provides[0].Gas);
+    }
+
+    [Test]
+    public void TestPowerConnectionSerialization()
+    {
+        PowerConnection accumulator = new PowerConnection
+        {
+            Provides = new PowerConnection.Info() { Rate = 10.0f, Capacity = 100.0f },
+            Requires = new PowerConnection.Info()
+            {
+                ParamConditions = new System.Collections.Generic.List<BuildableComponent.ParameterCondition>()
+                {
+                    new BuildableComponent.ParameterCondition()
+                    {
+                        Condition = BuildableComponent.ConditionType.IsGreaterThanZero,
+                        ParameterName = "cur_processed_inv"
+                    }
+                }
+            }
+        };
+
+        // serialize
+        StringWriter writer = new StringWriter();
+        XmlSerializer serializer = new XmlSerializer(typeof(BuildableComponent), new Type[] { typeof(PowerConnection) });
+
+        serializer.Serialize(writer, accumulator);
+
+        StringReader sr = new StringReader(writer.ToString());
+
+        // if you want to dump file to disk for visual check, uncomment this
+        ////File.WriteAllText("PowerConnection.xml", writer.ToString());
+
+        // deserialize
+        PowerConnection desPowConn = (PowerConnection)serializer.Deserialize(sr);
+
+        Assert.NotNull(desPowConn);
+
+        Assert.AreEqual(10f, desPowConn.Provides.Rate);
+        Assert.AreEqual(0f, desPowConn.Requires.Rate);
+        Assert.AreEqual(1, desPowConn.Requires.ParamConditions.Count);
+    }
+
+    [Test]
+    public void TestAnimatorSerialization()
+    {
+        Animator an = new Animator()
+        {
+            UsedAnimations = new System.Collections.Generic.List<BuildableComponent.UseAnimation>()
+            {
+                new BuildableComponent.UseAnimation()
+                {
+                    Name = "idle",
+                    Requires = new BuildableComponent.ParameterConditions()
+                    {
+                        ParamConditions = new System.Collections.Generic.List<BuildableComponent.ParameterCondition>()
+                        {
+                            new BuildableComponent.ParameterCondition()
+                            {
+                                Condition = BuildableComponent.ConditionType.IsZero,
+                                ParameterName = "cur_processed_inv"
+                            }
+                        }
+                    }
+                },
+                new BuildableComponent.UseAnimation()
+                {
+                    Name = "running",
+                    Requires = new BuildableComponent.ParameterConditions()
+                    {
+                        ParamConditions = new System.Collections.Generic.List<BuildableComponent.ParameterCondition>()
+                        {
+                            new BuildableComponent.ParameterCondition()
+                            {
+                                Condition = BuildableComponent.ConditionType.IsGreaterThanZero,
+                                ParameterName = "cur_processed_inv"
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        // serialize
+        StringWriter writer = new StringWriter();
+        XmlSerializer serializer = new XmlSerializer(typeof(BuildableComponent), new Type[] { typeof(Animator) });
+
+        serializer.Serialize(writer, an);
+
+        StringReader sr = new StringReader(writer.ToString());
+
+        // if you want to dump file to disk for visual check, uncomment this
+        ////File.WriteAllText("Animator.xml", writer.ToString());
+
+        // deserialize
+        Animator desPowConn = (Animator)serializer.Deserialize(sr);
+
+        Assert.NotNull(desPowConn);        
     }
 }

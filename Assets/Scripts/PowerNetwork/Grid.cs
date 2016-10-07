@@ -6,19 +6,21 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ProjectPorcupine.Buildable.Components;
 
 namespace ProjectPorcupine.PowerNetwork
 {
     public class Grid
     {
-        private readonly HashSet<Connection> connections;
+        private readonly HashSet<PowerConnection> connections;
 
         public Grid()
         {
-            connections = new HashSet<Connection>();
+            connections = new HashSet<PowerConnection>();
         }
 
         /// <summary>
@@ -34,7 +36,7 @@ namespace ProjectPorcupine.PowerNetwork
             get { return connections.Count == 0; }
         }
 
-        public bool CanPlugIn(Connection connection)
+        public bool CanPlugIn(PowerConnection connection)
         {
             if (connection == null)
             {
@@ -44,7 +46,7 @@ namespace ProjectPorcupine.PowerNetwork
             return true;
         }
 
-        public bool PlugIn(Connection connection)
+        public bool PlugIn(PowerConnection connection)
         {
             if (connection == null)
             {
@@ -60,7 +62,7 @@ namespace ProjectPorcupine.PowerNetwork
             return true;
         }
 
-        public bool IsPluggedIn(Connection connection)
+        public bool IsPluggedIn(PowerConnection connection)
         {
             if (connection == null)
             {
@@ -70,7 +72,7 @@ namespace ProjectPorcupine.PowerNetwork
             return connections.Contains(connection);
         }
 
-        public void Unplug(Connection connection)
+        public void Unplug(PowerConnection connection)
         {
             if (connection == null)
             {
@@ -83,16 +85,16 @@ namespace ProjectPorcupine.PowerNetwork
         public void Tick()
         {
             float currentPowerLevel = 0.0f;
-            foreach (Connection connection in connections)
+            foreach (PowerConnection connection in connections)
             {
                 if (connection.IsPowerProducer)
                 {
-                    currentPowerLevel += connection.OutputRate;
+                    currentPowerLevel += connection.Provides.Rate;
                 }
 
                 if (connection.IsPowerConsumer)
                 {
-                    currentPowerLevel -= connection.InputRate;
+                    currentPowerLevel -= connection.Requires.Rate;
                 }
             }
 
@@ -116,11 +118,11 @@ namespace ProjectPorcupine.PowerNetwork
 
         private void ChargeAccumulators(ref float currentPowerLevel)
         {
-            foreach (Connection connection in connections.Where(connection => connection.IsPowerAccumulator && !connection.IsFull))
+            foreach (PowerConnection connection in connections.Where(connection => connection.IsPowerAccumulator && !connection.IsFull))
             {
-                float inputRate = connection.AccumulatedPower + connection.InputRate > connection.Capacity ?
-                    connection.Capacity - connection.AccumulatedPower :
-                    connection.InputRate;
+                float inputRate = connection.AccumulatedPower + connection.Requires.Rate > connection.Provides.Capacity ?
+                    connection.Provides.Capacity - connection.AccumulatedPower :
+                    connection.Requires.Rate;
 
                 if (currentPowerLevel - inputRate < 0.0f)
                 {
@@ -147,9 +149,9 @@ namespace ProjectPorcupine.PowerNetwork
                 return;
             }
 
-            foreach (Connection connection in connections.Where(powerRelated => powerRelated.IsPowerAccumulator && !powerRelated.IsEmpty))
+            foreach (PowerConnection connection in connections.Where(powerRelated => powerRelated.IsPowerAccumulator && !powerRelated.IsEmpty))
             {
-                float outputRate = connection.OutputRate > Math.Abs(currentPowerLevel) ? Math.Abs(currentPowerLevel) : connection.OutputRate;
+                float outputRate = connection.Provides.Rate > Math.Abs(currentPowerLevel) ? Math.Abs(currentPowerLevel) : connection.Provides.Rate;
                 outputRate = GetOutputRate(connection, outputRate);
 
                 currentPowerLevel += outputRate;
@@ -161,11 +163,11 @@ namespace ProjectPorcupine.PowerNetwork
             }
         }
 
-        private float GetOutputRate(Connection connection, float outputRate = 0.0f)
+        private float GetOutputRate(PowerConnection connection, float outputRate = 0.0f)
         {
             if (outputRate.IsZero())
             {
-                outputRate = connection.OutputRate;
+                outputRate = connection.Provides.Rate;
             }
 
             return connection.AccumulatedPower - outputRate < 0.0f ? connection.AccumulatedPower : outputRate;

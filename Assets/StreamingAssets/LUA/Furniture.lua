@@ -439,12 +439,15 @@ function PowerGenerator_JobComplete(job)
 end
 
 function PowerGenerator_FuelInfo(furniture)
-    local curBurn = furniture.Parameters["burnTime"].ToFloat()
-	local maxBurn = furniture.Parameters["burnTimeRequired"].ToFloat()
+    local curBurn = furniture.Parameters["cur_processing_time"].ToFloat()
+	local maxBurn = furniture.Parameters["max_processing_time"].ToFloat()
 
 	local perc = 0
 	if (maxBurn != 0) then
-		perc = curBurn * 100 / maxBurn
+		perc = 100 - (curBurn * 100 / maxBurn)
+		if (perc <= 0) then
+			perc = 0
+		end
 	end
 
     return "Fuel: " .. string.format("%.1f", perc) .. "%"
@@ -527,7 +530,7 @@ function SolarPanel_OnUpdate(furniture, deltaTime)
 end
 
 function AirPump_OnUpdate(furniture, deltaTime)
-    if (furniture.DoesntNeedOrHasPower == false) then
+    if (furniture.IsOperating == false) then
         return
     end
 

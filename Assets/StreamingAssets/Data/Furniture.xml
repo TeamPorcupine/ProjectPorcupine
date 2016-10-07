@@ -207,11 +207,27 @@
             <Frame name="Oxygen_Generator_Running3" />
           </Animation>
         </Animations>
+        
+        <Component type="Animator">
+            <UseAnimation name="idle">
+                <Requires>
+                    <Param name="pow_is_running" condition="IsFalse" />
+                </Requires>
+            </UseAnimation>
+            <UseAnimation name="running">
+                <Requires>
+                    <Param name="pow_is_running" condition="IsTrue" />
+                </Requires>
+            </UseAnimation>
+        </Component>
+        
+        <Component type="PowerConnection">
+            <Requires rate="1"/> 
+        </Component>
 
         <Component type="GasConnection">
             <Provides gas="O2" rate="0.16" minLimit="0" maxLimit="0.2" />
             <Provides gas="N2" rate="0.16" minLimit="0" maxLimit="0.8" />
-            <UsedAnimations idle="idle" running="running" />
         </Component>
       
         <LocalizationCode>furn_oxygen_generator</LocalizationCode>
@@ -228,6 +244,10 @@
         <Width>3</Width>
         <Height>2</Height>
         <PowerConnection inputRate="1" outputRate="" capacity=""/>
+
+        <Component type="PowerConnection">
+            <Requires rate="1" />
+        </Component>
 
         <BuildingJob jobTime="0" />
         
@@ -282,10 +302,38 @@
             <Param name="burnTime" value="0" />
             <Param name="burnTimeRequired" value="60" />
         </Params>
+        
+        <Component type="Animator">
+            <UseAnimation name="idle">
+                <Requires>
+                    <Param name="cur_processed_inv" condition="IsZero" />
+                </Requires>
+            </UseAnimation>
+            <UseAnimation name="running">
+                <Requires>
+                    <Param name="cur_processed_inv" condition="IsGreaterThanZero" />
+                </Requires>
+            </UseAnimation>
+        </Component>
+        
+        <Component type="Workshop">
+            <ProductionChain name="Power generation" processingTime="60">
+                <Input>
+                    <Item objectType="Power Cell" amount="1" slotPosX="0" slotPosY="0" hasHopper="false" />
+                </Input>                
+            </ProductionChain>            
+            <!--<UsedAnimations idle="idle" running="running" />-->
+        </Component>
+        
+        <Component type="PowerConnection">
+            <Provides rate="5"/>            
+            <Requires>
+                <Param name="cur_processed_inv" condition="IsGreaterThanZero" />
+            </Requires>            
+        </Component>        
 
         <GetProgressInfo functionName="PowerGenerator_FuelInfo" />
-        <Action event="OnUpdate" functionName="PowerGenerator_UpdateAction" />
-
+        
         <LocalizationCode>furn_power_generator</LocalizationCode>
         <UnlocalizedDescription>furn_power_generator_desc</UnlocalizedDescription>
     </Furniture>
@@ -299,6 +347,10 @@
         <Width>2</Width>
         <Height>2</Height>
         <PowerConnection inputRate="1" outputRate="" capacity=""/>
+
+        <Component type="PowerConnection">
+            <Requires rate="1" />
+        </Component>
 
         <BuildingJob jobTime="10">
             <Inventory type="Steel Plate" amount="50" />
@@ -332,38 +384,6 @@
         <UnlocalizedDescription>furn_cloning_pod_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture type="Metal Smelter">
-        <Name>Metal Smelter</Name>
-        <Description>Smelts your raw iron into metal.</Description>
-        <TypeTag>Processor</TypeTag>
-        <MovementCost>1</MovementCost>
-        <PathfindingModifier>1.5</PathfindingModifier>
-        <PathfindingWeight>2</PathfindingWeight>
-        <Width>3</Width>
-        <Height>3</Height>
-        <PowerConnection inputRate="5" outputRate="" capacity=""/>
-
-        <BuildingJob jobTime="0" />
-        
-        <DeconstructJob jobTime="1">
-            <Inventory type="Steel Plate" amount="1" />
-        </DeconstructJob>
-
-        <JobInputSpotOffset X="0" Y="0" />
-        <JobWorkSpotOffset X="1" Y="0" />
-        <JobOutputSpotOffset X="2" Y="0" />
-
-        <Params>
-            <Param name="smelttime" value="0" />
-            <Param name="smelttime_required" value="6" />
-        </Params>
-
-        <Action event="OnUpdate" functionName="MetalSmelter_UpdateAction" />
-
-        <LocalizationCode>furn_metal_smelter</LocalizationCode>
-        <UnlocalizedDescription>furn_metal_smelter_desc</UnlocalizedDescription>
-    </Furniture>
-
     <Furniture type="Metal Furnace">
         <Name>Metal Furnace</Name>
         <Description>Smelts your raw ores into metal.</Description>
@@ -382,6 +402,10 @@
 
         <JobWorkSpotOffset X="1" Y="0" />
 
+        <Component type="PowerConnection">
+            <Requires rate="2" />
+        </Component>
+
         <Component type="GasConnection">
             <Requires gas="O2" minLimit="0.1" />
         </Component>
@@ -389,7 +413,7 @@
         <Component type="Workshop">
             <ProductionChain name="Copper smelting" processingTime="3">
                 <Input>
-                    <Item objectType="Raw Copper" amount="2" slotPosX="0" slotPosY="0" />
+                    <Item objectType="Raw Copper" amount="2" slotPosX="0" slotPosY="0" hasHopper="true"/>
                 </Input>
                 <Output>
                     <Item objectType="Copper Plate" amount="1" slotPosX="2" slotPosY="0" />
@@ -397,13 +421,25 @@
             </ProductionChain>
             <ProductionChain name="Iron smelting" processingTime="4">
                 <Input>
-                    <Item objectType="Raw Iron" amount="2" slotPosX="0" slotPosY="0" />
+                    <Item objectType="Raw Iron" amount="2" slotPosX="0" slotPosY="0" hasHopper="true"/>
                 </Input>
                 <Output>
-                    <Item objectType="Steel Plate" amount="1" slotPosX="2" slotPosY="0" />
+                    <Item objectType="Steel Plate" amount="1" slotPosX="2" slotPosY="0"/>
                 </Output>
             </ProductionChain>
-            <UsedAnimations idle="idle" running="running" />
+        </Component>
+
+        <Component type="Animator">
+            <UseAnimation name="idle">
+                <Requires>
+                    <Param name="cur_processed_inv" condition="IsZero" />
+                </Requires>
+            </UseAnimation>
+            <UseAnimation name="running">
+                <Requires>
+                    <Param name="cur_processed_inv" condition="IsGreaterThanZero" />
+                </Requires>
+            </UseAnimation>
         </Component>
 
         <Animations>
@@ -451,6 +487,10 @@
             <Param name="pressure_threshold" value="0.5" />
         </Params>
 
+        <Component type="PowerConnection">
+            <Requires rate="4" />
+        </Component>
+
         <LocalizationCode>furn_heater</LocalizationCode>
         <UnlocalizedDescription>furn_heater_desc</UnlocalizedDescription>
     </Furniture>
@@ -471,17 +511,21 @@
             <Inventory type="Uranium" amount="1" />
         </DeconstructJob>
 
-      <Component type="Workshop">
-          <ProductionChain name="Power Cell Pressing" processingTime="5">
-              <Input>
-                  <Item objectType="Uranium" amount="3" slotPosX="0" slotPosY="0" />
-                  <Item objectType="Steel Plate" amount="2" slotPosX="1" slotPosY="0" />
-              </Input>
-              <Output>
-                  <Item objectType="Power Cell" amount="1" slotPosX="2" slotPosY="1" />
-              </Output>
-          </ProductionChain>
-      </Component>
+          <Component type="Workshop">
+              <ProductionChain name="Power Cell Pressing" processingTime="5">
+                  <Input>
+                      <Item objectType="Uranium" amount="3" slotPosX="0" slotPosY="0" hasHopper="true"/>
+                      <Item objectType="Steel Plate" amount="2" slotPosX="1" slotPosY="0" hasHopper="true"/>
+                  </Input>
+                  <Output>
+                      <Item objectType="Power Cell" amount="1" slotPosX="2" slotPosY="1" />
+                  </Output>
+              </ProductionChain>
+          </Component>
+
+        <Component type="PowerConnection">
+            <Requires rate="1" />
+        </Component>
 
         <LocalizationCode>furn_power_cell_press</LocalizationCode>
         <UnlocalizedDescription>furn_power_cell_press_desc</UnlocalizedDescription>
@@ -589,7 +633,11 @@
             <Param name="efficiency" value="1" />
         </Params>
 
-        <Action event="OnUpdate" functionName="SolarPanel_OnUpdate" />
+        <Component type="PowerConnection">
+            <Provides rate="3" />
+        </Component>
+
+        <!--<Action event="OnUpdate" functionName="SolarPanel_OnUpdate" />-->
 
         <LocalizationCode>furn_solar_panel</LocalizationCode>
         <UnlocalizedDescription>furn_solar_panel_desc</UnlocalizedDescription>
@@ -618,6 +666,10 @@
             <Param name="flow_direction_up" value="1" />
             <Param name="active" value="true" />
         </Params>
+
+        <Component type="PowerConnection">
+            <Requires rate="1" />
+        </Component>
 
         <Action event="OnUpdate" functionName="AirPump_OnUpdate" />
         <GetSpriteName FunctionName="AirPump_GetSpriteName" />
@@ -709,8 +761,25 @@
        <DeconstructJob jobTime="1">
             <Inventory type="Steel Plate" amount="1" />
         </DeconstructJob>
+        
+        <Animations>
+          <Animation state="accumulate" valuebased="true">
+            <Frame name="accumulator_0" />
+            <Frame name="accumulator_25" />
+            <Frame name="accumulator_50" />
+            <Frame name="accumulator_75" />
+            <Frame name="accumulator_100" />
+          </Animation>          
+        </Animations>
+        
+        <Component type="Animator">
+            <UseAnimation name="accumulate" valuebasedParamerName="pow_accumulator_index"/>               
+        </Component>
 
-        <GetSpriteName FunctionName="Accumulator_GetSpriteName" />
+        <Component type="PowerConnection">
+            <Provides rate="10" capacity="50" capacityThresholds="5"/>
+            <Requires rate="5" />
+        </Component>
 
         <LocalizationCode>furn_accumulator</LocalizationCode>
         <UnlocalizedDescription>furn_accumulator_desc</UnlocalizedDescription>
@@ -771,6 +840,10 @@
         <Width>1</Width>
         <Height>1</Height>
         <PowerConnection inputRate="" outputRate="2" capacity=""/>
+
+        <Component type="PowerConnection">
+            <Provides rate="2" />
+        </Component>
 
         <BuildingJob jobTime="0" />
         

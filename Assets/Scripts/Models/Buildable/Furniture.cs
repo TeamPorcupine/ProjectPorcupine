@@ -121,7 +121,11 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         Jobs = new BuildableJobs(this, other.Jobs);
 
         // don't need to clone here, as all are prototype things (not changing)
-        components = new HashSet<BuildableComponent>(other.components);
+        components = new HashSet<BuildableComponent>();
+        foreach (var cmp in other.components)
+        {
+            components.Add(cmp.Clone());
+        }
 
         if (other.Animation != null)
         {
@@ -141,12 +145,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         isEnterableAction = other.isEnterableAction;
         getSpriteNameAction = other.getSpriteNameAction;
         getProgressInfoNameAction = other.getProgressInfoNameAction;
-
-        if (other.PowerConnection != null)
-        {
-            PowerConnection = other.PowerConnection.Clone() as Connection;
-            PowerConnection.NewThresholdReached += OnNewThresholdReached;
-        }
 
         tileTypeBuildPermissions = new HashSet<string>(other.tileTypeBuildPermissions);
 
@@ -206,12 +204,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// <value>The event actions that is called on update.</value>
     public EventActions EventActions { get; private set; }
     
-    /// <summary>
-    /// Gets the Connection that the furniture has to the power system.
-    /// </summary>
-    /// <value>The Connection of the furniture.</value>
-    public Connection PowerConnection { get; private set; }
-
     /// <summary>
     /// Gets a value indicating whether the furniture is operating or not.
     /// </summary>
@@ -367,18 +359,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             return !string.IsNullOrEmpty(getSpriteNameAction);
         }
     }
-
-    /// <summary>
-    /// Whether the furniture has power or not. Always true if power is not applicable to the furniture.
-    /// </summary>
-    /// <returns>True if the furniture has power or if the furniture doesn't require power to function.</returns>
-    public bool DoesntNeedOrHasPower
-    {
-        get
-        {
-            return PowerConnection == null || World.Current.PowerNetwork.HasPower(PowerConnection);
-        }
-    }
+    
     #endregion
 
     /// <summary>
@@ -408,13 +389,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             // (It will be garbage collected.)
             return null;
         }
-
-        // plug-in furniture only when it is placed in world
-        if (furnObj.PowerConnection != null)
-        {
-            World.Current.PowerNetwork.PlugIn(furnObj.PowerConnection);
-        }
-
+        
         // need to update reference to furniture and call Initialize (so components can place hooks on events there)
         foreach (var comp in furnObj.components)
         {
@@ -493,10 +468,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             canFunction &= cmp.CanFunction();
         }
 
-        IsOperating = DoesntNeedOrHasPower && canFunction;
+        IsOperating = canFunction;
 
-        if ((PowerConnection != null && PowerConnection.IsPowerConsumer && DoesntNeedOrHasPower == false) ||
-            canFunction == false)
+        if (canFunction == false)
         {
             if (prevUpdatePowerOn)
             {
@@ -754,11 +728,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                     break;
                 case "JobOutputSpotOffset":
                     Jobs.ReadOutputSpotOffset(reader);
-                    break;
-                case "PowerConnection":
-                    PowerConnection = new Connection();
-                    PowerConnection.ReadPrototype(reader);
-                    break;
+                    break;                
                 case "Params":
                     ReadXmlParams(reader);  // Read in the Param tag
                     break;
@@ -776,7 +746,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                     {
                         components.Add(cmp);
                     }
-
                     break;
             }
         }
@@ -961,13 +930,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                 World.Current.InventoryManager.PlaceInventoryAround(Tile, inv.Clone());
             }
         }
-
-        if (PowerConnection != null)
-        {
-            World.Current.PowerNetwork.Unplug(PowerConnection);
-            PowerConnection.NewThresholdReached -= OnNewThresholdReached;
-        }
-
+        
         if (Removed != null)
         {
             Removed(this);
@@ -1065,38 +1028,18 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         // try to get some info from components
         foreach (var comp in components)
         {
-            string desc = comp.GetDescription();
-            if (!string.IsNullOrEmpty(desc))
+            var desc = comp.GetDescription();
+            if (desc != null)
             {
-                yield return desc;
-            }
+                foreach (string inf in desc)
+                {
+                    yield return inf;
+                }
+            }     
         }
         
         yield return string.Format("Hitpoint 18 / 18");
-
-        if (PowerConnection != null)
-        {
-            bool hasPower = DoesntNeedOrHasPower;
-            string powerColor = hasPower ? "green" : "red";
-
-            yield return string.Format("Power Grid: <color={0}>{1}</color>", powerColor, hasPower ? "Online" : "Offline");
-
-            if (PowerConnection.IsPowerConsumer)
-            {
-                yield return string.Format("Power Input: <color={0}>{1}</color>", powerColor, PowerConnection.InputRate);
-            }
-
-            if (PowerConnection.IsPowerProducer)
-            {
-                yield return string.Format("Power Output: <color={0}>{1}</color>", powerColor, PowerConnection.OutputRate);
-            }
-
-            if (PowerConnection.IsPowerAccumulator)
-            {
-                yield return string.Format("Power Accumulated: {0} / {1}", PowerConnection.AccumulatedPower, PowerConnection.Capacity);
-            }
-        }
-
+        
         yield return GetProgressInfo();
     }
     #endregion
