@@ -121,7 +121,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     {
         get
         {
-            return speed ;
+            return speed;
         }
     }
 

@@ -7,7 +7,9 @@
 // ====================================================
 #endregion
 using System;
+using MoonSharp.Interpreter;
 
+[MoonSharpUserData]
 [Serializable]
 public class Health
 {
@@ -22,11 +24,12 @@ public class Health
         currentHealth = maxHealth;
     }
 
-    public Health(float maxHealth, bool isInvincible , bool isRevivable , bool canOveheal )
+    public Health(float maxHealth, bool isInvincible, bool isHealable, bool isRevivable, bool canOveheal)
     {
         MaxHealth = maxHealth;
         currentHealth = maxHealth;
         IsInvincible = isInvincible;
+        IsHealable = isHealable;
         IsRevivable = isRevivable;
         CanOverheal = canOveheal;
     }
@@ -36,6 +39,7 @@ public class Health
         currentHealth = other.currentHealth;
         MaxHealth = other.MaxHealth;
         IsInvincible = other.IsInvincible;
+        IsHealable = other.IsHealable;
         IsRevivable = other.IsRevivable;
         CanOverheal = other.CanOverheal;
     }
@@ -65,6 +69,7 @@ public class Health
             {
                 EvaluateHealthIncrease(value);
             }
+
             // New health less than current health.
             else if (value < currentHealth)
             {
@@ -82,6 +87,8 @@ public class Health
     }
 
     public bool IsInvincible { get; set; }
+
+    public bool IsHealable { get; set; }
 
     public bool IsRevivable { get; set; }
 
@@ -113,12 +120,11 @@ public class Health
         CurrentHealth -= damage;
     }
 
-
     /// <summary>
     /// Formats the text for health to be displayed by the Selection Panel.
     /// </summary>
     /// <returns>The newly formatted text.</returns>
-    public String TextForSelectionPanel()
+    public string TextForSelectionPanel()
     {
         if (MaxHealth > 0)
         {
@@ -127,19 +133,8 @@ public class Health
         else
         {
             return string.Format("HitPoints: {0}", "N/A");
-        }
-            
+        }  
     }
-
-    /// <summary>
-    /// Used for object creation.
-    /// </summary>
-    /// <param name="value">The starting hit points of the entity</param>
-    public void InitialHealth(float value)
-    {
-        currentHealth = value;
-    }
-
 
     private void EvaluateHealthIncrease(float value)
     {

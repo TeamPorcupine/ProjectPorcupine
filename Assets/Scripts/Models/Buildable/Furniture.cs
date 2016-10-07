@@ -62,12 +62,12 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
 
     private bool isOperating;
 
-    //need to hold the health value.
+    // Need to hold the health value.
     private Health health;
 
     private List<Inventory> deconstructInventory;
 
-    // did we have power in the last update?
+    // Did we have power in the last update?
     private bool prevUpdatePowerOn;
     #endregion
 
@@ -96,7 +96,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         DragType = "single";
         LinksToNeighbour = string.Empty;
         components = new HashSet<BuildableComponent>();
-        health = new Health(-1f);
+        health = new Health(-1f, true, false, false, false);
     }
 
     /// <summary>
@@ -127,7 +127,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
 
         // don't need to clone here, as all are prototype things (not changing)
         components = new HashSet<BuildableComponent>(other.components);
-
 
         if (other.Animation != null)
         {
@@ -699,9 +698,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                     break;
                 case "Health":
                     reader.Read();
-                    float temp = reader.ReadContentAsFloat();
-                    health.InitialHealth(temp);
-                    health.MaxHealth = temp;
+                health = new Health(reader.ReadContentAsFloat(), false, true, false, false);
                     break;
                 case "LinksToNeighbours":
                     reader.Read();

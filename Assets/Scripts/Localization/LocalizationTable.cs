@@ -93,6 +93,34 @@ namespace ProjectPorcupine.Localization
         }
 
         /// <summary>
+        /// Returns the localization for the given key, or the key itself, if no translation exists.
+        /// </summary>
+        public static string GetLocalization(string key, FallbackMode fallbackMode, string language, params string[] additionalValues)
+        {
+            string value;
+            if (localizationTable.ContainsKey(language) && localizationTable[language].TryGetValue(key, out value))
+            {
+                return string.Format(value, additionalValues);
+            }
+
+            if (!missingKeysLogged.Contains(key))
+            {
+                missingKeysLogged.Add(key);
+                Debug.ULogChannel("LocalizationTable", string.Format("Translation for {0} in {1} language failed: Key not in dictionary.", key, language));
+            }
+
+            switch (fallbackMode)
+            {
+                case FallbackMode.ReturnKey:
+                    return additionalValues != null && additionalValues.Length >= 1 ? key + " " + additionalValues[0] : key;
+                case FallbackMode.ReturnDefaultLanguage:
+                    return GetLocalization(key, FallbackMode.ReturnKey, DefaultLanguage, additionalValues);
+                default:
+                    return string.Empty;
+            }
+        }
+
+        /// <summary>
         /// Load a localization file from the harddrive with a defined localization code.
         /// </summary>
         /// <param name="path">The path to the file.</param>
@@ -111,7 +139,7 @@ namespace ProjectPorcupine.Localization
 
                 // We assume that A) the key is the first line B) the key is always the localizationCode
                 // If not, we know this language hasn't been updated yet, so insert the localizationCode as key and value
-                if (lines.Length > 0) //If this if check will ever return false... we now something is terribly wrong!
+                if (lines.Length > 0) // If this if check will ever return false... we now something is terribly wrong!
                 {
                     // Split the line
                     string[] line = lines[0].Split(new char[] { '=' }, 2);
@@ -148,34 +176,6 @@ namespace ProjectPorcupine.Localization
             catch (FileNotFoundException exception)
             {
                 Debug.ULogErrorChannel("LocalizationTable", new Exception(string.Format("There is no localization file for {0}", localizationCode), exception).ToString());
-            }
-        }
-
-        /// <summary>
-        /// Returns the localization for the given key, or the key itself, if no translation exists.
-        /// </summary>
-        public static string GetLocalization(string key, FallbackMode fallbackMode, string language, params string[] additionalValues)
-        {
-            string value;
-            if (localizationTable.ContainsKey(language) && localizationTable[language].TryGetValue(key, out value))
-            {
-                return string.Format(value, additionalValues);
-            }
-
-            if (!missingKeysLogged.Contains(key))
-            {
-                missingKeysLogged.Add(key);
-                Debug.ULogChannel("LocalizationTable", string.Format("Translation for {0} in {1} language failed: Key not in dictionary.", key, language));
-            }
-
-            switch (fallbackMode)
-            {
-                case FallbackMode.ReturnKey:
-                    return additionalValues != null && additionalValues.Length >= 1 ? key + " " + additionalValues[0] : key;
-                case FallbackMode.ReturnDefaultLanguage:
-                    return GetLocalization(key, FallbackMode.ReturnKey, DefaultLanguage, additionalValues);
-                default:
-                    return string.Empty;
             }
         }
     }
