@@ -20,7 +20,7 @@ public class DialogButton : MonoBehaviour
         // These names should actually be something like "button_my" in order to be localized.
         // However, just to make sure, we replace this to avoid any problems.
         buttonName = buttonName.Replace(" ", "_");
-        EventActions dialogEvents = transform.GetComponentInParent<DialogBoxLua>().events;
+        EventActions dialogEvents = transform.GetComponentInParent<ModDialogBox>().events;
 
         if (dialogEvents.HasEvent("On" + buttonName + "Clicked") == true)
         {

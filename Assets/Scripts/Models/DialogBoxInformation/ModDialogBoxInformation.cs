@@ -13,7 +13,7 @@ using System.Text;
 using System.Xml.Serialization;
 using UnityEngine;
 
-public class DialogBoxLuaInformation
+public class ModDialogBoxInformation
 {
     [XmlElement("Title")]
     public string title;

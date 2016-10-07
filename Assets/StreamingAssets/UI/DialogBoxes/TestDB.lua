@@ -5,8 +5,7 @@ DIALOGRESULT_OKAY = 3
 
 function Testing_DialogClosed( DialogBoxResult, result, data )
 	ModUtils.ULog("DialogClosed")
-	ModUtils.ULog("Result = " .. result)
 	if (result == DIALOGRESULT_YES) then
-		ModUtils.ULog(data[1])
+		ModUtils.ULog("Yes was clicked")
 	end
 end

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
-<DialogBoxLuaInformation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<ModDialogBoxInformation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Title>Testing</Title>
-  <Content type="Image">
+  <Content name="Img1" type="Image">
     <Position>
       <x>100</x>
       <y>-50</y>
@@ -19,4 +19,4 @@
   <Actions>
     <Action event="OnClosed" functionName="Testing_DialogClosed" />
   </Actions>
-</DialogBoxLuaInformation>
+</ModDialogBoxInformation>

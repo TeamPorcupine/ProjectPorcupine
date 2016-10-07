@@ -16,6 +16,9 @@ using UnityEngine;
 
 public class DialogComponent
 {
+    [XmlAttribute("name")]
+    public string name;
+
     [XmlAttribute("type")]
     public string ObjectType;
 

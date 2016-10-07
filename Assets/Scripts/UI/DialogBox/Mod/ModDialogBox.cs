@@ -16,13 +16,15 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [MoonSharpUserData]
-public class DialogBoxLua : DialogBox
+public class ModDialogBox : DialogBox
 {
     public EventActions events;
 
     private string title;
 
     private List<object> extraData;
+
+    private Dictionary<string, DialogControl> controls;
 
     public Transform Content { get; protected set; }
 
@@ -52,6 +54,11 @@ public class DialogBoxLua : DialogBox
         {
             events.Trigger("OnShow", this);
         }
+    }
+
+    public DialogControl GetControl(string name)
+    {
+        return controls[name];
     }
 
     public void YesButtonClicked()
@@ -94,22 +101,24 @@ public class DialogBoxLua : DialogBox
     }
 
     /// <summary>
-    /// Loads the LUA Dialog Box from the XML file.
+    /// Loads the Mod Dialog Box from the XML file.
     /// </summary>
     /// <param name="file">The FileInfo object that references to the XML file.</param>
     public void LoadFromXML(FileInfo file)
     {
         // TODO: Find a better way to do this. Not user friendly/Expansible.
-        // DialogBoxLua -> Dialog Background
+        // ModDialogBox -> Dialog Background
         //                 |-> Title
         //                 |-> Content
         Content = transform.GetChild(0).GetChild(1);
 
-        XmlSerializer serializer = new XmlSerializer(typeof(DialogBoxLuaInformation));
+        controls = new Dictionary<string, DialogControl>();
+
+        XmlSerializer serializer = new XmlSerializer(typeof(ModDialogBoxInformation));
         
         try
         {
-            DialogBoxLuaInformation dialogBoxInfo = (DialogBoxLuaInformation)serializer.Deserialize(file.OpenRead());
+            ModDialogBoxInformation dialogBoxInfo = (ModDialogBoxInformation)serializer.Deserialize(file.OpenRead());
             Title = dialogBoxInfo.title;
             foreach (DialogComponent gameObjectInfo in dialogBoxInfo.content)
             {
@@ -125,6 +134,7 @@ public class DialogBoxLua : DialogBox
                         GameObject inputObject = (GameObject)Instantiate(Resources.Load("Prefab/DialogBoxPrefabs/DialogInputComponent"), Content);
                         inputObject.GetComponent<RectTransform>().anchoredPosition = gameObjectInfo.position;
                         inputObject.GetComponent<RectTransform>().sizeDelta = gameObjectInfo.size;
+                        controls[gameObjectInfo.name] = inputObject.GetComponent<DialogControl>();
                         break;
                     case "Image":
                         GameObject imageObject = (GameObject)Instantiate(Resources.Load("Prefab/DialogBoxPrefabs/DialogImage"), Content);
@@ -137,10 +147,11 @@ public class DialogBoxLua : DialogBox
                             imageObject.GetComponent<Image>().sprite = imageSprite;
                             imageObject.GetComponent<RectTransform>().anchoredPosition = gameObjectInfo.position;
                             imageObject.GetComponent<RectTransform>().sizeDelta = gameObjectInfo.size;
+                            controls[gameObjectInfo.name] = imageObject.GetComponent<DialogControl>();
                         }
                         catch (System.Exception error)
                         {
-                            Debug.ULogErrorChannel("DialogBoxLua", "Error converting image:" + error.Message);
+                            Debug.ULogErrorChannel("ModDialogBox", "Error converting image:" + error.Message);
                             return;                            
                         }
 
@@ -175,12 +186,12 @@ public class DialogBoxLua : DialogBox
             }
 
             events = dialogBoxInfo.events;
-            FunctionsManager.Get("DialogBoxLua").RegisterGlobal(typeof(DialogBoxLua));
+            FunctionsManager.Get("ModDialogBox").RegisterGlobal(typeof(ModDialogBox));
             extraData = new List<object>();
         }
         catch (System.Exception error)
         {
-            Debug.ULogErrorChannel("DialogBoxLua", "Error deserializing data:" + error.Message);
+            Debug.ULogErrorChannel("ModDialogBox", "Error deserializing data:" + error.Message);
         }
     }
 }
