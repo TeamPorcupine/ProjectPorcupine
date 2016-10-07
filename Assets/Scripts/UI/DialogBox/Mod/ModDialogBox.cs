@@ -161,6 +161,9 @@ public class ModDialogBox : DialogBox
                         buttonObject.GetComponent<RectTransform>().anchoredPosition = gameObjectInfo.position;
                         buttonObject.GetComponent<RectTransform>().sizeDelta = gameObjectInfo.size;
                         buttonObject.GetComponentInChildren<Text>().text = (string)gameObjectInfo.data;
+                        buttonObject.GetComponent<DialogButton>().buttonName = gameObjectInfo.name;
+                        controls[gameObjectInfo.name] = buttonObject.GetComponent<DialogButton>();
+
                         break;
                 }
             }

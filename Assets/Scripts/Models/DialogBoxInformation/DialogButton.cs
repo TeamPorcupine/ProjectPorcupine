@@ -10,13 +10,12 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class DialogButton : MonoBehaviour
+public class DialogButton : DialogControl
 {
-    public void OnClicked()
-    {
-        string buttonName;
-        buttonName = GetComponentInChildren<Text>().text;
+    public string buttonName;
 
+    public void OnClicked()
+    { 
         // These names should actually be something like "button_my" in order to be localized.
         // However, just to make sure, we replace this to avoid any problems.
         buttonName = buttonName.Replace(" ", "_");
