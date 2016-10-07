@@ -22,7 +22,7 @@ public class DialogBoxLua : DialogBox
 
     private List<object> extraData;
 
-    private EventActions events;
+    public EventActions events;
 
     public Transform Content { get; protected set; }
 
@@ -136,6 +136,12 @@ public class DialogBoxLua : DialogBox
                             Debug.ULogErrorChannel("DialogBoxLua", "Error converting image:" + error.Message);
                             return;                            
                         }
+                        break;
+                    case "Button":
+                        GameObject buttonObject = (GameObject)Instantiate(Resources.Load("Prefab/DialogBoxPrefabs/DialogButton"));
+                        buttonObject.GetComponent<RectTransform>().anchoredPosition = gameObjectInfo.position;
+                        buttonObject.GetComponent<RectTransform>().sizeDelta = gameObjectInfo.size;
+                        buttonObject.GetComponentInChildren<Text>().text = (string)gameObjectInfo.data;
                         break;
                 }
             }
