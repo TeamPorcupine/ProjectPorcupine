@@ -8,22 +8,50 @@
 #endregion
 
 using UnityEngine;
+using UnityStandardAssets.Utility;
 
 public class MainMenuController : MonoBehaviour
 {
+    public ModsManager modsManager;
+
     public static MainMenuController Instance { get; protected set; }
 
     public void Start()
     {
         Instance = this;
 
+        new SpriteManager();
+        new AudioManager();
+        modsManager = new ModsManager();
+
         TimeManager.Instance.IsPaused = true;
 
-        // Display Main Menu.
+        // Create a Background.
+        GameObject background = (GameObject)Instantiate(Resources.Load("Prefab/BackgroundMainMenu"));
+
         GameObject canvas = GameObject.Find("Canvas");
-        GameObject mainMenuPrefab = (GameObject)Resources.Load("UI/MainMenu");
-        GameObject mainMenu = (GameObject)Instantiate(mainMenuPrefab);
+
+        // Create a Title.
+        GameObject title = (GameObject)Instantiate(Resources.Load("UI/TitleMainMenu"));
+        title.transform.SetParent(canvas.transform, false);
+        title.SetActive(true);
+
+        // Display Main Menu.
+        GameObject mainMenu = (GameObject)Instantiate(Resources.Load("UI/MainMenu"));
         mainMenu.transform.SetParent(canvas.transform, false);
         mainMenu.SetActive(true);
+
+        // Create dialogBoxes parent gameobject.
+        GameObject dialogBoxes = new GameObject("Dialog Boxes");
+        dialogBoxes.transform.SetParent(canvas.transform, false);
+        dialogBoxes.AddComponent<DialogBoxManager>();
+
+        // Instantiate a FPSCounter.
+        GameObject menuTop = (GameObject)Instantiate(Resources.Load("UI/MenuTop"));
+        menuTop.name = "MenuTop";
+        menuTop.transform.SetParent(canvas.transform, false);
+        menuTop.SetActive(true);
+        GameObject fpsCounter = FindObjectOfType<FPSCounter>().gameObject;
+        fpsCounter.SetActive(Settings.GetSetting("DialogBoxSettings_fpsToggle", true));
     }
 }

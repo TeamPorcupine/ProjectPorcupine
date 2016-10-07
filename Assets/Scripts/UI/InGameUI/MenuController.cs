@@ -52,7 +52,7 @@ public class MenuController : MonoBehaviour
 
     public void OnButtonWork()
     {
-        if (!GameController.Instance.IsModal)
+        if (!UIManager.Instance.IsModal)
         {
             DeactivateAll();
             dialogBoxManager.dialogBoxJobList.ShowDialog();
@@ -61,7 +61,7 @@ public class MenuController : MonoBehaviour
 
     public void OnButtonWorld()
     {
-        if (!GameController.Instance.IsModal)
+        if (!UIManager.Instance.IsModal)
         {
             DeactivateAll();
         }
@@ -69,7 +69,7 @@ public class MenuController : MonoBehaviour
 
     public void OnButtonQuests()
     {
-        if (!GameController.Instance.IsModal)
+        if (!UIManager.Instance.IsModal)
         {
             DeactivateAll();
             dialogBoxManager.dialogBoxQuests.ShowDialog();
@@ -78,7 +78,7 @@ public class MenuController : MonoBehaviour
 
     public void OnButtonOptions()
     {
-        if (!GameController.Instance.IsModal)
+        if (!UIManager.Instance.IsModal)
         {
             DeactivateAll();
             if (dialogBoxManager.dialogBoxSettings.isActiveAndEnabled)

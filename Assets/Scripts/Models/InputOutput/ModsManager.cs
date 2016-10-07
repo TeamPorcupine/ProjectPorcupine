@@ -17,7 +17,14 @@ public class ModsManager
     public ModsManager()
     {
         mods = GetModsFiles();
-        LoadFiles();
+        if (SceneManagerProjectPorcupine.Instance.GetCurrentScene() == SceneManagerProjectPorcupine.MainMenuSceneName)
+        {
+            LoadIntroFiles();
+        }
+        else
+        {
+            LoadFiles();
+        }
     }
 
     /// <summary>
@@ -58,6 +65,12 @@ public class ModsManager
         
         LoadDirectoryAssets("Images", SpriteManager.LoadSpriteFiles);
         LoadDirectoryAssets("Audio", AudioManager.LoadAudioFiles);
+    }
+
+    public void LoadIntroFiles()
+    {
+        LoadDirectoryAssets("MainMenu/Images", SpriteManager.LoadSpriteFiles);
+        LoadDirectoryAssets("MainMenu/Audio", AudioManager.LoadAudioFiles);
     }
 
     /// <summary>

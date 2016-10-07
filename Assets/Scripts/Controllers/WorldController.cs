@@ -14,7 +14,6 @@ using System.Xml.Serialization;
 using MoonSharp.Interpreter;
 using Scheduler;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 [MoonSharpUserData]
@@ -31,7 +30,6 @@ public class WorldController : MonoBehaviour
     public QuestController questController;
     public BuildModeController buildModeController;
     public MouseController mouseController;
-    public KeyboardManager keyboardManager;
     public CameraController cameraController;
     public SpawnInventoryController spawnInventoryController;
     public AutosaveManager autosaveManager;
@@ -39,8 +37,6 @@ public class WorldController : MonoBehaviour
     public ModsManager modsManager;
     public GameObject inventoryUI;
     public GameObject circleCursorPrefab;
-
-    private static string loadWorldFromFile = null;
 
     public static WorldController Instance { get; protected set; }
 
@@ -51,7 +47,7 @@ public class WorldController : MonoBehaviour
     {
         get
         {
-            return TimeManager.Instance.IsPaused || GameController.Instance.IsModal;
+            return TimeManager.Instance.IsPaused || UIManager.Instance.IsModal;
         }
 
         set
@@ -85,10 +81,10 @@ public class WorldController : MonoBehaviour
 
         modsManager = new ModsManager();
 
-        if (loadWorldFromFile != null)
+        if (SceneManagerProjectPorcupine.Instance.loadWorldFromFileName != null)
         {
-            CreateWorldFromSaveFile();
-            loadWorldFromFile = null;
+            CreateWorldFromSaveFile(SceneManagerProjectPorcupine.Instance.loadWorldFromFileName);
+            SceneManagerProjectPorcupine.Instance.loadWorldFromFileName = null;
         }
         else
         {
@@ -115,15 +111,14 @@ public class WorldController : MonoBehaviour
         buildModeController = new BuildModeController();
         spawnInventoryController = new SpawnInventoryController();
         mouseController = new MouseController(buildModeController, furnitureSpriteController, utilitySpriteController, circleCursorPrefab);
-        keyboardManager = KeyboardManager.Instance;
         questController = new QuestController();
         cameraController = new CameraController();
         TradeController = new TradeController();
         autosaveManager = new AutosaveManager();
 
         // Register inputs actions
-        keyboardManager.RegisterInputAction("Pause", KeyboardMappedInputType.KeyUp, () => { IsPaused = !IsPaused; });
-        keyboardManager.RegisterInputAction("DevMode", KeyboardMappedInputType.KeyDown, ChangeDevMode);
+        KeyboardManager.Instance.RegisterInputAction("Pause", KeyboardMappedInputType.KeyUp, () => { IsPaused = !IsPaused; });
+        KeyboardManager.Instance.RegisterInputAction("DevMode", KeyboardMappedInputType.KeyDown, ChangeDevMode);
 
         // Hiding Dev Mode spawn inventory controller if devmode is off.
         spawnInventoryController.SetUIVisibility(Settings.GetSetting("DialogBoxSettings_developerModeToggle", false));
@@ -137,6 +132,7 @@ public class WorldController : MonoBehaviour
         go.name = "ContextMenu";
 
         IsPaused = false;
+        UIManager.Instance.IsModal = false;
     }
 
     /// <summary>
@@ -150,29 +146,6 @@ public class WorldController : MonoBehaviour
         int y = Mathf.FloorToInt(coord.y + 0.5f);
 
         return World.GetTileAt(x, y, (int)coord.z);
-    }
-
-    public string FileSaveBasePath()
-    {
-        return System.IO.Path.Combine(Application.persistentDataPath, "Saves");
-    }
-
-    public void NewWorld()
-    {
-        Debug.ULogChannel("WorldController", "NewWorld button was clicked.");
-
-        Destroy();
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
-
-    public void LoadWorld(string fileName)
-    {
-        Debug.ULogChannel("WorldController", "LoadWorld button was clicked.");
-
-        // Reload the scene to reset all data (and purge old references)
-        loadWorldFromFile = fileName;
-        Destroy();
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void Destroy()
@@ -209,7 +182,7 @@ public class WorldController : MonoBehaviour
         Camera.main.transform.position = new Vector3(World.Width / 2, World.Height / 2, Camera.main.transform.position.z);
     }
 
-    private void CreateWorldFromSaveFile()
+    private void CreateWorldFromSaveFile(string fileName)
     {
         Debug.ULogChannel("WorldController", "CreateWorldFromSaveFile");
 
@@ -218,7 +191,7 @@ public class WorldController : MonoBehaviour
 
         // This can throw an exception.
         // TODO: Show a error message to the user.
-        string saveGameText = File.ReadAllText(loadWorldFromFile);
+        string saveGameText = File.ReadAllText(fileName);
 
         TextReader reader = new StringReader(saveGameText);
 

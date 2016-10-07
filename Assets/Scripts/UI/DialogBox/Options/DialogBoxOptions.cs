@@ -41,13 +41,7 @@ public class DialogBoxOptions : DialogBox
     // Quit the app whether in editor or a build version.
     public void OnButtonQuitGame()
     {
-        // Maybe ask the user if he want to save or is sure they want to quit??
-#if UNITY_EDITOR
-        // Allows you to quit in the editor.
-        UnityEditor.EditorApplication.isPlaying = false;
-#else
-        Application.Quit();
-#endif
+        SceneManagerProjectPorcupine.Instance.QuitGame();
     }
 
     private IEnumerator CheckIfSaveGameBefore(string prompt)
@@ -99,7 +93,7 @@ public class DialogBoxOptions : DialogBox
             dialogManager.dialogBoxPromptOrInfo.SetPrompt("message_creating_new_world");
             dialogManager.dialogBoxPromptOrInfo.ShowDialog();
 
-            WorldController.Instance.LoadWorld(null);
+            SceneManagerProjectPorcupine.Instance.LoadNewWorld();
         }
     }
 

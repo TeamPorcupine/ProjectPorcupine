@@ -182,7 +182,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inventoryUI: {fileID: 191780, guid: d1e1fcd802f51614595cb99879a132a5, type: 2}
   circleCursorPrefab: {fileID: 110048, guid: 782976062f887844ca858482495fcdbd, type: 2}
-  IsModal: 0
 --- !u!4 &179601669
 Transform:
   m_ObjectHideFlags: 0
@@ -880,7 +879,6 @@ GameObject:
   m_Component:
   - 4: {fileID: 849752487}
   - 114: {fileID: 849752486}
-  - 114: {fileID: 849752485}
   m_Layer: 0
   m_Name: GameController
   m_TagString: Untagged
@@ -888,17 +886,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &849752485
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 849752484}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e7a894cc58fce74f8f9919998cfdc22, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &849752486
 MonoBehaviour:
   m_ObjectHideFlags: 0

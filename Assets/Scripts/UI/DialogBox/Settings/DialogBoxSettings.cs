@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using ProjectPorcupine.Localization;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityStandardAssets.Utility;
 
 public class DialogBoxSettings : DialogBox
 {
@@ -38,7 +37,11 @@ public class DialogBoxSettings : DialogBox
     
     public void OnSave()
     {
-        WorldController.Instance.spawnInventoryController.SetUIVisibility(developerModeToggle.isOn);
+        if (WorldController.Instance != null)
+        {
+            WorldController.Instance.spawnInventoryController.SetUIVisibility(developerModeToggle.isOn);
+        }
+
         OnApply();
         SaveSetting();
         CloseDialog();
@@ -49,7 +52,10 @@ public class DialogBoxSettings : DialogBox
         LocalizationTable.SetLocalization(languageDropdown.value);
         
         fpsObject.SetActive(fpsToggle.isOn);
-        WorldController.Instance.spawnInventoryController.SetUIVisibility(developerModeToggle.isOn);
+        if (WorldController.Instance != null)
+        {
+            WorldController.Instance.spawnInventoryController.SetUIVisibility(developerModeToggle.isOn);
+        }
 
         // MasterTextureLimit should get 0 for High quality and higher values for lower qualities.
         // For example count is 3 (0:Low, 1:Med, 2:High).
@@ -92,8 +98,7 @@ public class DialogBoxSettings : DialogBox
         applyButton.onClick.AddListener(OnApply);
 
         fullScreenToggle.isOn = Screen.fullScreen;
-
-        fpsObject = FindObjectOfType<FPSCounter>().gameObject;
+        fpsObject = GameObject.Find("Canvas").transform.FindChild("MenuTop").transform.FindChild("Text FPS").gameObject;
 
         CreateResolutionDropdown();
 

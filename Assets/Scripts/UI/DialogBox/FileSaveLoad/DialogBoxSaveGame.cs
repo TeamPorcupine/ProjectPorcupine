@@ -56,7 +56,7 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
         //    C:\Users\Quill18\ApplicationData\MyCompanyName\MyGameName\Saves\SaveGameName123.sav
 
         // Application.persistentDataPath == C:\Users\<username>\ApplicationData\MyCompanyName\MyGameName\
-        string filePath = System.IO.Path.Combine(WorldController.Instance.FileSaveBasePath(), fileName + ".sav");
+        string filePath = System.IO.Path.Combine(GameController.Instance.FileSaveBasePath(), fileName + ".sav");
 
         // At this point, filePath should look very much like
         ////     C:\Users\Quill18\ApplicationData\MyCompanyName\MyGameName\Saves\SaveGameName123.sav
@@ -131,13 +131,13 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
         // Create/overwrite the save file with the xml text.
 
         // Make sure the save folder exists.
-        if (Directory.Exists(WorldController.Instance.FileSaveBasePath()) == false)
+        if (Directory.Exists(GameController.Instance.FileSaveBasePath()) == false)
         {
             // NOTE: This can throw an exception if we can't create the folder,
             // but why would this ever happen? We should, by definition, have the ability
             // to write to our persistent data folder unless something is REALLY broken
             // with the computer/device we're running on.
-            Directory.CreateDirectory(WorldController.Instance.FileSaveBasePath());
+            Directory.CreateDirectory(GameController.Instance.FileSaveBasePath());
         }
 
         File.WriteAllText(filePath, writer.ToString());

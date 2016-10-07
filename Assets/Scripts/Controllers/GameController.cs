@@ -9,49 +9,47 @@
 
 using ProjectPorcupine.Localization;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
-    public KeyboardManager KeyboardManager;
+    // TODO: Should this be also saved with the world data?
+    // If so - beginner task!
+    public static readonly string GameVersion = "Someone_will_come_up_with_a_proper_naming_scheme_later";
 
-    // If true, a modal dialog box is open, so normal inputs should be ignored.
-    public bool IsModal;
+    public KeyboardManager KeyboardManager;
+    public SceneManagerProjectPorcupine SceneManager;
+    public UIManager UIManager;
 
     public static GameController Instance { get; protected set; }
 
-    // Load the main scene.
-    public void LoadNewWorld()
+    // Path to the saves folder.
+    public string FileSaveBasePath()
     {
-        SceneManager.LoadScene("_SCENE_");
+        return System.IO.Path.Combine(Application.persistentDataPath, "Saves");
     }
 
-    // Quit the app whether in editor or a build version.
-    public void QuitGame()
-    {
-        // Maybe ask the user if he want to save or is sure they want to quit??
-        #if UNITY_EDITOR
-        // Allows you to quit in the editor.
-        UnityEditor.EditorApplication.isPlaying = false;
-        #else
-        Application.Quit();
-        #endif
-    }
-
+    // Each time a scene is loaded.
     private void Awake()
     {
         EnableDontDestroyOnLoad();
 
-        this.gameObject.AddComponent<LocalizationLoader>();
+        // Load Keyboard Mapping.
+        KeyboardManager = KeyboardManager.Instance;
+
+        UIManager.Instance.IsModal = false;
     }
 
+    // Only on first time a scene is loaded.
     private void Start()
     {
         // Load settings.
         Settings.LoadSettings();
 
-        // Load Keyboard Mapping.
-        KeyboardManager = KeyboardManager.Instance;
+        // Add a gameobject that Localization
+        this.gameObject.AddComponent<LocalizationLoader>();
+
+        SceneManager = SceneManagerProjectPorcupine.Instance;
+        UIManager = UIManager.Instance;
     }
 
     private void Update()
@@ -59,6 +57,7 @@ public class GameController : MonoBehaviour
         TimeManager.Instance.Update(Time.deltaTime);
     }
 
+    // Game Controller will persist between scenes. 
     private void EnableDontDestroyOnLoad()
     {
         if (Instance == null)
