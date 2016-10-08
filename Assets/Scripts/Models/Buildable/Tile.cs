@@ -343,6 +343,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
     /// </summary>
     /// <returns>The neighbours.</returns>
     /// <param name="diagOkay">Is diagonal movement okay?.</param>
+    /// <param name="vertOkay">Is vertical movement okay?.</param>
     public Tile[] GetNeighbours(bool diagOkay = false, bool vertOkay = false)
     {
         Tile[] tiles = diagOkay == false ? new Tile[6] : new Tile[10];
