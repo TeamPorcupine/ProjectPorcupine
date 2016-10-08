@@ -197,7 +197,7 @@ namespace ProjectPorcupine.Rooms
         /// <param name="splitting">If set to <c>true</c> it will perform a split action.
         /// This is for when a room could be logically subdivided into more rooms.
         /// If set to <c>false</c> then it will try to join rooms.</param>
-        public void DoRoomFloodFill(Tile sourceTile, bool splitting)
+        public void DoRoomFloodFill(Tile sourceTile, bool splitting, bool floodFillingOnTileChange = false)
         {
             // SourceFurniture is the piece of furniture that may be
             // splitting two existing rooms, or may be the final 
@@ -205,8 +205,95 @@ namespace ProjectPorcupine.Rooms
             // Check the NESW neighbours of the furniture's tile
             // and do flood fill from them.
             Room oldRoom = sourceTile.Room;
+            if(floodFillingOnTileChange)
+            {
+                if(splitting)
+                {
 
-            if (oldRoom != null && splitting)
+                    // The source tile had a room, so this must be a new piece of furniture
+                    // that is potentially dividing this old room into as many as four new rooms.
+
+                    // Save the size of old room before we start removing tiles.
+                    // Needed for gas calculations.
+                    int sizeOfOldRoom = oldRoom.TileCount;
+
+
+                    // Try building new rooms for each of our NESW directions.
+                    foreach (Tile t in sourceTile.GetNeighbours(false, true))
+                    {
+                        if (t != null && t.Room != null)
+                        {
+                            Room newRoom = ActualFloodFill(t, oldRoom, sizeOfOldRoom);
+
+                            if (newRoom != null && Split != null)
+                            {
+                                Split(oldRoom, newRoom);
+                            }
+                        }
+                    }
+
+                    // If this piece of furniture was added to an existing room
+                    // (which should always be true assuming with consider "outside" to be a big room)
+                    // delete that room and assign all tiles within to be "outside" for now.
+                    if (oldRoom.IsOutsideRoom() == false)
+                    {
+                        // At this point, oldRoom shouldn't have any more tiles left in it,
+                        // so in practice this "DeleteRoom" should mostly only need
+                        // to remove the room from the world's list.
+                        if (oldRoom.TileCount > 0)
+                        {
+                            Debug.ULogErrorChannel("Room", "'oldRoom' still has tiles assigned to it. This is clearly wrong.");
+                        }
+
+                        Remove(oldRoom);
+                    }
+                }
+                else
+                {
+
+                    // The source tile had a room, so this must be a new piece of furniture
+                    // that is potentially dividing this old room into as many as four new rooms.
+
+                    // Save the size of old room before we start removing tiles.
+                    // Needed for gas calculations.
+                    int sizeOfOldRoom = oldRoom.TileCount;
+
+                    // oldRoom is null, which means the source tile was probably a wall,
+                    // though this MAY not be the case any longer (i.e. the wall was 
+                    // probably deconstructed. So the only thing we have to try is
+                    // to spawn ONE new room starting from the tile in question.
+
+                    // Save a list of all the rooms to be removed for later calls
+                    // TODO: find a way of not doing this, because at the time of the
+                    // later calls, this is stale data.
+                    List<Room> oldRooms = new List<Room>();
+
+                    // You need to delete the surrounding rooms so a new room can be created
+                    oldRooms.Add(oldRoom);
+                    Remove(oldRoom);
+                    foreach (Tile t in sourceTile.GetNeighbours(false, true))
+                    {
+                        if (t != null && t.Room != null && !t.Room.IsOutsideRoom())
+                        {
+                            oldRooms.Add(t.Room);
+
+                            Remove(t.Room);
+                        }
+                    }
+
+                    // FIXME: find a better way to do this since right now it 
+                    // requires using stale data.
+                    Room newRoom = ActualFloodFill(sourceTile, null, 0);
+                    if (newRoom != null && oldRooms.Count > 0 && Joined != null)
+                    {
+                        foreach (Room r in oldRooms)
+                        {
+                            Joined(r, newRoom);
+                        }
+                    }
+                }
+            }
+            else if (oldRoom != null && splitting)
             {
                 // The source tile had a room, so this must be a new piece of furniture
                 // that is potentially dividing this old room into as many as four new rooms.
@@ -214,6 +301,7 @@ namespace ProjectPorcupine.Rooms
                 // Save the size of old room before we start removing tiles.
                 // Needed for gas calculations.
                 int sizeOfOldRoom = oldRoom.TileCount;
+
 
                 // Try building new rooms for each of our NESW directions.
                 foreach (Tile t in sourceTile.GetNeighbours())
@@ -326,12 +414,12 @@ namespace ProjectPorcupine.Rooms
                 return null;
             }
 
-            if (tile.Type == TileType.Empty)
-            {
-                // This tile is empty space and must remain part of the outside.
-                return null;
-            }
-
+//            if (tile.Type == TileType.Empty)
+//            {
+//                // This tile is empty space and must remain part of the outside.
+//                return null;
+//            }
+//
             // If we get to this point, then we know that we need to create a new room.
             List<Room> listOfOldRooms = new List<Room>();
 
@@ -358,10 +446,10 @@ namespace ProjectPorcupine.Rooms
 
                     newRoom.AssignTile(t);
 
-                    Tile[] ns = t.GetNeighbours();
+                    Tile[] ns = t.GetNeighbours(false, true);
                     foreach (Tile t2 in ns)
                     {
-                        if (t2 == null || t2.Type == TileType.Empty)
+                        if (t2 == null || t2.HasClearLineToBottom())
                         {
                             // We have hit open space (either by being the edge of the map or being an empty tile)
                             // so this "room" we're building is actually part of the Outside.

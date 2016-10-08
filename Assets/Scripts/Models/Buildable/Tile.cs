@@ -344,7 +344,8 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
     /// <returns>The neighbours.</returns>
     /// <param name="diagOkay">Is diagonal movement okay?.</param>
     /// <param name="vertOkay">Is vertical movement okay?.</param>
-    public Tile[] GetNeighbours(bool diagOkay = false, bool vertOkay = false)
+    /// <param name="nullOkay">Is returning null tiles okay?.</param>
+    public Tile[] GetNeighbours(bool diagOkay = false, bool vertOkay = false, bool nullOkay = false)
     {
         Tile[] tiles = diagOkay == false ? new Tile[6] : new Tile[10];
         tiles[0] = World.Current.GetTileAt(X, Y + 1, Z);
@@ -368,7 +369,14 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
             tiles[9] = World.Current.GetTileAt(X - 1, Y + 1, Z);
         }
 
-        return tiles.Where(tile => tile != null).ToArray();
+        if (!nullOkay)
+        {
+            return tiles.Where(tile => tile != null).ToArray();
+        }
+        else
+        {
+            return tiles;
+        }
     }
 
     public Tile[] GetVerticalNeighbors(bool nullOkay = false)
@@ -441,6 +449,23 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
 
         // If we are here, we are either not clipping, or not diagonal
         return false;
+    }
+
+    public bool HasClearLineToBottom()
+    {
+        if(type != TileType.Empty)
+        {
+            return false;
+        }
+
+        if(Down() == null)
+        {
+            return true;
+        }
+        else
+        {
+            return Down().HasClearLineToBottom();
+        }
     }
 
     public Tile North()
