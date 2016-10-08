@@ -28,7 +28,7 @@ public class MainMenu : MonoBehaviour
         GameObject newWorldButton = CreateButtonGO(buttonPrefab, "New World", "new_world");
         newWorldButton.GetComponent<Button>().onClick.AddListener(delegate
         {
-            if (!UIManager.Instance.IsModal)
+            if (!GameController.Instance.IsModal)
             {
                 dialogManager.dialogBoxPromptOrInfo.SetPrompt("message_creating_new_world");
                 dialogManager.dialogBoxPromptOrInfo.ShowDialog();
@@ -39,7 +39,7 @@ public class MainMenu : MonoBehaviour
         GameObject loadWorldButton = CreateButtonGO(buttonPrefab, "Load", "load"); 
         loadWorldButton.GetComponent<Button>().onClick.AddListener(delegate
         {
-            if (!UIManager.Instance.IsModal)
+            if (!GameController.Instance.IsModal)
             {
                 dialogManager.dialogBoxLoadGame.ShowDialog();
             }
@@ -48,7 +48,7 @@ public class MainMenu : MonoBehaviour
         GameObject settingsButton = CreateButtonGO(buttonPrefab, "Settings", "menu_settings");
         settingsButton.GetComponent<Button>().onClick.AddListener(delegate
         {
-            if (!UIManager.Instance.IsModal)
+            if (!GameController.Instance.IsModal)
             {
                 dialogManager.dialogBoxSettings.ShowDialog();
             }
@@ -57,7 +57,7 @@ public class MainMenu : MonoBehaviour
         GameObject quitButton = CreateButtonGO(buttonPrefab, "Quit", "menu_quit");
         quitButton.GetComponent<Button>().onClick.AddListener(delegate
         {
-            if (!UIManager.Instance.IsModal)
+            if (!GameController.Instance.IsModal)
             {
                 SceneManagerProjectPorcupine.Instance.QuitGame();
             }

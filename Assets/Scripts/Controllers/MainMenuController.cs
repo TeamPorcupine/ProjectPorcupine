@@ -33,7 +33,7 @@ public class MainMenuController : MonoBehaviour
         TimeManager.Instance.IsPaused = true;
 
         // Create a Background.
-        GameObject background = (GameObject)Instantiate(Resources.Load("Prefab/BackgroundMainMenu"));
+        Instantiate(Resources.Load("Prefab/BackgroundMainMenu"));
 
         GameObject canvas = GameObject.Find("Canvas");
 

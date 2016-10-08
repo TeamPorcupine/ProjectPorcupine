@@ -18,9 +18,24 @@ public class GameController : MonoBehaviour
 
     public KeyboardManager KeyboardManager;
     public SceneManagerProjectPorcupine SceneManager;
-    public UIManager UIManager;
+
+    // If true, a modal dialog box is open, so normal inputs should be ignored.
+    public bool IsModal;
 
     public static GameController Instance { get; protected set; }
+
+    public bool IsPaused
+    {
+        get
+        {
+            return TimeManager.Instance.IsPaused || IsModal;
+        }
+
+        set
+        {
+            TimeManager.Instance.IsPaused = value;
+        }
+    }
 
     // Path to the saves folder.
     public string FileSaveBasePath()
@@ -36,7 +51,8 @@ public class GameController : MonoBehaviour
         // Load Keyboard Mapping.
         KeyboardManager = KeyboardManager.Instance;
 
-        UIManager.Instance.IsModal = false;
+        IsModal = false;
+        IsPaused = false;
     }
 
     // Only on first time a scene is loaded.
@@ -49,7 +65,6 @@ public class GameController : MonoBehaviour
         this.gameObject.AddComponent<LocalizationLoader>();
 
         SceneManager = SceneManagerProjectPorcupine.Instance;
-        UIManager = UIManager.Instance;
     }
 
     private void Update()

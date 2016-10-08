@@ -43,19 +43,6 @@ public class WorldController : MonoBehaviour
     // The world and tile data.
     public World World { get; protected set; }
 
-    public bool IsPaused
-    {
-        get
-        {
-            return TimeManager.Instance.IsPaused || UIManager.Instance.IsModal;
-        }
-
-        set
-        {
-            TimeManager.Instance.IsPaused = value;
-        }
-    }
-
     // Use this for initialization.
     public void OnEnable()
     {
@@ -117,7 +104,7 @@ public class WorldController : MonoBehaviour
         autosaveManager = new AutosaveManager();
 
         // Register inputs actions
-        KeyboardManager.Instance.RegisterInputAction("Pause", KeyboardMappedInputType.KeyUp, () => { IsPaused = !IsPaused; });
+        KeyboardManager.Instance.RegisterInputAction("Pause", KeyboardMappedInputType.KeyUp, () => { GameController.Instance.IsPaused = !GameController.Instance.IsPaused; });
         KeyboardManager.Instance.RegisterInputAction("DevMode", KeyboardMappedInputType.KeyDown, ChangeDevMode);
 
         // Hiding Dev Mode spawn inventory controller if devmode is off.
@@ -131,8 +118,7 @@ public class WorldController : MonoBehaviour
         go = Instantiate(Resources.Load("UI/ContextMenu"), canvas.transform.position, canvas.transform.rotation, canvas.transform) as GameObject;
         go.name = "ContextMenu";
 
-        IsPaused = false;
-        UIManager.Instance.IsModal = false;
+        GameController.Instance.IsModal = false;
     }
 
     /// <summary>
