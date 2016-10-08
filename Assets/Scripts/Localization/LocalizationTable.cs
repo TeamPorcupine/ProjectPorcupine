@@ -93,65 +93,6 @@ namespace ProjectPorcupine.Localization
         }
 
         /// <summary>
-        /// Load a localization file from the harddrive with a defined localization code.
-        /// </summary>
-        /// <param name="path">The path to the file.</param>
-        /// <param name="localizationCode">The localization code, e.g.: "en_US", "en_UK".</param>
-        private static void LoadLocalizationFile(string path, string localizationCode)
-        {
-            try
-            {
-                if (localizationTable.ContainsKey(localizationCode) == false)
-                {
-                    localizationTable[localizationCode] = new Dictionary<string, string>();
-                }
-
-                //Read all lines in advance, we need it to know how the language is called.
-                string[] lines = File.ReadAllLines(path);
-
-                //We assume that A) the key is the first line B) the key is always the localizationCode
-                //If not, we know this language hasn't been updated yet, so insert the localizationCode as key and value
-                if (lines.Length > 0) //If this if check will ever return false... we now something is terribly wrong!
-                {
-                    //Split the line
-                    string[] line = lines[0].Split(new char[] { '=' }, 2);
-
-                    //Check if the language starts with a valid name.
-                    if(line[0] == "lang")
-                    {
-                        //It does, add it to the list, we need it later.
-                        localizationTable[localizationCode]["lang"] = line[1];
-                    }
-                    else
-                    {
-                        //It doesn't, add the localizationCode as a fallback for now.
-                        localizationTable[localizationCode]["lang"] = localizationCode;
-                    }
-                }
-
-                // Only the current and default languages translations will be loaded in memory.
-                if (localizationCode == DefaultLanguage || localizationCode == currentLanguage)
-                {
-                    foreach (string line in lines)
-                    {
-                        string[] keyValuePair = line.Split(new char[] { '=' }, 2);
-                        if (keyValuePair.Length != 2)
-                        {
-                            Debug.ULogErrorChannel("LocalizationTable", string.Format("Invalid format of localization string. Actual {0}", line));
-                            continue;
-                        }
-
-                        localizationTable[localizationCode][keyValuePair[0]] = keyValuePair[1];
-                    }
-                }
-            }
-            catch (FileNotFoundException exception)
-            {
-                Debug.ULogErrorChannel("LocalizationTable", new Exception(string.Format("There is no localization file for {0}", localizationCode), exception).ToString());
-            }
-        }
-
-        /// <summary>
         /// Returns the localization for the given key, or the key itself, if no translation exists.
         /// </summary>
         public static string GetLocalization(string key, FallbackMode fallbackMode, string language, params string[] additionalValues)
@@ -176,6 +117,66 @@ namespace ProjectPorcupine.Localization
                     return GetLocalization(key, FallbackMode.ReturnKey, DefaultLanguage, additionalValues);
                 default:
                     return string.Empty;
+            }
+        }
+
+        /// <summary>
+        /// Load a localization file from the harddrive with a defined localization code.
+        /// </summary>
+        /// <param name="path">The path to the file.</param>
+        /// <param name="localizationCode">The localization code, e.g.: "en_US", "en_UK".</param>
+        private static void LoadLocalizationFile(string path, string localizationCode)
+        {
+            try
+            {
+                if (localizationTable.ContainsKey(localizationCode) == false)
+                {
+                    localizationTable[localizationCode] = new Dictionary<string, string>();
+                }
+
+                // Read all lines in advance, we need it to know how the language is called.
+                string[] lines = File.ReadAllLines(path);
+
+                // We assume that A) the key is the first line B) the key is always the localizationCode
+                // If not, we know this language hasn't been updated yet, so insert the localizationCode as key and value
+                // If this if check will ever return false... we now something is terribly wrong!
+                if (lines.Length > 0)
+                {
+                    // Split the line
+                    string[] line = lines[0].Split(new char[] { '=' }, 2);
+
+                    // Check if the language starts with a valid name.
+                    if (line[0] == "lang")
+                    {
+                        // It does, add it to the list, we need it later.
+                        localizationTable[localizationCode]["lang"] = line[1];
+                    }
+                    else
+                    {
+                        // It doesn't, add the localizationCode as a fallback for now.
+                        localizationTable[localizationCode]["lang"] = localizationCode;
+                    }
+                }
+
+                // Only the current and default languages translations will be loaded in memory.
+                if (localizationCode == DefaultLanguage || localizationCode == currentLanguage)
+                {
+                    foreach (string line in lines)
+                    {
+                        string[] keyValuePair = line.Split(new char[] { '=' }, 2);
+                        if (keyValuePair.Length != 2)
+                        {
+                            Debug.ULogErrorChannel("LocalizationTable", string.Format("Invalid format of localization string. Actual {0}", line));
+                            continue;
+                        }
+
+                        localizationTable[localizationCode][keyValuePair[0]] = keyValuePair[1];
+                    }
+                }
+            }
+            catch (FileNotFoundException exception)
+            {
+                Debug.ULogErrorChannel("LocalizationTable", new Exception(string.Format("There is no localization file for {0}", localizationCode), exception).ToString());
             }
         }
     }

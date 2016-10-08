@@ -57,7 +57,6 @@ namespace ProjectPorcupine.Buildable.Components
             //   - as output will be produced after time, it is possible that output spot can be ocupied meanwhile
             // - process for specified time
             // - if output slot is free, provide output (if not, keep output 'inside' factory)
-
             if (ParentFurniture.IsBeingDestroyed)
             {
                 return;
@@ -68,6 +67,7 @@ namespace ProjectPorcupine.Buildable.Components
             if (!string.IsNullOrEmpty(curSetupChainName))
             {
                 ProductionChain prodChain = GetProductionChainByName(curSetupChainName);
+
                 // if there is no processing in progress
                 if (FurnitureParams[CurProcessedInvParamName].ToInt() == 0)
                 {
@@ -86,6 +86,7 @@ namespace ProjectPorcupine.Buildable.Components
                         FurnitureParams[CurProcessingTimeParamName].SetValue(0f);
                         FurnitureParams[MaxProcessingTimeParamName].SetValue(prodChain.ProcessingTime);
                     }
+
                     // trigger running state change
                     if (IsRunning)
                     {
@@ -106,10 +107,12 @@ namespace ProjectPorcupine.Buildable.Components
                         if (outPlacement.Count == prodChain.Output.Count)
                         {
                             PlaceInventories(outPlacement);
+
                             // processing done, can fetch input for another processing
                             FurnitureParams[CurProcessedInvParamName].SetValue(0);
                         }
                     }
+
                     // trigger running state change
                     if (!IsRunning)
                     {
@@ -323,6 +326,7 @@ namespace ProjectPorcupine.Buildable.Components
         private List<TileObjectTypeAmount> CheckForInventoryAtOutput(ProductionChain prodChain)
         {
             List<TileObjectTypeAmount> outPlacement = new List<TileObjectTypeAmount>();
+
             // processing is done, try to spit the output
             // check if output can be placed in world
             foreach (Item outObjType in prodChain.Output)
