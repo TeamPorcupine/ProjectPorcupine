@@ -12,10 +12,11 @@ Closes #
 ### What this PR does
 
 Describe _how_ you have fixed the issue(s).
-If there are any UI or sprite changes, please include an image showing the new element(s).
+If there are any UI or sprite changes, please include an image showing the new element(s) and keep it updated for subsequent changes.
+For any animations it is helpful to include an animated gif.
 Please ensure that you have the proper permission to include any copyrighted art or sound assets under license terms compatible with the open source licensing of this project.
 
-## TODO (if this is a [WIP] PR)
+### TODO (if this is a [WIP] PR)
 
 - [ ] foo
 - [ ] bar
