@@ -359,6 +359,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
             tiles[4] = vertTiles[0];
             tiles[5] = vertTiles[1];
         }
+
         if (diagOkay == true)
         {
             tiles[6] = World.Current.GetTileAt(X + 1, Y + 1, Z);
@@ -382,8 +383,9 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
         if (Type == TileType.Empty)
         {
             tiles[1] = World.Current.GetTileAt(X, Y, Z + 1);
-        }   
-        if(!nullOkay)
+        }
+
+        if (!nullOkay)
         {
             return tiles.Where(tile => tile != null).ToArray();
         }
@@ -392,6 +394,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
             return tiles;
         }
     }
+
     /// <summary>
     /// If one of the 8 neighbouring tiles is of TileType type then this returns true.
     /// </summary>
