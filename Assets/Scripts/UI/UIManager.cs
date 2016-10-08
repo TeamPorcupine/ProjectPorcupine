@@ -6,6 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using UnityStandardAssets.Utility;
 
 public class UIManager
 {
@@ -26,4 +27,6 @@ public class UIManager
             return instance;
         }
     }
+
+    public FPSCounter FPSCounter;
 }

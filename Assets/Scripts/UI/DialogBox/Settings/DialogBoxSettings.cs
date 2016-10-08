@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using ProjectPorcupine.Localization;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityStandardAssets.Utility;
 
 public class DialogBoxSettings : DialogBox
 {
@@ -98,7 +99,7 @@ public class DialogBoxSettings : DialogBox
         applyButton.onClick.AddListener(OnApply);
 
         fullScreenToggle.isOn = Screen.fullScreen;
-        fpsObject = GameObject.Find("Canvas").transform.FindChild("MenuTop").transform.FindChild("Text FPS").gameObject;
+        fpsObject = GameObject.FindObjectOfType<FPSCounter>().gameObject;
 
         CreateResolutionDropdown();
 

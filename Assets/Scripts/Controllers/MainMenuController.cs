@@ -47,7 +47,7 @@ public class MainMenuController : MonoBehaviour
         mainMenu.transform.SetParent(canvas.transform, false);
         mainMenu.SetActive(true);
 
-        // Create dialogBoxes parent gameobject.
+        // Create dialogBoxes.
         GameObject dialogBoxes = new GameObject("Dialog Boxes");
         dialogBoxes.transform.SetParent(canvas.transform, false);
         dialogBoxes.AddComponent<DialogBoxManager>();
