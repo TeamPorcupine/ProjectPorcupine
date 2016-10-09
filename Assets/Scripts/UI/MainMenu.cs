@@ -32,7 +32,7 @@ public class MainMenu : MonoBehaviour
             {
                 dialogManager.dialogBoxPromptOrInfo.SetPrompt("message_creating_new_world");
                 dialogManager.dialogBoxPromptOrInfo.ShowDialog();
-                SceneManagerProjectPorcupine.Instance.LoadNewWorld();
+                SceneController.Instance.LoadNewWorld();
             }
         });
 
@@ -59,7 +59,7 @@ public class MainMenu : MonoBehaviour
         {
             if (!GameController.Instance.IsModal)
             {
-                SceneManagerProjectPorcupine.Instance.QuitGame();
+                SceneController.Instance.QuitGame();
             }
         });
     }

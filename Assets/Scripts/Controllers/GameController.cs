@@ -17,7 +17,7 @@ public class GameController : MonoBehaviour
     public static readonly string GameVersion = "Someone_will_come_up_with_a_proper_naming_scheme_later";
 
     public KeyboardManager KeyboardManager;
-    public SceneManagerProjectPorcupine SceneManager;
+    public SceneController SceneManager;
 
     // If true, a modal dialog box is open, so normal inputs should be ignored.
     public bool IsModal;
@@ -53,6 +53,8 @@ public class GameController : MonoBehaviour
 
         IsModal = false;
         IsPaused = false;
+
+        KeyboardManager.RegisterInputAction("Pause", KeyboardMappedInputType.KeyUp, () => { IsPaused = !IsPaused; });
     }
 
     // Only on first time a scene is loaded.
@@ -64,7 +66,7 @@ public class GameController : MonoBehaviour
         // Add a gameobject that Localization
         this.gameObject.AddComponent<LocalizationLoader>();
 
-        SceneManager = SceneManagerProjectPorcupine.Instance;
+        SceneManager = SceneController.Instance;
     }
 
     private void Update()

@@ -68,10 +68,10 @@ public class WorldController : MonoBehaviour
 
         modsManager = new ModsManager();
 
-        if (SceneManagerProjectPorcupine.Instance.loadWorldFromFileName != null)
+        if (SceneController.Instance.loadWorldFromFileName != null)
         {
-            CreateWorldFromSaveFile(SceneManagerProjectPorcupine.Instance.loadWorldFromFileName);
-            SceneManagerProjectPorcupine.Instance.loadWorldFromFileName = null;
+            CreateWorldFromSaveFile(SceneController.Instance.loadWorldFromFileName);
+            SceneController.Instance.loadWorldFromFileName = null;
         }
         else
         {
@@ -104,7 +104,6 @@ public class WorldController : MonoBehaviour
         autosaveManager = new AutosaveManager();
 
         // Register inputs actions
-        KeyboardManager.Instance.RegisterInputAction("Pause", KeyboardMappedInputType.KeyUp, () => { GameController.Instance.IsPaused = !GameController.Instance.IsPaused; });
         KeyboardManager.Instance.RegisterInputAction("DevMode", KeyboardMappedInputType.KeyDown, ChangeDevMode);
 
         // Hiding Dev Mode spawn inventory controller if devmode is off.

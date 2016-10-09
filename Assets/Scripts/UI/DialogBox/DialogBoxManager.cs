@@ -41,7 +41,7 @@ public class DialogBoxManager : MonoBehaviour
         tempGoObj = CreateDialogGO("DB_PromptOrInfo", "Prompt or Info");
         dialogBoxPromptOrInfo = tempGoObj.GetComponent<DialogBoxPromptOrInfo>();
 
-        if (SceneManagerProjectPorcupine.Instance.GetCurrentScene().Equals(SceneManagerProjectPorcupine.MainSceneName))
+        if (SceneController.Instance.IsAtMainScene())
         {
             tempGoObj = CreateDialogGO("DB_SaveFile", "Save File");
             dialogBoxSaveGame = tempGoObj.GetComponent<DialogBoxSaveGame>();

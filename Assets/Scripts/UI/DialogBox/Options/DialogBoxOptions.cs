@@ -53,7 +53,7 @@ public class DialogBoxOptions : DialogBox
         {
             if (dialogManager.dialogBoxPromptOrInfo.Result == DialogBoxResult.Yes)
             {
-                SceneManagerProjectPorcupine.Instance.QuitGame();
+                SceneController.Instance.QuitGame();
             }
         };
 
@@ -114,7 +114,7 @@ public class DialogBoxOptions : DialogBox
             dialogManager.dialogBoxPromptOrInfo.SetPrompt("message_creating_new_world");
             dialogManager.dialogBoxPromptOrInfo.ShowDialog();
 
-            SceneManagerProjectPorcupine.Instance.LoadNewWorld();
+            SceneController.Instance.LoadNewWorld();
         }
     }
 

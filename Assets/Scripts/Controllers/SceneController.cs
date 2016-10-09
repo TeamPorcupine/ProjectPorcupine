@@ -8,7 +8,7 @@
 #endregion
 using UnityEngine.SceneManagement;
 
-public class SceneManagerProjectPorcupine
+public class SceneController
 {
     // Our current scenes Names
     public const string MainSceneName = "_SCENE_";
@@ -16,15 +16,15 @@ public class SceneManagerProjectPorcupine
 
     public string loadWorldFromFileName;
 
-    private static SceneManagerProjectPorcupine instance;
+    private static SceneController instance;
 
-    public static SceneManagerProjectPorcupine Instance
+    public static SceneController Instance
     {
         get
         {
             if (instance == null)
             {
-                instance = new SceneManagerProjectPorcupine();
+                instance = new SceneController();
             }
 
             return instance;
@@ -68,6 +68,18 @@ public class SceneManagerProjectPorcupine
     public string GetCurrentScene()
     {
         return SceneManager.GetActiveScene().name;
+    }
+
+    // Return the name of the current scene.
+    public bool IsAtIntroScene()
+    {
+        return (GetCurrentScene() == MainMenuSceneName) ? true : false;
+    }
+
+    // Return the name of the current scene.
+    public bool IsAtMainScene()
+    {
+        return (GetCurrentScene() == MainSceneName) ? true : false;
     }
 
     private void CleanInstancesBeforeLoadingScene()

@@ -144,7 +144,7 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
         dbm.dialogBoxPromptOrInfo.SetPrompt("message_loading_game");
         dbm.dialogBoxPromptOrInfo.ShowDialog();
 
-        SceneManagerProjectPorcupine.Instance.LoadWorld(filePath);
+        SceneController.Instance.LoadWorld(filePath);
     }
 
     private void Update()

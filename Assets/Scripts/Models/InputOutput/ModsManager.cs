@@ -17,7 +17,7 @@ public class ModsManager
     public ModsManager()
     {
         mods = GetModsFiles();
-        if (SceneManagerProjectPorcupine.Instance.GetCurrentScene() == SceneManagerProjectPorcupine.MainMenuSceneName)
+        if (SceneController.Instance.IsAtIntroScene())
         {
             LoadIntroFiles();
         }
