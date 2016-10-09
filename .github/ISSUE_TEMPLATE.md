@@ -9,6 +9,7 @@ Should do X
 ### Actual behavior
 
 Instead does Y
+If it would help, you may include an image or animated gif of the problem.
 
 ```
 include error messages or stack trace if there are any exceptions
