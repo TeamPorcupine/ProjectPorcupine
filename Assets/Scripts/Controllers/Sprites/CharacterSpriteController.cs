@@ -11,17 +11,22 @@ using UnityEngine;
 
 public enum SpriteSwapRedColor
 {
-    UNIFORMCOLOR = 129,
-    UNIFORMCOLORLIGHT = 199,
-    UNIFORMCOLORDARK = 97,
-    UNIFORMSTRIPECOLOR = 151,
-    UNIFORMSTRIPECOLORLIGHT = 201,
-    UNIFORMSTRIPECOLORDARK = 101,
+    UNIFORMCOLORVERYLIGHT = 155,
+    UNIFORMCOLORLIGHT = 132,
+    UNIFORMCOLOR = 105,
+    UNIFORMCOLORDARK = 86,
+    UNIFORMCOLORVERYDARK = 68,
+    UNIFORMSTRIPECOLORVERYLIGHT = 194,
+    UNIFORMSTRIPECOLORLIGHT = 180,
+    UNIFORMSTRIPECOLOR = 163,
+    UNIFORMSTRIPECOLORDARK = 152,
+    UNIFORMSTRIPECOLOVVERYRDARK = 141,
     HAIRCOLOR = 152,
     HAIRCOLORLIGHT = 202,
     HAIRCOLORDARK = 102,
-    SKINCOLOR = 244,
-    SKINCOLORDARK = 229
+    SKINCOLOR = 238,
+    SKINCOLORDARK = 217,
+    SKINCOLORVERYDARK = 143
 }
 
 public class CharacterSpriteController : BaseSpriteController<Character>
@@ -151,24 +156,34 @@ public class CharacterSpriteController : BaseSpriteController<Character>
         colorSwapTex.Apply();
 
         // Define the swapping colors. Add white to highlights and black to shadows        
-        Color newColorLight = Color.Lerp(character.GetCharacterColor(), ColorUtilities.ColorFromIntRGB(255, 255, 255), 0.5f);
-        Color newColorDark = Color.Lerp(character.GetCharacterColor(), ColorUtilities.ColorFromIntRGB(0, 0, 0), 0.5f);
+        Color newUniformStripeColorLight = Color.Lerp(character.GetCharacterColor(), ColorUtilities.ColorFromIntRGB(255, 255, 255), 0.5f);
+        Color newUniformStripeColorVeryLight = Color.Lerp(newUniformStripeColorLight, ColorUtilities.ColorFromIntRGB(255, 255, 255), 0.5f);
+        Color newUniformStripeColorDark = Color.Lerp(character.GetCharacterColor(), ColorUtilities.ColorFromIntRGB(0, 0, 0), 0.5f);
+        Color newUniformStripeColorVeryDark = Color.Lerp(newUniformStripeColorDark, ColorUtilities.ColorFromIntRGB(0, 0, 0), 0.5f);
         Color newSkinColor = character.GetCharacterSkinColor();
-        Color newSkinColorDark = Color.Lerp(newSkinColor, ColorUtilities.ColorFromIntRGB(0, 0, 0), 0.2f);        
+        Color newSkinColorDark = Color.Lerp(newSkinColor, ColorUtilities.ColorFromIntRGB(0, 0, 0), 0.2f);
+        Color newSkinColorVeryDark = Color.Lerp(newSkinColorDark, ColorUtilities.ColorFromIntRGB(0, 0, 0), 0.5f);
         Color newUniformColor = character.GetCharacterUniformColor();
-        Color newUniformColorLight = Color.Lerp(newUniformColor, ColorUtilities.ColorFromIntRGB(255, 255, 255), 0.5f);
+        Color newUniformColorLight = Color.Lerp(newUniformColor, ColorUtilities.ColorFromIntRGB(255, 255, 255), 0.2f);
+        Color newUniformColorVeryLight = Color.Lerp(newUniformColorLight, ColorUtilities.ColorFromIntRGB(255, 255, 255), 0.5f);
         Color newUniformColorDark = Color.Lerp(newUniformColor, ColorUtilities.ColorFromIntRGB(0, 0, 0), 0.2f);
+        Color newUniformColorVeryDark = Color.Lerp(newUniformColorDark, ColorUtilities.ColorFromIntRGB(0, 0, 0), 0.5f);
 
         // add the colors to the texture
         // TODO: Do something similar for HAIRCOLOR, when we have a character with visible hair
         colorSwapTex = SwapColor(colorSwapTex, SpriteSwapRedColor.UNIFORMCOLOR, newUniformColor);
         colorSwapTex = SwapColor(colorSwapTex, SpriteSwapRedColor.UNIFORMCOLORLIGHT, newUniformColorLight);
+        colorSwapTex = SwapColor(colorSwapTex, SpriteSwapRedColor.UNIFORMCOLORVERYLIGHT, newUniformColorVeryLight);
         colorSwapTex = SwapColor(colorSwapTex, SpriteSwapRedColor.UNIFORMCOLORDARK, newUniformColorDark);
+        colorSwapTex = SwapColor(colorSwapTex, SpriteSwapRedColor.UNIFORMCOLORVERYDARK, newUniformColorVeryDark);
         colorSwapTex = SwapColor(colorSwapTex, SpriteSwapRedColor.UNIFORMSTRIPECOLOR, character.GetCharacterColor());
-        colorSwapTex = SwapColor(colorSwapTex, SpriteSwapRedColor.UNIFORMSTRIPECOLORLIGHT, newColorLight);
-        colorSwapTex = SwapColor(colorSwapTex, SpriteSwapRedColor.UNIFORMSTRIPECOLORDARK, newColorDark);
+        colorSwapTex = SwapColor(colorSwapTex, SpriteSwapRedColor.UNIFORMSTRIPECOLORLIGHT, newUniformStripeColorLight);
+        colorSwapTex = SwapColor(colorSwapTex, SpriteSwapRedColor.UNIFORMSTRIPECOLORVERYLIGHT, newUniformStripeColorVeryLight);
+        colorSwapTex = SwapColor(colorSwapTex, SpriteSwapRedColor.UNIFORMSTRIPECOLORDARK, newUniformStripeColorDark);
+        colorSwapTex = SwapColor(colorSwapTex, SpriteSwapRedColor.UNIFORMSTRIPECOLOVVERYRDARK, newUniformStripeColorVeryDark);
         colorSwapTex = SwapColor(colorSwapTex, SpriteSwapRedColor.SKINCOLOR, newSkinColor);
         colorSwapTex = SwapColor(colorSwapTex, SpriteSwapRedColor.SKINCOLORDARK, newSkinColorDark);
+        colorSwapTex = SwapColor(colorSwapTex, SpriteSwapRedColor.SKINCOLORVERYDARK, newSkinColorVeryDark);
         colorSwapTex.Apply();
 
         // load material and shader
