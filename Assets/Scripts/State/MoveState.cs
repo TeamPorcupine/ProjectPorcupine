@@ -72,7 +72,8 @@ namespace ProjectPorcupine.State
 
                 distToTravel = Mathf.Sqrt(
                     Mathf.Pow(character.CurrTile.X - nextTile.X, 2) +
-                    Mathf.Pow(character.CurrTile.Y - nextTile.Y, 2));
+                    Mathf.Pow(character.CurrTile.Y - nextTile.Y, 2) +
+                    Mathf.Pow(character.CurrTile.Z - nextTile.Z, 2));
 
                 if (nextTile.IsEnterable() == Enterability.Yes)
                 {

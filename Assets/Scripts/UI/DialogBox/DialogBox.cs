@@ -16,6 +16,9 @@ public class DialogBox : MonoBehaviour
 
     public Action Closed { get; set; }
 
+    public static readonly Color ListPrimaryColor = new Color32(0, 149, 217, 80);
+    public static readonly Color ListSecondaryColor = new Color32(0, 149, 217, 160);
+
     private bool openedWhileModal = false;
 
     public virtual void ShowDialog()
