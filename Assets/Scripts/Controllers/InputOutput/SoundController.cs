@@ -28,23 +28,18 @@ public class SoundController
         soundCooldown -= deltaTime;
     }
 
-	//This is a delegate to play "PlayClick" on ShowDialog and CloseDialog from DialogBox script. 
-	delegate void ClickDelegate();
-		ClickDelegate btnsfx;
-	public void PlayClick()
-	{
-		btnsfx += OnButtonClickedSFX;
-		btnsfx ();
-	}
+	//public void PlayClick()
+	//{
+	//	OnButtonClickedSFX();
+	//}
 
-	public void OnButtonClickedSFX()
+	public void OnButtonSFX()
 	{
 		//FIXME
 		if (soundCooldown > 0)
 		{
 			return;
 		}
-
 
 		AudioClip ac = AudioManager.GetAudio("Sound", "MenuClick");
 		AudioSource.PlayClipAtPoint(ac, Camera.main.transform.position);
