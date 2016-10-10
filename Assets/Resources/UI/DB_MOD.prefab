@@ -529,8 +529,8 @@ MonoBehaviour:
   m_Padding:
     m_Left: 5
     m_Right: 5
-    m_Top: 5
-    m_Bottom: 5
+    m_Top: 0
+    m_Bottom: 0
   m_ChildAlignment: 0
   m_Spacing: 5
   m_ChildForceExpandWidth: 1
@@ -980,7 +980,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 272.9375, y: -18}
-  m_SizeDelta: {x: 103.175, y: 26}
+  m_SizeDelta: {x: 103.175, y: 33}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224000011778113406
 RectTransform:
@@ -999,7 +999,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 381.11252, y: -18}
-  m_SizeDelta: {x: 103.175, y: 26}
+  m_SizeDelta: {x: 103.175, y: 33}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224000012361007016
 RectTransform:
@@ -1018,7 +1018,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 164.76251, y: -18}
-  m_SizeDelta: {x: 103.175, y: 26}
+  m_SizeDelta: {x: 103.175, y: 33}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224000012519280640
 RectTransform:
@@ -1073,7 +1073,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 56.5875, y: -18}
-  m_SizeDelta: {x: 103.175, y: 26}
+  m_SizeDelta: {x: 103.175, y: 33}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224000013169314632
 RectTransform:
@@ -1090,8 +1090,8 @@ RectTransform:
   m_RootOrder: 1
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -13.3}
-  m_SizeDelta: {x: -26.6, y: 288.4}
+  m_AnchoredPosition: {x: 0, y: 7.449997}
+  m_SizeDelta: {x: -27, y: 246.9}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224000013295729168
 RectTransform:
@@ -1130,8 +1130,8 @@ RectTransform:
   m_RootOrder: 2
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -253.1, y: 33.2}
-  m_SizeDelta: {x: 437.7, y: 36}
+  m_AnchoredPosition: {x: -253.1, y: 40}
+  m_SizeDelta: {x: 438, y: 33}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224000013641945540
 RectTransform:
