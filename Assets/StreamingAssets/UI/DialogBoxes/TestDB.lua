@@ -15,4 +15,5 @@ end
 
 function Prompt_Closed( DialogResult )
 	ModUtils.ULog(DialogResult)
+	Prompt = nil
 end

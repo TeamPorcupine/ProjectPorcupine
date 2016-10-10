@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <ModDialogBoxInformation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Title>Testing</Title>
-  <Content name="Img1" type="Image">
+  <Control name="Img1" type="Image">
     <Position>
       <x>100</x>
       <y>-50</y>
@@ -12,7 +12,7 @@
       <y>50</y>
     </Size>
     <Data xsi:type="xsd:string">UI\DialogBoxes\img\test.jpg</Data>
-  </Content>
+  </Control>
   <Buttons>Yes</Buttons>
   <Buttons>No</Buttons>
   <Buttons>Cancel</Buttons>

@@ -18,7 +18,7 @@ public class ModDialogBoxInformation
     [XmlElement("Title")]
     public string title;
 
-    [XmlElement("Content")]
+    [XmlElement("Control")]
     public DialogComponent[] content;
 
     [XmlElement("Buttons")]
