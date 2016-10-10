@@ -81,15 +81,17 @@ public class DialogBoxManager : MonoBehaviour
     /// ShowDialogBoxByName shows the dialog box that has the name given.
     /// </summary>
     /// <param name="dialogName">The name of the dialog (a.k.a. the title of the dialog).</param>
-    public void ShowDialogBoxByName(string dialogName)
+    public DialogBox ShowDialogBoxByName(string dialogName)
     {
         if (DialogBoxes.ContainsKey(dialogName))
         {
             DialogBoxes[dialogName].ShowDialog();
+            return DialogBoxes[dialogName];
         }
         else
         {
             Debug.ULogErrorChannel("ModDialogBox", "Couldn't find dialog box with name" + dialogName);
+            return null;
         }
     }
 

@@ -28,8 +28,6 @@ public class ModDialogBox : DialogBox
 
     public Transform Content { get; protected set; }
 
-    public DialogBoxResult Result { get; set; }
-
     /// <summary>
     /// Gets or sets the title of the DialogBox.
     /// </summary>
@@ -88,8 +86,11 @@ public class ModDialogBox : DialogBox
     public override void CloseDialog()
     {
         foreach (DialogControl control in Content.GetComponentsInChildren<DialogControl>())
-        {            
-            extraData.Add(control.result);
+        {
+            if (control.result != null)
+            {
+                extraData.Add(control.result);
+            }
         }
 
         if (events.HasEvent("OnClosed") == true)
