@@ -11,20 +11,20 @@ using MoonSharp.Interpreter;
 
 [MoonSharpUserData]
 [Serializable]
-public class Health
+public class HealthSystem
 {
     //// Health States Order
     //// Revive, Heal, Overheal, Hit, Destroyed
 
     private float currentHealth;
 
-    public Health(float maxHealth)
+    public HealthSystem(float maxHealth)
     {
         MaxHealth = maxHealth;
         currentHealth = maxHealth;
     }
 
-    public Health(float maxHealth, bool isInvincible, bool isHealable, bool isRevivable, bool canOveheal)
+    public HealthSystem(float maxHealth, bool isInvincible, bool isHealable, bool isRevivable, bool canOveheal)
     {
         MaxHealth = maxHealth;
         currentHealth = maxHealth;
@@ -34,7 +34,7 @@ public class Health
         CanOverheal = canOveheal;
     }
 
-    private Health(Health other)
+    private HealthSystem(HealthSystem other)
     {
         currentHealth = other.currentHealth;
         MaxHealth = other.MaxHealth;
@@ -71,7 +71,7 @@ public class Health
             }
 
             // New health less than current health.
-            else if (value < currentHealth)
+            if (value < currentHealth)
             {
                 EvaluateHealthDecrease(value);
             }
@@ -104,9 +104,9 @@ public class Health
         }
     }
 
-    public Health Clone()
+    public HealthSystem Clone()
     {
-        return new Health(this);
+        return new HealthSystem(this);
     }
 
     /// <summary>
