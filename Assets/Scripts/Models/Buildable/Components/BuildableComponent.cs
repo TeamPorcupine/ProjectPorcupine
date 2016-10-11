@@ -54,10 +54,10 @@ namespace ProjectPorcupine.Buildable.Components
                 xmlReader = xmlReader.ReadSubtree();
                 Type t = componentTypes[componentTypeName];
                 XmlSerializer serializer = new XmlSerializer(t);
-                var cmp = (BuildableComponent)serializer.Deserialize(xmlReader);
+                BuildableComponent component = (BuildableComponent)serializer.Deserialize(xmlReader);
                 //// need to set name explicitly (not part of deserialization as it's passed in)
-                cmp.Type = componentTypeName;
-                return cmp;
+                component.Type = componentTypeName;
+                return component;
             }
             else
             {
@@ -135,7 +135,7 @@ namespace ProjectPorcupine.Buildable.Components
             {
                 foreach (Type type in assembly.GetTypes())
                 {
-                    var attribs = type.GetCustomAttributes(typeof(BuildableComponentNameAttribute), false);
+                    BuildableComponentNameAttribute[] attribs = (BuildableComponentNameAttribute[])type.GetCustomAttributes(typeof(BuildableComponentNameAttribute), false);
                     if (attribs != null && attribs.Length > 0)
                     {
                         foreach (BuildableComponentNameAttribute compNameAttr in attribs)

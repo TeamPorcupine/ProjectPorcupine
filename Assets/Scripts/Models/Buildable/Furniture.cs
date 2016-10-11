@@ -416,9 +416,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         }
 
         // need to update reference to furniture and call Initialize (so components can place hooks on events there)
-        foreach (var comp in furnObj.components)
+        foreach (BuildableComponent component in furnObj.components)
         {
-            comp.Initialize(furnObj);
+            component.Initialize(furnObj);
         }
 
         if (furnObj.LinksToNeighbour != string.Empty)
@@ -473,9 +473,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             EventActions.Trigger("OnFastUpdate", this, deltaTime);
         }
 
-        foreach (var cmp in components)
+        foreach (BuildableComponent component in components)
         {
-            cmp.EveryFrameUpdate(deltaTime);
+            component.EveryFrameUpdate(deltaTime);
         }
     }
 
@@ -488,9 +488,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     {
         // requirements from components (gas, ...)
         bool canFunction = true;
-        foreach (var cmp in components)
+        foreach (BuildableComponent component in components)
         {
-            canFunction &= cmp.CanFunction();
+            canFunction &= component.CanFunction();
         }
 
         IsOperating = DoesntNeedOrHasPower && canFunction;
@@ -517,9 +517,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             EventActions.Trigger("OnUpdate", this, deltaTime);
         }
                 
-        foreach (var cmp in components)
+        foreach (BuildableComponent component in components)
         {
-            cmp.FixedFrequencyUpdate(deltaTime);
+            component.FixedFrequencyUpdate(deltaTime);
         }        
         
         if (Animation != null)
@@ -771,10 +771,10 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                     UnlocalizedDescription = reader.ReadContentAsString();
                     break;
                 case "Component":
-                    var cmp = BuildableComponent.Deserialize(reader);
-                    if (cmp != null)
+                    BuildableComponent component = BuildableComponent.Deserialize(reader);
+                    if (component != null)
                     {
-                        components.Add(cmp);
+                        components.Add(component);
                     }
 
                     break;
@@ -1063,9 +1063,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     public IEnumerable<string> GetAdditionalInfo()
     {
         // try to get some info from components
-        foreach (var comp in components)
+        foreach (BuildableComponent component in components)
         {
-            string desc = comp.GetDescription();
+            string desc = component.GetDescription();
             if (!string.IsNullOrEmpty(desc))
             {
                 yield return desc;
@@ -1133,12 +1133,12 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         }
 
         // check for context menus of components
-        foreach (var comp in components)
+        foreach (BuildableComponent component in components)
         {
-            var compContextMenu = comp.GetContextMenu();
-            if (compContextMenu != null)
+            List<ContextMenuAction> componentContextMenu = component.GetContextMenu();
+            if (componentContextMenu != null)
             {
-                foreach (ContextMenuAction compContextMenuAction in compContextMenu)
+                foreach (ContextMenuAction compContextMenuAction in componentContextMenu)
                 {
                     yield return compContextMenuAction;
                 }
