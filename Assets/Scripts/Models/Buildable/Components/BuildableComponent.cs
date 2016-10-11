@@ -217,5 +217,23 @@ namespace ProjectPorcupine.Buildable.Components
             [XmlAttribute("condition")]
             public ConditionType Condition { get; set; }
         }
+
+        public class ParameterDefinition
+        {
+            [XmlAttribute("name")]
+            public string ParameterName { get; set; }
+
+            [XmlAttribute("type")]
+            public string Type { get; set; }
+
+            public ParameterDefinition()
+            {
+            }
+
+            public ParameterDefinition(string paramName)
+            {
+                this.ParameterName = paramName;
+            }
+        }
     }    
 }

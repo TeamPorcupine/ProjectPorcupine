@@ -77,6 +77,8 @@ public class BuildableComponentTest
             });
 
         fi.PossibleProductions.Add(chain2);
+
+        fi.ParamDefinitions = new Workshop.ParameterDefinitions();
                        
         // serialize
         StringWriter writer = new StringWriter();
@@ -87,7 +89,7 @@ public class BuildableComponentTest
         StringReader sr = new StringReader(writer.ToString());
 
         // if you want to dump file to disk for visual check, uncomment this
-        ////File.WriteAllText("Workshop.xml", writer.ToString());
+        File.WriteAllText("Workshop.xml", writer.ToString());
         
         // deserialize
         Workshop dfi = (Workshop)serializer.Deserialize(sr);

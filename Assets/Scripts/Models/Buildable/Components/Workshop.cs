@@ -21,27 +21,58 @@ namespace ProjectPorcupine.Buildable.Components
     [BuildableComponentName("Workshop")]
     public class Workshop : BuildableComponent
     {
-        // constants for parameters
-        public const string CurProcessingTimeParamName = "cur_processing_time";
-        public const string MaxProcessingTimeParamName = "max_processing_time";
-        public const string CurProcessedInvParamName = "cur_processed_inv";
-        public const string CurProductionChainParamName = "cur_production_chain";
-
+        
         public Workshop()
         {
         }
         
         private Workshop(Workshop other) : base(other)
         {
+            ParamDefinitions = other.ParamDefinitions;
             PossibleProductions = other.PossibleProductions;
         }
 
+        [XmlElement("ParameterDefinitions")]
+        public ParameterDefinitions ParamDefinitions { get; set; }
+
         [XmlElement("ProductionChain")]
         public List<ProductionChain> PossibleProductions { get; set; }
-        
+                
         [XmlIgnore]
         private List<ComponentContextMenu> WorkshopMenuActions { get; set; }
 
+        private Parameter CurrentProductionChainName
+        {
+            get
+            {
+                return FurnitureParams[ParamDefinitions.CurrentProductionChainName.ParameterName];
+            }
+        }
+
+        private Parameter CurrentProcessingTime
+        {
+            get
+            {
+                return FurnitureParams[ParamDefinitions.CurrentProcessingTime.ParameterName];
+            }
+        }
+
+        private Parameter MaximalProcessingTime
+        {
+            get
+            {
+                return FurnitureParams[ParamDefinitions.MaxProcessingTime.ParameterName];
+            }
+        }
+
+        private Parameter IsProcessing
+        {
+            get
+            {
+                return FurnitureParams[ParamDefinitions.IsProcessing.ParameterName];
+            }
+        }
+        
         public override BuildableComponent Clone()
         {
             return new Workshop(this);
@@ -52,7 +83,7 @@ namespace ProjectPorcupine.Buildable.Components
             if (PossibleProductions.Count > 1)
             {
                 StringBuilder sb = new StringBuilder();
-                string prodChain = FurnitureParams[CurProductionChainParamName].ToString();
+                string prodChain = CurrentProductionChainName.ToString();
                 sb.AppendLine(!string.IsNullOrEmpty(prodChain) ? string.Format("Production: {0}", prodChain) : "No selected production");
                 yield return sb.ToString();
             }
@@ -64,7 +95,7 @@ namespace ProjectPorcupine.Buildable.Components
 
         public override bool CanFunction()
         {
-            var curSetupChainName = FurnitureParams[CurProductionChainParamName].ToString();
+            var curSetupChainName = CurrentProductionChainName.ToString();
 
             if (!string.IsNullOrEmpty(curSetupChainName))
             {
@@ -90,13 +121,13 @@ namespace ProjectPorcupine.Buildable.Components
                 return;
             }
 
-            var curSetupChainName = FurnitureParams[CurProductionChainParamName].ToString();
+            var curSetupChainName = CurrentProductionChainName.ToString();
 
             if (!string.IsNullOrEmpty(curSetupChainName))
             {
                 ProductionChain prodChain = GetProductionChainByName(curSetupChainName);
                 //// if there is no processing in progress
-                if (FurnitureParams[CurProcessedInvParamName].ToInt() == 0)
+                if (IsProcessing.ToInt() == 0)
                 {
                     // check input slots for input inventory               
                     List<KeyValuePair<Tile, int>> flaggedForTaking = CheckForInventoryAtInput(prodChain);
@@ -107,20 +138,20 @@ namespace ProjectPorcupine.Buildable.Components
                         // consume input inventory
                         ConsumeInventories(flaggedForTaking);
 
-                        FurnitureParams[CurProcessedInvParamName].SetValue(1); // check if it can be bool
+                        IsProcessing.SetValue(1); // check if it can be bool
 
                         // reset processing timer and set max time for processing for this prod. chain
-                        FurnitureParams[CurProcessingTimeParamName].SetValue(0f);
-                        FurnitureParams[MaxProcessingTimeParamName].SetValue(prodChain.ProcessingTime);
+                        CurrentProcessingTime.SetValue(0f);
+                        MaximalProcessingTime.SetValue(prodChain.ProcessingTime);
                     }                  
                 }
                 else
                 {
                     // processing is in progress
-                    FurnitureParams[CurProcessingTimeParamName].ChangeFloatValue(deltaTime);
+                    CurrentProcessingTime.ChangeFloatValue(deltaTime);
 
-                    if (FurnitureParams[CurProcessingTimeParamName].ToFloat() >=
-                        FurnitureParams[MaxProcessingTimeParamName].ToFloat())
+                    if (CurrentProcessingTime.ToFloat() >=
+                        MaximalProcessingTime.ToFloat())
                     {
                         List<TileObjectTypeAmount> outPlacement = CheckForInventoryAtOutput(prodChain);
 
@@ -129,7 +160,7 @@ namespace ProjectPorcupine.Buildable.Components
                         {
                             PlaceInventories(outPlacement);
                             //// processing done, can fetch input for another processing
-                            FurnitureParams[CurProcessedInvParamName].SetValue(0);
+                            IsProcessing.SetValue(0);
                         }
                     }                    
                 }
@@ -148,7 +179,8 @@ namespace ProjectPorcupine.Buildable.Components
             {
                 WorkshopMenuActions = new List<ComponentContextMenu>();
 
-                FurnitureParams.AddParameter(new Parameter(CurProductionChainParamName, null));
+                //FurnitureParams.AddParameter(new Parameter(CurProductionChainParamName, null));
+                CurrentProductionChainName.SetValue(null);
                 foreach (var chain in PossibleProductions)
                 {
                     string prodChainName = chain.Name;
@@ -163,7 +195,8 @@ namespace ProjectPorcupine.Buildable.Components
             {
                 if (PossibleProductions.Count == 1)
                 {
-                    FurnitureParams.AddParameter(new Parameter(CurProductionChainParamName, PossibleProductions[0].Name));
+                    //FurnitureParams.AddParameter(new Parameter(CurProductionChainParamName, PossibleProductions[0].Name));
+                    CurrentProductionChainName.SetValue(PossibleProductions[0].Name);
                 }
                 else
                 {
@@ -172,9 +205,12 @@ namespace ProjectPorcupine.Buildable.Components
             }
 
             // add dynamic params here
-            FurnitureParams.AddParameter(new Parameter(CurProcessingTimeParamName, 0f));
-            FurnitureParams.AddParameter(new Parameter(MaxProcessingTimeParamName, 0f));
-            FurnitureParams.AddParameter(new Parameter(CurProcessedInvParamName, 0));
+            //FurnitureParams.AddParameter(new Parameter(CurProcessingTimeParamName, 0f));
+            //FurnitureParams.AddParameter(new Parameter(MaxProcessingTimeParamName, 0f));
+            //FurnitureParams.AddParameter(new Parameter(CurProcessedInvParamName, 0));
+            CurrentProcessingTime.SetValue(0);
+            MaximalProcessingTime.SetValue(0);
+            IsProcessing.SetValue(0);
             
             ParentFurniture.Removed += WorkshopRemoved;
         }
@@ -240,7 +276,7 @@ namespace ProjectPorcupine.Buildable.Components
 
         private void WorkshopRemoved(Furniture furniture)
         {
-            string oldProductionChainName = furniture.Parameters[CurProductionChainParamName].Value;
+            string oldProductionChainName = furniture.Parameters[ParamDefinitions.CurrentProductionChainName.ParameterName].Value;
 
             // unlock all inventories at input if there is something left
             UnlockInventoryAtInput(ParentFurniture, GetProductionChainByName(oldProductionChainName));
@@ -248,8 +284,8 @@ namespace ProjectPorcupine.Buildable.Components
 
         private void ChangeCurrentProductionChain(Furniture furniture, string newProductionChainName)
         {
-            string oldProductionChainName = furniture.Parameters[CurProductionChainParamName].Value;
-            bool isProcessing = furniture.Parameters[CurProcessedInvParamName].ToInt() > 0;
+            string oldProductionChainName = furniture.Parameters[ParamDefinitions.CurrentProductionChainName.ParameterName].Value;
+            bool isProcessing = furniture.Parameters[ParamDefinitions.IsProcessing.ParameterName].ToInt() > 0;
 
             // if selected production really changes and nothing is being processed now
             if (isProcessing || newProductionChainName.Equals(oldProductionChainName))
@@ -258,7 +294,7 @@ namespace ProjectPorcupine.Buildable.Components
             }
 
             furniture.Jobs.CancelAll();
-            furniture.Parameters[CurProductionChainParamName].SetValue(newProductionChainName);
+            furniture.Parameters[ParamDefinitions.CurrentProductionChainName.ParameterName].SetValue(newProductionChainName);
 
             // check for null, production chain can be selected for the first time
             if (oldProductionChainName != null)
@@ -271,7 +307,7 @@ namespace ProjectPorcupine.Buildable.Components
 
         private void HaulingJobForInputs(ProductionChain prodChain)
         {
-            bool isProcessing = ParentFurniture.Parameters[CurProcessedInvParamName].ToInt() > 0;
+            bool isProcessing = IsProcessing.ToInt() > 0;
             //// for all inputs in production chain
             foreach (var reqInputItem in prodChain.Input)
             {
@@ -413,6 +449,33 @@ namespace ProjectPorcupine.Buildable.Components
             public List<Item> Input { get; set; }
 
             public List<Item> Output { get; set; }
+        }
+
+        [Serializable]
+        public class ParameterDefinitions
+        {
+            // constants for parameters
+            public const string CurProcessingTimeParamName = "cur_processing_time";
+            public const string MaxProcessingTimeParamName = "max_processing_time";
+            public const string CurProcessedInvParamName = "cur_processed_inv";
+            public const string CurProductionChainParamName = "cur_production_chain";
+
+            public ParameterDefinition CurrentProcessingTime { get; set; }
+
+            public ParameterDefinition MaxProcessingTime { get; set; }
+
+            public ParameterDefinition IsProcessing { get; set; }
+
+            public ParameterDefinition CurrentProductionChainName { get; set; }
+
+            public ParameterDefinitions()
+            {
+                // default values if not defined from outside
+                CurrentProcessingTime = new ParameterDefinition(CurProcessingTimeParamName);
+                MaxProcessingTime = new ParameterDefinition(MaxProcessingTimeParamName);
+                IsProcessing = new ParameterDefinition(CurProcessedInvParamName);
+                CurrentProductionChainName = new ParameterDefinition(CurProductionChainParamName);
+            }
         }
         
         private class TileObjectTypeAmount
