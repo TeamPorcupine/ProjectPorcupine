@@ -48,7 +48,11 @@ public class DialogBoxSettings : DialogBox
     {
         LocalizationTable.SetLocalization(languageDropdown.value);
         
-        fpsObject.SetActive(fpsToggle.isOn);
+        if (fpsObject != null)
+        {
+            fpsObject.SetActive(fpsToggle.isOn);
+        }
+
         WorldController.Instance.spawnInventoryController.SetUIVisibility(developerModeToggle.isOn);
 
         // MasterTextureLimit should get 0 for High quality and higher values for lower qualities.
@@ -93,7 +97,10 @@ public class DialogBoxSettings : DialogBox
 
         fullScreenToggle.isOn = Screen.fullScreen;
 
-        fpsObject = FindObjectOfType<FPSCounter>().gameObject;
+        if (FindObjectOfType<FPSCounter>() != null)
+        {
+            fpsObject = FindObjectOfType<FPSCounter>().gameObject;
+        }       
 
         CreateResolutionDropdown();
 
