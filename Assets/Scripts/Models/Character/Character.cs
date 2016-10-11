@@ -66,7 +66,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     private float speed = 5f;
 
     /// Used for health system.
-    private Health health;
+    private HealthSystem health;
 
     /// Tile where job should be carried out, if different from MyJob.tile.
     private Tile jobTile;
@@ -215,6 +215,22 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             }
 
             selected = value;
+        }
+    }
+
+    /// <summary>
+    /// Gets the Health of this object.
+    /// </summary>
+    public HealthSystem Health
+    {
+        get
+        {
+            if (health == null)
+            {
+                health = new HealthSystem(-1f, true, false, false, false);
+            }
+
+            return health;
         }
     }
 
@@ -598,6 +614,6 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         speed = Convert.ToSingle(stats["Dexterity"].Value) / 2;
 
         // Base character max health on their constitution.
-        health = new Health(50 + (Convert.ToSingle(stats["Constitution"].Value) * 5));
+        health = new HealthSystem(50 + (Convert.ToSingle(stats["Constitution"].Value) * 5));
     }
 }

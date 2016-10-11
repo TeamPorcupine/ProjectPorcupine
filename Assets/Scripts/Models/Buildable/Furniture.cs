@@ -63,7 +63,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     private bool isOperating;
 
     // Need to hold the health value.
-    private Health health;
+    private HealthSystem health;
 
     private List<Inventory> deconstructInventory;
 
@@ -96,7 +96,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         DragType = "single";
         LinksToNeighbour = string.Empty;
         components = new HashSet<BuildableComponent>();
-        health = new Health(-1f, true, false, false, false);
     }
 
     /// <summary>
@@ -384,6 +383,23 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             return PowerConnection == null || World.Current.PowerNetwork.HasPower(PowerConnection);
         }
     }
+
+    /// <summary>
+    /// Gets the Health of this object.
+    /// </summary>
+    public HealthSystem Health
+    {
+        get
+        {
+            if (health == null)
+            {
+                health = new HealthSystem(-1f, true, false, false, false);
+            }
+
+            return health;
+        }
+    }
+
     #endregion
 
     /// <summary>
@@ -698,7 +714,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                     break;
                 case "Health":
                     reader.Read();
-                health = new Health(reader.ReadContentAsFloat(), false, true, false, false);
+                health = new HealthSystem(reader.ReadContentAsFloat(), false, true, false, false);
                     break;
                 case "LinksToNeighbours":
                     reader.Read();
