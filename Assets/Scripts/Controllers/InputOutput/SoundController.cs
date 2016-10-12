@@ -28,23 +28,18 @@ public class SoundController
         soundCooldown -= deltaTime;
     }
 
-	//public void PlayClick()
-	//{
-	//	OnButtonClickedSFX();
-	//}
+    public void OnButtonSFX()
+    {
+        // FIXME
+        if (soundCooldown > 0)
+        {
+             return;
+        }
 
-	public void OnButtonSFX()
-	{
-		//FIXME
-		if (soundCooldown > 0)
-		{
-			return;
-		}
-
-		AudioClip ac = AudioManager.GetAudio("Sound", "MenuClick");
-		AudioSource.PlayClipAtPoint(ac, Camera.main.transform.position);
-		soundCooldown = 0.1f;
-	}
+        AudioClip ac = AudioManager.GetAudio("Sound", "MenuClick");
+        AudioSource.PlayClipAtPoint(ac, Camera.main.transform.position);
+        soundCooldown = 0.1f;
+    }
 
     public void OnFurnitureCreated(Furniture furniture)
     {

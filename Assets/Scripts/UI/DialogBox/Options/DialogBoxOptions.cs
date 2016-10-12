@@ -36,7 +36,7 @@ public class DialogBoxOptions : DialogBox
     {
         this.CloseDialog();
         dialogManager.dialogBoxSettings.ShowDialog();
-	}
+    }
 
     // Quit the app whether in editor or a build version.
     public void OnButtonQuitGame()
@@ -143,7 +143,7 @@ public class DialogBoxOptions : DialogBox
     private void RenderButtons()
     {
         UnityEngine.Object buttonPrefab = Resources.Load("UI/Components/MenuButton");
-		GameObject resumeButton = CreateButtonGO(buttonPrefab, "Resume", "menu_resume");
+        GameObject resumeButton = CreateButtonGO(buttonPrefab, "Resume", "menu_resume");
         resumeButton.GetComponent<Button>().onClick.AddListener(delegate
         {
             this.CloseDialog();
