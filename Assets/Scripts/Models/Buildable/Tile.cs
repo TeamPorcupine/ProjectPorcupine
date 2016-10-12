@@ -411,30 +411,6 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
         }
     }
 
-    public Tile[] GetVerticalNeighbors(bool nullOkay = false)
-    {
-        Tile[] tiles = new Tile[2];
-        Tile tileup = World.Current.GetTileAt(X, Y, Z - 1);
-        if (tileup != null && tileup.Type == TileType.Empty)
-        {
-            tiles[0] = World.Current.GetTileAt(X, Y, Z - 1);
-        }
-
-        if (Type == TileType.Empty)
-        {
-            tiles[1] = World.Current.GetTileAt(X, Y, Z + 1);
-        }
-
-        if (!nullOkay)
-        {
-            return tiles.Where(tile => tile != null).ToArray();
-        }
-        else
-        {
-            return tiles;
-        }
-    }
-
     /// <summary>
     /// If one of the 8 neighbouring tiles is of TileType type then this returns true.
     /// </summary>
