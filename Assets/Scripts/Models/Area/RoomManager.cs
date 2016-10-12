@@ -9,6 +9,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ProjectPorcupine.Rooms
 {
@@ -205,11 +206,10 @@ namespace ProjectPorcupine.Rooms
             // Check the NESW neighbours of the furniture's tile
             // and do flood fill from them.
             Room oldRoom = sourceTile.Room;
-            if(floodFillingOnTileChange)
+            if (floodFillingOnTileChange)
             {
-                if(splitting)
+                if (splitting)
                 {
-
                     // The source tile had a room, so this must be a new piece of furniture
                     // that is potentially dividing this old room into as many as four new rooms.
 
@@ -217,9 +217,17 @@ namespace ProjectPorcupine.Rooms
                     // Needed for gas calculations.
                     int sizeOfOldRoom = oldRoom.TileCount;
 
+                    // Save a list of all the rooms to be removed for later calls
+                    // TODO: find a way of not doing this, because at the time of the
+                    // later calls, this is stale data.
+                    List<Room> oldRooms = new List<Room>();
+
+                    // You need to delete the surrounding rooms so a new room can be created
+                    oldRooms.Add(oldRoom);
+                    Remove(oldRoom);
 
                     // Try building new rooms for each of our NESW directions.
-                    foreach (Tile t in sourceTile.GetNeighbours(false, true))
+                    foreach (Tile t in new List<Tile>() { sourceTile, sourceTile.Down() })
                     {
                         if (t != null && t.Room != null)
                         {
@@ -247,10 +255,11 @@ namespace ProjectPorcupine.Rooms
 
                         Remove(oldRoom);
                     }
+
+                    oldRoom.UnassignTile(sourceTile);
                 }
                 else
                 {
-
                     // The source tile had a room, so this must be a new piece of furniture
                     // that is potentially dividing this old room into as many as four new rooms.
 
@@ -268,10 +277,7 @@ namespace ProjectPorcupine.Rooms
                     // later calls, this is stale data.
                     List<Room> oldRooms = new List<Room>();
 
-                    // You need to delete the surrounding rooms so a new room can be created
-                    oldRooms.Add(oldRoom);
-                    Remove(oldRoom);
-                    foreach (Tile t in sourceTile.GetNeighbours(false, true))
+                    foreach (Tile t in new List<Tile>() { sourceTile, sourceTile.Down() })
                     {
                         if (t != null && t.Room != null && !t.Room.IsOutsideRoom())
                         {
@@ -283,7 +289,7 @@ namespace ProjectPorcupine.Rooms
 
                     // FIXME: find a better way to do this since right now it 
                     // requires using stale data.
-                    Room newRoom = ActualFloodFill(sourceTile, null, 0);
+                    Room newRoom = ActualFloodFill(sourceTile, oldRoom, sizeOfOldRoom);
                     if (newRoom != null && oldRooms.Count > 0 && Joined != null)
                     {
                         foreach (Room r in oldRooms)
@@ -301,7 +307,6 @@ namespace ProjectPorcupine.Rooms
                 // Save the size of old room before we start removing tiles.
                 // Needed for gas calculations.
                 int sizeOfOldRoom = oldRoom.TileCount;
-
 
                 // Try building new rooms for each of our NESW directions.
                 foreach (Tile t in sourceTile.GetNeighbours())

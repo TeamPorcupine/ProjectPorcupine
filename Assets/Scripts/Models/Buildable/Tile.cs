@@ -67,6 +67,14 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
             type = value;
             ForceTileUpdate = true;
 
+            bool splitting = true;
+            if (value == TileType.Empty)
+            {
+                splitting = false;
+            }
+
+            World.Current.RoomManager.DoRoomFloodFill(this, splitting, true);
+
             OnTileClean();
         }
     }
@@ -453,12 +461,12 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
 
     public bool HasClearLineToBottom()
     {
-        if(type != TileType.Empty)
+        if (type != TileType.Empty)
         {
             return false;
         }
 
-        if(Down() == null)
+        if (Down() == null)
         {
             return true;
         }
