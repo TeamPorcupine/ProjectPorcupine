@@ -32,6 +32,9 @@ public class DialogBoxSettings : DialogBox
     public Dropdown vsyncDropdown;
     public Dropdown qualityDropdown;
 
+    public InputField autosaveInterval;
+    public InputField autosaveFiles;
+
     public Button closeButton;
     public Button saveButton;
     public Button applyButton;
