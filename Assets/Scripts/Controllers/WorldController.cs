@@ -5,14 +5,13 @@
 // and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
-using System.Threading;
-
 
 #endregion
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
 using Scheduler;
@@ -203,8 +202,6 @@ public class WorldController : MonoBehaviour
         spawnInventoryController.SetUIVisibility(developerMode);
         ///FurnitureBuildMenu.instance.RebuildMenuButtons(developerMode);
     }
-
-
 
     /// <summary>
     /// Serializes current Instance of the World and starts a thread

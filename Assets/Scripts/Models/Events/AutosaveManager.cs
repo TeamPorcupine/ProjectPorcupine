@@ -5,14 +5,11 @@
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
-using System.Linq;
-using System.Globalization;
-
 
 #endregion
 using System;
 using System.IO;
-using System.Xml.Serialization;
+using System.Linq;
 using Scheduler;
 
 public class AutosaveManager
@@ -45,7 +42,6 @@ public class AutosaveManager
             autosaveEvent = new ScheduledEvent("autosave", DoAutosave, AutosaveInterval * 60.0f, true, 0);
             scheduler.RegisterEvent(autosaveEvent);
         }
-
 
         // set autosaveCounter = maximum index of existing autosaves (so as not to clobber autosaves from previous games)
         if (Directory.Exists(WorldController.Instance.FileSaveBasePath()))
@@ -94,7 +90,6 @@ public class AutosaveManager
             return;
         }
 
-
         string fileName;
 
         string saveDirectoryPath = WorldController.Instance.FileSaveBasePath();
@@ -111,6 +106,7 @@ public class AutosaveManager
 
             fileName = AutosaveBaseName + autosaveCounter.ToString();
         }
+
         string filePath = Path.Combine(saveDir.ToString(), fileName + ".sav");
         Debug.ULogChannel("AutosaveManager", "Autosaving to '{0}'.", filePath);
         if (File.Exists(filePath) == true)

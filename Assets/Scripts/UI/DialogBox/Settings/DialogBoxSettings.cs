@@ -7,7 +7,6 @@
 // ====================================================
 using System;
 
-
 #endregion
 using System.Collections.Generic;
 using ProjectPorcupine.Localization;

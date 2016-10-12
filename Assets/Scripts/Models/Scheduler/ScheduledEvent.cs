@@ -271,6 +271,7 @@ namespace Scheduler
                     TimeToWait = 0;
                 }
             }
+
             Cooldown = newCooldown;
         }
 

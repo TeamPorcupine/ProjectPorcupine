@@ -117,14 +117,4 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
             }
         }
     }
-
-    /// <summary>
-    /// Create/overwrite the save file with the XML text.
-    /// </summary>
-    /// <param name="filePath">Full path to file.</param>
-    /// <param name="writer">TextWriter that contains serialized World data.</param>
-    private void SaveWorldToHdd(string filePath, TextWriter writer)
-    {
-        File.WriteAllText(filePath, writer.ToString());
-    }
 }
