@@ -33,10 +33,10 @@ public class BuildableComponentTest
         XmlReader reader = new XmlTextReader(new StringReader(inputXML));
         reader.Read();
                 
-        var cmp = ProjectPorcupine.Buildable.Components.BuildableComponent.Deserialize(reader);
+        BuildableComponent component = ProjectPorcupine.Buildable.Components.BuildableComponent.Deserialize(reader);
 
-        Assert.NotNull(cmp);
-        Assert.AreEqual("Workshop", cmp.Type);
+        Assert.NotNull(component);
+        Assert.AreEqual("Workshop", component.Type);
     }
     
     [Test]

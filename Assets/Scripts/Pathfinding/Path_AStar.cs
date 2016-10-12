@@ -201,7 +201,8 @@ public class Path_AStar
 
         return Mathf.Sqrt(
             Mathf.Pow(a.data.X - b.data.X, 2) +
-            Mathf.Pow(a.data.Y - b.data.Y, 2));
+            Mathf.Pow(a.data.Y - b.data.Y, 2) +
+            Mathf.Pow(a.data.Z - b.data.Z, 2));
     }
 
     private float Dist_between(Path_Node<Tile> a, Path_Node<Tile> b)

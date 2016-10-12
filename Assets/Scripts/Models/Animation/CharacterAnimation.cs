@@ -115,7 +115,7 @@ namespace Animation
                 }
             }
 
-            currentAnimation.Update(deltaTime);
+            currentAnimation.Update(deltaTime * character.MovementSpeed);
 
             if (prevFrameIndex != currentAnimation.CurrentFrame)
             {
