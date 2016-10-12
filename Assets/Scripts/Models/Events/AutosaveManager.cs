@@ -5,6 +5,10 @@
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
+using System.Linq;
+using System.Globalization;
+
+
 #endregion
 using System;
 using System.IO;
@@ -20,6 +24,9 @@ public class AutosaveManager
     private Scheduler.Scheduler scheduler;
 
     private ScheduledEvent autosaveEvent;
+
+    // FIXME: Just temporary, if this still exists by the time this is a PR, I've overlooked it, this should be a setting.
+    private int maxAutosaves = 5;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AutosaveManager"/> class.
@@ -91,11 +98,36 @@ public class AutosaveManager
             return;
         }
 
-        autosaveCounter += 1;
 
-        string fileName = AutosaveBaseName + autosaveCounter.ToString();
+        string fileName;
+
+        string saveDirectoryPath = WorldController.Instance.FileSaveBasePath();
+        DirectoryInfo saveDir = new DirectoryInfo(saveDirectoryPath);
+
+        DateTimeFormatInfo dtfi = (DateTimeFormatInfo)DateTimeFormatInfo.CurrentInfo.Clone();
+        dtfi.DateSeparator = "-";
+        dtfi.TimeSeparator = ".";
+        dtfi.ShortTimePattern = "HH:mm:ss";
+        Debug.Log(DateTime.Now.ToString("g", dtfi));
+        FileInfo[] saveGames = saveDir.GetFiles(AutosaveBaseName + "*.sav").OrderByDescending(f => f.LastWriteTime).ToArray();
+        if (saveGames.Length >= maxAutosaves)
+        {
+            // Get list of files in save location
+            fileName = Path.GetFileNameWithoutExtension(saveGames.Last().Name);
+        }
+        else
+        {
+
+            autosaveCounter += 1;
+
+            Directory.GetFiles(WorldController.Instance.FileSaveBasePath(), AutosaveBaseName + "*.sav");
+
+
+
+
+            fileName = AutosaveBaseName + autosaveCounter.ToString();
+        }
         string filePath = System.IO.Path.Combine(WorldController.Instance.FileSaveBasePath(), fileName + ".sav");
-
         Debug.ULogChannel("AutosaveManager", "Autosaving to '{0}'.", filePath);
         if (File.Exists(filePath) == true)
         {
