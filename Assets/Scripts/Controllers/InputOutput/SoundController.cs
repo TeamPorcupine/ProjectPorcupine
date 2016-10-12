@@ -35,7 +35,7 @@ public class SoundController
         {
              return;
         }
-        // fghfghfgh
+ 
         AudioClip ac = AudioManager.GetAudio("Sound", "MenuClick");
         AudioSource.PlayClipAtPoint(ac, Camera.main.transform.position);
         soundCooldown = 0.1f;
