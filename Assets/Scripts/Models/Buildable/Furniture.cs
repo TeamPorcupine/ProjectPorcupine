@@ -62,9 +62,12 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
 
     private bool isOperating;
 
+    // Need to hold the health value.
+    private HealthSystem health;
+
     private List<Inventory> deconstructInventory;
 
-    // did we have power in the last update?
+    // Did we have power in the last update?
     private bool prevUpdatePowerOn;
     #endregion
 
@@ -116,6 +119,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         Tint = other.Tint;
         LinksToNeighbour = other.LinksToNeighbour;
         deconstructInventory = other.deconstructInventory;
+        health = other.health;
 
         Parameters = new Parameter(other.Parameters);
         Jobs = new BuildableJobs(this, other.Jobs);
@@ -375,10 +379,27 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     public bool DoesntNeedOrHasPower
     {
         get
-        {
+        {   
             return PowerConnection == null || World.Current.PowerNetwork.HasPower(PowerConnection);
         }
     }
+
+    /// <summary>
+    /// Gets the Health of this object.
+    /// </summary>
+    public HealthSystem Health
+    {
+        get
+        {
+            if (health == null)
+            {
+                health = new HealthSystem(-1f, true, false, false, false);
+            }
+
+            return health;
+        }
+    }
+
     #endregion
 
     /// <summary>
@@ -690,6 +711,10 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                 case "Height":
                     reader.Read();
                     Height = reader.ReadContentAsInt();
+                    break;
+                case "Health":
+                    reader.Read();
+                health = new HealthSystem(reader.ReadContentAsFloat(), false, true, false, false);
                     break;
                 case "LinksToNeighbours":
                     reader.Read();
@@ -1071,8 +1096,11 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                 yield return desc;
             }
         }
-        
-        yield return string.Format("Hitpoint 18 / 18");
+
+        if (health != null)
+        {
+            yield return health.TextForSelectionPanel();
+        }
 
         if (PowerConnection != null)
         {
