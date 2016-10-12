@@ -86,6 +86,7 @@ public class DialogBoxSettings : DialogBox
         Settings.SetSetting("DialogBoxSettings_qualityDropdown", qualityDropdown.value);
         Settings.SetSetting("DialogBoxSettings_vSyncDropdown", vsyncDropdown.value);
         Settings.SetSetting("DialogBoxSettings_resolutionDropdown", resolutionDropdown.value);
+        Settings.SaveSettings();
     }
 
     public void OnEnable()
