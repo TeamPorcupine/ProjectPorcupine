@@ -419,12 +419,6 @@ namespace ProjectPorcupine.Rooms
                 return null;
             }
 
-//            if (tile.Type == TileType.Empty)
-//            {
-//                // This tile is empty space and must remain part of the outside.
-//                return null;
-//            }
-//
             // If we get to this point, then we know that we need to create a new room.
             List<Room> listOfOldRooms = new List<Room>();
 
