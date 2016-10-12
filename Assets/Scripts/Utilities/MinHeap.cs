@@ -151,9 +151,9 @@ public class MinHeap<T> : IEnumerable<T> where T : class, IComparable<T>
 
     IEnumerator<T> IEnumerable<T>.GetEnumerator()
     {
-        foreach (var i in items)
+        foreach (T item in items)
         {
-            yield return i;
+            yield return item;
         }
     }
 

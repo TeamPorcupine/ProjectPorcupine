@@ -198,11 +198,11 @@ public class CameraController
     /// </summary>    
     private Bounds GetCameraBounds()
     {
-        var x = Camera.main.transform.position.x;
-        var y = Camera.main.transform.position.y;
-        var size = Camera.main.orthographicSize * 2;
-        var width = size * (float)Screen.width / Screen.height;
-        var height = size;
+        float x = Camera.main.transform.position.x;
+        float y = Camera.main.transform.position.y;
+        float size = Camera.main.orthographicSize * 2;
+        float width = size * (float)Screen.width / Screen.height;
+        float height = size;
 
         return new Bounds(new Vector3(x, y, 0), new Vector3(width, height, 0));
     }
