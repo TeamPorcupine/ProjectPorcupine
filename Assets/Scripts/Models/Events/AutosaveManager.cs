@@ -25,9 +25,6 @@ public class AutosaveManager
 
     private ScheduledEvent autosaveEvent;
 
-    // FIXME: Just temporary, if this still exists by the time this is a PR, I've overlooked it, this should be a setting.
-    private int maxAutosaves = 5;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="AutosaveManager"/> class.
     /// This class schedules autosave events which save the game at regular intervals
@@ -43,13 +40,12 @@ public class AutosaveManager
         AutosaveInterval = Settings.GetSetting<int>("AutosaveInterval", 2); // in minutes
 
         // autosaves disabled if AutosaveInterval <= 0
-        if (AutosaveInterval <= 0)
+        if (AutosaveInterval > 0)
         {
-            return;
+            autosaveEvent = new ScheduledEvent("autosave", DoAutosave, AutosaveInterval * 60.0f, true, 0);
+            scheduler.RegisterEvent(autosaveEvent);
         }
 
-        autosaveEvent = new ScheduledEvent("autosave", DoAutosave, AutosaveInterval * 60.0f, true, 0);
-        scheduler.RegisterEvent(autosaveEvent);
 
         // set autosaveCounter = maximum index of existing autosaves (so as not to clobber autosaves from previous games)
         if (Directory.Exists(WorldController.Instance.FileSaveBasePath()))
@@ -103,61 +99,45 @@ public class AutosaveManager
 
         string saveDirectoryPath = WorldController.Instance.FileSaveBasePath();
         DirectoryInfo saveDir = new DirectoryInfo(saveDirectoryPath);
-
-        DateTimeFormatInfo dtfi = (DateTimeFormatInfo)DateTimeFormatInfo.CurrentInfo.Clone();
-        dtfi.DateSeparator = "-";
-        dtfi.TimeSeparator = ".";
-        dtfi.ShortTimePattern = "HH:mm:ss";
-        Debug.Log(DateTime.Now.ToString("g", dtfi));
         FileInfo[] saveGames = saveDir.GetFiles(AutosaveBaseName + "*.sav").OrderByDescending(f => f.LastWriteTime).ToArray();
-        if (saveGames.Length >= maxAutosaves)
+        if (saveGames.Length >= Settings.GetSetting<int>("AutosaveFiles", 5))
         {
             // Get list of files in save location
             fileName = Path.GetFileNameWithoutExtension(saveGames.Last().Name);
         }
         else
         {
-
             autosaveCounter += 1;
-
-            Directory.GetFiles(WorldController.Instance.FileSaveBasePath(), AutosaveBaseName + "*.sav");
-
-
-
 
             fileName = AutosaveBaseName + autosaveCounter.ToString();
         }
-        string filePath = System.IO.Path.Combine(WorldController.Instance.FileSaveBasePath(), fileName + ".sav");
+        string filePath = Path.Combine(saveDir.ToString(), fileName + ".sav");
         Debug.ULogChannel("AutosaveManager", "Autosaving to '{0}'.", filePath);
         if (File.Exists(filePath) == true)
         {
             Debug.ULogErrorChannel("AutosaveManager", "File already exists -- overwriting the file for now.");
         }
 
-        SaveWorld(filePath);
+        WorldController.Instance.SaveWorld(filePath);
     }
 
-    // FIXME: This is mostly just copied from DialogBoxSaveGame.cs
-    // Both functions could probably be mostly refactored onto World???
-    private void SaveWorld(string filePath)
+    public void SetAutosaveInterval(int newInterval)
     {
-        XmlSerializer serializer = new XmlSerializer(typeof(World));
-        TextWriter writer = new StringWriter();
-        serializer.Serialize(writer, WorldController.Instance.World);
-        writer.Close();
-
-        try
+        AutosaveInterval = newInterval;
+        if (newInterval == 0)
         {
-            if (Directory.Exists(WorldController.Instance.FileSaveBasePath()) == false)
-            {
-                Directory.CreateDirectory(WorldController.Instance.FileSaveBasePath());
-            }
-
-            File.WriteAllText(filePath, writer.ToString());
+            scheduler.DeregisterEvent(autosaveEvent);
+            return;
         }
-        catch (Exception e)
+
+        if (autosaveEvent == null)
         {
-            Debug.ULogErrorChannel("AutosaveManager", "Could not create autosave file. Error: '{0}'.", e.ToString());
+            autosaveEvent = new ScheduledEvent("autosave", DoAutosave, newInterval * 60.0f, true, 0);
+            scheduler.RegisterEvent(autosaveEvent);
+        }
+        else
+        {
+            autosaveEvent.SetCooldown(newInterval * 60.0f);
         }
     }
 }
