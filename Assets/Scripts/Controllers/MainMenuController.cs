@@ -33,7 +33,8 @@ public class MainMenuController : MonoBehaviour
         TimeManager.Instance.IsPaused = true;
 
         // Create a Background.
-        Instantiate(Resources.Load("Prefab/BackgroundMainMenu"));
+        GameObject backgroundGO = new GameObject("Background");
+        backgroundGO.AddComponent<SpriteRenderer>().sprite = SpriteManager.GetSprite("Background", "red-planet-background");
 
         GameObject canvas = GameObject.Find("Canvas");
 
