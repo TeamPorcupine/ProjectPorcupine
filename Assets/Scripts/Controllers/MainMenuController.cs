@@ -59,7 +59,8 @@ public class MainMenuController : MonoBehaviour
         menuTop.SetActive(true);
         GameObject fpsCounter = FindObjectOfType<FPSCounter>().gameObject;
         fpsCounter.SetActive(true);
-        // TODO : Activate this when UIDialogbox will be fixed.
-        //fpsCounter.SetActive(Settings.GetSetting("DialogBoxSettings_fpsToggle", true));
+
+        // TODO : Activate this when DialogBoxSettings will be fixed. See issue #1526
+        ////fpsCounter.SetActive(Settings.GetSetting("DialogBoxSettings_fpsToggle", true));
     }
 }

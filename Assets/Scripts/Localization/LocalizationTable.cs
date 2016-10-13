@@ -93,6 +93,14 @@ namespace ProjectPorcupine.Localization
         }
 
         /// <summary>
+        /// Destroy all recorded Delegates when changing scenes.
+        /// </summary>
+        public static void UnregisterDelegates()
+        {
+            CBLocalizationFilesChanged = null;
+        }
+
+        /// <summary>
         /// Load a localization file from the harddrive with a defined localization code.
         /// </summary>
         /// <param name="path">The path to the file.</param>
@@ -177,11 +185,6 @@ namespace ProjectPorcupine.Localization
                 default:
                     return string.Empty;
             }
-        }
-
-        public static void UnregisterDelegates()
-        {
-            CBLocalizationFilesChanged = null;
         }
     }
 }
