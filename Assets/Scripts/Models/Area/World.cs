@@ -492,6 +492,7 @@ public class World : IXmlSerializable
     {
         CharacterManager.Update(deltaTime);
         FurnitureManager.TickEveryFrame(deltaTime);
+        UtilityManager.TickEveryFrame(deltaTime);
         GameEventManager.Update(deltaTime);
         ShipManager.Update(deltaTime);
     }
@@ -503,7 +504,7 @@ public class World : IXmlSerializable
     private void TickFixedFrequency(float deltaTime)
     {
         FurnitureManager.TickFixedFrequency(deltaTime);
-
+        UtilityManager.TickFixedFrequency(deltaTime);
         // Progress temperature modelling
         temperature.Update();
         PowerNetwork.Update(deltaTime);

@@ -435,7 +435,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         {
             foreach (Utility util in tile.Utilities.Values)
             {
-                util.grid.PlugIn(furnObj.PowerConnection);
+                util.Grid.PlugIn(furnObj.PowerConnection);
             }
         }
 

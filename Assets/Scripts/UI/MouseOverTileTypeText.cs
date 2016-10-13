@@ -53,7 +53,7 @@ public class MouseOverTileTypeText : MonoBehaviour
         text.text = "Tile Type: " + tileType;
         if (t.Utilities != null && t.Utilities.Count > 0)
         {
-            text.text += "\n" + t.Utilities.First().Value.grid.GetId();
+            text.text += "\n" + t.Utilities.First().Value.Grid.GetId();
         }
     }
 }

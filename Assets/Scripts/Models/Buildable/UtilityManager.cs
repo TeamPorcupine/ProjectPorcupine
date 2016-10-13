@@ -78,6 +78,34 @@ public class UtilityManager : IEnumerable<Utility>
     }
 
     /// <summary>
+    /// Calls the utility update function on every frame.
+    /// The list needs to be copied temporarily in case furnitures are added or removed during the update.
+    /// </summary>
+    /// <param name="deltaTime">Delta time.</param>
+    public void TickEveryFrame(float deltaTime)
+    {
+        List<Utility> tempUtilities = utilities;
+        foreach (Utility utility in tempUtilities)
+        {
+            utility.EveryFrameUpdate(deltaTime);
+        }
+    }
+
+    /// <summary>
+    /// Calls the furnitures update function on every frame.
+    /// The list needs to be copied temporarily in case furnitures are added or removed during the update.
+    /// </summary>
+    /// <param name="deltaTime">Delta time.</param>
+    public void TickFixedFrequency(float deltaTime)
+    {
+        List<Utility> tempUtilities = utilities;
+        foreach (Utility utility in tempUtilities)
+        {
+            utility.FixedFrequencyUpdate(deltaTime);
+        }
+    }
+
+    /// <summary>
     /// When a construction job is completed, place the utility.
     /// </summary>
     /// <param name="job">The completed job.</param>

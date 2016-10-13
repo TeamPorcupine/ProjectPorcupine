@@ -110,6 +110,15 @@ namespace ProjectPorcupine.PowerNetwork
             powerGrids.Add(grid);
         }
 
+        public void UnregisterGrid(Grid grid)
+        {
+            if (!powerGrids.Contains(grid))
+            {
+                return;
+            }
+            powerGrids.Remove(grid);
+        }
+
         public int FindId(Grid grid)
         {
             return powerGrids.ToList().IndexOf(grid);

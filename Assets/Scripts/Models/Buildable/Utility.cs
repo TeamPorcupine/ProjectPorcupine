@@ -23,7 +23,8 @@ using ProjectPorcupine.PowerNetwork;
 [MoonSharpUserData]
 public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextActionProvider, IBuildable
 {
-    public Grid grid;
+    private Grid grid;
+    private bool gridUpdatedThisFrame = false;
 
     // Prevent construction too close to the world's edge
     private const int MinEdgeDistance = 5;
@@ -222,6 +223,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     /// </summary>
     public bool IsBeingDestroyed { get; protected set; }
 
+    public Grid Grid { get; private set; }
     /// <summary>
     /// Used to place utility in a certain position.
     /// </summary>
@@ -265,11 +267,6 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
                 {
                     foreach (Utility utility in tileAt.Utilities.Values)
                     {
-                        if (utility.grid != null && obj.grid == null && obj.Tile.IsNeighbour(utility.Tile))
-                        {
-                            obj.grid = utility.grid;
-
-                        }
                         if (utility.Changed != null)
                         {
                             utility.Changed(utility);
@@ -279,15 +276,11 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
             }
         }
 
+        obj.UpdateGrid(obj);
 
-        if (obj.grid == null)
-        {
-            obj.grid = new Grid();
-        }
-
-        World.Current.PowerNetwork.RegisterGrid(obj.grid);
         // Call LUA install scripts
         obj.EventActions.Trigger("OnInstall", obj);
+
         return obj;
     }
 
@@ -296,7 +289,17 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     /// This checks if the utility is a PowerConsumer, and if it does not have power it cancels its job.
     /// </summary>
     /// <param name="deltaTime">The time since the last update was called.</param>
-    public void Update(float deltaTime)
+    public void EveryFrameUpdate(float deltaTime)
+    {
+        gridUpdatedThisFrame = false;
+    }
+
+    /// <summary>
+    /// This function is called to update the utility. This will also trigger EventsActions.
+    /// This checks if the utility is a PowerConsumer, and if it does not have power it cancels its job.
+    /// </summary>
+    /// <param name="deltaTime">The time since the last update was called.</param>
+    public void FixedFrequencyUpdate(float deltaTime)
     {
         if (EventActions != null)
         {
@@ -685,6 +688,62 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         }
 
         return true;
+    }
+
+    protected void UpdateGrid(Utility utilityToUpdate, Grid newGrid = null)
+    {
+        if (gridUpdatedThisFrame)
+        {
+            return;
+        }
+
+        gridUpdatedThisFrame = true;
+        Grid oldGrid = utilityToUpdate.Grid;
+
+        if (newGrid == null)
+        {
+            foreach (Tile neighborTile in utilityToUpdate.Tile.GetNeighbours())
+            {
+                if (neighborTile != null && neighborTile.Utilities != null)
+                {
+                    foreach (Utility utility in neighborTile.Utilities.Values)
+                    {
+                        if (utility.Grid != null && utilityToUpdate.Grid == null)
+                        {
+                            utilityToUpdate.Grid = utility.Grid;
+                        }
+                    }
+                }
+            }
+
+            if (utilityToUpdate.Grid == null)
+            {
+                utilityToUpdate.Grid = new Grid();
+            }
+        }
+        else
+        {
+            utilityToUpdate.Grid = newGrid;
+        }
+
+        if (utilityToUpdate.Grid != oldGrid)
+        {
+            Debug.LogWarning("UnregisteringPowerGrid");
+            World.Current.PowerNetwork.UnregisterGrid(oldGrid);
+        }
+
+        World.Current.PowerNetwork.RegisterGrid(utilityToUpdate.Grid);
+
+        foreach (Tile neighborTile in utilityToUpdate.Tile.GetNeighbours())
+        {
+            if (neighborTile != null && neighborTile.Utilities != null)
+            {
+                foreach (Utility utility in neighborTile.Utilities.Values)
+                {
+                    utility.UpdateGrid(utility, utilityToUpdate.Grid);
+                }
+            }
+        }
     }
 
     private void ReadXmlDeconstructJob(XmlReader reader)
