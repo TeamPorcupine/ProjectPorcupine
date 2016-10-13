@@ -265,9 +265,10 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
                 {
                     foreach (Utility utility in tileAt.Utilities.Values)
                     {
-                        if (utility.grid != null && obj.grid == null)
+                        if (utility.grid != null && obj.grid == null && obj.Tile.IsNeighbour(utility.Tile))
                         {
                             obj.grid = utility.grid;
+
                         }
                         if (utility.Changed != null)
                         {
