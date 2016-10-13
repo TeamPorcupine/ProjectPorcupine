@@ -223,7 +223,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     /// </summary>
     public bool IsBeingDestroyed { get; protected set; }
 
-    public Grid Grid { get; private set; }
+    public Grid Grid { get; set; }
     /// <summary>
     /// Used to place utility in a certain position.
     /// </summary>
@@ -551,6 +551,16 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
             }
         }
 
+        foreach (Tile neighbor in Tile.GetNeighbours())
+        {
+            foreach (Utility utility in neighbor.Utilities.Values)
+            {
+                utility.Grid = new Grid();
+                utility.UpdateGrid(utility);
+                utility.Grid.Split();
+            }
+        }
+
         // At this point, no DATA structures should be pointing to us, so we
         // should get garbage-collected.
     }
@@ -728,8 +738,12 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
 
         if (utilityToUpdate.Grid != oldGrid)
         {
-            Debug.LogWarning("UnregisteringPowerGrid");
             World.Current.PowerNetwork.UnregisterGrid(oldGrid);
+        }
+
+        if (oldGrid != null && newGrid != null)
+        {
+            newGrid.Merge(oldGrid);
         }
 
         World.Current.PowerNetwork.RegisterGrid(utilityToUpdate.Grid);

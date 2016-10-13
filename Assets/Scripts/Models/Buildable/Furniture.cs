@@ -150,6 +150,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         {
             PowerConnection = other.PowerConnection.Clone() as Connection;
             PowerConnection.NewThresholdReached += OnNewThresholdReached;
+            PowerConnection.Reconnecting += OnReconnecting;
         }
 
         tileTypeBuildPermissions = new HashSet<string>(other.tileTypeBuildPermissions);
@@ -1312,6 +1313,15 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     {
         UpdateOnChanged(this);
     }
+
+    private void OnReconnecting()
+    {
+        foreach (Utility util in Tile.Utilities.Values)
+        {
+            util.Grid.PlugIn(PowerConnection);
+        }
+    }
+
     #endregion
 
     /// <summary>

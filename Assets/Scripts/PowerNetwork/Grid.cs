@@ -34,6 +34,14 @@ namespace ProjectPorcupine.PowerNetwork
             get { return connections.Count == 0; }
         }
 
+        public HashSet<Connection> Connections
+        {
+            get 
+            {
+                return connections; 
+            }
+        }
+
         public bool CanPlugIn(Connection connection)
         {
             if (connection == null)
@@ -118,6 +126,22 @@ namespace ProjectPorcupine.PowerNetwork
         {
             return World.Current.PowerNetwork.FindId(this);
         }
+
+        public void Merge(Grid otherGrid)
+        {
+            connections.UnionWith(otherGrid.connections);
+        }
+
+        public void Split()
+        {
+            Connection[] tempConnections = connections.ToArray();
+            connections.Clear();
+            foreach (Connection connection in tempConnections)
+            {
+                connection.Reconnect();
+            }
+        }
+
         private void ChargeAccumulators(ref float currentPowerLevel)
         {
             foreach (Connection connection in connections.Where(connection => connection.IsPowerAccumulator && !connection.IsFull))
