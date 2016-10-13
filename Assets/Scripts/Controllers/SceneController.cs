@@ -88,5 +88,7 @@ public class SceneController
         {
             WorldController.Instance.Destroy();
         }
+
+        ProjectPorcupine.Localization.LocalizationTable.UnregisterDelegates();
     }
 }

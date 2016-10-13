@@ -181,8 +181,9 @@ public class DialogBoxOptions : DialogBox
         buttonGameObject.transform.SetParent(this.transform, false);
         buttonGameObject.name = "Button " + name;
 
-        string localLocalizationCode = localizationCode;
-        buttonGameObject.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(localLocalizationCode) };
+        TextLocalizer textLocalizer = buttonGameObject.transform.GetComponentInChildren<TextLocalizer>();
+        textLocalizer.formatValues = new string[] { LocalizationTable.GetLocalization(localizationCode) };
+        textLocalizer.defaultText = localizationCode;
 
         return buttonGameObject;
     }

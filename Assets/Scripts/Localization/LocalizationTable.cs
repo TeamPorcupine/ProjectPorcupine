@@ -178,5 +178,10 @@ namespace ProjectPorcupine.Localization
                     return string.Empty;
             }
         }
+
+        public static void UnregisterDelegates()
+        {
+            CBLocalizationFilesChanged = null;
+        }
     }
 }
