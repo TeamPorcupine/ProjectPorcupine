@@ -6,6 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class SceneController
