@@ -51,24 +51,24 @@ namespace ProjectPorcupine.Buildable.Components
         
         public override void FixedFrequencyUpdate(float deltaTime)
         {
-            //// if there is enough input, do the processing and store item to output
-            //// - remove items from input
-            //// - add param to reflect factory can provide output (has output inside)
-            ////   - as output will be produced after time, it is possible that output spot can be ocupied meanwhile
-            //// - process for specified time
-            //// - if output slot is free, provide output (if not, keep output 'inside' factory)
-
+            // if there is enough input, do the processing and store item to output
+            // - remove items from input
+            // - add param to reflect factory can provide output (has output inside)
+            //   - as output will be produced after time, it is possible that output spot can be ocupied meanwhile
+            // - process for specified time
+            // - if output slot is free, provide output (if not, keep output 'inside' factory)
             if (ParentFurniture.IsBeingDestroyed)
             {
                 return;
             }
 
-            var curSetupChainName = FurnitureParams[CurProductionChainParamName].ToString();
+            string curSetupChainName = FurnitureParams[CurProductionChainParamName].ToString();
 
             if (!string.IsNullOrEmpty(curSetupChainName))
             {
                 ProductionChain prodChain = GetProductionChainByName(curSetupChainName);
-                //// if there is no processing in progress
+
+                // if there is no processing in progress
                 if (FurnitureParams[CurProcessedInvParamName].ToInt() == 0)
                 {
                     // check input slots for input inventory               
@@ -86,7 +86,8 @@ namespace ProjectPorcupine.Buildable.Components
                         FurnitureParams[CurProcessingTimeParamName].SetValue(0f);
                         FurnitureParams[MaxProcessingTimeParamName].SetValue(prodChain.ProcessingTime);
                     }
-                    //// trigger running state change
+
+                    // trigger running state change
                     if (IsRunning)
                     {
                         OnRunningStateChanged(IsRunning = false);
@@ -106,11 +107,13 @@ namespace ProjectPorcupine.Buildable.Components
                         if (outPlacement.Count == prodChain.Output.Count)
                         {
                             PlaceInventories(outPlacement);
-                            //// processing done, can fetch input for another processing
+
+                            // processing done, can fetch input for another processing
                             FurnitureParams[CurProcessedInvParamName].SetValue(0);
                         }
                     }
-                    //// trigger running state change
+
+                    // trigger running state change
                     if (!IsRunning)
                     {
                         OnRunningStateChanged(IsRunning = true);
@@ -135,7 +138,7 @@ namespace ProjectPorcupine.Buildable.Components
                 WorkshopMenuActions = new List<ComponentContextMenu>();
 
                 FurnitureParams.AddParameter(new Parameter(CurProductionChainParamName, null));
-                foreach (var chain in PossibleProductions)
+                foreach (ProductionChain chain in PossibleProductions)
                 {
                     string prodChainName = chain.Name;
                     WorkshopMenuActions.Add(new ComponentContextMenu()
@@ -169,7 +172,7 @@ namespace ProjectPorcupine.Buildable.Components
 
         private void PlaceInventories(List<TileObjectTypeAmount> outPlacement)
         {
-            foreach (var outPlace in outPlacement)
+            foreach (TileObjectTypeAmount outPlace in outPlacement)
             {
                 if (outPlace.IsEmpty)
                 {
@@ -278,7 +281,7 @@ namespace ProjectPorcupine.Buildable.Components
         private void HaulingJobForInputs(ProductionChain prodChain)
         {
             // for all inputs in production chain
-            foreach (var reqInputItem in prodChain.Input)
+            foreach (Item reqInputItem in prodChain.Input)
             {
                 // if there is no hauling job for input object type, create one
                 Job furnJob;
@@ -302,7 +305,7 @@ namespace ProjectPorcupine.Buildable.Components
 
                     if (desiredAmount > 0)
                     {
-                        var jb = new Job(
+                        Job job = new Job(
                                      inTile,
                                      null,  // beware: passed jobObjectType is expected Furniture only !!
                                      null,
@@ -312,9 +315,9 @@ namespace ProjectPorcupine.Buildable.Components
                                      false,
                                      false,
                                      false);
-                        jb.JobDescription = string.Format("Hauling '{0}' to '{1}'", desiredInv, ParentFurniture.Name);
-                        jb.OnJobWorked += PlaceInventoryToWorkshopInput;
-                        ParentFurniture.Jobs.Add(jb);
+                        job.JobDescription = string.Format("Hauling '{0}' to '{1}'", desiredInv, ParentFurniture.Name);
+                        job.OnJobWorked += PlaceInventoryToWorkshopInput;
+                        ParentFurniture.Jobs.Add(job);
                     }
                 }
             }
@@ -322,30 +325,31 @@ namespace ProjectPorcupine.Buildable.Components
 
         private List<TileObjectTypeAmount> CheckForInventoryAtOutput(ProductionChain prodChain)
         {
-            var outPlacement = new List<TileObjectTypeAmount>();
-            //// processing is done, try to spit the output
-            //// check if output can be placed in world
+            List<TileObjectTypeAmount> outPlacement = new List<TileObjectTypeAmount>();
+
+            // processing is done, try to spit the output
+            // check if output can be placed in world
             foreach (Item outObjType in prodChain.Output)
             {
                 int amount = outObjType.Amount;
 
                 // check ouput slots for products:                        
-                Tile tt = World.Current.GetTileAt(
+                Tile outputTile = World.Current.GetTileAt(
                     ParentFurniture.Tile.X + outObjType.SlotPosX,
                     ParentFurniture.Tile.Y + outObjType.SlotPosY,
                     ParentFurniture.Tile.Z);
 
-                bool tileHasOtherFurniture = tt.Furniture != null && tt.Furniture != ParentFurniture;
+                bool tileHasOtherFurniture = outputTile.Furniture != null && outputTile.Furniture != ParentFurniture;
 
                 if (!tileHasOtherFurniture &&
-                    (tt.Inventory == null ||
-                    (tt.Inventory.Type == outObjType.ObjectType && tt.Inventory.StackSize + amount <= tt.Inventory.MaxStackSize)))
+                    (outputTile.Inventory == null ||
+                    (outputTile.Inventory.Type == outObjType.ObjectType && outputTile.Inventory.StackSize + amount <= outputTile.Inventory.MaxStackSize)))
                 {
                     // out product can be placed here
                     outPlacement.Add(new TileObjectTypeAmount()
                     {
-                        Tile = tt,
-                        IsEmpty = tt.Inventory == null,
+                        Tile = outputTile,
+                        IsEmpty = outputTile.Inventory == null,
                         ObjectType = outObjType.ObjectType,
                         Amount = outObjType.Amount
                     });
@@ -357,7 +361,7 @@ namespace ProjectPorcupine.Buildable.Components
         
         private List<KeyValuePair<Tile, int>> CheckForInventoryAtInput(ProductionChain prodChain)
         {
-            var flaggedForTaking = new List<KeyValuePair<Tile, int>>();
+            List<KeyValuePair<Tile, int>> flaggedForTaking = new List<KeyValuePair<Tile, int>>();
             foreach (Item reqInputItem in prodChain.Input)
             {
                 // check input slots for req. item:                        

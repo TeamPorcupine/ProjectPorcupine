@@ -79,6 +79,7 @@ public class DialogBoxSettings : DialogBox
         Settings.SetSetting("DialogBoxSettings_qualityDropdown", qualityDropdown.value);
         Settings.SetSetting("DialogBoxSettings_vSyncDropdown", vsyncDropdown.value);
         Settings.SetSetting("DialogBoxSettings_resolutionDropdown", resolutionDropdown.value);
+        Settings.SaveSettings();
     }
 
     public void OnEnable()
@@ -142,7 +143,7 @@ public class DialogBoxSettings : DialogBox
             Resolution = Screen.currentResolution
         });
 
-        foreach (var resolution in Screen.resolutions)
+        foreach (Resolution resolution in Screen.resolutions)
         {
             options.Add(new ResolutionOption
             {

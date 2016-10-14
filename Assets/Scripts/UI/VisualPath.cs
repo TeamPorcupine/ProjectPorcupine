@@ -107,14 +107,14 @@ public class VisualPath : MonoBehaviour
             {
                 if (i != 0)
                 {
-                    GL.Vertex3(VisualPoints[entry][i - 1].X, VisualPoints[entry][i - 1].Y, 0);
+                    GL.Vertex3(VisualPoints[entry][i - 1].X, VisualPoints[entry][i - 1].Y, VisualPoints[entry][i - 1].Z);
                 }
                 else
                 {
-                    GL.Vertex3(VisualPoints[entry][i].X, VisualPoints[entry][i].Y, 0);
+                    GL.Vertex3(VisualPoints[entry][i].X, VisualPoints[entry][i].Y, VisualPoints[entry][i].Z);
                 }
 
-                GL.Vertex3(VisualPoints[entry][i].X, VisualPoints[entry][i].Y, 0);
+                GL.Vertex3(VisualPoints[entry][i].X, VisualPoints[entry][i].Y,  VisualPoints[entry][i].Z);
             }
         }
 
