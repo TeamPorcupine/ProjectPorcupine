@@ -8,52 +8,57 @@
 #endregion
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml.Serialization;
-using UnityEngine;
+using ProjectPorcupine.PowerNetwork;
 
 namespace ProjectPorcupine.Buildable.Components
 {
     [Serializable]
     [XmlRoot("Component")]
     [BuildableComponentName("PowerConnection")]
-    public class PowerConnection : BuildableComponent
-    {
-        // constants for parameters
-        public const string CurAccumulatorChargeParamName = "pow_accumulator_charge";
-        public const string CurAccumulatorIndexParamName = "pow_accumulator_index";
-        public const string CurIsRunningParamName = "pow_is_running";
-        
+    public class PowerConnection : BuildableComponent, IPlugable
+    {       
         public PowerConnection()
         {
         }
 
         private PowerConnection(PowerConnection other) : base(other)
         {
+            ParamsDefinitions = other.ParamsDefinitions;
             Provides = other.Provides;
             Requires = other.Requires;
         }
-              
+
+        [XmlElement("ParameterDefinitions")]
+        public PowerConnectionParameterDefinitions ParamsDefinitions { get; set; }
+
+        public Parameter CurrentAccumulatorCharge
+        {
+            get
+            {
+                return FurnitureParams[ParamsDefinitions.CurrentAcumulatorCharge.ParameterName];
+            }
+        }
+
+        public Parameter CurrentAccumulatorChargeIndex
+        {
+            get
+            {
+                return FurnitureParams[ParamsDefinitions.CurrentAcumulatorChargeIndex.ParameterName];
+            }
+        }
+
         [XmlIgnore]
         public bool IsRunning
         {
             get
             {
-                bool running = false;
-
-                // TODO: make adjustments in Parameters class to prevent double check for ContainsKey (indexer already checks it)
-                if (FurnitureParams.ContainsKey(CurIsRunningParamName))
-                {
-                    running = FurnitureParams[CurIsRunningParamName].ToBool();
-                }                
-
-                return running;
+                return FurnitureParams[ParamsDefinitions.IsRunning.ParameterName].ToBool();
             }
 
             set
             {
-                FurnitureParams[CurIsRunningParamName].SetValue(value);
+                FurnitureParams[ParamsDefinitions.IsRunning.ParameterName].SetValue(value);
             }
         }
 
@@ -64,49 +69,64 @@ namespace ProjectPorcupine.Buildable.Components
         public Info Requires { get; set; }
         
         [XmlIgnore]
-        public float AccumulatedPower
+        public float AccumulatedAmount
         {
             get
             {
-                return FurnitureParams != null ? FurnitureParams[CurAccumulatorChargeParamName].ToFloat() : 0f;
+                return CurrentAccumulatorCharge.ToFloat();
             }
 
             set
             {
-                float oldAccPower = FurnitureParams[CurAccumulatorChargeParamName].ToFloat();
+                float oldAccPower = CurrentAccumulatorCharge.ToFloat();
                 if (oldAccPower != value)
                 {
-                    FurnitureParams[CurAccumulatorChargeParamName].SetValue(value);
+                    CurrentAccumulatorCharge.SetValue(value);
 
                     int curIndex = (int)((Provides.CapacityThresholds - 1) * (value / Provides.Capacity));
-                    FurnitureParams[CurAccumulatorIndexParamName].SetValue(curIndex);
+                    CurrentAccumulatorChargeIndex.SetValue(curIndex);
                 }
             }
         }
 
+        public float InputRate
+        {
+            get { return Requires.Rate; }
+        }
+
+        public float OutputRate
+        {
+            get { return Provides.Rate; }
+        }
+
         public bool IsEmpty
         {
-            get { return IsPowerAccumulator && AccumulatedPower.IsZero(); }
+            get { return IsAccumulator && AccumulatedAmount.IsZero(); }
         }
         
         public bool IsFull
         {
-            get { return IsPowerAccumulator && AccumulatedPower.AreEqual(Provides.Capacity); }
+            get { return IsAccumulator && AccumulatedAmount.AreEqual(Provides.Capacity); }
         }
 
-        public bool IsPowerProducer
+        public bool IsProducer
         {
-            get { return Provides != null && IsRunning && Provides.Rate > 0.0f && !IsPowerAccumulator; }
+            get { return Provides != null && IsRunning && Provides.Rate > 0.0f && !IsAccumulator; }
         }
 
-        public bool IsPowerConsumer
+        public bool IsConsumer
         {
-            get { return Requires != null && Requires.Rate > 0.0f && !IsPowerAccumulator; }
+            get { return Requires != null && Requires.Rate > 0.0f && !IsAccumulator; }
         }
 
-        public bool IsPowerAccumulator
+        public bool IsAccumulator
         {
             get { return Provides != null && Provides.Capacity > 0.0f; }
+        }
+
+        public float AccumulatorCapacity
+        {
+            get { return IsAccumulator ? Provides.Capacity : 0f; }
         }
 
         public override BuildableComponent Clone()
@@ -117,7 +137,7 @@ namespace ProjectPorcupine.Buildable.Components
         public override bool CanFunction()
         {
             bool hasPower = true;
-            if (IsPowerConsumer)
+            if (IsConsumer)
             {
                 hasPower = World.Current.PowerNetwork.HasPower(this);
             }
@@ -133,9 +153,9 @@ namespace ProjectPorcupine.Buildable.Components
                 areAllParamReqsFulfilled = AreParameterConditionsFulfilled(Requires.ParamConditions);
             }
 
-            if (IsPowerAccumulator)
+            if (IsAccumulator)
             {
-                areAllParamReqsFulfilled &= AccumulatedPower > 0;
+                areAllParamReqsFulfilled &= AccumulatedAmount > 0;
             }
 
             IsRunning = areAllParamReqsFulfilled;
@@ -147,37 +167,42 @@ namespace ProjectPorcupine.Buildable.Components
 
             yield return string.Format("Power Grid: <color={0}>{1}</color>", powerColor, IsRunning ? "Online" : "Offline");
 
-            if (IsPowerConsumer)
+            if (IsConsumer)
             {
                 yield return string.Format("Power Input: <color={0}>{1}</color>", powerColor, Requires.Rate);
             }
 
-            if (IsPowerProducer)
+            if (IsProducer)
             {
                 yield return string.Format("Power Output: <color={0}>{1}</color>", powerColor, Provides.Rate);
             }
 
-            if (IsPowerAccumulator)
+            if (IsAccumulator)
             {
-                yield return string.Format("Power Accumulated: {0} / {1}", AccumulatedPower, Provides.Capacity);
+                yield return string.Format("Power Accumulated: {0} / {1}", AccumulatedAmount, Provides.Capacity);
             }
         }
 
         protected override void Initialize()
         {
+            if (ParamsDefinitions == null)
+            {
+                // don't need definition for all furniture, just use defaults
+                ParamsDefinitions = new PowerConnectionParameterDefinitions();
+            }
+
             // need to keep accumulator current charge in parameters
-            // TODO: need to prevent defining same type more than once
+
+            // TODO: need to prevent defining same type more than once?
             if (Provides != null)
             {
                 if (Provides.Capacity > 0)
                 {
-                    FurnitureParams.AddParameter(new Parameter(CurAccumulatorChargeParamName, 0f));
-                    FurnitureParams.AddParameter(new Parameter(CurAccumulatorIndexParamName, 0));
+                    CurrentAccumulatorCharge.SetValue(0f);
+                    CurrentAccumulatorChargeIndex.SetValue(0);
                 }
             }
-
-            FurnitureParams.AddParameter(new Parameter(CurIsRunningParamName, false));
-
+            
             IsRunning = false;
 
             World.Current.PowerNetwork.PlugIn(this);
@@ -203,6 +228,28 @@ namespace ProjectPorcupine.Buildable.Components
 
             [XmlElement("Param")]
             public List<ParameterCondition> ParamConditions { get; set; }            
+        }
+
+        public class PowerConnectionParameterDefinitions
+        {
+            // constants for parameters
+            public const string CurAccumulatorChargeParamName = "pow_accumulator_charge";
+            public const string CurAccumulatorIndexParamName = "pow_accumulator_index";
+            public const string CurIsRunningParamName = "pow_is_running";
+            
+            public PowerConnectionParameterDefinitions()
+            {
+                // defaults
+                CurrentAcumulatorCharge = new ParameterDefinition(CurAccumulatorChargeParamName);
+                CurrentAcumulatorChargeIndex = new ParameterDefinition(CurAccumulatorIndexParamName);
+                IsRunning = new ParameterDefinition(CurIsRunningParamName);
+            }
+
+            public ParameterDefinition CurrentAcumulatorCharge { get; set; }
+
+            public ParameterDefinition CurrentAcumulatorChargeIndex { get; set; }
+
+            public ParameterDefinition IsRunning { get; set; }
         }
     }
 }

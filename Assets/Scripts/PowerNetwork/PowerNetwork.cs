@@ -6,7 +6,6 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using ProjectPorcupine.Buildable.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,7 +28,7 @@ namespace ProjectPorcupine.PowerNetwork
             get { return powerGrids.Count == 0; }
         }
 
-        public bool CanPlugIn(PowerConnection connection)
+        public bool CanPlugIn(IPlugable connection)
         {
             if (connection == null)
             {
@@ -39,7 +38,7 @@ namespace ProjectPorcupine.PowerNetwork
             return powerGrids.Any(grid => grid.CanPlugIn(connection));
         }
 
-        public bool PlugIn(PowerConnection connection)
+        public bool PlugIn(IPlugable connection)
         {
             if (connection == null)
             {
@@ -55,7 +54,7 @@ namespace ProjectPorcupine.PowerNetwork
             return PlugIn(connection, powerGrid);
         }
 
-        public bool PlugIn(PowerConnection connection, Grid grid)
+        public bool PlugIn(IPlugable connection, Grid grid)
         {
             if (connection == null)
             {
@@ -65,7 +64,7 @@ namespace ProjectPorcupine.PowerNetwork
             return grid != null && grid.PlugIn(connection);
         }
 
-        public bool IsPluggedIn(PowerConnection connection, out Grid grid)
+        public bool IsPluggedIn(IPlugable connection, out Grid grid)
         {
             if (connection == null)
             {
@@ -82,7 +81,7 @@ namespace ProjectPorcupine.PowerNetwork
             return grid != null;
         }
 
-        public void Unplug(PowerConnection connection)
+        public void Unplug(IPlugable connection)
         {
             if (connection == null)
             {
@@ -99,7 +98,7 @@ namespace ProjectPorcupine.PowerNetwork
             Unplug(connection, grid);
         }
 
-        public void Unplug(PowerConnection connection, Grid grid)
+        public void Unplug(IPlugable connection, Grid grid)
         {
             if (connection == null)
             {
@@ -114,7 +113,7 @@ namespace ProjectPorcupine.PowerNetwork
             grid.Unplug(connection);
         }
 
-        public bool HasPower(PowerConnection connection)
+        public bool HasPower(IPlugable connection)
         {
             Grid grid;
             IsPluggedIn(connection, out grid);

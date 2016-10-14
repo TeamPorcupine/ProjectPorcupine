@@ -155,6 +155,7 @@ public class BuildableJobs
         {
             job = pausedJobs.FirstOrDefault(predicate);
         }
+
         return job != null;
     }
 

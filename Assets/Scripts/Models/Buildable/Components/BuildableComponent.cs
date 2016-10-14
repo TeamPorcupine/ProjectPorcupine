@@ -56,7 +56,7 @@ namespace ProjectPorcupine.Buildable.Components
         {
             get { return ParentFurniture.Parameters; }
         }
-        
+                
         public static BuildableComponent Deserialize(XmlReader xmlReader)
         {
             if (componentTypes == null)
@@ -159,6 +159,7 @@ namespace ProjectPorcupine.Buildable.Components
                             partialEval = FurnitureParams[cnd.ParameterName].ToBool() == false;
                             break;
                     }
+
                     conditionsFulFilled &= partialEval;
                 }
             }
@@ -218,14 +219,9 @@ namespace ProjectPorcupine.Buildable.Components
             public ConditionType Condition { get; set; }
         }
 
+        [Serializable]
         public class ParameterDefinition
-        {
-            [XmlAttribute("name")]
-            public string ParameterName { get; set; }
-
-            [XmlAttribute("type")]
-            public string Type { get; set; }
-
+        {              
             public ParameterDefinition()
             {
             }
@@ -234,6 +230,12 @@ namespace ProjectPorcupine.Buildable.Components
             {
                 this.ParameterName = paramName;
             }
+
+            [XmlAttribute("name")]
+            public string ParameterName { get; set; }
+
+            [XmlAttribute("type")]
+            public string Type { get; set; }
         }
     }    
 }

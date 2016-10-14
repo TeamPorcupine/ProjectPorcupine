@@ -746,6 +746,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                     {
                         components.Add(cmp);
                     }
+
                     break;
             }
         }

@@ -222,7 +222,12 @@
         </Component>
         
         <Component type="PowerConnection">
-            <Requires rate="1"/> 
+            <Requires rate="1"/>
+            <ParameterDefinitions>
+                <CurrentAcumulatorCharge name="pow_accumulator_charge" />
+                <CurrentAcumulatorChargeIndex name="pow_accumulator_index" />
+                <IsRunning name="pow_is_running" />
+            </ParameterDefinitions>
         </Component>
 
         <Component type="GasConnection">
@@ -797,6 +802,11 @@
         <Component type="PowerConnection">
             <Provides rate="10" capacity="50" capacityThresholds="5"/>
             <Requires rate="5" />
+            <ParameterDefinitions>
+                <CurrentAcumulatorCharge name="pow_accumulator_charge" />
+                <CurrentAcumulatorChargeIndex name="pow_accumulator_index" />
+                <IsRunning name="pow_is_running" />
+            </ParameterDefinitions>
         </Component>
 
         <LocalizationCode>furn_accumulator</LocalizationCode>
