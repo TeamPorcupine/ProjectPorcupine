@@ -35,7 +35,7 @@ public class MainMenuController : MonoBehaviour
 
         // Create a Background.
         GameObject backgroundGO = new GameObject("Background");
-        backgroundGO.AddComponent<SpriteRenderer>().sprite = SpriteManager.GetSprite("Background", "red-planet-background");
+        backgroundGO.AddComponent<SpriteRenderer>().sprite = SpriteManager.GetRandomSprite("Background");
 
         GameObject canvas = GameObject.Find("Canvas");
 
