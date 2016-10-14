@@ -262,14 +262,11 @@ namespace Scheduler
 
         public void SetCooldown(float newCooldown)
         {
-            if (newCooldown < TimeToWait)
+            // Decrement TimeToWait by the amount of time that has passed since the last time this event fired
+            TimeToWait = newCooldown - (Cooldown - TimeToWait);
+            if (TimeToWait < 0)
             {
-                // Decrement TimeToWait by the amount of time that has passed since the last time this event fired
-                TimeToWait -= Cooldown - TimeToWait;
-                if (TimeToWait < 0)
-                {
-                    TimeToWait = 0;
-                }
+                TimeToWait = 0;
             }
 
             Cooldown = newCooldown;
