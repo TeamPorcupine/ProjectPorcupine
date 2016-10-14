@@ -5,10 +5,12 @@
 // and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
+using System.Collections;
+
+
 #endregion
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
@@ -233,8 +235,9 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     /// </summary>
     /// <param name="proto">The prototype utility to place.</param>
     /// <param name="tile">The base tile to place the utility on, The tile will be the bottom left corner of the utility (to check).</param>
+    /// <param name="delayGridUpdate">If true, the grid won't be updated until the next frame.</param>
     /// <returns>Utility object.</returns>
-    public static Utility PlaceInstance(Utility proto, Tile tile)
+    public static Utility PlaceInstance(Utility proto, Tile tile, bool skipGridUpdate = false)
     {
         if (proto.IsValidPosition(tile) == false)
         {
@@ -278,7 +281,17 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
             }
         }
 
-        obj.UpdateGrid(obj);
+        if (!skipGridUpdate)
+        {
+            obj.UpdateGrid(obj);
+        }
+        else
+        {
+            // If we're skipping the update, we need a temporary grid for furniture in the same tile to connect to.
+            obj.Grid = new Grid();
+            World.Current.PowerNetwork.RegisterGrid(obj.Grid);
+        }
+
 
         if (obj.Tile != null && obj.Tile.Furniture != null && obj.Tile.Furniture.PowerConnection != null)
         {
@@ -707,7 +720,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         return true;
     }
 
-    protected void UpdateGrid(Utility utilityToUpdate, Grid newGrid = null)
+    public void UpdateGrid(Utility utilityToUpdate, Grid newGrid = null)
     {
         if (gridUpdatedThisFrame)
         {

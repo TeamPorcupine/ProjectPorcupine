@@ -622,10 +622,15 @@ public class World : IXmlSerializable
                 int y = int.Parse(reader.GetAttribute("Y"));
                 int z = int.Parse(reader.GetAttribute("Z"));
 
-                Utility utility = UtilityManager.PlaceUtility(reader.GetAttribute("objectType"), tiles[x, y, z], false);
+                Utility utility = UtilityManager.PlaceUtility(reader.GetAttribute("type"), tiles[x, y, z], true);
                 utility.ReadXml(reader);
             }
             while (reader.ReadToNextSibling("Utility"));
+        }
+
+        foreach (Utility utility in UtilityManager.Utilities)
+        {
+            utility.UpdateGrid(utility);
         }
     }
 
