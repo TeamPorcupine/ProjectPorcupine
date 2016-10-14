@@ -180,14 +180,17 @@ namespace ProjectPorcupine.Pathfinding
                 int minZ = goalTile.Z - 1;
                 int maxZ = goalTile.Z + 1;
 
+                // Tile is either adjacent on the same level, or directly above/below, and if above, is empty
                 return tile => (
                     (tile.X >= minX && tile.X <= maxX &&
                     tile.Y >= minY && tile.Y <= maxY &&
                     tile.Z == goalTile.Z &&
                     goalTile.IsClippingCorner(tile) == false) || 
-                    (tile.Z >= minZ && tile.Z <= maxZ &&
+                    ((tile.Z >= minZ && tile.Z <= maxZ &&
                     tile.X == goalTile.X &&
-                    tile.Y == goalTile.Y));
+                    tile.Y == goalTile.Y) && 
+                    (tile.Z >= goalTile.Z ||
+                    tile.Type == TileType.Empty)));
             }
             else
             {

@@ -87,6 +87,7 @@ public class DialogBoxSettings : DialogBox
         Settings.SetSetting("DialogBoxSettings_resolutionDropdown", resolutionDropdown.value);
         Settings.SetSetting("AutosaveInterval", int.Parse(autosaveInterval.text));
         Settings.SetSetting("AutosaveFiles", int.Parse(autosaveFiles.text));
+        Settings.SaveSettings();
     }
 
     public void OnEnable()

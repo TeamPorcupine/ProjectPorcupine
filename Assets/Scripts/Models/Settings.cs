@@ -14,7 +14,7 @@ using UnityEngine;
 public static class Settings
 {
     // Settings.xml file that is created if none exists.
-    private const string FallbackSettingsXML = @"
+    private const string FallbackSettingsXml = @"
 <Settings>
   <worldWidth>101</worldWidth>
   <worldHeight>101</worldHeight>
@@ -40,16 +40,9 @@ public static class Settings
     private static string userSettingsFilePath = System.IO.Path.Combine(
         Application.persistentDataPath, "Settings.xml");
 
-    private static bool unsavedSettings = false;
-
     static Settings()
     {
         LoadSettings();
-
-        PrototypeManager.ScheduledEvent.Add(
-            new Scheduler.ScheduledEvent(
-                "Settings_SaveSettings",
-                (evt) => Settings.SaveSettings()));
     }
 
     public static string GetSettingWithOverwrite(string key, string defaultValue)
@@ -68,7 +61,7 @@ public static class Settings
 
         settingsDict.Add(key, defaultValue);
 
-        ScheduleSave();
+        SaveSettings();
 
         return defaultValue;
     }
@@ -100,8 +93,6 @@ public static class Settings
             settingsDict.Add(key, value);
             Debug.ULogChannel("Settings", "Created new setting : " + key + " to value of " + value);
         }
-
-        ScheduleSave();
     }
 
     public static T GetSetting<T>(string key, T defaultValue)
@@ -132,27 +123,8 @@ public static class Settings
         return defaultValue;
     }
 
-    private static void ScheduleSave()
+    public static void SaveSettings()
     {
-        // we have justed altered a setting so we have to set the flag saying their are unsaved settings
-        if (Settings.unsavedSettings == false)
-        {
-            Scheduler.Scheduler.Current.ScheduleEvent("Settings_SaveSettings", Time.deltaTime, false);
-            Settings.unsavedSettings = true;
-        }
-
-        // else we should already be scheduled to save the settings so dont bother Scheduling it again 
-    }
-
-    private static void SaveSettings()
-    {
-        // if we do not have any unsaved settings then return
-        if (Settings.unsavedSettings == false)
-        {
-            Debug.ULogChannel("Settings", "No settings have changed, so none to save! (why was there a scheduled event?)");
-            return;
-        }
-
         Debug.ULogChannel("Settings", "Settings have changed, so there are settings to save!");
 
         // Create an xml document.
@@ -185,9 +157,6 @@ public static class Settings
             Debug.ULogWarningChannel("Settings", "Settings could not be saved to " + userSettingsFilePath);
             Debug.ULogWarningChannel("Settings", e.Message);
         }
-
-        // we have justed saved any unsaved settings so we no longer have any unsaved settings
-        Settings.unsavedSettings = false;
     }
 
     private static void LoadSettings()
@@ -204,7 +173,7 @@ public static class Settings
         {
             Debug.ULogChannel("Settings", "User settings file could not be found at '" + userSettingsFilePath + "'. Falling back to defaults.");
 
-            settingsXmlText = DefaultSettingsXMLFallback();
+            settingsXmlText = DefaultSettingsXmlFallback();
         }
         else
         {
@@ -217,7 +186,7 @@ public static class Settings
                 Debug.ULogWarningChannel("Settings", "User settings file could not be found at '" + userSettingsFilePath + "'. Falling back to defaults.");
                 Debug.ULogWarningChannel("Settings", e.Message);
 
-                settingsXmlText = DefaultSettingsXMLFallback();
+                settingsXmlText = DefaultSettingsXmlFallback();
             }
         }
 
@@ -244,9 +213,9 @@ public static class Settings
         }
     }
 
-    private static string DefaultSettingsXMLFallback()
+    private static string DefaultSettingsXmlFallback()
     {
-        string furnitureXmlText = FallbackSettingsXML;
+        string settingsXml = FallbackSettingsXml;
 
         if (System.IO.File.Exists(DefaultSettingsFilePath) == false)
         {
@@ -254,7 +223,7 @@ public static class Settings
 
             try
             {
-                System.IO.File.WriteAllText(DefaultSettingsFilePath, FallbackSettingsXML);
+                System.IO.File.WriteAllText(DefaultSettingsFilePath, FallbackSettingsXml);
             }
             catch (Exception e)
             {
@@ -266,7 +235,7 @@ public static class Settings
         {
             try
             {
-                furnitureXmlText = System.IO.File.ReadAllText(DefaultSettingsFilePath);
+                settingsXml = System.IO.File.ReadAllText(DefaultSettingsFilePath);
             }
             catch (Exception e)
             {
@@ -275,6 +244,6 @@ public static class Settings
             }
         }
 
-        return furnitureXmlText;
+        return settingsXml;
     }
 }

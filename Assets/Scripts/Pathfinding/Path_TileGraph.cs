@@ -26,6 +26,7 @@ public class Path_TileGraph
         *  Do we create nodes for non-floor tiles?  NO!
         *  Do we create nodes for tiles that are completely unwalkable (i.e. walls)?  NO!
         */
+
         nodes = new Dictionary<Tile, Path_Node<Tile>>();
 
         for (int x = 0; x < world.Width; x++)
@@ -74,7 +75,7 @@ public class Path_TileGraph
         List<Path_Edge<Tile>> edges = new List<Path_Edge<Tile>>();
 
         // Get a list of neighbours for the tile
-        Tile[] neighbours = t.GetNeighbours(true);
+        Tile[] neighbours = t.GetNeighbours(true, true);
 
         // NOTE: Some of the array spots could be null.
         // If neighbour is walkable, create an edge to the relevant node.
