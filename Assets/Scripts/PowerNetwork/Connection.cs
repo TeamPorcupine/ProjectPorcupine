@@ -33,7 +33,6 @@ namespace ProjectPorcupine.PowerNetwork
 
         public event Action<Connection> NewThresholdReached;
 
-
         public event Action Reconnecting;
 
         /// <summary>
@@ -116,7 +115,6 @@ namespace ProjectPorcupine.PowerNetwork
                 Reconnecting();
             }
         }
-
 
         public XmlSchema GetSchema()
         {

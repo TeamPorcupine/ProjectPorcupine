@@ -505,6 +505,7 @@ public class World : IXmlSerializable
     {
         FurnitureManager.TickFixedFrequency(deltaTime);
         UtilityManager.TickFixedFrequency(deltaTime);
+
         // Progress temperature modelling
         temperature.Update();
         PowerNetwork.Update(deltaTime);

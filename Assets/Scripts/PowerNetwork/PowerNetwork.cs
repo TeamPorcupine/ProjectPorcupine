@@ -60,10 +60,12 @@ namespace ProjectPorcupine.PowerNetwork
             {
                 throw new ArgumentNullException("connection");
             }
+
             if (!powerGrids.Contains(grid))
             {
                 powerGrids.Add(grid);
             }
+
             return grid != null && grid.PlugIn(connection);
         }
 
@@ -107,6 +109,7 @@ namespace ProjectPorcupine.PowerNetwork
             {
                 return;
             }
+
             powerGrids.Add(grid);
         }
 
@@ -116,6 +119,7 @@ namespace ProjectPorcupine.PowerNetwork
             {
                 return;
             }
+
             powerGrids.Remove(grid);
         }
 

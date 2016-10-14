@@ -8,14 +8,15 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
 using ProjectPorcupine.Jobs;
-using UnityEngine;
 using ProjectPorcupine.PowerNetwork;
+using UnityEngine;
 
 /// <summary>
 /// InstalledObjects are things like walls, doors, and utility (e.g. a sofa).
@@ -23,11 +24,10 @@ using ProjectPorcupine.PowerNetwork;
 [MoonSharpUserData]
 public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextActionProvider, IBuildable
 {
-    private Grid grid;
-    private bool gridUpdatedThisFrame = false;
-
     // Prevent construction too close to the world's edge
     private const int MinEdgeDistance = 5;
+
+    private bool gridUpdatedThisFrame = false;
 
     /// <summary>
     /// This action is called to get the sprite name based on the utility parameters.
@@ -99,7 +99,6 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
 
         LocalizationCode = other.LocalizationCode;
         UnlocalizedDescription = other.UnlocalizedDescription;
-
     }
 
     /// <summary>
@@ -223,7 +222,12 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     /// </summary>
     public bool IsBeingDestroyed { get; protected set; }
 
+    /// <summary>
+    /// Gets or sets the grid used by this utility.
+    /// </summary>
+    /// <value>The grid used by this utility.</value>
     public Grid Grid { get; set; }
+
     /// <summary>
     /// Used to place utility in a certain position.
     /// </summary>
@@ -257,20 +261,18 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         // buddy.  Just trigger their OnChangedCallback.
         int x = tile.X;
         int y = tile.Y;
-//        tile.GetNeighbours();
+
         for (int xpos = x - 1; xpos < x + 2; xpos++)
         {
             for (int ypos = y - 1; ypos < y + 2; ypos++)
             {
                 Tile tileAt = World.Current.GetTileAt(xpos, ypos, tile.Z);
-                if (tileAt != null && tileAt.Utilities != null)
+                if (tileAt != null && tileAt.Utilities != null && tileAt.Utilities.ContainsKey(obj.Name))
                 {
-                    foreach (Utility utility in tileAt.Utilities.Values)
+                    Utility utility = tileAt.Utilities[obj.Name];
+                    if (utility.Changed != null)
                     {
-                        if (utility.Changed != null)
-                        {
-                            utility.Changed(utility);
-                        }
+                        utility.Changed(utility);
                     }
                 }
             }
@@ -282,6 +284,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         {
             obj.Tile.Furniture.PowerConnection.Reconnect();
         }
+
         // Call LUA install scripts
         obj.EventActions.Trigger("OnInstall", obj);
 
@@ -600,7 +603,6 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
 
     public IEnumerable<string> GetAdditionalInfo()
     {
-        
         yield return string.Empty;
     }
 
@@ -714,19 +716,17 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
 
         gridUpdatedThisFrame = true;
         Grid oldGrid = utilityToUpdate.Grid;
-
         if (newGrid == null)
         {
             foreach (Tile neighborTile in utilityToUpdate.Tile.GetNeighbours())
             {
-                if (neighborTile != null && neighborTile.Utilities != null)
+                if (neighborTile != null && neighborTile.Utilities != null && neighborTile.Utilities.ContainsKey(this.Name))
                 {
-                    foreach (Utility utility in neighborTile.Utilities.Values)
+                    Utility utility = neighborTile.Utilities[this.Name];
+
+                    if (utility.Grid != null && utilityToUpdate.Grid == null)
                     {
-                        if (utility.Grid != null && utilityToUpdate.Grid == null)
-                        {
-                            utilityToUpdate.Grid = utility.Grid;
-                        }
+                        utilityToUpdate.Grid = utility.Grid;
                     }
                 }
             }
@@ -757,8 +757,9 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         {
             if (neighborTile != null && neighborTile.Utilities != null)
             {
-                foreach (Utility utility in neighborTile.Utilities.Values)
+                if (neighborTile != null && neighborTile.Utilities != null && neighborTile.Utilities.ContainsKey(this.Name))
                 {
+                    Utility utility = neighborTile.Utilities[this.Name];
                     utility.UpdateGrid(utility, utilityToUpdate.Grid);
                 }
             }
