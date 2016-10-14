@@ -21,6 +21,8 @@ public class DialogBox : MonoBehaviour
         openedWhileModal = GameController.Instance.IsModal ? true : false;
         GameController.Instance.IsModal = true;
 
+        GameController.Instance.soundController.OnButtonSFX();
+
         gameObject.transform.SetAsLastSibling();
         gameObject.SetActive(true);
     }
@@ -31,6 +33,8 @@ public class DialogBox : MonoBehaviour
         {
             GameController.Instance.IsModal = false;
         }
+
+        GameController.Instance.soundController.OnButtonSFX();
 
         gameObject.SetActive(false);
     }

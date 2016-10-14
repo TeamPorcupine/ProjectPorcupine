@@ -13,6 +13,7 @@ using UnityStandardAssets.Utility;
 public class MainMenuController : MonoBehaviour
 {
     public ModsManager modsManager;
+    public SoundController soundController;
 
     public static MainMenuController Instance { get; protected set; }
 

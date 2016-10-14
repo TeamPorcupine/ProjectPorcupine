@@ -18,6 +18,7 @@ public class GameController : MonoBehaviour
 
     public KeyboardManager KeyboardManager;
     public SceneController SceneManager;
+    public SoundController soundController;
 
     // If true, a modal dialog box is open, so normal inputs should be ignored.
     public bool IsModal;
@@ -47,6 +48,8 @@ public class GameController : MonoBehaviour
     private void Awake()
     {
         EnableDontDestroyOnLoad();
+
+        soundController = new SoundController();
 
         // Load Keyboard Mapping.
         KeyboardManager = KeyboardManager.Instance;

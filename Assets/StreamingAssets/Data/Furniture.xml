@@ -7,6 +7,7 @@
         <MovementCost>0</MovementCost>
         <Width>1</Width>
         <Height>1</Height>
+        <Health>1000</Health>
         <LinksToNeighbours>wall</LinksToNeighbours>
         <EnclosesRooms>true</EnclosesRooms>
         <DragType>path</DragType>
@@ -46,6 +47,7 @@
         <PathfindingWeight>1</PathfindingWeight>
         <Width>1</Width>
         <Height>1</Height>
+        <Health>500</Health>
         <EnclosesRooms>true</EnclosesRooms>
         <CanReplaceFurniture typeTag="Wall" />
 

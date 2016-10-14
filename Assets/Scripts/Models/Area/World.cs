@@ -540,6 +540,7 @@ public class World : IXmlSerializable
         if (tileGraph != null)
         {
             tileGraph.RegenerateGraphAtTile(t);
+            tileGraph.RegenerateGraphAtTile(t.Down());
         }
     }
 

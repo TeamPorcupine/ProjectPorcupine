@@ -49,7 +49,7 @@ public class MouseOverFurnitureTypeText : MonoBehaviour
         if (t != null && t.Furniture != null)
         {
             s = t.Furniture.Name;
-            text.text = LocalizationTable.GetLocalization("furniture") + ": " + s;
+            text.text = LocalizationTable.GetLocalization("furniture", s);
         }
         else
         {

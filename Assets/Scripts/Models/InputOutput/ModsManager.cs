@@ -17,13 +17,16 @@ public class ModsManager
     public ModsManager()
     {
         mods = GetModsFiles();
+
+        LoadSharedFiles();
+
         if (SceneController.Instance.IsAtIntroScene())
         {
             LoadIntroFiles();
         }
-        else
+        else if (SceneController.Instance.IsAtMainScene())
         {
-            LoadFiles();
+            LoadMainSceneFiles();
         }
     }
 
@@ -36,7 +39,15 @@ public class ModsManager
         return modsDir.GetDirectories();
     }
 
-    public void LoadFiles()
+    /// <summary>
+    /// Return the path to the mod folder.
+    /// </summary>
+    private static string GetPathToModsFolder()
+    {
+        return System.IO.Path.Combine(System.IO.Path.Combine(Application.streamingAssetsPath, "Data"), "Mods");
+    }
+
+    private void LoadMainSceneFiles()
     {
         LoadFunctions("Furniture.lua", "Furniture");
         LoadFunctions("Utility.lua", "Utility");
@@ -70,18 +81,16 @@ public class ModsManager
         LoadDirectoryAssets("Audio", AudioManager.LoadAudioFiles);
     }
 
-    public void LoadIntroFiles()
+    private void LoadIntroFiles()
     {
         LoadDirectoryAssets("MainMenu/Images", SpriteManager.LoadSpriteFiles);
         LoadDirectoryAssets("MainMenu/Audio", AudioManager.LoadAudioFiles);
     }
 
-    /// <summary>
-    /// Return the path to the mod folder.
-    /// </summary>
-    private static string GetPathToModsFolder()
+    private void LoadSharedFiles()
     {
-        return System.IO.Path.Combine(System.IO.Path.Combine(Application.streamingAssetsPath, "Data"), "Mods");
+        LoadDirectoryAssets("Shared/Images", SpriteManager.LoadSpriteFiles);
+        LoadDirectoryAssets("Shared/Audio", AudioManager.LoadAudioFiles);
     }
 
     /// <summary>

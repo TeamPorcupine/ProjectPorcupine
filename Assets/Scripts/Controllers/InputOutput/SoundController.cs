@@ -14,10 +14,13 @@ public class SoundController
     private float soundCooldown = 0;
 
     // Use this for initialization
-    public SoundController(World world)
+    public SoundController(World world = null)
     {
-        world.FurnitureManager.Created += OnFurnitureCreated;
-        world.OnTileChanged += OnTileChanged;
+        if (world != null)
+        {
+            world.FurnitureManager.Created += OnFurnitureCreated;
+            world.OnTileChanged += OnTileChanged;
+        }
 
         TimeManager.Instance.EveryFrame += Update;
     }
@@ -28,6 +31,19 @@ public class SoundController
         soundCooldown -= deltaTime;
     }
 
+    public void OnButtonSFX()
+    {
+        // FIXME
+        if (soundCooldown > 0)
+        {
+             return;
+        }
+ 
+        AudioClip ac = AudioManager.GetAudio("Sound", "MenuClick");
+        AudioSource.PlayClipAtPoint(ac, Camera.main.transform.position);
+        soundCooldown = 0.1f;
+    }
+
     public void OnFurnitureCreated(Furniture furniture)
     {
         // FIXME
@@ -35,7 +51,7 @@ public class SoundController
         {
             return;
         }
-
+    
         AudioClip ac = AudioManager.GetAudio("Sound", furniture.Type + "_OnCreated");
         AudioSource.PlayClipAtPoint(ac, Camera.main.transform.position);
         soundCooldown = 0.1f;

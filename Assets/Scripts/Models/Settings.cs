@@ -14,7 +14,7 @@ using UnityEngine;
 public static class Settings
 {
     // Settings.xml file that is created if none exists.
-    private const string FallbackSettingsXML = @"
+    private const string FallbackSettingsXml = @"
 <Settings>
   <worldWidth>101</worldWidth>
   <worldHeight>101</worldHeight>
@@ -122,60 +122,6 @@ public static class Settings
         return defaultValue;
     }
 
-    public static void LoadSettings()
-    {
-        // Initialize the settings dict.
-        settingsDict = new Dictionary<string, string>();
-        string settingsXmlText;
-
-        // Load the settings XML file.
-        // First try the user's private settings file in userSettingsFilePath.
-        // If that doesn't work fall back to defaultSettingsFilePath.
-        // If that doesn't work fall back to the hard coded furnitureXmlText above.
-        if (System.IO.File.Exists(userSettingsFilePath) == false)
-        {
-            Debug.ULogChannel("Settings", "User settings file could not be found at '" + userSettingsFilePath + "'. Falling back to defaults.");
-
-            settingsXmlText = DefaultSettingsXMLFallback();
-        }
-        else
-        {
-            try
-            {
-                settingsXmlText = System.IO.File.ReadAllText(userSettingsFilePath);
-            }
-            catch (Exception e)
-            {
-                Debug.ULogWarningChannel("Settings", "User settings file could not be found at '" + userSettingsFilePath + "'. Falling back to defaults.");
-                Debug.ULogWarningChannel("Settings", e.Message);
-
-                settingsXmlText = DefaultSettingsXMLFallback();
-            }
-        }
-
-        // Create an xml document from the loaded string.
-        XmlDocument doc = new XmlDocument();
-        doc.LoadXml(settingsXmlText);
-        Debug.ULogChannel("Settings", "Loaded settings");
-        Debug.ULogChannel("Settings", doc.InnerText);
-
-        // Get the Settings node. Its children are the individual settings.
-        XmlNode settingsNode = doc.GetElementsByTagName("Settings").Item(0);
-        XmlNodeList settingNodes = settingsNode.ChildNodes;
-        Debug.ULogChannel("Settings", settingNodes.Count + " settings loaded");
-
-        // Loop for each setting
-        foreach (XmlNode node in settingNodes)
-        {
-            if (node != null)
-            {
-                // and add setting to the settings dict.
-                settingsDict.Add(node.Name, node.InnerText);
-                Debug.ULogChannel("Settings", "Setting loaded :: " + node.Name + " : " + node.InnerText);
-            }
-        }
-    }
-
     public static void SaveSettings()
     {
         Debug.ULogChannel("Settings", "Settings have changed, so there are settings to save!");
@@ -212,9 +158,63 @@ public static class Settings
         }
     }
 
-    private static string DefaultSettingsXMLFallback()
+    public static void LoadSettings()
     {
-        string furnitureXmlText = FallbackSettingsXML;
+        // Initialize the settings dict.
+        settingsDict = new Dictionary<string, string>();
+        string settingsXmlText;
+
+        // Load the settings XML file.
+        // First try the user's private settings file in userSettingsFilePath.
+        // If that doesn't work fall back to defaultSettingsFilePath.
+        // If that doesn't work fall back to the hard coded furnitureXmlText above.
+        if (System.IO.File.Exists(userSettingsFilePath) == false)
+        {
+            Debug.ULogChannel("Settings", "User settings file could not be found at '" + userSettingsFilePath + "'. Falling back to defaults.");
+
+            settingsXmlText = DefaultSettingsXmlFallback();
+        }
+        else
+        {
+            try
+            {
+                settingsXmlText = System.IO.File.ReadAllText(userSettingsFilePath);
+            }
+            catch (Exception e)
+            {
+                Debug.ULogWarningChannel("Settings", "User settings file could not be found at '" + userSettingsFilePath + "'. Falling back to defaults.");
+                Debug.ULogWarningChannel("Settings", e.Message);
+
+                settingsXmlText = DefaultSettingsXmlFallback();
+            }
+        }
+
+        // Create an xml document from the loaded string.
+        XmlDocument doc = new XmlDocument();
+        doc.LoadXml(settingsXmlText);
+        Debug.ULogChannel("Settings", "Loaded settings");
+        Debug.ULogChannel("Settings", doc.InnerText);
+
+        // Get the Settings node. Its children are the individual settings.
+        XmlNode settingsNode = doc.GetElementsByTagName("Settings").Item(0);
+        XmlNodeList settingNodes = settingsNode.ChildNodes;
+        Debug.ULogChannel("Settings", settingNodes.Count + " settings loaded");
+
+        // Loop for each setting
+        foreach (XmlNode node in settingNodes)
+        {
+            if (node != null)
+            {
+                // and add setting to the settings dict.
+                settingsDict.Add(node.Name, node.InnerText);
+                Debug.ULogChannel("Settings", "Setting loaded :: " + node.Name + " : " + node.InnerText);
+            }
+        }
+    }
+
+    private static string DefaultSettingsXmlFallback()
+    {
+        string settingsXml = FallbackSettingsXml;
 
         if (System.IO.File.Exists(DefaultSettingsFilePath) == false)
         {
@@ -222,7 +222,7 @@ public static class Settings
 
             try
             {
-                System.IO.File.WriteAllText(DefaultSettingsFilePath, FallbackSettingsXML);
+                System.IO.File.WriteAllText(DefaultSettingsFilePath, FallbackSettingsXml);
             }
             catch (Exception e)
             {
@@ -234,7 +234,7 @@ public static class Settings
         {
             try
             {
-                furnitureXmlText = System.IO.File.ReadAllText(DefaultSettingsFilePath);
+                settingsXml = System.IO.File.ReadAllText(DefaultSettingsFilePath);
             }
             catch (Exception e)
             {
@@ -243,6 +243,6 @@ public static class Settings
             }
         }
 
-        return furnitureXmlText;
+        return settingsXml;
     }
 }

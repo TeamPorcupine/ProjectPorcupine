@@ -65,6 +65,9 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     /// Tiles per second.
     private float speed = 5f;
 
+    /// Used for health system.
+    private HealthSystem health;
+
     /// Tile where job should be carried out, if different from MyJob.tile.
     private Tile jobTile;
 
@@ -118,7 +121,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     {
         get
         {
-            return 5f;
+            return speed;
         }
     }
 
@@ -215,13 +218,36 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         }
     }
 
+    /// <summary>
+    /// Gets the Health of this object.
+    /// </summary>
+    public HealthSystem Health
+    {
+        get
+        {
+            if (health == null)
+            {
+                health = new HealthSystem(-1f, true, false, false, false);
+            }
+
+            return health;
+        }
+    }
+
     public IEnumerable<ContextMenuAction> GetContextMenuActions(ContextMenu contextMenu)
     {
         yield return new ContextMenuAction
         {
             Text = "Poke " + GetName(),
             RequireCharacterSelected = false,
-            Action = (cm, c) => Debug.ULogChannel("Character", GetDescription())
+            Action = (cm, c) => { Debug.ULogChannel("Character", GetDescription()); health.CurrentHealth -= 5; }
+        };
+
+        yield return new ContextMenuAction
+        {
+            Text = "Heal +5",
+            RequireCharacterSelected = false,
+            Action = (cm, c) => { health.CurrentHealth += 5; }
         };
     }
 
@@ -425,7 +451,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
     public IEnumerable<string> GetAdditionalInfo()
     {
-        yield return string.Format("HitPoints: 100/100");
+        yield return health.TextForSelectionPanel();
 
         foreach (Need n in Needs)
         {
@@ -547,6 +573,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     {
         LoadNeeds();
         LoadStats();
+        UseStats();
     }
 
     private void LoadNeeds()
@@ -576,5 +603,17 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         }
 
         Debug.ULogChannel("Character", "Initialized " + stats.Count + " Stats.");
+    }
+
+    /// <summary>
+    /// Use the stats of the character to determine various traits.
+    /// </summary>
+    private void UseStats()
+    {
+        // Base character speed on their dexterity.
+        speed = Convert.ToSingle(stats["Dexterity"].Value) / 2;
+
+        // Base character max health on their constitution.
+        health = new HealthSystem(50 + (Convert.ToSingle(stats["Constitution"].Value) * 5));
     }
 }

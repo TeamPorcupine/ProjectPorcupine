@@ -149,7 +149,7 @@ public class DialogBoxSettings : DialogBox
             Resolution = Screen.currentResolution
         });
 
-        foreach (var resolution in Screen.resolutions)
+        foreach (Resolution resolution in Screen.resolutions)
         {
             options.Add(new ResolutionOption
             {
