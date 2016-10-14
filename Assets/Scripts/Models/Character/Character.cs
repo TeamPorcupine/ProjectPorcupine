@@ -63,7 +63,8 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     private List<Tile> movementPath;
 
     /// Tiles per second.
-    private float speed = 5f;
+    private float speed;
+    private float baseSpeed = 5f;
 
     /// Used for health system.
     private HealthSystem health;
@@ -610,8 +611,8 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     /// </summary>
     private void UseStats()
     {
-        // Base character speed on their dexterity.
-        speed = Convert.ToSingle(stats["Dexterity"].Value) / 2;
+        // The speed is equal to (baseSpeed +/-50% of baseSpeed depending on Dexterity)
+        speed = baseSpeed + (0.5f * baseSpeed * ((Convert.ToSingle(stats["Dexterity"].Value) - 10) / 10));
 
         // Base character max health on their constitution.
         health = new HealthSystem(50 + (Convert.ToSingle(stats["Constitution"].Value) * 5));
