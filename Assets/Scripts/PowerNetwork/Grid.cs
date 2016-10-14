@@ -134,8 +134,10 @@ namespace ProjectPorcupine.PowerNetwork
 
         public void Split()
         {
-            Connection[] tempConnections = connections.ToArray();
+            Connection[] tempConnections = (Connection[])connections.ToArray().Clone();
+            Debug.LogWarning("BEFORE: " + tempConnections.Length + " " + connections.Count);
             connections.Clear();
+            Debug.LogWarning("AFTER: " + tempConnections.Length + " " + connections.Count);
             foreach (Connection connection in tempConnections)
             {
                 connection.Reconnect();

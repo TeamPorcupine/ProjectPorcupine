@@ -278,6 +278,10 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
 
         obj.UpdateGrid(obj);
 
+        if (obj.Tile != null && obj.Tile.Furniture != null && obj.Tile.Furniture.PowerConnection != null)
+        {
+            obj.Tile.Furniture.PowerConnection.Reconnect();
+        }
         // Call LUA install scripts
         obj.EventActions.Trigger("OnInstall", obj);
 
@@ -555,6 +559,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         {
             foreach (Utility utility in neighbor.Utilities.Values)
             {
+                World.Current.PowerNetwork.RemoveGrid(utility.Grid);
                 utility.Grid = new Grid();
                 utility.UpdateGrid(utility);
                 utility.Grid.Split();

@@ -158,6 +158,11 @@ namespace ProjectPorcupine.PowerNetwork
             Tick();
         }
 
+        public void RemoveGrid(Grid grid)
+        {
+            powerGrids.Remove(grid);
+        }
+
         private void Tick()
         {
             if (IsEmpty)
