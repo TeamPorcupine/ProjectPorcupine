@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
+using MoonSharp.Interpreter;
 using ProjectPorcupine.PowerNetwork;
 
 namespace ProjectPorcupine.Buildable.Components
@@ -16,6 +17,7 @@ namespace ProjectPorcupine.Buildable.Components
     [Serializable]
     [XmlRoot("Component")]
     [BuildableComponentName("PowerConnection")]
+    [MoonSharpUserData]
     public class PowerConnection : BuildableComponent, IPlugable
     {       
         public PowerConnection()
