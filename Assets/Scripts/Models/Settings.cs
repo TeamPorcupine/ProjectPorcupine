@@ -14,7 +14,7 @@ using UnityEngine;
 public static class Settings
 {
     // Settings.xml file that is created if none exists.
-    private const string FallbackSettingsXML = @"
+    private const string FallbackSettingsXml = @"
 <Settings>
   <worldWidth>101</worldWidth>
   <worldHeight>101</worldHeight>
@@ -59,7 +59,9 @@ public static class Settings
         }
 
         settingsDict.Add(key, defaultValue);
+
         SaveSettings();
+
         return defaultValue;
     }
 
@@ -90,8 +92,6 @@ public static class Settings
             settingsDict.Add(key, value);
             Debug.ULogChannel("Settings", "Created new setting : " + key + " to value of " + value);
         }
-
-        SaveSettings();
     }
 
     public static T GetSetting<T>(string key, T defaultValue)
@@ -122,8 +122,10 @@ public static class Settings
         return defaultValue;
     }
 
-    private static void SaveSettings()
+    public static void SaveSettings()
     {
+        Debug.ULogChannel("Settings", "Settings have changed, so there are settings to save!");
+
         // Create an xml document.
         XmlDocument doc = new XmlDocument();
 
@@ -135,7 +137,7 @@ public static class Settings
             // Create a new element for each pair in the dict.
             XmlElement settingElement = doc.CreateElement(pair.Key);
             settingElement.InnerText = pair.Value;
-            Debug.ULogChannel("Settings", pair.Key + " : " + pair.Value);
+            Debug.ULogChannel("Settings", "Saving setting :: " + pair.Key + " : " + pair.Value);
 
             // Add this element inside the Settings element.
             settingsNode.AppendChild(settingElement);
@@ -160,7 +162,7 @@ public static class Settings
     {
         // Initialize the settings dict.
         settingsDict = new Dictionary<string, string>();
-        string furnitureXmlText;
+        string settingsXmlText;
 
         // Load the settings XML file.
         // First try the user's private settings file in userSettingsFilePath.
@@ -170,26 +172,26 @@ public static class Settings
         {
             Debug.ULogChannel("Settings", "User settings file could not be found at '" + userSettingsFilePath + "'. Falling back to defaults.");
 
-            furnitureXmlText = DefaultSettingsXMLFallback();
+            settingsXmlText = DefaultSettingsXmlFallback();
         }
         else
         {
             try
             {
-                furnitureXmlText = System.IO.File.ReadAllText(userSettingsFilePath);
+                settingsXmlText = System.IO.File.ReadAllText(userSettingsFilePath);
             }
             catch (Exception e)
             {
                 Debug.ULogWarningChannel("Settings", "User settings file could not be found at '" + userSettingsFilePath + "'. Falling back to defaults.");
                 Debug.ULogWarningChannel("Settings", e.Message);
 
-                furnitureXmlText = DefaultSettingsXMLFallback();
+                settingsXmlText = DefaultSettingsXmlFallback();
             }
         }
 
         // Create an xml document from the loaded string.
         XmlDocument doc = new XmlDocument();
-        doc.LoadXml(furnitureXmlText);
+        doc.LoadXml(settingsXmlText);
         Debug.ULogChannel("Settings", "Loaded settings");
         Debug.ULogChannel("Settings", doc.InnerText);
 
@@ -205,14 +207,14 @@ public static class Settings
             {
                 // and add setting to the settings dict.
                 settingsDict.Add(node.Name, node.InnerText);
-                Debug.ULogChannel("Settings", node.Name + " : " + node.InnerText);
+                Debug.ULogChannel("Settings", "Setting loaded :: " + node.Name + " : " + node.InnerText);
             }
         }
     }
 
-    private static string DefaultSettingsXMLFallback()
+    private static string DefaultSettingsXmlFallback()
     {
-        string furnitureXmlText = FallbackSettingsXML;
+        string settingsXml = FallbackSettingsXml;
 
         if (System.IO.File.Exists(DefaultSettingsFilePath) == false)
         {
@@ -220,7 +222,7 @@ public static class Settings
 
             try
             {
-                System.IO.File.WriteAllText(DefaultSettingsFilePath, FallbackSettingsXML);
+                System.IO.File.WriteAllText(DefaultSettingsFilePath, FallbackSettingsXml);
             }
             catch (Exception e)
             {
@@ -232,7 +234,7 @@ public static class Settings
         {
             try
             {
-                furnitureXmlText = System.IO.File.ReadAllText(DefaultSettingsFilePath);
+                settingsXml = System.IO.File.ReadAllText(DefaultSettingsFilePath);
             }
             catch (Exception e)
             {
@@ -241,6 +243,6 @@ public static class Settings
             }
         }
 
-        return furnitureXmlText;
+        return settingsXml;
     }
 }

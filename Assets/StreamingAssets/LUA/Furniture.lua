@@ -418,7 +418,7 @@ function PowerGenerator_UpdateAction(furniture, deltatime)
         )
 
         job.RegisterJobCompletedCallback("PowerGenerator_JobComplete")
-        job.JobDescription = "job_power_generator_fulling_desc"
+        job.JobDescription = "job_power_generator_filling_desc"
         furniture.Jobs.Add(job)
     else
         furniture.Parameters["burnTime"].ChangeFloatValue(-deltatime)
@@ -693,7 +693,7 @@ function OreMine_CreateMiningJob(furniture, character)
         true
 	)
 
-    job.JobDescription = "mine ore"
+    job.JobDescription = "job_ore_mine_mining_desc"
     job.RegisterJobWorkedCallback("OreMine_OreMined")
     furniture.Jobs.Add(job)
     ModUtils.ULog("Create Mining Job - Mining Job Created")

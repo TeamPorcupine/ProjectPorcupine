@@ -56,6 +56,8 @@ public class World : IXmlSerializable
         WorldGenerator.Generate(this, seed);
         Debug.ULogChannel("World", "Generated World");
 
+        tileGraph = new Path_TileGraph(this);
+
         // Adding air to enclosed rooms
         foreach (Room room in this.RoomManager)
         {
@@ -141,6 +143,12 @@ public class World : IXmlSerializable
     /// </summary>
     /// <value>The room manager.</value>
     public RoomManager RoomManager { get; private set; }
+
+    /// <summary>
+    /// Gets the game event manager.
+    /// </summary>
+    /// <value>The game event manager.</value>
+    public GameEventManager GameEventManager { get; private set; }
 
     /// <summary>
     /// Gets the ship manager.
@@ -345,6 +353,7 @@ public class World : IXmlSerializable
         Depth = int.Parse(reader.GetAttribute("Depth"));
 
         SetupWorld(Width, Height, Depth);
+        tileGraph = new Path_TileGraph(this);
 
         while (reader.Read())
         {
@@ -416,16 +425,16 @@ public class World : IXmlSerializable
         FurnitureManager = new FurnitureManager();
         FurnitureManager.Created += OnFurnitureCreated;
 
-        ShipManager = new ShipManager();
-
         UtilityManager = new UtilityManager();
         CharacterManager = new CharacterManager();
         InventoryManager = new InventoryManager();
         jobQueue = new JobQueue();
-        CameraData = new CameraData();
-        PowerNetwork = new ProjectPorcupine.PowerNetwork.PowerNetwork();
+        GameEventManager = new GameEventManager();
+        PowerNetwork = new PowerNetwork();
         temperature = new Temperature();
+        ShipManager = new ShipManager();
         Wallet = new Wallet();
+        CameraData = new CameraData();
 
         LoadSkybox();
         AddEventListeners();
@@ -483,6 +492,7 @@ public class World : IXmlSerializable
     {
         CharacterManager.Update(deltaTime);
         FurnitureManager.TickEveryFrame(deltaTime);
+        GameEventManager.Update(deltaTime);
         ShipManager.Update(deltaTime);
     }
 
@@ -533,6 +543,7 @@ public class World : IXmlSerializable
         if (tileGraph != null)
         {
             tileGraph.RegenerateGraphAtTile(t);
+            tileGraph.RegenerateGraphAtTile(t.Down());
         }
     }
 

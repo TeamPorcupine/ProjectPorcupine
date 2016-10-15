@@ -23,9 +23,9 @@ public class SchedulerEditorTest
         end";
     
     private const string XmlPrototypeString = @"
-        <Events>
-            <Event name=""ping_log_lua"" onFire=""ping_log_lua""/>
-        </Events>";
+        <ScheduledEvents>
+            <ScheduledEvent name=""ping_log_lua"" onFire=""ping_log_lua""/>
+        </ScheduledEvents>";
 
     private Scheduler.Scheduler scheduler;
     private Action<ScheduledEvent> callback;
@@ -42,13 +42,13 @@ public class SchedulerEditorTest
 
         FunctionsManager.ScheduledEvent.LoadScript(LuaFunctionString, "ScheduledEvent");
 
-        if (PrototypeManager.SchedulerEvent == null)
+        if (PrototypeManager.ScheduledEvent == null)
         {
             new PrototypeManager();
         }
 
-        PrototypeManager.SchedulerEvent.Add(new ScheduledEvent("ping_log", evt => Debug.ULogChannel("Scheduler", "Event {0} fired", evt.Name)));
-        PrototypeManager.SchedulerEvent.LoadPrototypes(XmlPrototypeString);
+        PrototypeManager.ScheduledEvent.Add(new ScheduledEvent("ping_log", evt => Debug.ULogChannel("Scheduler", "Event {0} fired", evt.Name)));
+        PrototypeManager.ScheduledEvent.LoadPrototypes(XmlPrototypeString);
 
         // The problem with unit testing singletons
         ///scheduler = Scheduler.Scheduler.Current;
@@ -201,7 +201,7 @@ public class SchedulerEditorTest
     [Test]
     public void SchedulerLuaEventTest()
     {
-        ScheduledEvent evt = new ScheduledEvent(PrototypeManager.SchedulerEvent.Get("ping_log_lua"), 1.0f, 1.0f, false, 1);
+        ScheduledEvent evt = new ScheduledEvent(PrototypeManager.ScheduledEvent.Get("ping_log_lua"), 1.0f, 1.0f, false, 1);
 
         scheduler.RegisterEvent(evt);
 

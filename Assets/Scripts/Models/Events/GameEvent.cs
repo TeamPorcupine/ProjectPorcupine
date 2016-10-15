@@ -7,43 +7,91 @@
 // ====================================================
 #endregion
 using System.Collections.Generic;
-using MoonSharp;
+using System.Xml;
 using MoonSharp.Interpreter;
-using MoonSharp.Interpreter.Interop;
 using UnityEngine;
 
 [MoonSharpUserData]
-public class GameEvent 
+public class GameEvent : IPrototypable
 {
-    protected List<string> preconditions;
+    private List<string> preconditions;
 
-    protected List<string> executionActions;
+    private List<string> executionActions;
 
     private bool executed;
     private float timer;
     private int repeats;
 
-    public GameEvent(string name, bool repeat, int maxRepeats)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GameEvent"/> class.
+    /// Used to create the Prototype.
+    /// </summary>
+    public GameEvent()
     {
-        Name = name;
-        Repeat = repeat;
-        MaxRepeats = maxRepeats;
+        Repeat = false;
+        MaxRepeats = 0;
         preconditions = new List<string>();
         executionActions = new List<string>();
         timer = 0;
         repeats = 0;
     }
 
-    public string Name 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GameEvent"/> class.
+    /// Copy constructor use Clone.
+    /// </summary>
+    /// <param name="other">Other game event.</param>
+    private GameEvent(GameEvent other)
     {
-        get;
-        protected set;
+        Name = other.Name;
+        Repeat = other.Repeat;
+        MaxRepeats = other.MaxRepeats;
+        preconditions = new List<string>(other.preconditions);
+        executionActions = new List<string>(other.executionActions);
+        timer = 0;
+        repeats = 0;
     }
 
+    /// <summary>
+    /// Gets the type of the game event. Used for the Prototype and is equal to the name.
+    /// </summary>
+    /// <value>The type of the game event.</value>
+    public string Type
+    {
+        get { return Name; }
+    }
+
+    /// <summary>
+    /// Gets the name of the game event.
+    /// </summary>
+    /// <value>The name of the game event.</value>
+    public string Name { get; protected set; }
+
+    /// <summary>
+    /// Gets  a value indicating whether this <see cref="GameEvent"/> is repeats.
+    /// </summary>
+    /// <value><c>true</c> if the game event repeats; otherwise, <c>false</c>.</value>
     public bool Repeat { get; protected set; }
 
+    /// <summary>
+    /// Gets the max amount of repeats.
+    /// </summary>
+    /// <value>The max amount of repeats.</value>
     public int MaxRepeats { get; protected set; }
 
+    /// <summary>
+    /// Gets the timer.
+    /// </summary>
+    /// <value>The game event timer.</value>
+    public float Timer
+    {
+        get { return timer; }
+    }
+
+    /// <summary>
+    /// Update the game event.
+    /// </summary>
+    /// <param name="deltaTime">Delta time.</param>
     public void Update(float deltaTime)
     {
         int conditionsMet = 0;
@@ -60,21 +108,26 @@ public class GameEvent
         }
     }
 
+    /// <summary>
+    /// Adds the given time to the timer.
+    /// </summary>
+    /// <param name="time">The time to add.</param>
     public void AddTimer(float time)
     {
         timer += time;
     }
 
-    public float GetTimer()
-    {
-        return timer;
-    }
-
+    /// <summary>
+    /// Resets the game event timer.
+    /// </summary>
     public void ResetTimer()
     {
         timer = 0;
     }
 
+    /// <summary>
+    /// Execute the actions of this game event.
+    /// </summary>
     public void Execute()
     {
         if (executionActions != null)
@@ -89,23 +142,37 @@ public class GameEvent
         }
     }
 
-    public void RegisterPrecondition(string luaFunctionName)
+    /// <summary>
+    /// Clones this instance.
+    /// </summary>
+    public GameEvent Clone()
     {
-        preconditions.Add(luaFunctionName);
+        return new GameEvent(this);
     }
 
-    public void RegisterPreconditions(string[] luaFunctionNames)
+    /// <summary>
+    /// Reads the prototype from the specified XML reader.
+    /// </summary>
+    /// <param name="reader">The XML reader to read from.</param>
+    public void ReadXmlPrototype(XmlReader reader)
     {
-        preconditions.AddRange(luaFunctionNames);
-    }
+        Name = reader.GetAttribute("Name");
 
-    public void RegisterExecutionAction(string luaFunctionName)
-    {
-        executionActions.Add(luaFunctionName);
-    }
-
-    public void RegisterExecutionActions(string[] luaFunctionNames)
-    {
-        executionActions.AddRange(luaFunctionNames);
+        while (reader.Read())
+        {
+            switch (reader.Name)
+            {
+                case "Repeats":
+                    MaxRepeats = int.Parse(reader.GetAttribute("MaxRepeats"));
+                    Repeat = true;
+                    break;
+                case "Precondition":
+                    preconditions.Add(reader.GetAttribute("FunctionName"));
+                    break;
+                case "OnExecute":
+                    executionActions.Add(reader.GetAttribute("FunctionName"));
+                    break;
+            }
+        }
     }
 }

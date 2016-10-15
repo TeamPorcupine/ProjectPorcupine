@@ -6,7 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System.Collections;
+using System;
 using ProjectPorcupine.Localization;
 using UnityEngine;
 using UnityEngine.UI;
@@ -36,33 +36,30 @@ public class GameMenuController : MonoBehaviour
         buttonPrefab = Resources.Load("UI/MenuButton");
 
         CreateGameMenu();
+        DeactivateAll();
 
-        GameMenuManager.Instance.Added += CreateGameMenu;
+        GameMenuManager.Instance.Added += OnMenuItemAdded;
     }
 
     private void CreateGameMenu()
     {
-        // Clear out all the children of our file list
-        while (this.gameObject.transform.childCount > 0)
+        foreach (GameMenuItem gameMenuItem in GameMenuManager.Instance)
         {
-            Transform child = this.gameObject.transform.GetChild(0);
-            child.SetParent(null);  // Become Batman
-            Destroy(child.gameObject);
+            CreateButton(gameMenuItem);
         }
-
-        foreach (GameMenuItem mainMenuItem in GameMenuManager.Instance)
-        {
-            CreateButton(mainMenuItem);
-        }
-
-        DeactivateAll();
     }
 
-    private void CreateButton(GameMenuItem mainMenuItem)
+    private void OnMenuItemAdded(GameMenuItem gameMenuItem, int position)
+    {
+        GameObject gameObject = CreateButton(gameMenuItem);
+        gameObject.transform.SetSiblingIndex(position);
+    }
+
+    private GameObject CreateButton(GameMenuItem gameMenuItem)
     {
         GameObject gameObject = (GameObject)Instantiate(buttonPrefab, this.gameObject.transform);
-        gameObject.name = "Button - " + mainMenuItem.Key;
-        gameObject.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(mainMenuItem.Key) };
+        gameObject.name = "Button - " + gameMenuItem.Key;
+        gameObject.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(gameMenuItem.Key) };
 
         Button button = gameObject.GetComponent<Button>();
         button.onClick.AddListener(delegate
@@ -70,15 +67,36 @@ public class GameMenuController : MonoBehaviour
                 if (!WorldController.Instance.IsModal)
                 {
                     DeactivateAll();
-                    mainMenuItem.Trigger();
+                    gameMenuItem.Trigger();
                 }
             });
 
-        string menuItemKey = mainMenuItem.Key;
-        LocalizationTable.CBLocalizationFilesChanged += delegate
+        Action localizationFilesChangedHandler = null;
+        localizationFilesChangedHandler = delegate
             {
-                gameObject.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(menuItemKey) };
+                Transform transform;
+                try
+                {
+                    transform = gameObject.transform;
+                }
+                catch (MissingReferenceException)
+                {
+                    // this sometimes gets called when gameObject doesn't exist
+                    // if so the gameObject has obviously been destroyed, so deregister
+                    // the callback
+                    LocalizationTable.CBLocalizationFilesChanged -= localizationFilesChangedHandler;
+                    return;
+                }
+
+                string menuItemKey = gameObject.name.Replace("Button - ", string.Empty);
+                transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[]
+                {
+                    LocalizationTable.GetLocalization(menuItemKey)
+                };
             };
+        LocalizationTable.CBLocalizationFilesChanged += localizationFilesChangedHandler;
+
+        return gameObject;
     }
 
     private void Update()

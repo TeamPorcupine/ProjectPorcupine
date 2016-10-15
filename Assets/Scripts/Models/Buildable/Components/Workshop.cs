@@ -108,24 +108,26 @@ namespace ProjectPorcupine.Buildable.Components
 
         public override void FixedFrequencyUpdate(float deltaTime)
         {
-            //// if there is enough input, do the processing and store item to output
-            //// - remove items from input
-            //// - add param to reflect factory can provide output (has output inside)
-            ////   - as output will be produced after time, it is possible that output spot can be ocupied meanwhile
-            //// - process for specified time
-            //// - if output slot is free, provide output (if not, keep output 'inside' factory)
+
+            // if there is enough input, do the processing and store item to output
+            // - remove items from input
+            // - add param to reflect factory can provide output (has output inside)
+            //   - as output will be produced after time, it is possible that output spot can be ocupied meanwhile
+            // - process for specified time
+            // - if output slot is free, provide output (if not, keep output 'inside' factory)
 
             if (ParentFurniture.IsBeingDestroyed)
             {
                 return;
             }
 
-            var curSetupChainName = CurrentProductionChainName.ToString();
+            string curSetupChainName = CurrentProductionChainName.ToString();
 
             if (!string.IsNullOrEmpty(curSetupChainName))
             {
                 ProductionChain prodChain = GetProductionChainByName(curSetupChainName);
-                //// if there is no processing in progress
+
+                // if there is no processing in progress
                 if (IsProcessing.ToInt() == 0)
                 {
                     // check input slots for input inventory               
@@ -187,7 +189,7 @@ namespace ProjectPorcupine.Buildable.Components
                 WorkshopMenuActions = new List<ComponentContextMenu>();
                 
                 CurrentProductionChainName.SetValue(null);
-                foreach (var chain in PossibleProductions)
+                foreach (ProductionChain chain in PossibleProductions)
                 {
                     string prodChainName = chain.Name;
                     WorkshopMenuActions.Add(new ComponentContextMenu()
@@ -311,7 +313,7 @@ namespace ProjectPorcupine.Buildable.Components
         {
             bool isProcessing = IsProcessing.ToInt() > 0;
             //// for all inputs in production chain
-            foreach (var reqInputItem in prodChain.Input)
+            foreach (Item reqInputItem in prodChain.Input)
             {
                 if (isProcessing && !reqInputItem.HasHopper)
                 {
@@ -345,7 +347,7 @@ namespace ProjectPorcupine.Buildable.Components
 
                     if (desiredAmount > 0)
                     {
-                        var jb = new Job(
+                        Job jb = new Job(
                                      inTile,
                                      null,  // beware: passed jobObjectType is expected Furniture only !!
                                      null,
@@ -367,29 +369,30 @@ namespace ProjectPorcupine.Buildable.Components
         private List<TileObjectTypeAmount> CheckForInventoryAtOutput(ProductionChain prodChain)
         {
             var outPlacement = new List<TileObjectTypeAmount>();
-            //// processing is done, try to spit the output
-            //// check if output can be placed in world
+
+            // processing is done, try to spit the output
+            // check if output can be placed in world
             foreach (Item outObjType in prodChain.Output)
             {
                 int amount = outObjType.Amount;
 
                 // check ouput slots for products:                        
-                Tile tt = World.Current.GetTileAt(
+                Tile outputTile = World.Current.GetTileAt(
                     ParentFurniture.Tile.X + outObjType.SlotPosX,
                     ParentFurniture.Tile.Y + outObjType.SlotPosY,
                     ParentFurniture.Tile.Z);
 
-                bool tileHasOtherFurniture = tt.Furniture != null && tt.Furniture != ParentFurniture;
+                bool tileHasOtherFurniture = outputTile.Furniture != null && outputTile.Furniture != ParentFurniture;
 
                 if (!tileHasOtherFurniture &&
-                    (tt.Inventory == null ||
-                    (tt.Inventory.Type == outObjType.ObjectType && tt.Inventory.StackSize + amount <= tt.Inventory.MaxStackSize)))
+                    (outputTile.Inventory == null ||
+                    (outputTile.Inventory.Type == outObjType.ObjectType && outputTile.Inventory.StackSize + amount <= outputTile.Inventory.MaxStackSize)))
                 {
                     // out product can be placed here
                     outPlacement.Add(new TileObjectTypeAmount()
                     {
-                        Tile = tt,
-                        IsEmpty = tt.Inventory == null,
+                        Tile = outputTile,
+                        IsEmpty = outputTile.Inventory == null,
                         ObjectType = outObjType.ObjectType,
                         Amount = outObjType.Amount
                     });
