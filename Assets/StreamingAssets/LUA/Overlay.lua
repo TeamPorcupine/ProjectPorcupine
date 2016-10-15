@@ -31,11 +31,8 @@ function powerValueAt(tile)
     zero = 128 -- This is middle between 0 and 256
     multiplier = 12,8 -- For now 1 power is 40 in overlay
 	
-    if (tile == nil or tile.furniture == nil) then
-        return zero
-    end
+	local powerComponent = ModUtils.GetPlugablePowerConnectionForTile(tile)
 
-	local powerComponent = tile.furniture.GetPowerConnectionComponent()
 	if (powerComponent == nil) then
         return zero
     end

@@ -1085,6 +1085,12 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         yield return GetProgressInfo();
     }
 
+    /// <summary>
+    /// Gets component if present or null
+    /// </summary>
+    /// <typeparam name="T">type of component</typeparam>
+    /// <param name="componentName">type of the component, e.g. PowerConnection, WorkShop</param>
+    /// <returns>component or null</returns>
     public T GetComponent<T>(string componentName) where T : BuildableComponent
     {
         if (components != null)
@@ -1100,24 +1106,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
 
         return null;
     }
-
-    // TODO: this is just to make LUA overlay working, LUA can't access generic methods
-    public IPlugable GetPowerConnectionComponent()
-    {
-        if (components != null)
-        {
-            foreach (BuildableComponent component in components)
-            {
-                if (component.Type.Equals("PowerConnection"))
-                {
-                    return (IPlugable)component;
-                }
-            }
-        }
-
-        return null;
-    }
-
     #endregion
 
     #region Context Menu
