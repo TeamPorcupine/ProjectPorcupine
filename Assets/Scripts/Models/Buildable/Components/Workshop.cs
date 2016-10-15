@@ -236,12 +236,7 @@ namespace ProjectPorcupine.Buildable.Components
         {
             foreach (KeyValuePair<Tile, int> toConsume in flaggedForTaking)
             {
-                toConsume.Key.Inventory.StackSize -= toConsume.Value;
-                //// TODO: this should be handled somewhere else
-                if (toConsume.Key.Inventory.StackSize <= 0)
-                {
-                    toConsume.Key.Inventory = null;
-                }
+                World.Current.InventoryManager.ConsumeInventory(toConsume.Key, toConsume.Value);
             }
         }
 

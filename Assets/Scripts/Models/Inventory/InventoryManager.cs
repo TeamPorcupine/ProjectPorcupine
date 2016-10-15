@@ -125,6 +125,20 @@ public class InventoryManager
         return true;
     }
 
+    public bool ConsumeInventory(Tile tile, int amount)
+    {
+        if(tile.Inventory == null)
+        {
+            return false;
+        }
+        else
+        {
+            tile.Inventory.StackSize -= amount;
+            CleanupInventory(tile.Inventory);
+            return true;
+        }        
+    }
+
     public bool PlaceInventory(Job job, Character character)
     {
         Inventory sourceInventory = character.inventory;
