@@ -182,6 +182,8 @@ namespace ProjectPorcupine.Buildable.Components
             // check if context menu is needed
             if (PossibleProductions.Count > 1)
             {
+                componentRequirements = Requirements.Production;
+
                 WorkshopMenuActions = new List<ComponentContextMenu>();
                 
                 CurrentProductionChainName.SetValue(null);

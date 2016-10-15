@@ -22,9 +22,20 @@ namespace ProjectPorcupine.Buildable.Components
     [Serializable]
     public abstract class BuildableComponent
     {
+        [Flags]
+        public enum Requirements
+        {
+            None = 0,
+            Power = 1,
+            Production = 1 << 1,
+            Gas = 1 << 2
+        }
+
         protected static readonly string ComponentLogChannel = "FurnitureComponents";
 
         private static Dictionary<string, Type> componentTypes;
+
+        protected Requirements componentRequirements = Requirements.None;
 
         public BuildableComponent()
         {
@@ -49,6 +60,15 @@ namespace ProjectPorcupine.Buildable.Components
         public string Type { get; set; }
 
         [XmlIgnore]
+        public Requirements Needs
+        {
+            get
+            {
+                return componentRequirements;
+            }
+        }
+
+        [XmlIgnore]
         protected Furniture ParentFurniture { get; set; }
 
         [XmlIgnore]
@@ -56,7 +76,7 @@ namespace ProjectPorcupine.Buildable.Components
         {
             get { return ParentFurniture.Parameters; }
         }
-                
+                        
         public static BuildableComponent Deserialize(XmlReader xmlReader)
         {
             if (componentTypes == null)

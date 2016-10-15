@@ -359,7 +359,12 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             return !string.IsNullOrEmpty(getSpriteNameAction);
         }
     }
-    
+
+    /// <summary>
+    /// Flag with furniture requirements (used for showing icon overlay, e.g. No power, ... )
+    /// </summary>
+    public BuildableComponent.Requirements Requirements { get; protected set; }
+
     #endregion
 
     /// <summary>
@@ -463,9 +468,18 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     {
         // requirements from components (gas, ...)
         bool canFunction = true;
+        Requirements = BuildableComponent.Requirements.None;
+
         foreach (var cmp in components)
         {
-            canFunction &= cmp.CanFunction();
+            bool cmpCanFunction = cmp.CanFunction();
+            canFunction &= cmpCanFunction;
+
+            // if it can't function, collect all stuff it needs (power, gas, ...) for icon signalization
+            if (!cmpCanFunction)
+            {
+                Requirements |= cmp.Needs;
+            }
         }
 
         IsOperating = canFunction;
@@ -1043,6 +1057,40 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         
         yield return GetProgressInfo();
     }
+
+    public T GetComponent<T>(string componentName) where T : BuildableComponent
+    {
+        if (components != null)
+        {
+            foreach (BuildableComponent component in components)
+            {
+                if (component.Type.Equals(componentName))
+                {
+                    return (T)component;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    // TODO: this is just to make LUA overlay working, LUA can't access generic methods
+    public IPlugable GetPowerConnectionComponent()
+    {
+        if (components != null)
+        {
+            foreach (BuildableComponent component in components)
+            {
+                if (component.Type.Equals("PowerConnection"))
+                {
+                    return (IPlugable)component;
+                }
+            }
+        }
+
+        return null;
+    }
+
     #endregion
 
     #region Context Menu

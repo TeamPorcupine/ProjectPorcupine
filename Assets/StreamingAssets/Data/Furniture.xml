@@ -189,7 +189,6 @@
         <PathfindingWeight>2</PathfindingWeight>
         <Width>2</Width>
         <Height>2</Height>
-        <PowerConnection inputRate="1" outputRate="" capacity=""/>
 
         <BuildingJob jobTime="0" />
         
@@ -248,7 +247,6 @@
         <PathfindingWeight>2</PathfindingWeight>
         <Width>3</Width>
         <Height>2</Height>
-        <PowerConnection inputRate="1" outputRate="" capacity=""/>
 
         <Component type="PowerConnection">
             <Requires rate="1" />
@@ -284,7 +282,6 @@
         <PathfindingWeight>2</PathfindingWeight>
         <Width>2</Width>
         <Height>2</Height>
-        <PowerConnection inputRate="" outputRate="5" capacity=""/>
 
         <Animations>
             <Animation state="idle" looping="false">
@@ -333,7 +330,6 @@
                     <Item objectType="Power Cell" amount="1" slotPosX="0" slotPosY="0" hasHopper="false" />
                 </Input>
             </ProductionChain>
-            <!--<UsedAnimations idle="idle" running="running" />-->
         </Component>
         
         <Component type="PowerConnection">
@@ -357,7 +353,6 @@
         <PathfindingWeight>2</PathfindingWeight>
         <Width>2</Width>
         <Height>2</Height>
-        <PowerConnection inputRate="1" outputRate="" capacity=""/>
 
         <Component type="PowerConnection">
             <Requires rate="1" />
@@ -485,7 +480,6 @@
         <PathfindingWeight>2</PathfindingWeight>
         <Width>1</Width>
         <Height>1</Height>
-        <PowerConnection inputRate="4" outputRate="" capacity=""/>
 
         <BuildingJob jobTime="0" />
         
@@ -520,7 +514,6 @@
         <PathfindingWeight>2</PathfindingWeight>
         <Width>2</Width>
         <Height>2</Height>
-        <PowerConnection inputRate="1" outputRate="" capacity=""/>
 
         <BuildingJob jobTime="1" />
         
@@ -593,7 +586,6 @@
         <PathfindingWeight>2</PathfindingWeight>
         <Width>2</Width>
         <Height>2</Height>
-        <PowerConnection inputRate="1" outputRate="" capacity=""/>
 
         <BuildingJob jobTime="2" />
         
@@ -641,7 +633,6 @@
         <PathfindingWeight>2</PathfindingWeight>
         <Width>2</Width>
         <Height>3</Height>
-        <PowerConnection inputRate="" outputRate="3" capacity=""/>
         <CanRotate>true</CanRotate>
 
         <BuildingJob jobTime="1" />
@@ -672,7 +663,6 @@
         <Width>1</Width>
         <Height>1</Height>
         <EnclosesRooms>true</EnclosesRooms>
-        <PowerConnection inputRate="1" outputRate="" capacity=""/>
 
         <BuildingJob jobTime="1" />
         <CanReplaceFurniture typeTag="Wall" />
@@ -777,7 +767,6 @@
         <PathfindingWeight>2</PathfindingWeight>
         <Width>1</Width>
         <Height>1</Height>
-        <PowerConnection inputRate="5" outputRate="10" capacity="50"/>
 
         <BuildingJob jobTime="2" />
         
@@ -867,7 +856,6 @@
         <PathfindingWeight>2</PathfindingWeight>
         <Width>1</Width>
         <Height>1</Height>
-        <PowerConnection inputRate="" outputRate="2" capacity=""/>
 
         <Component type="PowerConnection">
             <Provides rate="2" />

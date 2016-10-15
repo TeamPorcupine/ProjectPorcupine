@@ -6,6 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using ProjectPorcupine.Buildable.Components;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -139,7 +140,7 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
         powerSpriteRenderer.sortingLayerName = "Power";
         powerSpriteRenderer.color = Color.red;
 
-        if (furniture.IsOperating)
+        if ((furniture.Requirements & BuildableComponent.Requirements.Power) == 0)        
         {
             powerGameObject.SetActive(false);
         }

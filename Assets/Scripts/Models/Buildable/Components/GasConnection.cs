@@ -81,7 +81,8 @@ namespace ProjectPorcupine.Buildable.Components
         }
 
         protected override void Initialize()
-        {            
+        {
+            componentRequirements = Requirements.Gas;
         }
         
         public class GasInfo

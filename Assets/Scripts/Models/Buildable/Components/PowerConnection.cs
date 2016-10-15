@@ -185,6 +185,8 @@ namespace ProjectPorcupine.Buildable.Components
 
         protected override void Initialize()
         {
+            componentRequirements = Requirements.Power;
+
             if (ParamsDefinitions == null)
             {
                 // don't need definition for all furniture, just use defaults
