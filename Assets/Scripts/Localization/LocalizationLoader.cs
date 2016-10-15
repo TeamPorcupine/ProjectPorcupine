@@ -58,6 +58,9 @@ namespace ProjectPorcupine.Localization
                 return;
             }
 
+            // Load the localization config file first
+            LocalizationTable.LoadConfigFile(Path.Combine(filePath, "config.xml"));
+
             // Loop through all files.
             // TODO: Think over the extension ".lang", might change that in the future.
             foreach (string file in Directory.GetFiles(filePath, "*.lang"))

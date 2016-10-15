@@ -11,15 +11,51 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Xml;
 using UnityEngine;
 
 namespace ProjectPorcupine.Localization
 {
+    // The class that holds information about a language
+    public class LanguageData
+    {
+        public readonly string localizationCode;
+        public string LocalName
+        {
+            get
+            {
+                if (isRightToLeft == false)
+                {
+                    return localName;
+                }
+                else
+                {
+                    return LocalizationTable.ReverseString(localName);
+                }
+            }
+
+            set
+            {
+                localName = value;
+            }
+        }
+        // even for RTL languages, this is kept as defined in xml. The property does the character reversal
+        private string localName; 
+        public bool isRightToLeft;
+
+        public LanguageData(string localizationCode, string localName, bool isRightToLeft = false)
+        {
+            this.localizationCode = localizationCode;
+            this.localName = localName ?? localizationCode;
+            this.isRightToLeft = isRightToLeft;
+        }
+    }
     /// <summary>
     /// The central class containing localization information.
     /// </summary>
     public static class LocalizationTable
     {
+
         // The current language. This will be automatically be set by the LocalizationLoader.
         // Default is English.
         public static string currentLanguage = DefaultLanguage;
@@ -28,6 +64,9 @@ namespace ProjectPorcupine.Localization
         public static bool initialized = false;
 
         private static readonly string DefaultLanguage = "en_US";
+
+        // Contains basic information about each localization
+        private static Dictionary<string, LanguageData> localizationConfigurations;
 
         // The dictionary that stores all the localization values.
         private static Dictionary<string, Dictionary<string, string>> localizationTable = new Dictionary<string, Dictionary<string, string>>();
@@ -92,6 +131,18 @@ namespace ProjectPorcupine.Localization
             }
         }
 
+        public static string GetLocalizaitonCodeLocalization(string code)
+        {
+            if (localizationConfigurations.ContainsKey(code) == false)
+            {
+                Debug.ULogChannel("LocalizationTable", "name of " + code + " is not present in config.xml");
+                return code;
+            }
+
+            return localizationConfigurations[code].LocalName;
+           
+        }
+
         public static void SetLocalization(int lang)
         {
             string[] languages = GetLanguages();
@@ -120,6 +171,33 @@ namespace ProjectPorcupine.Localization
             return localizationTable.Keys.ToArray();
         }
 
+        public static void LoadConfigFile(string pathToConfigFile)
+        {
+            localizationConfigurations = new Dictionary<string, LanguageData>();
+
+            if(File.Exists(pathToConfigFile) == false)
+            {
+                Debug.ULogErrorChannel("LocalizationTable", "No config file found at: " + pathToConfigFile);
+                return;
+            }
+
+            XmlReader reader = XmlReader.Create(pathToConfigFile);
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element && reader.Name == "language")
+                {
+                    if (reader.HasAttributes)
+                    {
+                        string code = reader.GetAttribute("code");
+                        string localName = reader.GetAttribute("name");
+                        bool rtl = (reader.GetAttribute("rtl") == "true") ? true : false;
+
+                        localizationConfigurations.Add(code, new LanguageData(code, localName, rtl));
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Load a localization file from the harddrive with a defined localization code.
         /// </summary>
@@ -134,62 +212,29 @@ namespace ProjectPorcupine.Localization
                     localizationTable[localizationCode] = new Dictionary<string, string>();
                 }
 
-                // Read all lines in advance, we need it to know how the language is called.
-                string[] allLines = File.ReadAllLines(path);
-
-                // We assume that A) the key is the first line or second line if the language is RTL B) the key is always the localizationCode
-                // If not, we know this language hasn't been updated yet, so insert the localizationCode as key and value
-                // If this if check will ever return false... we now something is terribly wrong!
-                if (allLines.Length > 0) 
+                if (localizationConfigurations.ContainsKey(localizationCode) == false)
                 {
-                    // Split the line
-                    string[] keyValuePair = allLines[0].Split(new char[] { '=' }, 2);
-
-                    // Check if the language starts with a valid name.
-                    // else: Maybe there is a lang key, but this language has an RTL line first?
-                    if (keyValuePair[0] == "lang")
-                    {
-                        // It does, add it to the list, we need it later.
-                        localizationTable[localizationCode]["lang"] = keyValuePair[1];
-                    }
-                    else if (keyValuePair[0] == "rtl")
-                    {
-                        // Check the next line down for the lang key
-                        string[] secondLineKeyValuePair = allLines[1].Split(new char[] { '=' }, 2);
-                        if (secondLineKeyValuePair[0] == "lang")
-                        {
-                            // this does have a lang key, so assign it
-                            if (keyValuePair[1] == "true" || keyValuePair[1] == "1")
-                            {
-                                localizationTable[localizationCode]["lang"] = ReverseString(secondLineKeyValuePair[1]);
-                            }
-                            else
-                            {
-                                // There is a lang key, and rtl is explicitly defined as false so just return the key as normal
-                                localizationTable[localizationCode]["lang"] = secondLineKeyValuePair[1];
-                            }
-                        }
-                    }
-                    else
-                    {
-                        // It doesn't, add the localizationCode as a fallback for now.
-                        localizationTable[localizationCode]["lang"] = localizationCode;
-                    }
+                    Debug.ULogErrorChannel("LocalizationTable", "Language: " + localizationCode + " not defined in localization/config.xml");
                 }
 
                 // Only the current and default languages translations will be loaded in memory.
                 if (localizationCode == DefaultLanguage || localizationCode == currentLanguage)
                 {
-                    bool rightToLeftLanguage = false;
+                    bool rightToLeftLanguage;
+                    if (localizationConfigurations.ContainsKey(localizationCode) == false)
+                    {
+                        Debug.ULogWarningChannel("LocalizationTable", "Assuming " + localizationCode + " is LTR");
+                        rightToLeftLanguage = false;
+
+                    }
+                    else
+                    {
+                        rightToLeftLanguage = localizationConfigurations[localizationCode].isRightToLeft;
+                    }
                     string[] lines = File.ReadAllLines(path);
                     foreach (string line in lines)
                     {
                         string[] keyValuePair = line.Split(new char[] { '=' }, 2);
-
-                        if (keyValuePair[0] == "rtl" && (keyValuePair[1] == "true" || keyValuePair[1] == "1"))
-                        {
-                            rightToLeftLanguage = true;
-                        }
 
                         if (keyValuePair.Length != 2)
                         {
@@ -200,7 +245,6 @@ namespace ProjectPorcupine.Localization
                         if (rightToLeftLanguage)
                         {
                             // reverse order of letters in the localization string since unity UI doesn't support RTL languages
-                            // note the line "rtl=true" must appear first in the file for this to work.
                             keyValuePair[1] = ReverseString(keyValuePair[1]);
                         }
 
@@ -219,8 +263,13 @@ namespace ProjectPorcupine.Localization
         /// </summary>
         /// <param name="original">The original and correct RTL text.</param>
         /// <returns>The string with the order of the characters reversed.</returns>
-        private static string ReverseString(string original)
+        public static string ReverseString(string original)
         {
+            if (original == null)
+            {
+                return null;
+            }
+
             char[] letterArray = original.ToCharArray();
             Array.Reverse(letterArray);
             string reverse = new string(letterArray);
