@@ -16,15 +16,29 @@ using UnityEngine;
 
 namespace ProjectPorcupine.Localization
 {
-    // The class that holds information about a language
+    // The class that holds information about a languages configuration data. 
+    // TODO: move to seperate cs file
     public class LanguageData
     {
-        public readonly string localizationCode;
+        public readonly string LocalizationCode;
+
+        public bool IsRightToLeft;
+
+        // Even for RTL languages, this is kept as defined in xml. The property does the character reversal
+        private string localName;
+
+        public LanguageData(string localizationCode, string localName, bool isRightToLeft = false)
+        {
+            this.LocalizationCode = localizationCode;
+            this.localName = localName ?? localizationCode;
+            this.IsRightToLeft = isRightToLeft;
+        }
+
         public string LocalName
         {
             get
             {
-                if (isRightToLeft == false)
+                if (IsRightToLeft == false)
                 {
                     return localName;
                 }
@@ -38,24 +52,14 @@ namespace ProjectPorcupine.Localization
             {
                 localName = value;
             }
-        }
-        // even for RTL languages, this is kept as defined in xml. The property does the character reversal
-        private string localName; 
-        public bool isRightToLeft;
-
-        public LanguageData(string localizationCode, string localName, bool isRightToLeft = false)
-        {
-            this.localizationCode = localizationCode;
-            this.localName = localName ?? localizationCode;
-            this.isRightToLeft = isRightToLeft;
-        }
+        }   
     }
+
     /// <summary>
     /// The central class containing localization information.
     /// </summary>
     public static class LocalizationTable
     {
-
         // The current language. This will be automatically be set by the LocalizationLoader.
         // Default is English.
         public static string currentLanguage = DefaultLanguage;
@@ -140,7 +144,6 @@ namespace ProjectPorcupine.Localization
             }
 
             return localizationConfigurations[code].LocalName;
-           
         }
 
         public static void SetLocalization(int lang)
@@ -175,7 +178,7 @@ namespace ProjectPorcupine.Localization
         {
             localizationConfigurations = new Dictionary<string, LanguageData>();
 
-            if(File.Exists(pathToConfigFile) == false)
+            if (File.Exists(pathToConfigFile) == false)
             {
                 Debug.ULogErrorChannel("LocalizationTable", "No config file found at: " + pathToConfigFile);
                 return;
@@ -195,66 +198,6 @@ namespace ProjectPorcupine.Localization
                         localizationConfigurations.Add(code, new LanguageData(code, localName, rtl));
                     }
                 }
-            }
-        }
-
-        /// <summary>
-        /// Load a localization file from the harddrive with a defined localization code.
-        /// </summary>
-        /// <param name="path">The path to the file.</param>
-        /// <param name="localizationCode">The localization code, e.g.: "en_US", "en_UK".</param>
-        private static void LoadLocalizationFile(string path, string localizationCode)
-        {
-            try
-            {
-                if (localizationTable.ContainsKey(localizationCode) == false)
-                {
-                    localizationTable[localizationCode] = new Dictionary<string, string>();
-                }
-
-                if (localizationConfigurations.ContainsKey(localizationCode) == false)
-                {
-                    Debug.ULogErrorChannel("LocalizationTable", "Language: " + localizationCode + " not defined in localization/config.xml");
-                }
-
-                // Only the current and default languages translations will be loaded in memory.
-                if (localizationCode == DefaultLanguage || localizationCode == currentLanguage)
-                {
-                    bool rightToLeftLanguage;
-                    if (localizationConfigurations.ContainsKey(localizationCode) == false)
-                    {
-                        Debug.ULogWarningChannel("LocalizationTable", "Assuming " + localizationCode + " is LTR");
-                        rightToLeftLanguage = false;
-
-                    }
-                    else
-                    {
-                        rightToLeftLanguage = localizationConfigurations[localizationCode].isRightToLeft;
-                    }
-                    string[] lines = File.ReadAllLines(path);
-                    foreach (string line in lines)
-                    {
-                        string[] keyValuePair = line.Split(new char[] { '=' }, 2);
-
-                        if (keyValuePair.Length != 2)
-                        {
-                            Debug.ULogErrorChannel("LocalizationTable", string.Format("Invalid format of localization string. Actual {0}", line));
-                            continue;
-                        }
-
-                        if (rightToLeftLanguage)
-                        {
-                            // reverse order of letters in the localization string since unity UI doesn't support RTL languages
-                            keyValuePair[1] = ReverseString(keyValuePair[1]);
-                        }
-
-                        localizationTable[localizationCode][keyValuePair[0]] = keyValuePair[1];
-                    }
-                }
-            }
-            catch (FileNotFoundException exception)
-            {
-                Debug.ULogErrorChannel("LocalizationTable", new Exception(string.Format("There is no localization file for {0}", localizationCode), exception).ToString());
             }
         }
 
@@ -295,6 +238,67 @@ namespace ProjectPorcupine.Localization
 
             // rebuild the reversed string
             return string.Join(null, revArray);
+        }
+
+        /// <summary>
+        /// Load a localization file from the harddrive with a defined localization code.
+        /// </summary>
+        /// <param name="path">The path to the file.</param>
+        /// <param name="localizationCode">The localization code, e.g.: "en_US", "en_UK".</param>
+        private static void LoadLocalizationFile(string path, string localizationCode)
+        {
+            try
+            {
+                if (localizationTable.ContainsKey(localizationCode) == false)
+                {
+                    localizationTable[localizationCode] = new Dictionary<string, string>();
+                }
+
+                if (localizationConfigurations.ContainsKey(localizationCode) == false)
+                {
+                    Debug.ULogErrorChannel("LocalizationTable", "Language: " + localizationCode + " not defined in localization/config.xml");
+                }
+
+                // Only the current and default languages translations will be loaded in memory.
+                if (localizationCode == DefaultLanguage || localizationCode == currentLanguage)
+                {
+                    bool rightToLeftLanguage;
+                    if (localizationConfigurations.ContainsKey(localizationCode) == false)
+                    {
+                        Debug.ULogWarningChannel("LocalizationTable", "Assuming " + localizationCode + " is LTR");
+                        rightToLeftLanguage = false;
+                    }
+                    else
+                    {
+                        rightToLeftLanguage = localizationConfigurations[localizationCode].IsRightToLeft;
+                    }
+
+                    string[] lines = File.ReadAllLines(path);
+
+                    foreach (string line in lines)
+                    {
+                        string[] keyValuePair = line.Split(new char[] { '=' }, 2);
+
+                        if (keyValuePair.Length != 2)
+                        {
+                            Debug.ULogErrorChannel("LocalizationTable", string.Format("Invalid format of localization string. Actual {0}", line));
+                            continue;
+                        }
+
+                        if (rightToLeftLanguage)
+                        {
+                            // reverse order of letters in the localization string since unity UI doesn't support RTL languages
+                            keyValuePair[1] = ReverseString(keyValuePair[1]);
+                        }
+
+                        localizationTable[localizationCode][keyValuePair[0]] = keyValuePair[1];
+                    }
+                }
+            }
+            catch (FileNotFoundException exception)
+            {
+                Debug.ULogErrorChannel("LocalizationTable", new Exception(string.Format("There is no localization file for {0}", localizationCode), exception).ToString());
+            }
         }
     }
 }

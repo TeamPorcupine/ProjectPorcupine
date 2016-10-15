@@ -8,6 +8,7 @@
 #endregion
 using NUnit.Framework;
 using ProjectPorcupine.Localization;
+
 public class ReverseLocalizationTest
 {
     [Test]
