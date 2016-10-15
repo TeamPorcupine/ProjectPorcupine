@@ -611,8 +611,8 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     /// </summary>
     private void UseStats()
     {
-        // The speed is equal to (baseSpeed +/-50% of baseSpeed depending on Dexterity)
-        speed = baseSpeed + (0.5f * baseSpeed * ((Convert.ToSingle(stats["Dexterity"].Value) - 10) / 10));
+        // The speed is equal to (baseSpeed +/-30% of baseSpeed depending on Dexterity)
+        speed = baseSpeed + (0.3f * baseSpeed * ((Convert.ToSingle(stats["Dexterity"].Value) - 10) / 10));
 
         // Base character max health on their constitution.
         health = new HealthSystem(50 + (Convert.ToSingle(stats["Constitution"].Value) * 5));
