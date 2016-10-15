@@ -6,8 +6,8 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using ProjectPorcupine.Buildable.Components;
 using System.Collections.Generic;
+using ProjectPorcupine.Buildable.Components;
 using UnityEngine;
 
 public class FurnitureSpriteController : BaseSpriteController<Furniture>

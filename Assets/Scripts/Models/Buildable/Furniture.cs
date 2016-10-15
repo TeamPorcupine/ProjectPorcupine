@@ -365,10 +365,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     }
 
     /// <summary>
-    /// Flag with furniture requirements (used for showing icon overlay, e.g. No power, ... )
+    /// Flag with furniture requirements (used for showing icon overlay, e.g. No power, ... ).
     /// </summary>
     public BuildableComponent.Requirements Requirements { get; protected set; }
-
 
     /// <summary>
     /// Gets the Health of this object.

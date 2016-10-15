@@ -108,14 +108,12 @@ namespace ProjectPorcupine.Buildable.Components
 
         public override void FixedFrequencyUpdate(float deltaTime)
         {
-
             // if there is enough input, do the processing and store item to output
             // - remove items from input
             // - add param to reflect factory can provide output (has output inside)
             //   - as output will be produced after time, it is possible that output spot can be ocupied meanwhile
             // - process for specified time
             // - if output slot is free, provide output (if not, keep output 'inside' factory)
-
             if (ParentFurniture.IsBeingDestroyed)
             {
                 return;

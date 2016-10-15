@@ -21,22 +21,13 @@ namespace ProjectPorcupine.Buildable.Components
 {
     [Serializable]
     public abstract class BuildableComponent
-    {
-        [Flags]
-        public enum Requirements
-        {
-            None = 0,
-            Power = 1,
-            Production = 1 << 1,
-            Gas = 1 << 2
-        }
-
+    {        
         protected static readonly string ComponentLogChannel = "FurnitureComponents";
-
-        private static Dictionary<string, Type> componentTypes;
 
         protected Requirements componentRequirements = Requirements.None;
 
+        private static Dictionary<string, Type> componentTypes;
+        
         public BuildableComponent()
         {
             // need to set it, for some reason GetHashCode is called during serialization (when Name is still null)
@@ -46,6 +37,15 @@ namespace ProjectPorcupine.Buildable.Components
         public BuildableComponent(BuildableComponent other)
         {
             Type = other.Type;
+        }
+
+        [Flags]
+        public enum Requirements
+        {
+            None = 0,
+            Power = 1,
+            Production = 1 << 1,
+            Gas = 1 << 2
         }
 
         public enum ConditionType
