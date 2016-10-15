@@ -199,6 +199,8 @@ namespace ProjectPorcupine.Localization
                     }
                 }
             }
+
+            reader.Close();
         }
 
         /// <summary>
@@ -221,6 +223,12 @@ namespace ProjectPorcupine.Localization
             int throwAway;
             for (int i = 0; i < revArray.Length; i++)
             {
+                // No brackets found, so just skip parsing them
+                if (revArray.Length == 1)
+                {
+                    break;
+                }
+
                 if (int.TryParse(revArray[i], out throwAway))
                 {
                     // This is the middle of a {#} segment of the string so let's add back the {} in the correct order for the parser

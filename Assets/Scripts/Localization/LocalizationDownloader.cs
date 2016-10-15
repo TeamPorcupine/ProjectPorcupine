@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
 // This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
@@ -9,6 +9,7 @@
 using System;
 using System.Collections;
 using System.IO;
+using System.Xml;
 using ICSharpCode.SharpZipLib.Zip;
 using UnityEngine;
 
@@ -45,11 +46,11 @@ namespace ProjectPorcupine.Localization
     /// </summary>
     public static class LocalizationDownloader
     {
-        // TODO: Change this to the official repo before PR.
-        private static readonly string LocalizationRepositoryZipLocation = "https://github.com/QuiZr/ProjectPorcupineLocalization/archive/" + World.Current.GameVersion + ".zip";
+        // TODO: Change this to the official repo.
+        private static readonly string LocalizationRepositoryZipLocation = "https://github.com/bjubes/ProjectPorcupineLocalization/archive/" + World.Current.GameVersion + ".zip";
 
-        // TODO: Change this to the official repo before PR.
-        private static readonly string LastCommitGithubApiLocation = "https://api.github.com/repos/QuiZr/ProjectPorcupineLocalization/commits/" + World.Current.GameVersion;
+        // TODO: Change this to the official repo.
+        private static readonly string LastCommitGithubApiLocation = "https://api.github.com/repos/bjubes/ProjectPorcupineLocalization/commits/" + World.Current.GameVersion;
 
         private static readonly string LocalizationFolderPath = Path.Combine(Application.streamingAssetsPath, "Localization");
 
@@ -61,7 +62,7 @@ namespace ProjectPorcupine.Localization
         /// </summary>
         public static IEnumerator CheckIfCurrentLocalizationIsUpToDate(Action onLocalizationDownloadedCallback)
         {
-            string currentLocalizationVersion = ReadCurrVerFile();
+            string currentLocalizationVersion = GetLocalizationVersionFromConfig();
 
             // Check the latest localization version through the GitHub API.
             WWW versionChecker = new WWW(LastCommitGithubApiLocation);
@@ -98,24 +99,27 @@ namespace ProjectPorcupine.Localization
                 // For now... Let's just force it >.> Beginners task!
                 Debug.ULogChannel("LocalizationDownloader", "There is an update for localization files!");
                 yield return DownloadLocalizationFromWeb(onLocalizationDownloadedCallback);
-            }
 
-            // Create curr.ver file to keep track of the latest localization version.
-            // Could we use the Settings class for this? Beginners task!
-            try
-            {
-                string currVerPath = Path.Combine(LocalizationFolderPath, "curr.ver");
-                using (StreamWriter currVer = File.CreateText(currVerPath))
+                // Because config.xml exists in the new downloaded localization, we have to add the version element to it.
+                try
                 {
-                    currVer.Write(latestCommitHash);
+                    string configPath = Path.Combine(LocalizationFolderPath, "config.xml");
+                    XmlDocument document = new XmlDocument();
+                    document.Load(configPath);
+                    XmlNode node = document.SelectSingleNode("//config");
+
+                    XmlElement versionElement = document.CreateElement("version");
+                    versionElement.SetAttribute("hash", latestCommitHash);
+                    node.InsertBefore(versionElement, document.SelectSingleNode("//languages"));
+                    document.Save(configPath);
                 }
-            }
-            catch (Exception e)
-            {
-                // Not a big deal:
-                // Next time the LocalizationDownloader will force an update.
-                Debug.ULogWarningChannel("LocalizationDownloader", "Writing curr.ver file failed: " + e.Message);
-                throw;
+                catch (Exception e)
+                {
+                    // Not a big deal:
+                    // Next time the LocalizationDownloader will force an update.
+                    Debug.ULogWarningChannel("LocalizationDownloader", "Writing version in config.xml file failed: " + e.Message);
+                    throw;
+                }
             }
         }
 
@@ -165,104 +169,94 @@ namespace ProjectPorcupine.Localization
                 return;
             }
 
-            try
+            // Clean the Localization folder and return it's info.
+            DirectoryInfo localizationFolderInfo = ClearLocalizationDirectory();
+
+            // Turn's out that System.IO.Compression.GZipStream is not working in unity:
+            // http://forum.unity3d.com/threads/cant-use-gzipstream-from-c-behaviours.33973/
+            // So I need to use some sort of 3rd party solution.
+
+            // Convert array of downloaded bytes to stream.
+            using (ZipInputStream zipReadStream = new ZipInputStream(new MemoryStream(www.bytes)))
             {
-                // Clean the Localization folder and return it's info.
-                DirectoryInfo localizationFolderInfo = ClearLocalizationDirectory();
+                // Unpack zip to the hard drive.
+                ZipEntry theEntry;
 
-                // Turn's out that System.IO.Compression.GZipStream is not working in unity:
-                // http://forum.unity3d.com/threads/cant-use-gzipstream-from-c-behaviours.33973/
-                // So I need to use some sort of 3rd party solution.
-
-                // Convert array of downloaded bytes to stream.
-                using (ZipInputStream zipReadStream = new ZipInputStream(new MemoryStream(www.bytes)))
+                // While there are still files inside zip archive.
+                while ((theEntry = zipReadStream.GetNextEntry()) != null)
                 {
-                    // Unpack zip to the hard drive.
-                    ZipEntry theEntry;
+                    string directoryName = Path.GetDirectoryName(theEntry.Name);
+                    string fileName = Path.GetFileName(theEntry.Name);
 
-                    // While there are still files inside zip archive.
-                    while ((theEntry = zipReadStream.GetNextEntry()) != null)
+                    // If there was a subfolder in zip (which there probably is) create one.
+                    if (string.IsNullOrEmpty(directoryName) == false)
                     {
-                        string directoryName = Path.GetDirectoryName(theEntry.Name);
-                        string fileName = Path.GetFileName(theEntry.Name);
-
-                        // If there was a subfolder in zip (which there probably is) create one.
-                        if (string.IsNullOrEmpty(directoryName) == false)
+                        string directoryFullPath = Path.Combine(LocalizationFolderPath, directoryName);
+                        if (Directory.Exists(directoryFullPath) == false)
                         {
-                            string directoryFullPath = Path.Combine(LocalizationFolderPath, directoryName);
-                            if (Directory.Exists(directoryFullPath) == false)
-                            {
-                                Directory.CreateDirectory(directoryFullPath);
-                            }
+                            Directory.CreateDirectory(directoryFullPath);
                         }
+                    }
 
-                        // Read files from stream to files on HDD.
-                        // 2048 buffer should be plenty.
-                        if (string.IsNullOrEmpty(fileName) == false && !fileName.StartsWith("en_US.lang"))
+                    // Read files from stream to files on HDD.
+                    // 2048 buffer should be plenty.
+                    if (string.IsNullOrEmpty(fileName) == false && !fileName.StartsWith("en_US.lang"))
+                    {
+                        string fullFilePath = Path.Combine(LocalizationFolderPath, theEntry.Name);
+                        using (FileStream fileWriter = File.Create(fullFilePath))
                         {
-                            string fullFilePath = Path.Combine(LocalizationFolderPath, theEntry.Name);
-                            using (FileStream fileWriter = File.Create(fullFilePath))
+                            int size = 2048;
+                            byte[] fdata = new byte[2048];
+                            while (true)
                             {
-                                int size = 2048;
-                                byte[] fdata = new byte[2048];
-                                while (true)
+                                size = zipReadStream.Read(fdata, 0, fdata.Length);
+                                if (size > 0)
                                 {
-                                    size = zipReadStream.Read(fdata, 0, fdata.Length);
-                                    if (size > 0)
-                                    {
-                                        fileWriter.Write(fdata, 0, size);
-                                    }
-                                    else
-                                    {
-                                        break;
-                                    }
+                                    fileWriter.Write(fdata, 0, size);
+                                }
+                                else
+                                {
+                                    break;
                                 }
                             }
                         }
                     }
                 }
-
-                // At this point we should have an subfolder in Application.streamingAssetsPath/Localization
-                // called ProjectPorcupineLocalization-*branch name*. Now we need to move all files from that directory
-                // to Application.streamingAssetsPath/Localization.
-                FileInfo[] fileInfo = localizationFolderInfo.GetFiles();
-                foreach (FileInfo file in fileInfo)
-                {
-                    if (file.Name != "en_US.lang" && file.Name != "en_US.lang.meta")
-                    {
-                        Debug.ULogErrorChannel("LocalizationDownloader", "There should only be en_US.lang and en_US.lang.meta. Instead there is: " + file.Name);
-                    }
-                }
-
-                DirectoryInfo[] dirInfo = localizationFolderInfo.GetDirectories();
-                if (dirInfo.Length > 1)
-                {
-                    Debug.ULogErrorChannel("LocalizationDownloader", "There should be only one directory");
-                }
-
-                // Move files from ProjectPorcupineLocalization-*branch name* to Application.streamingAssetsPath/Localization.
-                string[] filesToMove = Directory.GetFiles(dirInfo[0].FullName);
-
-                foreach (string file in filesToMove)
-                {
-                    string fileName = Path.GetFileName(file);
-                    string destFile = Path.Combine(LocalizationFolderPath, fileName);
-                    File.Copy(file, destFile, true);
-                    File.Delete(file);
-                }
-
-                // Remove ProjectPorcupineLocalization-*branch name*
-                Directory.Delete(dirInfo[0].FullName);
-
-                Debug.ULogChannel("LocalizationDownloader", "New localization files successfully downloaded!");
             }
-            catch (Exception e)
+
+            // At this point we should have an subfolder in Application.streamingAssetsPath/Localization
+            // called ProjectPorcupineLocalization-*branch name*. Now we need to move all files from that directory
+            // to Application.streamingAssetsPath/Localization.
+            FileInfo[] fileInfo = localizationFolderInfo.GetFiles();
+            foreach (FileInfo file in fileInfo)
             {
-                // Something happen in the file system. 
-                // TODO: Handle this properly, for now this is as useful as:
-                // http://i.imgur.com/9ArGADw.png
-                Debug.ULogErrorChannel("LocalizationDownloader", e.ToString());
+                if (file.Name != "en_US.lang" && file.Name != "en_US.lang.meta")
+                {
+                    Debug.ULogErrorChannel("LocalizationDownloader", "There should only be en_US.lang and en_US.lang.meta. Instead there is: " + file.Name);
+                }
             }
+
+            DirectoryInfo[] dirInfo = localizationFolderInfo.GetDirectories();
+            if (dirInfo.Length > 1)
+            {
+                Debug.ULogErrorChannel("LocalizationDownloader", "There should be only one directory");
+            }
+
+            // Move files from ProjectPorcupineLocalization-*branch name* to Application.streamingAssetsPath/Localization.
+            string[] filesToMove = Directory.GetFiles(dirInfo[0].FullName);
+
+            foreach (string file in filesToMove)
+            {
+                string fileName = Path.GetFileName(file);
+                string destFile = Path.Combine(LocalizationFolderPath, fileName);
+                File.Copy(file, destFile, true);
+                File.Delete(file);
+            }
+
+            // Remove ProjectPorcupineLocalization-*branch name*
+            Directory.Delete(dirInfo[0].FullName);
+
+            Debug.ULogChannel("LocalizationDownloader", "New localization files successfully downloaded!");
 
             onLocalizationDownloadedCallback();
         }
@@ -275,7 +269,7 @@ namespace ProjectPorcupine.Localization
                 // If there are files without that extension then:
                 // a) someone made a change to localization system and didn't update this
                 // b) We are in a wrong directory, so let's hope we didn't delete anything important.
-                if (file.Extension != ".lang" && file.Extension != ".meta" && file.Extension != ".ver" && file.Extension != ".md")
+                if (file.Extension != ".lang" && file.Extension != ".meta" && file.Extension != ".ver" && file.Extension != ".md" && file.Name != "config.xml")
                 {
                     Debug.ULogErrorChannel("LocalizationDownloader", "SOMETHING WENT HORRIBLY WRONG AT DOWNLOADING LOCALIZATION!");
                     throw new Exception("SOMETHING WENT HORRIBLY WRONG AT DOWNLOADING LOCALIZATION!");
@@ -296,32 +290,34 @@ namespace ProjectPorcupine.Localization
         }
 
         /// <summary>
-        /// Reads Application.streamingAssetsPath/Localization/curr.ver making sure that Localization folder exists.
+        /// Reads Application.streamingAssetsPath/Localization/config.xml making sure that Localization folder exists.
         /// </summary>
-        private static string ReadCurrVerFile()
+        private static string GetLocalizationVersionFromConfig()
         {
-            string currentLocalizationVersionFilePath = Path.Combine(LocalizationFolderPath, "curr.ver");
+            string localizationConfigFilePath = Path.Combine(LocalizationFolderPath, "config.xml");
 
-            string currentLocalizationVersion = string.Empty;
+            string currentLocalizationVersion = null;
             try
             {
-                using (StreamReader fileReader = File.OpenText(currentLocalizationVersionFilePath))
+                XmlReader reader = XmlReader.Create(localizationConfigFilePath);
+                while (reader.Read())
                 {
-                    try
+                    if (reader.NodeType == XmlNodeType.Element && reader.Name == "version")
                     {
-                        currentLocalizationVersion = fileReader.ReadToEnd();
-                    }
-                    catch (IOException e)
-                    {
-                        // Something happened... For now we will continue but maybe we should yield break here.
-                        Debug.ULogError("LocalizationDownloader", e.Message);
+                        if (reader.HasAttributes)
+                        {
+                            currentLocalizationVersion = reader.GetAttribute("hash");
+                            break;
+                        }
                     }
                 }
+
+                reader.Close();
             }
             catch (FileNotFoundException)
             {
                 // It's fine - we will create that file later.
-                Debug.ULogChannel("LocalizationDownloader", currentLocalizationVersionFilePath + " file not found, forcing an update.");
+                Debug.ULogChannel("LocalizationDownloader", localizationConfigFilePath + " file not found, forcing an update.");
             }
             catch (DirectoryNotFoundException)
             {
