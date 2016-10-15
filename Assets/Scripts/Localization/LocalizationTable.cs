@@ -280,8 +280,9 @@ namespace ProjectPorcupine.Localization
             {
                 if (int.TryParse(revArray[i], out throwAway))
                 {
-                    // this is the middle of a {#} segment of the string so let's add back the {} in the correct order for the parser
-                    revArray[i] = "{" + revArray[i] + "}";
+                    // This is the middle of a {#} segment of the string so let's add back the {} in the correct order for the parser
+                    // Note: revArray[i] is passed through ReverseString again so that the numbers digits order is flipped back to LTR
+                    revArray[i] = "{" + ReverseString(revArray[i]) + "}";
                 }
                 else
                 {
