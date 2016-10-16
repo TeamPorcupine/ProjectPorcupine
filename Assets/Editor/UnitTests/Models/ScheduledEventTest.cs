@@ -191,7 +191,6 @@ public class ScheduledEventTest
         evt.Update(.1f);
         Assert.That(didRun, Is.True);
         Assert.That(runCount, Is.EqualTo(1));
-
     }
 
     [Test]
