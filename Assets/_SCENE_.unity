@@ -182,7 +182,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inventoryUI: {fileID: 191780, guid: d1e1fcd802f51614595cb99879a132a5, type: 2}
   circleCursorPrefab: {fileID: 110048, guid: 782976062f887844ca858482495fcdbd, type: 2}
-  IsModal: 0
 --- !u!4 &179601669
 Transform:
   m_ObjectHideFlags: 0
@@ -411,6 +410,46 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 305970542}
+--- !u!1 &321002429
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 321002431}
+  - 114: {fileID: 321002430}
+  m_Layer: 0
+  m_Name: GameController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &321002430
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 321002429}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a049810096d1ca4e8f19d4a223c99e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &321002431
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 321002429}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
 --- !u!1001 &421907840
 Prefab:
   m_ObjectHideFlags: 0
@@ -746,7 +785,6 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 752785403}
-  - 114: {fileID: 752785405}
   m_Layer: 0
   m_Name: Controllers
   m_TagString: Untagged
@@ -768,17 +806,6 @@ Transform:
   - {fileID: 179601669}
   m_Father: {fileID: 0}
   m_RootOrder: 4
---- !u!114 &752785405
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 752785402}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e7a894cc58fce74f8f9919998cfdc22, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &821802274
 GameObject:
   m_ObjectHideFlags: 0

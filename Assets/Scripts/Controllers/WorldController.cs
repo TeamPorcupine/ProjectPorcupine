@@ -14,7 +14,6 @@ using System.Xml.Serialization;
 using MoonSharp.Interpreter;
 using Scheduler;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 [MoonSharpUserData]
@@ -31,7 +30,6 @@ public class WorldController : MonoBehaviour
     public QuestController questController;
     public BuildModeController buildModeController;
     public MouseController mouseController;
-    public KeyboardManager keyboardManager;
     public CameraController cameraController;
     public SpawnInventoryController spawnInventoryController;
     public AutosaveManager autosaveManager;
@@ -40,28 +38,10 @@ public class WorldController : MonoBehaviour
     public GameObject inventoryUI;
     public GameObject circleCursorPrefab;
 
-    // If true, a modal dialog box is open, so normal inputs should be ignored.
-    public bool IsModal;
-
-    private static string loadWorldFromFile = null;
-
     public static WorldController Instance { get; protected set; }
 
     // The world and tile data.
     public World World { get; protected set; }
-
-    public bool IsPaused
-    {
-        get
-        {
-            return TimeManager.Instance.IsPaused || IsModal;
-        }
-
-        set
-        {
-            TimeManager.Instance.IsPaused = value;
-        }
-    }
 
     // Use this for initialization.
     public void OnEnable()
@@ -86,13 +66,12 @@ public class WorldController : MonoBehaviour
                 "ping_log",
                 (evt) => Debug.ULogChannel("Scheduler", "Event {0} fired", evt.Name)));
 
-        string dataPath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
-        modsManager = new ModsManager(dataPath);
+        modsManager = new ModsManager();
 
-        if (loadWorldFromFile != null)
+        if (SceneController.Instance.loadWorldFromFileName != null)
         {
-            CreateWorldFromSaveFile();
-            loadWorldFromFile = null;
+            CreateWorldFromSaveFile(SceneController.Instance.loadWorldFromFileName);
+            SceneController.Instance.loadWorldFromFileName = null;
         }
         else
         {
@@ -119,15 +98,13 @@ public class WorldController : MonoBehaviour
         buildModeController = new BuildModeController();
         spawnInventoryController = new SpawnInventoryController();
         mouseController = new MouseController(buildModeController, furnitureSpriteController, utilitySpriteController, circleCursorPrefab);
-        keyboardManager = KeyboardManager.Instance;
         questController = new QuestController();
         cameraController = new CameraController();
         TradeController = new TradeController();
         autosaveManager = new AutosaveManager();
 
         // Register inputs actions
-        keyboardManager.RegisterInputAction("Pause", KeyboardMappedInputType.KeyUp, () => { IsPaused = !IsPaused; });
-        keyboardManager.RegisterInputAction("DevMode", KeyboardMappedInputType.KeyDown, ChangeDevMode);
+        KeyboardManager.Instance.RegisterInputAction("DevMode", KeyboardMappedInputType.KeyDown, ChangeDevMode);
 
         // Hiding Dev Mode spawn inventory controller if devmode is off.
         spawnInventoryController.SetUIVisibility(Settings.GetSetting("DialogBoxSettings_developerModeToggle", false));
@@ -139,11 +116,8 @@ public class WorldController : MonoBehaviour
         GameObject canvas = GameObject.Find("Canvas");
         go = Instantiate(Resources.Load("UI/ContextMenu"), canvas.transform.position, canvas.transform.rotation, canvas.transform) as GameObject;
         go.name = "ContextMenu";
-    }
 
-    public void Update()
-    {
-        TimeManager.Instance.Update(Time.deltaTime);
+        GameController.Instance.IsModal = false;
     }
 
     /// <summary>
@@ -157,29 +131,6 @@ public class WorldController : MonoBehaviour
         int y = Mathf.FloorToInt(coord.y + 0.5f);
 
         return World.GetTileAt(x, y, (int)coord.z);
-    }
-
-    public string FileSaveBasePath()
-    {
-        return System.IO.Path.Combine(Application.persistentDataPath, "Saves");
-    }
-
-    public void NewWorld()
-    {
-        Debug.ULogChannel("WorldController", "NewWorld button was clicked.");
-
-        Destroy();
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
-
-    public void LoadWorld(string fileName)
-    {
-        Debug.ULogChannel("WorldController", "LoadWorld button was clicked.");
-
-        // Reload the scene to reset all data (and purge old references)
-        loadWorldFromFile = fileName;
-        Destroy();
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void Destroy()
@@ -217,7 +168,7 @@ public class WorldController : MonoBehaviour
         Camera.main.transform.position = new Vector3(World.Width / 2, World.Height / 2, Camera.main.transform.position.z);
     }
 
-    private void CreateWorldFromSaveFile()
+    private void CreateWorldFromSaveFile(string fileName)
     {
         Debug.ULogChannel("WorldController", "CreateWorldFromSaveFile");
 
@@ -226,7 +177,7 @@ public class WorldController : MonoBehaviour
 
         // This can throw an exception.
         // TODO: Show a error message to the user.
-        string saveGameText = File.ReadAllText(loadWorldFromFile);
+        string saveGameText = File.ReadAllText(fileName);
 
         TextReader reader = new StringReader(saveGameText);
 
