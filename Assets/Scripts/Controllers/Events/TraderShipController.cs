@@ -25,7 +25,7 @@ public class TraderShipController : MonoBehaviour
 
     public void FixedUpdate()
     {
-        if (GameController.Instance.IsPaused)
+        if (WorldController.Instance.IsPaused)
         {
             return;
         }
