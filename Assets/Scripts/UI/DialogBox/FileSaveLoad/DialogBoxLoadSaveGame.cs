@@ -40,7 +40,7 @@ public class DialogBoxLoadSaveGame : DialogBox
         base.ShowDialog();
 
         // Get list of files in save location
-        string saveDirectoryPath = GameController.Instance.FileSaveBasePath();
+        string saveDirectoryPath = WorldController.Instance.FileSaveBasePath();
 
         EnsureDirectoryExists(saveDirectoryPath);
 
