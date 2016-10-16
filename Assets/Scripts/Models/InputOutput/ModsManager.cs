@@ -54,7 +54,7 @@ public class ModsManager
         LoadCharacterNames("CharacterNames.txt");
         
         LoadDirectoryAssets("Images", SpriteManager.LoadSpriteFiles);
-        LoadDirectoryAssets("Audio", AudioManager.LoadAudioFiles);
+        LoadDirectoryAssets("Audio", WorldController.Instance.audioManager.LoadAudioFiles);
     }
 
     public DirectoryInfo[] GetMods()
