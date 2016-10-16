@@ -15,7 +15,7 @@ public class SceneController
     public const string MainSceneName = "_SCENE_";
     public const string MainMenuSceneName = "MAIN_MENU";
 
-    public string loadWorldFromFileName;
+    public static string loadWorldFromFileName;
 
     private static SceneController instance;
 
@@ -42,6 +42,7 @@ public class SceneController
     // Load a save file.
     public void LoadWorld(string fileName)
     {
+        loadWorldFromFileName = fileName;
         CleanInstancesBeforeLoadingScene();
         SceneManager.LoadScene(MainSceneName);
     }

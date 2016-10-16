@@ -68,10 +68,10 @@ public class WorldController : MonoBehaviour
 
         modsManager = new ModsManager();
 
-        if (SceneController.Instance.loadWorldFromFileName != null)
+        if (SceneController.loadWorldFromFileName != null)
         {
-            CreateWorldFromSaveFile(SceneController.Instance.loadWorldFromFileName);
-            SceneController.Instance.loadWorldFromFileName = null;
+            CreateWorldFromSaveFile(SceneController.loadWorldFromFileName);
+            SceneController.loadWorldFromFileName = null;
         }
         else
         {
