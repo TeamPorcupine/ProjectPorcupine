@@ -48,7 +48,7 @@ public class AudioManager
     /// </param>
     /// <param name="audioName">The name of the AudioClip.</param>
     /// <returns>AudioClip form the specified category with the specified name.</returns>
-    public static AudioClip GetAudio(string categoryName, string audioName)
+    public AudioClip GetAudio(string categoryName, string audioName)
     {
         AudioClip clip = new AudioClip();
 
@@ -78,7 +78,7 @@ public class AudioManager
     /// Loads all the audio files from the specified directory.
     /// </summary>
     /// <param name="directoryPath">The path of the directory you want to load the audio files from.</param>
-    public static void LoadAudioFiles(string directoryPath)
+    public void LoadAudioFiles(string directoryPath)
     {
         string[] subDirectories = Directory.GetDirectories(directoryPath);
         foreach (string subDirectory in subDirectories)
@@ -95,7 +95,7 @@ public class AudioManager
         }
     }
 
-    private static IEnumerable<WWW> LoadAudioFile(string[] filesInDir, string directoryPath)
+    private IEnumerable<WWW> LoadAudioFile(string[] filesInDir, string directoryPath)
     {
         foreach (string file in filesInDir)
         {

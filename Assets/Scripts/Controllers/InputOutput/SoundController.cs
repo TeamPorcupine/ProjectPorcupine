@@ -39,7 +39,7 @@ public class SoundController
              return;
         }
  
-        AudioClip ac = AudioManager.GetAudio("Sound", "MenuClick");
+        AudioClip ac = WorldController.Instance.audioManager.GetAudio("Sound", "MenuClick");
         AudioSource.PlayClipAtPoint(ac, Camera.main.transform.position);
         soundCooldown = 0.1f;
     }
@@ -52,7 +52,7 @@ public class SoundController
             return;
         }
     
-        AudioClip ac = AudioManager.GetAudio("Sound", furniture.Type + "_OnCreated");
+        AudioClip ac = WorldController.Instance.audioManager.GetAudio("Sound", furniture.Type + "_OnCreated");
         AudioSource.PlayClipAtPoint(ac, Camera.main.transform.position);
         soundCooldown = 0.1f;
     }
@@ -67,7 +67,7 @@ public class SoundController
 
         if (tileData.ForceTileUpdate)
         {  
-            AudioClip ac = AudioManager.GetAudio("Sound", "Floor_OnCreated");
+            AudioClip ac = WorldController.Instance.audioManager.GetAudio("Sound", "Floor_OnCreated");
             AudioSource.PlayClipAtPoint(ac, Camera.main.transform.position);
             soundCooldown = 0.1f;
         }
