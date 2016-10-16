@@ -44,9 +44,9 @@ public class AutosaveManager
         }
 
         // set autosaveCounter = maximum index of existing autosaves (so as not to clobber autosaves from previous games)
-        if (Directory.Exists(WorldController.Instance.FileSaveBasePath()))
+        if (Directory.Exists(GameController.Instance.FileSaveBasePath()))
         {
-            string[] autosaveFileNames = Directory.GetFiles(WorldController.Instance.FileSaveBasePath(), AutosaveBaseName + "*.sav");
+            string[] autosaveFileNames = Directory.GetFiles(GameController.Instance.FileSaveBasePath(), AutosaveBaseName + "*.sav");
             if (autosaveFileNames.Length == 0)
             {
                 // no existing autosaves found
@@ -92,7 +92,7 @@ public class AutosaveManager
 
         string fileName;
 
-        string saveDirectoryPath = WorldController.Instance.FileSaveBasePath();
+        string saveDirectoryPath = GameController.Instance.FileSaveBasePath();
         DirectoryInfo saveDir = new DirectoryInfo(saveDirectoryPath);
         FileInfo[] saveGames = saveDir.GetFiles(AutosaveBaseName + "*.sav").OrderByDescending(f => f.LastWriteTime).ToArray();
         if (saveGames.Length >= Settings.GetSetting<int>("AutosaveFiles", 5))

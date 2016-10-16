@@ -21,9 +21,6 @@ using UnityEngine;
 [MoonSharpUserData]
 public class World : IXmlSerializable
 {
-    // TODO: Should this be also saved with the world data?
-    // If so - beginner task!
-    public readonly string GameVersion = "Someone_will_come_up_with_a_proper_naming_scheme_later";
     public Material skybox;
 
     // Store all temperature information
