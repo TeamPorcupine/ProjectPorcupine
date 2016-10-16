@@ -162,28 +162,22 @@ public class WorldController : MonoBehaviour
     /// <returns>Returns the thread that is currently saving data to HDD.</returns>
     public Thread SaveWorld(string filePath)
     {
-        // This function gets called when the user confirms a filename
-        // from the save dialog box.
-
-        // Get the file name from the save file dialog box.
-        Debug.ULogChannel("DialogBoxSaveGame", "SaveWorld button was clicked.");
-
         XmlSerializer serializer = new XmlSerializer(typeof(World));
         TextWriter writer = new StringWriter();
-        serializer.Serialize(writer, World);
+        serializer.Serialize(writer, WorldController.Instance.World);
         writer.Close();
 
         // UberLogger doesn't handle multi-line messages well.
         // Debug.Log(writer.ToString());
 
         // Make sure the save folder exists.
-        if (Directory.Exists(FileSaveBasePath()) == false)
+        if (Directory.Exists(GameController.Instance.FileSaveBasePath()) == false)
         {
             // NOTE: This can throw an exception if we can't create the folder,
             // but why would this ever happen? We should, by definition, have the ability
             // to write to our persistent data folder unless something is REALLY broken
             // with the computer/device we're running on.
-            Directory.CreateDirectory(FileSaveBasePath());
+            Directory.CreateDirectory(GameController.Instance.FileSaveBasePath());
         }
 
         // Launch saving operation in a separate thread.
