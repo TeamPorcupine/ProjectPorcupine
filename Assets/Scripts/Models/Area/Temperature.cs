@@ -258,6 +258,10 @@ public class Temperature
     /// </summary>
     private void ProgressTemperature(float deltaT) 
     {
+
+        Thread thread = new Thread(ForwardTemp);
+        thread.Start();
+
         // TODO: Compute temperature sources.
         if (sinksAndSources != null) 
         {
@@ -267,8 +271,7 @@ public class Temperature
             }
         }
 
-        Thread thread = new Thread(ForwardTemp);
-        thread.Start();
+        
     }
 
     /// <summary>
@@ -293,6 +296,12 @@ public class Temperature
             {
                 for (int x = 0; x < sizeX; x++) 
                 {
+
+                    //if (World.Current.GetTileAt(x, y, z).Furniture.Parameters["base_heating"].ToFloat()!=0  )
+                    //{
+                    //    Debug.ULogErrorChannel("temp","yep!");
+                    //}
+
                     int index = GetIndex(x, y, z);
                     int index_N = GetIndex(x, y + 1, z);
                     int index_S = GetIndex(x, y - 1, z);
@@ -301,14 +310,16 @@ public class Temperature
                     int index_above = GetIndex(x, y, z + 1);
                     int index_below = GetIndex(x, y, z - 1);
                         
-                    // Update temperature using finite difference and forward method:
-                    // U^{n+1} = U^n + dt*(\Div alpha \Grad U^n).
                     temp_curr[index] = temp_old[index];
 
-                    // If empty space, set temperature to 0.                 
-                    if (WorldController.Instance.GetTileAtWorldCoord(new Vector3(x, y, z)).Room == null) 
+                    // If empty space, set temperature to 0.     
+                    Tile tile = WorldController.Instance.GetTileAtWorldCoord(new Vector3(x, y, z));            
+                    if ((tile.Room == null || tile.Room.ID == 0) &&
+                        tile.Furniture == null) 
                     { 
+                        temp_curr[index] = 0f;
                         temp_old[index] = 0f;
+                        continue;
                     }
 
                     if (x > 0) 
