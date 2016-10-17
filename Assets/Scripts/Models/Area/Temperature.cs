@@ -258,7 +258,6 @@ public class Temperature
     /// </summary>
     private void ProgressTemperature(float deltaT) 
     {
-
         Thread thread = new Thread(ForwardTemp);
         thread.Start();
 
@@ -269,9 +268,7 @@ public class Temperature
             {
                 act(deltaT);
             }
-        }
-
-        
+        }     
     }
 
     /// <summary>
@@ -295,8 +292,7 @@ public class Temperature
             for (int y = 0; y < sizeY; y++) 
             {
                 for (int x = 0; x < sizeX; x++) 
-                {
-                
+                {          
                     int index = GetIndex(x, y, z);
                     int index_N = GetIndex(x, y + 1, z);
                     int index_S = GetIndex(x, y - 1, z);
@@ -320,16 +316,15 @@ public class Temperature
                     // If this tile has an object that gives off heat AND is hotter than the surrounding tiles, skip it.
                     // TODO: Make sure to change this to something that can read the "base_heating" param from Furniture objects.
 
-                    //Try 1
-                    //if (tile.Furniture.Type == "Heater" || tile.Furniture.Name == "RTG")
-                    //{
+                    // Try 1
+                    // if (tile.Furniture.Type == "Heater" || tile.Furniture.Name == "RTG")
+                    // {
                     //    continue;
-                    //}
+                    // }
 
                     // Try 2
-                    //float a = tile.Furniture.Parameters["base_heating"].ToFloat();    
-                    //UnityEngine.Debug.LogWarning(tile.Furniture.Parameters["base_heating"].ToFloat());
-
+                    // float a = tile.Furniture.Parameters["base_heating"].ToFloat();    
+                    // UnityEngine.Debug.LogWarning(tile.Furniture.Parameters["base_heating"].ToFloat());
                     if (x > 0) 
                     {
                         temp_curr[index] +=
@@ -370,24 +365,25 @@ public class Temperature
 
                     // Add a little bit more flow to the temperature.
                     float value = temp_curr[index];
+
                     // FINE tune the below number. ".005" has a huge affect.
                     value += 0.065f * value;
 
-                    float[] list = {
-                    temp_old[index_N],
-                    temp_old[index_S],
-                    temp_old[index_E],
-                    temp_old[index_W]
+                    float[] list = 
+                    {
+                        temp_old[index_N],
+                        temp_old[index_S],
+                        temp_old[index_E],
+                        temp_old[index_W]
                     };
 
                     Array.Sort(list);
 
-                    // because of the added flow just above, we need to make sure we don't overshoot the tempertures surrounding this tile.
+                    // Because of the added flow just above, we need to make sure we don't overshoot the tempertures surrounding this tile.
                     if (value < list[3])
                     {
                         temp_curr[index] = value;
-                    }
-                    
+                    }                   
                 }
             }
         }
