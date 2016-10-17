@@ -26,7 +26,7 @@ public class Temperature
     public static float defaultThermalDiffusivity = 1f;
 
     /// <summary>
-    /// How often doe the physics update.
+    /// How often does the physics update.
     /// </summary>
     public float updateInterval = 0.1f;
 
@@ -322,6 +322,12 @@ public class Temperature
                         continue;
                     }
 
+                    // Set the tile to the hea
+                    //if (tile.Furniture.Parameters["base_heating"].ToFloat() > 499)
+                    //{
+                    //    continue;
+                    //}
+
                     if (x > 0) 
                     {
                         temp_curr[index] +=
@@ -350,15 +356,33 @@ public class Temperature
                             (temp_old[index_N] - temp_old[index]);
                     }
 
-                    if (z > 0) 
+                    if (z > 0)
                     {
                         temp_curr[index] += c * 0.5f * (temp_old[index_below] - temp_old[index]);
                     }
 
-                    if (z < sizeZ - 1) 
+                    if (z < sizeZ - 1)
                     {
                         temp_curr[index] += c * 0.5f * (temp_old[index_above] - temp_old[index]);
-                    }                   
+                    }
+
+                    float value = temp_curr[index];
+                    value += 0.1f * value;
+
+                    float[] list = {
+                    temp_old[index_N],
+                    temp_old[index_S],
+                    temp_old[index_E],
+                    temp_old[index_W]
+                    };
+
+                    Array.Sort(list);
+
+                    if (value < list[3])
+                    {
+                        temp_curr[index] = value;
+                    }
+                    
                 }
             }
         }
