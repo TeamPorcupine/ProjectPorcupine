@@ -39,42 +39,66 @@ public class DialogBoxManager : MonoBehaviour
 
         GameObject tempGoObj;
 
-        tempGoObj = CreateDialogGO("DB_SaveFile", "Save File");
-        dialogBoxSaveGame = tempGoObj.GetComponent<DialogBoxSaveGame>();
-        DialogBoxes["Save File"] = dialogBoxSaveGame;
+        if (SceneController.Instance.IsAtMainScene())
+        {
+            tempGoObj = CreateDialogGO("DB_SaveFile", "Save File");
+            dialogBoxSaveGame = tempGoObj.GetComponent<DialogBoxSaveGame>();
 
-        tempGoObj = CreateDialogGO("DB_LoadFile", "Load File");
-        dialogBoxLoadGame = tempGoObj.GetComponent<DialogBoxLoadGame>();
-        DialogBoxes["Load File"] = dialogBoxSaveGame;
+            tempGoObj = CreateDialogGO("DB_Options", "Options");
+            dialogBoxOptions = tempGoObj.GetComponent<DialogBoxOptions>();
 
-        tempGoObj = CreateDialogGO("DB_Options", "Options");
-        dialogBoxOptions = tempGoObj.GetComponent<DialogBoxOptions>();
-        DialogBoxes["Options"] = dialogBoxOptions;
+            tempGoObj = CreateDialogGO("DB_Trade", "Trade");
+            dialogBoxTrade = tempGoObj.GetComponent<DialogBoxTrade>();
 
-        tempGoObj = CreateDialogGO("DB_Settings", "Settings");
-        dialogBoxSettings = tempGoObj.GetComponent<DialogBoxSettings>();
-        DialogBoxes["Settings"] = dialogBoxSettings;
+            tempGoObj = CreateDialogGO("DB_JobList", "Job List");
+            dialogBoxJobList = tempGoObj.GetComponent<DialogBoxJobList>();
 
-        tempGoObj = CreateDialogGO("DB_Trade", "Trade");
-        dialogBoxTrade = tempGoObj.GetComponent<DialogBoxTrade>();
-        DialogBoxes["Trade"] = dialogBoxTrade;
+            tempGoObj = CreateDialogGO("DB_Quests", "Quests");
+            dialogBoxQuests = tempGoObj.GetComponent<DialogBoxQuests>();
+            AddQuestList();
 
-        tempGoObj = CreateDialogGO("DB_PromptOrInfo", "Prompt or Info");
-        dialogBoxPromptOrInfo = tempGoObj.GetComponent<DialogBoxPromptOrInfo>();
-        DialogBoxes["Prompt or Info"] = dialogBoxPromptOrInfo;
+            AddMainMenuItems();
+        }else
+        {
+            tempGoObj = CreateDialogGO("DB_SaveFile", "Save File");
+            dialogBoxSaveGame = tempGoObj.GetComponent<DialogBoxSaveGame>();
+            DialogBoxes["Save File"] = dialogBoxSaveGame;
 
-        tempGoObj = CreateDialogGO("DB_JobList", "Job List");
-        dialogBoxJobList = tempGoObj.GetComponent<DialogBoxJobList>();
-        DialogBoxes["Job List"] = dialogBoxJobList;
+            tempGoObj = CreateDialogGO("DB_LoadFile", "Load File");
+            dialogBoxLoadGame = tempGoObj.GetComponent<DialogBoxLoadGame>();
+            DialogBoxes["Load File"] = dialogBoxSaveGame;
 
-        tempGoObj = CreateDialogGO("DB_Quests", "Quests");
-        dialogBoxQuests = tempGoObj.GetComponent<DialogBoxQuests>();
-        DialogBoxes["Quests"] = dialogBoxQuests;
+            tempGoObj = CreateDialogGO("DB_Options", "Options");
+            dialogBoxOptions = tempGoObj.GetComponent<DialogBoxOptions>();
+            DialogBoxes["Options"] = dialogBoxOptions;
 
-        AddQuestList();
+            tempGoObj = CreateDialogGO("DB_Settings", "Settings");
+            dialogBoxSettings = tempGoObj.GetComponent<DialogBoxSettings>();
+            DialogBoxes["Settings"] = dialogBoxSettings;
 
-        LoadModdedDialogBoxes();
-        AddMainMenuItems();
+            tempGoObj = CreateDialogGO("DB_Trade", "Trade");
+            dialogBoxTrade = tempGoObj.GetComponent<DialogBoxTrade>();
+            DialogBoxes["Trade"] = dialogBoxTrade;
+
+            tempGoObj = CreateDialogGO("DB_PromptOrInfo", "Prompt or Info");
+            dialogBoxPromptOrInfo = tempGoObj.GetComponent<DialogBoxPromptOrInfo>();
+            DialogBoxes["Prompt or Info"] = dialogBoxPromptOrInfo;
+
+            tempGoObj = CreateDialogGO("DB_JobList", "Job List");
+            dialogBoxJobList = tempGoObj.GetComponent<DialogBoxJobList>();
+            DialogBoxes["Job List"] = dialogBoxJobList;
+
+            tempGoObj = CreateDialogGO("DB_Quests", "Quests");
+            dialogBoxQuests = tempGoObj.GetComponent<DialogBoxQuests>();
+            DialogBoxes["Quests"] = dialogBoxQuests;
+
+            AddQuestList();
+
+            LoadModdedDialogBoxes();
+            AddMainMenuItems();
+
+
+        }
     }
 
     /// <summary>

@@ -23,8 +23,11 @@ public class DialogBox : MonoBehaviour
 
     public virtual void ShowDialog()
     {
-        openedWhileModal = WorldController.Instance.IsModal ? true : false;
-        WorldController.Instance.soundController.OnButtonSFX();
+        openedWhileModal = GameController.Instance.IsModal ? true : false;
+        GameController.Instance.IsModal = true;
+
+        GameController.Instance.soundController.OnButtonSFX();
+
         gameObject.transform.SetAsLastSibling();
         gameObject.SetActive(true);
     }
@@ -33,14 +36,15 @@ public class DialogBox : MonoBehaviour
     {
         if (!openedWhileModal)
         {
-            WorldController.Instance.IsModal = false;
+            GameController.Instance.IsModal = false;
         }
 
         InvokeClosed();
 
         Closed = null;
-        WorldController.Instance.soundController.OnButtonSFX();
 
+        GameController.Instance.soundController.OnButtonSFX();
+        
         gameObject.SetActive(false);
     }
 
