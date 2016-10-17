@@ -296,12 +296,7 @@ public class Temperature
             {
                 for (int x = 0; x < sizeX; x++) 
                 {
-
-                    //if (World.Current.GetTileAt(x, y, z).Furniture.Parameters["base_heating"].ToFloat()!=0  )
-                    //{
-                    //    Debug.ULogErrorChannel("temp","yep!");
-                    //}
-
+                
                     int index = GetIndex(x, y, z);
                     int index_N = GetIndex(x, y + 1, z);
                     int index_S = GetIndex(x, y - 1, z);
@@ -322,12 +317,18 @@ public class Temperature
                         continue;
                     }
 
-                    // Set the tile to the hea
-                    //if (tile.Furniture.Parameters["base_heating"].ToFloat() > 499)
-                    //{
-                    //    continue;
-                    //}
+                    // If this tile has an object that gives off heat AND is hotter than the surrounding tiles, skip it.
+                    // TODO: Make sure to change this to something that can read the "base_heating" param from Furniture objects.
 
+                    //Try 1
+                    //if (tile.Furniture.Type== "Heater" || tile.Furniture.Name == "RTG" )
+                    //    {
+                    //        continue;
+                    //    }
+
+                    // Try 2
+                    // float a = tile.Furniture.Parameters["base_heating"].ToFloat();    
+                    
                     if (x > 0) 
                     {
                         temp_curr[index] +=
@@ -366,8 +367,9 @@ public class Temperature
                         temp_curr[index] += c * 0.5f * (temp_old[index_above] - temp_old[index]);
                     }
 
+                    // Add a little bit more flow to the temperature.
                     float value = temp_curr[index];
-                    value += 0.1f * value;
+                    value += 0.07f * value;
 
                     float[] list = {
                     temp_old[index_N],
@@ -378,6 +380,7 @@ public class Temperature
 
                     Array.Sort(list);
 
+                    // because of the added flow just above, we need to make sure we don't overshoot the tempertures surrounding this tile.
                     if (value < list[3])
                     {
                         temp_curr[index] = value;
