@@ -370,7 +370,8 @@ public class Temperature
 
                     // Add a little bit more flow to the temperature.
                     float value = temp_curr[index];
-                    value += 0.07f * value;
+                    // FINE tune the below number. ".005" has a huge affect.
+                    value += 0.065f * value;
 
                     float[] list = {
                     temp_old[index_N],
