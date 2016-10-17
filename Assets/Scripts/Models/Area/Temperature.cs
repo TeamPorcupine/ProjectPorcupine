@@ -314,17 +314,12 @@ public class Temperature
                     }
 
                     // If this tile has an object that gives off heat AND is hotter than the surrounding tiles, skip it.
-                    // TODO: Make sure to change this to something that can read the "base_heating" param from Furniture objects.
+                    // TODO: Add the second part of the above statement.             
+                   if (tile.Furniture != null && tile.Furniture.Parameters.ContainsKey("base_heating"))
+                    {
+                        continue;
+                    }
 
-                    // Try 1
-                    // if (tile.Furniture.Type == "Heater" || tile.Furniture.Name == "RTG")
-                    // {
-                    //    continue;
-                    // }
-
-                    // Try 2
-                    // float a = tile.Furniture.Parameters["base_heating"].ToFloat();    
-                    // UnityEngine.Debug.LogWarning(tile.Furniture.Parameters["base_heating"].ToFloat());
                     if (x > 0) 
                     {
                         temp_curr[index] +=
