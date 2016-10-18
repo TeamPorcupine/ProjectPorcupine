@@ -27,7 +27,7 @@ namespace UnityStandardAssets.Utility
             fpsNextPeriod = Time.realtimeSinceStartup + FPSMeasurePeriod;
             text = GetComponent<Text>();
         }
-        
+
         private void Update()
         {
             // measure average frames per second
