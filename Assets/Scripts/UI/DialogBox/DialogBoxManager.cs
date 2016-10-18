@@ -22,6 +22,7 @@ public class DialogBoxManager : MonoBehaviour
     public DialogBoxSettings dialogBoxSettings;
     public DialogBoxTrade dialogBoxTrade;
     public DialogBoxPromptOrInfo dialogBoxPromptOrInfo;
+    public DialogBoxQuitMenu dialogBoxQuitMenu;
     public DialogBoxQuests dialogBoxQuests;
 
     public GameObject DialogBoxGO;
@@ -48,6 +49,9 @@ public class DialogBoxManager : MonoBehaviour
 
             tempGoObj = CreateDialogGO("DB_Options", "Options");
             dialogBoxOptions = tempGoObj.GetComponent<DialogBoxOptions>();
+
+            tempGoObj = CreateDialogGO("DB_QuitMenu", "Quit Menu");
+            dialogBoxQuitMenu = tempGoObj.GetComponent<DialogBoxQuitMenu>();
 
             tempGoObj = CreateDialogGO("DB_Trade", "Trade");
             dialogBoxTrade = tempGoObj.GetComponent<DialogBoxTrade>();
