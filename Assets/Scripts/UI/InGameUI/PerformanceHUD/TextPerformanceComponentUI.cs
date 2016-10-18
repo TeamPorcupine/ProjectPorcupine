@@ -10,8 +10,15 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Just holds a simple text UI component that can be access either through the public value "text"
+/// or throught he function call changeText
+/// </summary>
 public class TextPerformanceComponentUI : BasePerformanceComponentUI
 {
+    /// <summary>
+    /// The text UI element
+    /// </summary>
     public Text text;
 
     public void changeText(string newText)

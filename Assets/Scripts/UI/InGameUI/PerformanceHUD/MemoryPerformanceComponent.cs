@@ -10,6 +10,9 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Displays the currently used memory and the currently allocated memory
+/// </summary>
 public class MemoryPerformanceComponent : BasePerformanceComponent
 {
     private TextPerformanceComponentUI component;

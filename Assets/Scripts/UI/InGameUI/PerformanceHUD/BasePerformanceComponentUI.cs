@@ -9,4 +9,7 @@
 using UnityEngine;
 
 //Just so we can implement other UIs in the future (other than just TextPerformanceComponentUI)
+/// <summary>
+/// Just a base class for UI elements to subclass from
+/// </summary>
 public abstract class BasePerformanceComponentUI : MonoBehaviour { }

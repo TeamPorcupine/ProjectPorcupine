@@ -9,6 +9,9 @@
 using System;
 using UnityEngine;
 
+/// <summary>
+/// Displays the average FPS over a 30 second period
+/// </summary>
 public class FPSAveragePerformanceComponent : BasePerformanceComponent
 {
     private const float FPSMeasurePeriod = 30f;

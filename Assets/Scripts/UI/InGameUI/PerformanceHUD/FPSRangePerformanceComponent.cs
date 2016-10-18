@@ -10,7 +10,9 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-// MAX/MIN
+/// <summary>
+/// Just measures the max and min range for FPS
+/// </summary>
 public class FPSRangePerformanceComponent : BasePerformanceComponent
 {
     private const float FPSMeasurePeriod = 0.5f;

@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using ProjectPorcupine.Localization;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityStandardAssets.Utility;
 
 public class DialogBoxSettings : DialogBox
 {

@@ -9,6 +9,9 @@
 using System;
 using UnityEngine;
 
+/// <summary>
+/// Displays current FPS (over 0.5s period)
+/// </summary>
 public class FPSPerformanceComponent : BasePerformanceComponent
 {
     private const float FPSMeasurePeriod = 0.5f;

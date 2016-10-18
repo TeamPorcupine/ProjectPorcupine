@@ -10,6 +10,9 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Currently not used but may be used in future is just network
+/// </summary>
 public class NetworkPerformanceComponent : BasePerformanceComponent
 {
     private TextPerformanceComponentUI component;

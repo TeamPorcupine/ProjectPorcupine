@@ -10,14 +10,22 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Manages the PerformanceHUD (new FPS counter)
+/// </summary>
 public class PerformanceHUDManager : MonoBehaviour
 {
-    // The current mode
+    /// <summary>
+    /// The current group/mode to display
+    /// </summary>
     private static PerformanceComponentGroup currentGroup;
 
-    // Root Object
+    /// <summary>
+    /// The root object for the HUD
+    /// </summary>
     private static GameObject rootObject;
 
+    // Setup the groups
     void Awake()
     {
         PerformanceComponentGroups.groups = new PerformanceComponentGroup[] {
@@ -28,15 +36,14 @@ public class PerformanceHUDManager : MonoBehaviour
         };
     }
 
-    // Use this for initialization
     void Start()
     {
+        // Root should already exist just grab child
         if (rootObject == null)
         {
             rootObject = transform.GetChild(0).gameObject;
         }
 
-        //TODO: REMOVE TESTING VALUE
         int groupSetting = Settings.GetSetting("DialogBoxSettings_performanceGroup", 1);
 
         // Just a guard statement essentially
@@ -46,27 +53,29 @@ public class PerformanceHUDManager : MonoBehaviour
             currentGroup = PerformanceComponentGroups.groups[groupSetting];
 
             // Order by ascending using Linq
-            if (currentGroup.groupID != -1)
+            if (currentGroup.disableUI == true)
                 currentGroup.groupElements = currentGroup.groupElements.OrderBy(c => c.priorityID()).ToArray();
         }
+        // If so then just set to first option (normally none)
         else if (groupSetting > 0 && PerformanceComponentGroups.groups.Length > 0)
         {
             Debug.ULogErrorChannel("Performance", "Index out of range: Current group is set to 0" + groupSetting);
         }
+        // Else set to none (none is a readonly so it should always exist)
         else
         {
             Debug.ULogErrorChannel("Performance", "Array Empty: The PerformanceComponentGroups.groups array is empty");
             currentGroup = PerformanceComponentGroups.none;
         }
 
+        // Setup UI
         DirtyUI();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        // Could be simplified?
-        if (currentGroup.groupID == -1)
+        // If we are -1 then its none so disable UI
+        if (currentGroup.disableUI == true)
         {
             //Disable self
             gameObject.SetActive(false);
@@ -91,7 +100,7 @@ public class PerformanceHUDManager : MonoBehaviour
     /// </summary>
     public static void DirtyUI()
     {
-        // Could be improved
+        // Could be improved but its fine
         rootObject.transform.parent.gameObject.SetActive(true);
         // Clear
         foreach (Transform child in rootObject.transform)
@@ -103,7 +112,7 @@ public class PerformanceHUDManager : MonoBehaviour
         // Get new Performance Mode/Group
         currentGroup = PerformanceComponentGroups.groups[Settings.GetSetting("DialogBoxSettings_performanceGroup", 1)];
         // Order by ascending using Linq
-        if (currentGroup.groupID != -1)
+        if (currentGroup.disableUI == true)
             currentGroup.groupElements = currentGroup.groupElements.OrderBy(c => c.priorityID()).ToArray();
 
         // Draw and Begin UI Functionality

@@ -8,7 +8,6 @@
 #endregion
 
 using UnityEngine;
-using UnityStandardAssets.Utility;
 
 public class MainMenuController : MonoBehaviour
 {
