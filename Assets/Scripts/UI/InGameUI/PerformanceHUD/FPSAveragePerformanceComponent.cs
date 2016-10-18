@@ -12,10 +12,12 @@ using UnityEngine;
 public class FPSAveragePerformanceComponent : BasePerformanceComponent
 {
     private const float FPSMeasurePeriod = 30f;
-    private const string Display = "{0} AVG-FPS";
+    private const string Display = "{0}: AVG";
     private int fpsAccumulator = 0;
     private float fpsNextPeriod = 0;
     private int currentFps;
+
+    private TextPerformanceComponentUI component;
 
     public override int priorityID()
     {
@@ -25,7 +27,7 @@ public class FPSAveragePerformanceComponent : BasePerformanceComponent
 
     public override BasePerformanceComponentUI UIComponent()
     {
-        throw new NotImplementedException();
+        return component;
     }
 
     public override string nameOfComponent()
@@ -42,15 +44,19 @@ public class FPSAveragePerformanceComponent : BasePerformanceComponent
         {
             currentFps = (int)(fpsAccumulator / FPSMeasurePeriod);
             fpsAccumulator = 0;
-            // This way it will always be 0.5f instead of something like 0.4999999f
-            // Saves a little bit in floating math but mostly just for consistency
-            fpsNextPeriod += FPSMeasurePeriod + (Time.realtimeSinceStartup - fpsNextPeriod);
-            // ((TextPerformanceComponentUI)UIComponent()).changeText(string.Format(Display, currentFps));
+
+            fpsNextPeriod += FPSMeasurePeriod;
+
+            component.changeText(string.Format(Display, currentFps));
         }
     }
 
     public override void Start(BasePerformanceComponentUI UIComponent)
     {
+        component = (TextPerformanceComponentUI)UIComponent;
+
         fpsNextPeriod = Time.realtimeSinceStartup + FPSMeasurePeriod;
+
+        component.changeText("0: AVG");
     }
 }

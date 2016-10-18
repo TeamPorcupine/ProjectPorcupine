@@ -6,11 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System;
 using UnityEngine;
-using UnityEngine.UI;
 
-public abstract class BasePerformanceComponentUI : MonoBehaviour
-{
-    public abstract GameObject componentPrefab();
-}
+//Just so we can implement other UIs in the future (other than just TextPerformanceComponentUI)
+public abstract class BasePerformanceComponentUI : MonoBehaviour { }

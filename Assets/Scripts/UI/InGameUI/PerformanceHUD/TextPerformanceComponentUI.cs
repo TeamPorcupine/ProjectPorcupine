@@ -14,13 +14,6 @@ public class TextPerformanceComponentUI : BasePerformanceComponentUI
 {
     public Text text;
 
-    public override GameObject componentPrefab()
-    {
-        text = GetComponent<Text>();
-
-        return gameObject;
-    }
-
     public void changeText(string newText)
     {
         text.text = newText;

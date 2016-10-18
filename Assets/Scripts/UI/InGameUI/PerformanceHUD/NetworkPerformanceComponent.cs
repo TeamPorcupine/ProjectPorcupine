@@ -12,6 +12,8 @@ using UnityEngine.UI;
 
 public class NetworkPerformanceComponent : BasePerformanceComponent
 {
+    private TextPerformanceComponentUI component;
+
     public override int priorityID()
     {
         return 2;
@@ -19,16 +21,22 @@ public class NetworkPerformanceComponent : BasePerformanceComponent
 
     public override void Update()
     {
-
+        //NOT YET IMPLEMENTED
+        component.changeText("0ms");
     }
 
     public override BasePerformanceComponentUI UIComponent()
     {
-        throw new NotImplementedException();
+        return component;
     }
 
     public override string nameOfComponent()
     {
         return "UI/TextPerformanceComponentUI";
+    }
+
+    public override void Start(BasePerformanceComponentUI UIComponent)
+    {
+        component = (TextPerformanceComponentUI)UIComponent;
     }
 }

@@ -12,24 +12,32 @@ using UnityEngine.UI;
 
 public class MemoryPerformanceComponent : BasePerformanceComponent
 {
+    private TextPerformanceComponentUI component;
 
     public override int priorityID()
     {
-        return 1;
+        return 5;
     }
 
     public override void Update()
     {
-
+        component.changeText("Total: " + ((Profiler.GetTotalReservedMemory() / 1024) / 1024) + "mb\nAlloc: " + ((Profiler.GetTotalAllocatedMemory() / 1024) / 1024) + "mb");
     }
 
     public override BasePerformanceComponentUI UIComponent()
     {
-        throw new NotImplementedException();
+        return component;
     }
 
     public override string nameOfComponent()
     {
         return "UI/TextPerformanceComponentUI";
+    }
+
+    public override void Start(BasePerformanceComponentUI UIComponent)
+    {
+        Profiler.enabled = true;
+        component = (TextPerformanceComponentUI)UIComponent;
+        component.text.fontSize = 12;
     }
 }

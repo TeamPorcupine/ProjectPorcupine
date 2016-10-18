@@ -14,10 +14,9 @@ public static class PerformanceComponentGroups
     //NULL FORM
     public static readonly PerformanceComponentGroup none = new PerformanceComponentGroup(new BasePerformanceComponent[] { }, -1, "No FPS");
     public static readonly PerformanceComponentGroup basic = new PerformanceComponentGroup(new BasePerformanceComponent[] { new FPSPerformanceComponent() }, 0, "Basic");
-    public static readonly PerformanceComponentGroup standard = new PerformanceComponentGroup(new BasePerformanceComponent[] { new FPSPerformanceComponent(), new NetworkPerformanceComponent() }, 1, "Standard");
-    public static readonly PerformanceComponentGroup extended = new PerformanceComponentGroup(new BasePerformanceComponent[] { new FPSPerformanceComponent(), new FPSRangePerformanceComponent(), new FPSAveragePerformanceComponent(), new NetworkPerformanceComponent() }, 2, "Extended");
+    public static readonly PerformanceComponentGroup extended = new PerformanceComponentGroup(new BasePerformanceComponent[] { new FPSPerformanceComponent(), new FPSRangePerformanceComponent(), new FPSAveragePerformanceComponent() }, 2, "Extended");
     //TODO: Not fully done yet needs others
-    public static readonly PerformanceComponentGroup verbose = new PerformanceComponentGroup(new BasePerformanceComponent[] { new FPSPerformanceComponent(), new FPSRangePerformanceComponent(), new FPSAveragePerformanceComponent(), new NetworkPerformanceComponent(), new MemoryPerformanceComponent() }, 3, "Verbose");
+    public static readonly PerformanceComponentGroup verbose = new PerformanceComponentGroup(new BasePerformanceComponent[] { new FPSPerformanceComponent(), new FPSRangePerformanceComponent(), new FPSAveragePerformanceComponent(), new MemoryPerformanceComponent() }, 3, "Verbose");
 }
 
 public sealed class PerformanceComponentGroup

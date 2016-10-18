@@ -31,16 +31,18 @@ public abstract class BasePerformanceComponent
 
     /// <summary>
     /// The gameobject to be shown (so we don't need to keep creating it/hold copies)
+    /// You get the only copy you will ever get in the start function
+    /// And you have to store it somewhere to return it in this function
     /// </summary>
     public abstract BasePerformanceComponentUI UIComponent();
 
     /// <summary>
-    /// Update Action
+    /// Update Action called once per frame
     /// </summary>
-    public virtual void Update() { }
+    public abstract void Update();
 
     /// <summary>
     /// Start Action
     /// </summary>
-    public virtual void Start(BasePerformanceComponentUI UIComponent) { }
+    public abstract void Start(BasePerformanceComponentUI UIComponent);
 }

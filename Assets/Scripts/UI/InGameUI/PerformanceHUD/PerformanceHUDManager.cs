@@ -12,33 +12,32 @@ using UnityEngine.UI;
 
 public class PerformanceHUDManager : MonoBehaviour
 {
-    // Static to dirty UI (re draw)
-    // Set to true so it'll draw it the first time
-    public static bool dirty = true;
-
     // The current mode
-    private PerformanceComponentGroup currentGroup;
+    private static PerformanceComponentGroup currentGroup;
 
     // Root Object
-    public GameObject rootObject;
+    private static GameObject rootObject;
+
+    void Awake()
+    {
+        PerformanceComponentGroups.groups = new PerformanceComponentGroup[] {
+            PerformanceComponentGroups.none,
+            PerformanceComponentGroups.basic,
+            PerformanceComponentGroups.extended,
+            PerformanceComponentGroups.verbose
+        };
+    }
 
     // Use this for initialization
     void Start()
     {
-        PerformanceComponentGroups.groups = new PerformanceComponentGroup[] {
-            PerformanceComponentGroups.none,
-            PerformanceComponentGroups.basic, PerformanceComponentGroups.standard,
-            PerformanceComponentGroups.extended,
-            PerformanceComponentGroups.verbose
-        };
-
         if (rootObject == null)
         {
             rootObject = transform.GetChild(0).gameObject;
         }
 
         //TODO: REMOVE TESTING VALUE
-        int groupSetting = 1; //Settings.GetSetting("DialogBoxSettings_performanceGroup", 3);
+        int groupSetting = Settings.GetSetting("DialogBoxSettings_performanceGroup", 1);
 
         // Just a guard statement essentially
         if (PerformanceComponentGroups.groups.Length > groupSetting)
@@ -50,31 +49,30 @@ public class PerformanceHUDManager : MonoBehaviour
             if (currentGroup.groupID != -1)
                 currentGroup.groupElements = currentGroup.groupElements.OrderBy(c => c.priorityID()).ToArray();
         }
-        else if (groupSetting > 0)
+        else if (groupSetting > 0 && PerformanceComponentGroups.groups.Length > 0)
         {
-            Debug.ULogErrorChannel("Performance", "Index out of range: The PerformanceComponentGroups.groups array is <= to " + groupSetting);
+            Debug.ULogErrorChannel("Performance", "Index out of range: Current group is set to 0" + groupSetting);
         }
         else
         {
             Debug.ULogErrorChannel("Performance", "Array Empty: The PerformanceComponentGroups.groups array is empty");
             currentGroup = PerformanceComponentGroups.none;
         }
+
+        DirtyUI();
     }
 
     // Update is called once per frame
     void Update()
     {
-        // POTENTIAL BUG, if for some reason doesn't tag dirty
+        // Could be simplified?
         if (currentGroup.groupID == -1)
         {
-            if (dirty)
-                ClearUI();
+            //Disable self
+            gameObject.SetActive(false);
 
             return;
         }
-
-        if (dirty)
-            DrawUI();
 
         // Update UI
         // Shouldn't be slower and makes more contextual sense
@@ -87,19 +85,23 @@ public class PerformanceHUDManager : MonoBehaviour
         }
     }
 
-    void ClearUI()
+    /// <summary>
+    /// Clean and Re-Draw
+    /// Can be static cause it shouldn't matter
+    /// </summary>
+    public static void DirtyUI()
     {
-        //Clear UI
+        // Could be improved
+        rootObject.transform.parent.gameObject.SetActive(true);
+        // Clear
         foreach (Transform child in rootObject.transform)
         {
             Destroy(child.gameObject);
         }
-    }
 
-    void DrawUI()
-    {
+        // Draw
         // Get new Performance Mode/Group
-        currentGroup = PerformanceComponentGroups.groups[1];//Settings.GetSetting("DialogBoxSettings_performanceGroup", 1)];
+        currentGroup = PerformanceComponentGroups.groups[Settings.GetSetting("DialogBoxSettings_performanceGroup", 1)];
         // Order by ascending using Linq
         if (currentGroup.groupID != -1)
             currentGroup.groupElements = currentGroup.groupElements.OrderBy(c => c.priorityID()).ToArray();
@@ -107,19 +109,10 @@ public class PerformanceHUDManager : MonoBehaviour
         // Draw and Begin UI Functionality
         foreach (BasePerformanceComponent element in currentGroup.groupElements)
         {
-            if (element.UIComponent() == null)
-            {
-                BasePerformanceComponentUI go = ((GameObject)Instantiate(Resources.Load(element.nameOfComponent()))).GetComponent<BasePerformanceComponentUI>();
-                go.gameObject.transform.SetParent(rootObject.transform);
+            BasePerformanceComponentUI go = ((GameObject)Instantiate(Resources.Load(element.nameOfComponent()))).GetComponent<BasePerformanceComponentUI>();
+            go.gameObject.transform.SetParent(rootObject.transform);
 
-                element.Start(go);
-            }
-            else
-            {
-                element.Start(element.UIComponent());
-            }
+            element.Start(go);
         }
-
-        dirty = false;
     }
 }

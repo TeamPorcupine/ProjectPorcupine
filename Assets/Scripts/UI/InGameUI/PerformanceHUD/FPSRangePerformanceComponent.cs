@@ -10,26 +10,67 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
+// MAX/MIN
 public class FPSRangePerformanceComponent : BasePerformanceComponent
 {
+    private const float FPSMeasurePeriod = 0.5f;
+    private const string Display = "{0}: Min\n{1}: Max";
+    private int fpsAccumulator = 0;
+    private float fpsNextPeriod = 0;
+
+    private int currentFps;
+    private int lowestFps = 60;
+    private int highestFps = 60;
+
+    private TextPerformanceComponentUI component;
 
     public override int priorityID()
     {
-        return 2;
-    }
-
-    public override void Update()
-    {
-
+        //By default will be first component shown
+        return 0;
     }
 
     public override BasePerformanceComponentUI UIComponent()
     {
-        throw new NotImplementedException();
+        return component;
     }
 
     public override string nameOfComponent()
     {
         return "UI/TextPerformanceComponentUI";
+    }
+
+    // The shown FPS will be 0 for the first second until it ticks over correctly
+    public override void Update()
+    {
+        // measure average frames per second
+        fpsAccumulator++;
+        if (Time.realtimeSinceStartup > fpsNextPeriod)
+        {
+            currentFps = (int)(fpsAccumulator / FPSMeasurePeriod);
+            fpsAccumulator = 0;
+
+            fpsNextPeriod += FPSMeasurePeriod;
+
+            if (currentFps < lowestFps)
+            {
+                lowestFps = currentFps;
+            }
+            else if (currentFps > highestFps)
+            {
+                highestFps = currentFps;
+            }
+
+            component.changeText(string.Format(Display, lowestFps, highestFps));
+        }
+    }
+
+    public override void Start(BasePerformanceComponentUI UIComponent)
+    {
+        component = (TextPerformanceComponentUI)UIComponent;
+
+        fpsNextPeriod = Time.realtimeSinceStartup + FPSMeasurePeriod;
+
+        component.text.fontSize = 12;
     }
 }
