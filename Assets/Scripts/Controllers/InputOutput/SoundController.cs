@@ -39,8 +39,13 @@ public class SoundController
              return;
         }
  
-        AudioClip ac = AudioManager.GetAudio("Sound", "MenuClick");
-        AudioSource.PlayClipAtPoint(ac, Camera.main.transform.position);
+        FMOD.Sound clip = AudioManager.GetAudio("Sound", "MenuClick");
+        FMOD.System SoundSystem = AudioManager.SoundSystem;
+        FMOD.Channel Channel;
+        SoundSystem.playSound(clip, null, true, out Channel);
+        Channel.setVolume(1f);
+        Channel.setPaused(false);
+        //            
         soundCooldown = 0.1f;
     }
 
@@ -52,8 +57,13 @@ public class SoundController
             return;
         }
     
-        AudioClip ac = AudioManager.GetAudio("Sound", furniture.Type + "_OnCreated");
-        AudioSource.PlayClipAtPoint(ac, Camera.main.transform.position);
+        FMOD.Sound clip = AudioManager.GetAudio("Sound", furniture.Type + "_OnCreated");
+        FMOD.System SoundSystem = AudioManager.SoundSystem;
+        FMOD.Channel Channel;
+        SoundSystem.playSound(clip, null, true, out Channel);
+        Channel.setVolume(1f);
+        Channel.setPaused(false);
+        //            
         soundCooldown = 0.1f;
     }
 
@@ -67,8 +77,13 @@ public class SoundController
 
         if (tileData.ForceTileUpdate)
         {  
-            AudioClip ac = AudioManager.GetAudio("Sound", "Floor_OnCreated");
-            AudioSource.PlayClipAtPoint(ac, Camera.main.transform.position);
+            FMOD.Sound clip = AudioManager.GetAudio("Sound", "Floor_OnCreated");
+            FMOD.System SoundSystem = AudioManager.SoundSystem;
+            FMOD.Channel Channel;
+            SoundSystem.playSound(clip, null, true, out Channel);
+            Channel.setVolume(1f);
+            Channel.setPaused(false);
+//            AudioSource.PlayClipAtPoint(clip, Camera.main.transform.position);
             soundCooldown = 0.1f;
         }
     }

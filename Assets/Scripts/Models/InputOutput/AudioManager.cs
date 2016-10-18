@@ -6,7 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -17,14 +17,19 @@ using UnityEngine;
 /// </summary>
 public class AudioManager
 {
-    private static Dictionary<string, AudioClip> audioClips;
+    private static Dictionary<string, FMOD.Sound> audioClips;
+    public static FMOD.System SoundSystem;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AudioManager"/> class.
     /// </summary>
     public AudioManager()
     {
-        audioClips = new Dictionary<string, AudioClip>();
+        
+        FMOD.Factory.System_Create(out SoundSystem);
+        SoundSystem.setDSPBufferSize(1024, 10);
+        SoundSystem.init(32, FMOD.INITFLAGS.NORMAL, (IntPtr)0);
+        audioClips = new Dictionary<string, FMOD.Sound>();
     }
 
     /// <summary>
@@ -34,8 +39,9 @@ public class AudioManager
     /// <returns>String containing the information of audioClips.</returns>
     public static string GetAudioDictionaryString()
     {
-        Dictionary<string, AudioClip> dictionary = audioClips;
-        return "{" + string.Join(",", dictionary.Select(kv => kv.Key + "=" + kv.Value.length).ToArray()) + "}";
+        Dictionary<string, FMOD.Sound> dictionary = audioClips;
+
+        return "{" + string.Join(",", dictionary.Select(kv => kv.Key + "=" + kv.Value.ToString()).ToArray()) + "}";
     }
 
     /// <summary>
@@ -48,9 +54,9 @@ public class AudioManager
     /// </param>
     /// <param name="audioName">The name of the AudioClip.</param>
     /// <returns>AudioClip form the specified category with the specified name.</returns>
-    public static AudioClip GetAudio(string categoryName, string audioName)
+    public static FMOD.Sound GetAudio(string categoryName, string audioName)
     {
-        AudioClip clip = new AudioClip();
+        FMOD.Sound clip;
 
         string audioNameAndCategory = categoryName + "/" + audioName + ".ogg";
 
@@ -87,15 +93,10 @@ public class AudioManager
         }
 
         string[] filesInDir = Directory.GetFiles(directoryPath);
-        IEnumerable<WWW> audioFiles = LoadAudioFile(filesInDir, directoryPath);
-        IEnumerator<WWW> e = audioFiles.GetEnumerator();
-        while (e.MoveNext())
-        {
-            Debug.Log("Type: " + e.Current.GetType());
-        }
+        LoadAudioFile(filesInDir, directoryPath);
     }
 
-    private static IEnumerable<WWW> LoadAudioFile(string[] filesInDir, string directoryPath)
+    private static void LoadAudioFile(string[] filesInDir, string directoryPath)
     {
         foreach (string file in filesInDir)
         {
@@ -107,17 +108,14 @@ public class AudioManager
                 continue;
             }
 
-            WWW www = new WWW(@"file://" + filePath);
-
-            yield return www;
-
-            AudioClip clip = www.GetAudioClip(false, false);
-
+            FMOD.Sound clip;
+            SoundSystem.createSound(filePath, FMOD.MODE._2D, out clip);
             string filename = new FileInfo(filePath).Name;
 
             filename = audioCategory + "/" + filename;
 
             Debug.Log(filename + " Downloaded");
+
 
             audioClips[filename] = clip;
         }

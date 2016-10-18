@@ -63,6 +63,33 @@ public class WorldController : MonoBehaviour
         new SpriteManager();
         new AudioManager();
 
+
+//        string soundFile;
+//
+//        string directoryPath = Path.Combine(Path.Combine(Application.streamingAssetsPath, "Audio"), "Sound");
+//        string[] filesInDir = Directory.GetFiles(directoryPath);
+//        soundFile = filesInDir[32];
+////        for (int i = 0; i < filesInDir.Length; i++)
+////        {
+////            Debug.LogWarning(i + ": " + filesInDir[i]);
+////        }
+//        Debug.LogWarning(soundFile + " ");
+//        bool isP;
+//        FMOD.System SoundSystem;
+//        FMOD.Factory.System_Create(out SoundSystem);
+//        SoundSystem.setDSPBufferSize(1024, 10);
+//        SoundSystem.init(32, FMOD.INITFLAGS.NORMAL, (IntPtr)0);
+//        FMOD.Sound clip;
+//        FMOD.Channel Channel;
+//        SoundSystem.createSound(soundFile, FMOD.MODE._2D, out clip);
+//
+//        SoundSystem.playSound(clip, null, true, out Channel);
+//        Channel.setVolume(1f);
+//        Channel.setPaused(false);
+
+
+
+
         // FIXME: Do something real here. This is just to show how to register a C# event prototype for the Scheduler.
         PrototypeManager.ScheduledEvent.Add(
             new ScheduledEvent(
