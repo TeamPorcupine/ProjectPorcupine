@@ -11,32 +11,68 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Manages the PerformanceHUD (new FPS counter)
+/// Manages the PerformanceHUD (new FPS counter).
 /// </summary>
 public class PerformanceHUDManager : MonoBehaviour
 {
     /// <summary>
-    /// The current group/mode to display
+    /// The current group/mode to display.
     /// </summary>
     private static PerformanceComponentGroup currentGroup;
 
     /// <summary>
-    /// The root object for the HUD
+    /// The root object for the HUD.
     /// </summary>
     private static GameObject rootObject;
 
-    // Setup the groups
-    void Awake()
+    /// <summary>
+    /// Clean and Re-Draw
+    /// Can be static cause it shouldn't matter.
+    /// </summary>
+    public static void DirtyUI()
     {
-        PerformanceComponentGroups.groups = new PerformanceComponentGroup[] {
-            PerformanceComponentGroups.none,
-            PerformanceComponentGroups.basic,
-            PerformanceComponentGroups.extended,
-            PerformanceComponentGroups.verbose
+        // Could be improved but its fine
+        rootObject.transform.parent.gameObject.SetActive(true);
+
+        // Clear
+        foreach (Transform child in rootObject.transform)
+        {
+            Destroy(child.gameObject);
+        }
+
+        // Draw
+        // Get new Performance Mode/Group
+        currentGroup = PerformanceComponentGroups.groups[Settings.GetSetting("DialogBoxSettings_performanceGroup", 1)];
+
+        // Order by ascending using Linq
+        if (currentGroup.disableUI == true)
+        {
+            currentGroup.groupElements = currentGroup.groupElements.OrderBy(c => c.PriorityID()).ToArray();
+        }
+
+        // Draw and Begin UI Functionality
+        foreach (BasePerformanceComponent element in currentGroup.groupElements)
+        {
+            BasePerformanceComponentUI go = ((GameObject)Instantiate(Resources.Load(element.NameOfComponent()))).GetComponent<BasePerformanceComponentUI>();
+            go.gameObject.transform.SetParent(rootObject.transform);
+
+            element.Start(go);
+        }
+    }
+
+    // Setup the groups
+    private void Awake()
+    {
+        PerformanceComponentGroups.groups = new PerformanceComponentGroup[]
+        {
+            PerformanceComponentGroups.None,
+            PerformanceComponentGroups.Basic,
+            PerformanceComponentGroups.Extended,
+            PerformanceComponentGroups.Verbose
         };
     }
 
-    void Start()
+    private void Start()
     {
         // Root should already exist just grab child
         if (rootObject == null)
@@ -54,30 +90,32 @@ public class PerformanceHUDManager : MonoBehaviour
 
             // Order by ascending using Linq
             if (currentGroup.disableUI == true)
-                currentGroup.groupElements = currentGroup.groupElements.OrderBy(c => c.priorityID()).ToArray();
+            {
+                currentGroup.groupElements = currentGroup.groupElements.OrderBy(c => c.PriorityID()).ToArray();
+            }
         }
-        // If so then just set to first option (normally none)
         else if (groupSetting > 0 && PerformanceComponentGroups.groups.Length > 0)
         {
+            // If so then just set to first option (normally none)
             Debug.ULogErrorChannel("Performance", "Index out of range: Current group is set to 0" + groupSetting);
         }
-        // Else set to none (none is a readonly so it should always exist)
         else
         {
+            // Else set to none (none is a readonly so it should always exist)
             Debug.ULogErrorChannel("Performance", "Array Empty: The PerformanceComponentGroups.groups array is empty");
-            currentGroup = PerformanceComponentGroups.none;
+            currentGroup = PerformanceComponentGroups.None;
         }
 
         // Setup UI
         DirtyUI();
     }
 
-    void Update()
+    private void Update()
     {
         // If we are -1 then its none so disable UI
         if (currentGroup.disableUI == true)
         {
-            //Disable self
+            // Disable self
             gameObject.SetActive(false);
 
             return;
@@ -91,37 +129,6 @@ public class PerformanceHUDManager : MonoBehaviour
             {
                 element.Update();
             }
-        }
-    }
-
-    /// <summary>
-    /// Clean and Re-Draw
-    /// Can be static cause it shouldn't matter
-    /// </summary>
-    public static void DirtyUI()
-    {
-        // Could be improved but its fine
-        rootObject.transform.parent.gameObject.SetActive(true);
-        // Clear
-        foreach (Transform child in rootObject.transform)
-        {
-            Destroy(child.gameObject);
-        }
-
-        // Draw
-        // Get new Performance Mode/Group
-        currentGroup = PerformanceComponentGroups.groups[Settings.GetSetting("DialogBoxSettings_performanceGroup", 1)];
-        // Order by ascending using Linq
-        if (currentGroup.disableUI == true)
-            currentGroup.groupElements = currentGroup.groupElements.OrderBy(c => c.priorityID()).ToArray();
-
-        // Draw and Begin UI Functionality
-        foreach (BasePerformanceComponent element in currentGroup.groupElements)
-        {
-            BasePerformanceComponentUI go = ((GameObject)Instantiate(Resources.Load(element.nameOfComponent()))).GetComponent<BasePerformanceComponentUI>();
-            go.gameObject.transform.SetParent(rootObject.transform);
-
-            element.Start(go);
         }
     }
 }

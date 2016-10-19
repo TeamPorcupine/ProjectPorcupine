@@ -11,21 +11,20 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Currently not used but may be used in future is just network
+/// Currently not used but may be used in future is just network.
 /// </summary>
 public class NetworkPerformanceComponent : BasePerformanceComponent
 {
     private TextPerformanceComponentUI component;
 
-    public override int priorityID()
+    public override int PriorityID()
     {
         return 2;
     }
 
     public override void Update()
     {
-        //NOT YET IMPLEMENTED
-        component.changeText("0ms");
+        component.ChangeText("0ms");
     }
 
     public override BasePerformanceComponentUI UIComponent()
@@ -33,13 +32,13 @@ public class NetworkPerformanceComponent : BasePerformanceComponent
         return component;
     }
 
-    public override string nameOfComponent()
+    public override string NameOfComponent()
     {
         return "UI/TextPerformanceComponentUI";
     }
 
-    public override void Start(BasePerformanceComponentUI UIComponent)
+    public override void Start(BasePerformanceComponentUI componentUI)
     {
-        component = (TextPerformanceComponentUI)UIComponent;
+        component = (TextPerformanceComponentUI)componentUI;
     }
 }

@@ -8,56 +8,32 @@
 #endregion
 
 /// <summary>
-/// All the groups/modes for the PerformanceHUD
+/// All the groups/modes for the PerformanceHUD.
 /// </summary>
 public static class PerformanceComponentGroups
 {
     /// <summary>
-    /// All groups
+    /// A group with no elements (empty HUD).
+    /// </summary>
+    public static readonly PerformanceComponentGroup None = new PerformanceComponentGroup(new BasePerformanceComponent[] { }, true, "No FPS");
+
+    /// <summary>
+    /// A group with just an FPS Counter.
+    /// </summary>
+    public static readonly PerformanceComponentGroup Basic = new PerformanceComponentGroup(new BasePerformanceComponent[] { new FPSPerformanceComponent() }, false, "Basic");
+
+    /// <summary>
+    /// A group with elements: FPS, AVG FPS, and Range FPS.
+    /// </summary>           
+    public static readonly PerformanceComponentGroup Extended = new PerformanceComponentGroup(new BasePerformanceComponent[] { new FPSPerformanceComponent(), new FPSRangePerformanceComponent(), new FPSAveragePerformanceComponent() }, false, "Extended");
+
+    /// <summary>
+    /// A group with elements: FPS, AVG FPS, Range FPS, and Memory.
+    /// </summary>
+    public static readonly PerformanceComponentGroup Verbose = new PerformanceComponentGroup(new BasePerformanceComponent[] { new FPSPerformanceComponent(), new FPSRangePerformanceComponent(), new FPSAveragePerformanceComponent(), new MemoryPerformanceComponent() }, false, "Verbose");
+
+    /// <summary>
+    /// All groups in a single array.
     /// </summary>
     public static PerformanceComponentGroup[] groups;
-
-    //NULL FORM
-    /// <summary>
-    /// No HUD
-    /// </summary>
-    public static readonly PerformanceComponentGroup none = new PerformanceComponentGroup(new BasePerformanceComponent[] { }, true, "No FPS");
-    /// <summary>
-    /// Just FPS
-    /// </summary>
-    public static readonly PerformanceComponentGroup basic = new PerformanceComponentGroup(new BasePerformanceComponent[] { new FPSPerformanceComponent() }, false, "Basic");
-    /// <summary>
-    /// FPS + AVG FPS + Range FPS
-    /// </summary>
-    public static readonly PerformanceComponentGroup extended = new PerformanceComponentGroup(new BasePerformanceComponent[] { new FPSPerformanceComponent(), new FPSRangePerformanceComponent(), new FPSAveragePerformanceComponent() }, false, "Extended");
-    /// <summary>
-    /// FPS + AVG FPS + Range FPS + Memory
-    /// </summary>
-    public static readonly PerformanceComponentGroup verbose = new PerformanceComponentGroup(new BasePerformanceComponent[] { new FPSPerformanceComponent(), new FPSRangePerformanceComponent(), new FPSAveragePerformanceComponent(), new MemoryPerformanceComponent() }, false, "Verbose");
-}
-
-/// <summary>
-/// A performance group of UI elements
-/// </summary>
-public sealed class PerformanceComponentGroup
-{
-    /// <summary>
-    /// All the UI Elements
-    /// </summary>
-    public BasePerformanceComponent[] groupElements;
-    /// <summary>
-    /// If true disable UI
-    /// </summary>
-    public bool disableUI;
-    /// <summary>
-    /// The name to display as option
-    /// </summary>
-    public string groupName;
-
-    public PerformanceComponentGroup(BasePerformanceComponent[] elements, bool disableUI, string name)
-    {
-        groupElements = elements;
-        this.disableUI = disableUI;
-        groupName = name;
-    }
 }

@@ -65,7 +65,6 @@ public class DialogBoxSettings : DialogBox
 
         Screen.fullScreen = fullScreenToggle.isOn;
 
-
         ResolutionOption selectedOption = (ResolutionOption)resolutionDropdown.options[resolutionDropdown.value];
         Resolution resolution = selectedOption.Resolution;
         Screen.SetResolution(resolution.width, resolution.height, fullScreenToggle.isOn, resolution.refreshRate);

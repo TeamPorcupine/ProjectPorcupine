@@ -11,7 +11,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Just measures the max and min range for FPS
+/// Just measures the max and min range for FPS.
 /// </summary>
 public class FPSRangePerformanceComponent : BasePerformanceComponent
 {
@@ -26,9 +26,9 @@ public class FPSRangePerformanceComponent : BasePerformanceComponent
 
     private TextPerformanceComponentUI component;
 
-    public override int priorityID()
+    public override int PriorityID()
     {
-        //By default will be first component shown
+        // By default will be first component shown
         return 0;
     }
 
@@ -37,7 +37,7 @@ public class FPSRangePerformanceComponent : BasePerformanceComponent
         return component;
     }
 
-    public override string nameOfComponent()
+    public override string NameOfComponent()
     {
         return "UI/TextPerformanceComponentUI";
     }
@@ -63,13 +63,13 @@ public class FPSRangePerformanceComponent : BasePerformanceComponent
                 highestFps = currentFps;
             }
 
-            component.changeText(string.Format(Display, lowestFps, highestFps));
+            component.ChangeText(string.Format(Display, lowestFps, highestFps));
         }
     }
 
-    public override void Start(BasePerformanceComponentUI UIComponent)
+    public override void Start(BasePerformanceComponentUI componentUI)
     {
-        component = (TextPerformanceComponentUI)UIComponent;
+        component = (TextPerformanceComponentUI)componentUI;
 
         fpsNextPeriod = Time.realtimeSinceStartup + FPSMeasurePeriod;
 
