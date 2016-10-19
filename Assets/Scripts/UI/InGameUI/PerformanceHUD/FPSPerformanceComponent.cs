@@ -6,7 +6,6 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System;
 using UnityEngine;
 
 /// <summary>
@@ -15,7 +14,9 @@ using UnityEngine;
 public class FPSPerformanceComponent : BasePerformanceComponent
 {
     private const float FPSMeasurePeriod = 0.5f;
-    private const string Display = "{0} FPS";
+    private const string GreenDisplay = "<color=green>{0} FPS</color>";
+    private const string RedDisplay = "<color=red>{0} FPS</color>";
+    private const string YellowDisplay = "<color=yellow>{0} FPS</color>";
     private int fpsAccumulator = 0;
     private float fpsNextPeriod = 0;
     private int currentFps;
@@ -50,7 +51,22 @@ public class FPSPerformanceComponent : BasePerformanceComponent
 
             fpsNextPeriod += FPSMeasurePeriod;
 
-            component.ChangeText(string.Format(Display, currentFps));
+            // Colour Changing
+            if (currentFps > 55)
+            {
+                // A good area to be at
+                component.ChangeText(string.Format(GreenDisplay, currentFps));
+            }
+            else if (currentFps >= 30 && currentFps <= 55)
+            {
+                // Less preferable but playable
+                component.ChangeText(string.Format(YellowDisplay, currentFps));
+            }
+            else
+            {
+                // Too low, most likely due to an error or major slowdown
+                component.ChangeText(string.Format(RedDisplay, currentFps));
+            }
         }
     }
 

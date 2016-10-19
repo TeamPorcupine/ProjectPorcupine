@@ -8,7 +8,6 @@
 #endregion
 using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
 
 /// <summary>
 /// Manages the PerformanceHUD (new FPS counter).

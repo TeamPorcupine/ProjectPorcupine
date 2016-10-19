@@ -6,9 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System;
 using UnityEngine;
-using UnityEngine.UI;
 
 /// <summary>
 /// Displays the currently used memory and the currently allocated memory.

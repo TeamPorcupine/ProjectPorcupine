@@ -6,9 +6,6 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System;
-using UnityEngine;
-using UnityEngine.UI;
 
 /// <summary>
 /// Currently not used but may be used in future is just network.
