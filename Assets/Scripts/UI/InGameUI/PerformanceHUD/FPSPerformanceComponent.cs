@@ -14,9 +14,9 @@ using UnityEngine;
 public class FPSPerformanceComponent : BasePerformanceComponent
 {
     private const float FPSMeasurePeriod = 0.5f;
-    private const string GreenDisplay = "<color=green>{0} FPS</color>";
-    private const string RedDisplay = "<color=red>{0} FPS</color>";
-    private const string YellowDisplay = "<color=yellow>{0} FPS</color>";
+    private const string GreenDisplay = "<color=lime>{0}</color>";
+    private const string RedDisplay = "<color=red>{0}</color>";
+    private const string YellowDisplay = "<color=yellow>{0}</color>";
     private int fpsAccumulator = 0;
     private float fpsNextPeriod = 0;
     private int currentFps;
@@ -73,6 +73,7 @@ public class FPSPerformanceComponent : BasePerformanceComponent
     public override void Start(BasePerformanceComponentUI componentUI)
     {
         component = (TextPerformanceComponentUI)componentUI;
+        component.text.fontSize = 20;
 
         fpsNextPeriod = Time.realtimeSinceStartup + FPSMeasurePeriod;
     }

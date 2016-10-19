@@ -13,10 +13,11 @@ using UnityEngine;
 /// </summary>
 public class FPSAveragePerformanceComponent : BasePerformanceComponent
 {
-    private const float FPSMeasurePeriod = 30f;
-    private const string Display = "{0}: AVG";
+    private const float FPSMeasurePeriod = 5f;
+    private const string Display = "Avg: {0}";
+
     private int fpsAccumulator = 0;
-    private float fpsNextPeriod = 0;
+    private float fpsFinishPeriod = 0;
     private int currentFps;
 
     private TextPerformanceComponentUI component;
@@ -42,12 +43,13 @@ public class FPSAveragePerformanceComponent : BasePerformanceComponent
     {
         // measure average frames per second
         fpsAccumulator++;
-        if (Time.realtimeSinceStartup > fpsNextPeriod)
+        if (Time.realtimeSinceStartup > fpsFinishPeriod)
         {
             currentFps = (int)(fpsAccumulator / FPSMeasurePeriod);
+
             fpsAccumulator = 0;
 
-            fpsNextPeriod += FPSMeasurePeriod;
+            fpsFinishPeriod += FPSMeasurePeriod;
 
             component.ChangeText(string.Format(Display, currentFps));
         }
@@ -57,8 +59,8 @@ public class FPSAveragePerformanceComponent : BasePerformanceComponent
     {
         component = (TextPerformanceComponentUI)componentUI;
 
-        fpsNextPeriod = Time.realtimeSinceStartup + FPSMeasurePeriod;
+        fpsFinishPeriod = Time.realtimeSinceStartup + FPSMeasurePeriod;
 
-        component.ChangeText("0: AVG");
+        component.ChangeText("Avg: ...");
     }
 }

@@ -30,6 +30,12 @@ public class PerformanceHUDManager : MonoBehaviour
     /// </summary>
     public static void DirtyUI()
     {
+        // Guard
+        if (rootObject == null)
+        {
+            return;
+        }
+
         // Could be improved but its fine
         rootObject.transform.parent.gameObject.SetActive(true);
 

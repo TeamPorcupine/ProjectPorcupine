@@ -16,7 +16,7 @@ using UnityEngine.UI;
 public class FPSRangePerformanceComponent : BasePerformanceComponent
 {
     private const float FPSMeasurePeriod = 0.5f;
-    private const string Display = "{0}: Min\n{1}: Max";
+    private const string Display = "Min: {0}\nMax: {1}";
     private int fpsAccumulator = 0;
     private float fpsNextPeriod = 0;
 

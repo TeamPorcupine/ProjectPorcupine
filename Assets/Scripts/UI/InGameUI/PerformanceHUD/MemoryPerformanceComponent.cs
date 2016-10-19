@@ -22,7 +22,7 @@ public class MemoryPerformanceComponent : BasePerformanceComponent
 
     public override void Update()
     {
-        component.ChangeText("Total: " + ((Profiler.GetTotalReservedMemory() / 1024) / 1024) + "mb\nAlloc: " + ((Profiler.GetTotalAllocatedMemory() / 1024) / 1024) + "mb");
+        component.ChangeText("Mem: " + ((Profiler.GetTotalReservedMemory() / 1024) / 1024) + "mb\nAlloc: " + ((Profiler.GetTotalAllocatedMemory() / 1024) / 1024) + "mb");
     }
 
     public override BasePerformanceComponentUI UIComponent()
@@ -39,6 +39,7 @@ public class MemoryPerformanceComponent : BasePerformanceComponent
     {
         Profiler.enabled = true;
         component = (TextPerformanceComponentUI)componentUI;
-        component.text.fontSize = 12;
+        component.text.fontSize = 11;
+        component.text.resizeTextForBestFit = true;
     }
 }
