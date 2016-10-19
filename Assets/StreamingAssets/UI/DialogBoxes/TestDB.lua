@@ -3,7 +3,7 @@ DIALOGRESULT_NO = 1
 DIALOGRESULT_CANCEL = 2
 DIALOGRESULT_OKAY = 3
 
-function Testing_DialogClosed( DialogBoxResult, result, data )
+function Filter_DialogClosed( DialogBoxResult, result, data )
 	if (result == DIALOGRESULT_YES) then
 		Prompt = WorldController.Instance.dialogBoxManager.ShowDialogBoxByName("Prompt or Info")
 		Prompt.SetPrompt("Are you sure?")

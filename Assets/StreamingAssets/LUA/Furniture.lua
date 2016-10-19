@@ -153,6 +153,10 @@ function Stockpile_GetItemsFromFilter( furniture )
 	return furniture.AcceptsForStorage()
 end
 
+function Stockpile_SetNewFilter( furniture, character )
+    WorldController.Instance.dialogBoxManager.ShowDialogBoxByName("Filter")
+end
+
 function Stockpile_UpdateAction( furniture, deltaTime )
     -- We need to ensure that we have a job on the queue
     -- asking for either:

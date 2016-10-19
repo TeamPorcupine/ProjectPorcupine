@@ -24,6 +24,8 @@ public class DialogBox : MonoBehaviour
     public virtual void ShowDialog()
     {
         openedWhileModal = GameController.Instance.IsModal ? true : false;
+
+        Debug.ULogChannel("ModDialogBox", "GameController.IsModal returns=" + GameController.Instance.IsModal);
         GameController.Instance.IsModal = true;
 
         GameController.Instance.soundController.OnButtonSFX();
@@ -34,14 +36,15 @@ public class DialogBox : MonoBehaviour
 
     public virtual void CloseDialog()
     {
+        InvokeClosed();
+        
+        Closed = null;        
+
+        Debug.ULogChannel("ModDialogBox","openedWhileModal=" + openedWhileModal.ToString());
         if (!openedWhileModal)
         {
             GameController.Instance.IsModal = false;
         }
-
-        InvokeClosed();
-
-        Closed = null;
 
         GameController.Instance.soundController.OnButtonSFX();
         

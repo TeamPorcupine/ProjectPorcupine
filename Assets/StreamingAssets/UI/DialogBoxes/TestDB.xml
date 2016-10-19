@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <ModDialogBoxInformation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Title>Testing</Title>
-  <Control name="Img1" type="Image">
+  <Title>Filter</Title>
+  <Control name="Text1" type="Text">
     <Position>
       <x>100</x>
       <y>-50</y>
@@ -11,12 +11,12 @@
       <x>50</x>
       <y>50</y>
     </Size>
-    <Data xsi:type="xsd:string">UI\DialogBoxes\img\test.jpg</Data>
+    <Data xsi:type="xsd:string">Hello World!</Data>
   </Control>
   <Buttons>Yes</Buttons>
   <Buttons>No</Buttons>
   <Buttons>Cancel</Buttons>
   <Actions>
-    <Action event="OnClosed" functionName="Testing_DialogClosed" />
+    <Action event="OnClosed" functionName="Filter_DialogClosed" />
   </Actions>
 </ModDialogBoxInformation>

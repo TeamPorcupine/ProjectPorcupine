@@ -178,6 +178,8 @@
         <Action event="OnUpdate" functionName="Stockpile_UpdateAction" />
         <DragType>area</DragType>
 
+        <ContextMenuAction FunctionName="Stockpile_SetNewFilter" Text="Set Filter" RequireCharacterSelected="false"/>
+
         <LocalizationCode>furn_stockpile</LocalizationCode>
         <UnlocalizedDescription>furn_stockpile_desc</UnlocalizedDescription>
     </Furniture>
