@@ -656,8 +656,6 @@
         <ContextMenuAction FunctionName="Vent_Open" Text="Open Vent" RequireCharacterSelected="false" />
         <ContextMenuAction FunctionName="Vent_Close" Text="Close Vent" RequireCharacterSelected="false" />
 
-
-
         <Animations>
             <Animation state="horizontal" valuebased="true">
                 <Frame name="vent_EW_Closed" />
