@@ -25,7 +25,6 @@ namespace ProjectPorcupine.Rooms
         private Dictionary<string, string> deltaGas;
 
         private List<Tile> tiles;
-        private float temperature;
 
         public Room()
         {
@@ -48,14 +47,6 @@ namespace ProjectPorcupine.Rooms
             get
             {
                 return tiles.Count;
-            }
-        }
-
-        public float Temperature
-        {
-            get
-            {
-                return temperature;
             }
         }
 
@@ -335,16 +326,6 @@ namespace ProjectPorcupine.Rooms
             float amountMoved = Mathf.Min(amount, GetGasAmount(name));
             this.ChangeGas(name, -amountMoved);
             room.ChangeGas(name, amountMoved);
-        }
-
-        public float GetTemperature()
-        {
-            return temperature;
-        }
-
-        public void ChangeTemperature(float change)
-        {
-            temperature += change;
         }
 
         public string[] GetGasNames()
