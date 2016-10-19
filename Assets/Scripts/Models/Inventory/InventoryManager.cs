@@ -165,6 +165,7 @@ public class InventoryManager
             {
                 Inventories[character.inventory.Type] = new List<Inventory>();
             }
+            
             Inventories[character.inventory.Type].Add(character.inventory);
         }
         else if (character.inventory.Type != sourceInventory.Type)
