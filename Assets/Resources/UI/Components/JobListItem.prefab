@@ -195,7 +195,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b2d8c2d140c94780a47850e729eb427, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jobText: {fileID: 11460358}
   currentColor: {r: 0, g: 0, b: 0, a: 0}
 --- !u!114 &114000013548480896
 MonoBehaviour:
