@@ -42,14 +42,14 @@ public class DialogBoxOptions : DialogBox
     {
         UnityEngine.Object buttonPrefab = Resources.Load("UI/Components/MenuButton");
 
-        DestroyButton();
+        DestroyButtons();
         this.GetComponent<RectTransform>().sizeDelta = new Vector2(this.GetComponent<RectTransform>().sizeDelta.x, 260);
 
         GameObject cancelButton = CreateButtonGO(buttonPrefab, "Resume", "menu_resume");
         cancelButton.GetComponent<Button>().onClick.AddListener(delegate
         {
             this.CloseDialog();
-            DestroyButton();
+            DestroyButtons();
             RenderButtons();
             this.GetComponent<RectTransform>().sizeDelta = new Vector2(this.GetComponent<RectTransform>().sizeDelta.x, 400);
         });
@@ -205,7 +205,7 @@ public class DialogBoxOptions : DialogBox
         }
     }
 
-    private void DestroyButton()
+    private void DestroyButtons()
     {
         foreach (Transform t in transform)
         {
