@@ -5,6 +5,10 @@
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
+
 #endregion
 using System.Collections;
 using System.IO;
@@ -126,22 +130,6 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
     /// <returns>Returns the thread that is currently saving data to HDD.</returns>
     public Thread SaveWorld(string filePath)
     {
-
-        World.Current.WriteJson();
-        // This function gets called when the user confirms a filename
-        // from the save dialog box.
-
-        // Get the file name from the save file dialog box.
-        Debug.ULogChannel("DialogBoxSaveGame", "SaveWorld button was clicked.");
-
-        XmlSerializer serializer = new XmlSerializer(typeof(World));
-        TextWriter writer = new StringWriter();
-        serializer.Serialize(writer, WorldController.Instance.World);
-        writer.Close();
-
-        // UberLogger doesn't handle multi-line messages well.
-        // Debug.Log(writer.ToString());
-
         // Make sure the save folder exists.
         if (Directory.Exists(GameController.Instance.FileSaveBasePath()) == false)
         {
@@ -152,9 +140,14 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
             Directory.CreateDirectory(GameController.Instance.FileSaveBasePath());
         }
 
+        StreamWriter sw = new StreamWriter(filePath);
+        JsonWriter writer = new JsonTextWriter(sw);
+
+        JObject worldJson = World.Current.ToJson();
+
         // Launch saving operation in a separate thread.
         // This reduces lag while saving by a little bit.
-        Thread t = new Thread(new ThreadStart(delegate { SaveWorldToHdd(filePath, writer); }));
+        Thread t = new Thread(new ThreadStart(delegate { SaveWorldToHdd(worldJson, writer); }));
         t.Start();
 
         return t;
@@ -165,8 +158,15 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
     /// </summary>
     /// <param name="filePath">Full path to file.</param>
     /// <param name="writer">TextWriter that contains serialized World data.</param>
-    private void SaveWorldToHdd(string filePath, TextWriter writer)
+    private void SaveWorldToHdd(JObject worldJson, JsonWriter writer)
     {
-        File.WriteAllText(filePath, writer.ToString());
+        JsonSerializer serializer = new JsonSerializer();
+        //        serializer.Converters.Add(new JavaScriptDateTimeConverter());
+        serializer.NullValueHandling = NullValueHandling.Ignore;
+        serializer.Formatting = Newtonsoft.Json.Formatting.Indented;
+
+        serializer.Serialize(writer, worldJson);
+
+        writer.Flush();
     }
 }

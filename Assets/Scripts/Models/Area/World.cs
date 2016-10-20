@@ -301,15 +301,8 @@ public class World : IXmlSerializable
         }
     }
 
-    public void WriteJson()
+    public JObject ToJson()
     {
-        JsonSerializer serializer = new JsonSerializer();
-        //        serializer.Converters.Add(new JavaScriptDateTimeConverter());
-        serializer.NullValueHandling = NullValueHandling.Ignore;
-        serializer.Formatting = Newtonsoft.Json.Formatting.Indented;
-        StreamWriter sw = new StreamWriter(@"c:\json.txt");
-        JsonWriter writer = new JsonTextWriter(sw);
-
         JObject worldJson = new JObject();
         worldJson.Add(new JProperty("Width", Width.ToString()));
         worldJson.Add(new JProperty("Height", Height.ToString()));
@@ -323,14 +316,12 @@ public class World : IXmlSerializable
         worldJson.Add(new JProperty("CameraData", CameraData.ToJson()));
         worldJson.Add(new JProperty("Skybox", skybox.name));
         worldJson.Add(new JProperty("Wallet", Wallet.ToJson()));
-
-        serializer.Serialize(writer, worldJson);
-        writer.Flush();
+        return worldJson;
     }
 
-    public void ReadJson()
+    public void ReadJson(string filename)
     {
-        StreamReader reader = File.OpenText(@"c:\json.txt");
+        StreamReader reader = File.OpenText(filename);
         JObject worldJson = (JObject)JToken.ReadFrom(new JsonTextReader(reader));
         Width = (int) worldJson["Width"];
         Height = (int) worldJson["Height"];

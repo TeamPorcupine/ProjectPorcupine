@@ -172,20 +172,7 @@ public class WorldController : MonoBehaviour
     {
         Debug.ULogChannel("WorldController", "CreateWorldFromSaveFile");
 
-//        // Create a world from our save file data.
-//        XmlSerializer serializer = new XmlSerializer(typeof(World));
-//
-//        // This can throw an exception.
-//        // TODO: Show a error message to the user.
-//        string saveGameText = File.ReadAllText(fileName);
-//
-//        TextReader reader = new StringReader(saveGameText);
-//
-//        // Leaving this for Unity's console because UberLogger mangles multiline messages.
-//        Debug.Log(reader.ToString());
-//        World = (World)serializer.Deserialize(reader);
-//        reader.Close();
         World = new World();
-        World.ReadJson();
+        World.ReadJson(fileName);
     }
 }

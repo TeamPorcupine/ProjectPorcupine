@@ -5,6 +5,11 @@
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
+using System.Threading;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
+
 #endregion
 using System;
 using System.IO;
@@ -105,27 +110,51 @@ public class AutosaveManager
         SaveWorld(filePath);
     }
 
-    // FIXME: This is mostly just copied from DialogBoxSaveGame.cs
-    // Both functions could probably be mostly refactored onto World???
-    private void SaveWorld(string filePath)
+    /// <summary>
+    /// Serializes current Instance of the World and starts a thread
+    /// that actually saves serialized world to HDD.
+    /// </summary>
+    /// <param name="filePath">Where to save (Full path).</param>
+    /// <returns>Returns the thread that is currently saving data to HDD.</returns>
+    public Thread SaveWorld(string filePath)
     {
-        XmlSerializer serializer = new XmlSerializer(typeof(World));
-        TextWriter writer = new StringWriter();
-        serializer.Serialize(writer, WorldController.Instance.World);
-        writer.Close();
-
-        try
+        // Make sure the save folder exists.
+        if (Directory.Exists(GameController.Instance.FileSaveBasePath()) == false)
         {
-            if (Directory.Exists(GameController.Instance.FileSaveBasePath()) == false)
-            {
-                Directory.CreateDirectory(GameController.Instance.FileSaveBasePath());
-            }
+            // NOTE: This can throw an exception if we can't create the folder,
+            // but why would this ever happen? We should, by definition, have the ability
+            // to write to our persistent data folder unless something is REALLY broken
+            // with the computer/device we're running on.
+            Directory.CreateDirectory(GameController.Instance.FileSaveBasePath());
+        }
 
-            File.WriteAllText(filePath, writer.ToString());
-        }
-        catch (Exception e)
-        {
-            Debug.ULogErrorChannel("AutosaveManager", "Could not create autosave file. Error: '{0}'.", e.ToString());
-        }
+        StreamWriter sw = new StreamWriter(filePath);
+        JsonWriter writer = new JsonTextWriter(sw);
+
+        JObject worldJson = World.Current.ToJson();
+
+        // Launch saving operation in a separate thread.
+        // This reduces lag while saving by a little bit.
+        Thread t = new Thread(new ThreadStart(delegate { SaveWorldToHdd(worldJson, writer); }));
+        t.Start();
+
+        return t;
+    }
+
+    /// <summary>
+    /// Create/overwrite the save file with the XML text.
+    /// </summary>
+    /// <param name="filePath">Full path to file.</param>
+    /// <param name="writer">TextWriter that contains serialized World data.</param>
+    private void SaveWorldToHdd(JObject worldJson, JsonWriter writer)
+    {
+        JsonSerializer serializer = new JsonSerializer();
+        //        serializer.Converters.Add(new JavaScriptDateTimeConverter());
+        serializer.NullValueHandling = NullValueHandling.Ignore;
+        serializer.Formatting = Newtonsoft.Json.Formatting.Indented;
+
+        serializer.Serialize(writer, worldJson);
+
+        writer.Flush();
     }
 }
