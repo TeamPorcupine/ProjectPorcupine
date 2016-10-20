@@ -301,11 +301,6 @@
         <DeconstructJob jobTime="1">
             <Inventory type="Steel Plate" amount="1" />
         </DeconstructJob>
-
-        <Params>
-            <Param name="burnTime" value="0" />
-            <Param name="burnTimeRequired" value="60" />
-        </Params>
         
         <Component type="Animator">
             <UseAnimation name="idle">

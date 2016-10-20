@@ -402,42 +402,6 @@ function CloningPod_JobComplete(job)
     job.buildable.Deconstruct()
 end
 
-function PowerGenerator_UpdateAction(furniture, deltatime)
-    if (furniture.Jobs.Count < 1 and furniture.Parameters["burnTime"].ToFloat() == 0) then
-        furniture.PowerConnection.OutputRate = 0
-        local itemsDesired = {RequestedItem.__new("Power Cell", 1, 1)}
-
-        local job = Job.__new(
-            furniture.Jobs.WorkSpotTile,
-            "PowerGenerator_UpdateAction",
-            nil,
-            0.5,
-            itemsDesired,
-            Job.JobPriority.High,
-            false
-        )
-
-        job.RegisterJobCompletedCallback("PowerGenerator_JobComplete")
-        job.JobDescription = "job_power_generator_filling_desc"
-        furniture.Jobs.Add(job)
-    else
-        furniture.Parameters["burnTime"].ChangeFloatValue(-deltatime)
-        if ( furniture.Parameters["burnTime"].ToFloat() < 0 ) then
-            furniture.Parameters["burnTime"].SetValue(0)
-        end
-    end
-    if (furniture.Parameters["burnTime"].ToFloat() == 0) then
-        furniture.SetAnimationState("idle")
-    else
-        furniture.SetAnimationState("running")
-    end
-end
-
-function PowerGenerator_JobComplete(job)
-    job.buildable.Parameters["burnTime"].SetValue(job.buildable.Parameters["burnTimeRequired"].ToFloat())
-    job.buildable.PowerConnection.OutputRate = 5
-end
-
 function PowerGenerator_FuelInfo(furniture)
     local curBurn = furniture.Parameters["cur_processing_time"].ToFloat()
 	local maxBurn = furniture.Parameters["max_processing_time"].ToFloat()
