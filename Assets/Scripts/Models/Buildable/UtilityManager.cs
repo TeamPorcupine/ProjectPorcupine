@@ -5,6 +5,9 @@
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
+using Newtonsoft.Json.Linq;
+
+
 #endregion
 using System;
 using System.Collections;
@@ -134,6 +137,17 @@ public class UtilityManager : IEnumerable<Utility>
             utility.WriteXml(writer);
             writer.WriteEndElement();
         }
+    }
+
+    public object ToJSon()
+    {
+        JArray utilitiesJson = new JArray();
+        foreach (Utility utility in utilities)
+        {
+            utilitiesJson.Add(utility.ToJSon());
+        }
+
+        return utilitiesJson;
     }
 
     /// <summary>

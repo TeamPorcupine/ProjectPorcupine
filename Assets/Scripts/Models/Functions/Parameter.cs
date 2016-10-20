@@ -5,6 +5,9 @@
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
+using Newtonsoft.Json.Linq;
+
+
 #endregion
 using System.Collections;
 using System.Collections.Generic;
@@ -286,6 +289,20 @@ public class Parameter
         {
             WriteXmlParam(writer);
         }
+    }
+
+    public JToken ToJSon()
+    {
+        if (HasContents())
+        {
+            JObject contentsJson = new JObject();
+            foreach (string key in contents.Keys)
+            {
+                contentsJson.Add(key, contents[key].ToJSon());
+                return contentsJson;
+            }
+        }
+        return value;
     }
 
     // Provides a deep clone of the dictionary, to ensure contained Parameters aren't linked between old and new objects

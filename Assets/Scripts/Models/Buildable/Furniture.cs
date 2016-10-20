@@ -5,6 +5,9 @@
 // and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
+using Newtonsoft.Json.Linq;
+
+
 #endregion
 using System;
 using System.Collections.Generic;
@@ -898,6 +901,21 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         PrototypeManager.FurnitureDeconstructJob.Set(job);
     }
     #endregion
+
+    public object ToJSon()
+    {
+        JObject furnitureJSon = new JObject();
+        furnitureJSon.Add("X", Tile.X);
+        furnitureJSon.Add("Y", Tile.Y);
+        furnitureJSon.Add("Z", Tile.Z);
+        furnitureJSon.Add("Type", Type);
+        furnitureJSon.Add("Rotation", Rotation);
+        if (Parameters.HasContents())
+        {
+            furnitureJSon.Add("Parameters", Parameters.ToJSon());
+        }
+        return furnitureJSon;
+    }
 
     /// <summary>
     /// Accepts for storage.

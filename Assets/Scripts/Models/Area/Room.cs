@@ -5,6 +5,9 @@
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
+using Newtonsoft.Json.Linq;
+
+
 #endregion
 using System;
 using System.Collections.Generic;
@@ -363,6 +366,17 @@ namespace ProjectPorcupine.Rooms
                 }
                 while (reader.ReadToNextSibling("Param"));
             }
+        }
+
+        public object ToJson()
+        {
+            JObject roomGasses = new JObject();
+            foreach (string k in atmosphericGasses.Keys)
+            {
+                roomGasses.Add(new JProperty(k, atmosphericGasses[k]));
+            }
+
+            return roomGasses;
         }
 
         public void SplitGas(Room other, int sizeOfOtherRoom)

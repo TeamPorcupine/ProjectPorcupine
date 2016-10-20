@@ -5,6 +5,9 @@
 // and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
+using Newtonsoft.Json.Linq;
+
+
 #endregion
 using System;
 using System.Collections.Generic;
@@ -288,6 +291,17 @@ public class InventoryManager
 
         // We know the objects are out there, now find the closest.
         return Pathfinder.FindPathToInventory(tile, objectTypes, canTakeFromStockpile);
+    }
+
+    public object ToJSon()
+    {
+        JArray inventoriesJson = new JArray();
+        foreach (Inventory inventory in Inventories.SelectMany(pair => pair.Value))
+        {
+            inventoriesJson.Add(inventory.ToJSon());
+        }
+
+        return inventoriesJson;
     }
 
     private void CleanupInventory(Inventory inventory)

@@ -126,6 +126,8 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
     /// <returns>Returns the thread that is currently saving data to HDD.</returns>
     public Thread SaveWorld(string filePath)
     {
+
+        World.Current.WriteJson();
         // This function gets called when the user confirms a filename
         // from the save dialog box.
 

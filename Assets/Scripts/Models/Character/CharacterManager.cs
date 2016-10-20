@@ -5,6 +5,9 @@
 // and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
+using Newtonsoft.Json.Linq;
+
+
 #endregion
 using System;
 using System.Collections;
@@ -129,5 +132,16 @@ public class CharacterManager : IEnumerable<Character>
             c.WriteXml(writer);
             writer.WriteEndElement();
         }
+    }
+
+    public object ToJSon()
+    {
+        JArray charactersJson = new JArray();
+        foreach (Character character in characters)
+        {
+            charactersJson.Add(character.ToJSon());
+        }
+
+        return charactersJson;
     }
 }

@@ -5,6 +5,9 @@
 // and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
+using Newtonsoft.Json.Linq;
+
+
 #endregion
 using System;
 using System.Collections.Generic;
@@ -437,6 +440,43 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     }
 
     #endregion
+
+    public object ToJSon()
+    {
+        JObject characterJson = new JObject();
+
+        characterJson.Add("Name", name);
+        characterJson.Add("X", CurrTile.X);
+        characterJson.Add("Y", CurrTile.Y);
+        characterJson.Add("Z", CurrTile.Z);
+
+        JObject needsJSon = new JObject();
+        foreach (Need need in Needs)
+        {
+            needsJSon.Add(need.Name, need.Amount);
+        }
+        characterJson.Add("Needs", needsJSon);
+
+        JObject colorsJson = new JObject();
+        colorsJson.Add("CharacterColor", new JArray(characterColor.r, characterColor.g, characterColor.b));
+        colorsJson.Add("UniformColor", new JArray(characterUniformColor.r, characterUniformColor.g, characterUniformColor.b));
+        colorsJson.Add("SkinColor", new JArray(characterSkinColor.r, characterSkinColor.g, characterSkinColor.b));
+        characterJson.Add("Colors", colorsJson);
+
+        JObject statsJSon = new JObject();
+        foreach (Stat stat in stats.Values)
+        {
+            needsJSon.Add(stat.Name, stat.Value);
+        }
+        characterJson.Add("Stats", statsJSon);
+
+        if (inventory != null)
+        {
+            characterJson.Add("Inventories", new JArray(inventory.ToJSon()));
+        }
+
+        return characterJson;
+    }
 
     #region ISelectableInterface implementation
 

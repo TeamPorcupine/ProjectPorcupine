@@ -5,6 +5,9 @@
 // and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
+using Newtonsoft.Json.Linq;
+
+
 #endregion
 
 using System.Xml;
@@ -117,6 +120,33 @@ public class CameraData : IXmlSerializable
         }
 
         writer.WriteEndElement();
+    }
+
+    public object ToJson()
+    {
+        JObject cameraJson = new JObject();
+
+        cameraJson.Add("X", Camera.main.transform.position.x);
+        cameraJson.Add("Y", Camera.main.transform.position.y);
+        cameraJson.Add("Z", Camera.main.transform.position.z);
+        cameraJson.Add("ZoomLevel", Camera.main.orthographicSize);
+        cameraJson.Add("ZLevel", WorldController.Instance.cameraController.CurrentLayer);
+
+        JArray presetsJson = new JArray();
+
+        foreach (Preset preset in presets)
+        {
+            JObject presetJson = new JObject();
+            presetJson.Add("X", preset.position.x);
+            presetJson.Add("Y", preset.position.y);
+            presetJson.Add("Z", preset.position.z);
+            presetJson.Add("ZoomLevel", preset.zoomLevel);
+            presetsJson.Add(presetJson);
+        }
+
+        cameraJson.Add("Presets", presetsJson);
+
+        return cameraJson;
     }
 
     /// <summary>

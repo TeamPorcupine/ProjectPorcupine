@@ -5,6 +5,9 @@
 // and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
+using Newtonsoft.Json.Linq;
+
+
 #endregion
 using System;
 using System.Collections.Generic;
@@ -668,6 +671,20 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         }
 
         return true;
+    }
+
+    public object ToJSon()
+    {
+        JObject utilityJSon = new JObject();
+        utilityJSon.Add("X", Tile.X);
+        utilityJSon.Add("Y", Tile.Y);
+        utilityJSon.Add("Z", Tile.Z);
+        utilityJSon.Add("Type", Type);
+        if (Parameters.HasContents())
+        {
+            utilityJSon.Add("Parameters", Parameters.ToJSon());
+        }
+        return utilityJSon;
     }
 
     private void ReadXmlDeconstructJob(XmlReader reader)

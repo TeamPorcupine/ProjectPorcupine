@@ -9,6 +9,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace ProjectPorcupine.Rooms
 {
@@ -301,6 +303,21 @@ namespace ProjectPorcupine.Rooms
         }
 
         #endregion
+
+        public object ToJson()
+        {
+            JArray roomJArray = new JArray();
+            foreach (Room room in rooms)
+            {
+                if (room.IsOutsideRoom())
+                {
+                    continue;
+                }
+                roomJArray.Add(room.ToJson());
+            }
+
+            return roomJArray;
+        }
 
         protected Room ActualFloodFill(Tile tile, Room oldRoom, int sizeOfOldRoom)
         {

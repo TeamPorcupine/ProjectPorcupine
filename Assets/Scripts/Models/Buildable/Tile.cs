@@ -5,6 +5,9 @@
 // and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
+using Newtonsoft.Json.Linq;
+
+
 #endregion
 using System;
 using System.Collections;
@@ -533,6 +536,17 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
         ForceTileUpdate = true;
     }
     #endregion
+
+    public object ToJson()
+    {
+        return new JObject(
+            new JProperty("X", X),
+            new JProperty("Y", Y),
+            new JProperty("Z", Z),
+            new JProperty("timesWalked", WalkCount),
+            new JProperty("RoomID", Room == null ? -1 : Room.ID),
+            new JProperty("Type", Type.Type));
+    }
 
     #region ISelectableInterface implementation
 

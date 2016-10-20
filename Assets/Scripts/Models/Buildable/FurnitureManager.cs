@@ -5,6 +5,9 @@
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
+using Newtonsoft.Json.Linq;
+
+
 #endregion
 using System;
 using System.Collections;
@@ -281,6 +284,17 @@ public class FurnitureManager : IEnumerable<Furniture>
             furn.WriteXml(writer);
             writer.WriteEndElement();
         }
+    }
+
+    public object ToJSon()
+    {
+        JArray furnituresJson = new JArray();
+        foreach (Furniture furniture in furnitures)
+        {
+            furnituresJson.Add(furniture.ToJSon());
+        }
+
+        return furnituresJson;
     }
 
     /// <summary>

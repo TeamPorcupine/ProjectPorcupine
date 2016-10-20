@@ -5,6 +5,10 @@
 // and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
+
+
 #endregion
 using System;
 using System.Collections.Generic;
@@ -17,6 +21,7 @@ using MoonSharp.Interpreter;
 using ProjectPorcupine.PowerNetwork;
 using ProjectPorcupine.Rooms;
 using UnityEngine;
+using Newtonsoft.Json;
 
 [MoonSharpUserData]
 public class World : IXmlSerializable
@@ -67,7 +72,7 @@ public class World : IXmlSerializable
 
         // Make one character.
         CharacterManager.Create(GetTileAt(Width / 2, Height / 2, 0));
-
+//        WriteJson();
         TestRoomGraphGeneration(this);
     }
 
@@ -258,6 +263,53 @@ public class World : IXmlSerializable
     public XmlSchema GetSchema()
     {
         return null;
+    }
+
+    public object tilesToJSon()
+    {
+        JArray tileJArray = new JArray();
+        for (int x = 0; x < Width; x++)
+        {
+            for (int y = 0; y < Height; y++)
+            {
+                for (int z = 0; z < Depth; z++)
+                {
+                    if (tiles[x, y, z].Type != TileType.Empty)
+                    {
+                        tileJArray.Add(tiles[x, y, z].ToJson());
+                    }
+                }
+            }
+        }
+
+        return tileJArray;
+    }
+
+    public void WriteJson()
+    {
+        JsonSerializer serializer = new JsonSerializer();
+        //        serializer.Converters.Add(new JavaScriptDateTimeConverter());
+        serializer.NullValueHandling = NullValueHandling.Ignore;
+        serializer.Formatting = Newtonsoft.Json.Formatting.Indented;
+        StreamWriter sw = new StreamWriter(@"c:\json.txt");
+        JsonWriter writer = new JsonTextWriter(sw);
+
+        JObject world = new JObject();
+        world.Add(new JProperty("Width", Width.ToString()));
+        world.Add(new JProperty("Height", Height.ToString()));
+        world.Add(new JProperty("Depth", Depth.ToString()));
+        world.Add(new JProperty("Rooms", RoomManager.ToJson()));
+        world.Add(new JProperty("Tiles", tilesToJSon()));
+        world.Add(new JProperty("Inventories", InventoryManager.ToJSon()));
+        world.Add(new JProperty("Furnitures", FurnitureManager.ToJSon()));
+        world.Add(new JProperty("Utilities", UtilityManager.ToJSon()));
+        world.Add(new JProperty("Characters", CharacterManager.ToJSon()));
+        world.Add(new JProperty("CameraData", CameraData.ToJson()));
+        world.Add(new JProperty("Skybox", skybox.name));
+        world.Add(new JProperty("Wallet", Wallet.ToJson()));
+
+        serializer.Serialize(writer, world);
+        writer.Flush();
     }
 
     public void WriteXml(XmlWriter writer)

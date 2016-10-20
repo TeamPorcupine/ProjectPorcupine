@@ -5,6 +5,9 @@
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
+using Newtonsoft.Json.Linq;
+
+
 #endregion
 using System;
 using System.Collections.Generic;
@@ -138,6 +141,25 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
 
     public void ReadXml(XmlReader reader)
     {
+    }
+
+    public object ToJSon()
+    {
+        JObject inventoryJson = new JObject();
+        if (Tile != null)
+        {
+            inventoryJson.Add("X", Tile.X);
+            inventoryJson.Add("Y", Tile.Y);
+            inventoryJson.Add("Z", Tile.Z);
+        }
+        inventoryJson.Add("Type", Type);
+        inventoryJson.Add("MaxStackSize", MaxStackSize);
+        inventoryJson.Add("StackSize", StackSize);
+        inventoryJson.Add("BasePrice", BasePrice);
+        inventoryJson.Add("Category", Category);
+        inventoryJson.Add("Locked", Locked);
+
+        return inventoryJson;
     }
 
     public IEnumerable<ContextMenuAction> GetContextMenuActions(ContextMenu contextMenu)
