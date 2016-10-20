@@ -285,6 +285,22 @@ public class World : IXmlSerializable
         return tileJArray;
     }
 
+    void tilesFromJson(JToken jToken)
+    {
+        JArray tilesJArray = (JArray)jToken;
+
+        foreach ( JToken tileToken in tilesJArray)
+        {
+
+            int x = (int) tileToken["X"];
+            int y = (int) tileToken["Y"];
+            int z = (int) tileToken["Z"];
+
+            tiles[x, y, z].FromJson(tileToken);
+
+        }
+    }
+
     public void WriteJson()
     {
         JsonSerializer serializer = new JsonSerializer();
@@ -294,22 +310,47 @@ public class World : IXmlSerializable
         StreamWriter sw = new StreamWriter(@"c:\json.txt");
         JsonWriter writer = new JsonTextWriter(sw);
 
-        JObject world = new JObject();
-        world.Add(new JProperty("Width", Width.ToString()));
-        world.Add(new JProperty("Height", Height.ToString()));
-        world.Add(new JProperty("Depth", Depth.ToString()));
-        world.Add(new JProperty("Rooms", RoomManager.ToJson()));
-        world.Add(new JProperty("Tiles", tilesToJSon()));
-        world.Add(new JProperty("Inventories", InventoryManager.ToJSon()));
-        world.Add(new JProperty("Furnitures", FurnitureManager.ToJSon()));
-        world.Add(new JProperty("Utilities", UtilityManager.ToJSon()));
-        world.Add(new JProperty("Characters", CharacterManager.ToJSon()));
-        world.Add(new JProperty("CameraData", CameraData.ToJson()));
-        world.Add(new JProperty("Skybox", skybox.name));
-        world.Add(new JProperty("Wallet", Wallet.ToJson()));
+        JObject worldJson = new JObject();
+        worldJson.Add(new JProperty("Width", Width.ToString()));
+        worldJson.Add(new JProperty("Height", Height.ToString()));
+        worldJson.Add(new JProperty("Depth", Depth.ToString()));
+        worldJson.Add(new JProperty("Rooms", RoomManager.ToJson()));
+        worldJson.Add(new JProperty("Tiles", tilesToJSon()));
+        worldJson.Add(new JProperty("Inventories", InventoryManager.ToJSon()));
+        worldJson.Add(new JProperty("Furnitures", FurnitureManager.ToJSon()));
+        worldJson.Add(new JProperty("Utilities", UtilityManager.ToJSon()));
+        worldJson.Add(new JProperty("Characters", CharacterManager.ToJSon()));
+        worldJson.Add(new JProperty("CameraData", CameraData.ToJson()));
+        worldJson.Add(new JProperty("Skybox", skybox.name));
+        worldJson.Add(new JProperty("Wallet", Wallet.ToJson()));
 
-        serializer.Serialize(writer, world);
+        serializer.Serialize(writer, worldJson);
         writer.Flush();
+    }
+
+    public void ReadJson()
+    {
+        StreamReader reader = File.OpenText(@"c:\json.txt");
+        JObject worldJson = (JObject)JToken.ReadFrom(new JsonTextReader(reader));
+        Width = (int) worldJson["Width"];
+        Height = (int) worldJson["Height"];
+        Depth = (int) worldJson["Depth"];
+
+        SetupWorld(Width, Height, Depth);
+        tileGraph = new Path_TileGraph(this);
+
+        RoomManager.FromJson(worldJson["Rooms"]);
+        tilesFromJson(worldJson["Tiles"]);
+        InventoryManager.FromJson(worldJson["Inventories"]);
+        FurnitureManager.FromJson(worldJson["Furnitures"]);
+        UtilityManager.FromJson(worldJson["Utilities"]);
+        CharacterManager.FromJson(worldJson["Characters"]);
+        CameraData.FromJson(worldJson["CameraData"]);
+        LoadSkybox((string)worldJson["Skybox"]);
+        Wallet.FromJson(worldJson["Wallet"]);
+
+
+
     }
 
     public void WriteXml(XmlWriter writer)
@@ -587,7 +628,7 @@ public class World : IXmlSerializable
         }
 
         OnTileChanged(t);
-
+        Debug.LogWarning("Oh look we should probably beRegning");
         // InvalidateTileGraph();
         if (tileGraph != null)
         {

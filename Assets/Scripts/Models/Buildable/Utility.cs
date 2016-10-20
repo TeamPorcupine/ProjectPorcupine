@@ -6,6 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 using Newtonsoft.Json.Linq;
+using System.Linq;
 
 
 #endregion
@@ -685,6 +686,16 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
             utilityJSon.Add("Parameters", Parameters.ToJSon());
         }
         return utilityJSon;
+    }
+
+    public void FromJson(JToken utilityToken)
+    {
+        JObject utilityJObject = (JObject)utilityToken;
+        // Everything else has already been set by FurnitureManager, we just need our parameters
+        if (utilityJObject.Children().Contains("Parameters"))
+        {
+            Parameters.FromJson(utilityJObject["Parameters"]);
+        }
     }
 
     private void ReadXmlDeconstructJob(XmlReader reader)

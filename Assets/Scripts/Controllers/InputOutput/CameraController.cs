@@ -61,7 +61,6 @@ public class CameraController
         Camera.main.orthographicSize = zoomTarget;
 
         positionTarget = Camera.main.transform.position;
-
         TimeManager.Instance.EveryFrameNotModal += (time) => Update();
     }
 
@@ -176,11 +175,13 @@ public class CameraController
 
             cameraData.position = Camera.main.transform.position;
             cameraData.zoomLevel = zoomTarget;
+            cameraData.zLevel = currentLayer;
 
             for (int i = 0; i < cameraData.presets.Length; i++)
             {
                 cameraData.presets[i].position = Camera.main.transform.position;
                 cameraData.presets[i].zoomLevel = Camera.main.orthographicSize;
+                cameraData.presets[i].zLevel = currentLayer;
             }
         }
         else
@@ -190,6 +191,8 @@ public class CameraController
 
             zoomTarget = cameraData.zoomLevel;
             Camera.main.orthographicSize = zoomTarget;
+
+            ChangeLayer(cameraData.zLevel);
         }
     }
 

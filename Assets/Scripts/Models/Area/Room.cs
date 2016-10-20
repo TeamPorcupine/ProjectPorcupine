@@ -373,10 +373,20 @@ namespace ProjectPorcupine.Rooms
             JObject roomGasses = new JObject();
             foreach (string k in atmosphericGasses.Keys)
             {
-                roomGasses.Add(new JProperty(k, atmosphericGasses[k]));
+                roomGasses.Add(k, atmosphericGasses[k]);
             }
 
             return roomGasses;
+        }
+
+        public void FromJson(JToken room)
+        {
+            foreach (JProperty gas in ((JObject)room).Properties())
+            {
+                string k = gas.Name;
+                float v = (float)gas.Value;
+                atmosphericGasses[k] = v;
+            }
         }
 
         public void SplitGas(Room other, int sizeOfOtherRoom)

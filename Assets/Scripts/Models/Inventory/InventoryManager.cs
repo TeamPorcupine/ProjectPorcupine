@@ -304,6 +304,22 @@ public class InventoryManager
         return inventoriesJson;
     }
 
+    public void FromJson(JToken jToken)
+    {
+        JArray inventoriesJArray = (JArray) jToken;
+
+        foreach (JToken inventoryToken in inventoriesJArray)
+        {
+            int x = (int) inventoryToken["X"];
+            int y = (int) inventoryToken["Y"];
+            int z = (int) inventoryToken["Z"];
+
+            Inventory inventory = new Inventory();
+            inventory.FromJson(inventoryToken);
+            PlaceInventory(World.Current.GetTileAt(x, y, z), inventory);
+        }
+    }
+
     private void CleanupInventory(Inventory inventory)
     {
         if (inventory.StackSize != 0)

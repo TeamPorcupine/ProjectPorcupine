@@ -162,6 +162,16 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
         return inventoryJson;
     }
 
+    public void FromJson(JToken inventoryToken)
+    {
+        Type = (string)inventoryToken["Type"];
+        MaxStackSize = (int)inventoryToken["MaxStackSize"];
+        StackSize = (int)inventoryToken["StackSize"];
+        BasePrice = (float)inventoryToken["BasePrice"];
+        Category = (string)inventoryToken["Category"];
+        Locked = (bool)inventoryToken["Locked"];
+    }
+
     public IEnumerable<ContextMenuAction> GetContextMenuActions(ContextMenu contextMenu)
     {
         yield return new ContextMenuAction

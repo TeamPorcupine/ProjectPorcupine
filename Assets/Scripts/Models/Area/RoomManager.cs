@@ -319,6 +319,16 @@ namespace ProjectPorcupine.Rooms
             return roomJArray;
         }
 
+        public void FromJson(JToken jToken)
+        {
+            foreach(JToken room in jToken)
+            {
+                Room r = new Room();
+                Add(r);
+                r.FromJson(room);
+            }
+        }
+
         protected Room ActualFloodFill(Tile tile, Room oldRoom, int sizeOfOldRoom)
         {
             if (tile == null)

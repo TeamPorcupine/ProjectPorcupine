@@ -917,6 +917,16 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         return furnitureJSon;
     }
 
+    public void FromJson(JToken furnitureToken)
+    {
+        JObject furnitureJObject = (JObject)furnitureToken;
+        // Everything else has already been set by FurnitureManager, we just need our parameters
+        if (furnitureJObject.Children().Contains("Parameters"))
+        {
+            Parameters.FromJson(furnitureJObject["Parameters"]);
+        }
+    }
+
     /// <summary>
     /// Accepts for storage.
     /// </summary>

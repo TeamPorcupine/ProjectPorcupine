@@ -150,6 +150,21 @@ public class UtilityManager : IEnumerable<Utility>
         return utilitiesJson;
     }
 
+    public void FromJson(JToken utilitiesToken)
+    {
+        JArray utilitiesJArray = (JArray) utilitiesToken;
+
+        foreach (JToken utilityToken in utilitiesJArray)
+        {
+            int x = (int)utilityToken["X"];
+            int y = (int)utilityToken["Y"];
+            int z = (int)utilityToken["Z"];
+            string type = (string)utilityToken["Type"];
+            Utility utility = PlaceUtility(type, World.Current.GetTileAt(x, y, z), false);
+            utility.FromJson(utilityToken);
+        }
+    }
+
     /// <summary>
     /// Called when a utility is removed so that it can be deleted from the list.
     /// </summary>

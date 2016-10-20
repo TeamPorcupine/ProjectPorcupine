@@ -543,9 +543,22 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
             new JProperty("X", X),
             new JProperty("Y", Y),
             new JProperty("Z", Z),
-            new JProperty("timesWalked", WalkCount),
+            new JProperty("TimesWalked", WalkCount),
             new JProperty("RoomID", Room == null ? -1 : Room.ID),
             new JProperty("Type", Type.Type));
+    }
+
+    public void FromJson(JToken tileToken)
+    {
+        Room = World.Current.RoomManager[(int)tileToken["RoomID"]];
+        if (Room != null)
+        {
+            Room.AssignTile(this);
+        }
+
+        Type = PrototypeManager.TileType.Get((string)tileToken["Type"]);
+        WalkCount = (int)tileToken["TimesWalked"];
+        ForceTileUpdate = true;
     }
 
     #region ISelectableInterface implementation

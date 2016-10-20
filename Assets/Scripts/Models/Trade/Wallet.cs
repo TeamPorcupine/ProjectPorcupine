@@ -79,4 +79,14 @@ public class Wallet
         }
         return currencyJson;
     }
+
+    public void FromJson(JToken walletToken)
+    {
+        JObject walletJObject = (JObject)walletToken;
+
+        foreach (JProperty currency in walletJObject.Properties())
+        {
+            AddCurrency(currency.Name, (float)currency.Value);
+        }
+    }
 }

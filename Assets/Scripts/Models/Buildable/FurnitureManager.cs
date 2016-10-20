@@ -297,6 +297,22 @@ public class FurnitureManager : IEnumerable<Furniture>
         return furnituresJson;
     }
 
+    public void FromJson(JToken furnituresToken)
+    {
+        JArray furnituresJArray = (JArray) furnituresToken;
+
+        foreach (JToken furnitureToken in furnituresJArray)
+        {
+            int x = (int)furnitureToken["X"];
+            int y = (int)furnitureToken["Y"];
+            int z = (int)furnitureToken["Z"];
+            string type = (string)furnitureToken["Type"];
+            float rotation = (float)furnitureToken["Rotation"];
+            Furniture furniture = PlaceFurniture(type, World.Current.GetTileAt(x, y, z), false, rotation);
+            furniture.FromJson(furnitureToken);
+        }
+    }
+
     /// <summary>
     /// Called when a furniture is removed so that it can be deleted from the list.
     /// </summary>

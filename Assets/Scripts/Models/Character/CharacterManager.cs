@@ -6,6 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 using Newtonsoft.Json.Linq;
+using System.Linq;
 
 
 #endregion
@@ -143,5 +144,33 @@ public class CharacterManager : IEnumerable<Character>
         }
 
         return charactersJson;
+    }
+
+    public void FromJson(JToken charactersToken)
+    {
+        JArray charactersJArray = (JArray) charactersToken;
+
+        foreach (JToken characterToken in charactersJArray)
+        {
+            Character character;
+            int x = (int)characterToken["X"];
+            int y = (int)characterToken["Y"];
+            int z = (int)characterToken["Z"];
+            if (characterToken["Colors"] != null)
+            {
+                JToken colorToken = characterToken["Colors"];
+                Color color = ColorUtilities.ParseColorFromString((string)colorToken["CharacterColor"][0], (string)colorToken["CharacterColor"][1], (string)colorToken["CharacterColor"][2]);
+                Color colorUni = ColorUtilities.ParseColorFromString((string)colorToken["UniformColor"][0], (string)colorToken["UniformColor"][1], (string)colorToken["UniformColor"][2]);
+                Color colorSkin = ColorUtilities.ParseColorFromString((string)colorToken["SkinColor"][0], (string)colorToken["SkinColor"][1], (string)colorToken["SkinColor"][2]);
+                character = Create(World.Current.GetTileAt(x, y, z), color, colorUni, colorSkin);
+            }
+            else
+            {
+                character = Create(World.Current.GetTileAt(x, y, z));
+            }
+
+            character.name = (string)characterToken["Name"];
+
+        }
     }
 }

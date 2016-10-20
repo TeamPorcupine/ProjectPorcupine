@@ -19,12 +19,14 @@ public struct Preset
 {
     public Vector3 position;
     public float zoomLevel;
+    public int zLevel;
 }
 
 public class CameraData : IXmlSerializable
 {
     public Vector3 position;
     public float zoomLevel;
+    public int zLevel;
     public Preset[] presets;
 
     public void ReadXml(XmlReader reader)
@@ -147,6 +149,18 @@ public class CameraData : IXmlSerializable
         cameraJson.Add("Presets", presetsJson);
 
         return cameraJson;
+    }
+
+    public void FromJson(JToken cameraDataToken)
+    {
+        int x = (int) cameraDataToken["X"];
+        int y = (int) cameraDataToken["Y"];
+        int z = (int) cameraDataToken["Z"];
+        float zoomLevel = (float) cameraDataToken["ZoomLevel"];
+        zLevel = (int) cameraDataToken["ZLevel"];
+        Vector3 camPosition = new Vector3(x, y, z);
+        Camera.main.transform.position = camPosition;
+        Camera.main.orthographicSize = zoomLevel;
     }
 
     /// <summary>

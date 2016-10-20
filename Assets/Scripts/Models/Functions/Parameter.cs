@@ -305,6 +305,29 @@ public class Parameter
         return value;
     }
 
+    public void FromJson(JToken parameterToken)
+    {
+        JObject parameterJObject = (JObject)parameterToken;
+        foreach (JProperty parameterProperty in parameterJObject.Properties())
+        {
+            
+            string key = parameterProperty.Name;
+            Parameter parameter = new Parameter(key);
+            JToken valueToken = parameterProperty.Value;
+
+            if (valueToken.Children().Count() > 1)
+            {
+                parameter.FromJson(valueToken);
+            }
+            else
+            {
+                parameter.SetValue((string)valueToken);
+            }
+            AddParameter(parameter);
+
+        }
+    }
+
     // Provides a deep clone of the dictionary, to ensure contained Parameters aren't linked between old and new objects
     private Dictionary<string, Parameter> DeepCloneDictionary()
     {
