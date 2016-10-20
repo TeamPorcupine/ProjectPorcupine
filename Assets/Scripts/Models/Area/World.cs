@@ -337,7 +337,6 @@ public class World : IXmlSerializable
         Depth = (int) worldJson["Depth"];
 
         SetupWorld(Width, Height, Depth);
-        tileGraph = new Path_TileGraph(this);
 
         RoomManager.FromJson(worldJson["Rooms"]);
         tilesFromJson(worldJson["Tiles"]);
@@ -348,6 +347,7 @@ public class World : IXmlSerializable
         CameraData.FromJson(worldJson["CameraData"]);
         LoadSkybox((string)worldJson["Skybox"]);
         Wallet.FromJson(worldJson["Wallet"]);
+        tileGraph = new Path_TileGraph(this);
 
 
 
@@ -443,7 +443,6 @@ public class World : IXmlSerializable
         Depth = int.Parse(reader.GetAttribute("Depth"));
 
         SetupWorld(Width, Height, Depth);
-        tileGraph = new Path_TileGraph(this);
 
         while (reader.Read())
         {
@@ -481,6 +480,7 @@ public class World : IXmlSerializable
                     break;
             }
         }
+        tileGraph = new Path_TileGraph(this);
     }
 
     private void SetupWorld(int width, int height, int depth)
@@ -628,7 +628,6 @@ public class World : IXmlSerializable
         }
 
         OnTileChanged(t);
-        Debug.LogWarning("Oh look we should probably beRegning");
         // InvalidateTileGraph();
         if (tileGraph != null)
         {

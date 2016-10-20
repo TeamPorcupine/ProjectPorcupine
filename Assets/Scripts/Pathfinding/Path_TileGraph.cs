@@ -57,7 +57,6 @@ public class Path_TileGraph
         
     public void RegenerateGraphAtTile(Tile changedTile)
     {
-        Debug.LogWarning("Where are we coming from?");
         GenerateEdgesByTile(changedTile);
         foreach (Tile tile in changedTile.GetNeighbours(true))
         {
