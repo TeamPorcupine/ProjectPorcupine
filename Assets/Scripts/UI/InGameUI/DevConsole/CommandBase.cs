@@ -124,7 +124,8 @@ namespace DeveloperConsole.CommandTypes
             }
             else
             {
-                DevConsole.Log("<color=blue>Command Info:</color> " + (helpText == null ? "<color=red>There's no help for this command</color>" : helpText));
+                DevConsole.Log("<color=yellow>Command Info:</color> " + ((helpText == null) ? "<color=red>There's no help for this command</color>" : helpText));
+                DevConsole.Log("<color=orange>" + title + DevConsole.GetParametersWithConsoleMode(this) + "</color>" + ((helpText == null) ? "" : " //" + helpText));
             }
         }
 

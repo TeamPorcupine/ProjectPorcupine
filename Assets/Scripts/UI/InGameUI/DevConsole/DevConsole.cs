@@ -7,6 +7,7 @@ using System.Linq;
 
 public class DevConsole : MonoBehaviour
 {
+
     [SerializeField]
     bool dontDestroyOnLoad;                                         // Destroy on Load?
     [SerializeField]
@@ -35,6 +36,14 @@ public class DevConsole : MonoBehaviour
     }
 
     bool showTimeStamp = false;
+
+    // 0 is Function  :x, y, z
+    // 1 is Function  (x, y, z)   
+    // 2 is Function {x, y, z}   
+    // 3 is Function [x, y, z]   
+    // 4 is Function <x, y, z>
+    [SerializeField]
+    int developerCommandMode = 0;
 
     // AutoComplete
     List<string> possibleCandidates = new List<string>();           // Possible options that the user is trying to type
@@ -300,10 +309,44 @@ public class DevConsole : MonoBehaviour
             return;
         }
 
+
         // Get method and arguments
-        string[] methodNameAndArgs = command.Split(':');
-        string method = command;
-        string args = "";
+        string[] methodNameAndArgs;
+        string method;
+        string args;
+
+        switch (instance.developerCommandMode)
+        {
+            case 1:
+                methodNameAndArgs = command.Trim().TrimEnd(')').Split('(');
+                method = command;
+                args = "";
+                break;
+            case 2:
+                methodNameAndArgs = command.Trim().TrimEnd('}').Split('{');
+                method = command;
+                args = "";
+                break;
+            case 3:
+                methodNameAndArgs = command.Trim().TrimEnd(']').Split('[');
+                method = command;
+                args = "";
+                break;
+            case 4:
+                methodNameAndArgs = command.Trim().TrimEnd('>').Split('<');
+                method = command;
+                args = "";
+                break;
+
+            case 0:
+            default:
+                methodNameAndArgs = command.Trim().TrimEnd(':').Split(':');
+                method = command;
+                args = "";
+                break;
+        }
+
+
 
         IEnumerable<CommandBase> commandsToCall;
 
@@ -392,11 +435,39 @@ public class DevConsole : MonoBehaviour
     void Help()
     {
         string text = "";
+
         for (int i = 0; i < consoleCommands.Count; i++)
         {
-            text += "\n<color=orange>" + consoleCommands[i].title + " :" + consoleCommands[i].getParameters() + "</color>" + (consoleCommands[i].helpText == null ? "" : " //" + consoleCommands[i].helpText);
+            text += "\n<color=orange>" + consoleCommands[i].title + GetParametersWithConsoleMode(consoleCommands[i]) + "</color>" + (consoleCommands[i].helpText == null ? "" : " //" + consoleCommands[i].helpText);
         }
+
+        text += "\n<color=orange>Note:</color> If the function has no parameters you <color=red>don't</color> need to use the parameter modifier.";
+        text += "\n<color=orange>Note:</color> You <color=red>don't</color> need to use the trailing parameter modifier either";
+
         Log("-- Help --" + text);
+    }
+
+    public static string GetParametersWithConsoleMode(CommandBase command)
+    {
+        if (instance == null)
+        {
+            return "";
+        }
+
+        switch (instance.developerCommandMode)
+        {
+            case 1:
+                return " (" + command.getParameters() + ")";
+            case 2:
+                return " {" + command.getParameters() + "}";
+            case 3:
+                return " [" + command.getParameters() + "]";
+            case 4:
+                return " <" + command.getParameters() + ">";
+            case 0:
+            default:
+                return " :" + command.getParameters() + ":";
+        }
     }
 
     void Clear()
