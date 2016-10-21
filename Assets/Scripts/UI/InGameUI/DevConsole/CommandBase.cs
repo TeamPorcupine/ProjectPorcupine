@@ -95,7 +95,8 @@ namespace DeveloperConsole.CommandTypes
             catch (Exception e)
             {
                 // Debug Error
-                // Log Warning(e.InnerException.Message + "\n" + e.InnerException.StackTrace);
+                DevConsole.LogError(e.InnerException.Message);
+                throw e;
             }
         }
 
@@ -117,7 +118,7 @@ namespace DeveloperConsole.CommandTypes
             }
             else
             {
-                // Log Info ("Command Info: " + (helpText == null ? "There's no help for this command" : helpText));
+                DevConsole.Log("<color=blue>Command Info:</color> " + (helpText == null ? "<color=red>There's no help for this command</color>" : helpText));
             }
         }
 
@@ -155,17 +156,24 @@ namespace DeveloperConsole.CommandTypes
                 {
                     bool result;
                     if (ValueToBool(arg, out result))
+                    {
                         returnValue = (T)(object)result;
+                    }
                     else
-                        throw new Exception();
+                    {
+                        throw new Exception("The entered value is not a valid " + typeof(T) + " value");
+                    }
                 }
                 else
+                {
                     returnValue = (T)Convert.ChangeType(arg, typeof(T));
+                }
                 return returnValue;
             }
-            catch
+            catch (Exception e)
             {
-                throw new ArgumentException("The entered value is not a valid " + typeof(T) + " value");
+                DevConsole.LogError(e.InnerException.Message);
+                throw e;
             }
         }
 
@@ -200,11 +208,17 @@ namespace DeveloperConsole.CommandTypes
                 // Try String Parser
                 string stringResult = value.ToLower().Trim();
                 if (stringResult.Equals("yes") || stringResult.Equals("y"))
+                {
                     result = true;
+                }
                 else if (stringResult.Equals("no") || stringResult.Equals("n"))
+                {
                     result = false;
+                }
                 else
+                {
                     return false;
+                }
             }
             return true;
         }

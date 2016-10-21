@@ -97,8 +97,9 @@ namespace DeveloperConsole.CommandTypes
                     parameters[i] = GetValueType<T0>(args[i]);
                 return new object[] { parameters };
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
+                DevConsole.LogError(e.InnerException.Message);
                 throw e;
             }
         }
@@ -123,10 +124,12 @@ namespace DeveloperConsole.CommandTypes
         {
             try
             {
+                Debug.Log(GetValueType<T0>(args));
                 return new object[] { GetValueType<T0>(args) };
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
+                DevConsole.LogError(e.InnerException.Message);
                 throw e;
             }
         }
@@ -154,8 +157,9 @@ namespace DeveloperConsole.CommandTypes
                 string[] args = base.SplitAndTrim(message);
                 return new object[] { GetValueType<T0>(args[0]), GetValueType<T1>(args[1]) };
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
+                DevConsole.LogError(e.InnerException.Message);
                 throw e;
             }
         }
@@ -182,8 +186,9 @@ namespace DeveloperConsole.CommandTypes
                 string[] args = base.SplitAndTrim(message);
                 return new object[] { GetValueType<T0>(args[0]), GetValueType<T1>(args[1]), GetValueType<T2>(args[2]) };
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
+                DevConsole.LogError(e.InnerException.Message);
                 throw e;
             }
         }
@@ -246,9 +251,10 @@ namespace DeveloperConsole.CommandTypes
                         throw new ArgumentException("The entered value is not a valid Vector value");
                 }
             }
-            catch
+            catch (Exception e)
             {
-                throw new ArgumentException("The entered value is not a valid Vector value");
+                DevConsole.LogError(e.InnerException.Message);
+                throw e;
             }
         }
     }
