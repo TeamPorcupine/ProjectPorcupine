@@ -93,6 +93,7 @@ public class KeyboardManager
         RegisterInputMapping("RotateFurnitureRight", KeyboardInputModifier.None, KeyCode.T);
 
         RegisterInputMapping("Pause", KeyboardInputModifier.None, KeyCode.Space, KeyCode.Pause);
+        RegisterInputMapping("Return", KeyboardInputModifier.None, KeyCode.Return);
 
         RegisterInputMapping("DevMode", KeyboardInputModifier.None, KeyCode.F12);
     }

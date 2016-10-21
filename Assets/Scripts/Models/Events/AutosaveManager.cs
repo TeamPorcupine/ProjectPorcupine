@@ -45,9 +45,9 @@ public class AutosaveManager
         scheduler.RegisterEvent(autosaveEvent);
 
         // set autosaveCounter = maximum index of existing autosaves (so as not to clobber autosaves from previous games)
-        if (Directory.Exists(WorldController.Instance.FileSaveBasePath()))
+        if (Directory.Exists(GameController.Instance.FileSaveBasePath()))
         {
-            string[] autosaveFileNames = Directory.GetFiles(WorldController.Instance.FileSaveBasePath(), AutosaveBaseName + "*.sav");
+            string[] autosaveFileNames = Directory.GetFiles(GameController.Instance.FileSaveBasePath(), AutosaveBaseName + "*.sav");
             if (autosaveFileNames.Length == 0)
             {
                 // no existing autosaves found
@@ -94,7 +94,7 @@ public class AutosaveManager
         autosaveCounter += 1;
 
         string fileName = AutosaveBaseName + autosaveCounter.ToString();
-        string filePath = System.IO.Path.Combine(WorldController.Instance.FileSaveBasePath(), fileName + ".sav");
+        string filePath = System.IO.Path.Combine(GameController.Instance.FileSaveBasePath(), fileName + ".sav");
 
         Debug.ULogChannel("AutosaveManager", "Autosaving to '{0}'.", filePath);
         if (File.Exists(filePath) == true)
@@ -116,9 +116,9 @@ public class AutosaveManager
 
         try
         {
-            if (Directory.Exists(WorldController.Instance.FileSaveBasePath()) == false)
+            if (Directory.Exists(GameController.Instance.FileSaveBasePath()) == false)
             {
-                Directory.CreateDirectory(WorldController.Instance.FileSaveBasePath());
+                Directory.CreateDirectory(GameController.Instance.FileSaveBasePath());
             }
 
             File.WriteAllText(filePath, writer.ToString());

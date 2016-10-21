@@ -120,13 +120,13 @@ public class TimeManager
         InvokeEvent(EveryFrame, time);
 
         // Systems that update every frame not in Modal.
-        if (WorldController.Instance.IsModal == false)
+        if (GameController.Instance.IsModal == false)
         {
             InvokeEvent(EveryFrameNotModal, time);
         }
 
         // Systems that update every frame while unpaused.
-        if (WorldController.Instance.IsPaused == false)
+        if (GameController.Instance.IsPaused == false)
         {
             InvokeEvent(EveryFrameUnpaused, deltaTime);
         }
@@ -137,7 +137,7 @@ public class TimeManager
             InvokeEvent(FixedFrequency, TotalDeltaTime);
 
             // Systems that update at fixed frequency when not paused.
-            if (WorldController.Instance.IsPaused == false)
+            if (GameController.Instance.IsPaused == false)
             {
                 InvokeEvent(FixedFrequencyUnpaused, TotalDeltaTime);
             }

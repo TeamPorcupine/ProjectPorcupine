@@ -158,7 +158,7 @@ public static class Settings
         }
     }
 
-    private static void LoadSettings()
+    public static void LoadSettings()
     {
         // Initialize the settings dict.
         settingsDict = new Dictionary<string, string>();

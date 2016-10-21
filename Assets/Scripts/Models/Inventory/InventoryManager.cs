@@ -175,6 +175,11 @@ public class InventoryManager
         {
             character.inventory = sourceInventory.Clone();
             character.inventory.StackSize = 0;
+            if (Inventories.ContainsKey(character.inventory.Type) == false)
+            {
+                Inventories[character.inventory.Type] = new List<Inventory>();
+            }
+            
             Inventories[character.inventory.Type].Add(character.inventory);
         }
         else if (character.inventory.Type != sourceInventory.Type)
