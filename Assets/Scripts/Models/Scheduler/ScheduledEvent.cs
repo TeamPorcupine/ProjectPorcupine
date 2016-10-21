@@ -278,16 +278,5 @@ namespace Scheduler
 
             return eventJObject;
         }
-
-        public void FromJson(JToken eventToken)
-        {
-            JObject eventObject = (JObject)eventToken;
-
-            Name = (string)eventObject["Name"];
-            Cooldown = (float)eventObject["Cooldown"];
-            TimeToWait = (float)eventObject["TimeToWait"];
-            RepeatsForever = (bool)eventObject["RepeatsForever"];
-            RepeatsLeft = (int)eventObject["RepeatsLeft"];
-        }
     }
 }

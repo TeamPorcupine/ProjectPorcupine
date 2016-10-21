@@ -211,16 +211,21 @@ namespace Scheduler
 
         public void FromJson(JToken schedulerToken)
         {
+            CleanUp();
             JArray schedulerJArray = (JArray)schedulerToken;
 
             foreach (JToken eventToken in schedulerJArray)
             {
-                ScheduledEvent newEvent = new ScheduledEvent();
-                newEvent.FromJson(eventToken);
-                RegisterEvent(newEvent);
+                string name = (string)eventToken["Name"];
+                float cooldown = (float)eventToken["Cooldown"];
+                float timeToWait = (float)eventToken["TimeToWait"];
+                bool repeatsForever = (bool)eventToken["RepeatsForever"];
+                int repeatsLeft = (int)eventToken["RepeatsLeft"];
+
+                ScheduleEvent(name, cooldown, timeToWait, repeatsForever, repeatsLeft);
             }
 
-            this.Update(0); // update the event list
+            Update(0); // update the event list
         }
 
         /// <summary>
