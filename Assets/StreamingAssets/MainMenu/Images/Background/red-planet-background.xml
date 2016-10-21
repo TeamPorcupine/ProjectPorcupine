@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Sprites>
+	<Sprite name="red-planet-background" x="0" y="0" w="19" h="10" pixelPerUnit="100" />
+</Sprites>

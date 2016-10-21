@@ -2802,6 +2802,7 @@ MonoBehaviour:
   fpsObject: {fileID: 0}
   fullScreenToggle: {fileID: 114000012982859236}
   developerModeToggle: {fileID: 114000010569578726}
+  developerModeObject: {fileID: 0}
   musicVolume: {fileID: 114000011866825794}
   resolutionDropdown: {fileID: 114000013411617542}
   languageDropdown: {fileID: 114000013057809854}

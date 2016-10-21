@@ -32,32 +32,35 @@ public class DialogBoxManager : MonoBehaviour
 
         GameObject tempGoObj;
 
-        tempGoObj = CreateDialogGO("DB_SaveFile", "Save File");
-        dialogBoxSaveGame = tempGoObj.GetComponent<DialogBoxSaveGame>();
-
         tempGoObj = CreateDialogGO("DB_LoadFile", "Load File");
         dialogBoxLoadGame = tempGoObj.GetComponent<DialogBoxLoadGame>();
-
-        tempGoObj = CreateDialogGO("DB_Options", "Options");
-        dialogBoxOptions = tempGoObj.GetComponent<DialogBoxOptions>();
 
         tempGoObj = CreateDialogGO("DB_Settings", "Settings");
         dialogBoxSettings = tempGoObj.GetComponent<DialogBoxSettings>();
 
-        tempGoObj = CreateDialogGO("DB_Trade", "Trade");
-        dialogBoxTrade = tempGoObj.GetComponent<DialogBoxTrade>();
-
         tempGoObj = CreateDialogGO("DB_PromptOrInfo", "Prompt or Info");
         dialogBoxPromptOrInfo = tempGoObj.GetComponent<DialogBoxPromptOrInfo>();
 
-        tempGoObj = CreateDialogGO("DB_JobList", "Job List");
-        dialogBoxJobList = tempGoObj.GetComponent<DialogBoxJobList>();
+        if (SceneController.Instance.IsAtMainScene())
+        {
+            tempGoObj = CreateDialogGO("DB_SaveFile", "Save File");
+            dialogBoxSaveGame = tempGoObj.GetComponent<DialogBoxSaveGame>();
 
-        tempGoObj = CreateDialogGO("DB_Quests", "Quests");
-        dialogBoxQuests = tempGoObj.GetComponent<DialogBoxQuests>();
-        AddQuestList();
+            tempGoObj = CreateDialogGO("DB_Options", "Options");
+            dialogBoxOptions = tempGoObj.GetComponent<DialogBoxOptions>();
 
-        AddMainMenuItems();
+            tempGoObj = CreateDialogGO("DB_Trade", "Trade");
+            dialogBoxTrade = tempGoObj.GetComponent<DialogBoxTrade>();
+
+            tempGoObj = CreateDialogGO("DB_JobList", "Job List");
+            dialogBoxJobList = tempGoObj.GetComponent<DialogBoxJobList>();
+
+            tempGoObj = CreateDialogGO("DB_Quests", "Quests");
+            dialogBoxQuests = tempGoObj.GetComponent<DialogBoxQuests>();
+            AddQuestList();
+
+            AddMainMenuItems();
+        }
     }
 
     /// <summary>
