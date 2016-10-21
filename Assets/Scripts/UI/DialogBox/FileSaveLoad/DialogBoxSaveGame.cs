@@ -6,7 +6,6 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 
-
 #endregion
 using System.Collections;
 using System.IO;
@@ -160,7 +159,6 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
     private void SaveWorldToHdd(JObject worldJson, JsonWriter writer)
     {
         JsonSerializer serializer = new JsonSerializer();
-        //        serializer.Converters.Add(new JavaScriptDateTimeConverter());
         serializer.NullValueHandling = NullValueHandling.Ignore;
         serializer.Formatting = Newtonsoft.Json.Formatting.Indented;
 

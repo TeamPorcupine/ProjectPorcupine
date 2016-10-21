@@ -5,12 +5,10 @@
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
-using Newtonsoft.Json.Linq;
-
 
 #endregion
 using System.Collections.Generic;
-using System.Xml;
+using Newtonsoft.Json.Linq;
 
 public class Wallet
 {
@@ -63,6 +61,7 @@ public class Wallet
         {
             currencyJson.Add(currency.Name, currency.Balance);
         }
+
         return currencyJson;
     }
 

@@ -6,7 +6,6 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 
-
 #endregion
 using System;
 using System.Collections;
@@ -132,7 +131,7 @@ public class CharacterManager : IEnumerable<Character>
 
     public void FromJson(JToken charactersToken)
     {
-        JArray charactersJArray = (JArray) charactersToken;
+        JArray charactersJArray = (JArray)charactersToken;
 
         foreach (JToken characterToken in charactersJArray)
         {
@@ -154,7 +153,6 @@ public class CharacterManager : IEnumerable<Character>
             }
 
             character.name = (string)characterToken["Name"];
-
         }
     }
 }

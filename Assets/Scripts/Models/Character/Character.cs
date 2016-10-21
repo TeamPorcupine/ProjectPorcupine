@@ -5,14 +5,13 @@
 // and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
-using Newtonsoft.Json.Linq;
-
 
 #endregion
 using System;
 using System.Collections.Generic;
 using System.Xml;
 using MoonSharp.Interpreter;
+using Newtonsoft.Json.Linq;
 using ProjectPorcupine.Localization;
 using ProjectPorcupine.State;
 using UnityEngine;
@@ -369,6 +368,7 @@ public class Character : ISelectable, IContextActionProvider
         {
             needsJSon.Add(need.Name, need.Amount);
         }
+
         characterJson.Add("Needs", needsJSon);
 
         JObject colorsJson = new JObject();
@@ -382,6 +382,7 @@ public class Character : ISelectable, IContextActionProvider
         {
             needsJSon.Add(stat.Name, stat.Value);
         }
+
         characterJson.Add("Stats", statsJSon);
 
         if (inventory != null)

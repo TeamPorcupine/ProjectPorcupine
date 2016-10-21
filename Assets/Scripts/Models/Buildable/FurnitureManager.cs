@@ -5,14 +5,13 @@
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
-using Newtonsoft.Json.Linq;
-
 
 #endregion
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 public class FurnitureManager : IEnumerable<Furniture>
@@ -284,7 +283,7 @@ public class FurnitureManager : IEnumerable<Furniture>
 
     public void FromJson(JToken furnituresToken)
     {
-        JArray furnituresJArray = (JArray) furnituresToken;
+        JArray furnituresJArray = (JArray)furnituresToken;
 
         foreach (JToken furnitureToken in furnituresJArray)
         {

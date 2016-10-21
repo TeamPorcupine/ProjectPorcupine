@@ -6,7 +6,6 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 
-
 #endregion
 using System;
 using System.Collections.Generic;
@@ -304,15 +303,15 @@ public class InventoryManager
         return inventoriesJson;
     }
 
-    public void FromJson(JToken jToken)
+    public void FromJson(JToken inventoriesToken)
     {
-        JArray inventoriesJArray = (JArray) jToken;
+        JArray inventoriesJArray = (JArray)inventoriesToken;
 
         foreach (JToken inventoryToken in inventoriesJArray)
         {
-            int x = (int) inventoryToken["X"];
-            int y = (int) inventoryToken["Y"];
-            int z = (int) inventoryToken["Z"];
+            int x = (int)inventoryToken["X"];
+            int y = (int)inventoryToken["Y"];
+            int z = (int)inventoryToken["Z"];
 
             Inventory inventory = new Inventory();
             inventory.FromJson(inventoryToken);

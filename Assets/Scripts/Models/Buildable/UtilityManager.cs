@@ -6,7 +6,6 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 
-
 #endregion
 using System;
 using System.Collections;
@@ -136,7 +135,7 @@ public class UtilityManager : IEnumerable<Utility>
 
     public void FromJson(JToken utilitiesToken)
     {
-        JArray utilitiesJArray = (JArray) utilitiesToken;
+        JArray utilitiesJArray = (JArray)utilitiesToken;
 
         foreach (JToken utilityToken in utilitiesJArray)
         {

@@ -313,15 +313,16 @@ namespace ProjectPorcupine.Rooms
                 {
                     continue;
                 }
+
                 roomJArray.Add(room.ToJson());
             }
 
             return roomJArray;
         }
 
-        public void FromJson(JToken jToken)
+        public void FromJson(JToken roomsToken)
         {
-            foreach(JToken room in jToken)
+            foreach (JToken room in roomsToken)
             {
                 Room r = new Room();
                 Add(r);

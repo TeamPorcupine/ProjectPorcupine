@@ -6,7 +6,6 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 
-
 #endregion
 using System;
 using System.IO;
@@ -148,9 +147,8 @@ public class AutosaveManager
     private void SaveWorldToHdd(JObject worldJson, JsonWriter writer)
     {
         JsonSerializer serializer = new JsonSerializer();
-        //        serializer.Converters.Add(new JavaScriptDateTimeConverter());
         serializer.NullValueHandling = NullValueHandling.Ignore;
-        serializer.Formatting = Newtonsoft.Json.Formatting.Indented;
+        serializer.Formatting = Formatting.Indented;
 
         serializer.Serialize(writer, worldJson);
 

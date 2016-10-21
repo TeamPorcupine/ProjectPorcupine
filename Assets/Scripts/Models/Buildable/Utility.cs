@@ -5,16 +5,15 @@
 // and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
-using Newtonsoft.Json.Linq;
-using System.Linq;
-
 
 #endregion
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
+using Newtonsoft.Json.Linq;
 using ProjectPorcupine.Jobs;
 using UnityEngine;
 
@@ -643,12 +642,14 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
         {
             utilityJSon.Add("Parameters", Parameters.ToJson());
         }
+
         return utilityJSon;
     }
 
     public void FromJson(JToken utilityToken)
     {
         JObject utilityJObject = (JObject)utilityToken;
+
         // Everything else has already been set by FurnitureManager, we just need our parameters
         if (utilityJObject.Children().Contains("Parameters"))
         {

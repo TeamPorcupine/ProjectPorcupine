@@ -98,8 +98,6 @@ public class EventActions
     /// <param name="actionName">Name of the action being triggered.</param>
     /// <param name="target">Object, passed to LUA function as 1-argument.</param>
     /// <param name="deltaTime">Time since last Trigger of this event.</param>
-     
-     
     public void Trigger<T>(string actionName, T target, params object[] parameters)
     {
         if (!actionsList.ContainsKey(actionName) || actionsList[actionName] == null)

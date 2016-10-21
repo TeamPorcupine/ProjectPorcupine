@@ -6,14 +6,11 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 
-
 #endregion
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using MoonSharp.Interpreter;
-using UnityEngine;
 using Newtonsoft.Json.Linq;
 
 [MoonSharpUserData]
@@ -254,6 +251,7 @@ public class Parameter
                 return contentsJson;
             }
         }
+
         return value;
     }
 
@@ -261,8 +259,7 @@ public class Parameter
     {
         JObject parameterJObject = (JObject)parameterToken;
         foreach (JProperty parameterProperty in parameterJObject.Properties())
-        {
-            
+        {   
             string key = parameterProperty.Name;
             Parameter parameter = new Parameter(key);
             JToken valueToken = parameterProperty.Value;
@@ -275,8 +272,8 @@ public class Parameter
             {
                 parameter.SetValue((string)valueToken);
             }
-            AddParameter(parameter);
 
+            AddParameter(parameter);
         }
     }
 

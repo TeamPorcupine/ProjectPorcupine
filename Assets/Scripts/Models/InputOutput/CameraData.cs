@@ -6,7 +6,6 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 
-
 #endregion
 
 using Newtonsoft.Json.Linq;
@@ -55,11 +54,11 @@ public class CameraData
 
     public void FromJson(JToken cameraDataToken)
     {
-        int x = (int) cameraDataToken["X"];
-        int y = (int) cameraDataToken["Y"];
-        int z = (int) cameraDataToken["Z"];
-        float zoomLevel = (float) cameraDataToken["ZoomLevel"];
-        zLevel = (int) cameraDataToken["ZLevel"];
+        int x = (int)cameraDataToken["X"];
+        int y = (int)cameraDataToken["Y"];
+        int z = (int)cameraDataToken["Z"];
+        float zoomLevel = (float)cameraDataToken["ZoomLevel"];
+        zLevel = (int)cameraDataToken["ZLevel"];
         Vector3 camPosition = new Vector3(x, y, z);
         Camera.main.transform.position = camPosition;
         Camera.main.orthographicSize = zoomLevel;

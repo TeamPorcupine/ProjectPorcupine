@@ -6,17 +6,16 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 
-
 #endregion
 using System;
 using System.IO;
 using System.Linq;
 using MoonSharp.Interpreter;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ProjectPorcupine.PowerNetwork;
 using ProjectPorcupine.Rooms;
 using UnityEngine;
-using Newtonsoft.Json;
 
 [MoonSharpUserData]
 public class World
@@ -67,7 +66,7 @@ public class World
 
         // Make one character.
         CharacterManager.Create(GetTileAt(Width / 2, Height / 2, 0));
-//        WriteJson();
+
         TestRoomGraphGeneration(this);
     }
 
@@ -255,7 +254,7 @@ public class World
         return PrototypeManager.RoomBehavior.Get(roomBehaviorType).IsValidRoom(room);
     }
 
-    public JToken tilesToJson()
+    public JToken TilesToJson()
     {
         JArray tileJArray = new JArray();
         for (int x = 0; x < Width; x++)
@@ -275,19 +274,17 @@ public class World
         return tileJArray;
     }
 
-    void tilesFromJson(JToken jToken)
+    public void TilesFromJson(JToken tilesToken)
     {
-        JArray tilesJArray = (JArray)jToken;
+        JArray tilesJArray = (JArray)tilesToken;
 
-        foreach ( JToken tileToken in tilesJArray)
+        foreach (JToken tileToken in tilesJArray)
         {
-
-            int x = (int) tileToken["X"];
-            int y = (int) tileToken["Y"];
-            int z = (int) tileToken["Z"];
+            int x = (int)tileToken["X"];
+            int y = (int)tileToken["Y"];
+            int z = (int)tileToken["Z"];
 
             tiles[x, y, z].FromJson(tileToken);
-
         }
     }
 
@@ -298,7 +295,7 @@ public class World
         worldJson.Add("Height", Height.ToString());
         worldJson.Add("Depth", Depth.ToString());
         worldJson.Add("Rooms", RoomManager.ToJson());
-        worldJson.Add("Tiles", tilesToJson());
+        worldJson.Add("Tiles", TilesToJson());
         worldJson.Add("Inventories", InventoryManager.ToJson());
         worldJson.Add("Furnitures", FurnitureManager.ToJson());
         worldJson.Add("Utilities", UtilityManager.ToJson());
@@ -314,14 +311,14 @@ public class World
     {
         StreamReader reader = File.OpenText(filename);
         JObject worldJson = (JObject)JToken.ReadFrom(new JsonTextReader(reader));
-        Width = (int) worldJson["Width"];
-        Height = (int) worldJson["Height"];
-        Depth = (int) worldJson["Depth"];
+        Width = (int)worldJson["Width"];
+        Height = (int)worldJson["Height"];
+        Depth = (int)worldJson["Depth"];
 
         SetupWorld(Width, Height, Depth);
 
         RoomManager.FromJson(worldJson["Rooms"]);
-        tilesFromJson(worldJson["Tiles"]);
+        TilesFromJson(worldJson["Tiles"]);
         InventoryManager.FromJson(worldJson["Inventories"]);
         FurnitureManager.FromJson(worldJson["Furnitures"]);
         UtilityManager.FromJson(worldJson["Utilities"]);
@@ -332,9 +329,6 @@ public class World
         Scheduler.Scheduler.Current.FromJson(worldJson["Scheduler"]);
 
         tileGraph = new Path_TileGraph(this);
-
-
-
     }
 
     private void SetupWorld(int width, int height, int depth)
@@ -482,7 +476,7 @@ public class World
         }
 
         OnTileChanged(t);
-        // InvalidateTileGraph();
+
         if (tileGraph != null)
         {
             tileGraph.RegenerateGraphAtTile(t);

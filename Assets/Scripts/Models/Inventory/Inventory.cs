@@ -5,13 +5,12 @@
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
-using Newtonsoft.Json.Linq;
-
 
 #endregion
 using System;
 using System.Collections.Generic;
 using MoonSharp.Interpreter;
+using Newtonsoft.Json.Linq;
 
 // Inventory are things that are lying on the floor/stockpile, like a bunch of metal bars
 // or potentially a non-installed copy of furniture (e.g. a cabinet still in the box from Ikea).
@@ -120,6 +119,7 @@ public class Inventory : ISelectable, IContextActionProvider
             inventoryJson.Add("Y", Tile.Y);
             inventoryJson.Add("Z", Tile.Z);
         }
+
         inventoryJson.Add("Type", Type);
         inventoryJson.Add("MaxStackSize", MaxStackSize);
         inventoryJson.Add("StackSize", StackSize);
