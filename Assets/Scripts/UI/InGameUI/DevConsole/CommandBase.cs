@@ -95,7 +95,7 @@ namespace DeveloperConsole.CommandTypes
             catch (Exception e)
             {
                 // Debug Error
-                DevConsole.LogError(e.InnerException.Message);
+                DevConsole.LogError(e.Message);
                 throw e;
             }
         }

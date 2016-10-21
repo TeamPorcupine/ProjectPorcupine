@@ -146,7 +146,7 @@ public class DevConsole : MonoBehaviour
         inputField.text = "";
 
         // Add Text
-        textArea.text += "\n" + inputText + ((showTimeStamp == true) ? "\t[" + System.DateTime.Now.ToShortTimeString() + "]" : "");
+        Log(inputText);
 
         // Execute
         Execute(inputText);
@@ -273,9 +273,11 @@ public class DevConsole : MonoBehaviour
             instance.textArea.text = "AUTO-CLEAR";
         }
 
+        print("HERE");
         // Update scroll bar
         Canvas.ForceUpdateCanvases();
         instance.scrollRect.verticalNormalizedPosition = 0;
+        Canvas.ForceUpdateCanvases();
     }
 
     #endregion
