@@ -11,17 +11,13 @@ using Newtonsoft.Json.Linq;
 #endregion
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Xml;
-using System.Xml.Schema;
-using System.Xml.Serialization;
 using MoonSharp.Interpreter;
 
 // Inventory are things that are lying on the floor/stockpile, like a bunch of metal bars
 // or potentially a non-installed copy of furniture (e.g. a cabinet still in the box from Ikea).
 [MoonSharpUserData]
 [System.Diagnostics.DebuggerDisplay("Inventory {ObjectType} {StackSize}/{MaxStackSize}")]
-public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
+public class Inventory : ISelectable, IContextActionProvider
 {
     private int stackSize = 1;
 
@@ -113,34 +109,6 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
         yield return string.Format("StackSize: {0}", stackSize);
         yield return string.Format("Category: {0}", BasePrice);
         yield return string.Format("BasePrice: {0:N2}", BasePrice);
-    }
-
-    public XmlSchema GetSchema()
-    {
-        return null;
-    }
-
-    public void WriteXml(XmlWriter writer)
-    {
-        // If we reach this point through inventories we definitely have a tile
-        // If we don't have a tile, that means we're writing a character's inventory
-        if (Tile != null)
-        {
-            writer.WriteAttributeString("X", Tile.X.ToString());
-            writer.WriteAttributeString("Y", Tile.Y.ToString());
-            writer.WriteAttributeString("Z", Tile.Z.ToString());
-        }
-
-        writer.WriteAttributeString("type", Type);
-        writer.WriteAttributeString("maxStackSize", MaxStackSize.ToString());
-        writer.WriteAttributeString("stackSize", StackSize.ToString());
-        writer.WriteAttributeString("basePrice", BasePrice.ToString(CultureInfo.InvariantCulture));
-        writer.WriteAttributeString("category", Category);
-        writer.WriteAttributeString("locked", Locked.ToString());
-    }
-
-    public void ReadXml(XmlReader reader)
-    {
     }
 
     public object ToJSon()

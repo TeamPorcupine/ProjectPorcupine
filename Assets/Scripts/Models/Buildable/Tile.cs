@@ -5,18 +5,14 @@
 // and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
-using Newtonsoft.Json.Linq;
 
 
 #endregion
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml;
-using System.Xml.Schema;
-using System.Xml.Serialization;
 using MoonSharp.Interpreter;
+using Newtonsoft.Json.Linq;
 using ProjectPorcupine.Rooms;
 using UnityEngine;
 
@@ -29,7 +25,7 @@ public enum Enterability
 
 [MoonSharpUserData]
 [System.Diagnostics.DebuggerDisplay("Tile {X},{Y},{Z}")]
-public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComparable, IEquatable<Tile>
+public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable<Tile>
 {
     private TileType type = TileType.Empty;
 
@@ -503,37 +499,6 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
     {
         WalkCount = 0;
         ReportTileChanged();
-    }
-    #endregion
-
-    #region Save XML
-    public XmlSchema GetSchema()
-    {
-        return null;
-    }
-
-    public void WriteXml(XmlWriter writer)
-    {
-        writer.WriteAttributeString("X", X.ToString());
-        writer.WriteAttributeString("Y", Y.ToString());
-        writer.WriteAttributeString("Z", Z.ToString());
-        writer.WriteAttributeString("timesWalked", WalkCount.ToString());
-        writer.WriteAttributeString("RoomID", Room == null ? "-1" : Room.ID.ToString());
-        writer.WriteAttributeString("Type", Type.Type);
-    }
-
-    public void ReadXml(XmlReader reader)
-    {
-        // X and Y have already been read/processed
-        Room = World.Current.RoomManager[int.Parse(reader.GetAttribute("RoomID"))];
-        if (Room != null)
-        {
-            Room.AssignTile(this);
-        }
-
-        Type = PrototypeManager.TileType.Get(reader.GetAttribute("Type"));
-        WalkCount = int.Parse(reader.GetAttribute("timesWalked"));
-        ForceTileUpdate = true;
     }
     #endregion
 

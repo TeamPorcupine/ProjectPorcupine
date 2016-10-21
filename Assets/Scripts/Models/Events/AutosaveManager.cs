@@ -5,15 +5,14 @@
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
-using System.Threading;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 
 #endregion
 using System;
 using System.IO;
-using System.Xml.Serialization;
+using System.Threading;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Scheduler;
 
 public class AutosaveManager

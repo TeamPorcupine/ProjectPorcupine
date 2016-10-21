@@ -5,15 +5,13 @@
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
-using Newtonsoft.Json.Linq;
 
 
 #endregion
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Xml;
+using Newtonsoft.Json.Linq;
 
 public class UtilityManager : IEnumerable<Utility>
 {
@@ -125,21 +123,7 @@ public class UtilityManager : IEnumerable<Utility>
         }
     }
 
-    /// <summary>
-    /// Writes the utilities to the XML.
-    /// </summary>
-    /// <param name="writer">The Xml Writer.</param>
-    public void WriteXml(XmlWriter writer)
-    {
-        foreach (Utility utility in utilities)
-        {
-            writer.WriteStartElement("Utility");
-            utility.WriteXml(writer);
-            writer.WriteEndElement();
-        }
-    }
-
-    public object ToJSon()
+    public JToken ToJson()
     {
         JArray utilitiesJson = new JArray();
         foreach (Utility utility in utilities)

@@ -5,7 +5,6 @@
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
-using Newtonsoft.Json.Linq;
 
 
 #endregion
@@ -15,6 +14,7 @@ using System.Linq;
 using System.Xml;
 using MoonSharp.Interpreter;
 using UnityEngine;
+using Newtonsoft.Json.Linq;
 
 [MoonSharpUserData]
 public class Parameter
@@ -243,62 +243,14 @@ public class Parameter
         return contents.Count > 0;
     }
 
-    public void WriteXmlParamGroup(XmlWriter writer)
-    {
-        if (string.IsNullOrEmpty(name))
-        {
-            writer.WriteStartElement("Params");
-        }
-        else
-        {
-            writer.WriteStartElement("Param");
-            writer.WriteAttributeString("name", name);
-        }
-
-        if (value != null)
-        {
-            writer.WriteAttributeString("value", value);
-        }
-
-        foreach (string k in contents.Keys)
-        {
-            this[k].WriteXml(writer);
-        }
-
-        writer.WriteEndElement();
-    }
-
-    public void WriteXmlParam(XmlWriter writer)
-    {
-        if (string.IsNullOrEmpty(name) == false)
-        {
-            writer.WriteStartElement("Param");
-            writer.WriteAttributeString("name", name);
-            writer.WriteAttributeString("value", value);
-            writer.WriteEndElement();
-        }
-    }
-
-    public void WriteXml(XmlWriter writer)
-    {
-        if (HasContents())
-        {
-            WriteXmlParamGroup(writer);
-        }
-        else
-        {
-            WriteXmlParam(writer);
-        }
-    }
-
-    public JToken ToJSon()
+    public JToken ToJson()
     {
         if (HasContents())
         {
             JObject contentsJson = new JObject();
             foreach (string key in contents.Keys)
             {
-                contentsJson.Add(key, contents[key].ToJSon());
+                contentsJson.Add(key, contents[key].ToJson());
                 return contentsJson;
             }
         }

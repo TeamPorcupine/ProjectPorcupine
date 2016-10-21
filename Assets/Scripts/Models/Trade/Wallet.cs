@@ -56,21 +56,7 @@ public class Wallet
         }
     }
 
-    /// <summary>
-    /// Writes the Wallet to the Xml.
-    /// </summary>
-    /// <param name="writer">The Xml writer.</param>
-    public void WriteXml(XmlWriter writer)
-    {
-        foreach (Currency currency in currencies.Values)
-        {
-            writer.WriteStartElement("Currency");
-            currency.WriteXml(writer);
-            writer.WriteEndElement();
-        }
-    }
-
-    public object ToJson()
+    public JToken ToJson()
     {
         JObject currencyJson = new JObject();
         foreach (Currency currency in currencies.Values)

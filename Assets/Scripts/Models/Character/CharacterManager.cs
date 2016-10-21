@@ -5,16 +5,14 @@
 // and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
-using Newtonsoft.Json.Linq;
-using System.Linq;
 
 
 #endregion
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Xml;
 using MoonSharp.Interpreter;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 /// <summary>
@@ -121,21 +119,7 @@ public class CharacterManager : IEnumerable<Character>
         }
     }
 
-    /// <summary>
-    /// Writes the Characters to the XML.
-    /// </summary>
-    /// <param name="writer">The XML Writer.</param>
-    public void WriteXml(XmlWriter writer)
-    {
-        foreach (Character c in characters)
-        {
-            writer.WriteStartElement("Character");
-            c.WriteXml(writer);
-            writer.WriteEndElement();
-        }
-    }
-
-    public object ToJSon()
+    public JToken ToJson()
     {
         JArray charactersJson = new JArray();
         foreach (Character character in characters)

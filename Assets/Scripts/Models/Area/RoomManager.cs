@@ -304,7 +304,7 @@ namespace ProjectPorcupine.Rooms
 
         #endregion
 
-        public object ToJson()
+        public JToken ToJson()
         {
             JArray roomJArray = new JArray();
             foreach (Room room in rooms)

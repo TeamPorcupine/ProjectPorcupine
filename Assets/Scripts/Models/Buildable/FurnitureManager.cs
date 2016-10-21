@@ -13,7 +13,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml;
 using UnityEngine;
 
 public class FurnitureManager : IEnumerable<Furniture>
@@ -272,21 +271,7 @@ public class FurnitureManager : IEnumerable<Furniture>
         }
     }
 
-    /// <summary>
-    /// Writes the furniture to the XML.
-    /// </summary>
-    /// <param name="writer">The Xml Writer.</param>
-    public void WriteXml(XmlWriter writer)
-    {
-        foreach (Furniture furn in furnitures)
-        {
-            writer.WriteStartElement("Furniture");
-            furn.WriteXml(writer);
-            writer.WriteEndElement();
-        }
-    }
-
-    public object ToJSon()
+    public JToken ToJson()
     {
         JArray furnituresJson = new JArray();
         foreach (Furniture furniture in furnitures)

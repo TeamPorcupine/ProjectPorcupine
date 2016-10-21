@@ -5,7 +5,6 @@
 // and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
-using Newtonsoft.Json.Linq;
 
 
 #endregion
@@ -13,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MoonSharp.Interpreter;
+using Newtonsoft.Json.Linq;
 using ProjectPorcupine.Pathfinding;
 using UnityEngine;
 
@@ -293,7 +293,7 @@ public class InventoryManager
         return Pathfinder.FindPathToInventory(tile, objectTypes, canTakeFromStockpile);
     }
 
-    public object ToJSon()
+    public JToken ToJson()
     {
         JArray inventoriesJson = new JArray();
         foreach (Inventory inventory in Inventories.SelectMany(pair => pair.Value))
