@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System;
+using System.Reflection;
 using System.Linq;
 
 namespace DeveloperConsole.CommandTypes
@@ -73,39 +74,6 @@ namespace DeveloperConsole.CommandTypes
     }
 
     /// <summary>
-    /// multi parameter command
-    /// </summary>
-    public class ParamsCommand<T0> : CommandBase
-    {
-
-        public delegate void ConsoleMethod(params T0[] arg0);
-
-        public ParamsCommand(string title, ConsoleMethod method) : base(title, method) { }
-        public ParamsCommand(string title, ConsoleMethod method, string helpText) : base(title, method, helpText) { }
-        public ParamsCommand(string title, ConsoleMethod method, HelpMethod helpMethod) : base(title, method, helpMethod) { }
-        public ParamsCommand(ConsoleMethod method) : base(method) { }
-        public ParamsCommand(ConsoleMethod method, string helpText) : base(method, helpText) { }
-        public ParamsCommand(ConsoleMethod method, HelpMethod helpMethod) : base(method, helpMethod) { }
-
-        protected override object[] ParseArguments(string message)
-        {
-            try
-            {
-                string[] args = base.SplitAndTrim(message);
-                T0[] parameters = new T0[args.Length];
-                for (int i = 0; i < parameters.Length; i++)
-                    parameters[i] = GetValueType<T0>(args[i]);
-                return new object[] { parameters };
-            }
-            catch (Exception e)
-            {
-                DevConsole.LogError(e.InnerException.Message);
-                throw e;
-            }
-        }
-    }
-
-    /// <summary>
     /// 1 parameter command
     /// </summary>
     public class Command<T0> : CommandBase
@@ -124,12 +92,19 @@ namespace DeveloperConsole.CommandTypes
         {
             try
             {
-                Debug.Log(GetValueType<T0>(args));
-                return new object[] { GetValueType<T0>(args) };
+                if (args.Length > 0)
+                {
+                    return new object[] { GetValueType<T0>(args) };
+                }
+                else
+                {
+                    DevConsole.LogError(Errors.ParameterMissingConsoleError.Description(this));
+                    throw new Exception("Command Missing Parameter");
+                }
             }
             catch (Exception e)
             {
-                DevConsole.LogError(e.InnerException.Message);
+                //DevConsole.LogError(Errors.TypeConsoleError.Description(this));
                 throw e;
             }
         }
@@ -154,12 +129,20 @@ namespace DeveloperConsole.CommandTypes
         {
             try
             {
-                string[] args = base.SplitAndTrim(message);
-                return new object[] { GetValueType<T0>(args[0]), GetValueType<T1>(args[1]) };
+                string[] args = SplitAndTrim(message);
+                if (args.Length == 3)
+                {
+                    return new object[] { GetValueType<T0>(args[0]), GetValueType<T1>(args[1]) };
+                }
+                else
+                {
+                    DevConsole.LogError(Errors.ParameterMissingConsoleError.Description(this));
+                    throw new Exception("Command Missing Parameter");
+                }
             }
             catch (Exception e)
             {
-                DevConsole.LogError(e.InnerException.Message);
+                //DevConsole.LogError(Errors.TypeConsoleError.Description(this));
                 throw e;
             }
         }
@@ -183,12 +166,20 @@ namespace DeveloperConsole.CommandTypes
         {
             try
             {
-                string[] args = base.SplitAndTrim(message);
-                return new object[] { GetValueType<T0>(args[0]), GetValueType<T1>(args[1]), GetValueType<T2>(args[2]) };
+                string[] args = SplitAndTrim(message);
+                if (args.Length == 3)
+                {
+                    return new object[] { GetValueType<T0>(args[0]), GetValueType<T1>(args[1]), GetValueType<T2>(args[2]) };
+                }
+                else
+                {
+                    DevConsole.LogError(Errors.ParameterMissingConsoleError.Description(this));
+                    throw new Exception("Command Missing Parameter");
+                }
             }
             catch (Exception e)
             {
-                DevConsole.LogError(e.InnerException.Message);
+                //DevConsole.LogError(Errors.TypeConsoleError.Description(this));
                 throw e;
             }
         }
@@ -211,50 +202,46 @@ namespace DeveloperConsole.CommandTypes
 
         protected override object[] ParseArguments(string arguments)
         {
-            try
-            {
-                string[] args = base.SplitAndTrim(arguments);
+            string[] args = base.SplitAndTrim(arguments);
 
-                switch (args.Length)
-                {
-                    case 2:
-                        try
-                        {
-                            Vector2 vector = new Vector2(float.Parse(args[0]), float.Parse(args[1]));
-                            return new object[] { vector };
-                        }
-                        catch
-                        {
-                            throw new ArgumentException("The entered value is not a valid Vector2 value");
-                        }
-                    case 3:
-                        try
-                        {
-                            Vector3 vector = new Vector3(float.Parse(args[0]), float.Parse(args[1]), float.Parse(args[2]));
-                            return new object[] { vector };
-                        }
-                        catch
-                        {
-                            throw new ArgumentException("The entered value is not a valid Vector3 value");
-                        }
-                    case 4:
-                        try
-                        {
-                            Vector4 vector = new Vector4(float.Parse(args[0]), float.Parse(args[1]), float.Parse(args[2]), float.Parse(args[3]));
-                            return new object[] { vector };
-                        }
-                        catch
-                        {
-                            throw new ArgumentException("The entered value is not a valid Vector4 value");
-                        }
-                    default:
-                        throw new ArgumentException("The entered value is not a valid Vector value");
-                }
-            }
-            catch (Exception e)
+            switch (args.Length)
             {
-                DevConsole.LogError(e.InnerException.Message);
-                throw e;
+                case 2:
+                    try
+                    {
+                        Vector2 vector = new Vector2(float.Parse(args[0]), float.Parse(args[1]));
+                        return new object[] { vector };
+                    }
+                    catch
+                    {
+                        DevConsole.LogError(Errors.TypeConsoleError.Description(this));
+                        throw new ArgumentException("The entered value is not a valid Vector2 value");
+                    }
+                case 3:
+                    try
+                    {
+                        Vector3 vector = new Vector3(float.Parse(args[0]), float.Parse(args[1]), float.Parse(args[2]));
+                        return new object[] { vector };
+                    }
+                    catch
+                    {
+                        DevConsole.LogError(Errors.TypeConsoleError.Description(this));
+                        throw new ArgumentException("The entered value is not a valid Vector3 value");
+                    }
+                case 4:
+                    try
+                    {
+                        Vector4 vector = new Vector4(float.Parse(args[0]), float.Parse(args[1]), float.Parse(args[2]), float.Parse(args[3]));
+                        return new object[] { vector };
+                    }
+                    catch
+                    {
+                        DevConsole.LogError(Errors.TypeConsoleError.Description(this));
+                        throw new ArgumentException("The entered value is not a valid Vector4 value");
+                    }
+                default:
+                    DevConsole.LogError(Errors.ParameterMissingConsoleError.Description(this));
+                    throw new ArgumentException("The entered value is not a valid Vector value");
             }
         }
     }

@@ -18,7 +18,7 @@ public class DevConsole : MonoBehaviour
 
     public string inputText = "";
 
-    List<CommandBase> consoleCommands = new List<CommandBase>();                              // Whole list of commands available
+    List<CommandBase> consoleCommands = new List<CommandBase>();    // Whole list of commands available
 
     // Flags
     bool closed = true;
@@ -51,6 +51,8 @@ public class DevConsole : MonoBehaviour
     GameObject autoComplete;
     [SerializeField]
     ScrollRect scrollRect;
+    [SerializeField]
+    GameObject root;
 
     void Awake()
     {
@@ -88,7 +90,14 @@ public class DevConsole : MonoBehaviour
     {
         if (Input.GetKeyUp(consoleActivationKey))
         {
-            Open();
+            if (closed)
+            {
+                Open();
+            }
+            else
+            {
+                Close();
+            }
         }
     }
 
@@ -124,7 +133,7 @@ public class DevConsole : MonoBehaviour
         }
 
         instance.opened = true;
-        instance.gameObject.SetActive(true);
+        instance.root.SetActive(true);
     }
 
     public static void Close()
@@ -136,7 +145,7 @@ public class DevConsole : MonoBehaviour
 
         instance.closed = true;
         instance.inputText = "";
-        instance.gameObject.SetActive(false);
+        instance.root.SetActive(false);
     }
 
     public void EnterPressedForInput(Text newValue)
@@ -273,7 +282,6 @@ public class DevConsole : MonoBehaviour
             instance.textArea.text = "AUTO-CLEAR";
         }
 
-        print("HERE");
         // Update scroll bar
         Canvas.ForceUpdateCanvases();
         instance.scrollRect.verticalNormalizedPosition = 0;
@@ -386,7 +394,7 @@ public class DevConsole : MonoBehaviour
         string text = "";
         for (int i = 0; i < consoleCommands.Count; i++)
         {
-            text += "\n<color=orange>" + consoleCommands[i].title + "</color>" + (consoleCommands[i].helpText == null ? "" : ": " + consoleCommands[i].helpText);
+            text += "\n<color=orange>" + consoleCommands[i].title + " :" + consoleCommands[i].getParameters() + "</color>" + (consoleCommands[i].helpText == null ? "" : " //" + consoleCommands[i].helpText);
         }
         Log("-- Help --" + text);
     }
@@ -411,8 +419,19 @@ public class DevConsole : MonoBehaviour
 
     void SetFontSize(int size)
     {
-        textArea.fontSize = size;
-        Log("Change successful :D", "green");
+        if (size < 10)
+        {
+            LogError("Font size would be too small");
+        }
+        else if (size > 20)
+        {
+            LogError("Font size would be too big");
+        }
+        else
+        {
+            textArea.fontSize = size;
+            Log("Change successful :D", "green");
+        }
     }
 
     #endregion

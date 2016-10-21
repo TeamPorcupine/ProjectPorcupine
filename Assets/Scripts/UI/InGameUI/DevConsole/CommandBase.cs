@@ -2,6 +2,7 @@
 using System;
 using System.Reflection;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DeveloperConsole.CommandTypes
 {
@@ -21,6 +22,11 @@ namespace DeveloperConsole.CommandTypes
         public string helpText
         {
             get; private set;
+        }
+
+        public string getParameters()
+        {
+            return string.Join(", ", method.Method.GetParameters().Select(x => x.ParameterType.Name).ToArray());
         }
 
         /// <summary>
@@ -95,7 +101,7 @@ namespace DeveloperConsole.CommandTypes
             catch (Exception e)
             {
                 // Debug Error
-                DevConsole.LogError(e.Message);
+                DevConsole.LogError(Errors.ExecuteConsoleError.Description(this));
                 throw e;
             }
         }
@@ -172,7 +178,7 @@ namespace DeveloperConsole.CommandTypes
             }
             catch (Exception e)
             {
-                DevConsole.LogError(e.InnerException.Message);
+                DevConsole.LogError(Errors.TypeConsoleError.Description(this));
                 throw e;
             }
         }
