@@ -211,30 +211,32 @@ namespace ProjectPorcupine.Buildable.Components
             }
         }
 
-        private void UnlockInventoryAtInput(Furniture furniture, ProductionChain prodChain)
+        private void UnlockInventoryAtInput(Furniture furniture)
         {
-            foreach (Item inputItem in prodChain.Input)
+            // go though all productions and unlock the inputs
+            foreach (ProductionChain prodChain in PossibleProductions)
             {
-                // check input slots for req. item:                        
-                Tile tile = World.Current.GetTileAt(
-                    furniture.Tile.X + inputItem.SlotPosX,
-                    furniture.Tile.Y + inputItem.SlotPosY,
-                    furniture.Tile.Z);
-
-                if (tile.Inventory != null && tile.Inventory.Locked)
+                foreach (Item inputItem in prodChain.Input)
                 {
-                    tile.Inventory.Locked = false;
-                    Debug.ULogChannel(ComponentLogChannel, "Inventory {0} at tile {1} is unlocked", tile.Inventory, tile);
+                    // check input slots for req. item:                        
+                    Tile tile = World.Current.GetTileAt(
+                        furniture.Tile.X + inputItem.SlotPosX,
+                        furniture.Tile.Y + inputItem.SlotPosY,
+                        furniture.Tile.Z);
+
+                    if (tile.Inventory != null && tile.Inventory.Locked)
+                    {
+                        tile.Inventory.Locked = false;
+                        Debug.ULogChannel(ComponentLogChannel, "Inventory {0} at tile {1} is unlocked", tile.Inventory, tile);
+                    }
                 }
             }
         }
 
         private void WorkshopRemoved(Furniture furniture)
         {
-            string oldProductionChainName = furniture.Parameters[CurProductionChainParamName].Value;
-
             // unlock all inventories at input if there is something left
-            UnlockInventoryAtInput(ParentFurniture, GetProductionChainByName(oldProductionChainName));
+            UnlockInventoryAtInput(ParentFurniture);
         }
 
         private void RunningStateChanged(bool newIsRunningState)
@@ -267,15 +269,7 @@ namespace ProjectPorcupine.Buildable.Components
             furniture.Parameters[CurProductionChainParamName].SetValue(newProductionChainName);
 
             // unlock all inventories at input if there is something left
-            ProductionChain oldProdChain = GetProductionChainByName(oldProductionChainName);
-            if (oldProdChain != null)
-            {
-                UnlockInventoryAtInput(furniture, oldProdChain);
-            }
-            else
-            {
-                Debug.ULogWarningChannel(ComponentLogChannel, "Workshop old production chain is null for some reason.");
-            }
+            UnlockInventoryAtInput(furniture);
         }
 
         private void HaulingJobForInputs(ProductionChain prodChain)
