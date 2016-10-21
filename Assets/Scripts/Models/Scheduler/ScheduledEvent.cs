@@ -5,13 +5,14 @@
 // and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
+
+
 #endregion
 
 using System;
 using System.Xml;
-using System.Xml.Schema;
-using System.Xml.Serialization;
 using MoonSharp.Interpreter;
+using Newtonsoft.Json.Linq;
 
 namespace Scheduler
 {
@@ -36,7 +37,7 @@ namespace Scheduler
     /// for handling by the events.
     /// </summary>
     [MoonSharpUserData]
-    public class ScheduledEvent : IXmlSerializable, IPrototypable
+    public class ScheduledEvent : IPrototypable
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ScheduledEvent"/> class.
@@ -260,27 +261,6 @@ namespace Scheduler
             RepeatsForever = false;
         }
 
-        #region IXmlSerializable implementation
-
-        /// <summary>
-        /// This does absolutely nothing.
-        /// This is required to implement IXmlSerializable.
-        /// </summary>
-        /// <returns>NULL and NULL.</returns>
-        public XmlSchema GetSchema()
-        {
-            return null;
-        }
-
-        /// <summary>
-        /// Generates a <see cref="Scheduler.ScheduledEvent"/> from its XML representation. NOT IMPLEMENTED.
-        /// Loading saved <see cref="Scheduler.ScheduledEvent"/>s is handled by <see cref="Scheduler.Scheduler"/>.
-        /// </summary>
-        public void ReadXml(XmlReader reader)
-        {
-            throw new NotImplementedException();
-        }
-
         public void ReadXmlPrototype(XmlReader reader)
         {
             this.Name = reader.GetAttribute("name");
@@ -288,33 +268,27 @@ namespace Scheduler
             this.EventType = EventType.Lua;
         }
 
-        /// <summary>
-        /// Converts a <see cref="Scheduler.ScheduledEvent"/> into its XML representation.
-        /// Format:
-        /// <Event name="Name" cooldown="Cooldown" timeToWait="TimeToWait" repeatsForever="true" />
-        /// or
-        /// <Event name="Name" cooldown="Cooldown" timeToWait="TimeToWait" repeatsLeft="RepeatsLeft" />
-        /// if RepeatsForever == false.
-        /// </summary>
-        /// <param name="writer">The XmlWriter to output to.</param>
-        public void WriteXml(XmlWriter writer)
+        public JObject ToJson()
         {
-            writer.WriteStartElement("Event");
-            writer.WriteAttributeString("name", this.Name);
-            writer.WriteAttributeString("cooldown", this.Cooldown.ToString());
-            writer.WriteAttributeString("timeToWait", this.TimeToWait.ToString());
-            if (this.RepeatsForever)
-            {
-                writer.WriteAttributeString("repeatsForever", this.RepeatsForever.ToString());
-            }
-            else
-            {
-                writer.WriteAttributeString("repeatsLeft", this.RepeatsLeft.ToString());
-            }
+            JObject eventJObject = new JObject();
+            eventJObject.Add("Name", Name);
+            eventJObject.Add("Cooldown", Cooldown);
+            eventJObject.Add("TimeToWait", TimeToWait);
+            eventJObject.Add("RepeatsForever", RepeatsForever);
+            eventJObject.Add("RepeatsLeft", RepeatsLeft);
 
-            writer.WriteEndElement();
+            return eventJObject;
         }
 
-        #endregion
+        public void FromJson(JToken eventToken)
+        {
+            JObject eventObject = (JObject)eventToken;
+
+            Name = (string)eventObject["Name"];
+            Cooldown = (float)eventObject["Cooldown"];
+            TimeToWait = (float)eventObject["TimeToWait"];
+            RepeatsForever = (bool)eventObject["RepeatsForever"];
+            RepeatsLeft = (int)eventObject["RepeatsLeft"];
+        }
     }
 }

@@ -5,26 +5,21 @@
 // and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Linq;
 
 
 #endregion
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Xml;
-using System.Xml.Schema;
-using System.Xml.Serialization;
 using MoonSharp.Interpreter;
+using Newtonsoft.Json.Linq;
 using ProjectPorcupine.PowerNetwork;
 using ProjectPorcupine.Rooms;
 using UnityEngine;
 using Newtonsoft.Json;
 
 [MoonSharpUserData]
-public class World : IXmlSerializable
+public class World
 {
     public Material skybox;
 
@@ -260,12 +255,7 @@ public class World : IXmlSerializable
         return PrototypeManager.RoomBehavior.Get(roomBehaviorType).IsValidRoom(room);
     }
 
-    public XmlSchema GetSchema()
-    {
-        return null;
-    }
-
-    public object tilesToJSon()
+    public JToken tilesToJson()
     {
         JArray tileJArray = new JArray();
         for (int x = 0; x < Width; x++)
@@ -304,18 +294,19 @@ public class World : IXmlSerializable
     public JObject ToJson()
     {
         JObject worldJson = new JObject();
-        worldJson.Add(new JProperty("Width", Width.ToString()));
-        worldJson.Add(new JProperty("Height", Height.ToString()));
-        worldJson.Add(new JProperty("Depth", Depth.ToString()));
-        worldJson.Add(new JProperty("Rooms", RoomManager.ToJson()));
-        worldJson.Add(new JProperty("Tiles", tilesToJSon()));
-        worldJson.Add(new JProperty("Inventories", InventoryManager.ToJSon()));
-        worldJson.Add(new JProperty("Furnitures", FurnitureManager.ToJSon()));
-        worldJson.Add(new JProperty("Utilities", UtilityManager.ToJSon()));
-        worldJson.Add(new JProperty("Characters", CharacterManager.ToJSon()));
-        worldJson.Add(new JProperty("CameraData", CameraData.ToJson()));
-        worldJson.Add(new JProperty("Skybox", skybox.name));
-        worldJson.Add(new JProperty("Wallet", Wallet.ToJson()));
+        worldJson.Add("Width", Width.ToString());
+        worldJson.Add("Height", Height.ToString());
+        worldJson.Add("Depth", Depth.ToString());
+        worldJson.Add("Rooms", RoomManager.ToJson());
+        worldJson.Add("Tiles", tilesToJson());
+        worldJson.Add("Inventories", InventoryManager.ToJson());
+        worldJson.Add("Furnitures", FurnitureManager.ToJson());
+        worldJson.Add("Utilities", UtilityManager.ToJson());
+        worldJson.Add("Characters", CharacterManager.ToJson());
+        worldJson.Add("CameraData", CameraData.ToJson());
+        worldJson.Add("Skybox", skybox.name);
+        worldJson.Add("Wallet", Wallet.ToJson());
+        worldJson.Add("Scheduler", Scheduler.Scheduler.Current.ToJson());
         return worldJson;
     }
 
@@ -338,140 +329,12 @@ public class World : IXmlSerializable
         CameraData.FromJson(worldJson["CameraData"]);
         LoadSkybox((string)worldJson["Skybox"]);
         Wallet.FromJson(worldJson["Wallet"]);
+        Scheduler.Scheduler.Current.FromJson(worldJson["Scheduler"]);
+
         tileGraph = new Path_TileGraph(this);
 
 
 
-    }
-
-    public void WriteXml(XmlWriter writer)
-    {
-        // Save info here
-        writer.WriteAttributeString("Width", Width.ToString());
-        writer.WriteAttributeString("Height", Height.ToString());
-        writer.WriteAttributeString("Depth", Depth.ToString());
-
-        writer.WriteStartElement("Rooms");
-        foreach (Room r in RoomManager)
-        {
-            if (RoomManager.OutsideRoom == r)
-            {
-                // Skip the outside room. Alternatively, should SetupWorld be changed to not create one?
-                continue;
-            }
-
-            writer.WriteStartElement("Room");
-            r.WriteXml(writer);
-            writer.WriteEndElement();
-        }
-
-        writer.WriteEndElement();
-
-        writer.WriteStartElement("Tiles");
-        for (int x = 0; x < Width; x++)
-        {
-            for (int y = 0; y < Height; y++)
-            {
-                for (int z = 0; z < Depth; z++)
-                {
-                    if (tiles[x, y, z].Type != TileType.Empty)
-                    {
-                        writer.WriteStartElement("Tile");
-                        tiles[x, y, z].WriteXml(writer);
-                        writer.WriteEndElement();
-                    }
-                }
-            }
-        }
-
-        writer.WriteEndElement();
-        writer.WriteStartElement("Inventories");
-        foreach (Inventory inventory in InventoryManager.Inventories.SelectMany(pair => pair.Value))
-        {
-            // If we don't have a tile, that means this is in a character's inventory (or some other non-tile location
-            //      which means we shouldn't save that Inventory here, the character will take care of saving and loading
-            //      the inventory properly.
-            if (inventory.Tile != null)
-            {
-                writer.WriteStartElement("Inventory");
-                inventory.WriteXml(writer);
-                writer.WriteEndElement();
-            }
-        }
-
-        writer.WriteEndElement();
-
-        writer.WriteStartElement("Furnitures");
-        FurnitureManager.WriteXml(writer);
-        writer.WriteEndElement();
-
-        writer.WriteStartElement("Utilities");
-        UtilityManager.WriteXml(writer);
-        writer.WriteEndElement();
-
-        writer.WriteStartElement("Characters");
-        CharacterManager.WriteXml(writer);
-        writer.WriteEndElement();
-
-        writer.WriteStartElement("CameraData");
-        CameraData.WriteXml(writer);
-        writer.WriteEndElement();
-
-        writer.WriteElementString("Skybox", skybox.name);
-
-        writer.WriteStartElement("Wallet");
-        Wallet.WriteXml(writer);
-        writer.WriteEndElement();
-
-        Scheduler.Scheduler.Current.WriteXml(writer);
-    }
-
-    public void ReadXml(XmlReader reader)
-    {
-        // Load info here
-        Width = int.Parse(reader.GetAttribute("Width"));
-        Height = int.Parse(reader.GetAttribute("Height"));
-        Depth = int.Parse(reader.GetAttribute("Depth"));
-
-        SetupWorld(Width, Height, Depth);
-
-        while (reader.Read())
-        {
-            switch (reader.Name)
-            {
-                case "Rooms":
-                    ReadXml_Rooms(reader);
-                    break;
-                case "Tiles":
-                    ReadXml_Tiles(reader);
-                    break;
-                case "Inventories":
-                    ReadXml_Inventories(reader);
-                    break;
-                case "Furnitures":
-                    ReadXml_Furnitures(reader);
-                    break;
-                case "CameraData":
-                    CameraData.ReadXml(reader);
-                    break;
-                case "Utilities":
-                    ReadXml_Utilities(reader);
-                    break;
-                case "Characters":
-                    ReadXml_Characters(reader);
-                    break;
-                case "Skybox":
-                    LoadSkybox(reader.ReadElementString("Skybox"));
-                    break;
-                case "Wallet":
-                    ReadXml_Wallet(reader);
-                    break;
-                case "Scheduler":
-                    Scheduler.Scheduler.Current.ReadXml(reader);
-                    break;
-            }
-        }
-        tileGraph = new Path_TileGraph(this);
     }
 
     private void SetupWorld(int width, int height, int depth)
@@ -624,183 +487,6 @@ public class World : IXmlSerializable
         {
             tileGraph.RegenerateGraphAtTile(t);
             tileGraph.RegenerateGraphAtTile(t.Down());
-        }
-    }
-
-    private void ReadXml_Tiles(XmlReader reader)
-    {
-        // We are in the "Tiles" element, so read elements until
-        // we run out of "Tile" nodes.
-        if (reader.ReadToDescendant("Tile"))
-        {
-            // We have at least one tile, so do something with it.
-            do
-            {
-                int x = int.Parse(reader.GetAttribute("X"));
-                int y = int.Parse(reader.GetAttribute("Y"));
-                int z = int.Parse(reader.GetAttribute("Z"));
-                tiles[x, y, z].ReadXml(reader);
-            }
-            while (reader.ReadToNextSibling("Tile"));
-        }
-    }
-
-    private void ReadXml_Inventories(XmlReader reader)
-    {
-        Debug.ULogChannel("World", "ReadXml_Inventories");
-
-        if (reader.ReadToDescendant("Inventory"))
-        {
-            do
-            {
-                int x = int.Parse(reader.GetAttribute("X"));
-                int y = int.Parse(reader.GetAttribute("Y"));
-                int z = int.Parse(reader.GetAttribute("Z"));
-
-                // Create our inventory from the file
-                Inventory inv = new Inventory(
-                                    reader.GetAttribute("type"),
-                                    int.Parse(reader.GetAttribute("stackSize")),
-                                    int.Parse(reader.GetAttribute("maxStackSize")))
-                {
-                    Locked = bool.Parse(reader.GetAttribute("locked"))
-                };
-
-                InventoryManager.PlaceInventory(tiles[x, y, z], inv);
-            }
-            while (reader.ReadToNextSibling("Inventory"));
-        }
-    }
-
-    private void ReadXml_Furnitures(XmlReader reader)
-    {
-        if (reader.ReadToDescendant("Furniture"))
-        {
-            do
-            {
-                int x = int.Parse(reader.GetAttribute("X"));
-                int y = int.Parse(reader.GetAttribute("Y"));
-                int z = int.Parse(reader.GetAttribute("Z"));
-                float rotation = float.Parse(reader.GetAttribute("Rotation"));
-
-                Furniture furniture = FurnitureManager.PlaceFurniture(reader.GetAttribute("type"), tiles[x, y, z], false, rotation);
-                furniture.ReadXml(reader);
-            }
-            while (reader.ReadToNextSibling("Furniture"));
-        }
-    }
-
-    private void ReadXml_Utilities(XmlReader reader)
-    {
-        if (reader.ReadToDescendant("Utility"))
-        {
-            do
-            {
-                int x = int.Parse(reader.GetAttribute("X"));
-                int y = int.Parse(reader.GetAttribute("Y"));
-                int z = int.Parse(reader.GetAttribute("Z"));
-
-                Utility utility = UtilityManager.PlaceUtility(reader.GetAttribute("objectType"), tiles[x, y, z], false);
-                utility.ReadXml(reader);
-            }
-            while (reader.ReadToNextSibling("Utility"));
-        }
-    }
-
-    private void ReadXml_Rooms(XmlReader reader)
-    {
-        if (reader.ReadToDescendant("Room"))
-        {
-            do
-            {
-                Room r = new Room();
-                RoomManager.Add(r);
-                r.ReadXml(reader);
-            }
-            while (reader.ReadToNextSibling("Room"));
-        }
-    }
-
-    private void ReadXml_Characters(XmlReader reader)
-    {
-        if (reader.ReadToDescendant("Character"))
-        {
-            do
-            {
-                Character character;
-
-                int x = int.Parse(reader.GetAttribute("X"));
-                int y = int.Parse(reader.GetAttribute("Y"));
-                int z = int.Parse(reader.GetAttribute("Z"));
-
-                if (reader.GetAttribute("r") != null)
-                {
-                    Color color = ColorUtilities.ParseColorFromString(reader.GetAttribute("r"), reader.GetAttribute("g"), reader.GetAttribute("b"));
-                    Color colorUni = ColorUtilities.ParseColorFromString(reader.GetAttribute("rUni"), reader.GetAttribute("gUni"), reader.GetAttribute("bUni"));
-                    Color colorSkin = ColorUtilities.ParseColorFromString(reader.GetAttribute("rSkin"), reader.GetAttribute("gSkin"), reader.GetAttribute("bSkin"));
-                    character = CharacterManager.Create(tiles[x, y, z], color, colorUni, colorSkin);
-                }
-                else
-                {
-                    character = CharacterManager.Create(tiles[x, y, z]);
-                }
-
-                character.name = reader.GetAttribute("name");
-                character.ReadXml(reader);
-
-                // Read the children elements.
-                // TODO: This should either not be XML, or use XmlSerializer.
-                while (reader.Read())
-                {
-                    // Read until the end of the character.
-                    if (reader.NodeType == XmlNodeType.EndElement)
-                    {
-                        break;
-                    }
-
-                    switch (reader.Name)
-                    {
-                        case "Stats":
-                            character.ReadStatsFromSave(reader);
-                            break;
-                        case "Inventories":
-                            if (reader.ReadToDescendant("Inventory"))
-                            {
-                                do
-                                {
-                                    // Create our inventory from the file
-                                    Inventory inv = new Inventory(
-                                                        reader.GetAttribute("type"),
-                                                        int.Parse(reader.GetAttribute("stackSize")),
-                                                        int.Parse(reader.GetAttribute("maxStackSize")))
-                                    {
-                                        Locked = bool.Parse(reader.GetAttribute("locked"))
-                                    };
-
-                                    InventoryManager.PlaceInventory(character, inv);
-                                }
-                                while (reader.ReadToNextSibling("Inventory"));
-                            }
-
-                            break;
-                    }
-                }
-            }
-            while (reader.ReadToNextSibling("Character"));
-        }
-    }
-
-    private void ReadXml_Wallet(XmlReader reader)
-    {
-        if (reader.ReadToDescendant("Currency"))
-        {
-            do
-            {
-                Wallet.AddCurrency(
-                    reader.GetAttribute("Name"),
-                    float.Parse(reader.GetAttribute("Balance")));
-            }
-            while (reader.ReadToNextSibling("Currency"));
         }
     }
 
