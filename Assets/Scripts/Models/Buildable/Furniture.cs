@@ -420,6 +420,8 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         {
             component.Initialize(furnObj);
         }
+        Debug.LogWarning("Components Initialized");
+        furnObj.FixedFrequencyUpdate(0);
 
         if (furnObj.LinksToNeighbour != string.Empty)
         {
