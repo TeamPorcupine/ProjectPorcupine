@@ -64,5 +64,12 @@ public class MainMenuController : MonoBehaviour
 
         // TODO : Activate this when DialogBoxSettings will be fixed. See issue #1526
         ////fpsCounter.SetActive(Settings.GetSetting("DialogBoxSettings_fpsToggle", true));
+
+        GameObject devConsole = (GameObject)Instantiate(Resources.Load("UI/Console/DevConsole"));
+        devConsole.name = "DevConsole";
+        devConsole.transform.SetParent(canvas.transform, false);
+        devConsole.transform.SetAsLastSibling();
+        devConsole.SetActive(true);
+        DeveloperConsole.DevConsole.Close();
     }
 }

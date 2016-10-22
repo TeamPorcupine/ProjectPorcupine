@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ConsoleCommands>
+  <!-- List of console command prototypes -->
+  <!--Title is mandatory and should be unique-->
+  <!--FunctionName is for LUA and is the function name of the LUA Script that runs when the command is called-->
+  <!--Description is a short description of what this command does-->
+  <!--HelpFunctionName is for LUA and is the function name of the LUA Script that runs on Title?-->
+  <!--Parameters is a string that should contain all the parameters in C# Type format and with a comma between them.  e.g. Int, String, Boolean-->
+  <ConsoleCommand Title="SetFontSize" FunctionName="Set_FontSize" Description="Sets the font size, must be between 10 and 20 (inclusive)" HelpFunctionName="Set_FontSizeHelp" Parameters="Int" />
+</ConsoleCommands>

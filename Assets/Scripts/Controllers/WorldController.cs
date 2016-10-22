@@ -118,6 +118,13 @@ public class WorldController : MonoBehaviour
         go.name = "ContextMenu";
 
         GameController.Instance.IsModal = false;
+
+        GameObject devConsole = (GameObject)Instantiate(Resources.Load("UI/Console/DevConsole"));
+        devConsole.name = "DevConsole";
+        devConsole.transform.SetParent(canvas.transform, false);
+        devConsole.transform.SetAsLastSibling();
+        devConsole.SetActive(true);
+        DeveloperConsole.DevConsole.Close();
     }
 
     /// <summary>

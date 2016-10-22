@@ -35,6 +35,7 @@ public class LuaFunctions
         RegisterGlobal(typeof(Scheduler.Scheduler));
         RegisterGlobal(typeof(Scheduler.ScheduledEvent));
         RegisterGlobal(typeof(ProjectPorcupine.Jobs.RequestedItem));
+        RegisterGlobal(typeof(DeveloperConsole.DevConsole));
     }
 
     /// <summary>
@@ -103,12 +104,38 @@ public class LuaFunctions
     }
 
     /// <summary>
+    /// Call the specified lua function with the specified args.
+    /// </summary>
+    /// <param name="functionName">Function name.</param>
+    /// <param name="args">Arguments.</param>
+    /// <exception cref="Exception">Throws exception depending on LUA</exception>
+    /// <remarks>This is unsafe and can throw exceptions</remarks>
+    public DynValue Call_Unsafe(string functionName, params object[] args)
+    {
+        object func = script.Globals[functionName];
+
+        if (func == null)
+        {
+            throw new Exception("'" + functionName + "' is not a LUA function!");
+        }
+
+        try
+        {
+            return script.Call(func, args);
+        }
+        catch (ScriptRuntimeException e)
+        {
+            throw e;
+        }
+    }
+
+    /// <summary>
     /// Calls the specified lua functions with the specified instance.
     /// </summary>
     /// <param name="functionNames">Function names.</param>
     /// <param name="instance">An instance of the actions type.</param>
     /// <param name="deltaTime">Delta time.</param>
-    public void CallWithInstance(string[] functionNames, object instance,  params object[] parameters)
+    public void CallWithInstance(string[] functionNames, object instance, params object[] parameters)
     {
         if (instance == null)
         {

@@ -3,10 +3,13 @@ using System.Collections;
 using MoonSharp;
 using System;
 
-namespace DeveloperConsole.Interfaces
+namespace DeveloperConsole
 {
     public delegate void HelpMethod();
+}
 
+namespace DeveloperConsole.Interfaces
+{
     public interface ICommandHelpMethod
     {
         HelpMethod helpMethod

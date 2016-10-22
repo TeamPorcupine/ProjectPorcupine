@@ -59,6 +59,7 @@ namespace DeveloperConsole.CommandTypes
         /// <typeparam name="T"> the type of the argument </typeparam>
         /// <param name="arg"> the argument to find the value type </param>
         /// <returns> The type of the argument given </returns>
+        /// <exception cref="Exception"> Throws exception if arg is not type T, SHOULD BE CAUGHT by command&ltT0...&gt </exception>
         protected T GetValueType<T>(string arg)
         {
             try
@@ -136,51 +137,121 @@ namespace DeveloperConsole.CommandTypes
         }
     }
 
-    public abstract class LUACommand : CommandBase, ICommandDescription, ICommandHelpMethod, ICommandRunnable, ICommandLUA
+    public sealed class LUACommand : CommandBase, ICommandDescription, ICommandHelpMethod, ICommandRunnable, ICommandLUA
     {
         public string descriptiveText
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            get; private set;
         }
 
         public string functionName
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            get; private set;
         }
 
         public HelpMethod helpMethod
         {
             get
             {
-                throw new NotImplementedException();
+                return runLUAHelp;
+            }
+        }
+
+        public string helpFunctionName
+        {
+            get; private set;
+        }
+
+        public void runLUAHelp()
+        {
+            try
+            {
+                FunctionsManager.DevConsole.Call_Unsafe(helpFunctionName);
+            }
+            catch (Exception e)
+            {
+                DevConsole.LogError(e.Message);
             }
         }
 
         public string parameters
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            get; private set;
         }
 
         public string title
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            get; private set;
         }
 
         public void ExecuteCommand(string arguments)
         {
-            throw new NotImplementedException();
+            try
+            {
+                FunctionsManager.DevConsole.Call_Unsafe(functionName, arguments);
+            }
+            catch (Exception e)
+            {
+                DevConsole.LogError(e.Message);
+            }
+        }
+
+        protected override object[] ParseArguments(string arguments)
+        {
+            try
+            {
+                string[] args = SplitAndTrim(arguments);
+                if (args.Length == 3)
+                {
+                    return args;
+                }
+                else
+                {
+                    DevConsole.LogError(Errors.ParameterMissingConsoleError.Description((ICommandDescription)this));
+                    Debug.ULogErrorChannel("DevConsole", "Command Missing Parameter");
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.ULogErrorChannel("DevConsole", e.ToString());
+            }
+
+            return new object[] { };
+        }
+
+        /// <summary>
+        /// Standard with title and a method
+        /// </summary>
+        /// <param name="title"> The title for the command </param>
+        /// <param name="functionName"> The command to execute </param>
+        public LUACommand(string title, string functionName)
+        {
+            this.title = title;
+            this.functionName = functionName;
+        }
+
+        /// <summary>
+        /// Standard with title, method, and help text
+        /// </summary>
+        /// <param name="title"> The title for the command </param>
+        /// <param name="functionName"> The command to execute </param>
+        /// <param name="descriptiveText"> The help text to display </param>
+        public LUACommand(string title, string functionName, string descriptiveText) : this(title, functionName)
+        {
+            this.descriptiveText = descriptiveText;
+        }
+
+        /// <summary>
+        /// Standard but uses a delegate method for help text
+        /// </summary>
+        /// <param name="title"> The title for the command </param>
+        /// <param name="method"> The command to execute </param>
+        /// <param name="helpFunctionName"> The help method to execute </param>
+        //
+        public LUACommand(string title, string functionName, string descriptiveText, string helpFunctionName, string parameters) : this(title, functionName, descriptiveText)
+        {
+            this.helpFunctionName = helpFunctionName;
+            this.parameters = parameters;
         }
     }
 
@@ -291,8 +362,8 @@ namespace DeveloperConsole.CommandTypes
             catch (Exception e)
             {
                 // Debug Error
-                DevConsole.LogError(Errors.ExecuteConsoleError.Description(command: (ICommandDescription)this));
-                throw e;
+                DevConsole.LogError(Errors.ExecuteConsoleError.Description((ICommandDescription)this));
+                Debug.ULogErrorChannel("DevConsole", e.ToString());
             }
         }
     }

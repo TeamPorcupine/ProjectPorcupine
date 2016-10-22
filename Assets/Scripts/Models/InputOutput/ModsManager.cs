@@ -58,6 +58,7 @@ public class ModsManager
         LoadFunctions("Quest.lua", "Quest");
         LoadFunctions("ScheduledEvent.lua", "ScheduledEvent");
         LoadFunctions("Overlay.lua", "Overlay");
+        LoadFunctions("ConsoleCommands.lua", "DevConsole");
 
         LoadPrototypes("Tiles.xml", PrototypeManager.TileType.LoadPrototypes);
         LoadPrototypes("Furniture.xml", PrototypeManager.Furniture.LoadPrototypes);
@@ -74,9 +75,10 @@ public class ModsManager
         LoadPrototypes("Headlines.xml", PrototypeManager.Headline.LoadPrototypes);
         LoadPrototypes("Overlay.xml", PrototypeManager.Overlay.LoadPrototypes);
         LoadPrototypes("Ships.xml", PrototypeManager.Ship.LoadPrototypes);
-        
+        LoadPrototypes("ConsoleCommands.xml", PrototypeManager.DevConsole.LoadPrototypes);
+
         LoadCharacterNames("CharacterNames.txt");
-        
+
         LoadDirectoryAssets("Images", SpriteManager.LoadSpriteFiles);
         LoadDirectoryAssets("Audio", AudioManager.LoadAudioFiles);
     }

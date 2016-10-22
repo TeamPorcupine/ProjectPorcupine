@@ -106,7 +106,8 @@ namespace DeveloperConsole.CommandTypes
             catch (Exception e)
             {
                 //DevConsole.LogError(Errors.TypeConsoleError.Description(this));
-                throw e;
+                Debug.ULogErrorChannel("DevConsole", e.ToString());
+                return new object[] { };
             }
         }
     }
@@ -144,7 +145,8 @@ namespace DeveloperConsole.CommandTypes
             catch (Exception e)
             {
                 //DevConsole.LogError(Errors.TypeConsoleError.Description(this));
-                throw e;
+                Debug.ULogErrorChannel("DevConsole", e.ToString());
+                return new object[] { };
             }
         }
     }
@@ -181,7 +183,8 @@ namespace DeveloperConsole.CommandTypes
             catch (Exception e)
             {
                 //DevConsole.LogError(Errors.TypeConsoleError.Description(this));
-                throw e;
+                Debug.ULogErrorChannel("DevConsole", e.ToString());
+                return new object[] { };
             }
         }
     }
@@ -216,7 +219,8 @@ namespace DeveloperConsole.CommandTypes
                     catch
                     {
                         DevConsole.LogError(Errors.TypeConsoleError.Description((ICommandDescription)this));
-                        throw new ArgumentException("The entered value is not a valid Vector2 value");
+                        Debug.ULogErrorChannel("DevConsole", "The entered value is not a valid Vector2 value");
+                        return new object[] { };
                     }
                 case 3:
                     try
@@ -227,7 +231,8 @@ namespace DeveloperConsole.CommandTypes
                     catch
                     {
                         DevConsole.LogError(Errors.TypeConsoleError.Description((ICommandDescription)this));
-                        throw new ArgumentException("The entered value is not a valid Vector3 value");
+                        Debug.ULogErrorChannel("DevConsole", "The entered value is not a valid Vector3 value");
+                        return new object[] { };
                     }
                 case 4:
                     try
@@ -238,11 +243,13 @@ namespace DeveloperConsole.CommandTypes
                     catch
                     {
                         DevConsole.LogError(Errors.TypeConsoleError.Description((ICommandDescription)this));
-                        throw new ArgumentException("The entered value is not a valid Vector4 value");
+                        Debug.ULogErrorChannel("DevConsole", "The entered value is not a valid Vector4 value");
+                        return new object[] { };
                     }
                 default:
                     DevConsole.LogError(Errors.ParameterMissingConsoleError.Description((ICommandDescription)this));
-                    throw new ArgumentException("The entered value is not a valid Vector value");
+                    Debug.ULogErrorChannel("DevConsole", "The entered value is not a valid Vector value");
+                    return new object[] { };
             }
         }
     }
