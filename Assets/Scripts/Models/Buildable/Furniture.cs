@@ -420,7 +420,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         {
             component.Initialize(furnObj);
         }
-        furnObj.Changed(furnObj);
 
         if (furnObj.LinksToNeighbour != string.Empty)
         {
