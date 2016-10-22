@@ -126,9 +126,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
 
         // don't need to clone here, as all are prototype things (not changing)
         components = new HashSet<BuildableComponent>();
-        foreach (var cmp in other.components)
+        foreach (BuildableComponent component in other.components)
         {
-            components.Add(cmp.Clone());
+            components.Add(component.Clone());
         }
 
         if (other.Animation != null)
@@ -492,11 +492,11 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
 
         foreach (BuildableComponent component in components)
         {
-            bool cmpCanFunction = component.CanFunction();
-            canFunction &= cmpCanFunction;
+            bool componentCanFunction = component.CanFunction();
+            canFunction &= componentCanFunction;
 
             // if it can't function, collect all stuff it needs (power, gas, ...) for icon signalization
-            if (!cmpCanFunction)
+            if (!componentCanFunction)
             {
                 Requirements |= component.Needs;
             }
