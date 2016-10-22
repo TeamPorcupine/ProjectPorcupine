@@ -82,6 +82,8 @@ public class Parameter
         {
             if (contents.ContainsKey(key) == false)
             {
+                Debug.ULogWarningChannel("Parameter", "Trying to access non-existent key: '" + key + "'. Probably a Lua problem.");
+
                 // Add a new blank key to contents, that will then be returned.
                 contents.Add(key, new Parameter(key));
             }
