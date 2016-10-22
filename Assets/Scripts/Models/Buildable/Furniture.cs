@@ -150,6 +150,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         {
             PowerConnection = other.PowerConnection.Clone() as Connection;
             PowerConnection.NewThresholdReached += OnNewThresholdReached;
+            PowerConnection.Reconnecting += OnReconnecting;
         }
 
         tileTypeBuildPermissions = new HashSet<string>(other.tileTypeBuildPermissions);
@@ -433,7 +434,10 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         // plug-in furniture only when it is placed in world
         if (furnObj.PowerConnection != null)
         {
-            World.Current.PowerNetwork.PlugIn(furnObj.PowerConnection);
+            foreach (Utility util in tile.Utilities.Values)
+            {
+                util.Grid.PlugIn(furnObj.PowerConnection);
+            }
         }
 
         // need to update reference to furniture and call Initialize (so components can place hooks on events there)
@@ -1309,6 +1313,15 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     {
         UpdateOnChanged(this);
     }
+
+    private void OnReconnecting()
+    {
+        foreach (Utility util in Tile.Utilities.Values)
+        {
+            util.Grid.PlugIn(PowerConnection);
+        }
+    }
+
     #endregion
 
     /// <summary>

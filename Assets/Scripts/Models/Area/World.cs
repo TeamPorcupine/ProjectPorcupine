@@ -21,6 +21,9 @@ using UnityEngine;
 [MoonSharpUserData]
 public class World : IXmlSerializable
 {
+    // TODO: Should this be also saved with the world data?
+    // If so - beginner task!
+    public readonly string GameVersion = "Someone_will_come_up_with_a_proper_naming_scheme_later";
     public Material skybox;
 
     // Store all temperature information
@@ -489,6 +492,7 @@ public class World : IXmlSerializable
     {
         CharacterManager.Update(deltaTime);
         FurnitureManager.TickEveryFrame(deltaTime);
+        UtilityManager.TickEveryFrame(deltaTime);
         GameEventManager.Update(deltaTime);
         ShipManager.Update(deltaTime);
     }
@@ -500,6 +504,7 @@ public class World : IXmlSerializable
     private void TickFixedFrequency(float deltaTime)
     {
         FurnitureManager.TickFixedFrequency(deltaTime);
+        UtilityManager.TickFixedFrequency(deltaTime);
 
         // Progress temperature modelling
         temperature.Update();
@@ -617,10 +622,15 @@ public class World : IXmlSerializable
                 int y = int.Parse(reader.GetAttribute("Y"));
                 int z = int.Parse(reader.GetAttribute("Z"));
 
-                Utility utility = UtilityManager.PlaceUtility(reader.GetAttribute("objectType"), tiles[x, y, z], false);
+                Utility utility = UtilityManager.PlaceUtility(reader.GetAttribute("type"), tiles[x, y, z], true);
                 utility.ReadXml(reader);
             }
             while (reader.ReadToNextSibling("Utility"));
+        }
+
+        foreach (Utility utility in UtilityManager.Utilities)
+        {
+            utility.UpdateGrid(utility);
         }
     }
 

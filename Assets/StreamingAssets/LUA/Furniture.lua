@@ -469,8 +469,19 @@ function Heater_UninstallAction( furniture, deltaTime)
 end
 
 function Heater_UpdateTemperature( furniture, deltaTime)
-    UpdateTemperature(furniture, deltaTime)
-  end
+    if (furniture.tile.Room.IsOutsideRoom() == true) then
+        return
+    end
+
+    tile = furniture.tile
+    pressure = tile.Room.GetGasPressure() / tile.Room.TileCount
+    efficiency = ModUtils.Clamp01(pressure / furniture.Parameters["pressure_threshold"].ToFloat())
+    temperatureChangePerSecond = furniture.Parameters["base_heating"].ToFloat() * efficiency
+    temperatureChange = temperatureChangePerSecond * deltaTime
+
+    World.Current.temperature.ChangeTemperature(tile.X, tile.Y, tile.Z, temperatureChange)
+    --ModUtils.ULogChannel("Temperature", "Heat change: " .. temperatureChangePerSecond .. " => " .. World.current.temperature.GetTemperature(tile.X, tile.Y))
+end
 
 -- Should maybe later be integrated with GasGenerator function by
 -- someone who knows how that would work in this case
@@ -726,8 +737,19 @@ function Rtg_UninstallAction( furniture, deltaTime)
 end
 
 function Rtg_UpdateTemperature( furniture, deltaTime)
-    UpdateTemperature(furniture, deltaTime)
+    if (furniture.tile.Room.IsOutsideRoom() == true) then
+        return
     end
+
+    tile = furniture.tile
+    pressure = tile.Room.GetGasPressure() / tile.Room.TileCount
+    efficiency = ModUtils.Clamp01(pressure / furniture.Parameters["pressure_threshold"].ToFloat())
+    temperatureChangePerSecond = furniture.Parameters["base_heating"].ToFloat() * efficiency
+    temperatureChange = temperatureChangePerSecond * deltaTime
+
+    World.Current.temperature.ChangeTemperature(tile.X, tile.Y, tile.Z, temperatureChange)
+    --ModUtils.ULogChannel("Temperature", "Heat change: " .. temperatureChangePerSecond .. " => " .. World.current.temperature.GetTemperature(tile.X, tile.Y))
+end
 
 function Berth_TestSummoning(furniture, deltaTime)
     if (furniture.Parameters["occupied"].ToFloat() <= 0) then
@@ -757,24 +779,6 @@ function Berth_DismissShip(furniture, character)
         shipManager.DeberthShip(furniture)
         ship.SetDestination(0, 0)
     end
-end
-
-function UpdateTemperature( furniture, deltaTime )
-    if (furniture.tile.Room.IsOutsideRoom() == true) then
-        return
-    end
-
-    tile = furniture.tile
-    pressure = tile.Room.GetTotalGasPressure()
-    efficiency = ModUtils.Clamp01(pressure / furniture.Parameters["pressure_threshold"].ToFloat())
-    temperatureChangePerSecond = furniture.Parameters["base_heating"].ToFloat() * efficiency
-    temperatureChange = temperatureChangePerSecond * deltaTime
-    -- Multiply by this just to make the game make sense.
-    temperatureChange = temperatureChange * 10
-
-    World.Current.temperature.SetTemperature(tile.X, tile.Y, tile.Z, temperatureChange)
-    --ModUtils.ULogChannel("Temperature", "Heat change: " .. temperatureChangePerSecond .. " => " .. World.current.temperature.GetTemperature(tile.X, tile.Y))
-
 end
 
 ModUtils.ULog("Furniture.lua loaded")

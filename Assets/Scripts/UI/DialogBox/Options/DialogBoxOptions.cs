@@ -53,7 +53,13 @@ public class DialogBoxOptions : DialogBox
         {
             if (dialogManager.dialogBoxPromptOrInfo.Result == DialogBoxResult.Yes)
             {
-                SceneController.Instance.QuitGame();
+                // Quit the game
+#if UNITY_EDITOR
+                // Allows you to quit in the editor.
+                UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
             }
         };
 
@@ -114,7 +120,7 @@ public class DialogBoxOptions : DialogBox
             dialogManager.dialogBoxPromptOrInfo.SetPrompt("message_creating_new_world");
             dialogManager.dialogBoxPromptOrInfo.ShowDialog();
 
-            SceneController.Instance.LoadNewWorld();
+            WorldController.Instance.LoadWorld(null);
         }
     }
 
@@ -180,9 +186,8 @@ public class DialogBoxOptions : DialogBox
         buttonGameObject.transform.SetParent(this.transform, false);
         buttonGameObject.name = "Button " + name;
 
-        TextLocalizer textLocalizer = buttonGameObject.transform.GetComponentInChildren<TextLocalizer>();
-        textLocalizer.formatValues = new string[] { LocalizationTable.GetLocalization(localizationCode) };
-        textLocalizer.defaultText = localizationCode;
+        string localLocalizationCode = localizationCode;
+        buttonGameObject.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(localLocalizationCode) };
 
         return buttonGameObject;
     }

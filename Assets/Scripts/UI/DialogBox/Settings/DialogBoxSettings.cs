@@ -38,11 +38,7 @@ public class DialogBoxSettings : DialogBox
     
     public void OnSave()
     {
-        if (WorldController.Instance != null)
-        {
-            WorldController.Instance.spawnInventoryController.SetUIVisibility(developerModeToggle.isOn);
-        }
-
+        WorldController.Instance.spawnInventoryController.SetUIVisibility(developerModeToggle.isOn);
         OnApply();
         SaveSetting();
         CloseDialog();
@@ -53,10 +49,7 @@ public class DialogBoxSettings : DialogBox
         LocalizationTable.SetLocalization(languageDropdown.value);
         
         fpsObject.SetActive(fpsToggle.isOn);
-        if (WorldController.Instance != null)
-        {
-            WorldController.Instance.spawnInventoryController.SetUIVisibility(developerModeToggle.isOn);
-        }
+        WorldController.Instance.spawnInventoryController.SetUIVisibility(developerModeToggle.isOn);
 
         // MasterTextureLimit should get 0 for High quality and higher values for lower qualities.
         // For example count is 3 (0:Low, 1:Med, 2:High).
@@ -100,7 +93,8 @@ public class DialogBoxSettings : DialogBox
         applyButton.onClick.AddListener(OnApply);
 
         fullScreenToggle.isOn = Screen.fullScreen;
-        fpsObject = GameObject.FindObjectOfType<FPSCounter>().gameObject;
+
+        fpsObject = FindObjectOfType<FPSCounter>().gameObject;
 
         CreateResolutionDropdown();
 

@@ -58,13 +58,11 @@ public class PowerNetworkTest
     public void UnplugTest()
     {
         Connection connection = new Connection();
-        Assert.IsTrue(powerNetwork.PlugIn(connection));
+        Grid grid = new Grid();
+        Assert.IsTrue(powerNetwork.PlugIn(connection, grid));
         Assert.AreEqual(1, powerGrids.Count);
         powerNetwork.Unplug(connection);
-        Assert.AreEqual(1, powerGrids.Count);
-
-        powerNetwork.Update(1.0f);
-        Assert.AreEqual(0, powerGrids.Count);
+        Assert.AreEqual(0, grid.Connections.Count);
     }
 
     [Test]

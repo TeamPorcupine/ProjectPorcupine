@@ -2283,8 +2283,7 @@ MonoBehaviour:
   TraderCurrencyBalanceText: {fileID: 114000010303257016}
   TradeCurrencyBalanceText: {fileID: 114000010966220344}
   TradeItemListPanel: {fileID: 224000011586416764}
-  TradeItemPrefab: {fileID: 1000012557555258, guid: da29396d89156184cac0956897e67691,
-    type: 2}
+  TradeItemPrefab: {fileID: 0}
   AcceptButton: {fileID: 114000013484129864}
 --- !u!114 &114000013843059500
 MonoBehaviour:

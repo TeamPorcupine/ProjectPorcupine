@@ -29,7 +29,7 @@ namespace ProjectPorcupine.Localization
             LoadLocalizationInDirectory(Application.streamingAssetsPath);
 
             // Load mods localization files
-            foreach (DirectoryInfo mod in ModsManager.GetModsFiles())
+            foreach (DirectoryInfo mod in WorldController.Instance.modsManager.GetMods())
             {
                 LoadLocalizationInDirectory(mod.FullName);
             }
