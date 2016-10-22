@@ -127,7 +127,7 @@ public class InventoryManager
 
     public bool ConsumeInventory(Tile tile, int amount)
     {
-        if(tile.Inventory == null)
+        if (tile.Inventory == null)
         {
             return false;
         }

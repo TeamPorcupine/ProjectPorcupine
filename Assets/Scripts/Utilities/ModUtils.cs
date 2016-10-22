@@ -9,9 +9,9 @@
 
 using System.Collections;
 using MoonSharp.Interpreter;
-using UnityEngine;
-using ProjectPorcupine.PowerNetwork;
 using ProjectPorcupine.Buildable.Components;
+using ProjectPorcupine.PowerNetwork;
+using UnityEngine;
 
 [MoonSharpUserData]
 public static class ModUtils

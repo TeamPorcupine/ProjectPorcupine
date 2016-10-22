@@ -1086,11 +1086,11 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     }
 
     /// <summary>
-    /// Gets component if present or null
+    /// Gets component if present or null.
     /// </summary>
-    /// <typeparam name="T">type of component</typeparam>
-    /// <param name="componentName">type of the component, e.g. PowerConnection, WorkShop</param>
-    /// <returns>component or null</returns>
+    /// <typeparam name="T">Type of component.</typeparam>
+    /// <param name="componentName">Type of the component, e.g. PowerConnection, WorkShop.</param>
+    /// <returns>Component or null.</returns>
     public T GetComponent<T>(string componentName) where T : BuildableComponent
     {
         if (components != null)
