@@ -154,6 +154,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
 
         LocalizationCode = other.LocalizationCode;
         UnlocalizedDescription = other.UnlocalizedDescription;
+
+        // force true as default, to trigger OnIsOperatingChange (to sync the furniture icons after initialization)
+        IsOperating = true;
     }
     #endregion
 
@@ -441,7 +444,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                 }
             }
         }
-
+        
         // Let our workspot tile know it is reserved for us
         World.Current.ReserveTileAsWorkSpot(furnObj);
 
