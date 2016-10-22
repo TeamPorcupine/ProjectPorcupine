@@ -168,7 +168,14 @@ namespace ProjectPorcupine.Buildable.Components
 
         public override List<ContextMenuAction> GetContextMenu()
         {
-            return WorkshopMenuActions.Select(x => CreateComponentContextMenuItem(x)).ToList();
+            if (WorkshopMenuActions != null)
+            {
+                return WorkshopMenuActions.Select(x => CreateComponentContextMenuItem(x)).ToList();
+            }
+            else
+            {
+                return null;
+            }
         }
 
         protected override void Initialize()
