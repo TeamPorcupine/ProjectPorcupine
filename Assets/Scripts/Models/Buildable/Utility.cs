@@ -532,6 +532,9 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
             Jobs.CancelAll();
         }
 
+        // Just unregister our grid, it will get reregistered if there are any other utilities on this grid
+        World.Current.PowerNetwork.RemoveGrid(Grid);
+
         // We call lua to decostruct
         EventActions.Trigger("OnUninstall", this);
         Tile.UnplaceUtility(this);
