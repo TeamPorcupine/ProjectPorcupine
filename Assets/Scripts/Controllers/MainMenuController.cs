@@ -8,7 +8,6 @@
 #endregion
 
 using UnityEngine;
-using UnityStandardAssets.Utility;
 
 public class MainMenuController : MonoBehaviour
 {
@@ -58,13 +57,10 @@ public class MainMenuController : MonoBehaviour
         GameObject menuTop = (GameObject)Instantiate(Resources.Load("UI/MenuTop"));
         menuTop.name = "MenuTop";
         menuTop.transform.SetParent(canvas.transform, false);
-        menuTop.SetActive(true);
-        GameObject fpsCounter = FindObjectOfType<FPSCounter>().gameObject;
+        GameObject fpsCounter = menuTop.GetComponent<PerformanceHUDManager>().gameObject;
         fpsCounter.SetActive(true);
 
-        // TODO : Activate this when DialogBoxSettings will be fixed. See issue #1526
-        ////fpsCounter.SetActive(Settings.GetSetting("DialogBoxSettings_fpsToggle", true));
-
+        // Dev Console
         GameObject devConsole = (GameObject)Instantiate(Resources.Load("UI/Console/DevConsole"));
         devConsole.name = "DevConsole";
         devConsole.transform.SetParent(canvas.transform, false);

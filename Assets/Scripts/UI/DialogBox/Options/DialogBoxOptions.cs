@@ -38,31 +38,34 @@ public class DialogBoxOptions : DialogBox
         dialogManager.dialogBoxSettings.ShowDialog();
     }
 
-    // Quit the app whether in editor or a build version.
     public void OnButtonQuitGame()
     {
-        StartCoroutine(ConfirmQuitDialog());
-    }
+        UnityEngine.Object buttonPrefab = Resources.Load("UI/Components/MenuButton");
 
-    private IEnumerator ConfirmQuitDialog()
-    {
-        dialogManager.dialogBoxPromptOrInfo.SetPrompt("prompt_confirm_quit");
-        dialogManager.dialogBoxPromptOrInfo.SetButtons(DialogBoxResult.Yes, DialogBoxResult.No);
+        DestroyButtons();
+        this.GetComponent<RectTransform>().sizeDelta = new Vector2(this.GetComponent<RectTransform>().sizeDelta.x, 260);
 
-        dialogManager.dialogBoxPromptOrInfo.Closed = () =>
+        GameObject cancelButton = CreateButtonGO(buttonPrefab, "Resume", "menu_resume");
+        cancelButton.GetComponent<Button>().onClick.AddListener(delegate
         {
-            if (dialogManager.dialogBoxPromptOrInfo.Result == DialogBoxResult.Yes)
-            {
-                SceneController.Instance.QuitGame();
-            }
-        };
+            this.CloseDialog();
+            DestroyButtons();
+            RenderButtons();
+            this.GetComponent<RectTransform>().sizeDelta = new Vector2(this.GetComponent<RectTransform>().sizeDelta.x, 400);
+        });
 
-        dialogManager.dialogBoxPromptOrInfo.ShowDialog();
-
-        while (dialogManager.dialogBoxPromptOrInfo.gameObject.activeSelf)
+        GameObject mainMenuButton = CreateButtonGO(buttonPrefab, "Quit To Main Menu", "menu_quit_to_menu");
+        mainMenuButton.GetComponent<Button>().onClick.AddListener(delegate
         {
-            yield return null;
-        }
+            this.CloseDialog();
+            SceneController.Instance.LoadMainMenu();
+        });
+
+        GameObject quitButton = CreateButtonGO(buttonPrefab, "QuitGame", "menu_quit_game");
+        quitButton.GetComponent<Button>().onClick.AddListener(delegate
+        {
+            SceneController.Instance.QuitGame();
+        });
     }
 
     private IEnumerator CheckIfSaveGameBefore(string prompt)
@@ -199,6 +202,17 @@ public class DialogBoxOptions : DialogBox
         if (Input.GetKey(KeyCode.Escape))
         {
             this.CloseDialog();
+        }
+    }
+
+    private void DestroyButtons()
+    {
+        foreach (Transform t in transform)
+        {
+            if (t.name.StartsWith("Button"))
+            {
+                Destroy(t.gameObject);
+            }
         }
     }
 }
