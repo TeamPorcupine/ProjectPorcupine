@@ -6,6 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,11 +15,11 @@ namespace ProjectPorcupine.PowerNetwork
 {
     public class Grid
     {
-        private readonly HashSet<Connection> connections;
+        private readonly HashSet<IPlugable> connections;
 
         public Grid()
         {
-            connections = new HashSet<Connection>();
+            connections = new HashSet<IPlugable>();
         }
 
         /// <summary>
@@ -37,7 +38,7 @@ namespace ProjectPorcupine.PowerNetwork
         /// <summary>
         /// Gets the connections to this grid.
         /// </summary>
-        public HashSet<Connection> Connections
+        public HashSet<IPlugable> Connections
         {
             get 
             {
@@ -49,7 +50,7 @@ namespace ProjectPorcupine.PowerNetwork
         /// Determines whether the connection can plug into this grid.
         /// </summary>
         /// <returns><c>true</c> if the connection can plug into this grid; otherwise, <c>false</c>.</returns>
-        public bool CanPlugIn(Connection connection)
+        public bool CanPlugIn(IPlugable connection)
         {
             if (connection == null)
             {
@@ -60,11 +61,11 @@ namespace ProjectPorcupine.PowerNetwork
         }
 
         /// <summary>
-        /// Plugs the Connection into this grid.
+        /// Plugs the IPlugable into this grid.
         /// </summary>
         /// <returns><c>true</c>, if in was plugged, <c>false</c> otherwise.</returns>
-        /// <param name="connection">Connection to be plugged in.</param>
-        public bool PlugIn(Connection connection)
+        /// <param name="connection">IPlugable to be plugged in.</param>
+        public bool PlugIn(IPlugable connection)
         {
             if (connection == null)
             {
@@ -84,7 +85,7 @@ namespace ProjectPorcupine.PowerNetwork
         /// Determines whether the connection is plugged into this Grid.
         /// </summary>
         /// <returns><c>true</c> if the connection is plugged into this Grid; otherwise, <c>false</c>.</returns>
-        public bool IsPluggedIn(Connection connection)
+        public bool IsPluggedIn(IPlugable connection)
         {
             if (connection == null)
             {
@@ -95,10 +96,10 @@ namespace ProjectPorcupine.PowerNetwork
         }
 
         /// <summary>
-        /// Unplug the specified connection from this Grid.
+        /// Unplug the specified IPlugable from this Grid.
         /// </summary>
-        /// <param name="connection">Connection to be unplugged.</param>
-        public void Unplug(Connection connection)
+        /// <param name="connection">IPlugable to be unplugged.</param>
+        public void Unplug(IPlugable connection)
         {
             if (connection == null)
             {
@@ -111,14 +112,14 @@ namespace ProjectPorcupine.PowerNetwork
         public void Tick()
         {
             float currentPowerLevel = 0.0f;
-            foreach (Connection connection in connections)
+            foreach (IPlugable connection in connections)
             {
-                if (connection.IsPowerProducer)
+                if (connection.IsProducer)
                 {
                     currentPowerLevel += connection.OutputRate;
                 }
 
-                if (connection.IsPowerConsumer)
+                if (connection.IsConsumer)
                 {
                     currentPowerLevel -= connection.InputRate;
                 }
@@ -165,9 +166,9 @@ namespace ProjectPorcupine.PowerNetwork
         /// </summary>
         public void Split()
         {
-            Connection[] tempConnections = (Connection[])connections.ToArray().Clone();
+            IPlugable[] tempConnections = (IPlugable[])connections.ToArray().Clone();
             connections.Clear();
-            foreach (Connection connection in tempConnections)
+            foreach (IPlugable connection in tempConnections)
             {
                 connection.Reconnect();
             }
@@ -175,10 +176,10 @@ namespace ProjectPorcupine.PowerNetwork
 
         private void ChargeAccumulators(ref float currentPowerLevel)
         {
-            foreach (Connection connection in connections.Where(connection => connection.IsPowerAccumulator && !connection.IsFull))
+            foreach (IPlugable connection in connections.Where(connection => connection.IsAccumulator && !connection.IsFull))
             {
-                float inputRate = connection.AccumulatedPower + connection.InputRate > connection.Capacity ?
-                    connection.Capacity - connection.AccumulatedPower :
+                float inputRate = connection.AccumulatedAmount + connection.InputRate > connection.AccumulatorCapacity ?
+                    connection.AccumulatorCapacity - connection.AccumulatedAmount :
                     connection.InputRate;
 
                 if (currentPowerLevel - inputRate < 0.0f)
@@ -187,7 +188,7 @@ namespace ProjectPorcupine.PowerNetwork
                 }
 
                 currentPowerLevel -= inputRate;
-                connection.AccumulatedPower += inputRate;
+                connection.AccumulatedAmount += inputRate;
 
                 if (currentPowerLevel.IsZero())
                 {
@@ -198,7 +199,7 @@ namespace ProjectPorcupine.PowerNetwork
 
         private void DischargeAccumulators(ref float currentPowerLevel)
         {
-            float possibleOutput = connections.Where(connection => connection.IsPowerAccumulator && !connection.IsEmpty)
+            float possibleOutput = connections.Where(connection => connection.IsAccumulator && !connection.IsEmpty)
                 .Sum(connection => GetOutputRate(connection));
 
             if (currentPowerLevel + possibleOutput < 0)
@@ -206,13 +207,13 @@ namespace ProjectPorcupine.PowerNetwork
                 return;
             }
 
-            foreach (Connection connection in connections.Where(powerRelated => powerRelated.IsPowerAccumulator && !powerRelated.IsEmpty))
+            foreach (IPlugable connection in connections.Where(powerRelated => powerRelated.IsAccumulator && !powerRelated.IsEmpty))
             {
                 float outputRate = connection.OutputRate > Math.Abs(currentPowerLevel) ? Math.Abs(currentPowerLevel) : connection.OutputRate;
                 outputRate = GetOutputRate(connection, outputRate);
 
                 currentPowerLevel += outputRate;
-                connection.AccumulatedPower -= outputRate;
+                connection.AccumulatedAmount -= outputRate;
                 if (currentPowerLevel >= 0.0f)
                 {
                     break;
@@ -220,14 +221,14 @@ namespace ProjectPorcupine.PowerNetwork
             }
         }
 
-        private float GetOutputRate(Connection connection, float outputRate = 0.0f)
+        private float GetOutputRate(IPlugable connection, float outputRate = 0.0f)
         {
             if (outputRate.IsZero())
             {
                 outputRate = connection.OutputRate;
             }
 
-            return connection.AccumulatedPower - outputRate < 0.0f ? connection.AccumulatedPower : outputRate;
+            return connection.AccumulatedAmount - outputRate < 0.0f ? connection.AccumulatedAmount : outputRate;
         }
     }
 }

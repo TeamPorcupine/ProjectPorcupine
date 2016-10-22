@@ -39,14 +39,14 @@ public class PowerNetworkTest
     [Test]
     public void PlugInTest()
     {
-        Assert.IsTrue(powerNetwork.PlugIn(new Connection()));
+        Assert.IsTrue(powerNetwork.PlugIn(new MockConnection()));
         Assert.AreEqual(1, powerGrids.Count);
     }
 
     [Test]
     public void IsPluggedInTest()
     {
-        Connection connection = new Connection();
+        MockConnection connection = new MockConnection();
         Assert.IsTrue(powerNetwork.PlugIn(connection));
         Assert.AreEqual(1, powerGrids.Count);
         Grid grid;
@@ -57,7 +57,7 @@ public class PowerNetworkTest
     [Test]
     public void UnplugTest()
     {
-        Connection connection = new Connection();
+        MockConnection connection = new MockConnection();
         Grid grid = new Grid();
         Assert.IsTrue(powerNetwork.PlugIn(connection, grid));
         Assert.AreEqual(1, powerGrids.Count);
@@ -68,8 +68,8 @@ public class PowerNetworkTest
     [Test]
     public void UpdateEnoughPowerTest()
     {
-        Connection powerProducer = new Connection { OutputRate = 50.0f };
-        Connection firstPowerConsumer = new Connection { InputRate = 30.0f };
+        MockConnection powerProducer = new MockConnection { OutputRate = 50.0f };
+        MockConnection firstPowerConsumer = new MockConnection { InputRate = 30.0f };
         powerNetwork.PlugIn(powerProducer);
         powerNetwork.PlugIn(firstPowerConsumer);
         Assert.AreEqual(1, powerGrids.Count);
@@ -82,9 +82,9 @@ public class PowerNetworkTest
     [Test]
     public void UpdateNotEnoughPowerTest()
     {
-        Connection powerProducer = new Connection { OutputRate = 50.0f };
-        Connection firstPowerConsumer = new Connection { InputRate = 30.0f };
-        Connection secondPowerConsumer = new Connection { InputRate = 30.0f };
+        MockConnection powerProducer = new MockConnection { OutputRate = 50.0f };
+        MockConnection firstPowerConsumer = new MockConnection { InputRate = 30.0f };
+        MockConnection secondPowerConsumer = new MockConnection { InputRate = 30.0f };
         powerNetwork.PlugIn(powerProducer);
         powerNetwork.PlugIn(firstPowerConsumer);
         powerNetwork.PlugIn(secondPowerConsumer);
@@ -99,8 +99,8 @@ public class PowerNetworkTest
     [Test]
     public void UpdateIntervalTest()
     {
-        Connection powerProducer = new Connection { OutputRate = 50.0f };
-        Connection firstPowerConsumer = new Connection { InputRate = 30.0f };
+        MockConnection powerProducer = new MockConnection { OutputRate = 50.0f };
+        MockConnection firstPowerConsumer = new MockConnection { InputRate = 30.0f };
         powerNetwork.PlugIn(powerProducer);
         powerNetwork.PlugIn(firstPowerConsumer);
         Assert.AreEqual(1, powerGrids.Count);
@@ -118,5 +118,49 @@ public class PowerNetworkTest
         powerNetwork.Update(0.2f);
         Assert.IsTrue(powerNetwork.HasPower(powerProducer));
         Assert.IsTrue(powerNetwork.HasPower(firstPowerConsumer));
+    }
+
+    private class MockConnection : IPlugable
+    {
+        public event Action Reconnecting;
+
+        public float AccumulatedAmount { get; set; }
+
+        public float AccumulatorCapacity { get; set; }
+
+        public float InputRate { get; set; }
+
+        public bool IsAccumulator
+        {
+            get { return AccumulatorCapacity > 0f; }
+        }
+
+        public bool IsConsumer
+        {
+            get { return InputRate > 0f && !IsAccumulator; }
+        }
+
+        public bool IsEmpty
+        {
+            get { return AccumulatedAmount == 0f; }
+        }
+
+        public bool IsFull
+        {
+            get { return AccumulatedAmount.AreEqual(AccumulatorCapacity); }
+        }
+
+        public bool IsProducer
+        {
+            get { return OutputRate > 0f && !IsAccumulator; }
+        }
+
+        public float OutputRate { get; set; }
+
+
+        public void Reconnect()
+        {
+            // Not needed to do anything.
+        }
     }
 }
