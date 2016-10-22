@@ -577,7 +577,6 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         {
             foreach (Utility utility in neighbor.Utilities.Values)
             {
-                World.Current.PowerNetwork.RemoveGrid(utility.Grid);
                 utility.Grid = new Grid();
                 utility.UpdateGrid(utility);
                 utility.Grid.Split();
@@ -736,6 +735,9 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
 
         gridUpdatedThisFrame = true;
         Grid oldGrid = utilityToUpdate.Grid;
+
+        World.Current.PowerNetwork.RemoveGrid(utilityToUpdate.Grid);
+
         if (newGrid == null)
         {
             foreach (Tile neighborTile in utilityToUpdate.Tile.GetNeighbours())
