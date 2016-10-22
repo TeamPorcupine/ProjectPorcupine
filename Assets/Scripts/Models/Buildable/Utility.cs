@@ -5,6 +5,9 @@
 // and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
+using System.Collections;
+
+
 #endregion
 using System;
 using System.Collections.Generic;
@@ -14,6 +17,7 @@ using System.Xml.Serialization;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
 using ProjectPorcupine.Jobs;
+using ProjectPorcupine.PowerNetwork;
 using UnityEngine;
 
 /// <summary>
@@ -24,6 +28,8 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
 {
     // Prevent construction too close to the world's edge
     private const int MinEdgeDistance = 5;
+
+    private bool gridUpdatedThisFrame = false;
 
     /// <summary>
     /// This action is called to get the sprite name based on the utility parameters.
@@ -219,12 +225,19 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     public bool IsBeingDestroyed { get; protected set; }
 
     /// <summary>
+    /// Gets or sets the grid used by this utility.
+    /// </summary>
+    /// <value>The grid used by this utility.</value>
+    public Grid Grid { get; set; }
+
+    /// <summary>
     /// Used to place utility in a certain position.
     /// </summary>
     /// <param name="proto">The prototype utility to place.</param>
     /// <param name="tile">The base tile to place the utility on, The tile will be the bottom left corner of the utility (to check).</param>
+    /// <param name="delayGridUpdate">If true, the grid won't be updated until the next frame.</param>
     /// <returns>Utility object.</returns>
-    public static Utility PlaceInstance(Utility proto, Tile tile)
+    public static Utility PlaceInstance(Utility proto, Tile tile, bool skipGridUpdate = false)
     {
         if (proto.IsValidPosition(tile) == false)
         {
@@ -257,21 +270,37 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
             for (int ypos = y - 1; ypos < y + 2; ypos++)
             {
                 Tile tileAt = World.Current.GetTileAt(xpos, ypos, tile.Z);
-                if (tileAt != null && tileAt.Utilities != null)
+                if (tileAt != null && tileAt.Utilities != null && tileAt.Utilities.ContainsKey(obj.Name))
                 {
-                    foreach (Utility utility in tileAt.Utilities.Values)
+                    Utility utility = tileAt.Utilities[obj.Name];
+                    if (utility.Changed != null)
                     {
-                        if (utility.Changed != null)
-                        {
-                            utility.Changed(utility);
-                        }
+                        utility.Changed(utility);
                     }
                 }
             }
         }
 
+        if (!skipGridUpdate)
+        {
+            obj.UpdateGrid(obj);
+        }
+        else
+        {
+            // If we're skipping the update, we need a temporary grid for furniture in the same tile to connect to.
+            obj.Grid = new Grid();
+            World.Current.PowerNetwork.RegisterGrid(obj.Grid);
+        }
+
+
+        if (obj.Tile != null && obj.Tile.Furniture != null && obj.Tile.Furniture.PowerConnection != null)
+        {
+            obj.Tile.Furniture.PowerConnection.Reconnect();
+        }
+
         // Call LUA install scripts
         obj.EventActions.Trigger("OnInstall", obj);
+
         return obj;
     }
 
@@ -280,7 +309,17 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     /// This checks if the utility is a PowerConsumer, and if it does not have power it cancels its job.
     /// </summary>
     /// <param name="deltaTime">The time since the last update was called.</param>
-    public void Update(float deltaTime)
+    public void EveryFrameUpdate(float deltaTime)
+    {
+        gridUpdatedThisFrame = false;
+    }
+
+    /// <summary>
+    /// This function is called to update the utility. This will also trigger EventsActions.
+    /// This checks if the utility is a PowerConsumer, and if it does not have power it cancels its job.
+    /// </summary>
+    /// <param name="deltaTime">The time since the last update was called.</param>
+    public void FixedFrequencyUpdate(float deltaTime)
     {
         if (EventActions != null)
         {
@@ -532,6 +571,17 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
             }
         }
 
+        foreach (Tile neighbor in Tile.GetNeighbours())
+        {
+            foreach (Utility utility in neighbor.Utilities.Values)
+            {
+                World.Current.PowerNetwork.RemoveGrid(utility.Grid);
+                utility.Grid = new Grid();
+                utility.UpdateGrid(utility);
+                utility.Grid.Split();
+            }
+        }
+
         // At this point, no DATA structures should be pointing to us, so we
         // should get garbage-collected.
     }
@@ -668,6 +718,65 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         }
 
         return true;
+    }
+
+    public void UpdateGrid(Utility utilityToUpdate, Grid newGrid = null)
+    {
+        if (gridUpdatedThisFrame)
+        {
+            return;
+        }
+
+        gridUpdatedThisFrame = true;
+        Grid oldGrid = utilityToUpdate.Grid;
+        if (newGrid == null)
+        {
+            foreach (Tile neighborTile in utilityToUpdate.Tile.GetNeighbours())
+            {
+                if (neighborTile != null && neighborTile.Utilities != null && neighborTile.Utilities.ContainsKey(this.Name))
+                {
+                    Utility utility = neighborTile.Utilities[this.Name];
+
+                    if (utility.Grid != null && utilityToUpdate.Grid == null)
+                    {
+                        utilityToUpdate.Grid = utility.Grid;
+                    }
+                }
+            }
+
+            if (utilityToUpdate.Grid == null)
+            {
+                utilityToUpdate.Grid = new Grid();
+            }
+        }
+        else
+        {
+            utilityToUpdate.Grid = newGrid;
+        }
+
+        if (utilityToUpdate.Grid != oldGrid)
+        {
+            World.Current.PowerNetwork.UnregisterGrid(oldGrid);
+        }
+
+        if (oldGrid != null && newGrid != null)
+        {
+            newGrid.Merge(oldGrid);
+        }
+
+        World.Current.PowerNetwork.RegisterGrid(utilityToUpdate.Grid);
+
+        foreach (Tile neighborTile in utilityToUpdate.Tile.GetNeighbours())
+        {
+            if (neighborTile != null && neighborTile.Utilities != null)
+            {
+                if (neighborTile != null && neighborTile.Utilities != null && neighborTile.Utilities.ContainsKey(this.Name))
+                {
+                    Utility utility = neighborTile.Utilities[this.Name];
+                    utility.UpdateGrid(utility, utilityToUpdate.Grid);
+                }
+            }
+        }
     }
 
     private void ReadXmlDeconstructJob(XmlReader reader)
