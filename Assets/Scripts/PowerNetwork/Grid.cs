@@ -34,6 +34,9 @@ namespace ProjectPorcupine.PowerNetwork
             get { return connections.Count == 0; }
         }
 
+        /// <summary>
+        /// Gets the connections to this grid.
+        /// </summary>
         public HashSet<Connection> Connections
         {
             get 
@@ -42,6 +45,10 @@ namespace ProjectPorcupine.PowerNetwork
             }
         }
 
+        /// <summary>
+        /// Determines whether the connection can plug into this grid.
+        /// </summary>
+        /// <returns><c>true</c> if the connection can plug into this grid; otherwise, <c>false</c>.</returns>
         public bool CanPlugIn(Connection connection)
         {
             if (connection == null)
@@ -52,6 +59,11 @@ namespace ProjectPorcupine.PowerNetwork
             return true;
         }
 
+        /// <summary>
+        /// Plugs the Connection into this grid.
+        /// </summary>
+        /// <returns><c>true</c>, if in was plugged, <c>false</c> otherwise.</returns>
+        /// <param name="connection">Connection to be plugged in.</param>
         public bool PlugIn(Connection connection)
         {
             if (connection == null)
@@ -68,6 +80,10 @@ namespace ProjectPorcupine.PowerNetwork
             return true;
         }
 
+        /// <summary>
+        /// Determines whether the connection is plugged into this Grid.
+        /// </summary>
+        /// <returns><c>true</c> if the connection is plugged into this Grid; otherwise, <c>false</c>.</returns>
         public bool IsPluggedIn(Connection connection)
         {
             if (connection == null)
@@ -78,6 +94,10 @@ namespace ProjectPorcupine.PowerNetwork
             return connections.Contains(connection);
         }
 
+        /// <summary>
+        /// Unplug the specified connection from this Grid.
+        /// </summary>
+        /// <param name="connection">Connection to be unplugged.</param>
         public void Unplug(Connection connection)
         {
             if (connection == null)
@@ -122,22 +142,31 @@ namespace ProjectPorcupine.PowerNetwork
             IsOperating = currentPowerLevel >= 0.0f;
         }
 
+        /// <summary>
+        /// Gets the ID for this grid within the PowerNetwork.
+        /// </summary>
+        /// <returns>The ID number.</returns>
         public int GetId()
         {
             return World.Current.PowerNetwork.FindId(this);
         }
 
+        /// <summary>
+        /// Merge the specified Grid with this Grid.
+        /// </summary>
+        /// <param name="otherGrid">Other grid to be merged.</param>
         public void Merge(Grid otherGrid)
         {
             connections.UnionWith(otherGrid.connections);
         }
 
+        /// <summary>
+        /// Split this Grid into multiple grids.
+        /// </summary>
         public void Split()
         {
             Connection[] tempConnections = (Connection[])connections.ToArray().Clone();
-            Debug.LogWarning("BEFORE: " + tempConnections.Length + " " + connections.Count);
             connections.Clear();
-            Debug.LogWarning("AFTER: " + tempConnections.Length + " " + connections.Count);
             foreach (Connection connection in tempConnections)
             {
                 connection.Reconnect();

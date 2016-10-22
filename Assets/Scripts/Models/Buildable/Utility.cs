@@ -5,8 +5,6 @@
 // and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
-using System.Collections;
-
 
 #endregion
 using System;
@@ -52,7 +50,6 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
 
     private List<Inventory> deconstructInventory;
 
-    /// TODO: Implement object rotation
     /// <summary>
     /// Initializes a new instance of the <see cref="Utility"/> class.
     /// </summary>
@@ -235,7 +232,8 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     /// </summary>
     /// <param name="proto">The prototype utility to place.</param>
     /// <param name="tile">The base tile to place the utility on, The tile will be the bottom left corner of the utility (to check).</param>
-    /// <param name="delayGridUpdate">If true, the grid won't be updated until the next frame.</param>
+    /// <param name="skipGridUpdate">If true, the grid won't be updated from neighboring Utilities, UpdateGrid must be called on at least one
+    /// utility connected to this utility for them to network properly.</param>
     /// <returns>Utility object.</returns>
     public static Utility PlaceInstance(Utility proto, Tile tile, bool skipGridUpdate = false)
     {
@@ -291,7 +289,6 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
             obj.Grid = new Grid();
             World.Current.PowerNetwork.RegisterGrid(obj.Grid);
         }
-
 
         if (obj.Tile != null && obj.Tile.Furniture != null && obj.Tile.Furniture.PowerConnection != null)
         {
@@ -723,6 +720,11 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         return true;
     }
 
+    /// <summary>
+    /// Updates the grids of this utility sharing the grids along the network of connected utilities.
+    /// </summary>
+    /// <param name="utilityToUpdate">Utility to update.</param>
+    /// <param name="newGrid">If not null this will force neighboring utilities to use the specified Instance of Grid.</param>
     public void UpdateGrid(Utility utilityToUpdate, Grid newGrid = null)
     {
         if (gridUpdatedThisFrame)

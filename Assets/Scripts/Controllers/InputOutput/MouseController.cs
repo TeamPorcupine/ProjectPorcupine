@@ -458,7 +458,6 @@ public class MouseController
             Utility utility = firstTile.Utilities[PrototypeManager.Utility.Get(bmc.buildModeType).Name];
             utility.UpdateGrid(utility);
         }
-
     }
 
     // Checks whether a tile is valid for the drag type, given the drag parameters

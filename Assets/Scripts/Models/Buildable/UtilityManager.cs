@@ -22,12 +22,12 @@ public class UtilityManager : IEnumerable<Utility>
         Utilities = new List<Utility>();
     }
 
-    public List<Utility> Utilities { get; private set; }
-
     /// <summary>
     /// Occurs when a utility is created.
     /// </summary>
     public event Action<Utility> Created;
+
+    public List<Utility> Utilities { get; private set; }
 
     /// <summary>
     /// Creates a utility with the given type and places it at the given tile.
@@ -78,8 +78,8 @@ public class UtilityManager : IEnumerable<Utility>
     }
 
     /// <summary>
-    /// Calls the utility update function on every frame.
-    /// The list needs to be copied temporarily in case furnitures are added or removed during the update.
+    /// Calls the utilities update function on every frame.
+    /// The list needs to be copied temporarily in case utilities are added or removed during the update.
     /// </summary>
     /// <param name="deltaTime">Delta time.</param>
     public void TickEveryFrame(float deltaTime)
@@ -92,8 +92,8 @@ public class UtilityManager : IEnumerable<Utility>
     }
 
     /// <summary>
-    /// Calls the furnitures update function on every frame.
-    /// The list needs to be copied temporarily in case furnitures are added or removed during the update.
+    /// Calls the utilities update function on every frame.
+    /// The list needs to be copied temporarily in case utilities are added or removed during the update.
     /// </summary>
     /// <param name="deltaTime">Delta time.</param>
     public void TickFixedFrequency(float deltaTime)
