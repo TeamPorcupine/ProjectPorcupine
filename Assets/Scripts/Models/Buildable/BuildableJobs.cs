@@ -151,6 +151,11 @@ public class BuildableJobs
     public bool HasJobWithPredicate(Func<Job, bool> predicate, out Job job)
     {
         job = activeJobs.FirstOrDefault(predicate);
+        if (job == null)
+        {
+            job = pausedJobs.FirstOrDefault(predicate);
+        }
+
         return job != null;
     }
 
