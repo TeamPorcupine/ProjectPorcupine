@@ -3301,8 +3301,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fa62911837f871448bd7e62da9b277f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fpsToggle: {fileID: 0}
-  fpsObject: {fileID: 0}
+  performanceDropdown: {fileID: 114000013057809854}
   fullScreenToggle: {fileID: 114000012982859236}
   developerModeToggle: {fileID: 114000010569578726}
   musicVolume: {fileID: 114000011866825794}
@@ -3310,8 +3309,8 @@ MonoBehaviour:
   languageDropdown: {fileID: 114000010935686784}
   vsyncDropdown: {fileID: 114000013966113356}
   qualityDropdown: {fileID: 114000011108201276}
-  autosaveInterval: {fileID: 0}
-  autosaveFiles: {fileID: 0}
+  autosaveInterval: {fileID: 114000012712954606}
+  autosaveFiles: {fileID: 114000012121009636}
   closeButton: {fileID: 114000012044927824}
   saveButton: {fileID: 114000010484861234}
   applyButton: {fileID: 114000012746555430}
