@@ -14,6 +14,7 @@ using System.Xml.Schema;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
+using ProjectPorcupine.Buildable.Components;
 using ProjectPorcupine.Jobs;
 using ProjectPorcupine.PowerNetwork;
 using UnityEngine;
@@ -290,9 +291,10 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
             World.Current.PowerNetwork.RegisterGrid(obj.Grid);
         }
 
-        if (obj.Tile != null && obj.Tile.Furniture != null && obj.Tile.Furniture.PowerConnection != null)
+        if (obj.Tile != null && obj.Tile.Furniture != null && obj.Tile.Furniture.GetComponent<PowerConnection>("PowerConnection") != null)
         {
-            obj.Tile.Furniture.PowerConnection.Reconnect();
+            // HACK: This will work for now, but needs expanded when we have other types of connections we'll want to plug in
+            obj.Tile.Furniture.GetComponent<PowerConnection>("PowerConnection").Reconnect();
         }
 
         // Call LUA install scripts

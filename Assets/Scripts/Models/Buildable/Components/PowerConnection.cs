@@ -29,7 +29,11 @@ namespace ProjectPorcupine.Buildable.Components
             ParamsDefinitions = other.ParamsDefinitions;
             Provides = other.Provides;
             Requires = other.Requires;
+
+            Reconnecting += OnReconnecting;
         }
+
+        public event Action Reconnecting;
 
         [XmlElement("ParameterDefinitions")]
         public PowerConnectionParameterDefinitions ParamsDefinitions { get; set; }
@@ -185,6 +189,14 @@ namespace ProjectPorcupine.Buildable.Components
             }
         }
 
+        public void Reconnect()
+        {
+            if (Reconnecting != null)
+            {
+                Reconnecting();
+            }
+        }
+
         protected override void Initialize()
         {
             componentRequirements = Requirements.Power;
@@ -206,10 +218,14 @@ namespace ProjectPorcupine.Buildable.Components
                     CurrentAccumulatorChargeIndex.SetValue(0);
                 }
             }
-            
+
             IsRunning = false;
 
-            World.Current.PowerNetwork.PlugIn(this);
+            foreach (Utility util in ParentFurniture.Tile.Utilities.Values)
+            {
+                util.Grid.PlugIn(this);
+            }
+
             ParentFurniture.Removed += PowerConnectionRemoved;           
         }
         
@@ -217,6 +233,14 @@ namespace ProjectPorcupine.Buildable.Components
         {
             World.Current.PowerNetwork.Unplug(this);
             ParentFurniture.Removed -= PowerConnectionRemoved;
+        }
+
+        private void OnReconnecting()
+        {
+            foreach (Utility util in ParentFurniture.Tile.Utilities.Values)
+            {
+                util.Grid.PlugIn(this);
+            }
         }
 
         public class Info
