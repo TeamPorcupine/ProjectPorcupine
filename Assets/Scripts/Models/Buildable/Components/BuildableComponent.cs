@@ -21,13 +21,13 @@ namespace ProjectPorcupine.Buildable.Components
 {
     [Serializable]
     public abstract class BuildableComponent
-    {        
+    {
         protected static readonly string ComponentLogChannel = "FurnitureComponents";
 
         protected Requirements componentRequirements = Requirements.None;
 
         private static Dictionary<string, Type> componentTypes;
-        
+
         public BuildableComponent()
         {
             // need to set it, for some reason GetHashCode is called during serialization (when Name is still null)
@@ -76,7 +76,7 @@ namespace ProjectPorcupine.Buildable.Components
         {
             get { return ParentFurniture.Parameters; }
         }
-                        
+
         public static BuildableComponent Deserialize(XmlReader xmlReader)
         {
             if (componentTypes == null)
@@ -101,7 +101,7 @@ namespace ProjectPorcupine.Buildable.Components
                 return null;
             }
         }
-        
+
         public void Initialize(Furniture parentFurniture)
         {
             ParentFurniture = parentFurniture;
@@ -127,17 +127,17 @@ namespace ProjectPorcupine.Buildable.Components
         }
 
         public virtual IEnumerable<string> GetDescription()
-        { 
+        {
             return null;
         }
-        
+
         public override string ToString()
         {
             return Type;
         }
-        
+
         public abstract BuildableComponent Clone();
-        
+
         protected abstract void Initialize();
 
         protected ContextMenuAction CreateComponentContextMenuItem(ComponentContextMenu componentContextMenuAction)
@@ -154,29 +154,29 @@ namespace ProjectPorcupine.Buildable.Components
         {
             function(ParentFurniture, arg);
         }
-        
+
         protected bool AreParameterConditionsFulfilled(List<ParameterCondition> conditions)
         {
             bool conditionsFulFilled = true;
             //// here evaluate all parameter conditions
             if (conditions != null)
             {
-                foreach (ParameterCondition cnd in conditions)
+                foreach (ParameterCondition condition in conditions)
                 {
                     bool partialEval = true;
-                    switch (cnd.Condition)
+                    switch (condition.Condition)
                     {
                         case ConditionType.IsZero:
-                            partialEval = FurnitureParams[cnd.ParameterName].ToFloat().Equals(0);
+                            partialEval = FurnitureParams[condition.ParameterName].ToFloat().Equals(0);
                             break;
                         case ConditionType.IsGreaterThanZero:
-                            partialEval = FurnitureParams[cnd.ParameterName].ToFloat() > 0f;
+                            partialEval = FurnitureParams[condition.ParameterName].ToFloat() > 0f;
                             break;
                         case ConditionType.IsTrue:
-                            partialEval = FurnitureParams[cnd.ParameterName].ToBool() == true;
+                            partialEval = FurnitureParams[condition.ParameterName].ToBool() == true;
                             break;
                         case ConditionType.IsFalse:
-                            partialEval = FurnitureParams[cnd.ParameterName].ToBool() == false;
+                            partialEval = FurnitureParams[condition.ParameterName].ToBool() == false;
                             break;
                     }
 
@@ -215,13 +215,13 @@ namespace ProjectPorcupine.Buildable.Components
         {
             [XmlAttribute("name")]
             public string Name { get; set; }
-                        
+
             [XmlAttribute("valuebasedParamerName")]
             public string ValueBasedParamerName { get; set; }
-            
+
             public ParameterConditions Requires { get; set; }
         }
-        
+
         [Serializable]
         public class ParameterConditions
         {
@@ -241,7 +241,7 @@ namespace ProjectPorcupine.Buildable.Components
 
         [Serializable]
         public class ParameterDefinition
-        {              
+        {
             public ParameterDefinition()
             {
             }
@@ -257,5 +257,5 @@ namespace ProjectPorcupine.Buildable.Components
             [XmlAttribute("type")]
             public string Type { get; set; }
         }
-    }    
+    }
 }

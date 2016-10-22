@@ -25,7 +25,7 @@ public class PowerGridTest
         FieldInfo field = powerGridType.GetField("connections", BindingFlags.NonPublic | BindingFlags.Instance);
         Assert.IsNotNull(field);
         connections = field.GetValue(grid) as HashSet<IPlugable>;
-        Assert.IsNotNull(connections);        
+        Assert.IsNotNull(connections);
     }
 
     [Test]
@@ -90,10 +90,6 @@ public class PowerGridTest
     [Test]
     public void ChargeAccumulatorsTest()
     {
-        Furniture f1 = new Furniture();
-        Furniture f2 = new Furniture();
-        Furniture f3 = new Furniture();
-
         MockConnection powerProducer = new MockConnection { OutputRate = 50.0f };
         MockConnection firstPowerConsumer = new MockConnection { InputRate = 30.0f };
         MockConnection accumulator = new MockConnection { OutputRate = 10.0f, AccumulatorCapacity = 100.0f, InputRate = 10.0f };
@@ -104,10 +100,10 @@ public class PowerGridTest
         Assert.AreEqual(3, connections.Count);
         grid.Tick();
         Assert.IsTrue(grid.IsOperating);
-        Assert.IsTrue(accumulator.AccumulatedAmount.AreEqual(10.0f));      
+        Assert.IsTrue(accumulator.AccumulatedAmount.AreEqual(10.0f));
         grid.Tick();
         Assert.IsTrue(grid.IsOperating);
-        Assert.IsTrue(accumulator.AccumulatedAmount.AreEqual(20.0f));       
+        Assert.IsTrue(accumulator.AccumulatedAmount.AreEqual(20.0f));
         grid.Tick();
         Assert.IsTrue(grid.IsOperating);
         Assert.IsTrue(accumulator.AccumulatedAmount.AreEqual(30.0f));
@@ -118,7 +114,7 @@ public class PowerGridTest
     {
         MockConnection powerProducer = new MockConnection { OutputRate = 30.0f };
         MockConnection firstPowerConsumer = new MockConnection { InputRate = 30.0f };
-        MockConnection firstAccumulator = new MockConnection { InputRate = 10.0f,  OutputRate = 10.0f, AccumulatorCapacity = 100f };
+        MockConnection firstAccumulator = new MockConnection { InputRate = 10.0f, OutputRate = 10.0f, AccumulatorCapacity = 100f };
         MockConnection secondAccumulator = new MockConnection { InputRate = 10.0f, OutputRate = 10.0f, AccumulatorCapacity = 100f };
         MockConnection thirdAccumulator = new MockConnection { InputRate = 10.0f, OutputRate = 10.0f, AccumulatorCapacity = 100f };
         grid.PlugIn(powerProducer);

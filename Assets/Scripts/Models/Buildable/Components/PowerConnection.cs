@@ -80,8 +80,8 @@ namespace ProjectPorcupine.Buildable.Components
 
             set
             {
-                float oldAccPower = CurrentAccumulatorCharge.ToFloat();
-                if (oldAccPower != value)
+                float oldAccumulatorCharge = CurrentAccumulatorCharge.ToFloat();
+                if (oldAccumulatorCharge != value)
                 {
                     CurrentAccumulatorCharge.SetValue(value);
 

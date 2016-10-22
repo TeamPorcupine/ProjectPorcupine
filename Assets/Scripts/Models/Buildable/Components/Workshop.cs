@@ -94,7 +94,7 @@ namespace ProjectPorcupine.Buildable.Components
 
         public override bool CanFunction()
         {
-            var curSetupChainName = CurrentProductionChainName.ToString();
+            string curSetupChainName = CurrentProductionChainName.ToString();
 
             if (!string.IsNullOrEmpty(curSetupChainName))
             {
@@ -219,7 +219,7 @@ namespace ProjectPorcupine.Buildable.Components
 
         private void PlaceInventories(List<TileObjectTypeAmount> outPlacement)
         {
-            foreach (var outPlace in outPlacement)
+            foreach (TileObjectTypeAmount outPlace in outPlacement)
             {
                 if (outPlace.IsEmpty)
                 {
@@ -337,7 +337,7 @@ namespace ProjectPorcupine.Buildable.Components
 
                     if (desiredAmount > 0)
                     {
-                        Job jb = new Job(
+                        Job job = new Job(
                                      inTile,
                                      null,  // beware: passed jobObjectType is expected Furniture only !!
                                      null,
@@ -348,9 +348,9 @@ namespace ProjectPorcupine.Buildable.Components
                                      false,
                                      false);
                         
-                        jb.JobDescription = string.Format("Hauling '{0}' to '{1}'", desiredInv, ParentFurniture.Name);
-                        jb.OnJobWorked += PlaceInventoryToWorkshopInput;
-                        ParentFurniture.Jobs.Add(jb);
+                        job.JobDescription = string.Format("Hauling '{0}' to '{1}'", desiredInv, ParentFurniture.Name);
+                        job.OnJobWorked += PlaceInventoryToWorkshopInput;
+                        ParentFurniture.Jobs.Add(job);
                     }
                 }
             }
@@ -358,7 +358,7 @@ namespace ProjectPorcupine.Buildable.Components
 
         private List<TileObjectTypeAmount> CheckForInventoryAtOutput(ProductionChain prodChain)
         {
-            var outPlacement = new List<TileObjectTypeAmount>();
+            List<TileObjectTypeAmount> outPlacement = new List<TileObjectTypeAmount>();
 
             // processing is done, try to spit the output
             // check if output can be placed in world
@@ -394,7 +394,7 @@ namespace ProjectPorcupine.Buildable.Components
         
         private List<KeyValuePair<Tile, int>> CheckForInventoryAtInput(ProductionChain prodChain)
         {
-            var flaggedForTaking = new List<KeyValuePair<Tile, int>>();
+            List<KeyValuePair<Tile, int>> flaggedForTaking = new List<KeyValuePair<Tile, int>>();
             foreach (Item reqInputItem in prodChain.Input)
             {
                 // check input slots for req. item:                        

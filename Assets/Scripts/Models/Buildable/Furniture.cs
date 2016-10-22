@@ -1067,7 +1067,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         // try to get some info from components
         foreach (BuildableComponent component in components)
         {
-            var desc = component.GetDescription();
+            IEnumerable<string> desc = component.GetDescription();
             if (desc != null)
             {
                 foreach (string inf in desc)
