@@ -142,12 +142,10 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
 
         if ((furniture.Requirements & BuildableComponent.Requirements.Power) == 0)        
         {
-            Debug.LogWarning(furniture.Name + "Has Power");
             powerGameObject.SetActive(false);
         }
         else
         {
-            Debug.LogWarning(furniture.Name + "No Power");
             powerGameObject.SetActive(true);
         }
 
