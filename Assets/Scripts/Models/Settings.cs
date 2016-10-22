@@ -19,7 +19,7 @@ public static class Settings
   <worldWidth>101</worldWidth>
   <worldHeight>101</worldHeight>
   <localization>en_US</localization>
-  <DialogBoxSettings_fpsToggle>True</DialogBoxSettings_fpsToggle>
+  <DialogBoxSettings_performanceGroup>1</DialogBoxSettings_performanceGroup>
   <DialogBoxSettings_fullScreenToggle>True</DialogBoxSettings_fullScreenToggle>
   <DialogBoxSettings_qualityDropdown>2</DialogBoxSettings_qualityDropdown>
   <DialogBoxSettings_vSyncDropdown>0</DialogBoxSettings_vSyncDropdown>

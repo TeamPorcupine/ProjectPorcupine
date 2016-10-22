@@ -124,7 +124,7 @@ public class DialogBoxManager : MonoBehaviour
     {
         GameObject buttonQuestGameObject = (GameObject)Instantiate(Resources.Load("UI/PinToggleButton"), this.gameObject.transform);
         buttonQuestGameObject.name = "ToggleQuestPinButton";
-        buttonQuestGameObject.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, -30, 0);
+        buttonQuestGameObject.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, 0, 0);
         return buttonQuestGameObject.GetComponent<Toggle>();
     }
 }
