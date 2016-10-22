@@ -59,7 +59,7 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
         //    C:\Users\Quill18\ApplicationData\MyCompanyName\MyGameName\Saves\SaveGameName123.sav
 
         // Application.persistentDataPath == C:\Users\<username>\ApplicationData\MyCompanyName\MyGameName\
-        string saveDirectoryPath = WorldController.Instance.FileSaveBasePath();
+        string saveDirectoryPath = GameController.Instance.FileSaveBasePath();
 
         EnsureDirectoryExists(saveDirectoryPath);
 
@@ -94,7 +94,7 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
     {
         string fileName = gameObject.GetComponentInChildren<InputField>().text;
 
-        string saveDirectoryPath = WorldController.Instance.FileSaveBasePath();
+        string saveDirectoryPath = GameController.Instance.FileSaveBasePath();
 
         EnsureDirectoryExists(saveDirectoryPath);
 
@@ -144,7 +144,7 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
         dbm.dialogBoxPromptOrInfo.SetPrompt("message_loading_game");
         dbm.dialogBoxPromptOrInfo.ShowDialog();
 
-        WorldController.Instance.LoadWorld(filePath);
+        SceneController.Instance.LoadWorld(filePath);
     }
 
     private void Update()

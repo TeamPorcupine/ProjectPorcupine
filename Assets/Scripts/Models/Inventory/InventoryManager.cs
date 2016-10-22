@@ -125,6 +125,20 @@ public class InventoryManager
         return true;
     }
 
+    public bool ConsumeInventory(Tile tile, int amount)
+    {
+        if (tile.Inventory == null)
+        {
+            return false;
+        }
+        else
+        {
+            tile.Inventory.StackSize -= amount;
+            CleanupInventory(tile.Inventory);
+            return true;
+        }        
+    }
+
     public bool PlaceInventory(Job job, Character character)
     {
         Inventory sourceInventory = character.inventory;
@@ -161,6 +175,11 @@ public class InventoryManager
         {
             character.inventory = sourceInventory.Clone();
             character.inventory.StackSize = 0;
+            if (Inventories.ContainsKey(character.inventory.Type) == false)
+            {
+                Inventories[character.inventory.Type] = new List<Inventory>();
+            }
+            
             Inventories[character.inventory.Type].Add(character.inventory);
         }
         else if (character.inventory.Type != sourceInventory.Type)

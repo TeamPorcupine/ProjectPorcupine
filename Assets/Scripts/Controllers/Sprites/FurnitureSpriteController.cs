@@ -7,6 +7,7 @@
 // ====================================================
 #endregion
 using System.Collections.Generic;
+using ProjectPorcupine.Buildable.Components;
 using UnityEngine;
 
 public class FurnitureSpriteController : BaseSpriteController<Furniture>
@@ -128,27 +129,24 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
         furn_go.transform.SetParent(objectParent.transform, true);
 
         sr.sortingOrder = Mathf.RoundToInt(furn_go.transform.position.y * -1);
+        
+        GameObject powerGameObject = new GameObject();
+        powerStatusGameObjectMap.Add(furniture, powerGameObject);
+        powerGameObject.transform.parent = furn_go.transform;
+        powerGameObject.transform.position = furn_go.transform.position;
 
-        if (furniture.PowerConnection != null && furniture.PowerConnection.IsPowerConsumer)
+        SpriteRenderer powerSpriteRenderer = powerGameObject.AddComponent<SpriteRenderer>();
+        powerSpriteRenderer.sprite = GetPowerStatusSprite();
+        powerSpriteRenderer.sortingLayerName = "Power";
+        powerSpriteRenderer.color = Color.red;
+
+        if ((furniture.Requirements & BuildableComponent.Requirements.Power) == 0)        
         {
-            GameObject powerGameObject = new GameObject();
-            powerStatusGameObjectMap.Add(furniture, powerGameObject);
-            powerGameObject.transform.parent = furn_go.transform;
-            powerGameObject.transform.position = furn_go.transform.position;
-
-            SpriteRenderer powerSpriteRenderer = powerGameObject.AddComponent<SpriteRenderer>();
-            powerSpriteRenderer.sprite = GetPowerStatusSprite();
-            powerSpriteRenderer.sortingLayerName = "Power";
-            powerSpriteRenderer.color = Color.red;
-
-            if (furniture.IsOperating)
-            {
-                powerGameObject.SetActive(false);
-            }
-            else
-            {
-                powerGameObject.SetActive(true);
-            }
+            powerGameObject.SetActive(false);
+        }
+        else
+        {
+            powerGameObject.SetActive(true);
         }
 
         if (furniture.Animation != null)

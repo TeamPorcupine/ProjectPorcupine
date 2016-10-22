@@ -125,7 +125,11 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         Jobs = new BuildableJobs(this, other.Jobs);
 
         // don't need to clone here, as all are prototype things (not changing)
-        components = new HashSet<BuildableComponent>(other.components);
+        components = new HashSet<BuildableComponent>();
+        foreach (BuildableComponent component in other.components)
+        {
+            components.Add(component.Clone());
+        }
 
         if (other.Animation != null)
         {
@@ -145,12 +149,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         isEnterableAction = other.isEnterableAction;
         getSpriteNameAction = other.getSpriteNameAction;
         getProgressInfoNameAction = other.getProgressInfoNameAction;
-
-        if (other.PowerConnection != null)
-        {
-            PowerConnection = other.PowerConnection.Clone() as Connection;
-            PowerConnection.NewThresholdReached += OnNewThresholdReached;
-        }
 
         tileTypeBuildPermissions = new HashSet<string>(other.tileTypeBuildPermissions);
 
@@ -210,12 +208,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// <value>The event actions that is called on update.</value>
     public EventActions EventActions { get; private set; }
     
-    /// <summary>
-    /// Gets the Connection that the furniture has to the power system.
-    /// </summary>
-    /// <value>The Connection of the furniture.</value>
-    public Connection PowerConnection { get; private set; }
-
     /// <summary>
     /// Gets a value indicating whether the furniture is operating or not.
     /// </summary>
@@ -373,16 +365,9 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     }
 
     /// <summary>
-    /// Whether the furniture has power or not. Always true if power is not applicable to the furniture.
+    /// Flag with furniture requirements (used for showing icon overlay, e.g. No power, ... ).
     /// </summary>
-    /// <returns>True if the furniture has power or if the furniture doesn't require power to function.</returns>
-    public bool DoesntNeedOrHasPower
-    {
-        get
-        {   
-            return PowerConnection == null || World.Current.PowerNetwork.HasPower(PowerConnection);
-        }
-    }
+    public BuildableComponent.Requirements Requirements { get; protected set; }
 
     /// <summary>
     /// Gets the Health of this object.
@@ -429,13 +414,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             // (It will be garbage collected.)
             return null;
         }
-
-        // plug-in furniture only when it is placed in world
-        if (furnObj.PowerConnection != null)
-        {
-            World.Current.PowerNetwork.PlugIn(furnObj.PowerConnection);
-        }
-
+        
         // need to update reference to furniture and call Initialize (so components can place hooks on events there)
         foreach (BuildableComponent component in furnObj.components)
         {
@@ -509,15 +488,23 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     {
         // requirements from components (gas, ...)
         bool canFunction = true;
+        Requirements = BuildableComponent.Requirements.None;
+
         foreach (BuildableComponent component in components)
         {
-            canFunction &= component.CanFunction();
+            bool componentCanFunction = component.CanFunction();
+            canFunction &= componentCanFunction;
+
+            // if it can't function, collect all stuff it needs (power, gas, ...) for icon signalization
+            if (!componentCanFunction)
+            {
+                Requirements |= component.Needs;
+            }
         }
 
-        IsOperating = DoesntNeedOrHasPower && canFunction;
+        IsOperating = canFunction;
 
-        if ((PowerConnection != null && PowerConnection.IsPowerConsumer && DoesntNeedOrHasPower == false) ||
-            canFunction == false)
+        if (canFunction == false)
         {
             if (prevUpdatePowerOn)
             {
@@ -779,11 +766,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                     break;
                 case "JobOutputSpotOffset":
                     Jobs.ReadOutputSpotOffset(reader);
-                    break;
-                case "PowerConnection":
-                    PowerConnection = new Connection();
-                    PowerConnection.ReadPrototype(reader);
-                    break;
+                    break;                
                 case "Params":
                     ReadXmlParams(reader);  // Read in the Param tag
                     break;
@@ -986,13 +969,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                 World.Current.InventoryManager.PlaceInventoryAround(Tile, inv.Clone());
             }
         }
-
-        if (PowerConnection != null)
-        {
-            World.Current.PowerNetwork.Unplug(PowerConnection);
-            PowerConnection.NewThresholdReached -= OnNewThresholdReached;
-        }
-
+        
         if (Removed != null)
         {
             Removed(this);
@@ -1090,42 +1067,44 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         // try to get some info from components
         foreach (BuildableComponent component in components)
         {
-            string desc = component.GetDescription();
-            if (!string.IsNullOrEmpty(desc))
+            IEnumerable<string> desc = component.GetDescription();
+            if (desc != null)
             {
-                yield return desc;
-            }
+                foreach (string inf in desc)
+                {
+                    yield return inf;
+                }
+            }     
         }
 
         if (health != null)
         {
             yield return health.TextForSelectionPanel();
         }
+        
+        yield return GetProgressInfo();
+    }
 
-        if (PowerConnection != null)
+    /// <summary>
+    /// Gets component if present or null.
+    /// </summary>
+    /// <typeparam name="T">Type of component.</typeparam>
+    /// <param name="componentName">Type of the component, e.g. PowerConnection, WorkShop.</param>
+    /// <returns>Component or null.</returns>
+    public T GetComponent<T>(string componentName) where T : BuildableComponent
+    {
+        if (components != null)
         {
-            bool hasPower = DoesntNeedOrHasPower;
-            string powerColor = hasPower ? "green" : "red";
-
-            yield return string.Format("Power Grid: <color={0}>{1}</color>", powerColor, hasPower ? "Online" : "Offline");
-
-            if (PowerConnection.IsPowerConsumer)
+            foreach (BuildableComponent component in components)
             {
-                yield return string.Format("Power Input: <color={0}>{1}</color>", powerColor, PowerConnection.InputRate);
-            }
-
-            if (PowerConnection.IsPowerProducer)
-            {
-                yield return string.Format("Power Output: <color={0}>{1}</color>", powerColor, PowerConnection.OutputRate);
-            }
-
-            if (PowerConnection.IsPowerAccumulator)
-            {
-                yield return string.Format("Power Accumulated: {0} / {1}", PowerConnection.AccumulatedPower, PowerConnection.Capacity);
+                if (component.Type.Equals(componentName))
+                {
+                    return (T)component;
+                }
             }
         }
 
-        yield return GetProgressInfo();
+        return null;
     }
     #endregion
 

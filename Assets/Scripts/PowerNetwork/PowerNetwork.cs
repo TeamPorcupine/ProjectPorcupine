@@ -28,7 +28,7 @@ namespace ProjectPorcupine.PowerNetwork
             get { return powerGrids.Count == 0; }
         }
 
-        public bool CanPlugIn(Connection connection)
+        public bool CanPlugIn(IPlugable connection)
         {
             if (connection == null)
             {
@@ -38,7 +38,7 @@ namespace ProjectPorcupine.PowerNetwork
             return powerGrids.Any(grid => grid.CanPlugIn(connection));
         }
 
-        public bool PlugIn(Connection connection)
+        public bool PlugIn(IPlugable connection)
         {
             if (connection == null)
             {
@@ -54,7 +54,7 @@ namespace ProjectPorcupine.PowerNetwork
             return PlugIn(connection, powerGrid);
         }
 
-        public bool PlugIn(Connection connection, Grid grid)
+        public bool PlugIn(IPlugable connection, Grid grid)
         {
             if (connection == null)
             {
@@ -64,7 +64,7 @@ namespace ProjectPorcupine.PowerNetwork
             return grid != null && grid.PlugIn(connection);
         }
 
-        public bool IsPluggedIn(Connection connection, out Grid grid)
+        public bool IsPluggedIn(IPlugable connection, out Grid grid)
         {
             if (connection == null)
             {
@@ -81,7 +81,7 @@ namespace ProjectPorcupine.PowerNetwork
             return grid != null;
         }
 
-        public void Unplug(Connection connection)
+        public void Unplug(IPlugable connection)
         {
             if (connection == null)
             {
@@ -98,7 +98,7 @@ namespace ProjectPorcupine.PowerNetwork
             Unplug(connection, grid);
         }
 
-        public void Unplug(Connection connection, Grid grid)
+        public void Unplug(IPlugable connection, Grid grid)
         {
             if (connection == null)
             {
@@ -113,7 +113,7 @@ namespace ProjectPorcupine.PowerNetwork
             grid.Unplug(connection);
         }
 
-        public bool HasPower(Connection connection)
+        public bool HasPower(IPlugable connection)
         {
             Grid grid;
             IsPluggedIn(connection, out grid);
