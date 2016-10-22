@@ -143,6 +143,7 @@ public class DialogBoxOptions : DialogBox
     private void RenderButtons()
     {
         UnityEngine.Object buttonPrefab = Resources.Load("UI/Components/MenuButton");
+
         GameObject resumeButton = CreateButtonGO(buttonPrefab, "Resume", "menu_resume");
         resumeButton.GetComponent<Button>().onClick.AddListener(delegate
         {

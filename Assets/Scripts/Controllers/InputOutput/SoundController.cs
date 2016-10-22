@@ -28,19 +28,6 @@ public class SoundController
         soundCooldown -= deltaTime;
     }
 
-    public void OnButtonSFX()
-    {
-        // FIXME
-        if (soundCooldown > 0)
-        {
-             return;
-        }
- 
-        AudioClip ac = AudioManager.GetAudio("Sound", "MenuClick");
-        AudioSource.PlayClipAtPoint(ac, Camera.main.transform.position);
-        soundCooldown = 0.1f;
-    }
-
     public void OnFurnitureCreated(Furniture furniture)
     {
         // FIXME
@@ -48,7 +35,7 @@ public class SoundController
         {
             return;
         }
-    
+
         AudioClip ac = AudioManager.GetAudio("Sound", furniture.Type + "_OnCreated");
         AudioSource.PlayClipAtPoint(ac, Camera.main.transform.position);
         soundCooldown = 0.1f;
