@@ -3,96 +3,12 @@ using System;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
+using DeveloperConsole.Interfaces;
 
 namespace DeveloperConsole.CommandTypes
 {
-    public abstract class CommandBase
-    {
-        /// <summary>
-        /// The title/name of the command
-        /// </summary>
-        public string title
-        {
-            get; private set;
-        }
-
-        /// <summary>
-        /// The help text to display
-        /// </summary>
-        public string helpText
-        {
-            get; private set;
-        }
-
-        public string getParameters()
-        {
-            return string.Join(", ", method.Method.GetParameters().Select(x => x.ParameterType.Name).ToArray());
-        }
-
-        /// <summary>
-        /// The help method to call (instead of displaying help text)
-        /// </summary>
-        public delegate void HelpMethod();
-
-        HelpMethod helpMethod;
-        Delegate method;
-
-        /// <summary>
-        /// Standard with title and a method
-        /// </summary>
-        /// <param name="title"> The title for the command </param>
-        /// <param name="method"> The command to execute </param>
-        public CommandBase(string title, Delegate method)
-        {
-            this.title = title;
-            this.method = method;
-        }
-
-        /// <summary>
-        /// Standard with title, method, and help text
-        /// </summary>
-        /// <param name="title"> The title for the command </param>
-        /// <param name="method"> The command to execute </param>
-        /// <param name="helpText"> The help text to display </param>
-        public CommandBase(string title, Delegate method, string helpText) : this(title, method)
-        {
-            this.helpText = helpText;
-        }
-        /// <summary>
-        /// Standard but uses a delegate method for help text
-        /// </summary>
-        /// <param name="title"> The title for the command </param>
-        /// <param name="method"> The command to execute </param>
-        /// <param name="helpMethod"> The help method to execute </param>
-        //
-        public CommandBase(string title, Delegate method, HelpMethod helpMethod) : this(title, method)
-        {
-            this.helpMethod = helpMethod;
-        }
-
-        /// <summary>
-        /// Uses reflection to get title
-        /// </summary>
-        /// <param name="method"> The command to execute </param>
-        public CommandBase(Delegate method) : this(method.Method.DeclaringType.Name + "." + method.Method.Name, method) { }
-        /// <summary>
-        /// Uses reflection to get title then passes the helpMethod
-        /// </summary>
-        /// <param name="method"> The command to execute </param>
-        /// <param name="helpText"> The help text to display </param>
-        public CommandBase(Delegate method, string helpText) : this(method.Method.DeclaringType.Name + "." + method.Method.Name, method, helpText) { }
-        /// <summary>
-        /// Uses reflection to get title then passes the delegate for helpmethod
-        /// </summary>
-        /// <param name="method"> The command to execute </param>
-        /// <param name="helpMethod"> The help method to execute </param>
-        public CommandBase(Delegate method, HelpMethod helpMethod) : this(method.Method.DeclaringType.Name + "." + method.Method.Name, method, helpMethod) { }
-
-        /// <summary>
-        /// Execute the method
-        /// </summary>
-        /// <param name="arguments"> Arguments to parse </param>
-        public void ExecuteCommand(string arguments)
+    /*
+        void ExecuteCommand(string arguments)
         {
             try
             {
@@ -105,7 +21,13 @@ namespace DeveloperConsole.CommandTypes
                 throw e;
             }
         }
+    */
 
+    /// <summary>
+    /// A command base that all commands derive from
+    /// </summary> 
+    public abstract class CommandBase
+    {
         /// <summary>
         /// Parse the arguments
         /// </summary>
@@ -114,29 +36,12 @@ namespace DeveloperConsole.CommandTypes
         protected abstract object[] ParseArguments(string arguments);
 
         /// <summary>
-        /// Execute help method/show help text
+        /// Splits at character then trims ends and start
         /// </summary>
-        public virtual void ShowHelp()
-        {
-            if (helpMethod != null)
-            {
-                helpMethod();
-            }
-            else
-            {
-                DevConsole.Log("<color=yellow>Command Info:</color> " + ((helpText == null) ? "<color=red>There's no help for this command</color>" : helpText));
-                DevConsole.Log("<color=orange>" + title + DevConsole.GetParametersWithConsoleMode(this) + "</color>" + ((helpText == null) ? "" : " //" + helpText));
-            }
-        }
-
-        #region converters
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="arguments"></param>
+        /// <param name="arguments"> The string to split and trim </param>
+        /// <param name="atCharacter"> What character to split at </param>
         /// <returns></returns>
-        public string[] SplitAndTrim(string arguments, char atCharacter = ',')
+        protected string[] SplitAndTrim(string arguments, char atCharacter = ',')
         {
             List<string> args = new List<string>();
 
@@ -179,7 +84,7 @@ namespace DeveloperConsole.CommandTypes
             }
             catch (Exception e)
             {
-                DevConsole.LogError(Errors.TypeConsoleError.Description(this));
+                DevConsole.LogError(Errors.TypeConsoleError.Description(commandBase: this));
                 throw e;
             }
         }
@@ -229,7 +134,166 @@ namespace DeveloperConsole.CommandTypes
             }
             return true;
         }
+    }
 
-        #endregion
+    public abstract class LUACommand : CommandBase, ICommandDescription, ICommandHelpMethod, ICommandRunnable, ICommandLUA
+    {
+        public string descriptiveText
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string functionName
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public HelpMethod helpMethod
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string parameters
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string title
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public void ExecuteCommand(string arguments)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    /// <summary>
+    /// A core command for the core code, its in CSharp
+    /// </summary>
+    public abstract class CoreCommand : CommandBase, ICommandDescription, ICommandRunnable, ICommandCSharp, ICommandHelpMethod
+    {
+        /// <summary>
+        /// Text that describes this command
+        /// </summary>
+        public string descriptiveText { get; private set; }
+
+        /// <summary>
+        /// The method to call
+        /// </summary>
+        public Delegate method { get; private set; }
+
+        /// <summary>
+        /// The title of command
+        /// </summary>
+        public string title { get; private set; }
+
+        /// <summary>
+        /// Get all the parameters for this function
+        /// </summary>
+        /// <returns> a string of all the parameters with a comma between them </returns>
+        public string parameters
+        {
+            get
+            {
+                return string.Join(", ", method.Method.GetParameters().Select(x => x.ParameterType.Name).ToArray());
+            }
+        }
+
+        /// <summary>
+        /// To call to display help
+        /// </summary>
+        public HelpMethod helpMethod
+        {
+            get; private set;
+        }
+
+        /// <summary>
+        /// Standard with title and a method
+        /// </summary>
+        /// <param name="title"> The title for the command </param>
+        /// <param name="method"> The command to execute </param>
+        public CoreCommand(string title, Delegate method)
+        {
+            this.title = title;
+            this.method = method;
+        }
+
+        /// <summary>
+        /// Standard with title, method, and help text
+        /// </summary>
+        /// <param name="title"> The title for the command </param>
+        /// <param name="method"> The command to execute </param>
+        /// <param name="helpText"> The help text to display </param>
+        public CoreCommand(string title, Delegate method, string descriptiveText) : this(title, method)
+        {
+            this.descriptiveText = descriptiveText;
+        }
+
+        /// <summary>
+        /// Standard but uses a delegate method for help text
+        /// </summary>
+        /// <param name="title"> The title for the command </param>
+        /// <param name="method"> The command to execute </param>
+        /// <param name="helpMethod"> The help method to execute </param>
+        //
+        public CoreCommand(string title, Delegate method, HelpMethod helpMethod) : this(title, method)
+        {
+            this.helpMethod = helpMethod;
+        }
+
+        /// <summary>
+        /// Uses reflection to get title
+        /// </summary>
+        /// <param name="method"> The command to execute </param>
+        public CoreCommand(Delegate method) : this(method.Method.DeclaringType.Name + "." + method.Method.Name, method) { }
+
+        /// <summary>
+        /// Uses reflection to get title then passes the helpMethod
+        /// </summary>
+        /// <param name="method"> The command to execute </param>
+        /// <param name="helpText"> The help text to display </param>
+        public CoreCommand(Delegate method, string descriptiveText) : this(method.Method.DeclaringType.Name + "." + method.Method.Name, method, descriptiveText) { }
+
+        /// <summary>
+        /// Uses reflection to get title then passes the delegate for helpmethod
+        /// </summary>
+        /// <param name="method"> The command to execute </param>
+        /// <param name="helpMethod"> The help method to execute </param>
+        public CoreCommand(Delegate method, HelpMethod helpMethod) : this(method.Method.DeclaringType.Name + "." + method.Method.Name, method, helpMethod) { }
+
+        /// <summary>
+        /// Executes the command
+        /// </summary>
+        /// <param name="arguments"> Passes the arguments </param>
+        public void ExecuteCommand(string arguments)
+        {
+            try
+            {
+                method.Method.Invoke(method.Target, ParseArguments(arguments));
+            }
+            catch (Exception e)
+            {
+                // Debug Error
+                DevConsole.LogError(Errors.ExecuteConsoleError.Description(command: (ICommandDescription)this));
+                throw e;
+            }
+        }
     }
 }

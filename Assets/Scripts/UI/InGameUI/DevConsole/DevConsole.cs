@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using DeveloperConsole.CommandTypes;
+using DeveloperConsole.Interfaces;
 using System.Linq;
 
 public class DevConsole : MonoBehaviour
@@ -19,7 +20,7 @@ public class DevConsole : MonoBehaviour
 
     public string inputText = "";
 
-    List<CommandBase> consoleCommands = new List<CommandBase>();    // Whole list of commands available
+    List<ICommandDescription> consoleCommands = new List<ICommandDescription>();    // Whole list of commands available
 
     // Flags
     bool closed = true;
@@ -37,8 +38,8 @@ public class DevConsole : MonoBehaviour
 
     bool showTimeStamp = false;
 
-    // 0 is Function  :x, y, z
-    // 1 is Function  (x, y, z)   
+    // 0 is Function :x, y, z:
+    // 1 is Function (x, y, z)   
     // 2 is Function {x, y, z}   
     // 3 is Function [x, y, z]   
     // 4 is Function <x, y, z>
@@ -346,9 +347,7 @@ public class DevConsole : MonoBehaviour
                 break;
         }
 
-
-
-        IEnumerable<CommandBase> commandsToCall;
+        IEnumerable<ICommandDescription> commandsToCall;
 
         if (methodNameAndArgs.Length == 2)
         {
@@ -362,9 +361,18 @@ public class DevConsole : MonoBehaviour
             string testString = method.ToLower().Trim().TrimEnd('?');
             commandsToCall = instance.consoleCommands.Where(cB => cB.title.ToLower() == testString);
 
-            foreach (CommandBase commandToCall in commandsToCall)
+            foreach (ICommandDescription commandToCall in commandsToCall)
             {
-                commandToCall.ShowHelp();
+                ICommandHelpMethod helpMethod = (ICommandHelpMethod)commandToCall;
+
+                if (helpMethod != null && helpMethod.helpMethod != null)
+                {
+                    ShowHelpMethod(helpMethod);
+                }
+                else
+                {
+                    ShowDescription(commandToCall);
+                }
             }
 
             return;
@@ -373,13 +381,32 @@ public class DevConsole : MonoBehaviour
         // Execute command
         commandsToCall = instance.consoleCommands.Where(cB => cB.title.ToLower() == method.ToLower().Trim());
 
-        foreach (CommandBase commandToCall in commandsToCall)
+        foreach (ICommandDescription commandToCall in commandsToCall)
         {
-            commandToCall.ExecuteCommand(args);
+            ICommandRunnable runnable = (ICommandRunnable)commandToCall;
+
+            if (runnable != null)
+            {
+                runnable.ExecuteCommand(args);
+            }
         }
     }
 
-    public static void AddCommands(params CommandBase[] commands)
+    public static void ShowHelpMethod(ICommandHelpMethod help)
+    {
+        if (help.helpMethod != null)
+        {
+            help.helpMethod();
+        }
+    }
+
+    public static void ShowDescription(ICommandDescription description)
+    {
+        Log("<color=yellow>Command Info:</color> " + ((description.descriptiveText == "") ? "<color=red>There's no help for this command</color>" : description.descriptiveText));
+        Log("<color=yellow>Call: <color=orange>" + description.title + GetParametersWithConsoleMode(description) + "</color>");
+    }
+
+    public static void AddCommands(params ICommandDescription[] commands)
     {
         // Guard
         if (instance == null)
@@ -390,7 +417,7 @@ public class DevConsole : MonoBehaviour
         instance.consoleCommands.AddRange(commands);
     }
 
-    public static void AddCommand(CommandBase command)
+    public static void AddCommand(ICommandDescription command)
     {
         // Guard
         if (instance == null)
@@ -438,7 +465,7 @@ public class DevConsole : MonoBehaviour
 
         for (int i = 0; i < consoleCommands.Count; i++)
         {
-            text += "\n<color=orange>" + consoleCommands[i].title + GetParametersWithConsoleMode(consoleCommands[i]) + "</color>" + (consoleCommands[i].helpText == null ? "" : " //" + consoleCommands[i].helpText);
+            text += "\n<color=orange>" + consoleCommands[i].title + GetParametersWithConsoleMode(consoleCommands[i]) + "</color>" + (consoleCommands[i].descriptiveText == null ? "" : " //" + consoleCommands[i].descriptiveText);
         }
 
         text += "\n<color=orange>Note:</color> If the function has no parameters you <color=red>don't</color> need to use the parameter modifier.";
@@ -447,7 +474,7 @@ public class DevConsole : MonoBehaviour
         Log("-- Help --" + text);
     }
 
-    public static string GetParametersWithConsoleMode(CommandBase command)
+    public static string GetParametersWithConsoleMode(ICommandDescription description)
     {
         if (instance == null)
         {
@@ -457,16 +484,16 @@ public class DevConsole : MonoBehaviour
         switch (instance.developerCommandMode)
         {
             case 1:
-                return " (" + command.getParameters() + ")";
+                return " (" + description.parameters + ")";
             case 2:
-                return " {" + command.getParameters() + "}";
+                return " {" + description.parameters + "}";
             case 3:
-                return " [" + command.getParameters() + "]";
+                return " [" + description.parameters + "]";
             case 4:
-                return " <" + command.getParameters() + ">";
+                return " <" + description.parameters + ">";
             case 0:
             default:
-                return " :" + command.getParameters() + ":";
+                return " : " + description.parameters + " :";
         }
     }
 

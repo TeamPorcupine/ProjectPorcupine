@@ -298,7 +298,7 @@ Prefab:
     - target: {fileID: 224000010704941530, guid: 579862f65af366940920a43f90d05560,
         type: 2}
       propertyPath: m_SizeDelta.y
-      value: 20
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224000014034890060, guid: 579862f65af366940920a43f90d05560,
         type: 2}
@@ -314,6 +314,66 @@ Prefab:
         type: 2}
       propertyPath: m_SizeDelta.x
       value: -17
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000013355679236, guid: 579862f65af366940920a43f90d05560,
+        type: 2}
+      propertyPath: m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000013355679236, guid: 579862f65af366940920a43f90d05560,
+        type: 2}
+      propertyPath: m_Color.r
+      value: 0.5808823
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000013355679236, guid: 579862f65af366940920a43f90d05560,
+        type: 2}
+      propertyPath: m_Color.g
+      value: 0.5808823
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000013355679236, guid: 579862f65af366940920a43f90d05560,
+        type: 2}
+      propertyPath: m_Color.b
+      value: 0.5808823
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000011062204654, guid: 579862f65af366940920a43f90d05560,
+        type: 2}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000011062204654, guid: 579862f65af366940920a43f90d05560,
+        type: 2}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000011062204654, guid: 579862f65af366940920a43f90d05560,
+        type: 2}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000011062204654, guid: 579862f65af366940920a43f90d05560,
+        type: 2}
+      propertyPath: m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000010809125852, guid: 579862f65af366940920a43f90d05560,
+        type: 2}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000010809125852, guid: 579862f65af366940920a43f90d05560,
+        type: 2}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000010809125852, guid: 579862f65af366940920a43f90d05560,
+        type: 2}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114000011062204654, guid: 579862f65af366940920a43f90d05560,
+        type: 2}
+      propertyPath: m_Text
+      value: 'Enter command in format; command_name : x, y, z :'
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 579862f65af366940920a43f90d05560, type: 2}

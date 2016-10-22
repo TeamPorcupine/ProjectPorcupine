@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System;
 using System.Reflection;
 using System.Linq;
+using DeveloperConsole.Interfaces;
 
 namespace DeveloperConsole.CommandTypes
 {
-    public class Command : CommandBase
+    public class Command : CoreCommand
     {
         /// <summary>
         /// Parameterless command
@@ -76,7 +77,7 @@ namespace DeveloperConsole.CommandTypes
     /// <summary>
     /// 1 parameter command
     /// </summary>
-    public class Command<T0> : CommandBase
+    public class Command<T0> : CoreCommand
     {
 
         public delegate void ConsoleMethod(T0 arg0);
@@ -98,7 +99,7 @@ namespace DeveloperConsole.CommandTypes
                 }
                 else
                 {
-                    DevConsole.LogError(Errors.ParameterMissingConsoleError.Description(this));
+                    DevConsole.LogError(Errors.ParameterMissingConsoleError.Description((ICommandDescription)this));
                     throw new Exception("Command Missing Parameter");
                 }
             }
@@ -113,7 +114,7 @@ namespace DeveloperConsole.CommandTypes
     /// <summary>
     /// 2 parameter command
     /// </summary>
-    public class Command<T0, T1> : CommandBase
+    public class Command<T0, T1> : CoreCommand
     {
 
         public delegate void ConsoleMethod(T0 arg0, T1 arg1);
@@ -136,7 +137,7 @@ namespace DeveloperConsole.CommandTypes
                 }
                 else
                 {
-                    DevConsole.LogError(Errors.ParameterMissingConsoleError.Description(this));
+                    DevConsole.LogError(Errors.ParameterMissingConsoleError.Description((ICommandDescription)this));
                     throw new Exception("Command Missing Parameter");
                 }
             }
@@ -151,7 +152,7 @@ namespace DeveloperConsole.CommandTypes
     /// <summary>
     /// 3 parameter command
     /// </summary>
-    public class Command<T0, T1, T2> : CommandBase
+    public class Command<T0, T1, T2> : CoreCommand
     {
         public delegate void ConsoleMethod(T0 arg0, T1 arg1, T2 arg2);
 
@@ -173,7 +174,7 @@ namespace DeveloperConsole.CommandTypes
                 }
                 else
                 {
-                    DevConsole.LogError(Errors.ParameterMissingConsoleError.Description(this));
+                    DevConsole.LogError(Errors.ParameterMissingConsoleError.Description((ICommandDescription)this));
                     throw new Exception("Command Missing Parameter");
                 }
             }
@@ -189,7 +190,7 @@ namespace DeveloperConsole.CommandTypes
     /// A vector method for obtaining a vector from user input
     /// </summary>
     /// <typeparam name="T"> Should be of type Vector2, 3, or 4 </typeparam>
-    public class VectorCommand<T> : CommandBase
+    public class VectorCommand<T> : CoreCommand
     {
         public delegate void ConsoleMethod(T vector);
 
@@ -214,7 +215,7 @@ namespace DeveloperConsole.CommandTypes
                     }
                     catch
                     {
-                        DevConsole.LogError(Errors.TypeConsoleError.Description(this));
+                        DevConsole.LogError(Errors.TypeConsoleError.Description((ICommandDescription)this));
                         throw new ArgumentException("The entered value is not a valid Vector2 value");
                     }
                 case 3:
@@ -225,7 +226,7 @@ namespace DeveloperConsole.CommandTypes
                     }
                     catch
                     {
-                        DevConsole.LogError(Errors.TypeConsoleError.Description(this));
+                        DevConsole.LogError(Errors.TypeConsoleError.Description((ICommandDescription)this));
                         throw new ArgumentException("The entered value is not a valid Vector3 value");
                     }
                 case 4:
@@ -236,11 +237,11 @@ namespace DeveloperConsole.CommandTypes
                     }
                     catch
                     {
-                        DevConsole.LogError(Errors.TypeConsoleError.Description(this));
+                        DevConsole.LogError(Errors.TypeConsoleError.Description((ICommandDescription)this));
                         throw new ArgumentException("The entered value is not a valid Vector4 value");
                     }
                 default:
-                    DevConsole.LogError(Errors.ParameterMissingConsoleError.Description(this));
+                    DevConsole.LogError(Errors.ParameterMissingConsoleError.Description((ICommandDescription)this));
                     throw new ArgumentException("The entered value is not a valid Vector value");
             }
         }
