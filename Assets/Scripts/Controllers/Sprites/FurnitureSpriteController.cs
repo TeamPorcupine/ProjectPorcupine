@@ -140,15 +140,8 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
         powerSpriteRenderer.sortingLayerName = "Power";
         powerSpriteRenderer.color = Color.red;
 
-        if ((furniture.Requirements & BuildableComponent.Requirements.Power) == 0)        
-        {
-            powerGameObject.SetActive(false);
-        }
-        else
-        {
-            powerGameObject.SetActive(true);
-        }
-
+        UpdateIconObjectsVisibility(furniture, powerGameObject);
+        
         if (furniture.Animation != null)
         { 
             furniture.Animation.Renderer = sr;
@@ -240,7 +233,12 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
         }
 
         GameObject powerGameObject = powerStatusGameObjectMap[furniture];
-        if (furniture.IsOperating)
+        UpdateIconObjectsVisibility(furniture, powerGameObject);
+    }
+
+    private void UpdateIconObjectsVisibility(Furniture furniture, GameObject powerGameObject)
+    {
+        if ((furniture.Requirements & BuildableComponent.Requirements.Power) == 0)
         {
             powerGameObject.SetActive(false);
         }
