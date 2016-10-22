@@ -12,8 +12,6 @@ namespace DeveloperConsole
     [MoonSharpUserData]
     public class DevConsole : MonoBehaviour
     {
-        [SerializeField]
-        KeyCode consoleActivationKey = KeyCode.Backslash;                                    // Open/Close console
         [Range(8, 20)]
         public int fontSize = 15;                                                            // Starting font size (only changes the font on start)
 
@@ -22,6 +20,9 @@ namespace DeveloperConsole
         string inputText = "";                                                               // The current text
 
         List<ICommandDescription> consoleCommands = new List<ICommandDescription>();         // Whole list of commands available
+
+        List<string> history = new List<string>();                                           // History of inputs
+        int currentHistoryIndex = -1;                                                             // What index the history is at
 
         // Flags
         bool closed = true;                                                                  // Is the command line closed
@@ -83,20 +84,27 @@ namespace DeveloperConsole
                 Destroy(this);
             }
 
-            transform.SetAsLastSibling();
-
             SceneManager.activeSceneChanged += SceneChanged;
+
+            KeyboardManager.Instance.RegisterModalInputField(inputField);
+            KeyboardManager.Instance.RegisterInputAction("DevConsole", KeyboardMappedInputType.KeyUp, ToggleConsole);
         }
 
         static void SceneChanged(Scene oldScene, Scene newScene)
         {
-            instance = null;
+            if (instance != null)
+            {
+                KeyboardManager.Instance.UnRegisterModalInputField(instance.inputField);
+                instance = null;
+            }
         }
 
         // Use this for initialization
         void Start()
         {
-            if (textArea == null || inputField == null || autoComplete == null || scrollRect == null)
+            transform.SetAsLastSibling();
+
+            if (textArea == null || inputField == null || autoComplete == null || scrollRect == null || root == null)
             {
                 gameObject.SetActive(false);
                 Debug.ULogError("DevConsole", "Missing gameobjects, look at the serializeable fields");
@@ -105,20 +113,55 @@ namespace DeveloperConsole
             textArea.fontSize = fontSize;
 
             LoadCommands();
+
+            if (root != null)
+            {
+                opened = root.activeInHierarchy;
+            }
+        }
+
+        void ToggleConsole()
+        {
+            if (closed)
+            {
+                Open();
+            }
+            else
+            {
+                Close();
+            }
         }
 
         void Update()
         {
-            if (Input.GetKeyUp(consoleActivationKey))
+            if (!inputField.isFocused)
             {
-                if (closed)
+                currentHistoryIndex = -1;
+                return;
+            }
+
+            // If input field is focused
+            if (Input.GetKeyUp(KeyCode.UpArrow))
+            {
+                if (currentHistoryIndex < (history.Count - 1)) // (history.Count -1) is the max index
                 {
-                    Open();
+                    // This way the first index will be the last one so first in last out
+                    // Kind of like a stack but you can go up and down it
+                    currentHistoryIndex += 1;
+                    inputField.text = history[(history.Count - 1) - (currentHistoryIndex)];
                 }
-                else
+                inputField.MoveTextEnd(false);
+            }
+            else if (Input.GetKeyUp(KeyCode.DownArrow))
+            {
+                if (currentHistoryIndex > 0)
                 {
-                    Close();
+                    // This way the first index will be the last one so first in last out
+                    // Kind of like a stack but you can go up and down it
+                    currentHistoryIndex -= 1;
+                    inputField.text = history[history.Count - (currentHistoryIndex + 1)];
                 }
+                inputField.MoveTextEnd(false);
             }
         }
 
@@ -169,15 +212,22 @@ namespace DeveloperConsole
 
         public void EnterPressedForInput(Text newValue)
         {
+            currentHistoryIndex = -1;
             // Clear input but retrieve
             inputText = newValue.text;
             inputField.text = "";
 
-            // Add Text
-            Log(inputText);
+            if (inputText != "")
+            {
+                // Add Text to log
+                Log(inputText);
 
-            // Execute
-            Execute(inputText);
+                // Add to history
+                history.Add(inputText);
+
+                // Execute
+                Execute(inputText);
+            }
         }
 
         public void RegenerateAutoComplete(Text newValue)
@@ -318,7 +368,6 @@ namespace DeveloperConsole
             {
                 return;
             }
-
 
             // Get method and arguments
             string[] methodNameAndArgs;

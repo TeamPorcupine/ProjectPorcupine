@@ -18,7 +18,7 @@ public class KeyboardManager
     private static KeyboardManager instance;
 
     private Dictionary<string, KeyboadMappedInput> mapping;
-  
+
     public KeyboardManager()
     {
         instance = this;
@@ -55,6 +55,14 @@ public class KeyboardManager
         if (!ModalInputFields.Contains(filterField))
         {
             ModalInputFields.Add(filterField);
+        }
+    }
+
+    public void UnRegisterModalInputField(InputField filterField)
+    {
+        if (ModalInputFields.Contains(filterField))
+        {
+            ModalInputFields.Remove(filterField);
         }
     }
 
@@ -96,6 +104,7 @@ public class KeyboardManager
         RegisterInputMapping("Return", KeyboardInputModifier.None, KeyCode.Return);
 
         RegisterInputMapping("DevMode", KeyboardInputModifier.None, KeyCode.F12);
+        RegisterInputMapping("DevConsole", KeyboardInputModifier.None, KeyCode.Backslash);
     }
 
     public void Update()
@@ -128,6 +137,14 @@ public class KeyboardManager
                     OnTrigger = onTrigger,
                     Type = inputType
                 });
+        }
+    }
+
+    public void UnRegisterInputAction(string inputName)
+    {
+        if (mapping.ContainsKey(inputName))
+        {
+            mapping.Remove(inputName);
         }
     }
 

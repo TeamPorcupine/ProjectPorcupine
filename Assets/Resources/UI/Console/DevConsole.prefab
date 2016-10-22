@@ -268,7 +268,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1000013602903938
 GameObject:
   m_ObjectHideFlags: 1
@@ -616,9 +616,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47b6d2a379e125346823b82676f4dcb8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dontDestroyOnLoad: 1
-  consoleActivationKey: 92
   fontSize: 15
+  currentHistoryIndex: -1
   developerCommandMode: 0
   textArea: {fileID: 114000011375075150}
   inputField: {fileID: 114000010886413254}
