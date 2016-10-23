@@ -86,8 +86,12 @@ public class Job : ISelectable, IPrototypable
             }
         }
 
+        if (tile != null)
+        {
+            tile.PendingBuildJobs.Add(this);
+        }
+
         this.HeldInventory = new Dictionary<string, Inventory>();
-        tile.PendingBuildJobs.Add(this);
     }
 
     public Job(Tile tile, TileType jobTileType, Action<Job> jobCompleted, float jobTime, RequestedItem[] requestedItems, Job.JobPriority jobPriority, bool jobRepeats = false, bool adjacent = false)
@@ -146,6 +150,11 @@ public class Job : ISelectable, IPrototypable
         }
 
         this.HeldInventory = new Dictionary<string, Inventory>();
+
+        if (tile != null && JobTileType == null)
+        {
+            tile.PendingBuildJobs.Add(this);
+        }
     }
 
     // We have finished the work cycle and so things should probably get built or whatever.

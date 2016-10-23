@@ -341,8 +341,12 @@ public class BuildModeController
                     // if the existing buildJobs furniture is replaceable by the current furnitureType,
                     // we can pretend it does not overlap with the new build
 
-                    Job pendingFurnitureJob = pendingBuildJobs.Single(job => job.buildablePrototype.GetType() == typeof(Furniture));
-                    return !furnitureToBuild.ReplaceableFurniture.Any(pendingFurnitureJob.buildablePrototype.HasTypeTag);
+                    // We should only have 1 furniture building job per tile, so this should return that job and only that job
+                    IEnumerable<Job> pendingFurnitureJob = pendingBuildJobs.Where(job => job.buildablePrototype.GetType() == typeof(Furniture));
+                    if (pendingFurnitureJob.Count() == 1)
+                    {
+                        return !furnitureToBuild.ReplaceableFurniture.Any(pendingFurnitureJob.Single().buildablePrototype.HasTypeTag);
+                    }
                 }
             }
         }

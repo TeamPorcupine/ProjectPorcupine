@@ -43,6 +43,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
         MovementModifier = 1;
         Utilities = new Dictionary<string, Utility>();
         ReservedAsWorkSpotBy = new HashSet<Furniture>();
+        PendingBuildJobs = new HashSet<Job>();
     }
 
     // The function we callback any time our tile's data changes
