@@ -179,8 +179,8 @@ public class BuildModeController
                             // FIXME: I don't like having to manually and explicitly set
                             // flags that prevent conflicts. It's too easy to forget to set/clear them!
                             Tile offsetTile = World.Current.GetTileAt(x_off, y_off, tile.Z);
-                            offsetTile.PendingBuildJob = job;
-                            job.OnJobStopped += (theJob) => offsetTile.PendingBuildJob = null;
+                            offsetTile.PendingBuildJobs.Add(job);
+                            job.OnJobStopped += (theJob) => offsetTile.PendingBuildJobs = null;
                         }
                     }
 
@@ -235,8 +235,8 @@ public class BuildModeController
                     // FIXME: I don't like having to manually and explicitly set
                     // flags that preven conflicts. It's too easy to forget to set/clear them!
                     Tile offsetTile = World.Current.GetTileAt(tile.X, tile.Y, tile.Z);
-                    offsetTile.PendingBuildJob = job;
-                    job.OnJobStopped += (theJob) => offsetTile.PendingBuildJob = null;
+                    offsetTile.PendingBuildJobs.Add(job);
+                    job.OnJobStopped += (theJob) => offsetTile.PendingBuildJobs = null;
 
                     World.Current.jobQueue.Enqueue(job);
                 }
@@ -252,7 +252,7 @@ public class BuildModeController
             if (
                 tile.Type != tileType &&
                 tile.Furniture == null &&
-                tile.PendingBuildJob == null &&
+                tile.PendingBuildJobs == null &&
                 tileType.CanBuildHere(tile))
             {
                 // This tile position is valid tile type
@@ -269,10 +269,7 @@ public class BuildModeController
                 }
                 else
                 {
-                    // FIXME: I don't like having to manually and explicitly set
-                    // flags that prevent conflicts. It's too easy to forget to set/clear them!
-                    tile.PendingBuildJob = buildingJob;
-                    buildingJob.OnJobStopped += (theJob) => theJob.tile.PendingBuildJob = null;
+                    buildingJob.OnJobStopped += (theJob) => theJob.tile.PendingBuildJobs = null;
 
                     WorldController.Instance.World.jobQueue.Enqueue(buildingJob);
                 }
@@ -314,9 +311,9 @@ public class BuildModeController
 
                 tile.Furniture.SetDeconstructJob();
             }
-            else if (tile.PendingBuildJob != null)
+            else if (tile.PendingBuildJobs != null)
             {
-                tile.PendingBuildJob.CancelJob();
+                tile.PendingBuildJobs.Last().CancelJob();
             }
             else if (tile.Utilities.Count > 0)
             {
@@ -338,12 +335,14 @@ public class BuildModeController
         {
             for (int y_off = t.Y; y_off < (t.Y + furnitureToBuild.Height); y_off++)
             {
-                Job pendingBuildJob = WorldController.Instance.World.GetTileAt(x_off, y_off, t.Z).PendingBuildJob;
-                if (pendingBuildJob != null)
+                HashSet<Job> pendingBuildJobs = WorldController.Instance.World.GetTileAt(x_off, y_off, t.Z).PendingBuildJobs;
+                if (pendingBuildJobs != null)
                 {
                     // if the existing buildJobs furniture is replaceable by the current furnitureType,
                     // we can pretend it does not overlap with the new build
-                    return !furnitureToBuild.ReplaceableFurniture.Any(pendingBuildJob.buildablePrototype.HasTypeTag);
+
+                    Job pendingFurnitureJob = pendingBuildJobs.Single(job => job.buildablePrototype.GetType() == typeof(Furniture));
+                    return !furnitureToBuild.ReplaceableFurniture.Any(pendingFurnitureJob.buildablePrototype.HasTypeTag);
                 }
             }
         }

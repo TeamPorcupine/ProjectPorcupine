@@ -87,6 +87,7 @@ public class Job : ISelectable, IPrototypable
         }
 
         this.HeldInventory = new Dictionary<string, Inventory>();
+        tile.PendingBuildJobs.Add(this);
     }
 
     public Job(Tile tile, TileType jobTileType, Action<Job> jobCompleted, float jobTime, RequestedItem[] requestedItems, Job.JobPriority jobPriority, bool jobRepeats = false, bool adjacent = false)
@@ -115,6 +116,8 @@ public class Job : ISelectable, IPrototypable
         }
 
         this.HeldInventory = new Dictionary<string, Inventory>();
+
+        //FIXME: Are tile jobs supposed to reserve pending build jobs? Probably?
     }
 
     protected Job(Job other)
@@ -331,10 +334,16 @@ public class Job : ISelectable, IPrototypable
             OnJobStopped(this);
         }
 
-        // If we are a furniture building job, Let our workspot tile know it is no longer reserved for us.
+        // If we are a building job let our tile know we are no longer pending
         if (buildablePrototype != null)
         {
-            World.Current.UnreserveTileAsWorkSpot((Furniture)buildablePrototype, tile);
+            tile.PendingBuildJobs.Remove(this);
+
+            // If we are a furniture building job, Let our workspot tile know it is no longer reserved for us.
+            if (buildablePrototype.GetType() == typeof(Furniture))
+            {
+                World.Current.UnreserveTileAsWorkSpot((Furniture)buildablePrototype, tile);
+            }
         }
 
         // Remove the job out of both job queues.
