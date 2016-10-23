@@ -38,11 +38,11 @@ namespace ProjectPorcupine.PowerNetwork
         /// <summary>
         /// Gets the connections to this grid.
         /// </summary>
-        public HashSet<IPlugable> Connections
+        public int ConnectionCount
         {
             get 
             {
-                return connections; 
+                return connections.Count; 
             }
         }
 

@@ -221,10 +221,7 @@ namespace ProjectPorcupine.Buildable.Components
 
             IsRunning = false;
 
-            foreach (Utility util in ParentFurniture.Tile.Utilities.Values)
-            {
-                util.Grid.PlugIn(this);
-            }
+            OnReconnecting();
 
             ParentFurniture.Removed += PowerConnectionRemoved;           
         }

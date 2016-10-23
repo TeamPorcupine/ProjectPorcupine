@@ -62,7 +62,7 @@ public class PowerNetworkTest
         Assert.IsTrue(powerNetwork.PlugIn(connection, grid));
         Assert.AreEqual(1, powerGrids.Count);
         powerNetwork.Unplug(connection);
-        Assert.AreEqual(0, grid.Connections.Count);
+        Assert.AreEqual(0, grid.ConnectionCount);
     }
 
     [Test]
