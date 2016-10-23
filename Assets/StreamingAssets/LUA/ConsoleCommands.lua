@@ -71,7 +71,7 @@ function Set_FontSize( size )
 end
 
 function Clear()
-	DevConsole.TextObject().text = "<color=green> Cleared Console :D </color>"
+	DevConsole.TextObject().text = "\n<color=green> Cleared Console :D </color>"
 	DevConsole.ClearHistory()
 end
 

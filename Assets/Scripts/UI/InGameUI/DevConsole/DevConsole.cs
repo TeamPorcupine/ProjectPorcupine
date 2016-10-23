@@ -54,6 +54,13 @@ namespace DeveloperConsole
         // AutoComplete
         List<string> possibleCandidates = new List<string>();                                // Possible options that the user is trying to type
         int selectedCandidate = 0;                                                           // Index of the option chosen
+        bool showingAutoComplete                                                             // Is autocomplete currently showing
+        {
+            get
+            {
+                return autoComplete.activeInHierarchy;
+            }
+        }
 
         /// <summary>
         /// Current instance
@@ -110,6 +117,7 @@ namespace DeveloperConsole
             }
 
             textArea.fontSize = fontSize;
+            textArea.text = "\n";
 
             LoadCommands();
 
@@ -343,12 +351,12 @@ namespace DeveloperConsole
                 return;
             }
 
-            instance.textArea.text += "\n" + text + ((instance.showTimeStamp == true) ? "\t[" + System.DateTime.Now.ToShortTimeString() + "]" : "");
+            instance.textArea.text += text + ((instance.showTimeStamp == true) ? "\t[" + System.DateTime.Now.ToShortTimeString() + "]" : "") + "\n";
 
             // Clear if limit exceeded
             if (instance.textArea.text.Length >= Autoclear_Threshold)
             {
-                instance.textArea.text = "AUTO-CLEAR";
+                instance.textArea.text = "\nAUTO-CLEAR";
             }
 
             // Update scroll bar
@@ -621,7 +629,7 @@ namespace DeveloperConsole
                 return;
             }
 
-            instance.textArea.text = "";
+            instance.textArea.text = "\n";
             Log("Clear Successful :D", "green");
         }
 
@@ -643,7 +651,7 @@ namespace DeveloperConsole
                 return;
             }
 
-            instance.textArea.text = text;
+            instance.textArea.text = "\n" + text;
         }
 
         public static void SetTextSize(int size)
