@@ -2,6 +2,7 @@
 using System.Collections;
 using MoonSharp;
 using System;
+using MoonSharp.Interpreter;
 
 namespace DeveloperConsole
 {

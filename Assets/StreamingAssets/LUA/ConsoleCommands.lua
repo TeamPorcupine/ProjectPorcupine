@@ -11,6 +11,50 @@
 -- ModUtils.ULogError("Testing ModUtils.ULogErrorChannel") -- Note: pauses the game
 
 -------------------------------- Command Actions --------------------------------
+function stringIsNumeric( str )
+	if tonumber(a) ~= nil then
+		return true
+	else
+		return false
+	end
+end
+
+-- Cases:
+-- Value is string
+--  Value:lower() is "false" - > boolean false
+--  Value:lower() is "true"  - > boolean true
+
+-- Value is convertable to a number
+--	Value is 0 			     - > boolean false
+--  Value is 1 			     - > boolean true
+
+-- Value is a boolean
+--  Value is true 			 - > boolean true
+--  Value is false 			 - > boolean false
+-- Else:
+--  return nil
+function tobool(value)
+	if stringIsNumeric( value ) then
+		number = tonumber(value)
+		if number == 0 then
+			return false
+		elseif number == 1 then
+			return true
+		end
+	end
+	
+	if type(value) == "boolean" then
+        return value
+	elseif type(value) == "string" and (value:lower() == "false") then
+        return false
+	elseif type(value) == "string" and (value:lower() == "true") then
+		return true
+	end
+
+	return nil
+end
+
+-------------------------------- Command Actions --------------------------------
 
 function Set_FontSize( size ) 
 	size = tonumber(size)
@@ -21,9 +65,42 @@ function Set_FontSize( size )
 		DevConsole.LogError("Font size would be too big")
 	else
 		ModUtils.ULog("")
-		DevConsole.SetTextSize(size)
+		DevConsole.TextObject().fontSize = size
 		DevConsole.Log("Change successful :D", "green")
 	end
+end
+
+function Clear()
+	DevConsole.TextObject().text = "<color=green> Cleared Console :D </color>"
+	DevConsole.ClearHistory()
+end
+
+function ShowTimeStamp( on )
+	on = tobool(on)
+	if on ~= nil then
+		DevConsole.ShowTimeStamp(on)
+	else
+		DevConsole.LogError("The parameter provided is not of boolean type")
+	end
+end
+
+function HelpAll()
+	DevConsole.Log("-- Help --", "green")
+	for index, value in ipairs(DevConsole:CommandArray()) do
+		local text = "<color=orange>"..value.title..DevConsole.GetParametersWithConsoleMode(value).."</color>"
+		if (value.descriptiveText ~= nil) then
+			text = text .. "<color=green> //" .. value.descriptiveText .. "</color>"
+		end
+		
+		DevConsole.Log(text)
+	end
+	
+	DevConsole.Log("<color=orange>Note:</color> If the function has no parameters you <color=red>don't</color> need to use the parameter modifier.")
+	DevConsole.Log("<color=orange>Note:</color> You <color=red>don't</color> need to use the trailing parameter modifier either")
+end
+
+function ChangeCameraPositionLUA ( x, y )
+	DevConsole:ChangeCameraPositionCSharp(ModUtils.LUAVector3(tonumber(x), tonumber(y)))
 end
 
 -------------------------------- Help Actions --------------------------------

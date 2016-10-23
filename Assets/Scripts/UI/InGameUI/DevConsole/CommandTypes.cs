@@ -4,9 +4,11 @@ using System;
 using System.Reflection;
 using System.Linq;
 using DeveloperConsole.Interfaces;
+using MoonSharp.Interpreter;
 
 namespace DeveloperConsole.CommandTypes
 {
+    [MoonSharpUserData]
     public class Command : CoreCommand
     {
         /// <summary>
@@ -77,6 +79,7 @@ namespace DeveloperConsole.CommandTypes
     /// <summary>
     /// 1 parameter command
     /// </summary>
+    [MoonSharpUserData]
     public class Command<T0> : CoreCommand
     {
 
@@ -115,6 +118,7 @@ namespace DeveloperConsole.CommandTypes
     /// <summary>
     /// 2 parameter command
     /// </summary>
+    [MoonSharpUserData]
     public class Command<T0, T1> : CoreCommand
     {
 
@@ -154,6 +158,7 @@ namespace DeveloperConsole.CommandTypes
     /// <summary>
     /// 3 parameter command
     /// </summary>
+    [MoonSharpUserData]
     public class Command<T0, T1, T2> : CoreCommand
     {
         public delegate void ConsoleMethod(T0 arg0, T1 arg1, T2 arg2);
@@ -193,6 +198,7 @@ namespace DeveloperConsole.CommandTypes
     /// A vector method for obtaining a vector from user input
     /// </summary>
     /// <typeparam name="T"> Should be of type Vector2, 3, or 4 </typeparam>
+    [MoonSharpUserData]
     public class VectorCommand<T> : CoreCommand
     {
         public delegate void ConsoleMethod(T vector);

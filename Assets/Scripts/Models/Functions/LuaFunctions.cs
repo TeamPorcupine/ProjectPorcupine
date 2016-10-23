@@ -20,6 +20,7 @@ public class LuaFunctions
         // Tell the LUA interpreter system to load all the classes
         // that we have marked as [MoonSharpUserData]
         UserData.RegisterAssembly();
+        UserData.RegisterType<UnityEngine.Vector3>();
 
         this.script = new Script();
 
@@ -36,6 +37,7 @@ public class LuaFunctions
         RegisterGlobal(typeof(Scheduler.ScheduledEvent));
         RegisterGlobal(typeof(ProjectPorcupine.Jobs.RequestedItem));
         RegisterGlobal(typeof(DeveloperConsole.DevConsole));
+
     }
 
     /// <summary>

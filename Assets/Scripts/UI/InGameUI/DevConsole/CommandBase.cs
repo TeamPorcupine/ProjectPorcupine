@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using System;
-using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
 using DeveloperConsole.Interfaces;
+using MoonSharp.Interpreter;
 
 namespace DeveloperConsole.CommandTypes
 {
@@ -26,14 +26,38 @@ namespace DeveloperConsole.CommandTypes
     /// <summary>
     /// A command base that all commands derive from
     /// </summary> 
-    public abstract class CommandBase
+    [MoonSharpUserData]
+    public class CommandBase : ICommandDescription, ICommandHelpMethod
     {
+        public string descriptiveText
+        {
+            get; protected set;
+        }
+
+        public virtual string parameters
+        {
+            get; protected set;
+        }
+
+        public string title
+        {
+            get; protected set;
+        }
+
+        public HelpMethod helpMethod
+        {
+            get; protected set;
+        }
+
         /// <summary>
         /// Parse the arguments
         /// </summary>
         /// <param name="arguments"> Arguments to parse </param>
         /// <returns> the parsed arguments </returns>
-        protected abstract object[] ParseArguments(string arguments);
+        protected virtual object[] ParseArguments(string arguments)
+        {
+            return new object[] { };
+        }
 
         /// <summary>
         /// Splits at character then trims ends and start
@@ -137,24 +161,12 @@ namespace DeveloperConsole.CommandTypes
         }
     }
 
-    public sealed class LUACommand : CommandBase, ICommandDescription, ICommandHelpMethod, ICommandRunnable, ICommandLUA
+    [MoonSharpUserData]
+    public sealed class LUACommand : CommandBase, ICommandLUA
     {
-        public string descriptiveText
-        {
-            get; private set;
-        }
-
         public string functionName
         {
             get; private set;
-        }
-
-        public HelpMethod helpMethod
-        {
-            get
-            {
-                return runLUAHelp;
-            }
         }
 
         public string helpFunctionName
@@ -174,21 +186,11 @@ namespace DeveloperConsole.CommandTypes
             }
         }
 
-        public string parameters
-        {
-            get; private set;
-        }
-
-        public string title
-        {
-            get; private set;
-        }
-
         public void ExecuteCommand(string arguments)
         {
             try
             {
-                FunctionsManager.DevConsole.Call_Unsafe(functionName, arguments);
+                FunctionsManager.DevConsole.Call_Unsafe(functionName, ParseArguments(arguments));
             }
             catch (Exception e)
             {
@@ -201,15 +203,7 @@ namespace DeveloperConsole.CommandTypes
             try
             {
                 string[] args = SplitAndTrim(arguments);
-                if (args.Length == 3)
-                {
-                    return args;
-                }
-                else
-                {
-                    DevConsole.LogError(Errors.ParameterMissingConsoleError.Description((ICommandDescription)this));
-                    Debug.ULogErrorChannel("DevConsole", "Command Missing Parameter");
-                }
+                return args;
             }
             catch (Exception e)
             {
@@ -219,12 +213,17 @@ namespace DeveloperConsole.CommandTypes
             return new object[] { };
         }
 
+        public LUACommand()
+        {
+            helpMethod = runLUAHelp;
+        }
+
         /// <summary>
         /// Standard with title and a method
         /// </summary>
         /// <param name="title"> The title for the command </param>
         /// <param name="functionName"> The command to execute </param>
-        public LUACommand(string title, string functionName)
+        public LUACommand(string title, string functionName) : this()
         {
             this.title = title;
             this.functionName = functionName;
@@ -258,41 +257,24 @@ namespace DeveloperConsole.CommandTypes
     /// <summary>
     /// A core command for the core code, its in CSharp
     /// </summary>
-    public abstract class CoreCommand : CommandBase, ICommandDescription, ICommandRunnable, ICommandCSharp, ICommandHelpMethod
+    [MoonSharpUserData]
+    public abstract class CoreCommand : CommandBase, ICommandCSharp
     {
-        /// <summary>
-        /// Text that describes this command
-        /// </summary>
-        public string descriptiveText { get; private set; }
-
         /// <summary>
         /// The method to call
         /// </summary>
         public Delegate method { get; private set; }
 
         /// <summary>
-        /// The title of command
-        /// </summary>
-        public string title { get; private set; }
-
-        /// <summary>
         /// Get all the parameters for this function
         /// </summary>
         /// <returns> a string of all the parameters with a comma between them </returns>
-        public string parameters
+        public override string parameters
         {
             get
             {
                 return string.Join(", ", method.Method.GetParameters().Select(x => x.ParameterType.Name).ToArray());
             }
-        }
-
-        /// <summary>
-        /// To call to display help
-        /// </summary>
-        public HelpMethod helpMethod
-        {
-            get; private set;
         }
 
         /// <summary>

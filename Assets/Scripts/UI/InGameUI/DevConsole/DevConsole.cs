@@ -19,10 +19,10 @@ namespace DeveloperConsole
 
         string inputText = "";                                                               // The current text
 
-        List<ICommandDescription> consoleCommands = new List<ICommandDescription>();         // Whole list of commands available
+        List<CommandBase> consoleCommands = new List<CommandBase>();         // Whole list of commands available
 
         List<string> history = new List<string>();                                           // History of inputs
-        int currentHistoryIndex = -1;                                                             // What index the history is at
+        int currentHistoryIndex = -1;                                                        // What index the history is at
 
         // Flags
         bool closed = true;                                                                  // Is the command line closed
@@ -62,7 +62,6 @@ namespace DeveloperConsole
 
         [SerializeField]
         Text textArea;                                                                       // The console text logger
-
         [SerializeField]
         InputField inputField;                                                               // The console input field
         [SerializeField]
@@ -169,11 +168,12 @@ namespace DeveloperConsole
         {
             // Load Base Commands
             AddCommands(
-                new Command("Clear", Clear, "Clears the console"),
-                new Command<bool>("ShowTimeStamp", ShowTimeStamp, "Establishes whether or not to show the time stamp for each command"),
-                new Command("Help", Help, "Shows a list of all the available commands"),
+                //new Command("Clear", Clear, "Clears the console"),
+                //new Command<bool>("ShowTimeStamp", ShowTimeStamp, "Establishes whether or not to show the time stamp for each command"),
+                //new Command("Help", Help, "Shows a list of all the available commands"),
+                new VectorCommand<Vector3>("ChangeCameraCSharp", ChangeCameraPositionCSharp, "Change Camera Position (Written in CSharp)")
                 //             new Command<int>("SetFontSize", SetFontSize, "Sets the font size of the console"),
-                new Command("quit", Application.Quit, "Quits the game")
+                //              new Command("quit", Application.Quit, "Quits the game")
                 );
 
             // Load ProjectPorcupine specific commands
@@ -405,7 +405,7 @@ namespace DeveloperConsole
                     break;
             }
 
-            IEnumerable<ICommandDescription> commandsToCall;
+            IEnumerable<CommandBase> commandsToCall;
 
             if (methodNameAndArgs.Length == 2)
             {
@@ -419,13 +419,11 @@ namespace DeveloperConsole
                 string testString = method.ToLower().Trim().TrimEnd('?');
                 commandsToCall = instance.consoleCommands.Where(cB => cB.title.ToLower() == testString);
 
-                foreach (ICommandDescription commandToCall in commandsToCall)
+                foreach (CommandBase commandToCall in commandsToCall)
                 {
-                    ICommandHelpMethod helpMethod = (ICommandHelpMethod)commandToCall;
-
-                    if (helpMethod != null && helpMethod.helpMethod != null)
+                    if (commandToCall.helpMethod != null)
                     {
-                        ShowHelpMethod(helpMethod);
+                        ShowHelpMethod(commandToCall);
                     }
                     else
                     {
@@ -439,7 +437,7 @@ namespace DeveloperConsole
             // Execute command
             commandsToCall = instance.consoleCommands.Where(cB => cB.title.ToLower() == method.ToLower().Trim());
 
-            foreach (ICommandDescription commandToCall in commandsToCall)
+            foreach (CommandBase commandToCall in commandsToCall)
             {
                 ICommandRunnable runnable = (ICommandRunnable)commandToCall;
 
@@ -458,13 +456,13 @@ namespace DeveloperConsole
             }
         }
 
-        public static void ShowDescription(ICommandDescription description)
+        public static void ShowDescription(CommandBase description)
         {
             Log("<color=yellow>Command Info:</color> " + ((description.descriptiveText == "") ? "<color=red>There's no help for this command</color>" : description.descriptiveText));
             Log("<color=yellow>Call: <color=orange>" + description.title + GetParametersWithConsoleMode(description) + "</color>");
         }
 
-        public static void AddCommands(IEnumerable<ICommandDescription> commands)
+        public static void AddCommands(IEnumerable<CommandBase> commands)
         {
             // Guard
             if (instance == null)
@@ -475,7 +473,7 @@ namespace DeveloperConsole
             instance.consoleCommands.AddRange(commands);
         }
 
-        public static void AddCommands(params ICommandDescription[] commands)
+        public static void AddCommands(params CommandBase[] commands)
         {
             // Guard
             if (instance == null)
@@ -486,7 +484,7 @@ namespace DeveloperConsole
             instance.consoleCommands.AddRange(commands);
         }
 
-        public static void AddCommand(ICommandDescription command)
+        public static void AddCommand(CommandBase command)
         {
             // Guard
             if (instance == null)
@@ -524,9 +522,54 @@ namespace DeveloperConsole
             Log("Deleted " + (instance.consoleCommands.Count - oldCount).ToString() + " commands");
         }
 
+        public static IEnumerator<CommandBase> CommandIterator()
+        {
+            return (instance != null) ? instance.consoleCommands.GetEnumerator() : new List<CommandBase>.Enumerator();
+        }
+
+        public static CommandBase[] CommandArray()
+        {
+            return (instance != null) ? instance.consoleCommands.ToArray() : new CommandBase[] { };
+        }
+
+        public static void AddHistory(string command)
+        {
+            if (instance == null)
+            {
+                return;
+            }
+
+            instance.history.Add(command);
+        }
+
+        public static void RemoveHistory(string command)
+        {
+            if (instance == null || instance.history.Contains(command) == false)
+            {
+                return;
+            }
+
+            instance.history.Remove(command);
+        }
+
+        public static void ClearHistory()
+        {
+            if (instance == null)
+            {
+                return;
+            }
+
+            instance.history.Clear();
+        }
+
         #endregion
 
         #region BaseCommands
+
+        public static void ChangeCameraPositionCSharp(Vector3 newPos)
+        {
+            Camera.main.transform.position = newPos;
+        }
 
         public void Help()
         {
@@ -543,7 +586,12 @@ namespace DeveloperConsole
             Log("-- Help --" + text);
         }
 
-        public static string GetParametersWithConsoleMode(ICommandDescription description)
+        public static int DeveloperCommandMode()
+        {
+            return (instance == null) ? -1 : instance.developerCommandMode;
+        }
+
+        public static string GetParametersWithConsoleMode(CommandBase description)
         {
             if (instance == null)
             {
@@ -577,10 +625,14 @@ namespace DeveloperConsole
             Log("Clear Successful :D", "green");
         }
 
-        void ShowTimeStamp(bool value)
+        public static void ShowTimeStamp(bool value)
         {
-            print(value);
-            showTimeStamp = value;
+            if (instance == null)
+            {
+                return;
+            }
+
+            instance.showTimeStamp = value;
             Log("Change successful :D", "green");
         }
 
@@ -602,6 +654,16 @@ namespace DeveloperConsole
             }
 
             instance.textArea.fontSize = size;
+        }
+
+        public static Text TextObject()
+        {
+            if (instance == null)
+            {
+                return null;
+            }
+
+            return instance.textArea;
         }
 
         void SetFontSize(int size)
