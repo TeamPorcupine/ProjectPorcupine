@@ -30,14 +30,17 @@ end
 function powerValueAt(tile)
     zero = 128 -- This is middle between 0 and 256
     multiplier = 12,8 -- For now 1 power is 40 in overlay
-    if (tile == nil or tile.furniture == nil or tile.furniture.PowerConnection == nil) then
+	
+	local powerComponent = ModUtils.GetPlugablePowerConnectionForTile(tile)
+
+	if (powerComponent == nil) then
         return zero
     end
-    if (tile.furniture.PowerConnection.IsPowerConsumer) then
-        zero = zero - tile.furniture.PowerConnection.InputRate * multiplier
+    if (powerComponent.IsConsumer) then
+        zero = zero - powerComponent.InputRate * multiplier
     end
-    if (tile.furniture.PowerConnection.IsPowerProducer) then
-        zero = zero + tile.furniture.PowerConnection.OutputRate * multiplier
+    if (powerComponent.IsProducer) then
+        zero = zero + powerComponent.OutputRate * multiplier
     end
     return ModUtils.Clamp(zero, 0, 256)
 end

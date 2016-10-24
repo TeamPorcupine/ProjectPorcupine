@@ -75,6 +75,12 @@ namespace Animation
             CheckFrameChange();
         }
 
+        public void SetFrameIndex(int frameIndex)
+        {
+            currentAnimation.SetFrame(frameIndex);
+            CheckFrameChange();
+        }
+
         /// <summary>
         /// Set the animation state. Will only have an effect if stateName is different from current animation stateName.
         /// </summary>

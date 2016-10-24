@@ -7,6 +7,7 @@
 // ====================================================
 #endregion
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,6 +25,39 @@ public class ModDialogBoxInformation
     [XmlElement("Buttons")]
     public DialogBoxResult[] buttons;
 
-    [XmlElement("Actions")]
-    public EventActions events;
+    [XmlIgnore()]
+    public Dictionary<string, string> Actions = new Dictionary<string, string>();
+
+
+    [XmlArray("Actions")]
+    [XmlArrayItem("Action", Type = typeof(DictionaryEntry))]
+    public DictionaryEntry[] ActionsList
+    {
+        get
+        {
+            //Make an array of DictionaryEntries to return   
+            DictionaryEntry[] ret = new DictionaryEntry[Actions.Count];
+            int i = 0;
+            DictionaryEntry de;
+            //Iterate through Stuff to load items into the array.   
+            foreach (KeyValuePair<string, string> props in Actions)
+            {
+                de = new DictionaryEntry();
+                de.Key = props.Key;
+                de.Value = props.Value;
+                ret[i] = de;
+                i++;
+            }
+            return ret;
+        }
+        set
+        {
+            Actions.Clear();
+            for (int i = 0; i < value.Length; i++)
+            {
+                Actions.Add((string)value[i].Key, (string)value[i].Value);
+            }
+        }
+    }
+
 }

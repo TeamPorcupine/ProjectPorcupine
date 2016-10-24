@@ -56,6 +56,7 @@ GameObject:
   - 222: {fileID: 222000011447914422}
   - 114: {fileID: 114000012933612692}
   - 114: {fileID: 114000011591298446}
+  - 114: {fileID: 114000011606898568}
   m_Layer: 5
   m_Name: btnCancel
   m_TagString: Untagged
@@ -74,6 +75,7 @@ GameObject:
   - 222: {fileID: 222000012832324296}
   - 114: {fileID: 114000012049433144}
   - 114: {fileID: 114000013007435556}
+  - 114: {fileID: 114000013401538626}
   m_Layer: 5
   m_Name: btnNo
   m_TagString: Untagged
@@ -176,6 +178,7 @@ GameObject:
   - 222: {fileID: 222000010067770246}
   - 114: {fileID: 114000013595921090}
   - 114: {fileID: 114000010688993620}
+  - 114: {fileID: 114000012906972428}
   m_Layer: 5
   m_Name: btnOK
   m_TagString: Untagged
@@ -194,6 +197,7 @@ GameObject:
   - 222: {fileID: 222000012154324568}
   - 114: {fileID: 114000013486404188}
   - 114: {fileID: 114000010378317124}
+  - 114: {fileID: 114000012227452092}
   m_Layer: 5
   m_Name: btnYes
   m_TagString: Untagged
@@ -276,8 +280,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114000012712383356}
-        m_MethodName: YesButtonClicked
+      - m_Target: {fileID: 114000012227452092}
+        m_MethodName: OnClicked
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -356,8 +360,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114000012712383356}
-        m_MethodName: OkButtonClicked
+      - m_Target: {fileID: 114000012906972428}
+        m_MethodName: OnClicked
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -442,8 +446,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114000012712383356}
-        m_MethodName: CancelButtonClicked
+      - m_Target: {fileID: 114000011606898568}
+        m_MethodName: OnClicked
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -455,6 +459,18 @@ MonoBehaviour:
         m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
+--- !u!114 &114000011606898568
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000010514124378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3fbc7d0064bc67043b7ca5b55041ddcb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  buttonName: Cancel
 --- !u!114 &114000011828394426
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -515,6 +531,18 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &114000012227452092
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000013740242476}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3fbc7d0064bc67043b7ca5b55041ddcb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  buttonName: Yes
 --- !u!114 &114000012538230346
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -606,6 +634,18 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &114000012906972428
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000013655512110}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3fbc7d0064bc67043b7ca5b55041ddcb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  buttonName: Okay
 --- !u!114 &114000012933612692
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -673,8 +713,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114000012712383356}
-        m_MethodName: NoButtonClicked
+      - m_Target: {fileID: 114000013401538626}
+        m_MethodName: OnClicked
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -719,6 +759,18 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: 
+--- !u!114 &114000013401538626
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000010532736756}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3fbc7d0064bc67043b7ca5b55041ddcb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  buttonName: No
 --- !u!114 &114000013486404188
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -27,6 +27,7 @@ public class EventActions : IXmlSerializable
     /// </summary>
     protected Dictionary<string, List<string>> actionsList = new Dictionary<string, List<string>>();
 
+
     /// <summary>
     /// Used to transfer register actions to new object.
     /// </summary>

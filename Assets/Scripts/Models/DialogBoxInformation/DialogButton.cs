@@ -21,9 +21,12 @@ public class DialogButton : DialogControl
         buttonName = buttonName.Replace(" ", "_");
         EventActions dialogEvents = transform.GetComponentInParent<ModDialogBox>().events;
 
+        Debug.ULogChannel("ModDialogBox", "Calling On" + buttonName + "Clicked function");
+
         if (dialogEvents.HasEvent("On" + buttonName + "Clicked") == true)
         {
-            dialogEvents.Trigger("On" + buttonName + "Clicked", this);
+            Debug.ULogChannel("ModDialogBox", "Found On" + buttonName + "Clicked event");
+            dialogEvents.Trigger<ModDialogBox>("On" + buttonName + "Clicked", transform.GetComponentInParent<ModDialogBox>());
         }
     }
 }

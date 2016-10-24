@@ -25,7 +25,6 @@ public class DialogBox : MonoBehaviour
     {
         openedWhileModal = GameController.Instance.IsModal ? true : false;
 
-        Debug.ULogChannel("ModDialogBox", "GameController.IsModal returns=" + GameController.Instance.IsModal);
         GameController.Instance.IsModal = true;
 
         GameController.Instance.soundController.OnButtonSFX();

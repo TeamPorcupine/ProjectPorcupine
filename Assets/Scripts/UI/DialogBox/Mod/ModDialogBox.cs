@@ -10,6 +10,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
+using System.Xml.Linq;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
 using UnityEngine;
@@ -189,7 +190,14 @@ public class ModDialogBox : DialogBox
                 }
             }
 
-            events = dialogBoxInfo.events;
+            EventActions eventActions = new EventActions();
+            foreach (KeyValuePair<string, string> pair in dialogBoxInfo.Actions)
+            {
+                eventActions.Register(pair.Key, pair.Value);
+            }
+
+            events = eventActions;
+
             FunctionsManager.Get("ModDialogBox").RegisterGlobal(typeof(ModDialogBox));
             extraData = new List<object>();
         }
@@ -197,5 +205,34 @@ public class ModDialogBox : DialogBox
         {
             Debug.ULogErrorChannel("ModDialogBox", "Error deserializing data:" + error.Message);
         }
+        
+        /*
+        ModDialogBoxInformation Info = new ModDialogBoxInformation();
+        Info.title = "Filter";
+
+        DialogComponent[] content = new DialogComponent[1];
+        DialogComponent text = new DialogComponent();
+        text.name = "Text1";
+        text.ObjectType = "Text";
+        text.data = "Hello World!";
+        text.position = new Vector3(100, -50);
+        text.size = new Vector2(25, 25);
+        content[0] = text;
+        Info.content = content;
+
+        DictionaryEntry[] actions = new DictionaryEntry[3];
+        actions[0] = new DictionaryEntry("OnYesClicked", "Filter_YesClicked");
+        actions[1] = new DictionaryEntry("OnNoClicked", "Filter_NoClicked");
+        actions[2] = new DictionaryEntry("OnCancelClicked", "Filter_CancelClicked");
+        Info.ActionsList = actions;
+
+        DialogBoxResult[] results = new DialogBoxResult[3];
+        results[0] = DialogBoxResult.Yes;
+        results[1] = DialogBoxResult.No;
+        results[2] = DialogBoxResult.Cancel;
+        Info.buttons = results;
+
+        serializer.Serialize(file.OpenWrite(), Info);
+        */
     }
 }
