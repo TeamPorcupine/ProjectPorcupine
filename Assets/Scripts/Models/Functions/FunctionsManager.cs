@@ -10,28 +10,28 @@ using System.Collections.Generic;
 
 public class FunctionsManager
 {
-    private static Dictionary<string, LuaFunctions> actions;
+    private static Dictionary<string, Functions> actions;
 
     public FunctionsManager()
     {
-        actions = new Dictionary<string, LuaFunctions>();
+        actions = new Dictionary<string, Functions>();
 
-        actions.Add("Furniture", new LuaFunctions());
-        actions.Add("Utility", new LuaFunctions());
-        actions.Add("RoomBehavior", new LuaFunctions());
-        actions.Add("Need", new LuaFunctions());
-        actions.Add("GameEvent", new LuaFunctions());
-        actions.Add("TileType", new LuaFunctions());
-        actions.Add("Quest", new LuaFunctions());
-        actions.Add("ScheduledEvent", new LuaFunctions());
-        actions.Add("Overlay", new LuaFunctions());
+        actions.Add("Furniture", new Functions());
+        actions.Add("Utility", new Functions());
+        actions.Add("RoomBehavior", new Functions());
+        actions.Add("Need", new Functions());
+        actions.Add("GameEvent", new Functions());
+        actions.Add("TileType", new Functions());
+        actions.Add("Quest", new Functions());
+        actions.Add("ScheduledEvent", new Functions());
+        actions.Add("Overlay", new Functions());
     }
 
     /// <summary>
     /// Gets the furniture Lua Functions.
     /// </summary>
     /// <value>The furniture Lua Functions.</value>
-    public static LuaFunctions Furniture
+    public static Functions Furniture
     {
         get { return Get("Furniture"); }
     }
@@ -40,7 +40,7 @@ public class FunctionsManager
     /// Gets the utility Lua Functions.
     /// </summary>
     /// <value>The utility Lua Functions.</value>
-    public static LuaFunctions Utility
+    public static Functions Utility
     {
         get { return Get("Utility"); }
     }
@@ -49,7 +49,7 @@ public class FunctionsManager
     /// Gets the RoomBehavior Lua Functions.
     /// </summary>
     /// <value>The RoomBehavior Lua Functions.</value>
-    public static LuaFunctions RoomBehavior
+    public static Functions RoomBehavior
     {
         get { return Get("RoomBehavior"); }
     }
@@ -58,7 +58,7 @@ public class FunctionsManager
     /// Gets the need Lua Functions.
     /// </summary>
     /// <value>The need actions.</value>
-    public static LuaFunctions Need
+    public static Functions Need
     {
         get { return Get("Need"); }
     }
@@ -67,7 +67,7 @@ public class FunctionsManager
     /// Gets the game event Lua Functions.
     /// </summary>
     /// <value>The game event Lua Functions.</value>
-    public static LuaFunctions GameEvent
+    public static Functions GameEvent
     {
         get { return Get("GameEvent"); }
     }
@@ -76,7 +76,7 @@ public class FunctionsManager
     /// Gets the tile type Lua Functions.
     /// </summary>
     /// <value>The tile type Lua Functions.</value>
-    public static LuaFunctions TileType
+    public static Functions TileType
     {
         get { return Get("TileType"); }
     }
@@ -85,7 +85,7 @@ public class FunctionsManager
     /// Gets the quest Lua Functions.
     /// </summary>
     /// <value>The quest Lua Functions.</value>
-    public static LuaFunctions Quest
+    public static Functions Quest
     {
         get { return Get("Quest"); }
     }
@@ -94,7 +94,7 @@ public class FunctionsManager
     /// Gets the scheduled event Lua Functions.
     /// </summary>
     /// <value>The scheduled event Lua Functions.</value>
-    public static LuaFunctions ScheduledEvent
+    public static Functions ScheduledEvent
     {
         get { return Get("ScheduledEvent"); }
     }
@@ -103,7 +103,7 @@ public class FunctionsManager
     /// Gets the overlay Lua Functions.
     /// </summary>
     /// <value>The overlay Lua Functions.</value>
-    public static LuaFunctions Overlay
+    public static Functions Overlay
     {
         get { return Get("Overlay"); }
     }
@@ -112,7 +112,7 @@ public class FunctionsManager
     /// Get the Lua Functions for the specified name.
     /// </summary>
     /// <param name="name">The functions key.</param>
-    public static LuaFunctions Get(string name)
+    public static Functions Get(string name)
     {
         if (actions == null)
         {

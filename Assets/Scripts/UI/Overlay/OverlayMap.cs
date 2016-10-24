@@ -257,7 +257,7 @@ public class OverlayMap : MonoBehaviour
             currentOverlay = name;
             OverlayDescriptor descr = PrototypeManager.Overlay.Get(name);
 
-            if (FunctionsManager.Overlay.HasGlobal(descr.LuaFunctionName) == false)
+            if (FunctionsManager.Overlay.HasFunction(descr.LuaFunctionName) == false)
             {
                 Debug.ULogErrorChannel("OverlayMap", string.Format("Couldn't find a function named '{0}' in '{1}'", descr.LuaFunctionName));
                 return;

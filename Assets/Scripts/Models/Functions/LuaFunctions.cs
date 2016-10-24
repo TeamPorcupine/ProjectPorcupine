@@ -7,11 +7,10 @@
 // ====================================================
 #endregion
 using System;
-using System.IO;
 using MoonSharp.Interpreter;
 using ProjectPorcupine.PowerNetwork;
 
-public class LuaFunctions
+public class LuaFunctions : IFunctions
 {
     protected Script script;
 
@@ -45,13 +44,8 @@ public class LuaFunctions
     {
         script.Globals[type.Name] = type;
     }
-
-    /// <summary>
-    /// Determines whether there is a Lua global with the given name.
-    /// </summary>
-    /// <returns><c>true</c> if there is a global with the given name; otherwise, <c>false</c>.</returns>
-    /// <param name="name">The global name.</param>
-    public bool HasGlobal(string name)
+        
+    public bool HasFunction(string name)
     {
         return name != null && script.Globals[name] != null;
     }
@@ -84,13 +78,7 @@ public class LuaFunctions
     public DynValue Call(string functionName, params object[] args)
     {
         object func = script.Globals[functionName];
-
-        if (func == null)
-        {
-            Debug.ULogChannel("Lua", "'" + functionName + "' is not a LUA function!");
-            return null;
-        }
-
+                
         try
         {
             return script.Call(func, args);
@@ -100,6 +88,11 @@ public class LuaFunctions
             Debug.ULogErrorChannel("Lua", e.DecoratedMessage);
             return null;
         }
+    }
+
+    public T Call<T>(string functionName, params object[] args)
+    {
+        return Call(functionName, args).ToObject<T>();
     }
 
     /// <summary>

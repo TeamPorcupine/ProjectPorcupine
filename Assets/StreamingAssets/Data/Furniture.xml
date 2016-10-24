@@ -541,6 +541,8 @@
         <Component type="PowerConnection">
             <Requires rate="1" />
         </Component>
+        
+        <GetProgressInfo functionName="PowerCellPress_StatusInfo" />
 
         <LocalizationCode>furn_power_cell_press</LocalizationCode>
         <UnlocalizedDescription>furn_power_cell_press_desc</UnlocalizedDescription>

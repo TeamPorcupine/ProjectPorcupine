@@ -40,7 +40,7 @@ public class SchedulerEditorTest
             new FunctionsManager();
         }
 
-        FunctionsManager.ScheduledEvent.LoadScript(LuaFunctionString, "ScheduledEvent");
+        FunctionsManager.ScheduledEvent.LoadScript(LuaFunctionString, "ScheduledEvent", Functions.Type.Lua);
 
         if (PrototypeManager.ScheduledEvent == null)
         {
