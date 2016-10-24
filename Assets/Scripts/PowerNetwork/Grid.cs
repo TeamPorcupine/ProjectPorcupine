@@ -36,7 +36,7 @@ namespace ProjectPorcupine.PowerNetwork
         }
 
         /// <summary>
-        /// Gets the connections to this grid.
+        /// Gets the number of connections to this grid.
         /// </summary>
         public int ConnectionCount
         {
