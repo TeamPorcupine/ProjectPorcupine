@@ -56,27 +56,30 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
         {
             return type;
         }
+    }
 
-        set
+    public void SetTileType(TileType newTileType, bool doRoomFloodFill = true)
+    {
+        if (type == newTileType)
         {
-            if (type == value)
-            {
-                return;
-            }
-
-            type = value;
-            ForceTileUpdate = true;
-
-            bool splitting = true;
-            if (value == TileType.Empty)
-            {
-                splitting = false;
-            }
-
-            World.Current.RoomManager.DoRoomFloodFill(this, splitting, true);
-
-            OnTileClean();
+            return;
         }
+
+        type = newTileType;
+        ForceTileUpdate = true;
+
+        bool splitting = true;
+        if (newTileType == TileType.Empty)
+        {
+            splitting = false;
+        }
+
+        if (doRoomFloodFill)
+        {
+            World.Current.RoomManager.DoRoomFloodFill(this, splitting, true);
+        }
+
+        OnTileClean();
     }
 
     public HashSet<Furniture> ReservedAsWorkSpotBy { get; private set; }
@@ -164,7 +167,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
     public static void ChangeTileTypeJobComplete(Job theJob)
     {
         // FIXME: For now this is hardcoded to build floor
-        theJob.tile.Type = theJob.JobTileType;
+        theJob.tile.SetTileType(theJob.JobTileType);
 
         // FIXME: I don't like having to manually and explicitly set
         // flags that preven conflicts. It's too easy to forget to set/clear them!
@@ -561,7 +564,8 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
             Room.AssignTile(this);
         }
 
-        Type = PrototypeManager.TileType.Get(reader.GetAttribute("Type"));
+        // Since we are loading from a save here, we don't want to do a RoomFloodfill here.
+        SetTileType(PrototypeManager.TileType.Get(reader.GetAttribute("Type")), false);
         WalkCount = int.Parse(reader.GetAttribute("timesWalked"));
         ForceTileUpdate = true;
     }
