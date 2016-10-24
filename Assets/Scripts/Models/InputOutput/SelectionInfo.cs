@@ -45,6 +45,7 @@ public class SelectionInfo
         {
             stuffInTile.Add(pendingBuildJob);
         }
+
         stuffInTile.Add(Tile);
     }
 

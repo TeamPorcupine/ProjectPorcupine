@@ -146,6 +146,11 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             contextMenuLuaActions = new List<ContextMenuLuaAction>(other.contextMenuLuaActions);
         }
 
+        if (other.ReplaceableFurniture != null)
+        {
+            replaceableFurniture = other.ReplaceableFurniture;
+        }
+
         isEnterableAction = other.isEnterableAction;
         getSpriteNameAction = other.getSpriteNameAction;
         getProgressInfoNameAction = other.getProgressInfoNameAction;
@@ -716,7 +721,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                     break;
                 case "CanReplaceFurniture":
                     replaceableFurniture.Add(reader.GetAttribute("typeTag").ToString());
-                    Debug.LogWarning("ReplacableTypes: " + reader.GetAttribute("typeTag"));
                     break;
                 case "CanRotate":
                     reader.Read();

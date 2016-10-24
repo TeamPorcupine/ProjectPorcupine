@@ -86,11 +86,6 @@ public class Job : ISelectable, IPrototypable
             }
         }
 
-        if (tile != null)
-        {
-            tile.PendingBuildJobs.Add(this);
-        }
-
         this.HeldInventory = new Dictionary<string, Inventory>();
     }
 
@@ -120,8 +115,6 @@ public class Job : ISelectable, IPrototypable
         }
 
         this.HeldInventory = new Dictionary<string, Inventory>();
-
-        //FIXME: Are tile jobs supposed to reserve pending build jobs? Probably?
     }
 
     protected Job(Job other)
@@ -150,11 +143,6 @@ public class Job : ISelectable, IPrototypable
         }
 
         this.HeldInventory = new Dictionary<string, Inventory>();
-
-        if (tile != null && JobTileType == null)
-        {
-            tile.PendingBuildJobs.Add(this);
-        }
     }
 
     // We have finished the work cycle and so things should probably get built or whatever.
@@ -346,8 +334,6 @@ public class Job : ISelectable, IPrototypable
         // If we are a building job let our tile know we are no longer pending
         if (buildablePrototype != null)
         {
-            tile.PendingBuildJobs.Remove(this);
-
             // If we are a furniture building job, Let our workspot tile know it is no longer reserved for us.
             if (buildablePrototype.GetType() == typeof(Furniture))
             {

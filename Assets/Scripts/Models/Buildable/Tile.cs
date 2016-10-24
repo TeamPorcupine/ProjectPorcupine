@@ -118,7 +118,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
 
     // FIXME: This seems like a terrible way to flag if a job is pending
     // on a tile.  This is going to be prone to errors in set/clear.
-    public  HashSet<Job> PendingBuildJobs { get; set; }
+    public HashSet<Job> PendingBuildJobs { get; set; }
 
     public int X { get; private set; }
 
@@ -563,12 +563,11 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
     {
         if (PendingBuildJobs != null)
         {
-
             foreach (Job pendingJob in PendingBuildJobs)
             {
                 yield return new ContextMenuAction
                 {
-                    Text = "Cancel Job",
+                    Text = "Cancel " + pendingJob.GetName(),
                     RequireCharacterSelected = false,
                     Action = (cm, c) =>
                     {
