@@ -576,7 +576,7 @@ public class MouseController
         }
         else
         {
-            sr.color = new Color(1f, 0.5f, 0.5f, 0.25f);
+            sr.color = new Color(1f, 0.5f, 0.5f, 1f);
         }
 
         go.name = furnitureType + "_p_" + tile.X + "_" + tile.Y + "_" + tile.Z;

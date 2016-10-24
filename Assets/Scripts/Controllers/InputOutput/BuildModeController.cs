@@ -345,6 +345,15 @@ public class BuildModeController
                     IEnumerable<Job> pendingFurnitureJob = pendingBuildJobs.Where(job => job.buildablePrototype.GetType() == typeof(Furniture));
                     if (pendingFurnitureJob.Count() == 1)
                     {
+                        foreach (string typeTag in pendingFurnitureJob.Single().buildablePrototype.GetTypeTags())
+                        {
+                            Debug.LogWarning("Tag: " + typeTag);
+                        }
+                        Debug.LogWarning("rep count: " + furnitureToBuild.ReplaceableFurniture.Count);
+                        foreach (string otherThing in furnitureToBuild.ReplaceableFurniture)
+                        {
+                            Debug.LogWarning("OtherTag: " + otherThing);
+                        }
                         return !furnitureToBuild.ReplaceableFurniture.Any(pendingFurnitureJob.Single().buildablePrototype.HasTypeTag);
                     }
                 }

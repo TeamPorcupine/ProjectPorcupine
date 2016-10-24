@@ -716,6 +716,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                     break;
                 case "CanReplaceFurniture":
                     replaceableFurniture.Add(reader.GetAttribute("typeTag").ToString());
+                    Debug.LogWarning("ReplacableTypes: " + reader.GetAttribute("typeTag"));
                     break;
                 case "CanRotate":
                     reader.Read();
@@ -1023,6 +1024,15 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     public bool HasTypeTag(string typeTag)
     {
         return typeTags.Contains(typeTag);
+    }
+
+    /// <summary>
+    /// Gets the type tags.
+    /// </summary>
+    /// <returns>The type tags.</returns>
+    public string[] GetTypeTags()
+    {
+        return typeTags.ToArray();
     }
 
     /// <summary>

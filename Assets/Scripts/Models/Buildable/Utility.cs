@@ -8,6 +8,8 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Collections;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
@@ -544,6 +546,15 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     public bool HasTypeTag(string typeTag)
     {
         return typeTags.Contains(typeTag);
+    }
+
+    /// <summary>
+    /// Gets the type tags.
+    /// </summary>
+    /// <returns>The type tags.</returns>
+    public string[] GetTypeTags()
+    {
+        return typeTags.ToArray();
     }
 
     /// <summary>
