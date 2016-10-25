@@ -79,10 +79,9 @@ public class FunctionsTest
         Debug.Log(string.Format("Iterations: {0}", cache.Count / 2));
         Debug.Log(string.Format("CSharp calls: {0} ms", sw1.ElapsedMilliseconds));
         Debug.Log(string.Format("LUA calls: {0} ms", sw2.ElapsedMilliseconds));
-
     }
 
-    string ReplaceQuotes(string text)
+    private string ReplaceQuotes(string text)
     {
         return text.Replace("'", "\"");
     }

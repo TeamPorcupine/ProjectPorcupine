@@ -16,15 +16,9 @@ public class CSharpFunctions : IFunctions
 {    
     // this is just to support convertion of object to DynValue
     protected Script script;
-
-    //Dictionary<string, NetModMethod> methods;
-    //Dictionary<string, System.Delegate> methods;
-    // TODO: using slow Reflection calls, need to create generic delegates
+    
     private Dictionary<string, MethodInfo> methods;
-
-    //delegate object NetModMethod(params object[] args);
-    //delegate T GenericNetModMethod<T>(params object[] args);
-
+    
     private Evaluator evaluator;
 
     public CSharpFunctions()
@@ -47,7 +41,7 @@ public class CSharpFunctions : IFunctions
     /// <summary>
     /// Little helper method to detect dynamic assemblies.
     /// </summary>
-    /// <param name="assembly">Assembly.</param>
+    /// <param name="assembly">Assembly to check.</param>
     /// <returns>True if assembly is dynamic, otherwise false.</returns>
     public static bool IsDynamic(Assembly assembly)
     {
@@ -68,27 +62,21 @@ public class CSharpFunctions : IFunctions
     /// <param name="scriptName">The script name.</param>
     public bool LoadScript(string text, string scriptName)
     {
-        //var cs = new CompilerSettings();
-        //cs.
         evaluator = new Evaluator(new CompilerContext(new CompilerSettings(), CompilationResult));
         foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
         {
-            //if (!IsDynamic(assembly) && assembly != mscorelib)
             {
                 evaluator.ReferenceAssembly(assembly);
             }
         }
 
-        var resAssembly = GetCompiledAssembly(scriptName);
-        //var resAssembly = GetCompiledAssemblyForScript(scriptName);
+        var resAssembly = GetCompiledAssembly(scriptName);       
         
         if (resAssembly == null)
         {
             CompiledMethod cm = evaluator.Compile(text + GetConnectionPointClassDeclaration(scriptName));
-            //CompiledMethod cm = evaluator.Compile(text);
 
             resAssembly = GetCompiledAssembly(scriptName);
-            //resAssembly = GetCompiledAssemblyForScript(scriptName);
         }
 
         if (resAssembly == null)
@@ -127,8 +115,6 @@ public class CSharpFunctions : IFunctions
     public T Call<T>(string functionName, params object[] args)
     {
         return (T)methods[functionName].Invoke(null, args);
-        //return (T)methods[functionName].DynamicInvoke(args);
-        //return (T)methods[functionName](args);
     }
 
     public void CallWithInstance(string[] functionNames, object instance, params object[] parameters)
@@ -154,19 +140,14 @@ public class CSharpFunctions : IFunctions
             }
         }
     }
-
-    // Get mscorelib assembly
-    private static Assembly mscorelib = 333.GetType().Assembly;
-
+    
     private string GetConnectionPointClassDeclaration(string name)
     {
-        //return string.Format("{0} public struct MonoSharp_DynamicAssembly_{1} {{}}", Environment.NewLine, id); // 
         return Environment.NewLine + " public struct MonoSharp_DynamicAssembly_" + name + " {}";
     }
 
     private string GetConnectionPointGetTypeExpression(string name)
     {
-        //return string.Format("typeof(MonoSharp_DynamicAssembly_{1})", id); 
         return "typeof(MonoSharp_DynamicAssembly_" + name + ");";
     }
 
@@ -176,11 +157,6 @@ public class CSharpFunctions : IFunctions
         {
             foreach (var method in GetAllMethodsFromType(type))
             {
-                //var sysDelegate = System.Delegate.CreateDelegate(type, method);
-                //var modDelegate = (NetModMethod)System.Delegate.CreateDelegate(typeof(NetModMethod), method);
-                //var modDelegate = (Func<params object[], object)System.Delegate.CreateDelegate
-                //var retType = method.ReturnType;
-                //var genModDelegate = (NetModMethod)System.Delegate.CreateDelegate(typeof(GenericNetModMethod<retType>), method);
                 methods.Add(method.Name, method);
             }
         }
