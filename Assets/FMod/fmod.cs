@@ -1,4 +1,3 @@
-#define WIN64
 /* ========================================================================================== */
 /*                                                                                            */
 /* FMOD Studio - C# Wrapper . Copyright (c), Firelight Technologies Pty, Ltd. 2004-2016.      */
@@ -18,7 +17,8 @@ namespace FMOD
     public class VERSION
     {
         public const int    number = 0x00010813;
-#if WIN64
+
+#if UNITY_64
         public const string dll    = "fmod64";
 #else
         public const string dll    = "fmod";
