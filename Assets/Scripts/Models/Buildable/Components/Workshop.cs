@@ -201,7 +201,7 @@ namespace ProjectPorcupine.Buildable.Components
         private void PlaceInventoryToWorkshopInput(Job job)
         {
             job.CancelJob();
-            foreach (Inventory heldInventory in job.HeldInventory.Values)
+            foreach (Inventory heldInventory in job.DeliveredItems.Values)
             {
                 if (heldInventory.StackSize > 0)
                 {

@@ -82,10 +82,11 @@ public class FurnitureManager : IEnumerable<Furniture>
         furnitures.Add(furniture);
         furnituresVisible.Add(furniture);
 
-        // Do we need to recalculate our rooms?
+        // Do we need to recalculate our rooms/reachability for other jobs?
         if (doRoomFloodFill && furniture.RoomEnclosure)
         {
             World.Current.RoomManager.DoRoomFloodFill(furniture.Tile, true);
+            World.Current.jobQueue.ReevaluateReachability();
         }
 
         if (Created != null)

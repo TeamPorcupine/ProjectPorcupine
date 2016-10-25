@@ -137,12 +137,12 @@ public class InventoryManager
         }
 
         // Check that there is a target to transfer to
-        if (job.HeldInventory.ContainsKey(sourceInventory.Type) == false)
+        if (job.DeliveredItems.ContainsKey(sourceInventory.Type) == false)
         {
-            job.HeldInventory[sourceInventory.Type] = new Inventory(sourceInventory.Type, 0, sourceInventory.MaxStackSize);
+            job.DeliveredItems[sourceInventory.Type] = new Inventory(sourceInventory.Type, 0, sourceInventory.MaxStackSize);
         }
 
-        Inventory targetInventory = job.HeldInventory[sourceInventory.Type];
+        Inventory targetInventory = job.DeliveredItems[sourceInventory.Type];
         int transferAmount = Mathf.Min(targetInventory.MaxStackSize - targetInventory.StackSize, sourceInventory.StackSize);
 
         sourceInventory.StackSize -= transferAmount;

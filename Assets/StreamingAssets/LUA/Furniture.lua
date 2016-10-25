@@ -237,7 +237,7 @@ function Stockpile_JobWorked(job)
 
     -- TODO: Change this when we figure out what we're doing for the all/any pickup job.
     --values = job.GetInventoryRequirementValues();
-    for k, inv in pairs(job.HeldInventory) do
+    for k, inv in pairs(job.DeliveredItems) do
         if(inv.StackSize > 0) then
             World.Current.inventoryManager.PlaceInventory(job.tile, inv)
             return -- There should be no way that we ever end up with more than on inventory requirement with StackSize > 0
@@ -361,7 +361,7 @@ end
 function MetalSmelter_JobWorked(job)
     job.CancelJob()
     local inputSpot = job.tile.Furniture.Jobs.InputSpotTile
-    for k, inv in pairs(job.HeldInventory) do
+    for k, inv in pairs(job.DeliveredItems) do
         if(inv ~= nil and inv.StackSize > 0) then
             World.Current.inventoryManager.PlaceInventory(inputSpot, inv)
             inputSpot.Inventory.Locked = true
