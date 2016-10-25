@@ -239,17 +239,14 @@ public class JobQueue
     {
         if (job.charsCantReach != null)
         {
-            Debug.ULogError("here1");
             foreach (Character charTemp in job.charsCantReach)
             {
                 if (charTemp == character)
                 {
-                    Debug.ULogError("here2");
                     return true;
                 }
             }   
         }
-        Debug.ULogError("here3");
         return false;
     }
 
