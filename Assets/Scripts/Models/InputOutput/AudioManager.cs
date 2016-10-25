@@ -26,9 +26,10 @@ public class AudioManager
     public AudioManager()
     {
         
-        FMOD.Factory.System_Create(out SoundSystem);
+        FMOD.RESULT res = FMOD.Factory.System_Create(out SoundSystem);
         SoundSystem.setDSPBufferSize(1024, 10);
         SoundSystem.init(32, FMOD.INITFLAGS.NORMAL, (IntPtr)0);
+//        SoundSystem.set3DSettings(1f, 1f, 0.1f);
         audioClips = new Dictionary<string, FMOD.Sound>();
     }
 
@@ -94,6 +95,12 @@ public class AudioManager
 
         string[] filesInDir = Directory.GetFiles(directoryPath);
         LoadAudioFile(filesInDir, directoryPath);
+    }
+
+    public static void Destroy()
+    {
+        SoundSystem.release();
+        audioClips = null;
     }
 
     private static void LoadAudioFile(string[] filesInDir, string directoryPath)

@@ -82,7 +82,7 @@ public class SoundController
 
         if (tileData.ForceTileUpdate)
         {  
-            PlaySoundAt(AudioManager.GetAudio("Sound", "Floor_OnCreated"), tileData);
+            PlaySoundAt(AudioManager.GetAudio("Sound", "Floor_OnCreated"), tileData, 2);
 //            AudioSource.PlayClipAtPoint(clip, Camera.main.transform.position);
             soundCooldown = 0.1f;
         }
@@ -97,7 +97,7 @@ public class SoundController
         Channel.setPaused(false);
     }
 
-    public void PlaySoundAt(FMOD.Sound clip, Tile tile)
+    public void PlaySoundAt(FMOD.Sound clip, Tile tile, float freqRange = 0f)
     {
         FMOD.System SoundSystem = AudioManager.SoundSystem;
         FMOD.Channel Channel;
@@ -108,10 +108,14 @@ public class SoundController
 
 
         SoundSystem.set3DListenerAttributes(0, ref curLoc, ref zero, ref forward, ref up);
+//        SoundSystem.set3DListenerAttributes(0, ref tilePos, ref zero, ref forward, ref up);
         SoundSystem.playSound(clip, null, true, out Channel);
         Channel.setVolume(1f);
+        Channel.set3DMinMaxDistance(Camera.main.orthographicSize / 2, 1000);
         FMOD.VECTOR tilePos = GetVectorFrom(tile);
         Channel.set3DAttributes(ref tilePos, ref zero, ref zero);
+        float pitch = Mathf.Pow(1.059f, (Random.Range(-freqRange, freqRange)));
+        Channel.setPitch(pitch);
         Channel.setPaused(false);
     }
 
