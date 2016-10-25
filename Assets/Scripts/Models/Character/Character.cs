@@ -339,7 +339,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 else
                 {
                     // TODO: Lack of job states should be more interesting. Maybe go to the pub and have a pint?
-                    SetState(new IdleState(this));
+                    SetState(new IdleState(this));            
                 }
             }
         }

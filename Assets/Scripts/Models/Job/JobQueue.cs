@@ -23,13 +23,6 @@ public class JobQueue
         unreachableJobs = new Queue<Job>();
 
         World.Current.InventoryManager.InventoryCreated += ReevaluateWaitingQueue;
-
-        PrototypeManager.ScheduledEvent.Add(
-            new Scheduler.ScheduledEvent(
-                "JobQueue_ReevaluateReachability",
-                (evt) => ReevaluateReachability()));
-
-        Scheduler.Scheduler.Current.ScheduleEvent("JobQueue_ReevaluateReachability", 60f, true);
     }
 
     public event Action<Job> OnJobCreated;
@@ -46,6 +39,11 @@ public class JobQueue
         return jobQueue.Count;
     }
 
+    /// <summary>
+    /// Try to stick a new job into the Queue
+    /// </summary>
+    /// <param name="job">The job to be inserted into the Queue</param>
+    /// <param name="character">The character</param>
     public void Enqueue(Job job)
     {
         DebugLog("Enqueue({0})", job.JobObjectType);
@@ -57,7 +55,7 @@ public class JobQueue
             return;
         }
 
-        // If the job requres material but there is nothing available, store it in jobsWaitingForInventory
+        // If the job requires material but there is nothing available, store it in jobsWaitingForInventory
         if (job.RequestedItems.Count > 0 && job.GetFirstFulfillableInventoryRequirement() == null)
         {
             string missing = job.acceptsAny ? "*" : job.GetFirstDesiredItem().Type;
@@ -71,8 +69,13 @@ public class JobQueue
         }
         else if (job.tile != null && job.tile.IsReachableFromAnyNeighbor(true) == false)
         {
-            DebugLog(" - Job can't be reached");
+            Debug.ULogChannel("JobQueue", "- Job can't be reached");
             unreachableJobs.Enqueue(job);
+        }
+        else if (job.charsCantReach.Count == World.Current.CharacterManager.characters.Count)
+        {
+            unreachableJobs.Enqueue(job);
+            Dequeue();
         }
         else
         {
@@ -119,11 +122,15 @@ public class JobQueue
         for (int i = 0; i < jobQueue.Count; i++)
         {
             Job job = jobQueue.Values[i];
-
             // TODO: This is a simplistic version and needs to be expanded.
             // If we can get all material and we can walk to the tile, the job is workable.
             if (job.IsRequiredInventoriesAvailable() && job.tile.IsReachableFromAnyNeighbor(true))
             {
+                if (CharacterCantReachHelper(job, character))
+                {
+                    continue;
+                }
+
                 jobQueue.RemoveAt(i);
                 return job;
             }
@@ -206,7 +213,10 @@ public class JobQueue
         }
     }
 
-    private void ReevaluateReachability()
+    /// <summary>
+    /// Call this whenever a furniture gets changed or removed that might effect the reachability of an object.
+    /// </summary>
+    public void ReevaluateReachability()
     {
         DebugLog(" - Reevaluate reachability of {0} jobs", unreachableJobs.Count);
         Queue<Job> jobsToReevaluate = unreachableJobs;
@@ -216,6 +226,31 @@ public class JobQueue
         {
             Enqueue(job);
         }
+    }
+
+
+    /// <summary>
+    /// Returns true if the character is already in the list of characters unable to reach the job.
+    /// </summary>
+    /// <param name="job"></param>
+    /// <param name="character"></param>
+    /// <returns></returns>
+    public bool CharacterCantReachHelper(Job job, Character character)
+    {
+        if (job.charsCantReach != null)
+        {
+            Debug.ULogError("here1");
+            foreach (Character charTemp in job.charsCantReach)
+            {
+                if (charTemp == character)
+                {
+                    Debug.ULogError("here2");
+                    return true;
+                }
+            }   
+        }
+        Debug.ULogError("here3");
+        return false;
     }
 
     [System.Diagnostics.Conditional("FSM_DEBUG_LOG")]

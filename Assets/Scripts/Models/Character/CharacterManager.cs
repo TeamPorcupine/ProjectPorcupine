@@ -19,7 +19,7 @@ using UnityEngine;
 [MoonSharpUserData]
 public class CharacterManager : IEnumerable<Character>
 {
-    private List<Character> characters;
+    public List<Character> characters;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CharacterManager"/> class.

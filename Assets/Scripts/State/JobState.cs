@@ -65,6 +65,12 @@ namespace ProjectPorcupine.State
                 }
                 else
                 {
+                    // Add character to the list of characters unable to reach the job.
+                    if (!World.Current.jobQueue.CharacterCantReachHelper(Job, character))
+                    {
+                        Job.charsCantReach.Add(character);
+                    }
+                   
                     Interrupt();
                 }
             }
@@ -110,11 +116,11 @@ namespace ProjectPorcupine.State
                 return;
             }
 
-            // Drops the priority a level.
-            Job.DropPriority();
-
             // If the job gets abandoned because of pathing issues or something else, just return it to the queue
             World.Current.jobQueue.Enqueue(Job);
+
+            // This is the code that actually tells the character that it is no longer doing the job.
+            character.SetState(new IdleState(character));
         }
 
         private void OnJobStopped(Job stoppedJob)
