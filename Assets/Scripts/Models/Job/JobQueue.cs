@@ -224,6 +224,7 @@ public class JobQueue
 
         foreach (Job job in jobsToReevaluate)
         {
+            job.charsCantReach.Clear();
             Enqueue(job);
         }
     }
