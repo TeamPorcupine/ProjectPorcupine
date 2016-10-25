@@ -300,5 +300,7 @@ public class FurnitureManager : IEnumerable<Furniture>
         {
             furnituresVisible.Remove(furniture);
         }
+
+        World.Current.jobQueue.ReevaluateReachability();
     }
 }
