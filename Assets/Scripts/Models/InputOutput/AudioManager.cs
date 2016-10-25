@@ -109,9 +109,8 @@ public class AudioManager
             }
 
             FMOD.Sound clip;
-            SoundSystem.createSound(filePath, FMOD.MODE._2D, out clip);
+            SoundSystem.createSound(filePath, FMOD.MODE._3D, out clip);
             string filename = new FileInfo(filePath).Name;
-
             filename = audioCategory + "/" + filename;
 
             Debug.Log(filename + " Downloaded");
