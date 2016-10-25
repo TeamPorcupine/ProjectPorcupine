@@ -112,7 +112,7 @@ public class FurnitureManager : IEnumerable<Furniture>
 
         // FIXME: I don't like having to manually and explicitly set
         // flags that prevent conflicts. It's too easy to forget to set/clear them!
-        job.tile.PendingBuildJob = null;
+        job.tile.PendingBuildJob = null;    
     }
 
     /// <summary>
@@ -301,6 +301,7 @@ public class FurnitureManager : IEnumerable<Furniture>
             furnituresVisible.Remove(furniture);
         }
 
+        // Movement to jobs might have been opened, let's move jobs back into the queue to be re-evaluated.
         World.Current.jobQueue.ReevaluateReachability();
     }
 }

@@ -46,6 +46,7 @@ public class JobQueue
     /// <param name="character">The character</param>
     public void Enqueue(Job job)
     {
+        Debug.ULogError(" - Unreachable jobs: {0}", unreachableJobs.Count);
         DebugLog("Enqueue({0})", job.JobObjectType);
         if (job.JobTime < 0)
         {
@@ -218,6 +219,7 @@ public class JobQueue
     /// </summary>
     public void ReevaluateReachability()
     {
+        // TODO: Should this be an event on the furniture object?
         DebugLog(" - Reevaluate reachability of {0} jobs", unreachableJobs.Count);
         Queue<Job> jobsToReevaluate = unreachableJobs;
         unreachableJobs = new Queue<Job>();
