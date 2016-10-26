@@ -27,7 +27,9 @@ public class AudioManager
     // TODO: These should probably have a property to access them and possibly be put in a dictionary for easier access
     public static FMOD.ChannelGroup master;
     public static FMOD.ChannelGroup UI;
-    public static FMOD.ChannelGroup building;
+    public static FMOD.ChannelGroup gameSounds;
+    public static FMOD.ChannelGroup alerts;
+    public static FMOD.ChannelGroup music;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AudioManager"/> class.
@@ -40,20 +42,26 @@ public class AudioManager
         SoundSystem.init(32, FMOD.INITFLAGS.NORMAL, (IntPtr)0);
         SoundSystem.getMasterChannelGroup(out master);
         FMOD.DSPConnection throwaway;
-        SoundSystem.createChannelGroup("UI", out UI);
-        SoundSystem.createChannelGroup("building", out building);
-        master.addGroup(UI, true, out throwaway);
-        master.addGroup(building, true, out throwaway);
-//        foreach (KeyValuePair<string, FMOD.ChannelGroup> entry in channelGroups)
-//        {
-//            FMOD.ChannelGroup chanGroup;
-//            SoundSystem.createChannelGroup(entry.Key, out chanGroup);
+        channelGroups.Add("UI", null);
+        channelGroups.Add("gameSounds", null);
+        channelGroups.Add("alerts", null);
+        channelGroups.Add("music", null);
+//        SoundSystem.createChannelGroup("UI", out UI);
+//        SoundSystem.createChannelGroup("building", out gameSounds);
+//        SoundSystem.createChannelGroup("alerts", out alerts);
+//        SoundSystem.createChannelGroup("music", out music);
+//        master.addGroup(UI, true, out throwaway);
+//        master.addGroup(gameSounds, true, out throwaway);
+        foreach (string key in channelGroups.Keys.ToArray())
+        {
+            FMOD.ChannelGroup chanGroup;
+            SoundSystem.createChannelGroup(key, out chanGroup);
 //            FMOD.DSPConnection throwaway;
-//            master.addGroup(chanGroup, true, out throwaway);
-//            channelGroups[entry.Key] = chanGroup;
-//        }
+            master.addGroup(chanGroup, true, out throwaway);
+            channelGroups[key] = chanGroup;
+        }
+        channelGroups.Add("master", master);
 
-        SoundSystem.init(32, FMOD.INITFLAGS.NORMAL, (IntPtr)0);
         SoundSystem.set3DSettings(1f, 1f, 0.1f);
         audioClips = new Dictionary<string, FMOD.Sound>();
 //        master.setVolume(.5f);
