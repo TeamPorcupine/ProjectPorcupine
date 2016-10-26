@@ -775,7 +775,7 @@ namespace DeveloperConsole
 					if (i != selectedCandidate) {
 						go.GetComponent<Text> ().text = "<color=white>" + possibleCandidates [i] + "</color>";
 					} else {
-						go.GetComponent<Text> ().text = "<color=red>" + possibleCandidates [i] + "</color>";
+						go.GetComponent<Text> ().text = "<color=yellow>" + possibleCandidates [i] + "</color>";
 					}
 				}
 			}
