@@ -271,10 +271,13 @@ namespace DeveloperConsole
 		/// <summary>
 		/// Runs the help method of the passed interface.
 		/// </summary>
-		public static void ShowHelpMethod (ICommandHelpMethod help)
+		public static void ShowHelpMethod (CommandBase help)
 		{
 			if (help.HelpMethod != null) {
 				help.HelpMethod ();
+				Log ("<color=yellow>Call it like </color><color=orange> " + help.Title + GetParametersWithConsoleMode (help) + "</color>");
+			} else {
+				ShowDescription (help);
 			}
 		}
 
