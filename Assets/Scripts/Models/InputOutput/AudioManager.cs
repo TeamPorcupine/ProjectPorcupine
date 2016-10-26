@@ -32,16 +32,17 @@ public class AudioManager
         channelGroups = new Dictionary<string, FMOD.ChannelGroup>();
         FMOD.RESULT res = FMOD.Factory.System_Create(out SoundSystem);
         SoundSystem.setDSPBufferSize(1024, 10);
-        channelGroups.Add("UI", null);
-        channelGroups.Add("building", null);
-        SoundSystem.getMasterChannelGroup(out master);
-        foreach (string key in channelGroups.Keys)
-        {
-            FMOD.ChannelGroup chanGroup = channelGroups[key];
-            SoundSystem.createChannelGroup(key, out chanGroup);
-            FMOD.DSPConnection throwaway;
-            master.addGroup(channelGroups[key], true, out throwaway);
-        }
+//        channelGroups.Add("UI", null);
+//        channelGroups.Add("building", null);
+//        SoundSystem.getMasterChannelGroup(out master);
+//        foreach (string key in channelGroups.Keys)
+//        {
+//            FMOD.ChannelGroup chanGroup;
+//            SoundSystem.createChannelGroup(key, out chanGroup);
+//            FMOD.DSPConnection throwaway;
+//            master.addGroup(channelGroups[key], true, out throwaway);
+//            channelGroups[key] = chanGroup;
+//        }
 
         SoundSystem.init(32, FMOD.INITFLAGS.NORMAL, (IntPtr)0);
 //        SoundSystem.set3DSettings(1f, 1f, 0.1f);
