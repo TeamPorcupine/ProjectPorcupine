@@ -156,16 +156,34 @@ public class SoundController
 
     public void SetListenerPosition(Vector3 newPosition)
     {
-//        FMOD.VECTOR prevLoc;
+        SetListenerPosition(newPosition.x, newPosition.y, newPosition.z);
+    }
+
+    public void SetListenerPosition(float x, float y, float z)
+    {
+        //        FMOD.VECTOR prevLoc;
         FMOD.VECTOR curLoc;
-        curLoc.x = newPosition.x;
-        curLoc.y = newPosition.y;
-        curLoc.z = newPosition.z;
-//        AudioManager.SoundSystem.get3DListenerAttributes(0, out prevLoc, out ignore, out ignore, out ignore);
-//        FMOD.VECTOR velocity = GetVectorFrom((GetUnityVector(curLoc) - GetUnityVector(prevLoc)) / (Time.deltaTime*5));
+        curLoc.x = x;
+        curLoc.y = y;
+        curLoc.z = z;
+        //        AudioManager.SoundSystem.get3DListenerAttributes(0, out prevLoc, out ignore, out ignore, out ignore);
+        //        FMOD.VECTOR velocity = GetVectorFrom((GetUnityVector(curLoc) - GetUnityVector(prevLoc)) / (Time.deltaTime*5));
         AudioManager.SoundSystem.set3DListenerAttributes(0, ref curLoc, ref zero, ref forward, ref up);
         AudioManager.SoundSystem.update();
     }
+
+//    public void SetListenerPosition(Vector3 newPosition)
+//    {
+//        //        FMOD.VECTOR prevLoc;
+//        FMOD.VECTOR curLoc;
+//        curLoc.x = newPosition.x;
+//        curLoc.y = newPosition.y;
+//        curLoc.z = newPosition.z;
+//        //        AudioManager.SoundSystem.get3DListenerAttributes(0, out prevLoc, out ignore, out ignore, out ignore);
+//        //        FMOD.VECTOR velocity = GetVectorFrom((GetUnityVector(curLoc) - GetUnityVector(prevLoc)) / (Time.deltaTime*5));
+//        AudioManager.SoundSystem.set3DListenerAttributes(0, ref curLoc, ref zero, ref forward, ref up);
+//        AudioManager.SoundSystem.update();
+//    }
 
     private Vector3 GetUnityVector(FMOD.VECTOR vector)
     {

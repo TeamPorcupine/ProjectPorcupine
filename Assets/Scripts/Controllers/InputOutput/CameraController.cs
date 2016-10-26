@@ -126,7 +126,7 @@ public class CameraController
 
         prevPositionTarget = positionTarget;
 
-        WorldController.Instance.soundController.SetListenerPosition(new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y, CurrentLayer));
+        WorldController.Instance.soundController.SetListenerPosition(Camera.main.transform.position.x, Camera.main.transform.position.y, (float)CurrentLayer);
     }
 
     public void ChangeZoom(float amount)
