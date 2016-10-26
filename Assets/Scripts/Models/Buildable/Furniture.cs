@@ -48,7 +48,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// These context menu lua action are used to build the context menu of the furniture.
     /// </summary>
     private List<ContextMenuLuaAction> contextMenuLuaActions;
-    
+
     private HashSet<BuildableComponent> components;
 
     // This is the generic type of object this is, allowing things to interact with it based on it's generic type
@@ -193,7 +193,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// </summary>
     /// <value>The Color of the furniture.</value>
     public Color Tint { get; set; }
-        
+
     /// <summary>
     /// Gets or sets a value indicating whether the door is Vertical or not.
     /// Should be false if the furniture is not a door.
@@ -209,7 +209,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// </summary>
     /// <value>The event actions that is called on update.</value>
     public EventActions EventActions { get; private set; }
-    
+
     /// <summary>
     /// Gets the Connection that the furniture has to the power system.
     /// </summary>
@@ -379,7 +379,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     public bool DoesntNeedOrHasPower
     {
         get
-        {   
+        {
             return PowerConnection == null || World.Current.PowerNetwork.HasPower(PowerConnection);
         }
     }
@@ -419,7 +419,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         // We know our placement destination is valid.
         Furniture furnObj = proto.Clone();
         furnObj.Tile = tile;
-        
+
         if (tile.PlaceFurniture(furnObj) == false)
         {
             // For some reason, we weren't able to place our object in this tile.
@@ -537,12 +537,12 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         {
             EventActions.Trigger("OnUpdate", this, deltaTime);
         }
-                
+
         foreach (BuildableComponent component in components)
         {
             component.FixedFrequencyUpdate(deltaTime);
-        }        
-        
+        }
+
         if (Animation != null)
         {
             Animation.Update(deltaTime);
@@ -714,7 +714,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                     break;
                 case "Health":
                     reader.Read();
-                health = new HealthSystem(reader.ReadContentAsFloat(), false, true, false, false);
+                    health = new HealthSystem(reader.ReadContentAsFloat(), false, true, false, false);
                     break;
                 case "LinksToNeighbours":
                     reader.Read();
@@ -927,7 +927,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// </summary>
     public void SetDeconstructJob()
     {
-        if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
+        if (Settings.GetSetting("DialogBoxSettingsDevConsole_developerModeToggle", false))
         {
             Deconstruct();
             return;
@@ -952,7 +952,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// Deconstructs the furniture.
     /// </summary>
     public void Deconstruct()
-    { 
+    {
         int x = Tile.X;
         int y = Tile.Y;
         int fwidth = 1;
@@ -1137,7 +1137,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// <returns>Context menu actions.</returns>
     public IEnumerable<ContextMenuAction> GetContextMenuActions(ContextMenu contextMenu)
     {
-        if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false) == true || HasTypeTag("Non-deconstructible") == false)
+        if (Settings.GetSetting("DialogBoxSettingsDevConsole_developerModeToggle", false) == true || HasTypeTag("Non-deconstructible") == false)
         {
             yield return new ContextMenuAction
             {
@@ -1172,11 +1172,11 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                 }
             }
         }
-       
+
         foreach (ContextMenuLuaAction contextMenuLuaAction in contextMenuLuaActions)
         {
             if (!contextMenuLuaAction.DevModeOnly ||
-                Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
+                Settings.GetSetting("DialogBoxSettingsDevConsole_developerModeToggle", false))
             {
                 // TODO The Action could be done via a lambda, but it always uses the same space of memory, thus if 2 actions are performed, the same action will be produced for each.
                 yield return new ContextMenuAction
@@ -1206,7 +1206,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
 
         Rotation = rotation;
     }
-    
+
     // Make a copy of the current furniture.  Sub-classed should
     // override this Clone() if a different (sub-classed) copy
     // constructor should be run.

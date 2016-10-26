@@ -13,13 +13,7 @@ using UnityEngine.UI;
 
 public class DialogBoxSettings : DialogBox
 {
-    // FPS Option.
-    public Dropdown performanceDropdown;
-
     public Toggle fullScreenToggle;
-
-    public Toggle developerModeToggle;
-    public GameObject developerModeObject;
 
     public Slider musicVolume;
 
@@ -33,14 +27,12 @@ public class DialogBoxSettings : DialogBox
     public Button closeButton;
     public Button saveButton;
     public Button applyButton;
+    public Button developerOptionsButton;
+
+    public DialogBoxSettingsDeveloper devOptions;
 
     public void OnSave()
     {
-        if (WorldController.Instance != null)
-        {
-            WorldController.Instance.spawnInventoryController.SetUIVisibility(developerModeToggle.isOn);
-        }
-
         OnApply();
         SaveSetting();
 
@@ -50,11 +42,6 @@ public class DialogBoxSettings : DialogBox
     public void OnApply()
     {
         LocalizationTable.SetLocalization(languageDropdown.value);
-
-        if (WorldController.Instance != null)
-        {
-            WorldController.Instance.spawnInventoryController.SetUIVisibility(developerModeToggle.isOn);
-        }
 
         // MasterTextureLimit should get 0 for High quality and higher values for lower qualities.
         // For example count is 3 (0:Low, 1:Med, 2:High).
@@ -68,9 +55,6 @@ public class DialogBoxSettings : DialogBox
         ResolutionOption selectedOption = (ResolutionOption)resolutionDropdown.options[resolutionDropdown.value];
         Resolution resolution = selectedOption.Resolution;
         Screen.SetResolution(resolution.width, resolution.height, fullScreenToggle.isOn, resolution.refreshRate);
-
-        // One to many but we want an applying feature;
-        PerformanceHUDManager.DirtyUI();
     }
 
     /// <summary>
@@ -81,15 +65,24 @@ public class DialogBoxSettings : DialogBox
         Settings.SetSetting("DialogBoxSettings_musicVolume", musicVolume.normalizedValue);
 
         Settings.SetSetting("DialogBoxSettings_fullScreenToggle", fullScreenToggle.isOn);
-        Settings.SetSetting("DialogBoxSettings_developerModeToggle", developerModeToggle.isOn);
 
-        Settings.SetSetting("DialogBoxSettings_performanceGroup", performanceDropdown.value);
         Settings.SetSetting("DialogBoxSettings_qualityDropdown", qualityDropdown.value);
         Settings.SetSetting("DialogBoxSettings_vSyncDropdown", vsyncDropdown.value);
         Settings.SetSetting("DialogBoxSettings_resolutionDropdown", resolutionDropdown.value);
+
         Settings.SaveSettings();
 
         PerformanceHUDManager.DirtyUI();
+    }
+
+    public void OpenDeveloperOptions()
+    {
+        if (devOptions.isActiveAndEnabled)
+        {
+            devOptions.CloseDialog();
+        }
+
+        devOptions.ShowDialog();
     }
 
     public void OnEnable()
@@ -101,11 +94,11 @@ public class DialogBoxSettings : DialogBox
         closeButton.onClick.AddListener(CloseDialog);
         saveButton.onClick.AddListener(OnSave);
         applyButton.onClick.AddListener(OnApply);
+        developerOptionsButton.onClick.AddListener(OpenDeveloperOptions);
 
         fullScreenToggle.isOn = Screen.fullScreen;
 
         CreateResolutionDropdown();
-        CreatePerformanceHUDDropdown();
 
         // Load the setting.
         LoadSetting();
@@ -127,9 +120,7 @@ public class DialogBoxSettings : DialogBox
         musicVolume.normalizedValue = Settings.GetSetting("DialogBoxSettings_musicVolume", 0.5f);
 
         fullScreenToggle.isOn = Settings.GetSetting("DialogBoxSettings_fullScreenToggle", true);
-        developerModeToggle.isOn = Settings.GetSetting("DialogBoxSettings_developerModeToggle", false);
 
-        performanceDropdown.value = Settings.GetSetting("DialogBoxSettings_performanceGroup", 1);
         qualityDropdown.value = Settings.GetSetting("DialogBoxSettings_qualityDropdown", 0);
         vsyncDropdown.value = Settings.GetSetting("DialogBoxSettings_vSyncDropdown", 0);
         resolutionDropdown.value = Settings.GetSetting("DialogBoxSettings_resolutionDropdown", 0);
@@ -166,21 +157,6 @@ public class DialogBoxSettings : DialogBox
         }
 
         resolutionDropdown.AddOptions(options);
-    }
-
-    /// <summary>
-    /// Create the differents option for the performance HUD dropdown.
-    /// </summary>
-    private void CreatePerformanceHUDDropdown()
-    {
-        performanceDropdown.ClearOptions();
-        List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
-        foreach (PerformanceComponentGroup option in PerformanceComponentGroups.groups)
-        {
-            options.Add(new Dropdown.OptionData(option.groupName));
-        }
-
-        performanceDropdown.AddOptions(options);
     }
 
     private class ResolutionOption : Dropdown.OptionData

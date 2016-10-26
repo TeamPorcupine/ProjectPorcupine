@@ -189,8 +189,8 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     /// Gets a value indicating whether this utility is next to any utility of the same type.
     /// This is used to check what sprite to use if utility is next to each other.
     /// </summary>
-    public bool LinksToNeighbour 
-    { 
+    public bool LinksToNeighbour
+    {
         get { return true; }
     }
 
@@ -198,8 +198,8 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     /// Gets the type of dragging that is used to build multiples of this utility.
     /// e.g walls.
     /// </summary>
-    public string DragType 
-    { 
+    public string DragType
+    {
         get { return "path"; }
     }
 
@@ -460,7 +460,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     /// </summary>
     public void SetDeconstructJob()
     {
-        if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
+        if (Settings.GetSetting("DialogBoxSettingsDevConsole_developerModeToggle", false))
         {
             Deconstruct();
             return;
@@ -610,7 +610,7 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         foreach (ContextMenuLuaAction contextMenuLuaAction in contextMenuLuaActions)
         {
             if (!contextMenuLuaAction.DevModeOnly ||
-                Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
+                Settings.GetSetting("DialogBoxSettingsDevConsole_developerModeToggle", false))
             {
                 // TODO The Action could be done via a lambda, but it always uses the same space of memory, thus if 2 actions are performed, the same action will be produced for each.
                 yield return new ContextMenuAction

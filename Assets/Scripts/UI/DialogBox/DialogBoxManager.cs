@@ -38,6 +38,10 @@ public class DialogBoxManager : MonoBehaviour
         tempGoObj = CreateDialogGO("DB_Settings", "Settings");
         dialogBoxSettings = tempGoObj.GetComponent<DialogBoxSettings>();
 
+        // Added for more dev options
+        tempGoObj = CreateDialogGO("DB_Settings-Developer", "Developer Settings");
+        dialogBoxSettings.devOptions = tempGoObj.GetComponent<DialogBoxSettingsDeveloper>();
+
         tempGoObj = CreateDialogGO("DB_PromptOrInfo", "Prompt or Info");
         dialogBoxPromptOrInfo = tempGoObj.GetComponent<DialogBoxPromptOrInfo>();
 

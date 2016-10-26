@@ -7,12 +7,9 @@
 // ====================================================
 #endregion
 
-using System;
 using System.Xml;
-using System.Xml.Schema;
-using System.Xml.Serialization;
-using MoonSharp.Interpreter;
 using DeveloperConsole.CommandTypes;
+using MoonSharp.Interpreter;
 
 namespace DeveloperConsole.Prototypes
 {
@@ -31,70 +28,73 @@ namespace DeveloperConsole.Prototypes
         /// Initializes a new instance of the <see cref="LUAPrototype"/> class.
         /// This form of the constructor assumes the ScheduledEvent is of the EventType.CSharp type.
         /// </summary>
-        /// <param name="title"> The title of the command </param>
-        /// <param name="methodFunctionName"> The name of the function to call </param>
-        /// <param name="description"> The description of the command </param>
-        /// <param name="helpFunctionName"> The name of the function to call to show help </param>
-        /// <param name="parameters"> The parameters that this class requires (a string in C# type formats and comma between them) </param>
+        /// <param name="title"> The title of the command.</param>
+        /// <param name="methodFunctionName"> The name of the function to call.</param>
+        /// <param name="description"> The description of the command.</param>
+        /// <param name="helpFunctionName"> The name of the function to call to show help.</param>
+        /// <param name="parameters"> The parameters that this class requires (a string in C# type formats and comma between them).</param>
         public LUAPrototype(string title, string methodFunctionName, string description, string helpFunctionName, string parameters) : this()
         {
-            luaCommand = new LUACommand(title, methodFunctionName, description, helpFunctionName, parameters);
+            LUACommand = new LUACommand(title, methodFunctionName, description, helpFunctionName, parameters);
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LUAPrototype"/> class.
         /// This form of the constructor assumes the ScheduledEvent is of the EventType.CSharp type.
         /// </summary>       
-        /// <param name="title"> The title of the command </param>
-        /// <param name="methodFunctionName"> The name of the function to call </param>
-        /// <param name="description"> The description of the command </param>
+        /// <param name="title"> The title of the command.</param>
+        /// <param name="methodFunctionName"> The name of the function to call.</param>
+        /// <param name="description"> The description of the command.</param>
         public LUAPrototype(string title, string methodFunctionName, string description) : this()
         {
-            luaCommand = new LUACommand(title, methodFunctionName, description);
+            LUACommand = new LUACommand(title, methodFunctionName, description);
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LUAPrototype"/> class.
         /// This form of the constructor assumes the ScheduledEvent is of the EventType.CSharp type.
         /// </summary>   
-        /// <param name="title"> The title of the command </param>
-        /// <param name="methodFunctionName"> The name of the function to call </param>
+        /// <param name="title"> The title of the command.</param>
+        /// <param name="methodFunctionName"> The name of the function to call.</param>
         public LUAPrototype(string title, string methodFunctionName) : this()
         {
-            luaCommand = new LUACommand(title, methodFunctionName);
+            LUACommand = new LUACommand(title, methodFunctionName);
         }
 
         /// <summary>
-        /// Copies from other
+        /// Copies from other.
         /// </summary>
-        /// <param name="other"></param>
         public LUAPrototype(LUAPrototype other) : this()
         {
-            luaCommand = other.luaCommand;
+            LUACommand = other.LUACommand;
         }
 
         /// <summary>
-        /// Clones this prototype
+        /// The type of command.
         /// </summary>
-        /// <returns></returns>
+        public string Type
+        {
+            get
+            {
+                return LUACommand.Title;
+            }
+        }
+
+        /// <summary>
+        /// The main data storage of luacommand.
+        /// </summary>
+        public LUACommand LUACommand { get; protected set; }
+
+        /// <summary>
+        /// Clones this prototype.
+        /// </summary>
         public LUAPrototype Clone()
         {
             return new LUAPrototype(this);
         }
 
         /// <summary>
-        /// The type of command
-        /// </summary>
-        public string Type
-        {
-            get
-            {
-                return luaCommand.title;
-            }
-        }
-
-        /// <summary>
-        /// Reads from the reader provided
+        /// Reads from the reader provided.
         /// </summary>
         public void ReadXmlPrototype(XmlReader reader)
         {
@@ -104,24 +104,19 @@ namespace DeveloperConsole.Prototypes
             string helpFunctionName = reader.GetAttribute("HelpFunctionName");
             string parameters = reader.GetAttribute("Parameters");
 
-            luaCommand = new LUACommand(title, functionName, description, helpFunctionName, parameters);
+            LUACommand = new LUACommand(title, functionName, description, helpFunctionName, parameters);
         }
 
         /// <summary>
-        /// Writes to the writer provided
+        /// Writes to the writer provided.
         /// </summary>
         public void WriteXml(XmlWriter writer)
         {
-            writer.WriteAttributeString("Title", luaCommand.title);
-            writer.WriteAttributeString("FunctionName", luaCommand.functionName);
-            writer.WriteAttributeString("Description", luaCommand.descriptiveText);
-            writer.WriteAttributeString("HelpFunctionName", luaCommand.helpFunctionName);
-            writer.WriteAttributeString("Parameters", luaCommand.parameters);
+            writer.WriteAttributeString("Title", LUACommand.Title);
+            writer.WriteAttributeString("FunctionName", LUACommand.FunctionName);
+            writer.WriteAttributeString("Description", LUACommand.DescriptiveText);
+            writer.WriteAttributeString("HelpFunctionName", LUACommand.HelpFunctionName);
+            writer.WriteAttributeString("Parameters", LUACommand.Parameters);
         }
-
-        /// <summary>
-        /// The main data storage of luacommand
-        /// </summary>
-        public LUACommand luaCommand { get; protected set; }
     }
 }

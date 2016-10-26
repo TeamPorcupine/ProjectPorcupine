@@ -1,19 +1,18 @@
-﻿using UnityEngine;
-using System.Collections;
-using MoonSharp;
+﻿#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
 using System;
-using MoonSharp.Interpreter;
-
-namespace DeveloperConsole
-{
-    public delegate void HelpMethod();
-}
 
 namespace DeveloperConsole.Interfaces
 {
     public interface ICommandHelpMethod
     {
-        HelpMethod helpMethod
+        HelpMethod HelpMethod
         {
             get;
         }
@@ -21,24 +20,24 @@ namespace DeveloperConsole.Interfaces
 
     public interface ICommandDescription
     {
-        string descriptiveText
+        string DescriptiveText
         {
             get;
         }
 
         /// <summary>
         /// Should return all the parameter types (C# format so Int16/Int32 so on...) instead of names
-        /// Also should have a ',' between each type
+        /// Also should have a ',' between each type.
         /// </summary>
-        string parameters
+        string Parameters
         {
             get;
         }
 
         /// <summary>
-        /// The title/name for the command
+        /// The title/name for the command.
         /// </summary>
-        string title
+        string Title
         {
             get;
         }
@@ -47,9 +46,9 @@ namespace DeveloperConsole.Interfaces
     public interface ICommandCSharp : ICommandRunnable
     {
         /// <summary>
-        /// The method to be called
+        /// The method to be called.
         /// </summary>
-        Delegate method
+        Delegate Method
         {
             get;
         }
@@ -58,15 +57,15 @@ namespace DeveloperConsole.Interfaces
     public interface ICommandRunnable
     {
         /// <summary>
-        /// Execute the method
+        /// Execute the method.
         /// </summary>
-        /// <param name="arguments"> Arguments to parse </param>
+        /// <param name="arguments"> Arguments to parse.</param>
         void ExecuteCommand(string arguments);
     }
 
     public interface ICommandLUA : ICommandRunnable
     {
-        string functionName
+        string FunctionName
         {
             get;
         }

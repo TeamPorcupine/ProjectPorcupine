@@ -1,211 +1,99 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.SceneManagement;
+﻿#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
 using System.Collections.Generic;
+using System.Linq;
 using DeveloperConsole.CommandTypes;
 using DeveloperConsole.Interfaces;
-using System.Linq;
 using MoonSharp.Interpreter;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace DeveloperConsole
 {
+    public delegate void HelpMethod();
+
     [MoonSharpUserData]
     public class DevConsole : MonoBehaviour
     {
-        [Range(8, 20)]
-        public int fontSize = 15;                                                            // Starting font size (only changes the font on start)
+        private const int AutoclearThreshold = 18000;                                                // Max characters before cleaning
 
-        const int Autoclear_Threshold = 18000;                                               // Max characters before cleaning
+        /// <summary>
+        /// Current instance.
+        /// </summary>
+        private static DevConsole instance;                                                          // To prevent multiple
 
-        string inputText = "";                                                               // The current text
+        private string inputText = string.Empty;                                                     // The current text
 
-        List<CommandBase> consoleCommands = new List<CommandBase>();         // Whole list of commands available
+        private List<CommandBase> consoleCommands = new List<CommandBase>();                         // Whole list of commands available
 
-        List<string> history = new List<string>();                                           // History of inputs
-        int currentHistoryIndex = -1;                                                        // What index the history is at
+        private List<string> history = new List<string>();                                           // History of inputs
+        private int currentHistoryIndex = -1;                                                        // What index the history is at
 
         // Flags
-        bool closed = true;                                                                  // Is the command line closed
-        bool opened                                                                          // Is the command line open
+        private bool closed = true;                                                                  // Is the command line closed
+
+        // AutoComplete
+        private List<string> possibleCandidates = new List<string>();                                // Possible options that the user is trying to type
+        private int selectedCandidate = -1;                                                          // Index of the option chosen
+
+        [SerializeField]
+        private Text textArea;                                                                       // The console text logger
+        [SerializeField]
+        private InputField inputField;                                                               // The console input field
+        [SerializeField]
+        private ScrollRect autoComplete;                                                             // The autocomplete object
+        [SerializeField]
+        private GameObject contentAutoComplete;                                                      // Holds possible candidates
+        [SerializeField]
+        private ScrollRect scrollRect;                                                               // The scrolling rect for the main console logger
+        [SerializeField]
+        private GameObject root;                                                                     // The root object to disable/enable for '\' or whatever consoleActivationKey is
+
+        private bool Opened                                                                          // Is the command line open
         {
             get
             {
                 return !closed;
             }
+
             set
             {
                 closed = !value;
             }
         }
 
-        bool showTimeStamp = false;                                                          // Display a time stamp at the end of every command
-
-        [SerializeField]
-        /// <summary>
-        /// What mode the console is:
-        /// 0 is Function :x, y, z:
-        /// 1 is Function (x, y, z)   
-        /// 2 is Function {x, y, z}   
-        /// 3 is Function [x, y, z]   
-        /// 4 is Function &ltx, y, z&gt
-        /// </summary>
-        int developerCommandMode = 0;                                                        // The current mode that input is recieved as
-
-        // AutoComplete
-        List<string> possibleCandidates = new List<string>();                                // Possible options that the user is trying to type
-        int selectedCandidate = 0;                                                           // Index of the option chosen
-        bool showingAutoComplete                                                             // Is autocomplete currently showing
+        private bool ShowingAutoComplete                                                             // Is autocomplete currently showing
         {
             get
             {
-                return autoComplete.activeInHierarchy;
+                return autoComplete.gameObject.activeInHierarchy;
             }
         }
 
         /// <summary>
-        /// Current instance
+        /// Opens the console.
         /// </summary>
-        static DevConsole instance;                                                          // To prevent multiple
-
-        [SerializeField]
-        Text textArea;                                                                       // The console text logger
-        [SerializeField]
-        InputField inputField;                                                               // The console input field
-        [SerializeField]
-        GameObject autoComplete;                                                             // The autocomplete object
-        [SerializeField]
-        ScrollRect scrollRect;                                                               // The scrolling rect for the main console logger
-        [SerializeField]
-        GameObject root;                                                                     // The root object to disable/enable for '\' or whatever consoleActivationKey is
-
-        void Awake()
-        {
-            if (instance == null || instance == this)
-            {
-                instance = this;
-            }
-            else
-            {
-                Debug.ULogWarningChannel("DevConsole", "There can only be one Console per project");
-                Destroy(this);
-            }
-
-            SceneManager.activeSceneChanged += SceneChanged;
-
-            KeyboardManager.Instance.RegisterModalInputField(inputField);
-            KeyboardManager.Instance.RegisterInputAction("DevConsole", KeyboardMappedInputType.KeyUp, ToggleConsole);
-        }
-
-        static void SceneChanged(Scene oldScene, Scene newScene)
-        {
-            if (instance != null)
-            {
-                KeyboardManager.Instance.UnRegisterModalInputField(instance.inputField);
-                instance = null;
-            }
-        }
-
-        // Use this for initialization
-        void Start()
-        {
-            transform.SetAsLastSibling();
-
-            if (textArea == null || inputField == null || autoComplete == null || scrollRect == null || root == null)
-            {
-                gameObject.SetActive(false);
-                Debug.ULogError("DevConsole", "Missing gameobjects, look at the serializeable fields");
-            }
-
-            textArea.fontSize = fontSize;
-            textArea.text = "\n";
-
-            LoadCommands();
-
-            if (root != null)
-            {
-                opened = root.activeInHierarchy;
-            }
-        }
-
-        void ToggleConsole()
-        {
-            if (closed)
-            {
-                Open();
-            }
-            else
-            {
-                Close();
-            }
-        }
-
-        void Update()
-        {
-            if (!inputField.isFocused)
-            {
-                currentHistoryIndex = -1;
-                return;
-            }
-
-            // If input field is focused
-            if (Input.GetKeyUp(KeyCode.UpArrow))
-            {
-                if (currentHistoryIndex < (history.Count - 1)) // (history.Count -1) is the max index
-                {
-                    // This way the first index will be the last one so first in last out
-                    // Kind of like a stack but you can go up and down it
-                    currentHistoryIndex += 1;
-                    inputField.text = history[(history.Count - 1) - (currentHistoryIndex)];
-                }
-                inputField.MoveTextEnd(false);
-            }
-            else if (Input.GetKeyUp(KeyCode.DownArrow))
-            {
-                if (currentHistoryIndex > 0)
-                {
-                    // This way the first index will be the last one so first in last out
-                    // Kind of like a stack but you can go up and down it
-                    currentHistoryIndex -= 1;
-                    inputField.text = history[history.Count - (currentHistoryIndex + 1)];
-                }
-                inputField.MoveTextEnd(false);
-            }
-        }
-
-        void LoadCommands()
-        {
-            // Load Base Commands
-            AddCommands(
-                //new Command("Clear", Clear, "Clears the console"),
-                //new Command<bool>("ShowTimeStamp", ShowTimeStamp, "Establishes whether or not to show the time stamp for each command"),
-                //new Command("Help", Help, "Shows a list of all the available commands"),
-                new VectorCommand<Vector3>("ChangeCameraCSharp", ChangeCameraPositionCSharp, "Change Camera Position (Written in CSharp)")
-                //             new Command<int>("SetFontSize", SetFontSize, "Sets the font size of the console"),
-                //              new Command("quit", Application.Quit, "Quits the game")
-                );
-
-            // Load ProjectPorcupine specific commands
-
-
-            // Load Commands from C#
-            // Empty because C# Modding not implemented yet
-            // TODO: Once C# Modding Implemented, add the ability to add commands here
-
-            // Load Commands from XML (will be changed to JSON AFTER the current upgrade)
-            AddCommands(PrototypeManager.DevConsole.Values.Select(x => x.luaCommand).ToArray());
-        }
-
         public static void Open()
         {
-            if (instance == null || instance.opened)
+            if (instance == null || instance.Opened)
             {
                 return;
             }
 
-            instance.opened = true;
+            instance.Opened = true;
             instance.root.SetActive(true);
         }
 
+        /// <summary>
+        /// Closes the console.
+        /// </summary>
         public static void Close()
         {
             if (instance == null || instance.closed)
@@ -214,79 +102,16 @@ namespace DeveloperConsole
             }
 
             instance.closed = true;
-            instance.inputText = "";
+            instance.inputText = string.Empty;
             instance.root.SetActive(false);
-        }
-
-        public void EnterPressedForInput(Text newValue)
-        {
-            currentHistoryIndex = -1;
-            // Clear input but retrieve
-            inputText = newValue.text;
-            inputField.text = "";
-
-            if (inputText != "")
-            {
-                // Add Text to log
-                Log(inputText);
-
-                // Add to history
-                history.Add(inputText);
-
-                // Execute
-                Execute(inputText);
-            }
-        }
-
-        public void RegenerateAutoComplete(Text newValue)
-        {
-            inputText = newValue.text;
-
-            if (inputText == "" || consoleCommands == null || consoleCommands.Count == 0)
-            {
-                return;
-            }
-
-            string candidateTester = "";
-
-            if (possibleCandidates.Count != 0 && selectedCandidate >= 0 && possibleCandidates.Count > selectedCandidate)
-            {
-                // Set our candidates tester because we had a candidate before and we want it to carry over
-                candidateTester = possibleCandidates[selectedCandidate];
-            }
-
-            List<string> possible = consoleCommands
-                .Where(cB => cB.title.ToLower().StartsWith(inputText.ToLower()))
-                .Select(cB => cB.title).ToList();
-
-            if (possible != null)
-            {
-                possibleCandidates = possible;
-            }
-
-            if (candidateTester == "")
-            {
-                selectedCandidate = 0;
-                return;
-            }
-
-            for (int i = 0; i < possibleCandidates.Count; i++)
-            {
-                if (possibleCandidates[i] == candidateTester)
-                {
-                    selectedCandidate = i;
-                    return;
-                }
-            }
-            selectedCandidate = 0;
         }
 
         #region LogManagement
 
         /// <summary>
-        /// Logs to the console
+        /// Logs to the console.
         /// </summary>
-        /// <param name="obj"> Must be convertable to string </param>
+        /// <param name="obj"> Must be convertable to string.</param>
         public static void Log(object obj)
         {
             if (instance == null)
@@ -298,10 +123,10 @@ namespace DeveloperConsole
         }
 
         /// <summary>
-        /// Logs to the console
+        /// Logs to the console.
         /// </summary>
-        /// <param name="obj"> Must be convertable to string </param>
-        /// <param name="color"> Can either be the name of one the common names or can be in HTML format </param>
+        /// <param name="obj"> Must be convertable to string.</param>
+        /// <param name="color"> Can either be the name of one the common names or can be in HTML format.</param>
         public static void Log(object obj, string color)
         {
             if (instance == null)
@@ -313,9 +138,9 @@ namespace DeveloperConsole
         }
 
         /// <summary>
-        /// Logs to the console with color yellow
+        /// Logs to the console with color yellow.
         /// </summary>
-        /// <param name="obj"> Must be convertable to string </param>
+        /// <param name="obj"> Must be convertable to string.</param>
         public static void LogWarning(object obj)
         {
             if (instance == null)
@@ -327,9 +152,9 @@ namespace DeveloperConsole
         }
 
         /// <summary>
-        /// Logs to the console with color red
+        /// Logs to the console with color red.
         /// </summary>
-        /// <param name="obj"> Must be convertable to string </param>
+        /// <param name="obj"> Must be convertable to string.</param>
         public static void LogError(object obj)
         {
             if (instance == null)
@@ -341,9 +166,9 @@ namespace DeveloperConsole
         }
 
         /// <summary>
-        /// Logs to the console
+        /// Logs to the console.
         /// </summary>
-        /// <param name="text"> Text to print </param>
+        /// <param name="text"> Text to print.</param>
         public static void BasePrint(string text)
         {
             if (instance == null)
@@ -351,10 +176,10 @@ namespace DeveloperConsole
                 return;
             }
 
-            instance.textArea.text += text + ((instance.showTimeStamp == true) ? "\t[" + System.DateTime.Now.ToShortTimeString() + "]" : "") + "\n";
+            instance.textArea.text += text + (CommandSettings.ShowTimeStamp ? "\t[" + System.DateTime.Now.ToShortTimeString() + "]" : string.Empty) + "\n";
 
             // Clear if limit exceeded
-            if (instance.textArea.text.Length >= Autoclear_Threshold)
+            if (instance.textArea.text.Length >= AutoclearThreshold)
             {
                 instance.textArea.text = "\nAUTO-CLEAR";
             }
@@ -367,8 +192,9 @@ namespace DeveloperConsole
 
         #endregion
 
-        #region CommandManagement
-
+        /// <summary>
+        /// Executes the command passed.
+        /// </summary>
         public static void Execute(string command)
         {
             // Guard
@@ -379,37 +205,27 @@ namespace DeveloperConsole
 
             // Get method and arguments
             string[] methodNameAndArgs;
-            string method;
-            string args;
+            string method = command;
+            string args = string.Empty;
 
-            switch (instance.developerCommandMode)
+            switch (CommandSettings.DeveloperCommandMode)
             {
                 case 1:
                     methodNameAndArgs = command.Trim().TrimEnd(')').Split('(');
-                    method = command;
-                    args = "";
                     break;
                 case 2:
                     methodNameAndArgs = command.Trim().TrimEnd('}').Split('{');
-                    method = command;
-                    args = "";
                     break;
                 case 3:
                     methodNameAndArgs = command.Trim().TrimEnd(']').Split('[');
-                    method = command;
-                    args = "";
                     break;
                 case 4:
                     methodNameAndArgs = command.Trim().TrimEnd('>').Split('<');
-                    method = command;
-                    args = "";
                     break;
 
                 case 0:
                 default:
                     methodNameAndArgs = command.Trim().TrimEnd(':').Split(':');
-                    method = command;
-                    args = "";
                     break;
             }
 
@@ -425,11 +241,11 @@ namespace DeveloperConsole
             {
                 // This is help
                 string testString = method.ToLower().Trim().TrimEnd('?');
-                commandsToCall = instance.consoleCommands.Where(cB => cB.title.ToLower() == testString);
+                commandsToCall = instance.consoleCommands.Where(cB => cB.Title.ToLower() == testString);
 
                 foreach (CommandBase commandToCall in commandsToCall)
                 {
-                    if (commandToCall.helpMethod != null)
+                    if (commandToCall.HelpMethod != null)
                     {
                         ShowHelpMethod(commandToCall);
                     }
@@ -443,7 +259,7 @@ namespace DeveloperConsole
             }
 
             // Execute command
-            commandsToCall = instance.consoleCommands.Where(cB => cB.title.ToLower() == method.ToLower().Trim());
+            commandsToCall = instance.consoleCommands.Where(cB => cB.Title.ToLower() == method.ToLower().Trim());
 
             foreach (CommandBase commandToCall in commandsToCall)
             {
@@ -456,20 +272,29 @@ namespace DeveloperConsole
             }
         }
 
+        /// <summary>
+        /// Runs the help method of the passed interface.
+        /// </summary>
         public static void ShowHelpMethod(ICommandHelpMethod help)
         {
-            if (help.helpMethod != null)
+            if (help.HelpMethod != null)
             {
-                help.helpMethod();
+                help.HelpMethod();
             }
         }
 
+        /// <summary>
+        /// Logs the description of the passed command.
+        /// </summary>
         public static void ShowDescription(CommandBase description)
         {
-            Log("<color=yellow>Command Info:</color> " + ((description.descriptiveText == "") ? "<color=red>There's no help for this command</color>" : description.descriptiveText));
-            Log("<color=yellow>Call: <color=orange>" + description.title + GetParametersWithConsoleMode(description) + "</color>");
+            Log("<color=yellow>Command Info:</color> " + ((description.DescriptiveText == string.Empty) ? " < color=red>There's no help for this command</color>" : description.DescriptiveText));
+            Log("<color=yellow>Call it like </color><color=orange> " + description.Title + GetParametersWithConsoleMode(description) + "</color>");
         }
 
+        /// <summary>
+        /// Adds the given commands.
+        /// </summary>
         public static void AddCommands(IEnumerable<CommandBase> commands)
         {
             // Guard
@@ -481,6 +306,9 @@ namespace DeveloperConsole
             instance.consoleCommands.AddRange(commands);
         }
 
+        /// <summary>
+        /// Adds the given commands.
+        /// </summary>
         public static void AddCommands(params CommandBase[] commands)
         {
             // Guard
@@ -492,6 +320,9 @@ namespace DeveloperConsole
             instance.consoleCommands.AddRange(commands);
         }
 
+        /// <summary>
+        /// Adds the specified command.
+        /// </summary>
         public static void AddCommand(CommandBase command)
         {
             // Guard
@@ -503,6 +334,9 @@ namespace DeveloperConsole
             instance.consoleCommands.Add(command);
         }
 
+        /// <summary>
+        /// Returns true if the command exists.
+        /// </summary>
         public static bool CommandExists(string commandTitle)
         {
             // Guard
@@ -512,9 +346,12 @@ namespace DeveloperConsole
             }
 
             // Could just stop at first, but its a lazy search so its pretty darn fast anyways
-            return (instance.consoleCommands.Count(cB => cB.title.ToLower() == commandTitle.ToLower()) > 0) ? true : false;
+            return (instance.consoleCommands.Count(cB => cB.Title.ToLower() == commandTitle.ToLower()) > 0) ? true : false;
         }
 
+        /// <summary>
+        /// Removes the commmand from the list of commands.
+        /// </summary>
         public static void RemoveCommand(string commandTitle)
         {
             // Guard
@@ -524,22 +361,32 @@ namespace DeveloperConsole
             }
 
             int oldCount = instance.consoleCommands.Count;
+
             // Safe delete
-            instance.consoleCommands.RemoveAll(cB => cB.title.ToLower() == commandTitle.ToLower());
+            instance.consoleCommands.RemoveAll(cB => cB.Title.ToLower() == commandTitle.ToLower());
 
             Log("Deleted " + (instance.consoleCommands.Count - oldCount).ToString() + " commands");
         }
 
+        /// <summary>
+        /// Returns an IEnumerator that allows iteration consisting of all the commands.
+        /// </summary>
         public static IEnumerator<CommandBase> CommandIterator()
         {
             return (instance != null) ? instance.consoleCommands.GetEnumerator() : new List<CommandBase>.Enumerator();
         }
 
+        /// <summary>
+        /// Returns an array of all the commands.
+        /// </summary>
         public static CommandBase[] CommandArray()
         {
             return (instance != null) ? instance.consoleCommands.ToArray() : new CommandBase[] { };
         }
 
+        /// <summary>
+        /// Adds the specified command to the history.
+        /// </summary>
         public static void AddHistory(string command)
         {
             if (instance == null)
@@ -550,6 +397,9 @@ namespace DeveloperConsole
             instance.history.Add(command);
         }
 
+        /// <summary>
+        /// Removes specified command from the history.
+        /// </summary>
         public static void RemoveHistory(string command)
         {
             if (instance == null || instance.history.Contains(command) == false)
@@ -560,6 +410,9 @@ namespace DeveloperConsole
             instance.history.Remove(command);
         }
 
+        /// <summary>
+        /// Clears the command history.
+        /// </summary>
         public static void ClearHistory()
         {
             if (instance == null)
@@ -570,58 +423,52 @@ namespace DeveloperConsole
             instance.history.Clear();
         }
 
-        #endregion
-
-        #region BaseCommands
-
+        /// <summary>
+        /// Changes the current camera position.
+        /// </summary>
         public static void ChangeCameraPositionCSharp(Vector3 newPos)
         {
             Camera.main.transform.position = newPos;
         }
 
-        public void Help()
-        {
-            string text = "";
-
-            for (int i = 0; i < consoleCommands.Count; i++)
-            {
-                text += "\n<color=orange>" + consoleCommands[i].title + GetParametersWithConsoleMode(consoleCommands[i]) + "</color>" + (consoleCommands[i].descriptiveText == null ? "" : " //" + consoleCommands[i].descriptiveText);
-            }
-
-            text += "\n<color=orange>Note:</color> If the function has no parameters you <color=red>don't</color> need to use the parameter modifier.";
-            text += "\n<color=orange>Note:</color> You <color=red>don't</color> need to use the trailing parameter modifier either";
-
-            Log("-- Help --" + text);
-        }
-
+        /// <summary>
+        /// Returns the current command mode.
+        /// </summary>
         public static int DeveloperCommandMode()
         {
-            return (instance == null) ? -1 : instance.developerCommandMode;
+            return CommandSettings.DeveloperCommandMode;
         }
 
+        /// <summary>
+        /// Returns a parameter list using the correct command mode.
+        /// </summary>
+        /// <param name="description"> The description of the command.</param>
         public static string GetParametersWithConsoleMode(CommandBase description)
         {
             if (instance == null)
             {
-                return "";
+                return string.Empty;
             }
 
-            switch (instance.developerCommandMode)
+            switch (CommandSettings.DeveloperCommandMode)
             {
                 case 1:
-                    return " (" + description.parameters + ")";
+                    return " (" + description.Parameters + ")";
                 case 2:
-                    return " {" + description.parameters + "}";
+                    return " {" + description.Parameters + "}";
                 case 3:
-                    return " [" + description.parameters + "]";
+                    return " [" + description.Parameters + "]";
                 case 4:
-                    return " <" + description.parameters + ">";
+                    return " <" + description.Parameters + ">";
                 case 0:
                 default:
-                    return " : " + description.parameters + " :";
+                    return " : " + description.Parameters + " :";
             }
         }
 
+        /// <summary>
+        /// Clears the text area and history.
+        /// </summary>
         public static void Clear()
         {
             if (instance == null)
@@ -630,9 +477,26 @@ namespace DeveloperConsole
             }
 
             instance.textArea.text = "\n";
+            instance.history.Clear();
             Log("Clear Successful :D", "green");
         }
 
+        /// <summary>
+        /// Run the passed lua code.
+        /// </summary>
+        /// <param name="luaCode"> The LUA Code to run.</param>
+        /// <remarks> 
+        /// The code isn't vastly optimised since it should'nt be used for any large thing, 
+        /// just to run a single command.
+        /// </remarks>
+        public static void Run_LUA(string luaCode)
+        {
+            new LuaFunctions().RunText_Unsafe(luaCode);
+        }
+
+        /// <summary>
+        /// Established whether or not to show a time stamp on all messages.
+        /// </summary>
         public static void ShowTimeStamp(bool value)
         {
             if (instance == null)
@@ -640,10 +504,13 @@ namespace DeveloperConsole
                 return;
             }
 
-            instance.showTimeStamp = value;
+            CommandSettings.ShowTimeStamp = value;
             Log("Change successful :D", "green");
         }
 
+        /// <summary>
+        /// Sets the console text to the text supplied.
+        /// </summary>
         public static void SetText(string text)
         {
             if (instance == null)
@@ -654,6 +521,9 @@ namespace DeveloperConsole
             instance.textArea.text = "\n" + text;
         }
 
+        /// <summary>
+        /// Sets the size of the console text.
+        /// </summary>
         public static void SetTextSize(int size)
         {
             if (instance == null)
@@ -664,6 +534,9 @@ namespace DeveloperConsole
             instance.textArea.fontSize = size;
         }
 
+        /// <summary>
+        /// Passes the Text Object.
+        /// </summary>
         public static Text TextObject()
         {
             if (instance == null)
@@ -674,7 +547,313 @@ namespace DeveloperConsole
             return instance.textArea;
         }
 
-        void SetFontSize(int size)
+        /// <summary>
+        /// Button delegate action to handle command.
+        /// </summary>
+        public void EnterPressedForInput(Text newValue)
+        {
+            currentHistoryIndex = -1;
+
+            // Clear input but retrieve
+            inputText = newValue.text;
+            inputField.text = string.Empty;
+
+            if (inputText != string.Empty)
+            {
+                // Add Text to log, history then execute
+                Log(inputText);
+                history.Add(inputText);
+                Execute(inputText);
+            }
+        }
+
+        /// <summary>
+        /// Help for all functions.
+        /// </summary>
+        public void Help()
+        {
+            string text = string.Empty;
+
+            for (int i = 0; i < consoleCommands.Count; i++)
+            {
+                text += "\n<color=orange>" + consoleCommands[i].Title + GetParametersWithConsoleMode(consoleCommands[i]) + "</color>" + (consoleCommands[i].DescriptiveText == null ? string.Empty : " //" + consoleCommands[i].DescriptiveText);
+            }
+
+            text += "\n<color=orange>Note:</color> If the function has no parameters you <color=red>don't</color> need to use the parameter modifier.";
+            text += "\n<color=orange>Note:</color> You <color=red>don't</color> need to use the trailing parameter modifier either";
+
+            Log("-- Help --" + text);
+        }
+
+        /// <summary>
+        /// Regenerates the autocomplete (button delegate for text field changed).
+        /// </summary>
+        public void RegenerateAutoComplete(Text newValue)
+        {
+            inputText = newValue.text;
+
+            if (inputText == string.Empty || consoleCommands == null || consoleCommands.Count == 0)
+            {
+                return;
+            }
+
+            string candidateTester = string.Empty;
+
+            if (possibleCandidates.Count != 0 && selectedCandidate >= 0 && possibleCandidates.Count > selectedCandidate)
+            {
+                // Set our candidates tester because we had a candidate before and we want it to carry over
+                candidateTester = possibleCandidates[selectedCandidate];
+            }
+
+            List<string> possible = consoleCommands
+                .Where(cB => cB.Title.ToLower().StartsWith(inputText.ToLower()))
+                .Select(cB => cB.Title).ToList();
+
+            if (possible != null)
+            {
+                possibleCandidates = possible;
+            }
+
+            if (candidateTester == string.Empty)
+            {
+                selectedCandidate = 0;
+                return;
+            }
+
+            for (int i = 0; i < possibleCandidates.Count; i++)
+            {
+                if (possibleCandidates[i] == candidateTester)
+                {
+                    selectedCandidate = i;
+                    return;
+                }
+            }
+
+            selectedCandidate = 0;
+        }
+
+        /// <summary>
+        /// Initialisation.
+        /// </summary>
+        private void Awake()
+        {
+            // Guard
+            if (instance == null)
+            {
+                instance = this;
+            }
+            else
+            {
+                Debug.ULogWarningChannel("DevConsole", "There can only be one Console per project");
+                Destroy(gameObject);
+            }
+
+            // Delegation
+            SceneManager.activeSceneChanged += SceneChanged;
+
+            KeyboardManager.Instance.RegisterModalInputField(inputField);
+            KeyboardManager.Instance.RegisterInputAction("DevConsole", KeyboardMappedInputType.KeyUp, ToggleConsole);
+        }
+
+        /// <summary>
+        /// Delegation to unload instances.
+        /// </summary>
+        private void SceneChanged(Scene oldScene, Scene newScene)
+        {
+            if (instance != null && oldScene != newScene)
+            {
+                KeyboardManager.Instance.UnRegisterModalInputField(instance.inputField);
+                KeyboardManager.Instance.UnRegisterInputAction("DevConsole");
+
+                instance = null;
+                Destroy(gameObject);
+            }
+        }
+
+        /// <summary>
+        /// Set transform and do guard.
+        /// </summary>
+        private void Start()
+        {
+            transform.SetAsLastSibling();
+
+            // Guard
+            if (textArea == null || inputField == null || autoComplete == null || scrollRect == null || root == null)
+            {
+                gameObject.SetActive(false);
+                Debug.ULogError("DevConsole", "Missing gameobjects, look at the serializeable fields");
+            }
+
+            textArea.fontSize = CommandSettings.FontSize;
+            textArea.text = "\n";
+
+            // Load all the commands
+            LoadCommands();
+
+            if (root != null)
+            {
+                Opened = root.activeInHierarchy;
+            }
+        }
+
+        /// <summary>
+        /// Toggles the console on/off.
+        /// </summary>
+        private void ToggleConsole()
+        {
+            if (closed)
+            {
+                Open();
+            }
+            else
+            {
+                Close();
+            }
+        }
+
+        /// <summary>
+        /// Late Update, just does some key checking for history / AutoComplete.
+        /// </summary>
+        private void Update()
+        {
+            if (!inputField.isFocused)
+            {
+                currentHistoryIndex = -1;
+                selectedCandidate = -1;
+                autoComplete.gameObject.SetActive(false);
+                return;
+            }
+
+            // If input field is focused
+            if (Input.GetKeyUp(KeyCode.UpArrow))
+            {
+                if (ShowingAutoComplete)
+                {
+                    // Render autocomplete
+                    if (selectedCandidate > 0)
+                    {
+                        selectedCandidate -= 1;
+
+                        // Re-select
+                        DirtyAutocomplete();
+                    }
+                }
+                else if (currentHistoryIndex < (history.Count - 1))
+                {
+                    // (history.Count -1) is the max index
+
+                    // This way the first index will be the last one so first in last out
+                    // Kind of like a stack but you can go up and down it
+                    currentHistoryIndex += 1;
+                    inputField.text = history[(history.Count - 1) - currentHistoryIndex];
+                }
+
+                inputField.MoveTextEnd(false);
+            }
+            else if (Input.GetKeyUp(KeyCode.DownArrow))
+            {
+                if (ShowingAutoComplete)
+                {
+                    // Render autocomplete
+                    if (selectedCandidate < (possibleCandidates.Count - 1))
+                    {
+                        selectedCandidate += 1;
+
+                        // Re-select
+                        DirtyAutocomplete();
+                    }
+                }
+                else if (currentHistoryIndex > 0)
+                {
+                    // This way the first index will be the last one so first in last out
+                    // Kind of like a stack but you can go up and down it
+                    currentHistoryIndex -= 1;
+                    inputField.text = history[history.Count - (currentHistoryIndex + 1)];
+                }
+
+                inputField.MoveTextEnd(false);
+            }
+            else if (Input.GetKeyDown(KeyCode.Backspace) || Input.GetKeyDown(KeyCode.Escape))
+            {
+                selectedCandidate = -1;
+                autoComplete.gameObject.SetActive(false);
+            }
+            else if (Input.GetKeyUp(KeyCode.Tab))
+            {
+                // Handle autocomplete
+                if (ShowingAutoComplete)
+                {
+                    inputField.text = possibleCandidates[selectedCandidate];
+                    selectedCandidate = -1;
+                    autoComplete.gameObject.SetActive(false);
+                    inputField.MoveTextEnd(false);
+                }
+                else
+                {
+                    inputField.text = inputField.text.TrimEnd('\t');
+                    autoComplete.gameObject.SetActive(true);
+                    selectedCandidate = 0;
+                    DirtyAutocomplete();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Re-render autocomplete.
+        /// </summary>
+        private void DirtyAutocomplete()
+        {
+            RegenerateAutoComplete(inputField.textComponent);
+            if (selectedCandidate != -1)
+            {
+                autoComplete.gameObject.SetActive(true);
+
+                // Delete current children
+                foreach (Transform child in contentAutoComplete.transform)
+                {
+                    Destroy(child.gameObject);
+                }
+
+                // Recreate from possible candidates
+                for (int i = 0; i < possibleCandidates.Count; i++)
+                {
+                    GameObject go = Instantiate(Resources.Load<GameObject>("UI/Console/DevConsole_AutoCompleteOption"));
+                    go.transform.SetParent(contentAutoComplete.transform);
+
+                    // Quick way to add component / text
+                    if (i != selectedCandidate)
+                    {
+                        go.GetComponent<Text>().text = "<color=white>" + possibleCandidates[i] + "</color>";
+                    }
+                    else
+                    {
+                        go.GetComponent<Text>().text = "<color=red>" + possibleCandidates[i] + "</color>";
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Clears commands and re-loads them.
+        /// </summary>
+        private void LoadCommands()
+        {
+            consoleCommands.Clear();
+
+            // Load Base Commands
+            AddCommands(
+                new VectorCommand<Vector3>("ChangeCameraCSharp", ChangeCameraPositionCSharp, "Change Camera Position (Written in CSharp)"),
+                new StringCommand("Run_LUA", Run_LUA, "Runs the text as a LUA function"));
+
+            // Load Commands from C#
+            // Empty because C# Modding not implemented yet
+            // TODO: Once C# Modding Implemented, add the ability to add commands here
+
+            // Load Commands from XML (will be changed to JSON AFTER the current upgrade)
+            AddCommands(PrototypeManager.DevConsole.Values.Select(x => x.LUACommand).ToArray());
+        }
+
+        private void SetFontSize(int size)
         {
             if (size < 10)
             {
@@ -690,7 +869,5 @@ namespace DeveloperConsole
                 Log("Change successful :D", "green");
             }
         }
-
-        #endregion
     }
 }

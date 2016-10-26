@@ -11,8 +11,10 @@
 -- ModUtils.ULogError("Testing ModUtils.ULogErrorChannel") -- Note: pauses the game
 
 -------------------------------- Command Actions --------------------------------
-function stringIsNumeric( str )
-	if tonumber(a) ~= nil then
+
+-- Returns true if x can be numeric
+function isNumeric( x )
+	if tonumber(x) ~= nil then
 		return true
 	else
 		return false

@@ -20,9 +20,13 @@ public class LuaFunctions
         // Tell the LUA interpreter system to load all the classes
         // that we have marked as [MoonSharpUserData]
         UserData.RegisterAssembly();
-        UserData.RegisterType<UnityEngine.Vector3>();
 
         this.script = new Script();
+
+        // Registering types
+        UserData.RegisterType<UnityEngine.Vector3>();
+        UserData.RegisterType<UnityEngine.Vector2>();
+        UserData.RegisterType<UnityEngine.Vector4>();
 
         // If we want to be able to instantiate a new object of a class
         //   i.e. by doing    SomeClass.__new()
@@ -37,7 +41,6 @@ public class LuaFunctions
         RegisterGlobal(typeof(Scheduler.ScheduledEvent));
         RegisterGlobal(typeof(ProjectPorcupine.Jobs.RequestedItem));
         RegisterGlobal(typeof(DeveloperConsole.DevConsole));
-
     }
 
     /// <summary>
@@ -80,6 +83,19 @@ public class LuaFunctions
     }
 
     /// <summary>
+    /// Loads the script from the specified text.
+    /// </summary>
+    /// <param name="text">The code text.</param>
+    /// <exception cref="Exception">Throws exception depending on LUA.</exception>
+    /// <remarks>This is unsafe and can throw exceptions.</remarks>
+    public bool RunText_Unsafe(string text)
+    {
+        script.DoString(text);
+
+        return true;
+    }
+
+    /// <summary>
     /// Call the specified lua function with the specified args.
     /// </summary>
     /// <param name="functionName">Function name.</param>
@@ -110,8 +126,8 @@ public class LuaFunctions
     /// </summary>
     /// <param name="functionName">Function name.</param>
     /// <param name="args">Arguments.</param>
-    /// <exception cref="Exception">Throws exception depending on LUA</exception>
-    /// <remarks>This is unsafe and can throw exceptions</remarks>
+    /// <exception cref="Exception">Throws exception depending on LUA.</exception>
+    /// <remarks>This is unsafe and can throw exceptions.</remarks>
     public DynValue Call_Unsafe(string functionName, params object[] args)
     {
         object func = script.Globals[functionName];
@@ -121,14 +137,7 @@ public class LuaFunctions
             throw new Exception("'" + functionName + "' is not a LUA function!");
         }
 
-        try
-        {
-            return script.Call(func, args);
-        }
-        catch (ScriptRuntimeException e)
-        {
-            throw e;
-        }
+        return script.Call(func, args);
     }
 
     /// <summary>

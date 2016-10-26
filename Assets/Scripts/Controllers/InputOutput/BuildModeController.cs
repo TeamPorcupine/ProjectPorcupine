@@ -118,7 +118,7 @@ public class BuildModeController
 
             if (tile.Room != null && WorldController.Instance.World.IsRoomBehaviorValidForRoom(roomBehaviorType, tile.Room))
             {
-                RoomBehavior proto = PrototypeManager.RoomBehavior.Get(roomBehaviorType); 
+                RoomBehavior proto = PrototypeManager.RoomBehavior.Get(roomBehaviorType);
                 tile.Room.DesignateRoomBehavior(proto.Clone());
             }
         }
@@ -129,9 +129,9 @@ public class BuildModeController
             // Run the ValidPlacement function!
             string furnitureType = buildModeType;
 
-            if ( 
+            if (
                 World.Current.FurnitureManager.IsPlacementValid(furnitureType, tile, CurrentPreviewRotation) &&
-                World.Current.FurnitureManager.IsWorkSpotClear(furnitureType, tile) && 
+                World.Current.FurnitureManager.IsWorkSpotClear(furnitureType, tile) &&
                 DoesBuildJobOverlapExistingBuildJob(tile, furnitureType, CurrentPreviewRotation) == false)
             {
                 // This tile position is valid for this furniture
@@ -166,7 +166,7 @@ public class BuildModeController
                 job.buildablePrototype = furnituteToBuild;
 
                 // Add the job to the queue or build immediately if in Dev mode
-                if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
+                if (CommandSettings.DeveloperModeToggle)
                 {
                     World.Current.FurnitureManager.PlaceFurniture(furnituteToBuild, job.tile);
                 }
@@ -199,8 +199,8 @@ public class BuildModeController
             string utilityType = buildModeType;
 
             // TODO: Reimplement this later: DoesBuildJobOverlapExistingBuildJob(t, furnitureType) == false)
-            if ( 
-                World.Current.UtilityManager.IsPlacementValid(utilityType, tile)  &&
+            if (
+                World.Current.UtilityManager.IsPlacementValid(utilityType, tile) &&
                 DoesSameUtilityTypeAlreadyExist(tile, utilityType) == false)
             {
                 // This tile position is valid for this furniture
@@ -226,7 +226,7 @@ public class BuildModeController
                 job.buildablePrototype = PrototypeManager.Utility.Get(utilityType);
 
                 // Add the job to the queue or build immediately if in dev mode
-                if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
+                if (CommandSettings.DeveloperModeToggle)
                 {
                     World.Current.UtilityManager.PlaceUtility(job.JobObjectType, job.tile);
                 }
@@ -263,7 +263,7 @@ public class BuildModeController
                 buildingJob.tile = tile;
 
                 // Add the job to the queue or build immediately if in Dev mode
-                if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
+                if (CommandSettings.DeveloperModeToggle)
                 {
                     buildingJob.tile.Type = buildingJob.JobTileType;
                 }
@@ -281,7 +281,7 @@ public class BuildModeController
         else if (buildMode == BuildMode.DECONSTRUCT)
         {
             // TODO
-            bool canDeconstructAll = Settings.GetSetting("DialogBoxSettings_developerModeToggle", false);
+            bool canDeconstructAll = CommandSettings.DeveloperModeToggle;
             if (tile.Furniture != null && (canDeconstructAll || tile.Furniture.HasTypeTag("Non-deconstructible") == false))
             {
                 // check if this is a WALL neighbouring a pressured and pressureless environment, and if so, bail
