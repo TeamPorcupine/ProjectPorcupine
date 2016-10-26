@@ -588,6 +588,8 @@ namespace DeveloperConsole
                 .Where (cB => cB.Title.ToLower ().StartsWith (inputText.ToLower ()))
                 .Select (cB => cB.Title).ToList ();
 
+			print (possible);
+
 			if (possible != null) {
 				possibleCandidates = possible;
 			}
@@ -600,11 +602,14 @@ namespace DeveloperConsole
 			for (int i = 0; i < possibleCandidates.Count; i++) {
 				if (possibleCandidates [i] == candidateTester) {
 					selectedCandidate = i;
+					DirtyAutocomplete ();
 					return;
 				}
 			}
 
 			selectedCandidate = 0;
+
+			DirtyAutocomplete ();
 		}
 
 		/// <summary>
@@ -740,6 +745,13 @@ namespace DeveloperConsole
 				selectedCandidate = -1;
 				autoComplete.gameObject.SetActive (false);
 			} else if (Input.GetKeyUp (KeyCode.Tab)) {
+				if (possibleCandidates.Count == 0) {
+					selectedCandidate = -1;
+					autoComplete.gameObject.SetActive (false);
+					inputField.MoveTextEnd (false);
+					return;
+				}
+
 				// Handle autocomplete
 				if (ShowingAutoComplete) {
 					inputField.text = possibleCandidates [selectedCandidate];
@@ -750,7 +762,7 @@ namespace DeveloperConsole
 					inputField.text = inputField.text.TrimEnd ('\t');
 					autoComplete.gameObject.SetActive (true);
 					selectedCandidate = 0;
-					DirtyAutocomplete ();
+					RegenerateAutoComplete (inputField.textComponent);
 				}
 			}
 		}
@@ -760,7 +772,7 @@ namespace DeveloperConsole
 		/// </summary>
 		private void DirtyAutocomplete ()
 		{
-			RegenerateAutoComplete (inputField.textComponent);
+			print ("Dirtied");
 			if (selectedCandidate != -1) {
 				autoComplete.gameObject.SetActive (true);
 
