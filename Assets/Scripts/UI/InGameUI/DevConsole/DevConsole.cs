@@ -96,6 +96,11 @@ namespace DeveloperConsole
 				return;
 			}
 
+			if (CommandSettings.DeveloperConsoleToggle == false) {
+				Close ();
+				return;
+			}
+
 			instance.Opened = true;
 			instance.root.SetActive (true);
 		}
