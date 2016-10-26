@@ -18,16 +18,31 @@ using UnityEngine;
 public class AudioManager
 {
     private static Dictionary<string, FMOD.Sound> audioClips;
+
     public static FMOD.System SoundSystem;
 
+    // Channel Groups
+    public static Dictionary<string, FMOD.ChannelGroup> channelGroups;
+    public static FMOD.ChannelGroup master;
     /// <summary>
     /// Initializes a new instance of the <see cref="AudioManager"/> class.
     /// </summary>
     public AudioManager()
     {
-        
+        channelGroups = new Dictionary<string, FMOD.ChannelGroup>();
         FMOD.RESULT res = FMOD.Factory.System_Create(out SoundSystem);
         SoundSystem.setDSPBufferSize(1024, 10);
+        channelGroups.Add("UI", null);
+        channelGroups.Add("building", null);
+        SoundSystem.getMasterChannelGroup(out master);
+        foreach (string key in channelGroups.Keys)
+        {
+            FMOD.ChannelGroup chanGroup = channelGroups[key];
+            SoundSystem.createChannelGroup(key, out chanGroup);
+            FMOD.DSPConnection throwaway;
+            master.addGroup(channelGroups[key], true, out throwaway);
+        }
+
         SoundSystem.init(32, FMOD.INITFLAGS.NORMAL, (IntPtr)0);
 //        SoundSystem.set3DSettings(1f, 1f, 0.1f);
         audioClips = new Dictionary<string, FMOD.Sound>();
@@ -79,6 +94,15 @@ public class AudioManager
         }
 
         return clip;
+    }
+
+    public static List<FMOD.Sound> GetAudioSequence(string categoryName, string audioName)
+    {
+        List<FMOD.Sound> clipSequence;
+        string audioNameAndCategory = categoryName + "/" + audioName;
+        clipSequence = audioClips.Where(entry => entry.Key.StartsWith(audioNameAndCategory)).Select(kvPair => kvPair.Value).ToList();
+        return clipSequence;
+
     }
 
     /// <summary>

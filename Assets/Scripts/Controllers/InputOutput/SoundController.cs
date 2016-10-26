@@ -5,6 +5,9 @@
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
+using System.Collections.Generic;
+
+
 #endregion
 using System.Collections;
 using UnityEngine;
@@ -16,7 +19,7 @@ public class SoundController
     private FMOD.VECTOR up;
     private FMOD.VECTOR forward;
     private FMOD.VECTOR zero;
-
+    private FMOD.VECTOR ignore;
 
     // Use this for initialization
     public SoundController(World world = null)
@@ -28,11 +31,9 @@ public class SoundController
         }
 
         TimeManager.Instance.EveryFrame += Update;
-
         zero = GetVectorFrom(Vector3.zero);
         forward = GetVectorFrom(Vector3.forward);
         up = GetVectorFrom(Vector3.up);
-
     }
     
     // Update is called once per frame
@@ -82,40 +83,51 @@ public class SoundController
 
         if (tileData.ForceTileUpdate)
         {  
-            PlaySoundAt(AudioManager.GetAudio("Sound", "Floor_OnCreated"), tileData, 2);
+//            List<FMOD.Sound> sequence = AudioManager.GetAudioSequence("Sound", "Floor_OnCreated");
+
+//            PlaySoundAt(sequence[Random.Range(0, sequence.Count)], tileData);
+            PlaySoundAt(AudioManager.GetAudio("Sound", "PowerDown2"), tileData, 1);
 //            AudioSource.PlayClipAtPoint(clip, Camera.main.transform.position);
             soundCooldown = 0.1f;
         }
     }
 
-    public void PlaySound(FMOD.Sound clip)
+    public void PlaySound(FMOD.Sound clip, float freqRange = 0f, float volRange = 0f)
     {
         FMOD.System SoundSystem = AudioManager.SoundSystem;
         FMOD.Channel Channel;
         SoundSystem.playSound(clip, null, true, out Channel);
-        Channel.setVolume(1f);
+        if (!freqRange.AreEqual(0f))
+        {
+            float pitch = Mathf.Pow(1.059f, (Random.Range(-freqRange, freqRange)));
+            Channel.setPitch(pitch);
+        }
         Channel.setPaused(false);
     }
 
-    public void PlaySoundAt(FMOD.Sound clip, Tile tile, float freqRange = 0f)
+    public void PlaySoundAt(FMOD.Sound clip, Tile tile, float freqRange = 0f, float volRange = 0f)
     {
         FMOD.System SoundSystem = AudioManager.SoundSystem;
         FMOD.Channel Channel;
-        FMOD.VECTOR curLoc;
-        curLoc.x = Camera.main.transform.position.x;
-        curLoc.y = Camera.main.transform.position.y;
-        curLoc.z = WorldController.Instance.cameraController.CurrentLayer;
-
-
-        SoundSystem.set3DListenerAttributes(0, ref curLoc, ref zero, ref forward, ref up);
-//        SoundSystem.set3DListenerAttributes(0, ref tilePos, ref zero, ref forward, ref up);
         SoundSystem.playSound(clip, null, true, out Channel);
-        Channel.setVolume(1f);
-        Channel.set3DMinMaxDistance(Camera.main.orthographicSize / 2, 1000);
+//        Channel.setVolume(1f);
+//        Channel.set3DMinMaxDistance(Camera.main.orthographicSize / 2, 1000);
         FMOD.VECTOR tilePos = GetVectorFrom(tile);
         Channel.set3DAttributes(ref tilePos, ref zero, ref zero);
-        float pitch = Mathf.Pow(1.059f, (Random.Range(-freqRange, freqRange)));
-        Channel.setPitch(pitch);
+        if (!freqRange.AreEqual(0f))
+        {
+            float pitch = Mathf.Pow(1.059f, (Random.Range(-freqRange, freqRange)));
+            Channel.setPitch(pitch);
+        }
+
+        if (!volRange.AreEqual(0f))
+        {
+            float curVol;
+            Channel.getVolume(out curVol);
+            float volChange = Random.Range(-volRange, 0f);
+            Channel.setVolume(curVol * dBToVolume(volChange));
+        }
+
         Channel.setPaused(false);
     }
 
@@ -137,4 +149,31 @@ public class SoundController
         return fmodVector;
     }
 
+    private float dBToVolume(float dB)
+    {
+        return Mathf.Pow(10.0f, 0.05f * dB);
+    }
+
+    public void SetListenerPosition(Vector3 newPosition)
+    {
+//        FMOD.VECTOR prevLoc;
+        FMOD.VECTOR curLoc;
+        curLoc.x = newPosition.x;
+        curLoc.y = newPosition.y;
+        curLoc.z = newPosition.z;
+//        AudioManager.SoundSystem.get3DListenerAttributes(0, out prevLoc, out ignore, out ignore, out ignore);
+//        FMOD.VECTOR velocity = GetVectorFrom((GetUnityVector(curLoc) - GetUnityVector(prevLoc)) / (Time.deltaTime*5));
+        AudioManager.SoundSystem.set3DListenerAttributes(0, ref curLoc, ref zero, ref forward, ref up);
+        AudioManager.SoundSystem.update();
+    }
+
+    private Vector3 GetUnityVector(FMOD.VECTOR vector)
+    {
+        Vector3 unityVector;
+        unityVector.x = vector.x;
+        unityVector.y = vector.y;
+        unityVector.z = vector.z;
+
+        return unityVector;
+    }
 }
