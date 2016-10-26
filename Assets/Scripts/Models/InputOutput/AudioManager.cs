@@ -23,7 +23,12 @@ public class AudioManager
 
     // Channel Groups
     public static Dictionary<string, FMOD.ChannelGroup> channelGroups;
+
+    // TODO: These should probably have a property to access them and possibly be put in a dictionary for easier access
     public static FMOD.ChannelGroup master;
+    public static FMOD.ChannelGroup UI;
+    public static FMOD.ChannelGroup building;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="AudioManager"/> class.
     /// </summary>
@@ -32,21 +37,27 @@ public class AudioManager
         channelGroups = new Dictionary<string, FMOD.ChannelGroup>();
         FMOD.RESULT res = FMOD.Factory.System_Create(out SoundSystem);
         SoundSystem.setDSPBufferSize(1024, 10);
-//        channelGroups.Add("UI", null);
-//        channelGroups.Add("building", null);
-//        SoundSystem.getMasterChannelGroup(out master);
-//        foreach (string key in channelGroups.Keys)
+        SoundSystem.init(32, FMOD.INITFLAGS.NORMAL, (IntPtr)0);
+        SoundSystem.getMasterChannelGroup(out master);
+        FMOD.DSPConnection throwaway;
+        SoundSystem.createChannelGroup("UI", out UI);
+        SoundSystem.createChannelGroup("building", out building);
+        master.addGroup(UI, true, out throwaway);
+        master.addGroup(building, true, out throwaway);
+//        foreach (KeyValuePair<string, FMOD.ChannelGroup> entry in channelGroups)
 //        {
 //            FMOD.ChannelGroup chanGroup;
-//            SoundSystem.createChannelGroup(key, out chanGroup);
+//            SoundSystem.createChannelGroup(entry.Key, out chanGroup);
 //            FMOD.DSPConnection throwaway;
-//            master.addGroup(channelGroups[key], true, out throwaway);
-//            channelGroups[key] = chanGroup;
+//            master.addGroup(chanGroup, true, out throwaway);
+//            channelGroups[entry.Key] = chanGroup;
 //        }
 
         SoundSystem.init(32, FMOD.INITFLAGS.NORMAL, (IntPtr)0);
-//        SoundSystem.set3DSettings(1f, 1f, 0.1f);
+        SoundSystem.set3DSettings(1f, 1f, 0.1f);
         audioClips = new Dictionary<string, FMOD.Sound>();
+//        master.setVolume(.5f);
+//        UI.setVolume(8f);
     }
 
     /// <summary>

@@ -51,11 +51,7 @@ public class SoundController
         }
  
         FMOD.Sound clip = AudioManager.GetAudio("Sound", "MenuClick");
-        FMOD.System SoundSystem = AudioManager.SoundSystem;
-        FMOD.Channel Channel;
-        SoundSystem.playSound(clip, null, true, out Channel);
-        Channel.setVolume(1f);
-        Channel.setPaused(false);
+        PlaySound(clip, AudioManager.UI);
         //            
         soundCooldown = 0.1f;
     }
@@ -68,7 +64,7 @@ public class SoundController
             return;
         }
 
-        PlaySoundAt(AudioManager.GetAudio("Sound", furniture.Type + "_OnCreated"), furniture.Tile);
+        PlaySoundAt(AudioManager.GetAudio("Sound", furniture.Type + "_OnCreated"), furniture.Tile, AudioManager.building);
     
         soundCooldown = 0.1f;
     }
@@ -86,17 +82,22 @@ public class SoundController
 //            List<FMOD.Sound> sequence = AudioManager.GetAudioSequence("Sound", "Floor_OnCreated");
 
 //            PlaySoundAt(sequence[Random.Range(0, sequence.Count)], tileData);
-            PlaySoundAt(AudioManager.GetAudio("Sound", "PowerDown2"), tileData, 1);
+            PlaySoundAt(AudioManager.GetAudio("Sound", "Floor_OnCreated"), tileData, AudioManager.building, 1);
 //            AudioSource.PlayClipAtPoint(clip, Camera.main.transform.position);
             soundCooldown = 0.1f;
         }
     }
 
-    public void PlaySound(FMOD.Sound clip, float freqRange = 0f, float volRange = 0f)
+    public void PlaySound(FMOD.Sound clip, FMOD.ChannelGroup chanGroup = null, float freqRange = 0f, float volRange = 0f)
     {
+        if (chanGroup == null)
+        {
+            chanGroup = AudioManager.master;
+        }
+
         FMOD.System SoundSystem = AudioManager.SoundSystem;
         FMOD.Channel Channel;
-        SoundSystem.playSound(clip, null, true, out Channel);
+        SoundSystem.playSound(clip, chanGroup, true, out Channel);
         if (!freqRange.AreEqual(0f))
         {
             float pitch = Mathf.Pow(1.059f, (Random.Range(-freqRange, freqRange)));
@@ -105,11 +106,16 @@ public class SoundController
         Channel.setPaused(false);
     }
 
-    public void PlaySoundAt(FMOD.Sound clip, Tile tile, float freqRange = 0f, float volRange = 0f)
+    public void PlaySoundAt(FMOD.Sound clip, Tile tile, FMOD.ChannelGroup chanGroup = null, float freqRange = 0f, float volRange = 0f)
     {
+        if (chanGroup == null)
+        {
+            chanGroup = AudioManager.master;
+        }
+
         FMOD.System SoundSystem = AudioManager.SoundSystem;
         FMOD.Channel Channel;
-        SoundSystem.playSound(clip, null, true, out Channel);
+        SoundSystem.playSound(clip, chanGroup, true, out Channel);
 //        Channel.setVolume(1f);
 //        Channel.set3DMinMaxDistance(Camera.main.orthographicSize / 2, 1000);
         FMOD.VECTOR tilePos = GetVectorFrom(tile);
