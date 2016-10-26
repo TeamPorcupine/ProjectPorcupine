@@ -13,112 +13,110 @@ using UnityEngine.UI;
 
 public class DialogBoxSettingsDeveloper : DialogBox
 {
-    // FPS Option.
-    public Dropdown performanceDropdown;
+	// FPS Option.
+	public Dropdown performanceDropdown;
 
-    public Toggle timeStampToggle;
-    public Toggle developerConsoleToggle;
-    public Toggle developerModeToggle;
-    public GameObject developerModeObject;
+	public Toggle timeStampToggle;
+	public Toggle developerConsoleToggle;
+	public Toggle developerModeToggle;
+	public GameObject developerModeObject;
 
-    public Slider fontSize;
+	public Slider fontSize;
 
-    public Dropdown consoleInputDropdown;
+	public Dropdown consoleInputDropdown;
 
-    public Button closeButton;
-    public Button saveButton;
-    public Button applyButton;
+	public Button closeButton;
+	public Button saveButton;
+	public Button applyButton;
 
-    public void OnSave()
-    {
-        if (WorldController.Instance != null)
-        {
-            WorldController.Instance.spawnInventoryController.SetUIVisibility(developerModeToggle.isOn);
-        }
+	public void OnSave ()
+	{
+		if (WorldController.Instance != null) {
+			WorldController.Instance.spawnInventoryController.SetUIVisibility (developerModeToggle.isOn);
+		}
 
-        OnApply();
-        SaveSetting();
+		OnApply ();
+		SaveSetting ();
 
-        CloseDialog();
-    }
+		CloseDialog ();
+	}
 
-    public void OnApply()
-    {
-        if (WorldController.Instance != null)
-        {
-            WorldController.Instance.spawnInventoryController.SetUIVisibility(developerModeToggle.isOn);
-        }
+	public void OnApply ()
+	{
+		if (WorldController.Instance != null) {
+			WorldController.Instance.spawnInventoryController.SetUIVisibility (developerModeToggle.isOn);
+		}
 
-        // One to many but we want an applying feature;
-        PerformanceHUDManager.DirtyUI();
-    }
+		// One to many but we want an applying feature;
+		PerformanceHUDManager.DirtyUI ();
+	}
 
-    /// <summary>
-    /// Saves settings to Settings.xml via the Settings class.
-    /// </summary>
-    public void SaveSetting()
-    {
-        Settings.SetSetting("DialogBoxSettingsDevConsole_devConsoleToggle", developerConsoleToggle.isOn);
-        Settings.SetSetting("DialogBoxSettingsDevConsole_developerModeToggle", developerModeToggle.isOn);
-        Settings.SetSetting("DialogBoxSettingsDevConsole_timeStampToggle", timeStampToggle.isOn);
+	/// <summary>
+	/// Saves settings to Settings.xml via the Settings class.
+	/// </summary>
+	public void SaveSetting ()
+	{
+		Settings.SetSetting ("DialogBoxSettingsDevConsole_devConsoleToggle", developerConsoleToggle.isOn);
+		Settings.SetSetting ("DialogBoxSettingsDevConsole_developerModeToggle", developerModeToggle.isOn);
+		Settings.SetSetting ("DialogBoxSettingsDevConsole_timeStampToggle", timeStampToggle.isOn);
 
-        Settings.SetSetting("DialogBoxSettingsDevConsole_performanceGroup", performanceDropdown.value);
-        Settings.SetSetting("DialogBoxSettingsDevConsole_consoleInputGroup", consoleInputDropdown.value);
+		Settings.SetSetting ("DialogBoxSettingsDevConsole_performanceGroup", performanceDropdown.value);
+		Settings.SetSetting ("DialogBoxSettingsDevConsole_consoleInputGroup", consoleInputDropdown.value);
 
-        // This assignment will automatically save settings
-        CommandSettings.FontSize = (int)fontSize.value;
+		// This assignment will automatically save settings
+		CommandSettings.FontSize = (int)fontSize.value;
 
-        PerformanceHUDManager.DirtyUI();
-    }
+		PerformanceHUDManager.DirtyUI ();
+	}
 
-    public void OnEnable()
-    {
-        // Add our listeners.
-        closeButton.onClick.AddListener(CloseDialog);
-        saveButton.onClick.AddListener(OnSave);
-        applyButton.onClick.AddListener(OnApply);
+	public void OnEnable ()
+	{
+		// Add our listeners.
+		closeButton.onClick.AddListener (CloseDialog);
+		saveButton.onClick.AddListener (OnSave);
+		applyButton.onClick.AddListener (OnApply);
 
-        CreatePerformanceHUDDropdown();
+		CreatePerformanceHUDDropdown ();
 
-        // Load the setting.
-        LoadSetting();
-    }
+		// Load the setting.
+		LoadSetting ();
+	}
 
-    public void Update()
-    {
-        if (Input.GetKey(KeyCode.Escape))
-        {
-            CloseDialog();
-        }
-    }
+	public void Update ()
+	{
+		if (Input.GetKey (KeyCode.Escape)) {
+			CloseDialog ();
+		}
+	}
 
-    /// <summary>
-    /// Loads settings from Settings.xml via the Settings class.
-    /// </summary>
-    private void LoadSetting()
-    {
-        fontSize.value = Settings.GetSetting("DialogBoxSettingsDevConsole_consoleFontSize", 15);
+	/// <summary>
+	/// Loads settings from Settings.xml via the Settings class.
+	/// </summary>
+	private void LoadSetting ()
+	{
+		fontSize.value = Settings.GetSetting ("DialogBoxSettingsDevConsole_consoleFontSize", 15);
+		fontSize.maxValue = 20;
+		fontSize.minValue = 10;
 
-        developerConsoleToggle.isOn = Settings.GetSetting("DialogBoxSettingsDevConsole_devConsoleToggle", true);
-        developerModeToggle.isOn = Settings.GetSetting("DialogBoxSettingsDevConsole_developerModeToggle", false);
-        timeStampToggle.isOn = Settings.GetSetting("DialogBoxSettingsDevConsole_timeStampToggle", true);
+		developerConsoleToggle.isOn = Settings.GetSetting ("DialogBoxSettingsDevConsole_devConsoleToggle", true);
+		developerModeToggle.isOn = Settings.GetSetting ("DialogBoxSettingsDevConsole_developerModeToggle", false);
+		timeStampToggle.isOn = Settings.GetSetting ("DialogBoxSettingsDevConsole_timeStampToggle", true);
 
-        performanceDropdown.value = Settings.GetSetting("DialogBoxSettingsDevConsole_performanceGroup", 1);
-        consoleInputDropdown.value = Settings.GetSetting("DialogBoxSettingsDevConsole_consoleInputGroup", 0);
-    }
+		performanceDropdown.value = Settings.GetSetting ("DialogBoxSettingsDevConsole_performanceGroup", 1);
+		consoleInputDropdown.value = Settings.GetSetting ("DialogBoxSettingsDevConsole_consoleInputGroup", 0);
+	}
 
-    /// <summary>
-    /// Create the differents option for the performance HUD dropdown.
-    /// </summary>
-    private void CreatePerformanceHUDDropdown()
-    {
-        performanceDropdown.ClearOptions();
-        List<Dropdown.OptionData> options = new List<Dropdown.OptionData>();
-        foreach (PerformanceComponentGroup option in PerformanceComponentGroups.groups)
-        {
-            options.Add(new Dropdown.OptionData(option.groupName));
-        }
+	/// <summary>
+	/// Create the differents option for the performance HUD dropdown.
+	/// </summary>
+	private void CreatePerformanceHUDDropdown ()
+	{
+		performanceDropdown.ClearOptions ();
+		List<Dropdown.OptionData> options = new List<Dropdown.OptionData> ();
+		foreach (PerformanceComponentGroup option in PerformanceComponentGroups.groups) {
+			options.Add (new Dropdown.OptionData (option.groupName));
+		}
 
-        performanceDropdown.AddOptions(options);
-    }
+		performanceDropdown.AddOptions (options);
+	}
 }
