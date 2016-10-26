@@ -9,6 +9,8 @@
 
 using System.Collections;
 using MoonSharp.Interpreter;
+using ProjectPorcupine.Buildable.Components;
+using ProjectPorcupine.PowerNetwork;
 using UnityEngine;
 
 [MoonSharpUserData]
@@ -104,5 +106,15 @@ public static class ModUtils
     public static int Max(int a, int b)
     {
         return Mathf.Max(a, b);
+    }
+
+    public static IPlugable GetPlugablePowerConnectionForTile(Tile tile)
+    {
+        if (tile != null && tile.Furniture != null)
+        {
+            return tile.Furniture.GetComponent<PowerConnection>("PowerConnection");
+        }
+
+        return null;
     }
 }

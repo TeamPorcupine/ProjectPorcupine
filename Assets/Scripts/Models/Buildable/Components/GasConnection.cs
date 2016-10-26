@@ -18,20 +18,27 @@ namespace ProjectPorcupine.Buildable.Components
     [BuildableComponentName("GasConnection")]
     public class GasConnection : BuildableComponent
     {
-        private event Action<bool> OnRunningStateChanged;
+        public GasConnection()
+        {
+        }
 
+        private GasConnection(GasConnection other) : base(other)
+        {
+            Provides = other.Provides;
+            Requires = other.Requires;
+        }
+        
         [XmlElement("Provides")]
         public List<GasInfo> Provides { get; set; }
 
         [XmlElement("Requires")]
         public List<GasInfo> Requires { get; set; }
-
-        [XmlElement("UsedAnimations")]
-        public UsedAnimations UsedAnimation { get; set; }
-
-        [XmlIgnore]
-        public bool IsRunning { get; private set; }
         
+        public override BuildableComponent Clone()
+        {
+            return new GasConnection(this);
+        }
+
         public override bool CanFunction()
         {
             bool canFunction = true;
@@ -71,46 +78,13 @@ namespace ProjectPorcupine.Buildable.Components
                     }                    
                 }
             }
-
-            if (isWorking)
-            {
-                //// trigger running state change
-                if (!IsRunning)
-                {
-                    OnRunningStateChanged(IsRunning = true);
-                }
-            }
-            else
-            {
-                //// trigger running state change
-                if (IsRunning)
-                {
-                    OnRunningStateChanged(IsRunning = false);
-                }
-            }
         }
 
         protected override void Initialize()
         {
-            IsRunning = false;
-            OnRunningStateChanged += RunningStateChanged;
+            componentRequirements = Requirements.Gas;
         }
-
-        private void RunningStateChanged(bool newIsRunningState)
-        {
-            if (UsedAnimation != null)
-            {
-                if (newIsRunningState == true && !string.IsNullOrEmpty(UsedAnimation.Running))
-                {
-                    ParentFurniture.Animation.SetState(UsedAnimation.Running);
-                }
-                else if (newIsRunningState == false && !string.IsNullOrEmpty(UsedAnimation.Idle))
-                {
-                    ParentFurniture.Animation.SetState(UsedAnimation.Idle);
-                }
-            }
-        }
-
+        
         public class GasInfo
         {
             public GasInfo()
