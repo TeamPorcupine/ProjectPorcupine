@@ -12,8 +12,8 @@ using UnityEngine.SceneManagement;
 public class SceneController
 {
     // Our current scenes Names
-    public const string MainSceneName = "_SCENE_";
-    public const string MainMenuSceneName = "MAIN_MENU";
+    public const string MainSceneName = "_World";
+    public const string MainMenuSceneName = "MainMenu";
 
     public static string loadWorldFromFileName;
 
