@@ -57,6 +57,10 @@ public class Path_TileGraph
         
     public void RegenerateGraphAtTile(Tile changedTile)
     {
+        if (changedTile == null)
+        {
+            return;
+        }
         GenerateEdgesByTile(changedTile);
         foreach (Tile tile in changedTile.GetNeighbours(true))
         {
