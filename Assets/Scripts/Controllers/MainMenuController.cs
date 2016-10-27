@@ -11,61 +11,61 @@ using UnityEngine;
 
 public class MainMenuController : MonoBehaviour
 {
-	public ModsManager modsManager;
-	public SoundController soundController;
+    public ModsManager modsManager;
+    public SoundController soundController;
 
-	public static MainMenuController Instance { get; protected set; }
+    public static MainMenuController Instance { get; protected set; }
 
-	// Use this for initialization.
-	public void OnEnable ()
-	{
-		new PrototypeManager ();
-	}
+    // Use this for initialization.
+    public void OnEnable()
+    {
+        new PrototypeManager();
+    }
 
-	public void Start ()
-	{
-		Instance = this;
+    public void Start()
+    {
+        Instance = this;
 
-		new SpriteManager ();
-		new AudioManager ();
-		modsManager = new ModsManager ();
+        new SpriteManager();
+        new AudioManager();
+        modsManager = new ModsManager();
 
-		TimeManager.Instance.IsPaused = true;
+        TimeManager.Instance.IsPaused = true;
 
-		// Create a Background.
-		GameObject backgroundGO = new GameObject ("Background");
-		backgroundGO.AddComponent<SpriteRenderer> ().sprite = SpriteManager.GetRandomSprite ("Background");
+        // Create a Background.
+        GameObject backgroundGO = new GameObject("Background");
+        backgroundGO.AddComponent<SpriteRenderer>().sprite = SpriteManager.GetRandomSprite("Background");
 
-		GameObject canvas = GameObject.Find ("Canvas");
+        GameObject canvas = GameObject.Find("Canvas");
 
-		// Create a Title.
-		GameObject title = (GameObject)Instantiate (Resources.Load ("UI/TitleMainMenu"));
-		title.transform.SetParent (canvas.transform, false);
-		title.SetActive (true);
+        // Create a Title.
+        GameObject title = (GameObject)Instantiate(Resources.Load("UI/TitleMainMenu"));
+        title.transform.SetParent(canvas.transform, false);
+        title.SetActive(true);
 
-		// Display Main Menu.
-		GameObject mainMenu = (GameObject)Instantiate (Resources.Load ("UI/MainMenu"));
-		mainMenu.transform.SetParent (canvas.transform, false);
-		mainMenu.SetActive (true);
+        // Display Main Menu.
+        GameObject mainMenu = (GameObject)Instantiate(Resources.Load("UI/MainMenu"));
+        mainMenu.transform.SetParent(canvas.transform, false);
+        mainMenu.SetActive(true);
 
-		// Create dialogBoxes.
-		GameObject dialogBoxes = new GameObject ("Dialog Boxes");
-		dialogBoxes.transform.SetParent (canvas.transform, false);
-		dialogBoxes.AddComponent<DialogBoxManager> ();
+        // Create dialogBoxes.
+        GameObject dialogBoxes = new GameObject("Dialog Boxes");
+        dialogBoxes.transform.SetParent(canvas.transform, false);
+        dialogBoxes.AddComponent<DialogBoxManager>();
 
-		// Instantiate a FPSCounter.
-		GameObject menuTop = (GameObject)Instantiate (Resources.Load ("UI/MenuTop"));
-		menuTop.name = "MenuTop";
-		menuTop.transform.SetParent (canvas.transform, false);
-		GameObject fpsCounter = menuTop.GetComponent<PerformanceHUDManager> ().gameObject;
-		fpsCounter.SetActive (true);
+        // Instantiate a FPSCounter.
+        GameObject menuTop = (GameObject)Instantiate(Resources.Load("UI/MenuTop"));
+        menuTop.name = "MenuTop";
+        menuTop.transform.SetParent(canvas.transform, false);
+        GameObject fpsCounter = menuTop.GetComponent<PerformanceHUDManager>().gameObject;
+        fpsCounter.SetActive(true);
 
-		// Dev Console
-		GameObject devConsole = (GameObject)Instantiate (Resources.Load ("UI/Console/DevConsole"));
-		devConsole.name = "DevConsole";
-		devConsole.transform.SetParent (canvas.transform, false);
-		devConsole.transform.SetAsLastSibling ();
-		devConsole.SetActive (false);
-		DeveloperConsole.DevConsole.Close ();
-	}
+        // Dev Console
+        GameObject devConsole = (GameObject)Instantiate(Resources.Load("UI/Console/DevConsole"));
+        devConsole.name = "DevConsole";
+        devConsole.transform.SetParent(canvas.transform, false);
+        devConsole.transform.SetAsLastSibling();
+        devConsole.SetActive(false);
+        DeveloperConsole.DevConsole.Close();
+    }
 }
