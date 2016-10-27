@@ -178,10 +178,10 @@ public class DialogBoxManager : MonoBehaviour
                 case ".xml":
                     Debug.ULogChannel("ModDialogBox", "Found xml element:" + fileInfo.Name);
                     GameObject dialogBoxPrefab = CreateDialogGO("DB_MOD", "Modded Dialog Box");
-                    ModDialogBox ModDialogBox = dialogBoxPrefab.GetComponent<ModDialogBox>();
-                    ModDialogBox.LoadFromXML(fileInfo);
-                    dialogBoxPrefab.name = ModDialogBox.Title;
-                    DialogBoxes[ModDialogBox.Title] = ModDialogBox;
+                    ModDialogBox modDialogBox = dialogBoxPrefab.GetComponent<ModDialogBox>();
+                    modDialogBox.LoadFromXML(fileInfo);
+                    dialogBoxPrefab.name = modDialogBox.Title;
+                    DialogBoxes[modDialogBox.Title] = modDialogBox;
                     break;
                 case ".lua":
                     Debug.ULogChannel("ModDialogBox", "Found lua element:" + fileInfo.Name);

@@ -12,14 +12,14 @@ using UnityEngine;
 
 public class DialogBox : MonoBehaviour
 {
-    public DialogBoxResult Result { get; set; }
-
-    public Action Closed { get; set; }
-
     public static readonly Color ListPrimaryColor = new Color32(0, 149, 217, 80);
     public static readonly Color ListSecondaryColor = new Color32(0, 149, 217, 160);
 
     private bool openedWhileModal = false;
+
+    public DialogBoxResult Result { get; set; }
+
+    public Action Closed { get; set; }
 
     public virtual void ShowDialog()
     {
@@ -39,7 +39,7 @@ public class DialogBox : MonoBehaviour
         
         Closed = null;        
 
-        Debug.ULogChannel("ModDialogBox","openedWhileModal=" + openedWhileModal.ToString());
+        Debug.ULogChannel("ModDialogBox", "openedWhileModal=" + openedWhileModal.ToString());
         if (!openedWhileModal)
         {
             GameController.Instance.IsModal = false;
@@ -50,7 +50,7 @@ public class DialogBox : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    public void setClosedAction(string funcName)
+    public void SetClosedAction(string funcName)
     {
         Closed = () => FunctionsManager.Get("ModDialogBox").Call(funcName, Result); 
     }

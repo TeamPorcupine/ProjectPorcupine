@@ -61,8 +61,9 @@ public class DialogBoxPromptOrInfo : DialogBox
         {
             button.gameObject.SetActive(false);
         }
+
         Debug.ULogChannel("ModDialogBox", "Table length:" + buttons.Length.ToString());
-        for(int i = 1; i<=buttons.Length;i++)
+        for (int i = 1; i <= buttons.Length; i++)
         {
             switch (buttons.RawGet(i).ToObject<int>())
             {
