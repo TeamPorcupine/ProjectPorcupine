@@ -40,13 +40,11 @@ public class JobQueue
     }
 
     /// <summary>
-    /// Try to stick a new job into the Queue
+    /// Add a job to the JobQueue.
     /// </summary>
-    /// <param name="job">The job to be inserted into the Queue</param>
-    /// <param name="character">The character</param>
+    /// <param name="job">The job to be inserted into the Queue.</param>
     public void Enqueue(Job job)
     {
-        Debug.ULogError(" - Unreachable jobs: {0}", unreachableJobs.Count);
         DebugLog("Enqueue({0})", job.JobObjectType);
         if (job.JobTime < 0)
         {
@@ -70,7 +68,7 @@ public class JobQueue
         }
         else if (job.tile != null && job.tile.IsReachableFromAnyNeighbor(true) == false)
         {
-            Debug.ULogChannel("JobQueue", "- Job can't be reached");
+            DebugLog("JobQueue", "- Job can't be reached");
             unreachableJobs.Enqueue(job);
         }
         else if (job.charsCantReach.Count == World.Current.CharacterManager.characters.Count)
@@ -125,6 +123,7 @@ public class JobQueue
         for (int i = 0; i < jobQueue.Count; i++)
         {
             Job job = jobQueue.Values[i];
+
             // TODO: This is a simplistic version and needs to be expanded.
             // If we can get all material and we can walk to the tile, the job is workable.
             if (job.IsRequiredInventoriesAvailable() && job.tile.IsReachableFromAnyNeighbor(true))
@@ -181,6 +180,45 @@ public class JobQueue
         }
     }
 
+    /// <summary>
+    /// Call this whenever a furniture gets changed or removed that might effect the reachability of an object.
+    /// </summary>
+    public void ReevaluateReachability()
+    {
+        // TODO: Should this be an event on the furniture object?
+        DebugLog(" - Reevaluate reachability of {0} jobs", unreachableJobs.Count);
+        Queue<Job> jobsToReevaluate = unreachableJobs;
+        unreachableJobs = new Queue<Job>();
+
+        foreach (Job job in jobsToReevaluate)
+        {
+            job.charsCantReach.Clear();
+            Enqueue(job);
+        }
+    }
+
+    /// <summary>
+    /// Returns true if the character is already in the list of characters unable to reach the job.
+    /// </summary>
+    /// <param name="job"></param>
+    /// <param name="character"></param>
+    /// <returns></returns>
+    public bool CharacterCantReachHelper(Job job, Character character)
+    {
+        if (job.charsCantReach != null)
+        {
+            foreach (Character charTemp in job.charsCantReach)
+            {
+                if (charTemp == character)
+                {
+                    return true;
+                }
+            }   
+        }
+
+        return false;
+    }
+
     private void ReevaluateWaitingQueue(Inventory inv)
     {
         DebugLog("ReevaluateWaitingQueue() new resource: {0}, count: {1}", inv.Type, inv.StackSize);
@@ -214,45 +252,6 @@ public class JobQueue
                 Enqueue(job);
             }
         }
-    }
-
-    /// <summary>
-    /// Call this whenever a furniture gets changed or removed that might effect the reachability of an object.
-    /// </summary>
-    public void ReevaluateReachability()
-    {
-        // TODO: Should this be an event on the furniture object?
-        DebugLog(" - Reevaluate reachability of {0} jobs", unreachableJobs.Count);
-        Queue<Job> jobsToReevaluate = unreachableJobs;
-        unreachableJobs = new Queue<Job>();
-
-        foreach (Job job in jobsToReevaluate)
-        {
-            job.charsCantReach.Clear();
-            Enqueue(job);
-        }
-    }
-
-
-    /// <summary>
-    /// Returns true if the character is already in the list of characters unable to reach the job.
-    /// </summary>
-    /// <param name="job"></param>
-    /// <param name="character"></param>
-    /// <returns></returns>
-    public bool CharacterCantReachHelper(Job job, Character character)
-    {
-        if (job.charsCantReach != null)
-        {
-            foreach (Character charTemp in job.charsCantReach)
-            {
-                if (charTemp == character)
-                {
-                    return true;
-                }
-            }   
-        }
-        return false;
     }
 
     [System.Diagnostics.Conditional("FSM_DEBUG_LOG")]

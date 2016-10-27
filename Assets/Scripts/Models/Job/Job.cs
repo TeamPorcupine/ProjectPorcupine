@@ -45,6 +45,8 @@ public class Job : ISelectable, IPrototypable
     /// </summary>
     public bool acceptsAny;
 
+    public List<Character> charsCantReach = new List<Character>();
+    
     protected float jobTimeRequired;
 
     protected bool jobRepeats = false;
@@ -218,8 +220,6 @@ public class Job : ISelectable, IPrototypable
             return jobRepeats;
         }
     }
-
-    public List<Character> charsCantReach = new List<Character>();
 
     public Pathfinder.GoalEvaluator IsTileAtJobSite
     {
