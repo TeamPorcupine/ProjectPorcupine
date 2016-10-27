@@ -5,67 +5,55 @@
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
+using FMOD;
+
+
 #endregion
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using UnityEngine;
 
 /// <summary>
 /// The Manager that handles the loading and storing of audio from streamingAssets.
 /// </summary>
 public class AudioManager
 {
-    private static Dictionary<string, FMOD.Sound> audioClips;
+    private static Dictionary<string, SoundClip> audioClips;
 
     public static FMOD.System SoundSystem;
 
     // Channel Groups
-    public static Dictionary<string, FMOD.ChannelGroup> channelGroups;
+    public static Dictionary<string, ChannelGroup> channelGroups;
 
-    // TODO: These should probably have a property to access them and possibly be put in a dictionary for easier access
-    public static FMOD.ChannelGroup master;
-    public static FMOD.ChannelGroup UI;
-    public static FMOD.ChannelGroup gameSounds;
-    public static FMOD.ChannelGroup alerts;
-    public static FMOD.ChannelGroup music;
+    public static ChannelGroup master;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AudioManager"/> class.
     /// </summary>
     public AudioManager()
     {
-        channelGroups = new Dictionary<string, FMOD.ChannelGroup>();
-        FMOD.RESULT res = FMOD.Factory.System_Create(out SoundSystem);
+        channelGroups = new Dictionary<string, ChannelGroup>();
+        RESULT res = Factory.System_Create(out SoundSystem);
         SoundSystem.setDSPBufferSize(1024, 10);
-        SoundSystem.init(32, FMOD.INITFLAGS.NORMAL, (IntPtr)0);
+        SoundSystem.init(32, INITFLAGS.NORMAL, (IntPtr)0);
         SoundSystem.getMasterChannelGroup(out master);
-        FMOD.DSPConnection throwaway;
+        DSPConnection throwaway;
         channelGroups.Add("UI", null);
         channelGroups.Add("gameSounds", null);
         channelGroups.Add("alerts", null);
         channelGroups.Add("music", null);
-//        SoundSystem.createChannelGroup("UI", out UI);
-//        SoundSystem.createChannelGroup("building", out gameSounds);
-//        SoundSystem.createChannelGroup("alerts", out alerts);
-//        SoundSystem.createChannelGroup("music", out music);
-//        master.addGroup(UI, true, out throwaway);
-//        master.addGroup(gameSounds, true, out throwaway);
         foreach (string key in channelGroups.Keys.ToArray())
         {
-            FMOD.ChannelGroup chanGroup;
+            ChannelGroup chanGroup;
             SoundSystem.createChannelGroup(key, out chanGroup);
-//            FMOD.DSPConnection throwaway;
             master.addGroup(chanGroup, true, out throwaway);
             channelGroups[key] = chanGroup;
         }
         channelGroups.Add("master", master);
 
         SoundSystem.set3DSettings(1f, 1f, 0.1f);
-        audioClips = new Dictionary<string, FMOD.Sound>();
-//        master.setVolume(.5f);
-//        UI.setVolume(8f);
+        audioClips = new Dictionary<string, SoundClip>();
     }
 
     /// <summary>
@@ -75,7 +63,7 @@ public class AudioManager
     /// <returns>String containing the information of audioClips.</returns>
     public static string GetAudioDictionaryString()
     {
-        Dictionary<string, FMOD.Sound> dictionary = audioClips;
+        Dictionary<string, SoundClip> dictionary = audioClips;
 
         return "{" + string.Join(",", dictionary.Select(kv => kv.Key + "=" + kv.Value.ToString()).ToArray()) + "}";
     }
@@ -88,13 +76,13 @@ public class AudioManager
     /// The category that the AudioClip is in. Usually the same as the 
     /// directory that the audio file was load from.
     /// </param>
-    /// <param name="audioName">The name of the AudioClip.</param>
-    /// <returns>AudioClip form the specified category with the specified name.</returns>
-    public static FMOD.Sound GetAudio(string categoryName, string audioName)
+    /// <param name="audioName">The name of the SoundClip.</param>
+    /// <returns>SoundClip from the specified category with the specified name.</returns>
+    public static SoundClip GetAudio(string categoryName, string audioName)
     {
-        FMOD.Sound clip;
+        SoundClip clip;
 
-        string audioNameAndCategory = categoryName + "/" + audioName + ".ogg";
+        string audioNameAndCategory = categoryName + "/" + audioName;
 
         if (audioClips.ContainsKey(audioNameAndCategory))
         {
@@ -104,8 +92,8 @@ public class AudioManager
         {
             try
             {
-                Debug.LogWarning("No audio available called: " + audioNameAndCategory);
-                clip = audioClips["Sound/Error.ogg"];
+                Debug.LogWarning("No audio available called: " + audioNameAndCategory, null);
+                clip = audioClips["Sound/Error"];
             }
             catch
             {
@@ -114,15 +102,6 @@ public class AudioManager
         }
 
         return clip;
-    }
-
-    public static List<FMOD.Sound> GetAudioSequence(string categoryName, string audioName)
-    {
-        List<FMOD.Sound> clipSequence;
-        string audioNameAndCategory = categoryName + "/" + audioName;
-        clipSequence = audioClips.Where(entry => entry.Key.StartsWith(audioNameAndCategory)).Select(kvPair => kvPair.Value).ToList();
-        return clipSequence;
-
     }
 
     /// <summary>
@@ -159,15 +138,26 @@ public class AudioManager
                 continue;
             }
 
-            FMOD.Sound clip;
-            SoundSystem.createSound(filePath, FMOD.MODE._3D, out clip);
-            string filename = new FileInfo(filePath).Name;
+            Sound clip;
+            SoundSystem.createSound(filePath, MODE._3D, out clip);
+            string filename = Path.GetFileNameWithoutExtension(filePath);
+
+            // If the filename contains a period, it is part of a sequence, remove everything after the period,
+            // and it will be handled appropriately.
+            if (filename.Contains("."))
+            {
+                filename = filename.Substring(0, filename.IndexOf("."));
+            }
             filename = audioCategory + "/" + filename;
 
-            Debug.Log(filename + " Downloaded");
-
-
-            audioClips[filename] = clip;
+            if(audioClips.ContainsKey(filename))
+            {
+                audioClips[filename].Add(clip);
+            }
+            else
+            {
+                audioClips[filename] = new SoundClip(clip);
+            }
         }
     }
 }

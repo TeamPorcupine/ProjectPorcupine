@@ -5,21 +5,18 @@
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
-using System.Collections.Generic;
-
-
 #endregion
-using System.Collections;
+using FMOD;
 using UnityEngine;
 
 public class SoundController
 {
     private float soundCooldown = 0;
 
-    private FMOD.VECTOR up;
-    private FMOD.VECTOR forward;
-    private FMOD.VECTOR zero;
-    private FMOD.VECTOR ignore;
+    private VECTOR up;
+    private VECTOR forward;
+    private VECTOR zero;
+    private VECTOR ignore;
 
     // Use this for initialization
     public SoundController(World world = null)
@@ -50,7 +47,7 @@ public class SoundController
              return;
         }
  
-        FMOD.Sound clip = AudioManager.GetAudio("Sound", "MenuClick");
+        Sound clip = AudioManager.GetAudio("Sound", "MenuClick").Get();
         PlaySound(clip, "UI");
         //            
         soundCooldown = 0.1f;
@@ -64,7 +61,7 @@ public class SoundController
             return;
         }
 
-        PlaySoundAt(AudioManager.GetAudio("Sound", furniture.Type + "_OnCreated"), furniture.Tile, "gameSounds");
+        PlaySoundAt(AudioManager.GetAudio("Sound", furniture.Type + "_OnCreated").Get(), furniture.Tile, "gameSounds");
     
         soundCooldown = 0.1f;
     }
@@ -79,29 +76,21 @@ public class SoundController
 
         if (tileData.ForceTileUpdate)
         {  
-//            List<FMOD.Sound> sequence = AudioManager.GetAudioSequence("Sound", "Floor_OnCreated");
-
-//            PlaySoundAt(sequence[Random.Range(0, sequence.Count)], tileData);
-            PlaySoundAt(AudioManager.GetAudio("Sound", "Floor_OnCreated"), tileData, "gameSounds", 1);
-//            AudioSource.PlayClipAtPoint(clip, Camera.main.transform.position);
+            PlaySoundAt(AudioManager.GetAudio("Sound", "Floor_OnCreated").Get(), tileData, "gameSounds", 1);
             soundCooldown = 0.1f;
         }
     }
 
-    public void PlaySound(FMOD.Sound clip, string chanGroup = "master", float freqRange = 0f, float volRange = 0f)
+    public void PlaySound(Sound clip, string chanGroup = "master", float freqRange = 0f, float volRange = 0f)
     {
         if (!AudioManager.channelGroups.ContainsKey(chanGroup))
         {
             chanGroup = "master";
         }
-        FMOD.ChannelGroup channelGroup = AudioManager.channelGroups[chanGroup];
-//        if (chanGroup == null)
-//        {
-//            chanGroup = AudioManager.master;
-//        }
+        ChannelGroup channelGroup = AudioManager.channelGroups[chanGroup];
 
         FMOD.System SoundSystem = AudioManager.SoundSystem;
-        FMOD.Channel Channel;
+        Channel Channel;
         SoundSystem.playSound(clip, channelGroup, true, out Channel);
         if (!freqRange.AreEqual(0f))
         {
@@ -111,24 +100,18 @@ public class SoundController
         Channel.setPaused(false);
     }
 
-    public void PlaySoundAt(FMOD.Sound clip, Tile tile, string chanGroup = "master", float freqRange = 0f, float volRange = 0f)
+    public void PlaySoundAt(Sound clip, Tile tile, string chanGroup = "master", float freqRange = 0f, float volRange = 0f)
     {
         if (!AudioManager.channelGroups.ContainsKey(chanGroup))
         {
             chanGroup = "master";
         }
-        FMOD.ChannelGroup channelGroup = AudioManager.channelGroups[chanGroup];
-//        if (chanGroup == null)
-//        {
-//            chanGroup = AudioManager.channelGroups["master"];
-//        }
+        ChannelGroup channelGroup = AudioManager.channelGroups[chanGroup];
 
         FMOD.System SoundSystem = AudioManager.SoundSystem;
-        FMOD.Channel Channel;
+        Channel Channel;
         SoundSystem.playSound(clip, channelGroup, true, out Channel);
-//        Channel.setVolume(1f);
-//        Channel.set3DMinMaxDistance(Camera.main.orthographicSize / 2, 1000);
-        FMOD.VECTOR tilePos = GetVectorFrom(tile);
+        VECTOR tilePos = GetVectorFrom(tile);
         Channel.set3DAttributes(ref tilePos, ref zero, ref zero);
         if (!freqRange.AreEqual(0f))
         {
@@ -147,18 +130,18 @@ public class SoundController
         Channel.setPaused(false);
     }
 
-    private FMOD.VECTOR GetVectorFrom(Vector3 vector)
+    private VECTOR GetVectorFrom(Vector3 vector)
     {
-        FMOD.VECTOR fmodVector;
+        VECTOR fmodVector;
         fmodVector.x = vector.x;
         fmodVector.y = vector.y;
         fmodVector.z = vector.z;
         return fmodVector;
     }
 
-    private FMOD.VECTOR GetVectorFrom(Tile tile)
+    private VECTOR GetVectorFrom(Tile tile)
     {
-        FMOD.VECTOR fmodVector;
+        VECTOR fmodVector;
         fmodVector.x = tile.X;
         fmodVector.y = tile.Y;
         fmodVector.z = tile.Z * 2;
@@ -177,31 +160,15 @@ public class SoundController
 
     public void SetListenerPosition(float x, float y, float z)
     {
-        //        FMOD.VECTOR prevLoc;
-        FMOD.VECTOR curLoc;
+        VECTOR curLoc;
         curLoc.x = x;
         curLoc.y = y;
         curLoc.z = z;
-        //        AudioManager.SoundSystem.get3DListenerAttributes(0, out prevLoc, out ignore, out ignore, out ignore);
-        //        FMOD.VECTOR velocity = GetVectorFrom((GetUnityVector(curLoc) - GetUnityVector(prevLoc)) / (Time.deltaTime*5));
         AudioManager.SoundSystem.set3DListenerAttributes(0, ref curLoc, ref zero, ref forward, ref up);
         AudioManager.SoundSystem.update();
     }
 
-//    public void SetListenerPosition(Vector3 newPosition)
-//    {
-//        //        FMOD.VECTOR prevLoc;
-//        FMOD.VECTOR curLoc;
-//        curLoc.x = newPosition.x;
-//        curLoc.y = newPosition.y;
-//        curLoc.z = newPosition.z;
-//        //        AudioManager.SoundSystem.get3DListenerAttributes(0, out prevLoc, out ignore, out ignore, out ignore);
-//        //        FMOD.VECTOR velocity = GetVectorFrom((GetUnityVector(curLoc) - GetUnityVector(prevLoc)) / (Time.deltaTime*5));
-//        AudioManager.SoundSystem.set3DListenerAttributes(0, ref curLoc, ref zero, ref forward, ref up);
-//        AudioManager.SoundSystem.update();
-//    }
-
-    private Vector3 GetUnityVector(FMOD.VECTOR vector)
+    private Vector3 GetUnityVector(VECTOR vector)
     {
         Vector3 unityVector;
         unityVector.x = vector.x;
