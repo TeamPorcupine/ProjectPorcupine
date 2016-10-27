@@ -25,9 +25,8 @@ public class ModDialogBoxInformation
     [XmlElement("Buttons")]
     public DialogBoxResult[] buttons;
 
-    [XmlIgnore()]
+    [XmlIgnore]
     public Dictionary<string, string> Actions = new Dictionary<string, string>();
-
 
     [XmlArray("Actions")]
     [XmlArrayItem("Action", Type = typeof(DictionaryEntry))]
@@ -35,11 +34,12 @@ public class ModDialogBoxInformation
     {
         get
         {
-            //Make an array of DictionaryEntries to return   
+            // Make an array of DictionaryEntries to return   
             DictionaryEntry[] ret = new DictionaryEntry[Actions.Count];
             int i = 0;
             DictionaryEntry de;
-            //Iterate through Stuff to load items into the array.   
+
+            // Iterate through Stuff to load items into the array.   
             foreach (KeyValuePair<string, string> props in Actions)
             {
                 de = new DictionaryEntry();
@@ -48,8 +48,10 @@ public class ModDialogBoxInformation
                 ret[i] = de;
                 i++;
             }
+
             return ret;
         }
+
         set
         {
             Actions.Clear();
@@ -59,5 +61,4 @@ public class ModDialogBoxInformation
             }
         }
     }
-
 }
