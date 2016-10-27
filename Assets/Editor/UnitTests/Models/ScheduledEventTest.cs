@@ -14,6 +14,7 @@ public class ScheduledEventTest
 {
     private Action<ScheduledEvent> callback;
     private bool didRun = false;
+    private int runCount = 0;
 
     [SetUp]
     public void Init()
@@ -23,6 +24,7 @@ public class ScheduledEventTest
             {
                 Debug.ULogChannel("ScheduledEventTest", "Event {0} fired", evt.Name);
                 didRun = true;
+                runCount++;
             };
     }
 
@@ -60,7 +62,7 @@ public class ScheduledEventTest
     public void EndlessEventRunTest()
     {
         // event that repeats forever
-        didRun = false;
+        Reset();
         ScheduledEvent evt = new ScheduledEvent(
                                  "test1",
                                  callback,
@@ -73,7 +75,7 @@ public class ScheduledEventTest
         Assert.That(didRun, Is.True);
 
         // event that repeats forever -- confirm that repeats is ignored
-        didRun = false;
+        Reset();
         evt = new ScheduledEvent(
             "test2",
             callback,
@@ -90,7 +92,7 @@ public class ScheduledEventTest
     public void NTimesRepeatedEventRunTest()
     {
         // event that repeats twice
-        didRun = false;
+        Reset();
         ScheduledEvent evt = new ScheduledEvent(
             "test",
             callback,
@@ -104,14 +106,14 @@ public class ScheduledEventTest
         Assert.That(didRun, Is.True);
         Assert.That(evt.LastShot, Is.True);
         Assert.That(evt.Finished, Is.False);
-        didRun = false;
+        Reset();
 
         evt.Fire();
         Assert.That(didRun, Is.True);
         Assert.That(evt.LastShot, Is.False);
         Assert.That(evt.Finished, Is.True);
 
-        didRun = false;
+        Reset();
         evt.Fire();
         Assert.That(evt.LastShot, Is.False);
         Assert.That(didRun, Is.False);
@@ -128,14 +130,14 @@ public class ScheduledEventTest
             1);
 
         // doesn't run until the cooldown is reached
-        didRun = false;
+        Reset();
         evt.Update(2.0f);
         Assert.That(evt.LastShot, Is.False);
         Assert.That(evt.Finished, Is.False);
         Assert.That(evt.TimeToWait, Is.EqualTo(1.0f));
         Assert.That(didRun, Is.False);
 
-        didRun = false;
+        Reset();
         evt.Update(1.0f);
         Assert.That(evt.LastShot, Is.False);
         Assert.That(evt.Finished, Is.False);
@@ -145,24 +147,47 @@ public class ScheduledEventTest
         Assert.That(evt.TimeToWait, Is.EqualTo(evt.Cooldown));
 
         // so it should work again as above
-        didRun = false;
+        Reset();
         evt.Update(2.0f);
         Assert.That(evt.LastShot, Is.False);
         Assert.That(evt.Finished, Is.False);
         Assert.That(didRun, Is.False);
 
-        didRun = false;
+        Reset();
         evt.Update(1.0f);
         Assert.That(evt.LastShot, Is.False);
         Assert.That(evt.Finished, Is.False);
         Assert.That(didRun, Is.True);
 
         // and it should also work if we overshoot the cooldown
-        didRun = false;
+        Reset();
         evt.Update(5.0f);
         Assert.That(evt.LastShot, Is.False);
         Assert.That(evt.Finished, Is.False);
         Assert.That(didRun, Is.True);
+    }
+
+    [Test]
+    public void SetCooldownTest()
+    {
+        ScheduledEvent evt = new ScheduledEvent(
+            "test",
+            callback,
+            3.0f,
+            true,
+            1);
+        
+        Reset();
+        evt.Update(2f);
+        evt.SetCooldown(2.5f);
+        Assert.That(evt.TimeToWait, Is.EqualTo(.5f));
+        Assert.That(didRun, Is.False);
+
+        evt.SetCooldown(1f);
+        Assert.That(evt.TimeToWait, Is.EqualTo(0f));
+        evt.Update(.1f);
+        Assert.That(didRun, Is.True);
+        Assert.That(runCount, Is.EqualTo(1));
     }
 
     [Test]
@@ -199,7 +224,7 @@ public class ScheduledEventTest
             1);
 
         // doesn't run until the cooldown is reached
-        didRun = false;
+        Reset();
         evt.Update(5.0f);
         Assert.That(evt.LastShot, Is.False);
         Assert.That(evt.Finished, Is.False);
@@ -210,7 +235,7 @@ public class ScheduledEventTest
         // and now it should not run
         Assert.That(evt.LastShot, Is.False);
         Assert.That(evt.Finished, Is.True);
-        didRun = false;
+        Reset();
         evt.Update(5.0f);
         Assert.That(didRun, Is.False);
     }
@@ -239,5 +264,11 @@ public class ScheduledEventTest
         jsonString = Newtonsoft.Json.JsonConvert.SerializeObject(evt.ToJson());
 
         Assert.That(jsonString, Is.EqualTo("{\"Name\":\"test\",\"Cooldown\":3.0,\"TimeToWait\":3.0,\"RepeatsForever\":false,\"RepeatsLeft\":2}"));
+    }
+
+    private void Reset()
+    {
+        didRun = false;
+        runCount = 0;
     }
 }

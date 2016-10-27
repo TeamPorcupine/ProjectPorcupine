@@ -98,7 +98,7 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
             // Skip a frame so that user will see pop-up
             yield return null;
 
-            Thread t = SaveWorld(filePath);
+            Thread t = WorldController.Instance.SaveWorld(filePath);
 
             // Wait for data to be saved to HDD.
             while (t.IsAlive)
@@ -118,52 +118,5 @@ public class DialogBoxSaveGame : DialogBoxLoadSaveGame
                 yield return null;
             }
         }
-    }
-
-    /// <summary>
-    /// Serializes current Instance of the World and starts a thread
-    /// that actually saves serialized world to HDD.
-    /// </summary>
-    /// <param name="filePath">Where to save (Full path).</param>
-    /// <returns>Returns the thread that is currently saving data to HDD.</returns>
-    public Thread SaveWorld(string filePath)
-    {
-        // Make sure the save folder exists.
-        if (Directory.Exists(GameController.Instance.FileSaveBasePath()) == false)
-        {
-            // NOTE: This can throw an exception if we can't create the folder,
-            // but why would this ever happen? We should, by definition, have the ability
-            // to write to our persistent data folder unless something is REALLY broken
-            // with the computer/device we're running on.
-            Directory.CreateDirectory(GameController.Instance.FileSaveBasePath());
-        }
-
-        StreamWriter sw = new StreamWriter(filePath);
-        JsonWriter writer = new JsonTextWriter(sw);
-
-        JObject worldJson = World.Current.ToJson();
-
-        // Launch saving operation in a separate thread.
-        // This reduces lag while saving by a little bit.
-        Thread t = new Thread(new ThreadStart(delegate { SaveWorldToHdd(worldJson, writer); }));
-        t.Start();
-
-        return t;
-    }
-
-    /// <summary>
-    /// Create/overwrite the save file with the XML text.
-    /// </summary>
-    /// <param name="filePath">Full path to file.</param>
-    /// <param name="writer">TextWriter that contains serialized World data.</param>
-    private void SaveWorldToHdd(JObject worldJson, JsonWriter writer)
-    {
-        JsonSerializer serializer = new JsonSerializer();
-        serializer.NullValueHandling = NullValueHandling.Ignore;
-        serializer.Formatting = Newtonsoft.Json.Formatting.Indented;
-
-        serializer.Serialize(writer, worldJson);
-
-        writer.Flush();
     }
 }

@@ -12,6 +12,7 @@ using System.IO;
 using System.Threading;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Linq;
 using Scheduler;
 
 public class AutosaveManager
@@ -39,13 +40,11 @@ public class AutosaveManager
         AutosaveInterval = Settings.GetSetting<int>("AutosaveInterval", 2); // in minutes
 
         // autosaves disabled if AutosaveInterval <= 0
-        if (AutosaveInterval <= 0)
+        if (AutosaveInterval > 0)
         {
-            return;
+            autosaveEvent = new ScheduledEvent("autosave", DoAutosave, AutosaveInterval * 60.0f, true, 0);
+            scheduler.RegisterEvent(autosaveEvent);
         }
-
-        autosaveEvent = new ScheduledEvent("autosave", DoAutosave, AutosaveInterval * 60.0f, true, 0);
-        scheduler.RegisterEvent(autosaveEvent);
 
         // set autosaveCounter = maximum index of existing autosaves (so as not to clobber autosaves from previous games)
         if (Directory.Exists(GameController.Instance.FileSaveBasePath()))
@@ -94,64 +93,50 @@ public class AutosaveManager
             return;
         }
 
-        autosaveCounter += 1;
+        string fileName;
 
-        string fileName = AutosaveBaseName + autosaveCounter.ToString();
-        string filePath = System.IO.Path.Combine(GameController.Instance.FileSaveBasePath(), fileName + ".sav");
+        string saveDirectoryPath = GameController.Instance.FileSaveBasePath();
+        DirectoryInfo saveDir = new DirectoryInfo(saveDirectoryPath);
+        FileInfo[] saveGames = saveDir.GetFiles(AutosaveBaseName + "*.sav").OrderByDescending(f => f.LastWriteTime).ToArray();
+        if (saveGames.Length >= Settings.GetSetting<int>("AutosaveFiles", 5))
+        {
+            // Get list of files in save location
+            fileName = Path.GetFileNameWithoutExtension(saveGames.Last().Name);
+        }
+        else
+        {
+            autosaveCounter += 1;
 
+            fileName = AutosaveBaseName + autosaveCounter.ToString();
+        }
+
+        string filePath = Path.Combine(saveDir.ToString(), fileName + ".sav");
         Debug.ULogChannel("AutosaveManager", "Autosaving to '{0}'.", filePath);
         if (File.Exists(filePath) == true)
         {
             Debug.ULogErrorChannel("AutosaveManager", "File already exists -- overwriting the file for now.");
         }
 
-        SaveWorld(filePath);
+        WorldController.Instance.SaveWorld(filePath);
     }
 
-    /// <summary>
-    /// Serializes current Instance of the World and starts a thread
-    /// that actually saves serialized world to HDD.
-    /// </summary>
-    /// <param name="filePath">Where to save (Full path).</param>
-    /// <returns>Returns the thread that is currently saving data to HDD.</returns>
-    public Thread SaveWorld(string filePath)
+    public void SetAutosaveInterval(int newInterval)
     {
-        // Make sure the save folder exists.
-        if (Directory.Exists(GameController.Instance.FileSaveBasePath()) == false)
+        AutosaveInterval = newInterval;
+        if (newInterval == 0)
         {
-            // NOTE: This can throw an exception if we can't create the folder,
-            // but why would this ever happen? We should, by definition, have the ability
-            // to write to our persistent data folder unless something is REALLY broken
-            // with the computer/device we're running on.
-            Directory.CreateDirectory(GameController.Instance.FileSaveBasePath());
+            scheduler.DeregisterEvent(autosaveEvent);
+            return;
         }
 
-        StreamWriter sw = new StreamWriter(filePath);
-        JsonWriter writer = new JsonTextWriter(sw);
-
-        JObject worldJson = World.Current.ToJson();
-
-        // Launch saving operation in a separate thread.
-        // This reduces lag while saving by a little bit.
-        Thread t = new Thread(new ThreadStart(delegate { SaveWorldToHdd(worldJson, writer); }));
-        t.Start();
-
-        return t;
-    }
-
-    /// <summary>
-    /// Create/overwrite the save file with the XML text.
-    /// </summary>
-    /// <param name="filePath">Full path to file.</param>
-    /// <param name="writer">TextWriter that contains serialized World data.</param>
-    private void SaveWorldToHdd(JObject worldJson, JsonWriter writer)
-    {
-        JsonSerializer serializer = new JsonSerializer();
-        serializer.NullValueHandling = NullValueHandling.Ignore;
-        serializer.Formatting = Formatting.Indented;
-
-        serializer.Serialize(writer, worldJson);
-
-        writer.Flush();
+        if (autosaveEvent == null)
+        {
+            autosaveEvent = new ScheduledEvent("autosave", DoAutosave, newInterval * 60.0f, true, 0);
+            scheduler.RegisterEvent(autosaveEvent);
+        }
+        else
+        {
+            autosaveEvent.SetCooldown(newInterval * 60.0f);
+        }
     }
 }

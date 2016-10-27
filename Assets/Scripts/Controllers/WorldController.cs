@@ -6,7 +6,11 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using System.IO;
+using System.Threading;
 using MoonSharp.Interpreter;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Scheduler;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -145,6 +149,53 @@ public class WorldController : MonoBehaviour
         Settings.SetSetting("DialogBoxSettings_developerModeToggle", developerMode);
         spawnInventoryController.SetUIVisibility(developerMode);
         ///FurnitureBuildMenu.instance.RebuildMenuButtons(developerMode);
+    }
+
+    /// <summary>
+    /// Serializes current Instance of the World and starts a thread
+    /// that actually saves serialized world to HDD.
+    /// </summary>
+    /// <param name="filePath">Where to save (Full path).</param>
+    /// <returns>Returns the thread that is currently saving data to HDD.</returns>
+    public Thread SaveWorld(string filePath)
+    {
+        // Make sure the save folder exists.
+        if (Directory.Exists(GameController.Instance.FileSaveBasePath()) == false)
+        {
+            // NOTE: This can throw an exception if we can't create the folder,
+            // but why would this ever happen? We should, by definition, have the ability
+            // to write to our persistent data folder unless something is REALLY broken
+            // with the computer/device we're running on.
+            Directory.CreateDirectory(GameController.Instance.FileSaveBasePath());
+        }
+
+        StreamWriter sw = new StreamWriter(filePath);
+        JsonWriter writer = new JsonTextWriter(sw);
+
+        JObject worldJson = World.Current.ToJson();
+
+        // Launch saving operation in a separate thread.
+        // This reduces lag while saving by a little bit.
+        Thread t = new Thread(new ThreadStart(delegate { SaveWorldToHdd(worldJson, writer); }));
+        t.Start();
+
+        return t;
+    }
+
+    /// <summary>
+    /// Create/overwrite the save file with the XML text.
+    /// </summary>
+    /// <param name="filePath">Full path to file.</param>
+    /// <param name="writer">TextWriter that contains serialized World data.</param>
+    private void SaveWorldToHdd(JObject worldJson, JsonWriter writer)
+    {
+        JsonSerializer serializer = new JsonSerializer();
+        serializer.NullValueHandling = NullValueHandling.Ignore;
+        serializer.Formatting = Formatting.Indented;
+
+        serializer.Serialize(writer, worldJson);
+
+        writer.Flush();
     }
 
     private void CreateEmptyWorld()
