@@ -119,8 +119,8 @@ namespace ProjectPorcupine.State
             // If the job gets abandoned because of pathing issues or something else, just return it to the queue
             World.Current.jobQueue.Enqueue(Job);
 
-            // This is the code that actually tells the character that it is no longer doing the job.
-            character.SetState(new IdleState(character));
+            // Tell the player that we need a new task.
+            character.SetState(null);
         }
 
         private void OnJobStopped(Job stoppedJob)

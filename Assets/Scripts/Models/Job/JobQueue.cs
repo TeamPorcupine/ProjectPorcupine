@@ -76,7 +76,6 @@ public class JobQueue
         else if (job.charsCantReach.Count == World.Current.CharacterManager.characters.Count)
         {
             unreachableJobs.Enqueue(job);
-            Dequeue();
         }
         else
         {
@@ -96,6 +95,9 @@ public class JobQueue
         }
     }
 
+    /// <summary>
+    /// Returns the first job from the JobQueue.
+    /// </summary>
     public Job Dequeue()
     {
         if (jobQueue.Count == 0)

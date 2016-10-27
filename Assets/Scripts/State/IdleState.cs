@@ -21,7 +21,7 @@ namespace ProjectPorcupine.State
             : base("Idle", character, nextState)
         {
             timeSpentIdle = 0f;
-            totalIdleTime = Random.Range(0.2f, 2.0f);
+            totalIdleTime = Random.Range(0.2f, 0.5f);
         }
 
         public override void Update(float deltaTime)
