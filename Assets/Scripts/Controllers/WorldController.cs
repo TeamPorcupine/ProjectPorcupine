@@ -5,11 +5,13 @@
 // and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
+
 #endregion
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
 using Scheduler;
@@ -150,6 +152,50 @@ public class WorldController : MonoBehaviour
         Settings.SetSetting("DialogBoxSettings_developerModeToggle", developerMode);
         spawnInventoryController.SetUIVisibility(developerMode);
         ///FurnitureBuildMenu.instance.RebuildMenuButtons(developerMode);
+    }
+
+    /// <summary>
+    /// Serializes current Instance of the World and starts a thread
+    /// that actually saves serialized world to HDD.
+    /// </summary>
+    /// <param name="filePath">Where to save (Full path).</param>
+    /// <returns>Returns the thread that is currently saving data to HDD.</returns>
+    public Thread SaveWorld(string filePath)
+    {
+        XmlSerializer serializer = new XmlSerializer(typeof(World));
+        TextWriter writer = new StringWriter();
+        serializer.Serialize(writer, WorldController.Instance.World);
+        writer.Close();
+
+        // UberLogger doesn't handle multi-line messages well.
+        // Debug.Log(writer.ToString());
+
+        // Make sure the save folder exists.
+        if (Directory.Exists(GameController.Instance.FileSaveBasePath()) == false)
+        {
+            // NOTE: This can throw an exception if we can't create the folder,
+            // but why would this ever happen? We should, by definition, have the ability
+            // to write to our persistent data folder unless something is REALLY broken
+            // with the computer/device we're running on.
+            Directory.CreateDirectory(GameController.Instance.FileSaveBasePath());
+        }
+
+        // Launch saving operation in a separate thread.
+        // This reduces lag while saving by a little bit.
+        Thread t = new Thread(new ThreadStart(delegate { SaveWorldToHdd(filePath, writer); }));
+        t.Start();
+
+        return t;
+    }
+
+    /// <summary>
+    /// Create/overwrite the save file with the XML text.
+    /// </summary>
+    /// <param name="filePath">Full path to file.</param>
+    /// <param name="writer">TextWriter that contains serialized World data.</param>
+    private void SaveWorldToHdd(string filePath, TextWriter writer)
+    {
+        File.WriteAllText(filePath, writer.ToString());
     }
 
     private void CreateEmptyWorld()

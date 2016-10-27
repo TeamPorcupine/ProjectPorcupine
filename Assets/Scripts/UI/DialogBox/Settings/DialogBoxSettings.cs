@@ -5,6 +5,8 @@
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
+using System;
+
 #endregion
 using System.Collections.Generic;
 using ProjectPorcupine.Localization;
@@ -19,7 +21,6 @@ public class DialogBoxSettings : DialogBox
     public Toggle fullScreenToggle;
 
     public Toggle developerModeToggle;
-    public GameObject developerModeObject;
 
     public Slider musicVolume;
 
@@ -29,6 +30,9 @@ public class DialogBoxSettings : DialogBox
     public Dropdown languageDropdown;
     public Dropdown vsyncDropdown;
     public Dropdown qualityDropdown;
+
+    public InputField autosaveInterval;
+    public InputField autosaveFiles;
 
     public Button closeButton;
     public Button saveButton;
@@ -69,6 +73,8 @@ public class DialogBoxSettings : DialogBox
         Resolution resolution = selectedOption.Resolution;
         Screen.SetResolution(resolution.width, resolution.height, fullScreenToggle.isOn, resolution.refreshRate);
 
+        WorldController.Instance.autosaveManager.SetAutosaveInterval(int.Parse(autosaveInterval.text));
+
         // One to many but we want an applying feature;
         PerformanceHUDManager.DirtyUI();
     }
@@ -87,6 +93,8 @@ public class DialogBoxSettings : DialogBox
         Settings.SetSetting("DialogBoxSettings_qualityDropdown", qualityDropdown.value);
         Settings.SetSetting("DialogBoxSettings_vSyncDropdown", vsyncDropdown.value);
         Settings.SetSetting("DialogBoxSettings_resolutionDropdown", resolutionDropdown.value);
+        Settings.SetSetting("AutosaveInterval", int.Parse(autosaveInterval.text));
+        Settings.SetSetting("AutosaveFiles", int.Parse(autosaveFiles.text));
         Settings.SaveSettings();
 
         PerformanceHUDManager.DirtyUI();
@@ -133,6 +141,9 @@ public class DialogBoxSettings : DialogBox
         qualityDropdown.value = Settings.GetSetting("DialogBoxSettings_qualityDropdown", 0);
         vsyncDropdown.value = Settings.GetSetting("DialogBoxSettings_vSyncDropdown", 0);
         resolutionDropdown.value = Settings.GetSetting("DialogBoxSettings_resolutionDropdown", 0);
+
+        autosaveInterval.text = Settings.GetSetting("AutosaveInterval", 2).ToString();
+        autosaveFiles.text = Settings.GetSetting("AutosaveFiles", 5).ToString();
     }
 
     /// <summary>
