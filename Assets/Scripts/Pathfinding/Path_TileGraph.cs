@@ -61,6 +61,7 @@ public class Path_TileGraph
         {
             return;
         }
+
         GenerateEdgesByTile(changedTile);
         foreach (Tile tile in changedTile.GetNeighbours(true))
         {
