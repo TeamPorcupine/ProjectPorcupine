@@ -294,7 +294,14 @@ namespace ProjectPorcupine.Rooms
                     {
                         foreach (Room r in oldRooms)
                         {
+                            
                             Joined(r, newRoom);
+                            // HACK: For some reason upper portions of the room don't get properly reassigned
+                            // if the room is being joined with the outside, so do it manually.
+                            if (newRoom.IsOutsideRoom())
+                            {
+                                r.ReturnTilesToOutsideRoom();
+                            }
                         }
                     }
                 }
@@ -395,16 +402,16 @@ namespace ProjectPorcupine.Rooms
 
         #endregion
 
-        protected Room ActualFloodFill(Tile tile, Room oldRoom, int sizeOfOldRoom)
+        protected Room ActualFloodFill(Tile sourceTile, Room oldRoom, int sizeOfOldRoom)
         {
-            if (tile == null)
+            if (sourceTile == null)
             {
                 // We are trying to flood fill off the map, so just return
                 // without doing anything.
                 return null;
             }
 
-            if (tile.Room != oldRoom)
+            if (sourceTile.Room != oldRoom)
             {
                 // This tile was already assigned to another "new" room, which means
                 // that the direction picked isn't isolated. So we can just return
@@ -412,7 +419,7 @@ namespace ProjectPorcupine.Rooms
                 return null;
             }
 
-            if (tile.Furniture != null && tile.Furniture.RoomEnclosure)
+            if (sourceTile.Furniture != null && sourceTile.Furniture.RoomEnclosure)
             {
                 // This tile has a wall/door/whatever in it, so clearly
                 // we can't do a room here.
@@ -424,31 +431,31 @@ namespace ProjectPorcupine.Rooms
 
             Room newRoom = new Room();
             Queue<Tile> tilesToCheck = new Queue<Tile>();
-            tilesToCheck.Enqueue(tile);
+            tilesToCheck.Enqueue(sourceTile);
 
             bool connectedToSpace = false;
             int processedTiles = 0;
 
             while (tilesToCheck.Count > 0)
             {
-                Tile t = tilesToCheck.Dequeue();
+                Tile currentTile = tilesToCheck.Dequeue();
 
                 processedTiles++;
 
-                if (t.Room != newRoom)
+                if (currentTile.Room != newRoom)
                 {
-                    if (t.Room != null && listOfOldRooms.Contains(t.Room) == false)
+                    if (currentTile.Room != null && listOfOldRooms.Contains(currentTile.Room) == false)
                     {
-                        listOfOldRooms.Add(t.Room);
-                        newRoom.MoveGas(t.Room);
+                        listOfOldRooms.Add(currentTile.Room);
+                        newRoom.MoveGas(currentTile.Room);
                     }
 
-                    newRoom.AssignTile(t);
+                    newRoom.AssignTile(currentTile);
 
-                    Tile[] ns = t.GetNeighbours(false, true);
-                    foreach (Tile t2 in ns)
+                    Tile[] neighbors = currentTile.GetNeighbours(false, true);
+                    foreach (Tile neighborTile in neighbors)
                     {
-                        if (t2 == null || t2.HasClearLineToBottom())
+                        if (neighborTile == null || neighborTile.HasClearLineToBottom())
                         {
                             // We have hit open space (either by being the edge of the map or being an empty tile)
                             // so this "room" we're building is actually part of the Outside.
@@ -462,9 +469,9 @@ namespace ProjectPorcupine.Rooms
                             // We know t2 is not null nor is it an empty tile, so just make sure it
                             // hasn't already been processed and isn't a "wall" type tile.
                             if (
-                                t2.Room != newRoom && (t2.Furniture == null || t2.Furniture.RoomEnclosure == false))
+                                neighborTile.Room != newRoom && (neighborTile.Furniture == null || neighborTile.Furniture.RoomEnclosure == false))
                             {
-                                tilesToCheck.Enqueue(t2);
+                                tilesToCheck.Enqueue(neighborTile);
                             }
                         }
                     }
