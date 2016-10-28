@@ -148,13 +148,13 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
         childObjects.Overlay = new GameObject();
         childObjects.Overlay.transform.parent = furn_go.transform;
         childObjects.Overlay.transform.position = furn_go.transform.position;
-        SpriteRenderer srOverlay = childObjects.Overlay.AddComponent<SpriteRenderer>();
+        SpriteRenderer spriteRendererOverlay = childObjects.Overlay.AddComponent<SpriteRenderer>();
         Sprite overlaySprite = GetOverlaySpriteForFurniture(furniture);
         if (overlaySprite != null)
         {
-            srOverlay.sprite = overlaySprite;
-            srOverlay.sortingLayerName = "Furniture";
-            srOverlay.sortingOrder = Mathf.RoundToInt(furn_go.transform.position.y * -1) + 1;
+            spriteRendererOverlay.sprite = overlaySprite;
+            spriteRendererOverlay.sortingLayerName = "Furniture";
+            spriteRendererOverlay.sortingOrder = Mathf.RoundToInt(furn_go.transform.position.y * -1) + 1;
         }
         
         childObjects.PowerStatusIndicator = new GameObject();
@@ -223,9 +223,9 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
         furn_go.GetComponent<SpriteRenderer>().color = furn.Tint;
 
         Sprite overlaySprite = GetOverlaySpriteForFurniture(furn);
-        if(overlaySprite != null)
+        if (overlaySprite != null)
         {
-            furn_go.GetComponents<SpriteRenderer>()[1].sprite = overlaySprite;
+            childObjectMap[furn].Overlay.GetComponent<SpriteRenderer>().sprite = overlaySprite;
         }
     }
         
