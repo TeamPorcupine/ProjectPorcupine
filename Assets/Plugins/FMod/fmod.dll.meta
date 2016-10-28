@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 6055248154a1afc4fa1f62bb38644041
+guid: dc05627e3e1a2c3478a2b36ebc489adf
 timeCreated: 1476749399
 licenseType: Free
 PluginImporter:
@@ -14,7 +14,7 @@ PluginImporter:
     Editor:
       enabled: 0
       settings:
-        CPU: AnyCPU
+        CPU: x86
         DefaultValueInitialized: true
         OS: AnyOS
     Linux:
@@ -42,11 +42,11 @@ PluginImporter:
       settings:
         CPU: None
     Win:
-      enabled: 0
+      enabled: 1
       settings:
         CPU: AnyCPU
     Win64:
-      enabled: 1
+      enabled: 0
       settings:
         CPU: AnyCPU
   userData: 
