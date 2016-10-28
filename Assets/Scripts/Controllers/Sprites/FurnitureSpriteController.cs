@@ -46,7 +46,7 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
         {
             GameObject.Destroy(powerStatusGameObjectMap[furniture]);
         }
-            
+
         powerStatusGameObjectMap.Clear();
         base.RemoveAll();
     }
@@ -54,21 +54,21 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
     public Sprite GetSpriteForFurniture(string type)
     {
         Furniture proto = PrototypeManager.Furniture.Get(type);
-        string spriteName = proto.GetSpriteName();
-        Sprite s = SpriteManager.GetSprite("Furniture", spriteName + (proto.LinksToNeighbour != string.Empty && !proto.OnlyUseDefaultSpriteName ? "_" : string.Empty));
+        Sprite s = SpriteManager.GetSprite("Furniture", proto.GetDefaultSpriteName());
 
         return s;
     }
 
     public Sprite GetSpriteForFurniture(Furniture furniture)
     {
-        string spriteName = furniture.GetSpriteName();
+        bool explicitSpriteUsed;
+        string spriteName = furniture.GetSpriteName(out explicitSpriteUsed);
 
-        if (furniture.LinksToNeighbour == string.Empty || furniture.OnlyUseDefaultSpriteName)
+        if (string.IsNullOrEmpty(furniture.LinksToNeighbour) || explicitSpriteUsed)
         {
             return SpriteManager.GetSprite("Furniture", spriteName);
         }
-
+        
         // Otherwise, the sprite name is more complicated.
         spriteName += "_";
 

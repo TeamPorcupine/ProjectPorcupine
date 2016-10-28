@@ -29,6 +29,10 @@
             <!-- Leave default value (i.e. nothing) if the furniture does not have any isolation effect. -->
             <Param name="thermal_diffusivity" value="0.2" />
         </Params>
+        
+        <Component type="Visuals">
+            <DefaultSpriteName useName="furn_SteelWall_" />
+        </Component>
 
         <LocalizationCode>furn_steel_wall</LocalizationCode>
         <UnlocalizedDescription>furn_steel_wall_desc</UnlocalizedDescription>
@@ -58,8 +62,11 @@
         <DeconstructJob jobTime="1">
             <Inventory type="Steel Plate" amount="1" />
         </DeconstructJob>
-        
-        <GetSpriteName FunctionName="Door_GetSpriteName" />
+                
+        <Component type="Visuals">
+            <DefaultSpriteName useName="DoorHorizontal_0" />
+            <SpriteName fromFunction="Door_GetSpriteName" />
+        </Component>
 
         <Animations>
           <Animation state="horizontal" valuebased="true">
@@ -112,8 +119,11 @@
         <EnclosesRooms>true</EnclosesRooms>
         <CanReplaceFurniture typeTag="Wall" />
         <CanReplaceFurniture typeTag="Door" />
-        
-        <GetSpriteName FunctionName="Door_GetSpriteName" />
+                
+        <Component type="Visuals">
+            <DefaultSpriteName useName="AirlockHorizontal_0" />
+            <SpriteName fromFunction="Door_GetSpriteName" />
+        </Component>
 
         <BuildingJob jobTime="5">
             <Inventory type="Steel Plate" amount="10" />
@@ -177,6 +187,10 @@
 
         <Action event="OnUpdate" functionName="Stockpile_UpdateAction" />
         <DragType>area</DragType>
+        
+        <Component type="Visuals">
+            <DefaultSpriteName useName="Stockpile_" />
+        </Component>
 
         <LocalizationCode>furn_stockpile</LocalizationCode>
         <UnlocalizedDescription>furn_stockpile_desc</UnlocalizedDescription>
@@ -209,7 +223,7 @@
           </Animation>
         </Animations>
         
-        <Component type="Animator">
+        <Component type="Visuals">
             <UseAnimation name="idle">
                 <Requires>
                     <Param name="pow_is_running" condition="IsFalse" />
@@ -302,7 +316,8 @@
             <Inventory type="Steel Plate" amount="1" />
         </DeconstructJob>
         
-        <Component type="Animator">
+        <Component type="Visuals">
+            <DefaultSpriteName useName="Power-Generator-01" />
             <UseAnimation name="idle">
                 <Requires>
                     <Param name="cur_processed_inv" condition="IsZero" />
@@ -440,7 +455,7 @@
             </ProductionChain>
         </Component>
 
-        <Component type="Animator">
+        <Component type="Visuals">
             <UseAnimation name="idle">
                 <Requires>
                     <Param name="cur_processed_inv" condition="IsZero" />
@@ -682,9 +697,13 @@
         <Component type="PowerConnection">
             <Requires rate="1" />
         </Component>
+        
+        <Component type="Visuals">
+            <DefaultSpriteName useName="pump_air" />
+            <SpriteName fromFunction="AirPump_GetSpriteName" />
+        </Component>
 
         <Action event="OnUpdate" functionName="AirPump_OnUpdate" />
-        <GetSpriteName FunctionName="AirPump_GetSpriteName" />
         <ContextMenuAction FunctionName="AirPump_FlipDirection" Text="Flip Direction" RequireCharacterSelected="false" />
 
         <LocalizationCode>furn_pump_air</LocalizationCode>
@@ -784,7 +803,7 @@
           </Animation>          
         </Animations>
         
-        <Component type="Animator">
+        <Component type="Visuals">
             <UseAnimation name="accumulate" valuebasedParamerName="pow_accumulator_index"/>               
         </Component>
 
@@ -821,7 +840,10 @@
         </Params>
 
         <ContextMenuAction FunctionName="OreMine_CreateMiningJob" Text="Mine Ore" RequireCharacterSelected="false" />
-        <GetSpriteName FunctionName="OreMine_GetSpriteName" />
+        
+        <Component type="Visuals">
+            <SpriteName fromFunction="OreMine_GetSpriteName" />
+        </Component>
 
         <LocalizationCode>furn_mine</LocalizationCode>
         <UnlocalizedDescription>furn_mine_desc</UnlocalizedDescription>
@@ -899,7 +921,6 @@
         </Params>
 
     <ContextMenuAction FunctionName="OreMine_CreateMiningJob" Text="Mine Ore" RequireCharacterSelected="false" />
-    <!-- <GetSpriteName FunctionName="OreMine_GetSpriteName" /> -->
 
     <LocalizationCode>furn_astro_wall</LocalizationCode>
     <UnlocalizedDescription>furn_astro_wall_desc</UnlocalizedDescription>

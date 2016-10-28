@@ -61,6 +61,7 @@ public class SpriteManager
         else
         {
             sprite = Sprite.Create(noResourceTexture, new Rect(Vector2.zero, new Vector3(32, 32)), new Vector2(0.5f, 0.5f), 32);
+            Debug.ULogWarning("No sprite: {0}, using fallback sprite.", spriteName);
         }
 
         return sprite;
