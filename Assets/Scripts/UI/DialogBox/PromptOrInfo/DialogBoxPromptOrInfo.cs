@@ -8,6 +8,7 @@
 #endregion
 
 using System;
+using MoonSharp.Interpreter;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,15 +16,12 @@ using UnityEngine.UI;
 /// Can be used to create message boxes with info to the user (with an OK button to close or none)
 /// or prompt dialogs with a choice of "Yes", "No" and/or "Cancel" buttons.
 /// </summary>
+[MoonSharpUserData]
 public class DialogBoxPromptOrInfo : DialogBox
 {
     private float standardWidth = 320f;
 
-    public DialogBoxResult Result { get; set; }
-
     public DialogBoxResult Buttons { get; set; }
-
-    public Action Closed { get; set; }
 
     /// <summary>
     /// Define the buttons that should appear in the dialog (yes, no, cancel).
@@ -51,6 +49,37 @@ public class DialogBoxPromptOrInfo : DialogBox
         if (Array.Exists(buttonsToSet, element => element == DialogBoxResult.Cancel))
         {
             gameObject.transform.Find("Buttons/Button - Cancel").gameObject.SetActive(true);
+        }
+    }
+
+    public void SetButtons(Table buttons)
+    {
+        Transform buttonsGO = gameObject.transform.Find("Buttons");
+        buttonsGO.gameObject.SetActive(true);
+
+        foreach (Transform button in buttonsGO)
+        {
+            button.gameObject.SetActive(false);
+        }
+
+        Debug.ULogChannel("ModDialogBox", "Table length:" + buttons.Length.ToString());
+        for (int i = 1; i <= buttons.Length; i++)
+        {
+            switch (buttons.RawGet(i).ToObject<int>())
+            {
+                case 0:
+                    gameObject.transform.Find("Buttons/Button - Yes").gameObject.SetActive(true);
+                    break;
+                case 1:
+                    gameObject.transform.Find("Buttons/Button - No").gameObject.SetActive(true);
+                    break;
+                case 2:
+                    gameObject.transform.Find("Buttons/Button - Cancel").gameObject.SetActive(true);
+                    break;
+                case 3:
+                    gameObject.transform.Find("Buttons/Button - Okay").gameObject.SetActive(true);
+                    break;
+            }
         }
     }
 
@@ -109,10 +138,6 @@ public class DialogBoxPromptOrInfo : DialogBox
         gameObject.transform.Find("Buttons").gameObject.SetActive(false);
 
         base.CloseDialog();
-
-        InvokeClosed();
-
-        Closed = null;
     }
 
     /// <summary>
@@ -130,15 +155,5 @@ public class DialogBoxPromptOrInfo : DialogBox
     {
         Vector2 size = gameObject.GetComponent<RectTransform>().sizeDelta;
         gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(width, size.y);
-    }
-
-    private void InvokeClosed()
-    {
-        Action closed = Closed;
-        if (closed != null)
-        {
-            closed();
-            Closed = null;
-        }
     }
 }
