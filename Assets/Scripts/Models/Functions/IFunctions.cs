@@ -10,6 +10,8 @@ using MoonSharp.Interpreter;
 
 public interface IFunctions
 {
+    void RegisterType(System.Type type);
+
     bool HasFunction(string name);
 
     bool LoadScript(string text, string scriptName);

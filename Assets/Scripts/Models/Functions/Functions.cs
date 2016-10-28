@@ -107,6 +107,14 @@ public class Functions
         }
     }
 
+    public void RegisterType(System.Type type)
+    {
+        foreach (IFunctions functionsSet in FunctionsSets)
+        {
+            functionsSet.RegisterType(type);
+        }
+    }
+
     private IFunctions GetFunctions(string name)
     {
         foreach (IFunctions functionsSet in FunctionsSets)

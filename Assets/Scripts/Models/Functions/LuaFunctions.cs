@@ -35,16 +35,7 @@ public class LuaFunctions : IFunctions
         RegisterGlobal(typeof(Scheduler.ScheduledEvent));
         RegisterGlobal(typeof(ProjectPorcupine.Jobs.RequestedItem));
     }
-
-    /// <summary>
-    /// Registers a class as a global entity to use it inside of lua.
-    /// </summary>
-    /// <param name="type">Class typeof.</param>
-    public void RegisterGlobal(Type type)
-    {
-        script.Globals[type.Name] = type;
-    }
-        
+    
     public bool HasFunction(string name)
     {
         return name != null && script.Globals[name] != null;
@@ -129,5 +120,19 @@ public class LuaFunctions : IFunctions
                 Debug.ULogErrorChannel("Lua", result.String);
             }
         }
+    }
+
+    public void RegisterType(Type type)
+    {
+        RegisterGlobal(type);
+    }
+
+    /// <summary>
+    /// Registers a class as a global entity to use it inside of lua.
+    /// </summary>
+    /// <param name="type">Class typeof.</param>
+    private void RegisterGlobal(Type type)
+    {
+        script.Globals[type.Name] = type;
     }
 }

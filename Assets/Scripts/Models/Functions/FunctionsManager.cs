@@ -25,37 +25,38 @@ public class FunctionsManager
         actions.Add("Quest", new Functions());
         actions.Add("ScheduledEvent", new Functions());
         actions.Add("Overlay", new Functions());
+        actions.Add("ModDialogBox", new Functions());
     }
 
     /// <summary>
-    /// Gets the furniture Lua Functions.
+    /// Gets the furniture Functions.
     /// </summary>
-    /// <value>The furniture Lua Functions.</value>
+    /// <value>The furniture Functions.</value>
     public static Functions Furniture
     {
         get { return Get("Furniture"); }
     }
 
     /// <summary>
-    /// Gets the utility Lua Functions.
+    /// Gets the utility Functions.
     /// </summary>
-    /// <value>The utility Lua Functions.</value>
+    /// <value>The utility Functions.</value>
     public static Functions Utility
     {
         get { return Get("Utility"); }
     }
 
     /// <summary>
-    /// Gets the RoomBehavior Lua Functions.
+    /// Gets the RoomBehavior Functions.
     /// </summary>
-    /// <value>The RoomBehavior Lua Functions.</value>
+    /// <value>The RoomBehavior Functions.</value>
     public static Functions RoomBehavior
     {
         get { return Get("RoomBehavior"); }
     }
 
     /// <summary>
-    /// Gets the need Lua Functions.
+    /// Gets the need Functions.
     /// </summary>
     /// <value>The need actions.</value>
     public static Functions Need
@@ -64,52 +65,52 @@ public class FunctionsManager
     }
 
     /// <summary>
-    /// Gets the game event Lua Functions.
+    /// Gets the game event Functions.
     /// </summary>
-    /// <value>The game event Lua Functions.</value>
+    /// <value>The game event Functions.</value>
     public static Functions GameEvent
     {
         get { return Get("GameEvent"); }
     }
 
     /// <summary>
-    /// Gets the tile type Lua Functions.
+    /// Gets the tile type Functions.
     /// </summary>
-    /// <value>The tile type Lua Functions.</value>
+    /// <value>The tile type Functions.</value>
     public static Functions TileType
     {
         get { return Get("TileType"); }
     }
 
     /// <summary>
-    /// Gets the quest Lua Functions.
+    /// Gets the quest Functions.
     /// </summary>
-    /// <value>The quest Lua Functions.</value>
+    /// <value>The quest Functions.</value>
     public static Functions Quest
     {
         get { return Get("Quest"); }
     }
 
     /// <summary>
-    /// Gets the scheduled event Lua Functions.
+    /// Gets the scheduled event Functions.
     /// </summary>
-    /// <value>The scheduled event Lua Functions.</value>
+    /// <value>The scheduled event Functions.</value>
     public static Functions ScheduledEvent
     {
         get { return Get("ScheduledEvent"); }
     }
 
     /// <summary>
-    /// Gets the overlay Lua Functions.
+    /// Gets the overlay Functions.
     /// </summary>
-    /// <value>The overlay Lua Functions.</value>
+    /// <value>The overlay Functions.</value>
     public static Functions Overlay
     {
         get { return Get("Overlay"); }
     }
 
     /// <summary>
-    /// Get the Lua Functions for the specified name.
+    /// Get the Functions for the specified name.
     /// </summary>
     /// <param name="name">The functions key.</param>
     public static Functions Get(string name)

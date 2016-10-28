@@ -140,7 +140,12 @@ public class CSharpFunctions : IFunctions
             }
         }
     }
-    
+
+    public void RegisterType(Type type)
+    {
+        // nothing to do for C#
+    }
+
     private string GetConnectionPointClassDeclaration(string name)
     {
         return Environment.NewLine + " public struct MonoSharp_DynamicAssembly_" + name + " {}";
