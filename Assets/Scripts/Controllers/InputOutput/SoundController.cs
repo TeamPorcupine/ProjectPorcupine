@@ -168,7 +168,7 @@ public class SoundController
         VECTOR curLoc;
         curLoc.x = x;
         curLoc.y = y;
-        curLoc.z = z;
+        curLoc.z = z * 2;
         AudioManager.SoundSystem.set3DListenerAttributes(0, ref curLoc, ref zero, ref forward, ref up);
         AudioManager.SoundSystem.update();
     }
