@@ -2660,6 +2660,8 @@ MonoBehaviour:
   languageDropdown: {fileID: 114000010935686784}
   vsyncDropdown: {fileID: 114000013966113356}
   qualityDropdown: {fileID: 114000011108201276}
+  autosaveInterval: {fileID: 0}
+  autosaveFiles: {fileID: 0}
   closeButton: {fileID: 114000012044927824}
   saveButton: {fileID: 114000010484861234}
   applyButton: {fileID: 114000010422611202}

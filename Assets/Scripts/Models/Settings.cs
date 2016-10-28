@@ -33,6 +33,7 @@ public static class Settings
   <ZoomLerp>10</ZoomLerp>
   <ZoomSensitivity>3</ZoomSensitivity>
   <AutosaveInterval>10</AutosaveInterval>
+  <AutosaveFiles>5</AutosaveFiles>
 </Settings>
 ";
 

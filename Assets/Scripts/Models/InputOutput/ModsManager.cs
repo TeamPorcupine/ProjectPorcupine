@@ -40,6 +40,24 @@ public class ModsManager
     }
 
     /// <summary>
+    /// Loads the script file in the given location.
+    /// </summary>
+    /// <param name="file">The file name.</param>
+    /// <param name="functionsName">The functions name.</param>
+    public void LoadFunctionsInFile(FileInfo file, string functionsName)
+    {
+        LoadTextFile(
+            file.DirectoryName,
+            file.Name,
+            (filePath) =>
+            {
+                StreamReader reader = new StreamReader(file.OpenRead());
+                string text = reader.ReadToEnd();
+                FunctionsManager.Get(functionsName).LoadScript(text, functionsName);
+            });
+    }
+
+    /// <summary>
     /// Return the path to the mod folder.
     /// </summary>
     private static string GetPathToModsFolder()

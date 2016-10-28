@@ -26,6 +26,7 @@ public class FunctionsManager
         actions.Add("ScheduledEvent", new LuaFunctions());
         actions.Add("Overlay", new LuaFunctions());
         actions.Add("DevConsole", new LuaFunctions());
+        actions.Add("ModDialogBox", new LuaFunctions());
     }
 
     /// <summary>

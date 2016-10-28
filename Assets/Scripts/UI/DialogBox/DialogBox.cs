@@ -6,6 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -16,9 +17,14 @@ public class DialogBox : MonoBehaviour
 
     private bool openedWhileModal = false;
 
+    public DialogBoxResult Result { get; set; }
+
+    public Action Closed { get; set; }
+
     public virtual void ShowDialog()
     {
         openedWhileModal = GameController.Instance.IsModal ? true : false;
+
         GameController.Instance.IsModal = true;
 
         GameController.Instance.soundController.OnButtonSFX();
@@ -29,13 +35,33 @@ public class DialogBox : MonoBehaviour
 
     public virtual void CloseDialog()
     {
+        InvokeClosed();
+        
+        Closed = null;        
+
+        Debug.ULogChannel("ModDialogBox", "openedWhileModal=" + openedWhileModal.ToString());
         if (!openedWhileModal)
         {
             GameController.Instance.IsModal = false;
         }
 
         GameController.Instance.soundController.OnButtonSFX();
-
+        
         gameObject.SetActive(false);
+    }
+
+    public void SetClosedAction(string funcName)
+    {
+        Closed = () => FunctionsManager.Get("ModDialogBox").Call(funcName, Result); 
+    }
+
+    private void InvokeClosed()
+    {
+        Action closed = Closed;
+        if (closed != null)
+        {
+            closed();
+            Closed = null;
+        }
     }
 }
