@@ -135,6 +135,7 @@ namespace DeveloperConsole
         /// </summary>
         public static void Open()
         {
+            Debug.LogWarning("OPENING");
             if (instance == null || instance.Opened)
             {
                 return;
@@ -148,6 +149,7 @@ namespace DeveloperConsole
 
             instance.Opened = true;
             instance.root.SetActive(true);
+            instance.inputField.ActivateInputField();
         }
 
         /// <summary>
@@ -263,30 +265,9 @@ namespace DeveloperConsole
             }
 
             // Get method and arguments
-            string[] methodNameAndArgs;
+            string[] methodNameAndArgs = command.Trim().TrimEnd(')').Split('(');
             string method = command;
             string args = string.Empty;
-
-            switch (CommandSettings.DeveloperCommandMode)
-            {
-                case 1:
-                    methodNameAndArgs = command.Trim().TrimEnd(')').Split('(');
-                    break;
-                case 2:
-                    methodNameAndArgs = command.Trim().TrimEnd('}').Split('{');
-                    break;
-                case 3:
-                    methodNameAndArgs = command.Trim().TrimEnd(']').Split('[');
-                    break;
-                case 4:
-                    methodNameAndArgs = command.Trim().TrimEnd('>').Split('<');
-                    break;
-
-                case 0:
-                default:
-                    methodNameAndArgs = command.Trim().TrimEnd(':').Split(':');
-                    break;
-            }
 
             IEnumerable<CommandBase> commandsToCall;
 
@@ -339,7 +320,7 @@ namespace DeveloperConsole
             if (help.HelpMethod != null)
             {
                 help.HelpMethod();
-                Log("<color=yellow>Call it like </color><color=orange> " + help.Title + GetParametersWithConsoleMode(help) + "</color>");
+                Log("<color=yellow>Call it like </color><color=orange> " + help.Title + GetParameters(help) + "</color>");
             }
             else
             {
@@ -353,7 +334,7 @@ namespace DeveloperConsole
         public static void ShowDescription(CommandBase description)
         {
             Log("<color=yellow>Command Info:</color> " + ((description.DescriptiveText == string.Empty) ? " < color=red>There's no help for this command</color>" : description.DescriptiveText));
-            Log("<color=yellow>Call it like </color><color=orange> " + description.Title + GetParametersWithConsoleMode(description) + "</color>");
+            Log("<color=yellow>Call it like </color><color=orange> " + description.Title + GetParameters(description) + "</color>");
         }
 
         /// <summary>
@@ -496,38 +477,17 @@ namespace DeveloperConsole
         }
 
         /// <summary>
-        /// Returns the current command mode.
-        /// </summary>
-        public static int DeveloperCommandMode()
-        {
-            return CommandSettings.DeveloperCommandMode;
-        }
-
-        /// <summary>
         /// Returns a parameter list using the correct command mode.
         /// </summary>
         /// <param name="description"> The description of the command.</param>
-        public static string GetParametersWithConsoleMode(CommandBase description)
+        public static string GetParameters(CommandBase description)
         {
             if (instance == null)
             {
                 return string.Empty;
             }
 
-            switch (CommandSettings.DeveloperCommandMode)
-            {
-                case 1:
-                    return " (" + description.Parameters + ")";
-                case 2:
-                    return " {" + description.Parameters + "}";
-                case 3:
-                    return " [" + description.Parameters + "]";
-                case 4:
-                    return " <" + description.Parameters + ">";
-                case 0:
-                default:
-                    return " : " + description.Parameters + " :";
-            }
+            return " (" + description.Parameters + ")";
         }
 
         /// <summary>
@@ -616,6 +576,8 @@ namespace DeveloperConsole
         /// </summary>
         public void EnterPressedForInput(Text newValue)
         {
+            inputField.ActivateInputField();
+
             currentHistoryIndex = -1;
 
             // Clear input but retrieve
@@ -640,7 +602,7 @@ namespace DeveloperConsole
 
             for (int i = 0; i < consoleCommands.Count; i++)
             {
-                text += "\n<color=orange>" + consoleCommands[i].Title + GetParametersWithConsoleMode(consoleCommands[i]) + "</color>" + (consoleCommands[i].DescriptiveText == null ? string.Empty : " //" + consoleCommands[i].DescriptiveText);
+                text += "\n<color=orange>" + consoleCommands[i].Title + GetParameters(consoleCommands[i]) + "</color>" + (consoleCommands[i].DescriptiveText == null ? string.Empty : " //" + consoleCommands[i].DescriptiveText);
             }
 
             text += "\n<color=orange>Note:</color> If the function has no parameters you <color=red>don't</color> need to use the parameter modifier.";
@@ -696,7 +658,15 @@ namespace DeveloperConsole
                 }
             }
 
-            selectedCandidate = 0;
+            if (possibleCandidates.Count == 0)
+            {
+                selectedCandidate = -1;
+                autoComplete.gameObject.SetActive(false);
+            }
+            else
+            {
+                selectedCandidate = 0;
+            }
 
             DirtyAutocomplete();
         }
@@ -773,6 +743,11 @@ namespace DeveloperConsole
             if (root != null)
             {
                 Opened = root.activeInHierarchy;
+
+                if (Opened)
+                {
+                    inputField.ActivateInputField();
+                }
             }
         }
 
@@ -803,6 +778,8 @@ namespace DeveloperConsole
                 autoComplete.gameObject.SetActive(false);
                 return;
             }
+
+            KeyboardManager.Instance.TriggerActionIfValidFor("DevConsole");
 
             // If input field is focused
             if (Input.GetKeyUp(KeyCode.UpArrow))
@@ -918,6 +895,10 @@ namespace DeveloperConsole
                         go.GetComponent<Text>().text = "<color=yellow>" + possibleCandidates[i] + "</color>";
                     }
                 }
+            }
+            else
+            {
+                autoComplete.gameObject.SetActive(false);
             }
         }
 

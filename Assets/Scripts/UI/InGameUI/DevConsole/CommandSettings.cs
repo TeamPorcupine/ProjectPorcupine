@@ -52,28 +52,6 @@ public static class CommandSettings
     }
 
     /// <summary>
-    /// What mode the console is:
-    /// 0 is Function :x, y, z:
-    /// 1 is Function (x, y, z)   
-    /// 2 is Function {x, y, z}   
-    /// 3 is Function [x, y, z]   
-    /// 4 is Function &ltx, y, z&gt.
-    /// </summary>
-    public static int DeveloperCommandMode
-    {
-        get
-        {
-            return Settings.GetSetting("DialogBoxSettingsDevConsole_consoleInputGroup", 0);
-        }
-
-        set
-        {
-            Settings.SetSetting("DialogBoxSettingsDevConsole_consoleInputGroup", value);
-            Settings.SaveSettings();
-        }
-    }
-
-    /// <summary>
     /// Activate the developer console.
     /// </summary>
     public static bool DeveloperConsoleToggle

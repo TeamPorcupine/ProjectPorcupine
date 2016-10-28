@@ -67,7 +67,7 @@ function Set_FontSize( size )
 		DevConsole.LogError("Font size would be too big")
 	else
 		ModUtils.ULog("")
-		DevConsole.TextObject().fontSize = size
+		DevConsole.SetTextSize(size);
 		DevConsole.Log("Change successful :D", "green")
 	end
 end
@@ -78,6 +78,7 @@ function Clear()
 end
 
 function ShowTimeStamp( on )
+	DevConsole.Log("HELLO");
 	on = tobool(on)
 	if on ~= nil then
 		DevConsole.ShowTimeStamp(on)
@@ -89,7 +90,7 @@ end
 function HelpAll()
 	DevConsole.Log("-- Help --", "green")
 	for index, value in ipairs(DevConsole:CommandArray()) do
-		local text = "<color=orange>"..value.title..DevConsole.GetParametersWithConsoleMode(value).."</color>"
+		local text = "<color=orange>"..value.title..DevConsole.GetParameters(value).."</color>"
 		if (value.descriptiveText ~= nil) then
 			text = text .. "<color=green> //" .. value.descriptiveText .. "</color>"
 		end

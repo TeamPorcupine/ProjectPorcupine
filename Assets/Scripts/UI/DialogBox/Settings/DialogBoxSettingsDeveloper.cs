@@ -23,8 +23,6 @@ public class DialogBoxSettingsDeveloper : DialogBox
 
     public Slider fontSize;
 
-    public Dropdown consoleInputDropdown;
-
     public Button closeButton;
     public Button saveButton;
     public Button applyButton;
@@ -63,7 +61,6 @@ public class DialogBoxSettingsDeveloper : DialogBox
         Settings.SetSetting("DialogBoxSettingsDevConsole_timeStampToggle", timeStampToggle.isOn);
 
         Settings.SetSetting("DialogBoxSettingsDevConsole_performanceGroup", performanceDropdown.value);
-        Settings.SetSetting("DialogBoxSettingsDevConsole_consoleInputGroup", consoleInputDropdown.value);
 
         // This assignment will automatically save settings
         CommandSettings.FontSize = (int)fontSize.value;
@@ -106,7 +103,6 @@ public class DialogBoxSettingsDeveloper : DialogBox
         timeStampToggle.isOn = Settings.GetSetting("DialogBoxSettingsDevConsole_timeStampToggle", true);
 
         performanceDropdown.value = Settings.GetSetting("DialogBoxSettingsDevConsole_performanceGroup", 1);
-        consoleInputDropdown.value = Settings.GetSetting("DialogBoxSettingsDevConsole_consoleInputGroup", 0);
     }
 
     /// <summary>

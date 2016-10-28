@@ -27,13 +27,13 @@ namespace ProjectPorcupine.Buildable.Components
             Provides = other.Provides;
             Requires = other.Requires;
         }
-        
+
         [XmlElement("Provides")]
         public List<GasInfo> Provides { get; set; }
 
         [XmlElement("Requires")]
         public List<GasInfo> Requires { get; set; }
-        
+
         public override BuildableComponent Clone()
         {
             return new GasConnection(this);
@@ -76,7 +76,7 @@ namespace ProjectPorcupine.Buildable.Components
                     {
                         room.ChangeGas(provGas.Gas, provGas.Rate * deltaTime, provGas.MaxLimit);
                         isWorking = true;
-                    }                    
+                    }
                 }
             }
         }
@@ -85,7 +85,7 @@ namespace ProjectPorcupine.Buildable.Components
         {
             componentRequirements = Requirements.Gas;
         }
-        
+
         public class GasInfo
         {
             public GasInfo()
@@ -105,7 +105,7 @@ namespace ProjectPorcupine.Buildable.Components
 
             [XmlAttribute("maxLimit")]
             public float MaxLimit { get; set; }
-            
+
             public override string ToString()
             {
                 return string.Format("gas:{0}, rate:{1}, min:{2}, max:{3}", Gas, Rate, MinLimit, MaxLimit);

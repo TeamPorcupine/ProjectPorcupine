@@ -25,7 +25,6 @@ public static class Settings
   <DialogBoxSettings_resolutionDropdown>0</DialogBoxSettings_resolutionDropdown>
   <DialogBoxSettings_musicVolume>1</DialogBoxSettings_musicVolume>
   <DialogBoxSettingsDevConsole_performanceGroup>1</DialogBoxSettingsDevConsole_performanceGroup>
-  <DialogBoxSettingsDevConsole_consoleInputGroup>0</DialogBoxSettingsDevConsole_consoleInputGroup>
   <DialogBoxSettingsDevConsole_developerModeToggle>False</DialogBoxSettingsDevConsole_developerModeToggle>
   <DialogBoxSettingsDevConsole_devConsoleToggle>True</DialogBoxSettingsDevConsole_devConsoleToggle>
   <DialogBoxSettingsDevConsole_consoleFontSize>15</DialogBoxSettingsDevConsole_consoleFontSize>

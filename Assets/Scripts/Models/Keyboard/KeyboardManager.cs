@@ -104,7 +104,18 @@ public class KeyboardManager
         RegisterInputMapping("Return", KeyboardInputModifier.None, KeyCode.Return);
 
         RegisterInputMapping("DevMode", KeyboardInputModifier.None, KeyCode.F12);
-        RegisterInputMapping("DevConsole", KeyboardInputModifier.None, KeyCode.Backslash);
+        RegisterInputMapping("DevConsole", KeyboardInputModifier.Control, KeyCode.BackQuote);
+    }
+
+    /// <summary>
+    /// This won't care about the focus fields!!!!  Needed for some things like DevConsole
+    /// </summary>
+    public void TriggerActionIfValidFor(string inputName)
+    {
+        if (mapping.ContainsKey(inputName))
+        {
+            mapping[inputName].TriggerActionIfInputValid();
+        }
     }
 
     public void Update()

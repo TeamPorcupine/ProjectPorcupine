@@ -27,6 +27,7 @@ public class LuaFunctions
         UserData.RegisterType<UnityEngine.Vector3>();
         UserData.RegisterType<UnityEngine.Vector2>();
         UserData.RegisterType<UnityEngine.Vector4>();
+        UserData.RegisterType<UnityEngine.UI.Text>();
 
         // If we want to be able to instantiate a new object of a class
         //   i.e. by doing    SomeClass.__new()
