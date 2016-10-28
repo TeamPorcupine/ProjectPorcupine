@@ -6,13 +6,15 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using System.Collections.Generic;
+using System.Linq;
 using FMOD;
 using UnityEngine;
 
 public class SoundController
 {
     private float soundCooldown = 0;
-
+    private Dictionary<SoundClip, float> cooldowns;
     private VECTOR up;
     private VECTOR forward;
     private VECTOR zero;
@@ -31,73 +33,67 @@ public class SoundController
         zero = GetVectorFrom(Vector3.zero);
         forward = GetVectorFrom(Vector3.forward);
         up = GetVectorFrom(Vector3.up);
+        cooldowns = new Dictionary<SoundClip, float>();
     }
     
     // Update is called once per frame
     public void Update(float deltaTime)
     {
-        soundCooldown -= deltaTime;
+        foreach (SoundClip key in cooldowns.Keys.ToList())
+        {
+            cooldowns[key] -= deltaTime;
+            if (cooldowns[key] <= 0f)
+            {
+                cooldowns.Remove(key);
+            }
+        }
     }
 
     public void OnButtonSFX()
     {
-        // FIXME
-        if (soundCooldown > 0)
+        SoundClip clip = AudioManager.GetAudio("Sound", "MenuClick");
+        if (cooldowns.ContainsKey(clip) && cooldowns[clip] > 0)
         {
-             return;
+            return;
         }
- 
-        Sound clip = AudioManager.GetAudio("Sound", "MenuClick").Get();
-        PlaySound(clip, "UI");
-        //            
+
+        cooldowns[clip] = 0.1f;
+        PlaySound(clip.Get(), "UI");
         soundCooldown = 0.1f;
     }
 
     public void OnFurnitureCreated(Furniture furniture)
-    {
-        // FIXME
-        if (soundCooldown > 0)
+    {   SoundClip clip = AudioManager.GetAudio("Sound", furniture.Type + "_OnCreated");
+        if (cooldowns.ContainsKey(clip) && cooldowns[clip] > 0)
         {
             return;
         }
 
-        PlaySoundAt(AudioManager.GetAudio("Sound", furniture.Type + "_OnCreated").Get(), furniture.Tile, "gameSounds");
+        cooldowns[clip] = 0.1f;
+        PlaySoundAt(clip.Get(), furniture.Tile, "gameSounds");
     
         soundCooldown = 0.1f;
     }
 
-    private void OnTileChanged(Tile tileData)
+    public void OnTileChanged(Tile tileData)
     {
-        // FIXME
-        if (soundCooldown > 0)
-        {
-            return;
-        }
-
         if (tileData.ForceTileUpdate)
         {  
-            PlaySoundAt(AudioManager.GetAudio("Sound", "Floor_OnCreated").Get(), tileData, "gameSounds", 1);
+            SoundClip clip = AudioManager.GetAudio("Sound", "Floor_OnCreated");
+            if (cooldowns.ContainsKey(clip) && cooldowns[clip] > 0)
+            {
+                return;
+            }
+
+            cooldowns[clip] = 0.1f;
+            PlaySoundAt(clip.Get(), tileData, "gameSounds", 1);
             soundCooldown = 0.1f;
         }
     }
 
     public void PlaySound(Sound clip, string chanGroup = "master", float freqRange = 0f, float volRange = 0f)
     {
-        if (!AudioManager.channelGroups.ContainsKey(chanGroup))
-        {
-            chanGroup = "master";
-        }
-        ChannelGroup channelGroup = AudioManager.channelGroups[chanGroup];
-
-        FMOD.System SoundSystem = AudioManager.SoundSystem;
-        Channel Channel;
-        SoundSystem.playSound(clip, channelGroup, true, out Channel);
-        if (!freqRange.AreEqual(0f))
-        {
-            float pitch = Mathf.Pow(1.059f, (Random.Range(-freqRange, freqRange)));
-            Channel.setPitch(pitch);
-        }
-        Channel.setPaused(false);
+        PlaySoundAt(clip, null, chanGroup, freqRange, volRange);
     }
 
     public void PlaySoundAt(Sound clip, Tile tile, string chanGroup = "master", float freqRange = 0f, float volRange = 0f)
@@ -106,28 +102,48 @@ public class SoundController
         {
             chanGroup = "master";
         }
+
         ChannelGroup channelGroup = AudioManager.channelGroups[chanGroup];
 
-        FMOD.System SoundSystem = AudioManager.SoundSystem;
-        Channel Channel;
-        SoundSystem.playSound(clip, channelGroup, true, out Channel);
-        VECTOR tilePos = GetVectorFrom(tile);
-        Channel.set3DAttributes(ref tilePos, ref zero, ref zero);
+        FMOD.System soundSystem = AudioManager.SoundSystem;
+        Channel channel;
+        soundSystem.playSound(clip, channelGroup, true, out channel);
+        if (tile != null)
+        {
+            VECTOR tilePos = GetVectorFrom(tile);
+            channel.set3DAttributes(ref tilePos, ref zero, ref zero);
+        }
+
         if (!freqRange.AreEqual(0f))
         {
-            float pitch = Mathf.Pow(1.059f, (Random.Range(-freqRange, freqRange)));
-            Channel.setPitch(pitch);
+            float pitch = Mathf.Pow(1.059f, Random.Range(-freqRange, freqRange));
+            channel.setPitch(pitch);
         }
 
         if (!volRange.AreEqual(0f))
         {
             float curVol;
-            Channel.getVolume(out curVol);
+            channel.getVolume(out curVol);
             float volChange = Random.Range(-volRange, 0f);
-            Channel.setVolume(curVol * dBToVolume(volChange));
+            channel.setVolume(curVol * DecibelsToVolume(volChange));
         }
 
-        Channel.setPaused(false);
+        channel.setPaused(false);
+    }
+
+    public void SetListenerPosition(Vector3 newPosition)
+    {
+        SetListenerPosition(newPosition.x, newPosition.y, newPosition.z);
+    }
+
+    public void SetListenerPosition(float x, float y, float z)
+    {
+        VECTOR curLoc;
+        curLoc.x = x;
+        curLoc.y = y;
+        curLoc.z = z;
+        AudioManager.SoundSystem.set3DListenerAttributes(0, ref curLoc, ref zero, ref forward, ref up);
+        AudioManager.SoundSystem.update();
     }
 
     private VECTOR GetVectorFrom(Vector3 vector)
@@ -148,24 +164,9 @@ public class SoundController
         return fmodVector;
     }
 
-    private float dBToVolume(float dB)
+    private float DecibelsToVolume(float dB)
     {
         return Mathf.Pow(10.0f, 0.05f * dB);
-    }
-
-    public void SetListenerPosition(Vector3 newPosition)
-    {
-        SetListenerPosition(newPosition.x, newPosition.y, newPosition.z);
-    }
-
-    public void SetListenerPosition(float x, float y, float z)
-    {
-        VECTOR curLoc;
-        curLoc.x = x;
-        curLoc.y = y;
-        curLoc.z = z;
-        AudioManager.SoundSystem.set3DListenerAttributes(0, ref curLoc, ref zero, ref forward, ref up);
-        AudioManager.SoundSystem.update();
     }
 
     private Vector3 GetUnityVector(VECTOR vector)
