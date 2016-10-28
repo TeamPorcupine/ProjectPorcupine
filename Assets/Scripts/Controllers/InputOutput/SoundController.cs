@@ -63,7 +63,8 @@ public class SoundController
     }
 
     public void OnFurnitureCreated(Furniture furniture)
-    {   SoundClip clip = AudioManager.GetAudio("Sound", furniture.Type + "_OnCreated");
+    {
+        SoundClip clip = AudioManager.GetAudio("Sound", furniture.Type + "_OnCreated");
         if (cooldowns.ContainsKey(clip) && cooldowns[clip] > 0)
         {
             return;
