@@ -5,28 +5,26 @@
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
-using FMOD;
-
-
 #endregion
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using FMOD;
 
 /// <summary>
 /// The Manager that handles the loading and storing of audio from streamingAssets.
 /// </summary>
 public class AudioManager
 {
-    private static Dictionary<string, SoundClip> audioClips;
-
     public static FMOD.System SoundSystem;
 
     // Channel Groups
     public static Dictionary<string, ChannelGroup> channelGroups;
 
     public static ChannelGroup master;
+
+    private static Dictionary<string, SoundClip> audioClips;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AudioManager"/> class.
@@ -50,6 +48,7 @@ public class AudioManager
             master.addGroup(chanGroup, true, out throwaway);
             channelGroups[key] = chanGroup;
         }
+
         channelGroups.Add("master", master);
 
         SoundSystem.set3DSettings(1f, 1f, 0.1f);
@@ -148,9 +147,10 @@ public class AudioManager
             {
                 filename = filename.Substring(0, filename.IndexOf("."));
             }
+
             filename = audioCategory + "/" + filename;
 
-            if(audioClips.ContainsKey(filename))
+            if (audioClips.ContainsKey(filename))
             {
                 audioClips[filename].Add(clip);
             }
