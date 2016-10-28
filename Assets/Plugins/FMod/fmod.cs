@@ -19,7 +19,7 @@ namespace FMOD
     {
         public const int    number = 0x00010813;
 
-#if UNITY_64
+#if UNITY_64 || UNITY_EDITOR_64
         public const string dll    = "fmod64";
 #else
         public const string dll    = "fmod";
