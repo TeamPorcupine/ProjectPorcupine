@@ -110,7 +110,7 @@ public class KeyboardManager
     /// <summary>
     /// This won't care about the focus fields!!!!  Needed for some things like DevConsole
     /// </summary>
-    public void TriggerActionIfValidFor(string inputName)
+    public void TriggerActionIfValid(string inputName)
     {
         if (mapping.ContainsKey(inputName))
         {

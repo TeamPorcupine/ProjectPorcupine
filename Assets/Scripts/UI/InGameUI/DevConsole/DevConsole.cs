@@ -779,7 +779,7 @@ namespace DeveloperConsole
                 return;
             }
 
-            KeyboardManager.Instance.TriggerActionIfValidFor("DevConsole");
+            KeyboardManager.Instance.TriggerActionIfValid("DevConsole");
 
             // If input field is focused
             if (Input.GetKeyUp(KeyCode.UpArrow))
