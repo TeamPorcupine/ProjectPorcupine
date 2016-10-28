@@ -637,6 +637,11 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         explicitSpriteUsed = false;
         return Type;
     }
+
+    public string GetOverlaySpriteName()
+    {
+        return OverlaySpriteName;
+    }
     #endregion
 
     #region Save Load
