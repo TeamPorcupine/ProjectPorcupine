@@ -25,6 +25,7 @@ public class FunctionsManager
         actions.Add("Quest", new LuaFunctions());
         actions.Add("ScheduledEvent", new LuaFunctions());
         actions.Add("Overlay", new LuaFunctions());
+        actions.Add("ModDialogBox", new LuaFunctions());
     }
 
     /// <summary>

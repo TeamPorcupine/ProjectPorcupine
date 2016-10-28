@@ -6,11 +6,14 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using System.Collections;
+using UnityEngine;
+using UnityEngine.UI;
 
-public enum DialogBoxResult
+public class DialogInputField : DialogControl
 {
-    Yes,
-    No,
-    Cancel,
-    Okay
+    public void UpdateText()
+    {
+        result = GetComponent<InputField>().text;
+    }
 }

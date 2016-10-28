@@ -37,6 +37,7 @@ public class WorldController : MonoBehaviour
     public AutosaveManager autosaveManager;
     public TradeController TradeController;
     public ModsManager modsManager;
+    public DialogBoxManager dialogBoxManager;
     public GameObject inventoryUI;
     public GameObject circleCursorPrefab;
 
@@ -104,6 +105,8 @@ public class WorldController : MonoBehaviour
         cameraController = new CameraController();
         TradeController = new TradeController();
         autosaveManager = new AutosaveManager();
+
+        dialogBoxManager = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
 
         // Register inputs actions
         KeyboardManager.Instance.RegisterInputAction("DevMode", KeyboardMappedInputType.KeyDown, ChangeDevMode);

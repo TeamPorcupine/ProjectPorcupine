@@ -6,11 +6,10 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using System.Collections;
+using UnityEngine;
 
-public enum DialogBoxResult
+public class DialogControl : MonoBehaviour
 {
-    Yes,
-    No,
-    Cancel,
-    Okay
+    public object result;
 }
