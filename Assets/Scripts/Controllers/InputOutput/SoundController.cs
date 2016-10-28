@@ -91,11 +91,28 @@ public class SoundController
         }
     }
 
+    /// <summary>
+    /// Plays the clip at camera's location, on the channel group chanGroup. Pitch ranges from -freqRange to +freqRange in semitones.
+    /// Volume ranges from -volRange to No change in decibels.
+    /// </summary>
+    /// <param name="clip">Sound to Play.</param>
+    /// <param name="chanGroup">Chan group to play the sound on.</param>
+    /// <param name="freqRange">Frequency range in semitones.</param>
+    /// <param name="volRange">Volume range in decibels.</param>
     public void PlaySound(Sound clip, string chanGroup = "master", float freqRange = 0f, float volRange = 0f)
     {
         PlaySoundAt(clip, null, chanGroup, freqRange, volRange);
     }
 
+    /// <summary>
+    /// Plays the clip at tile's location, on the channel group chanGroup. Pitch ranges from -freqRange to +freqRange in semitones.
+    /// Volume ranges from -volRange to No change in decibels.
+    /// </summary>
+    /// <param name="clip">Sound to Play.</param>
+    /// <param name="tile">Tile's location to play at. If null, plays at camera's position.</param>
+    /// <param name="chanGroup">Chan group to play the sound on.</param>
+    /// <param name="freqRange">Frequency range in semitones.</param>
+    /// <param name="volRange">Volume range in decibels.</param>
     public void PlaySoundAt(Sound clip, Tile tile, string chanGroup = "master", float freqRange = 0f, float volRange = 0f)
     {
         if (!AudioManager.channelGroups.ContainsKey(chanGroup))
@@ -131,11 +148,21 @@ public class SoundController
         channel.setPaused(false);
     }
 
+    /// <summary>
+    /// Sets the listener position.
+    /// </summary>
+    /// <param name="newPosition">New position for the listener.</param>
     public void SetListenerPosition(Vector3 newPosition)
     {
         SetListenerPosition(newPosition.x, newPosition.y, newPosition.z);
     }
 
+    /// <summary>
+    /// Sets the listener position.
+    /// </summary>
+    /// <param name="x">The x coordinate.</param>
+    /// <param name="y">The y coordinate.</param>
+    /// <param name="z">The z coordinate.</param>
     public void SetListenerPosition(float x, float y, float z)
     {
         VECTOR curLoc;
