@@ -287,20 +287,23 @@ namespace ProjectPorcupine.Rooms
                         }
                     }
 
-                    // FIXME: find a better way to do this since right now it 
-                    // requires using stale data.
-                    Room newRoom = ActualFloodFill(sourceTile, oldRoom, sizeOfOldRoom);
-                    if (newRoom != null && oldRooms.Count > 0 && Joined != null)
+
+                    if (sourceTile.Down().Room.IsOutsideRoom())
                     {
-                        foreach (Room r in oldRooms)
+                        // We're punching a hole to the outside, just skip flood filling and put everything outside
+                        sourceTile.Room.ReturnTilesToOutsideRoom();
+                    }
+                    else
+                    {
+                        // FIXME: find a better way to do this since right now it 
+                        // requires using stale data.
+                        Room newRoom = ActualFloodFill(sourceTile, oldRoom, sizeOfOldRoom);
+                        if (newRoom != null && oldRooms.Count > 0 && Joined != null)
                         {
-                            
-                            Joined(r, newRoom);
-                            // HACK: For some reason upper portions of the room don't get properly reassigned
-                            // if the room is being joined with the outside, so do it manually.
-                            if (newRoom.IsOutsideRoom())
+                            foreach (Room r in oldRooms)
                             {
-                                r.ReturnTilesToOutsideRoom();
+                            
+                                Joined(r, newRoom);
                             }
                         }
                     }
