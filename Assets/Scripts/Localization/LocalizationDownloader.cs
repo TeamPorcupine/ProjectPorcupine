@@ -75,7 +75,7 @@ namespace ProjectPorcupine.Localization
             {
                 // This could be a thing when for example user has no internet connection.
                 Debug.ULogErrorChannel("LocalizationDownloader", "Error while checking for localization updates. Are you sure that you're connected to the internet?");
-                Debug.ULogErrorChannel("LocalizationDownloader", www.error);
+                Debug.ULogErrorChannel("LocalizationDownloader", versionChecker.error);
                 yield break;
             }
 

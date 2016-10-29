@@ -75,6 +75,9 @@ namespace ProjectPorcupine.Localization
         // The dictionary that stores all the localization values.
         private static Dictionary<string, Dictionary<string, string>> localizationTable = new Dictionary<string, Dictionary<string, string>>();
 
+        // Does the config exists? Initally assumes true. Used to silence repetitive errors
+        private static bool configExists = true;
+
         // Keeps track of what keys we've already logged are missing.
         private static HashSet<string> missingKeysLogged = new HashSet<string>();
 
@@ -181,6 +184,7 @@ namespace ProjectPorcupine.Localization
             if (File.Exists(pathToConfigFile) == false)
             {
                 Debug.ULogErrorChannel("LocalizationTable", "No config file found at: " + pathToConfigFile);
+                configExists = false;
                 return;
             }
 
@@ -270,7 +274,7 @@ namespace ProjectPorcupine.Localization
                     localizationTable[localizationCode] = new Dictionary<string, string>();
                 }
 
-                if (localizationConfigurations.ContainsKey(localizationCode) == false)
+                if (configExists && localizationConfigurations.ContainsKey(localizationCode) == false)
                 {
                     Debug.ULogErrorChannel("LocalizationTable", "Language: " + localizationCode + " not defined in localization/config.xml");
                 }
