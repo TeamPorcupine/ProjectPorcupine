@@ -42,8 +42,8 @@ public class BuildableComponentTest
     [Test]
     public void TestWorkshopSerialization()
     {
-        Workshop fi = new Workshop();        
-        fi.PossibleProductions = new System.Collections.Generic.List<Workshop.ProductionChain>();
+        Workshop workshop = new Workshop();        
+        workshop.PossibleProductions = new System.Collections.Generic.List<Workshop.ProductionChain>();
         Workshop.ProductionChain chain1 = new Workshop.ProductionChain()
             {
             Name = "Iron smelting", ProcessingTime = 4.0f
@@ -59,7 +59,7 @@ public class BuildableComponentTest
             ObjectType = "Steel Plate", Amount = 3, SlotPosX = 2, SlotPosY = 0
             });
 
-        fi.PossibleProductions.Add(chain1);
+        workshop.PossibleProductions.Add(chain1);
 
         Workshop.ProductionChain chain2 = new Workshop.ProductionChain()
             {
@@ -76,19 +76,15 @@ public class BuildableComponentTest
             ObjectType = "Copper Wire", Amount = 6, SlotPosX = 2, SlotPosY = 0
             });
 
-        fi.PossibleProductions.Add(chain2);
+        workshop.PossibleProductions.Add(chain2);
 
-        fi.UsedAnimation = new BuildableComponent.UsedAnimations()
-        {
-            Idle = "idle",
-            Running = "running"
-        };
-               
+        workshop.ParamsDefinitions = new Workshop.WorkShopParameterDefinitions();
+                       
         // serialize
         StringWriter writer = new StringWriter();
         XmlSerializer serializer = new XmlSerializer(typeof(BuildableComponent), new Type[] { typeof(Workshop) });
 
-        serializer.Serialize(writer, fi);        
+        serializer.Serialize(writer, workshop);        
 
         StringReader sr = new StringReader(writer.ToString());
 
@@ -96,19 +92,18 @@ public class BuildableComponentTest
         ////File.WriteAllText("Workshop.xml", writer.ToString());
         
         // deserialize
-        Workshop dfi = (Workshop)serializer.Deserialize(sr);
+        Workshop deserializedWorkshop = (Workshop)serializer.Deserialize(sr);
         
-        Assert.NotNull(dfi);
-        Assert.AreEqual("Raw Iron", dfi.PossibleProductions[0].Input[0].ObjectType);
-        Assert.AreEqual("running", dfi.UsedAnimation.Running);
+        Assert.NotNull(deserializedWorkshop);
+        Assert.AreEqual("Raw Iron", deserializedWorkshop.PossibleProductions[0].Input[0].ObjectType);
     }
 
     [Test]
     public void TestGasConnectionSerialization()
     {
-        GasConnection gasCon = new GasConnection();
+        GasConnection gasConnection = new GasConnection();
 
-        gasCon.Provides = new System.Collections.Generic.List<GasConnection.GasInfo>()
+        gasConnection.Provides = new System.Collections.Generic.List<GasConnection.GasInfo>()
         {
             new GasConnection.GasInfo()
             {
@@ -124,17 +119,11 @@ public class BuildableComponentTest
             }
         };
 
-        gasCon.UsedAnimation = new BuildableComponent.UsedAnimations()
-        {
-            Idle = "idle",
-            Running = "running"
-        };
-
         // serialize
         StringWriter writer = new StringWriter();
         XmlSerializer serializer = new XmlSerializer(typeof(BuildableComponent), new Type[] { typeof(GasConnection) });
 
-        serializer.Serialize(writer, gasCon);
+        serializer.Serialize(writer, gasConnection);
 
         StringReader sr = new StringReader(writer.ToString());
 
@@ -142,11 +131,109 @@ public class BuildableComponentTest
         ////File.WriteAllText("GasConnection.xml", writer.ToString());
 
         // deserialize
-        GasConnection desGasConn = (GasConnection)serializer.Deserialize(sr);
+        GasConnection deserializedGasConnection = (GasConnection)serializer.Deserialize(sr);
 
-        Assert.NotNull(desGasConn);
+        Assert.NotNull(deserializedGasConnection);
 
-        Assert.AreEqual(2, desGasConn.Provides.Count);
-        Assert.AreEqual("O2", desGasConn.Provides[0].Gas);
+        Assert.AreEqual(2, deserializedGasConnection.Provides.Count);
+        Assert.AreEqual("O2", deserializedGasConnection.Provides[0].Gas);
+    }
+
+    [Test]
+    public void TestPowerConnectionSerialization()
+    {
+        PowerConnection accumulator = new PowerConnection
+        {
+            Provides = new PowerConnection.Info() { Rate = 10.0f, Capacity = 100.0f },
+            Requires = new PowerConnection.Info()
+            {
+                ParamConditions = new System.Collections.Generic.List<BuildableComponent.ParameterCondition>()
+                {
+                    new BuildableComponent.ParameterCondition()
+                    {
+                        Condition = BuildableComponent.ConditionType.IsGreaterThanZero,
+                        ParameterName = "cur_processed_inv"
+                    }
+                }
+            },
+            ParamsDefinitions = new PowerConnection.PowerConnectionParameterDefinitions()           
+        };
+
+        // serialize
+        StringWriter writer = new StringWriter();
+        XmlSerializer serializer = new XmlSerializer(typeof(BuildableComponent), new Type[] { typeof(PowerConnection) });
+
+        serializer.Serialize(writer, accumulator);
+
+        StringReader sr = new StringReader(writer.ToString());
+
+        // if you want to dump file to disk for visual check, uncomment this
+        ////File.WriteAllText("PowerConnection.xml", writer.ToString());
+
+        // deserialize
+        PowerConnection deserializedPowerConnection = (PowerConnection)serializer.Deserialize(sr);
+
+        Assert.NotNull(deserializedPowerConnection);
+
+        Assert.AreEqual(10f, deserializedPowerConnection.Provides.Rate);
+        Assert.AreEqual(0f, deserializedPowerConnection.Requires.Rate);
+        Assert.AreEqual(1, deserializedPowerConnection.Requires.ParamConditions.Count);
+    }
+
+    [Test]
+    public void TestAnimatorSerialization()
+    {
+        Animator animator = new Animator()
+        {
+            UsedAnimations = new System.Collections.Generic.List<BuildableComponent.UseAnimation>()
+            {
+                new BuildableComponent.UseAnimation()
+                {
+                    Name = "idle",
+                    Requires = new BuildableComponent.ParameterConditions()
+                    {
+                        ParamConditions = new System.Collections.Generic.List<BuildableComponent.ParameterCondition>()
+                        {
+                            new BuildableComponent.ParameterCondition()
+                            {
+                                Condition = BuildableComponent.ConditionType.IsZero,
+                                ParameterName = "cur_processed_inv"
+                            }
+                        }
+                    }
+                },
+                new BuildableComponent.UseAnimation()
+                {
+                    Name = "running",
+                    Requires = new BuildableComponent.ParameterConditions()
+                    {
+                        ParamConditions = new System.Collections.Generic.List<BuildableComponent.ParameterCondition>()
+                        {
+                            new BuildableComponent.ParameterCondition()
+                            {
+                                Condition = BuildableComponent.ConditionType.IsGreaterThanZero,
+                                ParameterName = "cur_processed_inv"
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        // serialize
+        StringWriter writer = new StringWriter();
+        XmlSerializer serializer = new XmlSerializer(typeof(BuildableComponent), new Type[] { typeof(Animator) });
+
+        serializer.Serialize(writer, animator);
+
+        StringReader sr = new StringReader(writer.ToString());
+
+        // if you want to dump file to disk for visual check, uncomment this
+        ////File.WriteAllText("Animator.xml", writer.ToString());
+
+        // deserialize
+        Animator deserializedAnimator = (Animator)serializer.Deserialize(sr);
+
+        Assert.NotNull(deserializedAnimator);        
     }
 }

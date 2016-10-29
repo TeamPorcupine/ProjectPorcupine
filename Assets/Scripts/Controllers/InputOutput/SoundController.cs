@@ -14,10 +14,13 @@ public class SoundController
     private float soundCooldown = 0;
 
     // Use this for initialization
-    public SoundController(World world)
+    public SoundController(World world = null)
     {
-        world.FurnitureManager.Created += OnFurnitureCreated;
-        world.OnTileChanged += OnTileChanged;
+        if (world != null)
+        {
+            world.FurnitureManager.Created += OnFurnitureCreated;
+            world.OnTileChanged += OnTileChanged;
+        }
 
         TimeManager.Instance.EveryFrame += Update;
     }

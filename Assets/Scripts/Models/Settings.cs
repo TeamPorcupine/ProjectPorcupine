@@ -19,7 +19,7 @@ public static class Settings
   <worldWidth>101</worldWidth>
   <worldHeight>101</worldHeight>
   <localization>en_US</localization>
-  <DialogBoxSettings_fpsToggle>True</DialogBoxSettings_fpsToggle>
+  <DialogBoxSettings_performanceGroup>1</DialogBoxSettings_performanceGroup>
   <DialogBoxSettings_fullScreenToggle>True</DialogBoxSettings_fullScreenToggle>
   <DialogBoxSettings_qualityDropdown>2</DialogBoxSettings_qualityDropdown>
   <DialogBoxSettings_vSyncDropdown>0</DialogBoxSettings_vSyncDropdown>
@@ -27,7 +27,8 @@ public static class Settings
   <DialogBoxSettings_musicVolume>1</DialogBoxSettings_musicVolume>
   <ZoomLerp>10</ZoomLerp>
   <ZoomSensitivity>3</ZoomSensitivity>
-  <AutosaveInterval>10<AutosaveInterval>
+  <AutosaveInterval>10</AutosaveInterval>
+  <AutosaveFiles>5</AutosaveFiles>
 </Settings>
 ";
 
@@ -158,7 +159,7 @@ public static class Settings
         }
     }
 
-    private static void LoadSettings()
+    public static void LoadSettings()
     {
         // Initialize the settings dict.
         settingsDict = new Dictionary<string, string>();

@@ -151,7 +151,7 @@ namespace ProjectPorcupine.Localization
             string[] languages = GetLanguages();
             currentLanguage = languages[lang];
             Settings.SetSetting("localization", languages[lang]);
-            LocalizationLoader loader = GameObject.Find("Controllers").GetComponent(typeof(LocalizationLoader)) as LocalizationLoader;
+            LocalizationLoader loader = GameObject.Find("GameController").GetComponent(typeof(LocalizationLoader)) as LocalizationLoader;
             loader.UpdateLocalizationTable();
         }
 
@@ -246,6 +246,14 @@ namespace ProjectPorcupine.Localization
 
             // rebuild the reversed string
             return string.Join(null, revArray);
+        }
+
+        /// <summary>
+        /// Destroy all recorded Delegates when changing scenes.
+        /// </summary>
+        public static void UnregisterDelegates()
+        {
+            CBLocalizationFilesChanged = null;
         }
 
         /// <summary>
