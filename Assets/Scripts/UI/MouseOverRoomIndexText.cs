@@ -7,6 +7,7 @@
 // ====================================================
 #endregion
 using System.Collections;
+using ProjectPorcupine.Localization;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -50,6 +51,6 @@ public class MouseOverRoomIndexText : MonoBehaviour
             roomID = t.Room.ID.ToString();
         }
 
-        text.text = "Room Index: " + roomID;
+        text.text = LocalizationTable.GetLocalization("room_index") + " " + roomID;
     }
 }

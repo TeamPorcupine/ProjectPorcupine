@@ -7,6 +7,7 @@
 // ====================================================
 #endregion
 using System.Collections;
+using ProjectPorcupine.Localization;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -49,6 +50,6 @@ public class MouseOverTileTypeText : MonoBehaviour
             tileType = t.Type.ToString();
         }
 
-        text.text = "Tile Type: " + tileType;
+        text.text = LocalizationTable.GetLocalization("tile_type") + " " + tileType;
     }
 }
