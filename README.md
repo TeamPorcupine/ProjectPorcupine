@@ -1,7 +1,7 @@
 # ProjectPorcupine [![Build Status](https://travis-ci.org/TeamPorcupine/ProjectPorcupine.svg?branch=master)](https://travis-ci.org/TeamPorcupine/ProjectPorcupine)
 Project Porcupine: A Base-Building Game...in Space!
 
-![Preview Thumbnail](https://cloud.githubusercontent.com/assets/22880786/19803057/5f1ed188-9d52-11e6-8ac8-fae8864b49ad.PNG)
+![Preview Thumbnail](https://cloud.githubusercontent.com/assets/22880786/19826387/7ad0f0d2-9dd4-11e6-92f3-eb47b395ac63.png)
 
 [About](#about)  
 [Copyright & Licensing](#copyright--licensing)  
