@@ -5,6 +5,9 @@
 // and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
+using ProjectPorcupine.Rooms;
+
+
 #endregion
 
 using System.Collections.Generic;
@@ -26,6 +29,18 @@ namespace ProjectPorcupine.Pathfinding
         /// </summary>
         /// <param name="tile">Tile to evaluate.</param>
         public delegate bool GoalEvaluator(Tile tile);
+
+        /// <summary>
+        /// Delegate called to determine the distance from this tile to destination according to custom heuristics.
+        /// </summary>
+        /// <param name="tile">Tile to evalute.</param>
+        public delegate float RoomPathfindingHeuristic(Room room);
+
+        /// <summary>
+        /// Delegate called to determine if we've reached the goal.
+        /// </summary>
+        /// <param name="tile">Tile to evaluate.</param>
+        public delegate bool RoomGoalEvaluator(Room room);
 
         public static List<Tile> FindPath(Tile start, GoalEvaluator isGoal, PathfindingHeuristic costHeuristic)
         {
@@ -73,13 +88,51 @@ namespace ProjectPorcupine.Pathfinding
                 return null;
             }
 
-            Path_AStar resolver = new Path_AStar(World.Current, start, GoalInventoryEvaluator(types, canTakeFromStockpile), DijkstraDistance());
-            List<Tile> path = resolver.GetList();
+            RoomPath_AStar roomResolver = new RoomPath_AStar(World.Current, start.Room, RoomGoalInventoryEvaluator(types, canTakeFromStockpile), RoomDijkstraDistance());
+            List<Room> roomPath = roomResolver.GetList();
 
-            DebugLogIf(path.Count > 0, "FindPathToInventory from: {0}, to: {1}, found {2} [Length: {3}, took: {4}ms]", start, string.Join(",", types), path.LastOrDefault(), path.Count, (int)(resolver.Duration * 1000));
-            DebugLogIf(path == null, "Failed to find path to inventory of type {0}", string.Join(",", types));
+            Room roomWithInv = roomPath.Last();
+            Tile nearestExit;
+            if (roomPath.Count == 1)
+            {
+                nearestExit = start;
+            }
+            else
+            {
+                nearestExit = GetNearestExit(roomPath);
+            }
+            Tile targetTile = null;
+            float distance = 0f;
 
-            return path;
+            // Surely there's a better way to do this than nested foreach loops
+            foreach (string type in types)
+            {
+                if (World.Current.InventoryManager.Inventories.ContainsKey(type))
+                {
+                    foreach (Inventory inventory in World.Current.InventoryManager.Inventories[type].Where(inv => inv != null && inv.Tile != null && inv.Tile.Room == roomWithInv))
+                    {
+                        if (targetTile == null || Vector3.Distance(nearestExit.Vector3, inventory.Tile.Vector3) < distance)
+                        {
+                            distance = Vector3.Distance(nearestExit.Vector3, inventory.Tile.Vector3);
+                            targetTile = inventory.Tile;
+                        }
+                    }
+                }
+            }
+
+            return FindPathToTile(start, targetTile);
+//            Path_AStar resolver = new Path_AStar(World.Current, start, GoalInventoryEvaluator(types, canTakeFromStockpile), DijkstraDistance());
+//            List<Tile> path = resolver.GetList();
+
+//            foreach (Room room in roomPath)
+//            {
+//                Debug.LogWarning("Room: " + room.ID);
+//            }
+//
+//            DebugLogIf(path.Count > 0, "FindPathToInventory from: {0}, to: {1}, found {2} [Length: {3}, took: {4}ms]", start, string.Join(",", types), path.LastOrDefault(), path.Count, (int)(resolver.Duration * 1000));
+//            DebugLogIf(path == null, "Failed to find path to inventory of type {0}", string.Join(",", types));
+//
+//            return path;
         }
 
         /// <summary>
@@ -166,6 +219,12 @@ namespace ProjectPorcupine.Pathfinding
             return tile => 0f;
         }
 
+
+        public static RoomPathfindingHeuristic RoomDijkstraDistance()
+        {
+            return room => 0f;
+        }
+
         /// <summary>
         /// Simple reusable goal heuristic. Will match for specific tiles or adjacent tiles.
         /// </summary>
@@ -230,6 +289,35 @@ namespace ProjectPorcupine.Pathfinding
         public static GoalEvaluator GoalInventoryEvaluator(string type, bool canTakeFromStockpile = true)
         {
             return tile => tile.Inventory != null && tile.Inventory.CanBePickedUp(canTakeFromStockpile) && type == tile.Inventory.Type;
+        }
+
+        public static RoomGoalEvaluator RoomGoalInventoryEvaluator(string[] types, bool canTakeFromStockpile = true)
+        {
+            return room =>
+            {
+                // HACK: In case it's not obvious, this is a terrible way to do this.
+                bool truth = false;
+                foreach (string type in types)
+                {
+                    truth |= World.Current.InventoryManager.Inventories.Keys.Contains(type) && World.Current.InventoryManager.Inventories[type].Where(inv => inv != null && inv.CanBePickedUp(canTakeFromStockpile) &&inv.Tile != null && inv.Tile.Room == room).Count() > 0;
+                }
+                return truth;
+            };
+        }
+
+        public static RoomGoalEvaluator RoomGoalInventoryEvaluator(string type, bool canTakeFromStockpile = true)
+        {
+            return room => World.Current.InventoryManager.Inventories.Keys.Contains(type) && World.Current.InventoryManager.Inventories[type].Where(inv => inv.Tile.Room == room).Count() > 0;
+        }
+
+        public static Tile GetNearestExit(List<Room> roomList)
+        {
+            // We never want FindExitBetween froom outside room, because it can't find its exits, so reverse order if going outside.
+            if (roomList.Last().ID == 0)
+            {
+                return roomList[roomList.Count - 2].FindExitBetween(roomList.Last());
+            }
+            return roomList.Last().FindExitBetween(roomList[roomList.Count - 2]);
         }
 
         [System.Diagnostics.Conditional("PATHFINDER_DEBUG_LOG")]
