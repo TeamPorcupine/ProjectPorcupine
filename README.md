@@ -56,6 +56,8 @@ All non-code assets (e.g. art, sound) is licensed under CC BY-NC-SA 3.0
 The original tutorial project files, which feature no community-contributed code,
 are licensed under the MIT License and can be found here:
  * <http://quill18.com/porcupine/project_files/>
+ 
+Audio engine : FMOD by Firelight Technologies
 
 ## Contributing
 
