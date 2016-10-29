@@ -910,10 +910,11 @@
         <TypeTag>Wall</TypeTag>
         <TypeTag>Non-buildable</TypeTag>
         <TypeTag>Non-deconstructible</TypeTag>
+        <TypeTag>DoesntNeedFloor</TypeTag>
         <MovementCost>0</MovementCost>
         <Width>1</Width>
         <Height>1</Height>
-        <LinksToNeighbours>true</LinksToNeighbours>
+        <LinksToNeighbours>astro_wall</LinksToNeighbours>
         <EnclosesRooms>true</EnclosesRooms>
 
         <Params>

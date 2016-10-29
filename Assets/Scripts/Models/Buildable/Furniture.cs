@@ -1254,10 +1254,13 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                     isReplaceable = tile2.Furniture.typeTags.Overlaps(ReplaceableFurniture);
                 }
 
-                // Make sure tile is FLOOR
-                if (tile2.Type != TileType.Floor && tileTypeBuildPermissions.Contains(tile2.Type.Type) == false)
+                if (!HasTypeTag("DoesntNeedFloor"))
                 {
-                    return false;
+                    // Make sure tile is FLOOR
+                    if (tile2.Type != TileType.Floor && tileTypeBuildPermissions.Contains(tile2.Type.Type) == false)
+                    {
+                        return false;
+                    }
                 }
 
                 // Make sure tile doesn't already have furniture

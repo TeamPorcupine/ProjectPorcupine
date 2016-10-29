@@ -47,7 +47,7 @@ public class WorldGenerator
 
     public void Generate(World world, int seed)
     {
-        asteroidFloorType = TileType.Floor; 
+        asteroidFloorType = TileType.Empty; 
 
         ReadXML();
         Random.InitState(seed);
