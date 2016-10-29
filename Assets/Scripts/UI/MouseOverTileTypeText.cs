@@ -50,6 +50,6 @@ public class MouseOverTileTypeText : MonoBehaviour
             tileType = t.Type.ToString();
         }
 
-        text.text = LocalizationTable.GetLocalization("tile_type") + " " + tileType;
+        text.text = LocalizationTable.GetLocalization("tile_type", tileType);
     }
 }

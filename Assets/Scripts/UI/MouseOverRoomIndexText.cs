@@ -51,6 +51,6 @@ public class MouseOverRoomIndexText : MonoBehaviour
             roomID = t.Room.ID.ToString();
         }
 
-        text.text = LocalizationTable.GetLocalization("room_index") + " " + roomID;
+        text.text = LocalizationTable.GetLocalization("room_index", roomID);
     }
 }
