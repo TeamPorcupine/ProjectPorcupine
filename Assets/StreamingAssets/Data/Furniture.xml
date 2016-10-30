@@ -156,7 +156,7 @@
         <Action event="OnFastUpdate" functionName="OnUpdate_AirlockDoor" />
         <Action event="OnUpdate" functionName="OnUpdate_Leak_Airlock" />
 
-        <ContextMenuAction FunctionName="AirlockDoor_Toggle_Pressure_Lock" Text="Toggle Pressure Lock" RequireCharacterSelected="false"/>
+        <ContextMenuAction FunctionName="AirlockDoor_Toggle_Pressure_Lock" LocalizationKey="toggle_pressure_lock" RequireCharacterSelected="false"/>
 
         <IsEnterable FunctionName="IsEnterable_AirlockDoor" />
         
@@ -178,7 +178,7 @@
         <Action event="OnUpdate" functionName="Stockpile_UpdateAction" />
         <DragType>area</DragType>
 
-        <ContextMenuAction FunctionName="Stockpile_SetNewFilter" Text="Set Filter" RequireCharacterSelected="false"/>
+        <ContextMenuAction FunctionName="Stockpile_SetNewFilter" LocalizationKey="set_filter" RequireCharacterSelected="false"/>
 
         <LocalizationCode>furn_stockpile</LocalizationCode>
         <UnlocalizedDescription>furn_stockpile_desc</UnlocalizedDescription>
@@ -274,8 +274,8 @@
 
         <Action event="OnUpdate" functionName="MiningDroneStation_UpdateAction" />
 
-        <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Iron" Text="Change to Raw Iron" RequireCharacterSelected="false"/>
-        <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Copper" Text="Change to Raw Copper" RequireCharacterSelected="false"/>
+        <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Iron" LocalizationKey="change_to_raw_iron" RequireCharacterSelected="false"/>
+        <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Copper" LocalizationKey="change_to_raw_copper" RequireCharacterSelected="false"/>
 
         <LocalizationCode>furn_mining_drone_station</LocalizationCode>
         <UnlocalizedDescription>furn_mining_drone_station_desc</UnlocalizedDescription>
@@ -574,7 +574,7 @@
         <JobOutputSpotOffset X="1" Y="-1" />
 
         <ContextMenuAction FunctionName="LandingPad_Test_CallTradeShip"
-                           Text="Call Trade Ship Test"
+                           LocalizationKey="call_trade_ship_test"
                            RequireCharacterSelected="false"
                            DevModeOnly="true"/>
 
@@ -690,7 +690,7 @@
 
         <Action event="OnUpdate" functionName="AirPump_OnUpdate" />
         <GetSpriteName FunctionName="AirPump_GetSpriteName" />
-        <ContextMenuAction FunctionName="AirPump_FlipDirection" Text="Flip Direction" RequireCharacterSelected="false" />
+        <ContextMenuAction FunctionName="AirPump_FlipDirection" LocalizationKey="flip_direction" RequireCharacterSelected="false" />
 
         <LocalizationCode>furn_pump_air</LocalizationCode>
         <UnlocalizedDescription>furn_pump_air_desc</UnlocalizedDescription>
@@ -720,8 +720,8 @@
         <Action event="OnChange" functionName="Vent_SetOrientationState" />
         <Action event="OnInstall" functionName="Vent_SetOrientationState" />
 
-        <ContextMenuAction FunctionName="Vent_Open" Text="Open Vent" RequireCharacterSelected="false" />
-        <ContextMenuAction FunctionName="Vent_Close" Text="Close Vent" RequireCharacterSelected="false" />
+        <ContextMenuAction FunctionName="Vent_Open" LocalizationKey="open_vent" RequireCharacterSelected="false" />
+        <ContextMenuAction FunctionName="Vent_Close" LocalizationKey="close_vent" RequireCharacterSelected="false" />
 
         <Animations>
             <Animation state="horizontal" valuebased="true">
@@ -825,7 +825,7 @@
             <Param name="ore_type" value="Raw Iron" />
         </Params>
 
-        <ContextMenuAction FunctionName="OreMine_CreateMiningJob" Text="Mine Ore" RequireCharacterSelected="false" />
+        <ContextMenuAction FunctionName="OreMine_CreateMiningJob" LocalizationKey="mine_ore" RequireCharacterSelected="false" />
         <GetSpriteName FunctionName="OreMine_GetSpriteName" />
 
         <LocalizationCode>furn_mine</LocalizationCode>
@@ -903,7 +903,7 @@
          <Param name="ore_type" value="None" />
         </Params>
 
-    <ContextMenuAction FunctionName="OreMine_CreateMiningJob" Text="Mine Ore" RequireCharacterSelected="false" />
+    <ContextMenuAction FunctionName="OreMine_CreateMiningJob" LocalizationKey="mine_ore" RequireCharacterSelected="false" />
     <!-- <GetSpriteName FunctionName="OreMine_GetSpriteName" /> -->
 
     <LocalizationCode>furn_astro_wall</LocalizationCode>

@@ -239,14 +239,14 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
     {
         yield return new ContextMenuAction
         {
-            Text = "Poke " + GetName(),
+            LocalizationKey = "Poke " + GetName(),
             RequireCharacterSelected = false,
             Action = (cm, c) => { Debug.ULogChannel("Character", GetDescription()); health.CurrentHealth -= 5; }
         };
 
         yield return new ContextMenuAction
         {
-            Text = "Heal +5",
+            LocalizationKey = "Heal +5",
             RequireCharacterSelected = false,
             Action = (cm, c) => { health.CurrentHealth += 5; }
         };

@@ -122,3 +122,12 @@ power_input_status=Power Input: <color={0}>{1}</color>
 power_output_status=Power Output: <color={0}>{1}</color>
 power_accumulated_fraction=Power Accumulated: {0} / {1}
 gas_info=gas:{0}, rate:{1}, min:{2}, max:{3}
+call_trade_ship_test=Call Trade Ship Test
+flip_direction=Flip Direction
+open_vent=Open Vent
+close_vent=Close Vent
+mine_ore=Mine Ore
+toggle_pressure_lock=Toggle Pressure Lock
+set_filter=Set Filter%
+change_to_raw_iron=Change to Raw Iron
+change_to_raw_copper=Change to Raw Copper

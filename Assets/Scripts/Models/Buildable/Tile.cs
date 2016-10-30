@@ -565,7 +565,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
         {
             yield return new ContextMenuAction
             {
-                Text = "Cancel Job",
+                LocalizationKey = "Cancel Job",
                 RequireCharacterSelected = false,
                 Action = (cm, c) =>
                 {
@@ -580,7 +580,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
             {
                 yield return new ContextMenuAction
                 {
-                    Text = "Prioritize " + PendingBuildJob.GetName(),
+                    LocalizationKey = "Prioritize " + PendingBuildJob.GetName(),
                     RequireCharacterSelected = true,
                     Action = (cm, c) =>
                     {

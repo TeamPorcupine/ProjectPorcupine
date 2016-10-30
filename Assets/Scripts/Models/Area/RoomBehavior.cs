@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
 // This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
@@ -258,7 +258,7 @@ namespace ProjectPorcupine.Rooms
                         contextMenuLuaActions.Add(new ContextMenuLuaAction
                             {
                                 LuaFunction = reader.GetAttribute("FunctionName"),
-                                Text = reader.GetAttribute("Text"),
+                                LocalizationKey = reader.GetAttribute("Text"),
                                 RequireCharacterSelected = bool.Parse(reader.GetAttribute("RequireCharacterSelected")),
                                 DevModeOnly = bool.Parse(reader.GetAttribute("DevModeOnly") ?? "false")
                             });
@@ -373,7 +373,7 @@ namespace ProjectPorcupine.Rooms
         {
             yield return new ContextMenuAction
             {
-                Text = "Deconstruct " + Name,
+                LocalizationKey = "Deconstruct " + Name,
                 RequireCharacterSelected = false,
                 Action = (contextMenuAction, character) => Deconstruct(this)
             };
@@ -386,7 +386,7 @@ namespace ProjectPorcupine.Rooms
                     // TODO The Action could be done via a lambda, but it always uses the same space of memory, thus if 2 actions are performed, the same action will be produced for each.
                     yield return new ContextMenuAction
                     {
-                        Text = contextMenuLuaAction.Text,
+                        LocalizationKey = contextMenuLuaAction.LocalizationKey,
                         RequireCharacterSelected = contextMenuLuaAction.RequireCharacterSelected,
                         Action = InvokeContextMenuLuaAction,
                         Parameter = contextMenuLuaAction.LuaFunction    // Note that this is only in place because of the problem with the previous statement.
