@@ -265,7 +265,7 @@ public class BuildModeController
                 // Add the job to the queue or build immediately if in Dev mode
                 if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
                 {
-                    buildingJob.tile.Type = buildingJob.JobTileType;
+                    buildingJob.tile.SetTileType(buildingJob.JobTileType);
                 }
                 else
                 {
