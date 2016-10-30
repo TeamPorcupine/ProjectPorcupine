@@ -461,7 +461,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
 
         foreach (Stat stat in stats.Values)
         {
-            yield return LocalizationTable.GetLocalization("stat_" + stat.Type.ToLower(), stat.Value.ToString());
+            yield return LocalizationTable.GetLocalization("stat_" + stat.Type.ToLower(), stat.Value);
         }
     }
 
