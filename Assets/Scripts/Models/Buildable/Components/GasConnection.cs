@@ -42,17 +42,18 @@ namespace ProjectPorcupine.Buildable.Components
         public override bool CanFunction()
         {
             bool canFunction = true;
-            //// check if all requirements are fullfilled
+
+            // check if all requirements are fullfilled
             if (Requires != null && Requires.Count > 0)
             {
                 Room room = ParentFurniture.Tile.Room;
                 foreach (GasInfo reqGas in Requires)
                 {
-                    // get current gas rounded so it is in sync with UI
-                    float curGasPressure = (float)Math.Round((decimal)room.GetGasPressure(reqGas.Gas), 3);
+                    // get actual gas pressure so it matches what gas really is, not the prettified version for display
+                    float curGasPressure = room.GetGasPressure(reqGas.Gas);
                     if (curGasPressure < reqGas.MinLimit || curGasPressure > reqGas.MaxLimit)
                     {
-                        canFunction &= false;
+                        canFunction = false;
                     }
                 }
             }
@@ -68,13 +69,13 @@ namespace ProjectPorcupine.Buildable.Components
                 Room room = ParentFurniture.Tile.Room;
                 foreach (GasInfo provGas in Provides)
                 {
-                    // get current gas rounded so it is in sync with UI
-                    float curGasPressure = (float)Math.Round((decimal)room.GetGasPressure(provGas.Gas), 3);
+                    // get actual gas pressure so it matches what gas really is, not the prettified version for display
+                    float curGasPressure = room.GetGasPressure(provGas.Gas);
                     if ((provGas.Rate > 0 && curGasPressure < provGas.MaxLimit) ||
                         (provGas.Rate < 0 && curGasPressure > provGas.MinLimit))
                     {
                         room.ChangeGas(provGas.Gas, provGas.Rate * deltaTime, provGas.MaxLimit);
-                        isWorking |= true;
+                        isWorking = true;
                     }                    
                 }
             }

@@ -192,6 +192,8 @@
             <DefaultSpriteName useName="Stockpile_" />
         </Component>
 
+        <ContextMenuAction FunctionName="Stockpile_SetNewFilter" Text="Set Filter" RequireCharacterSelected="false"/>
+
         <LocalizationCode>furn_stockpile</LocalizationCode>
         <UnlocalizedDescription>furn_stockpile_desc</UnlocalizedDescription>
     </Furniture>
@@ -246,8 +248,11 @@
         </Component>
 
         <Component type="GasConnection">
-            <Provides gas="O2" rate="0.16" minLimit="0" maxLimit="0.2" />
-            <Provides gas="N2" rate="0.16" minLimit="0" maxLimit="0.8" />
+            <!-- Rate should be 0.16 total for all gas generation, smaller amounts
+                 for individual gasses allows O2 gen to mimic proper functionality
+                 without hacking the GasComponent to pieces. -->
+            <Provides gas="O2" rate="0.032" minLimit="0" maxLimit="0.2" />
+            <Provides gas="N2" rate="0.128" minLimit="0" maxLimit="0.8" />
         </Component>
       
         <LocalizationCode>furn_oxygen_generator</LocalizationCode>
