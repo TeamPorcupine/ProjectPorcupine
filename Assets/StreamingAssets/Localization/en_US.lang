@@ -114,3 +114,10 @@ room_index=Room Index: {0}
 hit_points_fraction=HitPoints: {0}/{1}
 hit_points=HitPoints: {0}
 not_applicable_shorthand=N/A
+stat_dexterity=Dexterity: {0}
+stat_strength=Strength: {0}
+power_grid_status_online=Power Grid: <color={0}>Online</color>
+power_grid_status_offline=Power Grid: <color={0}>Offline</color>
+power_input_status=Power Input: <color={0}>{1}</color>
+power_output_status=Power Output: <color={0}>{1}</color>
+power_accumulated_fraction=Power Accumulated: {0} / {1}

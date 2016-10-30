@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
 // This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
 using ProjectPorcupine.PowerNetwork;
+using ProjectPorcupine.Localization;
 
 namespace ProjectPorcupine.Buildable.Components
 {
@@ -166,22 +167,22 @@ namespace ProjectPorcupine.Buildable.Components
         public override IEnumerable<string> GetDescription()
         {           
             string powerColor = IsRunning ? "lime" : "red";
+            string status = IsRunning ? "online" : "offline";
+            yield return LocalizationTable.GetLocalization("power_grid_status_" + status, powerColor);
 
-            yield return string.Format("Power Grid: <color={0}>{1}</color>", powerColor, IsRunning ? "Online" : "Offline");
-
-            if (IsConsumer)
+            if (IsConsumer && Requires != null)
             {
-                yield return string.Format("Power Input: <color={0}>{1}</color>", powerColor, Requires.Rate);
+                yield return LocalizationTable.GetLocalization("power_input_status", powerColor, Requires.Rate.ToString());
             }
 
-            if (IsProducer)
+            if (IsProducer && Requires != null)
             {
-                yield return string.Format("Power Output: <color={0}>{1}</color>", powerColor, Provides.Rate);
+                yield return LocalizationTable.GetLocalization("power_output_status", powerColor, Requires.Rate.ToString());
             }
 
             if (IsAccumulator)
             {
-                yield return string.Format("Power Accumulated: {0} / {1}", AccumulatedAmount, Provides.Capacity);
+                yield return LocalizationTable.GetLocalization("power_accumulated_fraction", AccumulatedAmount.ToString(), Provides.Capacity.ToString());
             }
         }
 
