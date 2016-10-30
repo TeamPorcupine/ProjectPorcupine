@@ -9,8 +9,8 @@
 using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
-using ProjectPorcupine.Rooms;
 using ProjectPorcupine.Localization;
+using ProjectPorcupine.Rooms;
 
 namespace ProjectPorcupine.Buildable.Components
 {

@@ -10,8 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
-using ProjectPorcupine.PowerNetwork;
 using ProjectPorcupine.Localization;
+using ProjectPorcupine.PowerNetwork;
 
 namespace ProjectPorcupine.Buildable.Components
 {
@@ -170,17 +170,17 @@ namespace ProjectPorcupine.Buildable.Components
             string status = IsRunning ? "online" : "offline";
             yield return LocalizationTable.GetLocalization("power_grid_status_" + status, powerColor);
 
-            if (IsConsumer)
+            if (IsConsumer && Requires != null)
             {
                 yield return LocalizationTable.GetLocalization("power_input_status", powerColor, Requires.Rate);
             }
 
-            if (IsProducer)
+            if (IsProducer && Requires != null)
             {
                 yield return LocalizationTable.GetLocalization("power_output_status", powerColor, Requires.Rate);
             }
 
-            if (IsAccumulator)
+            if (IsAccumulator && Provides != null)
             {
                 yield return LocalizationTable.GetLocalization("power_accumulated_fraction", AccumulatedAmount, Provides.Capacity);
             }

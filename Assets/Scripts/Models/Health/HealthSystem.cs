@@ -133,7 +133,7 @@ public class HealthSystem
         }
         else
         {
-            return LocalizationTable.GetLocalization("hit_points","not_applicable_shorthand");
+            return LocalizationTable.GetLocalization("hit_points", "not_applicable_shorthand");
         }  
     }
 
