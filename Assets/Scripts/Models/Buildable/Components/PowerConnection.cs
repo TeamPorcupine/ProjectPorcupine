@@ -170,19 +170,19 @@ namespace ProjectPorcupine.Buildable.Components
             string status = IsRunning ? "online" : "offline";
             yield return LocalizationTable.GetLocalization("power_grid_status_" + status, powerColor);
 
-            if (IsConsumer && Requires != null)
+            if (IsConsumer)
             {
-                yield return LocalizationTable.GetLocalization("power_input_status", powerColor, Requires.Rate.ToString());
+                yield return LocalizationTable.GetLocalization("power_input_status", powerColor, Requires.Rate);
             }
 
-            if (IsProducer && Requires != null)
+            if (IsProducer)
             {
-                yield return LocalizationTable.GetLocalization("power_output_status", powerColor, Requires.Rate.ToString());
+                yield return LocalizationTable.GetLocalization("power_output_status", powerColor, Requires.Rate);
             }
 
             if (IsAccumulator)
             {
-                yield return LocalizationTable.GetLocalization("power_accumulated_fraction", AccumulatedAmount.ToString(), Provides.Capacity.ToString());
+                yield return LocalizationTable.GetLocalization("power_accumulated_fraction", AccumulatedAmount, Provides.Capacity);
             }
         }
 

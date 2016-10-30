@@ -129,7 +129,7 @@ public class HealthSystem
     {
         if (MaxHealth > 0)
         {
-            return LocalizationTable.GetLocalization("hit_points_fraction", currentHealth.ToString(), MaxHealth.ToString());
+            return LocalizationTable.GetLocalization("hit_points_fraction", currentHealth, MaxHealth);
         }
         else
         {
