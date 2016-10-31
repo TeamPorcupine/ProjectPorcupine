@@ -7,6 +7,7 @@
 // ====================================================
 #endregion
 using System;
+using System.Linq;
 using DeveloperConsole.Interfaces;
 using MoonSharp.Interpreter;
 using UnityEngine;
@@ -14,42 +15,43 @@ using UnityEngine;
 namespace DeveloperConsole.CommandTypes
 {
     /// <summary>
-    /// Passes everything after the ':' (cuts out the ending ":" though if it exists).
+    /// 2 parameter command.
     /// </summary>
     [MoonSharpUserData]
-    public class StringCommand : CSharpCommand
+    public class CommandParams : CSharpCommand
     {
-        public StringCommand(string title, ConsoleMethod method) : base(title, method)
+        public CommandParams(string title, ConsoleMethod method) : base(title, method)
         {
         }
 
-        public StringCommand(string title, ConsoleMethod method, string helpText) : base(title, method, helpText)
+        public CommandParams(string title, ConsoleMethod method, string helpText) : base(title, method, helpText)
         {
         }
 
-        public StringCommand(string title, ConsoleMethod method, HelpMethod helpMethod) : base(title, method, helpMethod)
+        public CommandParams(string title, ConsoleMethod method, HelpMethod helpMethod) : base(title, method, helpMethod)
         {
         }
 
-        public StringCommand(ConsoleMethod method) : base(method)
+        public CommandParams(ConsoleMethod method) : base(method)
         {
         }
 
-        public StringCommand(ConsoleMethod method, string helpText) : base(method, helpText)
+        public CommandParams(ConsoleMethod method, string helpText) : base(method, helpText)
         {
         }
 
-        public StringCommand(ConsoleMethod method, HelpMethod helpMethod) : base(method, helpMethod)
+        public CommandParams(ConsoleMethod method, HelpMethod helpMethod) : base(method, helpMethod)
         {
         }
 
-        public delegate void ConsoleMethod(string arg);
+        public delegate void ConsoleMethod(params object[] parameters);
 
         protected override object[] ParseArguments(string message)
         {
             try
             {
-                return new object[] { message.Trim() };
+                string[] args = SplitAndTrim(message);
+                return args;
             }
             catch (Exception e)
             {

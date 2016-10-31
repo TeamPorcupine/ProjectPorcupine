@@ -13,23 +13,9 @@ namespace DeveloperConsole.Errors
 {
     public static class TypeConsoleError
     {
-        public static string Description(ICommandDescription command)
+        public static string Description(CommandBase command)
         {
             return "The entered parameters do not conform to the types (in order): " + command.Parameters;
-        }
-
-        public static string Description(CommandBase commandBase)
-        {
-            ICommandDescription command = (ICommandDescription)commandBase;
-
-            if (command != null)
-            {
-                return "The entered parameters do not conform to the types (in order): " + command.Parameters;
-            }
-            else
-            {
-                return "The entered parameters do not conform to the types required";
-            }
         }
     }
 }

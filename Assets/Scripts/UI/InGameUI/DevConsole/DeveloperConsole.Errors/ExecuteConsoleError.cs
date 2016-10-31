@@ -13,23 +13,9 @@ namespace DeveloperConsole.Errors
 {
     public static class ExecuteConsoleError
     {
-        public static string Description(ICommandDescription command)
+        public static string Description(CommandBase command)
         {
             return "An execute error as occured, this could be due to a type error or parameter missing error; or could be the method raising an error (or causing an error).";
-        }
-
-        public static string Description(CommandBase commandBase)
-        {
-            ICommandDescription command = (ICommandDescription)commandBase;
-
-            if (command != null)
-            {
-                return "An execute error as occured, this could be due to a type error or parameter missing error; or could be the method raising an error (or causing an error).";
-            }
-            else
-            {
-                return "An execute error as occured, this could be due to a type error or parameter missing error; or could be the method raising an error (or causing an error).";
-            }
         }
     }
 }

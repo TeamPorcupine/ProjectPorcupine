@@ -108,7 +108,7 @@ public class KeyboardManager
     }
 
     /// <summary>
-    /// This won't care about the focus fields!!!!  Needed for some things like DevConsole
+    /// This won't care about the focus fields.  Needed for some things like DevConsole.
     /// </summary>
     public void TriggerActionIfValid(string inputName)
     {

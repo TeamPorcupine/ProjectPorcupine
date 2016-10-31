@@ -14,10 +14,10 @@ using UnityEngine;
 namespace DeveloperConsole.CommandTypes
 {
     /// <summary>
-    /// 2 parameter command.
+    /// 3 parameter command.
     /// </summary>
     [MoonSharpUserData]
-    public class Command<T0, T1> : CSharpCommand
+    public class Command<T0, T1, T2, T3> : CSharpCommand
     {
         public Command(string title, ConsoleMethod method) : base(title, method)
         {
@@ -43,16 +43,16 @@ namespace DeveloperConsole.CommandTypes
         {
         }
 
-        public delegate void ConsoleMethod(T0 arg0, T1 arg1);
+        public delegate void ConsoleMethod(T0 arg0, T1 arg1, T2 arg2, T3 arg3);
 
         protected override object[] ParseArguments(string message)
         {
             try
             {
                 string[] args = SplitAndTrim(message);
-                if (args.Length == 3)
+                if (args.Length == 4)
                 {
-                    return new object[] { GetValueType<T0>(args[0]), GetValueType<T1>(args[1]) };
+                    return new object[] { GetValueType<T0>(args[0]), GetValueType<T1>(args[1]), GetValueType<T2>(args[2]), GetValueType<T3>(args[3]) };
                 }
                 else
                 {

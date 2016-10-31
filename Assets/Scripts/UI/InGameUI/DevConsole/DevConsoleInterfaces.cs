@@ -10,39 +10,6 @@ using System;
 
 namespace DeveloperConsole.Interfaces
 {
-    public interface ICommandHelpMethod
-    {
-        HelpMethod HelpMethod
-        {
-            get;
-        }
-    }
-
-    public interface ICommandDescription
-    {
-        string DescriptiveText
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Should return all the parameter types (C# format so Int16/Int32 so on...) instead of names
-        /// Also should have a ',' between each type.
-        /// </summary>
-        string Parameters
-        {
-            get;
-        }
-
-        /// <summary>
-        /// The title/name for the command.
-        /// </summary>
-        string Title
-        {
-            get;
-        }
-    }
-
     public interface ICommandCSharp : ICommandRunnable
     {
         /// <summary>

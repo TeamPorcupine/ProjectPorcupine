@@ -14,7 +14,7 @@ using UnityEngine;
 namespace DeveloperConsole.CommandTypes
 {
     [MoonSharpUserData]
-    public class Command : CoreCommand
+    public class Command : CSharpCommand
     {
         #region StandardConstructors
 

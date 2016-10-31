@@ -18,7 +18,7 @@ namespace DeveloperConsole.CommandTypes
     /// A command base that all commands derive from.
     /// </summary> 
     [MoonSharpUserData]
-    public class CommandBase : ICommandDescription, ICommandHelpMethod
+    public class CommandBase
     {
         /// <summary>
         /// Text describing the command.
@@ -112,7 +112,7 @@ namespace DeveloperConsole.CommandTypes
             }
             catch (Exception e)
             {
-                DevConsole.LogError(Errors.TypeConsoleError.Description(commandBase: this));
+                DevConsole.LogError(Errors.TypeConsoleError.Description(this));
                 throw e;
             }
         }

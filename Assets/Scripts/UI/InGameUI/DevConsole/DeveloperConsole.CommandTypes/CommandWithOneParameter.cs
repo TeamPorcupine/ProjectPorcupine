@@ -17,7 +17,7 @@ namespace DeveloperConsole.CommandTypes
     /// 1 parameter command.
     /// </summary>
     [MoonSharpUserData]
-    public class Command<T0> : CoreCommand
+    public class Command<T0> : CSharpCommand
     {
         public Command(string title, ConsoleMethod method) : base(title, method)
         {
@@ -55,7 +55,7 @@ namespace DeveloperConsole.CommandTypes
                 }
                 else
                 {
-                    DevConsole.LogError(Errors.ParameterMissingConsoleError.Description((ICommandDescription)this));
+                    DevConsole.LogError(Errors.ParameterMissingConsoleError.Description(this));
                     throw new Exception("Command Missing Parameter");
                 }
             }

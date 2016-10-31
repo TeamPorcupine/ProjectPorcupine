@@ -135,7 +135,6 @@ namespace DeveloperConsole
         /// </summary>
         public static void Open()
         {
-            Debug.LogWarning("OPENING");
             if (instance == null || instance.Opened)
             {
                 return;
@@ -672,48 +671,51 @@ namespace DeveloperConsole
         }
 
         /// <summary>
-        /// Initialisation.
+        /// Uninitialisation.
         /// </summary>
-        private void Awake()
+        private void UnInit()
         {
-            // Guard
-            if (instance == null)
+            Debug.ULogWarningChannel("DevConsole", "Unitilising DevConsole: Bye Bye.");
+            if (instance == this)
             {
-                instance = this;
-            }
-            else
-            {
-                Debug.ULogWarningChannel("DevConsole", "There can only be one Console per project");
-                Destroy(gameObject);
-            }
-
-            // Delegation
-            SceneManager.activeSceneChanged += SceneChanged;
-
-            KeyboardManager.Instance.RegisterModalInputField(inputField);
-            KeyboardManager.Instance.RegisterInputAction("DevConsole", KeyboardMappedInputType.KeyUp, ToggleConsole);
-        }
-
-        /// <summary>
-        /// Delegation to unload instances.
-        /// </summary>
-        private void SceneChanged(Scene oldScene, Scene newScene)
-        {
-            if (instance != null && oldScene != newScene)
-            {
-                KeyboardManager.Instance.UnRegisterModalInputField(instance.inputField);
-                KeyboardManager.Instance.UnRegisterInputAction("DevConsole");
-
+                // If this isn't true then its trying to unitialise another instance, it shouldn't happen but this is just incase if it does.
                 instance = null;
-                Destroy(gameObject);
             }
         }
 
         /// <summary>
-        /// Raises the enable event.  Checks if console can open.
+        /// To make sure we uninit properly.
+        /// </summary>
+        private void OnDestroy()
+        {
+            if (instance == this)
+            {
+                instance.UnInit();
+            }
+        }
+
+        /// <summary>
+        /// Raises the enable event.  It just does some instance checking.
         /// </summary>
         private void OnEnable()
         {
+            // Guard
+            if (instance != this && instance != null)
+            {
+                // Destroy instance.
+                Debug.ULogErrorChannel("DevConsole", "There can only be one Console per project.  Deleting instance with name: " + instance.gameObject.name);
+                Destroy(instance.gameObject);
+            }
+
+            // Saves a small amount of extra calls and what not
+            if (instance != this)
+            {
+                instance = this;
+
+                KeyboardManager.Instance.RegisterModalInputField(inputField);
+                KeyboardManager.Instance.RegisterInputAction("DevConsole", KeyboardMappedInputType.KeyUp, ToggleConsole);
+            }
+
             if (CommandSettings.DeveloperConsoleToggle == false || closed)
             {
                 Close();

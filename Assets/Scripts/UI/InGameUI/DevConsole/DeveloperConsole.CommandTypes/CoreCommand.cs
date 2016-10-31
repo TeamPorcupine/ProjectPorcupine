@@ -15,17 +15,17 @@ using MoonSharp.Interpreter;
 namespace DeveloperConsole.CommandTypes
 {
     /// <summary>
-    /// A core command for the core code, its in CSharp.
+    /// A core class for CSharp Commands.
     /// </summary>
     [MoonSharpUserData]
-    public abstract class CoreCommand : CommandBase, ICommandCSharp
+    public abstract class CSharpCommand : CommandBase, ICommandCSharp
     {
         /// <summary>
         /// Standard with title and a method.
         /// </summary>
         /// <param name="title"> The title for the command.</param>
         /// <param name="method"> The command to execute.</param>
-        public CoreCommand(string title, Delegate method)
+        public CSharpCommand(string title, Delegate method)
         {
             this.Title = title;
             this.Method = method;
@@ -37,7 +37,7 @@ namespace DeveloperConsole.CommandTypes
         /// <param name="title"> The title for the command.</param>
         /// <param name="method"> The command to execute.</param>
         /// <param name="helpText"> The help text to display.</param>
-        public CoreCommand(string title, Delegate method, string descriptiveText) : this(title, method)
+        public CSharpCommand(string title, Delegate method, string descriptiveText) : this(title, method)
         {
             this.DescriptiveText = descriptiveText;
         }
@@ -48,7 +48,7 @@ namespace DeveloperConsole.CommandTypes
         /// <param name="title"> The title for the command.</param>
         /// <param name="method"> The command to execute.</param>
         /// <param name="helpMethod"> The help method to execute.</param>
-        public CoreCommand(string title, Delegate method, HelpMethod helpMethod) : this(title, method)
+        public CSharpCommand(string title, Delegate method, HelpMethod helpMethod) : this(title, method)
         {
             this.HelpMethod = helpMethod;
         }
@@ -57,7 +57,7 @@ namespace DeveloperConsole.CommandTypes
         /// Uses reflection to get title.
         /// </summary>
         /// <param name="method"> The command to execute.</param>
-        public CoreCommand(Delegate method) : this(method.Method.DeclaringType.Name + "." + method.Method.Name, method)
+        public CSharpCommand(Delegate method) : this(method.Method.DeclaringType.Name + "." + method.Method.Name, method)
         {
         }
 
@@ -66,7 +66,7 @@ namespace DeveloperConsole.CommandTypes
         /// </summary>
         /// <param name="method"> The command to execute.</param>
         /// <param name="helpText"> The help text to display.</param>
-        public CoreCommand(Delegate method, string descriptiveText) : this(method.Method.DeclaringType.Name + "." + method.Method.Name, method, descriptiveText)
+        public CSharpCommand(Delegate method, string descriptiveText) : this(method.Method.DeclaringType.Name + "." + method.Method.Name, method, descriptiveText)
         {
         }
 
@@ -75,7 +75,7 @@ namespace DeveloperConsole.CommandTypes
         /// </summary>
         /// <param name="method"> The command to execute.</param>
         /// <param name="helpMethod"> The help method to execute.</param>
-        public CoreCommand(Delegate method, HelpMethod helpMethod) : this(method.Method.DeclaringType.Name + "." + method.Method.Name, method, helpMethod)
+        public CSharpCommand(Delegate method, HelpMethod helpMethod) : this(method.Method.DeclaringType.Name + "." + method.Method.Name, method, helpMethod)
         {
         }
 
@@ -109,7 +109,7 @@ namespace DeveloperConsole.CommandTypes
             catch (Exception e)
             {
                 // Debug Error
-                DevConsole.LogError(Errors.ExecuteConsoleError.Description((ICommandDescription)this));
+                DevConsole.LogError(Errors.ExecuteConsoleError.Description(this));
                 Debug.ULogErrorChannel("DevConsole", e.ToString());
             }
         }

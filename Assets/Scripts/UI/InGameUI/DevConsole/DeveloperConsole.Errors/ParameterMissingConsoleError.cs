@@ -13,23 +13,9 @@ namespace DeveloperConsole.Errors
 {
     public static class ParameterMissingConsoleError
     {
-        public static string Description(ICommandDescription command)
+        public static string Description(CommandBase command)
         {
             return "Missing a parameter, the required parameters are: " + command.Parameters;
-        }
-
-        public static string Description(CommandBase commandBase)
-        {
-            ICommandDescription command = (ICommandDescription)commandBase;
-
-            if (command != null)
-            {
-                return "Missing a parameter, the required parameters are: " + command.Parameters;
-            }
-            else
-            {
-                return "Missing a parameter";
-            }
         }
     }
 }

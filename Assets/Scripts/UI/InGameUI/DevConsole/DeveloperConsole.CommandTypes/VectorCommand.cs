@@ -18,7 +18,7 @@ namespace DeveloperConsole.CommandTypes
     /// </summary>
     /// <typeparam name="T"> Should be of type Vector2, 3, or 4.</typeparam>
     [MoonSharpUserData]
-    public class VectorCommand<T> : CoreCommand
+    public class VectorCommand<T> : CSharpCommand
     {
         public VectorCommand(string title, ConsoleMethod method) : base(title, method)
         {
@@ -60,7 +60,7 @@ namespace DeveloperConsole.CommandTypes
                     }
                     catch
                     {
-                        DevConsole.LogError(Errors.TypeConsoleError.Description((ICommandDescription)this));
+                        DevConsole.LogError(Errors.TypeConsoleError.Description(this));
                         Debug.ULogErrorChannel("DevConsole", "The entered value is not a valid Vector2 value");
                         return new object[] { };
                     }
@@ -73,7 +73,7 @@ namespace DeveloperConsole.CommandTypes
                     }
                     catch
                     {
-                        DevConsole.LogError(Errors.TypeConsoleError.Description((ICommandDescription)this));
+                        DevConsole.LogError(Errors.TypeConsoleError.Description(this));
                         Debug.ULogErrorChannel("DevConsole", "The entered value is not a valid Vector3 value");
                         return new object[] { };
                     }
@@ -86,13 +86,13 @@ namespace DeveloperConsole.CommandTypes
                     }
                     catch
                     {
-                        DevConsole.LogError(Errors.TypeConsoleError.Description((ICommandDescription)this));
+                        DevConsole.LogError(Errors.TypeConsoleError.Description(this));
                         Debug.ULogErrorChannel("DevConsole", "The entered value is not a valid Vector4 value");
                         return new object[] { };
                     }
 
                 default:
-                    DevConsole.LogError(Errors.ParameterMissingConsoleError.Description((ICommandDescription)this));
+                    DevConsole.LogError(Errors.ParameterMissingConsoleError.Description(this));
                     Debug.ULogErrorChannel("DevConsole", "The entered value is not a valid Vector value");
                     return new object[] { };
             }
