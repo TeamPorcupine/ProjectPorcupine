@@ -294,15 +294,15 @@ namespace ProjectPorcupine.Pathfinding
         public static RoomGoalEvaluator RoomGoalInventoryEvaluator(string[] types, bool canTakeFromStockpile = true)
         {
             return room =>
-            {
-                // HACK: In case it's not obvious, this is a terrible way to do this.
-                bool truth = false;
-                foreach (string type in types)
-                {
-                    truth |= World.Current.InventoryManager.Inventories.Keys.Contains(type) && World.Current.InventoryManager.Inventories[type].Where(inv => inv != null && inv.CanBePickedUp(canTakeFromStockpile) &&inv.Tile != null && inv.Tile.Room == room).Count() > 0;
-                }
-                return truth;
-            };
+                World.Current.InventoryManager.Inventories.Where(dictEntry => types.Contains(dictEntry.Key)).SelectMany(dictEntry => dictEntry.Value).Any(inv => inv != null && inv.CanBePickedUp(canTakeFromStockpile) && inv.Tile != null && inv.Tile.Room == room);
+//                // HACK: In case it's not obvious, this is a terrible way to do this.
+//                bool truth = false;
+//                foreach (string type in types)
+//                {
+//                    truth |= World.Current.InventoryManager.Inventories.Keys.Contains(type) && World.Current.InventoryManager.Inventories[type].Where(inv => inv != null && inv.CanBePickedUp(canTakeFromStockpile) &&inv.Tile != null && inv.Tile.Room == room).Count() > 0;
+//                }
+//                return truth;
+//            };
         }
 
         public static RoomGoalEvaluator RoomGoalInventoryEvaluator(string type, bool canTakeFromStockpile = true)
