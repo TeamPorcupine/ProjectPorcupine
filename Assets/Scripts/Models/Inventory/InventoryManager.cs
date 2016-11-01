@@ -106,11 +106,12 @@ public class InventoryManager
         {
             // The tile did not accept the inventory for whatever reason, therefore stop.
             return false;
+            // TODO: Geoffrotism. Is this where we would hook in to handle inventory not being able to be placed in a tile.
         }
 
         CleanupInventory(inventory);
 
-        // We may also created a new stack on the tile, if the startTile was previously empty.
+        // We may also have to create a new stack on the tile, if the startTile was previously empty.
         if (tileWasEmpty)
         {
             if (Inventories.ContainsKey(tile.Inventory.Type) == false)
