@@ -7,13 +7,13 @@
 // ====================================================
 #endregion
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
+using ProjectPorcupine.Localization;
 using ProjectPorcupine.Rooms;
 using UnityEngine;
 
@@ -44,6 +44,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
         MovementModifier = 1;
         Utilities = new Dictionary<string, Utility>();
         ReservedAsWorkSpotBy = new HashSet<Furniture>();
+        PendingBuildJobs = new HashSet<Job>();
     }
 
     // The function we callback any time our tile's data changes
@@ -129,7 +130,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
 
     // FIXME: This seems like a terrible way to flag if a job is pending
     // on a tile.  This is going to be prone to errors in set/clear.
-    public Job PendingBuildJob { get; set; }
+    public HashSet<Job> PendingBuildJobs { get; set; }
 
     public int X { get; private set; }
 
@@ -171,7 +172,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
 
         // FIXME: I don't like having to manually and explicitly set
         // flags that preven conflicts. It's too easy to forget to set/clear them!
-        theJob.tile.PendingBuildJob = null;
+        theJob.tile.PendingBuildJobs = null;
     }
 
     public bool UnplaceFurniture()
@@ -598,32 +599,31 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
 
     public IEnumerable<ContextMenuAction> GetContextMenuActions(ContextMenu contextMenu)
     {
-        if (PendingBuildJob != null)
+        if (PendingBuildJobs != null)
         {
-            yield return new ContextMenuAction
-            {
-                Text = "Cancel Job",
-                RequireCharacterSelected = false,
-                Action = (cm, c) =>
-                {
-                    if (PendingBuildJob != null)
-                    {
-                        PendingBuildJob.CancelJob();
-                    }
-                }
-            };
-
-            if (!PendingBuildJob.IsBeingWorked)
+            foreach (Job pendingJob in PendingBuildJobs)
             {
                 yield return new ContextMenuAction
                 {
-                    Text = "Prioritize " + PendingBuildJob.GetName(),
-                    RequireCharacterSelected = true,
+                    Text = "Cancel " + pendingJob.GetName(),
+                    RequireCharacterSelected = false,
                     Action = (cm, c) =>
                     {
-                        c.PrioritizeJob(PendingBuildJob);
+                        pendingJob.CancelJob();
                     }
                 };
+                if (!pendingJob.IsBeingWorked)
+                {
+                    yield return new ContextMenuAction
+                    {
+                        Text = LocalizationTable.GetLocalization("prioritize", pendingJob.GetName()),
+                        RequireCharacterSelected = true,
+                        Action = (cm, c) =>
+                        {
+                            c.PrioritizeJob(pendingJob);
+                        }
+                    };
+                }
             }
         }
     }

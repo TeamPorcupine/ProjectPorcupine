@@ -132,7 +132,7 @@ public class BuildModeController
             if ( 
                 World.Current.FurnitureManager.IsPlacementValid(furnitureType, tile, CurrentPreviewRotation) &&
                 World.Current.FurnitureManager.IsWorkSpotClear(furnitureType, tile) && 
-                DoesBuildJobOverlapExistingBuildJob(tile, furnitureType, CurrentPreviewRotation) == false)
+                DoesFurnitureBuildJobOverlapExistingBuildJob(tile, furnitureType, CurrentPreviewRotation) == false)
             {
                 // This tile position is valid for this furniture
 
@@ -179,8 +179,22 @@ public class BuildModeController
                             // FIXME: I don't like having to manually and explicitly set
                             // flags that prevent conflicts. It's too easy to forget to set/clear them!
                             Tile offsetTile = World.Current.GetTileAt(x_off, y_off, tile.Z);
-                            offsetTile.PendingBuildJob = job;
-                            job.OnJobStopped += (theJob) => offsetTile.PendingBuildJob = null;
+                            HashSet<Job> pendingBuildJobs = WorldController.Instance.World.GetTileAt(x_off, y_off, tile.Z).PendingBuildJobs;
+                            if (pendingBuildJobs != null)
+                            {
+                                // if the existing buildJobs furniture is replaceable by the current furnitureType,
+                                // we can pretend it does not overlap with the new build
+
+                                // We should only have 1 furniture building job per tile, so this should return that job and only that job
+                                IEnumerable<Job> pendingFurnitureJob = pendingBuildJobs.Where(pendingJob => pendingJob.buildablePrototype.GetType() == typeof(Furniture));
+                                if (pendingFurnitureJob.Count() == 1)
+                                {
+                                    pendingFurnitureJob.Single().CancelJob();
+                                }
+                            }
+
+                            offsetTile.PendingBuildJobs.Add(job);
+                            job.OnJobStopped += (theJob) => offsetTile.PendingBuildJobs.Remove(job);
                         }
                     }
 
@@ -201,7 +215,8 @@ public class BuildModeController
             // TODO: Reimplement this later: DoesBuildJobOverlapExistingBuildJob(t, furnitureType) == false)
             if ( 
                 World.Current.UtilityManager.IsPlacementValid(utilityType, tile)  &&
-                DoesSameUtilityTypeAlreadyExist(tile, utilityType) == false)
+                DoesSameUtilityTypeAlreadyExist(utilityType, tile) == false &&
+                DoesUtilityBuildJobOverlapExistingBuildJob(utilityType, tile) == false)
             {
                 // This tile position is valid for this furniture
 
@@ -235,8 +250,8 @@ public class BuildModeController
                     // FIXME: I don't like having to manually and explicitly set
                     // flags that preven conflicts. It's too easy to forget to set/clear them!
                     Tile offsetTile = World.Current.GetTileAt(tile.X, tile.Y, tile.Z);
-                    offsetTile.PendingBuildJob = job;
-                    job.OnJobStopped += (theJob) => offsetTile.PendingBuildJob = null;
+                    offsetTile.PendingBuildJobs.Add(job);
+                    job.OnJobStopped += (theJob) => offsetTile.PendingBuildJobs.Remove(job);
 
                     World.Current.jobQueue.Enqueue(job);
                 }
@@ -252,7 +267,7 @@ public class BuildModeController
             if (
                 tile.Type != tileType &&
                 tile.Furniture == null &&
-                tile.PendingBuildJob == null &&
+                tile.PendingBuildJobs.Count == 0 &&
                 tileType.CanBuildHere(tile))
             {
                 // This tile position is valid tile type
@@ -269,10 +284,7 @@ public class BuildModeController
                 }
                 else
                 {
-                    // FIXME: I don't like having to manually and explicitly set
-                    // flags that prevent conflicts. It's too easy to forget to set/clear them!
-                    tile.PendingBuildJob = buildingJob;
-                    buildingJob.OnJobStopped += (theJob) => theJob.tile.PendingBuildJob = null;
+                    buildingJob.OnJobStopped += (theJob) => theJob.tile.PendingBuildJobs = null;
 
                     WorldController.Instance.World.jobQueue.Enqueue(buildingJob);
                 }
@@ -314,9 +326,9 @@ public class BuildModeController
 
                 tile.Furniture.SetDeconstructJob();
             }
-            else if (tile.PendingBuildJob != null)
+            else if (tile.PendingBuildJobs != null)
             {
-                tile.PendingBuildJob.CancelJob();
+                tile.PendingBuildJobs.Last().CancelJob();
             }
             else if (tile.Utilities.Count > 0)
             {
@@ -329,7 +341,7 @@ public class BuildModeController
         }
     }
 
-    public bool DoesBuildJobOverlapExistingBuildJob(Tile t, string furnitureType, float rotation = 0)
+    public bool DoesFurnitureBuildJobOverlapExistingBuildJob(Tile t, string furnitureType, float rotation = 0)
     {
         Furniture furnitureToBuild = PrototypeManager.Furniture.Get(furnitureType).Clone();
         furnitureToBuild.SetRotation(rotation);
@@ -338,12 +350,18 @@ public class BuildModeController
         {
             for (int y_off = t.Y; y_off < (t.Y + furnitureToBuild.Height); y_off++)
             {
-                Job pendingBuildJob = WorldController.Instance.World.GetTileAt(x_off, y_off, t.Z).PendingBuildJob;
-                if (pendingBuildJob != null)
+                HashSet<Job> pendingBuildJobs = WorldController.Instance.World.GetTileAt(x_off, y_off, t.Z).PendingBuildJobs;
+                if (pendingBuildJobs != null)
                 {
                     // if the existing buildJobs furniture is replaceable by the current furnitureType,
                     // we can pretend it does not overlap with the new build
-                    return !furnitureToBuild.ReplaceableFurniture.Any(pendingBuildJob.buildablePrototype.HasTypeTag);
+
+                    // We should only have 1 furniture building job per tile, so this should return that job and only that job
+                    IEnumerable<Job> pendingFurnitureJob = pendingBuildJobs.Where(job => job.buildablePrototype.GetType() == typeof(Furniture));
+                    if (pendingFurnitureJob.Count() == 1)
+                    {
+                        return !furnitureToBuild.ReplaceableFurniture.Any(pendingFurnitureJob.Single().buildablePrototype.HasTypeTag);
+                    }
                 }
             }
         }
@@ -351,9 +369,30 @@ public class BuildModeController
         return false;
     }
 
-    public bool DoesSameUtilityTypeAlreadyExist(Tile tile, string furnitureType)
+    /// <summary>
+    /// Does the utility build job overlap an existing utility build job of the same type.
+    /// </summary>
+    /// <returns><c>true</c>, if utility build job overlaps an existing utility build job of the same type, <c>false</c> otherwise.</returns>
+    /// <param name="utilityType">Utility type.</param>
+    /// <param name="tile">Tile.</param>
+    public bool DoesUtilityBuildJobOverlapExistingBuildJob(string utilityType, Tile tile)
     {
-        Utility proto = PrototypeManager.Utility.Get(furnitureType);
+        HashSet<Job> pendingBuildJobs = tile.PendingBuildJobs;
+        if (pendingBuildJobs != null)
+        {
+            IEnumerable<Job> pendingUtilityJob = pendingBuildJobs.Where(job => job.buildablePrototype.GetType() == typeof(Utility));
+            if (pendingUtilityJob.Count() > 0)
+            {
+                return pendingUtilityJob.Any(job => ((Utility)job.buildablePrototype).Type == utilityType);
+            }
+        }
+
+        return false;
+    }
+
+    public bool DoesSameUtilityTypeAlreadyExist(string type, Tile tile)
+    {
+        Utility proto = PrototypeManager.Utility.Get(type);
         return tile.Utilities.ContainsKey(proto.Name);
     }
 
