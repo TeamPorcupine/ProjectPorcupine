@@ -145,7 +145,7 @@ public class SoundController
             float volChange = Random.Range(-volRange, 0f);
             channel.setVolume(curVol * DecibelsToVolume(volChange));
         }
-
+        channel.set3DLevel(0.75f);
         channel.setPaused(false);
     }
 

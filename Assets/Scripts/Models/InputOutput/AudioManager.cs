@@ -51,7 +51,7 @@ public class AudioManager
 
         channelGroups.Add("master", master);
 
-        SoundSystem.set3DSettings(1f, 1f, 0.05f);
+        SoundSystem.set3DSettings(1f, 1f, .25f);
         audioClips = new Dictionary<string, SoundClip>();
     }
 
