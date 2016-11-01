@@ -1,4 +1,4 @@
-#region License
+﻿#region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
 // This program comes with ABSOLUTELY NO WARRANTY; This is free software,
@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
-using ProjectPorcupine.Localization;
 using ProjectPorcupine.Rooms;
 
 namespace ProjectPorcupine.Buildable.Components
@@ -109,7 +108,7 @@ namespace ProjectPorcupine.Buildable.Components
             
             public override string ToString()
             {
-                return LocalizationTable.GetLocalization("gas_info", Gas, Rate, MinLimit, MaxLimit);
+                return string.Format("gas:{0}, rate:{1}, min:{2}, max:{3}", Gas, Rate, MinLimit, MaxLimit);
             }
         }
     }
