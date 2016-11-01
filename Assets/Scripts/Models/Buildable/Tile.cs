@@ -13,6 +13,7 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
+using ProjectPorcupine.Localization;
 using ProjectPorcupine.Rooms;
 using UnityEngine;
 
@@ -615,7 +616,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
                 {
                     yield return new ContextMenuAction
                     {
-                        Text = "Prioritize " + pendingJob.GetName(),
+                        Text = LocalizationTable.GetLocalization("prioritize", pendingJob.GetName()),
                         RequireCharacterSelected = true,
                         Action = (cm, c) =>
                         {
