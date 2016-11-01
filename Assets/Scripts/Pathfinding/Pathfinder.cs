@@ -104,35 +104,21 @@ namespace ProjectPorcupine.Pathfinding
             Tile targetTile = null;
             float distance = 0f;
 
-            // Surely there's a better way to do this than nested foreach loops
-            foreach (string type in types)
+            foreach (Inventory inventory in World.Current.InventoryManager.Inventories.Where(dictEntry => types.Contains(dictEntry.Key)).SelectMany(dictEntry => dictEntry.Value))
             {
-                if (World.Current.InventoryManager.Inventories.ContainsKey(type))
+                if (inventory.Tile == null)
                 {
-                    foreach (Inventory inventory in World.Current.InventoryManager.Inventories[type].Where(inv => inv != null && inv.Tile != null && inv.Tile.Room == roomWithInv))
-                    {
-                        if (targetTile == null || Vector3.Distance(nearestExit.Vector3, inventory.Tile.Vector3) < distance)
-                        {
-                            distance = Vector3.Distance(nearestExit.Vector3, inventory.Tile.Vector3);
-                            targetTile = inventory.Tile;
-                        }
-                    }
+                    continue;
+                }
+
+                if (targetTile == null || Vector3.Distance(nearestExit.Vector3, inventory.Tile.Vector3) < distance)
+                {
+                    distance = Vector3.Distance(nearestExit.Vector3, inventory.Tile.Vector3);
+                    targetTile = inventory.Tile;
                 }
             }
 
             return FindPathToTile(start, targetTile);
-//            Path_AStar resolver = new Path_AStar(World.Current, start, GoalInventoryEvaluator(types, canTakeFromStockpile), DijkstraDistance());
-//            List<Tile> path = resolver.GetList();
-
-//            foreach (Room room in roomPath)
-//            {
-//                Debug.LogWarning("Room: " + room.ID);
-//            }
-//
-//            DebugLogIf(path.Count > 0, "FindPathToInventory from: {0}, to: {1}, found {2} [Length: {3}, took: {4}ms]", start, string.Join(",", types), path.LastOrDefault(), path.Count, (int)(resolver.Duration * 1000));
-//            DebugLogIf(path == null, "Failed to find path to inventory of type {0}", string.Join(",", types));
-//
-//            return path;
         }
 
         /// <summary>
@@ -140,18 +126,48 @@ namespace ProjectPorcupine.Pathfinding
         /// </summary>
         public static List<Tile> FindPathToInventory(Tile start, string type, bool canTakeFromStockpile = true)
         {
-            if (start == null || type == null)
+            if (start == null || type == null || !World.Current.InventoryManager.Inventories.Keys.Contains(type))
             {
                 return null;
             }
 
-            Path_AStar resolver = new Path_AStar(World.Current, start, GoalInventoryEvaluator(type, canTakeFromStockpile), DijkstraDistance());
-            List<Tile> path = resolver.GetList();
+            RoomPath_AStar roomResolver = new RoomPath_AStar(World.Current, start.Room, RoomGoalInventoryEvaluator(type, canTakeFromStockpile), RoomDijkstraDistance());
+            List<Room> roomPath = roomResolver.GetList();
 
-            DebugLogIf(path.Count > 0, "FindPathToInventory from: {0}, to: {1}, found {2} [Length: {3}, took: {4}ms]", start, type, path.LastOrDefault(), path.Count, (int)(resolver.Duration * 1000));
-            DebugLogIf(path == null, "Failed to find path to inventory of type {0}", type);
+            Room roomWithInv = roomPath.Last();
+            Tile nearestExit;
+            if (roomPath.Count == 1)
+            {
+                nearestExit = start;
+            }
+            else
+            {
+                nearestExit = GetNearestExit(roomPath);
+            }
+            Tile targetTile = null;
+            float distance = 0f;
+            foreach (Inventory inventory in World.Current.InventoryManager.Inventories[type])
+            {
+                if (inventory.Tile == null)
+                {
+                    continue;
+                }
 
-            return path;
+                if (targetTile == null || Vector3.Distance(nearestExit.Vector3, inventory.Tile.Vector3) < distance)
+                {
+                    distance = Vector3.Distance(nearestExit.Vector3, inventory.Tile.Vector3);
+                    targetTile = inventory.Tile;
+                }
+            }
+
+            return FindPathToTile(start, targetTile);
+//            Path_AStar resolver = new Path_AStar(World.Current, start, GoalInventoryEvaluator(type, canTakeFromStockpile), DijkstraDistance());
+//            List<Tile> path = resolver.GetList();
+//
+//            DebugLogIf(path.Count > 0, "FindPathToInventory from: {0}, to: {1}, found {2} [Length: {3}, took: {4}ms]", start, type, path.LastOrDefault(), path.Count, (int)(resolver.Duration * 1000));
+//            DebugLogIf(path == null, "Failed to find path to inventory of type {0}", type);
+//
+//            return path;
         }
 
         /// <summary>
@@ -295,19 +311,16 @@ namespace ProjectPorcupine.Pathfinding
         {
             return room =>
                 World.Current.InventoryManager.Inventories.Where(dictEntry => types.Contains(dictEntry.Key)).SelectMany(dictEntry => dictEntry.Value).Any(inv => inv != null && inv.CanBePickedUp(canTakeFromStockpile) && inv.Tile != null && inv.Tile.Room == room);
-//                // HACK: In case it's not obvious, this is a terrible way to do this.
-//                bool truth = false;
-//                foreach (string type in types)
-//                {
-//                    truth |= World.Current.InventoryManager.Inventories.Keys.Contains(type) && World.Current.InventoryManager.Inventories[type].Where(inv => inv != null && inv.CanBePickedUp(canTakeFromStockpile) &&inv.Tile != null && inv.Tile.Room == room).Count() > 0;
-//                }
-//                return truth;
-//            };
         }
 
         public static RoomGoalEvaluator RoomGoalInventoryEvaluator(string type, bool canTakeFromStockpile = true)
         {
-            return room => World.Current.InventoryManager.Inventories.Keys.Contains(type) && World.Current.InventoryManager.Inventories[type].Where(inv => inv.Tile.Room == room).Count() > 0;
+            return room => World.Current.InventoryManager.Inventories.Keys.Contains(type) && World.Current.InventoryManager.Inventories[type].Any(inv => inv.Tile.Room == room && inv.CanBePickedUp(canTakeFromStockpile));
+        }
+
+        public static RoomGoalEvaluator RoomGoalFurnitureEvaluator(string type)
+        {
+            return currentRoom => World.Current.FurnitureManager.Any(furniture => furniture.Type == type && furniture.Tile.Room == currentRoom);
         }
 
         public static Tile GetNearestExit(List<Room> roomList)
