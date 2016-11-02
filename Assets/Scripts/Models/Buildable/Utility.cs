@@ -5,14 +5,15 @@
 // and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
+
 #endregion
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
-using System.Xml.Schema;
-using System.Xml.Serialization;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
+using Newtonsoft.Json.Linq;
 using ProjectPorcupine.Jobs;
 using UnityEngine;
 
@@ -20,7 +21,7 @@ using UnityEngine;
 /// InstalledObjects are things like walls, doors, and utility (e.g. a sofa).
 /// </summary>
 [MoonSharpUserData]
-public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextActionProvider, IBuildable
+public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuildable
 {
     // Prevent construction too close to the world's edge
     private const int MinEdgeDistance = 5;
@@ -305,31 +306,6 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     }
 
     /// <summary>
-    /// This does absolutely nothing.
-    /// This is required to implement IXmlSerializable.
-    /// </summary>
-    /// <returns>NULL and NULL.</returns>
-    public XmlSchema GetSchema()
-    {
-        return null;
-    }
-
-    /// <summary>
-    /// Writes the utility to XML.
-    /// </summary>
-    /// <param name="writer">The XML writer to write to.</param>
-    public void WriteXml(XmlWriter writer)
-    {
-        writer.WriteAttributeString("X", Tile.X.ToString());
-        writer.WriteAttributeString("Y", Tile.Y.ToString());
-        writer.WriteAttributeString("Z", Tile.Z.ToString());
-        writer.WriteAttributeString("type", Type);
-
-        // Let the Parameters handle their own xml
-        Parameters.WriteXml(writer);
-    }
-
-    /// <summary>
     /// Reads the prototype utility from XML.
     /// </summary>
     /// <param name="readerParent">The XML reader to read from.</param>
@@ -393,21 +369,6 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
                     UnlocalizedDescription = reader.ReadContentAsString();
                     break;
             }
-        }
-    }
-
-    /// <summary>
-    /// Reads the specified XMLReader (pass it to <see cref="ReadXmlParams(XmlReader)"/>)
-    /// This is used to load utility from a save file.
-    /// </summary>
-    /// <param name="reader">The XML reader to read from.</param>
-    public void ReadXml(XmlReader reader)
-    {
-        // X, Y, and type have already been set, and we should already
-        // be assigned to a tile.  So just read extra data if we have any.
-        if (!reader.IsEmptyElement)
-        {
-            ReadXmlParams(reader);
         }
     }
 
@@ -547,6 +508,15 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
     }
 
     /// <summary>
+    /// Gets the type tags.
+    /// </summary>
+    /// <returns>The type tags.</returns>
+    public string[] GetTypeTags()
+    {
+        return typeTags.ToArray();
+    }
+
+    /// <summary>
     /// Returns LocalizationCode name for the utility.
     /// </summary>
     /// <returns>LocalizationCode for the name of the utility.</returns>
@@ -668,6 +638,32 @@ public class Utility : IXmlSerializable, ISelectable, IPrototypable, IContextAct
         }
 
         return true;
+    }
+
+    public object ToJSon()
+    {
+        JObject utilityJSon = new JObject();
+        utilityJSon.Add("X", Tile.X);
+        utilityJSon.Add("Y", Tile.Y);
+        utilityJSon.Add("Z", Tile.Z);
+        utilityJSon.Add("Type", Type);
+        if (Parameters.HasContents())
+        {
+            utilityJSon.Add("Parameters", Parameters.ToJson());
+        }
+
+        return utilityJSon;
+    }
+
+    public void FromJson(JToken utilityToken)
+    {
+        JObject utilityJObject = (JObject)utilityToken;
+
+        // Everything else has already been set by FurnitureManager, we just need our parameters
+        if (utilityJObject.Children().Contains("Parameters"))
+        {
+            Parameters.FromJson(utilityJObject["Parameters"]);
+        }
     }
 
     private void ReadXmlDeconstructJob(XmlReader reader)

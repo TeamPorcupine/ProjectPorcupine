@@ -5,20 +5,18 @@
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
+
 #endregion
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Xml;
-using System.Xml.Schema;
-using System.Xml.Serialization;
 using MoonSharp.Interpreter;
+using Newtonsoft.Json.Linq;
 
 // Inventory are things that are lying on the floor/stockpile, like a bunch of metal bars
 // or potentially a non-installed copy of furniture (e.g. a cabinet still in the box from Ikea).
 [MoonSharpUserData]
 [System.Diagnostics.DebuggerDisplay("Inventory {ObjectType} {StackSize}/{MaxStackSize}")]
-public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
+public class Inventory : ISelectable, IContextActionProvider
 {
     private int stackSize = 1;
 
@@ -112,32 +110,34 @@ public class Inventory : IXmlSerializable, ISelectable, IContextActionProvider
         yield return string.Format("BasePrice: {0:N2}", BasePrice);
     }
 
-    public XmlSchema GetSchema()
+    public object ToJSon()
     {
-        return null;
-    }
-
-    public void WriteXml(XmlWriter writer)
-    {
-        // If we reach this point through inventories we definitely have a tile
-        // If we don't have a tile, that means we're writing a character's inventory
+        JObject inventoryJson = new JObject();
         if (Tile != null)
         {
-            writer.WriteAttributeString("X", Tile.X.ToString());
-            writer.WriteAttributeString("Y", Tile.Y.ToString());
-            writer.WriteAttributeString("Z", Tile.Z.ToString());
+            inventoryJson.Add("X", Tile.X);
+            inventoryJson.Add("Y", Tile.Y);
+            inventoryJson.Add("Z", Tile.Z);
         }
 
-        writer.WriteAttributeString("type", Type);
-        writer.WriteAttributeString("maxStackSize", MaxStackSize.ToString());
-        writer.WriteAttributeString("stackSize", StackSize.ToString());
-        writer.WriteAttributeString("basePrice", BasePrice.ToString(CultureInfo.InvariantCulture));
-        writer.WriteAttributeString("category", Category);
-        writer.WriteAttributeString("locked", Locked.ToString());
+        inventoryJson.Add("Type", Type);
+        inventoryJson.Add("MaxStackSize", MaxStackSize);
+        inventoryJson.Add("StackSize", StackSize);
+        inventoryJson.Add("BasePrice", BasePrice);
+        inventoryJson.Add("Category", Category);
+        inventoryJson.Add("Locked", Locked);
+
+        return inventoryJson;
     }
 
-    public void ReadXml(XmlReader reader)
+    public void FromJson(JToken inventoryToken)
     {
+        Type = (string)inventoryToken["Type"];
+        MaxStackSize = (int)inventoryToken["MaxStackSize"];
+        StackSize = (int)inventoryToken["StackSize"];
+        BasePrice = (float)inventoryToken["BasePrice"];
+        Category = (string)inventoryToken["Category"];
+        Locked = (bool)inventoryToken["Locked"];
     }
 
     public IEnumerable<ContextMenuAction> GetContextMenuActions(ContextMenu contextMenu)

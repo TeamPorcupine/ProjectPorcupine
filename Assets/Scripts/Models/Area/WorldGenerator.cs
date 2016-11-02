@@ -6,7 +6,6 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
@@ -58,7 +57,7 @@ public class WorldGenerator
                 int worldY = (height / 2) + startAreaCenterY - y;
 
                 Tile tile = world.GetTileAt(worldX, worldY, 0);
-                tile.Type = PrototypeManager.TileType[startAreaTiles[x, y]];
+                tile.SetTileType(PrototypeManager.TileType[startAreaTiles[x, y]]);
             }
         }
 
@@ -97,7 +96,7 @@ public class WorldGenerator
                             continue;
                         }
 
-                        tile.Type = AsteroidFloorType;
+                        tile.SetTileType(AsteroidFloorType);
 
                         world.FurnitureManager.PlaceFurniture("astro_wall", tile, false);
 

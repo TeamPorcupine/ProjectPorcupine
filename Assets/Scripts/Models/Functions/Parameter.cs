@@ -5,13 +5,13 @@
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
+
 #endregion
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using MoonSharp.Interpreter;
-using UnityEngine;
+using Newtonsoft.Json.Linq;
 
 [MoonSharpUserData]
 public class Parameter
@@ -240,51 +240,40 @@ public class Parameter
         return contents.Count > 0;
     }
 
-    public void WriteXmlParamGroup(XmlWriter writer)
-    {
-        if (string.IsNullOrEmpty(name))
-        {
-            writer.WriteStartElement("Params");
-        }
-        else
-        {
-            writer.WriteStartElement("Param");
-            writer.WriteAttributeString("name", name);
-        }
-
-        if (value != null)
-        {
-            writer.WriteAttributeString("value", value);
-        }
-
-        foreach (string k in contents.Keys)
-        {
-            this[k].WriteXml(writer);
-        }
-
-        writer.WriteEndElement();
-    }
-
-    public void WriteXmlParam(XmlWriter writer)
-    {
-        if (string.IsNullOrEmpty(name) == false)
-        {
-            writer.WriteStartElement("Param");
-            writer.WriteAttributeString("name", name);
-            writer.WriteAttributeString("value", value);
-            writer.WriteEndElement();
-        }
-    }
-
-    public void WriteXml(XmlWriter writer)
+    public JToken ToJson()
     {
         if (HasContents())
         {
-            WriteXmlParamGroup(writer);
+            JObject contentsJson = new JObject();
+            foreach (string key in contents.Keys)
+            {
+                contentsJson.Add(key, contents[key].ToJson());
+                return contentsJson;
+            }
         }
-        else
-        {
-            WriteXmlParam(writer);
+
+        return value;
+    }
+
+    public void FromJson(JToken parameterToken)
+    {
+        JObject parameterJObject = (JObject)parameterToken;
+        foreach (JProperty parameterProperty in parameterJObject.Properties())
+        {   
+            string key = parameterProperty.Name;
+            Parameter parameter = new Parameter(key);
+            JToken valueToken = parameterProperty.Value;
+
+            if (valueToken.Children().Count() > 1)
+            {
+                parameter.FromJson(valueToken);
+            }
+            else
+            {
+                parameter.SetValue((string)valueToken);
+            }
+
+            AddParameter(parameter);
         }
     }
 

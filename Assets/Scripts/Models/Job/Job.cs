@@ -331,10 +331,14 @@ public class Job : ISelectable, IPrototypable
             OnJobStopped(this);
         }
 
-        // If we are a furniture building job, Let our workspot tile know it is no longer reserved for us.
+        // If we are a building job let our tile know we are no longer pending
         if (buildablePrototype != null)
         {
-            World.Current.UnreserveTileAsWorkSpot((Furniture)buildablePrototype, tile);
+            // If we are a furniture building job, Let our workspot tile know it is no longer reserved for us.
+            if (buildablePrototype.GetType() == typeof(Furniture))
+            {
+                World.Current.UnreserveTileAsWorkSpot((Furniture)buildablePrototype, tile);
+            }
         }
 
         // Remove the job out of both job queues.

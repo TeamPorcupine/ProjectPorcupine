@@ -6,9 +6,8 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System.Collections;
+
 using System.IO;
-using System.Xml.Serialization;
 using UnityEngine;
 using UnityEngine.UI;
 
