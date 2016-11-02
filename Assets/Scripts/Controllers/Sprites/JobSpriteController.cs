@@ -94,13 +94,13 @@ public class JobSpriteController : BaseSpriteController<Job>
             sr.sprite = SpriteManager.GetSprite("Tile", "Solid");
             sr.color = new Color32(128, 255, 128, 192);
         }
-        else if (job.JobDescription.Contains("deconstruct"))
+        else if (job.Description.Contains("deconstruct"))
         {
             sr.sprite = SpriteManager.GetSprite("UI", "CursorCircle");
             sr.color = Color.red;
             job_go.transform.position = job.tile.Vector3;
         }
-        else if (job.JobDescription.Contains("mine"))
+        else if (job.Description.Contains("mine"))
         {
             sr.sprite = SpriteManager.GetSprite("UI", "MiningIcon");
             sr.color = new Color(1, 1, 1, 0.25f);

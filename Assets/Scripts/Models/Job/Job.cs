@@ -44,8 +44,6 @@ public class Job : ISelectable, IPrototypable
     /// Defaults to false.
     /// </summary>
     public bool acceptsAny;
-
-    public List<Character> charsCantReach = new List<Character>();
     
     protected float jobTimeRequired;
 
@@ -72,7 +70,7 @@ public class Job : ISelectable, IPrototypable
         this.Critical = critical;
         this.Priority = jobPriority;
         this.adjacent = adjacent;
-        this.JobDescription = "job_error_missing_desc";
+        this.Description = "job_error_missing_desc";
 
         jobWorkedLua = new List<string>();
         jobCompletedLua = new List<string>();
@@ -99,7 +97,7 @@ public class Job : ISelectable, IPrototypable
         this.jobRepeats = jobRepeats;
         this.Priority = jobPriority;
         this.adjacent = adjacent;
-        this.JobDescription = "job_error_missing_desc";
+        this.Description = "job_error_missing_desc";
 
         jobWorkedLua = new List<string>();
         jobCompletedLua = new List<string>();
@@ -124,7 +122,7 @@ public class Job : ISelectable, IPrototypable
         this.JobTime = other.JobTime;
         this.Priority = other.Priority;
         this.adjacent = other.adjacent;
-        this.JobDescription = other.JobDescription;
+        this.Description = other.Description;
         this.acceptsAny = other.acceptsAny;
 
         jobWorkedLua = new List<string>(other.jobWorkedLua);
@@ -162,7 +160,7 @@ public class Job : ISelectable, IPrototypable
     // The items that have been delivered to the jobsite.
     public Dictionary<string, Inventory> DeliveredItems { get; set; }
 
-    public string JobDescription { get; set; }
+    public string Description { get; set; }
 
     public string JobObjectType
     {
@@ -220,6 +218,13 @@ public class Job : ISelectable, IPrototypable
             return jobRepeats;
         }
     }
+
+    public List<Character> CharsCantReach
+    {
+        get;
+        protected set;
+    }
+
 
     public Pathfinder.GoalEvaluator IsTileAtJobSite
     {
@@ -492,6 +497,18 @@ public class Job : ISelectable, IPrototypable
     public string GetJobDescription()
     {
         return GetDescription();
+    }
+
+    /// <summary>
+    /// Add the character to the list of characters that can not reach this job.
+    /// </summary>
+    public void AddCharCantReach(Character character)
+    {
+        if (!CharsCantReach.Contains(character))
+        {
+            CharsCantReach.Add(character);
+        }
+
     }
 
     public IEnumerable<string> GetAdditionalInfo()

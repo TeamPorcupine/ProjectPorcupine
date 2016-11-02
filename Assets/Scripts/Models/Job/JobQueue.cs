@@ -71,8 +71,10 @@ public class JobQueue
             DebugLog("JobQueue", "- Job can't be reached");
             unreachableJobs.Enqueue(job);
         }
-        else if (job.charsCantReach.Count == World.Current.CharacterManager.characters.Count)
+        else if (job.CharsCantReach.Count == World.Current.CharacterManager.characters.Count)
         {
+            // No one can reach the job.
+             DebugLog("JobQueue", "- Job can't be reached");
             unreachableJobs.Enqueue(job);
         }
         else
@@ -192,7 +194,7 @@ public class JobQueue
 
         foreach (Job job in jobsToReevaluate)
         {
-            job.charsCantReach.Clear();
+            job.CharsCantReach.Clear();
             Enqueue(job);
         }
     }
@@ -205,9 +207,9 @@ public class JobQueue
     /// <returns></returns>
     public bool CharacterCantReachHelper(Job job, Character character)
     {
-        if (job.charsCantReach != null)
+        if (job.CharsCantReach != null)
         {
-            foreach (Character charTemp in job.charsCantReach)
+            foreach (Character charTemp in job.CharsCantReach)
             {
                 if (charTemp == character)
                 {

@@ -354,7 +354,7 @@ namespace ProjectPorcupine.Buildable.Components
                                      false,
                                      false);
                         
-                        job.JobDescription = string.Format("Hauling '{0}' to '{1}'", desiredInv, ParentFurniture.Name);
+                        job.Description = string.Format("Hauling '{0}' to '{1}'", desiredInv, ParentFurniture.Name);
                         job.OnJobWorked += PlaceInventoryToWorkshopInput;
                         ParentFurniture.Jobs.Add(job);
                     }

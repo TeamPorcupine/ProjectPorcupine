@@ -443,7 +443,7 @@ public class Character : ISelectable, IContextActionProvider
             return "job_no_job_desc";
         }
 
-        return MyJob.JobDescription;
+        return MyJob.Description;
     }
 
     #endregion

@@ -110,13 +110,6 @@ public class FurnitureManager : IEnumerable<Furniture>
         World.Current.UnreserveTileAsWorkSpot(furn, job.tile);
 
         PlaceFurniture(furn, job.tile);
-<<<<<<< HEAD
-
-        // FIXME: I don't like having to manually and explicitly set
-        // flags that prevent conflicts. It's too easy to forget to set/clear them!
-        job.tile.PendingBuildJob = null;    
-=======
->>>>>>> a57377941a70504f485f9c61c5a7419d084f49ce
     }
 
     /// <summary>

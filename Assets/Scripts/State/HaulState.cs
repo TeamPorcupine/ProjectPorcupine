@@ -63,6 +63,7 @@ namespace ProjectPorcupine.State
                         // The character has no inventory and can't find anything to haul.
                         Interrupt();
                         DebugLog(" - Nothing to haul");
+                        Job.AddCharCantReach(character);
                         Finished();
                     }
                     else
@@ -88,6 +89,7 @@ namespace ProjectPorcupine.State
                     }
                     else
                     {
+                        Job.AddCharCantReach(character);
                         character.InterruptState();
                     }
 
@@ -99,7 +101,6 @@ namespace ProjectPorcupine.State
 
                     // Ping the Job system
                     Job.DoWork(0);
-
                     Finished();
                     break;
             }
