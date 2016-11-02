@@ -9,8 +9,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace ProjectPorcupine.Rooms
@@ -289,7 +287,6 @@ namespace ProjectPorcupine.Rooms
                         }
                     }
 
-
                     if (sourceTile.Down().Room.IsOutsideRoom())
                     {
                         // We're punching a hole to the outside, just skip flood filling and put everything outside
@@ -304,7 +301,6 @@ namespace ProjectPorcupine.Rooms
                         {
                             foreach (Room r in oldRooms)
                             {
-                            
                                 Joined(r, newRoom);
                             }
                         }

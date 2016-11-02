@@ -8,9 +8,7 @@
 #endregion
 
 using System;
-using System.Collections;
 using System.Linq;
-using System.Text;
 using ProjectPorcupine.Localization;
 using UnityEngine;
 using UnityEngine.UI;

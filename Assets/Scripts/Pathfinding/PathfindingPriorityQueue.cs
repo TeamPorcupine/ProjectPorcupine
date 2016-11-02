@@ -6,10 +6,9 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System;
+
 using System.Collections.Generic;
 using Priority_Queue;
-using UnityEngine;
 
 /// <summary>
 /// Wraps the FastPriorityQueue class so that it's both easy-to-use,

@@ -6,10 +6,9 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using MoonSharp.Interpreter;
 using ProjectPorcupine.Localization;
 using UnityEngine;
