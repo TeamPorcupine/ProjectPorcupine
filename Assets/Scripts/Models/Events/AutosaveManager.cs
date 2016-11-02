@@ -6,11 +6,9 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+
 using System;
 using System.IO;
-using System.Threading;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System.Linq;
 using Scheduler;
 

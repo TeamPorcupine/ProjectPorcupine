@@ -7,7 +7,6 @@
 // ====================================================
 #endregion
 
-using System.Collections;
 using MoonSharp.Interpreter;
 using ProjectPorcupine.Buildable.Components;
 using ProjectPorcupine.PowerNetwork;

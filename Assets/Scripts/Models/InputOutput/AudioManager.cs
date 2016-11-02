@@ -32,7 +32,7 @@ public class AudioManager
     public AudioManager()
     {
         channelGroups = new Dictionary<string, ChannelGroup>();
-        RESULT res = Factory.System_Create(out SoundSystem);
+        Factory.System_Create(out SoundSystem);
         SoundSystem.setDSPBufferSize(1024, 10);
         SoundSystem.init(32, INITFLAGS.NORMAL, (IntPtr)0);
         SoundSystem.getMasterChannelGroup(out master);

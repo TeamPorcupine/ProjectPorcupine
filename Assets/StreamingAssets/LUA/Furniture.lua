@@ -519,7 +519,7 @@ function AirPump_OnUpdate(furniture, deltaTime)
                 targetRoom = west.Room
             end
         else
-            ModUtils.UChannelLogWarning("Furniture", "Air Pump blocked. Direction unclear")
+            ModUtils.ULogWarningChannel("Furniture", "Air Pump blocked. Direction unclear")
             return
         end
         
