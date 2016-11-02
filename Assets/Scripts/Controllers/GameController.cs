@@ -92,4 +92,10 @@ public class GameController : MonoBehaviour
 
         DontDestroyOnLoad(this);
     }
+
+    private void OnApplicationQuit()
+    {
+        // Ensure that the audiomanager's resources get released properly on quit. This may only be a problem in the editor.
+        AudioManager.Destroy();
+    }
 }

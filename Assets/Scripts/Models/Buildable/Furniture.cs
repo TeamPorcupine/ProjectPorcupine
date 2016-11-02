@@ -146,6 +146,11 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
             contextMenuLuaActions = new List<ContextMenuLuaAction>(other.contextMenuLuaActions);
         }
 
+        if (other.ReplaceableFurniture != null)
+        {
+            replaceableFurniture = other.ReplaceableFurniture;
+        }
+
         isEnterableAction = other.isEnterableAction;
         getSpriteNameAction = other.getSpriteNameAction;
         getProgressInfoNameAction = other.getProgressInfoNameAction;
@@ -1006,6 +1011,15 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     public bool HasTypeTag(string typeTag)
     {
         return typeTags.Contains(typeTag);
+    }
+
+    /// <summary>
+    /// Gets the type tags.
+    /// </summary>
+    /// <returns>The type tags.</returns>
+    public string[] GetTypeTags()
+    {
+        return typeTags.ToArray();
     }
 
     /// <summary>

@@ -508,6 +508,15 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
     }
 
     /// <summary>
+    /// Gets the type tags.
+    /// </summary>
+    /// <returns>The type tags.</returns>
+    public string[] GetTypeTags()
+    {
+        return typeTags.ToArray();
+    }
+
+    /// <summary>
     /// Returns LocalizationCode name for the utility.
     /// </summary>
     /// <returns>LocalizationCode for the name of the utility.</returns>
