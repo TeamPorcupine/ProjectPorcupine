@@ -454,7 +454,7 @@ public class MouseController
         // In devmode, utilities don't build their network, and one of the utilities built needs UpdateGrid called explicitly after all are built.
         if (bmc.buildMode == BuildMode.UTILITY && Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
         {
-            Tile firstTile = World.Current.GetTileAt(dragParams.StartX, dragParams.StartY, WorldController.Instance.cameraController.CurrentLayer);
+            Tile firstTile = World.Current.GetTileAt(dragParams.RawStartX, dragParams.RawStartY, WorldController.Instance.cameraController.CurrentLayer);
             Utility utility = firstTile.Utilities[PrototypeManager.Utility.Get(bmc.buildModeType).Name];
             utility.UpdateGrid(utility);
         }
