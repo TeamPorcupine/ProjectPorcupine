@@ -258,20 +258,16 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
             return null;
         }
 
-        // This type of utility links itself to its neighbours,
+        // All utilities link to neighbors of the same type,
         // so we should inform our neighbours that they have a new
         // buddy.  Just trigger their OnChangedCallback.
-        int x = tile.X;
-        int y = tile.Y;
-
-        for (int xpos = x - 1; xpos < x + 2; xpos++)
+        foreach (Tile neighbor in Tile.GetNeighbours())
         {
-            for (int ypos = y - 1; ypos < y + 2; ypos++)
+            if (neighbor.Utilities != null && neighbor.Utilities.ContainsKey(this.Name))
             {
-                Tile tileAt = World.Current.GetTileAt(xpos, ypos, tile.Z);
-                if (tileAt != null && tileAt.Utilities != null && tileAt.Utilities.ContainsKey(obj.Name))
+                if (neighbor.Utilities != null && neighbor.Utilities.ContainsKey(obj.Name))
                 {
-                    Utility utility = tileAt.Utilities[obj.Name];
+                    Utility utility = neighbor.Utilities[obj.Name];
                     if (utility.Changed != null)
                     {
                         utility.Changed(utility);
@@ -512,37 +508,24 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
             }
         }
 
-        // We should inform our neighbours that they have just lost a
-        // neighbour regardless of type.
+        // We should inform our neighbours that they have just lost a neighbour.
         // Just trigger their OnChangedCallback.
-        for (int xpos = x - 1; xpos < x + 2; xpos++)
-        {
-            for (int ypos = y - 1; ypos < y + 2; ypos++)
-            {
-                Tile tileAt = World.Current.GetTileAt(xpos, ypos, Tile.Z);
-                if (tileAt != null && tileAt.Utilities != null)
-                {
-                    foreach (Utility neighborUtility in tileAt.Utilities.Values)
-                    {
-                        if (neighborUtility.Changed != null)
-                        {
-                            neighborUtility.Changed(neighborUtility);
-                        }
-                    }
-                }
-            }
-        }
-
         foreach (Tile neighbor in Tile.GetNeighbours())
         {
-            foreach (Utility utility in neighbor.Utilities.Values)
+            if (neighbor.Utilities != null && neighbor.Utilities.ContainsKey(this.Name))
             {
-                if (utility.Grid == this.Grid)
+                Utility neighborUtility = neighbor.Utilities[this.Name];
+                if (neighborUtility.Changed != null)
                 {
-                    utility.Grid = new Grid();
+                    neighborUtility.Changed(neighborUtility);
                 }
-                utility.UpdateGrid(utility);
-                utility.Grid.Split();
+
+                if (neighborUtility.Grid == this.Grid)
+                {
+                    neighborUtility.Grid = new Grid();
+                }
+                neighborUtility.UpdateGrid(neighborUtility);
+                neighborUtility.Grid.Split();
             }
         }
 
