@@ -537,7 +537,10 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
         {
             foreach (Utility utility in neighbor.Utilities.Values)
             {
-                utility.Grid = new Grid();
+                if (utility.Grid == this.Grid)
+                {
+                    utility.Grid = new Grid();
+                }
                 utility.UpdateGrid(utility);
                 utility.Grid.Split();
             }
