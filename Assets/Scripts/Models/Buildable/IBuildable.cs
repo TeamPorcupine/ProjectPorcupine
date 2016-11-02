@@ -39,4 +39,6 @@ public interface IBuildable
     /// <param name="typeTag">Tag to check for.</param>
     /// <returns>True if buildable has specified tag.</returns>
     bool HasTypeTag(string typeTag);
+
+    string[] GetTypeTags();
 }

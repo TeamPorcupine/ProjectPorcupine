@@ -5,12 +5,12 @@
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
+
 #endregion
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Xml;
+using Newtonsoft.Json.Linq;
 
 public class UtilityManager : IEnumerable<Utility>
 {
@@ -115,7 +115,7 @@ public class UtilityManager : IEnumerable<Utility>
 
         // FIXME: I don't like having to manually and explicitly set
         // flags that preven conflicts. It's too easy to forget to set/clear them!
-        job.tile.PendingBuildJob = null;
+        job.tile.PendingBuildJobs = null;
     }
 
     /// <summary>
@@ -150,17 +150,34 @@ public class UtilityManager : IEnumerable<Utility>
         }
     }
 
-    /// <summary>
-    /// Writes the utilities to the XML.
-    /// </summary>
-    /// <param name="writer">The Xml Writer.</param>
-    public void WriteXml(XmlWriter writer)
+    public JToken ToJson()
     {
+        JArray utilitiesJson = new JArray();
         foreach (Utility utility in Utilities)
         {
-            writer.WriteStartElement("Utility");
-            utility.WriteXml(writer);
-            writer.WriteEndElement();
+            utilitiesJson.Add(utility.ToJSon());
+        }
+
+        return utilitiesJson;
+    }
+
+    public void FromJson(JToken utilitiesToken)
+    {
+        JArray utilitiesJArray = (JArray)utilitiesToken;
+
+        foreach (JToken utilityToken in utilitiesJArray)
+        {
+            int x = (int)utilityToken["X"];
+            int y = (int)utilityToken["Y"];
+            int z = (int)utilityToken["Z"];
+            string type = (string)utilityToken["Type"];
+            Utility utility = PlaceUtility(type, World.Current.GetTileAt(x, y, z), false);
+            utility.FromJson(utilityToken);
+        }
+
+        foreach (Utility utility in Utilities)
+        {
+            utility.UpdateGrid(utility);
         }
     }
 

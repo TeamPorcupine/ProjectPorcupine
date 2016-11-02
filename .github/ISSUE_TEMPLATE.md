@@ -1,3 +1,5 @@
+_this template is for reporting bugs or issues in the current game. You don't need to use it if you are suggesting a feature or starting a discussion_
+
 Check your title. Try to make it short but descriptive. Have a quick look at the available [labels](https://github.com/TeamPorcupine/ProjectPorcupine/labels). If one seems relevant prefix the title with [label name].
 
 NOTE: This template is not enforced. You are encouraged to include all of the detail below, but if anything doesn't fit this particular issue feel free to delete it!
