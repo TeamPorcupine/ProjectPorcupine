@@ -131,10 +131,10 @@ public class JobQueue
                     DebugLog("Character could not find a path to the job site.");
                     continue;
                 }
-                else if (!job.canGetToInventory(character))
+                else if ((job.RequestedItems.Count > 0) && !job.canGetToInventory(character))
                 {
                     job.CharsCantReach.Add(character);
-                    Debug.ULogError("Character could not find a path to any inventory available.");
+                    DebugLog("Character could not find a path to any inventory available.");
                     continue;
                 }
 

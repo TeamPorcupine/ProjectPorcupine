@@ -369,6 +369,8 @@ public class InventoryManager
         if (handler != null)
         {
             handler(inventory);
+            // Let the JobQueue know there is new inventory available.
+            World.Current.jobQueue.ReevaluateReachability();
         }
     }
 
