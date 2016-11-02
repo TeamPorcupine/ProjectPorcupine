@@ -58,30 +58,6 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
         }
     }
 
-    public void SetTileType(TileType newTileType, bool doRoomFloodFill = true)
-    {
-        if (type == newTileType)
-        {
-            return;
-        }
-
-        type = newTileType;
-        ForceTileUpdate = true;
-
-        bool splitting = true;
-        if (newTileType == TileType.Empty)
-        {
-            splitting = false;
-        }
-
-        if (doRoomFloodFill)
-        {
-            World.Current.RoomManager.DoRoomFloodFill(this, splitting, true);
-        }
-
-        OnTileClean();
-    }
-
     public HashSet<Furniture> ReservedAsWorkSpotBy { get; private set; }
 
     // LooseObject is something like a drill or a stack of metal sitting on the floor
@@ -172,6 +148,30 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
         // FIXME: I don't like having to manually and explicitly set
         // flags that preven conflicts. It's too easy to forget to set/clear them!
         theJob.tile.PendingBuildJobs = null;
+    }
+
+    public void SetTileType(TileType newTileType, bool doRoomFloodFill = true)
+    {
+        if (type == newTileType)
+        {
+            return;
+        }
+
+        type = newTileType;
+        ForceTileUpdate = true;
+
+        bool splitting = true;
+        if (newTileType == TileType.Empty)
+        {
+            splitting = false;
+        }
+
+        if (doRoomFloodFill)
+        {
+            World.Current.RoomManager.DoRoomFloodFill(this, splitting, true);
+        }
+
+        OnTileClean();
     }
 
     public bool UnplaceFurniture()

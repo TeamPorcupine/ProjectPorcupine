@@ -8,9 +8,7 @@
 #endregion
 using System.Collections.Generic;
 using System.Linq;
-using MoonSharp.Interpreter;
 using ProjectPorcupine.Rooms;
-using UnityEngine;
 
 public enum BuildMode
 {
@@ -373,8 +371,8 @@ public class BuildModeController
     /// Does the utility build job overlap an existing utility build job of the same type.
     /// </summary>
     /// <returns><c>true</c>, if utility build job overlaps an existing utility build job of the same type, <c>false</c> otherwise.</returns>
-    /// <param name="utilityType">Utility type.</param>
-    /// <param name="tile">Tile.</param>
+    /// <param name="utilityType">Utility type to check for.</param>
+    /// <param name="tile">Tile to check for pending buildjobs.</param>
     public bool DoesUtilityBuildJobOverlapExistingBuildJob(string utilityType, Tile tile)
     {
         HashSet<Job> pendingBuildJobs = tile.PendingBuildJobs;

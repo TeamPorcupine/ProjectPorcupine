@@ -13,7 +13,6 @@ using UnityEngine;
 
 public class SoundController
 {
-    private float soundCooldown = 0;
     private Dictionary<SoundClip, float> cooldowns;
     private VECTOR up;
     private VECTOR forward;
@@ -59,7 +58,6 @@ public class SoundController
 
         cooldowns[clip] = 0.1f;
         PlaySound(clip.Get(), "UI");
-        soundCooldown = 0.1f;
     }
 
     public void OnFurnitureCreated(Furniture furniture)
@@ -72,8 +70,6 @@ public class SoundController
 
         cooldowns[clip] = 0.1f;
         PlaySoundAt(clip.Get(), furniture.Tile, "gameSounds");
-    
-        soundCooldown = 0.1f;
     }
 
     public void OnTileChanged(Tile tileData)
@@ -88,7 +84,6 @@ public class SoundController
 
             cooldowns[clip] = 0.1f;
             PlaySoundAt(clip.Get(), tileData, "gameSounds", 1);
-            soundCooldown = 0.1f;
         }
     }
 
@@ -145,6 +140,7 @@ public class SoundController
             float volChange = Random.Range(-volRange, 0f);
             channel.setVolume(curVol * DecibelsToVolume(volChange));
         }
+
         channel.set3DLevel(0.75f);
         channel.setPaused(false);
     }
