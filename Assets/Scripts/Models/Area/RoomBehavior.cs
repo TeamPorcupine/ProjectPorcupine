@@ -10,8 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
-using System.Xml.Schema;
-using System.Xml.Serialization;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
 
@@ -21,7 +19,7 @@ namespace ProjectPorcupine.Rooms
     /// Room Behaviors are functions added to specific rooms, such as an airlock, a dining room, or an abattoir.
     /// </summary>
     [MoonSharpUserData]
-    public class RoomBehavior : IXmlSerializable, ISelectable, IPrototypable, IContextActionProvider
+    public class RoomBehavior : ISelectable, IPrototypable, IContextActionProvider
     {
         /// <summary>
         /// These context menu lua action are used to build the context menu of the room behavior.
@@ -192,29 +190,6 @@ namespace ProjectPorcupine.Rooms
         public bool IsValidRoom(Room room)
         {
             return funcRoomValidation(room);
-        }
-
-        /// <summary>
-        /// This does absolutely nothing.
-        /// This is required to implement IXmlSerializable.
-        /// </summary>
-        /// <returns>NULL and NULL.</returns>
-        public XmlSchema GetSchema()
-        {
-            return null;
-        }
-
-        /// <summary>
-        /// Writes the room behavior to XML.
-        /// </summary>
-        /// <param name="writer">The XML writer to write to.</param>
-        public void WriteXml(XmlWriter writer)
-        {
-            writer.WriteAttributeString("Room", Room.ID.ToString());
-            writer.WriteAttributeString("type", Type);
-
-            // Let the Parameters handle their own xml
-            Parameters.WriteXml(writer);
         }
 
         /// <summary>

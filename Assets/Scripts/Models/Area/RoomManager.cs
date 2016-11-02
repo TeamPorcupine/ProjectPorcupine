@@ -10,6 +10,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace ProjectPorcupine.Rooms
 {
@@ -404,6 +406,32 @@ namespace ProjectPorcupine.Rooms
         }
 
         #endregion
+
+        public JToken ToJson()
+        {
+            JArray roomJArray = new JArray();
+            foreach (Room room in rooms)
+            {
+                if (room.IsOutsideRoom())
+                {
+                    continue;
+                }
+
+                roomJArray.Add(room.ToJson());
+            }
+
+            return roomJArray;
+        }
+
+        public void FromJson(JToken roomsToken)
+        {
+            foreach (JToken room in roomsToken)
+            {
+                Room r = new Room();
+                Add(r);
+                r.FromJson(room);
+            }
+        }
 
         protected Room ActualFloodFill(Tile sourceTile, Room oldRoom, int sizeOfOldRoom)
         {

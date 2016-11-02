@@ -5,14 +5,13 @@
 // and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
+
 #endregion
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml;
-using System.Xml.Schema;
-using System.Xml.Serialization;
 using MoonSharp.Interpreter;
+using Newtonsoft.Json.Linq;
 using ProjectPorcupine.Localization;
 using ProjectPorcupine.Rooms;
 using UnityEngine;
@@ -26,7 +25,7 @@ public enum Enterability
 
 [MoonSharpUserData]
 [System.Diagnostics.DebuggerDisplay("Tile {X},{Y},{Z}")]
-public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComparable, IEquatable<Tile>
+public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable<Tile>
 {
     private TileType type = TileType.Empty;
 
@@ -540,37 +539,30 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
     }
     #endregion
 
-    #region Save XML
-    public XmlSchema GetSchema()
+    public object ToJson()
     {
-        return null;
+        return new JObject(
+            new JProperty("X", X),
+            new JProperty("Y", Y),
+            new JProperty("Z", Z),
+            new JProperty("TimesWalked", WalkCount),
+            new JProperty("RoomID", Room == null ? -1 : Room.ID),
+            new JProperty("Type", Type.Type));
     }
 
-    public void WriteXml(XmlWriter writer)
+    public void FromJson(JToken tileToken)
     {
-        writer.WriteAttributeString("X", X.ToString());
-        writer.WriteAttributeString("Y", Y.ToString());
-        writer.WriteAttributeString("Z", Z.ToString());
-        writer.WriteAttributeString("timesWalked", WalkCount.ToString());
-        writer.WriteAttributeString("RoomID", Room == null ? "-1" : Room.ID.ToString());
-        writer.WriteAttributeString("Type", Type.Type);
-    }
-
-    public void ReadXml(XmlReader reader)
-    {
-        // X and Y have already been read/processed
-        Room = World.Current.RoomManager[int.Parse(reader.GetAttribute("RoomID"))];
+        Room = World.Current.RoomManager[(int)tileToken["RoomID"]];
         if (Room != null)
         {
             Room.AssignTile(this);
         }
 
         // Since we are loading from a save here, we don't want to do a RoomFloodfill here.
-        SetTileType(PrototypeManager.TileType.Get(reader.GetAttribute("Type")), false);
-        WalkCount = int.Parse(reader.GetAttribute("timesWalked"));
+        SetTileType(PrototypeManager.TileType.Get((string)tileToken["Type"]), false);
+        WalkCount = (int)tileToken["TimesWalked"];
         ForceTileUpdate = true;
     }
-    #endregion
 
     #region ISelectableInterface implementation
 
