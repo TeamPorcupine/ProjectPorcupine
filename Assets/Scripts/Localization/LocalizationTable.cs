@@ -16,45 +16,6 @@ using UnityEngine;
 
 namespace ProjectPorcupine.Localization
 {
-    // The class that holds information about a languages configuration data. 
-    // TODO: move to seperate cs file
-    public class LanguageData
-    {
-        public readonly string LocalizationCode;
-
-        public bool IsRightToLeft;
-
-        // Even for RTL languages, this is kept as defined in xml. The property does the character reversal
-        private string localName;
-
-        public LanguageData(string localizationCode, string localName, bool isRightToLeft = false)
-        {
-            this.LocalizationCode = localizationCode;
-            this.localName = localName ?? localizationCode;
-            this.IsRightToLeft = isRightToLeft;
-        }
-
-        public string LocalName
-        {
-            get
-            {
-                if (IsRightToLeft == false)
-                {
-                    return localName;
-                }
-                else
-                {
-                    return LocalizationTable.ReverseString(localName);
-                }
-            }
-
-            set
-            {
-                localName = value;
-            }
-        }   
-    }
-
     /// <summary>
     /// The central class containing localization information.
     /// </summary>
@@ -70,7 +31,7 @@ namespace ProjectPorcupine.Localization
         private static readonly string DefaultLanguage = "en_US";
 
         // Contains basic information about each localization
-        private static Dictionary<string, LanguageData> localizationConfigurations;
+        private static Dictionary<string, LocalizationData> localizationConfigurations;
 
         // The dictionary that stores all the localization values.
         private static Dictionary<string, Dictionary<string, string>> localizationTable = new Dictionary<string, Dictionary<string, string>>();
@@ -179,7 +140,7 @@ namespace ProjectPorcupine.Localization
 
         public static void LoadConfigFile(string pathToConfigFile)
         {
-            localizationConfigurations = new Dictionary<string, LanguageData>();
+            localizationConfigurations = new Dictionary<string, LocalizationData>();
 
             if (File.Exists(pathToConfigFile) == false)
             {
@@ -199,7 +160,7 @@ namespace ProjectPorcupine.Localization
                         string localName = reader.GetAttribute("name");
                         bool rtl = (reader.GetAttribute("rtl") == "true") ? true : false;
 
-                        localizationConfigurations.Add(code, new LanguageData(code, localName, rtl));
+                        localizationConfigurations.Add(code, new LocalizationData(code, localName, rtl));
                     }
                 }
             }

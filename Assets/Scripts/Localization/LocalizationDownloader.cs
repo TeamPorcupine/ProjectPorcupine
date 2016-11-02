@@ -46,7 +46,6 @@ namespace ProjectPorcupine.Localization
     /// </summary>
     public static class LocalizationDownloader
     {
-
         // TODO: Change this to the official repo before PR.
         private static readonly string LocalizationRepositoryZipLocation = "https://github.com/bjubes/ProjectPorcupineLocalization/archive/" + GameController.GameVersion + ".zip";
 
