@@ -225,7 +225,7 @@ function Stockpile_UpdateAction( furniture, deltaTime )
     		Job.JobPriority.Low,
     		false
   	)
-  	job.JobDescription = "job_stockpile_moving_desc"
+  	job.Description = "job_stockpile_moving_desc"
   	job.acceptsAny = true
 
   	-- TODO: Later on, add stockpile priorities, so that we can take from a lower
@@ -283,7 +283,7 @@ function MiningDroneStation_UpdateAction( furniture, deltaTime )
 	)
 
 	job.RegisterJobCompletedCallback("MiningDroneStation_JobComplete")
-	job.JobDescription = "job_mining_drone_station_mining_desc"
+	job.Description = "job_mining_drone_station_mining_desc"
 	furniture.Jobs.Add(job)
 end
 
@@ -393,7 +393,7 @@ function CloningPod_UpdateAction(furniture, deltaTime)
     furniture.SetAnimationState("idle")
     job.RegisterJobWorkedCallback("CloningPod_JobRunning")
     job.RegisterJobCompletedCallback("CloningPod_JobComplete")
-	job.JobDescription = "job_cloning_pod_cloning_desc"
+	job.Description = "job_cloning_pod_cloning_desc"
     furniture.Jobs.Add(job)
 end
 
@@ -650,7 +650,7 @@ function OreMine_CreateMiningJob(furniture, character)
         true
 	)
 
-    job.JobDescription = "job_ore_mine_mining_desc"
+    job.Description = "job_ore_mine_mining_desc"
     job.RegisterJobWorkedCallback("OreMine_OreMined")
     furniture.Jobs.Add(job)
     ModUtils.ULog("Create Mining Job - Mining Job Created")

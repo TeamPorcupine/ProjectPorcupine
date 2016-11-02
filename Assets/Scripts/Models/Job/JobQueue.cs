@@ -66,15 +66,11 @@ public class JobQueue
 
             jobsWaitingForInventory[missing].Add(job);
         }
-        else if (job.tile != null && job.tile.IsReachableFromAnyNeighbor(true) == false)
-        {
-            DebugLog("JobQueue", "- Job can't be reached");
-            unreachableJobs.Enqueue(job);
-        }
-        else if (job.CharsCantReach.Count == World.Current.CharacterManager.characters.Count)
+        else if ((job.tile != null && job.tile.IsReachableFromAnyNeighbor(true) == false) ||
+            job.CharsCantReach.Count == World.Current.CharacterManager.characters.Count)
         {
             // No one can reach the job.
-             DebugLog("JobQueue", "- Job can't be reached");
+            DebugLog("JobQueue", "- Job can't be reached");
             unreachableJobs.Enqueue(job);
         }
         else
