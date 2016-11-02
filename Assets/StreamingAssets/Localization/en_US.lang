@@ -81,6 +81,7 @@ tile_Floor=Floor
 tile_Floor_desc=Meets the highest non-skid standards.
 tile_Ladder=Ladder
 tile_Ladder_desc=High-tech space movement system. Effectiveness reduced when held by weak noodle arms.
+prioritize=Prioritize {0}
 need_oxygen=Oxygen {0}
 need_sleep=Sleep {0}
 job_no_job_desc=None

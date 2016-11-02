@@ -5,15 +5,14 @@
 // and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
+
 #endregion
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml;
-using System.Xml.Schema;
-using System.Xml.Serialization;
 using MoonSharp.Interpreter;
+using Newtonsoft.Json.Linq;
+using ProjectPorcupine.Localization;
 using ProjectPorcupine.Rooms;
 using UnityEngine;
 
@@ -26,7 +25,7 @@ public enum Enterability
 
 [MoonSharpUserData]
 [System.Diagnostics.DebuggerDisplay("Tile {X},{Y},{Z}")]
-public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComparable, IEquatable<Tile>
+public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable<Tile>
 {
     private TileType type = TileType.Empty;
 
@@ -44,6 +43,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
         MovementModifier = 1;
         Utilities = new Dictionary<string, Utility>();
         ReservedAsWorkSpotBy = new HashSet<Furniture>();
+        PendingBuildJobs = new HashSet<Job>();
     }
 
     // The function we callback any time our tile's data changes
@@ -56,19 +56,30 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
         {
             return type;
         }
+    }
 
-        set
+    public void SetTileType(TileType newTileType, bool doRoomFloodFill = true)
+    {
+        if (type == newTileType)
         {
-            if (type == value)
-            {
-                return;
-            }
-
-            type = value;
-            ForceTileUpdate = true;
-
-            OnTileClean();
+            return;
         }
+
+        type = newTileType;
+        ForceTileUpdate = true;
+
+        bool splitting = true;
+        if (newTileType == TileType.Empty)
+        {
+            splitting = false;
+        }
+
+        if (doRoomFloodFill)
+        {
+            World.Current.RoomManager.DoRoomFloodFill(this, splitting, true);
+        }
+
+        OnTileClean();
     }
 
     public HashSet<Furniture> ReservedAsWorkSpotBy { get; private set; }
@@ -118,7 +129,7 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
 
     // FIXME: This seems like a terrible way to flag if a job is pending
     // on a tile.  This is going to be prone to errors in set/clear.
-    public Job PendingBuildJob { get; set; }
+    public HashSet<Job> PendingBuildJobs { get; set; }
 
     public int X { get; private set; }
 
@@ -156,11 +167,11 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
     public static void ChangeTileTypeJobComplete(Job theJob)
     {
         // FIXME: For now this is hardcoded to build floor
-        theJob.tile.Type = theJob.JobTileType;
+        theJob.tile.SetTileType(theJob.JobTileType);
 
         // FIXME: I don't like having to manually and explicitly set
         // flags that preven conflicts. It's too easy to forget to set/clear them!
-        theJob.tile.PendingBuildJob = null;
+        theJob.tile.PendingBuildJobs = null;
     }
 
     public bool UnplaceFurniture()
@@ -344,7 +355,8 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
     /// <returns>The neighbours.</returns>
     /// <param name="diagOkay">Is diagonal movement okay?.</param>
     /// <param name="vertOkay">Is vertical movement okay?.</param>
-    public Tile[] GetNeighbours(bool diagOkay = false, bool vertOkay = false)
+    /// <param name="nullOkay">Is returning null tiles okay?.</param>
+    public Tile[] GetNeighbours(bool diagOkay = false, bool vertOkay = false, bool nullOkay = false)
     {
         Tile[] tiles = diagOkay == false ? new Tile[6] : new Tile[10];
         tiles[0] = World.Current.GetTileAt(X, Y + 1, Z);
@@ -368,7 +380,14 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
             tiles[9] = World.Current.GetTileAt(X - 1, Y + 1, Z);
         }
 
-        return tiles.Where(tile => tile != null).ToArray();
+        if (!nullOkay)
+        {
+            return tiles.Where(tile => tile != null).ToArray();
+        }
+        else
+        {
+            return tiles;
+        }
     }
 
     public Tile[] GetVerticalNeighbors(bool nullOkay = false)
@@ -443,6 +462,23 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
         return false;
     }
 
+    public bool HasClearLineToBottom()
+    {
+        if (type != TileType.Empty)
+        {
+            return false;
+        }
+
+        if (Down() == null)
+        {
+            return true;
+        }
+        else
+        {
+            return Down().HasClearLineToBottom();
+        }
+    }
+
     public Tile North()
     {
         return World.Current.GetTileAt(X, Y + 1, Z);
@@ -503,36 +539,30 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
     }
     #endregion
 
-    #region Save XML
-    public XmlSchema GetSchema()
+    public object ToJson()
     {
-        return null;
+        return new JObject(
+            new JProperty("X", X),
+            new JProperty("Y", Y),
+            new JProperty("Z", Z),
+            new JProperty("TimesWalked", WalkCount),
+            new JProperty("RoomID", Room == null ? -1 : Room.ID),
+            new JProperty("Type", Type.Type));
     }
 
-    public void WriteXml(XmlWriter writer)
+    public void FromJson(JToken tileToken)
     {
-        writer.WriteAttributeString("X", X.ToString());
-        writer.WriteAttributeString("Y", Y.ToString());
-        writer.WriteAttributeString("Z", Z.ToString());
-        writer.WriteAttributeString("timesWalked", WalkCount.ToString());
-        writer.WriteAttributeString("RoomID", Room == null ? "-1" : Room.ID.ToString());
-        writer.WriteAttributeString("Type", Type.Type);
-    }
-
-    public void ReadXml(XmlReader reader)
-    {
-        // X and Y have already been read/processed
-        Room = World.Current.RoomManager[int.Parse(reader.GetAttribute("RoomID"))];
+        Room = World.Current.RoomManager[(int)tileToken["RoomID"]];
         if (Room != null)
         {
             Room.AssignTile(this);
         }
 
-        Type = PrototypeManager.TileType.Get(reader.GetAttribute("Type"));
-        WalkCount = int.Parse(reader.GetAttribute("timesWalked"));
+        // Since we are loading from a save here, we don't want to do a RoomFloodfill here.
+        SetTileType(PrototypeManager.TileType.Get((string)tileToken["Type"]), false);
+        WalkCount = (int)tileToken["TimesWalked"];
         ForceTileUpdate = true;
     }
-    #endregion
 
     #region ISelectableInterface implementation
 
@@ -561,32 +591,31 @@ public class Tile : IXmlSerializable, ISelectable, IContextActionProvider, IComp
 
     public IEnumerable<ContextMenuAction> GetContextMenuActions(ContextMenu contextMenu)
     {
-        if (PendingBuildJob != null)
+        if (PendingBuildJobs != null)
         {
-            yield return new ContextMenuAction
-            {
-                Text = "Cancel Job",
-                RequireCharacterSelected = false,
-                Action = (cm, c) =>
-                {
-                    if (PendingBuildJob != null)
-                    {
-                        PendingBuildJob.CancelJob();
-                    }
-                }
-            };
-
-            if (!PendingBuildJob.IsBeingWorked)
+            foreach (Job pendingJob in PendingBuildJobs)
             {
                 yield return new ContextMenuAction
                 {
-                    Text = "Prioritize " + PendingBuildJob.GetName(),
-                    RequireCharacterSelected = true,
+                    Text = "Cancel " + pendingJob.GetName(),
+                    RequireCharacterSelected = false,
                     Action = (cm, c) =>
                     {
-                        c.PrioritizeJob(PendingBuildJob);
+                        pendingJob.CancelJob();
                     }
                 };
+                if (!pendingJob.IsBeingWorked)
+                {
+                    yield return new ContextMenuAction
+                    {
+                        Text = LocalizationTable.GetLocalization("prioritize", pendingJob.GetName()),
+                        RequireCharacterSelected = true,
+                        Action = (cm, c) =>
+                        {
+                            c.PrioritizeJob(pendingJob);
+                        }
+                    };
+                }
             }
         }
     }

@@ -1,4 +1,4 @@
-#region License
+﻿#region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
 // This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
@@ -91,5 +91,11 @@ public class GameController : MonoBehaviour
         }
 
         DontDestroyOnLoad(this);
+    }
+
+    private void OnApplicationQuit()
+    {
+        // Ensure that the audiomanager's resources get released properly on quit. This may only be a problem in the editor.
+        AudioManager.Destroy();
     }
 }

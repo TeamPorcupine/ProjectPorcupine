@@ -5,12 +5,13 @@
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
+
 #endregion
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 public class FurnitureManager : IEnumerable<Furniture>
@@ -108,10 +109,6 @@ public class FurnitureManager : IEnumerable<Furniture>
         World.Current.UnreserveTileAsWorkSpot(furn, job.tile);
 
         PlaceFurniture(furn, job.tile);
-
-        // FIXME: I don't like having to manually and explicitly set
-        // flags that prevent conflicts. It's too easy to forget to set/clear them!
-        job.tile.PendingBuildJob = null;
     }
 
     /// <summary>
@@ -269,17 +266,30 @@ public class FurnitureManager : IEnumerable<Furniture>
         }
     }
 
-    /// <summary>
-    /// Writes the furniture to the XML.
-    /// </summary>
-    /// <param name="writer">The Xml Writer.</param>
-    public void WriteXml(XmlWriter writer)
+    public JToken ToJson()
     {
-        foreach (Furniture furn in furnitures)
+        JArray furnituresJson = new JArray();
+        foreach (Furniture furniture in furnitures)
         {
-            writer.WriteStartElement("Furniture");
-            furn.WriteXml(writer);
-            writer.WriteEndElement();
+            furnituresJson.Add(furniture.ToJSon());
+        }
+
+        return furnituresJson;
+    }
+
+    public void FromJson(JToken furnituresToken)
+    {
+        JArray furnituresJArray = (JArray)furnituresToken;
+
+        foreach (JToken furnitureToken in furnituresJArray)
+        {
+            int x = (int)furnitureToken["X"];
+            int y = (int)furnitureToken["Y"];
+            int z = (int)furnitureToken["Z"];
+            string type = (string)furnitureToken["Type"];
+            float rotation = (float)furnitureToken["Rotation"];
+            Furniture furniture = PlaceFurniture(type, World.Current.GetTileAt(x, y, z), false, rotation);
+            furniture.FromJson(furnitureToken);
         }
     }
 
