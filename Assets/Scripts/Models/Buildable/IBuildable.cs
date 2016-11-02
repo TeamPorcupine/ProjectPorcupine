@@ -7,9 +7,6 @@
 // ====================================================
 #endregion
 
-using System.Collections;
-using UnityEngine;
-
 public interface IBuildable
 {
     /// <summary>

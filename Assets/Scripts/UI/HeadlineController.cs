@@ -7,9 +7,6 @@
 // ====================================================
 #endregion
 
-using System.Collections;
-using System.IO;
-using System.Xml;
 using Scheduler;
 using UnityEngine;
 using UnityEngine.UI;
