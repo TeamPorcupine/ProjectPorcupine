@@ -14,7 +14,7 @@ public class GameController : MonoBehaviour
 {
     // TODO: Should this be also saved with the world data?
     // If so - beginner task!
-    public static readonly string GameVersion = "test"; //"Someone_will_come_up_with_a_proper_naming_scheme_later";
+    public static readonly string GameVersion = "Someone_will_come_up_with_a_proper_naming_scheme_later";
 
     public KeyboardManager KeyboardManager;
     public SceneController SceneManager;
