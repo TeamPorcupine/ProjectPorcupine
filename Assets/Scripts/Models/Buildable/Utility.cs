@@ -261,17 +261,14 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
         // All utilities link to neighbors of the same type,
         // so we should inform our neighbours that they have a new
         // buddy.  Just trigger their OnChangedCallback.
-        foreach (Tile neighbor in Tile.GetNeighbours())
+        foreach (Tile neighbor in obj.Tile.GetNeighbours())
         {
-            if (neighbor.Utilities != null && neighbor.Utilities.ContainsKey(this.Name))
+            if (neighbor.Utilities != null && neighbor.Utilities.ContainsKey(obj.Name))
             {
-                if (neighbor.Utilities != null && neighbor.Utilities.ContainsKey(obj.Name))
+                Utility utility = neighbor.Utilities[obj.Name];
+                if (utility.Changed != null)
                 {
-                    Utility utility = neighbor.Utilities[obj.Name];
-                    if (utility.Changed != null)
-                    {
-                        utility.Changed(utility);
-                    }
+                    utility.Changed(utility);
                 }
             }
         }
@@ -480,8 +477,6 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
     /// </summary>
     public void Deconstruct()
     {
-        int x = Tile.X;
-        int y = Tile.Y;
         if (Tile.Utilities != null)
         {
             Jobs.CancelAll();
