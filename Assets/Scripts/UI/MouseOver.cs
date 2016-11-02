@@ -1,0 +1,64 @@
+﻿#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
+// and you are welcome to redistribute it under certain conditions; See 
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
+
+using UnityEngine;
+using UnityEngine.UI;
+
+/// <summary>
+/// Every frame, this script checks to see which tile
+/// is under the mouse and then updates the GetComponent<Text>.text
+/// parameter of the object it is attached to.
+/// </summary>
+public abstract class MouseOver : MonoBehaviour {
+
+    private Text text;
+    private MouseController mouseController;
+
+    // Use this for initialization.
+    private void Start()
+    {
+        text = GetComponent<Text>();
+
+        if (text == null)
+        {
+            Debug.ULogErrorChannel("MouseOver", "MouseOver: No 'Text' UI component on this object.");
+            this.enabled = false;
+            return;
+        }
+
+        mouseController = WorldController.Instance.mouseController;
+        if (mouseController == null)
+        {
+            Debug.ULogErrorChannel("MouseOver", "How do we not have an instance of mouse controller?");
+            this.enabled = false;
+            return;
+        }
+    }
+	
+	// Update is called once per frame
+	void Update () {
+        Tile tile = mouseController.GetMouseOverTile();
+
+        string infoString = "null";
+
+        if (tile != null)
+        {
+            infoString = getMouseOverString(tile);
+        }
+
+        text.text = infoString;
+	}
+
+    /// <summary>
+    /// obtains a string that represents some info about tile t.
+    /// </summary>
+    /// <param name="tile">the in game tile that our mouse is currently over</param>
+    protected abstract string getMouseOverString(Tile tile);
+
+}
