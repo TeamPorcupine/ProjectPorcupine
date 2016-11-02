@@ -405,7 +405,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     {
         if (proto.IsValidPosition(tile) == false)
         {
-            Debug.ULogErrorChannel("Furniture", "PlaceInstance -- Position Validity Function returned FALSE. " + proto.Name + " " + tile.X + ", " + tile.Y + ", " + tile.Z);
+            Debug.ULogWarningChannel("Furniture", "PlaceInstance :: Position Validity Function returned FALSE. " + proto.Name + " " + tile.X + ", " + tile.Y + ", " + tile.Z);
             return null;
         }
 
