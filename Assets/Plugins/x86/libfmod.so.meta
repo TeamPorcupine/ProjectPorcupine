@@ -16,6 +16,7 @@ PluginImporter:
       settings:
         CPU: x86
         DefaultValueInitialized: true
+        OS: AnyOS
     Linux:
       enabled: 1
       settings:
@@ -29,9 +30,9 @@ PluginImporter:
       settings:
         CPU: x86
     OSXIntel:
-      enabled: 1
+      enabled: 0
       settings:
-        CPU: AnyCPU
+        CPU: None
     OSXIntel64:
       enabled: 0
       settings:
@@ -39,7 +40,7 @@ PluginImporter:
     OSXUniversal:
       enabled: 0
       settings:
-        CPU: x86
+        CPU: None
     Win:
       enabled: 1
       settings:
