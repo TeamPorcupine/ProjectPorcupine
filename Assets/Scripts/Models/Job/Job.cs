@@ -54,6 +54,8 @@ public class Job : ISelectable, IPrototypable
     // The job has been stopped, either because it's non-repeating or was canceled.
     private List<string> jobCompletedLua;
 
+    private List<Character> charsCantReach = new List<Character>();
+
     // Required for IPrototypable
     public Job()
     {
@@ -221,8 +223,10 @@ public class Job : ISelectable, IPrototypable
 
     public List<Character> CharsCantReach
     {
-        get;
-        protected set;
+        get
+        {
+            return charsCantReach;
+        }
     }
 
 
@@ -508,7 +512,22 @@ public class Job : ISelectable, IPrototypable
         {
             CharsCantReach.Add(character);
         }
+    }
 
+    public bool canGetToInventory(Character character)
+    {
+        List<Tile> path = null;
+        path = World.Current.InventoryManager.GetPathToClosestInventoryOfType(RequestedItems.Keys.ToArray(), character.CurrTile, canTakeFromStockpile);
+        if (path != null && path.Count > 0) { return true; }
+        else { return false; }
+    }
+
+    /// <summary>
+    /// Resets the list of character unable to reach the job.
+    /// </summary>
+    public void ClearCharCantReach()
+    {
+        charsCantReach.Clear();
     }
 
     public IEnumerable<string> GetAdditionalInfo()

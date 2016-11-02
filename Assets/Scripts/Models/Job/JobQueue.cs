@@ -128,6 +128,13 @@ public class JobQueue
             {
                 if (CharacterCantReachHelper(job, character))
                 {
+                    DebugLog("Character could not find a path to the job site.");
+                    continue;
+                }
+                else if (!job.canGetToInventory(character))
+                {
+                    job.CharsCantReach.Add(character);
+                    Debug.ULogError("Character could not find a path to any inventory available.");
                     continue;
                 }
 
@@ -190,7 +197,7 @@ public class JobQueue
 
         foreach (Job job in jobsToReevaluate)
         {
-            job.CharsCantReach.Clear();
+            job.ClearCharCantReach();
             Enqueue(job);
         }
     }

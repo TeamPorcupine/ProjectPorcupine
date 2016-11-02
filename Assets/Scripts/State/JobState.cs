@@ -66,7 +66,7 @@ namespace ProjectPorcupine.State
                     // Add character to the list of characters unable to reach the job.
                     if (!World.Current.jobQueue.CharacterCantReachHelper(Job, character))
                     {
-                        Job.charsCantReach.Add(character);
+                        Job.CharsCantReach.Add(character);
                     }
                    
                     Interrupt();
