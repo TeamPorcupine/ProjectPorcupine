@@ -7,9 +7,6 @@
 // ====================================================
 #endregion
 using System;
-using System.IO;
-using System.Text;
-using System.Xml;
 using NUnit.Framework;
 using Scheduler;
 
@@ -244,7 +241,7 @@ public class ScheduledEventTest
     }
 
     [Test]
-    public void WriteXMLTest()
+    public void ToJsonTest()
     {
         ScheduledEvent evt = new ScheduledEvent(
             "test",
@@ -253,11 +250,9 @@ public class ScheduledEventTest
             true,
             1);
 
-        StringBuilder sb = new StringBuilder();
-        XmlWriter writer = new XmlTextWriter(new StringWriter(sb));
-        evt.WriteXml(writer);
+        string jsonString = Newtonsoft.Json.JsonConvert.SerializeObject(evt.ToJson());
 
-        Assert.That(sb.ToString(), Is.EqualTo("<Event name=\"test\" cooldown=\"3\" timeToWait=\"3\" repeatsForever=\"True\" />"));
+        Assert.That(jsonString, Is.EqualTo("{\"Name\":\"test\",\"Cooldown\":3.0,\"TimeToWait\":3.0,\"RepeatsForever\":true,\"RepeatsLeft\":1}"));
 
         evt = new ScheduledEvent(
             "test",
@@ -266,11 +261,9 @@ public class ScheduledEventTest
             false,
             2);
 
-        sb = new StringBuilder();
-        writer = new XmlTextWriter(new StringWriter(sb));
-        evt.WriteXml(writer);
+        jsonString = Newtonsoft.Json.JsonConvert.SerializeObject(evt.ToJson());
 
-        Assert.That(sb.ToString(), Is.EqualTo("<Event name=\"test\" cooldown=\"3\" timeToWait=\"3\" repeatsLeft=\"2\" />"));
+        Assert.That(jsonString, Is.EqualTo("{\"Name\":\"test\",\"Cooldown\":3.0,\"TimeToWait\":3.0,\"RepeatsForever\":false,\"RepeatsLeft\":2}"));
     }
 
     private void Reset()

@@ -5,16 +5,16 @@
 // and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
+
 #endregion
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
-using System.Xml.Schema;
-using System.Xml.Serialization;
 using Animation;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
+using Newtonsoft.Json.Linq;
 using ProjectPorcupine.Buildable.Components;
 using ProjectPorcupine.Jobs;
 using ProjectPorcupine.PowerNetwork;
@@ -24,7 +24,7 @@ using UnityEngine;
 /// InstalledObjects are things like walls, doors, and furniture (e.g. a sofa).
 /// </summary>
 [MoonSharpUserData]
-public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextActionProvider, IBuildable
+public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBuildable
 {
     #region Private Variables
     // Prevent construction too close to the world's edge
@@ -144,6 +144,11 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         if (other.contextMenuLuaActions != null)
         {
             contextMenuLuaActions = new List<ContextMenuLuaAction>(other.contextMenuLuaActions);
+        }
+
+        if (other.ReplaceableFurniture != null)
+        {
+            replaceableFurniture = other.ReplaceableFurniture;
         }
 
         isEnterableAction = other.isEnterableAction;
@@ -626,35 +631,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     }
     #endregion
 
-    #region Save Load
-    /// <summary>
-    /// This does absolutely nothing.
-    /// This is required to implement IXmlSerializable.
-    /// </summary>
-    /// <returns>NULL and NULL.</returns>
-    public XmlSchema GetSchema()
-    {
-        return null;
-    }
-
-    /// <summary>
-    /// Writes the furniture to XML.
-    /// </summary>
-    /// <param name="writer">The XML writer to write to.</param>
-    public void WriteXml(XmlWriter writer)
-    {
-        writer.WriteAttributeString("X", Tile.X.ToString());
-        writer.WriteAttributeString("Y", Tile.Y.ToString());
-        writer.WriteAttributeString("Z", Tile.Z.ToString());
-        writer.WriteAttributeString("type", Type);
-        writer.WriteAttributeString("Rotation", Rotation.ToString());
-
-        // Let the Parameters handle their own xml
-        Parameters.WriteXml(writer);
-    }
-
-    #endregion
-
     #region Read Prototype
     /// <summary>
     /// Reads the prototype furniture from XML.
@@ -794,21 +770,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     }
 
     /// <summary>
-    /// Reads the specified XMLReader (pass it to <see cref="ReadXmlParams(XmlReader)"/>)
-    /// This is used to load furniture from a save file.
-    /// </summary>
-    /// <param name="reader">The XML reader to read from.</param>
-    public void ReadXml(XmlReader reader)
-    {
-        // X, Y, type and rotation have already been set, and we should already
-        // be assigned to a tile.  So just read extra data if we have any.
-        if (!reader.IsEmptyElement)
-        {
-            ReadXmlParams(reader);
-        }
-    }
-
-    /// <summary>
     /// Reads the XML for parameters that this furniture has and assign it to the furniture.
     /// </summary>
     /// <param name="reader">The reader to read the parameters from.</param>
@@ -884,6 +845,33 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         PrototypeManager.FurnitureDeconstructJob.Set(job);
     }
     #endregion
+
+    public object ToJSon()
+    {
+        JObject furnitureJSon = new JObject();
+        furnitureJSon.Add("X", Tile.X);
+        furnitureJSon.Add("Y", Tile.Y);
+        furnitureJSon.Add("Z", Tile.Z);
+        furnitureJSon.Add("Type", Type);
+        furnitureJSon.Add("Rotation", Rotation);
+        if (Parameters.HasContents())
+        {
+            furnitureJSon.Add("Parameters", Parameters.ToJson());
+        }
+
+        return furnitureJSon;
+    }
+
+    public void FromJson(JToken furnitureToken)
+    {
+        JObject furnitureJObject = (JObject)furnitureToken;
+
+        // Everything else has already been set by FurnitureManager, we just need our parameters
+        if (furnitureJObject.Children().Contains("Parameters"))
+        {
+            Parameters.FromJson(furnitureJObject["Parameters"]);
+        }
+    }
 
     /// <summary>
     /// Accepts for storage.
@@ -1023,6 +1011,15 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     public bool HasTypeTag(string typeTag)
     {
         return typeTags.Contains(typeTag);
+    }
+
+    /// <summary>
+    /// Gets the type tags.
+    /// </summary>
+    /// <returns>The type tags.</returns>
+    public string[] GetTypeTags()
+    {
+        return typeTags.ToArray();
     }
 
     /// <summary>

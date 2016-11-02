@@ -69,14 +69,4 @@ public class Currency : IPrototypable
         Name = reader.GetAttribute("Name");
         ShortName = reader.GetAttribute("ShortName");
     }
-
-    /// <summary>
-    /// Writes the currency to the xml for saving.
-    /// </summary>
-    /// <param name="writer">The Xml writer.</param>
-    public void WriteXml(XmlWriter writer)
-    {
-        writer.WriteAttributeString("Name", Name.ToString());
-        writer.WriteAttributeString("Balance", Balance.ToString());
-    }
 }
