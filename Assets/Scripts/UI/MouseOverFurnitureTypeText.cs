@@ -17,11 +17,11 @@ using UnityEngine.UI;
 /// </summary>
 public class MouseOverFurnitureTypeText : MouseOver
 {
-    protected override string getMouseOverString(Tile tile)
+    protected override string GetMouseOverString(Tile tile)
     {
         if (tile != null && tile.Furniture != null)
         {
-            return  LocalizationTable.GetLocalization("furniture", tile.Furniture.Name);
+            return LocalizationTable.GetLocalization("furniture", tile.Furniture.Name);
         }
         else
         {

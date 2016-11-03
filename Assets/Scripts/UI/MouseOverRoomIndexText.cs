@@ -16,7 +16,7 @@ using UnityEngine.UI;
 /// </summary>
 public class MouseOverRoomIndexText : MouseOver
 {
-    protected override string getMouseOverString(Tile tile)
+    protected override string GetMouseOverString(Tile tile)
     {
         string roomID = "N/A";
 
@@ -26,6 +26,5 @@ public class MouseOverRoomIndexText : MouseOver
         }
 
         return "Room Index: " + roomID;
-
     }
 }

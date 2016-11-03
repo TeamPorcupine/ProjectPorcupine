@@ -17,10 +17,8 @@ using UnityEngine.UI;
 /// </summary>
 public class MouseOverRoomDetails : MouseOver
 {
- 
-    protected override string getMouseOverString(Tile tile)
+    protected override string GetMouseOverString(Tile tile)
     {
-
         if (tile == null || tile.Room == null)
         {
             return string.Empty;

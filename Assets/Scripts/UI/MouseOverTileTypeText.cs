@@ -16,8 +16,7 @@ using UnityEngine.UI;
 /// </summary>
 public class MouseOverTileTypeText : MouseOver
 {
-  
-    protected override string getMouseOverString(Tile tile)
+    protected override string GetMouseOverString(Tile tile)
     {
         string tileType = "N/A";
 

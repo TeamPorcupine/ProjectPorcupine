@@ -15,10 +15,31 @@ using UnityEngine.UI;
 /// is under the mouse and then updates the GetComponent<Text>.text
 /// parameter of the object it is attached to.
 /// </summary>
-public abstract class MouseOver : MonoBehaviour {
-
+public abstract class MouseOver : MonoBehaviour 
+{
     private Text text;
     private MouseController mouseController;
+
+    // Update is called once per frame
+    public void Update() 
+    {
+        Tile tile = mouseController.GetMouseOverTile();
+
+        string infoString = "null";
+
+        if (tile != null)
+        {
+            infoString = GetMouseOverString(tile);
+        }
+
+        text.text = infoString;
+    }
+
+    /// <summary>
+    /// Obtains a string that represents some info about tile t.
+    /// </summary>
+    /// <param name="tile">The in game tile that our mouse is currently over.</param>
+    protected abstract string GetMouseOverString(Tile tile);
 
     // Use this for initialization.
     private void Start()
@@ -40,25 +61,4 @@ public abstract class MouseOver : MonoBehaviour {
             return;
         }
     }
-	
-	// Update is called once per frame
-	void Update () {
-        Tile tile = mouseController.GetMouseOverTile();
-
-        string infoString = "null";
-
-        if (tile != null)
-        {
-            infoString = getMouseOverString(tile);
-        }
-
-        text.text = infoString;
-	}
-
-    /// <summary>
-    /// obtains a string that represents some info about tile t.
-    /// </summary>
-    /// <param name="tile">the in game tile that our mouse is currently over</param>
-    protected abstract string getMouseOverString(Tile tile);
-
 }
