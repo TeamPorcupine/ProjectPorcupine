@@ -45,7 +45,11 @@ public class JobQueue
     /// <param name="job">The job to be inserted into the Queue.</param>
     public void Enqueue(Job job)
     {
-        DebugLog("Enqueue({0})", job.JobObjectType);
+        foreach (Character x in job.CharsCantReach)
+        {
+            Debug.ULogError("character {0} could not find a path to the job {1} located at tile {2},{3},{4}", x.name, job.GetName(), job.tile.X, job.tile.Y, job.tile.Z);
+        }
+        DebugLog("Enqueue({0})", job.Type);
         if (job.JobTime < 0)
         {
             // Job has a negative job time, so it's not actually

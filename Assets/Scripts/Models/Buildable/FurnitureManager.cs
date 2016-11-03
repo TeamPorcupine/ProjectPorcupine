@@ -162,7 +162,7 @@ public class FurnitureManager : IEnumerable<Furniture>
     }
 
     /// <summary>
-    /// Reuturns a list of furniture using the given filter function.
+    /// Returns a list of furniture using the given filter function.
     /// </summary>
     /// <returns>A list of furnitures.</returns>
     /// <param name="filterFunc">The filter function.</param>

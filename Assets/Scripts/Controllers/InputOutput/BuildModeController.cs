@@ -241,7 +241,7 @@ public class BuildModeController
                 // Add the job to the queue or build immediately if in dev mode
                 if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
                 {
-                    World.Current.UtilityManager.PlaceUtility(job.JobObjectType, job.tile);
+                    World.Current.UtilityManager.PlaceUtility(job.Type, job.tile);
                 }
                 else
                 {

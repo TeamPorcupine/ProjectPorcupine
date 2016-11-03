@@ -61,10 +61,10 @@ public class Job : ISelectable, IPrototypable
     {
     }
 
-    public Job(Tile tile, string jobObjectType, Action<Job> jobComplete, float jobTime, RequestedItem[] requestedItems, Job.JobPriority jobPriority, bool jobRepeats = false, bool need = false, bool critical = false, bool adjacent = false)
+    public Job(Tile tile, string Type, Action<Job> jobComplete, float jobTime, RequestedItem[] requestedItems, Job.JobPriority jobPriority, bool jobRepeats = false, bool need = false, bool critical = false, bool adjacent = false)
     {
         this.tile = tile;
-        this.JobObjectType = jobObjectType;
+        this.Type = Type;
         this.OnJobCompleted += jobComplete;
         this.jobTimeRequired = this.JobTime = jobTime;
         this.jobRepeats = jobRepeats;
@@ -93,7 +93,7 @@ public class Job : ISelectable, IPrototypable
     {
         this.tile = tile;
         this.JobTileType = jobTileType;
-        this.JobObjectType = "tile_" + jobTileType.Name;
+        this.Type = "tile_" + jobTileType.Name;
         this.OnJobCompleted += jobCompleted;
         this.jobTimeRequired = this.JobTime = jobTime;
         this.jobRepeats = jobRepeats;
@@ -118,7 +118,7 @@ public class Job : ISelectable, IPrototypable
     protected Job(Job other)
     {
         this.tile = other.tile;
-        this.JobObjectType = other.JobObjectType;
+        this.Type = other.Type;
         this.JobTileType = other.JobTileType;
         this.OnJobCompleted = other.OnJobCompleted;
         this.JobTime = other.JobTime;
@@ -164,15 +164,10 @@ public class Job : ISelectable, IPrototypable
 
     public string Description { get; set; }
 
-    public string JobObjectType
+    public string Type
     {
         get;
         protected set;
-    }
-
-    public string Type
-    {
-        get { return JobObjectType; }
     }
 
     public bool IsNeed
@@ -484,7 +479,17 @@ public class Job : ISelectable, IPrototypable
 
     public string GetName()
     {
-        return LocalizationTable.GetLocalization(JobObjectType);
+
+        try
+        {    
+            return LocalizationTable.GetLocalization(PrototypeManager.Furniture.Get(Type.ToString()).GetName());
+        }
+        catch
+        {
+            Debug.ULogError("whoops");
+            return LocalizationTable.GetLocalization(Type);
+        }
+        
     }
 
     public string GetDescription()
@@ -514,6 +519,10 @@ public class Job : ISelectable, IPrototypable
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns> True if the character can reach the inventory it needs.</returns>
     public bool canGetToInventory(Character character)
     {
         List<Tile> path = null;
@@ -527,7 +536,7 @@ public class Job : ISelectable, IPrototypable
     /// </summary>
     public void ClearCharCantReach()
     {
-        charsCantReach.Clear();
+        charsCantReach = new List<Character>();
     }
 
     public IEnumerable<string> GetAdditionalInfo()
@@ -541,7 +550,7 @@ public class Job : ISelectable, IPrototypable
 
     public void FSMLogRequirements()
     {
-        Debug.ULogChannel("FSM", " - {0} {1}", JobObjectType, acceptsAny ? "Any" : "All");
+        Debug.ULogChannel("FSM", " - {0} {1}", Type, acceptsAny ? "Any" : "All");
         foreach (RequestedItem item in RequestedItems.Values)
         {
             Debug.ULogChannel("FSM", "   - {0}, min: {1}, max: {2}", item.Type, item.MinAmountRequested, item.MaxAmountRequested);

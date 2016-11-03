@@ -26,7 +26,7 @@ namespace ProjectPorcupine.State
             job.OnJobStopped += OnJobStopped;
             job.IsBeingWorked = true;
 
-            DebugLog("created {0}", job.JobObjectType ?? "Unnamed Job");
+            DebugLog("created {0}", job.Type ?? "Unnamed Job");
         }
 
         public Job Job { get; private set; }
