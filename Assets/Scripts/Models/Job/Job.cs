@@ -246,7 +246,7 @@ public class Job : ISelectable, IPrototypable
 
     public void SetTileFromNeedFurniture(Tile currentTile, string needFurniture)
     {
-        tile = ProjectPorcupine.Pathfinding.Pathfinder.FindPathToFurniture(currentTile, needFurniture).Last();
+        tile = Pathfinder.FindPathToFurniture(currentTile, needFurniture).Last();
     }
 
     public virtual Job Clone()
@@ -479,17 +479,14 @@ public class Job : ISelectable, IPrototypable
 
     public string GetName()
     {
-
         try
         {    
             return LocalizationTable.GetLocalization(PrototypeManager.Furniture.Get(Type.ToString()).GetName());
         }
         catch
         {
-            Debug.ULogError("whoops");
             return LocalizationTable.GetLocalization(Type);
-        }
-        
+        }      
     }
 
     public string GetDescription()
