@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Furnitures>
-    <Furniture type="furn_SteelWall">
+    <Furniture type="steel_wall">
         <Name>Steel Wall</Name>
         <Description>This is a steel wall.</Description>
         <TypeTag>Wall</TypeTag>
@@ -34,7 +34,7 @@
         <UnlocalizedDescription>furn_steel_wall_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture type="Door">
+    <Furniture type="door">
         <Name>Door</Name>
         <Description>A door that characters can walk through.</Description>
         <TypeTag>Door</TypeTag>
@@ -99,8 +99,8 @@
         <UnlocalizedDescription>furn_door_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture type="Airlock">
-        <Name>Door</Name>
+    <Furniture type="airlock_door">
+        <Name>Airlock Door</Name>
         <Description>An Airlock prevents air from leaving the base</Description>
         <TypeTag>Door</TypeTag>
         <TypeTag>Pressure Door</TypeTag>
@@ -160,11 +160,11 @@
 
         <IsEnterable FunctionName="IsEnterable_AirlockDoor" />
         
-        <LocalizationCode>furn_airlock</LocalizationCode>
-        <UnlocalizedDescription>furn_airlock_desc</UnlocalizedDescription>
+        <LocalizationCode>furn_airlock_door</LocalizationCode>
+        <UnlocalizedDescription>furn_airlock_door_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture type="Stockpile">
+    <Furniture type="stockpile">
         <Name>Stockpile</Name>
         <Description>Characters will brings inventory here for storage.</Description>
         <TypeTag>Storage</TypeTag>
@@ -184,7 +184,7 @@
         <UnlocalizedDescription>furn_stockpile_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture type="Oxygen Generator">
+    <Furniture type="oxygen_generator">
         <Name>Oxygen Generator</Name>
         <Description>Create O2 in the room in which it is built.</Description>
         <TypeTag>Generator</TypeTag>
@@ -245,7 +245,7 @@
         <UnlocalizedDescription>furn_oxygen_generator_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture type="Mining Drone Station">
+    <Furniture type="mining_drone_station">
         <Name>Mining Drone Station</Name>
         <Description>Creates raw materials when worked by a character.</Description>
         <TypeTag>Workstation</TypeTag>
@@ -281,8 +281,8 @@
         <UnlocalizedDescription>furn_mining_drone_station_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture type="Power Generator">
-        <Name>Power Generator</Name>
+    <Furniture type="fission_reactor">
+        <Name>Fission Reactor</Name>
         <TypeTag>Generator</TypeTag>
         <MovementCost>2</MovementCost>
         <PathfindingModifier>0</PathfindingModifier>
@@ -343,8 +343,8 @@
 
         <GetProgressInfo functionName="PowerGenerator_FuelInfo" />
         
-        <LocalizationCode>furn_power_generator</LocalizationCode>
-        <UnlocalizedDescription>furn_power_generator_desc</UnlocalizedDescription>
+        <LocalizationCode>furn_fission_reactor</LocalizationCode>
+        <UnlocalizedDescription>furn_fission_reactor_desc</UnlocalizedDescription>
     </Furniture>
 
     <Furniture type="cloning_pod">
@@ -392,7 +392,7 @@
         <UnlocalizedDescription>furn_cloning_pod_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture type="Metal Smelter">
+    <Furniture type="metal_smelter">
         <Name>Metal Smelter</Name>
         <Description>Smelts your raw ores into metal.</Description>
         <TypeTag>Processor</TypeTag>
@@ -475,7 +475,7 @@
         <UnlocalizedDescription>furn_metal_smelter_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture type="Heater">
+    <Furniture type="heater">
         <Name>Heater</Name>
         <Description>Raises temperature in the room.</Description>
         <BaseType>Temperature</BaseType>
@@ -510,7 +510,7 @@
         <UnlocalizedDescription>furn_heater_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture type="Power Cell Press">
+    <Furniture type="power_cell_press">
         <Name>Power Cell Press</Name>
         <Description>A press that converts steel plate and something into power cells.</Description>
         <MovementCost>1</MovementCost>
@@ -551,7 +551,7 @@
         <UnlocalizedDescription>furn_power_cell_press_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture type="Small Landing Pad">
+    <Furniture type="small_landing_pad">
         <Name>Small Landing Pad</Name>
         <Description>A landing pad for small spaceboats to land.</Description>
         <TypeTag>OutdoorOnly</TypeTag>
@@ -582,7 +582,7 @@
         <UnlocalizedDescription>furn_small_landing_pad_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture type="compressor_oxygen">
+    <Furniture type="oxygen_compressor">
         <Name>Oxygen Compressor</Name>
         <Description>Stores and releases oxygen as needed</Description>
         <MovementCost>2</MovementCost>
@@ -661,7 +661,7 @@
         <UnlocalizedDescription>furn_solar_panel_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture type="pump_air">
+    <Furniture type="air_pump">
         <Name>Air Pump</Name>
         <MovementCost>0</MovementCost>
         <Width>1</Width>
@@ -692,8 +692,8 @@
         <GetSpriteName FunctionName="AirPump_GetSpriteName" />
         <ContextMenuAction FunctionName="AirPump_FlipDirection" Text="Flip Direction" RequireCharacterSelected="false" />
 
-        <LocalizationCode>furn_pump_air</LocalizationCode>
-        <UnlocalizedDescription>furn_pump_air_desc</UnlocalizedDescription>
+        <LocalizationCode>furn_air_pump</LocalizationCode>
+        <UnlocalizedDescription>furn_air_pump_desc</UnlocalizedDescription>
     </Furniture>
 
     <Furniture type="vent">
@@ -852,7 +852,7 @@
         <UnlocalizedDescription>furn_berth_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture type="RTG">
+    <Furniture type="rtg">
         <Name>RTG</Name>
         <Description>Radioisotope thermoelectric generator provides electricity and heat</Description>
         <TypeTag>Temperature</TypeTag>
@@ -883,8 +883,8 @@
             <Param name="pressure_threshold" value="0.2" />
         </Params>
 
-        <LocalizationCode>furn_rt_generator</LocalizationCode>
-        <UnlocalizedDescription>furn_rt_generator_desc</UnlocalizedDescription>
+        <LocalizationCode>furn_rtg</LocalizationCode>
+        <UnlocalizedDescription>furn_rtg_desc</UnlocalizedDescription>
     </Furniture>
 
     <Furniture type="astro_wall">
