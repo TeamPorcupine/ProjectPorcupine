@@ -10,7 +10,9 @@
 -- ModUtils.ULogWarning("Testing ModUtils.ULogWarningChannel")
 -- ModUtils.ULogError("Testing ModUtils.ULogErrorChannel") -- Note: pauses the game
 
--------------------------------- Command Actions --------------------------------
+-------------------------------- Helper Functions --------------------------------
+
+-- Just some simple helper functions
 
 -- Returns true if x can be numeric
 function isNumeric( x )
@@ -36,7 +38,7 @@ end
 -- Else:
 --  return nil
 function tobool(value)
-	if stringIsNumeric( value ) then
+	if isNumeric( value ) then
 		number = tonumber(value)
 		if number == 0 then
 			return false
@@ -78,7 +80,6 @@ function Clear()
 end
 
 function ShowTimeStamp( on )
-	DevConsole.Log("HELLO");
 	on = tobool(on)
 	if on ~= nil then
 		DevConsole.ShowTimeStamp(on)

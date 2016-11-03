@@ -63,7 +63,6 @@ namespace ProjectPorcupine.Buildable.Components
 
         public override void FixedFrequencyUpdate(float deltaTime)
         {
-            bool isWorking = false;
             if (Provides != null && Provides.Count > 0)
             {
                 Room room = ParentFurniture.Tile.Room;
@@ -75,7 +74,6 @@ namespace ProjectPorcupine.Buildable.Components
                         (provGas.Rate < 0 && curGasPressure > provGas.MinLimit))
                     {
                         room.ChangeGas(provGas.Gas, provGas.Rate * deltaTime, provGas.MaxLimit);
-                        isWorking = true;
                     }
                 }
             }

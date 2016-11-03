@@ -1,20 +1,15 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
 <Settings>
   <worldWidth>101</worldWidth>
   <worldHeight>101</worldHeight>
   <localization>en_US</localization>
+  <DialogBoxSettings_performanceGroup>2</DialogBoxSettings_performanceGroup>
   <DialogBoxSettings_fullScreenToggle>True</DialogBoxSettings_fullScreenToggle>
   <DialogBoxSettings_qualityDropdown>2</DialogBoxSettings_qualityDropdown>
   <DialogBoxSettings_vSyncDropdown>0</DialogBoxSettings_vSyncDropdown>
   <DialogBoxSettings_resolutionDropdown>0</DialogBoxSettings_resolutionDropdown>
   <DialogBoxSettings_musicVolume>1</DialogBoxSettings_musicVolume>
-  <DialogBoxSettingsDevConsole_performanceGroup>1</DialogBoxSettingsDevConsole_performanceGroup>
-  <DialogBoxSettingsDevConsole_developerModeToggle>False</DialogBoxSettingsDevConsole_developerModeToggle>
-  <DialogBoxSettingsDevConsole_devConsoleToggle>True</DialogBoxSettingsDevConsole_devConsoleToggle>
-  <DialogBoxSettingsDevConsole_consoleFontSize>15</DialogBoxSettingsDevConsole_consoleFontSize>
-  <DialogBoxSettingsDevConsole_timeStampToggle>True</DialogBoxSettingsDevConsole_timeStampToggle>
   <ZoomLerp>10</ZoomLerp>
   <ZoomSensitivity>3</ZoomSensitivity>
+  <DialogBoxSettings_developerModeToggle>False</DialogBoxSettings_developerModeToggle>
   <AutosaveInterval>10</AutosaveInterval>
-  <AutosaveFiles>5</AutosaveFiles>
 </Settings>

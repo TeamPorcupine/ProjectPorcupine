@@ -6,25 +6,53 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using UnityEngine;
+using FMOD;
 
 /// <summary>
 /// The Manager that handles the loading and storing of audio from streamingAssets.
 /// </summary>
 public class AudioManager
 {
-    private static Dictionary<string, AudioClip> audioClips;
+    public static FMOD.System SoundSystem;
+
+    // Channel Groups
+    public static Dictionary<string, ChannelGroup> channelGroups;
+
+    public static ChannelGroup master;
+
+    private static Dictionary<string, SoundClip> audioClips;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AudioManager"/> class.
     /// </summary>
     public AudioManager()
     {
-        audioClips = new Dictionary<string, AudioClip>();
+        channelGroups = new Dictionary<string, ChannelGroup>();
+        Factory.System_Create(out SoundSystem);
+        SoundSystem.setDSPBufferSize(1024, 10);
+        SoundSystem.init(32, INITFLAGS.NORMAL, (IntPtr)0);
+        SoundSystem.getMasterChannelGroup(out master);
+        DSPConnection throwaway;
+        channelGroups.Add("UI", null);
+        channelGroups.Add("gameSounds", null);
+        channelGroups.Add("alerts", null);
+        channelGroups.Add("music", null);
+        foreach (string key in channelGroups.Keys.ToArray())
+        {
+            ChannelGroup chanGroup;
+            SoundSystem.createChannelGroup(key, out chanGroup);
+            master.addGroup(chanGroup, true, out throwaway);
+            channelGroups[key] = chanGroup;
+        }
+
+        channelGroups.Add("master", master);
+
+        SoundSystem.set3DSettings(1f, 1f, .25f);
+        audioClips = new Dictionary<string, SoundClip>();
     }
 
     /// <summary>
@@ -34,8 +62,9 @@ public class AudioManager
     /// <returns>String containing the information of audioClips.</returns>
     public static string GetAudioDictionaryString()
     {
-        Dictionary<string, AudioClip> dictionary = audioClips;
-        return "{" + string.Join(",", dictionary.Select(kv => kv.Key + "=" + kv.Value.length).ToArray()) + "}";
+        Dictionary<string, SoundClip> dictionary = audioClips;
+
+        return "{" + string.Join(",", dictionary.Select(kv => kv.Key + "=" + kv.Value.ToString()).ToArray()) + "}";
     }
 
     /// <summary>
@@ -46,13 +75,13 @@ public class AudioManager
     /// The category that the AudioClip is in. Usually the same as the 
     /// directory that the audio file was load from.
     /// </param>
-    /// <param name="audioName">The name of the AudioClip.</param>
-    /// <returns>AudioClip form the specified category with the specified name.</returns>
-    public static AudioClip GetAudio(string categoryName, string audioName)
+    /// <param name="audioName">The name of the SoundClip.</param>
+    /// <returns>SoundClip from the specified category with the specified name.</returns>
+    public static SoundClip GetAudio(string categoryName, string audioName)
     {
-        AudioClip clip = new AudioClip();
+        SoundClip clip;
 
-        string audioNameAndCategory = categoryName + "/" + audioName + ".ogg";
+        string audioNameAndCategory = categoryName + "/" + audioName;
 
         if (audioClips.ContainsKey(audioNameAndCategory))
         {
@@ -62,8 +91,8 @@ public class AudioManager
         {
             try
             {
-                Debug.LogWarning("No audio available called: " + audioNameAndCategory);
-                clip = audioClips["Sound/Error.ogg"];
+                Debug.LogWarning("No audio available called: " + audioNameAndCategory, null);
+                clip = audioClips["Sound/Error"];
             }
             catch
             {
@@ -87,15 +116,16 @@ public class AudioManager
         }
 
         string[] filesInDir = Directory.GetFiles(directoryPath);
-        IEnumerable<WWW> audioFiles = LoadAudioFile(filesInDir, directoryPath);
-        IEnumerator<WWW> e = audioFiles.GetEnumerator();
-        while (e.MoveNext())
-        {
-            Debug.Log("Type: " + e.Current.GetType());
-        }
+        LoadAudioFile(filesInDir, directoryPath);
     }
 
-    private static IEnumerable<WWW> LoadAudioFile(string[] filesInDir, string directoryPath)
+    public static void Destroy()
+    {
+        SoundSystem.release();
+        audioClips = null;
+    }
+
+    private static void LoadAudioFile(string[] filesInDir, string directoryPath)
     {
         foreach (string file in filesInDir)
         {
@@ -107,19 +137,27 @@ public class AudioManager
                 continue;
             }
 
-            WWW www = new WWW(@"file://" + filePath);
+            Sound clip;
+            SoundSystem.createSound(filePath, MODE._3D, out clip);
+            string filename = Path.GetFileNameWithoutExtension(filePath);
 
-            yield return www;
-
-            AudioClip clip = www.GetAudioClip(false, false);
-
-            string filename = new FileInfo(filePath).Name;
+            // If the filename contains a period, it is part of a sequence, remove everything after the period,
+            // and it will be handled appropriately.
+            if (filename.Contains("."))
+            {
+                filename = filename.Substring(0, filename.IndexOf("."));
+            }
 
             filename = audioCategory + "/" + filename;
 
-            Debug.Log(filename + " Downloaded");
-
-            audioClips[filename] = clip;
+            if (audioClips.ContainsKey(filename))
+            {
+                audioClips[filename].Add(clip);
+            }
+            else
+            {
+                audioClips[filename] = new SoundClip(clip);
+            }
         }
     }
 }

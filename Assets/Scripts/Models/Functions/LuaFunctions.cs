@@ -6,14 +6,15 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+
 using System;
-using System.IO;
 using MoonSharp.Interpreter;
 using ProjectPorcupine.PowerNetwork;
 
 public class LuaFunctions
 {
     protected Script script;
+    private string scriptName;
 
     public LuaFunctions()
     {
@@ -70,6 +71,7 @@ public class LuaFunctions
     /// <param name="scriptName">The script name.</param>
     public bool LoadScript(string text, string scriptName)
     {
+        this.scriptName = scriptName;
         try
         {
             script.DoString(text);
@@ -117,7 +119,7 @@ public class LuaFunctions
         }
         catch (ScriptRuntimeException e)
         {
-            Debug.ULogErrorChannel("Lua", e.DecoratedMessage);
+            Debug.ULogErrorChannel("Lua", "[" + scriptName + "] LUA RunTime error: " + e.DecoratedMessage);
             return null;
         }
     }
@@ -168,11 +170,14 @@ public class LuaFunctions
             instanceAndParams[0] = instance;
             parameters.CopyTo(instanceAndParams, 1);
 
-            result = Call(fn, instanceAndParams);
-
-            if (result != null && result.Type == DataType.String)
+            try
             {
-                Debug.ULogErrorChannel("Lua", result.String);
+                result = Call(fn, instanceAndParams);
+            }
+            catch (ScriptRuntimeException e)
+            {
+                Debug.ULogErrorChannel("Lua", "[" + scriptName + "] LUA RunTime error: "+ e.DecoratedMessage);
+
             }
         }
     }

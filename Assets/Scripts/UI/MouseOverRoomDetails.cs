@@ -6,8 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System;
-using System.Collections;
+
 using ProjectPorcupine.Rooms;
 using UnityEngine;
 using UnityEngine.UI;
