@@ -495,6 +495,8 @@ public class Job : ISelectable, IPrototypable
         foreach (RequestedItem item in RequestedItems.Values)
         {
             description += string.Format("\t{0} {1}..{2}\n", item.Type, item.MinAmountRequested, item.MaxAmountRequested);
+            // TODO: Not sure if this works or not.
+            description = LocalizationTable.GetLocalization(description);
         }
 
         return description;
@@ -510,9 +512,14 @@ public class Job : ISelectable, IPrototypable
     /// </summary>
     public void AddCharCantReach(Character character)
     {
+        Debug.ULogError("Here1");
         if (!CharsCantReach.Contains(character))
         {
-            CharsCantReach.Add(character);
+            charsCantReach.Add(character);
+            foreach (Character temp in charsCantReach)
+            {
+                Debug.ULogError(temp.GetName());
+            }
         }
     }
 

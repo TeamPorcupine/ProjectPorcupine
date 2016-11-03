@@ -45,6 +45,7 @@ public class JobQueue
     /// <param name="job">The job to be inserted into the Queue.</param>
     public void Enqueue(Job job)
     {
+        Debug.ULogError(job.Description);
         foreach (Character x in job.CharsCantReach)
         {
             Debug.ULogError("character {0} could not find a path to the job {1} located at tile {2},{3},{4}", x.name, job.GetName(), job.tile.X, job.tile.Y, job.tile.Z);
@@ -61,6 +62,7 @@ public class JobQueue
         // If the job requires material but there is nothing available, store it in jobsWaitingForInventory
         if (job.RequestedItems.Count > 0 && job.GetFirstFulfillableInventoryRequirement() == null)
         {
+            Debug.ULogError("HELP1");
             string missing = job.acceptsAny ? "*" : job.GetFirstDesiredItem().Type;
             DebugLog(" - missingInventory {0}", missing);
             if (jobsWaitingForInventory.ContainsKey(missing) == false)
@@ -74,6 +76,7 @@ public class JobQueue
             job.CharsCantReach.Count == World.Current.CharacterManager.characters.Count)
         {
             // No one can reach the job.
+            Debug.ULogError("HELP2");
             DebugLog("JobQueue", "- Job can't be reached");
             unreachableJobs.Enqueue(job);
         }
@@ -132,13 +135,13 @@ public class JobQueue
             {
                 if (CharacterCantReachHelper(job, character))
                 {
-                    DebugLog("Character could not find a path to the job site.");
+                    Debug.ULogError("Character could not find a path to the job site.");
                     continue;
                 }
                 else if ((job.RequestedItems.Count > 0) && !job.canGetToInventory(character))
                 {
-                    job.CharsCantReach.Add(character);
-                    DebugLog("Character could not find a path to any inventory available.");
+                    job.AddCharCantReach(character);
+                    Debug.ULogError("Character could not find a path to any inventory available.");
                     continue;
                 }
 
