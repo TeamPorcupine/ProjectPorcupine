@@ -72,7 +72,10 @@ public class DialogBoxSettings : DialogBox
         Resolution resolution = selectedOption.Resolution;
         Screen.SetResolution(resolution.width, resolution.height, fullScreenToggle.isOn, resolution.refreshRate);
 
-        WorldController.Instance.autosaveManager.SetAutosaveInterval(int.Parse(autosaveInterval.text));
+        if (WorldController.Instance != null)
+        {
+            WorldController.Instance.autosaveManager.SetAutosaveInterval(int.Parse(autosaveInterval.text));
+        }
 
         // One to many but we want an applying feature;
         PerformanceHUDManager.DirtyUI();
