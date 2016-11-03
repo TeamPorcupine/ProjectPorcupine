@@ -63,24 +63,24 @@
 
         <Animations>
           <Animation state="horizontal" valuebased="true">
-            <Frame name="DoorHorizontal_0" />
-            <Frame name="DoorHorizontal_1" />
-            <Frame name="DoorHorizontal_2" />
-            <Frame name="DoorHorizontal_3" />
-            <Frame name="DoorHorizontal_4" />
-            <Frame name="DoorHorizontal_5" />
-            <Frame name="DoorHorizontal_5" />
-            <Frame name="DoorHorizontal_5" />
+            <Frame name="door_horizontal_0" />
+            <Frame name="door_horizontal_1" />
+            <Frame name="door_horizontal_2" />
+            <Frame name="door_horizontal_3" />
+            <Frame name="door_horizontal_4" />
+            <Frame name="door_horizontal_5" />
+            <Frame name="door_horizontal_5" />
+            <Frame name="door_horizontal_5" />
           </Animation>  
           <Animation state="vertical" valuebased="true">
-            <Frame name="DoorVertical_0" />
-            <Frame name="DoorVertical_1" />
-            <Frame name="DoorVertical_2" />
-            <Frame name="DoorVertical_3" />
-            <Frame name="DoorVertical_4" />
-            <Frame name="DoorVertical_5" />
-            <Frame name="DoorVertical_5" />
-            <Frame name="DoorVertical_5" />                
+            <Frame name="door_vertical_0" />
+            <Frame name="door_vertical_1" />
+            <Frame name="door_vertical_2" />
+            <Frame name="door_vertical_3" />
+            <Frame name="door_vertical_4" />
+            <Frame name="door_vertical_5" />
+            <Frame name="door_vertical_5" />
+            <Frame name="door_vertical_5" />                
           </Animation>                      
         </Animations>
 
@@ -125,24 +125,24 @@
 
         <Animations>
           <Animation state="horizontal" valuebased="true">
-            <Frame name="AirlockHorizontal_0" />
-            <Frame name="AirlockHorizontal_1" />
-            <Frame name="AirlockHorizontal_2" />
-            <Frame name="AirlockHorizontal_3" />
-            <Frame name="AirlockHorizontal_4" />
-            <Frame name="AirlockHorizontal_5" />
-            <Frame name="AirlockHorizontal_5" />
-            <Frame name="AirlockHorizontal_5" />
+            <Frame name="airlock_door_horizontal_0" />
+            <Frame name="airlock_door_horizontal_1" />
+            <Frame name="airlock_door_horizontal_2" />
+            <Frame name="airlock_door_horizontal_3" />
+            <Frame name="airlock_door_horizontal_4" />
+            <Frame name="airlock_door_horizontal_5" />
+            <Frame name="airlock_door_horizontal_5" />
+            <Frame name="airlock_door_horizontal_5" />
           </Animation>
           <Animation state="vertical" valuebased="true">
-            <Frame name="AirlockVertical_0" />
-            <Frame name="AirlockVertical_1" />
-            <Frame name="AirlockVertical_2" />
-            <Frame name="AirlockVertical_3" />
-            <Frame name="AirlockVertical_4" />
-            <Frame name="AirlockVertical_5" />
-            <Frame name="AirlockVertical_5" />
-            <Frame name="AirlockVertical_5" />
+            <Frame name="airlock_door_vertical_0" />
+            <Frame name="airlock_door_vertical_1" />
+            <Frame name="airlock_door_vertical_2" />
+            <Frame name="airlock_door_vertical_3" />
+            <Frame name="airlock_door_vertical_4" />
+            <Frame name="airlock_door_vertical_5" />
+            <Frame name="airlock_door_vertical_5" />
+            <Frame name="airlock_door_vertical_5" />
           </Animation>
         </Animations>
       
@@ -202,12 +202,12 @@
 
         <Animations>
           <Animation state="idle" looping="false">
-            <Frame name="Oxygen Generator" />
+            <Frame name="oxygen_generator" />
           </Animation>
           <Animation state="running" fps="8" looping="true">
-            <Frame name="Oxygen_Generator_Running1" />
-            <Frame name="Oxygen_Generator_Running2" />
-            <Frame name="Oxygen_Generator_Running3" />
+            <Frame name="oxygen_generator_running_1" />
+            <Frame name="oxygen_generator_running_2" />
+            <Frame name="oxygen_generator_running_3" />
           </Animation>
         </Animations>
         
@@ -292,12 +292,12 @@
 
         <Animations>
             <Animation state="idle" looping="false">
-                <Frame name="Power-Generator-01" />
+                <Frame name="fission_reactor_1" />
             </Animation>
             <Animation state="running" fps="6" looping="true">
-                <Frame name="Power-Generator-02" />
-                <Frame name="Power-Generator-03" />
-                <Frame name="Power-Generator-04" />
+                <Frame name="fission_reactor_2" />
+                <Frame name="fission_reactor_3" />
+                <Frame name="fission_reactor_4" />
             </Animation>
         </Animations>
 
@@ -460,14 +460,14 @@
 
         <Animations>
             <Animation state="idle" fps="2" looping="false">
-                <Frame name="Metal Smelter" />
+                <Frame name="metal_smelter" />
             </Animation>
             <Animation state="running" fps="6" looping="true">
-                <Frame name="Metal_Smelter_Running_1" />
-                <Frame name="Metal_Smelter_Running_2" />
-                <Frame name="Metal_Smelter_Running_3" />
-                <Frame name="Metal_Smelter_Running_4" />
-                <Frame name="Metal_Smelter_Running_5" />
+                <Frame name="metal_smelter_running_1" />
+                <Frame name="metal_smelter_running_2" />
+                <Frame name="metal_smelter_running_3" />
+                <Frame name="metal_smelter_running_4" />
+                <Frame name="metal_smelter_running_5" />
             </Animation>
         </Animations>
 
@@ -599,16 +599,16 @@
 
         <Animations>
           <Animation state="running" valuebased="true">
-            <Frame name="compressor_oxygen" />
-            <Frame name="compressor_oxygen_0" />
-            <Frame name="compressor_oxygen_1" />
-            <Frame name="compressor_oxygen_2" />
-            <Frame name="compressor_oxygen_3" />
-            <Frame name="compressor_oxygen_4" />
-            <Frame name="compressor_oxygen_5" />
-            <Frame name="compressor_oxygen_6" />
-            <Frame name="compressor_oxygen_7" />
-            <Frame name="compressor_oxygen_8" />
+            <Frame name="oxygen_compressor" />
+            <Frame name="oxygen_compressor_0" />
+            <Frame name="oxygen_compressor_1" />
+            <Frame name="oxygen_compressor_2" />
+            <Frame name="oxygen_compressor_3" />
+            <Frame name="oxygen_compressor_4" />
+            <Frame name="oxygen_compressor_5" />
+            <Frame name="oxygen_compressor_6" />
+            <Frame name="oxygen_compressor_7" />
+            <Frame name="oxygen_compressor_8" />
           </Animation>
         </Animations>
       
@@ -725,12 +725,12 @@
 
         <Animations>
             <Animation state="horizontal" valuebased="true">
-                <Frame name="vent_EW_Closed" />
-                <Frame name="vent_EW_Opened" />
+                <Frame name="vent_EW_closed" />
+                <Frame name="vent_EW_opened" />
             </Animation>  
             <Animation state="vertical" valuebased="true">
-                <Frame name="vent_NS_Closed" />  
-                <Frame name="vent_NS_Opened" />           
+                <Frame name="vent_NS_closed" />  
+                <Frame name="vent_NS_opened" />           
             </Animation>                      
         </Animations>
         
