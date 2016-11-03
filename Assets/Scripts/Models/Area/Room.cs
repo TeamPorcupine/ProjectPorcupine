@@ -331,7 +331,7 @@ namespace ProjectPorcupine.Rooms
             return atmosphericGasses.Keys.ToArray();
         }
 
-        public object ToJson()
+        public JObject ToJson()
         {
             JObject roomGasses = new JObject();
             foreach (string k in atmosphericGasses.Keys)

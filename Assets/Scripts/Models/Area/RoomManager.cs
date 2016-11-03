@@ -5,6 +5,9 @@
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
+using System.Linq;
+
+
 #endregion
 using System;
 using System.Collections;
@@ -427,6 +430,35 @@ namespace ProjectPorcupine.Rooms
                 Add(r);
                 r.FromJson(room);
             }
+        }
+
+        public JToken BehaviorsToJson()
+        {
+            JArray behaviorsJson = new JArray();
+            foreach (RoomBehavior behavior in rooms.SelectMany(room => room.RoomBehaviors.Values))
+            {
+                behaviorsJson.Add(behavior.ToJson());
+            }
+            return behaviorsJson;
+        }
+
+        public void BehaviorsFromJson(JToken behaviorsToken)
+        {
+            foreach (JToken behaviorToken in behaviorsToken)
+            {
+                int roomId = (int)behaviorToken["Room"];
+                string type = (string)behaviorToken["Behavior"];
+                RoomBehavior behavior = PrototypeManager.RoomBehavior.Get(type);
+                this[roomId].DesignateRoomBehavior(behavior.Clone());
+            }
+
+//            int x = (int)furnitureToken["X"];
+//            int y = (int)furnitureToken["Y"];
+//            int z = (int)furnitureToken["Z"];
+//            string type = (string)furnitureToken["Behavior];
+//            float rotation = (float)furnitureToken["Rotation"];
+//            Furniture furniture = PlaceFurniture(type, World.Current.GetTileAt(x, y, z), false, rotation);
+//            furniture.FromJson(furnitureToken);
         }
 
         protected Room ActualFloodFill(Tile sourceTile, Room oldRoom, int sizeOfOldRoom)
