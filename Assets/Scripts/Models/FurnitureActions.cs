@@ -72,7 +72,7 @@ public class FurnitureActions
 
             if (func == null)
             {
-                Debug.LogError("'" + fn + "' is not a LUA function.");
+                Logger.LogError("'" + fn + "' is not a LUA function.");
                 return;
             }
 
@@ -80,14 +80,14 @@ public class FurnitureActions
 
             if (result.Type == DataType.String)
             {
-                Debug.Log(result.String);
+                Logger.Log(result.String);
             }
         }
     }
 
     static public DynValue CallFunction(string functionName, params object[] args)
     {
-        //Debug.Log("Calling function: " + functionName);
+        //Logger.Log("Calling function: " + functionName);
         object func = _Instance.myLuaScript.Globals[functionName];
 
         return _Instance.myLuaScript.Call(func, args);
@@ -116,7 +116,7 @@ public class FurnitureActions
 
 
     /*	public static void Door_UpdateAction(Furniture furn, float deltaTime) {
-		//Debug.Log("Door_UpdateAction: " + furn.furnParameters["openness"]);
+		//Logger.Log("Door_UpdateAction: " + furn.furnParameters["openness"]);
 
 		if(furn.GetParameter("is_opening") >= 1) {
 			furn.ChangeParameter("openness", deltaTime * 4);	// FIXME: Maybe a door open speed parameter?
@@ -136,7 +136,7 @@ public class FurnitureActions
 	}
 
 	public static ENTERABILITY Door_IsEnterable(Furniture furn) {
-		//Debug.Log("Door_IsEnterable");
+		//Logger.Log("Door_IsEnterable");
 		furn.SetParameter("is_opening", 1);
 
 		if(furn.GetParameter("openness") >= 1) {
@@ -189,7 +189,7 @@ public class FurnitureActions
 
 		// Third possibility: Something is WHACK
 		if( furn.tile.inventory != null && furn.tile.inventory.stackSize == 0 ) {
-			Debug.LogError("Stockpile has a zero-size stack. This is clearly WRONG!");
+			Logger.LogError("Stockpile has a zero-size stack. This is clearly WRONG!");
 			furn.CancelJobs();
 			return;
 		}
@@ -207,11 +207,11 @@ public class FurnitureActions
 		Inventory[] itemsDesired;
 
 		if( furn.tile.inventory == null ) {
-			Debug.Log("Creating job for new stack.");
+			Logger.Log("Creating job for new stack.");
 			itemsDesired = Stockpile_GetItemsFromFilter();
 		}
 		else {
-			Debug.Log("Creating job for existing stack.");
+			Logger.Log("Creating job for existing stack.");
 			Inventory desInv = furn.tile.inventory.Clone();
 			desInv.maxStackSize -= desInv.stackSize;
 			desInv.stackSize = 0;
@@ -236,7 +236,7 @@ public class FurnitureActions
 	}
 
 	static void Stockpile_JobWorked(Job j) {
-		Debug.Log("Stockpile_JobWorked");
+		Logger.Log("Stockpile_JobWorked");
 		j.CancelJob();
 
 		// TODO: Change this when we figure out what we're doing for the all/any pickup job.
@@ -253,7 +253,7 @@ public class FurnitureActions
 	public static void OxygenGenerator_UpdateAction(Furniture furn, float deltaTime) {
 
 		if(furn.tile.room== null)  {
-			Debug.LogError("Why are we in a null room?");
+			Logger.LogError("Why are we in a null room?");
 			return;
 		}
 			

@@ -78,7 +78,7 @@ public class MouseController : MonoBehaviour
             }
             else if (currentMode == MouseMode.SELECT)
             {
-                Debug.Log("Show game menu?");
+                Logger.Log("Show game menu?");
             }
         }
 
@@ -137,7 +137,7 @@ public class MouseController : MonoBehaviour
 
             if (mySelection == null || mySelection.tile != tileUnderMouse)
             {
-                //Debug.Log("new tile");
+                //Logger.Log("new tile");
                 // We have just selected a brand new tile, reset the info.
                 mySelection = new SelectionInfo();
                 mySelection.tile = tileUnderMouse;
@@ -262,18 +262,41 @@ public class MouseController : MonoBehaviour
                 {
                     // Display the building hint on top of this tile position
 
-                    if (bmc.buildMode == BuildMode.FURNITURE)
+                    // Check for furniture dragType
+                    Furniture proto = World.current.furniturePrototypes[bmc.buildModeObjectType];
+                    string dragType = proto.dragType;
+
+                    bool isValid = false;
+
+                    // Drag type validation
+                    if (dragType == "border")
                     {
-                        ShowFurnitureSpriteAtTile(bmc.buildModeObjectType, t);
+                        if (x == start_x || x == end_x || y == start_y || y == end_y)
+                        {
+                            isValid = true;
+                        } 
                     }
                     else
                     {
-                        // show the generic dragging visuals
-                        GameObject go = SimplePool.Spawn(circleCursorPrefab, new Vector3(x, y, 0), Quaternion.identity);
-                        go.transform.SetParent(this.transform, true);
-						go.GetComponent<SpriteRenderer>().sprite=SpriteManager.current.GetSprite( "UI", "CursorCircle");
-                        dragPreviewGameObjects.Add(go);
+                        isValid = true;
                     }
+
+                    if (isValid)
+                    {
+                        if (bmc.buildMode == BuildMode.FURNITURE)
+                        {
+                            ShowFurnitureSpriteAtTile(bmc.buildModeObjectType, t);
+                        }
+                        else
+                        {
+                            // show the generic dragging visuals
+                            GameObject go = SimplePool.Spawn(circleCursorPrefab, new Vector3(x, y, 0), Quaternion.identity);
+                            go.transform.SetParent(this.transform, true);
+                            go.GetComponent<SpriteRenderer>().sprite=SpriteManager.current.GetSprite( "UI", "CursorCircle");
+                            dragPreviewGameObjects.Add(go);
+                        }
+                    }
+  
 
                 }
             }
@@ -290,13 +313,36 @@ public class MouseController : MonoBehaviour
             {
                 for (int y = start_y; y <= end_y; y++)
                 {
-                    Tile t = WorldController.Instance.world.GetTileAt(x, y);
+                    // Check for furniture dragType
+                    Furniture proto = World.current.furniturePrototypes[bmc.buildModeObjectType];
+                    string dragType = proto.dragType;
 
-                    if (t != null)
+                    bool isValid = false;
+
+                    // Drag type validation
+                    if (dragType == "border")
                     {
-                        // Call BuildModeController::DoBuild()
-                        bmc.DoBuild(t);
+                        if (x == start_x || x == end_x || y == start_y || y == end_y)
+                        {
+                            isValid = true;
+                        } 
                     }
+                    else
+                    {
+                        isValid = true;
+                    }
+
+                    if (isValid)
+                    {
+                        Tile t = WorldController.Instance.world.GetTileAt(x, y);
+
+                        if (t != null)
+                        {
+                            // Call BuildModeController::DoBuild()
+                            bmc.DoBuild(t);
+                        }
+                    }
+
                 }
             }
         }

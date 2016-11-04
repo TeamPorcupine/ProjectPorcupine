@@ -149,7 +149,7 @@ namespace ProjectPorcupine.Localization
             {
 #if UNITY_EDITOR //TODO: Think if #if is a good idea or not.
                 //Log a warning into the console if this operation fails.
-                Debug.LogWarning("Translation for " + key + " failed: Key not in dictionary.");
+                Logger.LogWarning("Translation for " + key + " failed: Key not in dictionary.");
 #endif
 
                 //Switch the fallback mode.
