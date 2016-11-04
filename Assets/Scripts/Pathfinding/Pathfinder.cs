@@ -91,7 +91,6 @@ namespace ProjectPorcupine.Pathfinding
             RoomPath_AStar roomResolver = new RoomPath_AStar(World.Current, start.Room, RoomGoalInventoryEvaluator(types, canTakeFromStockpile), RoomDijkstraDistance());
             List<Room> roomPath = roomResolver.GetList();
 
-            Room roomWithInv = roomPath.Last();
             Tile nearestExit;
             if (roomPath.Count == 1)
             {
@@ -134,7 +133,6 @@ namespace ProjectPorcupine.Pathfinding
             RoomPath_AStar roomResolver = new RoomPath_AStar(World.Current, start.Room, RoomGoalInventoryEvaluator(type, canTakeFromStockpile), RoomDijkstraDistance());
             List<Room> roomPath = roomResolver.GetList();
 
-            Room roomWithInv = roomPath.Last();
             Tile nearestExit;
             if (roomPath.Count == 1)
             {
