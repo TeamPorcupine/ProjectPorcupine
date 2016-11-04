@@ -109,8 +109,6 @@ public class RoomPath_AStar
                     continue; // ignore this already completed neighbor
                 }
 
-//                float pathfinding_cost_to_neighbor = neighbor.data.TileCount;
-
                 float tentative_g_score = g_score[current] + costEstimate(neighbor.data);
 
                 if (openSet.Contains(neighbor) && tentative_g_score >= g_score[neighbor])
@@ -191,57 +189,6 @@ public class RoomPath_AStar
     {
         return path;
     }
-
-    private float Heuristic_cost_estimate(Path_Node<Room> a, Path_Node<Room> b)
-    {
-        if (b == null)
-        {
-            // We have no fixed destination (i.e. probably looking for an inventory item)
-            // so just return 0 for the cost estimate (i.e. all directions as just as good)
-            return 0f;
-        }
-
-        // How do we even measure the distance between the rooms?
-        // Center tile would work, but calculating a rooms center tile will be expensive, and will need to be redone when room changes
-        // We could approximate it, finding lowest and highest x and y of tiles and average, but that seems pretty expensive too.
-        // For now, let's just always return 0.
-        return 0f;
-//        return Mathf.Sqrt(
-//            Mathf.Pow(a.data.X - b.data.X, 2) +
-//            Mathf.Pow(a.data.Y - b.data.Y, 2) +
-//            Mathf.Pow(a.data.Z - b.data.Z, 2));
-    }
-
-    // FOr now we're not using this, but let's leave it here while I think on it.
-//    private float Dist_between(Path_Node<Room> a, Path_Node<Room> b)
-//    {
-//        // We can make assumptions because we know we're working
-//        // on a grid at this point.
-//
-//        // Hori/Vert neighbours have a distance of 1
-//        if (Mathf.Abs(a.data.X - b.data.X) + Mathf.Abs(a.data.Y - b.data.Y) == 1 && a.data.Z == b.data.Z)
-//        {
-//            return 1f;
-//        }
-//
-//        // Diag neighbours have a distance of 1.41421356237
-//        if (Mathf.Abs(a.data.X - b.data.X) == 1 && Mathf.Abs(a.data.Y - b.data.Y) == 1 && a.data.Z == b.data.Z)
-//        {
-//            return 1.41421356237f;
-//        }
-//
-//        // Up/Down neighbors have a distance of 1
-//        if (a.data.X == b.data.X && a.data.Y == b.data.Y && Mathf.Abs(a.data.Z - b.data.Z) == 1)
-//        {
-//            return 1f;
-//        }
-//
-//        // Otherwise, do the actual math.
-//        return Mathf.Sqrt(
-//            Mathf.Pow(a.data.X - b.data.X, 2) +
-//            Mathf.Pow(a.data.Y - b.data.Y, 2) +
-//            Mathf.Pow(a.data.Z - b.data.Z, 2));
-//    }
 
     private void Reconstruct_path(
         Dictionary<Path_Node<Room>, Path_Node<Room>> came_From,
