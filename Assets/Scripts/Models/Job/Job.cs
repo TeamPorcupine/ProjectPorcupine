@@ -61,10 +61,10 @@ public class Job : ISelectable, IPrototypable
     {
     }
 
-    public Job(Tile tile, string Type, Action<Job> jobComplete, float jobTime, RequestedItem[] requestedItems, Job.JobPriority jobPriority, bool jobRepeats = false, bool need = false, bool critical = false, bool adjacent = false)
+    public Job(Tile tile, string type, Action<Job> jobComplete, float jobTime, RequestedItem[] requestedItems, Job.JobPriority jobPriority, bool jobRepeats = false, bool need = false, bool critical = false, bool adjacent = false)
     {
         this.tile = tile;
-        this.Type = Type;
+        this.Type = type;
         this.OnJobCompleted += jobComplete;
         this.jobTimeRequired = this.JobTime = jobTime;
         this.jobRepeats = jobRepeats;
@@ -223,7 +223,6 @@ public class Job : ISelectable, IPrototypable
             return charsCantReach;
         }
     }
-
 
     public Pathfinder.GoalEvaluator IsTileAtJobSite
     {
@@ -495,6 +494,7 @@ public class Job : ISelectable, IPrototypable
         foreach (RequestedItem item in RequestedItems.Values)
         {
             description += string.Format("\t{0} {1}..{2}\n", item.Type, item.MinAmountRequested, item.MaxAmountRequested);
+
             // TODO: Not sure if this works or not.
             description = LocalizationTable.GetLocalization(description);
         }
@@ -522,12 +522,18 @@ public class Job : ISelectable, IPrototypable
     /// 
     /// </summary>
     /// <returns> True if the character can reach the inventory it needs.</returns>
-    public bool canGetToInventory(Character character)
+    public bool CanGetToInventory(Character character)
     {
         List<Tile> path = null;
         path = World.Current.InventoryManager.GetPathToClosestInventoryOfType(RequestedItems.Keys.ToArray(), character.CurrTile, canTakeFromStockpile);
-        if (path != null && path.Count > 0) { return true; }
-        else { return false; }
+        if (path != null && path.Count > 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     /// <summary>

@@ -108,6 +108,7 @@ public class InventoryManager
         {
             // The tile did not accept the inventory for whatever reason, therefore stop.
             return false;
+
             // TODO: Geoffrotism. Is this where we would hook in to handle inventory not being able to be placed in a tile.
         }
 
@@ -369,6 +370,7 @@ public class InventoryManager
         if (handler != null)
         {
             handler(inventory);
+
             // Let the JobQueue know there is new inventory available.
             World.Current.jobQueue.ReevaluateReachability();
         }

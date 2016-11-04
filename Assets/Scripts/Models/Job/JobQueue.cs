@@ -8,8 +8,8 @@
 #endregion
 using System;
 using System.Collections.Generic;
-using ProjectPorcupine.Jobs;
 using System.Linq;
+using ProjectPorcupine.Jobs;
 
 public class JobQueue
 {
@@ -149,13 +149,14 @@ public class JobQueue
                     Enqueue(job, i);
                     continue;
                 }
-                else if ((job.RequestedItems.Count > 0) && !job.canGetToInventory(character))
+                else if ((job.RequestedItems.Count > 0) && !job.CanGetToInventory(character))
                 {
                     job.AddCharCantReach(character);
                     Debug.ULogError("Character could not find a path to any inventory available.");
                     Enqueue(job, i);
                     continue;
                 }
+
                 return job;
             }
 

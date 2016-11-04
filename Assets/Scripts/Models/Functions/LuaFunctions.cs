@@ -138,7 +138,6 @@ public class LuaFunctions
             catch (ScriptRuntimeException e)
             {
                 Debug.ULogErrorChannel("Lua", "[" + scriptName + "] LUA RunTime error: "+ e.DecoratedMessage);
-
             }
         }
     }
