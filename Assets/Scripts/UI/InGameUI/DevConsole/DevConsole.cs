@@ -870,7 +870,6 @@ namespace DeveloperConsole
         /// </summary>
         private void DirtyAutocomplete()
         {
-            print("Dirtied");
             if (selectedCandidate != -1)
             {
                 autoComplete.gameObject.SetActive(true);
@@ -913,8 +912,8 @@ namespace DeveloperConsole
 
             // Load Base Commands
             AddCommands(
-                new VectorCommand<Vector3>("ChangeCameraCSharp", ChangeCameraPositionCSharp, "Change Camera Position (Written in CSharp)"),
-                new StringCommand("Run_LUA", Run_LUA, "Runs the text as a LUA function"));
+                new Command<Vector3>("ChangeCameraCSharp", ChangeCameraPositionCSharp, "Change Camera Position (Written in CSharp)"),
+                new Command<string>("Run_LUA", Run_LUA, "Runs the text as a LUA function"));
 
             // Load Commands from C#
             // Empty because C# Modding not implemented yet

@@ -97,7 +97,7 @@ namespace DeveloperConsole.CommandTypes
         {
             try
             {
-                string[] args = SplitAndTrim(arguments);
+                string[] args = RegexToStandardPattern(arguments);
                 return args;
             }
             catch (Exception e)

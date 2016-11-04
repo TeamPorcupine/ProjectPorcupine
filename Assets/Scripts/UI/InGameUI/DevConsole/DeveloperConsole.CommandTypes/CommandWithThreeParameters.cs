@@ -49,7 +49,7 @@ namespace DeveloperConsole.CommandTypes
         {
             try
             {
-                string[] args = SplitAndTrim(message);
+                string[] args = RegexToStandardPattern(message);
                 if (args.Length == 3)
                 {
                     return new object[] { GetValueType<T0>(args[0]), GetValueType<T1>(args[1]), GetValueType<T2>(args[2]) };

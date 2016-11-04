@@ -10,17 +10,6 @@ using System;
 
 namespace DeveloperConsole.Interfaces
 {
-    public interface ICommandCSharp : ICommandRunnable
-    {
-        /// <summary>
-        /// The method to be called.
-        /// </summary>
-        Delegate Method
-        {
-            get;
-        }
-    }
-
     public interface ICommandRunnable
     {
         /// <summary>
@@ -28,13 +17,5 @@ namespace DeveloperConsole.Interfaces
         /// </summary>
         /// <param name="arguments"> Arguments to parse.</param>
         void ExecuteCommand(string arguments);
-    }
-
-    public interface ICommandLUA : ICommandRunnable
-    {
-        string FunctionName
-        {
-            get;
-        }
     }
 }

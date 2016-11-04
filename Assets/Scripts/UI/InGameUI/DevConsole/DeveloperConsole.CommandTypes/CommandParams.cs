@@ -50,7 +50,7 @@ namespace DeveloperConsole.CommandTypes
         {
             try
             {
-                string[] args = SplitAndTrim(message);
+                string[] args = RegexToStandardPattern(message);
                 return args;
             }
             catch (Exception e)
