@@ -246,7 +246,7 @@ namespace ProjectPorcupine.Pathfinding
 
         public static RoomPathfindingHeuristic RoomHeuristic()
         {
-            return room => room.ID != 0 ? room.TileCount : Mathf.Infinity;
+            return room => room.ID != 0 ? room.TileCount : World.Current.Height * World.Current.Width * World.Current.Depth;
         }
 
         /// <summary>
