@@ -5,13 +5,12 @@
 // and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
-using ProjectPorcupine.Rooms;
-
-
 #endregion
+
 using System.Collections.Generic;
 using System.Linq;
 using ProjectPorcupine.Pathfinding;
+using ProjectPorcupine.Rooms;
 using UnityEngine;
 
 public class RoomPath_AStar
@@ -212,7 +211,6 @@ public class RoomPath_AStar
 //            Mathf.Pow(a.data.Y - b.data.Y, 2) +
 //            Mathf.Pow(a.data.Z - b.data.Z, 2));
     }
-
 
     // FOr now we're not using this, but let's leave it here while I think on it.
 //    private float Dist_between(Path_Node<Room> a, Path_Node<Room> b)

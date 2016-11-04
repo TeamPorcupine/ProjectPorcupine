@@ -380,7 +380,6 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
             tiles[9] = vertTiles[1];
         }
 
-
         if (!nullOkay)
         {
             return tiles.Where(tile => tile != null).ToArray();
@@ -528,6 +527,7 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
 
         return null;
     }
+
     public Enterability IsEnterable()
     {
         // This returns true if you can enter this tile right this moment.

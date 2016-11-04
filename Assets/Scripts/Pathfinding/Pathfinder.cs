@@ -5,13 +5,11 @@
 // and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
-using ProjectPorcupine.Rooms;
-
-
 #endregion
 
 using System.Collections.Generic;
 using System.Linq;
+using ProjectPorcupine.Rooms;
 using UnityEngine;
 
 namespace ProjectPorcupine.Pathfinding
@@ -100,6 +98,7 @@ namespace ProjectPorcupine.Pathfinding
             {
                 nearestExit = GetNearestExit(roomPath);
             }
+
             Tile targetTile = null;
             float distance = 0f;
 
@@ -142,6 +141,7 @@ namespace ProjectPorcupine.Pathfinding
             {
                 nearestExit = GetNearestExit(roomPath);
             }
+
             Tile targetTile = null;
             float distance = 0f;
             foreach (Inventory inventory in World.Current.InventoryManager.Inventories[type])
@@ -186,6 +186,7 @@ namespace ProjectPorcupine.Pathfinding
             {
                 nearestExit = GetNearestExit(roomPath);
             }
+
             Tile targetTile = null;
             float distance = 0f;
             foreach (Furniture furniture in World.Current.FurnitureManager.Where(furniture => furniture.Type == type))
@@ -242,7 +243,6 @@ namespace ProjectPorcupine.Pathfinding
         {
             return tile => 0f;
         }
-
 
         public static RoomPathfindingHeuristic RoomDijkstraDistance()
         {
@@ -338,6 +338,7 @@ namespace ProjectPorcupine.Pathfinding
             {
                 return roomList[roomList.Count - 2].FindExitBetween(roomList.Last());
             }
+
             return roomList.Last().FindExitBetween(roomList[roomList.Count - 2]);
         }
 
