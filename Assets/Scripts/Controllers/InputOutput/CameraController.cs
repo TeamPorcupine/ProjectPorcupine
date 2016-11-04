@@ -133,7 +133,7 @@ public class CameraController
         zoomTarget = Camera.main.orthographicSize - (Settings.GetSetting("ZoomSensitivity", 3) * (Camera.main.orthographicSize * amount));
     }
 
-    public void ChangeLayer(int newLayer) 
+    public void ChangeLayer(int newLayer)
     {
         if (layerCameras != null && newLayer >= 0 && newLayer < layerCameras.Length)
         {
@@ -177,13 +177,13 @@ public class CameraController
 
             cameraData.position = Camera.main.transform.position;
             cameraData.zoomLevel = zoomTarget;
-            cameraData.zLevel = currentLayer;
+            cameraData.currentLayer = currentLayer;
 
             for (int i = 0; i < cameraData.presets.Length; i++)
             {
                 cameraData.presets[i].position = Camera.main.transform.position;
                 cameraData.presets[i].zoomLevel = Camera.main.orthographicSize;
-                cameraData.presets[i].zLevel = currentLayer;
+                cameraData.presets[i].currentLayer = currentLayer;
             }
         }
         else
@@ -194,7 +194,7 @@ public class CameraController
             zoomTarget = cameraData.zoomLevel;
             Camera.main.orthographicSize = zoomTarget;
 
-            ChangeLayer(cameraData.zLevel);
+            ChangeLayer(cameraData.currentLayer);
         }
     }
 
@@ -238,7 +238,7 @@ public class CameraController
 
     private void CreateLayerCameras()
     {
-        if (WorldController.Instance.World == null) 
+        if (WorldController.Instance.World == null)
         {
             return;
         }
