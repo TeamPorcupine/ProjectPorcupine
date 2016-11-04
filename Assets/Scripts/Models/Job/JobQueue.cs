@@ -44,7 +44,7 @@ public class JobQueue
     /// Add a job to the JobQueue.
     /// </summary>
     /// <param name="job">The job to be inserted into the Queue.</param>
-    public void Enqueue(Job job, int position = -1)
+    public void Enqueue(Job job)
     {
         DebugLog("Enqueue({0})", job.Type);
         if (job.JobTime < 0)
@@ -84,21 +84,7 @@ public class JobQueue
 
             DebugLog(" - job ok");
 
-            if (position < 0 || position > jobQueue.Count)
-            {
-                jobQueue.Add(job.Priority, job);
-            }
-            else
-            {
-                List<Job> jobList = new List<Job>();
-                jobList = jobQueue.Values.ToList();
-                jobList.Insert(position, job);
-                jobQueue = new SortedList<Job.JobPriority, Job>();
-                foreach (Job x in jobList)
-                {
-                    jobQueue.Add(x.Priority, x);
-                }
-            }          
+            jobQueue.Add(job.Priority, job);       
         }
 
         if (OnJobCreated != null)
@@ -146,14 +132,14 @@ public class JobQueue
                 if (CharacterCantReachHelper(job, character))
                 {
                     Debug.ULogError("Character could not find a path to the job site.");
-                    Enqueue(job, i);
+                    ReInsertHelper(job);
                     continue;
                 }
                 else if ((job.RequestedItems.Count > 0) && !job.CanGetToInventory(character))
                 {
                     job.AddCharCantReach(character);
                     Debug.ULogError("Character could not find a path to any inventory available.");
-                    Enqueue(job, i);
+                    ReInsertHelper(job);
                     continue;
                 }
 
@@ -275,6 +261,13 @@ public class JobQueue
                 Enqueue(job);
             }
         }
+    }
+
+    private void ReInsertHelper(Job job)
+    {
+        jobQueue.Reverse();
+        Enqueue(job);
+        jobQueue.Reverse();
     }
 
     [System.Diagnostics.Conditional("FSM_DEBUG_LOG")]
