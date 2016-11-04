@@ -86,7 +86,7 @@ namespace ProjectPorcupine.Pathfinding
                 return null;
             }
 
-            RoomPath_AStar roomResolver = new RoomPath_AStar(World.Current, start.Room, RoomGoalInventoryEvaluator(types, canTakeFromStockpile), RoomDijkstraDistance());
+            RoomPath_AStar roomResolver = new RoomPath_AStar(World.Current, start.Room, RoomGoalInventoryEvaluator(types, canTakeFromStockpile), RoomHeuristic());
             List<Room> roomPath = roomResolver.GetList();
 
             Tile nearestExit;
@@ -129,7 +129,7 @@ namespace ProjectPorcupine.Pathfinding
                 return null;
             }
 
-            RoomPath_AStar roomResolver = new RoomPath_AStar(World.Current, start.Room, RoomGoalInventoryEvaluator(type, canTakeFromStockpile), RoomDijkstraDistance());
+            RoomPath_AStar roomResolver = new RoomPath_AStar(World.Current, start.Room, RoomGoalInventoryEvaluator(type, canTakeFromStockpile), RoomHeuristic());
             List<Room> roomPath = roomResolver.GetList();
 
             Tile nearestExit;
@@ -174,7 +174,7 @@ namespace ProjectPorcupine.Pathfinding
                 return null;
             }
 
-            RoomPath_AStar roomResolver = new RoomPath_AStar(World.Current, start.Room, RoomGoalFurnitureEvaluator(type), RoomDijkstraDistance());
+            RoomPath_AStar roomResolver = new RoomPath_AStar(World.Current, start.Room, RoomGoalFurnitureEvaluator(type), RoomHeuristic());
             List<Room> roomPath = roomResolver.GetList();
 
             Tile nearestExit;
@@ -244,9 +244,9 @@ namespace ProjectPorcupine.Pathfinding
             return tile => 0f;
         }
 
-        public static RoomPathfindingHeuristic RoomDijkstraDistance()
+        public static RoomPathfindingHeuristic RoomHeuristic()
         {
-            return room => 0f;
+            return room => room.ID != 0 ? room.TileCount : Mathf.Infinity;
         }
 
         /// <summary>

@@ -109,9 +109,9 @@ public class RoomPath_AStar
                     continue; // ignore this already completed neighbor
                 }
 
-                float pathfinding_cost_to_neighbor = neighbor.data.TileCount;
+//                float pathfinding_cost_to_neighbor = neighbor.data.TileCount;
 
-                float tentative_g_score = g_score[current] + pathfinding_cost_to_neighbor;
+                float tentative_g_score = g_score[current] + costEstimate(neighbor.data);
 
                 if (openSet.Contains(neighbor) && tentative_g_score >= g_score[neighbor])
                 {

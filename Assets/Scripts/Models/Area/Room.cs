@@ -63,9 +63,6 @@ namespace ProjectPorcupine.Rooms
                 }
             }
 
-            Debug.LogWarning("Room1 ID: " + this.ID);
-            Debug.LogWarning("Room2 ID: " + room2.ID);
-
             // In theory this should never be reached, if we are passed two rooms from a roomPath, there should always be an exit between
             // But we should probably add some kind of error checking anyways.
             return null;
