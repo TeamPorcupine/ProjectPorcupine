@@ -5,11 +5,13 @@
 // and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
+
 #endregion
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using MoonSharp.Interpreter;
+using Newtonsoft.Json.Linq;
 using ProjectPorcupine.Pathfinding;
 using UnityEngine;
 
@@ -302,6 +304,33 @@ public class InventoryManager
 
         // We know the objects are out there, now find the closest.
         return Pathfinder.FindPathToInventory(tile, objectTypes, canTakeFromStockpile);
+    }
+
+    public JToken ToJson()
+    {
+        JArray inventoriesJson = new JArray();
+        foreach (Inventory inventory in Inventories.SelectMany(pair => pair.Value))
+        {
+            inventoriesJson.Add(inventory.ToJSon());
+        }
+
+        return inventoriesJson;
+    }
+
+    public void FromJson(JToken inventoriesToken)
+    {
+        JArray inventoriesJArray = (JArray)inventoriesToken;
+
+        foreach (JToken inventoryToken in inventoriesJArray)
+        {
+            int x = (int)inventoryToken["X"];
+            int y = (int)inventoryToken["Y"];
+            int z = (int)inventoryToken["Z"];
+
+            Inventory inventory = new Inventory();
+            inventory.FromJson(inventoryToken);
+            PlaceInventory(World.Current.GetTileAt(x, y, z), inventory);
+        }
     }
 
     private void CleanupInventory(Inventory inventory)

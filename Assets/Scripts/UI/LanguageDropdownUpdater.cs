@@ -52,7 +52,7 @@ public class LanguageDropdownUpdater : MonoBehaviour
         public DropdownValue(string lang)
         {
             language = lang;
-            text = LocalizationTable.GetLocalization("lang", LocalizationTable.FallbackMode.ReturnKey, lang);
+            text = LocalizationTable.GetLocalizaitonCodeLocalization(lang);
         }
     }
 }

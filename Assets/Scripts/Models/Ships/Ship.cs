@@ -10,8 +10,6 @@
 using System;
 using System.Collections.Generic;
 using System.Xml;
-using System.Xml.Schema;
-using System.Xml.Serialization;
 using MoonSharp.Interpreter;
 using UnityEngine;
 
@@ -302,7 +300,7 @@ public class Ship : IPrototypable
                     Debug.ULogErrorChannel("Ships", "Tile " + tile.X + "," + tile.Y + " is not empty. Replacing anyway.");
                 }
 
-                tile.Type = PrototypeManager.TileType.Get(tileTypes[x, y]);
+                tile.SetTileType(PrototypeManager.TileType.Get(tileTypes[x, y]));
                 if (furnitureTypes[x, y] != null)
                 {
                     World.Current.FurnitureManager.PlaceFurniture(furnitureTypes[x, y], tile, false);
@@ -330,7 +328,7 @@ public class Ship : IPrototypable
                     tile.Furniture.Deconstruct();
                 }
 
-                tile.Type = TileType.Empty;
+                tile.SetTileType(TileType.Empty);
             }
         }
     }

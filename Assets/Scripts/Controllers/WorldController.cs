@@ -5,15 +5,12 @@
 // and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
-
 #endregion
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading;
-using System.Xml.Serialization;
 using MoonSharp.Interpreter;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Scheduler;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -144,6 +141,7 @@ public class WorldController : MonoBehaviour
         KeyboardManager.Instance.Destroy();
         Scheduler.Scheduler.Current.Destroy();
         GameMenuManager.Instance.Destroy();
+        AudioManager.Destroy();
     }
 
     /// <summary>
@@ -165,14 +163,6 @@ public class WorldController : MonoBehaviour
     /// <returns>Returns the thread that is currently saving data to HDD.</returns>
     public Thread SaveWorld(string filePath)
     {
-        XmlSerializer serializer = new XmlSerializer(typeof(World));
-        TextWriter writer = new StringWriter();
-        serializer.Serialize(writer, WorldController.Instance.World);
-        writer.Close();
-
-        // UberLogger doesn't handle multi-line messages well.
-        // Debug.Log(writer.ToString());
-
         // Make sure the save folder exists.
         if (Directory.Exists(GameController.Instance.FileSaveBasePath()) == false)
         {
@@ -183,9 +173,14 @@ public class WorldController : MonoBehaviour
             Directory.CreateDirectory(GameController.Instance.FileSaveBasePath());
         }
 
+        StreamWriter sw = new StreamWriter(filePath);
+        JsonWriter writer = new JsonTextWriter(sw);
+
+        JObject worldJson = World.Current.ToJson();
+
         // Launch saving operation in a separate thread.
         // This reduces lag while saving by a little bit.
-        Thread t = new Thread(new ThreadStart(delegate { SaveWorldToHdd(filePath, writer); }));
+        Thread t = new Thread(new ThreadStart(delegate { SaveWorldToHdd(worldJson, writer); }));
         t.Start();
 
         return t;
@@ -196,9 +191,15 @@ public class WorldController : MonoBehaviour
     /// </summary>
     /// <param name="filePath">Full path to file.</param>
     /// <param name="writer">TextWriter that contains serialized World data.</param>
-    private void SaveWorldToHdd(string filePath, TextWriter writer)
+    private void SaveWorldToHdd(JObject worldJson, JsonWriter writer)
     {
-        File.WriteAllText(filePath, writer.ToString());
+        JsonSerializer serializer = new JsonSerializer();
+        serializer.NullValueHandling = NullValueHandling.Ignore;
+        serializer.Formatting = Formatting.Indented;
+
+        serializer.Serialize(writer, worldJson);
+
+        writer.Flush();
     }
 
     private void CreateEmptyWorld()
@@ -221,18 +222,7 @@ public class WorldController : MonoBehaviour
     {
         Debug.ULogChannel("WorldController", "CreateWorldFromSaveFile");
 
-        // Create a world from our save file data.
-        XmlSerializer serializer = new XmlSerializer(typeof(World));
-
-        // This can throw an exception.
-        // TODO: Show a error message to the user.
-        string saveGameText = File.ReadAllText(fileName);
-
-        TextReader reader = new StringReader(saveGameText);
-
-        // Leaving this for Unity's console because UberLogger mangles multiline messages.
-        Debug.Log(reader.ToString());
-        World = (World)serializer.Deserialize(reader);
-        reader.Close();
+        World = new World();
+        World.ReadJson(fileName);
     }
 }

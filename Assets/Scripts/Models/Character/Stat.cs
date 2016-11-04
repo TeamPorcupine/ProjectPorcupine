@@ -32,12 +32,6 @@ public class Stat : IPrototypable
         Name = parentReader.GetAttribute("name");
     }
 
-    public void WriteXml(XmlWriter writer)
-    {
-        writer.WriteAttributeString("type", Type);
-        writer.WriteAttributeString("value", Value.ToString());
-    }
-
     public Stat Clone()
     {
         return new Stat(this);

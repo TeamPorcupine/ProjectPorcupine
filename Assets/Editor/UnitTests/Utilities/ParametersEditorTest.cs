@@ -152,28 +152,22 @@ public class ParametersEditorTest
     }
 
     [Test]
-    public void ParameterWriteXml()
+    public void ParameterToJson()
     {
-        StringBuilder sb = new StringBuilder();
-        XmlWriter writer = new XmlTextWriter(new StringWriter(sb));
-
         Parameter p = new Parameter("p", "test");
-        p.WriteXml(writer);
+        string paramJson = Newtonsoft.Json.JsonConvert.SerializeObject(p.ToJson());
 
-        Assert.That(sb.ToString(), Is.EqualTo("<Param name=\"p\" value=\"test\" />"));
+        Assert.That(paramJson, Is.EqualTo("\"test\""));
     }
 
     [Test]
-    public void ParameterGroupWriteXml()
+    public void ParameterGroupToJson()
     {
-        StringBuilder sb = new StringBuilder();
-        XmlWriter writer = new XmlTextWriter(new StringWriter(sb));
-
         Parameter p = new Parameter("p", "test");
         Parameter container = new Parameter("c");
         container.AddParameter(p);
-        container.WriteXml(writer);
+        string paramJson = Newtonsoft.Json.JsonConvert.SerializeObject(container.ToJson());
 
-        Assert.That(sb.ToString(), Is.EqualTo("<Param name=\"c\"><Param name=\"p\" value=\"test\" /></Param>"));
+        Assert.That(paramJson, Is.EqualTo("{\"p\":\"test\"}"));
     }
 }
