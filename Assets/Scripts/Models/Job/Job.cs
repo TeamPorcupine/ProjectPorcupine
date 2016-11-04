@@ -512,14 +512,9 @@ public class Job : ISelectable, IPrototypable
     /// </summary>
     public void AddCharCantReach(Character character)
     {
-        Debug.ULogError("Here1");
         if (!CharsCantReach.Contains(character))
         {
             charsCantReach.Add(character);
-            foreach (Character temp in charsCantReach)
-            {
-                Debug.ULogError(temp.GetName());
-            }
         }
     }
 

@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using ProjectPorcupine.Jobs;
+using System.Linq;
 
 public class JobQueue
 {
@@ -43,13 +44,8 @@ public class JobQueue
     /// Add a job to the JobQueue.
     /// </summary>
     /// <param name="job">The job to be inserted into the Queue.</param>
-    public void Enqueue(Job job)
+    public void Enqueue(Job job, int position = -1)
     {
-        Debug.ULogError(job.Description);
-        foreach (Character x in job.CharsCantReach)
-        {
-            Debug.ULogError("character {0} could not find a path to the job {1} located at tile {2},{3},{4}", x.name, job.GetName(), job.tile.X, job.tile.Y, job.tile.Z);
-        }
         DebugLog("Enqueue({0})", job.Type);
         if (job.JobTime < 0)
         {
@@ -62,7 +58,6 @@ public class JobQueue
         // If the job requires material but there is nothing available, store it in jobsWaitingForInventory
         if (job.RequestedItems.Count > 0 && job.GetFirstFulfillableInventoryRequirement() == null)
         {
-            Debug.ULogError("HELP1");
             string missing = job.acceptsAny ? "*" : job.GetFirstDesiredItem().Type;
             DebugLog(" - missingInventory {0}", missing);
             if (jobsWaitingForInventory.ContainsKey(missing) == false)
@@ -76,7 +71,6 @@ public class JobQueue
             job.CharsCantReach.Count == World.Current.CharacterManager.characters.Count)
         {
             // No one can reach the job.
-            Debug.ULogError("HELP2");
             DebugLog("JobQueue", "- Job can't be reached");
             unreachableJobs.Enqueue(job);
         }
@@ -89,7 +83,22 @@ public class JobQueue
             }
 
             DebugLog(" - job ok");
-            jobQueue.Add(job.Priority, job);
+
+            if (position < 0 || position > jobQueue.Count)
+            {
+                jobQueue.Add(job.Priority, job);
+            }
+            else
+            {
+                List<Job> jobList = new List<Job>();
+                jobList = jobQueue.Values.ToList();
+                jobList.Insert(position, job);
+                jobQueue = new SortedList<Job.JobPriority, Job>();
+                foreach (Job x in jobList)
+                {
+                    jobQueue.Add(x.Priority, x);
+                }
+            }          
         }
 
         if (OnJobCreated != null)
@@ -128,6 +137,7 @@ public class JobQueue
         for (int i = 0; i < jobQueue.Count; i++)
         {
             Job job = jobQueue.Values[i];
+            jobQueue.RemoveAt(i);
 
             // TODO: This is a simplistic version and needs to be expanded.
             // If we can get all material and we can walk to the tile, the job is workable.
@@ -136,16 +146,16 @@ public class JobQueue
                 if (CharacterCantReachHelper(job, character))
                 {
                     Debug.ULogError("Character could not find a path to the job site.");
+                    Enqueue(job, i);
                     continue;
                 }
                 else if ((job.RequestedItems.Count > 0) && !job.canGetToInventory(character))
                 {
                     job.AddCharCantReach(character);
                     Debug.ULogError("Character could not find a path to any inventory available.");
+                    Enqueue(job, i);
                     continue;
                 }
-
-                jobQueue.RemoveAt(i);
                 return job;
             }
 
