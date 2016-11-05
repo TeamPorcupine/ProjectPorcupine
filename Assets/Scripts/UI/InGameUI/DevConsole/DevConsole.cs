@@ -468,14 +468,6 @@ namespace DeveloperConsole
         }
 
         /// <summary>
-        /// Changes the current camera position.
-        /// </summary>
-        public static void ChangeCameraPositionCSharp(Vector3 newPos)
-        {
-            Camera.main.transform.position = newPos;
-        }
-
-        /// <summary>
         /// Returns a parameter list using the correct command mode.
         /// </summary>
         /// <param name="description"> The description of the command.</param>
@@ -487,74 +479,6 @@ namespace DeveloperConsole
             }
 
             return " (" + description.Parameters + ")";
-        }
-
-        /// <summary>
-        /// Clears the text area and history.
-        /// </summary>
-        public static void Clear()
-        {
-            if (instance == null)
-            {
-                return;
-            }
-
-            instance.textArea.text = "\n";
-            instance.history.Clear();
-            Log("Clear Successful :D", "green");
-        }
-
-        /// <summary>
-        /// Run the passed lua code.
-        /// </summary>
-        /// <param name="luaCode"> The LUA Code to run.</param>
-        /// <remarks> 
-        /// The code isn't vastly optimised since it should'nt be used for any large thing, 
-        /// just to run a single command.
-        /// </remarks>
-        public static void Run_LUA(string luaCode)
-        {
-            new LuaFunctions().RunText_Unsafe(luaCode);
-        }
-
-        /// <summary>
-        /// Established whether or not to show a time stamp on all messages.
-        /// </summary>
-        public static void ShowTimeStamp(bool value)
-        {
-            if (instance == null)
-            {
-                return;
-            }
-
-            CommandSettings.ShowTimeStamp = value;
-            Log("Change successful :D", "green");
-        }
-
-        /// <summary>
-        /// Sets the console text to the text supplied.
-        /// </summary>
-        public static void SetText(string text)
-        {
-            if (instance == null)
-            {
-                return;
-            }
-
-            instance.textArea.text = "\n" + text;
-        }
-
-        /// <summary>
-        /// Sets the size of the console text.
-        /// </summary>
-        public static void SetTextSize(int size)
-        {
-            if (instance == null)
-            {
-                return;
-            }
-
-            instance.textArea.fontSize = size;
         }
 
         /// <summary>
@@ -593,24 +517,6 @@ namespace DeveloperConsole
         }
 
         /// <summary>
-        /// Help for all functions.
-        /// </summary>
-        public void Help()
-        {
-            string text = string.Empty;
-
-            for (int i = 0; i < consoleCommands.Count; i++)
-            {
-                text += "\n<color=orange>" + consoleCommands[i].Title + GetParameters(consoleCommands[i]) + "</color>" + (consoleCommands[i].DescriptiveText == null ? string.Empty : " //" + consoleCommands[i].DescriptiveText);
-            }
-
-            text += "\n<color=orange>Note:</color> If the function has no parameters you <color=red>don't</color> need to use the parameter modifier.";
-            text += "\n<color=orange>Note:</color> You <color=red>don't</color> need to use the trailing parameter modifier either";
-
-            Log("-- Help --" + text);
-        }
-
-        /// <summary>
         /// Regenerates the autocomplete (button delegate for text field changed).
         /// </summary>
         public void RegenerateAutoComplete(Text newValue)
@@ -633,8 +539,6 @@ namespace DeveloperConsole
             List<string> possible = consoleCommands
                 .Where(cB => cB.Title.ToLower().StartsWith(inputText.ToLower()))
                 .Select(cB => cB.Title).ToList();
-
-            print(possible);
 
             if (possible != null)
             {
@@ -912,8 +816,8 @@ namespace DeveloperConsole
 
             // Load Base Commands
             AddCommands(
-                new Command<Vector3>("ChangeCameraCSharp", ChangeCameraPositionCSharp, "Change Camera Position (Written in CSharp)"),
-                new Command<string>("Run_LUA", Run_LUA, "Runs the text as a LUA function"));
+                new Command<Vector3>("ChangeCameraPosition", CoreCommands.ChangeCameraPosition, "Change Camera Position (Written in CSharp)"),
+                new Command<string>("Run_LUA", CoreCommands.Run_LUA, "Runs the text as a LUA function"));
 
             // Load Commands from C#
             // Empty because C# Modding not implemented yet
@@ -921,23 +825,6 @@ namespace DeveloperConsole
 
             // Load Commands from XML (will be changed to JSON AFTER the current upgrade)
             AddCommands(PrototypeManager.DevConsole.Values.Select(x => x.LUACommand).ToArray());
-        }
-
-        private void SetFontSize(int size)
-        {
-            if (size < 10)
-            {
-                LogError("Font size would be too small");
-            }
-            else if (size > 20)
-            {
-                LogError("Font size would be too big");
-            }
-            else
-            {
-                textArea.fontSize = size;
-                Log("Change successful :D", "green");
-            }
         }
     }
 }

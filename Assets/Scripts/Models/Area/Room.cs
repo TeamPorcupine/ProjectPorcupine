@@ -129,7 +129,7 @@ namespace ProjectPorcupine.Rooms
                             // We have found an exit
                             exits.Add(tile2);
                         }
-                    } 
+                    }
                 }
             }
 
@@ -426,7 +426,7 @@ namespace ProjectPorcupine.Rooms
                             // We have found an enclosing furniture, which means it is on our border
                             borderingTiles.Add(tile2);
                         }
-                    } 
+                    }
                 }
             }
 

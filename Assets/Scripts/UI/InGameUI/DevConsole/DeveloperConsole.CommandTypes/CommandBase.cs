@@ -14,6 +14,7 @@ using System.Text.RegularExpressions;
 using DeveloperConsole.Interfaces;
 using MoonSharp.Interpreter;
 using UnityEngine;
+using System.Reflection;
 
 namespace DeveloperConsole.CommandTypes
 {
@@ -128,49 +129,66 @@ namespace DeveloperConsole.CommandTypes
                         throw new Exception("The entered value is not a valid " + typeof(T) + " value");
                     }
                 }
-                else if (typeof(Vector2) == typeof(T))
+                else if (typeof(T) == typeof(string))
                 {
-                    // I'm wanting a vector 2
-                    Vector2 result;
-                    if (ValueToVector2(arg, out result))
+                    return (T)(object)arg.Trim('"');
+                }
+                else if (arg.Contains('['))
+                {
+                    arg = arg.Trim();
+                    string pattern = @"\[((?:"".*?"")|(?:[^\]]*))\]";
+
+                    string[] args = Regex.Matches(arg, pattern)
+                        .Cast<Match>()
+                        .Select(m => m.Value.Trim().Trim('[', ']').Trim('"'))
+                        .ToArray();
+
+                    // This is a list because then we can go parameters.Count to get the current 'non nil' parameters
+                    List<object> parameters = new List<object>();
+
+                    ConstructorInfo[] possibleConstructors = typeof(T).GetConstructors().Where(x => x.GetParameters().Length == args.Length).ToArray();
+                    ConstructorInfo chosenConstructor = null;
+
+                    for (int i = 0; i < possibleConstructors.Length; i++)
                     {
-                        returnValue = (T)(object)result;
+                        parameters = new List<object>();
+                        ParameterInfo[] possibleParameters = possibleConstructors[i].GetParameters();
+
+                        for (int j = 0; j < possibleParameters.Length; j++)
+                        {
+                            try
+                            {
+                                if (possibleParameters[j].ParameterType == typeof(string))
+                                {
+                                    parameters.Add(args[j]);
+                                }
+                                else
+                                {
+                                    parameters.Add(Convert.ChangeType(args[j], possibleParameters[j].ParameterType));
+                                }
+                            }
+                            catch
+                            {
+                                break;
+                            }
+                        }
+
+                        if (parameters.Count == possibleParameters.Length)
+                        {
+                            // We have all our parameters
+                            chosenConstructor = possibleConstructors[i];
+                            break;
+                        }
                     }
-                    else
+
+                    if (chosenConstructor == null)
                     {
                         throw new Exception("The entered value is not a valid " + typeof(T) + " value");
                     }
-                }
-                else if (typeof(Vector3) == typeof(T))
-                {
-                    // I'm wanting a vector 3
-                    Vector3 result;
-                    if (ValueToVector3(arg, out result))
-                    {
-                        returnValue = (T)(object)result;
-                    }
                     else
                     {
-                        throw new Exception("The entered value is not a valid " + typeof(T) + " value");
+                        returnValue = (T)chosenConstructor.Invoke(parameters.ToArray());
                     }
-                }
-                else if (typeof(Vector4) == typeof(T))
-                {
-                    // I'm wanting a vector 4
-                    Vector4 result;
-                    if (ValueToVector4(arg, out result))
-                    {
-                        returnValue = (T)(object)result;
-                    }
-                    else
-                    {
-                        throw new Exception("The entered value is not a valid " + typeof(T) + " value");
-                    }
-                }
-                else if (typeof(string) == typeof(T))
-                {
-                    // I'm wanting a string
-                    return (T)(object)arg.Trim().TrimEnd(']').TrimStart('[');
                 }
                 else
                 {
@@ -233,103 +251,6 @@ namespace DeveloperConsole.CommandTypes
             }
 
             return true;
-        }
-
-        /// <summary>
-        /// Converts the value to a vector via Int, and String Parsers, the string should be of type [3, 2, 1].
-        /// </summary>
-        /// <param name="value"> The value to convert.</param>
-        /// <param name="result"> The resulting vector2.</param>
-        /// <returns> True if the conversion was successful.</returns>
-        protected bool ValueToVector2(string value, out Vector2 result)
-        {
-            // Value should be in format [x, y]
-            // Therefore we can conclude that if it doesn't just return an empty vector
-
-            // We are using regex because its reliable then using some loops
-            string pattern = @"\[(\d+(?:\.\d+)?),(\d+(?:\.\d+)?)\]";
-
-            // Because we don't care about spaces in vectors
-            Match matches = Regex.Match(value.Replace(" ", string.Empty), pattern);
-
-            if (matches.Groups.Count == 3)
-            {
-                // Matches what we want so do our magic
-                result = new Vector2(float.Parse(matches.Groups[1].Value), float.Parse(matches.Groups[2].Value));
-
-                // Return true
-                return true;
-            }
-
-            result = new Vector2();
-
-            // Else it doesn't so return false
-            return false;
-        }
-
-        /// <summary>
-        /// Converts the value to a vector via Int, and String Parsers, the string should be of type [3, 2, 1].
-        /// </summary>
-        /// <param name="value"> The value to convert.</param>
-        /// <param name="result"> The resulting vector2.</param>
-        /// <returns> True if the conversion was successful.</returns>
-        protected bool ValueToVector3(string value, out Vector3 result)
-        {
-            // Value should be in format [x, y]
-            // Therefore we can conclude that if it doesn't just return an empty vector
-
-            // We are using regex because its reliable then using some loops
-            string pattern = @"\[(\d+(?:\.\d+)?),(\d+(?:\.\d+)?),(\d+(?:\.\d+)?)\]";
-
-            // We don't care about spaces
-            Match matches = Regex.Match(value.Replace(" ", string.Empty), pattern);
-
-            if (matches.Groups.Count == 4)
-            {
-                // Matches what we want so do our magic
-                result = new Vector3(float.Parse(matches.Groups[1].Value), float.Parse(matches.Groups[2].Value), float.Parse(matches.Groups[3].Value));
-
-                // Return true
-                return true;
-            }
-
-            result = new Vector3();
-
-            // Else it doesn't so return false
-            return false;
-        }
-
-        /// <summary>
-        /// Converts the value to a vector via Int, and String Parsers, the string should be of type [3, 2, 1].
-        /// </summary>
-        /// <param name="value"> The value to convert.</param>
-        /// <param name="result"> The resulting vector2.</param>
-        /// <returns> True if the conversion was successful.</returns>
-        protected bool ValueToVector4(string value, out Vector4 result)
-        {
-            // Value should be in format [x, y]
-            // Therefore we can conclude that if it doesn't just return an empty vector
-
-            // We are using regex because its reliable then using some loops
-
-            // Because we don't care about spaces in vectors
-            string pattern = @"\[(\d+(?:\.\d+)?),(\d+(?:\.\d+)?),(\d+(?:\.\d+)?),(\d+(?:\.\d+)?)\]";
-
-            Match matches = Regex.Match(value.Replace(" ", string.Empty), pattern);
-
-            if (matches.Groups.Count == 5)
-            {
-                // Matches what we want so do our magic
-                result = new Vector4(float.Parse(matches.Groups[1].Value), float.Parse(matches.Groups[2].Value), float.Parse(matches.Groups[3].Value), float.Parse(matches.Groups[4].Value));
-
-                // Return true
-                return true;
-            }
-
-            result = new Vector4();
-
-            // Else it doesn't so return false
-            return false;
         }
     }
 }
