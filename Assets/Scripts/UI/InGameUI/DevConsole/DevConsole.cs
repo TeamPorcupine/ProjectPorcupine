@@ -264,7 +264,9 @@ namespace DeveloperConsole
             }
 
             // Get method and arguments
-            string[] methodNameAndArgs = command.Trim().TrimEnd(')').Split('(');
+
+            // We want to ONLY split once!
+            string[] methodNameAndArgs = command.Trim().TrimEnd(')').Split(new char[] { '(' }, 2);
             string method = command;
             string args = string.Empty;
 
