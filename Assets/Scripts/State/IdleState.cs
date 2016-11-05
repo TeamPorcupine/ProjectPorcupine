@@ -7,6 +7,9 @@
 // ====================================================
 #endregion
 
+using ProjectPorcupine.Pathfinding;
+using System;
+using System.Collections.Generic;
 using Random = UnityEngine.Random;
 
 namespace ProjectPorcupine.State
@@ -26,11 +29,41 @@ namespace ProjectPorcupine.State
 
         public override void Update(float deltaTime)
         {
+                Tile startTile = character.CurrTile;
+                Tile endTile = null;
+                List<Tile> path = null;
+
+                // Get a random Int 0,1,2,3 for representing the 4 directions.
+                int direction = Int32.Parse(Math.Truncate(Random.value * 4).ToString());
+
+                switch (direction)
+                {
+                    case 0:
+                        endTile = World.Current.GetTileAt(startTile.X + 1, startTile.Y, startTile.Z);
+                        break;
+                    case 1:
+                        endTile = World.Current.GetTileAt(startTile.X, startTile.Y + 1, startTile.Z);
+                        break;
+                    case 2:
+                        endTile = World.Current.GetTileAt(startTile.X - 1, startTile.Y, startTile.Z);
+                        break;
+                    case 3:
+                        endTile = World.Current.GetTileAt(startTile.X, startTile.Y - 1, startTile.Z);
+                        break;
+                }
+
+                if (endTile != null)
+                {
+                  path = Pathfinder.FindPathToTile(startTile, endTile);
+                }
+
+            Pathfinder.GoalEvaluator GTE = Pathfinder.GoalTileEvaluator(endTile, true);
+
             timeSpentIdle += deltaTime;
             if (timeSpentIdle >= totalIdleTime)
             {
-                // We are done. Lets look for work.
-                character.SetState(null);
+                // We are done. Execute move then look for work.
+              character.SetState(new MoveState(character, GTE, path));
             }
         }
     }
