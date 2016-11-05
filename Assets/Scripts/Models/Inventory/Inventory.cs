@@ -5,7 +5,6 @@
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
-
 #endregion
 using System;
 using System.Collections.Generic;
@@ -91,7 +90,7 @@ public class Inventory : ISelectable, IContextActionProvider
     {
         return string.Format("StackSize: {0}\nCategory: {1}\nBasePrice: {2:N2}", StackSize, Category, BasePrice);
     }
-    
+
     public string GetJobDescription()
     {
         return string.Empty;

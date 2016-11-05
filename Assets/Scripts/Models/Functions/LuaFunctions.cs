@@ -110,7 +110,7 @@ public class LuaFunctions
     /// <param name="functionNames">Function names.</param>
     /// <param name="instance">An instance of the actions type.</param>
     /// <param name="deltaTime">Delta time.</param>
-    public void CallWithInstance(string[] functionNames, object instance,  params object[] parameters)
+    public void CallWithInstance(string[] functionNames, object instance, params object[] parameters)
     {
         if (instance == null)
         {
@@ -126,14 +126,13 @@ public class LuaFunctions
                 return;
             }
 
-            DynValue result;
             object[] instanceAndParams = new object[parameters.Length + 1];
             instanceAndParams[0] = instance;
             parameters.CopyTo(instanceAndParams, 1);
 
             try
             {
-                result = Call(fn, instanceAndParams);
+                Call(fn, instanceAndParams);
             }
             catch (ScriptRuntimeException e)
             {
