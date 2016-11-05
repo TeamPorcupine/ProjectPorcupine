@@ -177,13 +177,13 @@ public class CameraController
 
             cameraData.position = Camera.main.transform.position;
             cameraData.zoomLevel = zoomTarget;
-            cameraData.currentLayer = currentLayer;
+            cameraData.zLevel = currentLayer;
 
             for (int i = 0; i < cameraData.presets.Length; i++)
             {
                 cameraData.presets[i].position = Camera.main.transform.position;
                 cameraData.presets[i].zoomLevel = Camera.main.orthographicSize;
-                cameraData.presets[i].currentLayer = currentLayer;
+                cameraData.presets[i].zLevel = currentLayer;
             }
         }
         else
@@ -194,7 +194,7 @@ public class CameraController
             zoomTarget = cameraData.zoomLevel;
             Camera.main.orthographicSize = zoomTarget;
 
-            ChangeLayer(cameraData.currentLayer);
+            ChangeLayer(cameraData.zLevel);
         }
     }
 

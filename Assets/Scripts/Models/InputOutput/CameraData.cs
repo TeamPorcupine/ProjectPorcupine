@@ -14,14 +14,14 @@ public struct Preset
 {
     public Vector3 position;
     public float zoomLevel;
-    public int currentLayer;
+    public int zLevel;
 }
 
 public class CameraData
 {
     public Vector3 position;
     public float zoomLevel;
-    public int currentLayer;
+    public int zLevel;
     public Preset[] presets;
 
     public JToken ToJson()
@@ -32,7 +32,7 @@ public class CameraData
         cameraJson.Add("Y", Camera.main.transform.position.y);
         cameraJson.Add("Z", Camera.main.transform.position.z);
         cameraJson.Add("ZoomLevel", Camera.main.orthographicSize);
-        cameraJson.Add("CurrentLayer", WorldController.Instance.cameraController.CurrentLayer);
+        cameraJson.Add("ZLevel", WorldController.Instance.cameraController.CurrentLayer);
 
         JArray presetsJson = new JArray();
 
@@ -43,7 +43,6 @@ public class CameraData
             presetJson.Add("Y", preset.position.y);
             presetJson.Add("Z", preset.position.z);
             presetJson.Add("ZoomLevel", preset.zoomLevel);
-            presetJson.Add("CurrentLayer", preset.currentLayer);
             presetsJson.Add(presetJson);
         }
 
@@ -58,7 +57,7 @@ public class CameraData
         int y = (int)cameraDataToken["Y"];
         int z = (int)cameraDataToken["Z"];
         float zoomLevel = (float)cameraDataToken["ZoomLevel"];
-        currentLayer = (int)cameraDataToken["CurrentLayer"];
+        zLevel = (int)cameraDataToken["ZLevel"];
         Vector3 camPosition = new Vector3(x, y, z);
         Camera.main.transform.position = camPosition;
         Camera.main.orthographicSize = zoomLevel;
