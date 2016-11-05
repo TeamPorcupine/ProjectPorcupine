@@ -18,7 +18,7 @@ namespace DeveloperConsole.CommandTypes
     /// A core class for CSharp Commands.
     /// </summary>
     [MoonSharpUserData]
-    public abstract class CSharpCommand : CommandBase, ICommandCSharp
+    public class CSharpCommand : CommandBase, ICommandCSharp
     {
         /// <summary>
         /// Standard with title and a method.
@@ -80,11 +80,6 @@ namespace DeveloperConsole.CommandTypes
         }
 
         /// <summary>
-        /// The method to call.
-        /// </summary>
-        public Delegate Method { get; private set; }
-
-        /// <summary>
         /// Get all the parameters for this function.
         /// </summary>
         /// <returns> a string of all the parameters with a comma between them.</returns>
@@ -95,6 +90,8 @@ namespace DeveloperConsole.CommandTypes
                 return string.Join(", ", Method.Method.GetParameters().Select(x => x.ParameterType.Name).ToArray());
             }
         }
+
+        public Delegate Method { get; protected set; }
 
         /// <summary>
         /// Executes the command.
@@ -112,6 +109,11 @@ namespace DeveloperConsole.CommandTypes
                 DevConsole.LogError(Errors.ExecuteConsoleError.Description(this));
                 Debug.ULogErrorChannel("DevConsole", e.ToString());
             }
+        }
+
+        protected override object[] ParseArguments(string args)
+        {
+            return new object[] { };
         }
     }
 }

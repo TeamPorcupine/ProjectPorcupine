@@ -817,7 +817,28 @@ namespace DeveloperConsole
             // Load Base Commands
             AddCommands(
                 new Command<Vector3>("ChangeCameraPosition", CoreCommands.ChangeCameraPosition, "Change Camera Position (Written in CSharp)"),
-                new Command<string>("Run_LUA", CoreCommands.Run_LUA, "Runs the text as a LUA function"));
+                new Command<string>("Run_LUA", CoreCommands.Run_LUA, "Runs the text as a LUA function"),
+                new Command<string>("SetText", CoreCommands.SetText, "Sets the devConsole text"),
+                new Command("Clear", CoreCommands.Clear, "Clears the developer console"),
+                new Command<string, float>("SetCharacterHealth", CoreCommands.SetCharacterHealth, "Sets the character's health"),
+                new Command<string, float>("DamageCharacter", CoreCommands.DamageCharacter, "Damages said character"),
+                new Command<string>("ClearCharStateQueue", CoreCommands.CharacterClearStateQueue, "Clears the said character's state queue"),
+                new Command("ClearAllCharStateQueue", CoreCommands.AllCharactersClearStateQueue, "Clears all chaaracter's state queue"),
+                new Command<string, float>("AddCurrency", CoreCommands.AddCurrency, "Adds x amount of currency to wallet"),
+                new Command<Vector3, int>("ConsumeInventory", CoreCommands.ConsumeInventory, "Consumes x amount of inventory at position provided"),
+                new Command<Vector3, string, Vector2>("PlaceInventoryPos", CoreCommands.PlaceInventory, "Places inventory at position provided"),
+                new Command<string, int, string, Vector2>("PlaceInventoryChar", CoreCommands.PlaceInventory, "Places inventory at character provided"),
+                new Command<string, int, bool>("RemoveInventoryOfType", CoreCommands.RemoveInventoryOfType, "Remove inventory of type x"),
+                new Command<string, Vector3, float>("PlaceFurniture", CoreCommands.PlaceFurniture, "Places furniture"),
+                new Command<string, Vector3>("IsWorkSpotClear", CoreCommands.IsWorkSpotClear, "Is the work spot at the position provided clear"),
+                new Command<string, Vector3, float>("IsPlacementValid", CoreCommands.IsPlacementValid, "Is the spot provided available for furniture"),
+                new Command<Vector3>("GetTemperature", CoreCommands.GetTemperature, "Logs the current temperature at the square provided"),
+                new Command<Vector3>("GetThermalDiffusivity", CoreCommands.GetThermallDiffusivity, "Logs the current Thermal Diffusivity at the square provided"),
+                new Command<Vector3>("FloodFillRoom", CoreCommands.FloodFillRoomAt, "Flood fills the room at the position provided"),
+                new Command("GetRoomIDs", CoreCommands.GetAllRoomIDs, "Logs all the room IDs"),
+                new Command<int, string, Vector3>("DoBuild", CoreCommands.DoBuild, CoreCommands.DoBuildHelp),
+                new Command("DirtyTileGraph", CoreCommands.InvalidateTileGraph, "Invalidates the tile graph"),
+                new Command("GetCharNames", CoreCommands.GetCharacterNames, "Logs all the character names"));
 
             // Load Commands from C#
             // Empty because C# Modding not implemented yet

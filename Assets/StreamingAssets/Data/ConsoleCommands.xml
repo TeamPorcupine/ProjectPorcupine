@@ -10,5 +10,4 @@
   <ConsoleCommand Title="Clear" FunctionName="Clear" Description="Clears the console" HelpFunctionName="" Parameters=""></ConsoleCommand>
   <ConsoleCommand Title="ShowTimeStamp" FunctionName="ShowTimeStamp" Description="Establishes whether or not the console will show time stamps for each command" HelpFunctionName="" Parameters="Bool"></ConsoleCommand>
   <ConsoleCommand Title="Help" FunctionName="HelpAll" Description="Shows a list of all the available commands" HelpFunctionName="" Parameters="" />
-  <ConsoleCommand Title="ChangeCameraPositionLUA" FunctionName="ChangeCameraPositionLUA" Description="Changes the camera position (written in LUA)" HelpFunctionName="" Parameters="Vector2[Float, Float]" />
 </ConsoleCommands>

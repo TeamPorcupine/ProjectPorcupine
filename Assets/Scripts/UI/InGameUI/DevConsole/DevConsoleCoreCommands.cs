@@ -7,6 +7,7 @@
 // ====================================================
 #endregion
 using DeveloperConsole.CommandTypes;
+using ProjectPorcupine.Rooms;
 using System;
 using UnityEngine;
 
@@ -101,6 +102,9 @@ namespace DeveloperConsole
             GetCurrentWorld().CharacterManager.GetFromName(name).Health.DamageEntity(amount);
         }
 
+        /// <summary>
+        /// Currently not enough parameters, should create an object to hold this data, but idk?  Seems not relevant enough
+        /// </summary>
         public static void CharacterHealthSystemSet(string name, float HP, bool overheal, bool healable, bool invincible, bool revivable)
         {
             HealthSystem health = GetCurrentWorld().CharacterManager.GetFromName(name).Health;
@@ -147,6 +151,91 @@ namespace DeveloperConsole
         public static void RemoveInventoryOfType(string type, int amount, bool onlyFromStockpiles)
         {
             GetCurrentWorld().InventoryManager.RemoveInventoryOfType(type, amount, onlyFromStockpiles);
+        }
+
+        public static void PlaceFurniture(string type, Vector3 pos, float rotation)
+        {
+            GetCurrentWorld().FurnitureManager.PlaceFurniture(type, GetTileAt(pos), true, rotation);
+        }
+
+        public static void IsWorkSpotClear(string type, Vector3 pos)
+        {
+            if (GetCurrentWorld().FurnitureManager.IsWorkSpotClear(type, GetTileAt(pos)))
+            {
+                DevConsole.Log("Work spot is clear!", "green");
+            }
+            else
+            {
+                DevConsole.LogWarning("Work spot isn't clear!");
+            }
+        }
+
+        public static void IsPlacementValid(string type, Vector3 pos, float rotation)
+        {
+            if (GetCurrentWorld().FurnitureManager.IsPlacementValid(type, GetTileAt(pos), rotation))
+            {
+                DevConsole.Log("Spot is valid!", "green");
+            }
+            else
+            {
+                DevConsole.LogWarning("Spot isn't valid!");
+            }
+        }
+
+        public static void GetTemperature(Vector3 pos)
+        {
+            DevConsole.Log("Temperature: " + GetCurrentWorld().temperature.GetTemperature((int)pos.x, (int)pos.y, (int)pos.z));
+        }
+
+        public static void GetThermallDiffusivity(Vector3 pos)
+        {
+            DevConsole.Log("Thermal Diffusivity: " + GetCurrentWorld().temperature.GetThermalDiffusivity((int)pos.x, (int)pos.y, (int)pos.z));
+        }
+
+        public static void FloodFillRoomAt(Vector3 pos)
+        {
+            GetCurrentWorld().RoomManager.DoRoomFloodFill(GetTileAt(pos), false, false);
+        }
+
+        public static void GetAllRoomIDs()
+        {
+            foreach (Room room in GetCurrentWorld().RoomManager)
+            {
+                DevConsole.Log("Room " + room.ID);
+            }
+        }
+
+        /// <summary>
+        /// Build an object
+        /// </summary>
+        /// <param name="buildMode"> Build mode, with int in this order: FLOOR, ROOMBEHAVIOR, FURNITURE, UTILITY, DECONSTRUCT </param>
+        public static void DoBuild(int buildMode, string type, Vector3 pos)
+        {
+            BuildModeController.Instance.buildMode = (BuildMode)buildMode;
+            BuildModeController.Instance.buildModeType = type;
+            BuildModeController.Instance.DoBuild(GetTileAt(pos));
+
+            BuildModeController.Instance.buildModeType = "";
+            BuildModeController.Instance.buildMode = BuildMode.FLOOR;
+        }
+
+        public static void DoBuildHelp()
+        {
+            DevConsole.Log("Does build mode using the furniture/floor/whatever type provided at position pos");
+            DevConsole.Log("The options for build mode are: FLOOR = 0, ROOMBEHAVIOUR= 1, FURNITURE= 2, UTILITY = 3, and DECONSTRUCT= 4");
+        }
+
+        public static void InvalidateTileGraph()
+        {
+            GetCurrentWorld().InvalidateTileGraph();
+        }
+
+        public static void GetCharacterNames()
+        {
+            foreach (Character character in GetCurrentWorld().CharacterManager)
+            {
+                DevConsole.Log("Say hello to " + character.GetName());
+            }
         }
 
         static Tile GetTileAt(Vector3 pos)
