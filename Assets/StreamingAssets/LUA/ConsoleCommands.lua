@@ -75,7 +75,7 @@ function Set_FontSize( size )
 end
 
 function Clear()
-	DevConsole.TextObject().text = "\n<color=green> Cleared Console :D </color>"
+	DevConsole.TextObject().text = "\n<color=#7CFC00> Cleared Console :D </color>"
 	DevConsole.ClearHistory()
 end
 
@@ -93,7 +93,7 @@ function HelpAll()
 	for index, value in ipairs(DevConsole:CommandArray()) do
 		local text = "<color=orange>"..value.title..DevConsole.GetParameters(value).."</color>"
 		if (value.descriptiveText ~= nil) then
-			text = text .. "<color=green> //" .. value.descriptiveText .. "</color>"
+			text = text .. "<color=#7CFC00> //" .. value.descriptiveText .. "</color>"
 		end
 		
 		DevConsole.Log(text)
@@ -109,7 +109,3 @@ end
 
 -------------------------------- Help Actions --------------------------------
 
-function Set_FontSizeHelp()
-	DevConsole.Log("<color=yellow>Command Info:</color> Sets the font size, must be between 10 and 20 (inclusive)")
-	DevConsole.Log("Call it like: SetFontSize: 10")
-end

@@ -22,7 +22,7 @@ namespace DeveloperConsole.CommandTypes
             {
                 if (HelpFunctionName == string.Empty)
                 {
-                    DevConsole.ShowDescription(this);
+                    DevConsole.Log("<color=yellow>Command Info:</color> " + ((DescriptiveText == string.Empty) ? " < color=red>There's no help for this command</color>" : DescriptiveText));
                     return;
                 }
 
@@ -67,8 +67,8 @@ namespace DeveloperConsole.CommandTypes
         /// <param name="helpFunctionName"> The help method to execute.</param>
         public LUACommand(string title, string functionName, string descriptiveText, string helpFunctionName, string parameters) : this(title, functionName, descriptiveText)
         {
-            this.HelpFunctionName = helpFunctionName;
-            this.Parameters = parameters;
+            HelpFunctionName = helpFunctionName;
+            Parameters = parameters;
         }
 
         public string FunctionName
@@ -79,6 +79,11 @@ namespace DeveloperConsole.CommandTypes
         public string HelpFunctionName
         {
             get; private set;
+        }
+
+        public override string Parameters
+        {
+            get; protected set;
         }
 
         public void ExecuteCommand(string arguments)

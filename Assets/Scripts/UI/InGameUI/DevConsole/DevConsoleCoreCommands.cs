@@ -6,9 +6,9 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using System;
 using DeveloperConsole.CommandTypes;
 using ProjectPorcupine.Rooms;
-using System;
 using UnityEngine;
 
 namespace DeveloperConsole
@@ -103,13 +103,13 @@ namespace DeveloperConsole
         }
 
         /// <summary>
-        /// Currently not enough parameters, should create an object to hold this data, but idk?  Seems not relevant enough
+        /// Currently not enough parameters, should create an object to hold this data, but idk?  Seems not relevant enough.
         /// </summary>
-        public static void CharacterHealthSystemSet(string name, float HP, bool overheal, bool healable, bool invincible, bool revivable)
+        public static void CharacterHealthSystemSet(string name, float hp, bool overheal, bool healable, bool invincible, bool revivable)
         {
             HealthSystem health = GetCurrentWorld().CharacterManager.GetFromName(name).Health;
             health.CanOverheal = overheal;
-            health.CurrentHealth = HP;
+            health.CurrentHealth = hp;
             health.IsHealable = healable;
             health.IsInvincible = invincible;
             health.IsRevivable = revivable;
@@ -206,16 +206,16 @@ namespace DeveloperConsole
         }
 
         /// <summary>
-        /// Build an object
+        /// Build an object.
         /// </summary>
-        /// <param name="buildMode"> Build mode, with int in this order: FLOOR, ROOMBEHAVIOR, FURNITURE, UTILITY, DECONSTRUCT </param>
+        /// <param name="buildMode"> Build mode, with int in this order: FLOOR, ROOMBEHAVIOR, FURNITURE, UTILITY, DECONSTRUCT. </param>
         public static void DoBuild(int buildMode, string type, Vector3 pos)
         {
             BuildModeController.Instance.buildMode = (BuildMode)buildMode;
             BuildModeController.Instance.buildModeType = type;
             BuildModeController.Instance.DoBuild(GetTileAt(pos));
 
-            BuildModeController.Instance.buildModeType = "";
+            BuildModeController.Instance.buildModeType = string.Empty;
             BuildModeController.Instance.buildMode = BuildMode.FLOOR;
         }
 
@@ -238,7 +238,7 @@ namespace DeveloperConsole
             }
         }
 
-        static Tile GetTileAt(Vector3 pos)
+        public static Tile GetTileAt(Vector3 pos)
         {
             return GetCurrentWorld().GetTileAt((int)pos.x, (int)pos.y, (int)pos.z);
         }

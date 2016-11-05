@@ -6,8 +6,8 @@
   <!--Description is a short description of what this command does-->
   <!--HelpFunctionName is for LUA and is the function name of the LUA Script that runs on Title?-->
   <!--Parameters is a string that should contain all the parameters in C# Type format and with a comma between them.  e.g. Int, String, Boolean-->
-  <ConsoleCommand Title="SetFontSize" FunctionName="Set_FontSize" Description="Sets the font size, must be between 10 and 20 (inclusive)" HelpFunctionName="Set_FontSizeHelp" Parameters="Int[10 &lt;= x &lt;= 20]"></ConsoleCommand>
+  <ConsoleCommand Title="SetFontSize" FunctionName="Set_FontSize" Description="Sets the font size, must be between 10 and 20 (inclusive)" HelpFunctionName="" Parameters="size: Int"></ConsoleCommand>
   <ConsoleCommand Title="Clear" FunctionName="Clear" Description="Clears the console" HelpFunctionName="" Parameters=""></ConsoleCommand>
-  <ConsoleCommand Title="ShowTimeStamp" FunctionName="ShowTimeStamp" Description="Establishes whether or not the console will show time stamps for each command" HelpFunctionName="" Parameters="Bool"></ConsoleCommand>
+  <ConsoleCommand Title="ShowTimeStamp" FunctionName="ShowTimeStamp" Description="Establishes whether or not the console will show time stamps for each command" HelpFunctionName="" Parameters="on: Bool"></ConsoleCommand>
   <ConsoleCommand Title="Help" FunctionName="HelpAll" Description="Shows a list of all the available commands" HelpFunctionName="" Parameters="" />
 </ConsoleCommands>

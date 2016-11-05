@@ -194,7 +194,7 @@ namespace DeveloperConsole
                 return;
             }
 
-            BasePrint("<color=" + color + ">" + obj.ToString() + "</color>");
+            BasePrint("<color=" + (color.ToLower() != "green" ? color : "#7CFC00") + ">" + obj.ToString() + "</color>");
         }
 
         /// <summary>
@@ -286,14 +286,7 @@ namespace DeveloperConsole
 
                 foreach (CommandBase commandToCall in commandsToCall)
                 {
-                    if (commandToCall.HelpMethod != null)
-                    {
-                        ShowHelpMethod(commandToCall);
-                    }
-                    else
-                    {
-                        ShowDescription(commandToCall);
-                    }
+                    ShowHelpMethod(commandToCall);
                 }
 
                 return;
@@ -321,21 +314,13 @@ namespace DeveloperConsole
             if (help.HelpMethod != null)
             {
                 help.HelpMethod();
-                Log("<color=yellow>Call it like </color><color=orange> " + help.Title + GetParameters(help) + "</color>");
             }
             else
             {
-                ShowDescription(help);
+                Log("<color=yellow>Command Info:</color> " + ((help.DescriptiveText == string.Empty) ? " < color=red>There's no help for this command</color>" : help.DescriptiveText));
             }
-        }
 
-        /// <summary>
-        /// Logs the description of the passed command.
-        /// </summary>
-        public static void ShowDescription(CommandBase description)
-        {
-            Log("<color=yellow>Command Info:</color> " + ((description.DescriptiveText == string.Empty) ? " < color=red>There's no help for this command</color>" : description.DescriptiveText));
-            Log("<color=yellow>Call it like </color><color=orange> " + description.Title + GetParameters(description) + "</color>");
+            Log("<color=yellow>Call it like </color><color=orange> " + help.Title + GetParameters(help) + "</color>");
         }
 
         /// <summary>

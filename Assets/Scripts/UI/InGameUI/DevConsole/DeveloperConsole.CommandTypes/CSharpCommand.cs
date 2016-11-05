@@ -87,7 +87,12 @@ namespace DeveloperConsole.CommandTypes
         {
             get
             {
-                return string.Join(", ", Method.Method.GetParameters().Select(x => x.ParameterType.Name).ToArray());
+                return string.Join(", ", Method.Method.GetParameters().Select(x => x.Name + ": " + x.ParameterType.Name).ToArray());
+            }
+
+            protected set
+            {
+                return;
             }
         }
 

@@ -10,11 +10,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using DeveloperConsole.Interfaces;
 using MoonSharp.Interpreter;
 using UnityEngine;
-using System.Reflection;
 
 namespace DeveloperConsole.CommandTypes
 {
@@ -22,7 +22,7 @@ namespace DeveloperConsole.CommandTypes
     /// A command base that all commands derive from.
     /// </summary> 
     [MoonSharpUserData]
-    public class CommandBase
+    public abstract class CommandBase
     {
         /// <summary>
         /// Text describing the command.
@@ -35,7 +35,7 @@ namespace DeveloperConsole.CommandTypes
         /// <summary>
         /// The parameter list.
         /// </summary>
-        public virtual string Parameters
+        public abstract string Parameters
         {
             get; protected set;
         }
