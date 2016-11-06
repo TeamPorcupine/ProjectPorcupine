@@ -165,14 +165,13 @@ public class LuaFunctions
                 return;
             }
 
-            DynValue result;
             object[] instanceAndParams = new object[parameters.Length + 1];
             instanceAndParams[0] = instance;
             parameters.CopyTo(instanceAndParams, 1);
 
             try
             {
-                result = Call(fn, instanceAndParams);
+                Call(fn, instanceAndParams);
             }
             catch (ScriptRuntimeException e)
             {
