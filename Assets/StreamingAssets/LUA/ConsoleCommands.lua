@@ -69,7 +69,7 @@ function Set_FontSize( size )
 		DevConsole.LogError("Font size would be too big")
 	else
 		ModUtils.ULog("")
-		DevConsole.SetTextSize(size);
+		DevConsole.TextObject().fontSize = size;
 		DevConsole.Log("Change successful :D", "green")
 	end
 end
