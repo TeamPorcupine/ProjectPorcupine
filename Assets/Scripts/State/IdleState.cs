@@ -7,9 +7,9 @@
 // ====================================================
 #endregion
 
-using ProjectPorcupine.Pathfinding;
 using System;
 using System.Collections.Generic;
+using ProjectPorcupine.Pathfinding;
 using Random = UnityEngine.Random;
 
 namespace ProjectPorcupine.State
@@ -29,41 +29,24 @@ namespace ProjectPorcupine.State
 
         public override void Update(float deltaTime)
         {
-                Tile startTile = character.CurrTile;
-                Tile endTile = null;
-                List<Tile> path = null;
-
-                // Get a random Int 0,1,2,3 for representing the 4 directions.
-                int direction = Int32.Parse(Math.Truncate(Random.value * 4).ToString());
-
-                switch (direction)
-                {
-                    case 0:
-                        endTile = World.Current.GetTileAt(startTile.X + 1, startTile.Y, startTile.Z);
-                        break;
-                    case 1:
-                        endTile = World.Current.GetTileAt(startTile.X, startTile.Y + 1, startTile.Z);
-                        break;
-                    case 2:
-                        endTile = World.Current.GetTileAt(startTile.X - 1, startTile.Y, startTile.Z);
-                        break;
-                    case 3:
-                        endTile = World.Current.GetTileAt(startTile.X, startTile.Y - 1, startTile.Z);
-                        break;
-                }
-
-                if (endTile != null)
-                {
-                  path = Pathfinder.FindPathToTile(startTile, endTile);
-                }
-
-            Pathfinder.GoalEvaluator GTE = Pathfinder.GoalTileEvaluator(endTile, true);
-
+            // Moves character in a random direction while idle.
             timeSpentIdle += deltaTime;
             if (timeSpentIdle >= totalIdleTime)
             {
-                // We are done. Execute move then look for work.
-              character.SetState(new MoveState(character, GTE, path));
+                Tile[] neighbors = character.CurrTile.GetNeighbours();
+                Tile endTile = neighbors[int.Parse(Math.Truncate(Random.value * 4).ToString())];
+                List<Tile> path = Pathfinder.FindPathToTile(character.CurrTile, endTile);
+
+                if (endTile.MovementCost != 0)
+                {
+                    // See if the desired tile is walkable, then go there if we can.
+                    character.SetState(new MoveState(character, Pathfinder.GoalTileEvaluator(endTile, true), path));
+                }
+                else
+                {
+                    // If the tile is unwalkable, just get a new state.
+                    character.SetState(null);
+                }
             }
         }
     }
