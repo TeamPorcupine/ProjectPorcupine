@@ -825,7 +825,8 @@ namespace DeveloperConsole
                 new Command("GetRoomIDs", CoreCommands.GetAllRoomIDs, "Logs all the room IDs"),
                 new Command<int, string, Vector3>("DoBuild", CoreCommands.DoBuild, CoreCommands.DoBuildHelp),
                 new Command("DirtyTileGraph", CoreCommands.InvalidateTileGraph, "Invalidates the tile graph"),
-                new Command("GetCharNames", CoreCommands.GetCharacterNames, "Logs all the character names"));
+                new Command("GetCharNames", CoreCommands.GetCharacterNames, "Logs all the character names"),
+                new Command<bool>("SetTimeStamp", CoreCommands.SetTimeStamp, "Establishes whether or not to show the time stamp"));
 
             // Load Commands from C#
             // Empty because C# Modding not implemented yet

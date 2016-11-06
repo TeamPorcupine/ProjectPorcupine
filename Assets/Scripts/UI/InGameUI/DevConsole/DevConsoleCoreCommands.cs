@@ -20,7 +20,7 @@ namespace DeveloperConsole
             Camera.main.transform.position = newPos;
         }
 
-        public static void ShowTimeStamp(bool value)
+        public static void SetTimeStamp(bool value)
         {
             CommandSettings.ShowTimeStamp = value;
             DevConsole.Log("Change successful :D", "green");

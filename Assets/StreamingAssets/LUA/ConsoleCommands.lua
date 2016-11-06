@@ -79,15 +79,6 @@ function Clear()
 	DevConsole.ClearHistory()
 end
 
-function ShowTimeStamp( on )
-	on = tobool(on)
-	if on ~= nil then
-		DevConsole.ShowTimeStamp(on)
-	else
-		DevConsole.LogError("The parameter provided is not of boolean type")
-	end
-end
-
 function HelpAll()
 	DevConsole.Log("-- Help --", "green")
 	for index, value in ipairs(DevConsole:CommandArray()) do
@@ -101,10 +92,6 @@ function HelpAll()
 	
 	DevConsole.Log("<color=orange>Note:</color> If the function has no parameters you <color=red>don't</color> need to use the parameter modifier.")
 	DevConsole.Log("<color=orange>Note:</color> You <color=red>don't</color> need to use the trailing parameter modifier either")
-end
-
-function ChangeCameraPositionLUA ( x, y )
-	DevConsole:ChangeCameraPositionCSharp(ModUtils.LUAVector3(tonumber(x), tonumber(y)))
 end
 
 -------------------------------- Help Actions --------------------------------
