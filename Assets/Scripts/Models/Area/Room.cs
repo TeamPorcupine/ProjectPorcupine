@@ -5,7 +5,6 @@
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
-
 #endregion
 using System.Collections.Generic;
 using System.Linq;
@@ -129,7 +128,7 @@ namespace ProjectPorcupine.Rooms
                             // We have found an exit
                             exits.Add(tile2);
                         }
-                    } 
+                    }
                 }
             }
 
@@ -426,7 +425,7 @@ namespace ProjectPorcupine.Rooms
                             // We have found an enclosing furniture, which means it is on our border
                             borderingTiles.Add(tile2);
                         }
-                    } 
+                    }
                 }
             }
 
