@@ -5,7 +5,6 @@
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
-
 #endregion
 using System;
 using System.Collections;
@@ -237,7 +236,7 @@ public class FurnitureManager : IEnumerable<Furniture>
     /// The invisible enities can be updated less frequent for better performance.
     /// </summary>
     public void OnCameraMoved(Bounds cameraBounds)
-    {        
+    {
         // Expand bounds to include tiles on the edge where the centre isn't inside the bounds
         cameraBounds.Expand(1);
 
@@ -263,7 +262,7 @@ public class FurnitureManager : IEnumerable<Furniture>
                     furnituresVisible.Remove(furn);
                     furnituresInvisible.Add(furn);
                 }
-            }            
+            }
         }
     }
 
@@ -304,7 +303,7 @@ public class FurnitureManager : IEnumerable<Furniture>
 
         if (furnituresInvisible.Contains(furniture))
         {
-            furnituresInvisible.Remove(furniture);            
+            furnituresInvisible.Remove(furniture);
         }
         else if (furnituresVisible.Contains(furniture))
         {

@@ -5,7 +5,6 @@
 // and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
-
 #endregion
 using System;
 using System.Collections.Generic;
@@ -140,7 +139,7 @@ public class InventoryManager
             tile.Inventory.StackSize -= amount;
             CleanupInventory(tile.Inventory);
             return true;
-        }        
+        }
     }
 
     public bool PlaceInventory(Job job, Character character)
@@ -183,7 +182,7 @@ public class InventoryManager
             {
                 Inventories[character.inventory.Type] = new List<Inventory>();
             }
-            
+
             Inventories[character.inventory.Type].Add(character.inventory);
         }
         else if (character.inventory.Type != sourceInventory.Type)
