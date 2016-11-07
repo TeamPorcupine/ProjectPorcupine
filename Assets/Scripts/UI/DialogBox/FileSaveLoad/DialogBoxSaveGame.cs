@@ -5,13 +5,11 @@
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
-
 #endregion
+
 using System.Collections;
 using System.IO;
 using System.Threading;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 

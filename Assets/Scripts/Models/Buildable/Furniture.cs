@@ -5,7 +5,6 @@
 // and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
-
 #endregion
 using System;
 using System.Collections.Generic;
@@ -48,7 +47,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     /// These context menu lua action are used to build the context menu of the furniture.
     /// </summary>
     private List<ContextMenuLuaAction> contextMenuLuaActions;
-    
+
     private HashSet<BuildableComponent> components;
 
     // This is the generic type of object this is, allowing things to interact with it based on it's generic type
@@ -199,7 +198,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     /// </summary>
     /// <value>The Color of the furniture.</value>
     public Color Tint { get; set; }
-        
+
     /// <summary>
     /// Gets or sets a value indicating whether the door is Vertical or not.
     /// Should be false if the furniture is not a door.
@@ -215,7 +214,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     /// </summary>
     /// <value>The event actions that is called on update.</value>
     public EventActions EventActions { get; private set; }
-    
+
     /// <summary>
     /// Gets a value indicating whether the furniture is operating or not.
     /// </summary>
@@ -405,14 +404,14 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     {
         if (proto.IsValidPosition(tile) == false)
         {
-            Debug.ULogErrorChannel("Furniture", "PlaceInstance -- Position Validity Function returned FALSE. " + proto.Name + " " + tile.X + ", " + tile.Y + ", " + tile.Z);
+            Debug.ULogWarningChannel("Furniture", "PlaceInstance :: Position Validity Function returned FALSE. " + proto.Name + " " + tile.X + ", " + tile.Y + ", " + tile.Z);
             return null;
         }
 
         // We know our placement destination is valid.
         Furniture furnObj = proto.Clone();
         furnObj.Tile = tile;
-        
+
         if (tile.PlaceFurniture(furnObj) == false)
         {
             // For some reason, we weren't able to place our object in this tile.
@@ -449,7 +448,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
                 }
             }
         }
-        
+
         // Let our workspot tile know it is reserved for us
         World.Current.ReserveTileAsWorkSpot(furnObj);
 
@@ -532,12 +531,12 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         {
             EventActions.Trigger("OnUpdate", this, deltaTime);
         }
-                
+
         foreach (BuildableComponent component in components)
         {
             component.FixedFrequencyUpdate(deltaTime);
-        }        
-        
+        }
+
         if (Animation != null)
         {
             Animation.Update(deltaTime);
@@ -680,7 +679,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
                     break;
                 case "Health":
                     reader.Read();
-                health = new HealthSystem(reader.ReadContentAsFloat(), false, true, false, false);
+                    health = new HealthSystem(reader.ReadContentAsFloat(), false, true, false, false);
                     break;
                 case "LinksToNeighbours":
                     reader.Read();
@@ -745,7 +744,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
                     break;
                 case "JobOutputSpotOffset":
                     Jobs.ReadOutputSpotOffset(reader);
-                    break;                
+                    break;
                 case "Params":
                     ReadXmlParams(reader);  // Read in the Param tag
                     break;
@@ -926,7 +925,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     /// Deconstructs the furniture.
     /// </summary>
     public void Deconstruct()
-    { 
+    {
         int x = Tile.X;
         int y = Tile.Y;
         int fwidth = 1;
@@ -960,7 +959,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
                 World.Current.InventoryManager.PlaceInventoryAround(Tile, inv.Clone());
             }
         }
-        
+
         if (Removed != null)
         {
             Removed(this);
@@ -1074,14 +1073,14 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
                 {
                     yield return inf;
                 }
-            }     
+            }
         }
 
         if (health != null)
         {
             yield return health.TextForSelectionPanel();
         }
-        
+
         yield return GetProgressInfo();
     }
 
@@ -1151,7 +1150,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
                 }
             }
         }
-       
+
         foreach (ContextMenuLuaAction contextMenuLuaAction in contextMenuLuaActions)
         {
             if (!contextMenuLuaAction.DevModeOnly ||
@@ -1185,7 +1184,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
 
         Rotation = rotation;
     }
-    
+
     // Make a copy of the current furniture.  Sub-classed should
     // override this Clone() if a different (sub-classed) copy
     // constructor should be run.

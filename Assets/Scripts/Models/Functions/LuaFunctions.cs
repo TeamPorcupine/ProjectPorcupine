@@ -6,14 +6,15 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+
 using System;
-using System.IO;
 using MoonSharp.Interpreter;
 using ProjectPorcupine.PowerNetwork;
 
 public class LuaFunctions
 {
     protected Script script;
+    private string scriptName;
 
     public LuaFunctions()
     {
@@ -63,6 +64,7 @@ public class LuaFunctions
     /// <param name="scriptName">The script name.</param>
     public bool LoadScript(string text, string scriptName)
     {
+        this.scriptName = scriptName;
         try
         {
             script.DoString(text);
@@ -97,7 +99,7 @@ public class LuaFunctions
         }
         catch (ScriptRuntimeException e)
         {
-            Debug.ULogErrorChannel("Lua", e.DecoratedMessage);
+            Debug.ULogErrorChannel("Lua", "[" + scriptName + "] LUA RunTime error: " + e.DecoratedMessage);
             return null;
         }
     }
@@ -108,7 +110,7 @@ public class LuaFunctions
     /// <param name="functionNames">Function names.</param>
     /// <param name="instance">An instance of the actions type.</param>
     /// <param name="deltaTime">Delta time.</param>
-    public void CallWithInstance(string[] functionNames, object instance,  params object[] parameters)
+    public void CallWithInstance(string[] functionNames, object instance, params object[] parameters)
     {
         if (instance == null)
         {
@@ -124,16 +126,17 @@ public class LuaFunctions
                 return;
             }
 
-            DynValue result;
             object[] instanceAndParams = new object[parameters.Length + 1];
             instanceAndParams[0] = instance;
             parameters.CopyTo(instanceAndParams, 1);
 
-            result = Call(fn, instanceAndParams);
-
-            if (result != null && result.Type == DataType.String)
+            try
             {
-                Debug.ULogErrorChannel("Lua", result.String);
+                Call(fn, instanceAndParams);
+            }
+            catch (ScriptRuntimeException e)
+            {
+                Debug.ULogErrorChannel("Lua", "[" + scriptName + "] LUA RunTime error: " + e.DecoratedMessage);
             }
         }
     }

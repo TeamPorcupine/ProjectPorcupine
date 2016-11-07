@@ -6,54 +6,33 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+
 using System.Collections;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-/// Every frame, this script checks to see which tile
-/// is under the mouse and then updates the GetComponent<Text>.text
-/// parameter of the object it is attached to.
-public class MouseOverTileTypeText : MonoBehaviour
+/// <summary>
+/// MouseOverRoomIndex impliments the abstact class MouseOver.
+/// It returns info strings that represent the tiles type.
+/// </summary>
+public class MouseOverTileTypeText : MouseOver
 {
-    private Text text;
-    private MouseController mouseController;
-
-    // Use this for initialization.
-    private void Start()
+    protected override string GetMouseOverString(Tile tile)
     {
-        text = GetComponent<Text>();
+        string tileType = "N/A";
 
-        if (text == null)
+        if (tile != null)
         {
-            Debug.ULogErrorChannel("MouseOver", "No 'Text' UI component on this object.");
-            this.enabled = false;
-            return;
+            tileType = tile.Type.ToString();
         }
 
-        mouseController = WorldController.Instance.mouseController;
-        if (mouseController == null)
+        string tileInfo = "Tile Type: " + tileType;
+        if (tile != null && tile.Utilities != null && tile.Utilities.Count > 0)
         {
-            Debug.ULogErrorChannel("MouseOver", "How do we not have an instance of mouse controller?");
-            return;
-        }
-    }
-
-    // Update is called once per frame.
-    private void Update()
-    {
-        Tile t = mouseController.GetMouseOverTile();
-        string tileType = "Unknown";
-
-        if (t != null)
-        {
-            tileType = t.Type.ToString();
+            tileInfo += "\n" + tile.Utilities.First().Value.Grid.GetId();
         }
 
-        text.text = "Tile Type: " + tileType;
-        if (t != null && t.Utilities != null && t.Utilities.Count > 0)
-        {
-            text.text += "\n" + t.Utilities.First().Value.Grid.GetId();
-        }
+        return tileInfo;
     }
 }

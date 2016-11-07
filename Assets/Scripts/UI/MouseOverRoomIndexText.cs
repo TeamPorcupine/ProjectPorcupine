@@ -6,50 +6,25 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System.Collections;
+
 using UnityEngine;
 using UnityEngine.UI;
 
-/// Every frame, this script checks to see which tile
-/// is under the mouse and then updates the GetComponent<Text>.text
-/// parameter of the object it is attached to.
-public class MouseOverRoomIndexText : MonoBehaviour
+/// <summary>
+/// MouseOverRoomIndex impliments the abstact class MouseOver.
+/// It returns info strings that represent the tiles room ID.
+/// </summary>
+public class MouseOverRoomIndexText : MouseOver
 {
-    private Text text;
-    private MouseController mouseController;
-
-    // Use this for initialization.
-    private void Start()
+    protected override string GetMouseOverString(Tile tile)
     {
-        text = GetComponent<Text>();
-
-        if (text == null)
-        {
-            Debug.ULogErrorChannel("MouseOverRoomIndexText", "MouseOverTileTypeText: No 'Text' UI component on this object.");
-            this.enabled = false;
-            return;
-        }
-
-        mouseController = WorldController.Instance.mouseController;
-        if (mouseController == null)
-        {
-            Debug.ULogErrorChannel("MouseOverRoomIndexText", "How do we not have an instance of mouse controller?");
-            return;
-        }
-    }
-
-    // Update is called once per frame.
-    private void Update()
-    {
-        Tile t = mouseController.GetMouseOverTile();
-
         string roomID = "N/A";
 
-        if (t != null && t.Room != null)
+        if (tile != null && tile.Room != null)
         {
-            roomID = t.Room.ID.ToString();
+            roomID = tile.Room.ID.ToString();
         }
 
-        text.text = "Room Index: " + roomID;
+        return "Room Index: " + roomID;
     }
 }

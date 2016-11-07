@@ -5,7 +5,6 @@
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
-
 #endregion
 using System;
 using System.Collections.ObjectModel;
@@ -21,7 +20,7 @@ public class SchedulerEditorTest
             ModUtils.ULogChannel(""Scheduler"", ""Scheduled Lua event '"" .. event.Name .. ""'"")
             return
         end";
-    
+
     private const string XmlPrototypeString = @"
         <ScheduledEvents>
             <ScheduledEvent name=""ping_log_lua"" onFire=""ping_log_lua""/>

@@ -5,7 +5,6 @@
 // and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
-
 #endregion
 using System;
 using System.Collections.Generic;
@@ -193,8 +192,8 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
     /// Gets a value indicating whether this utility is next to any utility of the same type.
     /// This is used to check what sprite to use if utility is next to each other.
     /// </summary>
-    public bool LinksToNeighbour 
-    { 
+    public bool LinksToNeighbour
+    {
         get { return true; }
     }
 
@@ -202,8 +201,8 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
     /// Gets the type of dragging that is used to build multiples of this utility.
     /// e.g walls.
     /// </summary>
-    public string DragType 
-    { 
+    public string DragType
+    {
         get { return "path"; }
     }
 
