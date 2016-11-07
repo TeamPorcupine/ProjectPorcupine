@@ -12,8 +12,8 @@ using System.Linq;
 using System.Xml;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
-using ProjectPorcupine.Buildable.Components;
 using Newtonsoft.Json.Linq;
+using ProjectPorcupine.Buildable.Components;
 using ProjectPorcupine.Jobs;
 using ProjectPorcupine.PowerNetwork;
 using UnityEngine;
@@ -518,6 +518,7 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
                 {
                     neighborUtility.Grid = new Grid();
                 }
+
                 neighborUtility.UpdateGrid(neighborUtility);
                 neighborUtility.Grid.Split();
             }
@@ -736,6 +737,7 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
             }
         }
     }
+
     public object ToJSon()
     {
         JObject utilityJSon = new JObject();
