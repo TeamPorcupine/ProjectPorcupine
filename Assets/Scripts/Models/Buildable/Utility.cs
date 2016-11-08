@@ -411,7 +411,7 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
             jobTime,
             items.ToArray(),
             Job.JobPriority.High);
-        job.JobDescription = "job_build_" + Type + "_desc";
+        job.Description = "job_build_" + Type + "_desc";
         PrototypeManager.UtilityConstructJob.Set(job);
     }
 
@@ -691,7 +691,7 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
                     jobTime,
                     null,
                     Job.JobPriority.High);
-        job.JobDescription = "job_deconstruct_" + Type + "_desc";
+        job.Description = "job_deconstruct_" + Type + "_desc";
         PrototypeManager.UtilityDeconstructJob.Set(job);
     }
 

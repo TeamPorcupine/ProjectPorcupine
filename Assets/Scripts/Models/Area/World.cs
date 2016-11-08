@@ -449,7 +449,7 @@ public class World
     }
 
     /// <summary>
-    /// Called when a furniture is created so that we can regenerate the til graph.
+    /// Called when a furniture is created so that we can regenerate the tile graph.
     /// </summary>
     /// <param name="furniture">Furniture.</param>
     private void OnFurnitureCreated(Furniture furniture)

@@ -804,7 +804,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
             jobTime,
             items.ToArray(),
             Job.JobPriority.High);
-        job.JobDescription = "job_build_" + Type + "_desc";
+        job.Description = "job_build_" + Type + "_desc";
 
         PrototypeManager.FurnitureConstructJob.Set(job);
     }
@@ -838,7 +838,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
             jobTime,
             null,
             Job.JobPriority.High);
-        job.JobDescription = "job_deconstruct_" + Type + "_desc";
+        job.Description = "job_deconstruct_" + Type + "_desc";
         job.adjacent = true;
 
         PrototypeManager.FurnitureDeconstructJob.Set(job);

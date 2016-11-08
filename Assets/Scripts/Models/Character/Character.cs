@@ -338,7 +338,7 @@ public class Character : ISelectable, IContextActionProvider
                 else
                 {
                     // TODO: Lack of job states should be more interesting. Maybe go to the pub and have a pint?
-                    SetState(new IdleState(this));
+                    SetState(new IdleState(this));            
                 }
             }
         }
@@ -442,7 +442,7 @@ public class Character : ISelectable, IContextActionProvider
             return "job_no_job_desc";
         }
 
-        return MyJob.JobDescription;
+        return MyJob.Description;
     }
 
     #endregion

@@ -269,7 +269,7 @@ public class TileType : IPrototypable, IEquatable<TileType>
             false,
             true)
         {
-            JobDescription = "job_build_floor_" + this
+            Description = "job_build_floor_" + this
         };
     }
 }
