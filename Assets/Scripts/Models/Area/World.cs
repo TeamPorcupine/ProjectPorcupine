@@ -298,6 +298,7 @@ public class World
         worldJson.Add("Inventories", InventoryManager.ToJson());
         worldJson.Add("Furnitures", FurnitureManager.ToJson());
         worldJson.Add("Utilities", UtilityManager.ToJson());
+        worldJson.Add("RoomBehaviors", RoomManager.BehaviorsToJson());
         worldJson.Add("Characters", CharacterManager.ToJson());
         worldJson.Add("CameraData", CameraData.ToJson());
         worldJson.Add("Skybox", skybox.name);
@@ -321,6 +322,7 @@ public class World
         InventoryManager.FromJson(worldJson["Inventories"]);
         FurnitureManager.FromJson(worldJson["Furnitures"]);
         UtilityManager.FromJson(worldJson["Utilities"]);
+        RoomManager.BehaviorsFromJson(worldJson["RoomBehaviors"]);
         CharacterManager.FromJson(worldJson["Characters"]);
         CameraData.FromJson(worldJson["CameraData"]);
         LoadSkybox((string)worldJson["Skybox"]);
