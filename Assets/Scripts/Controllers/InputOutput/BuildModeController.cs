@@ -282,7 +282,7 @@ public class BuildModeController
                 }
                 else
                 {
-                    buildingJob.OnJobStopped += (theJob) => theJob.tile.PendingBuildJobs = null;
+                    buildingJob.OnJobStopped += (theJob) => theJob.tile.PendingBuildJobs.Remove(theJob);
 
                     WorldController.Instance.World.jobQueue.Enqueue(buildingJob);
                 }
