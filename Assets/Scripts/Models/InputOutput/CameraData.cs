@@ -7,125 +7,59 @@
 // ====================================================
 #endregion
 
-using System.Xml;
-using System.Xml.Schema;
-using System.Xml.Serialization;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 public struct Preset
 {
     public Vector3 position;
     public float zoomLevel;
+    public int zLevel;
 }
 
-public class CameraData : IXmlSerializable
+public class CameraData
 {
     public Vector3 position;
     public float zoomLevel;
+    public int zLevel;
     public Preset[] presets;
 
-    public void ReadXml(XmlReader reader)
+    public JToken ToJson()
     {
-        presets = new Preset[5];
+        JObject cameraJson = new JObject();
 
-        do
-        {
-            float x = float.Parse(reader.GetAttribute("X"));
-            float y = float.Parse(reader.GetAttribute("Y"));
-            float z = float.Parse(reader.GetAttribute("Z"));
-            position = new Vector3(x, y, z);
-            zoomLevel = float.Parse(reader.GetAttribute("zoomLevel"));
+        cameraJson.Add("X", Camera.main.transform.position.x);
+        cameraJson.Add("Y", Camera.main.transform.position.y);
+        cameraJson.Add("Z", Camera.main.transform.position.z);
+        cameraJson.Add("ZoomLevel", Camera.main.orthographicSize);
+        cameraJson.Add("ZLevel", WorldController.Instance.cameraController.CurrentLayer);
 
-            while (reader.Read())
-            {
-                // Read until the end of the character.
-                if (reader.NodeType == XmlNodeType.EndElement)
-                {
-                    break;
-                }
+        JArray presetsJson = new JArray();
 
-                switch (reader.Name)
-                {
-                    case "PresetPositions":
-                        if (reader.ReadToDescendant("Position"))
-                        {
-                            int index = 0;
-
-                            do
-                            {
-                                presets[index].position.x = float.Parse(reader.GetAttribute("X"));
-                                presets[index].position.y = float.Parse(reader.GetAttribute("Y"));
-                                presets[index].position.z = float.Parse(reader.GetAttribute("Z"));
-
-                                index++;
-                            }
-                            while (reader.ReadToNextSibling("Position"));
-                        }
-
-                        break;
-
-                    case "PresetZoomLevels":
-                        if (reader.ReadToDescendant("Level"))
-                        {
-                            int index = 0;
-                            do
-                            {
-                                presets[index].zoomLevel = float.Parse(reader.GetAttribute("Value"));
-                                index++;
-                            }
-                            while (reader.ReadToNextSibling("Level"));
-                        }
-
-                        break;
-                }
-            }
-        }
-        while (reader.ReadToNextSibling("CameraData"));
-    }
-
-    public void WriteXml(XmlWriter writer)
-    {
-        if (presets == null)
-        {
-            Debug.ULogErrorChannel("CameraData", "Tried to serialize non existent camera presets");
-            return;
-        }
-
-        writer.WriteAttributeString("X", Camera.main.transform.position.x.ToString());
-        writer.WriteAttributeString("Y", Camera.main.transform.position.y.ToString());
-        writer.WriteAttributeString("Z", Camera.main.transform.position.z.ToString());
-        writer.WriteAttributeString("zoomLevel", Camera.main.orthographicSize.ToString());
-
-        writer.WriteStartElement("PresetPositions");
         foreach (Preset preset in presets)
         {
-            writer.WriteStartElement("Position");
-            writer.WriteAttributeString("X", preset.position.x.ToString());
-            writer.WriteAttributeString("Y", preset.position.y.ToString());
-            writer.WriteAttributeString("Z", preset.position.z.ToString());
-            writer.WriteEndElement();
+            JObject presetJson = new JObject();
+            presetJson.Add("X", preset.position.x);
+            presetJson.Add("Y", preset.position.y);
+            presetJson.Add("Z", preset.position.z);
+            presetJson.Add("ZoomLevel", preset.zoomLevel);
+            presetsJson.Add(presetJson);
         }
 
-        writer.WriteEndElement();
+        cameraJson.Add("Presets", presetsJson);
 
-        writer.WriteStartElement("PresetZoomLevels");
-        foreach (Preset preset in presets)
-        {
-            writer.WriteStartElement("Level");
-            writer.WriteAttributeString("Value", preset.zoomLevel.ToString());
-            writer.WriteEndElement();
-        }
-
-        writer.WriteEndElement();
+        return cameraJson;
     }
 
-    /// <summary>
-    /// This does absolutely nothing.
-    /// This is required to implement IXmlSerializable.
-    /// </summary>
-    /// <returns>NULL and NULL.</returns>
-    public XmlSchema GetSchema()
+    public void FromJson(JToken cameraDataToken)
     {
-        return null;
+        int x = (int)cameraDataToken["X"];
+        int y = (int)cameraDataToken["Y"];
+        int z = (int)cameraDataToken["Z"];
+        float zoomLevel = (float)cameraDataToken["ZoomLevel"];
+        zLevel = (int)cameraDataToken["ZLevel"];
+        Vector3 camPosition = new Vector3(x, y, z);
+        Camera.main.transform.position = camPosition;
+        Camera.main.orthographicSize = zoomLevel;
     }
 }

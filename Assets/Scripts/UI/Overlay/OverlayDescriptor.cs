@@ -6,13 +6,11 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Xml;
 using MoonSharp.Interpreter;
 using ProjectPorcupine.Localization;
-using UnityEngine;
 
 /// <summary>
 /// Contains the description of a single overlay type. Contains LUA function name, id and coloring details.

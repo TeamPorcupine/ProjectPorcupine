@@ -6,11 +6,9 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System.Collections;
+
 using System.Collections.Generic;
 using System.IO;
-using System.Xml;
-using System.Xml.Linq;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
 using UnityEngine;

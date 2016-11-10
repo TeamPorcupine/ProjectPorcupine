@@ -9,8 +9,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Xml;
 using MoonSharp.Interpreter;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 /// <summary>
@@ -19,7 +19,7 @@ using UnityEngine;
 [MoonSharpUserData]
 public class CharacterManager : IEnumerable<Character>
 {
-    private List<Character> characters;
+    public List<Character> characters;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CharacterManager"/> class.
@@ -117,17 +117,41 @@ public class CharacterManager : IEnumerable<Character>
         }
     }
 
-    /// <summary>
-    /// Writes the Characters to the XML.
-    /// </summary>
-    /// <param name="writer">The XML Writer.</param>
-    public void WriteXml(XmlWriter writer)
+    public JToken ToJson()
     {
-        foreach (Character c in characters)
+        JArray charactersJson = new JArray();
+        foreach (Character character in characters)
         {
-            writer.WriteStartElement("Character");
-            c.WriteXml(writer);
-            writer.WriteEndElement();
+            charactersJson.Add(character.ToJSon());
+        }
+
+        return charactersJson;
+    }
+
+    public void FromJson(JToken charactersToken)
+    {
+        JArray charactersJArray = (JArray)charactersToken;
+
+        foreach (JToken characterToken in charactersJArray)
+        {
+            Character character;
+            int x = (int)characterToken["X"];
+            int y = (int)characterToken["Y"];
+            int z = (int)characterToken["Z"];
+            if (characterToken["Colors"] != null)
+            {
+                JToken colorToken = characterToken["Colors"];
+                Color color = ColorUtilities.ParseColorFromString((string)colorToken["CharacterColor"][0], (string)colorToken["CharacterColor"][1], (string)colorToken["CharacterColor"][2]);
+                Color colorUni = ColorUtilities.ParseColorFromString((string)colorToken["UniformColor"][0], (string)colorToken["UniformColor"][1], (string)colorToken["UniformColor"][2]);
+                Color colorSkin = ColorUtilities.ParseColorFromString((string)colorToken["SkinColor"][0], (string)colorToken["SkinColor"][1], (string)colorToken["SkinColor"][2]);
+                character = Create(World.Current.GetTileAt(x, y, z), color, colorUni, colorSkin);
+            }
+            else
+            {
+                character = Create(World.Current.GetTileAt(x, y, z));
+            }
+
+            character.name = (string)characterToken["Name"];
         }
     }
 }

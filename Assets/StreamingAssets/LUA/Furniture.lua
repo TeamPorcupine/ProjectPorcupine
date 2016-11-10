@@ -225,7 +225,7 @@ function Stockpile_UpdateAction( furniture, deltaTime )
     		Job.JobPriority.Low,
     		false
   	)
-  	job.JobDescription = "job_stockpile_moving_desc"
+  	job.Description = "job_stockpile_moving_desc"
   	job.acceptsAny = true
 
   	-- TODO: Later on, add stockpile priorities, so that we can take from a lower
@@ -241,7 +241,7 @@ function Stockpile_JobWorked(job)
 
     -- TODO: Change this when we figure out what we're doing for the all/any pickup job.
     --values = job.GetInventoryRequirementValues();
-    for k, inv in pairs(job.HeldInventory) do
+    for k, inv in pairs(job.DeliveredItems) do
         if(inv.StackSize > 0) then
             World.Current.inventoryManager.PlaceInventory(job.tile, inv)
             return -- There should be no way that we ever end up with more than on inventory requirement with StackSize > 0
@@ -283,7 +283,7 @@ function MiningDroneStation_UpdateAction( furniture, deltaTime )
 	)
 
 	job.RegisterJobCompletedCallback("MiningDroneStation_JobComplete")
-	job.JobDescription = "job_mining_drone_station_mining_desc"
+	job.Description = "job_mining_drone_station_mining_desc"
 	furniture.Jobs.Add(job)
 end
 
@@ -365,7 +365,7 @@ end
 function MetalSmelter_JobWorked(job)
     job.CancelJob()
     local inputSpot = job.tile.Furniture.Jobs.InputSpotTile
-    for k, inv in pairs(job.HeldInventory) do
+    for k, inv in pairs(job.DeliveredItems) do
         if(inv ~= nil and inv.StackSize > 0) then
             World.Current.inventoryManager.PlaceInventory(inputSpot, inv)
             inputSpot.Inventory.Locked = true
@@ -393,7 +393,7 @@ function CloningPod_UpdateAction(furniture, deltaTime)
     furniture.SetAnimationState("idle")
     job.RegisterJobWorkedCallback("CloningPod_JobRunning")
     job.RegisterJobCompletedCallback("CloningPod_JobComplete")
-	job.JobDescription = "job_cloning_pod_cloning_desc"
+	job.Description = "job_cloning_pod_cloning_desc"
     furniture.Jobs.Add(job)
 end
 
@@ -519,7 +519,7 @@ function AirPump_OnUpdate(furniture, deltaTime)
                 targetRoom = west.Room
             end
         else
-            ModUtils.UChannelLogWarning("Furniture", "Air Pump blocked. Direction unclear")
+            ModUtils.ULogWarningChannel("Furniture", "Air Pump blocked. Direction unclear")
             return
         end
         
@@ -650,7 +650,7 @@ function OreMine_CreateMiningJob(furniture, character)
         true
 	)
 
-    job.JobDescription = "job_ore_mine_mining_desc"
+    job.Description = "job_ore_mine_mining_desc"
     job.RegisterJobWorkedCallback("OreMine_OreMined")
     furniture.Jobs.Add(job)
     ModUtils.ULog("Create Mining Job - Mining Job Created")

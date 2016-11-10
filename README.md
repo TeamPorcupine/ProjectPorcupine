@@ -1,9 +1,7 @@
 # ProjectPorcupine [![Build Status](https://travis-ci.org/TeamPorcupine/ProjectPorcupine.svg?branch=master)](https://travis-ci.org/TeamPorcupine/ProjectPorcupine)
 Project Porcupine: A Base-Building Game...in Space!
 
-
-![Preview Thumbnail](https://cloud.githubusercontent.com/assets/12616499/19013271/442b24e4-87cc-11e6-87e0-1707585f9dfd.png)
-
+![Preview Thumbnail](https://cloud.githubusercontent.com/assets/22880786/19826387/7ad0f0d2-9dd4-11e6-92f3-eb47b395ac63.png)
 
 [About](#about)  
 [Copyright & Licensing](#copyright--licensing)  
@@ -56,6 +54,8 @@ All non-code assets (e.g. art, sound) is licensed under CC BY-NC-SA 3.0
 The original tutorial project files, which feature no community-contributed code,
 are licensed under the MIT License and can be found here:
  * <http://quill18.com/porcupine/project_files/>
+ 
+Audio engine : FMOD by Firelight Technologies
 
 ## Contributing
 

@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Xml;
 using System.Xml.Serialization;
 using ProjectPorcupine.Jobs;
 
@@ -250,7 +249,7 @@ namespace ProjectPorcupine.Buildable.Components
         private void PlaceInventoryToWorkshopInput(Job job)
         {
             job.CancelJob();
-            foreach (Inventory heldInventory in job.HeldInventory.Values)
+            foreach (Inventory heldInventory in job.DeliveredItems.Values)
             {
                 if (heldInventory.StackSize > 0)
                 {
@@ -355,7 +354,7 @@ namespace ProjectPorcupine.Buildable.Components
                                      false,
                                      false);
                         
-                        job.JobDescription = string.Format("Hauling '{0}' to '{1}'", desiredInv, ParentFurniture.Name);
+                        job.Description = string.Format("Hauling '{0}' to '{1}'", desiredInv, ParentFurniture.Name);
                         job.OnJobWorked += PlaceInventoryToWorkshopInput;
                         ParentFurniture.Jobs.Add(job);
                     }

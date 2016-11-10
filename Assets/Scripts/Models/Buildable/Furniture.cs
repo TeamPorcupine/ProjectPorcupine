@@ -10,11 +10,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
-using System.Xml.Schema;
-using System.Xml.Serialization;
 using Animation;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
+using Newtonsoft.Json.Linq;
 using ProjectPorcupine.Buildable.Components;
 using ProjectPorcupine.Jobs;
 using ProjectPorcupine.PowerNetwork;
@@ -24,7 +23,7 @@ using UnityEngine;
 /// InstalledObjects are things like walls, doors, and furniture (e.g. a sofa).
 /// </summary>
 [MoonSharpUserData]
-public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextActionProvider, IBuildable
+public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBuildable
 {
     #region Private Variables
     // Prevent construction too close to the world's edge
@@ -48,7 +47,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// These context menu lua action are used to build the context menu of the furniture.
     /// </summary>
     private List<ContextMenuLuaAction> contextMenuLuaActions;
-    
+
     private HashSet<BuildableComponent> components;
 
     // This is the generic type of object this is, allowing things to interact with it based on it's generic type
@@ -146,6 +145,11 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             contextMenuLuaActions = new List<ContextMenuLuaAction>(other.contextMenuLuaActions);
         }
 
+        if (other.ReplaceableFurniture != null)
+        {
+            replaceableFurniture = other.ReplaceableFurniture;
+        }
+
         isEnterableAction = other.isEnterableAction;
         getSpriteNameAction = other.getSpriteNameAction;
         getProgressInfoNameAction = other.getProgressInfoNameAction;
@@ -194,7 +198,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// </summary>
     /// <value>The Color of the furniture.</value>
     public Color Tint { get; set; }
-        
+
     /// <summary>
     /// Gets or sets a value indicating whether the door is Vertical or not.
     /// Should be false if the furniture is not a door.
@@ -210,7 +214,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// </summary>
     /// <value>The event actions that is called on update.</value>
     public EventActions EventActions { get; private set; }
-    
+
     /// <summary>
     /// Gets a value indicating whether the furniture is operating or not.
     /// </summary>
@@ -400,14 +404,14 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     {
         if (proto.IsValidPosition(tile) == false)
         {
-            Debug.ULogErrorChannel("Furniture", "PlaceInstance -- Position Validity Function returned FALSE. " + proto.Name + " " + tile.X + ", " + tile.Y + ", " + tile.Z);
+            Debug.ULogWarningChannel("Furniture", "PlaceInstance :: Position Validity Function returned FALSE. " + proto.Name + " " + tile.X + ", " + tile.Y + ", " + tile.Z);
             return null;
         }
 
         // We know our placement destination is valid.
         Furniture furnObj = proto.Clone();
         furnObj.Tile = tile;
-        
+
         if (tile.PlaceFurniture(furnObj) == false)
         {
             // For some reason, we weren't able to place our object in this tile.
@@ -417,7 +421,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             // (It will be garbage collected.)
             return null;
         }
-        
+
         // need to update reference to furniture and call Initialize (so components can place hooks on events there)
         foreach (BuildableComponent component in furnObj.components)
         {
@@ -444,7 +448,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                 }
             }
         }
-        
+
         // Let our workspot tile know it is reserved for us
         World.Current.ReserveTileAsWorkSpot(furnObj);
 
@@ -527,12 +531,12 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
         {
             EventActions.Trigger("OnUpdate", this, deltaTime);
         }
-                
+
         foreach (BuildableComponent component in components)
         {
             component.FixedFrequencyUpdate(deltaTime);
-        }        
-        
+        }
+
         if (Animation != null)
         {
             Animation.Update(deltaTime);
@@ -626,35 +630,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     }
     #endregion
 
-    #region Save Load
-    /// <summary>
-    /// This does absolutely nothing.
-    /// This is required to implement IXmlSerializable.
-    /// </summary>
-    /// <returns>NULL and NULL.</returns>
-    public XmlSchema GetSchema()
-    {
-        return null;
-    }
-
-    /// <summary>
-    /// Writes the furniture to XML.
-    /// </summary>
-    /// <param name="writer">The XML writer to write to.</param>
-    public void WriteXml(XmlWriter writer)
-    {
-        writer.WriteAttributeString("X", Tile.X.ToString());
-        writer.WriteAttributeString("Y", Tile.Y.ToString());
-        writer.WriteAttributeString("Z", Tile.Z.ToString());
-        writer.WriteAttributeString("type", Type);
-        writer.WriteAttributeString("Rotation", Rotation.ToString());
-
-        // Let the Parameters handle their own xml
-        Parameters.WriteXml(writer);
-    }
-
-    #endregion
-
     #region Read Prototype
     /// <summary>
     /// Reads the prototype furniture from XML.
@@ -704,7 +679,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                     break;
                 case "Health":
                     reader.Read();
-                health = new HealthSystem(reader.ReadContentAsFloat(), false, true, false, false);
+                    health = new HealthSystem(reader.ReadContentAsFloat(), false, true, false, false);
                     break;
                 case "LinksToNeighbours":
                     reader.Read();
@@ -769,7 +744,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                     break;
                 case "JobOutputSpotOffset":
                     Jobs.ReadOutputSpotOffset(reader);
-                    break;                
+                    break;
                 case "Params":
                     ReadXmlParams(reader);  // Read in the Param tag
                     break;
@@ -790,21 +765,6 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
 
                     break;
             }
-        }
-    }
-
-    /// <summary>
-    /// Reads the specified XMLReader (pass it to <see cref="ReadXmlParams(XmlReader)"/>)
-    /// This is used to load furniture from a save file.
-    /// </summary>
-    /// <param name="reader">The XML reader to read from.</param>
-    public void ReadXml(XmlReader reader)
-    {
-        // X, Y, type and rotation have already been set, and we should already
-        // be assigned to a tile.  So just read extra data if we have any.
-        if (!reader.IsEmptyElement)
-        {
-            ReadXmlParams(reader);
         }
     }
 
@@ -844,7 +804,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             jobTime,
             items.ToArray(),
             Job.JobPriority.High);
-        job.JobDescription = "job_build_" + Type + "_desc";
+        job.Description = "job_build_" + Type + "_desc";
 
         PrototypeManager.FurnitureConstructJob.Set(job);
     }
@@ -878,12 +838,39 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
             jobTime,
             null,
             Job.JobPriority.High);
-        job.JobDescription = "job_deconstruct_" + Type + "_desc";
+        job.Description = "job_deconstruct_" + Type + "_desc";
         job.adjacent = true;
 
         PrototypeManager.FurnitureDeconstructJob.Set(job);
     }
     #endregion
+
+    public object ToJSon()
+    {
+        JObject furnitureJSon = new JObject();
+        furnitureJSon.Add("X", Tile.X);
+        furnitureJSon.Add("Y", Tile.Y);
+        furnitureJSon.Add("Z", Tile.Z);
+        furnitureJSon.Add("Type", Type);
+        furnitureJSon.Add("Rotation", Rotation);
+        if (Parameters.HasContents())
+        {
+            furnitureJSon.Add("Parameters", Parameters.ToJson());
+        }
+
+        return furnitureJSon;
+    }
+
+    public void FromJson(JToken furnitureToken)
+    {
+        JObject furnitureJObject = (JObject)furnitureToken;
+
+        // Everything else has already been set by FurnitureManager, we just need our parameters
+        if (furnitureJObject.Children().Contains("Parameters"))
+        {
+            Parameters.FromJson(furnitureJObject["Parameters"]);
+        }
+    }
 
     /// <summary>
     /// Accepts for storage.
@@ -938,7 +925,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     /// Deconstructs the furniture.
     /// </summary>
     public void Deconstruct()
-    { 
+    {
         int x = Tile.X;
         int y = Tile.Y;
         int fwidth = 1;
@@ -972,7 +959,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                 World.Current.InventoryManager.PlaceInventoryAround(Tile, inv.Clone());
             }
         }
-        
+
         if (Removed != null)
         {
             Removed(this);
@@ -1023,6 +1010,15 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
     public bool HasTypeTag(string typeTag)
     {
         return typeTags.Contains(typeTag);
+    }
+
+    /// <summary>
+    /// Gets the type tags.
+    /// </summary>
+    /// <returns>The type tags.</returns>
+    public string[] GetTypeTags()
+    {
+        return typeTags.ToArray();
     }
 
     /// <summary>
@@ -1077,14 +1073,14 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                 {
                     yield return inf;
                 }
-            }     
+            }
         }
 
         if (health != null)
         {
             yield return health.TextForSelectionPanel();
         }
-        
+
         yield return GetProgressInfo();
     }
 
@@ -1154,7 +1150,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
                 }
             }
         }
-       
+
         foreach (ContextMenuLuaAction contextMenuLuaAction in contextMenuLuaActions)
         {
             if (!contextMenuLuaAction.DevModeOnly ||
@@ -1188,7 +1184,7 @@ public class Furniture : IXmlSerializable, ISelectable, IPrototypable, IContextA
 
         Rotation = rotation;
     }
-    
+
     // Make a copy of the current furniture.  Sub-classed should
     // override this Clone() if a different (sub-classed) copy
     // constructor should be run.

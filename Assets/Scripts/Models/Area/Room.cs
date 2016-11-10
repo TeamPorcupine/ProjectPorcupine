@@ -6,19 +6,16 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml;
-using System.Xml.Schema;
-using System.Xml.Serialization;
 using MoonSharp.Interpreter;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace ProjectPorcupine.Rooms
 {
     [MoonSharpUserData]
-    public class Room : IXmlSerializable
+    public class Room
     {
         // Dictionary with the amount of gas in room stored in preasure(in atm) multiplyed by number of tiles.
         private Dictionary<string, float> atmosphericGasses;
@@ -131,7 +128,7 @@ namespace ProjectPorcupine.Rooms
                             // We have found an exit
                             exits.Add(tile2);
                         }
-                    } 
+                    }
                 }
             }
 
@@ -333,35 +330,24 @@ namespace ProjectPorcupine.Rooms
             return atmosphericGasses.Keys.ToArray();
         }
 
-        public XmlSchema GetSchema()
+        public JObject ToJson()
         {
-            return null;
-        }
-
-        public void WriteXml(XmlWriter writer)
-        {
-            // Write out gas info.
+            JObject roomGasses = new JObject();
             foreach (string k in atmosphericGasses.Keys)
             {
-                writer.WriteStartElement("Param");
-                writer.WriteAttributeString("name", k);
-                writer.WriteAttributeString("value", atmosphericGasses[k].ToString());
-                writer.WriteEndElement();
+                roomGasses.Add(k, atmosphericGasses[k]);
             }
+
+            return roomGasses;
         }
 
-        public void ReadXml(XmlReader reader)
+        public void FromJson(JToken room)
         {
-            // Read gas info.
-            if (reader.ReadToDescendant("Param"))
+            foreach (JProperty gas in ((JObject)room).Properties())
             {
-                do
-                {
-                    string k = reader.GetAttribute("name");
-                    float v = float.Parse(reader.GetAttribute("value"));
-                    atmosphericGasses[k] = v;
-                }
-                while (reader.ReadToNextSibling("Param"));
+                string k = gas.Name;
+                float v = (float)gas.Value;
+                atmosphericGasses[k] = v;
             }
         }
 
@@ -439,7 +425,7 @@ namespace ProjectPorcupine.Rooms
                             // We have found an enclosing furniture, which means it is on our border
                             borderingTiles.Add(tile2);
                         }
-                    } 
+                    }
                 }
             }
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Furnitures>
-    <Furniture type="furn_SteelWall">
+    <Furniture type="Steel Wall">
         <Name>Steel Wall</Name>
         <Description>This is a steel wall.</Description>
         <TypeTag>Wall</TypeTag>

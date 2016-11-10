@@ -10,7 +10,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 public class FurnitureManager : IEnumerable<Furniture>
@@ -82,10 +82,11 @@ public class FurnitureManager : IEnumerable<Furniture>
         furnitures.Add(furniture);
         furnituresVisible.Add(furniture);
 
-        // Do we need to recalculate our rooms?
+        // Do we need to recalculate our rooms/reachability for other jobs?
         if (doRoomFloodFill && furniture.RoomEnclosure)
         {
             World.Current.RoomManager.DoRoomFloodFill(furniture.Tile, true);
+            World.Current.jobQueue.ReevaluateReachability();
         }
 
         if (Created != null)
@@ -108,10 +109,6 @@ public class FurnitureManager : IEnumerable<Furniture>
         World.Current.UnreserveTileAsWorkSpot(furn, job.tile);
 
         PlaceFurniture(furn, job.tile);
-
-        // FIXME: I don't like having to manually and explicitly set
-        // flags that prevent conflicts. It's too easy to forget to set/clear them!
-        job.tile.PendingBuildJob = null;
     }
 
     /// <summary>
@@ -164,7 +161,7 @@ public class FurnitureManager : IEnumerable<Furniture>
     }
 
     /// <summary>
-    /// Reuturns a list of furniture using the given filter function.
+    /// Returns a list of furniture using the given filter function.
     /// </summary>
     /// <returns>A list of furnitures.</returns>
     /// <param name="filterFunc">The filter function.</param>
@@ -239,7 +236,7 @@ public class FurnitureManager : IEnumerable<Furniture>
     /// The invisible enities can be updated less frequent for better performance.
     /// </summary>
     public void OnCameraMoved(Bounds cameraBounds)
-    {        
+    {
         // Expand bounds to include tiles on the edge where the centre isn't inside the bounds
         cameraBounds.Expand(1);
 
@@ -265,21 +262,34 @@ public class FurnitureManager : IEnumerable<Furniture>
                     furnituresVisible.Remove(furn);
                     furnituresInvisible.Add(furn);
                 }
-            }            
+            }
         }
     }
 
-    /// <summary>
-    /// Writes the furniture to the XML.
-    /// </summary>
-    /// <param name="writer">The Xml Writer.</param>
-    public void WriteXml(XmlWriter writer)
+    public JToken ToJson()
     {
-        foreach (Furniture furn in furnitures)
+        JArray furnituresJson = new JArray();
+        foreach (Furniture furniture in furnitures)
         {
-            writer.WriteStartElement("Furniture");
-            furn.WriteXml(writer);
-            writer.WriteEndElement();
+            furnituresJson.Add(furniture.ToJSon());
+        }
+
+        return furnituresJson;
+    }
+
+    public void FromJson(JToken furnituresToken)
+    {
+        JArray furnituresJArray = (JArray)furnituresToken;
+
+        foreach (JToken furnitureToken in furnituresJArray)
+        {
+            int x = (int)furnitureToken["X"];
+            int y = (int)furnitureToken["Y"];
+            int z = (int)furnitureToken["Z"];
+            string type = (string)furnitureToken["Type"];
+            float rotation = (float)furnitureToken["Rotation"];
+            Furniture furniture = PlaceFurniture(type, World.Current.GetTileAt(x, y, z), false, rotation);
+            furniture.FromJson(furnitureToken);
         }
     }
 
@@ -293,11 +303,14 @@ public class FurnitureManager : IEnumerable<Furniture>
 
         if (furnituresInvisible.Contains(furniture))
         {
-            furnituresInvisible.Remove(furniture);            
+            furnituresInvisible.Remove(furniture);
         }
         else if (furnituresVisible.Contains(furniture))
         {
             furnituresVisible.Remove(furniture);
         }
+
+        // Movement to jobs might have been opened, let's move jobs back into the queue to be re-evaluated.
+        World.Current.jobQueue.ReevaluateReachability();
     }
 }

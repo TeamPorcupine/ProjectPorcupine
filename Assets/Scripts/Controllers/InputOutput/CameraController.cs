@@ -61,7 +61,6 @@ public class CameraController
         Camera.main.orthographicSize = zoomTarget;
 
         positionTarget = Camera.main.transform.position;
-
         TimeManager.Instance.EveryFrameNotModal += (time) => Update();
     }
 
@@ -125,6 +124,8 @@ public class CameraController
         }
 
         prevPositionTarget = positionTarget;
+
+        WorldController.Instance.soundController.SetListenerPosition(Camera.main.transform.position.x, Camera.main.transform.position.y, (float)CurrentLayer);
     }
 
     public void ChangeZoom(float amount)
@@ -132,7 +133,7 @@ public class CameraController
         zoomTarget = Camera.main.orthographicSize - (Settings.GetSetting("ZoomSensitivity", 3) * (Camera.main.orthographicSize * amount));
     }
 
-    public void ChangeLayer(int newLayer) 
+    public void ChangeLayer(int newLayer)
     {
         if (layerCameras != null && newLayer >= 0 && newLayer < layerCameras.Length)
         {
@@ -176,11 +177,13 @@ public class CameraController
 
             cameraData.position = Camera.main.transform.position;
             cameraData.zoomLevel = zoomTarget;
+            cameraData.zLevel = currentLayer;
 
             for (int i = 0; i < cameraData.presets.Length; i++)
             {
                 cameraData.presets[i].position = Camera.main.transform.position;
                 cameraData.presets[i].zoomLevel = Camera.main.orthographicSize;
+                cameraData.presets[i].zLevel = currentLayer;
             }
         }
         else
@@ -190,6 +193,8 @@ public class CameraController
 
             zoomTarget = cameraData.zoomLevel;
             Camera.main.orthographicSize = zoomTarget;
+
+            ChangeLayer(cameraData.zLevel);
         }
     }
 
@@ -233,7 +238,7 @@ public class CameraController
 
     private void CreateLayerCameras()
     {
-        if (WorldController.Instance.World == null) 
+        if (WorldController.Instance.World == null)
         {
             return;
         }

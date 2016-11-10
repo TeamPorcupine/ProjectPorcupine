@@ -9,9 +9,8 @@
 using System;
 using System.Collections.Generic;
 using System.Xml;
-using System.Xml.Schema;
-using System.Xml.Serialization;
 using MoonSharp.Interpreter;
+using Newtonsoft.Json.Linq;
 using ProjectPorcupine.Localization;
 using ProjectPorcupine.State;
 using UnityEngine;
@@ -31,7 +30,7 @@ public enum Facing
 /// sub-classes or interfaces) to support friendly workers, enemies, etc...
 /// </summary>
 [MoonSharpUserData]
-public class Character : IXmlSerializable, ISelectable, IContextActionProvider
+public class Character : ISelectable, IContextActionProvider
 {
     /// Name of the Character.
     public string name;
@@ -339,7 +338,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
                 else
                 {
                     // TODO: Lack of job states should be more interesting. Maybe go to the pub and have a pint?
-                    SetState(new IdleState(this));
+                    SetState(new IdleState(this));            
                 }
             }
         }
@@ -354,89 +353,44 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
         }
     }
 
-    #region IXmlSerializable implementation
-
-    public XmlSchema GetSchema()
+    public object ToJSon()
     {
-        return null;
-    }
+        JObject characterJson = new JObject();
 
-    public void WriteXml(XmlWriter writer)
-    {
-        writer.WriteAttributeString("name", name);
-        writer.WriteAttributeString("X", CurrTile.X.ToString());
-        writer.WriteAttributeString("Y", CurrTile.Y.ToString());
-        writer.WriteAttributeString("Z", CurrTile.Z.ToString());
+        characterJson.Add("Name", name);
+        characterJson.Add("X", CurrTile.X);
+        characterJson.Add("Y", CurrTile.Y);
+        characterJson.Add("Z", CurrTile.Z);
 
-        // TODO: It is more verbose, but easier to parse if these are represented as key-value elements rather than a string with delimiters.
-        string needString = string.Empty;
-        foreach (Need n in Needs)
+        JObject needsJSon = new JObject();
+        foreach (Need need in Needs)
         {
-            int storeAmount = (int)(n.Amount * 10);
-            needString = needString + n.Type + ";" + storeAmount.ToString() + ":";
+            needsJSon.Add(need.Name, need.Amount);
         }
 
-        writer.WriteAttributeString("needs", needString);
+        characterJson.Add("Needs", needsJSon);
 
-        writer.WriteAttributeString("r", characterColor.r.ToString());
-        writer.WriteAttributeString("b", characterColor.b.ToString());
-        writer.WriteAttributeString("g", characterColor.g.ToString());
-        writer.WriteAttributeString("rUni", characterUniformColor.r.ToString());
-        writer.WriteAttributeString("bUni", characterUniformColor.b.ToString());
-        writer.WriteAttributeString("gUni", characterUniformColor.g.ToString());
-        writer.WriteAttributeString("rSkin", characterSkinColor.r.ToString());
-        writer.WriteAttributeString("bSkin", characterSkinColor.b.ToString());
-        writer.WriteAttributeString("gSkin", characterSkinColor.g.ToString());
+        JObject colorsJson = new JObject();
+        colorsJson.Add("CharacterColor", new JArray(characterColor.r, characterColor.g, characterColor.b));
+        colorsJson.Add("UniformColor", new JArray(characterUniformColor.r, characterUniformColor.g, characterUniformColor.b));
+        colorsJson.Add("SkinColor", new JArray(characterSkinColor.r, characterSkinColor.g, characterSkinColor.b));
+        characterJson.Add("Colors", colorsJson);
 
-        writer.WriteStartElement("Stats");
+        JObject statsJSon = new JObject();
         foreach (Stat stat in stats.Values)
         {
-            writer.WriteStartElement("Stat");
-            stat.WriteXml(writer);
-            writer.WriteEndElement();
+            needsJSon.Add(stat.Name, stat.Value);
         }
 
-        writer.WriteEndElement();
+        characterJson.Add("Stats", statsJSon);
+
         if (inventory != null)
         {
-            writer.WriteStartElement("Inventories");
-            writer.WriteStartElement("Inventory");
-            inventory.WriteXml(writer);
-            writer.WriteEndElement();
-            writer.WriteEndElement();
+            characterJson.Add("Inventories", new JArray(inventory.ToJSon()));
         }
+
+        return characterJson;
     }
-
-    public void ReadXml(XmlReader reader)
-    {
-        if (reader.GetAttribute("needs") == null)
-        {
-            return;
-        }
-
-        string[] needListA = reader.GetAttribute("needs").Split(new char[] { ':' });
-        foreach (string s in needListA)
-        {
-            string[] needListB = s.Split(new char[] { ';' });
-            foreach (Need n in Needs)
-            {
-                if (n.Type == needListB[0])
-                {
-                    int storeAmount;
-                    if (int.TryParse(needListB[1], out storeAmount))
-                    {
-                        n.Amount = (float)storeAmount / 10;
-                    }
-                    else
-                    {
-                        Debug.ULogErrorChannel("Character", "Character.ReadXml() expected an int when deserializing needs");
-                    }
-                }
-            }
-        }
-    }
-
-    #endregion
 
     #region ISelectableInterface implementation
 
@@ -488,7 +442,7 @@ public class Character : IXmlSerializable, ISelectable, IContextActionProvider
             return "job_no_job_desc";
         }
 
-        return MyJob.JobDescription;
+        return MyJob.Description;
     }
 
     #endregion
