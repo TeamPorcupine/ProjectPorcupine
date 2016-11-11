@@ -12,7 +12,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
+using MoonSharp.Interpreter;
 
+[MoonSharpUserData]
 public class FurnitureManager : IEnumerable<Furniture>
 {
     private List<Furniture> furnitures;
