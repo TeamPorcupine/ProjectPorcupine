@@ -98,6 +98,18 @@ namespace ProjectPorcupine.Buildable.Components
             }
         }
 
+        /// <summary>
+        /// Initializes after loading the prototype.
+        /// </summary>
+        /// <param name="protoFurniture">Reference to prototype of furniture.</param>
+        public virtual void InitializePrototype(Furniture protoFurniture)
+        {
+        }
+
+        /// <summary>
+        /// Initializes after placed into world.
+        /// </summary>
+        /// <param name="parentFurniture">Reference to furniture placed in world.</param>
         public void Initialize(Furniture parentFurniture)
         {
             ParentFurniture = parentFurniture;

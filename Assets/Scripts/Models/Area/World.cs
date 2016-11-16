@@ -51,7 +51,7 @@ public class World
         // Creates an empty world.
         SetupWorld(width, height, depth);
         int seed = UnityEngine.Random.Range(0, int.MaxValue);
-        WorldGenerator.Generate(this, seed);
+        WorldGenerator.Instance.Generate(this, seed);
         Debug.ULogChannel("World", "Generated World");
 
         tileGraph = new Path_TileGraph(this);
