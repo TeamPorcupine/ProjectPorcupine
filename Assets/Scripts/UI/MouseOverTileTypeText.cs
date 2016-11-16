@@ -7,6 +7,8 @@
 // ====================================================
 #endregion
 
+using System.Collections;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -25,6 +27,12 @@ public class MouseOverTileTypeText : MouseOver
             tileType = tile.Type.ToString();
         }
 
-        return "Tile Type: " + tileType;
+        string tileInfo = "Tile Type: " + tileType;
+        if (tile != null && tile.Utilities != null && tile.Utilities.Count > 0)
+        {
+            tileInfo += "\n" + tile.Utilities.First().Value.Grid.GetId();
+        }
+
+        return tileInfo;
     }
 }

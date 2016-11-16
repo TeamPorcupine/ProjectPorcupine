@@ -1287,6 +1287,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     {
         UpdateOnChanged(this);
     }
+
     #endregion
 
     /// <summary>

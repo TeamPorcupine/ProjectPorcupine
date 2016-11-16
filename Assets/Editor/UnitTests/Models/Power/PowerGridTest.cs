@@ -295,6 +295,8 @@ public class PowerGridTest
 
     private class MockConnection : IPlugable
     {
+        public event Action Reconnecting;
+
         public float AccumulatedAmount { get; set; }
 
         public float AccumulatorCapacity { get; set; }
@@ -327,5 +329,10 @@ public class PowerGridTest
         }
 
         public float OutputRate { get; set; }
+
+        public void Reconnect()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
