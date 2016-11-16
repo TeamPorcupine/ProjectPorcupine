@@ -8,6 +8,7 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Xml;
 using System.Xml.Serialization;
@@ -186,7 +187,7 @@ namespace ProjectPorcupine.Buildable.Components
         {
             componentTypes = new Dictionary<string, System.Type>();
 
-            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies().Where(asm => !CSharpFunctions.IsDynamic(asm)))
             {
                 foreach (Type type in assembly.GetTypes())
                 {
