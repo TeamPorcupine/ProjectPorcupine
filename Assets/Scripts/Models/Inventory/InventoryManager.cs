@@ -107,11 +107,13 @@ public class InventoryManager
         {
             // The tile did not accept the inventory for whatever reason, therefore stop.
             return false;
+
+            // TODO: Geoffrotism. Is this where we would hook in to handle inventory not being able to be placed in a tile.
         }
 
         CleanupInventory(inventory);
 
-        // We may also created a new stack on the tile, if the startTile was previously empty.
+        // We may also have to create a new stack on the tile, if the startTile was previously empty.
         if (tileWasEmpty)
         {
             if (Inventories.ContainsKey(tile.Inventory.Type) == false)
@@ -152,12 +154,12 @@ public class InventoryManager
         }
 
         // Check that there is a target to transfer to
-        if (job.HeldInventory.ContainsKey(sourceInventory.Type) == false)
+        if (job.DeliveredItems.ContainsKey(sourceInventory.Type) == false)
         {
-            job.HeldInventory[sourceInventory.Type] = new Inventory(sourceInventory.Type, 0, sourceInventory.MaxStackSize);
+            job.DeliveredItems[sourceInventory.Type] = new Inventory(sourceInventory.Type, 0, sourceInventory.MaxStackSize);
         }
 
-        Inventory targetInventory = job.HeldInventory[sourceInventory.Type];
+        Inventory targetInventory = job.DeliveredItems[sourceInventory.Type];
         int transferAmount = Mathf.Min(targetInventory.MaxStackSize - targetInventory.StackSize, sourceInventory.StackSize);
 
         sourceInventory.StackSize -= transferAmount;
@@ -367,6 +369,9 @@ public class InventoryManager
         if (handler != null)
         {
             handler(inventory);
+
+            // Let the JobQueue know there is new inventory available.
+            World.Current.jobQueue.ReevaluateReachability();
         }
     }
 
