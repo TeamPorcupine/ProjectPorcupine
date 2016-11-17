@@ -31,7 +31,7 @@
         </Params>
         
         <Component type="Visuals">
-            <DefaultSpriteName useName="furn_SteelWall_" />
+            <DefaultSpriteName useName="steel_wall_" />
         </Component>
 
         <LocalizationCode>furn_steel_wall</LocalizationCode>
@@ -64,7 +64,7 @@
         </DeconstructJob>
                 
         <Component type="Visuals">
-            <DefaultSpriteName useName="DoorHorizontal_0" />
+            <DefaultSpriteName useName="door_horizontal_0" />
             <SpriteName fromFunction="Door_GetSpriteName" />
         </Component>
 
@@ -121,7 +121,7 @@
         <CanReplaceFurniture typeTag="Door" />
                 
         <Component type="Visuals">
-            <DefaultSpriteName useName="AirlockHorizontal_0" />
+            <DefaultSpriteName useName="airlock_door_horizontal_0" />
             <SpriteName fromFunction="Door_GetSpriteName" />
         </Component>
 
@@ -189,7 +189,7 @@
         <DragType>area</DragType>
         
         <Component type="Visuals">
-            <DefaultSpriteName useName="Stockpile_" />
+            <DefaultSpriteName useName="stockpile_" />
         </Component>
 
         <ContextMenuAction FunctionName="Stockpile_SetNewFilter" Text="Set Filter" RequireCharacterSelected="false"/>
@@ -322,7 +322,7 @@
         </DeconstructJob>
         
         <Component type="Visuals">
-            <DefaultSpriteName useName="Power-Generator-01" />
+            <DefaultSpriteName useName="fission_reactor_1" />
             <UseAnimation name="idle">
                 <Requires>
                     <Param name="cur_processed_inv" condition="IsZero" />
@@ -706,7 +706,7 @@
         </Component>
         
         <Component type="Visuals">
-            <DefaultSpriteName useName="pump_air" />
+            <DefaultSpriteName useName="air_pump" />
             <SpriteName fromFunction="AirPump_GetSpriteName" />
         </Component>
 
