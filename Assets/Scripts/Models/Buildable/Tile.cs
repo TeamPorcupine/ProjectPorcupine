@@ -146,7 +146,7 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
 
         // FIXME: I don't like having to manually and explicitly set
         // flags that preven conflicts. It's too easy to forget to set/clear them!
-        theJob.tile.PendingBuildJobs = null;
+        theJob.tile.PendingBuildJobs.Remove(theJob);
     }
 
     public void SetTileType(TileType newTileType, bool doRoomFloodFill = true)
