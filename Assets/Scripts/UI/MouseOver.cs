@@ -36,7 +36,7 @@ public abstract class MouseOver : MonoBehaviour
     }
 
     /// <summary>
-    /// Obtains a string that represents some info about tile t.
+    /// Obtains a string that represents info about the tile.
     /// </summary>
     /// <param name="tile">The in game tile that our mouse is currently over.</param>
     protected abstract string GetMouseOverString(Tile tile);

@@ -108,7 +108,7 @@ public class DialogBoxManager : MonoBehaviour
     /// <returns>The dialog as an instance in the scene.</returns>
     private GameObject CreateDialogGO(string prefabName, string name)
     {
-        GameObject tempGoObj = (GameObject)Instantiate(Resources.Load("UI/" + prefabName), DialogBoxGO.transform.position, DialogBoxGO.transform.rotation, DialogBoxGO.transform);
+        GameObject tempGoObj = (GameObject)Instantiate(Resources.Load("UI/DialogBoxes/" + prefabName), DialogBoxGO.transform.position, DialogBoxGO.transform.rotation, DialogBoxGO.transform);
         tempGoObj.name = name;
         return tempGoObj;
     }

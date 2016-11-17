@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Sprites>
+	<Sprite name="fission_reactor_1"     x="0" y="0" w="2" h="2" pixelPerUnit="64" />
+	<Sprite name="fission_reactor_2"     x="2" y="0" w="2" h="2" pixelPerUnit="64" />
+	<Sprite name="fission_reactor_3"     x="4" y="0" w="2" h="2" pixelPerUnit="64" />
+	<Sprite name="fission_reactor_4"     x="6" y="0" w="2" h="2" pixelPerUnit="64" />
+</Sprites> 

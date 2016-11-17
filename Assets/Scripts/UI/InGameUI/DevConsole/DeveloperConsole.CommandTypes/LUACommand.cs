@@ -28,7 +28,8 @@ namespace DeveloperConsole.CommandTypes
 
                 try
                 {
-                    FunctionsManager.DevConsole.Call_Unsafe(HelpFunctionName);
+                    FunctionsManager.DevConsole.CallWithError(HelpFunctionName);
+
                 }
                 catch (Exception e)
                 {
@@ -90,7 +91,7 @@ namespace DeveloperConsole.CommandTypes
         {
             try
             {
-                FunctionsManager.DevConsole.Call_Unsafe(FunctionName, ParseArguments(arguments));
+                FunctionsManager.DevConsole.CallWithError(FunctionName, ParseArguments(arguments));
             }
             catch (Exception e)
             {

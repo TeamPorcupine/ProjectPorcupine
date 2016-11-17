@@ -50,6 +50,23 @@ namespace ProjectPorcupine.Rooms
         // RoomBehavior is something like an airlock or office.
         public Dictionary<string, RoomBehavior> RoomBehaviors { get; private set; }
 
+        public Tile FindExitBetween(Room room2)
+        {
+            List<Tile> exits = this.FindExits();
+
+            foreach (Tile exit in exits)
+            {
+                if (exit.GetNeighbours().Any(tile => tile.Room == room2))
+                {
+                    return exit;
+                }
+            }
+
+            // In theory this should never be reached, if we are passed two rooms from a roomPath, there should always be an exit between
+            // But we should probably add some kind of error checking anyways.
+            return null;
+        }
+
         public void AssignTile(Tile tile)
         {
             if (tiles.Contains(tile))
@@ -330,7 +347,7 @@ namespace ProjectPorcupine.Rooms
             return atmosphericGasses.Keys.ToArray();
         }
 
-        public object ToJson()
+        public JObject ToJson()
         {
             JObject roomGasses = new JObject();
             foreach (string k in atmosphericGasses.Keys)

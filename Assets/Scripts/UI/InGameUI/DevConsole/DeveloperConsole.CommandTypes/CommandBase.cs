@@ -135,8 +135,9 @@ namespace DeveloperConsole.CommandTypes
                 }
                 else if (arg.Contains('['))
                 {
+                    Debug.LogWarning("Object Mode");
                     arg = arg.Trim();
-                    string pattern = @"\[((?:"".*?"")|(?:[^\]]*))\]";
+                    string pattern = @"(?:\[|\,)(((?:"".*?"")|(?:[^\,\[]*?)))(?:\]|\,)";
 
                     string[] args = Regex.Matches(arg, pattern)
                         .Cast<Match>()
@@ -183,6 +184,7 @@ namespace DeveloperConsole.CommandTypes
 
                     if (chosenConstructor == null)
                     {
+                        args.ToList().ForEach(x => Debug.LogWarning(x));
                         throw new Exception("The entered value is not a valid " + typeof(T) + " value");
                     }
                     else

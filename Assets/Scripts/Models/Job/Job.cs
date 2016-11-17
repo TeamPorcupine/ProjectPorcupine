@@ -44,7 +44,7 @@ public class Job : ISelectable, IPrototypable
     /// Defaults to false.
     /// </summary>
     public bool acceptsAny;
-
+    
     protected float jobTimeRequired;
 
     protected bool jobRepeats = false;
@@ -54,15 +54,17 @@ public class Job : ISelectable, IPrototypable
     // The job has been stopped, either because it's non-repeating or was canceled.
     private List<string> jobCompletedLua;
 
+    private List<Character> charsCantReach = new List<Character>();
+
     // Required for IPrototypable
     public Job()
     {
     }
 
-    public Job(Tile tile, string jobObjectType, Action<Job> jobComplete, float jobTime, RequestedItem[] requestedItems, Job.JobPriority jobPriority, bool jobRepeats = false, bool need = false, bool critical = false, bool adjacent = false)
+    public Job(Tile tile, string type, Action<Job> jobComplete, float jobTime, RequestedItem[] requestedItems, Job.JobPriority jobPriority, bool jobRepeats = false, bool need = false, bool critical = false, bool adjacent = false)
     {
         this.tile = tile;
-        this.JobObjectType = jobObjectType;
+        this.Type = type;
         this.OnJobCompleted += jobComplete;
         this.jobTimeRequired = this.JobTime = jobTime;
         this.jobRepeats = jobRepeats;
@@ -70,12 +72,12 @@ public class Job : ISelectable, IPrototypable
         this.Critical = critical;
         this.Priority = jobPriority;
         this.adjacent = adjacent;
-        this.JobDescription = "job_error_missing_desc";
+        this.Description = "job_error_missing_desc";
 
         jobWorkedLua = new List<string>();
         jobCompletedLua = new List<string>();
 
-        this.HeldInventory = new Dictionary<string, Inventory>();
+        this.DeliveredItems = new Dictionary<string, Inventory>();
         this.RequestedItems = new Dictionary<string, RequestedItem>();
 
         if (requestedItems != null)
@@ -85,26 +87,24 @@ public class Job : ISelectable, IPrototypable
                 this.RequestedItems[item.Type] = item.Clone();
             }
         }
-
-        this.HeldInventory = new Dictionary<string, Inventory>();
     }
 
     public Job(Tile tile, TileType jobTileType, Action<Job> jobCompleted, float jobTime, RequestedItem[] requestedItems, Job.JobPriority jobPriority, bool jobRepeats = false, bool adjacent = false)
     {
         this.tile = tile;
         this.JobTileType = jobTileType;
-        this.JobObjectType = "tile_" + jobTileType.Name;
+        this.Type = "tile_" + jobTileType.Name;
         this.OnJobCompleted += jobCompleted;
         this.jobTimeRequired = this.JobTime = jobTime;
         this.jobRepeats = jobRepeats;
         this.Priority = jobPriority;
         this.adjacent = adjacent;
-        this.JobDescription = "job_error_missing_desc";
+        this.Description = "job_error_missing_desc";
 
         jobWorkedLua = new List<string>();
         jobCompletedLua = new List<string>();
 
-        this.HeldInventory = new Dictionary<string, Inventory>();
+        this.DeliveredItems = new Dictionary<string, Inventory>();
         this.RequestedItems = new Dictionary<string, RequestedItem>();
         if (requestedItems != null)
         {
@@ -113,26 +113,24 @@ public class Job : ISelectable, IPrototypable
                 this.RequestedItems[item.Type] = item.Clone();
             }
         }
-
-        this.HeldInventory = new Dictionary<string, Inventory>();
     }
 
     protected Job(Job other)
     {
         this.tile = other.tile;
-        this.JobObjectType = other.JobObjectType;
+        this.Type = other.Type;
         this.JobTileType = other.JobTileType;
         this.OnJobCompleted = other.OnJobCompleted;
         this.JobTime = other.JobTime;
         this.Priority = other.Priority;
         this.adjacent = other.adjacent;
-        this.JobDescription = other.JobDescription;
+        this.Description = other.Description;
         this.acceptsAny = other.acceptsAny;
 
         jobWorkedLua = new List<string>(other.jobWorkedLua);
         jobCompletedLua = new List<string>(other.jobWorkedLua);
 
-        this.HeldInventory = new Dictionary<string, Inventory>();
+        this.DeliveredItems = new Dictionary<string, Inventory>();
         this.RequestedItems = new Dictionary<string, RequestedItem>();
         if (other.RequestedItems != null)
         {
@@ -141,8 +139,6 @@ public class Job : ISelectable, IPrototypable
                 this.RequestedItems[item.Type] = item.Clone();
             }
         }
-
-        this.HeldInventory = new Dictionary<string, Inventory>();
     }
 
     // We have finished the work cycle and so things should probably get built or whatever.
@@ -160,21 +156,18 @@ public class Job : ISelectable, IPrototypable
         Low
     }
 
+    // The items needed to do this job.
     public Dictionary<string, RequestedItem> RequestedItems { get; set; }
 
-    public Dictionary<string, Inventory> HeldInventory { get; set; }
+    // The items that have been delivered to the jobsite.
+    public Dictionary<string, Inventory> DeliveredItems { get; set; }
 
-    public string JobDescription { get; set; }
-
-    public string JobObjectType
-    {
-        get;
-        protected set;
-    }
+    public string Description { get; set; }
 
     public string Type
     {
-        get { return JobObjectType; }
+        get;
+        protected set;
     }
 
     public bool IsNeed
@@ -223,6 +216,14 @@ public class Job : ISelectable, IPrototypable
         }
     }
 
+    public List<Character> CharsCantReach
+    {
+        get
+        {
+            return charsCantReach;
+        }
+    }
+
     public Pathfinder.GoalEvaluator IsTileAtJobSite
     {
         get
@@ -244,7 +245,7 @@ public class Job : ISelectable, IPrototypable
 
     public void SetTileFromNeedFurniture(Tile currentTile, string needFurniture)
     {
-        tile = ProjectPorcupine.Pathfinding.Pathfinder.FindPathToFurniture(currentTile, needFurniture).Last();
+        tile = Pathfinder.FindPathToFurniture(currentTile, needFurniture).Last();
     }
 
     public virtual Job Clone()
@@ -252,6 +253,7 @@ public class Job : ISelectable, IPrototypable
         return new Job(this);
     }
 
+    #region Callbacks
     public void RegisterJobCompletedCallback(string cb)
     {
         jobCompletedLua.Add(cb);
@@ -271,6 +273,7 @@ public class Job : ISelectable, IPrototypable
     {
         jobWorkedLua.Remove(cb);
     }
+    #endregion
 
     public void DoWork(float workTime)
     {
@@ -342,10 +345,14 @@ public class Job : ISelectable, IPrototypable
         }
 
         // Remove the job out of both job queues.
-//        World.Current.jobWaitingQueue.Remove(this);
+        // World.Current.jobWaitingQueue.Remove(this);
         World.Current.jobQueue.Remove(this);
     }
 
+    /// <summary>
+    /// Checks to see if the job has met the material requirements needed to do this job.
+    /// </summary>
+    /// <returns> Returns True if the job can do work based on material requirements.</returns>
     public bool MaterialNeedsMet()
     {
         if (acceptsAny && HasAnyMaterial())
@@ -370,7 +377,7 @@ public class Job : ISelectable, IPrototypable
 
         foreach (RequestedItem item in RequestedItems.Values)
         {
-            if (HeldInventory.ContainsKey(item.Type) == false || item.AmountNeeded(HeldInventory[item.Type]) > 0)
+            if (DeliveredItems.ContainsKey(item.Type) == false || item.AmountNeeded(DeliveredItems[item.Type]) > 0)
             {
                 return false;
             }
@@ -381,7 +388,7 @@ public class Job : ISelectable, IPrototypable
 
     public bool HasAnyMaterial()
     {
-        return HeldInventory.Count > 0 && HeldInventory.First().Value.StackSize > 0;
+        return DeliveredItems.Count > 0 && DeliveredItems.First().Value.StackSize > 0;
     }
 
     public int AmountDesiredOfInventoryType(string type)
@@ -391,7 +398,7 @@ public class Job : ISelectable, IPrototypable
             return 0;
         }
 
-        Inventory inventory = HeldInventory.ContainsKey(type) ? HeldInventory[type] : null;
+        Inventory inventory = DeliveredItems.ContainsKey(type) ? DeliveredItems[type] : null;
         return RequestedItems[type].AmountDesired(inventory);
     }
 
@@ -452,7 +459,7 @@ public class Job : ISelectable, IPrototypable
     {
         foreach (RequestedItem item in RequestedItems.Values)
         {
-            Inventory inventory = HeldInventory.ContainsKey(item.Type) ? HeldInventory[item.Type] : null;
+            Inventory inventory = DeliveredItems.ContainsKey(item.Type) ? DeliveredItems[item.Type] : null;
 
             if (item.DesiresMore(inventory))
             {
@@ -471,7 +478,14 @@ public class Job : ISelectable, IPrototypable
 
     public string GetName()
     {
-        return LocalizationTable.GetLocalization(JobObjectType);
+        try
+        {    
+            return LocalizationTable.GetLocalization(PrototypeManager.Furniture.Get(Type.ToString()).GetName());
+        }
+        catch
+        {
+            return LocalizationTable.GetLocalization(Type);
+        }      
     }
 
     public string GetDescription()
@@ -480,6 +494,9 @@ public class Job : ISelectable, IPrototypable
         foreach (RequestedItem item in RequestedItems.Values)
         {
             description += string.Format("\t{0} {1}..{2}\n", item.Type, item.MinAmountRequested, item.MaxAmountRequested);
+
+            // TODO: Not sure if this works or not.
+            description = LocalizationTable.GetLocalization(description);
         }
 
         return description;
@@ -488,6 +505,43 @@ public class Job : ISelectable, IPrototypable
     public string GetJobDescription()
     {
         return GetDescription();
+    }
+
+    /// <summary>
+    /// Add the character to the list of characters that can not reach this job.
+    /// </summary>
+    public void AddCharCantReach(Character character)
+    {
+        if (!CharsCantReach.Contains(character))
+        {
+            charsCantReach.Add(character);
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns> True if the character can reach the inventory it needs.</returns>
+    public bool CanGetToInventory(Character character)
+    {
+        List<Tile> path = null;
+        path = World.Current.InventoryManager.GetPathToClosestInventoryOfType(RequestedItems.Keys.ToArray(), character.CurrTile, canTakeFromStockpile);
+        if (path != null && path.Count > 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Resets the list of character unable to reach the job.
+    /// </summary>
+    public void ClearCharCantReach()
+    {
+        charsCantReach = new List<Character>();
     }
 
     public IEnumerable<string> GetAdditionalInfo()
@@ -501,7 +555,7 @@ public class Job : ISelectable, IPrototypable
 
     public void FSMLogRequirements()
     {
-        Debug.ULogChannel("FSM", " - {0} {1}", JobObjectType, acceptsAny ? "Any" : "All");
+        Debug.ULogChannel("FSM", " - {0} {1}", Type, acceptsAny ? "Any" : "All");
         foreach (RequestedItem item in RequestedItems.Values)
         {
             Debug.ULogChannel("FSM", "   - {0}, min: {1}, max: {2}", item.Type, item.MinAmountRequested, item.MaxAmountRequested);

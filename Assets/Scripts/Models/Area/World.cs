@@ -19,6 +19,9 @@ using UnityEngine;
 [MoonSharpUserData]
 public class World
 {
+    // TODO: Should this be also saved with the world data?
+    // If so - beginner task!
+    public readonly string GameVersion = "Someone_will_come_up_with_a_proper_naming_scheme_later";
     public Material skybox;
 
     // Store all temperature information
@@ -48,7 +51,7 @@ public class World
         // Creates an empty world.
         SetupWorld(width, height, depth);
         int seed = UnityEngine.Random.Range(0, int.MaxValue);
-        WorldGenerator.Generate(this, seed);
+        WorldGenerator.Instance.Generate(this, seed);
         Debug.ULogChannel("World", "Generated World");
 
         tileGraph = new Path_TileGraph(this);
@@ -298,6 +301,7 @@ public class World
         worldJson.Add("Inventories", InventoryManager.ToJson());
         worldJson.Add("Furnitures", FurnitureManager.ToJson());
         worldJson.Add("Utilities", UtilityManager.ToJson());
+        worldJson.Add("RoomBehaviors", RoomManager.BehaviorsToJson());
         worldJson.Add("Characters", CharacterManager.ToJson());
         worldJson.Add("CameraData", CameraData.ToJson());
         worldJson.Add("Skybox", skybox.name);
@@ -321,6 +325,7 @@ public class World
         InventoryManager.FromJson(worldJson["Inventories"]);
         FurnitureManager.FromJson(worldJson["Furnitures"]);
         UtilityManager.FromJson(worldJson["Utilities"]);
+        RoomManager.BehaviorsFromJson(worldJson["RoomBehaviors"]);
         CharacterManager.FromJson(worldJson["Characters"]);
         CameraData.FromJson(worldJson["CameraData"]);
         LoadSkybox((string)worldJson["Skybox"]);
@@ -429,6 +434,7 @@ public class World
     {
         CharacterManager.Update(deltaTime);
         FurnitureManager.TickEveryFrame(deltaTime);
+        UtilityManager.TickEveryFrame(deltaTime);
         GameEventManager.Update(deltaTime);
         ShipManager.Update(deltaTime);
     }
@@ -440,6 +446,7 @@ public class World
     private void TickFixedFrequency(float deltaTime)
     {
         FurnitureManager.TickFixedFrequency(deltaTime);
+        UtilityManager.TickFixedFrequency(deltaTime);
 
         // Progress temperature modelling
         temperature.Update();
@@ -447,7 +454,7 @@ public class World
     }
 
     /// <summary>
-    /// Called when a furniture is created so that we can regenerate the til graph.
+    /// Called when a furniture is created so that we can regenerate the tile graph.
     /// </summary>
     /// <param name="furniture">Furniture.</param>
     private void OnFurnitureCreated(Furniture furniture)

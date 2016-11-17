@@ -36,7 +36,7 @@ namespace DeveloperConsole
         /// </remarks>
         public static void Run_LUA(string code)
         {
-            new LuaFunctions().RunText_Unsafe(code);
+            new LuaFunctions().LoadScript(code, "User Script");
         }
 
         public static void Help()
@@ -184,12 +184,12 @@ namespace DeveloperConsole
 
         public static void GetTemperature(Vector3 pos)
         {
-            DevConsole.Log("Temperature: " + GetCurrentWorld().temperature.GetTemperature((int)pos.x, (int)pos.y, (int)pos.z));
+            DevConsole.Log("Temperature: " + GetCurrentWorld().temperature.GetTemperature((int)pos.x, (int)pos.y, (int)pos.z), "green");
         }
 
         public static void GetThermallDiffusivity(Vector3 pos)
         {
-            DevConsole.Log("Thermal Diffusivity: " + GetCurrentWorld().temperature.GetThermalDiffusivity((int)pos.x, (int)pos.y, (int)pos.z));
+            DevConsole.Log("Thermal Diffusivity: " + GetCurrentWorld().temperature.GetThermalDiffusivity((int)pos.x, (int)pos.y, (int)pos.z), "green");
         }
 
         public static void FloodFillRoomAt(Vector3 pos)
@@ -199,9 +199,10 @@ namespace DeveloperConsole
 
         public static void GetAllRoomIDs()
         {
+            DevConsole.Log("Room IDs:");
             foreach (Room room in GetCurrentWorld().RoomManager)
             {
-                DevConsole.Log("Room " + room.ID);
+                DevConsole.Log("Room " + room.ID, "green");
             }
         }
 
@@ -234,7 +235,7 @@ namespace DeveloperConsole
         {
             foreach (Character character in GetCurrentWorld().CharacterManager)
             {
-                DevConsole.Log("Say hello to " + character.GetName());
+                DevConsole.Log("Say hello to " + character.GetName(), "green");
             }
         }
 

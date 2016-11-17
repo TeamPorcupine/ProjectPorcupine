@@ -11,7 +11,7 @@ using System;
 using MoonSharp.Interpreter;
 using ProjectPorcupine.PowerNetwork;
 
-public class LuaFunctions
+public class LuaFunctions : IFunctions
 {
     protected Script script;
     private string scriptName;
@@ -45,21 +45,7 @@ public class LuaFunctions
         RegisterGlobal(typeof(DeveloperConsole.DevConsole));
     }
 
-    /// <summary>
-    /// Registers a class as a global entity to use it inside of lua.
-    /// </summary>
-    /// <param name="type">Class typeof.</param>
-    public void RegisterGlobal(Type type)
-    {
-        script.Globals[type.Name] = type;
-    }
-
-    /// <summary>
-    /// Determines whether there is a Lua global with the given name.
-    /// </summary>
-    /// <returns><c>true</c> if there is a global with the given name; otherwise, <c>false</c>.</returns>
-    /// <param name="name">The global name.</param>
-    public bool HasGlobal(string name)
+    public bool HasFunction(string name)
     {
         return name != null && script.Globals[name] != null;
     }
@@ -85,17 +71,14 @@ public class LuaFunctions
         return true;
     }
 
-    /// <summary>
-    /// Loads the script from the specified text.
-    /// </summary>
-    /// <param name="text">The code text.</param>
-    /// <exception cref="Exception">Throws exception depending on LUA.</exception>
-    /// <remarks>This is unsafe and can throw exceptions.</remarks>
-    public bool RunText_Unsafe(string text)
+    public DynValue CallWithError(string functionName, params object[] args)
     {
-        script.DoString(text);
+        return Call(functionName, true, args);
+    }
 
-        return true;
+    public DynValue Call(string functionName, params object[] args)
+    {
+        return Call(functionName, false, args);
     }
 
     /// <summary>
@@ -103,15 +86,9 @@ public class LuaFunctions
     /// </summary>
     /// <param name="functionName">Function name.</param>
     /// <param name="args">Arguments.</param>
-    public DynValue Call(string functionName, params object[] args)
+    private DynValue Call(string functionName, bool throwError, params object[] args)
     {
         object func = script.Globals[functionName];
-
-        if (func == null)
-        {
-            Debug.ULogChannel("Lua", "'" + functionName + "' is not a LUA function!");
-            return null;
-        }
 
         try
         {
@@ -124,23 +101,9 @@ public class LuaFunctions
         }
     }
 
-    /// <summary>
-    /// Call the specified lua function with the specified args.
-    /// </summary>
-    /// <param name="functionName">Function name.</param>
-    /// <param name="args">Arguments.</param>
-    /// <exception cref="Exception">Throws exception depending on LUA.</exception>
-    /// <remarks>This is unsafe and can throw exceptions.</remarks>
-    public DynValue Call_Unsafe(string functionName, params object[] args)
+    public T Call<T>(string functionName, params object[] args)
     {
-        object func = script.Globals[functionName];
-
-        if (func == null)
-        {
-            throw new Exception("'" + functionName + "' is not a LUA function!");
-        }
-
-        return script.Call(func, args);
+        return Call(functionName, args).ToObject<T>();
     }
 
     /// <summary>
@@ -178,5 +141,19 @@ public class LuaFunctions
                 Debug.ULogErrorChannel("Lua", "[" + scriptName + "] LUA RunTime error: " + e.DecoratedMessage);
             }
         }
+    }
+
+    public void RegisterType(Type type)
+    {
+        RegisterGlobal(type);
+    }
+
+    /// <summary>
+    /// Registers a class as a global entity to use it inside of lua.
+    /// </summary>
+    /// <param name="type">Class typeof.</param>
+    private void RegisterGlobal(Type type)
+    {
+        script.Globals[type.Name] = type;
     }
 }

@@ -156,7 +156,7 @@ public class BuildModeController
                     Debug.ULogErrorChannel("BuildModeController", "There is no furniture job prototype for '" + furnitureType + "'");
                     job = new Job(tile, furnitureType, World.Current.FurnitureManager.ConstructJobCompleted, 0.1f, null, Job.JobPriority.High);
                     job.adjacent = true;
-                    job.JobDescription = "job_build_" + furnitureType + "_desc";
+                    job.Description = "job_build_" + furnitureType + "_desc";
                 }
 
                 Furniture furnituteToBuild = PrototypeManager.Furniture.Get(furnitureType).Clone();
@@ -233,7 +233,7 @@ public class BuildModeController
                 {
                     Debug.ULogErrorChannel("BuildModeController", "There is no furniture job prototype for '" + utilityType + "'");
                     job = new Job(tile, utilityType, World.Current.UtilityManager.ConstructJobCompleted, 0.1f, null, Job.JobPriority.High);
-                    job.JobDescription = "job_build_" + utilityType + "_desc";
+                    job.Description = "job_build_" + utilityType + "_desc";
                 }
 
                 job.buildablePrototype = PrototypeManager.Utility.Get(utilityType);
@@ -241,7 +241,7 @@ public class BuildModeController
                 // Add the job to the queue or build immediately if in dev mode
                 if (CommandSettings.DeveloperModeToggle)
                 {
-                    World.Current.UtilityManager.PlaceUtility(job.JobObjectType, job.tile);
+                    World.Current.UtilityManager.PlaceUtility(job.Type, job.tile, true);
                 }
                 else
                 {
@@ -282,7 +282,7 @@ public class BuildModeController
                 }
                 else
                 {
-                    buildingJob.OnJobStopped += (theJob) => theJob.tile.PendingBuildJobs = null;
+                    buildingJob.OnJobStopped += (theJob) => theJob.tile.PendingBuildJobs.Remove(theJob);
 
                     WorldController.Instance.World.jobQueue.Enqueue(buildingJob);
                 }
