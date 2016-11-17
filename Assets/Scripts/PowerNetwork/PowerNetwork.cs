@@ -50,7 +50,7 @@ namespace ProjectPorcupine.PowerNetwork
                 powerGrids.Add(new Grid());
             }
 
-            Grid powerGrid = powerGrids.FirstOrDefault(grid => grid.CanPlugIn(connection));
+            Grid powerGrid = powerGrids.First(grid => grid.CanPlugIn(connection));
             return PlugIn(connection, powerGrid);
         }
 
@@ -59,6 +59,11 @@ namespace ProjectPorcupine.PowerNetwork
             if (connection == null)
             {
                 throw new ArgumentNullException("connection");
+            }
+
+            if (!powerGrids.Contains(grid))
+            {
+                powerGrids.Add(grid);
             }
 
             return grid != null && grid.PlugIn(connection);
@@ -98,6 +103,31 @@ namespace ProjectPorcupine.PowerNetwork
             Unplug(connection, grid);
         }
 
+        public void RegisterGrid(Grid grid)
+        {
+            if (powerGrids.Contains(grid))
+            {
+                return;
+            }
+
+            powerGrids.Add(grid);
+        }
+
+        public void UnregisterGrid(Grid grid)
+        {
+            if (!powerGrids.Contains(grid))
+            {
+                return;
+            }
+
+            powerGrids.Remove(grid);
+        }
+
+        public int FindId(Grid grid)
+        {
+            return powerGrids.ToList().IndexOf(grid);
+        }
+
         public void Unplug(IPlugable connection, Grid grid)
         {
             if (connection == null)
@@ -132,6 +162,11 @@ namespace ProjectPorcupine.PowerNetwork
             Tick();
         }
 
+        public void RemoveGrid(Grid grid)
+        {
+            powerGrids.Remove(grid);
+        }
+
         private void Tick()
         {
             if (IsEmpty)
@@ -139,7 +174,6 @@ namespace ProjectPorcupine.PowerNetwork
                 return;
             }
 
-            powerGrids.RemoveWhere(grid => grid.IsEmpty);
             foreach (Grid powerGrid in powerGrids)
             {
                 powerGrid.Tick();

@@ -33,6 +33,8 @@ namespace ProjectPorcupine.PowerNetwork
 
         public event Action<Connection> NewThresholdReached;
 
+        public event Action Reconnecting;
+
         /// <summary>
         /// Amount of power consumed by this connection per Tick of system
         /// Accumulator: rate of charge.
@@ -104,6 +106,14 @@ namespace ProjectPorcupine.PowerNetwork
         public bool IsPowerAccumulator
         {
             get { return Capacity > 0.0f; }
+        }
+
+        public void Reconnect()
+        {
+            if (Reconnecting != null)
+            {
+                Reconnecting();
+            }
         }
 
         public XmlSchema GetSchema()

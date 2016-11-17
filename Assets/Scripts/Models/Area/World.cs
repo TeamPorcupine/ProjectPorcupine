@@ -19,6 +19,9 @@ using UnityEngine;
 [MoonSharpUserData]
 public class World
 {
+    // TODO: Should this be also saved with the world data?
+    // If so - beginner task!
+    public readonly string GameVersion = "Someone_will_come_up_with_a_proper_naming_scheme_later";
     public Material skybox;
 
     // Store all temperature information
@@ -48,7 +51,7 @@ public class World
         // Creates an empty world.
         SetupWorld(width, height, depth);
         int seed = UnityEngine.Random.Range(0, int.MaxValue);
-        WorldGenerator.Generate(this, seed);
+        WorldGenerator.Instance.Generate(this, seed);
         Debug.ULogChannel("World", "Generated World");
 
         tileGraph = new Path_TileGraph(this);
@@ -431,6 +434,7 @@ public class World
     {
         CharacterManager.Update(deltaTime);
         FurnitureManager.TickEveryFrame(deltaTime);
+        UtilityManager.TickEveryFrame(deltaTime);
         GameEventManager.Update(deltaTime);
         ShipManager.Update(deltaTime);
     }
@@ -442,6 +446,7 @@ public class World
     private void TickFixedFrequency(float deltaTime)
     {
         FurnitureManager.TickFixedFrequency(deltaTime);
+        UtilityManager.TickFixedFrequency(deltaTime);
 
         // Progress temperature modelling
         temperature.Update();

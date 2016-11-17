@@ -146,7 +146,7 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
 
         // FIXME: I don't like having to manually and explicitly set
         // flags that preven conflicts. It's too easy to forget to set/clear them!
-        theJob.tile.PendingBuildJobs = null;
+        theJob.tile.PendingBuildJobs.Remove(theJob);
     }
 
     public void SetTileType(TileType newTileType, bool doRoomFloodFill = true)
@@ -357,26 +357,26 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
     /// <param name="nullOkay">Is returning null tiles okay?.</param>
     public Tile[] GetNeighbours(bool diagOkay = false, bool vertOkay = false, bool nullOkay = false)
     {
-        Tile[] tiles = diagOkay == false ? new Tile[6] : new Tile[10];
+        Tile[] tiles = new Tile[10];
         tiles[0] = World.Current.GetTileAt(X, Y + 1, Z);
         tiles[1] = World.Current.GetTileAt(X + 1, Y, Z);
         tiles[2] = World.Current.GetTileAt(X, Y - 1, Z);
         tiles[3] = World.Current.GetTileAt(X - 1, Y, Z);
 
+        if (diagOkay == true)
+        {
+            tiles[4] = World.Current.GetTileAt(X + 1, Y + 1, Z);
+            tiles[5] = World.Current.GetTileAt(X + 1, Y - 1, Z);
+            tiles[6] = World.Current.GetTileAt(X - 1, Y - 1, Z);
+            tiles[7] = World.Current.GetTileAt(X - 1, Y + 1, Z);
+        }
+
         // FIXME: This is a bit of a dirty hack, but it works for preventing characters from phasing through the floor for now.
         if (vertOkay)
         {
             Tile[] vertTiles = GetVerticalNeighbors(true);
-            tiles[4] = vertTiles[0];
-            tiles[5] = vertTiles[1];
-        }
-
-        if (diagOkay == true)
-        {
-            tiles[6] = World.Current.GetTileAt(X + 1, Y + 1, Z);
-            tiles[7] = World.Current.GetTileAt(X + 1, Y - 1, Z);
-            tiles[8] = World.Current.GetTileAt(X - 1, Y - 1, Z);
-            tiles[9] = World.Current.GetTileAt(X - 1, Y + 1, Z);
+            tiles[8] = vertTiles[0];
+            tiles[9] = vertTiles[1];
         }
 
         if (!nullOkay)
@@ -506,6 +506,25 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
     public Tile Down()
     {
         return World.Current.GetTileAt(X, Y, Z + 1);
+    }
+
+    public Room GetNearestAdjacentRoom()
+    {
+        if (Room != null)
+        {
+            return this.Room;
+        }
+
+        // Using GetNeighbors we will prefer tiles linearally adjacent, then diagonal, and only then vertical
+        foreach (Tile neighbor in GetNeighbours(true, true))
+        {
+            if (neighbor.Room != null)
+            {
+                return neighbor.Room;
+            }
+        }
+
+        return null;
     }
 
     public Enterability IsEnterable()

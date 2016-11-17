@@ -13,7 +13,9 @@ using System.Xml;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
 using Newtonsoft.Json.Linq;
+using ProjectPorcupine.Buildable.Components;
 using ProjectPorcupine.Jobs;
+using ProjectPorcupine.PowerNetwork;
 using UnityEngine;
 
 /// <summary>
@@ -24,6 +26,8 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
 {
     // Prevent construction too close to the world's edge
     private const int MinEdgeDistance = 5;
+
+    private bool gridUpdatedThisFrame = false;
 
     /// <summary>
     /// This action is called to get the sprite name based on the utility parameters.
@@ -46,7 +50,6 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
 
     private List<Inventory> deconstructInventory;
 
-    /// TODO: Implement object rotation
     /// <summary>
     /// Initializes a new instance of the <see cref="Utility"/> class.
     /// </summary>
@@ -219,12 +222,20 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
     public bool IsBeingDestroyed { get; protected set; }
 
     /// <summary>
+    /// Gets or sets the grid used by this utility.
+    /// </summary>
+    /// <value>The grid used by this utility.</value>
+    public Grid Grid { get; set; }
+
+    /// <summary>
     /// Used to place utility in a certain position.
     /// </summary>
     /// <param name="proto">The prototype utility to place.</param>
     /// <param name="tile">The base tile to place the utility on, The tile will be the bottom left corner of the utility (to check).</param>
+    /// <param name="skipGridUpdate">If true, the grid won't be updated from neighboring Utilities, UpdateGrid must be called on at least one
+    /// utility connected to this utility for them to network properly.</param>
     /// <returns>Utility object.</returns>
-    public static Utility PlaceInstance(Utility proto, Tile tile)
+    public static Utility PlaceInstance(Utility proto, Tile tile, bool skipGridUpdate = false)
     {
         if (proto.IsValidPosition(tile) == false)
         {
@@ -246,32 +257,41 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
             return null;
         }
 
-        // This type of utility links itself to its neighbours,
+        // All utilities link to neighbors of the same type,
         // so we should inform our neighbours that they have a new
         // buddy.  Just trigger their OnChangedCallback.
-        int x = tile.X;
-        int y = tile.Y;
-
-        for (int xpos = x - 1; xpos < x + 2; xpos++)
+        foreach (Tile neighbor in obj.Tile.GetNeighbours())
         {
-            for (int ypos = y - 1; ypos < y + 2; ypos++)
+            if (neighbor.Utilities != null && neighbor.Utilities.ContainsKey(obj.Name))
             {
-                Tile tileAt = World.Current.GetTileAt(xpos, ypos, tile.Z);
-                if (tileAt != null && tileAt.Utilities != null)
+                Utility utility = neighbor.Utilities[obj.Name];
+                if (utility.Changed != null)
                 {
-                    foreach (Utility utility in tileAt.Utilities.Values)
-                    {
-                        if (utility.Changed != null)
-                        {
-                            utility.Changed(utility);
-                        }
-                    }
+                    utility.Changed(utility);
                 }
             }
         }
 
+        if (!skipGridUpdate)
+        {
+            obj.UpdateGrid(obj);
+        }
+        else
+        {
+            // If we're skipping the update, we need a temporary grid for furniture in the same tile to connect to.
+            obj.Grid = new Grid();
+            World.Current.PowerNetwork.RegisterGrid(obj.Grid);
+        }
+
+        if (obj.Tile != null && obj.Tile.Furniture != null && obj.Tile.Furniture.GetComponent<PowerConnection>("PowerConnection") != null)
+        {
+            // HACK: This will work for now, but needs expanded when we have other types of connections we'll want to plug in
+            obj.Tile.Furniture.GetComponent<PowerConnection>("PowerConnection").Reconnect();
+        }
+
         // Call LUA install scripts
         obj.EventActions.Trigger("OnInstall", obj);
+
         return obj;
     }
 
@@ -280,7 +300,17 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
     /// This checks if the utility is a PowerConsumer, and if it does not have power it cancels its job.
     /// </summary>
     /// <param name="deltaTime">The time since the last update was called.</param>
-    public void Update(float deltaTime)
+    public void EveryFrameUpdate(float deltaTime)
+    {
+        gridUpdatedThisFrame = false;
+    }
+
+    /// <summary>
+    /// This function is called to update the utility. This will also trigger EventsActions.
+    /// This checks if the utility is a PowerConsumer, and if it does not have power it cancels its job.
+    /// </summary>
+    /// <param name="deltaTime">The time since the last update was called.</param>
+    public void FixedFrequencyUpdate(float deltaTime)
     {
         if (EventActions != null)
         {
@@ -446,12 +476,13 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
     /// </summary>
     public void Deconstruct()
     {
-        int x = Tile.X;
-        int y = Tile.Y;
         if (Tile.Utilities != null)
         {
             Jobs.CancelAll();
         }
+
+        // Just unregister our grid, it will get reregistered if there are any other utilities on this grid
+        World.Current.PowerNetwork.RemoveGrid(Grid);
 
         // We call lua to decostruct
         EventActions.Trigger("OnUninstall", this);
@@ -471,24 +502,25 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
             }
         }
 
-        // We should inform our neighbours that they have just lost a
-        // neighbour regardless of type.
+        // We should inform our neighbours that they have just lost a neighbour.
         // Just trigger their OnChangedCallback.
-        for (int xpos = x - 1; xpos < x + 2; xpos++)
+        foreach (Tile neighbor in Tile.GetNeighbours())
         {
-            for (int ypos = y - 1; ypos < y + 2; ypos++)
+            if (neighbor.Utilities != null && neighbor.Utilities.ContainsKey(this.Name))
             {
-                Tile tileAt = World.Current.GetTileAt(xpos, ypos, Tile.Z);
-                if (tileAt != null && tileAt.Utilities != null)
+                Utility neighborUtility = neighbor.Utilities[this.Name];
+                if (neighborUtility.Changed != null)
                 {
-                    foreach (Utility neighborUtility in tileAt.Utilities.Values)
-                    {
-                        if (neighborUtility.Changed != null)
-                        {
-                            neighborUtility.Changed(neighborUtility);
-                        }
-                    }
+                    neighborUtility.Changed(neighborUtility);
                 }
+
+                if (neighborUtility.Grid == this.Grid)
+                {
+                    neighborUtility.Grid = new Grid();
+                }
+
+                neighborUtility.UpdateGrid(neighborUtility);
+                neighborUtility.Grid.Split();
             }
         }
 
@@ -637,6 +669,73 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
         }
 
         return true;
+    }
+
+    /// <summary>
+    /// Updates the grids of this utility sharing the grids along the network of connected utilities.
+    /// </summary>
+    /// <param name="utilityToUpdate">Utility to update.</param>
+    /// <param name="newGrid">If not null this will force neighboring utilities to use the specified Instance of Grid.</param>
+    public void UpdateGrid(Utility utilityToUpdate, Grid newGrid = null)
+    {
+        if (gridUpdatedThisFrame)
+        {
+            return;
+        }
+
+        gridUpdatedThisFrame = true;
+        Grid oldGrid = utilityToUpdate.Grid;
+
+        World.Current.PowerNetwork.RemoveGrid(utilityToUpdate.Grid);
+
+        if (newGrid == null)
+        {
+            foreach (Tile neighborTile in utilityToUpdate.Tile.GetNeighbours())
+            {
+                if (neighborTile != null && neighborTile.Utilities != null && neighborTile.Utilities.ContainsKey(this.Name))
+                {
+                    Utility utility = neighborTile.Utilities[this.Name];
+
+                    if (utility.Grid != null && utilityToUpdate.Grid == null)
+                    {
+                        utilityToUpdate.Grid = utility.Grid;
+                    }
+                }
+            }
+
+            if (utilityToUpdate.Grid == null)
+            {
+                utilityToUpdate.Grid = new Grid();
+            }
+        }
+        else
+        {
+            utilityToUpdate.Grid = newGrid;
+        }
+
+        if (utilityToUpdate.Grid != oldGrid)
+        {
+            World.Current.PowerNetwork.UnregisterGrid(oldGrid);
+        }
+
+        if (oldGrid != null && newGrid != null)
+        {
+            newGrid.Merge(oldGrid);
+        }
+
+        World.Current.PowerNetwork.RegisterGrid(utilityToUpdate.Grid);
+
+        foreach (Tile neighborTile in utilityToUpdate.Tile.GetNeighbours())
+        {
+            if (neighborTile != null && neighborTile.Utilities != null)
+            {
+                if (neighborTile != null && neighborTile.Utilities != null && neighborTile.Utilities.ContainsKey(this.Name))
+                {
+                    Utility utility = neighborTile.Utilities[this.Name];
+                    utility.UpdateGrid(utility, utilityToUpdate.Grid);
+                }
+            }
+        }
     }
 
     public object ToJSon()

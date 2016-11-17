@@ -241,7 +241,7 @@ public class BuildModeController
                 // Add the job to the queue or build immediately if in dev mode
                 if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
                 {
-                    World.Current.UtilityManager.PlaceUtility(job.Type, job.tile);
+                    World.Current.UtilityManager.PlaceUtility(job.Type, job.tile, true);
                 }
                 else
                 {
@@ -282,7 +282,7 @@ public class BuildModeController
                 }
                 else
                 {
-                    buildingJob.OnJobStopped += (theJob) => theJob.tile.PendingBuildJobs = null;
+                    buildingJob.OnJobStopped += (theJob) => theJob.tile.PendingBuildJobs.Remove(theJob);
 
                     WorldController.Instance.World.jobQueue.Enqueue(buildingJob);
                 }

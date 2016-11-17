@@ -8,6 +8,7 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Xml;
 using System.Xml.Serialization;
@@ -97,6 +98,18 @@ namespace ProjectPorcupine.Buildable.Components
             }
         }
 
+        /// <summary>
+        /// Initializes after loading the prototype.
+        /// </summary>
+        /// <param name="protoFurniture">Reference to prototype of furniture.</param>
+        public virtual void InitializePrototype(Furniture protoFurniture)
+        {
+        }
+
+        /// <summary>
+        /// Initializes after placed into world.
+        /// </summary>
+        /// <param name="parentFurniture">Reference to furniture placed in world.</param>
         public void Initialize(Furniture parentFurniture)
         {
             ParentFurniture = parentFurniture;
@@ -186,7 +199,7 @@ namespace ProjectPorcupine.Buildable.Components
         {
             componentTypes = new Dictionary<string, System.Type>();
 
-            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies().Where(asm => !CSharpFunctions.IsDynamic(asm)))
             {
                 foreach (Type type in assembly.GetTypes())
                 {
