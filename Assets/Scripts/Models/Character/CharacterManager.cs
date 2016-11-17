@@ -5,7 +5,6 @@
 // and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
-
 #endregion
 using System;
 using System.Collections;
@@ -20,7 +19,7 @@ using UnityEngine;
 [MoonSharpUserData]
 public class CharacterManager : IEnumerable<Character>
 {
-    private List<Character> characters;
+    public List<Character> characters;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CharacterManager"/> class.

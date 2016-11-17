@@ -181,9 +181,9 @@ public class BuildableComponentTest
     }
 
     [Test]
-    public void TestAnimatorSerialization()
+    public void TestVisualsSerialization()
     {
-        Animator animator = new Animator()
+        Visuals visuals = new Visuals()
         {
             UsedAnimations = new System.Collections.Generic.List<BuildableComponent.UseAnimation>()
             {
@@ -222,9 +222,9 @@ public class BuildableComponentTest
 
         // serialize
         StringWriter writer = new StringWriter();
-        XmlSerializer serializer = new XmlSerializer(typeof(BuildableComponent), new Type[] { typeof(Animator) });
+        XmlSerializer serializer = new XmlSerializer(typeof(BuildableComponent), new Type[] { typeof(Visuals) });
 
-        serializer.Serialize(writer, animator);
+        serializer.Serialize(writer, visuals);
 
         StringReader sr = new StringReader(writer.ToString());
 
@@ -232,7 +232,7 @@ public class BuildableComponentTest
         ////File.WriteAllText("Animator.xml", writer.ToString());
 
         // deserialize
-        Animator deserializedAnimator = (Animator)serializer.Deserialize(sr);
+        Visuals deserializedAnimator = (Visuals)serializer.Deserialize(sr);
 
         Assert.NotNull(deserializedAnimator);        
     }

@@ -5,7 +5,6 @@
 // and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
-
 #endregion
 using System;
 using System.IO;
@@ -20,6 +19,9 @@ using UnityEngine;
 [MoonSharpUserData]
 public class World
 {
+    // TODO: Should this be also saved with the world data?
+    // If so - beginner task!
+    public readonly string GameVersion = "Someone_will_come_up_with_a_proper_naming_scheme_later";
     public Material skybox;
 
     // Store all temperature information
@@ -28,7 +30,7 @@ public class World
     // The pathfinding graph used to navigate our world map.
     public Path_TileGraph tileGraph;
     public Path_RoomGraph roomGraph;
-    
+
     // TODO: Most likely this will be replaced with a dedicated
     // class for managing job queues (plural!) that might also
     // be semi-static or self initializing or some damn thing.
@@ -49,7 +51,7 @@ public class World
         // Creates an empty world.
         SetupWorld(width, height, depth);
         int seed = UnityEngine.Random.Range(0, int.MaxValue);
-        WorldGenerator.Generate(this, seed);
+        WorldGenerator.Instance.Generate(this, seed);
         Debug.ULogChannel("World", "Generated World");
 
         tileGraph = new Path_TileGraph(this);
@@ -98,7 +100,7 @@ public class World
 
     // The tile depth of the world
     public int Depth { get; protected set; }
-    
+
     /// <summary>
     /// Gets the inventory manager.
     /// </summary>
@@ -172,7 +174,7 @@ public class World
     /// The invisible enities can be updated less frequent for better performance.
     /// </summary>
     public void OnCameraMoved(Bounds cameraBounds)
-    {        
+    {
         FurnitureManager.OnCameraMoved(cameraBounds);
     }
 
@@ -224,8 +226,8 @@ public class World
         }
 
         GetTileAt(
-            tile.X + (int)furniture.Jobs.WorkSpotOffset.x, 
-            tile.Y + (int)furniture.Jobs.WorkSpotOffset.y, 
+            tile.X + (int)furniture.Jobs.WorkSpotOffset.x,
+            tile.Y + (int)furniture.Jobs.WorkSpotOffset.y,
             tile.Z)
             .ReservedAsWorkSpotBy.Add(furniture);
     }
@@ -243,7 +245,7 @@ public class World
         }
 
         World.Current.GetTileAt(
-            tile.X + (int)furniture.Jobs.WorkSpotOffset.x, 
+            tile.X + (int)furniture.Jobs.WorkSpotOffset.x,
             tile.Y + (int)furniture.Jobs.WorkSpotOffset.y,
             tile.Z)
             .ReservedAsWorkSpotBy.Remove(furniture);
@@ -299,6 +301,7 @@ public class World
         worldJson.Add("Inventories", InventoryManager.ToJson());
         worldJson.Add("Furnitures", FurnitureManager.ToJson());
         worldJson.Add("Utilities", UtilityManager.ToJson());
+        worldJson.Add("RoomBehaviors", RoomManager.BehaviorsToJson());
         worldJson.Add("Characters", CharacterManager.ToJson());
         worldJson.Add("CameraData", CameraData.ToJson());
         worldJson.Add("Skybox", skybox.name);
@@ -322,6 +325,7 @@ public class World
         InventoryManager.FromJson(worldJson["Inventories"]);
         FurnitureManager.FromJson(worldJson["Furnitures"]);
         UtilityManager.FromJson(worldJson["Utilities"]);
+        RoomManager.BehaviorsFromJson(worldJson["RoomBehaviors"]);
         CharacterManager.FromJson(worldJson["Characters"]);
         CameraData.FromJson(worldJson["CameraData"]);
         LoadSkybox((string)worldJson["Skybox"]);
@@ -430,6 +434,7 @@ public class World
     {
         CharacterManager.Update(deltaTime);
         FurnitureManager.TickEveryFrame(deltaTime);
+        UtilityManager.TickEveryFrame(deltaTime);
         GameEventManager.Update(deltaTime);
         ShipManager.Update(deltaTime);
     }
@@ -441,6 +446,7 @@ public class World
     private void TickFixedFrequency(float deltaTime)
     {
         FurnitureManager.TickFixedFrequency(deltaTime);
+        UtilityManager.TickFixedFrequency(deltaTime);
 
         // Progress temperature modelling
         temperature.Update();
@@ -448,7 +454,7 @@ public class World
     }
 
     /// <summary>
-    /// Called when a furniture is created so that we can regenerate the til graph.
+    /// Called when a furniture is created so that we can regenerate the tile graph.
     /// </summary>
     /// <param name="furniture">Furniture.</param>
     private void OnFurnitureCreated(Furniture furniture)
@@ -461,7 +467,7 @@ public class World
             // occasionally avoid invalidating pathfinding graphs.
             // InvalidateTileGraph();    // Reset the pathfinding system
             if (tileGraph != null)
-            {   
+            {
                 tileGraph.RegenerateGraphAtTile(furniture.Tile);
             }
         }
@@ -579,15 +585,15 @@ public class World
                             continue;
                         }
 
-                        if (node.edges[0].node.data != world.RoomManager[4] || node.edges[1].node.data != world.RoomManager[7] || 
+                        if (node.edges[0].node.data != world.RoomManager[4] || node.edges[1].node.data != world.RoomManager[7] ||
                             node.edges[2].node.data != world.RoomManager[1] || node.edges[3].node.data != world.RoomManager[2])
                         {
                             Debug.ULogErrorChannel("Path_RoomGraph", "Room 3 supposed to have edges to Rooms 4, 7, 1, and 2");
                             string errorMessage = string.Format(
-                                "Instead has: {0}, {1}, {2}, and {3}", 
-                                node.edges[0].node.data.ID, 
-                                node.edges[1].node.data.ID, 
-                                node.edges[2].node.data.ID, 
+                                "Instead has: {0}, {1}, {2}, and {3}",
+                                node.edges[0].node.data.ID,
+                                node.edges[1].node.data.ID,
+                                node.edges[2].node.data.ID,
                                 node.edges[3].node.data.ID);
                             Debug.ULogErrorChannel("Path_RoomGraph", errorMessage);
                             errorCount++;

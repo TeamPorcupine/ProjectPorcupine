@@ -35,6 +35,21 @@ namespace ProjectPorcupine.PowerNetwork
             get { return connections.Count == 0; }
         }
 
+        /// <summary>
+        /// Gets the number of connections to this grid.
+        /// </summary>
+        public int ConnectionCount
+        {
+            get 
+            {
+                return connections.Count; 
+            }
+        }
+
+        /// <summary>
+        /// Determines whether the connection can plug into this grid.
+        /// </summary>
+        /// <returns><c>true</c> if the connection can plug into this grid; otherwise, <c>false</c>.</returns>
         public bool CanPlugIn(IPlugable connection)
         {
             if (connection == null)
@@ -45,6 +60,11 @@ namespace ProjectPorcupine.PowerNetwork
             return true;
         }
 
+        /// <summary>
+        /// Plugs the IPlugable into this grid.
+        /// </summary>
+        /// <returns><c>true</c>, if in was plugged, <c>false</c> otherwise.</returns>
+        /// <param name="connection">IPlugable to be plugged in.</param>
         public bool PlugIn(IPlugable connection)
         {
             if (connection == null)
@@ -61,6 +81,10 @@ namespace ProjectPorcupine.PowerNetwork
             return true;
         }
 
+        /// <summary>
+        /// Determines whether the connection is plugged into this Grid.
+        /// </summary>
+        /// <returns><c>true</c> if the connection is plugged into this Grid; otherwise, <c>false</c>.</returns>
         public bool IsPluggedIn(IPlugable connection)
         {
             if (connection == null)
@@ -71,6 +95,10 @@ namespace ProjectPorcupine.PowerNetwork
             return connections.Contains(connection);
         }
 
+        /// <summary>
+        /// Unplug the specified IPlugable from this Grid.
+        /// </summary>
+        /// <param name="connection">IPlugable to be unplugged.</param>
         public void Unplug(IPlugable connection)
         {
             if (connection == null)
@@ -113,6 +141,37 @@ namespace ProjectPorcupine.PowerNetwork
             }
 
             IsOperating = currentPowerLevel >= 0.0f;
+        }
+
+        /// <summary>
+        /// Gets the ID for this grid within the PowerNetwork.
+        /// </summary>
+        /// <returns>The ID number.</returns>
+        public int GetId()
+        {
+            return World.Current.PowerNetwork.FindId(this);
+        }
+
+        /// <summary>
+        /// Merge the specified Grid with this Grid.
+        /// </summary>
+        /// <param name="otherGrid">Other grid to be merged.</param>
+        public void Merge(Grid otherGrid)
+        {
+            connections.UnionWith(otherGrid.connections);
+        }
+
+        /// <summary>
+        /// Split this Grid into multiple grids.
+        /// </summary>
+        public void Split()
+        {
+            IPlugable[] tempConnections = (IPlugable[])connections.ToArray().Clone();
+            connections.Clear();
+            foreach (IPlugable connection in tempConnections)
+            {
+                connection.Reconnect();
+            }
         }
 
         private void ChargeAccumulators(ref float currentPowerLevel)

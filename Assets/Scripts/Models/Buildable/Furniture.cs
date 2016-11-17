@@ -5,7 +5,6 @@
 // and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
-
 #endregion
 using System;
 using System.Collections.Generic;
@@ -31,12 +30,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     private const int MinEdgeDistance = 5;
 
     private string isEnterableAction;
-
-    /// <summary>
-    /// This action is called to get the sprite name based on the furniture parameters.
-    /// </summary>
-    private string getSpriteNameAction;
-
+    
     /// <summary>
     /// This action is called to get the progress info based on the furniture parameters.
     /// </summary>
@@ -48,7 +42,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     /// These context menu lua action are used to build the context menu of the furniture.
     /// </summary>
     private List<ContextMenuLuaAction> contextMenuLuaActions;
-    
+
     private HashSet<BuildableComponent> components;
 
     // This is the generic type of object this is, allowing things to interact with it based on it's generic type
@@ -152,7 +146,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         }
 
         isEnterableAction = other.isEnterableAction;
-        getSpriteNameAction = other.getSpriteNameAction;
+
         getProgressInfoNameAction = other.getProgressInfoNameAction;
 
         tileTypeBuildPermissions = new HashSet<string>(other.tileTypeBuildPermissions);
@@ -199,7 +193,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     /// </summary>
     /// <value>The Color of the furniture.</value>
     public Color Tint { get; set; }
-        
+
     /// <summary>
     /// Gets or sets a value indicating whether the door is Vertical or not.
     /// Should be false if the furniture is not a door.
@@ -215,7 +209,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     /// </summary>
     /// <value>The event actions that is called on update.</value>
     public EventActions EventActions { get; private set; }
-    
+
     /// <summary>
     /// Gets a value indicating whether the furniture is operating or not.
     /// </summary>
@@ -343,6 +337,21 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     public string DragType { get; private set; }
 
     /// <summary>
+    /// Represents name of the sprite shown in menus.
+    /// </summary>
+    public string DefaultSpriteName { get; set; }
+
+    /// <summary>
+    /// Actual sprite name (can be null).
+    /// </summary>
+    public string SpriteName { get; set; }
+
+    /// <summary>
+    /// Sprite name for overlay.
+    /// </summary>
+    public string OverlaySpriteName { get; set; }
+
+    /// <summary>
     /// Gets or sets the furniture animation.
     /// </summary>
     public FurnitureAnimation Animation { get; set; }
@@ -351,7 +360,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     /// Gets or sets the parameters that is tied to the furniture.
     /// </summary>
     public Parameter Parameters { get; set; }
-
+    
     /// <summary>
     /// Gets a component that handles the jobs linked to the furniture.
     /// </summary>
@@ -361,17 +370,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     /// This flag is set if the furniture is tasked to be destroyed.
     /// </summary>
     public bool IsBeingDestroyed { get; protected set; }
-
-    /// Should we only use the default name? If not, then more complex logic is tested, such as walls.
-    /// </summary>
-    public bool OnlyUseDefaultSpriteName
-    {
-        get
-        {
-            return !string.IsNullOrEmpty(getSpriteNameAction);
-        }
-    }
-
+        
     /// <summary>
     /// Flag with furniture requirements (used for showing icon overlay, e.g. No power, ... ).
     /// </summary>
@@ -412,7 +411,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         // We know our placement destination is valid.
         Furniture furnObj = proto.Clone();
         furnObj.Tile = tile;
-        
+
         if (tile.PlaceFurniture(furnObj) == false)
         {
             // For some reason, we weren't able to place our object in this tile.
@@ -422,7 +421,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
             // (It will be garbage collected.)
             return null;
         }
-        
+
         // need to update reference to furniture and call Initialize (so components can place hooks on events there)
         foreach (BuildableComponent component in furnObj.components)
         {
@@ -449,7 +448,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
                 }
             }
         }
-        
+
         // Let our workspot tile know it is reserved for us
         World.Current.ReserveTileAsWorkSpot(furnObj);
 
@@ -532,12 +531,12 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         {
             EventActions.Trigger("OnUpdate", this, deltaTime);
         }
-                
+
         foreach (BuildableComponent component in components)
         {
             component.FixedFrequencyUpdate(deltaTime);
-        }        
-        
+        }
+
         if (Animation != null)
         {
             Animation.Update(deltaTime);
@@ -608,18 +607,30 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         return (Enterability)ret.Number;
     }
 
+    public string GetDefaultSpriteName()
+    {
+        if (!string.IsNullOrEmpty(DefaultSpriteName))
+        {
+            return DefaultSpriteName;
+        }
+
+        // Else return default Type string
+        return Type;
+    }
+
     /// <summary>
     /// Check if the furniture has a function to determine the sprite name and calls that function.
     /// </summary>
+    /// <param name="explicitSpriteUsed">Out: true if explicit sprite was used, false if default type was used.</param>
     /// <returns>Name of the sprite.</returns>
-    public string GetSpriteName()
+    public string GetSpriteName(out bool explicitSpriteUsed)
     {
-        if (!string.IsNullOrEmpty(getSpriteNameAction))
+        explicitSpriteUsed = true;
+        if (!string.IsNullOrEmpty(SpriteName))
         {
-            DynValue ret = FunctionsManager.Furniture.Call(getSpriteNameAction, this);
-            return ret.String;
+            return SpriteName;
         }
-
+        
         // Try to get spritename from animation
         if (Animation != null)
         {
@@ -627,7 +638,13 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         }
 
         // Else return default Type string
+        explicitSpriteUsed = false;
         return Type;
+    }
+
+    public string GetOverlaySpriteName()
+    {
+        return OverlaySpriteName;
     }
     #endregion
 
@@ -680,7 +697,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
                     break;
                 case "Health":
                     reader.Read();
-                health = new HealthSystem(reader.ReadContentAsFloat(), false, true, false, false);
+                    health = new HealthSystem(reader.ReadContentAsFloat(), false, true, false, false);
                     break;
                 case "LinksToNeighbours":
                     reader.Read();
@@ -731,9 +748,6 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
                 case "IsEnterable":
                     isEnterableAction = reader.GetAttribute("FunctionName");
                     break;
-                case "GetSpriteName":
-                    getSpriteNameAction = reader.GetAttribute("FunctionName");
-                    break;
                 case "GetProgressInfo":
                     getProgressInfoNameAction = reader.GetAttribute("functionName");
                     break;
@@ -745,7 +759,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
                     break;
                 case "JobOutputSpotOffset":
                     Jobs.ReadOutputSpotOffset(reader);
-                    break;                
+                    break;
                 case "Params":
                     ReadXmlParams(reader);  // Read in the Param tag
                     break;
@@ -761,6 +775,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
                     BuildableComponent component = BuildableComponent.Deserialize(reader);
                     if (component != null)
                     {
+                        component.InitializePrototype(this);
                         components.Add(component);
                     }
 
@@ -805,7 +820,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
             jobTime,
             items.ToArray(),
             Job.JobPriority.High);
-        job.JobDescription = "job_build_" + Type + "_desc";
+        job.Description = "job_build_" + Type + "_desc";
 
         PrototypeManager.FurnitureConstructJob.Set(job);
     }
@@ -839,7 +854,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
             jobTime,
             null,
             Job.JobPriority.High);
-        job.JobDescription = "job_deconstruct_" + Type + "_desc";
+        job.Description = "job_deconstruct_" + Type + "_desc";
         job.adjacent = true;
 
         PrototypeManager.FurnitureDeconstructJob.Set(job);
@@ -926,7 +941,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     /// Deconstructs the furniture.
     /// </summary>
     public void Deconstruct()
-    { 
+    {
         int x = Tile.X;
         int y = Tile.Y;
         int fwidth = 1;
@@ -960,7 +975,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
                 World.Current.InventoryManager.PlaceInventoryAround(Tile, inv.Clone());
             }
         }
-        
+
         if (Removed != null)
         {
             Removed(this);
@@ -1074,14 +1089,14 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
                 {
                     yield return inf;
                 }
-            }     
+            }
         }
 
         if (health != null)
         {
             yield return health.TextForSelectionPanel();
         }
-        
+
         yield return GetProgressInfo();
     }
 
@@ -1151,7 +1166,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
                 }
             }
         }
-       
+
         foreach (ContextMenuLuaAction contextMenuLuaAction in contextMenuLuaActions)
         {
             if (!contextMenuLuaAction.DevModeOnly ||
@@ -1185,7 +1200,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
 
         Rotation = rotation;
     }
-    
+
     // Make a copy of the current furniture.  Sub-classed should
     // override this Clone() if a different (sub-classed) copy
     // constructor should be run.
@@ -1235,10 +1250,13 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
                     isReplaceable = tile2.Furniture.typeTags.Overlaps(ReplaceableFurniture);
                 }
 
-                // Make sure tile is FLOOR
-                if (tile2.Type != TileType.Floor && tileTypeBuildPermissions.Contains(tile2.Type.Type) == false)
+                if (!HasTypeTag("DoesntNeedFloor"))
                 {
-                    return false;
+                    // Make sure tile is FLOOR
+                    if (tile2.Type != TileType.Floor && tileTypeBuildPermissions.Contains(tile2.Type.Type) == false)
+                    {
+                        return false;
+                    }
                 }
 
                 // Make sure tile doesn't already have furniture
@@ -1288,6 +1306,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     {
         UpdateOnChanged(this);
     }
+
     #endregion
 
     /// <summary>
