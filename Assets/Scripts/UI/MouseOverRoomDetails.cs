@@ -37,15 +37,6 @@ public class MouseOverRoomDetails : MouseOver
             foreach (RoomBehavior behavior in tile.Room.RoomBehaviors.Values)
             {
                 roomDetails += behavior.Name + "\n";
-
-///                foreach (string key in behavior.ControlledFurniture.Keys)
-///                {
-///                    s += key + "\t\n";
-///                    foreach (Furniture furniture in behavior.ControlledFurniture[key])
-///                    {
-///                        s += furniture.Name + "\t\t\n";
-///                    }
-///                }
             }
         }
 
