@@ -39,7 +39,7 @@ public class PrototypeManager
         Headline = new PrototypeMap<Headline>("Headlines", "Headline");
         Overlay = new PrototypeMap<OverlayDescriptor>("Overlays", "Overlay");
         Ship = new PrototypeMap<Ship>("Ships", "Ship");
-        DevConsole = new PrototypeMap<DeveloperConsole.Prototypes.LUAPrototype>("ConsoleCommands", "ConsoleCommand");
+        DevConsole = new PrototypeMap<DeveloperConsole.CommandPrototype>("ConsoleCommands", "ConsoleCommand");
     }
 
     /// <summary>
@@ -151,7 +151,7 @@ public class PrototypeManager
     /// Gets the DevConsole prototype map.
     /// </summary>
     /// <value>The DevConsole prototype map.</value>
-    public static PrototypeMap<DeveloperConsole.Prototypes.LUAPrototype> DevConsole { get; private set; }
+    public static PrototypeMap<DeveloperConsole.CommandPrototype> DevConsole { get; private set; }
 
     /// <summary>
     /// Gets the ship prototype map.

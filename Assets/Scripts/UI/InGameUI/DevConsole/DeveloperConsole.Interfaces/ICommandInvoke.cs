@@ -6,16 +6,23 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System;
 
 namespace DeveloperConsole.Interfaces
 {
-    public interface ICommandLUA : ICommandRunnable
+    public interface ICommandInvoke : ICommandRunnable
     {
         /// <summary>
         /// The function name to call.
         /// </summary>
         string FunctionName
+        {
+            get;
+        }
+
+        /// <summary>
+        /// The help function name to call.
+        /// </summary>
+        string HelpFunctionName
         {
             get;
         }

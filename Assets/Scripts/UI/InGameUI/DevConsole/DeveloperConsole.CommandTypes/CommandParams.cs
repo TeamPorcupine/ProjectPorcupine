@@ -7,10 +7,7 @@
 // ====================================================
 #endregion
 using System;
-using System.Linq;
-using DeveloperConsole.Interfaces;
 using MoonSharp.Interpreter;
-using UnityEngine;
 
 namespace DeveloperConsole.CommandTypes
 {

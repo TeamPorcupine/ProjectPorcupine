@@ -12,7 +12,6 @@ using DeveloperConsole.CommandTypes;
 using DeveloperConsole.Interfaces;
 using MoonSharp.Interpreter;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace DeveloperConsole
@@ -825,15 +824,11 @@ namespace DeveloperConsole
                 new Command("GetRoomIDs", CoreCommands.GetAllRoomIDs, "Logs all the room IDs"),
                 new Command<int, string, Vector3>("DoBuild", CoreCommands.DoBuild, CoreCommands.DoBuildHelp),
                 new Command("DirtyTileGraph", CoreCommands.InvalidateTileGraph, "Invalidates the tile graph"),
-                new Command("GetCharNames", CoreCommands.GetCharacterNames, "Logs all the character names"),
-                new Command<bool>("SetTimeStamp", CoreCommands.SetTimeStamp, "Establishes whether or not to show the time stamp"));
-
-            // Load Commands from C#
-            // Empty because C# Modding not implemented yet
-            // TODO: Once C# Modding Implemented, add the ability to add commands here
+                new Command("GetCharNames", CoreCommands.GetCharacterNames, "Logs all the character names"));
 
             // Load Commands from XML (will be changed to JSON AFTER the current upgrade)
-            AddCommands(PrototypeManager.DevConsole.Values.Select(x => x.LUACommand).ToArray());
+            // Covers both CSharp and LUA
+            AddCommands(PrototypeManager.DevConsole.Values.Select(x => x.ConsoleCommand).ToArray());
         }
     }
 }

@@ -11,21 +11,21 @@ using System.Xml;
 using DeveloperConsole.CommandTypes;
 using MoonSharp.Interpreter;
 
-namespace DeveloperConsole.Prototypes
+namespace DeveloperConsole
 {
     [MoonSharpUserData]
-    public class LUAPrototype : IPrototypable
+    public class CommandPrototype : IPrototypable
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="LUAPrototype"/> class.
+        /// Initializes a new instance of the <see cref="CommandPrototype"/> class.
         /// This is required to create a Prototype.
         /// </summary>
-        public LUAPrototype()
+        public CommandPrototype()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LUAPrototype"/> class.
+        /// Initializes a new instance of the <see cref="CommandPrototype"/> class.
         /// This form of the constructor assumes the ScheduledEvent is of the EventType.CSharp type.
         /// </summary>
         /// <param name="title"> The title of the command.</param>
@@ -33,40 +33,40 @@ namespace DeveloperConsole.Prototypes
         /// <param name="description"> The description of the command.</param>
         /// <param name="helpFunctionName"> The name of the function to call to show help.</param>
         /// <param name="parameters"> The parameters that this class requires (a string in C# type formats and comma between them).</param>
-        public LUAPrototype(string title, string methodFunctionName, string description, string helpFunctionName, string parameters) : this()
+        public CommandPrototype(string title, string methodFunctionName, string description, string helpFunctionName, string parameters) : this()
         {
-            LUACommand = new LUACommand(title, methodFunctionName, description, helpFunctionName, parameters);
+            ConsoleCommand = new InvokeCommand(title, methodFunctionName, description, helpFunctionName, parameters);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LUAPrototype"/> class.
+        /// Initializes a new instance of the <see cref="CommandPrototype"/> class.
         /// This form of the constructor assumes the ScheduledEvent is of the EventType.CSharp type.
         /// </summary>       
         /// <param name="title"> The title of the command.</param>
         /// <param name="methodFunctionName"> The name of the function to call.</param>
         /// <param name="description"> The description of the command.</param>
-        public LUAPrototype(string title, string methodFunctionName, string description) : this()
+        public CommandPrototype(string title, string methodFunctionName, string description) : this()
         {
-            LUACommand = new LUACommand(title, methodFunctionName, description);
+            ConsoleCommand = new InvokeCommand(title, methodFunctionName, description);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LUAPrototype"/> class.
+        /// Initializes a new instance of the <see cref="CommandPrototype"/> class.
         /// This form of the constructor assumes the ScheduledEvent is of the EventType.CSharp type.
         /// </summary>   
         /// <param name="title"> The title of the command.</param>
         /// <param name="methodFunctionName"> The name of the function to call.</param>
-        public LUAPrototype(string title, string methodFunctionName) : this()
+        public CommandPrototype(string title, string methodFunctionName) : this()
         {
-            LUACommand = new LUACommand(title, methodFunctionName);
+            ConsoleCommand = new InvokeCommand(title, methodFunctionName);
         }
 
         /// <summary>
         /// Copies from other.
         /// </summary>
-        public LUAPrototype(LUAPrototype other) : this()
+        public CommandPrototype(CommandPrototype other) : this()
         {
-            LUACommand = other.LUACommand;
+            ConsoleCommand = other.ConsoleCommand;
         }
 
         /// <summary>
@@ -76,21 +76,21 @@ namespace DeveloperConsole.Prototypes
         {
             get
             {
-                return LUACommand.Title;
+                return ConsoleCommand.Title;
             }
         }
 
         /// <summary>
         /// The main data storage of luacommand.
         /// </summary>
-        public LUACommand LUACommand { get; protected set; }
+        public InvokeCommand ConsoleCommand { get; protected set; }
 
         /// <summary>
         /// Clones this prototype.
         /// </summary>
-        public LUAPrototype Clone()
+        public CommandPrototype Clone()
         {
-            return new LUAPrototype(this);
+            return new CommandPrototype(this);
         }
 
         /// <summary>
@@ -104,7 +104,7 @@ namespace DeveloperConsole.Prototypes
             string helpFunctionName = reader.GetAttribute("HelpFunctionName");
             string parameters = reader.GetAttribute("Parameters");
 
-            LUACommand = new LUACommand(title, functionName, description, helpFunctionName, parameters);
+            ConsoleCommand = new InvokeCommand(title, functionName, description, helpFunctionName, parameters);
         }
 
         /// <summary>
@@ -112,11 +112,11 @@ namespace DeveloperConsole.Prototypes
         /// </summary>
         public void WriteXml(XmlWriter writer)
         {
-            writer.WriteAttributeString("Title", LUACommand.Title);
-            writer.WriteAttributeString("FunctionName", LUACommand.FunctionName);
-            writer.WriteAttributeString("Description", LUACommand.DescriptiveText);
-            writer.WriteAttributeString("HelpFunctionName", LUACommand.HelpFunctionName);
-            writer.WriteAttributeString("Parameters", LUACommand.Parameters);
+            writer.WriteAttributeString("Title", ConsoleCommand.Title);
+            writer.WriteAttributeString("FunctionName", ConsoleCommand.FunctionName);
+            writer.WriteAttributeString("Description", ConsoleCommand.DescriptiveText);
+            writer.WriteAttributeString("HelpFunctionName", ConsoleCommand.HelpFunctionName);
+            writer.WriteAttributeString("Parameters", ConsoleCommand.Parameters);
         }
     }
 }

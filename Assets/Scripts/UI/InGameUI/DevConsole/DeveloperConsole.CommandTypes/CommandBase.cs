@@ -12,9 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using DeveloperConsole.Interfaces;
 using MoonSharp.Interpreter;
-using UnityEngine;
 
 namespace DeveloperConsole.CommandTypes
 {
@@ -101,6 +99,7 @@ namespace DeveloperConsole.CommandTypes
             return result
                 .Cast<Match>()
                 .Select(m => m.Value.Trim())
+                .Where(m => m != "")
                 .ToArray();
         }
 

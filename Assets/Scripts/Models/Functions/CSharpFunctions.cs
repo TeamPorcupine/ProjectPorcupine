@@ -146,6 +146,12 @@ public class CSharpFunctions : IFunctions
         // nothing to do for C#
     }
 
+    // This really doesn't need to exist, CallWithError is only for LUA
+    public DynValue CallWithError(string functionName, params object[] args)
+    {
+        return Call(functionName, args);
+    }
+
     private string GetConnectionPointClassDeclaration(string name)
     {
         return Environment.NewLine + " public struct MonoSharp_DynamicAssembly_" + name + " {}";
@@ -200,12 +206,6 @@ public class CSharpFunctions : IFunctions
         {
             return null;
         }
-    }
-
-    // This really doesn't need to exist, CallWithError is only for LUA
-    public DynValue CallWithError(string functionName, params object[] args)
-    {
-        return Call(functionName, args);
     }
 
     private class CompilingResult : ReportPrinter

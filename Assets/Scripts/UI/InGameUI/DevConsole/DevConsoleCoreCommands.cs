@@ -6,7 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System;
+
 using DeveloperConsole.CommandTypes;
 using ProjectPorcupine.Rooms;
 using UnityEngine;
@@ -18,12 +18,6 @@ namespace DeveloperConsole
         public static void ChangeCameraPosition(Vector3 newPos)
         {
             Camera.main.transform.position = newPos;
-        }
-
-        public static void SetTimeStamp(bool value)
-        {
-            CommandSettings.ShowTimeStamp = value;
-            DevConsole.Log("Change successful :D", "green");
         }
 
         /// <summary>

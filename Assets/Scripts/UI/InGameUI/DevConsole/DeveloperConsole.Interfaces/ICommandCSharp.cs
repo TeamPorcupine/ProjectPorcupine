@@ -10,7 +10,7 @@ using System;
 
 namespace DeveloperConsole.Interfaces
 {
-    public interface ICommandCSharp : ICommandRunnable
+    public interface ICommandBase : ICommandRunnable
     {
         /// <summary>
         /// The method to be called.

@@ -79,6 +79,7 @@ public class ModsManager
         LoadFunctions("ConsoleCommands.lua", "DevConsole");
 
         LoadFunctions("FurnitureFunctions.cs", "Furniture");
+        LoadFunctions("CommandFunctions.cs", "DevConsole");
 
         LoadPrototypes("Tiles.xml", PrototypeManager.TileType.LoadPrototypes);
         LoadPrototypes("Furniture.xml", PrototypeManager.Furniture.LoadPrototypes);

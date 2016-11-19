@@ -57,7 +57,7 @@ public class Functions
     }
 
     /// <summary>
-    /// The Common Call Function
+    /// The Common Call Function.
     /// </summary>
     public DynValue Call(string functionName, params object[] args)
     {
@@ -65,31 +65,11 @@ public class Functions
     }
 
     /// <summary>
-    /// Throws an error if warranted
+    /// Throws an error if warranted.
     /// </summary>
     public DynValue CallWithError(string functionName, params object[] args)
     {
         return Call(functionName, true, args);
-    }
-
-    private DynValue Call(string functionName, bool throwError, params object[] args)
-    {
-        IFunctions functions = GetFunctions(functionName);
-        if (functions != null)
-        {
-            return functions.Call(functionName, args);
-        }
-        else
-        {
-            Debug.ULogChannel(ModFunctionsLogChannel, "'" + functionName + "' is not a LUA nor is it a CSharp function!");
-
-            if (throwError)
-            {
-                throw new Exception("'" + functionName + "' is not a LUA nor is it a CSharp function!");
-            }
-
-            return null;
-        }
     }
 
     public T Call<T>(string functionName, params object[] args)
@@ -136,6 +116,26 @@ public class Functions
         foreach (IFunctions functionsSet in FunctionsSets)
         {
             functionsSet.RegisterType(type);
+        }
+    }
+
+    private DynValue Call(string functionName, bool throwError, params object[] args)
+    {
+        IFunctions functions = GetFunctions(functionName);
+        if (functions != null)
+        {
+            return functions.Call(functionName, args);
+        }
+        else
+        {
+            Debug.ULogChannel(ModFunctionsLogChannel, "'" + functionName + "' is not a LUA nor is it a CSharp function!");
+
+            if (throwError)
+            {
+                throw new Exception("'" + functionName + "' is not a LUA nor is it a CSharp function!");
+            }
+
+            return null;
         }
     }
 

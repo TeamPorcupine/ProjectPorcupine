@@ -81,26 +81,6 @@ public class LuaFunctions : IFunctions
         return Call(functionName, false, args);
     }
 
-    /// <summary>
-    /// Call the specified lua function with the specified args.
-    /// </summary>
-    /// <param name="functionName">Function name.</param>
-    /// <param name="args">Arguments.</param>
-    private DynValue Call(string functionName, bool throwError, params object[] args)
-    {
-        object func = script.Globals[functionName];
-
-        try
-        {
-            return script.Call(func, args);
-        }
-        catch (ScriptRuntimeException e)
-        {
-            Debug.ULogErrorChannel("Lua", "[" + scriptName + "] LUA RunTime error: " + e.DecoratedMessage);
-            return null;
-        }
-    }
-
     public T Call<T>(string functionName, params object[] args)
     {
         return Call(functionName, args).ToObject<T>();
@@ -146,6 +126,26 @@ public class LuaFunctions : IFunctions
     public void RegisterType(Type type)
     {
         RegisterGlobal(type);
+    }
+
+    /// <summary>
+    /// Call the specified lua function with the specified args.
+    /// </summary>
+    /// <param name="functionName">Function name.</param>
+    /// <param name="args">Arguments.</param>
+    private DynValue Call(string functionName, bool throwError, params object[] args)
+    {
+        object func = script.Globals[functionName];
+
+        try
+        {
+            return script.Call(func, args);
+        }
+        catch (ScriptRuntimeException e)
+        {
+            Debug.ULogErrorChannel("Lua", "[" + scriptName + "] LUA RunTime error: " + e.DecoratedMessage);
+            return null;
+        }
     }
 
     /// <summary>

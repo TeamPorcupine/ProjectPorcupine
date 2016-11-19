@@ -6,7 +6,6 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-
 using System;
 using DeveloperConsole.Interfaces;
 using MoonSharp.Interpreter;
@@ -14,9 +13,43 @@ using MoonSharp.Interpreter;
 namespace DeveloperConsole.CommandTypes
 {
     [MoonSharpUserData]
-    public sealed class LUACommand : CommandBase, ICommandLUA
+    public sealed class InvokeCommand : CommandBase, ICommandInvoke
     {
-        public LUACommand()
+        /// <summary>
+        /// Standard with title and a method.
+        /// </summary>
+        /// <param name="title"> The title for the command.</param>
+        /// <param name="functionName"> The command to execute.</param>
+        public InvokeCommand(string title, string functionName) : this()
+        {
+            this.Title = title;
+            this.FunctionName = functionName;
+        }
+
+        /// <summary>
+        /// Standard with title, method, and help text.
+        /// </summary>
+        /// <param name="title"> The title for the command.</param>
+        /// <param name="functionName"> The command to execute.</param>
+        /// <param name="descriptiveText"> The help text to display.</param>
+        public InvokeCommand(string title, string functionName, string descriptiveText) : this(title, functionName)
+        {
+            this.DescriptiveText = descriptiveText;
+        }
+
+        /// <summary>
+        /// Standard but uses a delegate method for help text.
+        /// </summary>
+        /// <param name="title"> The title for the command.</param>
+        /// <param name="method"> The command to execute.</param>
+        /// <param name="helpFunctionName"> The help method to execute.</param>
+        public InvokeCommand(string title, string functionName, string descriptiveText, string helpFunctionName, string parameters) : this(title, functionName, descriptiveText)
+        {
+            HelpFunctionName = helpFunctionName;
+            Parameters = parameters;
+        }
+
+        private InvokeCommand()
         {
             HelpMethod = delegate
             {
@@ -29,47 +62,12 @@ namespace DeveloperConsole.CommandTypes
                 try
                 {
                     FunctionsManager.DevConsole.CallWithError(HelpFunctionName);
-
                 }
                 catch (Exception e)
                 {
                     DevConsole.LogError(e.Message);
                 }
             };
-        }
-
-        /// <summary>
-        /// Standard with title and a method.
-        /// </summary>
-        /// <param name="title"> The title for the command.</param>
-        /// <param name="functionName"> The command to execute.</param>
-        public LUACommand(string title, string functionName) : this()
-        {
-            this.Title = title;
-            this.FunctionName = functionName;
-        }
-
-        /// <summary>
-        /// Standard with title, method, and help text.
-        /// </summary>
-        /// <param name="title"> The title for the command.</param>
-        /// <param name="functionName"> The command to execute.</param>
-        /// <param name="descriptiveText"> The help text to display.</param>
-        public LUACommand(string title, string functionName, string descriptiveText) : this(title, functionName)
-        {
-            this.DescriptiveText = descriptiveText;
-        }
-
-        /// <summary>
-        /// Standard but uses a delegate method for help text.
-        /// </summary>
-        /// <param name="title"> The title for the command.</param>
-        /// <param name="method"> The command to execute.</param>
-        /// <param name="helpFunctionName"> The help method to execute.</param>
-        public LUACommand(string title, string functionName, string descriptiveText, string helpFunctionName, string parameters) : this(title, functionName, descriptiveText)
-        {
-            HelpFunctionName = helpFunctionName;
-            Parameters = parameters;
         }
 
         public string FunctionName
@@ -103,7 +101,7 @@ namespace DeveloperConsole.CommandTypes
         {
             try
             {
-                string[] args = RegexToStandardPattern(arguments);
+                object[] args = RegexToStandardPattern(arguments);
                 return args;
             }
             catch (Exception e)

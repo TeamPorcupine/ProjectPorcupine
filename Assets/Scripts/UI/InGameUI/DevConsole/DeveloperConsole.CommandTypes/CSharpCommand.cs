@@ -18,7 +18,7 @@ namespace DeveloperConsole.CommandTypes
     /// A core class for CSharp Commands.
     /// </summary>
     [MoonSharpUserData]
-    public class CSharpCommand : CommandBase, ICommandCSharp
+    public class CSharpCommand : CommandBase, ICommandBase
     {
         /// <summary>
         /// Standard with title and a method.
