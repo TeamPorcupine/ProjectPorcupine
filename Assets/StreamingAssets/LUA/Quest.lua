@@ -13,19 +13,33 @@
 ---------------------------- Quests Actions --------------------------------
 
 function Quest_Have_Furniture_Built(goal)
+
+	if(goal == nil) then
+		ModUtils.ULogErrorChannel("Quests","Quest_Have_Furniture_Built, goal was nil");
+		return
+	end
+
     goal.IsCompleted = false
     local type = goal.Parameters["type"].Value
     local amount = goal.Parameters["amount"].ToInt()
-    local amountFound = World.Current.CountFurnitureType(type)
+    local amountFound = World.Current.FurnitureManager.CountWithType(type)
     if (amountFound >= amount) then
         goal.IsCompleted = true
     end
 end
 
 function Quest_Spawn_Inventory(reward)
-    --tile = World.Current.GetCenterTile()
-    local tile = World.Current.GetFirstCenterTileWithNoInventory(6)
+
+	if(reward == nil) then
+		ModUtils.ULogErrorChannel("Quests","Quest_Spawn_Inventory, reward was nil");
+		return
+	end
+
+   --local tile = World.Current.GetCenterTile()
+   local tile = reward.GetEmptyTileNearCenter(10)
+
     if (tile == nil) then
+		ModUtils.ULogErrorChannel("Quests","Quest_Spawn_Inventory, tile was nil");
         return
     end
     local type = reward.Parameters["type"].Value
@@ -35,5 +49,5 @@ function Quest_Spawn_Inventory(reward)
     reward.IsCollected = true;
 end
 
-ModUtils.ULog("Quest.lua loaded")
+ModUtils.ULogChannel("Quests","Quest.lua loaded")
 return "LUA Script Parsed!"
