@@ -99,7 +99,7 @@ namespace DeveloperConsole.CommandTypes
             return result
                 .Cast<Match>()
                 .Select(m => m.Value.Trim())
-                .Where(m => m != "")
+                .Where(m => m != string.Empty)
                 .ToArray();
         }
 
