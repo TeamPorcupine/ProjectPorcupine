@@ -58,13 +58,11 @@ public class PowerNetworkTest
     public void UnplugTest()
     {
         MockConnection connection = new MockConnection();
-        Assert.IsTrue(powerNetwork.PlugIn(connection));
+        Grid grid = new Grid();
+        Assert.IsTrue(powerNetwork.PlugIn(connection, grid));
         Assert.AreEqual(1, powerGrids.Count);
         powerNetwork.Unplug(connection);
-        Assert.AreEqual(1, powerGrids.Count);
-
-        powerNetwork.Update(1.0f);
-        Assert.AreEqual(0, powerGrids.Count);
+        Assert.AreEqual(0, grid.ConnectionCount);
     }
 
     [Test]
@@ -124,6 +122,8 @@ public class PowerNetworkTest
 
     private class MockConnection : IPlugable
     {
+        public event Action Reconnecting;
+
         public float AccumulatedAmount { get; set; }
 
         public float AccumulatorCapacity { get; set; }
@@ -156,5 +156,10 @@ public class PowerNetworkTest
         }
 
         public float OutputRate { get; set; }
+
+        public void Reconnect()
+        {
+            // Not needed to do anything.
+        }
     }
 }

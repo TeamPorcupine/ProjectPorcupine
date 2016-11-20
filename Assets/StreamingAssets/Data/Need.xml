@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Needs>
-    <Need type="Oxygen">
+    <Need type="oxygen">
         <Name>Oxygen</Name>
         <GrowthRate>0.3</GrowthRate>
-        <RestoreNeedFurnitureType>Oxygen Generator</RestoreNeedFurnitureType>
+        <RestoreNeedFurnitureType>oxygen_generator</RestoreNeedFurnitureType>
         <RestoreNeedTime>10</RestoreNeedTime>
         <RestoreNeedAmount>100</RestoreNeedAmount>
         <Damage>20</Damage>
@@ -13,7 +13,7 @@
         <Localization>need_oxygen</Localization>
     </Need>
 
-    <Need type="Sleep">
+    <Need type="sleep">
         <Name>Sleep</Name>
         <RestoreNeedFurnitureType>simple_bed</RestoreNeedFurnitureType>
         <!-- A GrowthRate of .15 approximates a "day (16 hours of awake time + 8 hours of sleep time)

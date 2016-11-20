@@ -88,6 +88,7 @@ namespace ProjectPorcupine.State
                     }
                     else
                     {
+                        Job.AddCharCantReach(character);
                         character.InterruptState();
                     }
 
@@ -99,7 +100,6 @@ namespace ProjectPorcupine.State
 
                     // Ping the Job system
                     Job.DoWork(0);
-
                     Finished();
                     break;
             }

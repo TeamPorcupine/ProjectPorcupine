@@ -6,12 +6,14 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
+using Newtonsoft.Json.Linq;
 
 namespace ProjectPorcupine.Rooms
 {
@@ -400,6 +402,14 @@ namespace ProjectPorcupine.Rooms
             }
 
             EventActions.Trigger("OnControl", this);
+        }
+
+        public JObject ToJson()
+        {
+            JObject behaviorJson = new JObject();
+            behaviorJson.Add("Room", Room.ID);
+            behaviorJson.Add("Behavior", Type);
+            return behaviorJson;
         }
 
         [MoonSharpVisible(true)]

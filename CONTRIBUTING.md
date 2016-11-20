@@ -7,7 +7,9 @@
 [Best Practices for Contributing](#best-practices-for-contributing)  
 [Image & Sound File Formats](#file-formats)  
 
+# Note
 
+Please also read the [Contributor's Portal](../../wiki/Contributors'-Portal#important-links), mainly the [Contributing Guidelines](../../wiki/Contributing-Guidelines).
 
 # Contributing
 

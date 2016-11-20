@@ -196,7 +196,7 @@ public class ModDialogBox : DialogBox
 
             events = eventActions;
 
-            FunctionsManager.Get("ModDialogBox").RegisterGlobal(typeof(ModDialogBox));
+            FunctionsManager.Get("ModDialogBox").RegisterType(typeof(ModDialogBox));
             extraData = new List<object>();
         }
         catch (System.Exception error)

@@ -6,7 +6,9 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+
 using System.Collections;
+using System.Linq;
 using ProjectPorcupine.Localization;
 using UnityEngine;
 using UnityEngine.UI;
@@ -26,6 +28,13 @@ public class MouseOverTileTypeText : MouseOver
             tileType = tile.Type.ToString();
         }
 
-       return LocalizationTable.GetLocalization("tile_type", tileType);
+
+        string tileInfo = LocalizationTable.GetLocalization("tile_type", tileType);
+        if (tile != null && tile.Utilities != null && tile.Utilities.Count > 0)
+        {
+            tileInfo += "\n" + tile.Utilities.First().Value.Grid.GetId();
+        }
+
+        return tileInfo;
     }
 }

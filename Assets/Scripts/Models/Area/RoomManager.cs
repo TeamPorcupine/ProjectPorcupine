@@ -6,9 +6,11 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json.Linq;
 
 namespace ProjectPorcupine.Rooms
@@ -426,6 +428,28 @@ namespace ProjectPorcupine.Rooms
                 Room r = new Room();
                 Add(r);
                 r.FromJson(room);
+            }
+        }
+
+        public JToken BehaviorsToJson()
+        {
+            JArray behaviorsJson = new JArray();
+            foreach (RoomBehavior behavior in rooms.SelectMany(room => room.RoomBehaviors.Values))
+            {
+                behaviorsJson.Add(behavior.ToJson());
+            }
+
+            return behaviorsJson;
+        }
+
+        public void BehaviorsFromJson(JToken behaviorsToken)
+        {
+            foreach (JToken behaviorToken in behaviorsToken)
+            {
+                int roomId = (int)behaviorToken["Room"];
+                string type = (string)behaviorToken["Behavior"];
+                RoomBehavior behavior = PrototypeManager.RoomBehavior.Get(type);
+                this[roomId].DesignateRoomBehavior(behavior.Clone());
             }
         }
 

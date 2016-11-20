@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Sprites>
+	<Sprite name="metal_smelter"     			      x="0" 	y="0"  w="3" h="3" pixelPerUnit="32" />
+	<Sprite name="metal_smelter_running_1"     	x="0" 	y="3" w="3" h="3" pixelPerUnit="32" />
+	<Sprite name="metal_smelter_running_2"     	x="3" 	y="3" w="3" h="3" pixelPerUnit="32" />
+	<Sprite name="metal_smelter_running_3"     	x="6" y="3" w="3" h="3" pixelPerUnit="32" />
+	<Sprite name="metal_smelter_running_4"     	x="9" y="3" w="3" h="3" pixelPerUnit="32" />
+	<Sprite name="metal_smelter_running_5"     	x="12" y="3" w="3" h="3" pixelPerUnit="32" />
+</Sprites>

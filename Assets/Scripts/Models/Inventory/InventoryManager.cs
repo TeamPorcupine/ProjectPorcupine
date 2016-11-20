@@ -5,7 +5,6 @@
 // and you are welcome to redistribute it under certain conditions; See
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
-
 #endregion
 using System;
 using System.Collections.Generic;
@@ -108,11 +107,13 @@ public class InventoryManager
         {
             // The tile did not accept the inventory for whatever reason, therefore stop.
             return false;
+
+            // TODO: Geoffrotism. Is this where we would hook in to handle inventory not being able to be placed in a tile.
         }
 
         CleanupInventory(inventory);
 
-        // We may also created a new stack on the tile, if the startTile was previously empty.
+        // We may also have to create a new stack on the tile, if the startTile was previously empty.
         if (tileWasEmpty)
         {
             if (Inventories.ContainsKey(tile.Inventory.Type) == false)
@@ -138,7 +139,7 @@ public class InventoryManager
             tile.Inventory.StackSize -= amount;
             CleanupInventory(tile.Inventory);
             return true;
-        }        
+        }
     }
 
     public bool PlaceInventory(Job job, Character character)
@@ -153,12 +154,12 @@ public class InventoryManager
         }
 
         // Check that there is a target to transfer to
-        if (job.HeldInventory.ContainsKey(sourceInventory.Type) == false)
+        if (job.DeliveredItems.ContainsKey(sourceInventory.Type) == false)
         {
-            job.HeldInventory[sourceInventory.Type] = new Inventory(sourceInventory.Type, 0, sourceInventory.MaxStackSize);
+            job.DeliveredItems[sourceInventory.Type] = new Inventory(sourceInventory.Type, 0, sourceInventory.MaxStackSize);
         }
 
-        Inventory targetInventory = job.HeldInventory[sourceInventory.Type];
+        Inventory targetInventory = job.DeliveredItems[sourceInventory.Type];
         int transferAmount = Mathf.Min(targetInventory.MaxStackSize - targetInventory.StackSize, sourceInventory.StackSize);
 
         sourceInventory.StackSize -= transferAmount;
@@ -181,7 +182,7 @@ public class InventoryManager
             {
                 Inventories[character.inventory.Type] = new List<Inventory>();
             }
-            
+
             Inventories[character.inventory.Type].Add(character.inventory);
         }
         else if (character.inventory.Type != sourceInventory.Type)
@@ -368,6 +369,9 @@ public class InventoryManager
         if (handler != null)
         {
             handler(inventory);
+
+            // Let the JobQueue know there is new inventory available.
+            World.Current.jobQueue.ReevaluateReachability();
         }
     }
 

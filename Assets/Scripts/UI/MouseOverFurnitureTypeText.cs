@@ -12,7 +12,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// MouseOverRoomIndex impliments the abstact class MouseOver.
+/// MouseOverFurnitureTypeText implements the abstract class MouseOver.
 /// It returns info strings that represent the tiles furniture type.
 /// </summary>
 public class MouseOverFurnitureTypeText : MouseOver

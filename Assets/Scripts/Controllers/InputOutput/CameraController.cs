@@ -133,7 +133,7 @@ public class CameraController
         zoomTarget = Camera.main.orthographicSize - (Settings.GetSetting("ZoomSensitivity", 3) * (Camera.main.orthographicSize * amount));
     }
 
-    public void ChangeLayer(int newLayer) 
+    public void ChangeLayer(int newLayer)
     {
         if (layerCameras != null && newLayer >= 0 && newLayer < layerCameras.Length)
         {
@@ -238,7 +238,7 @@ public class CameraController
 
     private void CreateLayerCameras()
     {
-        if (WorldController.Instance.World == null) 
+        if (WorldController.Instance.World == null)
         {
             return;
         }

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Sprites>
+	<Sprite name="door_horizontal_0"	x="0"	y="2"	w="1"	h="1"	pixelPerUnit="64" />
+	<Sprite name="door_horizontal_1"	x="1"	y="2"	w="1"	h="1"	pixelPerUnit="64" />
+	<Sprite name="door_horizontal_2"	x="0"	y="1"	w="1"	h="1"	pixelPerUnit="64" />
+	<Sprite name="door_horizontal_3"	x="1"	y="1"	w="1"	h="1"	pixelPerUnit="64" />
+	<Sprite name="door_horizontal_4"	x="0"	y="0"	w="1"	h="1"	pixelPerUnit="64" />
+	<Sprite name="door_horizontal_5"	x="1"	y="0"	w="1"	h="1"	pixelPerUnit="64" />
+</Sprites>
