@@ -197,7 +197,6 @@ GameObject:
   - 222: {fileID: 222000013910140856}
   - 114: {fileID: 114000012491780442}
   - 114: {fileID: 114000011946741832}
-  - 114: {fileID: 114000011449879948}
   m_Layer: 5
   m_Name: ConstructionMenu
   m_TagString: Untagged
@@ -405,7 +404,7 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 114000011449879948}
+      - m_Target: {fileID: 0}
         m_MethodName: FilterTextChanged
         m_Mode: 0
         m_Arguments:
@@ -437,17 +436,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ShowMaskGraphic: 0
---- !u!114 &114000011449879948
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000012915241740}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 437c972c83d2a7941bf45b10959021ba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &114000011803155106
 MonoBehaviour:
   m_ObjectHideFlags: 1

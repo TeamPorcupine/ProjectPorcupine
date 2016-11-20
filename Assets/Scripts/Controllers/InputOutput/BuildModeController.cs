@@ -16,7 +16,8 @@ public enum BuildMode
     ROOMBEHAVIOR,
     FURNITURE,
     UTILITY,
-    DECONSTRUCT
+    DECONSTRUCT,
+    MINE
 }
 
 public class BuildModeController
@@ -48,7 +49,7 @@ public class BuildModeController
 
     public bool IsObjectDraggable()
     {
-        if (buildMode == BuildMode.FLOOR || buildMode == BuildMode.DECONSTRUCT || buildMode == BuildMode.UTILITY)
+        if (buildMode == BuildMode.FLOOR || buildMode == BuildMode.DECONSTRUCT || buildMode == BuildMode.UTILITY || buildMode == BuildMode.MINE)
         {
             // floors are draggable
             return true;
@@ -105,6 +106,12 @@ public class BuildModeController
     public void SetMode_Deconstruct()
     {
         buildMode = BuildMode.DECONSTRUCT;
+        mouseController.StartBuildMode();
+    }
+
+    public void SetMode_Mine()
+    {
+        buildMode = BuildMode.MINE;
         mouseController.StartBuildMode();
     }
 
@@ -295,31 +302,9 @@ public class BuildModeController
             if (tile.Furniture != null && (canDeconstructAll || tile.Furniture.HasTypeTag("Non-deconstructible") == false))
             {
                 // check if this is a WALL neighbouring a pressured and pressureless environment, and if so, bail
-                if (tile.Furniture.HasTypeTag("Wall"))
+                if (IsTilePartOfPressuredRoom(tile))
                 {
-                    Tile[] neighbors = tile.GetNeighbours(); // diagOkay??
-                    int pressuredNeighbors = 0;
-                    int vacuumNeighbors = 0;
-                    foreach (Tile neighbor in neighbors)
-                    {
-                        if (neighbor != null && neighbor.Room != null)
-                        {
-                            if (neighbor.Room.IsOutsideRoom() || MathUtilities.IsZero(neighbor.Room.GetTotalGasPressure()))
-                            {
-                                vacuumNeighbors++;
-                            }
-                            else
-                            {
-                                pressuredNeighbors++;
-                            }
-                        }
-                    }
-
-                    if (vacuumNeighbors > 0 && pressuredNeighbors > 0)
-                    {
-                        Debug.ULogChannel("BuildModeController", "Someone tried to deconstruct a wall between a pressurized room and vacuum!");
-                        return;
-                    }
+                    return;
                 }
 
                 tile.Furniture.SetDeconstructJob();
@@ -331,6 +316,21 @@ public class BuildModeController
             else if (tile.Utilities.Count > 0)
             {
                 tile.Utilities.Last().Value.SetDeconstructJob();
+            }
+        }
+        else if(buildMode == BuildMode.MINE)
+        {
+            // TODO: need to also check whether it was already marked for mining (will come with some smart JobManager)
+            if(tile.Furniture != null && tile.Furniture.Type == "astro_wall")
+            {
+                // check if this is a WALL neighbouring a pressured and pressureless environment, and if so, bail
+                if (IsTilePartOfPressuredRoom(tile))
+                {
+                    return;
+                }
+
+                // TODO: hack - trigger LUA function here, need system to couple OrderActions -> Actions(), as a core system with possible override
+                FunctionsManager.Furniture.Call("OreMine_CreateMiningJob", tile.Furniture, null);
             }
         }
         else
@@ -392,6 +392,39 @@ public class BuildModeController
     {
         Utility proto = PrototypeManager.Utility.Get(type);
         return tile.Utilities.ContainsKey(proto.Name);
+    }
+
+    private bool IsTilePartOfPressuredRoom(Tile tile)
+    {
+        // check if this is a WALL neighbouring a pressured and pressureless environment, and if so, bail
+        if (tile.Furniture.HasTypeTag("Wall"))
+        {
+            Tile[] neighbors = tile.GetNeighbours(); // diagOkay??
+            int pressuredNeighbors = 0;
+            int vacuumNeighbors = 0;
+            foreach (Tile neighbor in neighbors)
+            {
+                if (neighbor != null && neighbor.Room != null)
+                {
+                    if (neighbor.Room.IsOutsideRoom() || MathUtilities.IsZero(neighbor.Room.GetTotalGasPressure()))
+                    {
+                        vacuumNeighbors++;
+                    }
+                    else
+                    {
+                        pressuredNeighbors++;
+                    }
+                }
+            }
+
+            if (vacuumNeighbors > 0 && pressuredNeighbors > 0)
+            {
+                Debug.ULogChannel("BuildModeController", "Someone tried to deconstruct a wall between a pressurized room and vacuum!");
+                return true;
+            }
+        }
+
+        return false;
     }
 
     // Rotate the preview furniture to the left.

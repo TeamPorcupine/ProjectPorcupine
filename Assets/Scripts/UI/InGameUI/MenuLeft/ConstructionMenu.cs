@@ -55,8 +55,7 @@ public class ConstructionMenu : MonoBehaviour
         }
 
         this.showAllFurniture = showAllFurniture;
-
-        RenderDeconstructButton();
+        
         RenderRoomBehaviorButtons();
         RenderTileButtons();
         RenderFurnitureButtons();
@@ -89,8 +88,7 @@ public class ConstructionMenu : MonoBehaviour
         {
             menuLeft.CloseMenu();
         });
-
-        RenderDeconstructButton();
+        
         RenderRoomBehaviorButtons();
         RenderTileButtons();
         RenderFurnitureButtons();
@@ -284,38 +282,5 @@ public class ConstructionMenu : MonoBehaviour
             Image image = gameObject.transform.GetChild(0).GetComponentsInChildren<Image>().First();
             image.sprite = SpriteManager.GetSprite("Tile", tileType.Type);
         }
-    }
-
-    private void RenderDeconstructButton()
-    {
-        taskItems = new List<GameObject>();
-
-        UnityEngine.Object buttonPrefab = Resources.Load("UI/MenuLeft/ConstructionMenu/Button");
-        Transform contentTransform = this.transform.FindChild("Scroll View").FindChild("Viewport").FindChild("Content");
-
-        BuildModeController buildModeController = WorldController.Instance.buildModeController;
-
-        GameObject gameObject = (GameObject)Instantiate(buttonPrefab);
-        gameObject.transform.SetParent(contentTransform);
-        taskItems.Add(gameObject);
-
-        gameObject.name = "Button - Deconstruct";
-
-        gameObject.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(LocalizationDeconstruct) };
-
-        Button button = gameObject.GetComponent<Button>();
-
-        button.onClick.AddListener(delegate
-        {
-            buildModeController.SetMode_Deconstruct();
-        });
-
-        LocalizationTable.CBLocalizationFilesChanged += delegate
-        {
-            gameObject.transform.GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization(LocalizationDeconstruct) };
-        };
-
-        Image image = gameObject.transform.GetChild(0).GetComponentsInChildren<Image>().First();
-        image.sprite = SpriteManager.GetSprite("UI", "Deconstruct");
     }
 }
