@@ -28,7 +28,6 @@ public class MouseOverTileTypeText : MouseOver
             tileType = tile.Type.ToString();
         }
 
-
         string tileInfo = LocalizationTable.GetLocalization("tile_type", tileType);
         if (tile != null && tile.Utilities != null && tile.Utilities.Count > 0)
         {

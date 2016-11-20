@@ -16,9 +16,9 @@ using MoonSharp.Interpreter.Interop;
 using Newtonsoft.Json.Linq;
 using ProjectPorcupine.Buildable.Components;
 using ProjectPorcupine.Jobs;
+using ProjectPorcupine.Localization;
 using ProjectPorcupine.PowerNetwork;
 using UnityEngine;
-using ProjectPorcupine.Localization;
 
 /// <summary>
 /// InstalledObjects are things like walls, doors, and furniture (e.g. a sofa).

@@ -14,6 +14,7 @@ using System.Xml;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
 using Newtonsoft.Json.Linq;
+using ProjectPorcupine.Localization;
 
 namespace ProjectPorcupine.Rooms
 {
@@ -350,7 +351,7 @@ namespace ProjectPorcupine.Rooms
         {
             yield return new ContextMenuAction
             {
-                LocalizationKey = "Deconstruct " + Name,
+                LocalizationKey = LocalizationTable.GetLocalization("deconstruct_furniture", LocalizationCode),
                 RequireCharacterSelected = false,
                 Action = (contextMenuAction, character) => Deconstruct(this)
             };
