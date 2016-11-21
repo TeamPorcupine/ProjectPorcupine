@@ -10,5 +10,5 @@ fi
 if [ "$StyleCopErrorCode" != "0" ]; then
     echo '\nThe following Stylecop violations were thrown:\n'
     echo "$StylecopOutput\n"
-    exitStatus=1
+    exit 1
 fi
