@@ -1,4 +1,3 @@
-echo 'travis_fold:start:stylecop'
 echo "Stylecopping"
 StylecopOutput=$(mono /opt/stylecop/StyleCopCmd.Console.exe -rd Assets/ -vt)
 StyleCopErrorCode=$?
@@ -6,7 +5,6 @@ StyleCopErrorCode=$?
 if [ "$StyleCopErrorCode" == "0" ]; then
     echo '\nNo Stylecop violations were found.\n'
 fi
-echo 'travis_fold:end:stylecop'
 
 
 if [ "$StyleCopErrorCode" != "0" ]; then
