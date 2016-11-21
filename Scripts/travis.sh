@@ -1,10 +1,10 @@
 #! /bin/sh
 
 if [ "$TEST_SUITE" == "unit-test" ]; then
-    ./test.sh --travis
+    ./Scripts/test.sh --travis
 fi
 
 
 if [ "$TEST_SUITE" == "stylecop" ]; then
-    ./check-style.sh
+    ./Scripts/check-style.sh
 fi
