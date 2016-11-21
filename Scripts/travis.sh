@@ -1,7 +1,7 @@
 #! /bin/sh
 
 if [ "$TEST_SUITE" == "unit-test" ]; then
-    ./test.sh
+    ./test.sh --travis
 fi
 
 
