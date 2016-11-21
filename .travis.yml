@@ -10,13 +10,17 @@ before_install:
  - chmod +x ./Scripts/install.sh
  - chmod +x ./Scripts/test.sh
  - chmod +x ./Scripts/mono.sh
- - chmod +x ./Scripts/stylecop.sh
- 
+ - chmod +x ./Scripts/install-stylecop.sh
+ - chmod +x ./Scripts/check-style.sh
+ - chmod +x ./Scripts/travis.sh
+env:
+  - JOB=unit-test
+  - JOB=stylecop
 install:
 - ./Scripts/install.sh
 - ./Scripts/mono.sh
-- ./Scripts/stylecop.sh
+- ./Scripts/install-stylecop.sh
 script:
-- ./Scripts/test.sh --travis
+- ./Scripts/travis.sh
 notifications:
   email: false
