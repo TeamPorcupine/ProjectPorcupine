@@ -11,6 +11,7 @@ before_install:
  - chmod +x ./Scripts/test.sh
  - chmod +x ./Scripts/mono.sh
  - chmod +x ./Scripts/stylecop.sh
+ - chmod +x ./Scripts/check-style.sh
  - chmod +x ./Scripts/travis.sh
 env:
   - TEST_SUITE=unit-test
