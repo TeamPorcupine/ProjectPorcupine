@@ -3,7 +3,8 @@
 # the environment variable travis selects.
 
 if [ "$JOB" == "unit-test" ]; then
-    ./Scripts/test.sh --travis
+   ./Scripts/test.sh --travis
+   exit $?
 fi
 
 
