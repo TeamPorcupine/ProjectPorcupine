@@ -6,7 +6,7 @@ StyleCopErrorCode=$?
 if [ "$StyleCopErrorCode" == "0" ]; then
     echo '\nNo Stylecop violations were found.\n'
 fi
-travecho 'travis_fold:end:stylecop'
+echo 'travis_fold:end:stylecop'
 
 
 if [ "$StyleCopErrorCode" != "0" ]; then

@@ -1,10 +1,12 @@
 #! /bin/sh
+# This script is responsible for running the script that matches
+# the environment variable travis selects.
 
-if [ "$TEST_SUITE" == "unit-test" ]; then
+if [ "$JOB" == "unit-test" ]; then
     ./Scripts/test.sh --travis
 fi
 
 
-if [ "$TEST_SUITE" == "stylecop" ]; then
+if [ "$JOB" == "stylecop" ]; then
     ./Scripts/check-style.sh
 fi

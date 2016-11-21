@@ -63,16 +63,6 @@ travecho()
 
 endTestsFold=0 #stores whether the travis_fold:end:tests has been echoed yet
 
-travecho 'travis_fold:start:stylecop'
-echo "Stylecopping"
-StylecopOutput=$(mono /opt/stylecop/StyleCopCmd.Console.exe -rd Assets/ -vt)
-StyleCopErrorCode=$?
-
-if [ "$StyleCopErrorCode" == "0" ]; then
-    echo '\nNo Stylecop violations were found.\n'
-fi
-travecho 'travis_fold:end:stylecop'
-
 travecho 'travis_fold:start:compile'
 echo "Attempting Unit Tests"
 "$unityPath" -batchmode -runEditorTests -nographics -EditorTestResultFile "$(pwd)"/EditorTestResults.xml -projectPath "$(pwd)" -logFile unity.log
@@ -110,11 +100,6 @@ if [ "$endTestsFold" = 0 ]; then
     travecho 'travis_fold:end:tests'
 fi
 
-if [ "$StyleCopErrorCode" != "0" ]; then
-    echo '\nThe following Stylecop violations were thrown:\n'
-    echo "$StylecopOutput\n"
-    exitStatus=1
-fi
 
 #TERRIBLE error check logic - Please fix ASAP
 errorCount=$(grep "failures" EditorTestResults.xml | awk -F"\"" '{print $8}') #find line with 'failures' and returns characters between quotation mark 8 and 9
