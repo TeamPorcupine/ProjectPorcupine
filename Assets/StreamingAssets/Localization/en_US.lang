@@ -131,3 +131,4 @@ toggle_pressure_lock=Toggle Pressure Lock
 set_filter=Set Filter%
 change_to_raw_iron=Change to Raw Iron
 change_to_raw_copper=Change to Raw Copper
+deconstruct=Deconstruct {0}
