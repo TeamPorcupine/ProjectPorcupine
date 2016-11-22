@@ -526,7 +526,6 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         prevUpdatePowerOn = true;
         Jobs.ResumeAll();
 
-        // TODO: some weird thing happens
         if (EventActions != null)
         {
             EventActions.Trigger("OnUpdate", this, deltaTime);
