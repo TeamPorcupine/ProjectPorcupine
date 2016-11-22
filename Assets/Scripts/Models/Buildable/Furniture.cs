@@ -16,6 +16,7 @@ using MoonSharp.Interpreter.Interop;
 using Newtonsoft.Json.Linq;
 using ProjectPorcupine.Buildable.Components;
 using ProjectPorcupine.Jobs;
+using ProjectPorcupine.Localization;
 using ProjectPorcupine.PowerNetwork;
 using UnityEngine;
 
@@ -739,7 +740,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
                     contextMenuLuaActions.Add(new ContextMenuLuaAction
                     {
                         LuaFunction = reader.GetAttribute("FunctionName"),
-                        Text = reader.GetAttribute("Text"),
+                        LocalizationKey = reader.GetAttribute("LocalizationKey"),
                         RequireCharacterSelected = bool.Parse(reader.GetAttribute("RequireCharacterSelected")),
                         DevModeOnly = bool.Parse(reader.GetAttribute("DevModeOnly") ?? "false")
                     });
@@ -1134,7 +1135,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         {
             yield return new ContextMenuAction
             {
-                Text = "Deconstruct " + Name,
+                LocalizationKey = LocalizationTable.GetLocalization("deconstruct_furniture", LocalizationCode),
                 RequireCharacterSelected = false,
                 Action = (ca, c) => SetDeconstructJob()
             };
@@ -1146,7 +1147,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
             {
                 yield return new ContextMenuAction
                 {
-                    Text = "Prioritize " + Name,
+                    LocalizationKey = LocalizationTable.GetLocalization("prioritize_furniture", LocalizationCode),
                     RequireCharacterSelected = true,
                     Action = (ca, c) => c.PrioritizeJob(Jobs[0])
                 };
@@ -1174,7 +1175,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
                 // TODO The Action could be done via a lambda, but it always uses the same space of memory, thus if 2 actions are performed, the same action will be produced for each.
                 yield return new ContextMenuAction
                 {
-                    Text = contextMenuLuaAction.Text,
+                    LocalizationKey = contextMenuLuaAction.LocalizationKey,
                     RequireCharacterSelected = contextMenuLuaAction.RequireCharacterSelected,
                     Action = InvokeContextMenuLuaAction,
                     Parameter = contextMenuLuaAction.LuaFunction    // Note that this is only in place because of the problem with the previous statement.
