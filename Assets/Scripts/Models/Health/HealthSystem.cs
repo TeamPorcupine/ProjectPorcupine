@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
 // This program comes with ABSOLUTELY NO WARRANTY; This is free software,
@@ -8,6 +8,7 @@
 #endregion
 using System;
 using MoonSharp.Interpreter;
+using ProjectPorcupine.Localization;
 
 [MoonSharpUserData]
 [Serializable]
@@ -128,11 +129,11 @@ public class HealthSystem
     {
         if (MaxHealth > 0)
         {
-            return string.Format("HitPoints: {0}/{1} ", currentHealth, MaxHealth);
+            return LocalizationTable.GetLocalization("hit_points_fraction", currentHealth, MaxHealth);
         }
         else
         {
-            return string.Format("HitPoints: {0}", "N/A");
+            return LocalizationTable.GetLocalization("hit_points", "not_applicable_shorthand");
         }  
     }
 

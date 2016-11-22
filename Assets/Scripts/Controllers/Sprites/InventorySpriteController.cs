@@ -44,7 +44,6 @@ public sealed class InventorySpriteController : BaseSpriteController<Inventory>
 
     protected override void OnCreated(Inventory inventory)
     {
-        // FIXME: Does not consider rotated objects
         // This creates a new GameObject and adds it to our scene.
         GameObject inventoryGameObject = new GameObject();
 

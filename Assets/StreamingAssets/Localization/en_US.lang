@@ -82,6 +82,7 @@ tile_Ladder_desc=High-tech space movement system. Effectiveness reduced when hel
 roombehavior_airlock=Airlock
 roombehavior_airlock_desc=A room that prevents air from escaping the base.
 prioritize=Prioritize {0}
+cancel_job=Cancel {0}
 need_oxygen=Oxygen {0}
 need_sleep=Sleep {0}
 job_no_job_desc=None
@@ -109,3 +110,25 @@ prompt_save_before_loading_new_game=Would you like to save before loading anothe
 prompt_overwrite_existing_file=File {0} already exists! Would you like to overwrite it?
 prompt_delete_file=Delete file {0}? You cannot revert this action
 prompt_confirm_quit=Are you sure you want to quit?
+tile_type=Tile Type: {0}
+room_index=Room Index: {0}
+hit_points_fraction=HitPoints: {0}/{1}
+hit_points=HitPoints: {0}
+not_applicable_shorthand=N/A
+stat_dexterity=Dexterity: {0}
+stat_strength=Strength: {0}
+power_grid_status_online=Power Grid: <color={0}>Online</color>
+power_grid_status_offline=Power Grid: <color={0}>Offline</color>
+power_input_status=Power Input: <color={0}>{1}</color>
+power_output_status=Power Output: <color={0}>{1}</color>
+power_accumulated_fraction=Power Accumulated: {0} / {1}
+call_trade_ship_test=Call Trade Ship Test
+flip_direction=Flip Direction
+open_vent=Open Vent
+close_vent=Close Vent
+mine_ore=Mine Ore
+toggle_pressure_lock=Toggle Pressure Lock
+set_filter=Set Filter%
+change_to_raw_iron=Change to Raw Iron
+change_to_raw_copper=Change to Raw Copper
+deconstruct=Deconstruct {0}

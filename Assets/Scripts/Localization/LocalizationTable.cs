@@ -65,7 +65,7 @@ namespace ProjectPorcupine.Localization
         /// <param name="key">The key that should be searched for.</param>
         /// <param name="additionalValues">The values that should be inserted.</param>
         /// <returns></returns>
-        public static string GetLocalization(string key, params string[] additionalValues)
+        public static string GetLocalization(string key, params object[] additionalValues)
         {
             // Return the localization of the advanced method.
             return GetLocalization(key, FallbackMode.ReturnDefaultLanguage, currentLanguage, additionalValues);
@@ -74,7 +74,7 @@ namespace ProjectPorcupine.Localization
         /// <summary>
         /// Returns the localization for the given key, or the key itself, if no translation exists.
         /// </summary>
-        public static string GetLocalization(string key, FallbackMode fallbackMode, string language, params string[] additionalValues)
+        public static string GetLocalization(string key, FallbackMode fallbackMode, string language, params object[] additionalValues)
         {
             string value;
             if (localizationTable.ContainsKey(language) && localizationTable[language].TryGetValue(key, out value))
