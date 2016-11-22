@@ -141,7 +141,6 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
     // Called when the character has completed the job to change tile type
     public static void ChangeTileTypeJobComplete(Job theJob)
     {
-        // FIXME: For now this is hardcoded to build floor
         theJob.tile.SetTileType(theJob.JobTileType);
 
         // FIXME: I don't like having to manually and explicitly set

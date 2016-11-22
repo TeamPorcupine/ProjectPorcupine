@@ -109,7 +109,6 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
 
     protected override void OnCreated(Furniture furniture)
     {
-        // FIXME: Does not consider rotated objects
         GameObject furn_go = new GameObject();
 
         // Add our tile/GO pair to the dictionary.
