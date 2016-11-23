@@ -68,13 +68,16 @@ namespace DeveloperConsole.CommandTypes
             // We are using regex since we only want a very specific part of the parameters
             // This is relatively fast, (actually quite fast compared to other methods and is in start)
             // Something like text: String, value: Int, on: Bool
-            string regexExpression = @"\s*(.*?\;)?.*?\:(.*?)\s*(?:\,|$)";
+            // Old Regex: \s*(.*?\;)?.*?\:(.*?)\s*(?:\,|$)
+            // Koosemoose's Regex: /using\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)/
+            // My Adjustments to Koosemoose's Regex (optimises for groups not needed): (using\s+[^\s]+)?\s*([^\s]+)\s+[^\s]+
+            string regexExpression = @"(using\s+[^\s]+)?\s*([^\s]+)\s+[^\s]+";
 
             // This will just get the types
             string[] parameterTypes = Regex.Matches(parameters, regexExpression)
                 .Cast<Match>()
                 .Where(m => m.Groups.Count >= 2 && m.Groups[2].Value != string.Empty)
-                .Select(m => (m.Groups[1].Value != string.Empty ? m.Groups[1].Value.Trim() : "System;") + m.Groups[2].Value.Trim())
+                .Select(m => (m.Groups[1].Value != string.Empty ? m.Groups[1].Value.Trim() : "using System;") + m.Groups[2].Value.Trim())
                 .ToArray();
 
             Type[] types = new Type[parameterTypes.Length];
@@ -95,13 +98,15 @@ namespace DeveloperConsole.CommandTypes
                         // Honestly this could be touched up quite a bit as a whole
                         string[] parameterSections = parameterTypes[i].Split(';');
 
+                        Debug.LogWarning(parameterSections[0]);
+                        Debug.LogWarning(parameterSections[1]);
+
                         types[i] = GetFriendlyType(parameterSections[1], parameterSections[0]);
                     }
                     catch (Exception e)
                     {
                         types[i] = typeof(object);
-                        throw e.InnerException;
-                        //Debug.ULogErrorChannel("DevConsole", e.Message);
+                        Debug.ULogErrorChannel("DevConsole", e.Message);
                     }
                 }
             }
@@ -177,7 +182,7 @@ namespace DeveloperConsole.CommandTypes
             // A little ugly but not too bad
             // I've shrunk it to provide a little bit of speed (its not that hard to read anyway)
             string code =
-                "using " + namespaces + ";\n"
+                namespaces + ";\n"
                 + @" public class TypeFullNameGetter {public override string ToString(){"
                 + "return typeof(" + friendlyName.ToLower() + ").FullName;"
                 + " }}";

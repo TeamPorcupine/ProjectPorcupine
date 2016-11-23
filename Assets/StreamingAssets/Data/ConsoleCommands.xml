@@ -6,11 +6,11 @@
   <!--Description is a short description of what this command does-->
   <!--HelpFunctionName is for LUA and is the function name of the LUA Script that runs on Title?-->
   <!--Parameters is a list of parameter, with each parameter having four parts: Name (being the name of variable), Type (the type, can be friendly C# or Namespace C#), the Namespace (to add before the type like UnityEngine.Vector3), and Assembly (like UnityEngine or System)-->
-  <!--You set parameters to the format NameSpace; VariableName : Type, ...-->
-  <!--E.g. UnityEngine; MyVector : UnityEngine.Vector3, MyPrimitiveInt : Int-->
+  <!--You set parameters to the format NameSpace; Type: VariableName,...-->
+  <!--E.g. UnityEngine; UnityEngine.Vector3 : MyVector, Int : MyPrimitiveInt-->
   <!--Note: You can not include the namespace if its a system namespace (like primitives i.e. int, bool...)-->
-  <ConsoleCommand Title="SetFontSize" FunctionName="Set_FontSize" Description="Sets the font size, must be between 10 and 20 (inclusive)" HelpFunctionName="" Parameters="size: Int"></ConsoleCommand>
+  <ConsoleCommand Title="SetFontSize" FunctionName="Set_FontSize" Description="Sets the font size, must be between 10 and 20 (inclusive)" HelpFunctionName="" Parameters="Int size"></ConsoleCommand>
   <ConsoleCommand Title="Clear" FunctionName="Clear" Description="Clears the console" HelpFunctionName="" Parameters=""></ConsoleCommand>
   <ConsoleCommand Title="Help" FunctionName="HelpAll" Description="Shows a list of all the available commands" HelpFunctionName="" Parameters=""></ConsoleCommand>
-  <ConsoleCommand Title="SetTimeStamp" FunctionName="SetTimeStamp" Description="Sets the time stamp" HelpFunctionName="Sets to either show or hide time stamps" Parameters="on: Bool"></ConsoleCommand>
+  <ConsoleCommand Title="SetTimeStamp" FunctionName="SetTimeStamp" Description="Sets the time stamp" HelpFunctionName="Sets to either show or hide time stamps" Parameters="Bool on"></ConsoleCommand>
 </ConsoleCommands>
