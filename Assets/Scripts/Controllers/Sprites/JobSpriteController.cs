@@ -69,8 +69,6 @@ public class JobSpriteController : BaseSpriteController<Job>
             return;
         }
 
-        // FIXME: We can only do furniture-building jobs.
-        // TODO: Sprite
         if (objectGameObjectMap.ContainsKey(job))
         {
             return;

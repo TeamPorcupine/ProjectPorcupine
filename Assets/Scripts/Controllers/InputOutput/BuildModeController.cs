@@ -217,7 +217,6 @@ public class BuildModeController
             // Run the ValidPlacement function!
             string utilityType = buildModeType;
 
-            // TODO: Reimplement this later: DoesBuildJobOverlapExistingBuildJob(t, furnitureType) == false)
             if ( 
                 World.Current.UtilityManager.IsPlacementValid(utilityType, tile)  &&
                 DoesSameUtilityTypeAlreadyExist(utilityType, tile) == false &&
@@ -297,7 +296,6 @@ public class BuildModeController
         }
         else if (buildMode == BuildMode.DECONSTRUCT)
         {
-            // TODO
             bool canDeconstructAll = Settings.GetSetting("DialogBoxSettings_developerModeToggle", false);
             if (tile.Furniture != null && (canDeconstructAll || tile.Furniture.HasTypeTag("Non-deconstructible") == false))
             {

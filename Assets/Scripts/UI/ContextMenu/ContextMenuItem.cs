@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
 // This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
@@ -6,6 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using ProjectPorcupine.Localization;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -26,7 +27,7 @@ public class ContextMenuItem : MonoBehaviour
     /// </summary>
     public void BuildInterface()
     {
-        text.text = Action.Text;
+        text.text = LocalizationTable.GetLocalization(Action.LocalizationKey);
     }
 
     /// <summary>

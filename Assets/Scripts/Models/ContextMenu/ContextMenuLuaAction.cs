@@ -10,7 +10,7 @@ public class ContextMenuLuaAction
 {
     public string LuaFunction;
     
-    public string Text;
+    public string LocalizationKey;
     
     public bool RequireCharacterSelected;
 
