@@ -1,12 +1,14 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
 using DeveloperConsole;
 
 public static class CommandFunctions
 {
-    public static void SetTimeStamp(Vector3 on)
+    // Just doing this so its an example
+    // Tbh this is really quite cool, you can say any variable 
+    // And it will adjust to that, including objects (as long as those objects exist in a assembly/namespace used commonly)
+    public static void SetTimeStamp(bool on)
     {
-        Debug.LogWarning(on);
+        CommandSettings.ShowTimeStamp = on;
         DevConsole.Log("Change successful :D", "green");
     }
 }

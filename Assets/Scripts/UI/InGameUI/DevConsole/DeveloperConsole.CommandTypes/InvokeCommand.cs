@@ -7,16 +7,17 @@
 // ====================================================
 #endregion
 using System;
-using System.Text.RegularExpressions;
-using DeveloperConsole.Interfaces;
-using MoonSharp.Interpreter;
-using System.Linq;
-
-using Microsoft.CSharp;
 using System.CodeDom.Compiler;
+using System.Linq;
+using System.Text.RegularExpressions;
+
+using DeveloperConsole.Interfaces;
+using Microsoft.CSharp;
+using MoonSharp.Interpreter;
 
 namespace DeveloperConsole.CommandTypes
 {
+    // This is for LUA and invokable C#
     [MoonSharpUserData]
     public sealed class InvokeCommand : CommandBase, ICommandInvoke
     {
@@ -51,19 +52,29 @@ namespace DeveloperConsole.CommandTypes
         public InvokeCommand(string title, string functionName, string descriptiveText, string helpFunctionName, string parameters) : this(title, functionName, descriptiveText)
         {
             HelpFunctionName = helpFunctionName;
-            Parameters = parameters;
+
+            // This will exclude the first part (IF it contains a ';')
+            if (parameters.Contains(';'))
+            {
+                Parameters = parameters.Substring(parameters.IndexOf(';') + 1).Trim();
+            }
+            else
+            {
+                // In this case we will just add system, since no point making the user add it each time
+                Parameters = parameters;
+            }
 
             // Parse the parameters
             // We are using regex since we only want a very specific part of the parameters
             // This is relatively fast, (actually quite fast compared to other methods and is in start)
             // Something like text: String, value: Int, on: Bool
-            string regexExpression = @"\s*.*?\:(.*?)\s*(?:\,|$)";
+            string regexExpression = @"\s*(.*?\;)?.*?\:(.*?)\s*(?:\,|$)";
 
             // This will just get the types
             string[] parameterTypes = Regex.Matches(parameters, regexExpression)
                 .Cast<Match>()
-                .Where(m => m.Groups.Count >= 2 && m.Groups[1].Value != string.Empty)
-                .Select(m => m.Groups[1].Value.Trim())
+                .Where(m => m.Groups.Count >= 2 && m.Groups[2].Value != string.Empty)
+                .Select(m => (m.Groups[1].Value != string.Empty ? m.Groups[1].Value.Trim() : "System;") + m.Groups[2].Value.Trim())
                 .ToArray();
 
             Type[] types = new Type[parameterTypes.Length];
@@ -81,12 +92,16 @@ namespace DeveloperConsole.CommandTypes
                     // Could try to remove, but in most cases won't be part of DevConsole, till you open, or it starts.
                     try
                     {
-                        types[i] = GetFriendlyType(parameterTypes[i]);
+                        // Honestly this could be touched up quite a bit as a whole
+                        string[] parameterSections = parameterTypes[i].Split(';');
+
+                        types[i] = GetFriendlyType(parameterSections[1], parameterSections[0]);
                     }
                     catch (Exception e)
                     {
                         types[i] = typeof(object);
-                        Debug.ULogErrorChannel("DevConsole", e.Message);
+                        throw e.InnerException;
+                        //Debug.ULogErrorChannel("DevConsole", e.Message);
                     }
                 }
             }
@@ -136,6 +151,54 @@ namespace DeveloperConsole.CommandTypes
             get; protected set;
         }
 
+        // This should work for all types
+        public static Type GetFriendlyType(string friendlyName, string namespaces)
+        {
+            // This first bit was made up by me,
+            // just to make the whole process a little faster (this should run in 99% of cases)
+            Type tryType = Type.GetType(friendlyName + ", " + namespaces, false, true);
+
+            if (tryType != null)
+            {
+                return tryType;
+            }
+
+            // From http://stackoverflow.com/questions/16984005/convert-c-friendly-type-name-to-actual-type-int-typeofint
+            // Really annoying way to do it
+            // We could maybe cache multiple together????
+            var provider = new CSharpCodeProvider();
+
+            var pars = new CompilerParameters
+            {
+                GenerateExecutable = false,
+                GenerateInMemory = true
+            };
+
+            // A little ugly but not too bad
+            // I've shrunk it to provide a little bit of speed (its not that hard to read anyway)
+            string code =
+                "using " + namespaces + ";\n"
+                + @" public class TypeFullNameGetter {public override string ToString(){"
+                + "return typeof(" + friendlyName.ToLower() + ").FullName;"
+                + " }}";
+
+            var comp = provider.CompileAssemblyFromSource(pars, new[] { code });
+
+            if (comp.Errors.Count > 0)
+            {
+                foreach (CompilerError error in comp.Errors)
+                {
+                    Debug.ULogWarningChannel("DevConsole", error.ErrorText);
+                }
+
+                return null;
+            }
+
+            object fullNameGetter = comp.CompiledAssembly.CreateInstance("TypeFullNameGetter");
+            string fullName = fullNameGetter.ToString();
+            return Type.GetType(fullName);
+        }
+
         public void ExecuteCommand(string arguments)
         {
             try
@@ -146,53 +209,6 @@ namespace DeveloperConsole.CommandTypes
             {
                 DevConsole.LogError(e.Message);
             }
-        }
-
-        // This should work for all types
-        public static Type GetFriendlyType(string friendlyName)
-        {
-            // Do a first convert then try other
-            Type tryType = Type.GetType(friendlyName + ", UnityEngine", false, true);
-
-            Debug.LogWarning(tryType);
-            if (tryType != null)
-            {
-                return tryType;
-            }
-
-            // From http://stackoverflow.com/questions/16984005/convert-c-friendly-type-name-to-actual-type-int-typeofint
-            // Really annoying way to do it
-            var provider = new CSharpCodeProvider();
-
-            var pars = new CompilerParameters
-            {
-                GenerateExecutable = false,
-                GenerateInMemory = true
-            };
-
-            string code = "public class TypeFullNameGetter"
-                        + "{"
-                        + "     public override string ToString()"
-                        + "     {"
-                        + "         return typeof(" + friendlyName.ToLower() + ").FullName;"
-                        + "     }"
-                        + "}";
-
-            var comp = provider.CompileAssemblyFromSource(pars, new[] { code });
-
-            if (comp.Errors.Count > 0)
-            {
-                foreach (CompilerError error in comp.Errors)
-                {
-                    Debug.LogWarning(error.ErrorText);
-                }
-
-                return null;
-            }
-
-            object fullNameGetter = comp.CompiledAssembly.CreateInstance("TypeFullNameGetter");
-            string fullName = fullNameGetter.ToString();
-            return Type.GetType(fullName);
         }
 
         protected override object[] ParseArguments(string arguments)

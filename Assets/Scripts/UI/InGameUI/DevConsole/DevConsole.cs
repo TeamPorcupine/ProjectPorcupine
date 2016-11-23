@@ -13,6 +13,7 @@ using DeveloperConsole.Interfaces;
 using MoonSharp.Interpreter;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
 namespace DeveloperConsole
 {
@@ -22,7 +23,8 @@ namespace DeveloperConsole
     public class DevConsole : MonoBehaviour
     {
         /// <summary>
-        /// Max characters before cleaning.
+        /// Max lines before cleaning.
+        /// This is quite low but its like decently high
         /// </summary>
         private const int AutoclearThreshold = 18000;
 
@@ -226,6 +228,7 @@ namespace DeveloperConsole
 
         /// <summary>
         /// Logs to the console.
+        /// Still a little slow (maybe do a paging system??)
         /// </summary>
         /// <param name="text"> Text to print.</param>
         public static void BasePrint(string text)
@@ -238,9 +241,9 @@ namespace DeveloperConsole
             instance.textArea.text += text + (CommandSettings.ShowTimeStamp ? "\t[" + System.DateTime.Now.ToShortTimeString() + "]" : string.Empty) + "\n";
 
             // Clear if limit exceeded
-            if (instance.textArea.text.Length >= AutoclearThreshold)
+            if (instance.textArea.cachedTextGenerator.characterCount >= AutoclearThreshold || instance.textArea.cachedTextGenerator.vertexCount > 55000)
             {
-                instance.textArea.text = "\nAUTO-CLEAR";
+                instance.textArea.text = "\nAUTO-CLEAR\n";
             }
 
             // Update scroll bar
