@@ -3,15 +3,24 @@
 # Using objective-c since windows build images are not available
 # The chmod-ing may be uneccesary 
 language: objective-c
-osx_image: xcode61
+osx_image: xcode6.4
 rvm:
 - 2.1.2
 before_install:
  - chmod +x ./Scripts/install.sh
  - chmod +x ./Scripts/test.sh
+ - chmod +x ./Scripts/mono.sh
+ - chmod +x ./Scripts/install-stylecop.sh
+ - chmod +x ./Scripts/check-style.sh
+ - chmod +x ./Scripts/travis.sh
+env:
+  - JOB=unit-test
+  - JOB=stylecop
 install:
 - ./Scripts/install.sh
+- ./Scripts/mono.sh
+- ./Scripts/install-stylecop.sh
 script:
-- ./Scripts/test.sh --travis
+- ./Scripts/travis.sh
 notifications:
   email: false

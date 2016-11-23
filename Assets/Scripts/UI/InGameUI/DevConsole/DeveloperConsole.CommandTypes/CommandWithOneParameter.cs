@@ -49,7 +49,6 @@ namespace DeveloperConsole.CommandTypes
         {
             try
             {
-                Debug.LogWarning(args);
                 if (args.Length > 0)
                 {
                     return new object[] { GetValueType<T0>(args) };

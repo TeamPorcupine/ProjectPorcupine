@@ -15,7 +15,7 @@ public class ContextMenuAction
 
     public bool RequireCharacterSelected { get; set; }
 
-    public string Text { get; set; }
+    public string LocalizationKey { get; set; }
 
     public void OnClick(MouseController mouseController)
     {

@@ -4,17 +4,9 @@ using DeveloperConsole;
 
 public static class CommandFunctions
 {
-    public static void SetTimeStamp(string values)
+    public static void SetTimeStamp(Vector3 on)
     {
-        bool result;
-        if (bool.TryParse(values, out result))
-        {
-            CommandSettings.ShowTimeStamp = result;
-            DevConsole.Log("Change successful :D", "green");
-        }
-        else
-        {
-            DevConsole.LogError("Value not a boolean");
-        }
+        Debug.LogWarning(on);
+        DevConsole.Log("Change successful :D", "green");
     }
 }

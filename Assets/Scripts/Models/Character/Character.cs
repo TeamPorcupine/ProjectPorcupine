@@ -238,14 +238,14 @@ public class Character : ISelectable, IContextActionProvider
     {
         yield return new ContextMenuAction
         {
-            Text = "Poke " + GetName(),
+            LocalizationKey = "Poke " + GetName(),
             RequireCharacterSelected = false,
             Action = (cm, c) => { Debug.ULogChannel("Character", GetDescription()); health.CurrentHealth -= 5; }
         };
 
         yield return new ContextMenuAction
         {
-            Text = "Heal +5",
+            LocalizationKey = "Heal +5",
             RequireCharacterSelected = false,
             Action = (cm, c) => { health.CurrentHealth += 5; }
         };
@@ -415,8 +415,7 @@ public class Character : ISelectable, IContextActionProvider
 
         foreach (Stat stat in stats.Values)
         {
-            // TODO: Localization
-            yield return string.Format("{0}: {1}", stat.Type, stat.Value);
+            yield return LocalizationTable.GetLocalization("stat_" + stat.Type.ToLower(), stat.Value);
         }
     }
 

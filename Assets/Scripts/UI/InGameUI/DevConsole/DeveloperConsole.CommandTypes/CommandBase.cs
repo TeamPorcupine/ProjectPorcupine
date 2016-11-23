@@ -110,12 +110,23 @@ namespace DeveloperConsole.CommandTypes
         /// <param name="arg"> the argument to find the value type.</param>
         /// <returns> The type of the argument given.</returns>
         /// <exception cref="Exception"> Throws exception if arg is not type T, SHOULD BE CAUGHT by command&ltT0...&gt.</exception>
-        protected T GetValueType<T>(string arg)
+        protected T GetValueType<T>(string arg, Type typeVariable = null)
         {
+            Type typeOfT;
+
+            if (typeVariable != null)
+            {
+                typeOfT = typeVariable;
+            }
+            else
+            {
+                typeOfT = typeof(T);
+            }
+
             try
             {
                 T returnValue;
-                if (typeof(bool) == typeof(T))
+                if (typeof(bool) == typeOfT)
                 {
                     // I'm wanting a boolean
                     bool result;
@@ -125,28 +136,32 @@ namespace DeveloperConsole.CommandTypes
                     }
                     else
                     {
-                        throw new Exception("The entered value is not a valid " + typeof(T) + " value");
+                        throw new Exception("The entered value is not a valid " + typeOfT + " value");
                     }
                 }
-                else if (typeof(T) == typeof(string))
+                else if (typeOfT == typeof(string))
                 {
                     return (T)(object)arg.Trim('"');
                 }
                 else if (arg.Contains('['))
                 {
                     Debug.LogWarning("Object Mode");
-                    arg = arg.Trim();
-                    string pattern = @"(?:\[|\,)(((?:"".*?"")|(?:[^\,\[]*?)))(?:\]|\,)";
+                    arg = arg.Trim().Trim('[', ']');
+
+                    Debug.LogWarning(arg);
+
+                    string pattern = @"\,?((?:\"".*?\"")|(?:[^\,]*))\,?";
 
                     string[] args = Regex.Matches(arg, pattern)
                         .Cast<Match>()
-                        .Select(m => m.Value.Trim().Trim('[', ']').Trim('"'))
+                        .Where(m => m.Groups.Count >= 2 && m.Groups[1].Value != string.Empty)
+                        .Select(m => m.Groups[1].Value.Trim().Trim('"'))
                         .ToArray();
 
                     // This is a list because then we can go parameters.Count to get the current 'non nil' parameters
                     List<object> parameters = new List<object>();
 
-                    ConstructorInfo[] possibleConstructors = typeof(T).GetConstructors().Where(x => x.GetParameters().Length == args.Length).ToArray();
+                    ConstructorInfo[] possibleConstructors = typeOfT.GetConstructors().Where(x => x.GetParameters().Length == args.Length).ToArray();
                     ConstructorInfo chosenConstructor = null;
 
                     for (int i = 0; i < possibleConstructors.Length; i++)
@@ -184,7 +199,7 @@ namespace DeveloperConsole.CommandTypes
                     if (chosenConstructor == null)
                     {
                         args.ToList().ForEach(x => Debug.LogWarning(x));
-                        throw new Exception("The entered value is not a valid " + typeof(T) + " value");
+                        throw new Exception("The entered value is not a valid " + typeOfT + " value");
                     }
                     else
                     {
@@ -193,7 +208,7 @@ namespace DeveloperConsole.CommandTypes
                 }
                 else
                 {
-                    returnValue = (T)Convert.ChangeType(arg, typeof(T));
+                    returnValue = (T)Convert.ChangeType(arg, typeOfT);
                 }
 
                 return returnValue;

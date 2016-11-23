@@ -209,8 +209,6 @@ public class BuildModeController
             // Can we build the furniture in the selected tile?
             // Run the ValidPlacement function!
             string utilityType = buildModeType;
-
-            // TODO: Reimplement this later: DoesBuildJobOverlapExistingBuildJob(t, furnitureType) == false)
             if (
                 World.Current.UtilityManager.IsPlacementValid(utilityType, tile) &&
                 DoesSameUtilityTypeAlreadyExist(utilityType, tile) == false &&
@@ -290,8 +288,8 @@ public class BuildModeController
         }
         else if (buildMode == BuildMode.DECONSTRUCT)
         {
-            // TODO
             bool canDeconstructAll = CommandSettings.DeveloperModeToggle;
+
             if (tile.Furniture != null && (canDeconstructAll || tile.Furniture.HasTypeTag("Non-deconstructible") == false))
             {
                 // check if this is a WALL neighbouring a pressured and pressureless environment, and if so, bail

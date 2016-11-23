@@ -6,6 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using System;
 
 namespace DeveloperConsole.Interfaces
 {
@@ -23,6 +24,11 @@ namespace DeveloperConsole.Interfaces
         /// The help function name to call.
         /// </summary>
         string HelpFunctionName
+        {
+            get;
+        }
+
+        Type[] Types
         {
             get;
         }

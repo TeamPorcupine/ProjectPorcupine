@@ -6,7 +6,8 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-
+using System.Collections;
+using ProjectPorcupine.Localization;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -25,6 +26,6 @@ public class MouseOverRoomIndexText : MouseOver
             roomID = tile.Room.ID.ToString();
         }
 
-        return "Room Index: " + roomID;
+        return LocalizationTable.GetLocalization("room_index", roomID);
     }
 }
