@@ -211,7 +211,7 @@ namespace ProjectPorcupine.Buildable.Components
                 }
                 else
                 {
-                    Debug.ULogWarningChannel(ComponentLogChannel, "Furniture {0} is marked as factory, but has no production chain", ParentFurniture.Name);
+                    UnityDebugger.Debugger.LogWarningFormat(ComponentLogChannel, "Furniture {0} is marked as factory, but has no production chain", ParentFurniture.Name);
                 }
             }
 
@@ -275,7 +275,7 @@ namespace ProjectPorcupine.Buildable.Components
                     if (tile.Inventory != null && tile.Inventory.Locked)
                     {
                         tile.Inventory.Locked = false;
-                        Debug.ULogChannel(ComponentLogChannel, "Inventory {0} at tile {1} is unlocked", tile.Inventory, tile);
+                        UnityDebugger.Debugger.LogFormat(ComponentLogChannel, "Inventory {0} at tile {1} is unlocked", tile.Inventory, tile);
                     }
                 }
             }

@@ -405,7 +405,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     {
         if (proto.IsValidPosition(tile) == false)
         {
-            Debug.ULogWarningChannel("Furniture", "PlaceInstance :: Position Validity Function returned FALSE. " + proto.Name + " " + tile.X + ", " + tile.Y + ", " + tile.Z);
+            UnityDebugger.Debugger.LogWarning("Furniture", "PlaceInstance :: Position Validity Function returned FALSE. " + proto.Name + " " + tile.X + ", " + tile.Y + ", " + tile.Z);
             return null;
         }
 
@@ -568,7 +568,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
 
         if (maxValue == 0)
         {
-            Debug.ULogError("SetAnimationProgressValue maxValue is zero");
+            UnityDebugger.Debugger.LogError("SetAnimationProgressValue maxValue is zero");
         }
 
         float percent = Mathf.Clamp01(currentValue / maxValue);
@@ -896,7 +896,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     {
         if (HasTypeTag("Storage") == false)
         {
-            Debug.ULogChannel("Stockpile_messages", "Someone is asking a non-stockpile to store stuff!?");
+            UnityDebugger.Debugger.Log("Stockpile_messages", "Someone is asking a non-stockpile to store stuff!?");
             return null;
         }
 

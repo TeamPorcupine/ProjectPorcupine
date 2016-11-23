@@ -252,7 +252,7 @@ namespace ProjectPorcupine.Rooms
                         // to remove the room from the world's list.
                         if (oldRoom.TileCount > 0)
                         {
-                            Debug.ULogErrorChannel("Room", "'oldRoom' still has tiles assigned to it. This is clearly wrong.");
+                            UnityDebugger.Debugger.LogError("Room", "'oldRoom' still has tiles assigned to it. This is clearly wrong.");
                         }
 
                         Remove(oldRoom);
@@ -346,7 +346,7 @@ namespace ProjectPorcupine.Rooms
                     // to remove the room from the world's list.
                     if (oldRoom.TileCount > 0)
                     {
-                        Debug.ULogErrorChannel("Room", "'oldRoom' still has tiles assigned to it. This is clearly wrong.");
+                        UnityDebugger.Debugger.LogError("Room", "'oldRoom' still has tiles assigned to it. This is clearly wrong.");
                     }
 
                     Remove(oldRoom);

@@ -57,7 +57,7 @@ public class LuaFunctions : IFunctions
         }
         catch (SyntaxErrorException e)
         {
-            Debug.ULogErrorChannel("Lua", "[" + scriptName + "] LUA Parse error: " + e.DecoratedMessage);
+            UnityDebugger.Debugger.LogError("Lua", "[" + scriptName + "] LUA Parse error: " + e.DecoratedMessage);
             return false;
         }
 
@@ -79,7 +79,7 @@ public class LuaFunctions : IFunctions
         }
         catch (ScriptRuntimeException e)
         {
-            Debug.ULogErrorChannel("Lua", "[" + scriptName + "] LUA RunTime error: " + e.DecoratedMessage);
+            UnityDebugger.Debugger.LogError("Lua", "[" + scriptName + "] LUA RunTime error: " + e.DecoratedMessage);
             return null;
         }
     }
@@ -100,14 +100,14 @@ public class LuaFunctions : IFunctions
         if (instance == null)
         {
             // These errors are about the lua code so putting them in the Lua channel.
-            Debug.ULogErrorChannel("Lua", "Instance is null, cannot call LUA function (something is fishy).");
+            UnityDebugger.Debugger.LogError("Lua", "Instance is null, cannot call LUA function (something is fishy).");
         }
 
         foreach (string fn in functionNames)
         {
             if (fn == null)
             {
-                Debug.ULogErrorChannel("Lua", "'" + fn + "' is not a LUA function.");
+                UnityDebugger.Debugger.LogError("Lua", "'" + fn + "' is not a LUA function.");
                 return;
             }
 
@@ -121,7 +121,7 @@ public class LuaFunctions : IFunctions
             }
             catch (ScriptRuntimeException e)
             {
-                Debug.ULogErrorChannel("Lua", "[" + scriptName + "] LUA RunTime error: " + e.DecoratedMessage);
+                UnityDebugger.Debugger.LogError("Lua", "[" + scriptName + "] LUA RunTime error: " + e.DecoratedMessage);
             }
         }
     }

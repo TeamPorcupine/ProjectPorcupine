@@ -49,32 +49,32 @@ public static class ModUtils
 
     public static void ULogChannel(string channel, string message)
     {
-        Debug.ULogChannel(channel, message);
+        UnityDebugger.Debugger.Log(channel, message);
     }
 
     public static void ULogWarningChannel(string channel, string message)
     {
-        Debug.ULogWarningChannel(channel, message);
+        UnityDebugger.Debugger.LogWarning(channel, message);
     }
 
     public static void ULogErrorChannel(string channel, string message)
     {
-        Debug.ULogErrorChannel(channel, message);
+        UnityDebugger.Debugger.LogError(channel, message);
     }
 
     public static void ULog(string message)
     {
-        Debug.ULogChannel(defaultLogChannel, message);
+        UnityDebugger.Debugger.Log(defaultLogChannel, message);
     }
 
     public static void ULogWarning(string message)
     {
-        Debug.ULogWarningChannel(defaultLogChannel, message);
+        UnityDebugger.Debugger.LogWarning(defaultLogChannel, message);
     }
 
     public static void ULogError(string message)
     {
-        Debug.ULogErrorChannel(defaultLogChannel, message);
+        UnityDebugger.Debugger.LogError(defaultLogChannel, message);
     }
 
     public static float Clamp(float value, float min, float max)

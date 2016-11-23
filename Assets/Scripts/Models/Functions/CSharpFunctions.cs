@@ -83,7 +83,7 @@ public class CSharpFunctions : IFunctions
         {
             if (CompilationResult.HasErrors)
             {
-                Debug.ULogErrorChannel(
+                UnityDebugger.Debugger.LogError(
                     "CSharp",
                     string.Format("[{0}] CSharp compile errors ({1}): {2}", scriptName, CompilationResult.Errors.Count, CompilationResult.GetErrorsLog()));
             }
@@ -123,7 +123,7 @@ public class CSharpFunctions : IFunctions
         {
             if (fn == null)
             {
-                Debug.ULogErrorChannel("CSharp", "'" + fn + "' is not a CSharp function.");
+                UnityDebugger.Debugger.LogError("CSharp", "'" + fn + "' is not a CSharp function.");
                 return;
             }
 
@@ -136,7 +136,7 @@ public class CSharpFunctions : IFunctions
 
             if (result != null && result.Type == DataType.String)
             {
-                Debug.ULogErrorChannel("CSharp", result.String);
+                UnityDebugger.Debugger.LogError("CSharp", result.String);
             }
         }
     }

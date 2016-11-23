@@ -39,7 +39,6 @@ public class CSharpFunctionsTest
     [SetUp]
     public void Init()
     {
-        Debug.IsLogEnabled = false;
         functions = new CSharpFunctions();
     }
 

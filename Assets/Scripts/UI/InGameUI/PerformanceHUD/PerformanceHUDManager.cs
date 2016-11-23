@@ -90,7 +90,7 @@ public class PerformanceHUDManager : MonoBehaviour
         // Just a guard statement essentially
         if (PerformanceComponentGroups.groups.Length > groupSetting)
         {
-            Debug.ULogChannel("Performance", "The current channel was set to index: " + groupSetting);
+            UnityDebugger.Debugger.Log("Performance", "The current channel was set to index: " + groupSetting);
             currentGroup = PerformanceComponentGroups.groups[groupSetting];
 
             // Order by ascending using Linq
@@ -102,12 +102,12 @@ public class PerformanceHUDManager : MonoBehaviour
         else if (groupSetting > 0 && PerformanceComponentGroups.groups.Length > 0)
         {
             // If so then just set to first option (normally none)
-            Debug.ULogErrorChannel("Performance", "Index out of range: Current group is set to 0" + groupSetting);
+            UnityDebugger.Debugger.LogError("Performance", "Index out of range: Current group is set to 0" + groupSetting);
         }
         else
         {
             // Else set to none (none is a readonly so it should always exist)
-            Debug.ULogErrorChannel("Performance", "Array Empty: The PerformanceComponentGroups.groups array is empty");
+            UnityDebugger.Debugger.LogError("Performance", "Array Empty: The PerformanceComponentGroups.groups array is empty");
             currentGroup = PerformanceComponentGroups.None;
         }
 

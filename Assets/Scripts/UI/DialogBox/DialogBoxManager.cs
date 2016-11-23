@@ -91,7 +91,7 @@ public class DialogBoxManager : MonoBehaviour
         }
         else
         {
-            Debug.ULogErrorChannel("ModDialogBox", "Couldn't find dialog box with name" + dialogName);
+            UnityDebugger.Debugger.LogError("ModDialogBox", "Couldn't find dialog box with name" + dialogName);
             return null;
         }
     }
@@ -166,7 +166,7 @@ public class DialogBoxManager : MonoBehaviour
     /// </summary>
     private void LoadModdedDialogBoxes()
     {
-        Debug.ULogChannel("ModDialogBox", "Loading xml dialog boxes");
+        UnityDebugger.Debugger.Log("ModDialogBox", "Loading xml dialog boxes");
         string dialogBoxPath = Path.Combine(Application.streamingAssetsPath, "UI");
         dialogBoxPath = Path.Combine(dialogBoxPath, "DialogBoxes");
         DirectoryInfo dialogBoxPathInfo = new DirectoryInfo(dialogBoxPath);
@@ -176,7 +176,7 @@ public class DialogBoxManager : MonoBehaviour
             switch (fileInfo.Extension)
             {
                 case ".xml":
-                    Debug.ULogChannel("ModDialogBox", "Found xml element:" + fileInfo.Name);
+                    UnityDebugger.Debugger.Log("ModDialogBox", "Found xml element:" + fileInfo.Name);
                     GameObject dialogBoxPrefab = CreateDialogGO("DB_MOD", "Modded Dialog Box");
                     ModDialogBox modDialogBox = dialogBoxPrefab.GetComponent<ModDialogBox>();
                     modDialogBox.LoadFromXML(fileInfo);
@@ -184,7 +184,7 @@ public class DialogBoxManager : MonoBehaviour
                     DialogBoxes[modDialogBox.Title] = modDialogBox;
                     break;
                 case ".lua":
-                    Debug.ULogChannel("ModDialogBox", "Found lua element:" + fileInfo.Name);
+                    UnityDebugger.Debugger.Log("ModDialogBox", "Found lua element:" + fileInfo.Name);
                     WorldController.Instance.modsManager.LoadFunctionsInFile(fileInfo, "ModDialogBox");
                     break;
             }

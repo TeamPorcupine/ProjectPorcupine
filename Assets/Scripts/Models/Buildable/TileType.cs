@@ -163,7 +163,7 @@ public class TileType : IPrototypable, IEquatable<TileType>
             return value.Boolean;
         }
 
-        Debug.ULogChannel("Lua", "Found no lua function " + CanBuildHereLua);
+        UnityDebugger.Debugger.Log("Lua", "Found no lua function " + CanBuildHereLua);
         return false;
     }
 
@@ -232,7 +232,7 @@ public class TileType : IPrototypable, IEquatable<TileType>
         float jobTimeValue;
         if (float.TryParse(jobTime, out jobTimeValue) == false)
         {
-            Debug.ULogErrorChannel(ULogChanelName, "Could not load jobTime for TyleType: {0} -- jobTime readed {1}", Type, jobTime);
+            UnityDebugger.Debugger.LogErrorFormat(ULogChanelName, "Could not load jobTime for TyleType: {0} -- jobTime readed {1}", Type, jobTime);
             return;
         }
 
@@ -255,7 +255,7 @@ public class TileType : IPrototypable, IEquatable<TileType>
             }
             else
             {
-                Debug.ULogErrorChannel(ULogChanelName, "Could not load Inventory item for TyleType: {0}", Type);
+                UnityDebugger.Debugger.LogErrorFormat(ULogChanelName, "Could not load Inventory item for TyleType: {0}", Type);
             }
         }
 

@@ -93,7 +93,7 @@ namespace ProjectPorcupine.Buildable.Components
             }
             else
             {
-                Debug.ULogErrorChannel(ComponentLogChannel, "There is no deserializer for component '{0}'", componentTypeName);
+                UnityDebugger.Debugger.LogErrorFormat(ComponentLogChannel, "There is no deserializer for component '{0}'", componentTypeName);
                 return null;
             }
         }
@@ -209,7 +209,7 @@ namespace ProjectPorcupine.Buildable.Components
                         foreach (BuildableComponentNameAttribute compNameAttr in attribs)
                         {
                             componentTypes.Add(compNameAttr.ComponentName, type);
-                            Debug.ULogChannel(ComponentLogChannel, "Found component in assembly: {0}", compNameAttr.ComponentName);
+                            UnityDebugger.Debugger.LogFormat(ComponentLogChannel, "Found component in assembly: {0}", compNameAttr.ComponentName);
                         }
                     }
                 }
