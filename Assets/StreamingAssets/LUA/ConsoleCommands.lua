@@ -79,20 +79,5 @@ function Clear()
 	DevConsole.ClearHistory()
 end
 
-function HelpAll()
-	DevConsole.Log("-- Help --", "green")
-	for index, value in ipairs(DevConsole:CommandArray()) do
-		local text = "<color=orange>"..value.title..DevConsole.GetParameters(value).."</color>"
-		if (value.descriptiveText ~= nil) then
-			text = text .. "<color=#7CFC00> //" .. value.descriptiveText .. "</color>"
-		end
-		
-		DevConsole.Log(text)
-	end
-	
-	DevConsole.Log("<color=orange>Note:</color> If the function has no parameters you <color=red>don't</color> need to use the parameter modifier.")
-	DevConsole.Log("<color=orange>Note:</color> You <color=red>don't</color> need to use the trailing parameter modifier either")
-end
-
 -------------------------------- Help Actions --------------------------------
 

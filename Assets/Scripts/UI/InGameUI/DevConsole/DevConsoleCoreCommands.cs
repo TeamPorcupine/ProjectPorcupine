@@ -35,6 +35,8 @@ namespace DeveloperConsole
 
         public static void Help()
         {
+            DevConsole.Log("-- Help --", "green");
+
             string text = string.Empty;
 
             CommandBase[] consoleCommands = DevConsole.CommandArray();
@@ -44,10 +46,10 @@ namespace DeveloperConsole
                 text += "\n<color=orange>" + consoleCommands[i].Title + DevConsole.GetParameters(consoleCommands[i]) + "</color>" + (consoleCommands[i].DescriptiveText == null ? string.Empty : " //" + consoleCommands[i].DescriptiveText);
             }
 
-            text += "\n<color=orange>Note:</color> If the function has no parameters you <color=red>don't</color> need to use the parameter modifier.";
-            text += "\n<color=orange>Note:</color> You <color=red>don't</color> need to use the trailing parameter modifier either";
+            DevConsole.Log(text);
 
-            DevConsole.Log("-- Help --" + text);
+            DevConsole.Log("<color=orange>Note:</color> If the function has no parameters you <color=red> don't</color> need to use the parameter modifier.");
+            DevConsole.Log("<color=orange>Note:</color> You <color=red>don't</color> need to use the trailing parameter modifier either");
         }
 
         public static void SetFontSize(int size)
