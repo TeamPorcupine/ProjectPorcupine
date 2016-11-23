@@ -98,9 +98,6 @@ namespace DeveloperConsole.CommandTypes
                         // Honestly this could be touched up quite a bit as a whole
                         string[] parameterSections = parameterTypes[i].Split(';');
 
-                        Debug.LogWarning(parameterSections[0]);
-                        Debug.LogWarning(parameterSections[1]);
-
                         types[i] = GetFriendlyType(parameterSections[1], parameterSections[0]);
                     }
                     catch (Exception e)
