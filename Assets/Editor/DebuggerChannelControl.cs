@@ -10,13 +10,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
 public class DebuggerChannelControl : EditorWindow
 {
     private EditorWindow window;
-    private HashSet<string> Channels;
 
     [MenuItem("Window/Debugger Channel Control")]
     public static void ShowWindow()
@@ -28,25 +28,21 @@ public class DebuggerChannelControl : EditorWindow
     {
         window = GetWindow(typeof(DebuggerChannelControl));
         window.minSize = new Vector2(460, 100);
-        Channels = new HashSet<string>();
-        Channels.Add("Pathfinder");
-        Channels.Add("SpriteManager");
-        Channels.Add("More");
-        Channels.Add("More1");
-        Channels.Add("More2");
-        Channels.Add("More3");
     }
 
     private void OnGUI()
     {
-//        GUILayout.BeginHorizontal("Box");
+        GUILayout.BeginHorizontal("Box");
         GUILayout.Toggle(true, "All");
 
-        foreach (string channelName in Channels)
+        if(UnityDebugger.Debugger.Channels != null)
         {
-            GUILayout.Toggle(true, channelName);
+            foreach (string channelName in UnityDebugger.Debugger.Channels.Keys.AsEnumerable())
+            {
+                GUILayout.Toggle(UnityDebugger.Debugger.Channels[channelName], channelName);
+            }
         }
-//        GUILayout.EndHorizontal();
+        GUILayout.EndHorizontal();
 
         EditorGUILayout.Space();
     }

@@ -2,6 +2,7 @@
 using System;
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
+using System.Collections.Generic;
 
 namespace UnityDebugger
 {
@@ -39,10 +40,13 @@ namespace UnityDebugger
         /// </summary>
         public static LogLevel LogLevel { get; set; }
 
+        public static Dictionary<string, bool> Channels { get; set; }
+
         static Debugger()
         {
             Enabled = Debug.isDebugBuild;
             LogLevel = LogLevel.Info;
+            Channels = new Dictionary<string, bool>();
         }
 
         #region Asserts
@@ -98,7 +102,10 @@ namespace UnityDebugger
         /// <param name="context">Context.</param>
         public static void Log(string channel, string message, Object context = null)
         {
-            Log(message, context);
+            if (ChannelEnabled(channel))
+            {
+                Log(message, context);
+            }
         }
 
         /// <summary>
@@ -144,7 +151,10 @@ namespace UnityDebugger
         /// <param name="context">Context.</param>
         public static void LogWarning(string channel, string message, Object context = null)
         {
-            LogWarning(message, context);
+            if (ChannelEnabled(channel))
+            {
+                LogWarning(message, context);
+            }
         }
 
         /// <summary>
@@ -190,7 +200,10 @@ namespace UnityDebugger
         /// <param name="context">Context.</param>
         public static void LogError(string channel, string message, Object context = null)
         {
-            LogError(message, context);
+            if (ChannelEnabled(channel))
+            {
+                LogError(message, context);
+            }
         }
 
         /// <summary>
@@ -236,7 +249,10 @@ namespace UnityDebugger
         /// <param name="context">Context.</param>
         public static void LogException(string channel, Exception exception, Object context = null)
         {
-            LogException(exception, context);
+            if (ChannelEnabled(channel))
+            {
+                LogException(exception, context);
+            }
         }
 
         #endregion
@@ -248,6 +264,18 @@ namespace UnityDebugger
             return Enabled && LogLevel >= logLevel;
         }
 
+        private static bool ChannelEnabled(string channel)
+        {
+            if (Channels.ContainsKey(channel))
+            {
+                return Channels[channel];
+            }
+            else
+            {
+                Channels.Add(channel, false);
+                return false;
+            }
+        }
         #endregion
     }
 }
