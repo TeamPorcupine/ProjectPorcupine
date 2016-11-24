@@ -3,6 +3,8 @@ using System;
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 using System.Collections.Generic;
+using UnityEngine;
+
 
 namespace UnityDebugger
 {
@@ -26,8 +28,10 @@ namespace UnityDebugger
         public AssertException(string message, Exception innerException) : base(message, innerException) { }
     }
 
+    [ExecuteInEditMode]
     public static class Debugger
     {
+        public static bool exists = false;
         /// <summary>
         /// If false, Debugger does nothing. 
         /// Default value: Debug.isDebugBuild
@@ -40,7 +44,7 @@ namespace UnityDebugger
         /// </summary>
         public static LogLevel LogLevel { get; set; }
 
-        public static bool DefaultState { get; set; }
+        public static bool DefaultState;
 
         public static Dictionary<string, bool> Channels { get; set; }
 
@@ -49,6 +53,13 @@ namespace UnityDebugger
             Enabled = Debug.isDebugBuild;
             LogLevel = LogLevel.Info;
             Channels = new Dictionary<string, bool>();
+            exists = true;
+
+            ChannelSettingsSO channelSettings = Resources.Load<ChannelSettingsSO>("ChannelSettings");
+            if(channelSettings != null)
+            {
+                DefaultState = channelSettings.DefaultState;
+            }
         }
 
         #region Asserts
