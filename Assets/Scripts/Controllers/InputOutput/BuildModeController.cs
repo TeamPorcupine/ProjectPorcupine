@@ -166,14 +166,14 @@ public class BuildModeController
                     job.Description = "job_build_" + furnitureType + "_desc";
                 }
 
-                Furniture furnituteToBuild = PrototypeManager.Furniture.Get(furnitureType).Clone();
-                furnituteToBuild.SetRotation(CurrentPreviewRotation);
-                job.buildablePrototype = furnituteToBuild;
+                Furniture furnitureToBuild = PrototypeManager.Furniture.Get(furnitureType).Clone();
+                furnitureToBuild.SetRotation(CurrentPreviewRotation);
+                job.buildablePrototype = furnitureToBuild;
 
                 // Add the job to the queue or build immediately if in Dev mode
                 if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
-                {
-                    World.Current.FurnitureManager.PlaceFurniture(furnituteToBuild, job.tile);
+                {                    
+                    World.Current.FurnitureManager.PlaceFurniture(furnitureToBuild, job.tile);
                 }
                 else
                 {
@@ -316,10 +316,10 @@ public class BuildModeController
                 tile.Utilities.Last().Value.SetDeconstructJob();
             }
         }
-        else if(buildMode == BuildMode.MINE)
+        else if (buildMode == BuildMode.MINE)
         {
             // TODO: need to also check whether it was already marked for mining (will come with some smart JobManager)
-            if(tile.Furniture != null && tile.Furniture.Type == "astro_wall")
+            if (tile.Furniture != null && tile.Furniture.Type == "astro_wall")
             {
                 // check if this is a WALL neighbouring a pressured and pressureless environment, and if so, bail
                 if (IsTilePartOfPressuredRoom(tile))

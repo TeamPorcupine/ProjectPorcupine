@@ -1,33 +1,33 @@
-﻿using ProjectPorcupine.Localization;
-using System;
+﻿#region License
+// ====================================================
+// Project Porcupine Copyright(C) 2016 Team Porcupine
+// This program comes with ABSOLUTELY NO WARRANTY; This is free software,
+// and you are welcome to redistribute it under certain conditions; See
+// file LICENSE, which is part of this source code package, for details.
+// ====================================================
+#endregion
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using ProjectPorcupine.Localization;
 using UnityEngine;
 using UnityEngine.UI;
 
-class OrderMenu : MonoBehaviour
+public class OrderMenu : MonoBehaviour
 {
-
     private const string LocalizationDeconstruct = "deconstruct_furniture";
     private const string LocalizationMine = "mine_furniture";
 
     private List<GameObject> taskItems;
 
-
-    private bool showAllFurniture;
-
     private MenuLeft menuLeft;
 
-    public void RebuildMenuButtons(bool showAllFurniture = false)
+    public void RebuildMenuButtons()
     {       
         foreach (GameObject gameObject in taskItems)
         {
             Destroy(gameObject);
         }
-
-        this.showAllFurniture = showAllFurniture;
-
+        
         RenderDeconstructButton();
         RenderMineButton();
     }
@@ -53,13 +53,7 @@ class OrderMenu : MonoBehaviour
     private void Start()
     {
         Text title = GetComponentInChildren<Text>();
-        title.text = "Orders";
-        
-        //title.text = "menu_orders";
-        //title.gameObject.AddComponent<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization("menu_orders") };
-        // TODO: localization, this for some reason breaks the game:
-        //GetComponentInChildren<TextLocalizer>().formatValues = new string[] { LocalizationTable.GetLocalization("menu_orders") };
-        //title.text = LocalizationTable.GetLocalization("menu_orders");
+        title.text = LocalizationTable.GetLocalization("menu_orders");
 
         menuLeft = this.transform.GetComponentInParent<MenuLeft>();
 

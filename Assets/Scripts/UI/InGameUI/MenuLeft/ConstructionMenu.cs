@@ -21,7 +21,6 @@ public class ConstructionMenu : MonoBehaviour
     private List<GameObject> roomBehaviorItems;
     private List<GameObject> utilityItems;
     private List<GameObject> tileItems;
-    private List<GameObject> taskItems;
 
     private bool showAllFurniture;
 
@@ -48,12 +47,7 @@ public class ConstructionMenu : MonoBehaviour
         {
             Destroy(gameObject);
         }
-
-        foreach (GameObject gameObject in taskItems)
-        {
-            Destroy(gameObject);
-        }
-
+        
         this.showAllFurniture = showAllFurniture;
         
         RenderRoomBehaviorButtons();
@@ -82,6 +76,9 @@ public class ConstructionMenu : MonoBehaviour
 
     private void Start()
     {
+        Text title = GetComponentInChildren<Text>();
+        title.text = LocalizationTable.GetLocalization("menu_construction");
+
         menuLeft = this.transform.GetComponentInParent<MenuLeft>();
 
         this.transform.FindChild("Close Button").GetComponent<Button>().onClick.AddListener(delegate
@@ -111,7 +108,8 @@ public class ConstructionMenu : MonoBehaviour
         // of the button to be clicked!
         foreach (string furnitureKey in PrototypeManager.Furniture.Keys)
         {
-            if (PrototypeManager.Furniture.Get(furnitureKey).HasTypeTag("Non-buildable") && showAllFurniture == false)
+            if ((PrototypeManager.Furniture.Get(furnitureKey).HasTypeTag("Non-buildable") && showAllFurniture == false) ||
+                PrototypeManager.Furniture.Get(furnitureKey).IsAbstract)
             {
                 continue;
             }
