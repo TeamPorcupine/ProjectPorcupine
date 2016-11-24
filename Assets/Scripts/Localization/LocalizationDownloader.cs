@@ -6,17 +6,13 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-/*using System;
-using System.Collections;
-using System.IO;
-using System.Xml;
-using ICSharpCode.SharpZipLib.Zip;
-using UnityEngine;*/
+
 using System;
 using System.IO;
 using System.Xml;
 using System.Collections;
 using UnityEngine;
+using Newtonsoft.Json;
 
 
 namespace ProjectPorcupine.Localization
@@ -55,117 +51,37 @@ namespace ProjectPorcupine.Localization
         private const string localizationRepository = "QuiZr/ProjectPorcupineLocalization/";
         private const string latestCommitURL = "https://api.github.com/repos/" + localizationRepository + "/commits/" + GameController.GameVersion;
         private const string localizationConfigName = "config.xml";
+        //NOTE: StreamingAssetsPath is read-only on android and iOS.
         private static readonly string localizationFolderPath = Path.Combine(Application.streamingAssetsPath, "Localization");
 
-        private static WWW www;
+        private static readonly string configPath = localizationFolderPath + Path.DirectorySeparatorChar + localizationConfigName;
 
 
         public static IEnumerator UpdateLocalization(Action onLocalizationDownloadedCallback)
         {
             //Use this to see if the user has auto update enabled.
             Settings.GetSetting("DialogBoxSettings_autoUpdateLocalization", true);
-            //string currentLocalizationVersion = GetLocalizationVersionFromConfig();
-            string configPath = localizationFolderPath + Path.DirectorySeparatorChar + localizationConfigName;
+
             if (!File.Exists(configPath))
             {
-                //Downloading the config file.
-                WWW downloadConfig = new WWW("https://raw.githubusercontent.com/" + localizationRepository + "/blob/" + GameController.GameVersion + "/config.xml");
-                yield return downloadConfig;
-                if (!string.IsNullOrEmpty(downloadConfig.error))
-                {
-                    Debug.ULogErrorChannel("LocalizationDownloader", "Error while downloading localization for the first time. Are you connected to the internet?");
-                    Debug.ULogErrorChannel("LocalizationDownloader", downloadConfig.error);
-                    yield break;
-                }
-                File.WriteAllBytes (configPath, downloadConfig.bytes);
+                //Download all of the localization
+                DownloadLocalization();
 
-                //Download the translation files.
-                foreach (string locale in GetTranslations(configPath))
-                {
-                    WWW www = new WWW("https://raw.githubusercontent/" + localizationRepository + "/blob/" + GameController.GameVersion + "/" + locale + ".lang");
-                    yield return www;
-                    
-                    if (!string.IsNullOrEmpty(www.error))
-                    {
-                        Debug.ULogErrorChannel("LocalizationDownloader", "Error while downloading locale " + locale + " for the first time. Are you connected to the internet?");
-                        Debug.ULogErrorChannel("LocalizationDownloader", downloadConfig.error);
-                        yield break;
-                    }
-                    File.WriteAllBytes(localizationFolderPath + Path.DirectorySeparatorChar + locale + ".lang", www.bytes);
-                }
             } 
             else if (Settings.GetSetting("DialogBoxSettings_autoUpdateLocalization", true))
             {
+                yield return GetChangesSinceDate();
                 //Let's check if 
-            }
-            
-            
-            // Check the latest localization version through the GitHub API.
-            //WWW versionChecker = new WWW(LastCommitGithubApiLocation);
-
-            // yield until API response is downloaded
-            yield return versionChecker;
-
-            if (string.IsNullOrEmpty(versionChecker.error) == false)
-            {
-                // This could be a thing when for example user has no internet connection.
-                Debug.ULogErrorChannel("LocalizationDownloader", "Error while checking for localization updates. Are you sure that you're connected to the internet?");
-                Debug.ULogErrorChannel("LocalizationDownloader", versionChecker.error);
-                yield break;
-            }
-
-            // Let's try to filter that response and get the latest hash from it.
-            // There is a possibility that the versionChecker.text will be corrupted
-            // (i.e. when you pull the Ethernet plug while downloading so thats why 
-            // a little try-catch block is there.
-            string latestCommitHash = string.Empty;
-            try
-            {
-                latestCommitHash = GetHashOfLastCommitFromAPIResponse(versionChecker.text);
-            }
-            catch (Exception e)
-            {
-                Debug.ULogErrorChannel("LocalizationDownloader", e.Message);
-            }
-
-            if (latestCommitHash != currentLocalizationVersion)
-            {
-                // There are still some updates available. We should probably notify
-                // user about it and offer him an option to download it right now.
-                // For now... Let's just force it >.> Beginners task!
-                Debug.ULogChannel("LocalizationDownloader", "There is an update for localization files!");
-                yield return DownloadLocalizationFromWeb(onLocalizationDownloadedCallback);
-
-                // Because config.xml exists in the new downloaded localization, we have to add the version element to it.
-                try
-                {
-                    string configPath = Path.Combine(LocalizationFolderPath, "config.xml");
-                    XmlDocument document = new XmlDocument();
-                    document.Load(configPath);
-                    XmlNode node = document.SelectSingleNode("//config");
-
-                    XmlElement versionElement = document.CreateElement("version");
-                    versionElement.SetAttribute("hash", latestCommitHash);
-                    node.InsertBefore(versionElement, document.SelectSingleNode("//languages"));
-                    document.Save(configPath);
-                }
-                catch (Exception e)
-                {
-                    // Not a big deal:
-                    // Next time the LocalizationDownloader will force an update.
-                    Debug.ULogWarningChannel("LocalizationDownloader", "Writing version in config.xml file failed: " + e.Message);
-                    throw;
-                }
             }
         }
         /// <summary>
-        /// Parses the config file and returns all of the avialable translations.
-        /// TODO: Migrate config.xml to json.
+        /// Parses the config file and returns all of the available translations.
+        /// TODO: Migrate config.xml to json or SKON.
         /// </summary>
-        private static ArrayList GetTranslations(string filePath)
+        private static ArrayList GetTranslations()
         {
             ArrayList translations = new ArrayList();
-            XmlReader reader = XmlReader.Create(filePath);
+            XmlReader reader = XmlReader.Create(configPath);
             while (reader.Read())
             {
                 if (reader.NodeType == XmlNodeType.Element && reader.Name == "language")
@@ -176,450 +92,114 @@ namespace ProjectPorcupine.Localization
                     }
                 }
             }
-            Debug.Log("translations: " + translations);
             return translations;
         }
         
-        
-        
-        // For now Unity's implementation of .net WebClient will do just fine,
-        // especially that it doesn't have problems with downloading from https.
-        private static IEnumerator DownloadLocalizationFromWeb(Action onLocalizationDownloadedCallback)
-        {
-            // If there were some files downloading previously (maybe user tried to download the newest
-            // language pack and mashed a download button?) just cancel them and start a new one.
-            if (www != null)
-            {
-                www.Dispose();
-            }
-
-            Debug.ULogChannel("LocalizationDownloader", "Localization files download has started");
-
-            www = new WWW(LocalizationRepositoryZipLocation);
-
-            // Wait for www to download current localization files.
-            yield return www;
-
-            Debug.ULogChannel("LocalizationDownloader", "Localization files download has finished!");
-
-            // Almost like a callback call
-            OnDownloadLocalizationComplete(onLocalizationDownloadedCallback);
-        }
         /// <summary>
-        /// Reads Application.streamingAssetsPath/Localization/config.xml making sure that Localization folder exists.
+        /// Downloads the localization files from the localization repository using rawgit CDN.
+        /// If you don't provide any parameters it will just download all of the files.
         /// </summary>
-        private static string GetLocalizationVersionFromConfig()
+        ///<param name="list">A list of files to download and update.</param>
+        private static IEnumerator DownloadLocalization(ArrayList list = null)
         {
-            string localizationConfigFilePath = Path.Combine(localizationFolderPath, "config.xml");
-
-            string currentLocalizationVersion = null;
-            try
+            if (list == null)
             {
-                XmlReader reader = XmlReader.Create(localizationConfigFilePath);
-                while (reader.Read())
+                //Just going to download everything
+
+                //Download the config
+                
+                WWW downloadConfig = new WWW("https://cdn.rawgit.com/" + localizationRepository + GameController.GameVersion + "/" + localizationConfigName);
+                yield return downloadConfig;
+                if (!string.IsNullOrEmpty(downloadConfig.error))
                 {
-                    if (reader.NodeType == XmlNodeType.Element && reader.Name == "version")
+                    Debug.ULogErrorChannel("LocalizationDownloader", "Error while downloading localization for the first time. Are you connected to the internet? \n" + downloadConfig.error);
+                    yield break;
+                }
+                File.WriteAllBytes (configPath, downloadConfig.bytes);
+
+                //Download the translation files.
+                foreach (string locale in GetTranslations())
+                {
+                    WWW www = new WWW("https://cdn.rawgit.com/" + localizationRepository + GameController.GameVersion + "/" + locale + ".lang");
+                    yield return www;
+                    
+                    if (!string.IsNullOrEmpty(www.error))
                     {
-                        if (reader.HasAttributes)
-                        {
-                            currentLocalizationVersion = reader.GetAttribute("hash");
-                            break;
-                        }
+                        Debug.ULogErrorChannel("LocalizationDownloader", "Error while downloading locale " + locale + " for the first time. Are you connected to the internet? \n" + www.error);
+                        yield break;
+                    }
+                    File.WriteAllBytes(localizationFolderPath + Path.DirectorySeparatorChar + locale + ".lang", www.bytes);
+                }
+                WriteLocalizationDate();
+            } else
+            {
+
+            }
+            yield return null;
+        }
+
+
+
+
+
+        /// <summary>
+        /// This uses the GitHub api to get all of the commits since a date (recorded in config.xml).
+        /// This is better for when/if we get very large translation files and we don't want to download all of the files when only one is changed.
+        /// </summary>
+        private static IEnumerator GetChangesSinceDate()
+        {
+            string lastDate = "";
+            XmlReader reader = XmlReader.Create(configPath);
+            while (reader.Read())
+            {
+                if (reader.NodeType == XmlNodeType.Element && reader.Name == "version")
+                {
+                    if (reader.HasAttributes)
+                    {
+                        lastDate = reader.GetAttribute("date");
                     }
                 }
-
-                reader.Close();
             }
-            catch (FileNotFoundException)
+            if (string.IsNullOrEmpty(lastDate))
             {
-                // It's fine - we will create that file later.
-                Debug.ULogChannel("LocalizationDownloader", localizationConfigFilePath + " file not found, forcing an update.");
-            }
-            catch (DirectoryNotFoundException)
-            {
-                // This is probably first launch of the game.
-                Debug.ULogChannel("LocalizationDownloader", LocalizationFolderPath + " folder not found, creating...");
-
-                try
-                {
-                    Directory.CreateDirectory(LocalizationFolderPath);
-                }
-                catch (Exception e)
-                {
-                    // If any exception happen here then we don't have a Localization folder in place
-                    // so we can just throw - we won't do anything good here.
-                    throw e;
-                }
-            }
-            catch (Exception e)
-            {
-                // i.e. UnauthorizedAccessException, NotSupportedException or UnauthorizedAccessException.
-                // Those should never happen and if they do something is really fucked up so we should
-                // probably start a fire, call 911 or at least throw an exception.
-                throw e;
-            }
-
-            return currentLocalizationVersion;
-        }
-
-        /*
-        // TODO: Change this to the official repo before PR.
-        private static readonly string LocalizationRepositoryZipLocation = "https://github.com/QuiZr/ProjectPorcupineLocalization/archive/" + GameController.GameVersion + ".zip";
-
-        // TODO: Change this to the official repo before PR.
-        private static readonly string LastCommitGithubApiLocation = "https://api.github.com/repos/QuiZr/ProjectPorcupineLocalization/commits/" + GameController.GameVersion;
-
-        private static readonly string LocalizationFolderPath = Path.Combine(Application.streamingAssetsPath, "Localization");
-
-        // Object for downloading localization data from web.
-        private static WWW www;
-
-        /// <summary>
-        /// Check if there are any new updates for localization. TODO: Add a choice for a user to not update it right now.
-        /// </summary>
-        public static IEnumerator CheckIfCurrentLocalizationIsUpToDate(Action onLocalizationDownloadedCallback)
-        {
-            string currentLocalizationVersion = GetLocalizationVersionFromConfig();
-
-            // Check the latest localization version through the GitHub API.
-            WWW versionChecker = new WWW(LastCommitGithubApiLocation);
-
-            // yield until API response is downloaded
-            yield return versionChecker;
-
-            if (string.IsNullOrEmpty(versionChecker.error) == false)
-            {
-                // This could be a thing when for example user has no internet connection.
-                Debug.ULogErrorChannel("LocalizationDownloader", "Error while checking for localization updates. Are you sure that you're connected to the internet?");
-                Debug.ULogErrorChannel("LocalizationDownloader", versionChecker.error);
+                Debug.ULogErrorChannel("LocalizationDownloader", "Error while trying to get the date of the last update. I'm going to re-download everything.");
+                //We re-download everything because most-likely the're using the old version of the config file that includes the hash but not the date.
+                DownloadLocalization();
                 yield break;
             }
 
-            // Let's try to filter that response and get the latest hash from it.
-            // There is a possibility that the versionChecker.text will be corrupted
-            // (i.e. when you pull the Ethernet plug while downloading so thats why 
-            // a little try-catch block is there.
-            string latestCommitHash = string.Empty;
-            try
-            {
-                latestCommitHash = GetHashOfLastCommitFromAPIResponse(versionChecker.text);
-            }
-            catch (Exception e)
-            {
-                Debug.ULogErrorChannel("LocalizationDownloader", e.Message);
-            }
+            string request = "https://api.github.com/repos/" + localizationRepository + "commits?since=" + lastDate + "&sha=" + GameController.GameVersion;
 
-            if (latestCommitHash != currentLocalizationVersion)
-            {
-                // There are still some updates available. We should probably notify
-                // user about it and offer him an option to download it right now.
-                // For now... Let's just force it >.> Beginners task!
-                Debug.ULogChannel("LocalizationDownloader", "There is an update for localization files!");
-                yield return DownloadLocalizationFromWeb(onLocalizationDownloadedCallback);
-
-                // Because config.xml exists in the new downloaded localization, we have to add the version element to it.
-                try
-                {
-                    string configPath = Path.Combine(LocalizationFolderPath, "config.xml");
-                    XmlDocument document = new XmlDocument();
-                    document.Load(configPath);
-                    XmlNode node = document.SelectSingleNode("//config");
-
-                    XmlElement versionElement = document.CreateElement("version");
-                    versionElement.SetAttribute("hash", latestCommitHash);
-                    node.InsertBefore(versionElement, document.SelectSingleNode("//languages"));
-                    document.Save(configPath);
-                }
-                catch (Exception e)
-                {
-                    // Not a big deal:
-                    // Next time the LocalizationDownloader will force an update.
-                    Debug.ULogWarningChannel("LocalizationDownloader", "Writing version in config.xml file failed: " + e.Message);
-                    throw;
-                }
-            }
-        }
-
-        // For now Unity's implementation of .net WebClient will do just fine,
-        // especially that it doesn't have problems with downloading from https.
-        private static IEnumerator DownloadLocalizationFromWeb(Action onLocalizationDownloadedCallback)
-        {
-            // If there were some files downloading previously (maybe user tried to download the newest
-            // language pack and mashed a download button?) just cancel them and start a new one.
-            if (www != null)
-            {
-                www.Dispose();
-            }
-
-            Debug.ULogChannel("LocalizationDownloader", "Localization files download has started");
-
-            www = new WWW(LocalizationRepositoryZipLocation);
-
-            // Wait for www to download current localization files.
+            WWW www = new WWW(request);
             yield return www;
-
-            Debug.ULogChannel("LocalizationDownloader", "Localization files download has finished!");
-
-            // Almost like a callback call
-            OnDownloadLocalizationComplete(onLocalizationDownloadedCallback);
+                    
+            if (!string.IsNullOrEmpty(www.error))
+            {
+                Debug.ULogErrorChannel("LocalizationDownloader", "Error while downloading commits information using the GitHub API. \n " + www.error);
+                yield break;
+            }
+            
+            
         }
 
         /// <summary>
-        /// Callback for DownloadLocalizationFromWeb. 
-        /// It replaces current content of localizationFolderPath with fresh, downloaded one.
+        /// Writes the current date and time to localization.
+        /// The GitHub api requires the date to be ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ.
+        /// TODO: Migrate config.xml to json or SKON
         /// </summary>
-        private static void OnDownloadLocalizationComplete(Action onLocalizationDownloadedCallback)
+        private static void WriteLocalizationDate()
         {
-            if (www.isDone == false)
-            {
-                // This should never happen.
-                Debug.ULogErrorChannel("LocalizationDownloader", "OnDownloadLocalizationComplete got called before www finished downloading.");
-                www.Dispose();
-                return;
-            }
+            XmlDocument document = new XmlDocument();
+            document.Load(configPath);
 
-            if (string.IsNullOrEmpty(www.error) == false)
-            {
-                // This could be a thing when for example user has no internet connection.
-                Debug.ULogErrorChannel("LocalizationDownloader", "Error while downloading localizations files.");
-                Debug.ULogErrorChannel("LocalizationDownloader", www.error);
-                return;
-            }
-
-            // Clean the Localization folder and return it's info.
-            DirectoryInfo localizationFolderInfo = ClearLocalizationDirectory();
-
-            // Turn's out that System.IO.Compression.GZipStream is not working in unity:
-            // http://forum.unity3d.com/threads/cant-use-gzipstream-from-c-behaviours.33973/
-            // So I need to use some sort of 3rd party solution.
-
-            // Convert array of downloaded bytes to stream.
-            using (ZipInputStream zipReadStream = new ZipInputStream(new MemoryStream(www.bytes)))
-            {
-                // Unpack zip to the hard drive.
-                ZipEntry theEntry;
-
-                // While there are still files inside zip archive.
-                while ((theEntry = zipReadStream.GetNextEntry()) != null)
-                {
-                    string directoryName = Path.GetDirectoryName(theEntry.Name);
-                    string fileName = Path.GetFileName(theEntry.Name);
-
-                    // If there was a subfolder in zip (which there probably is) create one.
-                    if (string.IsNullOrEmpty(directoryName) == false)
-                    {
-                        string directoryFullPath = Path.Combine(LocalizationFolderPath, directoryName);
-                        if (Directory.Exists(directoryFullPath) == false)
-                        {
-                            Directory.CreateDirectory(directoryFullPath);
-                        }
-                    }
-
-                    // Read files from stream to files on HDD.
-                    // 2048 buffer should be plenty.
-                    if (string.IsNullOrEmpty(fileName) == false && !fileName.StartsWith("en_US.lang"))
-                    {
-                        string fullFilePath = Path.Combine(LocalizationFolderPath, theEntry.Name);
-                        using (FileStream fileWriter = File.Create(fullFilePath))
-                        {
-                            int size = 2048;
-                            byte[] fdata = new byte[2048];
-                            while (true)
-                            {
-                                size = zipReadStream.Read(fdata, 0, fdata.Length);
-                                if (size > 0)
-                                {
-                                    fileWriter.Write(fdata, 0, size);
-                                }
-                                else
-                                {
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            // At this point we should have an subfolder in Application.streamingAssetsPath/Localization
-            // called ProjectPorcupineLocalization-*branch name*. Now we need to move all files from that directory
-            // to Application.streamingAssetsPath/Localization.
-            FileInfo[] fileInfo = localizationFolderInfo.GetFiles();
-            foreach (FileInfo file in fileInfo)
-            {
-                if (file.Name != "en_US.lang" && file.Name != "en_US.lang.meta")
-                {
-                    Debug.ULogErrorChannel("LocalizationDownloader", "There should only be en_US.lang and en_US.lang.meta. Instead there is: " + file.Name);
-                }
-            }
-
-            DirectoryInfo[] dirInfo = localizationFolderInfo.GetDirectories();
-            if (dirInfo.Length > 1)
-            {
-                Debug.ULogErrorChannel("LocalizationDownloader", "There should be only one directory");
-            }
-
-            // Move files from ProjectPorcupineLocalization-*branch name* to Application.streamingAssetsPath/Localization.
-            string[] filesToMove = Directory.GetFiles(dirInfo[0].FullName);
-
-            foreach (string file in filesToMove)
-            {
-                string fileName = Path.GetFileName(file);
-                string destFile = Path.Combine(LocalizationFolderPath, fileName);
-                File.Copy(file, destFile, true);
-                File.Delete(file);
-            }
-
-            // Remove ProjectPorcupineLocalization-*branch name*
-            Directory.Delete(dirInfo[0].FullName);
-
-            Debug.ULogChannel("LocalizationDownloader", "New localization files successfully downloaded!");
-
-            onLocalizationDownloadedCallback();
+            XmlNode node = document.SelectSingleNode("//config");
+            XmlElement versionElement = document.CreateElement("version");
+           
+           // The GitHub api requires the date to be ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ.
+            versionElement.SetAttribute("date", DateTime.UtcNow.ToString("o"));
+            node.InsertBefore(versionElement, document.SelectSingleNode("//languages"));
+            
+            document.Save(configPath);
         }
-
-        private static DirectoryInfo ClearLocalizationDirectory()
-        {
-            DirectoryInfo localizationFolderInfo = new DirectoryInfo(LocalizationFolderPath);
-            foreach (FileInfo file in localizationFolderInfo.GetFiles())
-            {
-                // If there are files without that extension then:
-                // a) someone made a change to localization system and didn't update this
-                // b) We are in a wrong directory, so let's hope we didn't delete anything important.
-                if (file.Extension != ".lang" && file.Extension != ".meta" && file.Extension != ".ver" && file.Extension != ".md" && file.Name != "config.xml")
-                {
-                    Debug.ULogErrorChannel("LocalizationDownloader", "SOMETHING WENT HORRIBLY WRONG AT DOWNLOADING LOCALIZATION!");
-                    throw new Exception("SOMETHING WENT HORRIBLY WRONG AT DOWNLOADING LOCALIZATION!");
-                }
-
-                if (file.Name != "en_US.lang" && file.Name != "en_US.lang.meta")
-                {
-                    file.Delete();
-                }
-            }
-
-            foreach (DirectoryInfo dir in localizationFolderInfo.GetDirectories())
-            {
-                dir.Delete();
-            }
-
-            return localizationFolderInfo;
-        }
-
-        /// <summary>
-        /// Reads Application.streamingAssetsPath/Localization/config.xml making sure that Localization folder exists.
-        /// </summary>
-        private static string GetLocalizationVersionFromConfig()
-        {
-            string localizationConfigFilePath = Path.Combine(LocalizationFolderPath, "config.xml");
-
-            string currentLocalizationVersion = null;
-            try
-            {
-                XmlReader reader = XmlReader.Create(localizationConfigFilePath);
-                while (reader.Read())
-                {
-                    if (reader.NodeType == XmlNodeType.Element && reader.Name == "version")
-                    {
-                        if (reader.HasAttributes)
-                        {
-                            currentLocalizationVersion = reader.GetAttribute("hash");
-                            break;
-                        }
-                    }
-                }
-
-                reader.Close();
-            }
-            catch (FileNotFoundException)
-            {
-                // It's fine - we will create that file later.
-                Debug.ULogChannel("LocalizationDownloader", localizationConfigFilePath + " file not found, forcing an update.");
-            }
-            catch (DirectoryNotFoundException)
-            {
-                // This is probably first launch of the game.
-                Debug.ULogChannel("LocalizationDownloader", LocalizationFolderPath + " folder not found, creating...");
-
-                try
-                {
-                    Directory.CreateDirectory(LocalizationFolderPath);
-                }
-                catch (Exception e)
-                {
-                    // If any exception happen here then we don't have a Localization folder in place
-                    // so we can just throw - we won't do anything good here.
-                    throw e;
-                }
-            }
-            catch (Exception e)
-            {
-                // i.e. UnauthorizedAccessException, NotSupportedException or UnauthorizedAccessException.
-                // Those should never happen and if they do something is really fucked up so we should
-                // probably start a fire, call 911 or at least throw an exception.
-                throw e;
-            }
-
-            return currentLocalizationVersion;
-        }
-
-        /// <summary>
-        /// This is a really wonky way of parsing JSON. I didn't want to include something like
-        /// Json.NET library purely for this functionality but if we will be using it somewhere else
-        /// this need to change. DO NOT TOUCH and this will be fine.
-        /// </summary>
-        /// <param name="githubApiResponse">GitHub API response.</param>
-        /// <returns></returns>
-        private static string GetHashOfLastCommitFromAPIResponse(string githubApiResponse)
-        {
-            if (string.IsNullOrEmpty(githubApiResponse))
-            {
-                throw new ArgumentNullException("githubApiResponse");
-            }
-
-            string hashSearchPattern = "sha\":\"";
-
-            // Index of the first char of hash. 
-            int index = githubApiResponse.IndexOf(hashSearchPattern);
-
-            if (index == -1)
-            {
-                // Either the response was damaged or GitHub API returned an error.
-                throw new Exception("Error at parsing JSON - sha\":\" not found.");
-            }
-
-            // hashSearchPattern length
-            index += 6;
-
-            // + 1 for that while loop first run.
-            if (index + 1 >= githubApiResponse.Length - 1)
-            {
-                // Either the response was damaged or GitHub API returned an error.
-                throw new Exception("Error at parsing JSON - githubApiResponse too short.");
-            }
-
-            char currentChar = githubApiResponse[index];
-
-            // Hash of the commit.
-            string hash = string.Empty;
-
-            // Get the commit hash
-            do
-            {
-                hash += currentChar;
-                index++;
-                currentChar = githubApiResponse[index];
-
-                // Check if this is the end of the commit string.
-                if (index + 1 == githubApiResponse.Length - 1)
-                {
-                    // Either the response was damaged or GitHub API returned an error.
-                    throw new Exception("Error at parsing JSON - hash closing tag not found.");
-                }
-            }
-            while (currentChar != '\"');
-
-            return hash;
-        }*/
     }
 }
