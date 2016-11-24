@@ -18,6 +18,10 @@ public class DebuggerChannelControl : EditorWindow
 {
     private EditorWindow window;
 
+    private bool allState = false;
+    private bool allPreveState = false;
+    private bool needToChangeDefaultState = false;
+
     [MenuItem("Window/Debugger Channel Control")]
     public static void ShowWindow()
     {
@@ -28,12 +32,32 @@ public class DebuggerChannelControl : EditorWindow
     {
         window = GetWindow(typeof(DebuggerChannelControl));
         window.minSize = new Vector2(460, 100);
+        EditorApplication.playmodeStateChanged += OnPlayStateChanged;
     }
 
     private void OnGUI()
     {
         GUILayout.BeginHorizontal("Box");
-        GUILayout.Toggle(true, "All");
+        bool allStateChanged = false;
+        allState = GUILayout.Toggle(allState, "All");
+
+        UnityDebugger.Debugger.DefaultState = allState;
+
+        if (allState != allPreveState)
+        {
+            allPreveState = allState;
+            allStateChanged = true;
+        }
+
+        if (needToChangeDefaultState) 
+        {
+//            if (UnityDebugger.Debugger.Channels != null)
+//            {
+                UnityDebugger.Debugger.DefaultState = allState;
+                needToChangeDefaultState = false;
+//            }
+
+        }
 
         if(UnityDebugger.Debugger.Channels != null)
         {
@@ -41,6 +65,10 @@ public class DebuggerChannelControl : EditorWindow
             foreach (string channelName in UnityDebugger.Debugger.Channels.Keys.AsEnumerable())
             {
                 toggleReturns.Add(channelName, GUILayout.Toggle(UnityDebugger.Debugger.Channels[channelName], channelName));
+                if (allStateChanged)
+                {
+                    toggleReturns[channelName] = allState;
+                }
             }
 
             foreach (string channelName in toggleReturns.Keys.AsEnumerable())
@@ -51,5 +79,13 @@ public class DebuggerChannelControl : EditorWindow
         GUILayout.EndHorizontal();
 
         EditorGUILayout.Space();
+    }
+
+    public void OnPlayStateChanged()
+    {
+        Debug.LogWarning("This Happens");
+        EditorApplication.playmodeStateChanged += OnPlayStateChanged;
+            UnityDebugger.Debugger.DefaultState = allState;
+            needToChangeDefaultState = true;
     }
 }
