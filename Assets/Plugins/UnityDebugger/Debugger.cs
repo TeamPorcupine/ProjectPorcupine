@@ -55,11 +55,14 @@ namespace UnityDebugger
             Channels = new Dictionary<string, bool>();
             exists = true;
 
+            DefaultState = true;
+            #if (UNITY_EDITOR || UNITY_EDITOR_64)
             ChannelSettingsSO channelSettings = Resources.Load<ChannelSettingsSO>("ChannelSettings");
             if(channelSettings != null)
             {
                 DefaultState = channelSettings.DefaultState;
             }
+            #endif
         }
 
         #region Asserts
