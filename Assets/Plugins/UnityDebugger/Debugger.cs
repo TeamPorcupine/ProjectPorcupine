@@ -40,6 +40,8 @@ namespace UnityDebugger
         /// </summary>
         public static LogLevel LogLevel { get; set; }
 
+        public static bool DefaultState { get; set; }
+
         public static Dictionary<string, bool> Channels { get; set; }
 
         static Debugger()
@@ -272,8 +274,9 @@ namespace UnityDebugger
             }
             else
             {
-                Channels.Add(channel, false);
-                return false;
+                bool channelSetting = DefaultState;
+                Channels.Add(channel, channelSetting);
+                return channelSetting;
             }
         }
         #endregion
