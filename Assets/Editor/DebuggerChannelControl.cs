@@ -37,9 +37,15 @@ public class DebuggerChannelControl : EditorWindow
 
         if(UnityDebugger.Debugger.Channels != null)
         {
+            Dictionary<string, bool> toggleReturns = new Dictionary<string, bool>();
             foreach (string channelName in UnityDebugger.Debugger.Channels.Keys.AsEnumerable())
             {
-                GUILayout.Toggle(UnityDebugger.Debugger.Channels[channelName], channelName);
+                toggleReturns.Add(channelName, GUILayout.Toggle(UnityDebugger.Debugger.Channels[channelName], channelName));
+            }
+
+            foreach (string channelName in toggleReturns.Keys.AsEnumerable())
+            {
+                UnityDebugger.Debugger.Channels[channelName] = toggleReturns[channelName];
             }
         }
         GUILayout.EndHorizontal();
