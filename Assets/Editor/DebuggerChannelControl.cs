@@ -6,6 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+    
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -18,9 +19,9 @@ public class DebuggerChannelControl : EditorWindow
 {
     private EditorWindow window;
 
-    private bool allState = false;
-    private bool allPreveState = false;
-    private bool needToChangeDefaultState = false;
+    private bool allState;
+    private bool allPreveState;
+    private ChannelSettingsSO channelSettings;
 
     [MenuItem("Window/Debugger Channel Control")]
     public static void ShowWindow()
@@ -30,9 +31,19 @@ public class DebuggerChannelControl : EditorWindow
 
     private void Awake()
     {
+        channelSettings = Resources.Load<ChannelSettingsSO>("ChannelSettings");
+        if(channelSettings == null)
+        {
+            Debug.LogWarning("Beep Bop Boop");
+            channelSettings = ScriptableObject.CreateInstance<ChannelSettingsSO>();
+            AssetDatabase.CreateAsset(channelSettings, "Assets/Resources/ChannelSettings.asset");
+            AssetDatabase.SaveAssets();
+        }
+
+        allState = channelSettings.DefaultState;
+        allPreveState = allState;
         window = GetWindow(typeof(DebuggerChannelControl));
         window.minSize = new Vector2(460, 100);
-        EditorApplication.playmodeStateChanged += OnPlayStateChanged;
     }
 
     private void OnGUI()
@@ -41,22 +52,12 @@ public class DebuggerChannelControl : EditorWindow
         bool allStateChanged = false;
         allState = GUILayout.Toggle(allState, "All");
 
-        UnityDebugger.Debugger.DefaultState = allState;
-
         if (allState != allPreveState)
         {
             allPreveState = allState;
             allStateChanged = true;
-        }
-
-        if (needToChangeDefaultState) 
-        {
-//            if (UnityDebugger.Debugger.Channels != null)
-//            {
-                UnityDebugger.Debugger.DefaultState = allState;
-                needToChangeDefaultState = false;
-//            }
-
+            channelSettings.DefaultState = allState;
+            EditorUtility.SetDirty(channelSettings);
         }
 
         if(UnityDebugger.Debugger.Channels != null)
@@ -79,13 +80,5 @@ public class DebuggerChannelControl : EditorWindow
         GUILayout.EndHorizontal();
 
         EditorGUILayout.Space();
-    }
-
-    public void OnPlayStateChanged()
-    {
-        Debug.LogWarning("This Happens");
-        EditorApplication.playmodeStateChanged += OnPlayStateChanged;
-            UnityDebugger.Debugger.DefaultState = allState;
-            needToChangeDefaultState = true;
     }
 }
