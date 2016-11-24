@@ -4,6 +4,7 @@ using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 
 namespace UnityDebugger
@@ -61,6 +62,12 @@ namespace UnityDebugger
             if(channelSettings != null)
             {
                 DefaultState = channelSettings.DefaultState;
+                Debug.LogWarning("BeepBeepBoop");
+                foreach (string channelName in channelSettings.ChannelState.Keys.AsEnumerable())
+                {
+                    Debug.LogWarning("Setting " + channelName+ " to " + channelSettings.ChannelState[channelName]);
+                    Channels.Add(channelName, channelSettings.ChannelState[channelName]);
+                }
             }
             #endif
         }

@@ -68,13 +68,26 @@ public class DebuggerChannelControl : EditorWindow
                 toggleReturns.Add(channelName, GUILayout.Toggle(UnityDebugger.Debugger.Channels[channelName], channelName));
                 if (allStateChanged)
                 {
-                    toggleReturns[channelName] = allState;
+//                    toggleReturns[channelName] = allState;
                 }
             }
 
             foreach (string channelName in toggleReturns.Keys.AsEnumerable())
             {
                 UnityDebugger.Debugger.Channels[channelName] = toggleReturns[channelName];
+//                if (!channelSettings.ChannelState.ContainsKey(channelName))
+//                {
+                if (!channelSettings.ChannelState.ContainsKey(channelName) || channelSettings.ChannelState[channelName] != toggleReturns[channelName])
+                {
+                    if(!channelSettings.ChannelState.ContainsKey(channelName))
+                    {
+                        channelSettings.ChannelState.Add(channelName, toggleReturns[channelName]);
+                    }
+                    channelSettings.ChannelState[channelName] = toggleReturns[channelName];
+                    EditorUtility.SetDirty(channelSettings);
+                    Debug.LogWarning("* " + channelSettings.ChannelState.ContainsKey(channelName));
+                }
+//                }
             }
         }
         GUILayout.EndHorizontal();
