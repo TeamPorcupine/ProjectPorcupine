@@ -63,7 +63,7 @@ public class DebuggerChannelControl : EditorWindow
         if(UnityDebugger.Debugger.Channels != null)
         {
             Dictionary<string, bool> toggleReturns = new Dictionary<string, bool>();
-            Dictionary<string, bool> settingsCopy = new Dictionary<string, bool>(channelSettings.ChannelState);
+            ChannelDictionary settingsCopy = new ChannelDictionary(channelSettings.ChannelState);
             foreach (string channelName in UnityDebugger.Debugger.Channels.Keys.AsEnumerable())
             {
                 toggleReturns.Add(channelName, GUILayout.Toggle(UnityDebugger.Debugger.Channels[channelName], channelName));

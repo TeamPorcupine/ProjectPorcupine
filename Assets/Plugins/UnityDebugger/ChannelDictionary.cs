@@ -12,6 +12,19 @@ public class ChannelDictionary : Dictionary<string, bool>, ISerializationCallbac
     [SerializeField]
     private List<bool> values = new List<bool>();
 
+    public ChannelDictionary()
+    {
+        
+    }
+
+    public ChannelDictionary(ChannelDictionary channelState)
+    {
+        foreach (KeyValuePair<string,bool> kvp in channelState)
+        {
+            this.Add(kvp.Key, kvp.Value);
+        }
+    }
+
     // save the dictionary to lists
     public void OnBeforeSerialize()
     {
