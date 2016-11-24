@@ -47,7 +47,6 @@ public class DebuggerChannelControl : EditorWindow
 
     private void OnGUI()
     {
-        GUILayout.BeginArea(new Rect(0, 0, 460, 100));
         bool allStateChanged = false;
         allState = GUILayout.Toggle(allState, "All");
 
@@ -84,7 +83,6 @@ public class DebuggerChannelControl : EditorWindow
 //                }
             }
         }
-        GUILayout.EndHorizontal();
 
         EditorGUILayout.Space();
     }
