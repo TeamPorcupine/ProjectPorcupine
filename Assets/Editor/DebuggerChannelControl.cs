@@ -74,9 +74,11 @@ public class DebuggerChannelControl : EditorWindow
             foreach (string channelName in toggleReturns.Keys.AsEnumerable())
             {
                 UnityDebugger.Debugger.Channels[channelName] = toggleReturns[channelName];
-//                if (!channelSettings.ChannelState.ContainsKey(channelName))
-//                {
-                if (!channelSettings.ChannelState.ContainsKey(channelName) || channelSettings.ChannelState[channelName] != toggleReturns[channelName])
+                if (!channelSettings.ChannelState.ContainsKey(channelName) && toggleReturns.ContainsKey(channelName))
+                {
+                    channelSettings.ChannelState.Add(channelName, toggleReturns[channelName]);
+                }
+                else if (channelSettings.ChannelState[channelName] != toggleReturns[channelName])
                 {
                     channelSettings.ChannelState[channelName] = toggleReturns[channelName];
                     EditorUtility.SetDirty(channelSettings);
