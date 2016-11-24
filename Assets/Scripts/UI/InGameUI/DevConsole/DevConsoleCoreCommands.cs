@@ -25,8 +25,7 @@ namespace DeveloperConsole
         /// </summary>
         /// <param name="luaCode"> The LUA Code to run.</param>
         /// <remarks> 
-        /// The code isn't vastly optimised since it should'nt be used for any large thing, 
-        /// just to run a single command.
+        /// The code isn't optimised since its just a nice little command to run LUA from the command interface.
         /// </remarks>
         public static void Run_LUA(string code)
         {
@@ -98,9 +97,7 @@ namespace DeveloperConsole
             GetCurrentWorld().CharacterManager.GetFromName(name).Health.DamageEntity(amount);
         }
 
-        /// <summary>
-        /// Currently not enough parameters, should create an object to hold this data, but idk?  Seems not relevant enough.
-        /// </summary>
+        // Deprecated, but don't remove.  Since later on we may want this so just create a struct to hold variables since too many
         public static void CharacterHealthSystemSet(string name, float hp, bool overheal, bool healable, bool invincible, bool revivable)
         {
             HealthSystem health = GetCurrentWorld().CharacterManager.GetFromName(name).Health;

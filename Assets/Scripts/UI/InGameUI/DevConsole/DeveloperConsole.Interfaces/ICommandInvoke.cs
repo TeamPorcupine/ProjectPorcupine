@@ -28,6 +28,9 @@ namespace DeveloperConsole.Interfaces
             get;
         }
 
+        /// <summary>
+        /// All the types of the parameters
+        /// </summary>
         Type[] Types
         {
             get;

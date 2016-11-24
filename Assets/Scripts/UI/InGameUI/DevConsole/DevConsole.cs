@@ -23,7 +23,6 @@ namespace DeveloperConsole
     {
         /// <summary>
         /// Max lines before cleaning.
-        /// This is quite low but its like decently high.
         /// </summary>
         private const int AutoclearThreshold = 18000;
 
@@ -227,7 +226,6 @@ namespace DeveloperConsole
 
         /// <summary>
         /// Logs to the console.
-        /// Still a little slow (maybe do a paging system??).
         /// </summary>
         /// <param name="text"> Text to print.</param>
         public static void BasePrint(string text)

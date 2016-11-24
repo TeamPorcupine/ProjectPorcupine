@@ -13,6 +13,9 @@ using MoonSharp.Interpreter;
 
 namespace DeveloperConsole
 {
+    /// <summary>
+    /// A prototype for console commands
+    /// </summary>
     [MoonSharpUserData]
     public class CommandPrototype : IPrototypable
     {
@@ -36,29 +39,6 @@ namespace DeveloperConsole
         public CommandPrototype(string title, string methodFunctionName, string description, string helpFunctionName, string parameters) : this()
         {
             ConsoleCommand = new InvokeCommand(title, methodFunctionName, description, helpFunctionName, parameters);
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CommandPrototype"/> class.
-        /// This form of the constructor assumes the ScheduledEvent is of the EventType.CSharp type.
-        /// </summary>       
-        /// <param name="title"> The title of the command.</param>
-        /// <param name="methodFunctionName"> The name of the function to call.</param>
-        /// <param name="description"> The description of the command.</param>
-        public CommandPrototype(string title, string methodFunctionName, string description) : this()
-        {
-            ConsoleCommand = new InvokeCommand(title, methodFunctionName, description);
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CommandPrototype"/> class.
-        /// This form of the constructor assumes the ScheduledEvent is of the EventType.CSharp type.
-        /// </summary>   
-        /// <param name="title"> The title of the command.</param>
-        /// <param name="methodFunctionName"> The name of the function to call.</param>
-        public CommandPrototype(string title, string methodFunctionName) : this()
-        {
-            ConsoleCommand = new InvokeCommand(title, methodFunctionName);
         }
 
         /// <summary>
