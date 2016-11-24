@@ -7,13 +7,12 @@
 // ====================================================
 #endregion
 
-using System;
+using Newtonsoft.Json;
+using System.Collections;
 using System.IO;
 using System.Xml;
-using System.Collections;
+using System;
 using UnityEngine;
-using Newtonsoft.Json;
-
 
 namespace ProjectPorcupine.Localization
 {
@@ -48,32 +47,33 @@ namespace ProjectPorcupine.Localization
     /// </summary>
     public static class LocalizationDownloader
     {
-        private const string localizationRepository = "QuiZr/ProjectPorcupineLocalization/";
-        private const string latestCommitURL = "https://api.github.com/repos/" + localizationRepository + "/commits/" + GameController.GameVersion;
-        private const string localizationConfigName = "config.xml";
-        //NOTE: StreamingAssetsPath is read-only on android and iOS.
-        private static readonly string localizationFolderPath = Path.Combine(Application.streamingAssetsPath, "Localization");
+        private const string LocalizationRepository = "QuiZr/ProjectPorcupineLocalization/";
+        private const string LatestCommitURL = "https://api.github.com/repos/" + LocalizationRepository + "/commits/" + GameController.GameVersion;
+        private const string LocalizationConfigName = "config.xml";
+        // NOTE: StreamingAssetsPath is read-only on android and iOS.
+        private static readonly string LocalizationFolderPath = Path.Combine(Application.streamingAssetsPath, "Localization");
 
-        private static readonly string configPath = localizationFolderPath + Path.DirectorySeparatorChar + localizationConfigName;
+        private static readonly string ConfigPath = LocalizationFolderPath + Path.DirectorySeparatorChar + LocalizationConfigName;
 
 
         public static IEnumerator UpdateLocalization(Action onLocalizationDownloadedCallback)
         {
-            //Use this to see if the user has auto update enabled.
+            // Use this to see if the user has auto update enabled.
             Settings.GetSetting("DialogBoxSettings_autoUpdateLocalization", true);
 
-            if (!File.Exists(configPath))
+            if (!File.Exists(ConfigPath))
             {
-                //Download all of the localization
+                // Download all of the localization
                 DownloadLocalization();
 
-            } 
+            }
             else if (Settings.GetSetting("DialogBoxSettings_autoUpdateLocalization", true))
             {
                 yield return GetChangesSinceDate();
-                //Let's check if 
+                // Let's check if 
             }
         }
+
         /// <summary>
         /// Parses the config file and returns all of the available translations.
         /// TODO: Migrate config.xml to json or SKON.
@@ -81,7 +81,7 @@ namespace ProjectPorcupine.Localization
         private static ArrayList GetTranslations()
         {
             ArrayList translations = new ArrayList();
-            XmlReader reader = XmlReader.Create(configPath);
+            XmlReader reader = XmlReader.Create(ConfigPath);
             while (reader.Read())
             {
                 if (reader.NodeType == XmlNodeType.Element && reader.Name == "language")
@@ -90,8 +90,11 @@ namespace ProjectPorcupine.Localization
                     {
                         translations.Add(reader.GetAttribute("code"));
                     }
+
                 }
+
             }
+
             return translations;
         }
         
@@ -99,28 +102,29 @@ namespace ProjectPorcupine.Localization
         /// Downloads the localization files from the localization repository using rawgit CDN.
         /// If you don't provide any parameters it will just download all of the files.
         /// </summary>
-        ///<param name="list">A list of files to download and update.</param>
+        /// <param name="list">A list of files to download and update.</param>
         private static IEnumerator DownloadLocalization(ArrayList list = null)
         {
             if (list == null)
             {
-                //Just going to download everything
+                // Just going to download everything
 
-                //Download the config
+                // Download the config
                 
-                WWW downloadConfig = new WWW("https://cdn.rawgit.com/" + localizationRepository + GameController.GameVersion + "/" + localizationConfigName);
+                WWW downloadConfig = new WWW("https://cdn.rawgit.com/" + LocalizationRepository + GameController.GameVersion + "/" + LocalizationConfigName);
                 yield return downloadConfig;
                 if (!string.IsNullOrEmpty(downloadConfig.error))
                 {
                     Debug.ULogErrorChannel("LocalizationDownloader", "Error while downloading localization for the first time. Are you connected to the internet? \n" + downloadConfig.error);
                     yield break;
                 }
-                File.WriteAllBytes (configPath, downloadConfig.bytes);
 
-                //Download the translation files.
+                File.WriteAllBytes (ConfigPath, downloadConfig.bytes);
+
+                // Download the translation files.
                 foreach (string locale in GetTranslations())
                 {
-                    WWW www = new WWW("https://cdn.rawgit.com/" + localizationRepository + GameController.GameVersion + "/" + locale + ".lang");
+                    WWW www = new WWW("https://cdn.rawgit.com/" + LocalizationRepository + GameController.GameVersion + "/" + locale + ".lang");
                     yield return www;
                     
                     if (!string.IsNullOrEmpty(www.error))
@@ -128,11 +132,13 @@ namespace ProjectPorcupine.Localization
                         Debug.ULogErrorChannel("LocalizationDownloader", "Error while downloading locale " + locale + " for the first time. Are you connected to the internet? \n" + www.error);
                         yield break;
                     }
-                    File.WriteAllBytes(localizationFolderPath + Path.DirectorySeparatorChar + locale + ".lang", www.bytes);
+
+                    File.WriteAllBytes(LocalizationFolderPath + Path.DirectorySeparatorChar + locale + ".lang", www.bytes);
                 }
+
                 WriteLocalizationDate();
-            } else
-            {
+            }
+            else {
 
             }
             yield return null;
@@ -148,8 +154,8 @@ namespace ProjectPorcupine.Localization
         /// </summary>
         private static IEnumerator GetChangesSinceDate()
         {
-            string lastDate = "";
-            XmlReader reader = XmlReader.Create(configPath);
+            string lastDate = String.Empty;
+            XmlReader reader = XmlReader.Create(ConfigPath);
             while (reader.Read())
             {
                 if (reader.NodeType == XmlNodeType.Element && reader.Name == "version")
@@ -163,12 +169,12 @@ namespace ProjectPorcupine.Localization
             if (string.IsNullOrEmpty(lastDate))
             {
                 Debug.ULogErrorChannel("LocalizationDownloader", "Error while trying to get the date of the last update. I'm going to re-download everything.");
-                //We re-download everything because most-likely the're using the old version of the config file that includes the hash but not the date.
+                // We re-download everything because most-likely the're using the old version of the config file that includes the hash but not the date.
                 DownloadLocalization();
                 yield break;
             }
 
-            string request = "https://api.github.com/repos/" + localizationRepository + "commits?since=" + lastDate + "&sha=" + GameController.GameVersion;
+            string request = "https://api.github.com/repos/" + LocalizationRepository + "commits?since=" + lastDate + "&sha=" + GameController.GameVersion;
 
             WWW www = new WWW(request);
             yield return www;
@@ -179,27 +185,26 @@ namespace ProjectPorcupine.Localization
                 yield break;
             }
             
-            
         }
 
         /// <summary>
         /// Writes the current date and time to localization.
         /// The GitHub api requires the date to be ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ.
-        /// TODO: Migrate config.xml to json or SKON
+        /// TODO: Migrate config.xml to json or SKON.
         /// </summary>
         private static void WriteLocalizationDate()
         {
             XmlDocument document = new XmlDocument();
-            document.Load(configPath);
+            document.Load(ConfigPath);
 
             XmlNode node = document.SelectSingleNode("//config");
             XmlElement versionElement = document.CreateElement("version");
            
-           // The GitHub api requires the date to be ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ.
+            // The GitHub api requires the date to be ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ.
             versionElement.SetAttribute("date", DateTime.UtcNow.ToString("o"));
             node.InsertBefore(versionElement, document.SelectSingleNode("//languages"));
             
-            document.Save(configPath);
+            document.Save(ConfigPath);
         }
     }
 }
