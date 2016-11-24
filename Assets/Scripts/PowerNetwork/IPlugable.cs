@@ -7,10 +7,14 @@
 // ====================================================
 #endregion
 
+using System;
+
 namespace ProjectPorcupine.PowerNetwork
 {
     public interface IPlugable
     {
+        event Action Reconnecting;
+
         float InputRate { get; }
 
         float OutputRate { get; }
@@ -28,5 +32,7 @@ namespace ProjectPorcupine.PowerNetwork
         bool IsFull { get; }
 
         bool IsEmpty { get; }
+
+        void Reconnect();
     }
 }

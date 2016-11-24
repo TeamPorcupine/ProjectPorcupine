@@ -11,7 +11,7 @@ using System;
 using MoonSharp.Interpreter;
 using ProjectPorcupine.PowerNetwork;
 
-public class LuaFunctions
+public class LuaFunctions : IFunctions
 {
     protected Script script;
     private string scriptName;
@@ -37,22 +37,8 @@ public class LuaFunctions
         RegisterGlobal(typeof(Scheduler.ScheduledEvent));
         RegisterGlobal(typeof(ProjectPorcupine.Jobs.RequestedItem));
     }
-
-    /// <summary>
-    /// Registers a class as a global entity to use it inside of lua.
-    /// </summary>
-    /// <param name="type">Class typeof.</param>
-    public void RegisterGlobal(Type type)
-    {
-        script.Globals[type.Name] = type;
-    }
-
-    /// <summary>
-    /// Determines whether there is a Lua global with the given name.
-    /// </summary>
-    /// <returns><c>true</c> if there is a global with the given name; otherwise, <c>false</c>.</returns>
-    /// <param name="name">The global name.</param>
-    public bool HasGlobal(string name)
+    
+    public bool HasFunction(string name)
     {
         return name != null && script.Globals[name] != null;
     }
@@ -86,13 +72,7 @@ public class LuaFunctions
     public DynValue Call(string functionName, params object[] args)
     {
         object func = script.Globals[functionName];
-
-        if (func == null)
-        {
-            Debug.ULogChannel("Lua", "'" + functionName + "' is not a LUA function!");
-            return null;
-        }
-
+                
         try
         {
             return script.Call(func, args);
@@ -102,6 +82,11 @@ public class LuaFunctions
             Debug.ULogErrorChannel("Lua", "[" + scriptName + "] LUA RunTime error: " + e.DecoratedMessage);
             return null;
         }
+    }
+
+    public T Call<T>(string functionName, params object[] args)
+    {
+        return Call(functionName, args).ToObject<T>();
     }
 
     /// <summary>
@@ -139,5 +124,19 @@ public class LuaFunctions
                 Debug.ULogErrorChannel("Lua", "[" + scriptName + "] LUA RunTime error: " + e.DecoratedMessage);
             }
         }
+    }
+
+    public void RegisterType(Type type)
+    {
+        RegisterGlobal(type);
+    }
+
+    /// <summary>
+    /// Registers a class as a global entity to use it inside of lua.
+    /// </summary>
+    /// <param name="type">Class typeof.</param>
+    private void RegisterGlobal(Type type)
+    {
+        script.Globals[type.Name] = type;
     }
 }

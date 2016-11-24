@@ -53,7 +53,7 @@ public class ModsManager
             {
                 StreamReader reader = new StreamReader(file.OpenRead());
                 string text = reader.ReadToEnd();
-                FunctionsManager.Get(functionsName).LoadScript(text, functionsName);
+                FunctionsManager.Get(functionsName).LoadScript(text, functionsName, file.Extension == ".lua" ? Functions.Type.Lua : Functions.Type.CSharp);
             });
     }
 
@@ -76,6 +76,8 @@ public class ModsManager
         LoadFunctions("Quest.lua", "Quest");
         LoadFunctions("ScheduledEvent.lua", "ScheduledEvent");
         LoadFunctions("Overlay.lua", "Overlay");
+
+        LoadFunctions("FurnitureFunctions.cs", "Furniture");
 
         LoadPrototypes("Tiles.xml", PrototypeManager.TileType.LoadPrototypes);
         LoadPrototypes("Furniture.xml", PrototypeManager.Furniture.LoadPrototypes);
@@ -118,13 +120,26 @@ public class ModsManager
     /// <param name="functionsName">The functions name.</param>
     private void LoadFunctions(string fileName, string functionsName)
     {
+        string ext = Path.GetExtension(fileName);
+        string folder = "LUA";
+        Functions.Type scriptType = Functions.Type.Lua;
+
+        if (string.Compare(".cs", ext, true) == 0)
+        {
+            folder = "CSharp";
+            scriptType = Functions.Type.CSharp;
+        }
+
         LoadTextFile(
-            "LUA",
+            folder,
             fileName,
             (filePath) =>
             {
-                string text = File.ReadAllText(filePath);
-                FunctionsManager.Get(functionsName).LoadScript(text, functionsName);
+                if (File.Exists(filePath))
+                {
+                    string text = File.ReadAllText(filePath);
+                    FunctionsManager.Get(functionsName).LoadScript(text, functionsName, scriptType);
+                }
             });
     }
 

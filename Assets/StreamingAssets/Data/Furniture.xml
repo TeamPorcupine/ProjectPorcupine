@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Furnitures>
-    <Furniture type="Steel Wall">
+    <Furniture type="steel_wall">
         <Name>Steel Wall</Name>
         <Description>This is a steel wall.</Description>
         <TypeTag>Wall</TypeTag>
@@ -29,12 +29,16 @@
             <!-- Leave default value (i.e. nothing) if the furniture does not have any isolation effect. -->
             <Param name="thermal_diffusivity" value="0.2" />
         </Params>
+        
+        <Component type="Visuals">
+            <DefaultSpriteName useName="steel_wall_" />
+        </Component>
 
         <LocalizationCode>furn_steel_wall</LocalizationCode>
         <UnlocalizedDescription>furn_steel_wall_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture type="Door">
+    <Furniture type="door">
         <Name>Door</Name>
         <Description>A door that characters can walk through.</Description>
         <TypeTag>Door</TypeTag>
@@ -58,29 +62,32 @@
         <DeconstructJob jobTime="1">
             <Inventory type="Steel Plate" amount="1" />
         </DeconstructJob>
-        
-        <GetSpriteName FunctionName="Door_GetSpriteName" />
+                
+        <Component type="Visuals">
+            <DefaultSpriteName useName="door_horizontal_0" />
+            <SpriteName fromFunction="Door_GetSpriteName" />
+        </Component>
 
         <Animations>
           <Animation state="horizontal" valuebased="true">
-            <Frame name="DoorHorizontal_0" />
-            <Frame name="DoorHorizontal_1" />
-            <Frame name="DoorHorizontal_2" />
-            <Frame name="DoorHorizontal_3" />
-            <Frame name="DoorHorizontal_4" />
-            <Frame name="DoorHorizontal_5" />
-            <Frame name="DoorHorizontal_5" />
-            <Frame name="DoorHorizontal_5" />
+            <Frame name="door_horizontal_0" />
+            <Frame name="door_horizontal_1" />
+            <Frame name="door_horizontal_2" />
+            <Frame name="door_horizontal_3" />
+            <Frame name="door_horizontal_4" />
+            <Frame name="door_horizontal_5" />
+            <Frame name="door_horizontal_5" />
+            <Frame name="door_horizontal_5" />
           </Animation>  
           <Animation state="vertical" valuebased="true">
-            <Frame name="DoorVertical_0" />
-            <Frame name="DoorVertical_1" />
-            <Frame name="DoorVertical_2" />
-            <Frame name="DoorVertical_3" />
-            <Frame name="DoorVertical_4" />
-            <Frame name="DoorVertical_5" />
-            <Frame name="DoorVertical_5" />
-            <Frame name="DoorVertical_5" />                
+            <Frame name="door_vertical_0" />
+            <Frame name="door_vertical_1" />
+            <Frame name="door_vertical_2" />
+            <Frame name="door_vertical_3" />
+            <Frame name="door_vertical_4" />
+            <Frame name="door_vertical_5" />
+            <Frame name="door_vertical_5" />
+            <Frame name="door_vertical_5" />                
           </Animation>                      
         </Animations>
 
@@ -99,8 +106,8 @@
         <UnlocalizedDescription>furn_door_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture type="Airlock">
-        <Name>Door</Name>
+    <Furniture type="airlock_door">
+        <Name>Airlock Door</Name>
         <Description>An Airlock prevents air from leaving the base</Description>
         <TypeTag>Door</TypeTag>
         <TypeTag>Pressure Door</TypeTag>
@@ -112,8 +119,11 @@
         <EnclosesRooms>true</EnclosesRooms>
         <CanReplaceFurniture typeTag="Wall" />
         <CanReplaceFurniture typeTag="Door" />
-        
-        <GetSpriteName FunctionName="Door_GetSpriteName" />
+                
+        <Component type="Visuals">
+            <DefaultSpriteName useName="airlock_door_horizontal_0" />
+            <SpriteName fromFunction="Door_GetSpriteName" />
+        </Component>
 
         <BuildingJob jobTime="5">
             <Inventory type="Steel Plate" amount="10" />
@@ -125,24 +135,24 @@
 
         <Animations>
           <Animation state="horizontal" valuebased="true">
-            <Frame name="AirlockHorizontal_0" />
-            <Frame name="AirlockHorizontal_1" />
-            <Frame name="AirlockHorizontal_2" />
-            <Frame name="AirlockHorizontal_3" />
-            <Frame name="AirlockHorizontal_4" />
-            <Frame name="AirlockHorizontal_5" />
-            <Frame name="AirlockHorizontal_5" />
-            <Frame name="AirlockHorizontal_5" />
+            <Frame name="airlock_door_horizontal_0" />
+            <Frame name="airlock_door_horizontal_1" />
+            <Frame name="airlock_door_horizontal_2" />
+            <Frame name="airlock_door_horizontal_3" />
+            <Frame name="airlock_door_horizontal_4" />
+            <Frame name="airlock_door_horizontal_5" />
+            <Frame name="airlock_door_horizontal_5" />
+            <Frame name="airlock_door_horizontal_5" />
           </Animation>
           <Animation state="vertical" valuebased="true">
-            <Frame name="AirlockVertical_0" />
-            <Frame name="AirlockVertical_1" />
-            <Frame name="AirlockVertical_2" />
-            <Frame name="AirlockVertical_3" />
-            <Frame name="AirlockVertical_4" />
-            <Frame name="AirlockVertical_5" />
-            <Frame name="AirlockVertical_5" />
-            <Frame name="AirlockVertical_5" />
+            <Frame name="airlock_door_vertical_0" />
+            <Frame name="airlock_door_vertical_1" />
+            <Frame name="airlock_door_vertical_2" />
+            <Frame name="airlock_door_vertical_3" />
+            <Frame name="airlock_door_vertical_4" />
+            <Frame name="airlock_door_vertical_5" />
+            <Frame name="airlock_door_vertical_5" />
+            <Frame name="airlock_door_vertical_5" />
           </Animation>
         </Animations>
       
@@ -156,15 +166,15 @@
         <Action event="OnFastUpdate" functionName="OnUpdate_AirlockDoor" />
         <Action event="OnUpdate" functionName="OnUpdate_Leak_Airlock" />
 
-        <ContextMenuAction FunctionName="AirlockDoor_Toggle_Pressure_Lock" Text="Toggle Pressure Lock" RequireCharacterSelected="false"/>
+        <ContextMenuAction FunctionName="AirlockDoor_Toggle_Pressure_Lock" LocalizationKey="toggle_pressure_lock" RequireCharacterSelected="false"/>
 
         <IsEnterable FunctionName="IsEnterable_AirlockDoor" />
         
-        <LocalizationCode>furn_airlock</LocalizationCode>
-        <UnlocalizedDescription>furn_airlock_desc</UnlocalizedDescription>
+        <LocalizationCode>furn_airlock_door</LocalizationCode>
+        <UnlocalizedDescription>furn_airlock_door_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture type="Stockpile">
+    <Furniture type="stockpile">
         <Name>Stockpile</Name>
         <Description>Characters will brings inventory here for storage.</Description>
         <TypeTag>Storage</TypeTag>
@@ -177,14 +187,18 @@
 
         <Action event="OnUpdate" functionName="Stockpile_UpdateAction" />
         <DragType>area</DragType>
+        
+        <Component type="Visuals">
+            <DefaultSpriteName useName="stockpile_" />
+        </Component>
 
-        <ContextMenuAction FunctionName="Stockpile_SetNewFilter" Text="Set Filter" RequireCharacterSelected="false"/>
+        <ContextMenuAction FunctionName="Stockpile_SetNewFilter" LocalizationKey="set_filter" RequireCharacterSelected="false"/>
 
         <LocalizationCode>furn_stockpile</LocalizationCode>
         <UnlocalizedDescription>furn_stockpile_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture type="Oxygen Generator">
+    <Furniture type="oxygen_generator">
         <Name>Oxygen Generator</Name>
         <Description>Create O2 in the room in which it is built.</Description>
         <TypeTag>Generator</TypeTag>
@@ -202,16 +216,16 @@
 
         <Animations>
           <Animation state="idle" looping="false">
-            <Frame name="Oxygen Generator" />
+            <Frame name="oxygen_generator" />
           </Animation>
           <Animation state="running" fps="8" looping="true">
-            <Frame name="Oxygen_Generator_Running1" />
-            <Frame name="Oxygen_Generator_Running2" />
-            <Frame name="Oxygen_Generator_Running3" />
+            <Frame name="oxygen_generator_running_1" />
+            <Frame name="oxygen_generator_running_2" />
+            <Frame name="oxygen_generator_running_3" />
           </Animation>
         </Animations>
         
-        <Component type="Animator">
+        <Component type="Visuals">
             <UseAnimation name="idle">
                 <Requires>
                     <Param name="pow_is_running" condition="IsFalse" />
@@ -245,7 +259,7 @@
         <UnlocalizedDescription>furn_oxygen_generator_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture type="Mining Drone Station">
+    <Furniture type="mining_drone_station">
         <Name>Mining Drone Station</Name>
         <Description>Creates raw materials when worked by a character.</Description>
         <TypeTag>Workstation</TypeTag>
@@ -274,15 +288,15 @@
 
         <Action event="OnUpdate" functionName="MiningDroneStation_UpdateAction" />
 
-        <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Iron" Text="Change to Raw Iron" RequireCharacterSelected="false"/>
-        <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Copper" Text="Change to Raw Copper" RequireCharacterSelected="false"/>
+        <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Iron" LocalizationKey="change_to_raw_iron" RequireCharacterSelected="false"/>
+        <ContextMenuAction FunctionName="MiningDroneStation_Change_to_Raw_Copper" LocalizationKey="change_to_raw_copper" RequireCharacterSelected="false"/>
 
         <LocalizationCode>furn_mining_drone_station</LocalizationCode>
         <UnlocalizedDescription>furn_mining_drone_station_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture type="Power Generator">
-        <Name>Power Generator</Name>
+    <Furniture type="fission_reactor">
+        <Name>Fission Reactor</Name>
         <TypeTag>Generator</TypeTag>
         <MovementCost>2</MovementCost>
         <PathfindingModifier>0</PathfindingModifier>
@@ -292,12 +306,12 @@
 
         <Animations>
             <Animation state="idle" looping="false">
-                <Frame name="Power-Generator-01" />
+                <Frame name="fission_reactor_1" />
             </Animation>
             <Animation state="running" fps="6" looping="true">
-                <Frame name="Power-Generator-02" />
-                <Frame name="Power-Generator-03" />
-                <Frame name="Power-Generator-04" />
+                <Frame name="fission_reactor_2" />
+                <Frame name="fission_reactor_3" />
+                <Frame name="fission_reactor_4" />
             </Animation>
         </Animations>
 
@@ -307,7 +321,8 @@
             <Inventory type="Steel Plate" amount="1" />
         </DeconstructJob>
         
-        <Component type="Animator">
+        <Component type="Visuals">
+            <DefaultSpriteName useName="fission_reactor_1" />
             <UseAnimation name="idle">
                 <Requires>
                     <Param name="cur_processed_inv" condition="IsZero" />
@@ -343,8 +358,8 @@
 
         <GetProgressInfo functionName="PowerGenerator_FuelInfo" />
         
-        <LocalizationCode>furn_power_generator</LocalizationCode>
-        <UnlocalizedDescription>furn_power_generator_desc</UnlocalizedDescription>
+        <LocalizationCode>furn_fission_reactor</LocalizationCode>
+        <UnlocalizedDescription>furn_fission_reactor_desc</UnlocalizedDescription>
     </Furniture>
 
     <Furniture type="cloning_pod">
@@ -392,7 +407,7 @@
         <UnlocalizedDescription>furn_cloning_pod_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture type="Metal Smelter">
+    <Furniture type="metal_smelter">
         <Name>Metal Smelter</Name>
         <Description>Smelts your raw ores into metal.</Description>
         <TypeTag>Processor</TypeTag>
@@ -445,7 +460,7 @@
             </ProductionChain>
         </Component>
 
-        <Component type="Animator">
+        <Component type="Visuals">
             <UseAnimation name="idle">
                 <Requires>
                     <Param name="cur_processed_inv" condition="IsZero" />
@@ -460,14 +475,14 @@
 
         <Animations>
             <Animation state="idle" fps="2" looping="false">
-                <Frame name="Metal Smelter" />
+                <Frame name="metal_smelter" />
             </Animation>
             <Animation state="running" fps="6" looping="true">
-                <Frame name="Metal_Smelter_Running_1" />
-                <Frame name="Metal_Smelter_Running_2" />
-                <Frame name="Metal_Smelter_Running_3" />
-                <Frame name="Metal_Smelter_Running_4" />
-                <Frame name="Metal_Smelter_Running_5" />
+                <Frame name="metal_smelter_running_1" />
+                <Frame name="metal_smelter_running_2" />
+                <Frame name="metal_smelter_running_3" />
+                <Frame name="metal_smelter_running_4" />
+                <Frame name="metal_smelter_running_5" />
             </Animation>
         </Animations>
 
@@ -475,7 +490,7 @@
         <UnlocalizedDescription>furn_metal_smelter_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture type="Heater">
+    <Furniture type="heater">
         <Name>Heater</Name>
         <Description>Raises temperature in the room.</Description>
         <BaseType>Temperature</BaseType>
@@ -510,7 +525,7 @@
         <UnlocalizedDescription>furn_heater_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture type="Power Cell Press">
+    <Furniture type="power_cell_press">
         <Name>Power Cell Press</Name>
         <Description>A press that converts steel plate and something into power cells.</Description>
         <MovementCost>1</MovementCost>
@@ -546,12 +561,14 @@
         <Component type="PowerConnection">
             <Requires rate="1" />
         </Component>
+        
+        <GetProgressInfo functionName="PowerCellPress_StatusInfo" />
 
         <LocalizationCode>furn_power_cell_press</LocalizationCode>
         <UnlocalizedDescription>furn_power_cell_press_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture type="Small Landing Pad">
+    <Furniture type="small_landing_pad">
         <Name>Small Landing Pad</Name>
         <Description>A landing pad for small spaceboats to land.</Description>
         <TypeTag>OutdoorOnly</TypeTag>
@@ -574,7 +591,7 @@
         <JobOutputSpotOffset X="1" Y="-1" />
 
         <ContextMenuAction FunctionName="LandingPad_Test_CallTradeShip"
-                           Text="Call Trade Ship Test"
+                           LocalizationKey="call_trade_ship_test"
                            RequireCharacterSelected="false"
                            DevModeOnly="true"/>
 
@@ -582,7 +599,7 @@
         <UnlocalizedDescription>furn_small_landing_pad_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture type="compressor_oxygen">
+    <Furniture type="oxygen_compressor">
         <Name>Oxygen Compressor</Name>
         <Description>Stores and releases oxygen as needed</Description>
         <MovementCost>2</MovementCost>
@@ -599,16 +616,16 @@
 
         <Animations>
           <Animation state="running" valuebased="true">
-            <Frame name="compressor_oxygen" />
-            <Frame name="compressor_oxygen_0" />
-            <Frame name="compressor_oxygen_1" />
-            <Frame name="compressor_oxygen_2" />
-            <Frame name="compressor_oxygen_3" />
-            <Frame name="compressor_oxygen_4" />
-            <Frame name="compressor_oxygen_5" />
-            <Frame name="compressor_oxygen_6" />
-            <Frame name="compressor_oxygen_7" />
-            <Frame name="compressor_oxygen_8" />
+            <Frame name="oxygen_compressor" />
+            <Frame name="oxygen_compressor_0" />
+            <Frame name="oxygen_compressor_1" />
+            <Frame name="oxygen_compressor_2" />
+            <Frame name="oxygen_compressor_3" />
+            <Frame name="oxygen_compressor_4" />
+            <Frame name="oxygen_compressor_5" />
+            <Frame name="oxygen_compressor_6" />
+            <Frame name="oxygen_compressor_7" />
+            <Frame name="oxygen_compressor_8" />
           </Animation>
         </Animations>
       
@@ -661,7 +678,7 @@
         <UnlocalizedDescription>furn_solar_panel_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture type="pump_air">
+    <Furniture type="air_pump">
         <Name>Air Pump</Name>
         <MovementCost>0</MovementCost>
         <Width>1</Width>
@@ -687,13 +704,18 @@
         <Component type="PowerConnection">
             <Requires rate="1" />
         </Component>
+        
+        <Component type="Visuals">
+            <DefaultSpriteName useName="air_pump" />
+            <SpriteName fromFunction="AirPump_GetSpriteName" />
+        </Component>
 
         <Action event="OnUpdate" functionName="AirPump_OnUpdate" />
-        <GetSpriteName FunctionName="AirPump_GetSpriteName" />
-        <ContextMenuAction FunctionName="AirPump_FlipDirection" Text="Flip Direction" RequireCharacterSelected="false" />
 
-        <LocalizationCode>furn_pump_air</LocalizationCode>
-        <UnlocalizedDescription>furn_pump_air_desc</UnlocalizedDescription>
+        <ContextMenuAction FunctionName="AirPump_FlipDirection" LocalizationKey="flip_direction" RequireCharacterSelected="false" />
+
+        <LocalizationCode>furn_air_pump</LocalizationCode>
+        <UnlocalizedDescription>furn_air_pump_desc</UnlocalizedDescription>
     </Furniture>
 
     <Furniture type="vent">
@@ -720,17 +742,17 @@
         <Action event="OnChange" functionName="Vent_SetOrientationState" />
         <Action event="OnInstall" functionName="Vent_SetOrientationState" />
 
-        <ContextMenuAction FunctionName="Vent_Open" Text="Open Vent" RequireCharacterSelected="false" />
-        <ContextMenuAction FunctionName="Vent_Close" Text="Close Vent" RequireCharacterSelected="false" />
+        <ContextMenuAction FunctionName="Vent_Open" LocalizationKey="open_vent" RequireCharacterSelected="false" />
+        <ContextMenuAction FunctionName="Vent_Close" LocalizationKey="close_vent" RequireCharacterSelected="false" />
 
         <Animations>
             <Animation state="horizontal" valuebased="true">
-                <Frame name="vent_EW_Closed" />
-                <Frame name="vent_EW_Opened" />
+                <Frame name="vent_EW_closed" />
+                <Frame name="vent_EW_opened" />
             </Animation>  
             <Animation state="vertical" valuebased="true">
-                <Frame name="vent_NS_Closed" />  
-                <Frame name="vent_NS_Opened" />           
+                <Frame name="vent_NS_closed" />  
+                <Frame name="vent_NS_opened" />           
             </Animation>                      
         </Animations>
         
@@ -789,7 +811,7 @@
           </Animation>          
         </Animations>
         
-        <Component type="Animator">
+        <Component type="Visuals">
             <UseAnimation name="accumulate" valuebasedParamerName="pow_accumulator_index"/>               
         </Component>
 
@@ -825,8 +847,11 @@
             <Param name="ore_type" value="Raw Iron" />
         </Params>
 
-        <ContextMenuAction FunctionName="OreMine_CreateMiningJob" Text="Mine Ore" RequireCharacterSelected="false" />
-        <GetSpriteName FunctionName="OreMine_GetSpriteName" />
+        <ContextMenuAction FunctionName="OreMine_CreateMiningJob" LocalizationKey="mine_ore" RequireCharacterSelected="false" />
+        
+        <Component type="Visuals">
+            <SpriteName fromFunction="OreMine_GetSpriteName" />
+        </Component>
 
         <LocalizationCode>furn_mine</LocalizationCode>
         <UnlocalizedDescription>furn_mine_desc</UnlocalizedDescription>
@@ -852,7 +877,7 @@
         <UnlocalizedDescription>furn_berth_desc</UnlocalizedDescription>
     </Furniture>
 
-    <Furniture type="RTG">
+    <Furniture type="rtg">
         <Name>RTG</Name>
         <Description>Radioisotope thermoelectric generator provides electricity and heat</Description>
         <TypeTag>Temperature</TypeTag>
@@ -883,8 +908,8 @@
             <Param name="pressure_threshold" value="0.2" />
         </Params>
 
-        <LocalizationCode>furn_rt_generator</LocalizationCode>
-        <UnlocalizedDescription>furn_rt_generator_desc</UnlocalizedDescription>
+        <LocalizationCode>furn_rtg</LocalizationCode>
+        <UnlocalizedDescription>furn_rtg_desc</UnlocalizedDescription>
     </Furniture>
 
     <Furniture type="astro_wall">
@@ -893,21 +918,25 @@
         <TypeTag>Wall</TypeTag>
         <TypeTag>Non-buildable</TypeTag>
         <TypeTag>Non-deconstructible</TypeTag>
+        <TypeTag>DoesntNeedFloor</TypeTag>
         <MovementCost>0</MovementCost>
         <Width>1</Width>
         <Height>1</Height>
-        <LinksToNeighbours>true</LinksToNeighbours>
+        <LinksToNeighbours>astro_wall</LinksToNeighbours>
         <EnclosesRooms>true</EnclosesRooms>
-        
+
         <Params>
-         <Param name="ore_type" value="None" />
+            <Param name="ore_type" value="None" />
         </Params>
 
-    <ContextMenuAction FunctionName="OreMine_CreateMiningJob" Text="Mine Ore" RequireCharacterSelected="false" />
-    <!-- <GetSpriteName FunctionName="OreMine_GetSpriteName" /> -->
+        <Component type="Visuals">
+            <OverlaySpriteName fromParameter="source_type" />
+        </Component>
 
-    <LocalizationCode>furn_astro_wall</LocalizationCode>
-    <UnlocalizedDescription>furn_astro_wall_desc</UnlocalizedDescription>
+        <ContextMenuAction FunctionName="OreMine_CreateMiningJob" LocalizationKey="mine_ore" RequireCharacterSelected="false" />
+
+        <LocalizationCode>furn_astro_wall</LocalizationCode>
+        <UnlocalizedDescription>furn_astro_wall_desc</UnlocalizedDescription>
     </Furniture>
     
 </Furnitures>

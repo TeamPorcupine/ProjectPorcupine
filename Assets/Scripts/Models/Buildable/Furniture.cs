@@ -16,6 +16,7 @@ using MoonSharp.Interpreter.Interop;
 using Newtonsoft.Json.Linq;
 using ProjectPorcupine.Buildable.Components;
 using ProjectPorcupine.Jobs;
+using ProjectPorcupine.Localization;
 using ProjectPorcupine.PowerNetwork;
 using UnityEngine;
 
@@ -30,12 +31,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     private const int MinEdgeDistance = 5;
 
     private string isEnterableAction;
-
-    /// <summary>
-    /// This action is called to get the sprite name based on the furniture parameters.
-    /// </summary>
-    private string getSpriteNameAction;
-
+    
     /// <summary>
     /// This action is called to get the progress info based on the furniture parameters.
     /// </summary>
@@ -151,7 +147,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         }
 
         isEnterableAction = other.isEnterableAction;
-        getSpriteNameAction = other.getSpriteNameAction;
+
         getProgressInfoNameAction = other.getProgressInfoNameAction;
 
         tileTypeBuildPermissions = new HashSet<string>(other.tileTypeBuildPermissions);
@@ -342,6 +338,21 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     public string DragType { get; private set; }
 
     /// <summary>
+    /// Represents name of the sprite shown in menus.
+    /// </summary>
+    public string DefaultSpriteName { get; set; }
+
+    /// <summary>
+    /// Actual sprite name (can be null).
+    /// </summary>
+    public string SpriteName { get; set; }
+
+    /// <summary>
+    /// Sprite name for overlay.
+    /// </summary>
+    public string OverlaySpriteName { get; set; }
+
+    /// <summary>
     /// Gets or sets the furniture animation.
     /// </summary>
     public FurnitureAnimation Animation { get; set; }
@@ -350,7 +361,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     /// Gets or sets the parameters that is tied to the furniture.
     /// </summary>
     public Parameter Parameters { get; set; }
-
+    
     /// <summary>
     /// Gets a component that handles the jobs linked to the furniture.
     /// </summary>
@@ -360,17 +371,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     /// This flag is set if the furniture is tasked to be destroyed.
     /// </summary>
     public bool IsBeingDestroyed { get; protected set; }
-
-    /// Should we only use the default name? If not, then more complex logic is tested, such as walls.
-    /// </summary>
-    public bool OnlyUseDefaultSpriteName
-    {
-        get
-        {
-            return !string.IsNullOrEmpty(getSpriteNameAction);
-        }
-    }
-
+        
     /// <summary>
     /// Flag with furniture requirements (used for showing icon overlay, e.g. No power, ... ).
     /// </summary>
@@ -526,7 +527,6 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         prevUpdatePowerOn = true;
         Jobs.ResumeAll();
 
-        // TODO: some weird thing happens
         if (EventActions != null)
         {
             EventActions.Trigger("OnUpdate", this, deltaTime);
@@ -607,18 +607,30 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         return (Enterability)ret.Number;
     }
 
+    public string GetDefaultSpriteName()
+    {
+        if (!string.IsNullOrEmpty(DefaultSpriteName))
+        {
+            return DefaultSpriteName;
+        }
+
+        // Else return default Type string
+        return Type;
+    }
+
     /// <summary>
     /// Check if the furniture has a function to determine the sprite name and calls that function.
     /// </summary>
+    /// <param name="explicitSpriteUsed">Out: true if explicit sprite was used, false if default type was used.</param>
     /// <returns>Name of the sprite.</returns>
-    public string GetSpriteName()
+    public string GetSpriteName(out bool explicitSpriteUsed)
     {
-        if (!string.IsNullOrEmpty(getSpriteNameAction))
+        explicitSpriteUsed = true;
+        if (!string.IsNullOrEmpty(SpriteName))
         {
-            DynValue ret = FunctionsManager.Furniture.Call(getSpriteNameAction, this);
-            return ret.String;
+            return SpriteName;
         }
-
+        
         // Try to get spritename from animation
         if (Animation != null)
         {
@@ -626,7 +638,13 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         }
 
         // Else return default Type string
+        explicitSpriteUsed = false;
         return Type;
+    }
+
+    public string GetOverlaySpriteName()
+    {
+        return OverlaySpriteName;
     }
     #endregion
 
@@ -722,16 +740,13 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
                     contextMenuLuaActions.Add(new ContextMenuLuaAction
                     {
                         LuaFunction = reader.GetAttribute("FunctionName"),
-                        Text = reader.GetAttribute("Text"),
+                        LocalizationKey = reader.GetAttribute("LocalizationKey"),
                         RequireCharacterSelected = bool.Parse(reader.GetAttribute("RequireCharacterSelected")),
                         DevModeOnly = bool.Parse(reader.GetAttribute("DevModeOnly") ?? "false")
                     });
                     break;
                 case "IsEnterable":
                     isEnterableAction = reader.GetAttribute("FunctionName");
-                    break;
-                case "GetSpriteName":
-                    getSpriteNameAction = reader.GetAttribute("FunctionName");
                     break;
                 case "GetProgressInfo":
                     getProgressInfoNameAction = reader.GetAttribute("functionName");
@@ -760,6 +775,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
                     BuildableComponent component = BuildableComponent.Deserialize(reader);
                     if (component != null)
                     {
+                        component.InitializePrototype(this);
                         components.Add(component);
                     }
 
@@ -1119,7 +1135,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         {
             yield return new ContextMenuAction
             {
-                Text = "Deconstruct " + Name,
+                LocalizationKey = LocalizationTable.GetLocalization("deconstruct_furniture", LocalizationCode),
                 RequireCharacterSelected = false,
                 Action = (ca, c) => SetDeconstructJob()
             };
@@ -1131,7 +1147,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
             {
                 yield return new ContextMenuAction
                 {
-                    Text = "Prioritize " + Name,
+                    LocalizationKey = LocalizationTable.GetLocalization("prioritize_furniture", LocalizationCode),
                     RequireCharacterSelected = true,
                     Action = (ca, c) => c.PrioritizeJob(Jobs[0])
                 };
@@ -1159,7 +1175,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
                 // TODO The Action could be done via a lambda, but it always uses the same space of memory, thus if 2 actions are performed, the same action will be produced for each.
                 yield return new ContextMenuAction
                 {
-                    Text = contextMenuLuaAction.Text,
+                    LocalizationKey = contextMenuLuaAction.LocalizationKey,
                     RequireCharacterSelected = contextMenuLuaAction.RequireCharacterSelected,
                     Action = InvokeContextMenuLuaAction,
                     Parameter = contextMenuLuaAction.LuaFunction    // Note that this is only in place because of the problem with the previous statement.
@@ -1234,10 +1250,13 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
                     isReplaceable = tile2.Furniture.typeTags.Overlaps(ReplaceableFurniture);
                 }
 
-                // Make sure tile is FLOOR
-                if (tile2.Type != TileType.Floor && tileTypeBuildPermissions.Contains(tile2.Type.Type) == false)
+                if (!HasTypeTag("DoesntNeedFloor"))
                 {
-                    return false;
+                    // Make sure tile is FLOOR
+                    if (tile2.Type != TileType.Floor && tileTypeBuildPermissions.Contains(tile2.Type.Type) == false)
+                    {
+                        return false;
+                    }
                 }
 
                 // Make sure tile doesn't already have furniture
@@ -1287,6 +1306,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     {
         UpdateOnChanged(this);
     }
+
     #endregion
 
     /// <summary>

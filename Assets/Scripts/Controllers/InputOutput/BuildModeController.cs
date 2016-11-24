@@ -210,7 +210,6 @@ public class BuildModeController
             // Run the ValidPlacement function!
             string utilityType = buildModeType;
 
-            // TODO: Reimplement this later: DoesBuildJobOverlapExistingBuildJob(t, furnitureType) == false)
             if ( 
                 World.Current.UtilityManager.IsPlacementValid(utilityType, tile)  &&
                 DoesSameUtilityTypeAlreadyExist(utilityType, tile) == false &&
@@ -241,7 +240,7 @@ public class BuildModeController
                 // Add the job to the queue or build immediately if in dev mode
                 if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
                 {
-                    World.Current.UtilityManager.PlaceUtility(job.Type, job.tile);
+                    World.Current.UtilityManager.PlaceUtility(job.Type, job.tile, true);
                 }
                 else
                 {
@@ -282,7 +281,7 @@ public class BuildModeController
                 }
                 else
                 {
-                    buildingJob.OnJobStopped += (theJob) => theJob.tile.PendingBuildJobs = null;
+                    buildingJob.OnJobStopped += (theJob) => theJob.tile.PendingBuildJobs.Remove(theJob);
 
                     WorldController.Instance.World.jobQueue.Enqueue(buildingJob);
                 }
@@ -290,7 +289,6 @@ public class BuildModeController
         }
         else if (buildMode == BuildMode.DECONSTRUCT)
         {
-            // TODO
             bool canDeconstructAll = Settings.GetSetting("DialogBoxSettings_developerModeToggle", false);
             if (tile.Furniture != null && (canDeconstructAll || tile.Furniture.HasTypeTag("Non-deconstructible") == false))
             {

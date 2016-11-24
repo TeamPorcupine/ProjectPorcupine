@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Sprites>
+	<Sprite name="oxygen_generator"     		x="0" 	y="0"   w="2" h="2" pixelPerUnit="32" />
+	<Sprite name="oxygen_generator_running_1"    x="0" 	y="2"  w="2" h="2" pixelPerUnit="32" />
+	<Sprite name="oxygen_generator_running_2"    x="2" 	y="2" 	w="2" h="2" pixelPerUnit="32" />
+	<Sprite name="oxygen_generator_running_3"    x="4" y="2" 	w="2" h="2" pixelPerUnit="32" />
+</Sprites>

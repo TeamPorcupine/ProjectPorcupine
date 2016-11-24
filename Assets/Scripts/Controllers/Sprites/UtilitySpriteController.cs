@@ -76,7 +76,6 @@ public class UtilitySpriteController : BaseSpriteController<Utility>
 
     protected override void OnCreated(Utility utility)
     {
-        // FIXME: Does not consider rotated objects
         GameObject util_go = new GameObject();
 
         // Add our tile/GO pair to the dictionary.

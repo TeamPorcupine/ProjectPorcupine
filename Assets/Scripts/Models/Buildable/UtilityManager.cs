@@ -13,14 +13,12 @@ using Newtonsoft.Json.Linq;
 
 public class UtilityManager : IEnumerable<Utility>
 {
-    private List<Utility> utilities;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="UtilityManager"/> class.
     /// </summary>
     public UtilityManager()
     {
-        utilities = new List<Utility>();
+        Utilities = new List<Utility>();
     }
 
     /// <summary>
@@ -28,14 +26,16 @@ public class UtilityManager : IEnumerable<Utility>
     /// </summary>
     public event Action<Utility> Created;
 
+    public List<Utility> Utilities { get; private set; }
+
     /// <summary>
     /// Creates a utility with the given type and places it at the given tile.
     /// </summary>
     /// <returns>The utility.</returns>
     /// <param name="type">The type of the utility.</param>
     /// <param name="tile">The tile to place the utility at.</param>
-    /// <param name="doRoomFloodFill">If set to <c>true</c> do room flood fill.</param>
-    public Utility PlaceUtility(string type, Tile tile, bool doRoomFloodFill = false)
+    /// <param name="skipGridUpdate">If set to <c>true</c> don't build the network, in which case the network will need explictly built.</param>
+    public Utility PlaceUtility(string type, Tile tile, bool skipGridUpdate = false)
     {
         if (PrototypeManager.Utility.Has(type) == false)
         {
@@ -45,7 +45,7 @@ public class UtilityManager : IEnumerable<Utility>
 
         Utility utility = PrototypeManager.Utility.Get(type);
 
-        return PlaceUtility(utility, tile, doRoomFloodFill);
+        return PlaceUtility(utility, tile, skipGridUpdate);
     }
 
     /// <summary>
@@ -54,10 +54,10 @@ public class UtilityManager : IEnumerable<Utility>
     /// <returns>The utility.</returns>
     /// <param name="prototype">The utility prototype.</param>
     /// <param name="tile">The tile to place the utility at.</param>
-    /// <param name="doRoomFloodFill">If set to <c>true</c> do room flood fill.</param>
-    public Utility PlaceUtility(Utility prototype, Tile tile, bool doRoomFloodFill = true)
+    /// <param name="skipGridUpdate">If set to <c>true</c> don't build the network, in which case the network will need explictly built.</param>
+    public Utility PlaceUtility(Utility prototype, Tile tile, bool skipGridUpdate = false)
     {
-        Utility utility = Utility.PlaceInstance(prototype, tile);
+        Utility utility = Utility.PlaceInstance(prototype, tile, skipGridUpdate);
 
         if (utility == null)
         {
@@ -66,7 +66,7 @@ public class UtilityManager : IEnumerable<Utility>
         }
 
         utility.Removed += OnRemoved;
-        utilities.Add(utility);
+        Utilities.Add(utility);
 
         if (Created != null)
         {
@@ -74,6 +74,34 @@ public class UtilityManager : IEnumerable<Utility>
         }
 
         return utility;
+    }
+
+    /// <summary>
+    /// Calls the utilities update function on every frame.
+    /// The list needs to be copied temporarily in case utilities are added or removed during the update.
+    /// </summary>
+    /// <param name="deltaTime">Delta time.</param>
+    public void TickEveryFrame(float deltaTime)
+    {
+        List<Utility> tempUtilities = Utilities;
+        foreach (Utility utility in tempUtilities)
+        {
+            utility.EveryFrameUpdate(deltaTime);
+        }
+    }
+
+    /// <summary>
+    /// Calls the utilities update function on every frame.
+    /// The list needs to be copied temporarily in case utilities are added or removed during the update.
+    /// </summary>
+    /// <param name="deltaTime">Delta time.</param>
+    public void TickFixedFrequency(float deltaTime)
+    {
+        List<Utility> tempUtilities = Utilities;
+        foreach (Utility utility in tempUtilities)
+        {
+            utility.FixedFrequencyUpdate(deltaTime);
+        }
     }
 
     /// <summary>
@@ -86,7 +114,7 @@ public class UtilityManager : IEnumerable<Utility>
 
         // FIXME: I don't like having to manually and explicitly set
         // flags that preven conflicts. It's too easy to forget to set/clear them!
-        job.tile.PendingBuildJobs = null;
+        job.tile.PendingBuildJobs.Remove(job);
     }
 
     /// <summary>
@@ -106,7 +134,7 @@ public class UtilityManager : IEnumerable<Utility>
     /// <returns>The enumerator.</returns>
     public IEnumerator GetEnumerator()
     {
-        return utilities.GetEnumerator();
+        return Utilities.GetEnumerator();
     }
 
     /// <summary>
@@ -115,7 +143,7 @@ public class UtilityManager : IEnumerable<Utility>
     /// <returns>Each utility.</returns>
     IEnumerator<Utility> IEnumerable<Utility>.GetEnumerator()
     {
-        foreach (Utility utility in utilities)
+        foreach (Utility utility in Utilities)
         {
             yield return utility;
         }
@@ -124,7 +152,7 @@ public class UtilityManager : IEnumerable<Utility>
     public JToken ToJson()
     {
         JArray utilitiesJson = new JArray();
-        foreach (Utility utility in utilities)
+        foreach (Utility utility in Utilities)
         {
             utilitiesJson.Add(utility.ToJSon());
         }
@@ -145,6 +173,11 @@ public class UtilityManager : IEnumerable<Utility>
             Utility utility = PlaceUtility(type, World.Current.GetTileAt(x, y, z), false);
             utility.FromJson(utilityToken);
         }
+
+        foreach (Utility utility in Utilities)
+        {
+            utility.UpdateGrid(utility);
+        }
     }
 
     /// <summary>
@@ -153,6 +186,6 @@ public class UtilityManager : IEnumerable<Utility>
     /// <param name="utility">The utility being removed.</param>
     private void OnRemoved(Utility utility)
     {
-        utilities.Remove(utility);
+        Utilities.Remove(utility);
     }
 }
