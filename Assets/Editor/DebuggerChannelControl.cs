@@ -34,7 +34,6 @@ public class DebuggerChannelControl : EditorWindow
         channelSettings = Resources.Load<ChannelSettingsSO>("ChannelSettings");
         if(channelSettings == null)
         {
-            Debug.LogWarning("Beep Bop Boop");
             channelSettings = ScriptableObject.CreateInstance<ChannelSettingsSO>();
             AssetDatabase.CreateAsset(channelSettings, "Assets/Resources/ChannelSettings.asset");
             AssetDatabase.SaveAssets();
@@ -48,7 +47,7 @@ public class DebuggerChannelControl : EditorWindow
 
     private void OnGUI()
     {
-        GUILayout.BeginHorizontal("Box");
+        GUILayout.BeginArea(new Rect(0, 0, 460, 100));
         bool allStateChanged = false;
         allState = GUILayout.Toggle(allState, "All");
 
@@ -68,7 +67,7 @@ public class DebuggerChannelControl : EditorWindow
                 toggleReturns.Add(channelName, GUILayout.Toggle(UnityDebugger.Debugger.Channels[channelName], channelName));
                 if (allStateChanged)
                 {
-//                    toggleReturns[channelName] = allState;
+                    toggleReturns[channelName] = allState;
                 }
             }
 
@@ -79,13 +78,8 @@ public class DebuggerChannelControl : EditorWindow
 //                {
                 if (!channelSettings.ChannelState.ContainsKey(channelName) || channelSettings.ChannelState[channelName] != toggleReturns[channelName])
                 {
-                    if(!channelSettings.ChannelState.ContainsKey(channelName))
-                    {
-                        channelSettings.ChannelState.Add(channelName, toggleReturns[channelName]);
-                    }
                     channelSettings.ChannelState[channelName] = toggleReturns[channelName];
                     EditorUtility.SetDirty(channelSettings);
-                    Debug.LogWarning("* " + channelSettings.ChannelState.ContainsKey(channelName));
                 }
 //                }
             }
