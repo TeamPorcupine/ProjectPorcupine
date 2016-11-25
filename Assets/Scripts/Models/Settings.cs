@@ -30,6 +30,7 @@ public static class Settings
 	'DialogBoxSettingsDevConsole_devConsoleToggle' : true,
 	'DialogBoxSettingsDevConsole_consoleFontSize' : 15,
 	'DialogBoxSettingsDevConsole_timeStampToggle' : true,
+    'DialogBoxSettingsDevConsole_scrollSensitivity': 6,
 	'ZoomLerp' : 10,
 	'ZoomSensitivity' : 3,
 	'AutosaveInterval' : 10,

@@ -7,7 +7,6 @@
 // ====================================================
 #endregion
 using System.Collections.Generic;
-using ProjectPorcupine.Localization;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,9 +18,9 @@ public class DialogBoxSettingsDeveloper : DialogBox
     public Toggle timeStampToggle;
     public Toggle developerConsoleToggle;
     public Toggle developerModeToggle;
-    public GameObject developerModeObject;
 
     public Slider fontSize;
+    public Slider scrollingSensitivity;
 
     public Button closeButton;
     public Button saveButton;
@@ -62,10 +61,13 @@ public class DialogBoxSettingsDeveloper : DialogBox
 
         Settings.SetSetting("DialogBoxSettingsDevConsole_performanceGroup", performanceDropdown.value);
 
-        // This assignment will automatically save settings
-        CommandSettings.FontSize = (int)fontSize.value;
+        Settings.SetSetting("DialogBoxSettingsDevConsole_scrollSensitivity", scrollingSensitivity.value);
+        Settings.SetSetting("DialogBoxSettingsDevConsole_consoleFontSize", (int)fontSize.value);
+
+        Settings.SaveSettings();
 
         PerformanceHUDManager.DirtyUI();
+        DeveloperConsole.DevConsole.DirtySettings();
     }
 
     public void OnEnable()
@@ -97,6 +99,10 @@ public class DialogBoxSettingsDeveloper : DialogBox
         fontSize.value = Settings.GetSetting("DialogBoxSettingsDevConsole_consoleFontSize", 15);
         fontSize.maxValue = 20;
         fontSize.minValue = 10;
+
+        scrollingSensitivity.value = Settings.GetSetting("DialogBoxSettingsDevConsole_scrollSensitivity", 6);
+        scrollingSensitivity.maxValue = 15;
+        scrollingSensitivity.minValue = 5;
 
         developerConsoleToggle.isOn = Settings.GetSetting("DialogBoxSettingsDevConsole_devConsoleToggle", true);
         developerModeToggle.isOn = Settings.GetSetting("DialogBoxSettingsDevConsole_developerModeToggle", false);

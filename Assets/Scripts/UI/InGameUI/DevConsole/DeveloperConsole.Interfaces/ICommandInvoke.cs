@@ -29,7 +29,7 @@ namespace DeveloperConsole.Interfaces
         }
 
         /// <summary>
-        /// All the types of the parameters
+        /// All the types of the parameters.
         /// </summary>
         Type[] Types
         {

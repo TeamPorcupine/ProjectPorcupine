@@ -14,7 +14,7 @@ using MoonSharp.Interpreter;
 namespace DeveloperConsole
 {
     /// <summary>
-    /// A prototype for console commands
+    /// A prototype for console commands.
     /// </summary>
     [MoonSharpUserData]
     public class CommandPrototype : IPrototypable

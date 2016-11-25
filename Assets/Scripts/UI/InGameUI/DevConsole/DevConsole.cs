@@ -481,6 +481,20 @@ namespace DeveloperConsole
         }
 
         /// <summary>
+        /// Refreshes variables based on the settings.
+        /// </summary>
+        public static void DirtySettings()
+        {
+            if (instance == null)
+            {
+                return;
+            }
+
+            instance.textArea.fontSize = CommandSettings.FontSize;
+            instance.scrollRect.scrollSensitivity = CommandSettings.ScrollingSensitivity;
+        }
+
+        /// <summary>
         /// Button delegate action to handle command.
         /// </summary>
         public void EnterPressedForInput(Text newValue)

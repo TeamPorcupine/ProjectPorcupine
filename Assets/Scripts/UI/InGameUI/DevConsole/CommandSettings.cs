@@ -23,14 +23,25 @@ public static class CommandSettings
         set
         {
             Settings.SetSetting("DialogBoxSettingsDevConsole_consoleFontSize", value);
-
-            UnityEngine.UI.Text text = DevConsole.TextObject();
-            if (text != null)
-            {
-                text.fontSize = value;
-            }
-
             Settings.SaveSettings();
+
+            DevConsole.DirtySettings();
+        }
+    }
+
+    public static int ScrollingSensitivity
+    {
+        get
+        {
+            return Settings.GetSetting("DialogBoxSettingsDevConsole_scrollSensitivity", 6);
+        }
+
+        set
+        {
+            Settings.SetSetting("DialogBoxSettingsDevConsole_scrollSensitivity", value);
+            Settings.SaveSettings();
+
+            DevConsole.DirtySettings();
         }
     }
 
