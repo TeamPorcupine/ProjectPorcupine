@@ -7,19 +7,15 @@ osx_image: xcode6.4
 rvm:
 - 2.1.2
 before_install:
- - chmod +x ./Scripts/install.sh
+ - chmod +x ./Scripts/Install/unity.sh
+ - chmod +x ./Scripts/Install/mono.sh
+ - chmod +x ./Scripts/Install/stylecop.sh
  - chmod +x ./Scripts/test.sh
- - chmod +x ./Scripts/mono.sh
- - chmod +x ./Scripts/install-stylecop.sh
  - chmod +x ./Scripts/check-style.sh
  - chmod +x ./Scripts/travis.sh
 env:
   - JOB=unit-test
   - JOB=stylecop
-install:
-- ./Scripts/install.sh
-- ./Scripts/mono.sh
-- ./Scripts/install-stylecop.sh
 script:
 - ./Scripts/travis.sh
 notifications:
