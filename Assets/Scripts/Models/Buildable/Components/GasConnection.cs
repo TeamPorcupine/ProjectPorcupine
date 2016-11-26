@@ -9,11 +9,13 @@
 using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
+using Newtonsoft.Json;
 using ProjectPorcupine.Rooms;
 
 namespace ProjectPorcupine.Buildable.Components
 {
     [Serializable]
+    [JsonObject(MemberSerialization.OptIn)]
     [XmlRoot("Component")]
     [BuildableComponentName("GasConnection")]
     public class GasConnection : BuildableComponent
@@ -29,9 +31,11 @@ namespace ProjectPorcupine.Buildable.Components
         }
 
         [XmlElement("Provides")]
+        [JsonProperty("Provides")]
         public List<GasInfo> Provides { get; set; }
 
         [XmlElement("Requires")]
+        [JsonProperty("Requires")]
         public List<GasInfo> Requires { get; set; }
 
         public override BuildableComponent Clone()
@@ -84,6 +88,8 @@ namespace ProjectPorcupine.Buildable.Components
             componentRequirements = Requirements.Gas;
         }
 
+        [Serializable]
+        [JsonObject(MemberSerialization.OptOut)]
         public class GasInfo
         {
             public GasInfo()
