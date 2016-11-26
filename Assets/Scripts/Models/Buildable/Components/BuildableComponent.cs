@@ -12,6 +12,9 @@ using System.Linq;
 using System.Reflection;
 using System.Xml;
 using System.Xml.Serialization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 
 namespace ProjectPorcupine.Buildable.Components
 {
@@ -87,6 +90,30 @@ namespace ProjectPorcupine.Buildable.Components
                 Type t = componentTypes[componentTypeName];
                 XmlSerializer serializer = new XmlSerializer(t);
                 BuildableComponent component = (BuildableComponent)serializer.Deserialize(xmlReader);
+                //// need to set name explicitly (not part of deserialization as it's passed in)
+                component.Type = componentTypeName;
+                return component;
+            }
+            else
+            {
+                Debug.ULogErrorChannel(ComponentLogChannel, "There is no deserializer for component '{0}'", componentTypeName);
+                return null;
+            }
+        }
+
+        public static BuildableComponent Deserialize(JToken jtoken)
+        {
+            if (componentTypes == null)
+            {
+                componentTypes = FindComponentsInAssembly();
+            }
+
+            string componentTypeName = jtoken["Component"]["Type"].ToString();
+
+            if (componentTypes.ContainsKey(componentTypeName))
+            {
+                Type t = componentTypes[componentTypeName];
+                BuildableComponent component = (BuildableComponent)jtoken["Component"].ToObject(t);
                 //// need to set name explicitly (not part of deserialization as it's passed in)
                 component.Type = componentTypeName;
                 return component;
@@ -219,6 +246,7 @@ namespace ProjectPorcupine.Buildable.Components
         }
 
         [Serializable]
+        [JsonObject(MemberSerialization.OptOut)]
         public class UseAnimation
         {
             [XmlAttribute("name")]
@@ -231,6 +259,7 @@ namespace ProjectPorcupine.Buildable.Components
         }
 
         [Serializable]
+        [JsonObject(MemberSerialization.OptOut)]
         public class ParameterConditions
         {
             [XmlElement("Param")]
@@ -238,16 +267,19 @@ namespace ProjectPorcupine.Buildable.Components
         }
 
         [Serializable]
+        [JsonObject(MemberSerialization.OptOut)]
         public class ParameterCondition
         {
             [XmlAttribute("name")]
             public string ParameterName { get; set; }
 
             [XmlAttribute("condition")]
+            [JsonConverter(typeof(StringEnumConverter))]
             public ConditionType Condition { get; set; }
         }
 
         [Serializable]
+        [JsonObject(MemberSerialization.OptOut)]
         public class ParameterDefinition
         {
             public ParameterDefinition()

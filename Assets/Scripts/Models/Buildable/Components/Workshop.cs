@@ -11,11 +11,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
+using Newtonsoft.Json;
 using ProjectPorcupine.Jobs;
 
 namespace ProjectPorcupine.Buildable.Components
 {
     [Serializable]
+    [JsonObject(MemberSerialization.OptIn)]
     [XmlRoot("Component")]
     [BuildableComponentName("Workshop")]
     public class Workshop : BuildableComponent
@@ -31,6 +33,7 @@ namespace ProjectPorcupine.Buildable.Components
         }
 
         [XmlElement("ParameterDefinitions")]
+        [JsonProperty("ParameterDefinitions")]
         public WorkShopParameterDefinitions ParamsDefinitions { get; set; }
 
         public Parameter CurrentProcessingTime
@@ -66,6 +69,7 @@ namespace ProjectPorcupine.Buildable.Components
         }
 
         [XmlElement("ProductionChain")]
+        [JsonProperty("ProductionChain")]
         public List<ProductionChain> PossibleProductions { get; set; }
                 
         [XmlIgnore]
@@ -425,6 +429,7 @@ namespace ProjectPorcupine.Buildable.Components
         }
 
         [Serializable]
+        [JsonObject(MemberSerialization.OptOut)]
         public class Item
         {
             [XmlAttribute("objectType")]
@@ -440,6 +445,7 @@ namespace ProjectPorcupine.Buildable.Components
         }
 
         [Serializable]
+        [JsonObject(MemberSerialization.OptOut)]
         public class ProductionChain
         {
             [XmlAttribute("name")]
@@ -453,6 +459,7 @@ namespace ProjectPorcupine.Buildable.Components
         }
 
         [Serializable]
+        [JsonObject(MemberSerialization.OptOut)]
         public class WorkShopParameterDefinitions
         {
             // constants for parameters

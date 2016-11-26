@@ -10,10 +10,12 @@ using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
+using Newtonsoft.Json;
 
 namespace ProjectPorcupine.Buildable.Components
 {
     [Serializable]
+    [JsonObject(MemberSerialization.OptIn)]
     [XmlRoot("Component")]
     [BuildableComponentName("Visuals")]
     public class Visuals : BuildableComponent
@@ -31,15 +33,19 @@ namespace ProjectPorcupine.Buildable.Components
         }
 
         [XmlElement("DefaultSpriteName")]
+        [JsonProperty("DefaultSpriteName")]
         public SpriteNameInfo DefaultSpriteName { get; set; }
 
         [XmlElement("SpriteName")]
+        [JsonProperty("SpriteName")]
         public SpriteNameInfo SpriteName { get; set; }
 
         [XmlElement("OverlaySpriteName")]
+        [JsonProperty("OverlaySpriteName")]
         public SpriteNameInfo OverlaySpriteName { get; set; }
 
         [XmlElement("UseAnimation")]
+        [JsonProperty("UseAnimation")]
         public List<UseAnimation> UsedAnimations { get; set; }
         
         [XmlIgnore]
@@ -148,6 +154,7 @@ namespace ProjectPorcupine.Buildable.Components
         }       
 
         [Serializable]
+        [JsonObject(MemberSerialization.OptOut)]
         public class SpriteNameInfo
         {
             [XmlAttribute("useName")]
