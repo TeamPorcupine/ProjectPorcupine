@@ -39,6 +39,7 @@ public class PrototypeManager
         Headline = new PrototypeMap<Headline>("Headlines", "Headline");
         Overlay = new PrototypeMap<OverlayDescriptor>("Overlays", "Overlay");
         Ship = new PrototypeMap<Ship>("Ships", "Ship");
+        DevConsole = new PrototypeMap<DeveloperConsole.CommandPrototype>("ConsoleCommands", "ConsoleCommand");
     }
 
     /// <summary>
@@ -145,6 +146,12 @@ public class PrototypeManager
     /// </summary>
     /// <value>The overlay prototype map.</value>
     public static PrototypeMap<OverlayDescriptor> Overlay { get; private set; }
+
+    /// <summary>
+    /// Gets the DevConsole prototype map.
+    /// </summary>
+    /// <value>The DevConsole prototype map.</value>
+    public static PrototypeMap<DeveloperConsole.CommandPrototype> DevConsole { get; private set; }
 
     /// <summary>
     /// Gets the ship prototype map.

@@ -130,7 +130,7 @@ public class MouseController
         UpdateCameraMovement();
         UpdateSelection();
 
-        if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
+        if (Settings.GetSetting("DialogBoxSettingsDevConsole_developerModeToggle", false))
         {
             UpdateSpawnClicking();
         }
@@ -153,7 +153,7 @@ public class MouseController
     public void ClearMouseMode(bool changeMode = false)
     {
         isDragging = false;
-        if (changeMode) 
+        if (changeMode)
         {
             currentMode = MouseMode.SELECT;
         }
@@ -549,7 +549,7 @@ public class MouseController
         {
             WorldController.Instance.cameraController.ChangeZoom(Input.GetAxis("Mouse ScrollWheel"));
         }
-        
+
         UpdateCameraBounds();
     }
 
@@ -577,7 +577,7 @@ public class MouseController
         sr.sprite = fsc.GetSpriteForFurniture(furnitureType);
 
         if (World.Current.FurnitureManager.IsPlacementValid(furnitureType, tile, bmc.CurrentPreviewRotation) &&
-            World.Current.FurnitureManager.IsWorkSpotClear(furnitureType, tile) && 
+            World.Current.FurnitureManager.IsWorkSpotClear(furnitureType, tile) &&
             bmc.DoesFurnitureBuildJobOverlapExistingBuildJob(tile, furnitureType, bmc.CurrentPreviewRotation) == false)
         {
             sr.color = new Color(0.5f, 1f, 0.5f, 0.25f);
@@ -611,7 +611,7 @@ public class MouseController
         sr.sprite = SpriteManager.GetSprite("UI", "WorkSpotIndicator");
 
         if (World.Current.FurnitureManager.IsPlacementValid(furnitureType, tile) &&
-            World.Current.FurnitureManager.IsWorkSpotClear(furnitureType, tile) && 
+            World.Current.FurnitureManager.IsWorkSpotClear(furnitureType, tile) &&
             bmc.DoesFurnitureBuildJobOverlapExistingBuildJob(tile, furnitureType) == false)
         {
             sr.color = new Color(0.5f, 1f, 0.5f, 0.25f);
@@ -636,7 +636,7 @@ public class MouseController
 
         if (World.Current.UtilityManager.IsPlacementValid(type, tile) &&
             bmc.DoesSameUtilityTypeAlreadyExist(type, tile) &&
-            bmc.DoesUtilityBuildJobOverlapExistingBuildJob(type, tile) == false) 
+            bmc.DoesUtilityBuildJobOverlapExistingBuildJob(type, tile) == false)
         {
             sr.color = new Color(0.5f, 1f, 0.5f, 0.25f);
         }

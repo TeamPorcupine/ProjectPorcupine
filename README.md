@@ -75,7 +75,7 @@ Here's the current list of proposed features:
 ## Community
 
 * [Unoffical Discord Channel ](https://discord.gg/68hkpSA)<discord.projectporcupine.com>
-* [Official Subreddit](https://reddit.com/r/ProjectPorcupine)
+* [Unoffical Subreddit](https://reddit.com/r/ProjectPorcupine)
 
 ## Contact
 

@@ -47,6 +47,10 @@ public class DialogBoxManager : MonoBehaviour
         dialogBoxSettings = tempGoObj.GetComponent<DialogBoxSettings>();
         DialogBoxes["Settings"] = dialogBoxSettings;
 
+        // Added for more dev options
+        tempGoObj = CreateDialogGO("DB_Settings-Developer", "Developer Settings");
+        dialogBoxSettings.devOptions = tempGoObj.GetComponent<DialogBoxSettingsDeveloper>();
+
         tempGoObj = CreateDialogGO("DB_PromptOrInfo", "Prompt or Info");
         dialogBoxPromptOrInfo = tempGoObj.GetComponent<DialogBoxPromptOrInfo>();
         DialogBoxes["Prompt or Info"] = dialogBoxPromptOrInfo;

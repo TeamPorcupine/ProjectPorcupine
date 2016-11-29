@@ -4,8 +4,8 @@ public static class FurnitureFunctions
     {
         float curProcessingTime = furniture.Parameters["cur_processing_time"].ToFloat();
         float maxProcessingTime = furniture.Parameters["max_processing_time"].ToFloat();
-        int isProcessing = furniture.Parameters["cur_processed_inv"].ToInt();  
-        
+        int isProcessing = furniture.Parameters["cur_processed_inv"].ToInt();
+
         float perc = 0f;
         if (isProcessing > 0)
         {

@@ -91,7 +91,7 @@ namespace ProjectPorcupine.Rooms
                 requiredFurniture = new List<FurnitureRequirement>(other.requiredFurniture);
             }
 
-            if (other.ControlledFurniture != null) 
+            if (other.ControlledFurniture != null)
             {
                 ControlledFurniture = new Dictionary<string, List<Furniture>>(other.ControlledFurniture);
             }
@@ -234,12 +234,12 @@ namespace ProjectPorcupine.Rooms
                         break;
                     case "ContextMenuAction":
                         contextMenuLuaActions.Add(new ContextMenuLuaAction
-                            {
-                                LuaFunction = reader.GetAttribute("FunctionName"),
-                                LocalizationKey = reader.GetAttribute("Text"),
-                                RequireCharacterSelected = bool.Parse(reader.GetAttribute("RequireCharacterSelected")),
-                                DevModeOnly = bool.Parse(reader.GetAttribute("DevModeOnly") ?? "false")
-                            });
+                        {
+                            LuaFunction = reader.GetAttribute("FunctionName"),
+                            LocalizationKey = reader.GetAttribute("Text"),
+                            RequireCharacterSelected = bool.Parse(reader.GetAttribute("RequireCharacterSelected")),
+                            DevModeOnly = bool.Parse(reader.GetAttribute("DevModeOnly") ?? "false")
+                        });
                         break;
                     case "Params":
                         ReadXmlParams(reader);  // Read in the Param tag
@@ -359,7 +359,7 @@ namespace ProjectPorcupine.Rooms
             foreach (ContextMenuLuaAction contextMenuLuaAction in contextMenuLuaActions)
             {
                 if (!contextMenuLuaAction.DevModeOnly ||
-                    Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
+                    Settings.GetSetting("DialogBoxSettingsDevConsole_developerModeToggle", false))
                 {
                     // TODO The Action could be done via a lambda, but it always uses the same space of memory, thus if 2 actions are performed, the same action will be produced for each.
                     yield return new ContextMenuAction
@@ -384,7 +384,7 @@ namespace ProjectPorcupine.Rooms
             return new RoomBehavior(this);
         }
 
-        public void Control(Room room) 
+        public void Control(Room room)
         {
             this.Room = room;
             List<Tile> innerTiles = room.GetInnerTiles();
@@ -396,7 +396,7 @@ namespace ProjectPorcupine.Rooms
             {
                 string furnitureKey = requirement.type ?? requirement.typeTag;
                 ControlledFurniture.Add(furnitureKey, new List<Furniture>());
-                foreach (Tile tile in allTiles.FindAll(tile => (tile.Furniture != null && (tile.Furniture.Type == requirement.type || tile.Furniture.HasTypeTag(requirement.typeTag))))) 
+                foreach (Tile tile in allTiles.FindAll(tile => (tile.Furniture != null && (tile.Furniture.Type == requirement.type || tile.Furniture.HasTypeTag(requirement.typeTag)))))
                 {
                     ControlledFurniture[furnitureKey].Add(tile.Furniture);
                 }
@@ -421,7 +421,7 @@ namespace ProjectPorcupine.Rooms
 
         private bool DefaultIsValidRoom(Room room)
         {
-            if (room.TileCount < requiredSize) 
+            if (room.TileCount < requiredSize)
             {
                 return false;
             }
@@ -433,7 +433,7 @@ namespace ProjectPorcupine.Rooms
 
             foreach (FurnitureRequirement requirement in requiredFurniture)
             {
-                if (allTiles.Count(tile => (tile.Furniture != null && (tile.Furniture.Type == requirement.type || tile.Furniture.HasTypeTag(requirement.typeTag)))) < requirement.count) 
+                if (allTiles.Count(tile => (tile.Furniture != null && (tile.Furniture.Type == requirement.type || tile.Furniture.HasTypeTag(requirement.typeTag)))) < requirement.count)
                 {
                     return false;
                 }

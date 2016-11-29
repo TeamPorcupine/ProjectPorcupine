@@ -25,6 +25,7 @@ public class FunctionsManager
         actions.Add("Quest", new Functions());
         actions.Add("ScheduledEvent", new Functions());
         actions.Add("Overlay", new Functions());
+        actions.Add("DevConsole", new Functions());
         actions.Add("ModDialogBox", new Functions());
     }
 
@@ -107,6 +108,15 @@ public class FunctionsManager
     public static Functions Overlay
     {
         get { return Get("Overlay"); }
+    }
+
+    /// <summary>
+    /// Gets the DevConsole Lua Functions.
+    /// </summary>
+    /// <value>The DevConsole Lua Functions.</value>
+    public static Functions DevConsole
+    {
+        get { return Get("DevConsole"); }
     }
 
     /// <summary>
