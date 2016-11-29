@@ -450,7 +450,7 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
     /// </summary>
     public void SetDeconstructJob()
     {
-        if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
+        if (Settings.GetSetting("DialogBoxSettingsDevConsole_developerModeToggle", false))
         {
             Deconstruct();
             return;
@@ -611,7 +611,7 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
         foreach (ContextMenuLuaAction contextMenuLuaAction in contextMenuLuaActions)
         {
             if (!contextMenuLuaAction.DevModeOnly ||
-                Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
+                Settings.GetSetting("DialogBoxSettingsDevConsole_developerModeToggle", false))
             {
                 // TODO The Action could be done via a lambda, but it always uses the same space of memory, thus if 2 actions are performed, the same action will be produced for each.
                 yield return new ContextMenuAction

@@ -13,12 +13,12 @@ using Mono.CSharp;
 using MoonSharp.Interpreter;
 
 public class CSharpFunctions : IFunctions
-{    
+{
     // this is just to support convertion of object to DynValue
     protected Script script;
-    
+
     private Dictionary<string, MethodInfo> methods;
-    
+
     private Evaluator evaluator;
 
     public CSharpFunctions()
@@ -70,8 +70,8 @@ public class CSharpFunctions : IFunctions
             }
         }
 
-        var resAssembly = GetCompiledAssembly(scriptName);       
-        
+        var resAssembly = GetCompiledAssembly(scriptName);
+
         if (resAssembly == null)
         {
             CompiledMethod cm = evaluator.Compile(text + GetConnectionPointClassDeclaration(scriptName));
@@ -146,6 +146,12 @@ public class CSharpFunctions : IFunctions
         // nothing to do for C#
     }
 
+    // This really doesn't need to exist, CallWithError is only for LUA
+    public DynValue CallWithError(string functionName, params object[] args)
+    {
+        return Call(functionName, args);
+    }
+
     private string GetConnectionPointClassDeclaration(string name)
     {
         return Environment.NewLine + " public struct MonoSharp_DynamicAssembly_" + name + " {}";
@@ -201,7 +207,7 @@ public class CSharpFunctions : IFunctions
             return null;
         }
     }
-    
+
     private class CompilingResult : ReportPrinter
     {
         /// <summary>
