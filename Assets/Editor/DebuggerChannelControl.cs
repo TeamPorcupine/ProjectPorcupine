@@ -6,11 +6,8 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-    
-using System;
+
 using System.Collections.Generic;
-using System.IO;
-using System.Xml;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -32,7 +29,7 @@ public class DebuggerChannelControl : EditorWindow
     private void Awake()
     {
         channelSettings = Resources.Load<ChannelSettingsSO>("ChannelSettings");
-        if(channelSettings == null)
+        if (channelSettings == null)
         {
             channelSettings = ScriptableObject.CreateInstance<ChannelSettingsSO>();
             AssetDatabase.CreateAsset(channelSettings, "Assets/Resources/ChannelSettings.asset");
@@ -60,7 +57,7 @@ public class DebuggerChannelControl : EditorWindow
             dirtySettings = true;
         }
 
-        if(UnityDebugger.Debugger.Channels != null)
+        if (UnityDebugger.Debugger.Channels != null)
         {
             Dictionary<string, bool> toggleReturns = new Dictionary<string, bool>();
             foreach (string channelName in UnityDebugger.Debugger.Channels.Keys.AsEnumerable())
@@ -81,6 +78,7 @@ public class DebuggerChannelControl : EditorWindow
                     // We're in a weird state with no channelSettings, just bail 'til we get it back.
                     return;
                 }
+
                 if (!channelSettings.ChannelState.ContainsKey(channelName) && toggleReturns.ContainsKey(channelName))
                 {
                     bool theValueIWant = toggleReturns[channelName];
@@ -92,13 +90,14 @@ public class DebuggerChannelControl : EditorWindow
                     channelSettings.ChannelState[channelName] = toggleReturns[channelName];
                     dirtySettings = true;
                 }
-//                }
-            }
-            if (dirtySettings)
-            {
-                EditorUtility.SetDirty(channelSettings);
             }
         }
+
+        if (dirtySettings)
+        {
+            EditorUtility.SetDirty(channelSettings);
+        }
+
         EditorGUILayout.EndHorizontal();
     }
 }
