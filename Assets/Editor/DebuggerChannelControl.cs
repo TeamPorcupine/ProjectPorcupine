@@ -63,7 +63,6 @@ public class DebuggerChannelControl : EditorWindow
         if(UnityDebugger.Debugger.Channels != null)
         {
             Dictionary<string, bool> toggleReturns = new Dictionary<string, bool>();
-            ChannelDictionary settingsCopy = new ChannelDictionary(channelSettings.ChannelState);
             foreach (string channelName in UnityDebugger.Debugger.Channels.Keys.AsEnumerable())
             {
                 toggleReturns.Add(channelName, GUILayout.Toggle(UnityDebugger.Debugger.Channels[channelName], channelName));
@@ -73,31 +72,33 @@ public class DebuggerChannelControl : EditorWindow
                 }
             }
 
-            List<string> toggleKeys = new List<string>(toggleReturns.Keys.ToList());
-            foreach (string channelName in toggleKeys)
+            foreach (string channelName in toggleReturns.Keys.ToList())
             {
                 UnityDebugger.Debugger.Channels[channelName] = toggleReturns[channelName];
-                if (!settingsCopy.ContainsKey(channelName) && toggleReturns.ContainsKey(channelName))
+
+                if (channelSettings == null)
+                {
+                    // We're in a weird state with no channelSettings, just bail 'til we get it back.
+                    return;
+                }
+                if (!channelSettings.ChannelState.ContainsKey(channelName) && toggleReturns.ContainsKey(channelName))
                 {
                     bool theValueIWant = toggleReturns[channelName];
-                    settingsCopy.Add(channelName, theValueIWant);
+                    channelSettings.ChannelState.Add(channelName, theValueIWant);
                     dirtySettings = true;
                 }
-                else if (settingsCopy[channelName] != toggleReturns[channelName])
+                else if (channelSettings.ChannelState[channelName] != toggleReturns[channelName])
                 {
-                    settingsCopy[channelName] = toggleReturns[channelName];
+                    channelSettings.ChannelState[channelName] = toggleReturns[channelName];
                     dirtySettings = true;
                 }
 //                }
             }
             if (dirtySettings)
             {
-                channelSettings.ChannelState = settingsCopy;
                 EditorUtility.SetDirty(channelSettings);
             }
         }
         EditorGUILayout.EndHorizontal();
-
-        EditorGUILayout.Space();
     }
 }
