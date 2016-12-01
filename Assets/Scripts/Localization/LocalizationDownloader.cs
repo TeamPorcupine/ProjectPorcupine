@@ -7,12 +7,19 @@
 // ====================================================
 #endregion
 
-using Newtonsoft.Json;
 using System.Collections;
 using System.IO;
 using System.Xml;
+using System.Collections.Generic;
+using System.Linq;
 using System;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 using UnityEngine;
+using UnityEngine.Networking;
+using DiffMatchPatch;
+
 
 namespace ProjectPorcupine.Localization
 {
@@ -56,20 +63,24 @@ namespace ProjectPorcupine.Localization
         private static readonly string ConfigPath = LocalizationFolderPath + Path.DirectorySeparatorChar + LocalizationConfigName;
 
 
-        public static IEnumerator UpdateLocalization(Action onLocalizationDownloadedCallback)
+        public static IEnumerator UpdateLocalization(System.Action onLocalizationDownloadedCallback)
         {
+            
             // Use this to see if the user has auto update enabled.
             Settings.GetSetting("DialogBoxSettings_autoUpdateLocalization", true);
 
             if (!File.Exists(ConfigPath))
             {
+                
                 // Download all of the localization
-                DownloadLocalization();
+                yield return DownloadLocalization();
 
             }
+
             else if (Settings.GetSetting("DialogBoxSettings_autoUpdateLocalization", true))
             {
                 yield return GetChangesSinceDate();
+                
                 // Let's check if 
             }
         }
@@ -88,13 +99,13 @@ namespace ProjectPorcupine.Localization
                 {
                     if (reader.HasAttributes)
                     {
-                        translations.Add(reader.GetAttribute("code"));
+                        string attribute = reader.GetAttribute("code");
+                        if (attribute != "en_US")
+                            translations.Add(attribute);
                     }
 
                 }
-
             }
-
             return translations;
         }
         
@@ -105,12 +116,10 @@ namespace ProjectPorcupine.Localization
         /// <param name="list">A list of files to download and update.</param>
         private static IEnumerator DownloadLocalization(ArrayList list = null)
         {
+            Debug.ULogErrorChannel("LocalizationDownloader", "right here");
             if (list == null)
             {
                 // Just going to download everything
-
-                // Download the config
-                
                 WWW downloadConfig = new WWW("https://cdn.rawgit.com/" + LocalizationRepository + GameController.GameVersion + "/" + LocalizationConfigName);
                 yield return downloadConfig;
                 if (!string.IsNullOrEmpty(downloadConfig.error))
@@ -119,9 +128,9 @@ namespace ProjectPorcupine.Localization
                     yield break;
                 }
 
-                File.WriteAllBytes (ConfigPath, downloadConfig.bytes);
-
+                File.WriteAllBytes(ConfigPath, downloadConfig.bytes);
                 // Download the translation files.
+                Debug.ULogErrorChannel("LocalizationDownloader", "right here");
                 foreach (string locale in GetTranslations())
                 {
                     WWW www = new WWW("https://cdn.rawgit.com/" + LocalizationRepository + GameController.GameVersion + "/" + locale + ".lang");
@@ -135,7 +144,7 @@ namespace ProjectPorcupine.Localization
 
                     File.WriteAllBytes(LocalizationFolderPath + Path.DirectorySeparatorChar + locale + ".lang", www.bytes);
                 }
-
+                Debug.ULogErrorChannel("LocalizationDownloader", "right here");
                 WriteLocalizationDate();
             }
             else {
@@ -151,10 +160,11 @@ namespace ProjectPorcupine.Localization
         /// <summary>
         /// This uses the GitHub api to get all of the commits since a date (recorded in config.xml).
         /// This is better for when/if we get very large translation files and we don't want to download all of the files when only one is changed.
+        /// TODO: Migrate config.xml to json or SKON.
         /// </summary>
         private static IEnumerator GetChangesSinceDate()
         {
-            string lastDate = String.Empty;
+            string lastDate = string.Empty;
             XmlReader reader = XmlReader.Create(ConfigPath);
             while (reader.Read())
             {
@@ -166,25 +176,56 @@ namespace ProjectPorcupine.Localization
                     }
                 }
             }
+            Debug.Log(lastDate);
             if (string.IsNullOrEmpty(lastDate))
             {
+                yield return DownloadLocalization();
                 Debug.ULogErrorChannel("LocalizationDownloader", "Error while trying to get the date of the last update. I'm going to re-download everything.");
                 // We re-download everything because most-likely the're using the old version of the config file that includes the hash but not the date.
-                DownloadLocalization();
-                yield break;
+                
             }
-
-            string request = "https://api.github.com/repos/" + LocalizationRepository + "commits?since=" + lastDate + "&sha=" + GameController.GameVersion;
+            // Here is a good example output: https://api.github.com/repos/QuiZr/ProjectPorcupineLocalization/commits?since=2016-10-25T04:15:52Z&sha=Someone_will_come_up_with_a_proper_naming_scheme_later
+            //string request = "https://api.github.com/repos/" + LocalizationRepository + "commits?since=" + lastDate + "&sha=" + GameController.GameVersion;
+            string request = "https://api.github.com/repos/QuiZr/ProjectPorcupineLocalization/commits?since=2016-10-25T04:15:52Z&sha=Someone_will_come_up_with_a_proper_naming_scheme_later";
 
             WWW www = new WWW(request);
             yield return www;
                     
             if (!string.IsNullOrEmpty(www.error))
             {
-                Debug.ULogErrorChannel("LocalizationDownloader", "Error while downloading commits information using the GitHub API. \n " + www.error);
+                Debug.ULogErrorChannel("LocalizationDownloader", "Error while downloading commits information using the GitHub API. \n" + www.error);
                 yield break;
             }
-            
+            // Documentation for parsing: http://www.newtonsoft.com/json/help/html/SerializingJSONFragments.htm
+
+            // Now parse the json from github.
+            ArrayList files = new ArrayList();
+
+            JArray array = JArray.Parse(www.text);
+            List<string> hashes = array.Select(o => (string) o["sha"]).ToList();
+            foreach (string hash in hashes)
+            {
+                Console.WriteLine(hash);
+                string hashRequest = "https://api.github.com/repos/" + LocalizationRepository + "commits/" + hash;
+                //WWWForm form = new WWWForm();
+                //form.AddField("Content-Type", "application/vnd.github.VERSION.sha; charset=utf-8");
+                //WWW wwwHash = new WWW(hashRequest, form.headers);
+                UnityWebRequest wwwHash = UnityWebRequest.Get(hashRequest);
+                yield return wwwHash.Send();
+                    
+                if (wwwHash.isError)
+                {
+                    Debug.ULogErrorChannel("LocalizationDownloader", "Error while downloading commit " + hash + " using the GitHub API. \n" + wwwHash.error);
+                    yield break;
+                }
+                Debug.ULogChannel("LocalizationDownloader", "hash downloaded: \n" + wwwHash.downloadHandler.text);
+                //diff_match_patch dmp = new diff_match_patchTest();
+                diff_match_patch dmp = new diff_match_patch();
+                var test = dmp.patch_fromText(wwwHash.downloadHandler.text);
+                //dmp.patch_apply(test, "");
+            }
+
+
         }
 
         /// <summary>
@@ -206,5 +247,6 @@ namespace ProjectPorcupine.Localization
             
             document.Save(ConfigPath);
         }
+        
     }
 }
