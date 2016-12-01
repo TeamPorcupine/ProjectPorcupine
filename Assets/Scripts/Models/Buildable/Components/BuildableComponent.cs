@@ -120,7 +120,7 @@ namespace ProjectPorcupine.Buildable.Components
             }
             else
             {
-                Debug.ULogErrorChannel(ComponentLogChannel, "There is no deserializer for component '{0}'", componentTypeName);
+                UnityDebugger.Debugger.LogErrorFormat(ComponentLogChannel, "There is no deserializer for component '{0}'", componentTypeName);
                 return null;
             }
         }

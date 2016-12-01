@@ -579,7 +579,6 @@ namespace DeveloperConsole
         /// </summary>
         private void UnInit()
         {
-            Debug.ULogWarningChannel("DevConsole", "Unitilising DevConsole: Bye Bye.");
             if (instance == this)
             {
                 // If this isn't true then its trying to unitialise another instance, it shouldn't happen but this is just incase if it does.
@@ -607,7 +606,7 @@ namespace DeveloperConsole
             if (instance != this && instance != null)
             {
                 // Destroy instance.
-                Debug.ULogErrorChannel("DevConsole", "There can only be one Console per project.  Deleting instance with name: " + instance.gameObject.name);
+                UnityDebugger.Debugger.LogError("DevConsole", "There can only be one Console per project.  Deleting instance with name: " + instance.gameObject.name);
                 Destroy(instance.gameObject);
             }
 
@@ -637,7 +636,7 @@ namespace DeveloperConsole
             if (textArea == null || inputField == null || autoComplete == null || scrollRect == null || root == null)
             {
                 gameObject.SetActive(false);
-                Debug.ULogError("DevConsole", "Missing gameobjects, look at the serializeable fields");
+                UnityDebugger.Debugger.LogError("DevConsole", "Missing gameobjects, look at the serializeable fields");
             }
 
             textArea.fontSize = CommandSettings.FontSize;
