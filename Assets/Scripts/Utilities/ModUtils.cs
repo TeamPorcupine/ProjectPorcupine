@@ -17,9 +17,24 @@ public static class ModUtils
 {
     private static string defaultLogChannel = "Lua";
 
-    public static float Clamp01(float value) 
+    public static Vector2 LUAVector2(float x, float y)
     {
-        return Mathf.Clamp01(value); 
+        return new Vector2(x, y);
+    }
+
+    public static Vector3 LUAVector3(float x, float y, float z)
+    {
+        return new Vector3(x, y, z);
+    }
+
+    public static Vector3 LUAVector4(float x, float y, float z, float w)
+    {
+        return new Vector4(x, y, z, w);
+    }
+
+    public static float Clamp01(float value)
+    {
+        return Mathf.Clamp01(value);
     }
 
     public static int FloorToInt(float value)
@@ -32,17 +47,17 @@ public static class ModUtils
         return (float)System.Math.Round((double)value, digits);
     }
 
-    public static void Log(object obj) 
+    public static void Log(object obj)
     {
         Debug.Log(obj);
     }
 
-    public static void LogWarning(object obj) 
+    public static void LogWarning(object obj)
     {
         Debug.LogWarning(obj);
     }
 
-    public static void LogError(object obj) 
+    public static void LogError(object obj)
     {
         Debug.LogError(obj);
     }

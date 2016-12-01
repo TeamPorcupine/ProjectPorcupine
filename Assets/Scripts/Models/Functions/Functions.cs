@@ -6,13 +6,14 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using System;
 using System.Collections.Generic;
 using MoonSharp.Interpreter;
 
 public class Functions
 {
     private const string ModFunctionsLogChannel = "ModScript";
-        
+
     public Functions()
     {
         FunctionsSets = new HashSet<IFunctions>();
@@ -23,7 +24,7 @@ public class Functions
         Lua,
         CSharp
     }
-    
+
     public HashSet<IFunctions> FunctionsSets { get; private set; }
 
     public bool HasFunction(string name)
@@ -55,18 +56,20 @@ public class Functions
         return result;
     }
 
+    /// <summary>
+    /// The Common Call Function.
+    /// </summary>
     public DynValue Call(string functionName, params object[] args)
     {
-        IFunctions functions = GetFunctions(functionName);
-        if (functions != null)
-        {
-            return functions.Call(functionName, args);
-        }
-        else
-        {
-            UnityDebugger.Debugger.Log(ModFunctionsLogChannel, "'" + functionName + "' is not a LUA nor CSharp function!");
-            return null;
-        }
+        return Call(functionName, false, args);
+    }
+
+    /// <summary>
+    /// Throws an error if warranted.
+    /// </summary>
+    public DynValue CallWithError(string functionName, params object[] args)
+    {
+        return Call(functionName, true, args);
     }
 
     public T Call<T>(string functionName, params object[] args)
@@ -112,6 +115,26 @@ public class Functions
         foreach (IFunctions functionsSet in FunctionsSets)
         {
             functionsSet.RegisterType(type);
+        }
+    }
+
+    private DynValue Call(string functionName, bool throwError, params object[] args)
+    {
+        IFunctions functions = GetFunctions(functionName);
+        if (functions != null)
+        {
+            return functions.Call(functionName, args);
+        }
+        else
+        {
+            UnityDebugger.Debugger.Log(ModFunctionsLogChannel, "'" + functionName + "' is not a LUA nor is it a CSharp function!");
+
+            if (throwError)
+            {
+                throw new Exception("'" + functionName + "' is not a LUA nor is it a CSharp function!");
+            }
+
+            return null;
         }
     }
 

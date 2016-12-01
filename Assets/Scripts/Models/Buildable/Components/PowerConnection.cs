@@ -10,12 +10,14 @@ using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
+using Newtonsoft.Json;
 using ProjectPorcupine.Localization;
 using ProjectPorcupine.PowerNetwork;
 
 namespace ProjectPorcupine.Buildable.Components
 {
     [Serializable]
+    [JsonObject(MemberSerialization.OptIn)]
     [XmlRoot("Component")]
     [BuildableComponentName("PowerConnection")]
     [MoonSharpUserData]
@@ -37,6 +39,7 @@ namespace ProjectPorcupine.Buildable.Components
         public event Action Reconnecting;
 
         [XmlElement("ParameterDefinitions")]
+        [JsonProperty("ParameterDefinitions")]
         public PowerConnectionParameterDefinitions ParamsDefinitions { get; set; }
 
         public Parameter CurrentAccumulatorCharge
@@ -70,9 +73,11 @@ namespace ProjectPorcupine.Buildable.Components
         }
 
         [XmlElement("Provides")]
+        [JsonProperty("Provides")]
         public Info Provides { get; set; }
 
         [XmlElement("Requires")]
+        [JsonProperty("Requires")]
         public Info Requires { get; set; }
         
         [XmlIgnore]
@@ -241,6 +246,8 @@ namespace ProjectPorcupine.Buildable.Components
             }
         }
 
+        [Serializable]
+        [JsonObject(MemberSerialization.OptOut)]
         public class Info
         {
             [XmlAttribute("rate")]
@@ -256,6 +263,8 @@ namespace ProjectPorcupine.Buildable.Components
             public List<ParameterCondition> ParamConditions { get; set; }            
         }
 
+        [Serializable]
+        [JsonObject(MemberSerialization.OptOut)]
         public class PowerConnectionParameterDefinitions
         {
             // constants for parameters

@@ -108,7 +108,7 @@ public class WorldController : MonoBehaviour
         KeyboardManager.Instance.RegisterInputAction("DevMode", KeyboardMappedInputType.KeyDown, ChangeDevMode);
 
         // Hiding Dev Mode spawn inventory controller if devmode is off.
-        spawnInventoryController.SetUIVisibility(Settings.GetSetting("DialogBoxSettings_developerModeToggle", false));
+        spawnInventoryController.SetUIVisibility(Settings.GetSetting("DialogBoxSettingsDevConsole_developerModeToggle", false));
 
         cameraController.Initialize();
         cameraController.Moved += this.World.OnCameraMoved;
@@ -119,6 +119,18 @@ public class WorldController : MonoBehaviour
         go.name = "ContextMenu";
 
         GameController.Instance.IsModal = false;
+
+        GameObject devConsole = (GameObject)Instantiate(Resources.Load("UI/Console/DevConsole"));
+
+        // This is just to make sure it isn't null (the static thing shouldn't destroy this copy but in some edge cases it might decide to).
+        if (devConsole != null)
+        {
+            devConsole.name = "DevConsole-Spawned";
+            devConsole.transform.SetParent(canvas.transform, false);
+            devConsole.transform.SetAsLastSibling();
+            devConsole.SetActive(true);
+            DeveloperConsole.DevConsole.Close();
+        }
     }
 
     /// <summary>
@@ -148,8 +160,8 @@ public class WorldController : MonoBehaviour
     /// </summary>
     public void ChangeDevMode()
     {
-        bool developerMode = !Settings.GetSetting("DialogBoxSettings_developerModeToggle", false);
-        Settings.SetSetting("DialogBoxSettings_developerModeToggle", developerMode);
+        bool developerMode = !Settings.GetSetting("DialogBoxSettingsDevConsole_developerModeToggle", false);
+        Settings.SetSetting("DialogBoxSettingsDevConsole_developerModeToggle", developerMode);
         spawnInventoryController.SetUIVisibility(developerMode);
         ///FurnitureBuildMenu.instance.RebuildMenuButtons(developerMode);
     }

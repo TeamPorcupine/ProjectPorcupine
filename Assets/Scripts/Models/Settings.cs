@@ -14,23 +14,27 @@ using UnityEngine;
 
 public static class Settings
 {
-    // Settings.json file that is created if none exists.
+    // Settings.xml file that is created if none exists.
     private const string FallbackSettingJson = @"
 {
 	'worldWidth' : 101,
 	'worldHeight' : 101,
 	'localization' : 'en_US',
-	'DialogBoxSettings_performanceGroup' : 1,
 	'DialogBoxSettings_fullScreenToggle' : true,
 	'DialogBoxSettings_qualityDropdown' : 2,
 	'DialogBoxSettings_vSyncDropdown' : 0,
 	'DialogBoxSettings_resolutionDropdown' : 0,
 	'DialogBoxSettings_musicVolume' : 1,
-	'DialogBoxSettings_developerModeToggle' : false,
+	'DialogBoxSettingsDevConsole_performanceGroup' : 1,
+	'DialogBoxSettingsDevConsole_developerModeToggle' : false,
+	'DialogBoxSettingsDevConsole_devConsoleToggle' : true,
+	'DialogBoxSettingsDevConsole_consoleFontSize' : 15,
+	'DialogBoxSettingsDevConsole_timeStampToggle' : true,
+    'DialogBoxSettingsDevConsole_scrollSensitivity': 6,
 	'ZoomLerp' : 10,
 	'ZoomSensitivity' : 3,
 	'AutosaveInterval' : 10,
-	'AutosaveFiles' : 5,
+	'AutosaveFiles' : 5, 
 }
 ";
 

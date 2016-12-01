@@ -24,6 +24,12 @@ public class LuaFunctions : IFunctions
 
         this.script = new Script();
 
+        // Registering types
+        UserData.RegisterType<UnityEngine.Vector3>();
+        UserData.RegisterType<UnityEngine.Vector2>();
+        UserData.RegisterType<UnityEngine.Vector4>();
+        UserData.RegisterType<UnityEngine.UI.Text>();
+
         // If we want to be able to instantiate a new object of a class
         //   i.e. by doing    SomeClass.__new()
         // We need to make the base type visible.
@@ -36,8 +42,9 @@ public class LuaFunctions : IFunctions
         RegisterGlobal(typeof(Scheduler.Scheduler));
         RegisterGlobal(typeof(Scheduler.ScheduledEvent));
         RegisterGlobal(typeof(ProjectPorcupine.Jobs.RequestedItem));
+        RegisterGlobal(typeof(DeveloperConsole.DevConsole));
     }
-    
+
     public bool HasFunction(string name)
     {
         return name != null && script.Globals[name] != null;
@@ -64,24 +71,14 @@ public class LuaFunctions : IFunctions
         return true;
     }
 
-    /// <summary>
-    /// Call the specified lua function with the specified args.
-    /// </summary>
-    /// <param name="functionName">Function name.</param>
-    /// <param name="args">Arguments.</param>
+    public DynValue CallWithError(string functionName, params object[] args)
+    {
+        return Call(functionName, true, args);
+    }
+
     public DynValue Call(string functionName, params object[] args)
     {
-        object func = script.Globals[functionName];
-                
-        try
-        {
-            return script.Call(func, args);
-        }
-        catch (ScriptRuntimeException e)
-        {
-            UnityDebugger.Debugger.LogError("Lua", "[" + scriptName + "] LUA RunTime error: " + e.DecoratedMessage);
-            return null;
-        }
+        return Call(functionName, false, args);
     }
 
     public T Call<T>(string functionName, params object[] args)
@@ -129,6 +126,26 @@ public class LuaFunctions : IFunctions
     public void RegisterType(Type type)
     {
         RegisterGlobal(type);
+    }
+
+    /// <summary>
+    /// Call the specified lua function with the specified args.
+    /// </summary>
+    /// <param name="functionName">Function name.</param>
+    /// <param name="args">Arguments.</param>
+    private DynValue Call(string functionName, bool throwError, params object[] args)
+    {
+        object func = script.Globals[functionName];
+
+        try
+        {
+            return script.Call(func, args);
+        }
+        catch (ScriptRuntimeException e)
+        {
+            UnityDebugger.Debugger.LogError("Lua", "[" + scriptName + "] LUA RunTime error: " + e.DecoratedMessage);
+            return null;
+        }
     }
 
     /// <summary>

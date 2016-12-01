@@ -47,7 +47,7 @@ public class PerformanceHUDManager : MonoBehaviour
 
         // Draw
         // Get new Performance Mode/Group
-        currentGroup = PerformanceComponentGroups.groups[Settings.GetSetting("DialogBoxSettings_performanceGroup", 1)];
+        currentGroup = PerformanceComponentGroups.groups[CommandSettings.PerformanceHUDMode];
 
         // Order by ascending using Linq
         if (currentGroup.disableUI == true)
@@ -85,7 +85,7 @@ public class PerformanceHUDManager : MonoBehaviour
             rootObject = transform.GetChild(0).gameObject;
         }
 
-        int groupSetting = Settings.GetSetting("DialogBoxSettings_performanceGroup", 1);
+        int groupSetting = CommandSettings.PerformanceHUDMode;
 
         // Just a guard statement essentially
         if (PerformanceComponentGroups.groups.Length > groupSetting)

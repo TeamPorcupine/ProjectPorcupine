@@ -57,9 +57,15 @@ public class MainMenuController : MonoBehaviour
         GameObject menuTop = (GameObject)Instantiate(Resources.Load("UI/MenuTop"));
         menuTop.name = "MenuTop";
         menuTop.transform.SetParent(canvas.transform, false);
-        menuTop.SetActive(true);
-
         GameObject fpsCounter = menuTop.GetComponent<PerformanceHUDManager>().gameObject;
         fpsCounter.SetActive(true);
+
+        // Dev Console
+        GameObject devConsole = (GameObject)Instantiate(Resources.Load("UI/Console/DevConsole"));
+        devConsole.name = "DevConsole";
+        devConsole.transform.SetParent(canvas.transform, false);
+        devConsole.transform.SetAsLastSibling();
+        devConsole.SetActive(false);
+        DeveloperConsole.DevConsole.Close();
     }
 }
