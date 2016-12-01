@@ -1,4 +1,4 @@
-#region License
+﻿#region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
 // This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
@@ -19,15 +19,15 @@ namespace ProjectPorcupine.Buildable.Components
     [Serializable]
     [JsonObject(MemberSerialization.OptIn)]
     [XmlRoot("Component")]
-    [BuildableComponentName("PowerConnection")]
+    [BuildableComponentName("FluidConnection")]
     [MoonSharpUserData]
-    public class PowerConnection : BuildableComponent, IPlugable
+    public class FluidConnection : BuildableComponent, IPlugable
     {       
-        public PowerConnection()
+        public FluidConnection()
         {
         }
 
-        private PowerConnection(PowerConnection other) : base(other)
+        private FluidConnection(FluidConnection other) : base(other)
         {
             ParamsDefinitions = other.ParamsDefinitions;
             Provides = other.Provides;
@@ -40,7 +40,7 @@ namespace ProjectPorcupine.Buildable.Components
 
         [XmlElement("ParameterDefinitions")]
         [JsonProperty("ParameterDefinitions")]
-        public PowerConnectionParameterDefinitions ParamsDefinitions { get; set; }
+        public FluidConnectionParameterDefinitions ParamsDefinitions { get; set; }
 
         public Parameter CurrentAccumulatorCharge
         {
@@ -79,7 +79,7 @@ namespace ProjectPorcupine.Buildable.Components
         [XmlElement("Requires")]
         [JsonProperty("Requires")]
         public Info Requires { get; set; }
-        
+
         [XmlIgnore]
         public float AccumulatedAmount
         {
@@ -118,16 +118,12 @@ namespace ProjectPorcupine.Buildable.Components
 
         public UtilityType utilityType { 
             get { 
-                return UtilityType.Power;
+                return UtilityType.Fluid;
             }
         }
 
-        public string subType {
-            get {
-                return "";
-            }
-        }
-        
+        public string subType { get; private set; }
+
         public bool IsFull
         {
             get { return IsAccumulator && AccumulatedAmount.AreEqual(Provides.Capacity); }
@@ -155,7 +151,7 @@ namespace ProjectPorcupine.Buildable.Components
 
         public override BuildableComponent Clone()
         {
-            return new PowerConnection(this);
+            return new FluidConnection(this);
         }
 
         public override bool CanFunction()
@@ -163,7 +159,7 @@ namespace ProjectPorcupine.Buildable.Components
             bool hasPower = true;
             if (IsConsumer)
             {
-                hasPower = World.Current.PowerNetwork.HasPower(this);
+                hasPower = World.Current.FluidNetwork.HasPower(this);
             }
 
             return hasPower;
@@ -184,26 +180,26 @@ namespace ProjectPorcupine.Buildable.Components
 
             IsRunning = areAllParamReqsFulfilled;
         }
-        
+
         public override IEnumerable<string> GetDescription()
         {           
             string powerColor = IsRunning ? "lime" : "red";
             string status = IsRunning ? "online" : "offline";
-            yield return LocalizationTable.GetLocalization("power_grid_status_" + status, powerColor);
+            yield return LocalizationTable.GetLocalization("fluid_grid_status_" + status, powerColor);
 
             if (IsConsumer && Requires != null)
             {
-                yield return LocalizationTable.GetLocalization("power_input_status", powerColor, Requires.Rate);
+                yield return LocalizationTable.GetLocalization("fluid_input_status", powerColor, Requires.Rate);
             }
 
             if (IsProducer && Requires != null)
             {
-                yield return LocalizationTable.GetLocalization("power_output_status", powerColor, Requires.Rate);
+                yield return LocalizationTable.GetLocalization("fluid_output_status", powerColor, Requires.Rate);
             }
 
             if (IsAccumulator && Provides != null)
             {
-                yield return LocalizationTable.GetLocalization("power_accumulated_fraction", AccumulatedAmount, Provides.Capacity);
+                yield return LocalizationTable.GetLocalization("fluid_accumulated_fraction", AccumulatedAmount, Provides.Capacity);
             }
         }
 
@@ -217,12 +213,12 @@ namespace ProjectPorcupine.Buildable.Components
 
         protected override void Initialize()
         {
-            componentRequirements = Requirements.Power;
+            componentRequirements = Requirements.Fluid;
 
             if (ParamsDefinitions == null)
             {
                 // don't need definition for all furniture, just use defaults
-                ParamsDefinitions = new PowerConnectionParameterDefinitions();
+                ParamsDefinitions = new FluidConnectionParameterDefinitions();
             }
 
             // need to keep accumulator current charge in parameters
@@ -241,21 +237,24 @@ namespace ProjectPorcupine.Buildable.Components
 
             OnReconnecting();
 
-            ParentFurniture.Removed += PowerConnectionRemoved;           
+            ParentFurniture.Removed += FluidConnectionRemoved;           
         }
-        
-        private void PowerConnectionRemoved(Furniture obj)
+
+        private void FluidConnectionRemoved(Furniture obj)
         {
-            World.Current.PowerNetwork.Unplug(this);
-            ParentFurniture.Removed -= PowerConnectionRemoved;
+            World.Current.FluidNetwork.Unplug(this);
+            ParentFurniture.Removed -= FluidConnectionRemoved;
         }
 
         private void OnReconnecting()
         {
-            foreach (Utility util in ParentFurniture.Tile.Utilities.Values)
-            {
-                util.Grid.PlugIn(this);
-            }
+            // TODO: Make this not a Universal Connection
+
+            World.Current.FluidNetwork.PlugIn(this);
+//            foreach (Utility util in ParentFurniture.Tile.Utilities.Values)
+//            {
+//                util.Grid.PlugIn(this);
+//            }
         }
 
         [Serializable]
@@ -277,14 +276,14 @@ namespace ProjectPorcupine.Buildable.Components
 
         [Serializable]
         [JsonObject(MemberSerialization.OptOut)]
-        public class PowerConnectionParameterDefinitions
+        public class FluidConnectionParameterDefinitions
         {
             // constants for parameters
             public const string CurAccumulatorChargeParamName = "pow_accumulator_charge";
             public const string CurAccumulatorIndexParamName = "pow_accumulator_index";
-            public const string CurIsRunningParamName = "pow_is_running";
-            
-            public PowerConnectionParameterDefinitions()
+            public const string CurIsRunningParamName = "water_is_running";
+
+            public FluidConnectionParameterDefinitions()
             {
                 // defaults
                 CurrentAcumulatorCharge = new ParameterDefinition(CurAccumulatorChargeParamName);

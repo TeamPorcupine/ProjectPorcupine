@@ -497,12 +497,10 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         // requirements from components (gas, ...)
         bool canFunction = true;
         Requirements = BuildableComponent.Requirements.None;
-
         foreach (BuildableComponent component in components)
         {
             bool componentCanFunction = component.CanFunction();
             canFunction &= componentCanFunction;
-
             // if it can't function, collect all stuff it needs (power, gas, ...) for icon signalization
             if (!componentCanFunction)
             {

@@ -143,14 +143,14 @@ namespace ProjectPorcupine.PowerNetwork
             IsOperating = currentPowerLevel >= 0.0f;
         }
 
-        /// <summary>
-        /// Gets the ID for this grid within the PowerNetwork.
-        /// </summary>
-        /// <returns>The ID number.</returns>
-        public int GetId()
-        {
-            return World.Current.PowerNetwork.FindId(this);
-        }
+//        /// <summary>
+//        /// Gets the ID for this grid within the PowerNetwork.
+//        /// </summary>
+//        /// <returns>The ID number.</returns>
+//        public int GetId()
+//        {
+//            return World.Current.PowerNetwork.FindId(this);
+//        }
 
         /// <summary>
         /// Merge the specified Grid with this Grid.

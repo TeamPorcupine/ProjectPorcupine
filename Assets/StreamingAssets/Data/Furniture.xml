@@ -238,12 +238,12 @@
             </UseAnimation>
         </Component>
         
-        <Component type="PowerConnection">
+        <Component type="FluidConnection">
             <Requires rate="1"/>
             <ParameterDefinitions>
-                <CurrentAcumulatorCharge name="pow_accumulator_charge" />
-                <CurrentAcumulatorChargeIndex name="pow_accumulator_index" />
-                <IsRunning name="pow_is_running" />
+                <CurrentAcumulatorCharge name="fluid_accumulator_charge" />
+                <CurrentAcumulatorChargeIndex name="fluid_accumulator_index" />
+                <IsRunning name="water_is_running" />
             </ParameterDefinitions>
         </Component>
 
@@ -360,6 +360,50 @@
         
         <LocalizationCode>furn_fission_reactor</LocalizationCode>
         <UnlocalizedDescription>furn_fission_reactor_desc</UnlocalizedDescription>
+    </Furniture>
+
+    <Furniture type="water_generator">
+        <Name>Water Generator</Name>
+        <TypeTag>Generator</TypeTag>
+        <MovementCost>2</MovementCost>
+        <PathfindingModifier>0</PathfindingModifier>
+        <PathfindingWeight>2</PathfindingWeight>
+        <Width>1</Width>
+        <Height>1</Height>
+
+        <BuildingJob jobTime="0" />
+        
+        <DeconstructJob jobTime="1">
+            <Inventory type="Steel Plate" amount="1" />
+        </DeconstructJob>
+<!--
+        <Component type="Workshop">
+            <ParameterDefinitions>
+                <CurrentProcessingTime name="cur_processing_time" />
+                <MaxProcessingTime name="max_processing_time" />
+                <IsProcessing name="cur_processed_inv" />
+                <CurrentProductionChainName name="cur_production_chain" />
+            </ParameterDefinitions>
+            <ProductionChain name="Power generation" processingTime="60">
+                <Input>
+                    <Item objectType="Power Cell" amount="1" slotPosX="0" slotPosY="0" hasHopper="false" />
+                </Input>
+            </ProductionChain>
+        </Component>
+    -->    
+        <Component type="FluidConnection">
+            <Provides rate="5"/>            
+			<!--
+            <Requires>
+                <Param name="cur_processed_inv" condition="IsGreaterThanZero" />
+            </Requires>            
+			-->
+        </Component>        
+
+        
+        
+        <LocalizationCode>furn_water_generator</LocalizationCode>
+        <UnlocalizedDescription>furn_water_generator_desc</UnlocalizedDescription>
     </Furniture>
 
     <Furniture type="cloning_pod">
@@ -822,6 +866,34 @@
                 <CurrentAcumulatorCharge name="pow_accumulator_charge" />
                 <CurrentAcumulatorChargeIndex name="pow_accumulator_index" />
                 <IsRunning name="pow_is_running" />
+            </ParameterDefinitions>
+        </Component>
+
+        <LocalizationCode>furn_accumulator</LocalizationCode>
+        <UnlocalizedDescription>furn_accumulator_desc</UnlocalizedDescription>
+    </Furniture>
+
+    <Furniture type="water_tank">
+        <Name>Water Tank</Name>
+        <Description>Water Tank</Description>
+        <MovementCost>2</MovementCost>
+        <PathfindingModifier>0</PathfindingModifier>
+        <PathfindingWeight>2</PathfindingWeight>
+        <Width>1</Width>
+        <Height>1</Height>
+
+        <BuildingJob jobTime="2" />
+        
+       <DeconstructJob jobTime="1">
+            <Inventory type="Steel Plate" amount="1" />
+        </DeconstructJob>
+        <Component type="FluidConnection">
+            <Provides rate="10" capacity="50" capacityThresholds="5"/>
+            <Requires rate="5" />
+            <ParameterDefinitions>
+                <CurrentAcumulatorCharge name="fluid_accumulator_charge" />
+                <CurrentAcumulatorChargeIndex name="fluid_accumulator_index" />
+                <IsRunning name="water_is_running" />
             </ParameterDefinitions>
         </Component>
 

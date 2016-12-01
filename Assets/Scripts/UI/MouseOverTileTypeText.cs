@@ -29,10 +29,10 @@ public class MouseOverTileTypeText : MouseOver
         }
 
         string tileInfo = LocalizationTable.GetLocalization("tile_type", tileType);
-        if (tile != null && tile.Utilities != null && tile.Utilities.Count > 0)
-        {
-            tileInfo += "\n" + tile.Utilities.First().Value.Grid.GetId();
-        }
+//        if (tile != null && tile.Utilities != null && tile.Utilities.Count > 0)
+//        {
+//            tileInfo += "\n" + tile.Utilities.First().Value.Grid.GetId();
+//        }
 
         return tileInfo;
     }
