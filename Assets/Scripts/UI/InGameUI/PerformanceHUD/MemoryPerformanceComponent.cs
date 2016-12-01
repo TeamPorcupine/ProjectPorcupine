@@ -7,6 +7,7 @@
 // ====================================================
 #endregion
 using UnityEngine;
+using UnityEngine.Profiling;
 
 /// <summary>
 /// Displays the currently used memory and the currently allocated memory.
