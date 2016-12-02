@@ -60,8 +60,22 @@ namespace ProjectPorcupine.Localization
         // NOTE: StreamingAssetsPath is read-only on android and iOS.
         private static readonly string LocalizationFolderPath = Path.Combine(Application.streamingAssetsPath, "Localization");
 
-        private static readonly string ConfigPath = LocalizationFolderPath + Path.DirectorySeparatorChar + LocalizationConfigName;
+        private static readonly string ConfigPath = Path.Combine(LocalizationFolderPath, LocalizationConfigName);
 
+        class GithubFile
+        {
+            public string sha { get; set; }
+            public string filename { get; set; }
+            public string status { get; set; }
+            public string patch { get; set; }
+            
+        }
+        class GithubCommit
+        {
+            public string sha { get; set; }
+            public GithubFile[] files { get; set; }
+
+        }
 
         public static IEnumerator UpdateLocalization(System.Action onLocalizationDownloadedCallback)
         {
@@ -79,9 +93,8 @@ namespace ProjectPorcupine.Localization
 
             else if (Settings.GetSetting("DialogBoxSettings_autoUpdateLocalization", true))
             {
+                //Check if we have any updates to the localization
                 yield return GetChangesSinceDate();
-                
-                // Let's check if 
             }
         }
 
@@ -114,12 +127,16 @@ namespace ProjectPorcupine.Localization
         /// If you don't provide any parameters it will just download all of the files.
         /// </summary>
         /// <param name="list">A list of files to download and update.</param>
-        private static IEnumerator DownloadLocalization(ArrayList list = null)
+        /// <param name="hash">If you want to provide a specific commit hash (sha).</param>
+        private static IEnumerator DownloadLocalization(string[] list = null, string hash = null)
         {
-            Debug.ULogErrorChannel("LocalizationDownloader", "right here");
             if (list == null)
             {
                 // Just going to download everything
+                if (File.Exists(ConfigPath))
+                {
+                    File.Delete(ConfigPath);
+                }
                 WWW downloadConfig = new WWW("https://cdn.rawgit.com/" + LocalizationRepository + GameController.GameVersion + "/" + LocalizationConfigName);
                 yield return downloadConfig;
                 if (!string.IsNullOrEmpty(downloadConfig.error))
@@ -130,24 +147,48 @@ namespace ProjectPorcupine.Localization
 
                 File.WriteAllBytes(ConfigPath, downloadConfig.bytes);
                 // Download the translation files.
-                Debug.ULogErrorChannel("LocalizationDownloader", "right here");
                 foreach (string locale in GetTranslations())
                 {
+                    string path = Path.Combine(LocalizationFolderPath, locale + ".lang");
                     WWW www = new WWW("https://cdn.rawgit.com/" + LocalizationRepository + GameController.GameVersion + "/" + locale + ".lang");
                     yield return www;
-                    
+                    if (File.Exists(path))
+                    {
+                        File.Delete(path);
+                    }
                     if (!string.IsNullOrEmpty(www.error))
                     {
                         Debug.ULogErrorChannel("LocalizationDownloader", "Error while downloading locale " + locale + " for the first time. Are you connected to the internet? \n" + www.error);
                         yield break;
                     }
 
-                    File.WriteAllBytes(LocalizationFolderPath + Path.DirectorySeparatorChar + locale + ".lang", www.bytes);
+                    File.WriteAllBytes(path, www.bytes);
                 }
                 Debug.ULogErrorChannel("LocalizationDownloader", "right here");
                 WriteLocalizationDate();
             }
             else {
+                string url;
+
+                // We need a different url if a hash is provided.
+                if (String.IsNullOrEmpty(hash))
+                    url = "https://cdn.rawgit.com/" + LocalizationRepository + GameController.GameVersion + "/";
+                else
+                    url = "https://cdn.rawgit.com/" + LocalizationRepository + hash + "/";
+
+                foreach(string file in list)
+                {
+                    string path = Path.Combine(LocalizationFolderPath, file);
+                    UnityWebRequest www = UnityWebRequest.Get(url + file);
+                    yield return www.Send();
+                    
+                    if (www.isError)
+                    {
+                        Debug.ULogErrorChannel("LocalizationDownloader", "Error while downloading file " + file + " using rawgit. Are you sure your connected to the internet? \n" + www.error);
+                        yield break;
+                    }
+                    File.WriteAllBytes(path, www.downloadHandler.data);
+                }
 
             }
             yield return null;
@@ -166,23 +207,35 @@ namespace ProjectPorcupine.Localization
         {
             string lastDate = string.Empty;
             XmlReader reader = XmlReader.Create(ConfigPath);
-            while (reader.Read())
+            try
             {
-                if (reader.NodeType == XmlNodeType.Element && reader.Name == "version")
+                while (reader.Read())
                 {
-                    if (reader.HasAttributes)
+                    if (reader.NodeType == XmlNodeType.Element && reader.Name == "version")
                     {
-                        lastDate = reader.GetAttribute("date");
+                        if (reader.HasAttributes)
+                        {
+                            lastDate = reader.GetAttribute("date");
+                        }
                     }
                 }
+            } 
+            catch (XmlException e)
+            {
+                Debug.ULogErrorChannel("LocalizationDownloader", "XML Error while parsing config.xml. config.xml's XML must be formatted incorrectly. \n" + e);
             }
-            Debug.Log(lastDate);
+            catch (System.Exception e)
+            {
+                Debug.ULogErrorChannel("LocalizationDownloader", "Error while parsing config.xml. \n" + e);
+            }
+            reader.Close();
+            //reader.Close();
             if (string.IsNullOrEmpty(lastDate))
             {
                 yield return DownloadLocalization();
                 Debug.ULogErrorChannel("LocalizationDownloader", "Error while trying to get the date of the last update. I'm going to re-download everything.");
                 // We re-download everything because most-likely the're using the old version of the config file that includes the hash but not the date.
-                
+                yield return null;
             }
             // Here is a good example output: https://api.github.com/repos/QuiZr/ProjectPorcupineLocalization/commits?since=2016-10-25T04:15:52Z&sha=Someone_will_come_up_with_a_proper_naming_scheme_later
             //string request = "https://api.github.com/repos/" + LocalizationRepository + "commits?since=" + lastDate + "&sha=" + GameController.GameVersion;
@@ -203,9 +256,13 @@ namespace ProjectPorcupine.Localization
 
             JArray array = JArray.Parse(www.text);
             List<string> hashes = array.Select(o => (string) o["sha"]).ToList();
+            // We need to reverse the hashes because we want to deal with the oldest changes first.
+            hashes.Reverse();
+            
+
             foreach (string hash in hashes)
             {
-                Console.WriteLine(hash);
+                //Example hashRequest: https://api.github.com/repos/QuiZr/ProjectPorcupineLocalization/commits/fde139ae1d8fcf82bb145bbc99ed41763202e28f
                 string hashRequest = "https://api.github.com/repos/" + LocalizationRepository + "commits/" + hash;
                 //WWWForm form = new WWWForm();
                 //form.AddField("Content-Type", "application/vnd.github.VERSION.sha; charset=utf-8");
@@ -220,8 +277,57 @@ namespace ProjectPorcupine.Localization
                 }
                 Debug.ULogChannel("LocalizationDownloader", "hash downloaded: \n" + wwwHash.downloadHandler.text);
                 //diff_match_patch dmp = new diff_match_patchTest();
-                diff_match_patch dmp = new diff_match_patch();
-                var test = dmp.patch_fromText(wwwHash.downloadHandler.text);
+
+                GithubCommit commit = JsonConvert.DeserializeObject<GithubCommit>(wwwHash.downloadHandler.text);
+                foreach (GithubFile file in commit.files)
+                {
+                    string path = Path.Combine(LocalizationFolderPath, file.filename);
+                    
+                    switch (file.status)
+                    {
+                        case "removed":
+                            Debug.ULogChannel("LocalizationDownloader", "Removing the file " + file.filename + "from the localization.");
+                            File.Delete(Path.Combine(LocalizationFolderPath, file.filename));
+                            break;
+
+                        case "modified":
+                            Debug.ULogChannel("LocalizationDownloader", "Patching/modifing the file " + file.filename + ".");
+
+                            //Let us make sure the file exists before we try to modify it.
+                            if (!File.Exists(path))
+                            {
+                                Debug.ULogErrorChannel("LocalizationDownloader", "Error while patching file " + file.filename + " for the localization. The file doesn't exist, so I'll download it.");
+                                DownloadLocalization(new string[] {file.filename}, hash);
+                                break;
+                            }
+
+                            // Patch the file
+                            diff_match_patch p = new diff_match_patch();
+                            List<Patch> patches = p.patch_fromText(file.patch);
+                            System.Object[] patch = p.patch_apply(patches, File.ReadAllText(path) );
+                            bool[] boolArray = (bool[])patch[1];
+                            if  (boolArray.Length == 0 || !boolArray[0] || !boolArray[1])
+                            {
+                                Debug.ULogErrorChannel("LocalizationDownloader", "Error while patching file " + file.filename + " for the localization. Try deleting the file.");
+                                yield break;
+                            }
+                            File.WriteAllText(path, patch[0].ToString());
+                            break;
+
+                        case "added":
+                            Debug.ULogChannel("LocalizationDownloader", "Adding the file " + file.filename + " to the localization.");
+                            
+                            DownloadLocalization(new string[] {file.filename}, hash);
+                            break;
+
+                        default:
+                            Debug.ULogErrorChannel("LocalizationDownloader", "Error while parsing Github commit: " + hash + 
+                                                   ". The file " + file.filename + " has an unkown status of " + file.status + ".");
+                            yield break;
+                    }
+                }
+
+                
                 //dmp.patch_apply(test, "");
             }
 
