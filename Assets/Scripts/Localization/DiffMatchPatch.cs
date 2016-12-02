@@ -19,6 +19,8 @@
  * http://code.google.com/p/google-diff-match-patch/
  */
 
+ //Heavily modified and stripped by Zion Nimchuk (hcorion) for use in Project Porcupine
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -172,7 +174,9 @@ namespace DiffMatchPatch {
 
         //text.Append( HttpUtility.UrlEncode(aDiff.text,
         //    new UTF8Encoding()).Replace('+', ' ')).Append("\n");
-        Debug.Log("Without URLEncode: " + aDiff.text);
+
+        text.Append(UnityEngine.WWW.EscapeURL(aDiff.text, 
+                    new UTF8Encoding() ).Replace('+', ' ') ).Append("\n");
       }
 
       return diff_match_patch.unescapeForEncodeUriCompatability(
@@ -2255,6 +2259,7 @@ namespace DiffMatchPatch {
           line = text[textPointer].Substring(1);
           line = line.Replace("+", "%2b");
           //line = HttpUtility.UrlDecode(line, new UTF8Encoding(false, true));
+          line = UnityEngine.WWW.UnEscapeURL(line, new UTF8Encoding(false, true) );
           if (sign == '-') {
             // Deletion.
             patch.diffs.Add(new Diff(Operation.DELETE, line));
