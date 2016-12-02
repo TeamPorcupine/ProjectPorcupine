@@ -81,6 +81,9 @@ public class ModsManager
         LoadFunctions("FurnitureFunctions.cs", "Furniture");
         LoadFunctions("CommandFunctions.cs", "DevConsole");
 
+        // We only allowing settings menu to be C# due to class requirements
+        LoadFunctions("SettingsMenuFunctions.cs", "SettingsMenu");
+
         LoadPrototypes("Tiles.xml", PrototypeManager.TileType.LoadPrototypes);
         LoadPrototypes("Furniture.xml", PrototypeManager.Furniture.LoadPrototypes);
         LoadPrototypes("Utility.xml", PrototypeManager.Utility.LoadPrototypes);
@@ -97,6 +100,7 @@ public class ModsManager
         LoadPrototypes("Overlay.xml", PrototypeManager.Overlay.LoadPrototypes);
         LoadPrototypes("Ships.xml", PrototypeManager.Ship.LoadPrototypes);
         LoadPrototypes("ConsoleCommands.xml", PrototypeManager.DevConsole.LoadPrototypes);
+        LoadPrototypes("SettingsTemplate.xml", PrototypeManager.SettingsCategories.LoadPrototypes);
 
         LoadCharacterNames("CharacterNames.txt");
 

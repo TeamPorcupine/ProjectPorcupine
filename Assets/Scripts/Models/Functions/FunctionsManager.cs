@@ -27,6 +27,7 @@ public class FunctionsManager
         actions.Add("Overlay", new Functions());
         actions.Add("DevConsole", new Functions());
         actions.Add("ModDialogBox", new Functions());
+        actions.Add("SettingsMenu", new Functions());
     }
 
     /// <summary>
@@ -111,12 +112,21 @@ public class FunctionsManager
     }
 
     /// <summary>
-    /// Gets the DevConsole Lua Functions.
+    /// Gets the DevConsole Functions.
     /// </summary>
-    /// <value>The DevConsole Lua Functions.</value>
+    /// <value>The DevConsole Functions.</value>
     public static Functions DevConsole
     {
         get { return Get("DevConsole"); }
+    }
+
+    /// <summary>
+    /// Gets the Settings Functions.
+    /// </summary>
+    /// <value>The Settings Functions.</value>
+    public static Functions SettingsMenu
+    {
+        get { return Get("SettingsMenu"); }
     }
 
     /// <summary>

@@ -103,7 +103,7 @@
 				{
 					'name': 'Console Font Size',
 					'optionKey': 'consoleFontSize',
-					'defaultValue': true,
+					'defaultValue': 15,
 					'className': 'FontSizeSlider'
 				},
 				{
@@ -133,7 +133,7 @@
 				{
 					'name': 'Console Scroll Sensitivity',
 					'optionKey': 'scrollingSensitivity',
-					'defaultValue': 'false',
+					'defaultValue': 6,
 					'className': 'ScrollSensitivitySlider'
 				}
 			]

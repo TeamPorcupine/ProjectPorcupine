@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Categories>
+  <Category Name="General">
+    <Option Name="Language" Key="localization" DefaultValue="en_US" ClassName="LocalizationComboBox" />
+    <Option Name="Autosave Every" Key="AutosaveInterval" DefaultValue="10" ClassName="AutosaveNumberField" />
+    <Option Name="Max Autosaves" Key="AutosaveFiles" DefaultValue="5" ClassName="AutosaveNumberField" />
+  </Category>
+  <Category Name="Sound">
+    <Option Name="Music Volume" Key="musicVolume" DefaultValue="1" ClassName="SoundSlider" />
+    <Option Name="Master Volume" Key="masterVolume" DefaultValue="1" ClassName="SoundSlider" />
+  </Category>
+  <Category Name="Video">
+    <Option Name="Full Screen" Key="fullScreenToggle" DefaultValue="true" ClassName="GenericToggle" />
+    <Option Name="UI Skin" Key="UISkin" DefaultValue="0" ClassName="UISkinComboBox" />
+    <Option Name="Quality" Key="quality" DefaultValue="2" ClassName="QualityComboBox" />
+    <Option Name="V-Sync" Key="vSync" DefaultValue="0" ClassName="VSyncDropDown" />
+  </Category>
+  <Category Name="Developer">
+    <Option Name="Console Font Size" Key="consoleFontSize" DefaultValue="15" ClassName="FontSizeSlider" />
+    <Option Name="Developer Console" Key="developerConsole" DefaultValue="true" ClassName="GenericToggle" />
+    <Option Name="Performance HUD" Key="performanceHUD" DefaultValue="1" ClassName="PerformanceHUDComboBox" />
+    <Option Name="Developer Mode" Key="developerMode" DefaultValue="0" ClassName="GenericToggle" />
+    <Option Name="Console Time Stamps" Key="timeStamps" DefaultValue="false" ClassName="GenericToggle" />
+    <Option Name="Console Scroll Sensitivity" Key="scrollingSensitivity" DefaultValue="6" ClassName="ScrollSensitivitySlider" />
+  </Category>
+</Categories>

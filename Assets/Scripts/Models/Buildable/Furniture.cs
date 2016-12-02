@@ -31,7 +31,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     private const int MinEdgeDistance = 5;
 
     private string isEnterableAction;
-    
+
     /// <summary>
     /// This action is called to get the progress info based on the furniture parameters.
     /// </summary>
@@ -361,7 +361,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     /// Gets or sets the parameters that is tied to the furniture.
     /// </summary>
     public Parameter Parameters { get; set; }
-    
+
     /// <summary>
     /// Gets a component that handles the jobs linked to the furniture.
     /// </summary>
@@ -371,7 +371,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     /// This flag is set if the furniture is tasked to be destroyed.
     /// </summary>
     public bool IsBeingDestroyed { get; protected set; }
-        
+
     /// <summary>
     /// Flag with furniture requirements (used for showing icon overlay, e.g. No power, ... ).
     /// </summary>
@@ -630,7 +630,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         {
             return SpriteName;
         }
-        
+
         // Try to get spritename from animation
         if (Animation != null)
         {
