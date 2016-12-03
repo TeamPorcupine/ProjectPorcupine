@@ -53,18 +53,23 @@ public class GenericToggle : BaseSettingsElement
 
     public override GameObject InitializeElement()
     {
-        GameObject element = GetHorizontalBaseElement("Toggle", false, false, TextAnchor.MiddleCenter, 10);
+        GameObject element = GetHorizontalBaseElement("Toggle", 80, 40, TextAnchor.MiddleLeft);
 
-        CreateText(option.name + ": ").transform.SetParent(element.transform);
+        Text text = CreateText(option.name + ": ", true);
+        text.transform.SetParent(element.transform);
+
         toggleElement = CreateToggle();
-
-        LayoutElement toggleLayout = toggleElement.gameObject.AddComponent<LayoutElement>();
-        toggleLayout.minWidth = 40;
-        toggleLayout.minHeight = 40;
-
         toggleElement.transform.SetParent(element.transform);
-
         toggleElement.isOn = getValue();
+
+        LayoutElement layout = toggleElement.gameObject.AddComponent<LayoutElement>();
+        layout.ignoreLayout = true;
+
+        toggleElement.GetComponent<RectTransform>().sizeDelta = new Vector2(30, 30);
+        toggleElement.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
+        toggleElement.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
+        toggleElement.GetComponent<RectTransform>().localPosition = new Vector3(140, 0, 0);
+
         return element;
     }
 
@@ -88,17 +93,17 @@ public class GenericInputField : BaseSettingsElement
 
     public override GameObject InitializeElement()
     {
-        GameObject element = GetHorizontalBaseElement("InputField", false, false, TextAnchor.MiddleCenter, 10);
+        GameObject element = GetFluidHorizontalBaseElement("InputField", true, false, TextAnchor.MiddleLeft, 10);
 
-        CreateText(option.name + ": ").transform.SetParent(element.transform);
+        CreateText(option.name + ": ", true).transform.SetParent(element.transform);
 
         fieldElement = CreateInputField(getValue());
         fieldElement.transform.SetParent(element.transform);
         fieldElement.textComponent.alignment = TextAnchor.MiddleCenter;
 
-        LayoutElement ourLayout = fieldElement.gameObject.AddComponent<LayoutElement>();
-        ourLayout.minWidth = 80;
-        ourLayout.minHeight = 40;
+        LayoutElement layout = fieldElement.gameObject.AddComponent<LayoutElement>();
+        layout.minWidth = 60;
+        layout.minHeight = 30;
 
         return element;
     }
@@ -122,11 +127,11 @@ public class GenericSlider : BaseSettingsElement
 
     public override GameObject InitializeElement()
     {
-        GameObject element = GetHorizontalBaseElement("Slider", false, false, TextAnchor.MiddleCenter, 10);
+        GameObject element = GetFluidHorizontalBaseElement("Slider", false, false, TextAnchor.MiddleLeft, 10);
 
-        format = option.name + " ({0}): ";
+        format = option.name + " ({0:00}): ";
 
-        textElement = CreateText(string.Format(format, getValue()));
+        textElement = CreateText(string.Format(format, getValue(), false, 18 / GameObject.FindObjectOfType<Canvas>().scaleFactor));
         textElement.transform.SetParent(element.transform);
 
         sliderElement = CreateSlider(getValue(), new Vector2(0, 1), false);

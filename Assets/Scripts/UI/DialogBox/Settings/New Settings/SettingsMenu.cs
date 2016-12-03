@@ -16,7 +16,7 @@ using UnityEngine.UI;
 /// </summary>
 public class SettingsMenu : MonoBehaviour
 {
-    private Dictionary<string, BaseSettingsElement[]> options = new Dictionary<string, BaseSettingsElement[]>();
+    private Dictionary<string, Dictionary<string, BaseSettingsElement[]>> options = new Dictionary<string, Dictionary<string, BaseSettingsElement[]>>();
 
     [SerializeField]
     private GameObject elementRoot;
@@ -27,6 +27,8 @@ public class SettingsMenu : MonoBehaviour
 
     [SerializeField]
     private GameObject categoryPrefab;
+    [SerializeField]
+    private GameObject headingPrefab;
 
     [SerializeField]
     private Text categoryHeading;
@@ -58,6 +60,14 @@ public class SettingsMenu : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        if (Input.GetKey(KeyCode.Escape))
+        {
+            Cancel();
+        }
+    }
+
     /// <summary>
     /// Load our categories.
     /// </summary>
@@ -75,33 +85,50 @@ public class SettingsMenu : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        options = new Dictionary<string, BaseSettingsElement[]>();
+        options = new Dictionary<string, Dictionary<string, BaseSettingsElement[]>>();
 
-        Dictionary<string, SettingsOption[]> categories = PrototypeManager.SettingsCategories.Values.ToArray().SelectMany(x => x.category).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+        Dictionary<string, Dictionary<string, SettingsOption[]>> categories = PrototypeManager.SettingsCategories.Values.ToArray().SelectMany(x => x.categories).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
-        // This is quite optimised (despite being a forloop on a dictionary), and is only done during start
-        foreach (KeyValuePair<string, SettingsOption[]> keyValuePair in categories)
+        foreach (string currentName in categories.Keys)
         {
-            options.Add(keyValuePair.Key, new BaseSettingsElement[keyValuePair.Value.Length]);
-
             Button button = (Instantiate(categoryPrefab)).GetComponent<Button>();
-            button.GetComponentInChildren<CategoryButtonHandler>().Initialize(keyValuePair.Key);
+            button.GetComponentInChildren<CategoryButtonHandler>().Initialize(currentName);
             button.transform.SetParent(categoryRoot.transform);
-            button.name = keyValuePair.Key + ": Button";
+            button.name = currentName + ": Button";
+            options.Add(currentName, new Dictionary<string, BaseSettingsElement[]>());
 
-            for (int i = 0; i < keyValuePair.Value.Length; i++)
+            // This is quite optimised (despite being a forloop on a dictionary), and is only done during start
+            foreach (KeyValuePair<string, SettingsOption[]> keyValuePair in categories[currentName])
             {
-                if (FunctionsManager.SettingsMenu.HasFunction("Get" + keyValuePair.Value[i].className))
+                options[currentName].Add(keyValuePair.Key, new BaseSettingsElement[keyValuePair.Value.Length]);
+
+                for (int i = 0; i < keyValuePair.Value.Length; i++)
                 {
-                    options[keyValuePair.Key][i] = FunctionsManager.SettingsMenu.Call("Get" + keyValuePair.Value[i].className).ToObject<BaseSettingsElement>();
-                    options[keyValuePair.Key][i].option = keyValuePair.Value[i];
-                }
-                else
-                {
-                    Debug.LogWarning("Get" + keyValuePair.Value[i].className + "() Doesn't exist");
+                    if (FunctionsManager.SettingsMenu.HasFunction("Get" + keyValuePair.Value[i].className))
+                    {
+                        options[currentName][keyValuePair.Key][i] = FunctionsManager.SettingsMenu.Call("Get" + keyValuePair.Value[i].className).ToObject<BaseSettingsElement>();
+                        options[currentName][keyValuePair.Key][i].option = keyValuePair.Value[i];
+                    }
+                    else
+                    {
+                        Debug.LogWarning("Get" + keyValuePair.Value[i].className + "() Doesn't exist");
+                    }
                 }
             }
         }
+    }
+
+    public static void Open()
+    {
+        if (instance == null)
+        {
+            return;
+        }
+
+        GameController.Instance.IsModal = true;
+        GameController.Instance.soundController.OnButtonSFX();
+
+        instance.mainRoot.SetActive(true);
     }
 
     public static void DisplayCategory(string category)
@@ -114,11 +141,14 @@ public class SettingsMenu : MonoBehaviour
         // Optimisation for saving
         if (instance.currentCategory != string.Empty && instance.currentCategory != category && instance.options.ContainsKey(instance.currentCategory))
         {
-            for (int i = 0; i < instance.options[instance.currentCategory].Length; i++)
+            foreach (string headingName in instance.options[instance.currentCategory].Keys)
             {
-                if (instance.options[instance.currentCategory][i] != null)
+                for (int i = 0; i < instance.options[instance.currentCategory][headingName].Length; i++)
                 {
-                    instance.options[instance.currentCategory][i].SaveElement();
+                    if (instance.options[instance.currentCategory][headingName][i] != null)
+                    {
+                        instance.options[instance.currentCategory][headingName][i].SaveElement();
+                    }
                 }
             }
         }
@@ -149,20 +179,37 @@ public class SettingsMenu : MonoBehaviour
             return;
         }
 
-        for (int i = 0; i < instance.options[category].Length; i++)
+        if (instance.currentCategory != string.Empty && instance.options.ContainsKey(instance.currentCategory))
         {
-            if (instance.options[category][i] != null)
+            foreach (string headingName in instance.options[instance.currentCategory].Keys)
             {
-                instance.options[category][i].InitializeElement().transform.SetParent(instance.elementRoot.transform);
+                // Create heading prefab
+                SettingsHeading heading = Instantiate(instance.headingPrefab).GetComponent<SettingsHeading>();
+                heading.SetText(headingName);
+                heading.transform.SetParent(instance.elementRoot.transform);
+
+                for (int i = 0; i < instance.options[instance.currentCategory][headingName].Length; i++)
+                {
+                    if (instance.options[instance.currentCategory][headingName][i] != null)
+                    {
+                        heading.AddObjectToRoot(instance.options[instance.currentCategory][headingName][i].InitializeElement());
+                    }
+                }
             }
         }
     }
 
     public void SaveAndApply()
     {
-        for (int i = 0; i < options[currentCategory].Length; i++)
+        foreach (string headingName in instance.options[instance.currentCategory].Keys)
         {
-            options[currentCategory][i].SaveElement();
+            for (int i = 0; i < instance.options[instance.currentCategory][headingName].Length; i++)
+            {
+                if (instance.options[instance.currentCategory][headingName][i] != null)
+                {
+                    instance.options[instance.currentCategory][headingName][i].SaveElement();
+                }
+            }
         }
 
         Settings.SaveSettings();
@@ -174,16 +221,21 @@ public class SettingsMenu : MonoBehaviour
         Settings.LoadSettings();
 
         mainRoot.SetActive(false);
+        GameController.Instance.IsModal = false;
+        GameController.Instance.soundController.OnButtonSFX();
     }
 
     public void Default()
     {
         // Reset current category
-        for (int i = 0; i < options[currentCategory].Length; i++)
+        foreach (string headingName in instance.options[instance.currentCategory].Keys)
         {
-            if (options[currentCategory][i] != null)
+            for (int i = 0; i < instance.options[instance.currentCategory][headingName].Length; i++)
             {
-                Settings.SetSetting(options[currentCategory][i].option.key, options[currentCategory][i].option.defaultValue);
+                if (instance.options[instance.currentCategory][headingName][i] != null)
+                {
+                    Settings.SetSetting(options[instance.currentCategory][headingName][i].option.key, options[instance.currentCategory][headingName][i].option.defaultValue);
+                }
             }
         }
 
@@ -195,14 +247,17 @@ public class SettingsMenu : MonoBehaviour
     /// </summary>
     public void ResetAll()
     {
-        BaseSettingsElement[] values = options.Values.SelectMany(x => x).ToArray();
-
-        // Reset current category
-        for (int i = 0; i < values.Length; i++)
+        foreach (string headingName in instance.options[instance.currentCategory].Keys)
         {
-            if (values[i] != null)
+            BaseSettingsElement[] values = options[headingName].Values.SelectMany(x => x).ToArray();
+
+            // Reset current category
+            for (int i = 0; i < values.Length; i++)
             {
-                Settings.SetSetting(values[i].option.key, values[i].option.defaultValue);
+                if (values[i] != null)
+                {
+                    Settings.SetSetting(values[i].option.key, values[i].option.defaultValue);
+                }
             }
         }
 

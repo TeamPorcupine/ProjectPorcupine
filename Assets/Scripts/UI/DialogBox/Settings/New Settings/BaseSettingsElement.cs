@@ -27,17 +27,26 @@ public abstract class BaseSettingsElement
     /// </summary>
     public abstract GameObject InitializeElement();
 
-    /// <summary>
-    /// Returns a base element, with a horizontal layout.
-    /// </summary>
-    /// <returns></returns>
-    public GameObject GetHorizontalBaseElement(string elementTitle = "", bool expandHeight = true, bool expandWidth = true, TextAnchor alignment = TextAnchor.MiddleCenter, int spacing = 10)
+    public GameObject GetFluidHorizontalBaseElement(string elementTitle = "", bool stretchX = false, bool stretchY = false, TextAnchor alignment = TextAnchor.MiddleCenter, int spacing = 10)
     {
         GameObject go = new GameObject(elementTitle == string.Empty ? "Element_" + option.name : elementTitle);
 
         HorizontalLayoutGroup layout = go.AddComponent<HorizontalLayoutGroup>();
-        layout.childForceExpandHeight = expandHeight;
-        layout.childForceExpandWidth = expandWidth;
+        layout.childForceExpandHeight = stretchY;
+        layout.childForceExpandWidth = stretchX;
+        layout.childAlignment = alignment;
+        layout.spacing = spacing;
+
+        return go;
+    }
+
+    public GameObject GetFluidVerticalBaseElement(string elementTitle = "", bool stretchX = false, bool stretchY = false, TextAnchor alignment = TextAnchor.MiddleCenter, int spacing = 10)
+    {
+        GameObject go = new GameObject(elementTitle == string.Empty ? "Element_" + option.name : elementTitle);
+
+        VerticalLayoutGroup layout = go.AddComponent<VerticalLayoutGroup>();
+        layout.childForceExpandHeight = stretchY;
+        layout.childForceExpandWidth = stretchX;
         layout.childAlignment = alignment;
         layout.spacing = spacing;
 
@@ -45,13 +54,19 @@ public abstract class BaseSettingsElement
     }
 
     /// <summary>
-    /// Returns a base element, with a grid layout.
+    /// Returns a base element, with a horizontal layout.
     /// </summary>
     /// <returns></returns>
-    public GameObject GetGridBaseElement(string elementTitle = "", int xSize = 200, int ySize = 100)
+    public GameObject GetHorizontalBaseElement(string elementTitle = "", int xSize = 95, int ySize = 80, TextAnchor alignment = TextAnchor.MiddleCenter, int spacing = 10)
     {
         GameObject go = new GameObject(elementTitle == string.Empty ? "Element_" + option.name : elementTitle);
-        go.AddComponent<GridLayoutGroup>().cellSize = new Vector2(xSize, ySize);
+
+        GridLayoutGroup layout = go.AddComponent<GridLayoutGroup>();
+        layout.constraint = GridLayoutGroup.Constraint.FixedRowCount;
+        layout.constraintCount = 1;
+        layout.childAlignment = alignment;
+        layout.spacing = new Vector2(spacing, 0);
+        layout.cellSize = new Vector2(xSize, ySize);
 
         return go;
     }
@@ -60,23 +75,32 @@ public abstract class BaseSettingsElement
     /// Returns a base element, with a vertical layout.
     /// </summary>
     /// <returns></returns>
-    public GameObject GetVerticalBaseElement(string elementTitle = "", bool expandHeight = true, bool expandWidth = true, TextAnchor alignment = TextAnchor.MiddleCenter, int spacing = 10)
+    public GameObject GetVerticalBaseElement(string elementTitle = "", int xSize = 100, int ySize = 80, TextAnchor alignment = TextAnchor.MiddleCenter, int spacing = 10)
     {
         GameObject go = new GameObject(elementTitle == string.Empty ? "Element_" + option.name : elementTitle);
 
-        VerticalLayoutGroup layout = go.AddComponent<VerticalLayoutGroup>();
-        layout.childForceExpandHeight = expandHeight;
-        layout.childForceExpandWidth = expandWidth;
+        GridLayoutGroup layout = go.AddComponent<GridLayoutGroup>();
+        layout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+        layout.constraintCount = 1;
         layout.childAlignment = alignment;
-        layout.spacing = 10;
+        layout.spacing = new Vector2(0, spacing);
+        layout.cellSize = new Vector2(xSize, ySize);
 
         return go;
     }
 
-    public Text CreateText(string withText)
+    public Text CreateText(string withText, bool autoFit = false, int fontSize = 16)
     {
         Text text = Object.Instantiate(Resources.Load<GameObject>("UI/SettingsMenu/SettingsText")).GetComponent<Text>();
         text.text = withText;
+        text.alignment = TextAnchor.MiddleLeft;
+
+        if (autoFit == true)
+        {
+            text.resizeTextForBestFit = true;
+            text.resizeTextMaxSize = 25;
+            text.resizeTextMinSize = 5;
+        }
 
         return text;
     }

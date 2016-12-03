@@ -23,7 +23,8 @@ public class SettingsCategory : IPrototypable
         }
     }
 
-    public Dictionary<string, SettingsOption[]> category = new Dictionary<string, SettingsOption[]>();
+    // Its in format Category::Heading
+    public Dictionary<string, Dictionary<string, SettingsOption[]>> categories = new Dictionary<string, Dictionary<string, SettingsOption[]>>();
 
     /// <summary>
     /// Reads from the reader provided.
@@ -31,31 +32,56 @@ public class SettingsCategory : IPrototypable
     public void ReadXmlPrototype(XmlReader reader)
     {
         string name = reader.GetAttribute("Name");
-        List<SettingsOption> optionsList = new List<SettingsOption>();
+        if (name != null)
+        {
+            categories.Add(name, new Dictionary<string, SettingsOption[]>());
+        }
+
+        string currentHeading = "";
+        List<SettingsOption> options = new List<SettingsOption>();
 
         while (reader.Read())
         {
             switch (reader.Name)
             {
+                case "OptionHeading":
+                    // Assign then switch over
+                    if (name != null && currentHeading != null && currentHeading != string.Empty)
+                    {
+                        categories[name].Add(currentHeading, options.ToArray());
+                    }
+
+                    currentHeading = reader.GetAttribute("Name");
+                    options.Clear();
+                    break;
                 case "Option":
-                    optionsList.Add(new SettingsOption(reader));
+                    options.Add(new SettingsOption(reader));
                     break;
                 case "Category":
-                    if (optionsList.Count > 0 && name != null)
+                    if (options.Count > 0 && name != null && currentHeading != null)
                     {
                         // Assign then clear
-                        category.Add(name, optionsList.ToArray());
-                        optionsList.Clear();
+                        if (name != null && currentHeading != null && currentHeading != string.Empty)
+                        {
+                            categories[name].Add(currentHeading, options.ToArray());
+                        }
+
+                        options.Clear();
                     }
 
                     name = reader.GetAttribute("Name");
+
+                    if (name != null)
+                    {
+                        categories.Add(name, new Dictionary<string, SettingsOption[]>());
+                    }
                     break;
             }
         }
 
-        if (name != null)
+        if (name != null && currentHeading != null && currentHeading != string.Empty)
         {
-            category.Add(name, optionsList.ToArray());
+            categories[name].Add(currentHeading, options.ToArray());
         }
     }
 }

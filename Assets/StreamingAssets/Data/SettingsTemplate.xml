@@ -1,26 +1,42 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Categories>
   <Category Name="General">
-    <Option Name="Language" Key="localization" DefaultValue="en_US" ClassName="LocalizationComboBox" />
-    <Option Name="Autosave Every" Key="AutosaveInterval" DefaultValue="10" ClassName="AutosaveNumberField" />
-    <Option Name="Max Autosaves" Key="AutosaveFiles" DefaultValue="5" ClassName="AutosaveNumberField" />
+    <OptionHeading Name="Autosave">
+      <Option Name="Autosave Every" Key="AutosaveInterval" DefaultValue="10" ClassName="AutosaveNumberField" />
+      <Option Name="Max Autosaves" Key="AutosaveFiles" DefaultValue="5" ClassName="AutosaveNumberField" />
+    </OptionHeading>
+    <OptionHeading Name="Localisation">
+      <Option Name="Language" Key="localization" DefaultValue="en_US" ClassName="LocalizationComboBox" />
+    </OptionHeading>
   </Category>
   <Category Name="Sound">
-    <Option Name="Music Volume" Key="musicVolume" DefaultValue="1" ClassName="SoundSlider" />
-    <Option Name="Master Volume" Key="masterVolume" DefaultValue="1" ClassName="SoundSlider" />
+    <OptionHeading Name="Volume">
+      <Option Name="Master Volume" Key="masterVolume" DefaultValue="1" ClassName="SoundSlider" />
+      <Option Name="Music Volume" Key="musicVolume" DefaultValue="1" ClassName="SoundSlider" />
+    </OptionHeading>
   </Category>
   <Category Name="Video">
-    <Option Name="Full Screen" Key="fullScreenToggle" DefaultValue="true" ClassName="GenericToggle" />
-    <Option Name="UI Skin" Key="UISkin" DefaultValue="0" ClassName="UISkinComboBox" />
-    <Option Name="Quality" Key="quality" DefaultValue="2" ClassName="QualityComboBox" />
-    <Option Name="V-Sync" Key="vSync" DefaultValue="0" ClassName="VSyncDropDown" />
+    <OptionHeading Name="Quality Settings">
+      <Option Name="UI Skin" Key="UISkin" DefaultValue="0" ClassName="UISkinComboBox" />
+      <Option Name="Quality" Key="quality" DefaultValue="2" ClassName="QualityComboBox" />
+      <Option Name="V-Sync" Key="vSync" DefaultValue="0" ClassName="VSyncDropDown" />
+    </OptionHeading>
+    <OptionHeading Name="Window Settings">
+      <Option Name="Full Screen" Key="fullScreenToggle" DefaultValue="true" ClassName="GenericToggle" />
+    </OptionHeading>
   </Category>
   <Category Name="Developer">
-    <Option Name="Console Font Size" Key="consoleFontSize" DefaultValue="15" ClassName="FontSizeSlider" />
-    <Option Name="Developer Console" Key="developerConsole" DefaultValue="true" ClassName="GenericToggle" />
-    <Option Name="Performance HUD" Key="performanceHUD" DefaultValue="1" ClassName="PerformanceHUDComboBox" />
-    <Option Name="Developer Mode" Key="developerMode" DefaultValue="false" ClassName="GenericToggle" />
-    <Option Name="Console Time Stamps" Key="timeStamps" DefaultValue="false" ClassName="GenericToggle" />
-    <Option Name="Console Scroll Sensitivity" Key="scrollingSensitivity" DefaultValue="6" ClassName="ScrollSensitivitySlider" />
+    <OptionHeading Name="Developer Console Settings">
+      <Option Name="Console Scroll Sensitivity" Key="scrollingSensitivity" DefaultValue="6" ClassName="ScrollSensitivitySlider" />
+      <Option Name="Console Time Stamps" Key="timeStamps" DefaultValue="false" ClassName="GenericToggle" />
+      <Option Name="Developer Console" Key="developerConsole" DefaultValue="true" ClassName="GenericToggle" />
+      <Option Name="Console Font Size" Key="consoleFontSize" DefaultValue="15" ClassName="FontSizeSlider"></Option>
+    </OptionHeading>
+    <OptionHeading Name="Utilities">
+      <Option Name="Performance HUD" Key="performanceHUD" DefaultValue="1" ClassName="PerformanceHUDComboBox" />
+    </OptionHeading>
+    <OptionHeading Name="God Mode Settings">
+      <Option Name="Developer Mode" Key="developerMode" DefaultValue="false" ClassName="GenericToggle" />
+    </OptionHeading>
   </Category>
 </Categories>
