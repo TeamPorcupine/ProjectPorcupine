@@ -45,7 +45,7 @@ public class DebuggerChannelControl : EditorWindow
     {
         bool dirtySettings = false;
         scrollViewVector = GUILayout.BeginScrollView(scrollViewVector);
-        EditorGUILayout.BeginHorizontal("Box");
+        EditorGUILayout.BeginVertical("Box");
         bool allStateChanged = false;
         allState = GUILayout.Toggle(allState, "All");
 
@@ -98,7 +98,7 @@ public class DebuggerChannelControl : EditorWindow
             EditorUtility.SetDirty(channelSettings);
         }
 
-        EditorGUILayout.EndHorizontal();
+        EditorGUILayout.EndVertical();
         GUILayout.EndScrollView();
     }
 }
