@@ -27,7 +27,7 @@ public abstract class BaseSettingsElement
     /// </summary>
     public abstract GameObject InitializeElement();
 
-    public GameObject GetFluidHorizontalBaseElement(string elementTitle = "", bool stretchX = false, bool stretchY = false, TextAnchor alignment = TextAnchor.MiddleCenter, int spacing = 10)
+    protected GameObject GetFluidHorizontalBaseElement(string elementTitle = "", bool stretchX = false, bool stretchY = false, TextAnchor alignment = TextAnchor.MiddleCenter, int spacing = 10)
     {
         GameObject go = new GameObject(elementTitle == string.Empty ? "Element_" + option.name : elementTitle);
 
@@ -40,7 +40,7 @@ public abstract class BaseSettingsElement
         return go;
     }
 
-    public GameObject GetFluidVerticalBaseElement(string elementTitle = "", bool stretchX = false, bool stretchY = false, TextAnchor alignment = TextAnchor.MiddleCenter, int spacing = 10)
+    protected GameObject GetFluidVerticalBaseElement(string elementTitle = "", bool stretchX = false, bool stretchY = false, TextAnchor alignment = TextAnchor.MiddleCenter, int spacing = 10)
     {
         GameObject go = new GameObject(elementTitle == string.Empty ? "Element_" + option.name : elementTitle);
 
@@ -54,10 +54,26 @@ public abstract class BaseSettingsElement
     }
 
     /// <summary>
+    /// Returns a base element, with a grid layout.
+    /// </summary>
+    /// <returns></returns>
+    protected GameObject GetGridBaseElement(string elementTitle = "", int xSize = 97, int ySize = 37, TextAnchor alignment = TextAnchor.MiddleCenter, int spacingX = 5, int spacingY = 5)
+    {
+        GameObject go = new GameObject(elementTitle == string.Empty ? "Element_" + option.name : elementTitle);
+
+        GridLayoutGroup layout = go.AddComponent<GridLayoutGroup>();
+        layout.childAlignment = alignment;
+        layout.spacing = new Vector2(spacingX, spacingY);
+        layout.cellSize = new Vector2(xSize, ySize);
+
+        return go;
+    }
+
+    /// <summary>
     /// Returns a base element, with a horizontal layout.
     /// </summary>
     /// <returns></returns>
-    public GameObject GetHorizontalBaseElement(string elementTitle = "", int xSize = 95, int ySize = 80, TextAnchor alignment = TextAnchor.MiddleCenter, int spacing = 10)
+    protected GameObject GetHorizontalBaseElement(string elementTitle = "", int xSize = 95, int ySize = 80, TextAnchor alignment = TextAnchor.MiddleCenter, int spacing = 10)
     {
         GameObject go = new GameObject(elementTitle == string.Empty ? "Element_" + option.name : elementTitle);
 
@@ -75,7 +91,7 @@ public abstract class BaseSettingsElement
     /// Returns a base element, with a vertical layout.
     /// </summary>
     /// <returns></returns>
-    public GameObject GetVerticalBaseElement(string elementTitle = "", int xSize = 100, int ySize = 80, TextAnchor alignment = TextAnchor.MiddleCenter, int spacing = 10)
+    protected GameObject GetVerticalBaseElement(string elementTitle = "", int xSize = 100, int ySize = 80, TextAnchor alignment = TextAnchor.MiddleCenter, int spacing = 10)
     {
         GameObject go = new GameObject(elementTitle == string.Empty ? "Element_" + option.name : elementTitle);
 
@@ -89,7 +105,7 @@ public abstract class BaseSettingsElement
         return go;
     }
 
-    public Text CreateText(string withText, bool autoFit = false, int fontSize = 16)
+    protected Text CreateText(string withText, bool autoFit = false, int fontSize = 16)
     {
         Text text = Object.Instantiate(Resources.Load<GameObject>("UI/SettingsMenu/SettingsText")).GetComponent<Text>();
         text.text = withText;
@@ -105,12 +121,12 @@ public abstract class BaseSettingsElement
         return text;
     }
 
-    public Toggle CreateToggle()
+    protected Toggle CreateToggle()
     {
         return Object.Instantiate(Resources.Load<GameObject>("UI/SettingsMenu/SettingsToggle")).GetComponent<Toggle>();
     }
 
-    public InputField CreateInputField(string withText)
+    protected InputField CreateInputField(string withText)
     {
         InputField field = Object.Instantiate(Resources.Load<GameObject>("UI/SettingsMenu/SettingsField")).GetComponent<InputField>();
         field.text = withText;
@@ -118,7 +134,7 @@ public abstract class BaseSettingsElement
         return field;
     }
 
-    public Slider CreateSlider(float value, Vector2 range, bool wholeNumbers = true)
+    protected Slider CreateSlider(float value, Vector2 range, bool wholeNumbers = true)
     {
         Slider slider = Object.Instantiate(Resources.Load<GameObject>("UI/SettingsMenu/SettingsSlider")).GetComponent<Slider>();
 
@@ -130,7 +146,7 @@ public abstract class BaseSettingsElement
         return slider;
     }
 
-    public Dropdown CreateComboBox()
+    protected Dropdown CreateComboBox()
     {
         return Object.Instantiate(Resources.Load<GameObject>("UI/SettingsMenu/SettingsDropdown")).GetComponent<Dropdown>();
     }

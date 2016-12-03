@@ -65,10 +65,11 @@ public class GenericToggle : BaseSettingsElement
         LayoutElement layout = toggleElement.gameObject.AddComponent<LayoutElement>();
         layout.ignoreLayout = true;
 
-        toggleElement.GetComponent<RectTransform>().sizeDelta = new Vector2(30, 30);
-        toggleElement.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 0.5f);
-        toggleElement.GetComponent<RectTransform>().anchorMin = new Vector2(0.5f, 0.5f);
-        toggleElement.GetComponent<RectTransform>().localPosition = new Vector3(140, 0, 0);
+        RectTransform rTransform = toggleElement.GetComponent<RectTransform>();
+        rTransform.sizeDelta = new Vector2(30, 30);
+        rTransform.anchorMax = new Vector2(0.5f, 0.5f);
+        rTransform.anchorMin = new Vector2(0.5f, 0.5f);
+        rTransform.localPosition = new Vector3(110, 0, 0);
 
         return element;
     }
@@ -195,7 +196,7 @@ public class FontSizeSlider : GenericSlider
         GameObject go = base.InitializeElement();
 
         sliderElement.maxValue = 20;
-        sliderElement.minValue = 10;
+        sliderElement.minValue = 12;
         sliderElement.wholeNumbers = true;
 
         return go;
