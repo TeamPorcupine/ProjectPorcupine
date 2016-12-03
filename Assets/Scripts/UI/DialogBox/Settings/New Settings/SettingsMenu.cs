@@ -16,7 +16,6 @@ using UnityEngine.UI;
 /// </summary>
 public class SettingsMenu : MonoBehaviour
 {
-    // Maybe list??  May not need??  Could just use this to initialies then remove??
     private Dictionary<string, BaseSettingsElement[]> options = new Dictionary<string, BaseSettingsElement[]>();
 
     [SerializeField]
@@ -24,8 +23,18 @@ public class SettingsMenu : MonoBehaviour
     [SerializeField]
     private GameObject categoryRoot;
     [SerializeField]
+    private GameObject mainRoot;
+
+    [SerializeField]
     private GameObject categoryPrefab;
 
+    [SerializeField]
+    private Text categoryHeading;
+
+    // For optimising saving
+    private string currentCategory = "";
+
+    // For statics
     private static SettingsMenu instance;
 
     // Initial State
@@ -34,40 +43,18 @@ public class SettingsMenu : MonoBehaviour
         instance = this;
     }
 
-    public static void Show()
-    {
-        // Don't know the future use
-    }
-
     // Use this for initialization
     private void Start()
     {
         LoadCategories();
-    }
 
-    public static void DisplayCategory(string category)
-    {
-        if (instance == null)
+        if (options.Count > 0)
         {
-            return;
+            DisplayCategory(options.First().Key);
         }
-
-        // Clear root
-        foreach (Transform child in instance.elementRoot.transform)
+        else
         {
-            Destroy(child.gameObject);
-        }
-
-        Debug.LogWarning(category);
-
-        for (int i = 0; i < instance.options[category].Length; i++)
-        {
-            Debug.LogWarning("I'm here'):");
-
-            if (instance.options[category][i] != null)
-            {
-                instance.options[category][i].InitializeElement().transform.SetParent(instance.elementRoot.transform);
-            }
+            DisplayCategory("No Settings Loaded");
         }
     }
 
@@ -100,6 +87,7 @@ public class SettingsMenu : MonoBehaviour
             Button button = (Instantiate(categoryPrefab)).GetComponent<Button>();
             button.GetComponentInChildren<CategoryButtonHandler>().Initialize(keyValuePair.Key);
             button.transform.SetParent(categoryRoot.transform);
+            button.name = keyValuePair.Key + ": Button";
 
             for (int i = 0; i < keyValuePair.Value.Length; i++)
             {
@@ -114,5 +102,110 @@ public class SettingsMenu : MonoBehaviour
                 }
             }
         }
+    }
+
+    public static void DisplayCategory(string category)
+    {
+        if (instance == null)
+        {
+            return;
+        }
+
+        // Optimisation for saving
+        if (instance.currentCategory != string.Empty && instance.currentCategory != category && instance.options.ContainsKey(instance.currentCategory))
+        {
+            for (int i = 0; i < instance.options[instance.currentCategory].Length; i++)
+            {
+                if (instance.options[instance.currentCategory][i] != null)
+                {
+                    instance.options[instance.currentCategory][i].SaveElement();
+                }
+            }
+        }
+
+        instance.categoryHeading.text = category;
+        instance.currentCategory = category;
+
+        // Clear root
+        foreach (Transform child in instance.elementRoot.transform)
+        {
+            Destroy(child.gameObject);
+        }
+
+        foreach (CategoryButtonHandler button in instance.categoryRoot.GetComponentsInChildren<CategoryButtonHandler>())
+        {
+            if (button.gameObject.name == category + ": Button")
+            {
+                button.Clicked();
+            }
+            else
+            {
+                button.UnClick();
+            }
+        }
+
+        if (instance.options.ContainsKey(category) == false)
+        {
+            return;
+        }
+
+        for (int i = 0; i < instance.options[category].Length; i++)
+        {
+            if (instance.options[category][i] != null)
+            {
+                instance.options[category][i].InitializeElement().transform.SetParent(instance.elementRoot.transform);
+            }
+        }
+    }
+
+    public void SaveAndApply()
+    {
+        for (int i = 0; i < options[currentCategory].Length; i++)
+        {
+            options[currentCategory][i].SaveElement();
+        }
+
+        Settings.SaveSettings();
+    }
+
+    public void Cancel()
+    {
+        // Reload (which will redefault settings)
+        Settings.LoadSettings();
+
+        mainRoot.SetActive(false);
+    }
+
+    public void Default()
+    {
+        // Reset current category
+        for (int i = 0; i < options[currentCategory].Length; i++)
+        {
+            if (options[currentCategory][i] != null)
+            {
+                Settings.SetSetting(options[currentCategory][i].option.key, options[currentCategory][i].option.defaultValue);
+            }
+        }
+
+        DisplayCategory(currentCategory);
+    }
+
+    /// <summary>
+    /// Will be considerably slower (it does all the options).
+    /// </summary>
+    public void ResetAll()
+    {
+        BaseSettingsElement[] values = options.Values.SelectMany(x => x).ToArray();
+
+        // Reset current category
+        for (int i = 0; i < values.Length; i++)
+        {
+            if (values[i] != null)
+            {
+                Settings.SetSetting(values[i].option.key, values[i].option.defaultValue);
+            }
+        }
+
+        DisplayCategory(currentCategory);
     }
 }

@@ -22,8 +22,8 @@ GameObject:
   - 222: {fileID: 222000011531232660}
   - 114: {fileID: 114000011728363504}
   - 114: {fileID: 114000010281303658}
-  - 114: {fileID: 114000010313461502}
   - 114: {fileID: 114000013521423838}
+  - 114: {fileID: 114000011852658578}
   m_Layer: 5
   m_Name: SettingsButton
   m_TagString: Untagged
@@ -89,24 +89,6 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
---- !u!114 &114000010313461502
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000011889461486}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 1679637790, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_IgnoreLayout: 0
-  m_MinWidth: 250
-  m_MinHeight: 60
-  m_PreferredWidth: -1
-  m_PreferredHeight: -1
-  m_FlexibleWidth: -1
-  m_FlexibleHeight: -1
 --- !u!114 &114000011728363504
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -134,6 +116,24 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &114000011852658578
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000011889461486}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1679637790, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: 20
+  m_PreferredWidth: -1
+  m_PreferredHeight: 55
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
 --- !u!114 &114000011883905060
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -146,7 +146,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.4972109, g: 0.04595589, b: 0.625, a: 1}
+  m_Color: {r: 0.625, g: 0.087316185, b: 0.09363281, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -154,12 +154,12 @@ MonoBehaviour:
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: 33ab2b6bb29e3274b8d27bb896b14de1, type: 3}
     m_FontSize: 24
     m_FontStyle: 0
-    m_BestFit: 0
-    m_MinSize: 0
-    m_MaxSize: 40
+    m_BestFit: 1
+    m_MinSize: 5
+    m_MaxSize: 30
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -180,6 +180,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   text: {fileID: 114000011883905060}
   button: {fileID: 114000010281303658}
+  image: {fileID: 114000011728363504}
 --- !u!222 &222000011531232660
 CanvasRenderer:
   m_ObjectHideFlags: 1
@@ -224,8 +225,8 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 224000010633826320}
   m_RootOrder: 0
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0.058333334, y: 0.17142858}
+  m_AnchorMax: {x: 0.9416667, y: 0.8857143}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}

@@ -19,7 +19,7 @@
     <Option Name="Console Font Size" Key="consoleFontSize" DefaultValue="15" ClassName="FontSizeSlider" />
     <Option Name="Developer Console" Key="developerConsole" DefaultValue="true" ClassName="GenericToggle" />
     <Option Name="Performance HUD" Key="performanceHUD" DefaultValue="1" ClassName="PerformanceHUDComboBox" />
-    <Option Name="Developer Mode" Key="developerMode" DefaultValue="0" ClassName="GenericToggle" />
+    <Option Name="Developer Mode" Key="developerMode" DefaultValue="false" ClassName="GenericToggle" />
     <Option Name="Console Time Stamps" Key="timeStamps" DefaultValue="false" ClassName="GenericToggle" />
     <Option Name="Console Scroll Sensitivity" Key="scrollingSensitivity" DefaultValue="6" ClassName="ScrollSensitivitySlider" />
   </Category>
