@@ -19,6 +19,7 @@ public class DebuggerChannelControl : EditorWindow
     private bool allState;
     private bool allPreveState;
     private ChannelSettingsSO channelSettings;
+    private Vector2 scrollViewVector = Vector2.down;
 
     [MenuItem("Window/Debugger Channel Control")]
     public static void ShowWindow()
@@ -38,13 +39,12 @@ public class DebuggerChannelControl : EditorWindow
 
         allState = channelSettings.DefaultState;
         allPreveState = allState;
-        window = GetWindow(typeof(DebuggerChannelControl));
-        window.minSize = new Vector2(460, 100);
     }
 
     private void OnGUI()
     {
         bool dirtySettings = false;
+        scrollViewVector = GUILayout.BeginScrollView(scrollViewVector);
         EditorGUILayout.BeginHorizontal("Box");
         bool allStateChanged = false;
         allState = GUILayout.Toggle(allState, "All");
@@ -99,5 +99,6 @@ public class DebuggerChannelControl : EditorWindow
         }
 
         EditorGUILayout.EndHorizontal();
+        GUILayout.EndScrollView();
     }
 }
