@@ -302,9 +302,9 @@ namespace ProjectPorcupine.Localization
                             }
 
                             // Patch the file
-                            diff_match_patch p = new diff_match_patch();
-                            List<Patch> patches = p.patch_fromText(file.patch);
-                            System.Object[] patch = p.patch_apply(patches, File.ReadAllText(path) );
+                            //DiffMatchPatch p = new diff_match_patch();
+                            List<Patch> patches = Patcher.patch_fromText(file.patch);
+                            System.Object[] patch = Patcher.patch_apply(patches, File.ReadAllText(path) );
                             bool[] boolArray = (bool[])patch[1];
                             if  (boolArray.Length == 0 || !boolArray[0] || !boolArray[1])
                             {
@@ -326,9 +326,6 @@ namespace ProjectPorcupine.Localization
                             yield break;
                     }
                 }
-
-                
-                //dmp.patch_apply(test, "");
             }
 
 
@@ -353,6 +350,5 @@ namespace ProjectPorcupine.Localization
             
             document.Save(ConfigPath);
         }
-        
     }
 }
