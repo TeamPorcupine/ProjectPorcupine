@@ -63,8 +63,8 @@ namespace DiffMatchPatch
         private const short MatchMaxBits = 32;
 
         // Define some regex patterns for matching boundaries.
-        private const Regex BlankLineEnd = new Regex("\\n\\r?\\n\\Z");
-        private const Regex BlankLineStart = new Regex("\\A\\r?\\n\\r?\\n");
+        private static Regex blankLineEnd = new Regex("\\n\\r?\\n\\Z");
+        private static Regex blankLineStart = new Regex("\\A\\r?\\n\\r?\\n");
 
         /**
      * Unescape selected chars for compatability with JavaScript's encodeURI.
@@ -88,6 +88,22 @@ namespace DiffMatchPatch
           .Replace("%3d", "=").Replace("%2b", "+").Replace("%24", "$")
           .Replace("%2c", ",").Replace("%23", "#");
         }
+
+        // JScript splice function
+        public static List<T> Splice<T>(this List<T> input, int start, int count, params T[] objects)
+        {
+            List<T> deletedRange = input.GetRange(start, count);
+            input.RemoveRange(start, count);
+            input.InsertRange(start, objects);
+ 
+            return deletedRange;
+       }
+
+        // Java substring function
+       public static string JavaSubstring(this string s, int begin, int end)
+       {
+           return s.Substring(begin, end - begin);
+       }
 
         /**
      * Find the differences between two texts.
@@ -1025,8 +1041,8 @@ namespace DiffMatchPatch
             bool whitespace2 = nonAlphaNumeric2 && char.IsWhiteSpace(char2);
             bool lineBreak1 = whitespace1 && char.IsControl(char1);
             bool lineBreak2 = whitespace2 && char.IsControl(char2);
-            bool blankLine1 = lineBreak1 && BlankLineEnd.IsMatch(one);
-            bool blankLine2 = lineBreak2 && BlankLineStart.IsMatch(two);
+            bool blankLine1 = lineBreak1 && blankLineEnd.IsMatch(one);
+            bool blankLine2 = lineBreak2 && blankLineStart.IsMatch(two);
 
             if (blankLine1 || blankLine2)
             {
@@ -1865,16 +1881,16 @@ namespace DiffMatchPatch
             }
 
             // Add some padding on start of first diff.
-            Patch patch = patches.First();
-            List<Diff> diffs = patch.diffs;
+            Patch ptch = patches.First();
+            List<Diff> diffs = ptch.diffs;
             if (diffs.Count == 0 || diffs.First().operation != Operation.EQUAL)
             {
                 // Add nullPadding equality.
                 diffs.Insert(0, new Diff(Operation.EQUAL, nullPadding));
-                patch.start1 -= paddingLength;  // Should be 0.
-                patch.start2 -= paddingLength;  // Should be 0.
-                patch.length1 += paddingLength;
-                patch.length2 += paddingLength;
+                ptch.start1 -= paddingLength;  // Should be 0.
+                ptch.start2 -= paddingLength;  // Should be 0.
+                ptch.length1 += paddingLength;
+                ptch.length2 += paddingLength;
             }
             else if (paddingLength > diffs.First().text.Length)
             {
@@ -1883,21 +1899,21 @@ namespace DiffMatchPatch
                 int extraLength = paddingLength - firstDiff.text.Length;
                 firstDiff.text = nullPadding.Substring(firstDiff.text.Length)
                 + firstDiff.text;
-                patch.start1 -= extraLength;
-                patch.start2 -= extraLength;
-                patch.length1 += extraLength;
-                patch.length2 += extraLength;
+                ptch.start1 -= extraLength;
+                ptch.start2 -= extraLength;
+                ptch.length1 += extraLength;
+                ptch.length2 += extraLength;
             }
 
             // Add some padding on end of last diff.
-            patch = patches.Last();
-            diffs = patch.diffs;
+            ptch = patches.Last();
+            diffs = ptch.diffs;
             if (diffs.Count == 0 || diffs.Last().operation != Operation.EQUAL)
             {
                 // Add nullPadding equality.
                 diffs.Add(new Diff(Operation.EQUAL, nullPadding));
-                patch.length1 += paddingLength;
-                patch.length2 += paddingLength;
+                ptch.length1 += paddingLength;
+                ptch.length2 += paddingLength;
             }
             else if (paddingLength > diffs.Last().text.Length)
             {
@@ -1905,8 +1921,8 @@ namespace DiffMatchPatch
                 Diff lastDiff = diffs.Last();
                 int extraLength = paddingLength - lastDiff.text.Length;
                 lastDiff.text += nullPadding.Substring(0, extraLength);
-                patch.length1 += extraLength;
-                patch.length2 += extraLength;
+                ptch.length1 += extraLength;
+                ptch.length2 += extraLength;
             }
 
             return nullPadding;
@@ -2172,7 +2188,6 @@ namespace DiffMatchPatch
 
                     line = text[textPointer].Substring(1);
                     line = line.Replace("+", "%2b");
-                    //line = HttpUtility.UrlDecode(line, new UTF8Encoding(false, true));
                     line = UnityEngine.WWW.UnEscapeURL(line, new UTF8Encoding(false, true));
                     if (sign == '-')
                     {
