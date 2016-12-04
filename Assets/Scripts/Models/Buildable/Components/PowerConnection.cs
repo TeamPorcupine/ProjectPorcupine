@@ -116,15 +116,21 @@ namespace ProjectPorcupine.Buildable.Components
             get { return IsAccumulator && AccumulatedAmount.IsZero(); }
         }
 
-        public UtilityType utilityType { 
+        public UtilityType UtilityType { 
             get { 
                 return UtilityType.Power;
             }
         }
 
-        public string subType {
-            get {
+        public string SubType
+        {
+            get
+            {
                 return "";
+            }
+
+            set
+            {
             }
         }
         

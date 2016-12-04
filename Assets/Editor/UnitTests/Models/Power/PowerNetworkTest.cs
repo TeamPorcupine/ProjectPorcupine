@@ -150,6 +150,24 @@ public class PowerNetworkTest
             get { return AccumulatedAmount.AreEqual(AccumulatorCapacity); }
         }
 
+        public UtilityType UtilityType { 
+            get { 
+                return UtilityType.Power;
+            }
+        }
+
+        public string SubType
+        {
+            get
+            {
+                return "";
+            }
+
+            set
+            {
+            }
+        }
+
         public bool IsProducer
         {
             get { return OutputRate > 0f && !IsAccumulator; }

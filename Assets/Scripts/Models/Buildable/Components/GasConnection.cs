@@ -81,6 +81,7 @@ namespace ProjectPorcupine.Buildable.Components
                     }
                 }
             }
+            Debug.LogWarning(Settings.GetSetting("localization", "en_us"));
         }
 
         protected override void Initialize()

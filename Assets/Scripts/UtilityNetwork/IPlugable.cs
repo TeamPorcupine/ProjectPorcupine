@@ -33,9 +33,9 @@ namespace ProjectPorcupine.PowerNetwork
 
         bool IsEmpty { get; }
 
-        UtilityType utilityType { get;}
+        UtilityType UtilityType { get;}
 
-        string subType { get; }
+        string SubType { get; set;}
 
         void Reconnect();
     }

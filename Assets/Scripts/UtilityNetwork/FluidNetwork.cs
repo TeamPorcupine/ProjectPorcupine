@@ -45,13 +45,14 @@ namespace ProjectPorcupine.PowerNetwork
                 throw new ArgumentNullException("connection");
             }
 
-            if (IsEmpty)
+            if (IsEmpty || !fluidGrids.Any(grid => grid.CanPlugIn(connection)))
             {
                 fluidGrids.Add(new Grid());
                 Debug.LogWarning("Adding new Grid");
             }
 
             // TODO: Currently, this will create a "Universal" Fluid system... that is not ideal.
+            // In theory at this point there should either be a grid that can be plugged in, or there should be new grid added... that can be plugged in.
             Grid fluidGrid = fluidGrids.FirstOrDefault(grid => grid.CanPlugIn(connection));
             return PlugIn(connection, fluidGrid);
         }
@@ -84,7 +85,7 @@ namespace ProjectPorcupine.PowerNetwork
                 return false;
             }
 
-            grid = fluidGrids.FirstOrDefault(fluidGrid => fluidGrid.IsPluggedIn(connection));
+            grid = fluidGrids.First(fluidGrid => fluidGrid.IsPluggedIn(connection));
             return grid != null;
         }
 

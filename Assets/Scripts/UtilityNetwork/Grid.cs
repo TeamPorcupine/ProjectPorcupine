@@ -20,6 +20,7 @@ namespace ProjectPorcupine.PowerNetwork
         public Grid()
         {
             connections = new HashSet<IPlugable>();
+            SubType = "";
         }
 
         /// <summary>
@@ -46,16 +47,50 @@ namespace ProjectPorcupine.PowerNetwork
             }
         }
 
+        public UtilityType UtilityType { get; private set; }
+
+        public string SubType { get; private set; }
+
         /// <summary>
         /// Determines whether the connection can plug into this grid.
         /// </summary>
         /// <returns><c>true</c> if the connection can plug into this grid; otherwise, <c>false</c>.</returns>
         public bool CanPlugIn(IPlugable connection)
         {
+//            Debug.LogWarning("GUT = " + UtilityType);
+//            Debug.LogWarning("GST = *" + SubType +"*");
+//            Debug.LogWarning("CUT = " + connection.UtilityType);
+//            Debug.LogWarning("CST = " + connection.SubType);
+//            Debug.LogWarning(UtilityType != connection.UtilityType && SubType != connection.SubType);
+//            Debug.LogWarning((SubType != null) + " && " + (connection.SubType != string.Empty) + " && " + (SubType != connection.SubType) + " = " + (SubType != string.Empty && connection.SubType != string.Empty && SubType != connection.SubType));
             if (connection == null)
             {
                 throw new ArgumentNullException("connection");
             }
+
+            if (UtilityType != UtilityType.Null && UtilityType != connection.UtilityType)
+            {
+                Debug.LogWarning("UtilityType isn't null and doesn't match, no plugin");
+                return false;
+            }
+
+            if (SubType != string.Empty && connection.SubType != string.Empty && SubType != connection.SubType)
+            {
+                Debug.LogWarning("Neither SubType is empty, and they don't match, no plugin");
+                return false;
+            }
+
+//            if (UtilityType == UtilityType.Null || SubType == string.Empty)
+//            {
+//                Debug.LogWarning("UtilityType or subType unset, so it's ok to plugin");
+//                return true;
+//            }
+//
+//            if (UtilityType != connection.UtilityType || SubType != connection.SubType)
+//            {
+//                Debug.LogWarning("UtilityType or subType don't match, no plugin allowed");
+//                return false;
+//            }
 
             return true;
         }
@@ -74,7 +109,22 @@ namespace ProjectPorcupine.PowerNetwork
 
             if (!CanPlugIn(connection))
             {
+                Debug.LogWarning("Can't Plugin");
                 return false;
+            }
+
+            if (UtilityType == UtilityType.Null)
+            {
+                UtilityType = connection.UtilityType;
+            }
+
+            if (SubType == string.Empty)
+            {
+                SubType = connection.SubType;
+            }
+            else if (connection.SubType == string.Empty)
+            {
+                connection.SubType = SubType;
             }
 
             connections.Add(connection);

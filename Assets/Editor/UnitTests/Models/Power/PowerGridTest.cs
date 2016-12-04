@@ -323,15 +323,19 @@ public class PowerGridTest
             get { return AccumulatedAmount.AreEqual(AccumulatorCapacity); }
         }
 
-        public UtilityType utilityType { 
+        public UtilityType UtilityType { 
             get { 
                 return UtilityType.Power;
             }
         }
 
-        public string subType {
+        public string SubType {
             get {
                 return "";
+            }
+
+            set
+            {
             }
         }
 

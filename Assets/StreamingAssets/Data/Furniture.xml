@@ -237,16 +237,26 @@
                 </Requires>
             </UseAnimation>
         </Component>
-        
+		
+        <Component type="PowerConnection">
+            <Requires rate="1"/>
+            <ParameterDefinitions>
+                <CurrentAcumulatorCharge name="pow_accumulator_charge" />
+                <CurrentAcumulatorChargeIndex name="pow_accumulator_index" />
+                <IsRunning name="pow_is_running" />
+            </ParameterDefinitions>
+        </Component>
+		
         <Component type="FluidConnection">
             <Requires rate="1"/>
+			<FluidType>water</FluidType>
             <ParameterDefinitions>
                 <CurrentAcumulatorCharge name="fluid_accumulator_charge" />
                 <CurrentAcumulatorChargeIndex name="fluid_accumulator_index" />
                 <IsRunning name="water_is_running" />
             </ParameterDefinitions>
         </Component>
-
+		
         <Component type="GasConnection">
             <!-- Rate should be 0.16 total for all gas generation, smaller amounts
                  for individual gasses allows O2 gen to mimic proper functionality
@@ -392,6 +402,7 @@
         </Component>
     -->    
         <Component type="FluidConnection">
+			<FluidType>water</FluidType>
             <Provides rate="5"/>            
 			<!--
             <Requires>
@@ -404,6 +415,34 @@
         
         <LocalizationCode>furn_water_generator</LocalizationCode>
         <UnlocalizedDescription>furn_water_generator_desc</UnlocalizedDescription>
+    </Furniture>
+
+    <Furniture type="water_tank">
+        <Name>Water Tank</Name>
+        <Description>Water Tank</Description>
+        <MovementCost>2</MovementCost>
+        <PathfindingModifier>0</PathfindingModifier>
+        <PathfindingWeight>2</PathfindingWeight>
+        <Width>1</Width>
+        <Height>1</Height>
+
+        <BuildingJob jobTime="2" />
+        
+       <DeconstructJob jobTime="1">
+            <Inventory type="Steel Plate" amount="1" />
+        </DeconstructJob>
+        <Component type="FluidConnection">
+            <Provides rate="10" capacity="50" capacityThresholds="5"/>
+            <Requires rate="5" />
+            <ParameterDefinitions>
+                <CurrentAcumulatorCharge name="fluid_accumulator_charge" />
+                <CurrentAcumulatorChargeIndex name="fluid_accumulator_index" />
+                <IsRunning name="water_is_running" />
+            </ParameterDefinitions>
+        </Component>
+
+        <LocalizationCode>furn_accumulator</LocalizationCode>
+        <UnlocalizedDescription>furn_accumulator_desc</UnlocalizedDescription>
     </Furniture>
 
     <Furniture type="cloning_pod">
@@ -866,34 +905,6 @@
                 <CurrentAcumulatorCharge name="pow_accumulator_charge" />
                 <CurrentAcumulatorChargeIndex name="pow_accumulator_index" />
                 <IsRunning name="pow_is_running" />
-            </ParameterDefinitions>
-        </Component>
-
-        <LocalizationCode>furn_accumulator</LocalizationCode>
-        <UnlocalizedDescription>furn_accumulator_desc</UnlocalizedDescription>
-    </Furniture>
-
-    <Furniture type="water_tank">
-        <Name>Water Tank</Name>
-        <Description>Water Tank</Description>
-        <MovementCost>2</MovementCost>
-        <PathfindingModifier>0</PathfindingModifier>
-        <PathfindingWeight>2</PathfindingWeight>
-        <Width>1</Width>
-        <Height>1</Height>
-
-        <BuildingJob jobTime="2" />
-        
-       <DeconstructJob jobTime="1">
-            <Inventory type="Steel Plate" amount="1" />
-        </DeconstructJob>
-        <Component type="FluidConnection">
-            <Provides rate="10" capacity="50" capacityThresholds="5"/>
-            <Requires rate="5" />
-            <ParameterDefinitions>
-                <CurrentAcumulatorCharge name="fluid_accumulator_charge" />
-                <CurrentAcumulatorChargeIndex name="fluid_accumulator_index" />
-                <IsRunning name="water_is_running" />
             </ParameterDefinitions>
         </Component>
 

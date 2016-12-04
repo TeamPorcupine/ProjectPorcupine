@@ -25,6 +25,7 @@ namespace ProjectPorcupine.Buildable.Components
     {       
         public FluidConnection()
         {
+            SubType = "";
         }
 
         private FluidConnection(FluidConnection other) : base(other)
@@ -32,6 +33,7 @@ namespace ProjectPorcupine.Buildable.Components
             ParamsDefinitions = other.ParamsDefinitions;
             Provides = other.Provides;
             Requires = other.Requires;
+            SubType = other.SubType;
 
             Reconnecting += OnReconnecting;
         }
@@ -116,13 +118,15 @@ namespace ProjectPorcupine.Buildable.Components
             get { return IsAccumulator && AccumulatedAmount.IsZero(); }
         }
 
-        public UtilityType utilityType { 
+        public UtilityType UtilityType { 
             get { 
                 return UtilityType.Fluid;
             }
         }
 
-        public string subType { get; private set; }
+        [XmlElement("FluidType")]
+        [JsonProperty("FluidType")]
+        public string SubType { get; set; }
 
         public bool IsFull
         {
@@ -186,6 +190,9 @@ namespace ProjectPorcupine.Buildable.Components
             string powerColor = IsRunning ? "lime" : "red";
             string status = IsRunning ? "online" : "offline";
             yield return LocalizationTable.GetLocalization("fluid_grid_status_" + status, powerColor);
+
+            // Debugging info, should be removed
+            yield return "Fluid Type: " + SubType;
 
             if (IsConsumer && Requires != null)
             {
