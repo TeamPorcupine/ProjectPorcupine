@@ -193,6 +193,8 @@ public class SettingsMenu : MonoBehaviour
                 }
             }
         }
+
+        TextScaling.ScaleAllTexts();
     }
 
     public void SaveAndApply()

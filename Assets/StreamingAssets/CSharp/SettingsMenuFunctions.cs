@@ -53,7 +53,7 @@ public class GenericToggle : BaseSettingsElement
 
     public override GameObject InitializeElement()
     {
-        GameObject element = GetHorizontalBaseElement("Toggle", 80, 40, TextAnchor.MiddleLeft);
+        GameObject element = GetHorizontalBaseElement("Toggle", 200, 40, TextAnchor.MiddleLeft);
 
         Text text = CreateText(option.name + ": ", true);
         text.transform.SetParent(element.transform);
@@ -128,7 +128,8 @@ public class GenericSlider : BaseSettingsElement
 
     public override GameObject InitializeElement()
     {
-        GameObject element = GetFluidHorizontalBaseElement("Slider", false, false, TextAnchor.MiddleLeft, 10);
+        // Note this is just from playing around and finding a nice value
+        GameObject element = GetHorizontalBaseElement("Slider", 175, 45, TextAnchor.MiddleLeft, 10);
 
         format = option.name + " ({0:00}): ";
 
@@ -139,9 +140,14 @@ public class GenericSlider : BaseSettingsElement
         sliderElement.transform.SetParent(element.transform);
         sliderElement.onValueChanged.AddListener((float value) => { textElement.text = string.Format(format, value); });
 
-        LayoutElement ourLayout = sliderElement.gameObject.AddComponent<LayoutElement>();
-        ourLayout.minWidth = 80;
-        ourLayout.minHeight = 20;
+        LayoutElement layout = sliderElement.gameObject.AddComponent<LayoutElement>();
+        layout.ignoreLayout = true;
+
+        RectTransform rTransform = sliderElement.GetComponent<RectTransform>();
+        rTransform.sizeDelta = new Vector2(140, 20);
+        rTransform.anchorMax = new Vector2(0.5f, 0.5f);
+        rTransform.anchorMin = new Vector2(0.5f, 0.5f);
+        rTransform.localPosition = new Vector3(110, 0, 0);
 
         return element;
     }

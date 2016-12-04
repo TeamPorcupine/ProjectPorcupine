@@ -106,7 +106,7 @@ public abstract class BaseSettingsElement
         return go;
     }
 
-    protected Text CreateText(string withText, bool autoFit = false, int fontSize = 16)
+    protected Text CreateText(string withText, bool autoFit = false)
     {
         Text text = Object.Instantiate(Resources.Load<GameObject>("UI/SettingsMenu/SettingsText")).GetComponent<Text>();
         text.text = withText;
@@ -114,9 +114,7 @@ public abstract class BaseSettingsElement
 
         if (autoFit == true)
         {
-            text.resizeTextForBestFit = true;
-            text.resizeTextMaxSize = 25;
-            text.resizeTextMinSize = 5;
+            text.gameObject.AddComponent<TextScaling>();
         }
 
         return text;

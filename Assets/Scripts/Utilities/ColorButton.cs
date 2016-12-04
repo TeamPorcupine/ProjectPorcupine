@@ -63,7 +63,7 @@ public class ColorButton : MonoBehaviour
 }
 
 /// <summary>
-/// This is holds the original and the selected colours.
+/// This is holds the original and the selected colours for the colorButton.
 /// </summary>
 [System.Serializable]
 public struct ButtonUpdateColorBlock
