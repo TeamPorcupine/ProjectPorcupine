@@ -52,7 +52,7 @@ public class MenuLeft : MonoBehaviour
 
             if (CurrentlyOpen.name == "ConstructionMenu")
             {
-                WorldController.Instance.spawnInventoryController.SetUIVisibility(Settings.GetSetting("DialogBoxSettings_developerModeToggle", false));
+                WorldController.Instance.spawnInventoryController.SetUIVisibility(Settings.GetSetting("DialogBoxSettingsDevConsole_developerModeToggle", false));
             }
 
             WorldController.Instance.soundController.OnButtonSFX();

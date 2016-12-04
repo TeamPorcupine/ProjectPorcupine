@@ -859,7 +859,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     /// </summary>
     public void SetDeconstructJob()
     {
-        if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
+        if (CommandSettings.DeveloperModeToggle)
         {
             Deconstruct();
             return;
@@ -1090,7 +1090,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     /// <returns>Context menu actions.</returns>
     public IEnumerable<ContextMenuAction> GetContextMenuActions(ContextMenu contextMenu)
     {
-        if (Settings.GetSetting("DialogBoxSettings_developerModeToggle", false) == true || HasTypeTag("Non-deconstructible") == false)
+        if (CommandSettings.DeveloperModeToggle == true || HasTypeTag("Non-deconstructible") == false)
         {
             yield return new ContextMenuAction
             {
@@ -1129,7 +1129,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         foreach (ContextMenuLuaAction contextMenuLuaAction in contextMenuLuaActions)
         {
             if (!contextMenuLuaAction.DevModeOnly ||
-                Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
+                CommandSettings.DeveloperModeToggle)
             {
                 // TODO The Action could be done via a lambda, but it always uses the same space of memory, thus if 2 actions are performed, the same action will be produced for each.
                 yield return new ContextMenuAction
