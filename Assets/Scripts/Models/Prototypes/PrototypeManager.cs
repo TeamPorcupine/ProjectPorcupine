@@ -154,7 +154,6 @@ public class PrototypeManager
     /// <value>The DevConsole prototype map.</value>
     public static PrototypeMap<DeveloperConsole.CommandPrototype> DevConsole { get; private set; }
 
-
     /// <summary>
     /// Gets the SettingsCategory prototype map.
     /// </summary>

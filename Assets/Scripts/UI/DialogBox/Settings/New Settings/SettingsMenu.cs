@@ -6,9 +6,9 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using UnityEngine;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
@@ -16,6 +16,9 @@ using UnityEngine.UI;
 /// </summary>
 public class SettingsMenu : MonoBehaviour
 {
+    // For statics
+    private static SettingsMenu instance;
+
     private Dictionary<string, Dictionary<string, BaseSettingsElement[]>> options = new Dictionary<string, Dictionary<string, BaseSettingsElement[]>>();
 
     [SerializeField]
@@ -34,89 +37,7 @@ public class SettingsMenu : MonoBehaviour
     private Text categoryHeading;
 
     // For optimising saving
-    private string currentCategory = "";
-
-    // For statics
-    private static SettingsMenu instance;
-
-    // Initial State
-    private void Awake()
-    {
-        instance = this;
-    }
-
-    // Use this for initialization
-    private void Start()
-    {
-        LoadCategories();
-
-        if (options.Count > 0)
-        {
-            DisplayCategory(options.First().Key);
-        }
-        else
-        {
-            DisplayCategory("No Settings Loaded");
-        }
-    }
-
-    private void Update()
-    {
-        if (Input.GetKey(KeyCode.Escape))
-        {
-            Cancel();
-        }
-    }
-
-    /// <summary>
-    /// Load our categories.
-    /// </summary>
-    private void LoadCategories()
-    {
-        // Clear root
-        foreach (Transform child in elementRoot.transform)
-        {
-            Destroy(child.gameObject);
-        }
-
-        // Clear root
-        foreach (Transform child in categoryRoot.transform)
-        {
-            Destroy(child.gameObject);
-        }
-
-        options = new Dictionary<string, Dictionary<string, BaseSettingsElement[]>>();
-
-        Dictionary<string, Dictionary<string, SettingsOption[]>> categories = PrototypeManager.SettingsCategories.Values.ToArray().SelectMany(x => x.categories).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-
-        foreach (string currentName in categories.Keys)
-        {
-            ColorButton button = (Instantiate(categoryPrefab)).GetComponent<ColorButton>();
-            button.transform.SetParent(categoryRoot.transform);
-            button.name = currentName;
-            button.SetText(currentName);
-            options.Add(currentName, new Dictionary<string, BaseSettingsElement[]>());
-
-            // This is quite optimised (despite being a forloop on a dictionary), and is only done during start
-            foreach (KeyValuePair<string, SettingsOption[]> keyValuePair in categories[currentName])
-            {
-                options[currentName].Add(keyValuePair.Key, new BaseSettingsElement[keyValuePair.Value.Length]);
-
-                for (int i = 0; i < keyValuePair.Value.Length; i++)
-                {
-                    if (FunctionsManager.SettingsMenu.HasFunction("Get" + keyValuePair.Value[i].className))
-                    {
-                        options[currentName][keyValuePair.Key][i] = FunctionsManager.SettingsMenu.Call("Get" + keyValuePair.Value[i].className).ToObject<BaseSettingsElement>();
-                        options[currentName][keyValuePair.Key][i].option = keyValuePair.Value[i];
-                    }
-                    else
-                    {
-                        Debug.LogWarning("Get" + keyValuePair.Value[i].className + "() Doesn't exist");
-                    }
-                }
-            }
-        }
-    }
+    private string currentCategory = string.Empty;
 
     public static void Open()
     {
@@ -127,6 +48,15 @@ public class SettingsMenu : MonoBehaviour
 
         GameController.Instance.IsModal = true;
         GameController.Instance.soundController.OnButtonSFX();
+
+        if (instance.options.Count > 0)
+        {
+            DisplayCategory(instance.options.First().Key);
+        }
+        else
+        {
+            DisplayCategory("No Settings Loaded");
+        }
 
         instance.mainRoot.SetActive(true);
     }
@@ -215,12 +145,30 @@ public class SettingsMenu : MonoBehaviour
 
     public void Cancel()
     {
-        // Reload (which will redefault settings)
-        Settings.LoadSettings();
+        // Open a dialog box to double check
+        DialogBoxPromptOrInfo check = (DialogBoxPromptOrInfo)WorldController.Instance.dialogBoxManager.ShowDialogBoxByName("Prompt or Info");
+        check.SetPrompt("Are you sure you want to close the menu and cancel all settings?");
+        check.SetButtons(new DialogBoxResult[] { DialogBoxResult.Yes, DialogBoxResult.No });
+        check.Closed =
+            () =>
+            {
+                switch (check.Result)
+                {
+                    case DialogBoxResult.Yes:
+                        // Reload (which will redefault settings)
+                        Settings.LoadSettings();
+                        GameController.Instance.IsModal = false;
+                        GameController.Instance.soundController.OnButtonSFX();
+                        break;
+                    case DialogBoxResult.No:
+                        GameController.Instance.soundController.OnButtonSFX();
+                        mainRoot.SetActive(true);
+                        break;
+                }
+            };
 
         mainRoot.SetActive(false);
-        GameController.Instance.IsModal = false;
-        GameController.Instance.soundController.OnButtonSFX();
+        check.ShowDialog();
     }
 
     public void Default()
@@ -260,5 +208,84 @@ public class SettingsMenu : MonoBehaviour
         }
 
         DisplayCategory(currentCategory);
+    }
+
+    // Initial State
+    private void Awake()
+    {
+        instance = this;
+    }
+
+    // Use this for initialization
+    private void Start()
+    {
+        LoadCategories();
+
+        if (options.Count > 0)
+        {
+            DisplayCategory(options.First().Key);
+        }
+        else
+        {
+            DisplayCategory("No Settings Loaded");
+        }
+    }
+
+    private void Update()
+    {
+        if (Input.GetKey(KeyCode.Escape))
+        {
+            Cancel();
+        }
+    }
+
+    /// <summary>
+    /// Load our categories.
+    /// </summary>
+    private void LoadCategories()
+    {
+        // Clear root
+        foreach (Transform child in elementRoot.transform)
+        {
+            Destroy(child.gameObject);
+        }
+
+        // Clear root
+        foreach (Transform child in categoryRoot.transform)
+        {
+            Destroy(child.gameObject);
+        }
+
+        options = new Dictionary<string, Dictionary<string, BaseSettingsElement[]>>();
+
+        Dictionary<string, Dictionary<string, SettingsOption[]>> categories = PrototypeManager.SettingsCategories.Values.ToArray().SelectMany(x => x.categories).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+
+        foreach (string currentName in categories.Keys)
+        {
+            ColorButton button = Instantiate(categoryPrefab).GetComponent<ColorButton>();
+            button.transform.SetParent(categoryRoot.transform);
+            button.name = currentName;
+            button.SetText(currentName);
+            options.Add(currentName, new Dictionary<string, BaseSettingsElement[]>());
+
+            // This is quite optimised (despite being a forloop on a dictionary), and is only done during start
+            foreach (KeyValuePair<string, SettingsOption[]> keyValuePair in categories[currentName])
+            {
+                options[currentName].Add(keyValuePair.Key, new BaseSettingsElement[keyValuePair.Value.Length]);
+
+                for (int i = 0; i < keyValuePair.Value.Length; i++)
+                {
+                    if (FunctionsManager.SettingsMenu.HasFunction("Get" + keyValuePair.Value[i].className))
+                    {
+                        options[currentName][keyValuePair.Key][i] = FunctionsManager.SettingsMenu.Call("Get" + keyValuePair.Value[i].className).ToObject<BaseSettingsElement>();
+                        options[currentName][keyValuePair.Key][i].option = keyValuePair.Value[i];
+                    }
+                    else
+                    {
+                        Debug.LogWarning("Get" + keyValuePair.Value[i].className + "() Doesn't exist");
+                    }
+                }
+            }
+        }
     }
 }

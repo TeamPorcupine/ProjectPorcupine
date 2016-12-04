@@ -7,41 +7,35 @@
 // ====================================================
 #endregion
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
-[RequireComponent(typeof(Button))]
+/// <summary>
+/// This is holds the original and the selected colours for the colorButton.
+/// </summary>
+[System.Serializable]
+public struct ButtonUpdateColorBlock
+{
+    public Color textOriginalColor;
+    public Color textSelectedColor;
+
+    public Color imageOriginalColor;
+    public Color imageSelectedColor;
+}
+
 /// <summary>
 /// Just a nice extension.
 /// This will allow you to set colours that will happen automatically when clicked.
 /// They will have to be unselected via a public method.
 /// </summary>
+[RequireComponent(typeof(Button))]
 public class ColorButton : MonoBehaviour
 {
     [SerializeField]
-    ButtonUpdateColorBlock colorSelectGroup = new ButtonUpdateColorBlock();
+    private ButtonUpdateColorBlock colorSelectGroup = new ButtonUpdateColorBlock();
 
-    Text updateText;
-    Button button;
-
-    void Awake()
-    {
-        updateText = gameObject.GetComponentInChildren<Text>();
-        button = gameObject.GetComponent<Button>();
-
-        button.onClick.AddListener(
-            () =>
-            {
-                button.image.color = colorSelectGroup.imageSelectedColor;
-
-                if (updateText != null)
-                {
-                    updateText.color = colorSelectGroup.textSelectedColor;
-                }
-
-                SettingsMenu.DisplayCategory(gameObject.name);
-            });
-    }
+    private Text updateText;
+    private Button button;
 
     public void SetText(string text)
     {
@@ -60,17 +54,23 @@ public class ColorButton : MonoBehaviour
             updateText.color = colorSelectGroup.textOriginalColor;
         }
     }
-}
 
-/// <summary>
-/// This is holds the original and the selected colours for the colorButton.
-/// </summary>
-[System.Serializable]
-public struct ButtonUpdateColorBlock
-{
-    public Color textOriginalColor;
-    public Color textSelectedColor;
+    private void Awake()
+    {
+        updateText = gameObject.GetComponentInChildren<Text>();
+        button = gameObject.GetComponent<Button>();
 
-    public Color imageOriginalColor;
-    public Color imageSelectedColor;
+        button.onClick.AddListener(
+            () =>
+            {
+                button.image.color = colorSelectGroup.imageSelectedColor;
+
+                if (updateText != null)
+                {
+                    updateText.color = colorSelectGroup.textSelectedColor;
+                }
+
+                SettingsMenu.DisplayCategory(gameObject.name);
+            });
+    }
 }

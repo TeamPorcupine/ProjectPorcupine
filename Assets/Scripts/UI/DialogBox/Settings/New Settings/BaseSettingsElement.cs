@@ -8,7 +8,6 @@
 #endregion
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
 
 // Base Class, will be a UI Element
 [MoonSharp.Interpreter.MoonSharpUserData]
@@ -108,7 +107,7 @@ public abstract class BaseSettingsElement
 
     protected Text CreateText(string withText, bool autoFit = false)
     {
-        Text text = Object.Instantiate(Resources.Load<GameObject>("UI/SettingsMenu/SettingsText")).GetComponent<Text>();
+        Text text = GameObject.Instantiate(Resources.Load<GameObject>("UI/SettingsMenu/SettingsText")).GetComponent<Text>();
         text.text = withText;
         text.alignment = TextAnchor.MiddleLeft;
 
@@ -122,12 +121,12 @@ public abstract class BaseSettingsElement
 
     protected Toggle CreateToggle()
     {
-        return Object.Instantiate(Resources.Load<GameObject>("UI/SettingsMenu/SettingsToggle")).GetComponent<Toggle>();
+        return GameObject.Instantiate(Resources.Load<GameObject>("UI/SettingsMenu/SettingsToggle")).GetComponent<Toggle>();
     }
 
     protected InputField CreateInputField(string withText)
     {
-        InputField field = Object.Instantiate(Resources.Load<GameObject>("UI/SettingsMenu/SettingsField")).GetComponent<InputField>();
+        InputField field = GameObject.Instantiate(Resources.Load<GameObject>("UI/SettingsMenu/SettingsField")).GetComponent<InputField>();
         field.text = withText;
 
         return field;
@@ -135,7 +134,7 @@ public abstract class BaseSettingsElement
 
     protected Slider CreateSlider(float value, Vector2 range, bool wholeNumbers = true)
     {
-        Slider slider = Object.Instantiate(Resources.Load<GameObject>("UI/SettingsMenu/SettingsSlider")).GetComponent<Slider>();
+        Slider slider = GameObject.Instantiate(Resources.Load<GameObject>("UI/SettingsMenu/SettingsSlider")).GetComponent<Slider>();
 
         slider.maxValue = range.y;
         slider.minValue = range.x;
@@ -147,6 +146,6 @@ public abstract class BaseSettingsElement
 
     protected Dropdown CreateComboBox()
     {
-        return Object.Instantiate(Resources.Load<GameObject>("UI/SettingsMenu/SettingsDropdown")).GetComponent<Dropdown>();
+        return GameObject.Instantiate(Resources.Load<GameObject>("UI/SettingsMenu/SettingsDropdown")).GetComponent<Dropdown>();
     }
 }

@@ -6,8 +6,38 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System.Xml;
 using System.Collections.Generic;
+using System.Xml;
+
+/// <summary>
+/// For XML reader.
+/// </summary>
+public struct SettingsOption
+{
+    public string name;
+    public string key;
+    public string defaultValue;
+    public string className;
+
+    public SettingsOption(string name, string key, string defaultValue, string className)
+    {
+        this.name = name;
+        this.key = key;
+        this.defaultValue = defaultValue;
+        this.className = className;
+    }
+
+    /// <summary>
+    /// A nice little helper (pass it a reader class that is up to the subtree).
+    /// </summary>
+    public SettingsOption(XmlReader reader)
+    {
+        name = reader.GetAttribute("Name");
+        key = reader.GetAttribute("Key");
+        defaultValue = reader.GetAttribute("DefaultValue");
+        className = reader.GetAttribute("ClassName");
+    }
+}
 
 /// <summary>
 /// Holds the category and its options (and name).
@@ -16,6 +46,9 @@ using System.Collections.Generic;
 /// </summary>
 public class SettingsCategory : IPrototypable
 {
+    // Its in format Category::Heading
+    public Dictionary<string, Dictionary<string, SettingsOption[]>> categories = new Dictionary<string, Dictionary<string, SettingsOption[]>>();
+
     public string Type
     {
         get
@@ -23,9 +56,6 @@ public class SettingsCategory : IPrototypable
             return "SettingsCategory";
         }
     }
-
-    // Its in format Category::Heading
-    public Dictionary<string, Dictionary<string, SettingsOption[]>> categories = new Dictionary<string, Dictionary<string, SettingsOption[]>>();
 
     /// <summary>
     /// Reads from the reader provided.
@@ -38,7 +68,7 @@ public class SettingsCategory : IPrototypable
             categories.Add(name, new Dictionary<string, SettingsOption[]>());
         }
 
-        string currentHeading = "";
+        string currentHeading = string.Empty;
         List<SettingsOption> options = new List<SettingsOption>();
 
         while (reader.Read())
@@ -76,6 +106,7 @@ public class SettingsCategory : IPrototypable
                     {
                         categories.Add(name, new Dictionary<string, SettingsOption[]>());
                     }
+
                     break;
             }
         }
@@ -84,32 +115,5 @@ public class SettingsCategory : IPrototypable
         {
             categories[name].Add(currentHeading, options.ToArray());
         }
-    }
-}
-
-public struct SettingsOption
-{
-    public string name;
-    public string key;
-    public string defaultValue;
-    public string className;
-
-    public SettingsOption(string name, string key, string defaultValue, string className)
-    {
-        this.name = name;
-        this.key = key;
-        this.defaultValue = defaultValue;
-        this.className = className;
-    }
-
-    /// <summary>
-    /// A nice little helper (pass it a reader class that is up to the subtree)
-    /// </summary>
-    public SettingsOption(XmlReader reader)
-    {
-        name = reader.GetAttribute("Name");
-        key = reader.GetAttribute("Key");
-        defaultValue = reader.GetAttribute("DefaultValue");
-        className = reader.GetAttribute("ClassName");
     }
 }
