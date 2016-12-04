@@ -21,9 +21,9 @@ GameObject:
   - 224: {fileID: 224000010633826320}
   - 222: {fileID: 222000011531232660}
   - 114: {fileID: 114000011728363504}
-  - 114: {fileID: 114000010281303658}
   - 114: {fileID: 114000013521423838}
   - 114: {fileID: 114000011852658578}
+  - 114: {fileID: 114000010215954120}
   m_Layer: 5
   m_Name: SettingsButton
   m_TagString: Untagged
@@ -48,7 +48,7 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &114000010281303658
+--- !u!114 &114000010215954120
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -178,9 +178,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ea1accf4a5fc264cafab1603fa802be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  text: {fileID: 114000011883905060}
-  button: {fileID: 114000010281303658}
-  image: {fileID: 114000011728363504}
+  colorSelectGroup:
+    textOriginalColor: {r: 0.62352943, g: 0.08627451, b: 0.09019608, a: 1}
+    textSelectedColor: {r: 0.8901961, g: 0.39215687, b: 0.4, a: 1}
+    imageOriginalColor: {r: 1, g: 1, b: 1, a: 1}
+    imageSelectedColor: {r: 1, g: 0.5019608, b: 0.5019608, a: 1}
 --- !u!222 &222000011531232660
 CanvasRenderer:
   m_ObjectHideFlags: 1

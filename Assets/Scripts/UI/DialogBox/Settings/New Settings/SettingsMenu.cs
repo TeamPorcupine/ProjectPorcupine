@@ -91,10 +91,10 @@ public class SettingsMenu : MonoBehaviour
 
         foreach (string currentName in categories.Keys)
         {
-            Button button = (Instantiate(categoryPrefab)).GetComponent<Button>();
-            button.GetComponentInChildren<CategoryButtonHandler>().Initialize(currentName);
+            ColorButton button = (Instantiate(categoryPrefab)).GetComponent<ColorButton>();
             button.transform.SetParent(categoryRoot.transform);
-            button.name = currentName + ": Button";
+            button.name = currentName;
+            button.SetText(currentName);
             options.Add(currentName, new Dictionary<string, BaseSettingsElement[]>());
 
             // This is quite optimised (despite being a forloop on a dictionary), and is only done during start
@@ -162,15 +162,11 @@ public class SettingsMenu : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        foreach (CategoryButtonHandler button in instance.categoryRoot.GetComponentsInChildren<CategoryButtonHandler>())
+        foreach (ColorButton button in instance.categoryRoot.GetComponentsInChildren<ColorButton>())
         {
-            if (button.gameObject.name == category + ": Button")
+            if (button.gameObject.name != category)
             {
-                button.Clicked();
-            }
-            else
-            {
-                button.UnClick();
+                button.RevertColor();
             }
         }
 
