@@ -17,7 +17,8 @@ public abstract class BaseSettingsElement
     public SettingsOption option;
 
     /// <summary>
-    /// Save to settings your value.
+    /// Do a settings.setValue call to set your value.
+    /// You shouldn't call settings.save() here (that's for the controller to manage).
     /// </summary>
     public abstract void SaveElement();
 

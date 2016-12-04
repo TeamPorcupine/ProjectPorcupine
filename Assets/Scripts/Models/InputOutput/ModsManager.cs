@@ -81,7 +81,7 @@ public class ModsManager
         LoadFunctions("FurnitureFunctions.cs", "Furniture");
         LoadFunctions("CommandFunctions.cs", "DevConsole");
 
-        // We only allowing settings menu to be C# due to class requirements
+        // We are only allowing the settings menu to be in C# due to class requirements
         LoadFunctions("SettingsMenuFunctions.cs", "SettingsMenu");
 
         LoadPrototypes("Tiles.xml", PrototypeManager.TileType.LoadPrototypes);

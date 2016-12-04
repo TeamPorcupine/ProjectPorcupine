@@ -11,7 +11,8 @@ using System.Collections.Generic;
 
 /// <summary>
 /// Holds the category and its options (and name).
-/// No need to write, only will ever read.
+/// There is no need to implement a write method (to write to an xml document),
+/// since the template will only ever be read from.
 /// </summary>
 public class SettingsCategory : IPrototypable
 {
