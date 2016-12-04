@@ -17,6 +17,7 @@ using Newtonsoft.Json.Linq;
 using ProjectPorcupine.Buildable.Components;
 using ProjectPorcupine.Jobs;
 using ProjectPorcupine.Localization;
+using ProjectPorcupine.OrderActions;
 using ProjectPorcupine.PowerNetwork;
 using UnityEngine;
 
@@ -46,6 +47,8 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
 
     private HashSet<BuildableComponent> components;
 
+    private Dictionary<string, OrderAction> orderActions;
+
     // This is the generic type of object this is, allowing things to interact with it based on it's generic type
     private HashSet<string> typeTags;
 
@@ -59,9 +62,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
 
     // Need to hold the health value.
     private HealthSystem health;
-
-    private List<Inventory> deconstructInventory;
-
+    
     // Did we have power in the last update?
     private bool prevUpdatePowerOn;
     #endregion
@@ -91,6 +92,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         DragType = "single";
         LinksToNeighbour = string.Empty;
         components = new HashSet<BuildableComponent>();
+        orderActions = new Dictionary<string, OrderAction>();
     }
 
     /// <summary>
@@ -113,19 +115,25 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         Rotation = other.Rotation;
         Tint = other.Tint;
         LinksToNeighbour = other.LinksToNeighbour;
-        deconstructInventory = other.deconstructInventory;
         health = other.health;
 
         Parameters = new Parameter(other.Parameters);
         Jobs = new BuildableJobs(this, other.Jobs);
 
-        // don't need to clone here, as all are prototype things (not changing)
+        // add cloned components
         components = new HashSet<BuildableComponent>();
         foreach (BuildableComponent component in other.components)
         {
             components.Add(component.Clone());
         }
 
+        // add cloned order actions
+        orderActions = new Dictionary<string, OrderAction>();
+        foreach (var orderAction in other.orderActions)
+        {
+            orderActions.Add(orderAction.Key, orderAction.Value.Clone());
+        }
+        
         if (other.Animation != null)
         {
             Animation = other.Animation.Clone();
@@ -717,13 +725,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
                 case "DragType":
                     reader.Read();
                     DragType = reader.ReadContentAsString();
-                    break;
-                case "BuildingJob":
-                    ReadXmlBuildingJob(reader);
-                    break;
-                case "DeconstructJob":
-                    ReadXmlDeconstructJob(reader);
-                    break;
+                    break;               
                 case "CanBeBuiltOn":
                     tileTypeBuildPermissions.Add(reader.GetAttribute("tileType"));
                     break;
@@ -780,6 +782,14 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
                     }
 
                     break;
+                case "OrderAction":
+                    OrderAction orderAction = OrderAction.Deserialize(reader);
+                    if (orderAction != null)
+                    {
+                        orderActions[orderAction.Type] = orderAction;
+                    }
+
+                    break;
             }
         }
     }
@@ -791,74 +801,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     public void ReadXmlParams(XmlReader reader)
     {
         Parameters = Parameter.ReadXml(reader);
-    }
-
-    /// <summary>
-    /// Reads the XML building job.
-    /// </summary>
-    /// <param name="reader">The XML reader to read from.</param>
-    public void ReadXmlBuildingJob(XmlReader reader)
-    {
-        float jobTime = float.Parse(reader.GetAttribute("jobTime"));
-        List<RequestedItem> items = new List<RequestedItem>();
-        XmlReader inventoryReader = reader.ReadSubtree();
-
-        while (inventoryReader.Read())
-        {
-            if (inventoryReader.Name == "Inventory")
-            {
-                // Found an inventory requirement, so add it to the list!
-                int amount = int.Parse(inventoryReader.GetAttribute("amount"));
-                items.Add(new RequestedItem(inventoryReader.GetAttribute("type"), amount));
-            }
-        }
-
-        Job job = new Job(
-            null,
-            Type,
-            (theJob) => World.Current.FurnitureManager.ConstructJobCompleted(theJob),
-            jobTime,
-            items.ToArray(),
-            Job.JobPriority.High);
-        job.Description = "job_build_" + Type + "_desc";
-
-        PrototypeManager.FurnitureConstructJob.Set(job);
-    }
-
-    /// <summary>
-    /// Reads the XML building job.
-    /// </summary>
-    /// <param name="reader">The XML reader to read from.</param>
-    public void ReadXmlDeconstructJob(XmlReader reader)
-    {
-        float jobTime = 0;
-        float.TryParse(reader.GetAttribute("jobTime"), out jobTime);
-        deconstructInventory = new List<Inventory>();
-        XmlReader inventoryReader = reader.ReadSubtree();
-
-        while (inventoryReader.Read())
-        {
-            if (inventoryReader.Name == "Inventory")
-            {
-                // Found an inventory requirement, so add it to the list!
-                deconstructInventory.Add(new Inventory(
-                    inventoryReader.GetAttribute("type"),
-                    int.Parse(inventoryReader.GetAttribute("amount"))));
-            }
-        }
-
-        Job job = new Job(
-            null,
-            Type,
-            null,
-            jobTime,
-            null,
-            Job.JobPriority.High);
-        job.Description = "job_deconstruct_" + Type + "_desc";
-        job.adjacent = true;
-
-        PrototypeManager.FurnitureDeconstructJob.Set(job);
-    }
+    }    
     #endregion
 
     public object ToJSon()
@@ -930,11 +873,13 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         IsBeingDestroyed = true;
         Jobs.CancelAll();
 
-        Job job = PrototypeManager.FurnitureDeconstructJob.Get(Type).Clone();
-        job.tile = Tile;
-        job.OnJobCompleted += (inJob) => Deconstruct();
-
-        World.Current.jobQueue.Enqueue(job);
+        Deconstruct deconstructOrder = GetOrderAction<Deconstruct>();
+        if (deconstructOrder != null)
+        {
+            Job job = deconstructOrder.CreateJob(Tile, Type);
+            job.OnJobCompleted += (inJob) => Deconstruct();
+            World.Current.jobQueue.Enqueue(job);
+        }        
     }
 
     /// <summary>
@@ -967,12 +912,12 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
 
         Tile.UnplaceFurniture();
 
-        if (deconstructInventory != null)
+        Deconstruct deconstructOrder = GetOrderAction<Deconstruct>();
+        if (deconstructOrder != null)
         {
-            foreach (Inventory inv in deconstructInventory)
+            foreach (OrderAction.InventoryInfo inv in deconstructOrder.Inventory)
             {
-                inv.MaxStackSize = PrototypeManager.Inventory.Get(inv.Type).maxStackSize;
-                World.Current.InventoryManager.PlaceInventoryAround(Tile, inv.Clone());
+                World.Current.InventoryManager.PlaceInventoryAround(Tile, new Inventory(inv.Type, inv.Amount));               
             }
         }
 
@@ -1121,6 +1066,20 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
 
         return null;
     }
+
+    public T GetOrderAction<T>() where T : OrderAction
+    {
+        OrderAction orderAction;
+        if (orderActions.TryGetValue(typeof(T).Name, out orderAction))
+        {
+            return (T)orderAction;
+        }
+        else
+        {
+            return null;
+        }
+    }
+    
     #endregion
 
     #region Context Menu

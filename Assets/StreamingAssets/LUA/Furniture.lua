@@ -652,8 +652,8 @@ function OreMine_CreateMiningJob(furniture, character)
 
     job.Description = "job_ore_mine_mining_desc"
     job.RegisterJobWorkedCallback("OreMine_OreMined")
-    furniture.Jobs.Add(job)
     ModUtils.ULog("Create Mining Job - Mining Job Created")
+	return job
 end
 
 function OreMine_OreMined(job)

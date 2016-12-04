@@ -126,6 +126,7 @@ public class Job : ISelectable, IPrototypable
         this.adjacent = other.adjacent;
         this.Description = other.Description;
         this.acceptsAny = other.acceptsAny;
+        this.OrderName = other.OrderName;
 
         jobWorkedLua = new List<string>(other.jobWorkedLua);
         jobCompletedLua = new List<string>(other.jobWorkedLua);
@@ -163,6 +164,11 @@ public class Job : ISelectable, IPrototypable
     public Dictionary<string, Inventory> DeliveredItems { get; set; }
 
     public string Description { get; set; }
+
+    /// <summary>
+    /// Name of order that created this job. This should prevent multiple same orders on same things if not allowed.
+    /// </summary>
+    public string OrderName { get; set; }
 
     public string Type
     {

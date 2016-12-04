@@ -108,8 +108,7 @@ public class ConstructionMenu : MonoBehaviour
         // of the button to be clicked!
         foreach (string furnitureKey in PrototypeManager.Furniture.Keys)
         {
-            if ((PrototypeManager.Furniture.Get(furnitureKey).HasTypeTag("Non-buildable") && showAllFurniture == false) ||
-                PrototypeManager.Furniture.Get(furnitureKey).IsAbstract)
+            if (PrototypeManager.Furniture.Get(furnitureKey).HasTypeTag("Non-buildable") && showAllFurniture == false)
             {
                 continue;
             }

@@ -6,8 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
-using System.Collections.Generic;
-using ProjectPorcupine.Jobs;
+using System.Text;
 using UnityEngine;
 
 public class CursorInfoDisplay
@@ -48,7 +47,8 @@ public class CursorInfoDisplay
         for (int i = 0; i < mc.GetDragObjects().Count; i++)
         {
             Tile t1 = GetTileUnderDrag(mc.GetDragObjects()[i].transform.position);
-            if (World.Current.FurnitureManager.IsPlacementValid(bmc.buildModeType, t1) && t1.PendingBuildJobs == null)
+            if (World.Current.FurnitureManager.IsPlacementValid(bmc.buildModeType, t1) &&
+               (t1.PendingBuildJobs == null || (t1.PendingBuildJobs != null && t1.PendingBuildJobs.Count == 0)))
             {
                 validPostionCount++;
             }
@@ -72,18 +72,21 @@ public class CursorInfoDisplay
     public string GetCurrentBuildRequirements()
     {
         string temp = string.Empty;
-        Dictionary<string, RequestedItem> items = PrototypeManager.FurnitureConstructJob.Get(bmc.buildModeType).RequestedItems;
-        foreach (RequestedItem item in items.Values)
+        ProjectPorcupine.OrderActions.Build buildOrder = PrototypeManager.Furniture.Get(bmc.buildModeType).GetOrderAction<ProjectPorcupine.OrderActions.Build>();
+        if (buildOrder != null)
         {
-            string requiredMaterialCount = (item.MinAmountRequested * validPostionCount).ToString();
-            if (items.Count > 1)
+            StringBuilder sb = new StringBuilder();
+            foreach (var item in buildOrder.Inventory)
             {
-                return temp += requiredMaterialCount + " " + item.Type + "\n";
+                string requiredMaterialCount = (item.Amount * validPostionCount).ToString();
+                sb.Append(string.Format("{0}x {1}", requiredMaterialCount, item.Type)); // TODO: LocalizationTable.GetLocalization(item.Type))
+                if (buildOrder.Inventory.Count > 1)
+                {
+                    sb.AppendLine();
+                }
             }
-            else
-            {
-                return temp += requiredMaterialCount + " " + item.Type;
-            }
+
+            return sb.ToString();
         }
 
         return "furnitureJobPrototypes is null";

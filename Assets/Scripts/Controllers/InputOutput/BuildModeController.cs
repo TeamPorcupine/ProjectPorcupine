@@ -8,6 +8,7 @@
 #endregion
 using System.Collections.Generic;
 using System.Linq;
+using ProjectPorcupine.OrderActions;
 using ProjectPorcupine.Rooms;
 
 public enum BuildMode
@@ -150,13 +151,13 @@ public class BuildModeController
                 // Create a job for it to be build
                 Job job;
 
-                if (PrototypeManager.FurnitureConstructJob.Has(furnitureType))
+                Furniture toBuildProto = PrototypeManager.Furniture.Get(furnitureType);
+                OrderAction orderAction = toBuildProto.GetOrderAction<Build>();
+                if (orderAction != null)
                 {
-                    // Make a clone of the job prototype
-                    job = PrototypeManager.FurnitureConstructJob.Get(furnitureType).Clone();
-
-                    // Assign the correct tile.
-                    job.tile = tile;
+                    job = orderAction.CreateJob(tile, furnitureType);
+                    //// this is here so OrderAction can be used for utility as well as furniture
+                    job.OnJobCompleted += (theJob) => World.Current.FurnitureManager.ConstructJobCompleted(theJob);
                 }
                 else
                 {
@@ -227,13 +228,13 @@ public class BuildModeController
                 // Create a job for it to be build
                 Job job;
 
-                if (PrototypeManager.UtilityConstructJob.Has(utilityType))
+                Utility toBuildProto = PrototypeManager.Utility.Get(utilityType);
+                OrderAction orderAction = toBuildProto.GetOrderAction<Build>();
+                if (orderAction != null)
                 {
-                    // Make a clone of the job prototype
-                    job = PrototypeManager.UtilityConstructJob.Get(utilityType).Clone();
-
-                    // Assign the correct tile.
-                    job.tile = tile;
+                    job = orderAction.CreateJob(tile, utilityType);
+                    //// this is here so OrderAction can be used for utility as well as furniture
+                    job.OnJobCompleted += (theJob) => World.Current.UtilityManager.ConstructJobCompleted(theJob);
                 }
                 else
                 {
@@ -318,17 +319,25 @@ public class BuildModeController
         }
         else if (buildMode == BuildMode.MINE)
         {
-            // TODO: need to also check whether it was already marked for mining (will come with some smart JobManager)
-            if (tile.Furniture != null && tile.Furniture.Type == "astro_wall")
+            if (tile.Furniture != null)
             {
-                // check if this is a WALL neighbouring a pressured and pressureless environment, and if so, bail
-                if (IsTilePartOfPressuredRoom(tile))
+                Job existingMineJob;
+                bool hasMineJob = tile.Furniture.Jobs.HasJobWithPredicate(x => x.OrderName == typeof(Mine).Name, out existingMineJob);
+                if (!hasMineJob)
                 {
-                    return;
-                }
+                    OrderAction mineAction = tile.Furniture.GetOrderAction<Mine>();
+                    if (mineAction != null)
+                    {
+                        // check if this is a WALL neighbouring a pressured and pressureless environment, and if so, bail
+                        if (IsTilePartOfPressuredRoom(tile))
+                        {
+                            return;
+                        }
 
-                // TODO: hack - trigger LUA function here, need system to couple OrderActions -> Actions(), as a core system with possible override
-                FunctionsManager.Furniture.Call("OreMine_CreateMiningJob", tile.Furniture, null);
+                        Job job = mineAction.CreateJob(tile, null);
+                        tile.Furniture.Jobs.Add(job);
+                    }
+                }
             }
         }
         else
