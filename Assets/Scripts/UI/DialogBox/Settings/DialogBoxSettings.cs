@@ -176,7 +176,7 @@ public class DialogBoxSettings : DialogBox
         resolutionDropdown.AddOptions(options);
     }
 
-    private class ResolutionOption : Dropdown.OptionData
+    public class ResolutionOption : Dropdown.OptionData
     {
         public Resolution Resolution { get; set; }
     }

@@ -1,5 +1,7 @@
 ﻿using System.Collections;
+using System.Linq;
 using DeveloperConsole;
+using ProjectPorcupine.Localization;
 using UnityEngine.UI;
 using UnityEngine;
 
@@ -42,6 +44,31 @@ public static class SettingsMenuFunctions
     {
         return new SoundSlider();
     }
+
+    public static LocalizationComboBox GetLocalizationComboBox()
+    {
+        return new LocalizationComboBox();
+    }
+
+    public static QualityComboBox GetQualityComboBox()
+    {
+        return new QualityComboBox();
+    }
+
+    public static ResolutionComboBox GetResolutionComboBox()
+    {
+        return new ResolutionComboBox();
+    }
+
+    public static FullScreenToggle GetFullScreenToggle()
+    {
+        return new FullScreenToggle();
+    }
+
+    public static AutosaveIntervalNumberField GetAutosaveIntervalNumberField()
+    {
+        return new AutosaveIntervalNumberField();
+    }
 }
 
 /// <summary>
@@ -49,6 +76,7 @@ public static class SettingsMenuFunctions
 /// </summary>
 public class GenericToggle : BaseSettingsElement
 {
+    protected bool isOn;
     protected Toggle toggleElement;
 
     public override GameObject InitializeElement()
@@ -61,6 +89,11 @@ public class GenericToggle : BaseSettingsElement
         toggleElement = CreateToggle();
         toggleElement.transform.SetParent(element.transform);
         toggleElement.isOn = getValue();
+        toggleElement.onValueChanged.AddListener(
+            (bool v) =>
+            {
+                isOn = v;
+            });
 
         LayoutElement layout = toggleElement.gameObject.AddComponent<LayoutElement>();
         layout.ignoreLayout = true;
@@ -166,6 +199,201 @@ public class GenericSlider : BaseSettingsElement
     }
 }
 
+// This class is just to help you create your own dropdown class
+private class GenericComboBox : BaseSettingsElement
+{
+    protected Dropdown dropdownElement;
+
+    public GameObject DropdownHelperFromText(string[] options, int value)
+    {
+        // Note this is just from playing around and finding a nice value
+        GameObject element = GetHorizontalBaseElement("Dropdown", 200, 40, TextAnchor.MiddleCenter, 0);
+
+        dropdownElement = CreateDropdownFromText(options, value);
+        dropdownElement.transform.SetParent(element.transform);
+
+        return element;
+    }
+
+    public GameObject DropdownHelperFromOptionData(Dropdown.OptionData[] options, int value)
+    {
+        // Note this is just from playing around and finding a nice value
+        GameObject element = GetHorizontalBaseElement("Dropdown", 200, 40, TextAnchor.MiddleCenter, 0);
+
+        dropdownElement = CreateDropdownFromOptionData(options, value);
+        dropdownElement.transform.SetParent(element.transform);
+
+        return element;
+    }
+
+    public GameObject DropdownHelperEmpty()
+    {
+        // Note this is just from playing around and finding a nice value
+        GameObject element = GetHorizontalBaseElement("Dropdown", 200, 40, TextAnchor.MiddleCenter, 0);
+
+        dropdownElement = CreateEmptyDropdown();
+        dropdownElement.transform.SetParent(element.transform);
+
+        return element;
+    }
+
+    public override GameObject InitializeElement()
+    {
+        return GetHorizontalBaseElement("Dropdown", 200, 40, TextAnchor.MiddleCenter, 0);
+    }
+
+    public override void SaveElement()
+    {
+        Settings.SetSetting(option.key, dropdownElement.value);
+    }
+
+    public int getValue()
+    {
+        int v = 0;
+        int.TryParse(option.defaultValue, out v);
+
+        return Settings.GetSetting(option.key, v);
+    }
+}
+
+public class LocalizationComboBox : GenericComboBox
+{
+    private int selectedValue;
+
+    public override GameObject InitializeElement()
+    {
+        GameObject go = DropdownHelperEmpty();
+        dropdownElement.gameObject.AddComponent<LanguageDropdownUpdater>();
+        dropdownElement.onValueChanged.AddListener(
+            (int v) =>
+            {
+                selectedValue = v;
+            });
+        dropdownElement.value = getValue();
+
+        return go;
+    }
+
+    public override void ApplySave()
+    {
+        LocalizationTable.SetLocalization(selectedValue);
+    }
+
+    public override void SaveElement()
+    {
+        Settings.SetSetting(option.key, LocalizationTable.GetLanguages()[dropdownElement.value]);
+    }
+
+    public int getValue()
+    {
+        // Tbh this never gets called (like legit never) or rather ever gets used
+        // But this is here cause if you ever need to call it for some reason it can come as a number or a string...
+        // So this handles both
+        string lang = Settings.GetSetting<string>(option.key, option.defaultValue).Replace("en_US", "English (US)");
+        int value = -1;
+
+        if (int.TryParse(lang, out value) == false)
+        {
+            value = dropdownElement.options.FindIndex(x => x.text == lang);
+        }
+
+        return (value >= 0) ? value : 0;
+    }
+}
+
+public class QualityComboBox : GenericComboBox
+{
+    private int count;
+    private int selectedValue;
+
+    public override GameObject InitializeElement()
+    {
+        GameObject go = DropdownHelperFromText(new string[] { "Low", "Med", "High" }, getValue());
+
+        dropdownElement.onValueChanged.AddListener(
+        (int v) =>
+        {
+            selectedValue = v;
+        });
+
+        count = dropdownElement.options.Count;
+
+        return go;
+    }
+
+    public override void ApplySave()
+    {
+        // Copied from DialogBoxSettings
+        // MasterTextureLimit should get 0 for High quality and higher values for lower qualities.
+        // For example count is 3 (0:Low, 1:Med, 2:High).
+        // For High: count - 1 - value  =  3 - 1 - 2  =  0  (therefore no limit = high quality).
+        // For Med:  count - 1 - value  =  3 - 1 - 1  =  1  (therefore a slight limit = medium quality).
+        // For Low:  count - 1 - value  =  3 - 1 - 0  =  1  (therefore more limit = low quality).
+        QualitySettings.masterTextureLimit = count - 1 - selectedValue;
+    }
+}
+
+public class ResolutionComboBox : GenericComboBox
+{
+    private ResolutionOption selectedValue;
+
+    private class ResolutionOption : Dropdown.OptionData
+    {
+        public Resolution Resolution { get; set; }
+    }
+
+    public override GameObject InitializeElement()
+    {
+        GameObject go = DropdownHelperFromOptionData(CreateResolutionDropdown(), getValue());
+        dropdownElement.onValueChanged.AddListener(
+        (int v) =>
+        {
+            selectedValue = (ResolutionOption)dropdownElement.options[v];
+        });
+
+        return go;
+    }
+
+    /// <summary>
+    /// Create the differents option for the resolution dropdown.
+    /// </summary>
+    private Dropdown.OptionData[] CreateResolutionDropdown()
+    {
+        Dropdown.OptionData[] options = new Dropdown.OptionData[Screen.resolutions.Length];
+        options[0] = new ResolutionOption
+        {
+            text = string.Format(
+                "{0} x {1} @ {2}",
+                Screen.currentResolution.width,
+                Screen.currentResolution.height,
+                Screen.currentResolution.refreshRate),
+            Resolution = Screen.currentResolution
+        };
+
+        for (int i = 0; i < Screen.resolutions.Length; i++)
+        {
+            options[i + 1] = new ResolutionOption
+            {
+                text = string.Format(
+                    "{0} x {1} @ {2}",
+                    Screen.resolutions[i].width,
+                    Screen.resolutions[i].height,
+                    Screen.resolutions[i].refreshRate),
+                Resolution = Screen.resolutions[i]
+            };
+        }
+
+        return options;
+    }
+
+    public override void ApplySave()
+    {
+        // Copied from DialogBoxSettings
+        Resolution resolution = selectedValue.Resolution;
+        Screen.SetResolution(resolution.width, resolution.height, Settings.GetSetting("fullScreenToggle", true), resolution.refreshRate);
+    }
+}
+
 public class SoundSlider : GenericSlider
 {
     public override GameObject InitializeElement()
@@ -178,6 +406,14 @@ public class SoundSlider : GenericSlider
         sliderElement.onValueChanged.Invoke(sliderElement.value);
 
         return go;
+    }
+}
+
+public class FullScreenToggle : GenericToggle
+{
+    public override void ApplySave()
+    {
+        Screen.fullScreen = isOn;
     }
 }
 
@@ -243,5 +479,16 @@ public class AutosaveNumberField : GenericInputField
         }
 
         return output;
+    }
+}
+
+public class AutosaveIntervalNumberField : AutosaveNumberField
+{
+    public override void ApplySave()
+    {
+        if (WorldController.Instance != null)
+        {
+            WorldController.Instance.autosaveManager.SetAutosaveInterval(int.Parse(fieldElement.text));
+        }
     }
 }

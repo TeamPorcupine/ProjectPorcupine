@@ -6,6 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -123,24 +124,42 @@ public class SettingsMenu : MonoBehaviour
                 }
             }
         }
-
-        TextScaling.ScaleAllTexts();
     }
 
+    // This singular function is enough evidence to convince someone who doesn't believe in climate change
+    // That we should have optimisation here (most likely in the source of a 'changes' made tracker
     public void SaveAndApply()
     {
-        foreach (string headingName in instance.options[instance.currentCategory].Keys)
+        foreach (string headingName in options[instance.currentCategory].Keys)
         {
-            for (int i = 0; i < instance.options[instance.currentCategory][headingName].Length; i++)
+            for (int i = 0; i < options[currentCategory][headingName].Length; i++)
             {
-                if (instance.options[instance.currentCategory][headingName][i] != null)
+                if (options[currentCategory][headingName][i] != null)
                 {
-                    instance.options[instance.currentCategory][headingName][i].SaveElement();
+                    options[currentCategory][headingName][i].SaveElement();
                 }
             }
         }
 
         Settings.SaveSettings();
+
+        foreach (string categoryName in options.Keys)
+        {
+            foreach (string headingName in options[categoryName].Keys)
+            {
+                for (int i = 0; i < options[categoryName][headingName].Length; i++)
+                {
+                    if (options[categoryName][headingName][i] != null)
+                    {
+                        options[categoryName][headingName][i].ApplySave();
+                    }
+                }
+            }
+        }
+
+        GameController.Instance.IsModal = false;
+        GameController.Instance.soundController.OnButtonSFX();
+        mainRoot.SetActive(false);
     }
 
     public void Cancel()
@@ -193,7 +212,7 @@ public class SettingsMenu : MonoBehaviour
     /// </summary>
     public void ResetAll()
     {
-        foreach (string headingName in instance.options[instance.currentCategory].Keys)
+        foreach (string headingName in options.Keys)
         {
             BaseSettingsElement[] values = options[headingName].Values.SelectMany(x => x).ToArray();
 
@@ -219,6 +238,18 @@ public class SettingsMenu : MonoBehaviour
     // Use this for initialization
     private void Start()
     {
+        // This just makes sure that the localisation is done
+        // It won't always work,
+        // especially if slow internet so cross fingers lol, since there is no 'localization finished thing'
+        StartCoroutine(LateStart());
+    }
+
+    private IEnumerator LateStart()
+    {
+        yield return new WaitForEndOfFrame();
+
+        Debug.LogWarning("Started");
+
         LoadCategories();
 
         if (options.Count > 0)
@@ -229,6 +260,8 @@ public class SettingsMenu : MonoBehaviour
         {
             DisplayCategory("No Settings Loaded");
         }
+
+        yield return null;
     }
 
     private void Update()

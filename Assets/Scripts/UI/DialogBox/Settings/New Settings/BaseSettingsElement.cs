@@ -6,6 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -26,6 +27,13 @@ public abstract class BaseSettingsElement
     /// Pass it back basically.
     /// </summary>
     public abstract GameObject InitializeElement();
+
+    /// <summary>
+    /// Call anything that needs to be called, will only call on scripts that have told us that they have changed.
+    /// </summary>
+    public virtual void ApplySave()
+    {
+    }
 
     protected GameObject GetFluidHorizontalBaseElement(string elementTitle = "", bool stretchX = false, bool stretchY = false, TextAnchor alignment = TextAnchor.MiddleCenter, int spacing = 10)
     {
@@ -144,8 +152,26 @@ public abstract class BaseSettingsElement
         return slider;
     }
 
-    protected Dropdown CreateComboBox()
+    protected Dropdown CreateEmptyDropdown()
     {
         return GameObject.Instantiate(Resources.Load<GameObject>("UI/SettingsMenu/SettingsDropdown")).GetComponent<Dropdown>();
+    }
+
+    protected Dropdown CreateDropdownFromText(string[] textOptions, int value)
+    {
+        Dropdown dropdown = GameObject.Instantiate(Resources.Load<GameObject>("UI/SettingsMenu/SettingsDropdown")).GetComponent<Dropdown>();
+        dropdown.AddOptions(textOptions.ToList());
+        dropdown.value = value;
+
+        return dropdown;
+    }
+
+    protected Dropdown CreateDropdownFromOptionData(Dropdown.OptionData[] optionDataOptions, int value)
+    {
+        Dropdown dropdown = GameObject.Instantiate(Resources.Load<GameObject>("UI/SettingsMenu/SettingsDropdown")).GetComponent<Dropdown>();
+        dropdown.AddOptions(optionDataOptions.ToList());
+        dropdown.value = value;
+
+        return dropdown;
     }
 }

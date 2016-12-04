@@ -18,6 +18,11 @@ public class LanguageDropdownUpdater : MonoBehaviour
         LocalizationTable.CBLocalizationFilesChanged += UpdateLanguageDropdown;
     }
 
+    private void OnDestroy()
+    {
+        LocalizationTable.CBLocalizationFilesChanged -= UpdateLanguageDropdown;
+    }
+
     private void UpdateLanguageDropdown()
     {
         Dropdown dropdown = GetComponent<Dropdown>();
@@ -40,6 +45,8 @@ public class LanguageDropdownUpdater : MonoBehaviour
                 dropdown.value = i;
             }
         }
+
+        Debug.LogWarning(dropdown.value + "DJD");
 
         // Set scroll sensitivity based on the save-item count.
         dropdown.template.GetComponent<ScrollRect>().scrollSensitivity = dropdown.options.Count / 3;
