@@ -8,6 +8,7 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
 using Newtonsoft.Json;
@@ -22,7 +23,9 @@ namespace ProjectPorcupine.Buildable.Components
     [BuildableComponentName("PowerConnection")]
     [MoonSharpUserData]
     public class PowerConnection : BuildableComponent, IPlugable
-    {       
+    {
+        private const string Medium = "Power";
+
         public PowerConnection()
         {
         }
@@ -31,12 +34,8 @@ namespace ProjectPorcupine.Buildable.Components
         {
             ParamsDefinitions = other.ParamsDefinitions;
             Provides = other.Provides;
-            Requires = other.Requires;
-
-            Reconnecting += OnReconnecting;
+            Requires = other.Requires;            
         }
-
-        public event Action Reconnecting;
 
         [XmlElement("ParameterDefinitions")]
         [JsonProperty("ParameterDefinitions")]
@@ -141,6 +140,14 @@ namespace ProjectPorcupine.Buildable.Components
             get { return IsAccumulator ? Provides.Capacity : 0f; }
         }
 
+        string IPlugable.Medium
+        {
+            get
+            {
+                return Medium;
+            }
+        }
+
         public override BuildableComponent Clone()
         {
             return new PowerConnection(this);
@@ -197,9 +204,13 @@ namespace ProjectPorcupine.Buildable.Components
 
         public void Reconnect()
         {
-            if (Reconnecting != null)
+            IEnumerable<Utility> powerUtilities = Furniture.GetFurnitureTiles(ParentFurniture.Tile, ParentFurniture)
+                .SelectMany(x => x.Utilities.Values)
+                .Where(tg => tg.HasTypeTag("Power"));
+
+            foreach (Utility util in powerUtilities)
             {
-                Reconnecting();
+                util.Grid.PlugIn(this);
             }
         }
 
@@ -227,7 +238,7 @@ namespace ProjectPorcupine.Buildable.Components
 
             IsRunning = false;
 
-            OnReconnecting();
+            Reconnect();
 
             ParentFurniture.Removed += PowerConnectionRemoved;           
         }
@@ -236,14 +247,6 @@ namespace ProjectPorcupine.Buildable.Components
         {
             World.Current.PowerNetwork.Unplug(this);
             ParentFurniture.Removed -= PowerConnectionRemoved;
-        }
-
-        private void OnReconnecting()
-        {
-            foreach (Utility util in ParentFurniture.Tile.Utilities.Values)
-            {
-                util.Grid.PlugIn(this);
-            }
         }
 
         [Serializable]

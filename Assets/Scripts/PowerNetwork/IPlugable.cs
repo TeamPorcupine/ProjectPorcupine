@@ -13,7 +13,7 @@ namespace ProjectPorcupine.PowerNetwork
 {
     public interface IPlugable
     {
-        event Action Reconnecting;
+        string Medium { get; }
 
         float InputRate { get; }
 

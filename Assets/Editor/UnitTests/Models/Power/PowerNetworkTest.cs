@@ -122,8 +122,6 @@ public class PowerNetworkTest
 
     private class MockConnection : IPlugable
     {
-        public event Action Reconnecting;
-
         public float AccumulatedAmount { get; set; }
 
         public float AccumulatorCapacity { get; set; }
@@ -156,6 +154,14 @@ public class PowerNetworkTest
         }
 
         public float OutputRate { get; set; }
+
+        public string Medium
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
 
         public void Reconnect()
         {
