@@ -21,12 +21,6 @@
 // Modified and stripped for use in Project Porcupine
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-
 namespace DiffMatchPatch
 {
     public class Diff

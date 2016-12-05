@@ -18,7 +18,6 @@ using DiffMatchPatch;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
 
 using UnityEngine;
 using UnityEngine.Networking;
@@ -46,7 +45,7 @@ namespace ProjectPorcupine.Localization
 
         private static readonly string ConfigPath = Path.Combine(LocalizationFolderPath, LocalizationConfigName);
 
-        public static IEnumerator UpdateLocalization(System.Action onLocalizationDownloadedCallback)
+        public static IEnumerator UpdateLocalization(System.Action onFinished)
         {
             if (!File.Exists(ConfigPath))
             {
@@ -58,6 +57,8 @@ namespace ProjectPorcupine.Localization
                 // Check if we have any updates to the localization
                 yield return GetChangesSinceDate();
             }
+
+            onFinished();
         }
 
         /// <summary>
@@ -83,6 +84,7 @@ namespace ProjectPorcupine.Localization
                 }
             }
 
+            reader.Close();
             return translations;
         }
         
@@ -288,6 +290,10 @@ namespace ProjectPorcupine.Localization
                             Debug.ULogChannel("LocalizationDownloader", "Adding the file " + file.Filename + " to the localization.");
                             
                             DownloadLocalization(new string[] { file.Filename }, hash);
+                            break;
+                        
+                        case "renamed":
+                            Debug.ULogErrorChannel("LocalizationDownloader", "Error, we tried to rename the file " + file.Filename + " but that isn't supported yet!");
                             break;
 
                         default:
