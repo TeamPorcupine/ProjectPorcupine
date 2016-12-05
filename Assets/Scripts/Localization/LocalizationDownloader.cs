@@ -252,7 +252,7 @@ namespace ProjectPorcupine.Localization
                 {
                     string path = Path.Combine(LocalizationFolderPath, file.Filename);
                     
-                    switch (file.status)
+                    switch (file.Status)
                     {
                         case "removed":
                             Debug.ULogChannel("LocalizationDownloader", "Removing the file " + file.Filename + "from the localization.");
@@ -294,7 +294,7 @@ namespace ProjectPorcupine.Localization
 
                         default:
                             string error  = "Error while parsing Github commit: " + hash + 
-                                                   ". The file " + file.Filename + " has an unkown status of " + file.status + ".";
+                                                   ". The file " + file.Filename + " has an unkown status of " + file.Status + ".";
                             Debug.ULogErrorChannel("LocalizationDownloader", error);
                             yield break;
                     }
