@@ -34,8 +34,12 @@ namespace ProjectPorcupine.Buildable.Components
         {
             ParamsDefinitions = other.ParamsDefinitions;
             Provides = other.Provides;
-            Requires = other.Requires;            
+            Requires = other.Requires;
+
+            Reconnecting += OnReconnecting;
         }
+
+        public event Action Reconnecting;
 
         [XmlElement("ParameterDefinitions")]
         [JsonProperty("ParameterDefinitions")]
@@ -204,13 +208,9 @@ namespace ProjectPorcupine.Buildable.Components
 
         public void Reconnect()
         {
-            IEnumerable<Utility> powerUtilities = Furniture.GetFurnitureTiles(ParentFurniture.Tile, ParentFurniture)
-                .SelectMany(x => x.Utilities.Values)
-                .Where(tg => tg.HasTypeTag("Power"));
-
-            foreach (Utility util in powerUtilities)
+            if (Reconnecting != null)
             {
-                util.Grid.PlugIn(this);
+                Reconnecting();
             }
         }
 
@@ -238,7 +238,7 @@ namespace ProjectPorcupine.Buildable.Components
 
             IsRunning = false;
 
-            Reconnect();
+            OnReconnecting();
 
             ParentFurniture.Removed += PowerConnectionRemoved;           
         }
@@ -247,6 +247,18 @@ namespace ProjectPorcupine.Buildable.Components
         {
             World.Current.PowerNetwork.Unplug(this);
             ParentFurniture.Removed -= PowerConnectionRemoved;
+        }
+
+        private void OnReconnecting()
+        {         
+            IEnumerable<Utility> powerUtilities = Furniture.GetFurnitureTiles(ParentFurniture.Tile, ParentFurniture)
+                .SelectMany(x => x.Utilities.Values)
+                .Where(tg => tg.HasTypeTag(Medium));
+
+            foreach (Utility util in powerUtilities)
+            {
+                util.Grid.PlugIn(this);
+            }
         }
 
         [Serializable]

@@ -295,6 +295,8 @@ public class PowerGridTest
 
     private class MockConnection : IPlugable
     {
+        public event Action Reconnecting;
+
         public float AccumulatedAmount { get; set; }
 
         public float AccumulatorCapacity { get; set; }
