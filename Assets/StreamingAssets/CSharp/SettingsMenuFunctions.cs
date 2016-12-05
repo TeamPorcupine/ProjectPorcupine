@@ -116,7 +116,7 @@ public class GenericToggle : BaseSettingsElement
 
     public override void SaveElement()
     {
-        Settings.SetSetting(option.key, toggleElement.isOn);
+        Settings.SetSetting(option.key, isOn);
     }
 
     public bool getValue()
@@ -163,7 +163,7 @@ public class GenericInputField : BaseSettingsElement
 
     public override void SaveElement()
     {
-        Settings.SetSetting(option.key, fieldElement.text);
+        Settings.SetSetting(option.key, value);
     }
 
     public string getValue()
@@ -216,7 +216,7 @@ public class GenericSlider : BaseSettingsElement
 
     public override void SaveElement()
     {
-        Settings.SetSetting(option.key, sliderElement.value);
+        Settings.SetSetting(option.key, value);
     }
 
     public float getValue()
@@ -274,7 +274,7 @@ private class GenericComboBox : BaseSettingsElement
 
     public override void SaveElement()
     {
-        Settings.SetSetting(option.key, dropdownElement.value);
+        Settings.SetSetting(option.key, selectedValue);
     }
 
     public int getValue()
@@ -306,14 +306,10 @@ public class LocalizationComboBox : GenericComboBox
         return go;
     }
 
-    public override void ApplySave()
-    {
-        LocalizationTable.SetLocalization(selectedValue);
-    }
-
     public override void SaveElement()
     {
-        Settings.SetSetting(option.key, LocalizationTable.GetLanguages()[dropdownElement.value]);
+        Settings.SetSetting(option.key, LocalizationTable.GetLanguages()[selectedValue]);
+        LocalizationTable.SetLocalization(selectedValue);
     }
 
     public int getValue()
@@ -356,8 +352,9 @@ public class QualityComboBox : GenericComboBox
         return go;
     }
 
-    public override void ApplySave()
+    public override void SaveElement()
     {
+        base.SaveElement();
         // Copied from DialogBoxSettings
         // MasterTextureLimit should get 0 for High quality and higher values for lower qualities.
         // For example count is 3 (0:Low, 1:Med, 2:High).
@@ -427,8 +424,9 @@ public class ResolutionComboBox : GenericComboBox
         return options;
     }
 
-    public override void ApplySave()
+    public override void SaveElement()
     {
+        base.SaveElement();
         // Copied from DialogBoxSettings
         Resolution resolution = selectedOption.Resolution;
         Screen.SetResolution(resolution.width, resolution.height, Settings.GetSetting("fullScreenToggle", true), resolution.refreshRate);
@@ -463,8 +461,9 @@ public class SoundSlider : GenericSlider
 
 public class FullScreenToggle : GenericToggle
 {
-    public override void ApplySave()
+    public override void SaveElement()
     {
+        base.SaveElement();
         Screen.fullScreen = isOn;
     }
 }
@@ -536,11 +535,12 @@ public class AutosaveNumberField : GenericInputField
 
 public class AutosaveIntervalNumberField : AutosaveNumberField
 {
-    public override void ApplySave()
+    public override void SaveElement()
     {
+        base.SaveElement();
         if (WorldController.Instance != null)
         {
-            WorldController.Instance.autosaveManager.SetAutosaveInterval(int.Parse(fieldElement.text));
+            WorldController.Instance.autosaveManager.SetAutosaveInterval(int.Parse(value));
         }
     }
 }

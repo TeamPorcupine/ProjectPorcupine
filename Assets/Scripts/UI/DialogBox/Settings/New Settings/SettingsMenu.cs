@@ -81,7 +81,6 @@ public class SettingsMenu : MonoBehaviour
 
                     if (elementCopy != null && elementCopy.valueChanged)
                     {
-                        elementCopy.SaveElement();
                         instance.changesTracker.Add(elementCopy);
                     }
                 }
@@ -132,8 +131,12 @@ public class SettingsMenu : MonoBehaviour
 
     public void SaveAndApply()
     {
+        System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
+        watch.Start();
+
         // We only want to gain a set of them that have a flag :D  Aka the ones we saved after each individual save
         // So what we will do is first go through the current category and save them and add them to the array IF they have the flag
+        /*
         if (options.ContainsKey(currentCategory))
         {
             foreach (string headingName in options[currentCategory].Keys)
@@ -145,20 +148,29 @@ public class SettingsMenu : MonoBehaviour
                     if (elementCopy != null && elementCopy.valueChanged)
                     {
                         elementCopy.SaveElement();
-                        changesTracker.Add(elementCopy);
+                        elementCopy.ApplySave();
                     }
                 }
             }
+        }
+        */
+
+        if (options.ContainsKey(currentCategory))
+        {
+            changesTracker.AddRange(options[currentCategory].Values.SelectMany(x => x).Where(x => x != null && x.valueChanged));
         }
 
         Settings.SaveSettings();
 
         for (int i = 0; i < changesTracker.Count; i++)
         {
-            changesTracker[i].ApplySave();
+            changesTracker[i].SaveElement();
         }
 
         changesTracker.Clear();
+
+        watch.Stop();
+        Debug.LogWarning(watch.Elapsed.TotalSeconds);
 
         GameController.Instance.IsModal = false;
         GameController.Instance.soundController.OnButtonSFX();

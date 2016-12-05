@@ -20,7 +20,8 @@ public abstract class BaseSettingsElement
 
     /// <summary>
     /// Do a settings.setValue call to set your value.
-    /// You shouldn't call settings.save() here (that's for the controller to manage).
+    /// Also apply your setting.
+    /// DON'T CALL SETTINGS.SAVE() !!!
     /// </summary>
     public abstract void SaveElement();
 
@@ -29,13 +30,6 @@ public abstract class BaseSettingsElement
     /// Pass it back basically.
     /// </summary>
     public abstract GameObject InitializeElement();
-
-    /// <summary>
-    /// Call anything that needs to be called, will only call on scripts that have told us that they have changed.
-    /// </summary>
-    public virtual void ApplySave()
-    {
-    }
 
     protected GameObject GetFluidHorizontalBaseElement(string elementTitle = "", bool stretchX = false, bool stretchY = false, TextAnchor alignment = TextAnchor.MiddleCenter, int spacing = 10)
     {
