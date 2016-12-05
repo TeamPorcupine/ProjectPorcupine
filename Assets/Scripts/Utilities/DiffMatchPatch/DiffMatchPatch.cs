@@ -118,15 +118,8 @@ namespace DiffMatchPatch
         {
             // Set a deadline by which time the diff must be complete.
             DateTime deadline;
-            if (DiffTimeout <= 0)
-            {
-                deadline = DateTime.MaxValue;
-            }
-            else
-            {
-                deadline = DateTime.Now +
-                new TimeSpan(((long)(DiffTimeout * 1000)) * 10000);
-            }
+            deadline = DateTime.Now +
+            new TimeSpan(((long)(DiffTimeout * 1000)) * 10000);
 
             return DiffMain(text1, text2, checklines, deadline);
         }
