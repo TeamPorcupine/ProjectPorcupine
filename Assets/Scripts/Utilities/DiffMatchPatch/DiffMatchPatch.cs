@@ -946,12 +946,6 @@ namespace DiffMatchPatch
 
         private static string[] DiffHalfMatch(string text1, string text2)
         {
-            if (DiffTimeout <= 0)
-            {
-                // Don't risk returning a non-optimal diff if we have unlimited time.
-                return null;
-            }
-
             string longtext = text1.Length > text2.Length ? text1 : text2;
             string shorttext = text1.Length > text2.Length ? text2 : text1;
             if (longtext.Length < 4 || shorttext.Length * 2 < longtext.Length)
@@ -1678,11 +1672,6 @@ namespace DiffMatchPatch
         {
             float accuracy = (float)e / pattern.Length;
             int proximity = Math.Abs(loc - x);
-            if (MatchDistance == 0)
-            {
-                // Dodge divide by zero error.
-                return proximity == 0 ? accuracy : 1.0;
-            }
 
             return accuracy + (proximity / (float)MatchDistance);
         }

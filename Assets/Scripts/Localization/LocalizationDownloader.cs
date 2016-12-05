@@ -26,21 +26,19 @@ using UnityEngine.Networking;
 namespace ProjectPorcupine.Localization
 {
     /// <summary>
-    /// This class makes sure that your localization is up to date. It does that by comparing latest know commit hash
-    /// (which is stored in Application.streamingAssetsPath/Localization/curr.ver) to the latest hash available through
-    /// GitHub. If the hashes don't match or curr.ver doesn't exist a new zip containing
-    /// localization will be downloaded from GitHub repo. Then, the zip is stored in the memory and waits for
-    /// Application.streamingAssetsPath/Localization to be cleaned. When It's empty the zip gets unpacked and saved
-    /// to hard drive using ICSharpCode.SharpZipLib.Zip library. Every GitHub zip download has a folder with
-    /// *ProjectName*-*BranchName* so all of it's content needs to be moved to Application.streamingAssetsPath/Localization.
-    /// After that the folder get's deleted and new curr.ver file is created containing latest hash.
-    /// GitHub's branch name corresponds to World.current.gameVersion, so that the changes in localization
-    /// for version 0.2 won't affect users who haven't updated yet from version 0.1.
+    /// This class makes sure that your localization is up to date.
+    /// If we haven't ever started the program then it downloads all of the file using rawgit.com's CDN
+    /// then adds the date in ISO 8601 format to config.xml.
+    /// If we have started ProjectPorcupine then it uses the Github API to check for the latest changes.
+    /// If there are changes, then we download the details of the commits, including the changes of each file.
+    /// We then use Google's DiffMatchPatch to change the files, so that we don't need to re-download the file.
     /// </summary>
     public static class LocalizationDownloader
     {
+        // NOTE: Should be moved to the official TeamPorcupine repository.
         private const string LocalizationRepository = "QuiZr/ProjectPorcupineLocalization/";
-        private const string LatestCommitURL = "https://api.github.com/repos/" + LocalizationRepository + "/commits/" + GameController.GameVersion;
+
+        // TODO: Migrate to json or SKON.
         private const string LocalizationConfigName = "config.xml";
 
         // NOTE: StreamingAssetsPath is read-only on android and iOS.
@@ -99,11 +97,6 @@ namespace ProjectPorcupine.Localization
             if (list == null)
             {
                 // Just going to download everything
-                if (File.Exists(ConfigPath))
-                {
-                    File.Delete(ConfigPath);
-                }
-
                 WWW downloadConfig = new WWW("https://cdn.rawgit.com/" + LocalizationRepository + GameController.GameVersion + "/" + LocalizationConfigName);
                 yield return downloadConfig;
                 if (!string.IsNullOrEmpty(downloadConfig.error))
@@ -112,29 +105,34 @@ namespace ProjectPorcupine.Localization
                     yield break;
                 }
 
+                if (File.Exists(ConfigPath))
+                {
+                    File.Delete(ConfigPath);
+                }
+
                 File.WriteAllBytes(ConfigPath, downloadConfig.bytes);
 
                 // Download the translation files.
                 foreach (string locale in GetTranslations())
                 {
                     string path = Path.Combine(LocalizationFolderPath, locale + ".lang");
-                    WWW www = new WWW("https://cdn.rawgit.com/" + LocalizationRepository + GameController.GameVersion + "/" + locale + ".lang");
+                    UnityWebRequest www = UnityWebRequest.Get("https://cdn.rawgit.com/" + LocalizationRepository + GameController.GameVersion + "/" + locale + ".lang");
                     yield return www;
-                    if (File.Exists(path))
-                    {
-                        File.Delete(path);
-                    }
 
-                    if (!string.IsNullOrEmpty(www.error))
+                    if (www.isError)
                     {
                         Debug.ULogErrorChannel("LocalizationDownloader", "Error while downloading locale " + locale + " for the first time. Are you connected to the internet? \n" + www.error);
                         yield break;
                     }
 
-                    File.WriteAllBytes(path, www.bytes);
+                    if (File.Exists(path))
+                    {
+                        File.Delete(path);
+                    }
+
+                    File.WriteAllBytes(path, www.downloadHandler.data);
                 }
 
-                Debug.ULogErrorChannel("LocalizationDownloader", "right here");
                 WriteLocalizationDate();
             }
             else
@@ -161,6 +159,11 @@ namespace ProjectPorcupine.Localization
                     {
                         Debug.ULogErrorChannel("LocalizationDownloader", "Error while downloading file " + file + " using rawgit. Are you sure your connected to the internet? \n" + www.error);
                         yield break;
+                    }
+
+                    if (File.Exists(path))
+                    {
+                        File.Delete(path);
                     }
 
                     File.WriteAllBytes(path, www.downloadHandler.data);
@@ -223,9 +226,6 @@ namespace ProjectPorcupine.Localization
                 yield break;
             }
 
-            // Now parse the json from github.
-            ArrayList files = new ArrayList();
-
             JArray array = JArray.Parse(www.text);
             List<string> hashes = array.Select(o => (string)o["sha"]).ToList();
 
@@ -244,8 +244,6 @@ namespace ProjectPorcupine.Localization
                     Debug.ULogErrorChannel("LocalizationDownloader", "Error while downloading commit " + hash + " using the GitHub API. \n" + wwwHash.error);
                     yield break;
                 }
-
-                Debug.ULogChannel("LocalizationDownloader", "hash downloaded: \n" + wwwHash.downloadHandler.text);
 
                 GithubCommit commit = JsonConvert.DeserializeObject<GithubCommit>(wwwHash.downloadHandler.text);
                 foreach (GithubFile file in commit.Files)
@@ -323,43 +321,43 @@ namespace ProjectPorcupine.Localization
         }
 
         /// <summary>
-        /// Github file.
+        /// A file that was modified in a GitHub commit.
         /// </summary>
         private class GithubFile
         {
             /// <summary>
-            /// Gets or sets the sha.
+            /// The sha of the file, which is just a string of numbers.
             /// </summary>
             public string Sha { get; set; }
 
             /// <summary>
-            /// Gets or sets the filename.
+            /// The name of the file that was modified.
             /// </summary>
             public string Filename { get; set; }
 
             /// <summary>
-            /// Gets or sets the status.
+            /// The status of the modification. ie, Deleted, modified, Added.
             /// </summary>
             public string Status { get; set; }
 
             /// <summary>
-            /// Gets or sets the patch.
+            /// The changes done to the file in the format of an Unix patch file.
             /// </summary>
             public string Patch { get; set; }
         }
 
         /// <summary>
-        /// Github commit.
+        /// Based on the GitHub API version 3's json for fetching a list of commits.
         /// </summary>
         private class GithubCommit
         {
             /// <summary>
-            /// Gets or sets the sha.
+            /// The sha of the commit, which is just a string of numbers.
             /// </summary>
             public string Sha { get; set; }
 
             /// <summary>
-            /// Gets or sets the files.
+            /// The list of files that were changed in the commit.
             /// </summary>
             public GithubFile[] Files { get; set; }
         }
