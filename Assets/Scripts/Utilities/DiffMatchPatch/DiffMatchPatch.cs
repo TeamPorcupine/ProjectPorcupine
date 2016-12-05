@@ -250,7 +250,7 @@ namespace DiffMatchPatch
      * @return Two element Object array, containing the new text and an array of
      *      bool values.
      */
-        public static Object[] PatchApply(List<Patch> patches, string text)
+        public static object[] PatchApply(List<Patch> patches, string text)
         {
             if (patches.Count == 0)
             {
