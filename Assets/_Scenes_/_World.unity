@@ -180,7 +180,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 614d1936f989c6949b68336704b91aa8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dialogBoxManager: {fileID: 0}
+  dialogBoxManager: {fileID: 2020152305}
   inventoryUI: {fileID: 191780, guid: d1e1fcd802f51614595cb99879a132a5, type: 2}
   circleCursorPrefab: {fileID: 110048, guid: 782976062f887844ca858482495fcdbd, type: 2}
 --- !u!4 &179601669

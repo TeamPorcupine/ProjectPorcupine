@@ -88,11 +88,18 @@ public class GenericToggle : BaseSettingsElement
 
         toggleElement = CreateToggle();
         toggleElement.transform.SetParent(element.transform);
-        toggleElement.isOn = getValue();
+
+        isOn = getValue();
+        toggleElement.isOn = isOn;
+
         toggleElement.onValueChanged.AddListener(
             (bool v) =>
             {
-                isOn = v;
+                if (v != isOn)
+                {
+                    valueChanged = true;
+                    isOn = v;
+                }
             });
 
         LayoutElement layout = toggleElement.gameObject.AddComponent<LayoutElement>();
@@ -124,6 +131,7 @@ public class GenericToggle : BaseSettingsElement
 public class GenericInputField : BaseSettingsElement
 {
     protected InputField fieldElement;
+    protected string value;
 
     public override GameObject InitializeElement()
     {
@@ -131,9 +139,20 @@ public class GenericInputField : BaseSettingsElement
 
         CreateText(option.name + ": ", true).transform.SetParent(element.transform);
 
-        fieldElement = CreateInputField(getValue());
+        value = getValue();
+
+        fieldElement = CreateInputField(value);
         fieldElement.transform.SetParent(element.transform);
         fieldElement.textComponent.alignment = TextAnchor.MiddleCenter;
+        fieldElement.onValueChanged.AddListener(
+        (string v) =>
+        {
+            if (v != value)
+            {
+                valueChanged = true;
+                value = v;
+            }
+        });
 
         LayoutElement layout = fieldElement.gameObject.AddComponent<LayoutElement>();
         layout.minWidth = 60;
@@ -158,6 +177,7 @@ public class GenericSlider : BaseSettingsElement
     protected Slider sliderElement;
     protected Text textElement;
     protected string format;
+    protected float value;
 
     public override GameObject InitializeElement()
     {
@@ -171,7 +191,16 @@ public class GenericSlider : BaseSettingsElement
 
         sliderElement = CreateSlider(getValue(), new Vector2(0, 1), false);
         sliderElement.transform.SetParent(element.transform);
-        sliderElement.onValueChanged.AddListener((float value) => { textElement.text = string.Format(format, value); });
+        sliderElement.onValueChanged.AddListener(
+            (float v) =>
+            {
+                if (v != value)
+                {
+                    valueChanged = true;
+                    textElement.text = string.Format(format, v);
+                    value = v;
+                }
+            });
 
         LayoutElement layout = sliderElement.gameObject.AddComponent<LayoutElement>();
         layout.ignoreLayout = true;
@@ -203,6 +232,7 @@ public class GenericSlider : BaseSettingsElement
 private class GenericComboBox : BaseSettingsElement
 {
     protected Dropdown dropdownElement;
+    protected int selectedValue;
 
     public GameObject DropdownHelperFromText(string[] options, int value)
     {
@@ -258,8 +288,6 @@ private class GenericComboBox : BaseSettingsElement
 
 public class LocalizationComboBox : GenericComboBox
 {
-    private int selectedValue;
-
     public override GameObject InitializeElement()
     {
         GameObject go = DropdownHelperEmpty();
@@ -267,7 +295,11 @@ public class LocalizationComboBox : GenericComboBox
         dropdownElement.onValueChanged.AddListener(
             (int v) =>
             {
-                selectedValue = v;
+                if (v != selectedValue)
+                {
+                    valueChanged = true;
+                    selectedValue = v;
+                }
             });
         dropdownElement.value = getValue();
 
@@ -303,8 +335,7 @@ public class LocalizationComboBox : GenericComboBox
 
 public class QualityComboBox : GenericComboBox
 {
-    private int count;
-    private int selectedValue;
+    protected int count;
 
     public override GameObject InitializeElement()
     {
@@ -313,7 +344,11 @@ public class QualityComboBox : GenericComboBox
         dropdownElement.onValueChanged.AddListener(
         (int v) =>
         {
-            selectedValue = v;
+            if (v != selectedValue)
+            {
+                valueChanged = true;
+                selectedValue = v;
+            }
         });
 
         count = dropdownElement.options.Count;
@@ -335,7 +370,7 @@ public class QualityComboBox : GenericComboBox
 
 public class ResolutionComboBox : GenericComboBox
 {
-    private ResolutionOption selectedValue;
+    private ResolutionOption selectedOption;
 
     private class ResolutionOption : Dropdown.OptionData
     {
@@ -344,11 +379,17 @@ public class ResolutionComboBox : GenericComboBox
 
     public override GameObject InitializeElement()
     {
-        GameObject go = DropdownHelperFromOptionData(CreateResolutionDropdown(), getValue());
+        selectedValue = getValue();
+        GameObject go = DropdownHelperFromOptionData(CreateResolutionDropdown(), selectedValue);
         dropdownElement.onValueChanged.AddListener(
         (int v) =>
         {
-            selectedValue = (ResolutionOption)dropdownElement.options[v];
+            if (v != selectedValue)
+            {
+                valueChanged = true;
+                selectedOption = (ResolutionOption)dropdownElement.options[v];
+                selectedValue = v;
+            }
         });
 
         return go;
@@ -389,7 +430,7 @@ public class ResolutionComboBox : GenericComboBox
     public override void ApplySave()
     {
         // Copied from DialogBoxSettings
-        Resolution resolution = selectedValue.Resolution;
+        Resolution resolution = selectedOption.Resolution;
         Screen.SetResolution(resolution.width, resolution.height, Settings.GetSetting("fullScreenToggle", true), resolution.refreshRate);
     }
 }
@@ -401,8 +442,19 @@ public class SoundSlider : GenericSlider
         GameObject go = base.InitializeElement();
 
         // Set it from 0 - 100 (still reflective of 0-1, but shows from 0 - 100)
+
+        // We want to apply our own listener
         sliderElement.onValueChanged.RemoveAllListeners();
-        sliderElement.onValueChanged.AddListener((float value) => { textElement.text = string.Format(format, (int)(value * 100)); });
+        sliderElement.onValueChanged.AddListener(
+            (float v) =>
+            {
+                if (v != value)
+                {
+                    valueChanged = true;
+                    value = v;
+                    textElement.text = string.Format(format, (int)(value * 100));
+                }
+            });
         sliderElement.onValueChanged.Invoke(sliderElement.value);
 
         return go;

@@ -21,6 +21,7 @@ public class SettingsMenu : MonoBehaviour
     private static SettingsMenu instance;
 
     private Dictionary<string, Dictionary<string, BaseSettingsElement[]>> options = new Dictionary<string, Dictionary<string, BaseSettingsElement[]>>();
+    private List<BaseSettingsElement> changesTracker = new List<BaseSettingsElement>();
 
     [SerializeField]
     private GameObject elementRoot;
@@ -76,9 +77,12 @@ public class SettingsMenu : MonoBehaviour
             {
                 for (int i = 0; i < instance.options[instance.currentCategory][headingName].Length; i++)
                 {
-                    if (instance.options[instance.currentCategory][headingName][i] != null)
+                    BaseSettingsElement elementCopy = instance.options[instance.currentCategory][headingName][i];
+
+                    if (elementCopy != null && elementCopy.valueChanged)
                     {
-                        instance.options[instance.currentCategory][headingName][i].SaveElement();
+                        elementCopy.SaveElement();
+                        instance.changesTracker.Add(elementCopy);
                     }
                 }
             }
@@ -126,36 +130,35 @@ public class SettingsMenu : MonoBehaviour
         }
     }
 
-    // This singular function is enough evidence to convince someone who doesn't believe in climate change
-    // That we should have optimisation here (most likely in the source of a 'changes' made tracker
     public void SaveAndApply()
     {
-        foreach (string headingName in options[instance.currentCategory].Keys)
+        // We only want to gain a set of them that have a flag :D  Aka the ones we saved after each individual save
+        // So what we will do is first go through the current category and save them and add them to the array IF they have the flag
+        if (options.ContainsKey(currentCategory))
         {
-            for (int i = 0; i < options[currentCategory][headingName].Length; i++)
+            foreach (string headingName in options[currentCategory].Keys)
             {
-                if (options[currentCategory][headingName][i] != null)
+                for (int i = 0; i < options[currentCategory][headingName].Length; i++)
                 {
-                    options[currentCategory][headingName][i].SaveElement();
+                    BaseSettingsElement elementCopy = options[currentCategory][headingName][i];
+
+                    if (elementCopy != null && elementCopy.valueChanged)
+                    {
+                        elementCopy.SaveElement();
+                        changesTracker.Add(elementCopy);
+                    }
                 }
             }
         }
 
         Settings.SaveSettings();
 
-        foreach (string categoryName in options.Keys)
+        for (int i = 0; i < changesTracker.Count; i++)
         {
-            foreach (string headingName in options[categoryName].Keys)
-            {
-                for (int i = 0; i < options[categoryName][headingName].Length; i++)
-                {
-                    if (options[categoryName][headingName][i] != null)
-                    {
-                        options[categoryName][headingName][i].ApplySave();
-                    }
-                }
-            }
+            changesTracker[i].ApplySave();
         }
+
+        changesTracker.Clear();
 
         GameController.Instance.IsModal = false;
         GameController.Instance.soundController.OnButtonSFX();
@@ -176,6 +179,7 @@ public class SettingsMenu : MonoBehaviour
                     case DialogBoxResult.Yes:
                         // Reload (which will redefault settings)
                         Settings.LoadSettings();
+                        changesTracker.Clear();
                         GameController.Instance.IsModal = false;
                         GameController.Instance.soundController.OnButtonSFX();
                         break;
@@ -204,6 +208,8 @@ public class SettingsMenu : MonoBehaviour
             }
         }
 
+        changesTracker.Clear();
+
         DisplayCategory(currentCategory);
     }
 
@@ -225,6 +231,8 @@ public class SettingsMenu : MonoBehaviour
                 }
             }
         }
+
+        changesTracker.Clear();
 
         DisplayCategory(currentCategory);
     }
