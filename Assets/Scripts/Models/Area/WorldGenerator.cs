@@ -166,7 +166,7 @@ public class WorldGenerator
     private bool IsStartArea(int x, int y, World world)
     {
         int boundX = (world.Width / 2) - startAreaCenterX;
-        int boundY = (world.Height / 2) + startAreaCenterY;
+        int boundY = (world.Height / 2) + startAreaCenterY + 1;
 
         if (x >= boundX && x < (boundX + startAreaWidth) && y >= (boundY - startAreaHeight) && y < boundY)
         {
