@@ -421,6 +421,7 @@ public class MouseController
                     // Trying to build off the map, bail out of this cycle.
                     continue;
                 }
+
                 if (bmc.buildMode == BuildMode.FURNITURE)
                 {
                     // Check for furniture dragType.
