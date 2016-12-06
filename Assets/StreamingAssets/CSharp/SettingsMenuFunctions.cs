@@ -100,6 +100,159 @@ public static class SettingsMenuFunctions
     }
 }
 
+public class GenericSwitch : BaseSettingsElement
+{
+    protected bool isOn;
+    protected Toggle toggleElement;
+
+    public override GameObject InitializeElement()
+    {
+        GameObject element = GetHorizontalBaseElement("Switch", 120, 60, TextAnchor.MiddleLeft);
+
+        Text text = CreateText(option.name + ": ", true);
+        text.transform.SetParent(element.transform);
+
+        toggleElement = CreateSwitch();
+        toggleElement.transform.SetParent(element.transform);
+
+        isOn = getValue();
+        toggleElement.isOn = isOn;
+
+        toggleElement.onValueChanged.AddListener(
+            (bool v) =>
+            {
+                if (v != isOn)
+                {
+                    valueChanged = true;
+                    isOn = v;
+                }
+            });
+
+        LayoutElement layout = toggleElement.gameObject.AddComponent<LayoutElement>();
+        layout.ignoreLayout = true;
+
+        RectTransform rTransform = toggleElement.GetComponent<RectTransform>();
+        rTransform.sizeDelta = new Vector2(60, 30);
+        rTransform.anchorMax = new Vector2(0.5f, 0.5f);
+        rTransform.anchorMin = new Vector2(0.5f, 0.5f);
+        rTransform.localPosition = new Vector3(45, 0, 0);
+
+        return element;
+    }
+
+    public override void SaveElement()
+    {
+        Settings.SetSetting(option.key, isOn);
+    }
+
+    public bool getValue()
+    {
+        return Settings.GetSetting(option.key, option.defaultValue.ToLower() == "true" ? true : false);
+    }
+}
+
+public class GenericCircleRadio : BaseSettingsElement
+{
+    protected bool isOn;
+    protected Toggle toggleElement;
+
+    public override GameObject InitializeElement()
+    {
+        GameObject element = GetHorizontalBaseElement("Circle-Radio", 120, 60, TextAnchor.MiddleLeft);
+
+        Text text = CreateText(option.name + ": ", true);
+        text.transform.SetParent(element.transform);
+
+        toggleElement = CreateCircleRadio();
+        toggleElement.transform.SetParent(element.transform);
+
+        isOn = getValue();
+        toggleElement.isOn = isOn;
+
+        toggleElement.onValueChanged.AddListener(
+            (bool v) =>
+            {
+                if (v != isOn)
+                {
+                    valueChanged = true;
+                    isOn = v;
+                }
+            });
+
+        LayoutElement layout = toggleElement.gameObject.AddComponent<LayoutElement>();
+        layout.ignoreLayout = true;
+
+        RectTransform rTransform = toggleElement.GetComponent<RectTransform>();
+        rTransform.sizeDelta = new Vector2(40, 40);
+        rTransform.anchorMax = new Vector2(0.5f, 0.5f);
+        rTransform.anchorMin = new Vector2(0.5f, 0.5f);
+        rTransform.localPosition = new Vector3(45, 0, 0);
+
+        return element;
+    }
+
+    public override void SaveElement()
+    {
+        Settings.SetSetting(option.key, isOn);
+    }
+
+    public bool getValue()
+    {
+        return Settings.GetSetting(option.key, option.defaultValue.ToLower() == "true" ? true : false);
+    }
+}
+
+public class GenericSquareRadio : BaseSettingsElement
+{
+    protected bool isOn;
+    protected Toggle toggleElement;
+
+    public override GameObject InitializeElement()
+    {
+        GameObject element = GetHorizontalBaseElement("Square-Radio", 120, 60, TextAnchor.MiddleLeft);
+
+        Text text = CreateText(option.name + ": ", true);
+        text.transform.SetParent(element.transform);
+
+        toggleElement = CreateSquareRadio();
+        toggleElement.transform.SetParent(element.transform);
+
+        isOn = getValue();
+        toggleElement.isOn = isOn;
+
+        toggleElement.onValueChanged.AddListener(
+            (bool v) =>
+            {
+                if (v != isOn)
+                {
+                    valueChanged = true;
+                    isOn = v;
+                }
+            });
+
+        LayoutElement layout = toggleElement.gameObject.AddComponent<LayoutElement>();
+        layout.ignoreLayout = true;
+
+        RectTransform rTransform = toggleElement.GetComponent<RectTransform>();
+        rTransform.sizeDelta = new Vector2(40, 40);
+        rTransform.anchorMax = new Vector2(0.5f, 0.5f);
+        rTransform.anchorMin = new Vector2(0.5f, 0.5f);
+        rTransform.localPosition = new Vector3(45, 0, 0);
+
+        return element;
+    }
+
+    public override void SaveElement()
+    {
+        Settings.SetSetting(option.key, isOn);
+    }
+
+    public bool getValue()
+    {
+        return Settings.GetSetting(option.key, option.defaultValue.ToLower() == "true" ? true : false);
+    }
+}
+
 /// <summary>
 /// A generic toggle.
 /// </summary>
@@ -640,7 +793,7 @@ public class VSyncComboBox : GenericComboBox
     }
 }
 
-public class DeveloperConsoleToggle : GenericToggle
+public class DeveloperConsoleToggle : GenericSwitch
 {
     public override void SaveElement()
     {
@@ -650,7 +803,7 @@ public class DeveloperConsoleToggle : GenericToggle
     }
 }
 
-public class DeveloperModeToggle : GenericToggle
+public class DeveloperModeToggle : GenericSwitch
 {
     public override void SaveElement()
     {
