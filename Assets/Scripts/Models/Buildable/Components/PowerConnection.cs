@@ -21,7 +21,7 @@ namespace ProjectPorcupine.Buildable.Components
     [XmlRoot("Component")]
     [BuildableComponentName("PowerConnection")]
     [MoonSharpUserData]
-    public class PowerConnection : BuildableComponent, IPlugable
+    public class PowerConnection : BuildableComponent, IPluggable
     {       
         public PowerConnection()
         {

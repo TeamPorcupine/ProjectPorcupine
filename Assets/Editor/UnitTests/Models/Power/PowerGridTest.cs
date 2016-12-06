@@ -15,7 +15,7 @@ using ProjectPorcupine.PowerNetwork;
 public class PowerGridTest
 {
     private Grid grid;
-    private HashSet<IPlugable> connections;
+    private HashSet<IPluggable> connections;
 
     [SetUp]
     public void Init()
@@ -24,7 +24,7 @@ public class PowerGridTest
         Type powerGridType = typeof(Grid);
         FieldInfo field = powerGridType.GetField("connections", BindingFlags.NonPublic | BindingFlags.Instance);
         Assert.IsNotNull(field);
-        connections = field.GetValue(grid) as HashSet<IPlugable>;
+        connections = field.GetValue(grid) as HashSet<IPluggable>;
         Assert.IsNotNull(connections);
     }
 
@@ -293,7 +293,7 @@ public class PowerGridTest
         Assert.IsTrue(accumulator2.AccumulatedAmount.AreEqual(5.0f), string.Format("Expected {0} Actual {1}", 5.0f, accumulator2.AccumulatedAmount));
     }
 
-    private class MockConnection : IPlugable
+    private class MockConnection : IPluggable
     {
         public event Action Reconnecting;
 

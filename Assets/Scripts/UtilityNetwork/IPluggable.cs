@@ -11,7 +11,7 @@ using System;
 
 namespace ProjectPorcupine.PowerNetwork
 {
-    public interface IPlugable
+    public interface IPluggable
     {
         event Action Reconnecting;
 

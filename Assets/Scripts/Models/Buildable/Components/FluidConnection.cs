@@ -21,7 +21,7 @@ namespace ProjectPorcupine.Buildable.Components
     [XmlRoot("Component")]
     [BuildableComponentName("FluidConnection")]
     [MoonSharpUserData]
-    public class FluidConnection : BuildableComponent, IPlugable
+    public class FluidConnection : BuildableComponent, IPluggable
     {       
         public FluidConnection()
         {

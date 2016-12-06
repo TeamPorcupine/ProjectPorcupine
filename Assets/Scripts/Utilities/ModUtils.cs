@@ -107,7 +107,7 @@ public static class ModUtils
         return Mathf.Max(a, b);
     }
 
-    public static IPlugable GetPlugablePowerConnectionForTile(Tile tile)
+    public static IPluggable GetPlugablePowerConnectionForTile(Tile tile)
     {
         if (tile != null && tile.Furniture != null)
         {

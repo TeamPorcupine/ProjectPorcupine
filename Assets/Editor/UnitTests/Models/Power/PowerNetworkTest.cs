@@ -120,7 +120,7 @@ public class PowerNetworkTest
         Assert.IsTrue(powerNetwork.HasPower(firstPowerConsumer));
     }
 
-    private class MockConnection : IPlugable
+    private class MockConnection : IPluggable
     {
         public event Action Reconnecting;
 
