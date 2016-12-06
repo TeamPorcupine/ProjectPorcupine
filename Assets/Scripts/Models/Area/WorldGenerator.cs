@@ -61,6 +61,12 @@ public class WorldGenerator
         
         int sumOfAllWeightedChances = asteroidInfo.Resources.Select(x => x.WeightedChance).Sum();
 
+        World startArea = new World();
+
+        string startAreaFilePath = System.IO.Path.Combine(Application.streamingAssetsPath, "WorldGen/StartArea.sav");
+        startArea.ReadJson(startAreaFilePath);
+        Debug.LogWarning(startArea.Width);
+
         for (int x = 0; x < startAreaWidth; x++)
         {
             for (int y = 0; y < startAreaHeight; y++)
