@@ -7,8 +7,8 @@
 // ====================================================
 #endregion
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -131,30 +131,6 @@ public class SettingsMenu : MonoBehaviour
 
     public void SaveAndApply()
     {
-        System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
-        watch.Start();
-
-        // We only want to gain a set of them that have a flag :D  Aka the ones we saved after each individual save
-        // So what we will do is first go through the current category and save them and add them to the array IF they have the flag
-        /*
-        if (options.ContainsKey(currentCategory))
-        {
-            foreach (string headingName in options[currentCategory].Keys)
-            {
-                for (int i = 0; i < options[currentCategory][headingName].Length; i++)
-                {
-                    BaseSettingsElement elementCopy = options[currentCategory][headingName][i];
-
-                    if (elementCopy != null && elementCopy.valueChanged)
-                    {
-                        elementCopy.SaveElement();
-                        elementCopy.ApplySave();
-                    }
-                }
-            }
-        }
-        */
-
         if (options.ContainsKey(currentCategory))
         {
             changesTracker.AddRange(options[currentCategory].Values.SelectMany(x => x).Where(x => x != null && x.valueChanged));
@@ -168,9 +144,6 @@ public class SettingsMenu : MonoBehaviour
         }
 
         changesTracker.Clear();
-
-        watch.Stop();
-        Debug.LogWarning(watch.Elapsed.TotalSeconds);
 
         GameController.Instance.IsModal = false;
         GameController.Instance.soundController.OnButtonSFX();
@@ -268,8 +241,6 @@ public class SettingsMenu : MonoBehaviour
     {
         yield return new WaitForEndOfFrame();
 
-        Debug.LogWarning("Started");
-
         LoadCategories();
 
         if (options.Count > 0)
@@ -333,7 +304,7 @@ public class SettingsMenu : MonoBehaviour
                         options[currentName][keyValuePair.Key][i] = FunctionsManager.SettingsMenu.Call("Get" + keyValuePair.Value[i].className).ToObject<BaseSettingsElement>();
                         options[currentName][keyValuePair.Key][i].option = keyValuePair.Value[i];
                     }
-                    else
+                    else if (keyValuePair.Value[i].name != null)
                     {
                         Debug.LogWarning("Get" + keyValuePair.Value[i].className + "() Doesn't exist");
                     }

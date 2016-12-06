@@ -21,7 +21,7 @@ public abstract class BaseSettingsElement
     /// <summary>
     /// Do a settings.setValue call to set your value.
     /// Also apply your setting.
-    /// DON'T CALL SETTINGS.SAVE() !!!
+    /// DON'T CALL SETTINGS.SAVE().
     /// </summary>
     public abstract void SaveElement();
 
@@ -109,11 +109,11 @@ public abstract class BaseSettingsElement
         return go;
     }
 
-    protected Text CreateText(string withText, bool autoFit = false)
+    protected Text CreateText(string withText, bool autoFit = false, TextAnchor alignment = TextAnchor.MiddleLeft)
     {
         Text text = GameObject.Instantiate(Resources.Load<GameObject>("UI/SettingsMenu/SettingsText")).GetComponent<Text>();
         text.text = withText;
-        text.alignment = TextAnchor.MiddleLeft;
+        text.alignment = alignment;
 
         if (autoFit == true)
         {

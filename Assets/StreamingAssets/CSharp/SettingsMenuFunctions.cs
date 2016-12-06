@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Linq;
 using DeveloperConsole;
 using ProjectPorcupine.Localization;
 using UnityEngine.UI;
@@ -10,11 +9,6 @@ using UnityEngine;
 /// </summary>
 public static class SettingsMenuFunctions
 {
-    public static AutosaveNumberField GetAutosaveNumberField()
-    {
-        return new AutosaveNumberField();
-    }
-
     public static GenericToggle GetGenericToggle()
     {
         return new GenericToggle();
@@ -30,19 +24,14 @@ public static class SettingsMenuFunctions
         return new GenericSlider();
     }
 
-    public static FontSizeSlider GetFontSizeSlider()
+    public static AutosaveIntervalNumberField GetAutosaveIntervalNumberField()
     {
-        return new FontSizeSlider();
+        return new AutosaveIntervalNumberField();
     }
 
-    public static ScrollSensitivitySlider GetScrollSensitivitySlider()
+    public static AutosaveNumberField GetAutosaveNumberField()
     {
-        return new ScrollSensitivitySlider();
-    }
-
-    public static SoundSlider GetSoundSlider()
-    {
-        return new SoundSlider();
+        return new AutosaveNumberField();
     }
 
     public static LocalizationComboBox GetLocalizationComboBox()
@@ -50,14 +39,24 @@ public static class SettingsMenuFunctions
         return new LocalizationComboBox();
     }
 
+    public static SoundSlider GetSoundSlider()
+    {
+        return new SoundSlider();
+    }
+
+    public static UISkinComboBox GetUISkinComboBox()
+    {
+        return new UISkinComboBox();
+    }
+
     public static QualityComboBox GetQualityComboBox()
     {
         return new QualityComboBox();
     }
 
-    public static ResolutionComboBox GetResolutionComboBox()
+    public static VSyncComboBox GetVSyncComboBox()
     {
-        return new ResolutionComboBox();
+        return new VSyncComboBox();
     }
 
     public static FullScreenToggle GetFullScreenToggle()
@@ -65,9 +64,39 @@ public static class SettingsMenuFunctions
         return new FullScreenToggle();
     }
 
-    public static AutosaveIntervalNumberField GetAutosaveIntervalNumberField()
+    public static ResolutionComboBox GetResolutionComboBox()
     {
-        return new AutosaveIntervalNumberField();
+        return new ResolutionComboBox();
+    }
+
+    public static ScrollSensitivitySlider GetScrollSensitivitySlider()
+    {
+        return new ScrollSensitivitySlider();
+    }
+
+    public static TimeStampToggle GetTimeStampToggle()
+    {
+        return new TimeStampToggle();
+    }
+
+    public static DeveloperConsoleToggle GetDeveloperConsoleToggle()
+    {
+        return new DeveloperConsoleToggle();
+    }
+
+    public static FontSizeSlider GetFontSizeSlider()
+    {
+        return new FontSizeSlider();
+    }
+
+    public static PerformanceHUDComboBox GetPerformanceHUDComboBox()
+    {
+        return new PerformanceHUDComboBox();
+    }
+
+    public static DeveloperModeToggle GetDeveloperModeToggle()
+    {
+        return new DeveloperModeToggle();
     }
 }
 
@@ -81,7 +110,7 @@ public class GenericToggle : BaseSettingsElement
 
     public override GameObject InitializeElement()
     {
-        GameObject element = GetHorizontalBaseElement("Toggle", 200, 40, TextAnchor.MiddleLeft);
+        GameObject element = GetHorizontalBaseElement("Toggle", 120, 60, TextAnchor.MiddleLeft);
 
         Text text = CreateText(option.name + ": ", true);
         text.transform.SetParent(element.transform);
@@ -106,10 +135,10 @@ public class GenericToggle : BaseSettingsElement
         layout.ignoreLayout = true;
 
         RectTransform rTransform = toggleElement.GetComponent<RectTransform>();
-        rTransform.sizeDelta = new Vector2(30, 30);
+        rTransform.sizeDelta = new Vector2(40, 40);
         rTransform.anchorMax = new Vector2(0.5f, 0.5f);
         rTransform.anchorMin = new Vector2(0.5f, 0.5f);
-        rTransform.localPosition = new Vector3(110, 0, 0);
+        rTransform.localPosition = new Vector3(45, 0, 0);
 
         return element;
     }
@@ -182,11 +211,11 @@ public class GenericSlider : BaseSettingsElement
     public override GameObject InitializeElement()
     {
         // Note this is just from playing around and finding a nice value
-        GameObject element = GetHorizontalBaseElement("Slider", 175, 45, TextAnchor.MiddleLeft, 10);
+        GameObject element = GetVerticalBaseElement("Slider", 200, 30, TextAnchor.MiddleLeft, 0);
 
         format = option.name + " ({0:00}): ";
 
-        textElement = CreateText(string.Format(format, getValue(), false, 18 / GameObject.FindObjectOfType<Canvas>().scaleFactor));
+        textElement = CreateText(string.Format(format, getValue()), true, TextAnchor.MiddleCenter);
         textElement.transform.SetParent(element.transform);
 
         sliderElement = CreateSlider(getValue(), new Vector2(0, 1), false);
@@ -201,15 +230,6 @@ public class GenericSlider : BaseSettingsElement
                     value = v;
                 }
             });
-
-        LayoutElement layout = sliderElement.gameObject.AddComponent<LayoutElement>();
-        layout.ignoreLayout = true;
-
-        RectTransform rTransform = sliderElement.GetComponent<RectTransform>();
-        rTransform.sizeDelta = new Vector2(140, 20);
-        rTransform.anchorMax = new Vector2(0.5f, 0.5f);
-        rTransform.anchorMin = new Vector2(0.5f, 0.5f);
-        rTransform.localPosition = new Vector3(110, 0, 0);
 
         return element;
     }
@@ -236,8 +256,7 @@ private class GenericComboBox : BaseSettingsElement
 
     public GameObject DropdownHelperFromText(string[] options, int value)
     {
-        // Note this is just from playing around and finding a nice value
-        GameObject element = GetHorizontalBaseElement("Dropdown", 200, 40, TextAnchor.MiddleCenter, 0);
+        GameObject element = GetBasicElement();
 
         dropdownElement = CreateDropdownFromText(options, value);
         dropdownElement.transform.SetParent(element.transform);
@@ -247,8 +266,7 @@ private class GenericComboBox : BaseSettingsElement
 
     public GameObject DropdownHelperFromOptionData(Dropdown.OptionData[] options, int value)
     {
-        // Note this is just from playing around and finding a nice value
-        GameObject element = GetHorizontalBaseElement("Dropdown", 200, 40, TextAnchor.MiddleCenter, 0);
+        GameObject element = GetBasicElement();
 
         dropdownElement = CreateDropdownFromOptionData(options, value);
         dropdownElement.transform.SetParent(element.transform);
@@ -258,8 +276,7 @@ private class GenericComboBox : BaseSettingsElement
 
     public GameObject DropdownHelperEmpty()
     {
-        // Note this is just from playing around and finding a nice value
-        GameObject element = GetHorizontalBaseElement("Dropdown", 200, 40, TextAnchor.MiddleCenter, 0);
+        GameObject element = GetBasicElement();
 
         dropdownElement = CreateEmptyDropdown();
         dropdownElement.transform.SetParent(element.transform);
@@ -267,9 +284,18 @@ private class GenericComboBox : BaseSettingsElement
         return element;
     }
 
+    public GameObject GetBasicElement()
+    {
+        GameObject element = GetVerticalBaseElement("Dropdown", 220, 30, TextAnchor.MiddleCenter, 0);
+
+        CreateText(option.name + ": ", true, TextAnchor.MiddleCenter).transform.SetParent(element.transform);
+
+        return element;
+    }
+
     public override GameObject InitializeElement()
     {
-        return GetHorizontalBaseElement("Dropdown", 200, 40, TextAnchor.MiddleCenter, 0);
+        return GetBasicElement();
     }
 
     public override void SaveElement()
@@ -379,15 +405,15 @@ public class ResolutionComboBox : GenericComboBox
         selectedValue = getValue();
         GameObject go = DropdownHelperFromOptionData(CreateResolutionDropdown(), selectedValue);
         dropdownElement.onValueChanged.AddListener(
-        (int v) =>
-        {
-            if (v != selectedValue)
+            (int v) =>
             {
-                valueChanged = true;
-                selectedOption = (ResolutionOption)dropdownElement.options[v];
-                selectedValue = v;
-            }
-        });
+                if (v != selectedValue)
+                {
+                    valueChanged = true;
+                    selectedOption = (ResolutionOption)dropdownElement.options[v];
+                    selectedValue = v;
+                }
+            });
 
         return go;
     }
@@ -397,7 +423,7 @@ public class ResolutionComboBox : GenericComboBox
     /// </summary>
     private Dropdown.OptionData[] CreateResolutionDropdown()
     {
-        Dropdown.OptionData[] options = new Dropdown.OptionData[Screen.resolutions.Length];
+        Dropdown.OptionData[] options = new Dropdown.OptionData[Screen.resolutions.Length + 1];
         options[0] = new ResolutionOption
         {
             text = string.Format(
@@ -480,6 +506,13 @@ public class ScrollSensitivitySlider : GenericSlider
 
         return go;
     }
+
+    public override void SaveElement()
+    {
+        base.SaveElement();
+
+        DeveloperConsole.DevConsole.DirtySettings();
+    }
 }
 
 public class FontSizeSlider : GenericSlider
@@ -493,6 +526,13 @@ public class FontSizeSlider : GenericSlider
         sliderElement.wholeNumbers = true;
 
         return go;
+    }
+
+    public override void SaveElement()
+    {
+        base.SaveElement();
+
+        DeveloperConsole.DevConsole.DirtySettings();
     }
 }
 
@@ -542,5 +582,127 @@ public class AutosaveIntervalNumberField : AutosaveNumberField
         {
             WorldController.Instance.autosaveManager.SetAutosaveInterval(int.Parse(value));
         }
+    }
+}
+
+// This seems to be a placeholder (so I'll just make it a place holder)
+public class UISkinComboBox : GenericComboBox
+{
+    public override GameObject InitializeElement()
+    {
+        GameObject go = DropdownHelperFromText(new string[] { "Light" }, getValue());
+
+        dropdownElement.onValueChanged.AddListener(
+        (int v) =>
+        {
+            if (v != selectedValue)
+            {
+                valueChanged = true;
+                selectedValue = v;
+            }
+        });
+
+        return go;
+    }
+
+    public override void SaveElement()
+    {
+        base.SaveElement();
+
+        // TODO: Once skins are implemented do stuff here
+    }
+}
+
+public class VSyncComboBox : GenericComboBox
+{
+    public override GameObject InitializeElement()
+    {
+        GameObject go = DropdownHelperFromText(new string[] { "Disabled", "Every frame", "Every second frame" }, getValue());
+
+        dropdownElement.onValueChanged.AddListener(
+        (int v) =>
+        {
+            if (v != selectedValue)
+            {
+                valueChanged = true;
+                selectedValue = v;
+            }
+        });
+
+        return go;
+    }
+
+    public override void SaveElement()
+    {
+        base.SaveElement();
+
+        QualitySettings.vSyncCount = selectedValue;
+    }
+}
+
+public class DeveloperConsoleToggle : GenericToggle
+{
+    public override void SaveElement()
+    {
+        base.SaveElement();
+
+        DeveloperConsole.DevConsole.DirtySettings();
+    }
+}
+
+public class DeveloperModeToggle : GenericToggle
+{
+    public override void SaveElement()
+    {
+        base.SaveElement();
+
+        if (WorldController.Instance != null)
+        {
+            WorldController.Instance.spawnInventoryController.SetUIVisibility(isOn);
+        }
+    }
+}
+
+public class TimeStampToggle : GenericToggle
+{
+    public override void SaveElement()
+    {
+        base.SaveElement();
+
+        DeveloperConsole.DevConsole.DirtySettings();
+    }
+}
+
+public class PerformanceHUDComboBox : GenericComboBox
+{
+    public override GameObject InitializeElement()
+    {
+        string[] groupNames = new string[PerformanceComponentGroups.groups.Length];
+
+        for (int i = 0; i < PerformanceComponentGroups.groups.Length; i++)
+        {
+            groupNames[i] = PerformanceComponentGroups.groups[i].groupName;
+        }
+
+        GameObject go = DropdownHelperFromText(groupNames, getValue());
+
+        dropdownElement.onValueChanged.AddListener(
+        (int v) =>
+        {
+            if (v != selectedValue)
+            {
+                valueChanged = true;
+                selectedValue = v;
+            }
+        });
+
+        return go;
+    }
+
+    public override void SaveElement()
+    {
+        base.SaveElement();
+
+        PerformanceHUDManager.DirtyUI();
     }
 }

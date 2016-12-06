@@ -5,7 +5,7 @@
       <Option Name="Autosave Every" Key="AutosaveInterval" DefaultValue="10" ClassName="AutosaveIntervalNumberField" />
       <Option Name="Max Autosaves" Key="AutosaveFiles" DefaultValue="5" ClassName="AutosaveNumberField" />
     </OptionHeading>
-    <OptionHeading Name="Localisation">
+    <OptionHeading Name="Localization">
       <Option Name="Language" Key="localization" DefaultValue="en_US" ClassName="LocalizationComboBox" />
     </OptionHeading>
   </Category>
@@ -19,24 +19,25 @@
     <OptionHeading Name="Quality Settings">
       <Option Name="UI Skin" Key="UISkin" DefaultValue="0" ClassName="UISkinComboBox" />
       <Option Name="Quality" Key="quality" DefaultValue="2" ClassName="QualityComboBox" />
-      <Option Name="V-Sync" Key="vSync" DefaultValue="0" ClassName="VSyncDropDown" />
+      <Option Name="V-Sync" Key="vSync" DefaultValue="0" ClassName="VSyncComboBox" />
     </OptionHeading>
     <OptionHeading Name="Window Settings">
       <Option Name="Full Screen" Key="fullScreenToggle" DefaultValue="true" ClassName="FullScreenToggle" />
+      <Option Name="Resolution" Key="resolution" DefaultValue="0" ClassName="ResolutionComboBox" />
     </OptionHeading>
   </Category>
   <Category Name="Developer">
     <OptionHeading Name="Developer Console Settings">
       <Option Name="Console Scroll Sensitivity" Key="scrollingSensitivity" DefaultValue="6" ClassName="ScrollSensitivitySlider" />
-      <Option Name="Console Time Stamps" Key="timeStamps" DefaultValue="false" ClassName="GenericToggle" />
-      <Option Name="Developer Console" Key="developerConsole" DefaultValue="true" ClassName="GenericToggle" />
+      <Option Name="Console Time Stamps" Key="timeStamps" DefaultValue="false" ClassName="TimeStampToggle" />
+      <Option Name="Developer Console" Key="developerConsole" DefaultValue="true" ClassName="DeveloperConsoleToggle" />
       <Option Name="Console Font Size" Key="consoleFontSize" DefaultValue="15" ClassName="FontSizeSlider"></Option>
     </OptionHeading>
     <OptionHeading Name="Utilities">
       <Option Name="Performance HUD" Key="performanceHUD" DefaultValue="1" ClassName="PerformanceHUDComboBox" />
     </OptionHeading>
     <OptionHeading Name="God Mode Settings">
-      <Option Name="Developer Mode" Key="developerMode" DefaultValue="false" ClassName="GenericToggle" />
+      <Option Name="Developer Mode" Key="developerMode" DefaultValue="false" ClassName="DeveloperModeToggle" />
     </OptionHeading>
   </Category>
 </Categories>
