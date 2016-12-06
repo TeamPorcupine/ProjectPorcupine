@@ -57,7 +57,7 @@ public class WorldGenerator
         int offsetX = Random.Range(0, 10000);
         int offsetY = Random.Range(0, 10000);
 
-        int minEdgeDistance = 5;
+        int minEdgeDistance = 0;
         
         int sumOfAllWeightedChances = asteroidInfo.Resources.Select(x => x.WeightedChance).Sum();
 
@@ -68,7 +68,9 @@ public class WorldGenerator
                 int worldX = (width / 2) - startAreaCenterX + x;
                 int worldY = (height / 2) + startAreaCenterY - y;
 
+                Debug.LogWarning("World Coords: " + worldX + ", " + worldY);
                 Tile tile = world.GetTileAt(worldX, worldY, 0);
+                Debug.LogWarning("StartArea Coords: " + x + ", " + y);
                 tile.SetTileType(PrototypeManager.TileType[startAreaTiles[x, y]]);
             }
         }
@@ -88,56 +90,58 @@ public class WorldGenerator
                 }
             }
         }
-
-        for (int z = 0; z < depth; z++)
+        if (SceneController.GenerateAsteroids)
         {
-            float scaleZ = Mathf.Lerp(1f, .5f, Mathf.Abs((depth / 2f) - z) / depth);
-            for (int x = 0; x < width; x++)
+            for (int z = 0; z < depth; z++)
             {
-                for (int y = 0; y < height; y++)
+                float scaleZ = Mathf.Lerp(1f, .5f, Mathf.Abs((depth / 2f) - z) / depth);
+                for (int x = 0; x < width; x++)
                 {
-                    float noiseValue = Mathf.PerlinNoise(
-                        (x + offsetX) / (width * asteroidInfo.NoiseScale * scaleZ),
-                        (y + offsetY) / (height * asteroidInfo.NoiseScale * scaleZ));
-                    if (noiseValue >= asteroidInfo.NoiseThreshhold && !IsStartArea(x, y, world))
+                    for (int y = 0; y < height; y++)
                     {
-                        Tile tile = world.GetTileAt(x, y, z);
-
-                        if (tile.X < minEdgeDistance || tile.Y < minEdgeDistance ||
-                              World.Current.Width - tile.X <= minEdgeDistance ||
-                              World.Current.Height - tile.Y <= minEdgeDistance)
+                        float noiseValue = Mathf.PerlinNoise(
+                                           (x + offsetX) / (width * asteroidInfo.NoiseScale * scaleZ),
+                                           (y + offsetY) / (height * asteroidInfo.NoiseScale * scaleZ));
+                        if (noiseValue >= asteroidInfo.NoiseThreshhold && !IsStartArea(x, y, world))
                         {
-                            continue;
-                        }
+                            Tile tile = world.GetTileAt(x, y, z);
 
-                        tile.SetTileType(asteroidFloorType);
-
-                        world.FurnitureManager.PlaceFurniture("astro_wall", tile, false);
-
-                        if (Random.value <= asteroidInfo.ResourceChance && tile.Furniture.Name == "Rock Wall")
-                        {
-                            if (asteroidInfo.Resources.Count > 0)
+                            if (tile.X < minEdgeDistance || tile.Y < minEdgeDistance ||
+                            World.Current.Width - tile.X <= minEdgeDistance ||
+                            World.Current.Height - tile.Y <= minEdgeDistance)
                             {
-                                int currentweight = 0;
-                                int randomweight = Random.Range(0, sumOfAllWeightedChances);
+                                continue;
+                            }
 
-                                for (int i = 0; i < asteroidInfo.Resources.Count; i++)
+                            tile.SetTileType(asteroidFloorType);
+
+                            world.FurnitureManager.PlaceFurniture("astro_wall", tile, false);
+
+                            if (Random.value <= asteroidInfo.ResourceChance && tile.Furniture.Name == "Rock Wall")
+                            {
+                                if (asteroidInfo.Resources.Count > 0)
                                 {
-                                    Resource inv = asteroidInfo.Resources[i];
+                                    int currentweight = 0;
+                                    int randomweight = Random.Range(0, sumOfAllWeightedChances);
 
-                                    int weight = inv.WeightedChance; 
-                                    currentweight += weight;
-
-                                    if (randomweight <= currentweight)
+                                    for (int i = 0; i < asteroidInfo.Resources.Count; i++)
                                     {
-                                        tile.Furniture.Deconstruct();
+                                        Resource inv = asteroidInfo.Resources[i];
 
-                                        Furniture oreWall = PrototypeManager.Furniture.Get("astro_wall").Clone();
-                                        oreWall.Parameters["ore_type"].SetValue(inv.Type);
-                                        oreWall.Parameters["source_type"].SetValue(inv.Source);
+                                        int weight = inv.WeightedChance; 
+                                        currentweight += weight;
+
+                                        if (randomweight <= currentweight)
+                                        {
+                                            tile.Furniture.Deconstruct();
+
+                                            Furniture oreWall = PrototypeManager.Furniture.Get("astro_wall").Clone();
+                                            oreWall.Parameters["ore_type"].SetValue(inv.Type);
+                                            oreWall.Parameters["source_type"].SetValue(inv.Source);
                                         
-                                        world.FurnitureManager.PlaceFurniture(oreWall, tile, false);
-                                        break;
+                                            world.FurnitureManager.PlaceFurniture(oreWall, tile, false);
+                                            break;
+                                        }
                                     }
                                 }
                             }

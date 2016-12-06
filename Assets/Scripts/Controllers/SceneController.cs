@@ -7,6 +7,7 @@
 // ====================================================
 #endregion
 
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class SceneController
@@ -16,6 +17,9 @@ public class SceneController
     public const string MainMenuSceneName = "MainMenu";
 
     public static string loadWorldFromFileName;
+
+    public static Vector3 NewWorldSize;
+    public static bool GenerateAsteroids;
 
     private static SceneController instance;
 
@@ -33,10 +37,17 @@ public class SceneController
     }
 
     // Load the main scene.
-    public void LoadNewWorld()
+    public void LoadNewWorld(int height, int width, int depth, bool generateAsteroids = true)
     {
+        NewWorldSize = new Vector3(height, width, depth); 
+        GenerateAsteroids = generateAsteroids;
         CleanInstancesBeforeLoadingScene();
         SceneManager.LoadScene(MainSceneName);
+    }
+
+    public void ConfigureNewWorld()
+    {
+        GameObject.FindObjectOfType<DialogBoxManager>().dialogBoxNewGame.ShowDialog();
     }
 
     // Load a save file.

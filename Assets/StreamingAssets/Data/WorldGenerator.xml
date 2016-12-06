@@ -11,7 +11,7 @@
             <Resource type="Uranium" source="uranium_ore" min="5" max="15" weightedChance="35" />
         </Resources>
     </Asteroid>
-    <StartArea width="18" height="15" centerX="8" centerY="7">
+    <StartArea width="18" height="15" centerX="9" centerY="7">
         <Tiles>
             0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,
             0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,0,
