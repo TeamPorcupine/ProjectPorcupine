@@ -57,7 +57,7 @@ public class WorldGenerator
         int offsetX = Random.Range(0, 10000);
         int offsetY = Random.Range(0, 10000);
 
-        int minEdgeDistance = 5;
+        int minEdgeDistance = 0;
         
         int sumOfAllWeightedChances = asteroidInfo.Resources.Select(x => x.WeightedChance).Sum();
 

@@ -25,7 +25,7 @@ using UnityEngine;
 public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuildable
 {
     // Prevent construction too close to the world's edge
-    private const int MinEdgeDistance = 5;
+    private const int MinEdgeDistance = 0;
 
     private bool gridUpdatedThisFrame = false;
 

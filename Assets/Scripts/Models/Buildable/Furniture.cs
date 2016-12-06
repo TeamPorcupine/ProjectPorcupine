@@ -28,7 +28,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
 {
     #region Private Variables
     // Prevent construction too close to the world's edge
-    private const int MinEdgeDistance = 5;
+    private const int MinEdgeDistance = 0;
 
     private string isEnterableAction;
     
