@@ -13,6 +13,7 @@ public class MainMenuController : MonoBehaviour
 {
     public ModsManager modsManager;
     public SoundController soundController;
+    public DialogBoxManager dialogBoxManager;
 
     public static MainMenuController Instance { get; protected set; }
 
@@ -20,6 +21,7 @@ public class MainMenuController : MonoBehaviour
     public void OnEnable()
     {
         new PrototypeManager();
+        new FunctionsManager();
     }
 
     public void Start()
@@ -48,10 +50,20 @@ public class MainMenuController : MonoBehaviour
         mainMenu.transform.SetParent(canvas.transform, false);
         mainMenu.SetActive(true);
 
+        // Display the Settings Menu
+        GameObject settingsMenu = (GameObject)Instantiate(Resources.Load("UI/SettingsMenu/SettingsMenu"));
+
+        if (settingsMenu != null)
+        {
+            settingsMenu.name = "Settings Menu";
+            settingsMenu.transform.SetParent(canvas.transform, false);
+            settingsMenu.SetActive(true);
+        }
+
         // Create dialogBoxes.
         GameObject dialogBoxes = new GameObject("Dialog Boxes");
         dialogBoxes.transform.SetParent(canvas.transform, false);
-        dialogBoxes.AddComponent<DialogBoxManager>();
+        dialogBoxManager = dialogBoxes.AddComponent<DialogBoxManager>();
 
         // Instantiate a FPSCounter.
         GameObject menuTop = (GameObject)Instantiate(Resources.Load("UI/MenuTop"));
@@ -62,10 +74,14 @@ public class MainMenuController : MonoBehaviour
 
         // Dev Console
         GameObject devConsole = (GameObject)Instantiate(Resources.Load("UI/Console/DevConsole"));
-        devConsole.name = "DevConsole";
-        devConsole.transform.SetParent(canvas.transform, false);
-        devConsole.transform.SetAsLastSibling();
-        devConsole.SetActive(false);
-        DeveloperConsole.DevConsole.Close();
+
+        if (devConsole != null)
+        {
+            devConsole.name = "DevConsole-Spawned";
+            devConsole.transform.SetParent(canvas.transform, false);
+            devConsole.transform.SetAsLastSibling();
+            devConsole.SetActive(true);
+            DeveloperConsole.DevConsole.Close();
+        }
     }
 }

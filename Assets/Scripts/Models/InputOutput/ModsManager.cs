@@ -76,13 +76,8 @@ public class ModsManager
         LoadFunctions("Quest.lua", "Quest");
         LoadFunctions("ScheduledEvent.lua", "ScheduledEvent");
         LoadFunctions("Overlay.lua", "Overlay");
-        LoadFunctions("ConsoleCommands.lua", "DevConsole");
 
         LoadFunctions("FurnitureFunctions.cs", "Furniture");
-        LoadFunctions("CommandFunctions.cs", "DevConsole");
-
-        // We are only allowing the settings menu to be in C# due to class requirements
-        LoadFunctions("SettingsMenuFunctions.cs", "SettingsMenu");
 
         LoadPrototypes("Tiles.xml", PrototypeManager.TileType.LoadPrototypes);
         LoadPrototypes("Furniture.xml", PrototypeManager.Furniture.LoadPrototypes);
@@ -99,8 +94,6 @@ public class ModsManager
         LoadPrototypes("Headlines.xml", PrototypeManager.Headline.LoadPrototypes);
         LoadPrototypes("Overlay.xml", PrototypeManager.Overlay.LoadPrototypes);
         LoadPrototypes("Ships.xml", PrototypeManager.Ship.LoadPrototypes);
-        LoadPrototypes("ConsoleCommands.xml", PrototypeManager.DevConsole.LoadPrototypes);
-        LoadPrototypes("SettingsTemplate.xml", PrototypeManager.SettingsCategories.LoadPrototypes);
 
         LoadCharacterNames("CharacterNames.txt");
 
@@ -118,6 +111,14 @@ public class ModsManager
     {
         LoadDirectoryAssets("Shared/Images", SpriteManager.LoadSpriteFiles);
         LoadDirectoryAssets("Shared/Audio", AudioManager.LoadAudioFiles);
+
+        LoadFunctions("CommandFunctions.cs", "DevConsole");
+        LoadFunctions("ConsoleCommands.lua", "DevConsole");
+
+        // We are only allowing the settings menu to be in C# due to class requirements
+        LoadFunctions("SettingsMenuFunctions.cs", "SettingsMenu");
+        LoadPrototypes("ConsoleCommands.xml", PrototypeManager.DevConsole.LoadPrototypes);
+        LoadPrototypes("SettingsTemplate.xml", PrototypeManager.SettingsCategories.LoadPrototypes);
     }
 
     /// <summary>

@@ -161,7 +161,22 @@ public class SettingsMenu : MonoBehaviour
     public void Cancel()
     {
         // Open a dialog box to double check
-        DialogBoxPromptOrInfo check = (DialogBoxPromptOrInfo)WorldController.Instance.dialogBoxManager.ShowDialogBoxByName("Prompt or Info");
+        DialogBoxPromptOrInfo check;
+
+        if (WorldController.Instance != null)
+        {
+            check = WorldController.Instance.dialogBoxManager.dialogBoxPromptOrInfo;
+        }
+        else if (MainMenuController.Instance != null)
+        {
+            check = MainMenuController.Instance.dialogBoxManager.dialogBoxPromptOrInfo;
+        }
+        else
+        {
+            mainRoot.SetActive(false);
+            return;
+        }
+
         check.SetPrompt("Are you sure you want to close the menu and cancel all settings?");
         check.SetButtons(new DialogBoxResult[] { DialogBoxResult.Yes, DialogBoxResult.No });
         check.Closed =

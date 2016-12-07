@@ -121,9 +121,17 @@ public class WorldController : MonoBehaviour
 
         GameController.Instance.IsModal = false;
 
+        GameObject settingsMenu = (GameObject)Instantiate(Resources.Load("UI/SettingsMenu/SettingsMenu"));
+
+        if (settingsMenu != null)
+        {
+            settingsMenu.name = "Settings Menu";
+            settingsMenu.transform.SetParent(canvas.transform, false);
+            settingsMenu.SetActive(true);
+        }
+
         GameObject devConsole = (GameObject)Instantiate(Resources.Load("UI/Console/DevConsole"));
 
-        // This is just to make sure it isn't null (the static thing shouldn't destroy this copy but in some edge cases it might decide to).
         if (devConsole != null)
         {
             devConsole.name = "DevConsole-Spawned";
