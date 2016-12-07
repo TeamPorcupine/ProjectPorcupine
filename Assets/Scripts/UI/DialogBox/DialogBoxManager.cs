@@ -135,15 +135,7 @@ public class DialogBoxManager : MonoBehaviour
             "menu_options",
             () =>
             {
-                SettingsMenu.Open();
-                /*
-                if (dialogBoxSettings.isActiveAndEnabled)
-                {
-                    dialogBoxSettings.CloseDialog();
-                }
-
-                dialogBoxOptions.ShowDialog(); 
-                */
+                dialogBoxOptions.ShowDialog();
             },
             "menu_quests");
     }

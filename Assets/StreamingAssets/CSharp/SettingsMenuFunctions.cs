@@ -140,7 +140,11 @@ public class GenericSwitch : BaseSettingsElement
         return element;
     }
 
-    public override void SaveElement()
+    public override void CancelSetting()
+    {
+    }
+
+    public override void ApplySetting()
     {
         Settings.SetSetting(option.key, isOn);
     }
@@ -191,7 +195,11 @@ public class GenericCircleRadio : BaseSettingsElement
         return element;
     }
 
-    public override void SaveElement()
+    public override void CancelSetting()
+    {
+    }
+
+    public override void ApplySetting()
     {
         Settings.SetSetting(option.key, isOn);
     }
@@ -242,7 +250,11 @@ public class GenericSquareRadio : BaseSettingsElement
         return element;
     }
 
-    public override void SaveElement()
+    public override void CancelSetting()
+    {
+    }
+
+    public override void ApplySetting()
     {
         Settings.SetSetting(option.key, isOn);
     }
@@ -296,7 +308,11 @@ public class GenericToggle : BaseSettingsElement
         return element;
     }
 
-    public override void SaveElement()
+    public override void CancelSetting()
+    {
+    }
+
+    public override void ApplySetting()
     {
         Settings.SetSetting(option.key, isOn);
     }
@@ -343,7 +359,11 @@ public class GenericInputField : BaseSettingsElement
         return element;
     }
 
-    public override void SaveElement()
+    public override void CancelSetting()
+    {
+    }
+
+    public override void ApplySetting()
     {
         Settings.SetSetting(option.key, value);
     }
@@ -383,11 +403,16 @@ public class GenericSlider : BaseSettingsElement
                     value = v;
                 }
             });
+        sliderElement.onValueChanged.Invoke(sliderElement.value);
 
         return element;
     }
 
-    public override void SaveElement()
+    public override void CancelSetting()
+    {
+    }
+
+    public override void ApplySetting()
     {
         Settings.SetSetting(option.key, value);
     }
@@ -451,7 +476,11 @@ private class GenericComboBox : BaseSettingsElement
         return GetBasicElement();
     }
 
-    public override void SaveElement()
+    public override void CancelSetting()
+    {
+    }
+
+    public override void ApplySetting()
     {
         Settings.SetSetting(option.key, selectedValue);
     }
@@ -485,7 +514,12 @@ public class LocalizationComboBox : GenericComboBox
         return go;
     }
 
-    public override void SaveElement()
+    public override void CancelSetting()
+    {
+        LocalizationTable.SetLocalization(getValue());
+    }
+
+    public override void ApplySetting()
     {
         Settings.SetSetting(option.key, LocalizationTable.GetLanguages()[selectedValue]);
         LocalizationTable.SetLocalization(selectedValue);
@@ -531,16 +565,26 @@ public class QualityComboBox : GenericComboBox
         return go;
     }
 
-    public override void SaveElement()
+    public override void CancelSetting()
     {
-        base.SaveElement();
+        ApplyQuality(count, getValue());
+    }
+
+    public override void ApplySetting()
+    {
+        Settings.SetSetting(option.key, selectedValue);
+        ApplyQuality(count, selectedValue);
+    }
+
+    public void ApplyQuality(int count, int value)
+    {
         // Copied from DialogBoxSettings
         // MasterTextureLimit should get 0 for High quality and higher values for lower qualities.
         // For example count is 3 (0:Low, 1:Med, 2:High).
         // For High: count - 1 - value  =  3 - 1 - 2  =  0  (therefore no limit = high quality).
         // For Med:  count - 1 - value  =  3 - 1 - 1  =  1  (therefore a slight limit = medium quality).
         // For Low:  count - 1 - value  =  3 - 1 - 0  =  1  (therefore more limit = low quality).
-        QualitySettings.masterTextureLimit = count - 1 - selectedValue;
+        QualitySettings.masterTextureLimit = count - 1 - value;
     }
 }
 
@@ -603,10 +647,16 @@ public class ResolutionComboBox : GenericComboBox
         return options;
     }
 
-    public override void SaveElement()
+    public override void CancelSetting()
     {
-        base.SaveElement();
-        // Copied from DialogBoxSettings
+        Resolution resolution = ((ResolutionOption)dropdownElement.options[selectedValue]).Resolution;
+        Screen.SetResolution(resolution.width, resolution.height, Settings.GetSetting("fullScreenToggle", true), resolution.refreshRate);
+    }
+
+    public override void ApplySetting()
+    {
+        Settings.SetSetting(option.key, selectedValue);
+
         Resolution resolution = selectedOption.Resolution;
         Screen.SetResolution(resolution.width, resolution.height, Settings.GetSetting("fullScreenToggle", true), resolution.refreshRate);
     }
@@ -640,10 +690,16 @@ public class SoundSlider : GenericSlider
 
 public class FullScreenToggle : GenericToggle
 {
-    public override void SaveElement()
+    public override void ApplySetting()
     {
-        base.SaveElement();
+        base.ApplySetting();
         Screen.fullScreen = isOn;
+    }
+
+    public override void CancelSetting()
+    {
+        base.CancelSetting();
+        Screen.fullScreen = getValue();
     }
 }
 
@@ -653,17 +709,26 @@ public class ScrollSensitivitySlider : GenericSlider
     {
         GameObject go = base.InitializeElement();
 
+        Debug.LogWarning(getValue());
+
         sliderElement.maxValue = 15;
         sliderElement.minValue = 5;
         sliderElement.wholeNumbers = true;
+        sliderElement.value = getValue();
+        sliderElement.onValueChanged.Invoke(sliderElement.value);
 
         return go;
     }
 
-    public override void SaveElement()
+    public override void ApplySetting()
     {
-        base.SaveElement();
+        base.ApplySetting();
+        DeveloperConsole.DevConsole.DirtySettings();
+    }
 
+    public override void CancelSetting()
+    {
+        base.CancelSetting();
         DeveloperConsole.DevConsole.DirtySettings();
     }
 }
@@ -677,14 +742,21 @@ public class FontSizeSlider : GenericSlider
         sliderElement.maxValue = 20;
         sliderElement.minValue = 12;
         sliderElement.wholeNumbers = true;
+        sliderElement.value = getValue();
+        sliderElement.onValueChanged.Invoke(sliderElement.value);
 
         return go;
     }
 
-    public override void SaveElement()
+    public override void ApplySetting()
     {
-        base.SaveElement();
+        base.ApplySetting();
+        DeveloperConsole.DevConsole.DirtySettings();
+    }
 
+    public override void CancelSetting()
+    {
+        base.CancelSetting();
         DeveloperConsole.DevConsole.DirtySettings();
     }
 }
@@ -728,12 +800,21 @@ public class AutosaveNumberField : GenericInputField
 
 public class AutosaveIntervalNumberField : AutosaveNumberField
 {
-    public override void SaveElement()
+    public override void ApplySetting()
     {
-        base.SaveElement();
+        base.ApplySetting();
         if (WorldController.Instance != null)
         {
             WorldController.Instance.autosaveManager.SetAutosaveInterval(int.Parse(value));
+        }
+    }
+
+    public override void CancelSetting()
+    {
+        base.CancelSetting();
+        if (WorldController.Instance != null)
+        {
+            WorldController.Instance.autosaveManager.SetAutosaveInterval(int.Parse(getValue()));
         }
     }
 }
@@ -758,11 +839,18 @@ public class UISkinComboBox : GenericComboBox
         return go;
     }
 
-    public override void SaveElement()
+    public override void ApplySetting()
     {
-        base.SaveElement();
+        base.ApplySetting();
 
-        // TODO: Once skins are implemented do stuff here
+        // Apply Skin
+    }
+
+    public override void CancelSetting()
+    {
+        base.CancelSetting();
+
+        // Undo Skin
     }
 }
 
@@ -785,30 +873,48 @@ public class VSyncComboBox : GenericComboBox
         return go;
     }
 
-    public override void SaveElement()
+    public override void ApplySetting()
     {
-        base.SaveElement();
-
+        base.ApplySetting();
         QualitySettings.vSyncCount = selectedValue;
+    }
+
+    public override void CancelSetting()
+    {
+        base.CancelSetting();
+        QualitySettings.vSyncCount = getValue();
     }
 }
 
 public class DeveloperConsoleToggle : GenericSwitch
 {
-    public override void SaveElement()
+    public override void ApplySetting()
     {
-        base.SaveElement();
+        base.ApplySetting();
+        DeveloperConsole.DevConsole.DirtySettings();
+    }
 
+    public override void CancelSetting()
+    {
+        base.CancelSetting();
         DeveloperConsole.DevConsole.DirtySettings();
     }
 }
 
 public class DeveloperModeToggle : GenericSwitch
 {
-    public override void SaveElement()
+    public override void ApplySetting()
     {
-        base.SaveElement();
+        base.ApplySetting();
+        if (WorldController.Instance != null)
+        {
+            WorldController.Instance.spawnInventoryController.SetUIVisibility(isOn);
+        }
+    }
 
+    public override void CancelSetting()
+    {
+        base.CancelSetting();
         if (WorldController.Instance != null)
         {
             WorldController.Instance.spawnInventoryController.SetUIVisibility(isOn);
@@ -818,10 +924,15 @@ public class DeveloperModeToggle : GenericSwitch
 
 public class TimeStampToggle : GenericToggle
 {
-    public override void SaveElement()
+    public override void ApplySetting()
     {
-        base.SaveElement();
+        base.ApplySetting();
+        DeveloperConsole.DevConsole.DirtySettings();
+    }
 
+    public override void CancelSetting()
+    {
+        base.CancelSetting();
         DeveloperConsole.DevConsole.DirtySettings();
     }
 }
@@ -852,10 +963,15 @@ public class PerformanceHUDComboBox : GenericComboBox
         return go;
     }
 
-    public override void SaveElement()
+    public override void ApplySetting()
     {
-        base.SaveElement();
+        base.ApplySetting();
+        PerformanceHUDManager.DirtyUI();
+    }
 
+    public override void CancelSetting()
+    {
+        base.CancelSetting();
         PerformanceHUDManager.DirtyUI();
     }
 }

@@ -102,6 +102,10 @@ public class SettingsMenu : MonoBehaviour
             {
                 button.RevertColor();
             }
+            else
+            {
+                button.SelectColor();
+            }
         }
 
         if (instance.options.ContainsKey(category) == false)
@@ -129,20 +133,24 @@ public class SettingsMenu : MonoBehaviour
         }
     }
 
-    public void SaveAndApply()
+    public void Apply()
     {
         if (options.ContainsKey(currentCategory))
         {
             changesTracker.AddRange(options[currentCategory].Values.SelectMany(x => x).Where(x => x != null && x.valueChanged));
         }
 
-        Settings.SaveSettings();
-
         for (int i = 0; i < changesTracker.Count; i++)
         {
-            changesTracker[i].SaveElement();
+            changesTracker[i].ApplySetting();
         }
+    }
 
+    public void Save()
+    {
+        Apply();
+
+        Settings.SaveSettings();
         changesTracker.Clear();
 
         GameController.Instance.IsModal = false;
@@ -162,9 +170,19 @@ public class SettingsMenu : MonoBehaviour
                 switch (check.Result)
                 {
                     case DialogBoxResult.Yes:
-                        // Reload (which will redefault settings)
+                        // CANCEL
+                        if (options.ContainsKey(currentCategory))
+                        {
+                            changesTracker.AddRange(options[currentCategory].Values.SelectMany(x => x).Where(x => x != null && x.valueChanged));
+                        }
+
                         Settings.LoadSettings();
-                        changesTracker.Clear();
+
+                        for (int i = 0; i < changesTracker.Count; i++)
+                        {
+                            changesTracker[i].CancelSetting();
+                        }
+
                         GameController.Instance.IsModal = false;
                         GameController.Instance.soundController.OnButtonSFX();
                         break;

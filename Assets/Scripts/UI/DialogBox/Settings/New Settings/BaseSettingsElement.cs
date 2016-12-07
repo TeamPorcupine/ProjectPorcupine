@@ -19,11 +19,16 @@ public abstract class BaseSettingsElement
     public bool valueChanged;
 
     /// <summary>
-    /// Do a settings.setValue call to set your value.
-    /// Also apply your setting.
-    /// DON'T CALL SETTINGS.SAVE().
+    /// Apply your setting.  You can use variables in this.
+    /// Do a setting.setSetting beforehand.
     /// </summary>
-    public abstract void SaveElement();
+    public abstract void ApplySetting();
+
+    /// <summary>
+    /// Undo your setting.  You should do a setting.getSetting call
+    /// To get the latest setting info.
+    /// </summary>
+    public abstract void CancelSetting();
 
     /// <summary>
     /// Set ranges, set fields...

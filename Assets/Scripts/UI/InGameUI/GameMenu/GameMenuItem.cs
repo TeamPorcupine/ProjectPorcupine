@@ -14,7 +14,7 @@ public class GameMenuItem
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MainMenuItem"/> class.
-    /// </summary>
+    /// </summary>s
     /// <param name="key">The menu item key.</param>
     /// <param name="actionCallback">The menu item callback. Called when is clicked.</param>
     public GameMenuItem(string key, Action actionCallback)

@@ -55,6 +55,16 @@ public class ColorButton : MonoBehaviour
         }
     }
 
+    public void SelectColor()
+    {
+        button.image.color = colorSelectGroup.imageSelectedColor;
+
+        if (updateText != null)
+        {
+            updateText.color = colorSelectGroup.textSelectedColor;
+        }
+    }
+
     private void Awake()
     {
         updateText = gameObject.GetComponentInChildren<Text>();
@@ -63,13 +73,6 @@ public class ColorButton : MonoBehaviour
         button.onClick.AddListener(
             () =>
             {
-                button.image.color = colorSelectGroup.imageSelectedColor;
-
-                if (updateText != null)
-                {
-                    updateText.color = colorSelectGroup.textSelectedColor;
-                }
-
                 SettingsMenu.DisplayCategory(gameObject.name);
             });
     }
