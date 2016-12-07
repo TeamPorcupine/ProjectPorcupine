@@ -56,6 +56,7 @@ public class World
         Debug.ULogChannel("World", "Generated World");
 
         tileGraph = new Path_TileGraph(this);
+        roomGraph = new Path_RoomGraph(this);
 
         // Adding air to enclosed rooms
         foreach (Room room in this.RoomManager)
@@ -357,11 +358,12 @@ public class World
             return;
         }
 
-        int offsetX = (width - Width)/2 -1;
-        int offsetY = (height - Height)/2-1;;
+        int offsetX = (width - Width)/2;
+        int offsetY = (height - Height)/2 + 1;;
 
         Tile[,,] oldTIles = (Tile[,,])tiles.Clone();
         tiles = new Tile[width, height, depth];
+
 
         Debug.LogWarning("new Size: " + width + ", " + height + ", " + depth);
         Debug.LogWarning("Old Size: " + Width + ", " + Height + ", " + Depth);
@@ -375,6 +377,12 @@ public class World
         Depth = depth;
 
         FillTilesArray();
+        tileGraph = null;
+        roomGraph = null;
+
+        // Reset temperature, so it properly sizes arrays to the new world size
+        temperature = new Temperature();
+
         for (int x = 0; x < oldWidth; x++)
         {
             for (int y = 0; y < oldHeight; y++)
@@ -384,6 +392,8 @@ public class World
 //                    Debug.LogWarning("Old Tiles: " + x + ", " +y + ", " +z);
 //                    Debug.LogWarning("New World:" + (x + offsetX) + ", " + (y + offsetY) + ", " + z);
                     tiles[x + offsetX, y + offsetY, z] = oldTIles[x, y, z];
+                    oldTIles[x, y, z].MoveTile(x + offsetX, y + offsetY, z);
+
                 }
             }   
         }
@@ -450,9 +460,12 @@ public class World
             {
                 for (int z = 0; z < Depth; z++)
                 {
-                    tiles[x, y, z] = new Tile(x, y, z);
-                    tiles[x, y, z].TileChanged += OnTileChangedCallback;
-                    tiles[x, y, z].Room = RoomManager.OutsideRoom; // Rooms 0 is always going to be outside, and that is our default room
+                    if (tiles[x, y, z]  == null)
+                    {
+                        tiles[x, y, z] = new Tile(x, y, z);
+                        tiles[x, y, z].TileChanged += OnTileChangedCallback;
+                        tiles[x, y, z].Room = RoomManager.OutsideRoom; // Rooms 0 is always going to be outside, and that is our default room
+                    }
                 }
             }
         }

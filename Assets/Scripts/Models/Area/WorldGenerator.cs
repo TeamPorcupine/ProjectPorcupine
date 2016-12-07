@@ -116,7 +116,6 @@ public class WorldGenerator
                         if (noiseValue >= asteroidInfo.NoiseThreshhold && !IsStartArea(x, y, world))
                         {
                             Tile tile = world.GetTileAt(x, y, z);
-                            Debug.LogWarning(x + ", " + y + ", " + z);
                             if (tile.X < minEdgeDistance || tile.Y < minEdgeDistance ||
                             World.Current.Width - tile.X <= minEdgeDistance ||
                             World.Current.Height - tile.Y <= minEdgeDistance)
