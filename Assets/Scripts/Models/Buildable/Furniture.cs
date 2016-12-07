@@ -1214,7 +1214,8 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     /// <param name="t">The base tile.</param>
     /// <returns>True if the tile is valid for the placement of the furniture.</returns>
     public bool IsValidPosition(Tile tile)
-    {if (HasTypeTag("OutdoorOnly"))
+    {
+        if (HasTypeTag("OutdoorOnly"))
         {
             if (tile.Room == null || !tile.Room.IsOutsideRoom())
             {
