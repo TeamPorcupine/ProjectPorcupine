@@ -1,12 +1,18 @@
 fileFormatVersion: 2
 guid: 8ed11db9bdff2784d87323bcd4032852
-timeCreated: 1481083354
+timeCreated: 1481088231
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
     21300000: Buttons_Normal
     21300002: Buttons_Hovered
     21300004: Buttons_Selected
+    21300006: Buttons_Normal_Dark
+    21300008: Buttons_Normal_Light
+    21300010: Buttons_Hover_Dark
+    21300012: Buttons_Hover_Light
+    21300014: Buttons_Selected_Dark
+    21300016: Buttons_Selected_Light
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -56,24 +62,63 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Buttons_Normal
+      name: Buttons_Normal_Dark
       rect:
         serializedVersion: 2
         x: 6
+        y: 82
+        width: 91
+        height: 34
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 5, y: 5, z: 5, w: 5}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Buttons_Normal_Light
+      rect:
+        serializedVersion: 2
+        x: 106
         y: 82
         width: 92
         height: 34
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 6, y: 6, z: 6, w: 6}
+      border: {x: 5, y: 5, z: 5, w: 5}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: Buttons_Hovered
+      name: Buttons_Hover_Dark
       rect:
         serializedVersion: 2
-        x: 103
-        y: 84
+        x: 6
+        y: 43
+        width: 91
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 5, y: 5, z: 5, w: 5}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Buttons_Hover_Light
+      rect:
+        serializedVersion: 2
+        x: 106
+        y: 43
+        width: 92
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 5, y: 27, z: 5, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Buttons_Selected_Dark
+      rect:
+        serializedVersion: 2
+        x: 5
+        y: 8
         width: 92
         height: 32
       alignment: 0
@@ -82,11 +127,11 @@ TextureImporter:
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: Buttons_Selected
+      name: Buttons_Selected_Light
       rect:
         serializedVersion: 2
-        x: 6
-        y: 43
+        x: 106
+        y: 8
         width: 92
         height: 32
       alignment: 0
