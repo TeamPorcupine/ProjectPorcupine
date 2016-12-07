@@ -19,7 +19,7 @@ public class SceneController
     public static string loadWorldFromFileName;
 
     public static Vector3 NewWorldSize;
-    public static bool GenerateAsteroids;
+    public static bool GenerateAsteroids = true;
 
     private static SceneController instance;
 

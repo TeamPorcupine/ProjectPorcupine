@@ -336,6 +336,76 @@ public class World
         tileGraph = new Path_TileGraph(this);
     }
 
+    public void ResizeWorld(Vector3 worldSize)
+    {
+        ResizeWorld((int)worldSize.x, (int)worldSize.y, (int)worldSize.z);
+    }
+
+    public void ResizeWorld(int width, int height, int depth)
+    {
+        if (width < Width || height < height || depth < Depth)
+        {
+            Debug.LogError("Shrinking the world is not presently supported");
+            return;
+        }
+        Debug.LogWarning("new Size: " + width + ", " + height + ", " + depth);
+        Debug.LogWarning("Old Size: " + Width + ", " + Height + ", " + Depth);
+
+        if (width == Width && height == Height && depth == Depth)
+        {
+            // No change, just bail
+            return;
+        }
+
+        int offsetX = (width - Width)/2 -1;
+        int offsetY = (height - Height)/2-1;;
+
+        Tile[,,] oldTIles = (Tile[,,])tiles.Clone();
+        tiles = new Tile[width, height, depth];
+
+        Debug.LogWarning("new Size: " + width + ", " + height + ", " + depth);
+        Debug.LogWarning("Old Size: " + Width + ", " + Height + ", " + Depth);
+
+        int oldWidth = Width;
+        int oldHeight = Height;
+        int oldDepth = Depth;
+
+        Width = width;
+        Height = height;
+        Depth = depth;
+
+        FillTilesArray();
+        for (int x = 0; x < oldWidth; x++)
+        {
+            for (int y = 0; y < oldHeight; y++)
+            {
+                for (int z = 0; z < oldDepth; z++)
+                {
+//                    Debug.LogWarning("Old Tiles: " + x + ", " +y + ", " +z);
+//                    Debug.LogWarning("New World:" + (x + offsetX) + ", " + (y + offsetY) + ", " + z);
+                    tiles[x + offsetX, y + offsetY, z] = oldTIles[x, y, z];
+                }
+            }   
+        }
+    }
+
+    public void dumpNullTiles()
+    {
+
+        for (int z = 0; z < Depth; z++)
+        {
+            for (int x = 0; x < Width; x++)
+            {
+                for (int y = 0; y < Height; y++)
+                {
+                    if (tiles[x,y,z] == null)
+                    {
+                        Debug.LogWarning(x + ", " + y + ", " + z);
+                    }
+                }
+            }
+        }
+    }
     private void SetupWorld(int width, int height, int depth)
     {
         // Set the current world to be this world.
@@ -352,18 +422,7 @@ public class World
         RoomManager.Adding += (room) => roomGraph = null;
         RoomManager.Removing += (room) => roomGraph = null;
 
-        for (int x = 0; x < Width; x++)
-        {
-            for (int y = 0; y < Height; y++)
-            {
-                for (int z = 0; z < Depth; z++)
-                {
-                    tiles[x, y, z] = new Tile(x, y, z);
-                    tiles[x, y, z].TileChanged += OnTileChangedCallback;
-                    tiles[x, y, z].Room = RoomManager.OutsideRoom; // Rooms 0 is always going to be outside, and that is our default room
-                }
-            }
-        }
+        FillTilesArray();
 
         FurnitureManager = new FurnitureManager();
         FurnitureManager.Created += OnFurnitureCreated;
@@ -381,6 +440,22 @@ public class World
 
         LoadSkybox();
         AddEventListeners();
+    }
+
+    private void FillTilesArray()
+    {
+        for (int x = 0; x < Width; x++)
+        {
+            for (int y = 0; y < Height; y++)
+            {
+                for (int z = 0; z < Depth; z++)
+                {
+                    tiles[x, y, z] = new Tile(x, y, z);
+                    tiles[x, y, z].TileChanged += OnTileChangedCallback;
+                    tiles[x, y, z].Room = RoomManager.OutsideRoom; // Rooms 0 is always going to be outside, and that is our default room
+                }
+            }
+        }
     }
 
     private void LoadSkybox(string name = null)

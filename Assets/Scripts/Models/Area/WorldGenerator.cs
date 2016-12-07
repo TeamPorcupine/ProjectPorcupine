@@ -47,6 +47,7 @@ public class WorldGenerator
 
     public void Generate(World world, int seed)
     {
+        Debug.LogWarning("Generating");
         asteroidFloorType = TileType.Empty; 
 
         ReadXML();
@@ -61,43 +62,47 @@ public class WorldGenerator
         
         int sumOfAllWeightedChances = asteroidInfo.Resources.Select(x => x.WeightedChance).Sum();
 
-        World startArea = new World();
+
 
         string startAreaFilePath = System.IO.Path.Combine(Application.streamingAssetsPath, "WorldGen/StartArea.sav");
-        startArea.ReadJson(startAreaFilePath);
-        Debug.LogWarning(startArea.Width);
+        world.ReadJson(startAreaFilePath);
+        world.ResizeWorld(width, height, depth);
+//        world.dumpNullTiles();
 
-        for (int x = 0; x < startAreaWidth; x++)
+
+//        for (int x = 0; x < startAreaWidth; x++)
+//        {
+//            for (int y = 0; y < startAreaHeight; y++)
+//            {
+//                int worldX = (width / 2) - startAreaCenterX + x;
+//                int worldY = (height / 2) + startAreaCenterY - y;
+//
+//                Debug.LogWarning("World Coords: " + worldX + ", " + worldY);
+//                Tile tile = world.GetTileAt(worldX, worldY, 0);
+//                Debug.LogWarning("StartArea Coords: " + x + ", " + y);
+//                tile.SetTileType(PrototypeManager.TileType[startAreaTiles[x, y]]);
+//            }
+//        }
+//
+//        for (int x = 0; x < startAreaWidth; x++)
+//        {
+//            for (int y = 0; y < startAreaHeight; y++)
+//            {
+//                int worldX = (width / 2) - startAreaCenterX + x;
+//                int worldY = (height / 2) + startAreaCenterY - y;
+//
+//                Tile tile = world.GetTileAt(worldX, worldY, 0);
+//
+//                if (startAreaFurnitures[x, y] != null && startAreaFurnitures[x, y] != string.Empty)
+//                {
+//                    world.FurnitureManager.PlaceFurniture(startAreaFurnitures[x, y], tile, true);
+//                }
+//            }
+//        }
+        Debug.LogWarning("Bout to Asteroid");
+        if (true && SceneController.GenerateAsteroids)
         {
-            for (int y = 0; y < startAreaHeight; y++)
-            {
-                int worldX = (width / 2) - startAreaCenterX + x;
-                int worldY = (height / 2) + startAreaCenterY - y;
-
-                Debug.LogWarning("World Coords: " + worldX + ", " + worldY);
-                Tile tile = world.GetTileAt(worldX, worldY, 0);
-                Debug.LogWarning("StartArea Coords: " + x + ", " + y);
-                tile.SetTileType(PrototypeManager.TileType[startAreaTiles[x, y]]);
-            }
-        }
-
-        for (int x = 0; x < startAreaWidth; x++)
-        {
-            for (int y = 0; y < startAreaHeight; y++)
-            {
-                int worldX = (width / 2) - startAreaCenterX + x;
-                int worldY = (height / 2) + startAreaCenterY - y;
-
-                Tile tile = world.GetTileAt(worldX, worldY, 0);
-
-                if (startAreaFurnitures[x, y] != null && startAreaFurnitures[x, y] != string.Empty)
-                {
-                    world.FurnitureManager.PlaceFurniture(startAreaFurnitures[x, y], tile, true);
-                }
-            }
-        }
-        if (SceneController.GenerateAsteroids)
-        {
+            Debug.LogWarning("Gen Asteroids");
             for (int z = 0; z < depth; z++)
             {
                 float scaleZ = Mathf.Lerp(1f, .5f, Mathf.Abs((depth / 2f) - z) / depth);
@@ -111,7 +116,7 @@ public class WorldGenerator
                         if (noiseValue >= asteroidInfo.NoiseThreshhold && !IsStartArea(x, y, world))
                         {
                             Tile tile = world.GetTileAt(x, y, z);
-
+                            Debug.LogWarning(x + ", " + y + ", " + z);
                             if (tile.X < minEdgeDistance || tile.Y < minEdgeDistance ||
                             World.Current.Width - tile.X <= minEdgeDistance ||
                             World.Current.Height - tile.Y <= minEdgeDistance)

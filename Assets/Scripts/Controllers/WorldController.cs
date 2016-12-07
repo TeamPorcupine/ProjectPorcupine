@@ -222,9 +222,9 @@ public class WorldController : MonoBehaviour
         int height = Settings.GetSetting("worldHeight", 100);
 
         // FIXME: Need to read this from settings.
-        height = 15;
-        width = 18;
-        int depth = 1;
+        height = 100;
+        width = 100;
+        int depth = 5;
 
 
         if (SceneController.NewWorldSize != Vector3.zero)
