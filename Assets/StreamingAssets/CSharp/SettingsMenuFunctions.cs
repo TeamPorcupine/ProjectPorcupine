@@ -709,8 +709,6 @@ public class ScrollSensitivitySlider : GenericSlider
     {
         GameObject go = base.InitializeElement();
 
-        Debug.LogWarning(getValue());
-
         sliderElement.maxValue = 15;
         sliderElement.minValue = 5;
         sliderElement.wholeNumbers = true;
