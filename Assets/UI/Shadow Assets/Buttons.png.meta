@@ -1,11 +1,12 @@
 fileFormatVersion: 2
-guid: f97180fd48a7aeb44a28666cd1a8ccaa
-timeCreated: 1481012846
+guid: 8ed11db9bdff2784d87323bcd4032852
+timeCreated: 1481083354
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
-    21300000: Switches_OFF
-    21300002: Switches_ON
+    21300000: Buttons_Normal
+    21300002: Buttons_Hovered
+    21300004: Buttons_Selected
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -55,29 +56,42 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Switches_OFF
+      name: Buttons_Normal
       rect:
         serializedVersion: 2
-        x: 33
-        y: 158
-        width: 241
-        height: 121
+        x: 6
+        y: 82
+        width: 92
+        height: 34
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      border: {x: 6, y: 6, z: 6, w: 6}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: Switches_ON
+      name: Buttons_Hovered
       rect:
         serializedVersion: 2
-        x: 33
-        y: 24
-        width: 241
-        height: 121
+        x: 103
+        y: 84
+        width: 92
+        height: 32
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      border: {x: 5, y: 5, z: 5, w: 5}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Buttons_Selected
+      rect:
+        serializedVersion: 2
+        x: 6
+        y: 43
+        width: 92
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 5, y: 5, z: 5, w: 5}
       outline: []
       tessellationDetail: 0
     outline: []

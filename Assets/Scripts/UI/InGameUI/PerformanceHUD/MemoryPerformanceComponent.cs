@@ -8,6 +8,10 @@
 #endregion
 using UnityEngine;
 
+#if UNITY_5_5_OR_NEWER
+    using UnityEngine.Profiling;
+#endif
+
 /// <summary>
 /// Displays the currently used memory and the currently allocated memory.
 /// </summary>
