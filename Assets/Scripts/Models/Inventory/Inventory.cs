@@ -86,7 +86,7 @@ public class Inventory : ISelectable, IContextActionProvider
     {
         // FIXME: The various Claim related functions should most likely track claim time in an in game time increment.
         DateTime requestTime = DateTime.Now;
-        if (claim == null || (requestTime - claim).TotalSeconds > 5)
+        if ((requestTime - claim).TotalSeconds > 5)
         {
             claim = requestTime;
             return true;
@@ -102,8 +102,7 @@ public class Inventory : ISelectable, IContextActionProvider
 
     public bool CanClaim()
     {
-        DateTime requestTime = DateTime.Now;
-        return claim == null || (requestTime - claim).TotalSeconds > 5;
+        return (DateTime.Now - claim).TotalSeconds > 5;
     }
 
     public string GetName()
