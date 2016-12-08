@@ -30,6 +30,6 @@ public class DialogBoxNewGame : DialogBox
         int height = int.Parse(Height.text);
         int width = int.Parse(Width.text);
         int depth = int.Parse(Depth.text);
-        SceneController.Instance.LoadNewWorld(height, width, depth, GenerateAsteroids.isOn);
+        SceneController.Instance.LoadNewWorld(width, height, depth, GenerateAsteroids.isOn);
     }
 }

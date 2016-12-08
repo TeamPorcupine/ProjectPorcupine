@@ -344,8 +344,14 @@ public class World
 
     public void ResizeWorld(int width, int height, int depth)
     {
-        if (width < Width || height < height || depth < Depth)
+        if (width < Width || height < Height || depth < Depth)
         {
+            if (width < Width)
+                Debug.LogWarning("Width too small: " + Width + " " + width);
+            if (height < Height)
+                Debug.LogWarning("Height too small: " + Height + " " + height);
+            if (depth < Depth)
+                Debug.LogWarning("Depth too small: " + Depth + " " + depth);
             Debug.LogError("Shrinking the world is not presently supported");
             return;
         }
