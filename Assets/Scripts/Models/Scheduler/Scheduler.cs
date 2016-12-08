@@ -214,6 +214,7 @@ namespace Scheduler
             {
                 return;
             }
+
             CleanUp();
             JArray schedulerJArray = (JArray)schedulerToken;
 

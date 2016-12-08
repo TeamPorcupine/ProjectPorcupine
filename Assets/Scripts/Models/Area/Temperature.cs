@@ -185,7 +185,6 @@ public class Temperature
     {
         if (IsWithinThermalDiffusivityBounds(coeff))
         {
-//            Debug.LogWarning(GetIndex(x, y, z) + ": " + x + ", " + y + ", " + z);
             thermalDiffusivity[GetIndex(x, y, z)] = coeff;
         }
     }

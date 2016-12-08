@@ -347,14 +347,24 @@ public class World
         if (width < Width || height < Height || depth < Depth)
         {
             if (width < Width)
+            {
                 Debug.LogWarning("Width too small: " + Width + " " + width);
+            }
+
             if (height < Height)
+            {
                 Debug.LogWarning("Height too small: " + Height + " " + height);
+            }
+
             if (depth < Depth)
+            {
                 Debug.LogWarning("Depth too small: " + Depth + " " + depth);
+            }
+
             Debug.LogError("Shrinking the world is not presently supported");
             return;
         }
+
         Debug.LogWarning("new Size: " + width + ", " + height + ", " + depth);
         Debug.LogWarning("Old Size: " + Width + ", " + Height + ", " + Depth);
 
@@ -364,12 +374,11 @@ public class World
             return;
         }
 
-        int offsetX = (width - Width)/2;
-        int offsetY = (height - Height)/2 + 1;;
+        int offsetX = (width - Width) / 2;
+        int offsetY = ((height - Height) / 2) + 1;
 
         Tile[,,] oldTIles = (Tile[,,])tiles.Clone();
         tiles = new Tile[width, height, depth];
-
 
         Debug.LogWarning("new Size: " + width + ", " + height + ", " + depth);
         Debug.LogWarning("Old Size: " + Width + ", " + Height + ", " + Depth);
@@ -395,26 +404,22 @@ public class World
             {
                 for (int z = 0; z < oldDepth; z++)
                 {
-//                    Debug.LogWarning("Old Tiles: " + x + ", " +y + ", " +z);
-//                    Debug.LogWarning("New World:" + (x + offsetX) + ", " + (y + offsetY) + ", " + z);
                     tiles[x + offsetX, y + offsetY, z] = oldTIles[x, y, z];
                     oldTIles[x, y, z].MoveTile(x + offsetX, y + offsetY, z);
-
                 }
             }   
         }
     }
 
-    public void dumpNullTiles()
+    public void DumpNullTiles()
     {
-
         for (int z = 0; z < Depth; z++)
         {
             for (int x = 0; x < Width; x++)
             {
                 for (int y = 0; y < Height; y++)
                 {
-                    if (tiles[x,y,z] == null)
+                    if (tiles[x, y, z] == null)
                     {
                         Debug.LogWarning(x + ", " + y + ", " + z);
                     }
@@ -422,6 +427,7 @@ public class World
             }
         }
     }
+
     private void SetupWorld(int width, int height, int depth)
     {
         // Set the current world to be this world.

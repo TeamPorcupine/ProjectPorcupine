@@ -216,16 +216,10 @@ public class WorldController : MonoBehaviour
 
     private void CreateEmptyWorld()
     {
-        // get world size from settings
-
-        int width = Settings.GetSetting("worldWidth", 100);
-        int height = Settings.GetSetting("worldHeight", 100);
-
-        // FIXME: Need to read this from settings.
-        height = 100;
-        width = 100;
+        // Set default world size, in case game is loaded from World scene
+        int width = 100;
+        int height = 100;
         int depth = 5;
-
 
         if (SceneController.NewWorldSize != Vector3.zero)
         {
