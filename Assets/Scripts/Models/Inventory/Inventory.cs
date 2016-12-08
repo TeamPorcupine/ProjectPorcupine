@@ -17,7 +17,9 @@ using Newtonsoft.Json.Linq;
 [System.Diagnostics.DebuggerDisplay("Inventory {ObjectType} {StackSize}/{MaxStackSize}")]
 public class Inventory : ISelectable, IContextActionProvider
 {
+    
     private int stackSize = 1;
+    private DateTime claim;
 
     public Inventory()
     {
@@ -81,6 +83,29 @@ public class Inventory : ISelectable, IContextActionProvider
         return new Inventory(this);
     }
 
+    public bool Claim()
+    {
+        // FIXME: The various Claim related functions should most likely track claim time in an in game time increment.
+        DateTime requestTime = DateTime.Now;
+        if (claim == null || (requestTime - claim).TotalSeconds > 5)
+        {
+            claim = requestTime;
+            return true;
+        }
+
+        return false;
+    }
+
+    public void ReleaseClaim()
+    {
+        claim = new DateTime();
+    }
+
+    public bool CanClaim()
+    {
+        DateTime requestTime = DateTime.Now;
+        return claim == null || (requestTime - claim).TotalSeconds > 5;
+    }
     public string GetName()
     {
         return Type;
@@ -152,7 +177,7 @@ public class Inventory : ISelectable, IContextActionProvider
     public bool CanBePickedUp(bool canTakeFromStockpile)
     {
         // You can't pick up stuff that isn't on a tile or if it's locked
-        if (Tile == null || Locked)
+        if (Tile == null || Locked || !CanClaim())
         {
             return false;
         }
