@@ -46,7 +46,7 @@ public class SoundClip
     {
         if (clips == null || clips.Count == 0)
         {
-            Debug.ULogErrorChannel("Audio", "Attempting to access an empty SoundClip.");
+            UnityDebugger.Debugger.LogError("Audio", "Attempting to access an empty SoundClip.");
             return null;
         }
 

@@ -555,10 +555,10 @@ public class Job : ISelectable, IPrototypable
 
     public void FSMLogRequirements()
     {
-        Debug.ULogChannel("FSM", " - {0} {1}", Type, acceptsAny ? "Any" : "All");
+        UnityDebugger.Debugger.Log("FSM", string.Format(" - {0} {1}", Type, acceptsAny ? "Any" : "All"));
         foreach (RequestedItem item in RequestedItems.Values)
         {
-            Debug.ULogChannel("FSM", "   - {0}, min: {1}, max: {2}", item.Type, item.MinAmountRequested, item.MaxAmountRequested);
+            UnityDebugger.Debugger.Log("FSM", string.Format("   - {0}, min: {1}, max: {2}", item.Type, item.MinAmountRequested, item.MaxAmountRequested));
         }
     }
 }

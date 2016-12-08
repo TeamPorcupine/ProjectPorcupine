@@ -151,7 +151,7 @@ public class ModDialogBox : DialogBox
                         }
                         catch (System.Exception error)
                         {
-                            Debug.ULogErrorChannel("ModDialogBox", "Error converting image:" + error.Message);
+                            UnityDebugger.Debugger.LogError("ModDialogBox", "Error converting image:" + error.Message);
                             return;                            
                         }
 
@@ -201,7 +201,7 @@ public class ModDialogBox : DialogBox
         }
         catch (System.Exception error)
         {
-            Debug.ULogErrorChannel("ModDialogBox", "Error deserializing data:" + error.Message);
+            UnityDebugger.Debugger.LogError("ModDialogBox", "Error deserializing data:" + error.Message);
         }        
     }
 }

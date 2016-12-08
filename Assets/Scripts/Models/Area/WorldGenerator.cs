@@ -192,7 +192,7 @@ public class WorldGenerator
             }
             else
             {
-                Debug.ULogErrorChannel("WorldGenerator", "Did not find a 'Asteroid' element in the WorldGenerator definition file.");
+                UnityDebugger.Debugger.LogError("WorldGenerator", "Did not find a 'Asteroid' element in the WorldGenerator definition file.");
             }
 
             if (reader.ReadToNextSibling("StartArea"))
@@ -208,7 +208,7 @@ public class WorldGenerator
             }
             else
             {
-                Debug.ULogErrorChannel("WorldGenerator", "Did not find a 'StartArea' element in the WorldGenerator definition file.");
+                UnityDebugger.Debugger.LogError("WorldGenerator", "Did not find a 'StartArea' element in the WorldGenerator definition file.");
             }
 
             if (reader.ReadToNextSibling("Wallet"))
@@ -224,12 +224,12 @@ public class WorldGenerator
             }
             else
             {
-                Debug.ULogErrorChannel("WorldGenerator", "Did not find a 'Wallet' element in the WorldGenerator definition file.");
+                UnityDebugger.Debugger.LogError("WorldGenerator", "Did not find a 'Wallet' element in the WorldGenerator definition file.");
             }
         }
         else
         {
-            Debug.ULogErrorChannel("WorldGenerator", "Did not find a 'WorldGenerator' element in the WorldGenerator definition file.");
+            UnityDebugger.Debugger.LogError("WorldGenerator", "Did not find a 'WorldGenerator' element in the WorldGenerator definition file.");
         }
     }
 
@@ -261,7 +261,7 @@ public class WorldGenerator
 
                     if (splittedString.Length < startAreaWidth * startAreaHeight)
                     {
-                        Debug.ULogErrorChannel("WorldGenerator", "Error reading 'Tiles' array to short: " + splittedString.Length + " !");
+                        UnityDebugger.Debugger.LogError("WorldGenerator", "Error reading 'Tiles' array to short: " + splittedString.Length + " !");
                         break;
                     }
 

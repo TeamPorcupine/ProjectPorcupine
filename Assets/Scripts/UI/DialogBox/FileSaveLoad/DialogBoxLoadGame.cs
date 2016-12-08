@@ -137,7 +137,7 @@ public class DialogBoxLoadGame : DialogBoxLoadSaveGame
         // from the load dialog box.
 
         // Get the file name from the save file dialog box.
-        Debug.ULogChannel("DialogBoxLoadGame", "LoadWorld button was clicked.");
+        UnityDebugger.Debugger.Log("DialogBoxLoadGame", "LoadWorld button was clicked.");
 
         DialogBoxManager dbm = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
         dbm.dialogBoxPromptOrInfo.SetPrompt("message_loading_game");

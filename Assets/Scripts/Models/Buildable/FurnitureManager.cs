@@ -52,7 +52,7 @@ public class FurnitureManager : IEnumerable<Furniture>
     {
         if (PrototypeManager.Furniture.Has(type) == false)
         {
-            Debug.ULogErrorChannel("World", "furniturePrototypes doesn't contain a proto for key: " + type);
+            UnityDebugger.Debugger.LogError("World", "furniturePrototypes doesn't contain a proto for key: " + type);
             return null;
         }
 

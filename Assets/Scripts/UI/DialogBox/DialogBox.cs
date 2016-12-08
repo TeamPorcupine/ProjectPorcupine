@@ -39,7 +39,7 @@ public class DialogBox : MonoBehaviour
         
         Closed = null;        
 
-        Debug.ULogChannel("ModDialogBox", "openedWhileModal=" + openedWhileModal.ToString());
+        UnityDebugger.Debugger.Log("ModDialogBox", "openedWhileModal=" + openedWhileModal.ToString());
         if (!openedWhileModal)
         {
             GameController.Instance.IsModal = false;

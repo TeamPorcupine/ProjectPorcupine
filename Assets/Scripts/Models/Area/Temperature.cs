@@ -218,7 +218,7 @@ public class Temperature
         else
         {
             // string.format not needed with UberLogger.
-            Debug.ULogWarningChannel("Temperature", "Yep, something is wrong with your temperature: {0}.", temp);
+            UnityDebugger.Debugger.LogWarningFormat("Temperature", "Yep, something is wrong with your temperature: {0}.", temp);
             return false;
         }
     }
@@ -236,7 +236,7 @@ public class Temperature
         }
         else
         {
-            Debug.ULogWarningChannel("Temperature", "Trying to set a thermal diffusivity that may break the world: {0}.", thermal_diff);
+            UnityDebugger.Debugger.LogWarningFormat("Temperature", "Trying to set a thermal diffusivity that may break the world: {0}.", thermal_diff);
             return false;
         }
     }

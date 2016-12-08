@@ -149,7 +149,7 @@ public class InventoryManager
         // Check that it's wanted by the job
         if (job.RequestedItems.ContainsKey(sourceInventory.Type) == false)
         {
-            Debug.ULogErrorChannel(InventoryManagerLogChanel, "Trying to add inventory to a job that it doesn't want.");
+            UnityDebugger.Debugger.LogError(InventoryManagerLogChanel, "Trying to add inventory to a job that it doesn't want.");
             return false;
         }
 
@@ -187,7 +187,7 @@ public class InventoryManager
         }
         else if (character.inventory.Type != sourceInventory.Type)
         {
-            Debug.ULogErrorChannel(InventoryManagerLogChanel, "Character is trying to pick up a mismatched inventory object type.");
+            UnityDebugger.Debugger.LogError(InventoryManagerLogChanel, "Character is trying to pick up a mismatched inventory object type.");
             return false;
         }
 

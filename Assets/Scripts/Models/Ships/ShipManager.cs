@@ -67,7 +67,7 @@ public class ShipManager
     {
         if (PrototypeManager.Ship.Has(type) == false)
         {
-            Debug.ULogErrorChannel("Ships", "Prototype `" + type + "` does not exist");
+            UnityDebugger.Debugger.LogError("Ships", "Prototype `" + type + "` does not exist");
             return null;
         }
 
@@ -139,7 +139,7 @@ public class ShipManager
     {
         if (berthShipMap.ContainsKey(berth) == false || berthShipMap[berth] == null)
         {
-            Debug.ULogErrorChannel("Ships", "No ship berthed here: " + berth.Tile.ToString());
+            UnityDebugger.Debugger.LogError("Ships", "No ship berthed here: " + berth.Tile.ToString());
             return;
         }
 

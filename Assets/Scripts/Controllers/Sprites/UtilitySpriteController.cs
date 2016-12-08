@@ -101,7 +101,7 @@ public class UtilitySpriteController : BaseSpriteController<Utility>
         // Make sure the utility's graphics are correct.
         if (objectGameObjectMap.ContainsKey(util) == false)
         {
-            Debug.ULogErrorChannel("UtilitySpriteController", "OnUtilityChanged -- trying to change visuals for utility not in our map.");
+            UnityDebugger.Debugger.LogError("UtilitySpriteController", "OnUtilityChanged -- trying to change visuals for utility not in our map.");
             return;
         }
 
@@ -115,7 +115,7 @@ public class UtilitySpriteController : BaseSpriteController<Utility>
     {
         if (objectGameObjectMap.ContainsKey(util) == false)
         {
-            Debug.ULogErrorChannel("UtilitySpriteController", "OnUtilityRemoved -- trying to change visuals for utility not in our map.");
+            UnityDebugger.Debugger.LogError("UtilitySpriteController", "OnUtilityRemoved -- trying to change visuals for utility not in our map.");
             return;
         }
 
