@@ -99,10 +99,8 @@ public class WorldGenerator
 //                }
 //            }
 //        }
-        Debug.LogWarning("Bout to Asteroid");
-        if (true && SceneController.GenerateAsteroids)
+        if (SceneController.GenerateAsteroids)
         {
-            Debug.LogWarning("Gen Asteroids");
             for (int z = 0; z < depth; z++)
             {
                 float scaleZ = Mathf.Lerp(1f, .5f, Mathf.Abs((depth / 2f) - z) / depth);

@@ -37,9 +37,9 @@ public class SceneController
     }
 
     // Load the main scene.
-    public void LoadNewWorld(int height, int width, int depth, bool generateAsteroids = true)
+    public void LoadNewWorld(int width, int height, int depth, bool generateAsteroids = true)
     {
-        NewWorldSize = new Vector3(height, width, depth); 
+        NewWorldSize = new Vector3(width, height, depth); 
         GenerateAsteroids = generateAsteroids;
         CleanInstancesBeforeLoadingScene();
         SceneManager.LoadScene(MainSceneName);
