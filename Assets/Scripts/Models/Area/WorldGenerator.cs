@@ -57,12 +57,8 @@ public class WorldGenerator
         int depth = world.Depth;
         int offsetX = Random.Range(0, 10000);
         int offsetY = Random.Range(0, 10000);
-
-        int minEdgeDistance = 0;
         
         int sumOfAllWeightedChances = asteroidInfo.Resources.Select(x => x.WeightedChance).Sum();
-
-
 
         string startAreaFilePath = System.IO.Path.Combine(Application.streamingAssetsPath, "WorldGen/StartArea.sav");
         world.ReadJson(startAreaFilePath);
@@ -114,13 +110,6 @@ public class WorldGenerator
                         if (noiseValue >= asteroidInfo.NoiseThreshhold && !IsStartArea(x, y, world))
                         {
                             Tile tile = world.GetTileAt(x, y, z);
-                            if (tile.X < minEdgeDistance || tile.Y < minEdgeDistance ||
-                            World.Current.Width - tile.X <= minEdgeDistance ||
-                            World.Current.Height - tile.Y <= minEdgeDistance)
-                            {
-                                continue;
-                            }
-
                             tile.SetTileType(asteroidFloorType);
 
                             world.FurnitureManager.PlaceFurniture("astro_wall", tile, false);
