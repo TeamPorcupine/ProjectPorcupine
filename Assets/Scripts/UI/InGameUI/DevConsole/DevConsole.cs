@@ -793,6 +793,9 @@ namespace DeveloperConsole
             // Load Base Commands
             AddCommands(
                 new Command("Help", CoreCommands.Help, "Returns information on all commands"),
+                new Command("Exit", CoreCommands.Exit, "Closes the dev console window"),
+                new Command("Status", CoreCommands.Status),
+                new Command<bool>("DevMode", CoreCommands.DevMode, "Sets the developer mode"),
                 new Command<Vector3>("ChangeCameraPosition", CoreCommands.ChangeCameraPosition, "Change Camera Position (Written in CSharp)"),
                 new Command<string>("Run_LUA", CoreCommands.Run_LUA, "Runs the text as a LUA function"),
                 new Command<string>("SetText", CoreCommands.SetText, "Sets the devConsole text"),

@@ -68,6 +68,23 @@ namespace DeveloperConsole
             }
         }
 
+        public static void Exit()
+        {
+            DevConsole.Close();
+        }
+
+        public static void DevMode(bool isOn)
+        {
+            CommandSettings.DeveloperModeToggle = isOn;
+        }
+
+        public static void Status()
+        {
+            DevConsole.Log("Developer Mode is " + (CommandSettings.DeveloperModeToggle ? "on" : "off"), "yellow");
+            DevConsole.Log("Time is " + (TimeManager.Instance.IsPaused ? "paused" : TimeManager.Instance.TimeScale + "x"), "yellow");
+            // Current In-Game Time
+        }
+
         public static void SetText(string text)
         {
             DevConsole.TextObject().text = "\n" + text;
