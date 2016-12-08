@@ -87,6 +87,11 @@ namespace DeveloperConsole
             return World.Current;
         }
 
+        public static void NewCharacter(Vector3 pos)
+        {
+            GetCurrentWorld().CharacterManager.Create(GetTileAt(pos));
+        }
+
         public static void SetCharacterHealth(string name, float health)
         {
             GetCurrentWorld().CharacterManager.GetFromName(name).Health.CurrentHealth = health;
