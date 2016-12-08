@@ -50,24 +50,12 @@ public class MouseCursor
         
         LoadCursorTexture();
         BuildCursor();
+
+        KeyboardManager.Instance.RegisterInputAction("ToggleCursorTextBox", KeyboardMappedInputType.KeyUp, () => { cursorOverride = !cursorOverride; });
     }
 
     public void Update()
     {
-        // Hold Ctrl and press M to activate.
-        if ((Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && Input.GetKeyDown(KeyCode.M))
-        {
-            // Toggle cursorOverride.
-            if (cursorOverride == false)
-            {
-                cursorOverride = true;
-            }
-            else
-            {
-                cursorOverride = false;
-            }                
-        }
-
         ShowCursor();
 
         if (cursorOverride == true)
@@ -114,8 +102,6 @@ public class MouseCursor
         upperRight = new CursorTextBox(cursorGO, TextAnchor.MiddleLeft, style, upperRightPostion, cursorTextBoxSize);
         lowerLeft = new CursorTextBox(cursorGO, TextAnchor.MiddleRight, style, lowerLeftPostion, cursorTextBoxSize);
         lowerRight = new CursorTextBox(cursorGO, TextAnchor.MiddleLeft, style, lowerRightPostion, cursorTextBoxSize);        
-
-        UnityDebugger.Debugger.Log("MouseCursor", "Cursor Built");
     }
 
     private void UpdateCursor()

@@ -1,4 +1,5 @@
 # ProjectPorcupine [![Build Status](https://travis-ci.org/TeamPorcupine/ProjectPorcupine.svg?branch=master)](https://travis-ci.org/TeamPorcupine/ProjectPorcupine)
+# Project Porcupine will migrate to Unity 5.5.0 on January 1st 2017, be sure to update your Unity installation before then.
 Project Porcupine: A Base-Building Game...in Space!
 
 ![Preview Thumbnail](https://cloud.githubusercontent.com/assets/22880786/19826387/7ad0f0d2-9dd4-11e6-92f3-eb47b395ac63.png)
@@ -65,7 +66,7 @@ Please check the [CONTRIBUTING.md](CONTRIBUTING.md) file for contribution instru
 
 For further information, such as Roadmaps, explanations of systems and features, Standards and Conventions, and all your Git needs and troubleshooting see the [Wiki](https://github.com/TeamPorcupine/ProjectPorcupine/wiki)
 
-Make sure that you are using Unity 5.4.2 [Windows] (https://unity3d.com/get-unity/download?thank-you=update&download_nid=43049&os=Win) | [Mac] (https://unity3d.com/get-unity/download?thank-you=update&download_nid=43049&os=Mac)
+Make sure that you are using Unity 5.4.2 [Windows] (https://unity3d.com/get-unity/download?thank-you=update&download_nid=43049&os=Win) | [Mac] (https://unity3d.com/get-unity/download?thank-you=update&download_nid=43049&os=Mac) but we are currently migrating towards Unity 5.5 [Windows] (https://unity3d.com/get-unity/download?thank-you=update&download_nid=44093&os=Win) | [Mac] (https://unity3d.com/get-unity/download?thank-you=update&download_nid=44093&os=Mac)
 
 ## Vote on Proposed Features
 

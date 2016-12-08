@@ -415,19 +415,22 @@ public class MouseController
 
             for (int y = begin; y != stop; y += increment)
             {
-                Tile t = WorldController.Instance.World.GetTileAt(x, y, WorldController.Instance.cameraController.CurrentLayer);
+                Tile tile = WorldController.Instance.World.GetTileAt(x, y, WorldController.Instance.cameraController.CurrentLayer);
+                if (tile == null)
+                {
+                    // Trying to build off the map, bail out of this cycle.
+                    continue;
+                }
+
                 if (bmc.buildMode == BuildMode.FURNITURE)
                 {
                     // Check for furniture dragType.
                     Furniture proto = PrototypeManager.Furniture.Get(bmc.buildModeType);
 
-                    if (IsPartOfDrag(t, dragParams, proto.DragType))
+                    if (IsPartOfDrag(tile, dragParams, proto.DragType))
                     {
-                        if (t != null)
-                        {
-                            // Call BuildModeController::DoBuild().
-                            bmc.DoBuild(t);
-                        }
+                        // Call BuildModeController::DoBuild().
+                        bmc.DoBuild(tile);
                     }
                 }
                 else if (bmc.buildMode == BuildMode.UTILITY)
@@ -435,24 +438,21 @@ public class MouseController
                     // Check for furniture dragType.
                     Utility proto = PrototypeManager.Utility.Get(bmc.buildModeType);
 
-                    if (IsPartOfDrag(t, dragParams, proto.DragType))
+                    if (IsPartOfDrag(tile, dragParams, proto.DragType))
                     {
-                        if (t != null)
-                        {
-                            // Call BuildModeController::DoBuild().
-                            bmc.DoBuild(t);
-                        }
+                        // Call BuildModeController::DoBuild().
+                        bmc.DoBuild(tile);
                     }
                 }
                 else
                 {
-                    bmc.DoBuild(t);
+                    bmc.DoBuild(tile);
                 }
             }
         }
 
         // In devmode, utilities don't build their network, and one of the utilities built needs UpdateGrid called explicitly after all are built.
-        if (bmc.buildMode == BuildMode.UTILITY && Settings.GetSetting("DialogBoxSettings_developerModeToggle", false))
+        if (bmc.buildMode == BuildMode.UTILITY && Settings.GetSetting("DialogBoxSettingsDevConsole_developerModeToggle", false))
         {
             Tile firstTile = World.Current.GetTileAt(dragParams.RawStartX, dragParams.RawStartY, WorldController.Instance.cameraController.CurrentLayer);
             Utility utility = firstTile.Utilities[PrototypeManager.Utility.Get(bmc.buildModeType).Name];
