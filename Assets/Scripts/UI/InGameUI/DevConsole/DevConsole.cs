@@ -815,7 +815,8 @@ namespace DeveloperConsole
                 new Command("GetRoomIDs", CoreCommands.GetAllRoomIDs, "Logs all the room IDs"),
                 new Command<int, string, Vector3>("DoBuild", CoreCommands.DoBuild, CoreCommands.DoBuildHelp),
                 new Command("DirtyTileGraph", CoreCommands.InvalidateTileGraph, "Invalidates the tile graph"),
-                new Command("GetCharNames", CoreCommands.GetCharacterNames, "Logs all the character names"));
+                new Command("GetCharNames", CoreCommands.GetCharacterNames, "Logs all the character names"),
+                new Command<Vector3>("NewCharacter", CoreCommands.NewCharacter, "Creates a new character at position provided"));
 
             // Load Commands from XML (will be changed to JSON AFTER the current upgrade)
             // Covers both CSharp and LUA
