@@ -32,8 +32,6 @@ public class SchedulerEditorTest
     [SetUp]
     public void Init()
     {
-        Debug.IsLogEnabled = false;
-
         if (FunctionsManager.ScheduledEvent == null)
         {
             new FunctionsManager();
@@ -46,14 +44,14 @@ public class SchedulerEditorTest
             new PrototypeManager();
         }
 
-        PrototypeManager.ScheduledEvent.Add(new ScheduledEvent("ping_log", evt => Debug.ULogChannel("Scheduler", "Event {0} fired", evt.Name)));
+        PrototypeManager.ScheduledEvent.Add(new ScheduledEvent("ping_log", evt => UnityDebugger.Debugger.LogFormat("Scheduler", "Event {0} fired", evt.Name)));
         PrototypeManager.ScheduledEvent.LoadPrototypes(XmlPrototypeString);
 
         // The problem with unit testing singletons
         ///scheduler = Scheduler.Scheduler.Current;
         scheduler = new Scheduler.Scheduler();
 
-        callback = evt => Debug.ULogChannel("SchedulerTest", "Event {0} fired", evt.Name);
+        callback = evt => UnityDebugger.Debugger.LogFormat("SchedulerTest", "Event {0} fired", evt.Name);
     }
 
     [Test]

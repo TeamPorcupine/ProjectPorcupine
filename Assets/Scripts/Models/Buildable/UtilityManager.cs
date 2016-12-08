@@ -39,7 +39,7 @@ public class UtilityManager : IEnumerable<Utility>
     {
         if (PrototypeManager.Utility.Has(type) == false)
         {
-            Debug.ULogErrorChannel("World", "PrototypeManager.Utility doesn't contain a proto for key: " + type);
+            UnityDebugger.Debugger.LogError("World", "PrototypeManager.Utility doesn't contain a proto for key: " + type);
             return null;
         }
 

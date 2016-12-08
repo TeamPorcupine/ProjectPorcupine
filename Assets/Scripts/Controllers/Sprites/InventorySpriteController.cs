@@ -64,7 +64,7 @@ public sealed class InventorySpriteController : BaseSpriteController<Inventory>
         sr.sprite = SpriteManager.GetSprite("Inventory", inventory.Type);
         if (sr.sprite == null)
         {
-            Debug.ULogErrorChannel("InventorySpriteController", "No sprite for: " + inventory.Type);
+            UnityDebugger.Debugger.LogError("InventorySpriteController", "No sprite for: " + inventory.Type);
         }
 
         sr.sortingLayerName = "Inventory";
@@ -90,7 +90,7 @@ public sealed class InventorySpriteController : BaseSpriteController<Inventory>
         // Make sure the furniture's graphics are correct.
         if (objectGameObjectMap.ContainsKey(inventory) == false)
         {
-            Debug.ULogErrorChannel("InventorySpriteController", "OnCharacterChanged -- trying to change visuals for inventory not in our map.");
+            UnityDebugger.Debugger.LogError("InventorySpriteController", "OnCharacterChanged -- trying to change visuals for inventory not in our map.");
             return;
         }
 

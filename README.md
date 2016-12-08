@@ -58,6 +58,8 @@ are licensed under the MIT License and can be found here:
  
 Audio engine : FMOD by Firelight Technologies
 
+Logger: Based on UnityDebugger by Valian (at <https://github.com/Valian/UnityDebugger>), modified source code available at <https://github.com/koosemose/UnityDebugger>
+
 ## Contributing
 
 Please check the [CONTRIBUTING.md](CONTRIBUTING.md) file for contribution instructions and guidelines.

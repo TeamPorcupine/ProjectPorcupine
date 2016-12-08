@@ -108,10 +108,10 @@ public class AutosaveManager
         }
 
         string filePath = Path.Combine(saveDir.ToString(), fileName + ".sav");
-        Debug.ULogChannel("AutosaveManager", "Autosaving to '{0}'.", filePath);
+        UnityDebugger.Debugger.LogFormat("AutosaveManager", "Autosaving to '{0}'.", filePath);
         if (File.Exists(filePath) == true)
         {
-            Debug.ULogErrorChannel("AutosaveManager", "File already exists -- overwriting the file for now.");
+            UnityDebugger.Debugger.LogError("AutosaveManager", "File already exists -- overwriting the file for now.");
         }
 
         WorldController.Instance.SaveWorld(filePath);

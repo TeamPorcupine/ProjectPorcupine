@@ -122,7 +122,7 @@ public class CharacterSpriteController : BaseSpriteController<Character>
 
         if (objectGameObjectMap.ContainsKey(character) == false)
         {
-            Debug.ULogErrorChannel("CharacterSpriteController", "OnCharacterChanged -- trying to change visuals for character not in our map.");
+            UnityDebugger.Debugger.LogError("CharacterSpriteController", "OnCharacterChanged -- trying to change visuals for character not in our map.");
             return;
         }
 

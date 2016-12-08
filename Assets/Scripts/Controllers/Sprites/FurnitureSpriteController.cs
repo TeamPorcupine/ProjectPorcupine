@@ -184,7 +184,7 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
         // Make sure the furniture's graphics are correct.
         if (objectGameObjectMap.ContainsKey(furn) == false)
         {
-            Debug.ULogErrorChannel("FurnitureSpriteController", "OnFurnitureChanged -- trying to change visuals for furniture not in our map.");
+            UnityDebugger.Debugger.LogError("FurnitureSpriteController", "OnFurnitureChanged -- trying to change visuals for furniture not in our map.");
             return;
         }
 
@@ -232,7 +232,7 @@ public class FurnitureSpriteController : BaseSpriteController<Furniture>
     {
         if (objectGameObjectMap.ContainsKey(furn) == false)
         {
-            Debug.ULogErrorChannel("FurnitureSpriteController", "OnFurnitureRemoved -- trying to change visuals for furniture not in our map.");
+            UnityDebugger.Debugger.LogError("FurnitureSpriteController", "OnFurnitureRemoved -- trying to change visuals for furniture not in our map.");
             return;
         }
 

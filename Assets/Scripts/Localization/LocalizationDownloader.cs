@@ -73,8 +73,8 @@ namespace ProjectPorcupine.Localization
             if (string.IsNullOrEmpty(versionChecker.error) == false)
             {
                 // This could be a thing when for example user has no internet connection.
-                Debug.ULogErrorChannel("LocalizationDownloader", "Error while checking for localization updates. Are you sure that you're connected to the internet?");
-                Debug.ULogErrorChannel("LocalizationDownloader", versionChecker.error);
+                UnityDebugger.Debugger.LogError("LocalizationDownloader", "Error while checking for localization updates. Are you sure that you're connected to the internet?");
+                UnityDebugger.Debugger.LogError("LocalizationDownloader", versionChecker.error);
                 yield break;
             }
 
@@ -89,7 +89,7 @@ namespace ProjectPorcupine.Localization
             }
             catch (Exception e)
             {
-                Debug.ULogErrorChannel("LocalizationDownloader", e.Message);
+                UnityDebugger.Debugger.LogError("LocalizationDownloader", e.Message);
             }
 
             if (latestCommitHash != currentLocalizationVersion)
@@ -97,7 +97,7 @@ namespace ProjectPorcupine.Localization
                 // There are still some updates available. We should probably notify
                 // user about it and offer him an option to download it right now.
                 // For now... Let's just force it >.> Beginners task!
-                Debug.ULogChannel("LocalizationDownloader", "There is an update for localization files!");
+                UnityDebugger.Debugger.Log("LocalizationDownloader", "There is an update for localization files!");
                 yield return DownloadLocalizationFromWeb(onLocalizationDownloadedCallback);
 
                 // Because config.xml exists in the new downloaded localization, we have to add the version element to it.
@@ -117,7 +117,7 @@ namespace ProjectPorcupine.Localization
                 {
                     // Not a big deal:
                     // Next time the LocalizationDownloader will force an update.
-                    Debug.ULogWarningChannel("LocalizationDownloader", "Writing version in config.xml file failed: " + e.Message);
+                    UnityDebugger.Debugger.LogWarning("LocalizationDownloader", "Writing version in config.xml file failed: " + e.Message);
                     throw;
                 }
             }
@@ -134,14 +134,14 @@ namespace ProjectPorcupine.Localization
                 www.Dispose();
             }
 
-            Debug.ULogChannel("LocalizationDownloader", "Localization files download has started");
+            UnityDebugger.Debugger.Log("LocalizationDownloader", "Localization files download has started");
 
             www = new WWW(LocalizationRepositoryZipLocation);
 
             // Wait for www to download current localization files.
             yield return www;
 
-            Debug.ULogChannel("LocalizationDownloader", "Localization files download has finished!");
+            UnityDebugger.Debugger.Log("LocalizationDownloader", "Localization files download has finished!");
 
             // Almost like a callback call
             OnDownloadLocalizationComplete(onLocalizationDownloadedCallback);
@@ -156,7 +156,7 @@ namespace ProjectPorcupine.Localization
             if (www.isDone == false)
             {
                 // This should never happen.
-                Debug.ULogErrorChannel("LocalizationDownloader", "OnDownloadLocalizationComplete got called before www finished downloading.");
+                UnityDebugger.Debugger.LogError("LocalizationDownloader", "OnDownloadLocalizationComplete got called before www finished downloading.");
                 www.Dispose();
                 return;
             }
@@ -164,8 +164,8 @@ namespace ProjectPorcupine.Localization
             if (string.IsNullOrEmpty(www.error) == false)
             {
                 // This could be a thing when for example user has no internet connection.
-                Debug.ULogErrorChannel("LocalizationDownloader", "Error while downloading localizations files.");
-                Debug.ULogErrorChannel("LocalizationDownloader", www.error);
+                UnityDebugger.Debugger.LogError("LocalizationDownloader", "Error while downloading localizations files.");
+                UnityDebugger.Debugger.LogError("LocalizationDownloader", www.error);
                 return;
             }
 
@@ -232,14 +232,14 @@ namespace ProjectPorcupine.Localization
             {
                 if (file.Name != "en_US.lang" && file.Name != "en_US.lang.meta")
                 {
-                    Debug.ULogErrorChannel("LocalizationDownloader", "There should only be en_US.lang and en_US.lang.meta. Instead there is: " + file.Name);
+                    UnityDebugger.Debugger.LogError("LocalizationDownloader", "There should only be en_US.lang and en_US.lang.meta. Instead there is: " + file.Name);
                 }
             }
 
             DirectoryInfo[] dirInfo = localizationFolderInfo.GetDirectories();
             if (dirInfo.Length > 1)
             {
-                Debug.ULogErrorChannel("LocalizationDownloader", "There should be only one directory");
+                UnityDebugger.Debugger.LogError("LocalizationDownloader", "There should be only one directory");
             }
 
             // Move files from ProjectPorcupineLocalization-*branch name* to Application.streamingAssetsPath/Localization.
@@ -256,7 +256,7 @@ namespace ProjectPorcupine.Localization
             // Remove ProjectPorcupineLocalization-*branch name*
             Directory.Delete(dirInfo[0].FullName);
 
-            Debug.ULogChannel("LocalizationDownloader", "New localization files successfully downloaded!");
+            UnityDebugger.Debugger.Log("LocalizationDownloader", "New localization files successfully downloaded!");
 
             onLocalizationDownloadedCallback();
         }
@@ -271,7 +271,7 @@ namespace ProjectPorcupine.Localization
                 // b) We are in a wrong directory, so let's hope we didn't delete anything important.
                 if (file.Extension != ".lang" && file.Extension != ".meta" && file.Extension != ".ver" && file.Extension != ".md" && file.Name != "config.xml")
                 {
-                    Debug.ULogErrorChannel("LocalizationDownloader", "SOMETHING WENT HORRIBLY WRONG AT DOWNLOADING LOCALIZATION!");
+                    UnityDebugger.Debugger.LogError("LocalizationDownloader", "SOMETHING WENT HORRIBLY WRONG AT DOWNLOADING LOCALIZATION!");
                     throw new Exception("SOMETHING WENT HORRIBLY WRONG AT DOWNLOADING LOCALIZATION!");
                 }
 
@@ -317,12 +317,12 @@ namespace ProjectPorcupine.Localization
             catch (FileNotFoundException)
             {
                 // It's fine - we will create that file later.
-                Debug.ULogChannel("LocalizationDownloader", localizationConfigFilePath + " file not found, forcing an update.");
+                UnityDebugger.Debugger.Log("LocalizationDownloader", localizationConfigFilePath + " file not found, forcing an update.");
             }
             catch (DirectoryNotFoundException)
             {
                 // This is probably first launch of the game.
-                Debug.ULogChannel("LocalizationDownloader", LocalizationFolderPath + " folder not found, creating...");
+                UnityDebugger.Debugger.Log("LocalizationDownloader", LocalizationFolderPath + " folder not found, creating...");
 
                 try
                 {

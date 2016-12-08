@@ -85,7 +85,7 @@ namespace ProjectPorcupine.Localization
             if (!missingKeysLogged.Contains(key))
             {
                 missingKeysLogged.Add(key);
-                Debug.ULogChannel("LocalizationTable", string.Format("Translation for {0} in {1} language failed: Key not in dictionary.", key, language));
+                UnityDebugger.Debugger.Log("LocalizationTable", string.Format("Translation for {0} in {1} language failed: Key not in dictionary.", key, language));
             }
 
             switch (fallbackMode)
@@ -103,7 +103,7 @@ namespace ProjectPorcupine.Localization
         {
             if (localizationConfigurations.ContainsKey(code) == false)
             {
-                Debug.ULogChannel("LocalizationTable", "name of " + code + " is not present in config.xml");
+                UnityDebugger.Debugger.Log("LocalizationTable", "name of " + code + " is not present in config.xml");
                 return code;
             }
 
@@ -145,7 +145,7 @@ namespace ProjectPorcupine.Localization
 
             if (File.Exists(pathToConfigFile) == false)
             {
-                Debug.ULogErrorChannel("LocalizationTable", "No config file found at: " + pathToConfigFile);
+                UnityDebugger.Debugger.LogError("LocalizationTable", "No config file found at: " + pathToConfigFile);
                 configExists = false;
                 return;
             }
@@ -206,7 +206,7 @@ namespace ProjectPorcupine.Localization
                     // For now lets assume that passing in { or } without a number in between is likely an error
                     // why would a string need curly brackets in game?
                     // Note: this removes the curly braces and cannot replace them since string.split doesn't say whether { or } appeared
-                    Debug.ULogWarningChannel("LocalizationTable", "{ or } exist in localization string '" + original + "' for " + currentLanguage + "but do not enclose a number for string substitution.");
+                    UnityDebugger.Debugger.LogWarning("LocalizationTable", "{ or } exist in localization string '" + original + "' for " + currentLanguage + "but do not enclose a number for string substitution.");
                 }
             }
 
@@ -238,7 +238,7 @@ namespace ProjectPorcupine.Localization
 
                 if (configExists && localizationConfigurations.ContainsKey(localizationCode) == false)
                 {
-                    Debug.ULogErrorChannel("LocalizationTable", "Language: " + localizationCode + " not defined in localization/config.xml");
+                    UnityDebugger.Debugger.LogError("LocalizationTable", "Language: " + localizationCode + " not defined in localization/config.xml");
                 }
 
                 // Only the current and default languages translations will be loaded in memory.
@@ -247,7 +247,7 @@ namespace ProjectPorcupine.Localization
                     bool rightToLeftLanguage;
                     if (localizationConfigurations.ContainsKey(localizationCode) == false)
                     {
-                        Debug.ULogWarningChannel("LocalizationTable", "Assuming " + localizationCode + " is LTR");
+                        UnityDebugger.Debugger.LogWarning("LocalizationTable", "Assuming " + localizationCode + " is LTR");
                         rightToLeftLanguage = false;
                     }
                     else
@@ -263,7 +263,7 @@ namespace ProjectPorcupine.Localization
 
                         if (keyValuePair.Length != 2)
                         {
-                            Debug.ULogErrorChannel("LocalizationTable", string.Format("Invalid format of localization string. Actual {0}", line));
+                            UnityDebugger.Debugger.LogError("LocalizationTable", string.Format("Invalid format of localization string. Actual {0}", line));
                             continue;
                         }
 
@@ -279,7 +279,7 @@ namespace ProjectPorcupine.Localization
             }
             catch (FileNotFoundException exception)
             {
-                Debug.ULogErrorChannel("LocalizationTable", new Exception(string.Format("There is no localization file for {0}", localizationCode), exception).ToString());
+                UnityDebugger.Debugger.LogError("LocalizationTable", new Exception(string.Format("There is no localization file for {0}", localizationCode), exception).ToString());
             }
         }
     }

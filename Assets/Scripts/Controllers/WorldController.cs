@@ -46,10 +46,9 @@ public class WorldController : MonoBehaviour
     // Use this for initialization.
     public void OnEnable()
     {
-        Debug.IsLogEnabled = true;
         if (Instance != null)
         {
-            Debug.ULogErrorChannel("WorldController", "There should never be two world controllers.");
+            UnityDebugger.Debugger.LogError("WorldController", "There should never be two world controllers.");
         }
 
         Instance = this;
@@ -64,7 +63,7 @@ public class WorldController : MonoBehaviour
         PrototypeManager.ScheduledEvent.Add(
             new ScheduledEvent(
                 "ping_log",
-                (evt) => Debug.ULogChannel("Scheduler", "Event {0} fired", evt.Name)));
+                (evt) => UnityDebugger.Debugger.LogFormat("Scheduler", "Event {0} fired", evt.Name)));
 
         modsManager = new ModsManager();
 
@@ -240,7 +239,7 @@ public class WorldController : MonoBehaviour
 
     private void CreateWorldFromSaveFile(string fileName)
     {
-        Debug.ULogChannel("WorldController", "CreateWorldFromSaveFile");
+        UnityDebugger.Debugger.Log("WorldController", "CreateWorldFromSaveFile");
 
         World = new World();
         World.ReadJson(fileName);

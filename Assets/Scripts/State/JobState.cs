@@ -100,7 +100,7 @@ namespace ProjectPorcupine.State
         private void AbandonJob()
         {
             DebugLog(" - Job abandoned!");
-            Debug.ULogChannel("Character", character.GetName() + " abandoned their job.");
+            UnityDebugger.Debugger.Log("Character", character.GetName() + " abandoned their job.");
 
             Job.OnJobCompleted -= OnJobCompleted;
             Job.OnJobStopped -= OnJobStopped;
@@ -134,7 +134,7 @@ namespace ProjectPorcupine.State
 
             if (Job != stoppedJob)
             {
-                Debug.ULogErrorChannel("Character", "Character being told about job that isn't his. You forgot to unregister something.");
+                UnityDebugger.Debugger.LogError("Character", "Character being told about job that isn't his. You forgot to unregister something.");
                 return;
             }
         }
@@ -153,7 +153,7 @@ namespace ProjectPorcupine.State
 
                 if (Job != finishedJob)
                 {
-                    Debug.ULogErrorChannel("Character", "Character being told about job that isn't his. You forgot to unregister something.");
+                    UnityDebugger.Debugger.LogError("Character", "Character being told about job that isn't his. You forgot to unregister something.");
                     return;
                 }
             }

@@ -18,11 +18,11 @@ public class DialogButton : DialogControl
         buttonName = buttonName.Replace(" ", "_");
         EventActions dialogEvents = transform.GetComponentInParent<ModDialogBox>().events;
 
-        Debug.ULogChannel("ModDialogBox", "Calling On" + buttonName + "Clicked function");
+        UnityDebugger.Debugger.Log("ModDialogBox", "Calling On" + buttonName + "Clicked function");
 
         if (dialogEvents.HasEvent("On" + buttonName + "Clicked") == true)
         {
-            Debug.ULogChannel("ModDialogBox", "Found On" + buttonName + "Clicked event");
+            UnityDebugger.Debugger.Log("ModDialogBox", "Found On" + buttonName + "Clicked event");
             dialogEvents.Trigger<ModDialogBox>("On" + buttonName + "Clicked", transform.GetComponentInParent<ModDialogBox>());
         }
     }

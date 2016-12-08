@@ -238,7 +238,7 @@ public class Ship : IPrototypable
     {
         if (goalBerth == null)
         {
-            Debug.ULogError("Ships", "Destination berth should not be set to null this way. Use Berth property or SetDestination(x,y) instead.");
+            UnityDebugger.Debugger.LogError("Ships", "Destination berth should not be set to null this way. Use Berth property or SetDestination(x,y) instead.");
             return;
         }
 
@@ -297,7 +297,7 @@ public class Ship : IPrototypable
                 // Change tile to defined contents
                 if (tile.Type.Equals(TileType.Empty) == false || tile.Furniture != null)
                 {
-                    Debug.ULogErrorChannel("Ships", "Tile " + tile.X + "," + tile.Y + " is not empty. Replacing anyway.");
+                    UnityDebugger.Debugger.LogError("Ships", "Tile " + tile.X + "," + tile.Y + " is not empty. Replacing anyway.");
                 }
 
                 tile.SetTileType(PrototypeManager.TileType.Get(tileTypes[x, y]));
@@ -432,7 +432,7 @@ public class Ship : IPrototypable
             default:
                 worldX = 0;
                 worldY = 0;
-                Debug.ULogErrorChannel("Ships", "Invalid berthing direction: " + BerthDirection);
+                UnityDebugger.Debugger.LogError("Ships", "Invalid berthing direction: " + BerthDirection);
                 break;
         }
 
