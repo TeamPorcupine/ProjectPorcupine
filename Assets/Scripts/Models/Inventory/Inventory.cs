@@ -17,7 +17,6 @@ using Newtonsoft.Json.Linq;
 [System.Diagnostics.DebuggerDisplay("Inventory {ObjectType} {StackSize}/{MaxStackSize}")]
 public class Inventory : ISelectable, IContextActionProvider
 {
-    
     private int stackSize = 1;
     private DateTime claim;
 
@@ -106,6 +105,7 @@ public class Inventory : ISelectable, IContextActionProvider
         DateTime requestTime = DateTime.Now;
         return claim == null || (requestTime - claim).TotalSeconds > 5;
     }
+
     public string GetName()
     {
         return Type;
