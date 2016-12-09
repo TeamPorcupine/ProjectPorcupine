@@ -67,7 +67,7 @@ namespace Animation
         {
             if (frame >= frameCount)
             {
-                Debug.ULogErrorChannel("Animation", "SetFrame frame " + frame + " int is larger than array length " + frameCount + ".");
+                UnityDebugger.Debugger.LogError("Animation", "SetFrame frame " + frame + " int is larger than array length " + frameCount + ".");
                 return;
             }
 

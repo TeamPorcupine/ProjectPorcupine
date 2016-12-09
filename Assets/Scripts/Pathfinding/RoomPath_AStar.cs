@@ -22,7 +22,7 @@ public class RoomPath_AStar
     {
         if (path == null || !path.Any())
         {
-            Debug.ULogWarningChannel("Path_AStar", "Created path with no tiles, is this intended?");
+            UnityDebugger.Debugger.LogWarning("Path_AStar", "Created path with no tiles, is this intended?");
         }
 
         this.path = path;
@@ -57,7 +57,7 @@ public class RoomPath_AStar
         // Make sure our start/end tiles are in the list of nodes!
         if (nodes.ContainsKey(roomStart) == false)
         {
-            Debug.ULogErrorChannel("Path_AStar", "The starting tile isn't in the list of nodes!");
+            UnityDebugger.Debugger.LogError("Path_AStar", "The starting tile isn't in the list of nodes!");
 
             return;
         }
@@ -141,13 +141,13 @@ public class RoomPath_AStar
     {
         if (path == null)
         {
-            Debug.ULogErrorChannel("Path_AStar", "Attempting to dequeue from an null path.");
+            UnityDebugger.Debugger.LogError("Path_AStar", "Attempting to dequeue from an null path.");
             return null;
         }
 
         if (path.Count <= 0)
         {
-            Debug.ULogErrorChannel("Path_AStar", "Path queue is zero or less elements long.");
+            UnityDebugger.Debugger.LogError("Path_AStar", "Path queue is zero or less elements long.");
             return null;
         }
 
@@ -168,7 +168,7 @@ public class RoomPath_AStar
     {
         if (path == null || path.Count == 0)
         {
-            Debug.ULogChannel("Path_AStar", "Path is null or empty.");
+            UnityDebugger.Debugger.Log("Path_AStar", "Path is null or empty.");
             return null;
         }
 

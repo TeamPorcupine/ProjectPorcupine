@@ -240,7 +240,7 @@ public class Character : ISelectable, IContextActionProvider
         {
             LocalizationKey = "Poke " + GetName(),
             RequireCharacterSelected = false,
-            Action = (cm, c) => { Debug.ULogChannel("Character", GetDescription()); health.CurrentHealth -= 5; }
+            Action = (cm, c) => { UnityDebugger.Debugger.Log("Character", GetDescription()); health.CurrentHealth -= 5; }
         };
 
         yield return new ContextMenuAction
@@ -499,7 +499,7 @@ public class Character : ISelectable, IContextActionProvider
             int statValue;
             if (!int.TryParse(reader.GetAttribute("value"), out statValue))
             {
-                Debug.ULogErrorChannel("Character", "Stat element did not have a value!");
+                UnityDebugger.Debugger.LogError("Character", "Stat element did not have a value!");
                 continue;
             }
 
@@ -556,7 +556,7 @@ public class Character : ISelectable, IContextActionProvider
             stats.Add(newStat.Type, newStat);
         }
 
-        Debug.ULogChannel("Character", "Initialized " + stats.Count + " Stats.");
+        UnityDebugger.Debugger.Log("Character", "Initialized " + stats.Count + " Stats.");
     }
 
     /// <summary>

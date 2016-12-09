@@ -86,7 +86,7 @@ namespace ProjectPorcupine.State
                     //            so that we don't waste a bunch of time walking towards a dead end.
                     //            To save CPU, maybe we can only check every so often?
                     //            Or maybe we should register a callback to the OnTileChanged event?
-                    // Debug.ULogErrorChannel("FIXME", "A character was trying to enter an unwalkable tile.");
+                    // UnityDebugger.Debugger.LogErrorChannel("FIXME", "A character was trying to enter an unwalkable tile.");
 
                     // Should the character show that he is surprised to find a wall?
                     Finished();

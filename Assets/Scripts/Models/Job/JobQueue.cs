@@ -131,14 +131,14 @@ public class JobQueue
             {
                 if (CharacterCantReachHelper(job, character))
                 {
-                    Debug.ULogError("Character could not find a path to the job site.");
+                    UnityDebugger.Debugger.LogError("Character could not find a path to the job site.");
                     ReInsertHelper(job);
                     continue;
                 }
                 else if ((job.RequestedItems.Count > 0) && !job.CanGetToInventory(character))
                 {
                     job.AddCharCantReach(character);
-                    Debug.ULogError("Character could not find a path to any inventory available.");
+                    UnityDebugger.Debugger.LogError("Character could not find a path to any inventory available.");
                     ReInsertHelper(job);
                     continue;
                 }
@@ -273,6 +273,6 @@ public class JobQueue
     [System.Diagnostics.Conditional("FSM_DEBUG_LOG")]
     private void DebugLog(string message, params object[] par)
     {
-        Debug.ULogChannel("FSM", message, par);
+        UnityDebugger.Debugger.LogFormat("FSM", message, par);
     }
 }

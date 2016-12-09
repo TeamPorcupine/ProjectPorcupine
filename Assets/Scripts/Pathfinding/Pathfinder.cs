@@ -345,7 +345,7 @@ namespace ProjectPorcupine.Pathfinding
         [System.Diagnostics.Conditional("PATHFINDER_DEBUG_LOG")]
         private static void DebugLog(string message, params object[] par)
         {
-            Debug.ULogChannel("Pathfinding", message, par);
+            UnityDebugger.Debugger.LogFormat("Pathfinding", message, par);
         }
 
         [System.Diagnostics.Conditional("PATHFINDER_DEBUG_LOG")]

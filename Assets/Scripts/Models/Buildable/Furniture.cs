@@ -27,9 +27,6 @@ using UnityEngine;
 public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBuildable
 {
     #region Private Variables
-    // Prevent construction too close to the world's edge
-    private const int MinEdgeDistance = 5;
-
     private string isEnterableAction;
     
     /// <summary>
@@ -405,7 +402,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     {
         if (proto.IsValidPosition(tile) == false)
         {
-            Debug.ULogWarningChannel("Furniture", "PlaceInstance :: Position Validity Function returned FALSE. " + proto.Name + " " + tile.X + ", " + tile.Y + ", " + tile.Z);
+            UnityDebugger.Debugger.LogWarning("Furniture", "PlaceInstance :: Position Validity Function returned FALSE. " + proto.Name + " " + tile.X + ", " + tile.Y + ", " + tile.Z);
             return null;
         }
 
@@ -566,7 +563,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
 
         if (maxValue == 0)
         {
-            Debug.ULogError("SetAnimationProgressValue maxValue is zero");
+            UnityDebugger.Debugger.LogError("SetAnimationProgressValue maxValue is zero");
         }
 
         float percent = Mathf.Clamp01(currentValue / maxValue);
@@ -894,7 +891,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     {
         if (HasTypeTag("Storage") == false)
         {
-            Debug.ULogChannel("Stockpile_messages", "Someone is asking a non-stockpile to store stuff!?");
+            UnityDebugger.Debugger.Log("Stockpile_messages", "Someone is asking a non-stockpile to store stuff!?");
             return null;
         }
 
@@ -1216,15 +1213,6 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
     /// <returns>True if the tile is valid for the placement of the furniture.</returns>
     public bool IsValidPosition(Tile tile)
     {
-        bool tooCloseToEdge = tile.X < MinEdgeDistance || tile.Y < MinEdgeDistance ||
-                              World.Current.Width - tile.X <= MinEdgeDistance ||
-                              World.Current.Height - tile.Y <= MinEdgeDistance;
-
-        if (tooCloseToEdge)
-        {
-            return false;
-        }
-
         if (HasTypeTag("OutdoorOnly"))
         {
             if (tile.Room == null || !tile.Room.IsOutsideRoom())
