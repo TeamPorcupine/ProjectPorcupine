@@ -284,6 +284,12 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
         {
             // HACK: This will work for now, but needs expanded when we have other types of connections we'll want to plug in
             obj.Tile.Furniture.GetComponent<PowerConnection>("PowerConnection").Reconnect();
+            IPluggable pluggableComponent = obj.Tile.Furniture.GetPluggable(proto.typeTags);
+            if (pluggableComponent != null)
+            {
+                // plug in
+                pluggableComponent.Reconnect();
+            }
         }
 
         // Call LUA install scripts

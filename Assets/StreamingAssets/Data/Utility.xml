@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Utilities>
-  <Utility type="util_power_cable">
+  <Utility type="power_cable">
     <Name>Power Cables</Name>
     <Description>This is a power cable.</Description>
     <TypeTag>Power</TypeTag>
@@ -20,7 +20,7 @@
     <UnlocalizedDescription>util_power_cable_desc</UnlocalizedDescription>
   </Utility>
   
-  <Utility type="util_fluid_pipe">
+  <Utility type="fluid_pipe">
     <Name>Fluid Pipe</Name>
     <Description>This is a fluid pipe.</Description>
     <TypeTag>Fluid</TypeTag>

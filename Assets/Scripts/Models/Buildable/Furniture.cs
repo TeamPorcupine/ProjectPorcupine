@@ -1095,6 +1095,25 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         yield return GetProgressInfo();
     }
 
+
+
+    public IPluggable GetPluggable(HashSet<string> utilityTags)
+    {
+        if (components != null)
+        {
+            foreach (BuildableComponent component in components)
+            {
+                IPluggable pluggable = component as IPluggable;
+                if (pluggable != null && utilityTags.Contains(pluggable.UtilityType))
+                {
+                    return pluggable;
+                }
+            }
+        }
+
+        return null;
+    }
+
     /// <summary>
     /// Gets component if present or null.
     /// </summary>
