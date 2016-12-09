@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: ec81cdf726ec46d46a85e2ed0576bf3b
-timeCreated: 1481246320
+timeCreated: 1481248330
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -11,6 +11,8 @@ TextureImporter:
     21300008: TimeScaleControls_4x
     21300010: TimeScaleControls_.5x
     21300012: TimeScaleControls_.33x
+    21300014: TimeScaleControls_Minus
+    21300016: TimeScaleControls_Add
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -145,6 +147,32 @@ TextureImporter:
         y: 129
         width: 56
         height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: TimeScaleControls_Minus
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 65
+        width: 41
+        height: 11
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: TimeScaleControls_Add
+      rect:
+        serializedVersion: 2
+        x: 9
+        y: 12
+        width: 41
+        height: 41
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}

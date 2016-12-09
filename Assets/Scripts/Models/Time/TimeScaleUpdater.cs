@@ -69,4 +69,31 @@ public class TimeScaleUpdater : MonoBehaviour
 
         imageElement.gameObject.SetActive(oldTimeScalePosition != -1);
     }
+
+    public void IncreaseSpeed()
+    {
+        if (TimeManager.Instance != null)
+        {
+            TimeManager.Instance.IncreaseTimeScale();
+            TimeManager.Instance.IsPaused = false;
+        }
+    }
+
+    public void DecreaseSpeed()
+    {
+        if (TimeManager.Instance != null)
+        {
+            TimeManager.Instance.DecreaseTimeScale();
+            TimeManager.Instance.IsPaused = false;
+        }
+    }
+
+    public void PauseSpeed()
+    {
+        if (TimeManager.Instance != null)
+        {
+            // Toggle
+            TimeManager.Instance.IsPaused = !TimeManager.Instance.IsPaused;
+        }
+    }
 }
