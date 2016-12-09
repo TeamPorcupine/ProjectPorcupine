@@ -118,9 +118,9 @@ namespace ProjectPorcupine.Buildable.Components
             get { return IsAccumulator && AccumulatedAmount.IsZero(); }
         }
 
-        public UtilityType UtilityType { 
+        public string UtilityType { 
             get { 
-                return UtilityType.Fluid;
+                return "Fluid";
             }
         }
 

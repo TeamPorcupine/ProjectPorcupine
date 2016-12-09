@@ -33,7 +33,7 @@ namespace ProjectPorcupine.PowerNetwork
 
         bool IsEmpty { get; }
 
-        UtilityType UtilityType { get;}
+        string UtilityType { get;}
 
         string SubType { get; set;}
 

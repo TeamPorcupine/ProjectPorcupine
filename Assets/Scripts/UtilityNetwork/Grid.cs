@@ -20,6 +20,7 @@ namespace ProjectPorcupine.PowerNetwork
         public Grid()
         {
             connections = new HashSet<IPluggable>();
+            UtilityType = "";
             SubType = "";
         }
 
@@ -47,7 +48,7 @@ namespace ProjectPorcupine.PowerNetwork
             }
         }
 
-        public UtilityType UtilityType { get; private set; }
+        public string UtilityType { get; private set; }
 
         public string SubType { get; private set; }
 
@@ -68,15 +69,15 @@ namespace ProjectPorcupine.PowerNetwork
                 throw new ArgumentNullException("connection");
             }
 
-            if (UtilityType != UtilityType.Null && UtilityType != connection.UtilityType)
+            if (UtilityType != string.Empty && UtilityType != connection.UtilityType)
             {
-                Debug.LogWarning("UtilityType isn't null and doesn't match, no plugin");
+                UnityDebugger.Debugger.LogWarning("UtilityType isn't null and doesn't match, no plugin");
                 return false;
             }
 
             if (SubType != string.Empty && connection.SubType != string.Empty && SubType != connection.SubType)
             {
-                Debug.LogWarning("Neither SubType is empty, and they don't match, no plugin");
+                UnityDebugger.Debugger.LogWarning("Neither SubType is empty, and they don't match, no plugin");
                 return false;
             }
 
@@ -109,11 +110,11 @@ namespace ProjectPorcupine.PowerNetwork
 
             if (!CanPlugIn(connection))
             {
-                Debug.LogWarning("Can't Plugin");
+                UnityDebugger.Debugger.LogWarning("Can't Plugin");
                 return false;
             }
 
-            if (UtilityType == UtilityType.Null)
+            if (UtilityType == string.Empty)
             {
                 UtilityType = connection.UtilityType;
             }
