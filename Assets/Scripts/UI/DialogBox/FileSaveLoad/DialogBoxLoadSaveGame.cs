@@ -29,7 +29,7 @@ public class DialogBoxLoadSaveGame : DialogBox
     {
         if (Directory.Exists(directoryPath) == false)
         {
-            Debug.ULogWarningChannel("DialogBoxLoadSaveGame", "Directory: " + directoryPath + " doesn't exist - creating.");
+            UnityDebugger.Debugger.LogWarning("DialogBoxLoadSaveGame", "Directory: " + directoryPath + " doesn't exist - creating.");
             Directory.CreateDirectory(directoryPath);
         }
     }

@@ -258,7 +258,7 @@ public class OverlayMap : MonoBehaviour
 
             if (FunctionsManager.Overlay.HasFunction(descr.LuaFunctionName) == false)
             {
-                Debug.ULogErrorChannel("OverlayMap", string.Format("Couldn't find a function named '{0}' in '{1}'", descr.LuaFunctionName));
+                UnityDebugger.Debugger.LogError("OverlayMap", string.Format("Couldn't find a function named '{0}' in '{1}'", descr.LuaFunctionName));
                 return;
             }
 
@@ -277,7 +277,7 @@ public class OverlayMap : MonoBehaviour
                 {
                     if (loggedOnce == false)
                     {
-                        Debug.ULogErrorChannel("OverlayMap", string.Format("The return value from the function named '{0}' was null for tile at ({1}, {2}, {3})", descr.LuaFunctionName, x, y, z));
+                        UnityDebugger.Debugger.LogError("OverlayMap", string.Format("The return value from the function named '{0}' was null for tile at ({1}, {2}, {3})", descr.LuaFunctionName, x, y, z));
                         loggedOnce = true;
                     }
                     
@@ -293,7 +293,7 @@ public class OverlayMap : MonoBehaviour
         }
         else
         {
-            Debug.ULogWarningChannel("OverlayMap", string.Format("Overlay with name {0} not found in prototypes", name));
+            UnityDebugger.Debugger.LogWarning("OverlayMap", string.Format("Overlay with name {0} not found in prototypes", name));
         }
     }
 
@@ -378,7 +378,7 @@ public class OverlayMap : MonoBehaviour
         meshRenderer.material = mat;
         if (mat == null || meshRenderer == null)
         {
-            Debug.ULogErrorChannel("OverlayMap", "Material or renderer is null. Failing.");
+            UnityDebugger.Debugger.LogError("OverlayMap", "Material or renderer is null. Failing.");
         }
 
         initialized = true;
@@ -430,7 +430,7 @@ public class OverlayMap : MonoBehaviour
     {
         if (colorMapTexture == null)
         {
-            Debug.ULogErrorChannel("OverlayMap", "No color map texture setted!");
+            UnityDebugger.Debugger.LogError("OverlayMap", "No color map texture setted!");
         }
         
         if (!overlayColorMapLookup.ContainsKey(currentOverlay))
@@ -534,7 +534,7 @@ public class OverlayMap : MonoBehaviour
         UnityEngine.UI.Dropdown dropdown = parentPanel.GetComponentInChildren<UnityEngine.UI.Dropdown>();
         if (dropdown == null)
         {
-            Debug.ULogWarningChannel("OverlayMap", "No parent panel was selected!");
+            UnityDebugger.Debugger.LogWarning("OverlayMap", "No parent panel was selected!");
             return;
         }
 

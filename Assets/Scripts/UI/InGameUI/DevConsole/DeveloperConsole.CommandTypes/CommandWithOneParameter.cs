@@ -61,7 +61,7 @@ namespace DeveloperConsole.CommandTypes
             }
             catch (Exception e)
             {
-                Debug.ULogErrorChannel("DevConsole", e.ToString());
+                UnityDebugger.Debugger.LogError("DevConsole", e.ToString());
                 return new object[] { };
             }
         }

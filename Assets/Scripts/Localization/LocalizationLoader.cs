@@ -69,7 +69,7 @@ namespace ProjectPorcupine.Localization
                 LocalizationTable.LoadLocalizationFile(file);
 
                 // Just write a little debug info into the console.
-                Debug.ULogChannel("LocalizationLoader", "Loaded localization at path: " + file);
+                UnityDebugger.Debugger.Log("LocalizationLoader", "Loaded localization at path: " + file);
             }
         }
 

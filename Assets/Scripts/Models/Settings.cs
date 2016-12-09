@@ -57,7 +57,7 @@ public static class Settings
     {
         if (settingsDict == null)
         {
-            Debug.ULogErrorChannel("Settings", "Settings Dictionary was not loaded!");
+            UnityDebugger.Debugger.LogError("Settings", "Settings Dictionary was not loaded!");
             return defaultValue;
         }
 
@@ -83,7 +83,7 @@ public static class Settings
     {
         if (settingsDict == null)
         {
-            Debug.ULogErrorChannel("Settings", "Settings Dictionary was not loaded!");
+            UnityDebugger.Debugger.LogError("Settings", "Settings Dictionary was not loaded!");
             return;
         }
 
@@ -93,13 +93,13 @@ public static class Settings
             // update the setting.
             settingsDict.Remove(key);
             settingsDict.Add(key, value);
-            Debug.ULogChannel("Settings", "Updated setting : " + key + " to value of " + value);
+            UnityDebugger.Debugger.Log("Settings", "Updated setting : " + key + " to value of " + value);
         }
         else
         {
             // add a new setting to the dict.
             settingsDict.Add(key, value);
-            Debug.ULogChannel("Settings", "Created new setting : " + key + " to value of " + value);
+            UnityDebugger.Debugger.Log("Settings", "Created new setting : " + key + " to value of " + value);
         }
     }
 
@@ -108,7 +108,7 @@ public static class Settings
     {
         if (settingsDict == null)
         {
-            Debug.ULogErrorChannel("Settings", "Settings Dictionary was not loaded!");
+            UnityDebugger.Debugger.LogError("Settings", "Settings Dictionary was not loaded!");
             return defaultValue;
         }
 
@@ -122,21 +122,21 @@ public static class Settings
             }
             catch (Exception exception)
             {
-                Debug.ULogErrorChannel("Settings", "Exception {0} whyle trying to convert {1} to type {2}", exception.Message, value, typeof(T));
+                UnityDebugger.Debugger.LogErrorFormat("Settings", "Exception {0} whyle trying to convert {1} to type {2}", exception.Message, value, typeof(T));
                 return defaultValue;
             }
         }
 
-        Debug.ULogWarningChannel("Settings", "Attempted to access a setting that was not loaded from Settings.json:\t" + key);
+        UnityDebugger.Debugger.LogWarning("Settings", "Attempted to access a setting that was not loaded from Settings.json:\t" + key);
         return defaultValue;
     }
 
     public static void SaveSettings()
     {
-        Debug.ULogChannel("Settings", "Settings have changed, so there are settings to save!");
+        UnityDebugger.Debugger.Log("Settings", "Settings have changed, so there are settings to save!");
 
         string jsonData = JsonConvert.SerializeObject(settingsDict, Newtonsoft.Json.Formatting.Indented);
-        Debug.ULogChannel("Settings", "Saving settings :: " + jsonData);
+        UnityDebugger.Debugger.Log("Settings", "Saving settings :: " + jsonData);
 
         // Save the document.
         try
@@ -148,8 +148,8 @@ public static class Settings
         }
         catch (Exception e)
         {
-            Debug.ULogWarningChannel("Settings", "Settings could not be saved to " + userSettingsFilePath);
-            Debug.ULogWarningChannel("Settings", e.Message);
+            UnityDebugger.Debugger.LogWarning("Settings", "Settings could not be saved to " + userSettingsFilePath);
+            UnityDebugger.Debugger.LogWarning("Settings", e.Message);
         }
     }
 
@@ -163,7 +163,7 @@ public static class Settings
         // If that doesn't work fall back to the hard coded FallbackSettingJson above.
         if (System.IO.File.Exists(userSettingsFilePath) == false)
         {
-            Debug.ULogChannel("Settings", "User settings file could not be found at '" + userSettingsFilePath + "'. Falling back to defaults.");
+            UnityDebugger.Debugger.Log("Settings", "User settings file could not be found at '" + userSettingsFilePath + "'. Falling back to defaults.");
 
             settingsJsonText = DefaultSettingsJsonFallback();
         }
@@ -175,8 +175,8 @@ public static class Settings
             }
             catch (Exception e)
             {
-                Debug.ULogWarningChannel("Settings", "User settings file could not be found at '" + userSettingsFilePath + "'. Falling back to defaults.");
-                Debug.ULogWarningChannel("Settings", e.Message);
+                UnityDebugger.Debugger.LogWarning("Settings", "User settings file could not be found at '" + userSettingsFilePath + "'. Falling back to defaults.");
+                UnityDebugger.Debugger.LogWarning("Settings", e.Message);
 
                 settingsJsonText = DefaultSettingsJsonFallback();
             }
@@ -191,7 +191,7 @@ public static class Settings
 
         if (System.IO.File.Exists(DefaultSettingsFilePath) == false)
         {
-            Debug.ULogWarningChannel("Settings", "Default settings file could not be found at '" + DefaultSettingsFilePath + "'. Falling back to Settings.cs defaults.");
+            UnityDebugger.Debugger.LogWarning("Settings", "Default settings file could not be found at '" + DefaultSettingsFilePath + "'. Falling back to Settings.cs defaults.");
 
             try
             {
@@ -199,8 +199,8 @@ public static class Settings
             }
             catch (Exception e)
             {
-                Debug.ULogWarningChannel("Settings", "Default settings file could not be created at '" + DefaultSettingsFilePath + "'.");
-                Debug.ULogWarningChannel("Settings", e.Message);
+                UnityDebugger.Debugger.LogWarning("Settings", "Default settings file could not be created at '" + DefaultSettingsFilePath + "'.");
+                UnityDebugger.Debugger.LogWarning("Settings", e.Message);
             }
         }
         else
@@ -211,8 +211,8 @@ public static class Settings
             }
             catch (Exception e)
             {
-                Debug.ULogWarningChannel("Settings", "Settings file at '" + DefaultSettingsFilePath + "' could not be read. Falling back to Settings.cs defaults.");
-                Debug.ULogWarningChannel("Settings", e.Message);
+                UnityDebugger.Debugger.LogWarning("Settings", "Settings file at '" + DefaultSettingsFilePath + "' could not be read. Falling back to Settings.cs defaults.");
+                UnityDebugger.Debugger.LogWarning("Settings", e.Message);
             }
         }
 

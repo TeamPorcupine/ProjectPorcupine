@@ -238,7 +238,7 @@ namespace Scheduler
         {
             if (Finished)
             {
-                Debug.ULogChannel("ScheduledEvent", "Scheduled event '" + Name + "' finished last repeat already -- not firing again.");
+                UnityDebugger.Debugger.Log("ScheduledEvent", "Scheduled event '" + Name + "' finished last repeat already -- not firing again.");
                 return;
             }
 

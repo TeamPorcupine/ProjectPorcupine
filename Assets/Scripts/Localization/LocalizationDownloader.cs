@@ -103,7 +103,7 @@ namespace ProjectPorcupine.Localization
                 yield return downloadConfig;
                 if (!string.IsNullOrEmpty(downloadConfig.error))
                 {
-                    Debug.ULogErrorChannel("LocalizationDownloader", "Error while downloading localization for the first time. Are you connected to the internet? \n" + downloadConfig.error);
+                    UnityDebugger.Debugger.LogError("LocalizationDownloader", "Error while downloading localization for the first time. Are you connected to the internet? \n" + downloadConfig.error);
                     yield break;
                 }
 
@@ -123,7 +123,7 @@ namespace ProjectPorcupine.Localization
 
                     if (www.isError)
                     {
-                        Debug.ULogErrorChannel("LocalizationDownloader", "Error while downloading locale " + locale + " for the first time. Are you connected to the internet? \n" + www.error);
+                        UnityDebugger.Debugger.LogError("LocalizationDownloader", "Error while downloading locale " + locale + " for the first time. Are you connected to the internet? \n" + www.error);
                         yield break;
                     }
 
@@ -159,7 +159,7 @@ namespace ProjectPorcupine.Localization
                     
                     if (www.isError)
                     {
-                        Debug.ULogErrorChannel("LocalizationDownloader", "Error while downloading file " + file + " using rawgit. Are you sure your connected to the internet? \n" + www.error);
+                        UnityDebugger.Debugger.LogError("LocalizationDownloader", "Error while downloading file " + file + " using rawgit. Are you sure your connected to the internet? \n" + www.error);
                         yield break;
                     }
 
@@ -199,18 +199,18 @@ namespace ProjectPorcupine.Localization
             } 
             catch (XmlException e)
             {
-                Debug.ULogErrorChannel("LocalizationDownloader", "XML Error while parsing config.xml. config.xml's XML must be formatted incorrectly. \n" + e);
+                UnityDebugger.Debugger.LogError("LocalizationDownloader", "XML Error while parsing config.xml. config.xml's XML must be formatted incorrectly. \n" + e);
             }
             catch (System.Exception e)
             {
-                Debug.ULogErrorChannel("LocalizationDownloader", "Error while parsing config.xml. \n" + e);
+                UnityDebugger.Debugger.LogError("LocalizationDownloader", "Error while parsing config.xml. \n" + e);
             }
 
             reader.Close();
             if (string.IsNullOrEmpty(lastDate))
             {
+                UnityDebugger.Debugger.LogError("LocalizationDownloader", "Error while trying to get the date of the last update. I'm going to re-download everything.");
                 yield return DownloadLocalization();
-                Debug.ULogErrorChannel("LocalizationDownloader", "Error while trying to get the date of the last update. I'm going to re-download everything.");
 
                 // We re-download everything because most-likely the're using the old version of the config file that includes the hash rather than the date.
                 yield return null;
@@ -224,7 +224,7 @@ namespace ProjectPorcupine.Localization
                     
             if (!string.IsNullOrEmpty(www.error))
             {
-                Debug.ULogErrorChannel("LocalizationDownloader", "Error while downloading commits information using the GitHub API. \n" + www.error);
+                UnityDebugger.Debugger.LogError("LocalizationDownloader", "Error while downloading commits information using the GitHub API. \n" + www.error);
                 yield break;
             }
 
@@ -243,7 +243,7 @@ namespace ProjectPorcupine.Localization
                     
                 if (wwwHash.isError)
                 {
-                    Debug.ULogErrorChannel("LocalizationDownloader", "Error while downloading commit " + hash + " using the GitHub API. \n" + wwwHash.error);
+                    UnityDebugger.Debugger.LogError("LocalizationDownloader", "Error while downloading commit " + hash + " using the GitHub API. \n" + wwwHash.error);
                     yield break;
                 }
 
@@ -255,17 +255,17 @@ namespace ProjectPorcupine.Localization
                     switch (file.Status)
                     {
                         case "removed":
-                            Debug.ULogChannel("LocalizationDownloader", "Removing the file " + file.Filename + "from the localization.");
+                            UnityDebugger.Debugger.Log("LocalizationDownloader", "Removing the file " + file.Filename + "from the localization.");
                             File.Delete(Path.Combine(LocalizationFolderPath, file.Filename));
                             break;
 
                         case "modified":
-                            Debug.ULogChannel("LocalizationDownloader", "Patching/modifing the file " + file.Filename + ".");
+                            UnityDebugger.Debugger.Log("LocalizationDownloader", "Patching/modifing the file " + file.Filename + ".");
 
                             // Let us make sure the file exists before we try to modify it.
                             if (!File.Exists(path))
                             {
-                                Debug.ULogErrorChannel("LocalizationDownloader", "Error while patching file " + file.Filename + " for the localization. The file doesn't exist, so I'll download it.");
+                                UnityDebugger.Debugger.LogError("LocalizationDownloader", "Error while patching file " + file.Filename + " for the localization. The file doesn't exist, so I'll download it.");
                                 DownloadLocalization(new string[] { file.Filename }, hash);
                                 break;
                             }
@@ -278,7 +278,7 @@ namespace ProjectPorcupine.Localization
                             bool[] boolArray = (bool[])patch[1];
                             if (boolArray.Length == 0 || !boolArray[0] || !boolArray[1])
                             {
-                                Debug.ULogErrorChannel("LocalizationDownloader", "Error while patching file " + file.Filename + " for the localization. I'll just download it.");
+                                UnityDebugger.Debugger.LogError("LocalizationDownloader", "Error while patching file " + file.Filename + " for the localization. I'll just download it.");
                                 DownloadLocalization(new string[] { file.Filename }, hash);
                                 yield break;
                             }
@@ -287,19 +287,19 @@ namespace ProjectPorcupine.Localization
                             break;
 
                         case "added":
-                            Debug.ULogChannel("LocalizationDownloader", "Adding the file " + file.Filename + " to the localization.");
+                            UnityDebugger.Debugger.Log("LocalizationDownloader", "Adding the file " + file.Filename + " to the localization.");
                             
                             DownloadLocalization(new string[] { file.Filename }, hash);
                             break;
                         
                         case "renamed":
-                            Debug.ULogErrorChannel("LocalizationDownloader", "Error, we tried to rename the file " + file.Filename + " but that isn't supported yet!");
+                            UnityDebugger.Debugger.LogError("LocalizationDownloader", "Error, we tried to rename the file " + file.Filename + " but that isn't supported yet!");
                             break;
 
                         default:
                             string error  = "Error while parsing Github commit: " + hash + 
                                                    ". The file " + file.Filename + " has an unkown status of " + file.Status + ".";
-                            Debug.ULogErrorChannel("LocalizationDownloader", error);
+                            UnityDebugger.Debugger.LogError("LocalizationDownloader", error);
                             yield break;
                     }
                 }

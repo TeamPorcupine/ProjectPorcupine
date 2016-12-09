@@ -171,7 +171,7 @@ public class SpriteToXML : EditorWindow
 
             if (images.Length > 1)
             {
-                Debug.ULogErrorChannel("SpriteToXML", "Place only one sprite in 'Resources/Editor/SpriteToXML'");
+                UnityDebugger.Debugger.LogError("SpriteToXML", "Place only one sprite in 'Resources/Editor/SpriteToXML'");
                 return;
             }
 
@@ -191,16 +191,16 @@ public class SpriteToXML : EditorWindow
 
     private void ExportSprites()
     {
-        Debug.ULogChannel("SpriteToXML", "Files saved to: " + outputDirPath);
+        UnityDebugger.Debugger.Log("SpriteToXML", "Files saved to: " + outputDirPath);
 
         foreach (string fn in filesInDir)
         {
-            Debug.ULogChannel("SpriteToXML", "files in dir: " + fn);
+            UnityDebugger.Debugger.Log("SpriteToXML", "files in dir: " + fn);
         }   
             
         foreach (Texture2D t in images)
         {
-            Debug.ULogChannel("SpriteToXML", "Filename: " + t.name);            
+            UnityDebugger.Debugger.Log("SpriteToXML", "Filename: " + t.name);            
         }
 
         WriteXml();        
@@ -210,7 +210,7 @@ public class SpriteToXML : EditorWindow
     {
         if (outputDirPath == string.Empty)
         {
-            Debug.ULogErrorChannel("SpriteToXML", "Please select a folder");
+            UnityDebugger.Debugger.LogError("SpriteToXML", "Please select a folder");
             return;
         }
         
@@ -384,7 +384,7 @@ public class SpriteToXML : EditorWindow
                 if ((columnIndex == 0 && rowIndex == 0) && isMultipleSprite == true)
                 {
                     EditorUtility.DisplayDialog("Select proper Row/Column count", "Please select more than 1 Row/Column!", "OK");
-                    Debug.ULogErrorChannel("SpriteToXML", "Please select more than 1 Row/Column");
+                    UnityDebugger.Debugger.LogError("SpriteToXML", "Please select more than 1 Row/Column");
                 }
                 else
                 {
@@ -424,7 +424,7 @@ public class SpriteToXML : EditorWindow
             myTexture = imageTexture;
             imageName = Path.GetFileNameWithoutExtension(filePath);
             imageExt = Path.GetExtension(filePath);
-            Debug.ULogChannel("SpriteToXML", imageName + " Loaded");
+            UnityDebugger.Debugger.Log("SpriteToXML", imageName + " Loaded");
             textureLoaded = true;            
         }        
     }
@@ -516,18 +516,18 @@ public class SpriteToXML : EditorWindow
             try
             {
                 File.Replace(filePath, destPath, destPath + ".bak");
-                Debug.ULogWarningChannel("SpriteToXML", "Image already exsists, backing old one up to: " + destPath + ".bak");
+                UnityDebugger.Debugger.LogWarning("SpriteToXML", "Image already exsists, backing old one up to: " + destPath + ".bak");
             }
             catch (Exception ex)
             {
-                Debug.ULogWarningChannel("SpriteToXML", ex.Message + " - " + imageName + imageExt + " not moved.");
+                UnityDebugger.Debugger.LogWarning("SpriteToXML", ex.Message + " - " + imageName + imageExt + " not moved.");
                 EditorUtility.DisplayDialog(imageName + imageExt + " not moved.", "The original and output directories cannot be the same!" + "\n\n" + "XML was still generated.", "OK");
             }
         }
         else
         {
             File.Move(filePath, destPath);            
-            Debug.ULogChannel("SpriteToXML", "Image moved to: " + destPath);
+            UnityDebugger.Debugger.Log("SpriteToXML", "Image moved to: " + destPath);
         }
 
         if (File.Exists(filePath + ".meta") && File.Exists(destPath + ".meta"))
@@ -538,7 +538,7 @@ public class SpriteToXML : EditorWindow
             }
             catch (Exception ex)
             {
-                Debug.ULogWarningChannel("SpriteToXML", ex.Message + " - " + imageName + imageExt + ".meta not moved.");
+                UnityDebugger.Debugger.LogWarning("SpriteToXML", ex.Message + " - " + imageName + imageExt + ".meta not moved.");
             }            
         }
         else

@@ -91,7 +91,7 @@ namespace Scheduler
         {
             if (PrototypeManager.ScheduledEvent.Has(name) == false)
             {
-                Debug.ULogWarningChannel("Scheduler", "Tried to schedule an event from a prototype '{0}' which does not exist. Bailing.", name);
+                UnityDebugger.Debugger.LogWarningFormat("Scheduler", "Tried to schedule an event from a prototype '{0}' which does not exist. Bailing.", name);
                 return;
             }
 
@@ -110,7 +110,7 @@ namespace Scheduler
             {
                 if (IsRegistered(evt))
                 {
-                    Debug.ULogChannel("Scheduler", "Event '{0}' registered more than once.", evt.Name);
+                    UnityDebugger.Debugger.LogFormat("Scheduler", "Event '{0}' registered more than once.", evt.Name);
                 }
 
                 eventsToAddNextTick.Add(evt);

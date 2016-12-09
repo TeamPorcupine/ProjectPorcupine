@@ -56,8 +56,6 @@ public class WorldGenerator
         int depth = world.Depth;
         int offsetX = Random.Range(0, 10000);
         int offsetY = Random.Range(0, 10000);
-
-        int minEdgeDistance = 5;
         
         int sumOfAllWeightedChances = asteroidInfo.Resources.Select(x => x.WeightedChance).Sum();
 
@@ -102,13 +100,6 @@ public class WorldGenerator
                     if (noiseValue >= asteroidInfo.NoiseThreshhold && !IsStartArea(x, y, world))
                     {
                         Tile tile = world.GetTileAt(x, y, z);
-
-                        if (tile.X < minEdgeDistance || tile.Y < minEdgeDistance ||
-                              World.Current.Width - tile.X <= minEdgeDistance ||
-                              World.Current.Height - tile.Y <= minEdgeDistance)
-                        {
-                            continue;
-                        }
 
                         tile.SetTileType(asteroidFloorType);
 
@@ -166,7 +157,7 @@ public class WorldGenerator
     private bool IsStartArea(int x, int y, World world)
     {
         int boundX = (world.Width / 2) - startAreaCenterX;
-        int boundY = (world.Height / 2) + startAreaCenterY;
+        int boundY = (world.Height / 2) + startAreaCenterY + 1;
 
         if (x >= boundX && x < (boundX + startAreaWidth) && y >= (boundY - startAreaHeight) && y < boundY)
         {
@@ -201,7 +192,7 @@ public class WorldGenerator
             }
             else
             {
-                Debug.ULogErrorChannel("WorldGenerator", "Did not find a 'Asteroid' element in the WorldGenerator definition file.");
+                UnityDebugger.Debugger.LogError("WorldGenerator", "Did not find a 'Asteroid' element in the WorldGenerator definition file.");
             }
 
             if (reader.ReadToNextSibling("StartArea"))
@@ -217,7 +208,7 @@ public class WorldGenerator
             }
             else
             {
-                Debug.ULogErrorChannel("WorldGenerator", "Did not find a 'StartArea' element in the WorldGenerator definition file.");
+                UnityDebugger.Debugger.LogError("WorldGenerator", "Did not find a 'StartArea' element in the WorldGenerator definition file.");
             }
 
             if (reader.ReadToNextSibling("Wallet"))
@@ -233,12 +224,12 @@ public class WorldGenerator
             }
             else
             {
-                Debug.ULogErrorChannel("WorldGenerator", "Did not find a 'Wallet' element in the WorldGenerator definition file.");
+                UnityDebugger.Debugger.LogError("WorldGenerator", "Did not find a 'Wallet' element in the WorldGenerator definition file.");
             }
         }
         else
         {
-            Debug.ULogErrorChannel("WorldGenerator", "Did not find a 'WorldGenerator' element in the WorldGenerator definition file.");
+            UnityDebugger.Debugger.LogError("WorldGenerator", "Did not find a 'WorldGenerator' element in the WorldGenerator definition file.");
         }
     }
 
@@ -270,7 +261,7 @@ public class WorldGenerator
 
                     if (splittedString.Length < startAreaWidth * startAreaHeight)
                     {
-                        Debug.ULogErrorChannel("WorldGenerator", "Error reading 'Tiles' array to short: " + splittedString.Length + " !");
+                        UnityDebugger.Debugger.LogError("WorldGenerator", "Error reading 'Tiles' array to short: " + splittedString.Length + " !");
                         break;
                     }
 
