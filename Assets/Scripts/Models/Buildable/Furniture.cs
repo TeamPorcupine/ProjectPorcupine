@@ -27,12 +27,6 @@ using UnityEngine;
 public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBuildable
 {
     #region Private Variables
-<<<<<<< HEAD
-    // Prevent construction too close to the world's edge
-    private const int MinEdgeDistance = 0;
-
-=======
->>>>>>> a45d6636a8bd878abaf68fe1f141cbe0440b067c
     private string isEnterableAction;
     
     /// <summary>

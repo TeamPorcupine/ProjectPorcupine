@@ -23,6 +23,9 @@ public class DialogBoxNewGame : DialogBox
     public override void ShowDialog()
     {
         base.ShowDialog();
+        Height.onEndEdit.AddListener(delegate{VerifyNumericInput(Height);});
+        Width.onEndEdit.AddListener(delegate{VerifyNumericInput(Width);});
+        Depth.onEndEdit.AddListener(delegate{VerifyNumericInput(Depth);});
     }
 
     public void OkayWasClicked()
@@ -31,5 +34,13 @@ public class DialogBoxNewGame : DialogBox
         int width = int.Parse(Width.text);
         int depth = int.Parse(Depth.text);
         SceneController.Instance.LoadNewWorld(width, height, depth, GenerateAsteroids.isOn);
+    }
+
+    public void VerifyNumericInput(InputField input)
+    {
+        if (int.Parse(input.text) < 1)
+        {
+            input.text = "1";
+        }
     }
 }
