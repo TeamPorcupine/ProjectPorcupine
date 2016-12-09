@@ -4,32 +4,32 @@
   "Depth": "1",
   "Rooms": [
     {
-      "O2": 2.60000014,
-      "N2": 10.4000006
+      "O2": 5.20000029,
+      "N2": 20.8000011
     },
     {
-      "O2": 1.80000007,
-      "N2": 7.20000029
+      "O2": 3.60000014,
+      "N2": 14.4000006
     },
     {
-      "O2": 3.0,
-      "N2": 12.0
+      "O2": 6.0,
+      "N2": 24.0
     },
     {
-      "O2": 1.80000007,
-      "N2": 7.20000029
+      "O2": 3.60000014,
+      "N2": 14.4000006
     },
     {
-      "O2": 2.0,
-      "N2": 8.0
+      "O2": 4.0,
+      "N2": 16.0
     },
     {
-      "O2": 2.0,
-      "N2": 8.0
+      "O2": 4.0,
+      "N2": 16.0
     },
     {
-      "O2": 8.0,
-      "N2": 32.0
+      "O2": 16.0,
+      "N2": 64.0
     }
   ],
   "Tiles": [
@@ -2145,7 +2145,7 @@
       "Type": "oxygen_generator",
       "Rotation": 0.0,
       "Parameters": {
-        "pow_is_running": "False"
+        "pow_is_running": "True"
       }
     },
     {
@@ -2601,6 +2601,128 @@
       }
     }
   ],
-  "Utilities": [],
+  "Utilities": [
+    {
+      "X": 11,
+      "Y": 4,
+      "Z": 0,
+      "Type": "power_cable"
+    },
+    {
+      "X": 12,
+      "Y": 4,
+      "Z": 0,
+      "Type": "power_cable"
+    },
+    {
+      "X": 13,
+      "Y": 4,
+      "Z": 0,
+      "Type": "power_cable"
+    },
+    {
+      "X": 14,
+      "Y": 4,
+      "Z": 0,
+      "Type": "power_cable"
+    },
+    {
+      "X": 15,
+      "Y": 4,
+      "Z": 0,
+      "Type": "power_cable"
+    },
+    {
+      "X": 13,
+      "Y": 5,
+      "Z": 0,
+      "Type": "power_cable"
+    },
+    {
+      "X": 14,
+      "Y": 5,
+      "Z": 0,
+      "Type": "power_cable"
+    },
+    {
+      "X": 15,
+      "Y": 5,
+      "Z": 0,
+      "Type": "power_cable"
+    },
+    {
+      "X": 10,
+      "Y": 3,
+      "Z": 0,
+      "Type": "power_cable"
+    },
+    {
+      "X": 10,
+      "Y": 4,
+      "Z": 0,
+      "Type": "power_cable"
+    },
+    {
+      "X": 10,
+      "Y": 5,
+      "Z": 0,
+      "Type": "power_cable"
+    },
+    {
+      "X": 10,
+      "Y": 6,
+      "Z": 0,
+      "Type": "power_cable"
+    },
+    {
+      "X": 10,
+      "Y": 7,
+      "Z": 0,
+      "Type": "power_cable"
+    },
+    {
+      "X": 10,
+      "Y": 8,
+      "Z": 0,
+      "Type": "power_cable"
+    },
+    {
+      "X": 10,
+      "Y": 9,
+      "Z": 0,
+      "Type": "power_cable"
+    },
+    {
+      "X": 11,
+      "Y": 9,
+      "Z": 0,
+      "Type": "power_cable"
+    },
+    {
+      "X": 10,
+      "Y": 10,
+      "Z": 0,
+      "Type": "power_cable"
+    },
+    {
+      "X": 10,
+      "Y": 11,
+      "Z": 0,
+      "Type": "power_cable"
+    },
+    {
+      "X": 10,
+      "Y": 12,
+      "Z": 0,
+      "Type": "power_cable"
+    },
+    {
+      "X": 10,
+      "Y": 2,
+      "Z": 0,
+      "Type": "power_cable"
+    }
+  ],
   "RoomBehaviors": []
+  }
 }
