@@ -17,7 +17,8 @@ public class TimeManager
     private float gameTickPerSecond = 5;
 
     // Current position in that array.
-    private int timeScalePosition = 2;
+    // Public so TimeScaleUpdater can easily get a position appropriate to an image.
+    public int timeScalePosition { private set; get; }
 
     // An array of possible time multipliers.
     private float[] possibleTimeScales = new float[6] { 0.1f, 0.5f, 1f, 2f, 4f, 8f };
@@ -30,8 +31,9 @@ public class TimeManager
         instance = this;
         TimeScale = 1f;
         TotalDeltaTime = 0f;
+        timeScalePosition = 2;
         IsPaused = false;
-        
+
         KeyboardManager.Instance.RegisterInputAction("SetSpeed1", KeyboardMappedInputType.KeyUp, () => SetTimeScalePosition(2));
         KeyboardManager.Instance.RegisterInputAction("SetSpeed2", KeyboardMappedInputType.KeyUp, () => SetTimeScalePosition(3));
         KeyboardManager.Instance.RegisterInputAction("SetSpeed3", KeyboardMappedInputType.KeyUp, () => SetTimeScalePosition(4));
