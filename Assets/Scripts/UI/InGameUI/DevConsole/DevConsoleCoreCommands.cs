@@ -82,7 +82,11 @@ namespace DeveloperConsole
         {
             DevConsole.Log("Developer Mode is " + (CommandSettings.DeveloperModeToggle ? "on" : "off"), "yellow");
             DevConsole.Log("Time is " + (TimeManager.Instance.IsPaused ? "paused" : TimeManager.Instance.TimeScale + "x"), "yellow");
-            // Current In-Game Time
+        }
+
+        public static void CreateCharacterCenter()
+        {
+            NewCharacter(new Vector2(GetCurrentWorld().Width / 2, GetCurrentWorld().Height / 2));
         }
 
         public static void SetText(string text)
@@ -104,7 +108,7 @@ namespace DeveloperConsole
             return World.Current;
         }
 
-        public static void NewCharacter(Vector3 pos)
+        public static void NewCharacter(Vector2 pos)
         {
             GetCurrentWorld().CharacterManager.Create(GetTileAt(pos));
         }
