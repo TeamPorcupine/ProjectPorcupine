@@ -16,10 +16,6 @@ public class TimeManager
 
     private float gameTickPerSecond = 5;
 
-    // Current position in that array.
-    // Public so TimeScaleUpdater can easily get a position appropriate to an image.
-    public int timeScalePosition { private set; get; }
-
     // An array of possible time multipliers.
     private float[] possibleTimeScales = new float[6] { 0.1f, 0.5f, 1f, 2f, 4f, 8f };
 
@@ -31,7 +27,7 @@ public class TimeManager
         instance = this;
         TimeScale = 1f;
         TotalDeltaTime = 0f;
-        timeScalePosition = 2;
+        TimeScalePosition = 2;
         IsPaused = false;
 
         KeyboardManager.Instance.RegisterInputAction("SetSpeed1", KeyboardMappedInputType.KeyUp, () => SetTimeScalePosition(2));
@@ -82,6 +78,10 @@ public class TimeManager
             return instance;
         }
     }
+
+    // Current position in that array.
+    // Public so TimeScaleUpdater can easily get a position appropriate to an image.
+    public int TimeScalePosition { get; private set; }
 
     /// <summary>
     /// Gets the game time tick delay.
@@ -156,9 +156,9 @@ public class TimeManager
     /// <param name="newTimeScalePosition">New time scale position.</param>
     public void SetTimeScalePosition(int newTimeScalePosition)
     {
-        if (newTimeScalePosition < possibleTimeScales.Length && newTimeScalePosition >= 0 && newTimeScalePosition != timeScalePosition)
+        if (newTimeScalePosition < possibleTimeScales.Length && newTimeScalePosition >= 0 && newTimeScalePosition != TimeScalePosition)
         {
-            timeScalePosition = newTimeScalePosition;
+            TimeScalePosition = newTimeScalePosition;
             TimeScale = possibleTimeScales[newTimeScalePosition];
             UnityDebugger.Debugger.Log("Game speed", "Game speed set to " + TimeScale + "x");
         }
@@ -169,7 +169,7 @@ public class TimeManager
     /// </summary>
     public void IncreaseTimeScale()
     {
-        SetTimeScalePosition(timeScalePosition + 1);
+        SetTimeScalePosition(TimeScalePosition + 1);
     }
 
     /// <summary>
@@ -177,7 +177,7 @@ public class TimeManager
     /// </summary>
     public void DecreaseTimeScale()
     {
-        SetTimeScalePosition(timeScalePosition - 1);
+        SetTimeScalePosition(TimeScalePosition - 1);
     }
 
     /// <summary>
