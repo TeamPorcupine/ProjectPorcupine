@@ -296,20 +296,20 @@ namespace ProjectPorcupine.Localization
                             UnityDebugger.Debugger.Log("LocalizationDownloader", "Renaming the file " + file.Previous_filename + " to " + file.Filename + " to the localization.");
                             string oldPath = Path.Combine(LocalizationFolderPath, file.Previous_filename);
                             
-                            //If the file we are trying to rename doesn't exist then we can just download the new file.
+                            // If the file we are trying to rename doesn't exist then we can just download the new file.
                             if (!File.Exists(oldPath))
                             {
                                 DownloadLocalization(new string[] { file.Filename }, hash);
                                 break;
                             }
                             
-                            //If the file we are trying to rename to already exists, then just delete it.
+                            // If the file we are trying to rename to already exists, then just delete it.
                             if (File.Exists(path))
                             {
                                 File.Delete(path);
                             }
                             
-                            //Move, AKA rename the file.
+                            // Move, AKA rename the file.
                             File.Move(oldPath, path);
                             break;
 
@@ -371,7 +371,7 @@ namespace ProjectPorcupine.Localization
             /// <summary>
             /// Only shows up if the status is of the renaming type.
             /// </summary>
-            public string Previous_filename {get; set;}
+            public string Previous_filename { get; set; }
         }
 
         /// <summary>
