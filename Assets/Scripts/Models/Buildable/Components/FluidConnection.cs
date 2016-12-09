@@ -25,7 +25,7 @@ namespace ProjectPorcupine.Buildable.Components
     {       
         public FluidConnection()
         {
-            SubType = "";
+            SubType = string.Empty;
         }
 
         private FluidConnection(FluidConnection other) : base(other)
@@ -118,8 +118,10 @@ namespace ProjectPorcupine.Buildable.Components
             get { return IsAccumulator && AccumulatedAmount.IsZero(); }
         }
 
-        public string UtilityType { 
-            get { 
+        public string UtilityType 
+        { 
+            get 
+            { 
                 return "Fluid";
             }
         }
@@ -256,12 +258,7 @@ namespace ProjectPorcupine.Buildable.Components
         private void OnReconnecting()
         {
             // TODO: Make this not a Universal Connection
-
             World.Current.FluidNetwork.PlugIn(this);
-//            foreach (Utility util in ParentFurniture.Tile.Utilities.Values)
-//            {
-//                util.Grid.PlugIn(this);
-//            }
         }
 
         [Serializable]

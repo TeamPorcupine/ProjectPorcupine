@@ -498,6 +498,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         {
             bool componentCanFunction = component.CanFunction();
             canFunction &= componentCanFunction;
+
             // if it can't function, collect all stuff it needs (power, gas, ...) for icon signalization
             if (!componentCanFunction)
             {
@@ -1094,8 +1095,6 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
 
         yield return GetProgressInfo();
     }
-
-
 
     public IPluggable GetPluggable(HashSet<string> utilityTags)
     {

@@ -20,8 +20,8 @@ namespace ProjectPorcupine.PowerNetwork
         public Grid()
         {
             connections = new HashSet<IPluggable>();
-            UtilityType = "";
-            SubType = "";
+            UtilityType = string.Empty;
+            SubType = string.Empty;
         }
 
         /// <summary>
@@ -58,12 +58,6 @@ namespace ProjectPorcupine.PowerNetwork
         /// <returns><c>true</c> if the connection can plug into this grid; otherwise, <c>false</c>.</returns>
         public bool CanPlugIn(IPluggable connection)
         {
-//            Debug.LogWarning("GUT = " + UtilityType);
-//            Debug.LogWarning("GST = *" + SubType +"*");
-//            Debug.LogWarning("CUT = " + connection.UtilityType);
-//            Debug.LogWarning("CST = " + connection.SubType);
-//            Debug.LogWarning(UtilityType != connection.UtilityType && SubType != connection.SubType);
-//            Debug.LogWarning((SubType != null) + " && " + (connection.SubType != string.Empty) + " && " + (SubType != connection.SubType) + " = " + (SubType != string.Empty && connection.SubType != string.Empty && SubType != connection.SubType));
             if (connection == null)
             {
                 throw new ArgumentNullException("connection");
@@ -80,18 +74,6 @@ namespace ProjectPorcupine.PowerNetwork
                 UnityDebugger.Debugger.LogWarning("Neither SubType is empty, and they don't match, no plugin");
                 return false;
             }
-
-//            if (UtilityType == UtilityType.Null || SubType == string.Empty)
-//            {
-//                Debug.LogWarning("UtilityType or subType unset, so it's ok to plugin");
-//                return true;
-//            }
-//
-//            if (UtilityType != connection.UtilityType || SubType != connection.SubType)
-//            {
-//                Debug.LogWarning("UtilityType or subType don't match, no plugin allowed");
-//                return false;
-//            }
 
             return true;
         }
@@ -193,15 +175,6 @@ namespace ProjectPorcupine.PowerNetwork
 
             IsOperating = currentPowerLevel >= 0.0f;
         }
-
-//        /// <summary>
-//        /// Gets the ID for this grid within the PowerNetwork.
-//        /// </summary>
-//        /// <returns>The ID number.</returns>
-//        public int GetId()
-//        {
-//            return World.Current.PowerNetwork.FindId(this);
-//        }
 
         /// <summary>
         /// Merge the specified Grid with this Grid.

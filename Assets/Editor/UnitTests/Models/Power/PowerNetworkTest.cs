@@ -150,8 +150,10 @@ public class PowerNetworkTest
             get { return AccumulatedAmount.AreEqual(AccumulatorCapacity); }
         }
 
-        public string UtilityType { 
-            get { 
+        public string UtilityType 
+        { 
+            get 
+            { 
                 return "Power";
             }
         }
@@ -160,7 +162,7 @@ public class PowerNetworkTest
         {
             get
             {
-                return "";
+                return string.Empty;
             }
 
             set

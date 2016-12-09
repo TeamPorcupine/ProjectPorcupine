@@ -85,11 +85,6 @@ namespace ProjectPorcupine.PowerNetwork
                 return false;
             }
 
-            foreach(Grid fluidGrid in fluidGrids)
-            {
-                if (fluidGrid == null)
-                    UnityDebugger.Debugger.LogWarning("It's null all rihgt");
-            }
             grid = fluidGrids.First(fluidGrid => fluidGrid.IsPluggedIn(connection));
             return grid != null;
         }
