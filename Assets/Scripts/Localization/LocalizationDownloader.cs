@@ -293,7 +293,24 @@ namespace ProjectPorcupine.Localization
                             break;
                         
                         case "renamed":
-                            UnityDebugger.Debugger.LogError("LocalizationDownloader", "Error, we tried to rename the file " + file.Filename + " but that isn't supported yet!");
+                            UnityDebugger.Debugger.Log("LocalizationDownloader", "Renaming the file " + file.Previous_filename + " to " + file.Filename + " to the localization.");
+                            string oldPath = Path.Combine(LocalizationFolderPath, file.Previous_filename);
+                            
+                            //If the file we are trying to rename doesn't exist then we can just download the new file.
+                            if (!File.Exists(oldPath))
+                            {
+                                DownloadLocalization(new string[] { file.Filename }, hash);
+                                break;
+                            }
+                            
+                            //If the file we are trying to rename to already exists, then just delete it.
+                            if (File.Exists(path))
+                            {
+                                File.Delete(path);
+                            }
+                            
+                            //Move, AKA rename the file.
+                            File.Move(oldPath, path);
                             break;
 
                         default:
@@ -342,7 +359,7 @@ namespace ProjectPorcupine.Localization
             public string Filename { get; set; }
 
             /// <summary>
-            /// The status of the modification. ie, Deleted, modified, Added.
+            /// The status of the modification. ie, Deleted, modified, Added or Renamed.
             /// </summary>
             public string Status { get; set; }
 
@@ -350,6 +367,11 @@ namespace ProjectPorcupine.Localization
             /// The changes done to the file in the format of an Unix patch file.
             /// </summary>
             public string Patch { get; set; }
+
+            /// <summary>
+            /// Only shows up if the status is of the renaming type.
+            /// </summary>
+            public string Previous_filename {get; set;}
         }
 
         /// <summary>
