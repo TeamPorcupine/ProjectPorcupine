@@ -821,8 +821,7 @@ namespace DeveloperConsole
                 new Command<int>("FillRoomWithAir", CoreCommands.FillRoomWithAir, "Set's the room's gasses to standard atmosphere (20/80 O2/N2 mix)"),
                 new Command("FillAllRoomsWithAir", CoreCommands.FillAllRoomsWithAir, "Set's all rooms' gasses to standard atmosphere (20/80 O2/N2 mix)"),
                 new Command<int>("EmptyRoom", CoreCommands.EmptyRoom, "Empties the room's atmosphere"),
-                new Command("EmptyAllRooms", CoreCommands.EmptyAllRooms, "Empties all rooms' atmosphere")
-            );
+                new Command("EmptyAllRooms", CoreCommands.EmptyAllRooms, "Empties all rooms' atmosphere"));
 
             // Load Commands from XML (will be changed to JSON AFTER the current upgrade)
             // Covers both CSharp and LUA
