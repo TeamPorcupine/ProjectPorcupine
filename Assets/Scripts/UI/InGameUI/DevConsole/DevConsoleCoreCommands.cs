@@ -260,6 +260,11 @@ namespace DeveloperConsole
         {
             // Adding air to room
             Room room = World.Current.RoomManager[roomID];
+            foreach (string gas in room.GetGasNames())
+            {
+                room.SetGas(gas, 0);
+            }
+
             room.SetGas("O2", 0.2f * room.TileCount);
             room.SetGas("N2", 0.8f * room.TileCount);
         }
@@ -269,6 +274,11 @@ namespace DeveloperConsole
             // Adding air to all rooms
             foreach (Room room in World.Current.RoomManager)
             {
+                foreach (string gas in room.GetGasNames())
+                {
+                    room.SetGas(gas, 0);
+                }
+
                 if (room.ID > 0)
                 {
                     room.SetGas("O2", 0.2f * room.TileCount);
