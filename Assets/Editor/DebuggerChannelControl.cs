@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
 // This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
@@ -12,7 +12,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-public class DebuggerChannelControl : EditorWindow
+public class DebuggerChannelControl : EditorWindow, IHasCustomMenu
 {
     private EditorWindow window;
 
@@ -20,6 +20,7 @@ public class DebuggerChannelControl : EditorWindow
     private bool allPreveState;
     private ChannelSettingsSO channelSettings;
     private Vector2 scrollViewVector = Vector2.down;
+    const string channelSettingsPath = "Assets/Resources/ChannelSettings.asset";
 
     [MenuItem("Window/Debugger Channel Control")]
     public static void ShowWindow()
@@ -33,7 +34,7 @@ public class DebuggerChannelControl : EditorWindow
         if (channelSettings == null)
         {
             channelSettings = ScriptableObject.CreateInstance<ChannelSettingsSO>();
-            AssetDatabase.CreateAsset(channelSettings, "Assets/Resources/ChannelSettings.asset");
+            AssetDatabase.CreateAsset(channelSettings, channelSettingsPath);
             AssetDatabase.SaveAssets();
         }
 
@@ -100,5 +101,13 @@ public class DebuggerChannelControl : EditorWindow
 
         EditorGUILayout.EndVertical();
         GUILayout.EndScrollView();
+    }
+
+    public void AddItemsToMenu(GenericMenu menu)
+    {
+        menu.AddItem(new GUIContent("Reload"), false, new GenericMenu.MenuFunction( ()=> {
+            AssetDatabase.DeleteAsset(channelSettingsPath);
+            Repaint();
+        }));
     }
 }
