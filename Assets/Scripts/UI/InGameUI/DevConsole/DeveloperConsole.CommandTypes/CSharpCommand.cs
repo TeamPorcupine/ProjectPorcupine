@@ -21,25 +21,17 @@ namespace DeveloperConsole.CommandTypes
     public class CSharpCommand : CommandBase, ICommandBase
     {
         /// <summary>
-        /// Standard with title and a method.
-        /// </summary>
-        /// <param name="title"> The title for the command.</param>
-        /// <param name="method"> The command to execute.</param>
-        public CSharpCommand(string title, Delegate method)
-        {
-            this.Title = title;
-            this.Method = method;
-        }
-
-        /// <summary>
         /// Standard with title, method, and help text.
         /// </summary>
         /// <param name="title"> The title for the command.</param>
         /// <param name="method"> The command to execute.</param>
         /// <param name="helpText"> The help text to display.</param>
-        public CSharpCommand(string title, Delegate method, string descriptiveText) : this(title, method)
+        public CSharpCommand(string title, Delegate method, string descriptiveText, string defaultValue = "")
         {
+            this.Title = title;
+            this.Method = method;
             this.DescriptiveText = descriptiveText;
+            this.DefaultValue = defaultValue;
         }
 
         /// <summary>
@@ -48,35 +40,33 @@ namespace DeveloperConsole.CommandTypes
         /// <param name="title"> The title for the command.</param>
         /// <param name="method"> The command to execute.</param>
         /// <param name="helpMethod"> The help method to execute.</param>
-        public CSharpCommand(string title, Delegate method, HelpMethod helpMethod) : this(title, method)
+        public CSharpCommand(string title, Delegate method, HelpMethod helpMethod, string defaultValue = "") : this(title, method, defaultValue)
         {
             this.HelpMethod = helpMethod;
         }
 
         /// <summary>
-        /// Uses reflection to get title.
+        /// Standard with title, method, and help text.
         /// </summary>
-        /// <param name="method"> The command to execute.</param>
-        public CSharpCommand(Delegate method) : this(method.Method.DeclaringType.Name + "." + method.Method.Name, method)
-        {
-        }
-
-        /// <summary>
-        /// Uses reflection to get title then passes the helpMethod.
-        /// </summary>
+        /// <param name="title"> The title for the command.</param>
         /// <param name="method"> The command to execute.</param>
         /// <param name="helpText"> The help text to display.</param>
-        public CSharpCommand(Delegate method, string descriptiveText) : this(method.Method.DeclaringType.Name + "." + method.Method.Name, method, descriptiveText)
+        /// <param name="tags"> Just tags for help function. </param>
+        public CSharpCommand(string title, Delegate method, string descriptiveText, string[] tags, string defaultValue = "") : this(title, method, descriptiveText, defaultValue)
         {
+            this.Tags = tags;
         }
 
         /// <summary>
-        /// Uses reflection to get title then passes the delegate for helpmethod.
+        /// Standard but uses a delegate method for help text.
         /// </summary>
-        /// <param name="method"> The command to execute.</param>
-        /// <param name="helpMethod"> The help method to execute.</param>
-        public CSharpCommand(Delegate method, HelpMethod helpMethod) : this(method.Method.DeclaringType.Name + "." + method.Method.Name, method, helpMethod)
+        /// <param name="title"> The title for the command. </param>
+        /// <param name="method"> The command to execute. </param>
+        /// <param name="helpMethod"> The help method to execute. </param>
+        /// <param name="tags"> Just tags for help function. </param>
+        public CSharpCommand(string title, Delegate method, HelpMethod helpMethod, string[] tags, string defaultValue = "") : this(title, method, helpMethod, defaultValue)
         {
+            this.Tags = tags;
         }
 
         /// <summary>
@@ -110,7 +100,6 @@ namespace DeveloperConsole.CommandTypes
             }
             catch (Exception e)
             {
-                // Debug Error
                 DevConsole.LogError(Errors.ExecuteConsoleError.Description(this));
                 UnityDebugger.Debugger.LogError("DevConsole", e.ToString());
             }

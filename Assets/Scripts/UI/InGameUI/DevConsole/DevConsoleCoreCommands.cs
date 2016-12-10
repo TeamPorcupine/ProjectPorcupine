@@ -32,13 +32,13 @@ namespace DeveloperConsole
             new LuaFunctions().LoadScript(code, "User Script");
         }
 
-        public static void Help()
+        public static void Help(string tag = "")
         {
             DevConsole.Log("-- Help --", "green");
 
             string text = string.Empty;
 
-            CommandBase[] consoleCommands = DevConsole.CommandArray();
+            CommandBase[] consoleCommands = DevConsole.CommandArray(tag);
 
             for (int i = 0; i < consoleCommands.Length; i++)
             {
@@ -47,7 +47,7 @@ namespace DeveloperConsole
 
             DevConsole.Log(text);
 
-            DevConsole.Log("<color=orange>Note:</color> If the function has no parameters you <color=red> don't</color> need to use the parameter modifier.");
+            DevConsole.Log("\n<color=orange>Note:</color> If the function has no parameters you <color=red> don't</color> need to use the parameter modifier.");
             DevConsole.Log("<color=orange>Note:</color> You <color=red>don't</color> need to use the trailing parameter modifier either");
         }
 
