@@ -280,7 +280,7 @@ namespace DeveloperConsole
         public static void EmptyRoom(int roomId)
         {
             Room room = World.Current.RoomManager[roomId];
-            foreach (string gas in room.GetGasNames)
+            foreach (string gas in room.GetGasNames())
             {
                 room.SetGas(gas, 0);
             }
@@ -292,7 +292,7 @@ namespace DeveloperConsole
             {
                 if (room.ID > 0)
                 {
-                    foreach (string gas in room.GetGasNames)
+                    foreach (string gas in room.GetGasNames())
                     {
                         room.SetGas(gas, 0);
                     }
