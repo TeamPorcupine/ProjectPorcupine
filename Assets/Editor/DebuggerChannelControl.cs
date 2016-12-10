@@ -13,19 +13,30 @@ using UnityEditor;
 using UnityEngine;
 
 public class DebuggerChannelControl : EditorWindow, IHasCustomMenu
-{
+{ 
     private EditorWindow window;
-
     private bool allState;
     private bool allPreveState;
     private ChannelSettingsSO channelSettings;
     private Vector2 scrollViewVector = Vector2.down;
-    const string channelSettingsPath = "Assets/Resources/ChannelSettings.asset";
+    private string channelSettingsPath = "Assets/Resources/ChannelSettings.asset";
 
     [MenuItem("Window/Debugger Channel Control")]
     public static void ShowWindow()
     {
         GetWindow(typeof(DebuggerChannelControl));
+    }
+
+    public void AddItemsToMenu(GenericMenu menu)
+    {
+        menu.AddItem(
+            new GUIContent("Reload"),
+            false,
+            new GenericMenu.MenuFunction(() =>
+            {
+                AssetDatabase.DeleteAsset(channelSettingsPath);
+                Repaint();
+            }));
     }
 
     private void Awake()
@@ -101,13 +112,5 @@ public class DebuggerChannelControl : EditorWindow, IHasCustomMenu
 
         EditorGUILayout.EndVertical();
         GUILayout.EndScrollView();
-    }
-
-    public void AddItemsToMenu(GenericMenu menu)
-    {
-        menu.AddItem(new GUIContent("Reload"), false, new GenericMenu.MenuFunction( ()=> {
-            AssetDatabase.DeleteAsset(channelSettingsPath);
-            Repaint();
-        }));
-    }
+    }    
 }
