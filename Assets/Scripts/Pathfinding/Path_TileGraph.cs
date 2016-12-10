@@ -17,7 +17,7 @@ public class Path_TileGraph
 
     public Path_TileGraph(World world)
     {
-        Debug.ULogChannel("Path_TileGraph", "Entered Path_TileGraph");
+        UnityDebugger.Debugger.Log("Path_TileGraph", "Entered Path_TileGraph");
 
        /*
         * Loop through all tiles of the world
@@ -44,7 +44,7 @@ public class Path_TileGraph
             }
         }
 
-        Debug.ULogChannel("Path_TileGraph", "Created " + nodes.Count + " nodes.");
+        UnityDebugger.Debugger.Log("Path_TileGraph", "Created " + nodes.Count + " nodes.");
 
         // Now loop through all nodes again
         // Create edges for neighbours

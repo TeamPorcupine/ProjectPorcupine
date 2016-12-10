@@ -112,7 +112,7 @@ namespace DeveloperConsole.CommandTypes
             {
                 // Debug Error
                 DevConsole.LogError(Errors.ExecuteConsoleError.Description(this));
-                Debug.ULogErrorChannel("DevConsole", e.ToString());
+                UnityDebugger.Debugger.LogError("DevConsole", e.ToString());
             }
         }
 

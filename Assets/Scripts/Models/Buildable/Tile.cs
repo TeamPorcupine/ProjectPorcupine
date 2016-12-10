@@ -202,7 +202,7 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
 
         if (objInstance.IsValidPosition(this) == false)
         {
-            Debug.ULogErrorChannel("Tile", "Trying to assign a furniture to a tile that isn't valid!");
+            UnityDebugger.Debugger.LogError("Tile", "Trying to assign a furniture to a tile that isn't valid!");
             return false;
         }
 
@@ -223,7 +223,7 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
         // Just uninstalling.
         if (Utilities == null)
         {
-            Debug.ULogErrorChannel("Tile", "Utilities null when trying to unplace a Utility, this should never happen!");
+            UnityDebugger.Debugger.LogError("Tile", "Utilities null when trying to unplace a Utility, this should never happen!");
             return false;
         }
 
@@ -241,7 +241,7 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
 
         if (objInstance.IsValidPosition(this) == false)
         {
-            Debug.ULogErrorChannel("Tile", "Trying to assign a furniture to a tile that isn't valid!");
+            UnityDebugger.Debugger.LogError("Tile", "Trying to assign a furniture to a tile that isn't valid!");
             return false;
         }
 
@@ -263,7 +263,7 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
             // There's already inventory here. Maybe we can combine a stack?
             if (Inventory.Type != inventory.Type)
             {
-                Debug.ULogErrorChannel("Tile", "Trying to assign inventory to a tile that already has some of a different type.");
+                UnityDebugger.Debugger.LogError("Tile", "Trying to assign inventory to a tile that already has some of a different type.");
                 return false;
             }
 

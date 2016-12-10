@@ -398,7 +398,7 @@ namespace ProjectPorcupine.Rooms
 
             if (objInstance.IsValidRoom(this) == false)
             {
-                Debug.ULogErrorChannel("Tile", "Trying to assign a RoomBehavior to a room that isn't valid!");
+                UnityDebugger.Debugger.LogError("Tile", "Trying to assign a RoomBehavior to a room that isn't valid!");
                 return false;
             }
 

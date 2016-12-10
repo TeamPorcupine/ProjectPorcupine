@@ -53,7 +53,7 @@ public class World
         int seed = UnityEngine.Random.Range(0, int.MaxValue);
         Debug.LogWarning("World Seed: " + seed);
         WorldGenerator.Instance.Generate(this, seed);
-        Debug.ULogChannel("World", "Generated World");
+        UnityDebugger.Debugger.Log("World", "Generated World");
 
         tileGraph = new Path_TileGraph(this);
         roomGraph = new Path_RoomGraph(this);
@@ -522,7 +522,7 @@ public class World
         }
         else
         {
-            Debug.ULogWarningChannel("World", "No skyboxes detected! Falling back to black.");
+            UnityDebugger.Debugger.LogWarning("World", "No skyboxes detected! Falling back to black.");
         }
     }
 
@@ -609,7 +609,7 @@ public class World
 //
 //        if (roomGraph.nodes.Count() != 8)
 //        {
-//            Debug.ULogErrorChannel("Path_RoomGraph", "Generated incorrect number of nodes: " + roomGraph.nodes.Count().ToString());
+//            UnityDebugger.Debugger.LogError("Path_RoomGraph", "Generated incorrect number of nodes: " + roomGraph.nodes.Count().ToString());
 //            errorCount++;
 //        }
 //
@@ -617,7 +617,7 @@ public class World
 //        {
 //            if (roomGraph.nodes.ContainsKey(r) == false)
 //            {
-//                Debug.ULogErrorChannel("Path_RoomGraph", "Does not contain room: " + r.ID);
+//                UnityDebugger.Debugger.LogError("Path_RoomGraph", "Does not contain room: " + r.ID);
 //                errorCount++;
 //            }
 //            else
@@ -629,15 +629,15 @@ public class World
 //                    case 0: // the outside room has two edges both connecting to room 2
 //                        if (edgeCount != 2)
 //                        {
-//                            Debug.ULogErrorChannel("Path_RoomGraph", "Room 0 supposed to have 2 edges. Instead has: " + edgeCount);
+//                            UnityDebugger.Debugger.LogError("Path_RoomGraph", "Room 0 supposed to have 2 edges. Instead has: " + edgeCount);
 //                            errorCount++;
 //                            continue;
 //                        }
 //
 //                        if (node.edges[0].node.data != world.RoomManager[2] || node.edges[1].node.data != world.RoomManager[4])
 //                        {
-//                            Debug.ULogErrorChannel("Path_RoomGraph", "Room 0 supposed to have edges to Room 2 and Room 4.");
-//                            Debug.ULogErrorChannel(
+//                            UnityDebugger.Debugger.LogError("Path_RoomGraph", "Room 0 supposed to have edges to Room 2 and Room 4.");
+//                            UnityDebugger.Debugger.LogError(
 //                                "Path_RoomGraph",
 //                                string.Format("Instead has: {1} and {2}", node.edges[0].node.data.ID, node.edges[1].node.data.ID));
 //                            errorCount++;
@@ -647,15 +647,15 @@ public class World
 //                    case 1: // Room 1 has one edge connecting to room 2
 //                        if (edgeCount != 1)
 //                        {
-//                            Debug.ULogErrorChannel("Path_RoomGraph", "Room 1 supposed to have 1 edge. Instead has: " + edgeCount);
+//                            UnityDebugger.Debugger.LogError("Path_RoomGraph", "Room 1 supposed to have 1 edge. Instead has: " + edgeCount);
 //                            errorCount++;
 //                            continue;
 //                        }
 //
 //                        if (node.edges[0].node.data != world.RoomManager[3])
 //                        {
-//                            Debug.ULogErrorChannel("Path_RoomGraph", "Room 1 supposed to have edge to Room 3.");
-//                            Debug.ULogErrorChannel("Path_RoomGraph", "Instead has: " + node.edges[0].node.data.ID.ToString());
+//                            UnityDebugger.Debugger.LogError("Path_RoomGraph", "Room 1 supposed to have edge to Room 3.");
+//                            UnityDebugger.Debugger.LogError("Path_RoomGraph", "Instead has: " + node.edges[0].node.data.ID.ToString());
 //                            errorCount++;
 //                        }
 //
@@ -663,15 +663,15 @@ public class World
 //                    case 2: // Room 2 has two edges both connecting to the outside room, one connecting to room 1 and one connecting to room 5
 //                        if (edgeCount != 2)
 //                        {
-//                            Debug.ULogErrorChannel("Path_RoomGraph", "Room 2 supposed to have 2 edges. Instead has: " + edgeCount);
+//                            UnityDebugger.Debugger.LogError("Path_RoomGraph", "Room 2 supposed to have 2 edges. Instead has: " + edgeCount);
 //                            errorCount++;
 //                            continue;
 //                        }
 //
 //                        if (node.edges[0].node.data != world.RoomManager[3] || node.edges[1].node.data != world.RoomManager[0])
 //                        {
-//                            Debug.ULogErrorChannel("Path_RoomGraph", "Room 2 supposed to have edges to Room 3 and Room 0.");
-//                            Debug.ULogErrorChannel(
+//                            UnityDebugger.Debugger.LogError("Path_RoomGraph", "Room 2 supposed to have edges to Room 3 and Room 0.");
+//                            UnityDebugger.Debugger.LogError(
 //                                "Path_RoomGraph",
 //                                string.Format("Instead has: {0} and {1}", node.edges[0].node.data.ID, node.edges[1].node.data.ID));
 //                            errorCount++;
@@ -681,7 +681,7 @@ public class World
 //                    case 3: // Room 3 has 4 edges, connecting to Rooms 1, 2, 4, and 7
 //                        if (edgeCount != 4)
 //                        {
-//                            Debug.ULogErrorChannel("Path_RoomGraph", "Room 3 supposed to have 4 edges. Instead has: " + edgeCount);
+//                            UnityDebugger.Debugger.LogError("Path_RoomGraph", "Room 3 supposed to have 4 edges. Instead has: " + edgeCount);
 //                            errorCount++;
 //                            continue;
 //                        }
@@ -689,14 +689,14 @@ public class World
 //                        if (node.edges[0].node.data != world.RoomManager[4] || node.edges[1].node.data != world.RoomManager[7] ||
 //                            node.edges[2].node.data != world.RoomManager[1] || node.edges[3].node.data != world.RoomManager[2])
 //                        {
-//                            Debug.ULogErrorChannel("Path_RoomGraph", "Room 3 supposed to have edges to Rooms 4, 7, 1, and 2");
+//                            UnityDebugger.Debugger.LogError("Path_RoomGraph", "Room 3 supposed to have edges to Rooms 4, 7, 1, and 2");
 //                            string errorMessage = string.Format(
 //                                "Instead has: {0}, {1}, {2}, and {3}",
 //                                node.edges[0].node.data.ID,
 //                                node.edges[1].node.data.ID,
 //                                node.edges[2].node.data.ID,
 //                                node.edges[3].node.data.ID);
-//                            Debug.ULogErrorChannel("Path_RoomGraph", errorMessage);
+//                            UnityDebugger.Debugger.LogError("Path_RoomGraph", errorMessage);
 //                            errorCount++;
 //                        }
 //
@@ -704,15 +704,15 @@ public class World
 //                    case 4: // Room 2 has two edges both connecting to the outside room, one connecting to room 1 and one connecting to room 5
 //                        if (edgeCount != 2)
 //                        {
-//                            Debug.ULogErrorChannel("Path_RoomGraph", "Room 4 supposed to have 2 edges. Instead has: " + edgeCount);
+//                            UnityDebugger.Debugger.LogError("Path_RoomGraph", "Room 4 supposed to have 2 edges. Instead has: " + edgeCount);
 //                            errorCount++;
 //                            continue;
 //                        }
 //
 //                        if (node.edges[0].node.data != world.RoomManager[0] || node.edges[1].node.data != world.RoomManager[3])
 //                        {
-//                            Debug.ULogErrorChannel("Path_RoomGraph", "Room 4 supposed to have edges to Room 0 and Room 3.");
-//                            Debug.ULogErrorChannel(
+//                            UnityDebugger.Debugger.LogError("Path_RoomGraph", "Room 4 supposed to have edges to Room 0 and Room 3.");
+//                            UnityDebugger.Debugger.LogError(
 //                                "Path_RoomGraph",
 //                                string.Format("Instead has: {0} and {1}", node.edges[0].node.data.ID, node.edges[1].node.data.ID));
 //
@@ -725,7 +725,7 @@ public class World
 //                    case 5: // Room 5 has no edges
 //                        if (edgeCount != 0)
 //                        {
-//                            Debug.ULogErrorChannel("Path_RoomGraph", "Room 5 supposed to have no edges. Instead has: " + edgeCount);
+//                            UnityDebugger.Debugger.LogError("Path_RoomGraph", "Room 5 supposed to have no edges. Instead has: " + edgeCount);
 //                            errorCount++;
 //                            continue;
 //                        }
@@ -734,7 +734,7 @@ public class World
 //                    case 6: // Room 4 has no edges
 //                        if (edgeCount != 0)
 //                        {
-//                            Debug.ULogErrorChannel("Path_RoomGraph", "Room 6 supposed to have no edges. Instead has: " + edgeCount);
+//                            UnityDebugger.Debugger.LogError("Path_RoomGraph", "Room 6 supposed to have no edges. Instead has: " + edgeCount);
 //                            errorCount++;
 //                            continue;
 //                        }
@@ -743,21 +743,21 @@ public class World
 //                    case 7: // Room 5 has one edge to Room 3
 //                        if (edgeCount != 1)
 //                        {
-//                            Debug.ULogErrorChannel("Path_RoomGraph", "Room 7 supposed to have 1 edge. Instead has: " + edgeCount);
+//                            UnityDebugger.Debugger.LogError("Path_RoomGraph", "Room 7 supposed to have 1 edge. Instead has: " + edgeCount);
 //                            errorCount++;
 //                            continue;
 //                        }
 //
 //                        if (node.edges[0].node.data != world.RoomManager[3])
 //                        {
-//                            Debug.ULogErrorChannel("Path_RoomGraph", "Room 7 supposed to have edge to Room 3.");
-//                            Debug.ULogErrorChannel("Path_RoomGraph", "Instead has: " + node.edges[0].node.data.ID.ToString());
+//                            UnityDebugger.Debugger.LogError("Path_RoomGraph", "Room 7 supposed to have edge to Room 3.");
+//                            UnityDebugger.Debugger.LogError("Path_RoomGraph", "Instead has: " + node.edges[0].node.data.ID.ToString());
 //                            errorCount++;
 //                        }
 //
 //                        break;
 //                    default:
-//                        Debug.ULogErrorChannel("Path_RoomGraph", "Unknown room ID: " + r.ID);
+//                        UnityDebugger.Debugger.LogError("Path_RoomGraph", "Unknown room ID: " + r.ID);
 //                        errorCount++;
 //                        break;
 //                }
@@ -766,7 +766,7 @@ public class World
 //
 //        if (errorCount == 0)
 //        {
-//            Debug.ULogChannel("Path_RoomGraph", "TestRoomGraphGeneration completed without errors!");
+//            UnityDebugger.Debugger.Log("Path_RoomGraph", "TestRoomGraphGeneration completed without errors!");
 //        }
     }
 

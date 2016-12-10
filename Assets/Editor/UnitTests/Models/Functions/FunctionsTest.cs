@@ -40,7 +40,6 @@ public class FunctionsTest
     [SetUp]
     public void Init()
     {
-        Debug.IsLogEnabled = true;
         csharpFunctions = new CSharpFunctions();
         luaFunctions = new LuaFunctions();
     }
@@ -76,9 +75,9 @@ public class FunctionsTest
 
         sw2.Stop();
 
-        Debug.Log(string.Format("Iterations: {0}", cache.Count / 2));
-        Debug.Log(string.Format("CSharp calls: {0} ms", sw1.ElapsedMilliseconds));
-        Debug.Log(string.Format("LUA calls: {0} ms", sw2.ElapsedMilliseconds));
+        UnityDebugger.Debugger.Log(string.Format("Iterations: {0}", cache.Count / 2));
+        UnityDebugger.Debugger.Log(string.Format("CSharp calls: {0} ms", sw1.ElapsedMilliseconds));
+        UnityDebugger.Debugger.Log(string.Format("LUA calls: {0} ms", sw2.ElapsedMilliseconds));
     }
 
     private string ReplaceQuotes(string text)

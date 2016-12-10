@@ -81,8 +81,7 @@ public class Functions
         }
         else
         {
-            Debug.ULogChannel(ModFunctionsLogChannel, "'" + functionName + "' is not a LUA nor CSharp function!");
-
+            UnityDebugger.Debugger.Log(ModFunctionsLogChannel, "'" + functionName + "' is not a LUA nor CSharp function!");
             return default(T);
         }
     }
@@ -93,7 +92,7 @@ public class Functions
         {
             if (fn == null)
             {
-                Debug.ULogErrorChannel(ModFunctionsLogChannel, "'" + fn + "'  is not a LUA nor CSharp function!");
+                UnityDebugger.Debugger.LogError(ModFunctionsLogChannel, "'" + fn + "'  is not a LUA nor CSharp function!");
                 return;
             }
 
@@ -106,7 +105,7 @@ public class Functions
 
             if (result != null && result.Type == DataType.String)
             {
-                Debug.ULogErrorChannel(ModFunctionsLogChannel, result.String);
+                UnityDebugger.Debugger.LogError(ModFunctionsLogChannel, result.String);
             }
         }
     }
@@ -128,7 +127,7 @@ public class Functions
         }
         else
         {
-            Debug.ULogChannel(ModFunctionsLogChannel, "'" + functionName + "' is not a LUA nor is it a CSharp function!");
+            UnityDebugger.Debugger.Log(ModFunctionsLogChannel, "'" + functionName + "' is not a LUA nor is it a CSharp function!");
 
             if (throwError)
             {

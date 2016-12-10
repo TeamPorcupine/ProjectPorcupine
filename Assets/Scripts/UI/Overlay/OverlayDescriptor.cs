@@ -94,7 +94,7 @@ public class OverlayDescriptor : IPrototypable
             }
             catch (ArgumentException e)
             {
-                Debug.ULogErrorChannel("OverlayMap", "Invalid color map!", e);
+                UnityDebugger.Debugger.LogErrorFormat("OverlayMap", "Invalid color map!\n{0}", e.Message);
             }
         }
 
