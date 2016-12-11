@@ -18,7 +18,7 @@ namespace DeveloperConsole.CommandTypes
     /// A core class for CSharp Commands.
     /// </summary>
     [MoonSharpUserData]
-    public class CSharpCommand : CommandBase, ICommandBase
+    public class InternalCommand : CommandBase, ICommandInternal
     {
         /// <summary>
         /// Standard with title, method, and help text.
@@ -26,12 +26,13 @@ namespace DeveloperConsole.CommandTypes
         /// <param name="title"> The title for the command.</param>
         /// <param name="method"> The command to execute.</param>
         /// <param name="helpText"> The help text to display.</param>
-        public CSharpCommand(string title, Delegate method, string descriptiveText, string defaultValue = "")
+        public InternalCommand(string title, Method method, string descriptiveText, Type[] typeInfo = null, string defaultValue = "")
         {
             this.Title = title;
             this.Method = method;
             this.DescriptiveText = descriptiveText;
             this.DefaultValue = defaultValue;
+            this.TypeInfo = typeInfo;
         }
 
         /// <summary>
@@ -40,7 +41,7 @@ namespace DeveloperConsole.CommandTypes
         /// <param name="title"> The title for the command.</param>
         /// <param name="method"> The command to execute.</param>
         /// <param name="helpMethod"> The help method to execute.</param>
-        public CSharpCommand(string title, Delegate method, HelpMethod helpMethod, string defaultValue = "") : this(title, method, defaultValue)
+        public InternalCommand(string title, Method method, HelpMethod helpMethod, Type[] typeInfo = null, string defaultValue = "") : this(title, method, defaultValue)
         {
             this.HelpMethod = helpMethod;
         }
@@ -52,7 +53,7 @@ namespace DeveloperConsole.CommandTypes
         /// <param name="method"> The command to execute.</param>
         /// <param name="helpText"> The help text to display.</param>
         /// <param name="tags"> Just tags for help function. </param>
-        public CSharpCommand(string title, Delegate method, string descriptiveText, string[] tags, string defaultValue = "") : this(title, method, descriptiveText, defaultValue)
+        public InternalCommand(string title, Method method, string descriptiveText, string[] tags, Type[] typeInfo = null, string defaultValue = "") : this(title, method, descriptiveText, typeInfo, defaultValue)
         {
             this.Tags = tags;
         }
@@ -64,7 +65,7 @@ namespace DeveloperConsole.CommandTypes
         /// <param name="method"> The command to execute. </param>
         /// <param name="helpMethod"> The help method to execute. </param>
         /// <param name="tags"> Just tags for help function. </param>
-        public CSharpCommand(string title, Delegate method, HelpMethod helpMethod, string[] tags, string defaultValue = "") : this(title, method, helpMethod, defaultValue)
+        public InternalCommand(string title, Method method, HelpMethod helpMethod, string[] tags, Type[] typeInfo = null, string defaultValue = "") : this(title, method, helpMethod, typeInfo, defaultValue)
         {
             this.Tags = tags;
         }
@@ -86,7 +87,9 @@ namespace DeveloperConsole.CommandTypes
             }
         }
 
-        public Delegate Method { get; protected set; }
+        public Method Method { get; protected set; }
+
+        public Type[] TypeInfo { get; protected set; }
 
         /// <summary>
         /// Executes the command.
@@ -107,7 +110,42 @@ namespace DeveloperConsole.CommandTypes
 
         protected override object[] ParseArguments(string args)
         {
-            return new object[] { };
+            object[] convertedArgs = new object[] { };
+
+            try
+            {
+                string[] arguments = RegexToStandardPattern(args);
+                convertedArgs = new object[arguments.Length];
+
+                // If TypeInfo null then no new parameters to pass (we'll we will pass an array of strings, which could be empty)
+                if (TypeInfo == null)
+                {
+                    return arguments;
+                }
+
+                for (int i = 0; i < TypeInfo.Length; i++)
+                {
+                    // Guard to make sure we don't actually go overboard
+                    if (arguments.Length > i)
+                    {
+                        // This just wraps then unwraps, works quite fast actually, since its a easy wrap/unwrap.
+                        convertedArgs[i] = GetValueType<object>(arguments[i], TypeInfo[i]);
+                    }
+                    else
+                    {
+                        // No point running through the rest, 
+                        // this means 'technically' you could have 100 parameters at the end (not tested)
+                        // However, that may break for other reasons
+                        break;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                UnityDebugger.Debugger.LogError("DevConsole", e.ToString());
+            }
+
+            return convertedArgs;
         }
     }
 }

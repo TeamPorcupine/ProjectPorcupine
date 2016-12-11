@@ -10,12 +10,12 @@ using System;
 
 namespace DeveloperConsole.Interfaces
 {
-    public interface ICommandBase : ICommandRunnable
+    public interface ICommandInternal : ICommandRunnable
     {
         /// <summary>
         /// The method to be called.
         /// </summary>
-        Delegate Method
+        Method Method
         {
             get;
         }

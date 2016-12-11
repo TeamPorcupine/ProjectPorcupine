@@ -11,7 +11,7 @@ using DeveloperConsole.Interfaces;
 
 namespace DeveloperConsole
 {
-    static class Errors
+    public static class Errors
     {
         public static string ParametersNotInFormat(CommandBase command)
         {

@@ -32,8 +32,15 @@ namespace DeveloperConsole
             new LuaFunctions().LoadScript(code, "User Script");
         }
 
-        public static void Help(string tag = "")
+        public static void Help(params object[] objects)
         {
+            string tag = string.Empty;
+
+            if (objects != null && objects.Length > 0 && objects[0] is string)
+            {
+                tag = objects[0] as string;
+            }
+
             DevConsole.Log("-- Help --", "green");
 
             string text = string.Empty;
@@ -75,8 +82,9 @@ namespace DeveloperConsole
 
         /// <summary>
         /// Clears the text area and history.
+        /// We don't care about the objects :D.
         /// </summary>
-        public static void Clear()
+        public static void Clear(params object[] objects)
         {
             DevConsole.ClearHistory();
             SetText("\n<color=green>Clear Successful :D</color>\n");
