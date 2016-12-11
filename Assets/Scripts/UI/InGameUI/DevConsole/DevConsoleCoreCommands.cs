@@ -32,32 +32,6 @@ namespace DeveloperConsole
             new LuaFunctions().LoadScript(code, "User Script");
         }
 
-        public static void Help(params object[] objects)
-        {
-            string tag = string.Empty;
-
-            if (objects != null && objects.Length > 0 && objects[0] is string)
-            {
-                tag = objects[0] as string;
-            }
-
-            DevConsole.Log("-- Help --", "green");
-
-            string text = string.Empty;
-
-            CommandBase[] consoleCommands = DevConsole.CommandArray(tag);
-
-            for (int i = 0; i < consoleCommands.Length; i++)
-            {
-                text += "\n<color=orange>" + consoleCommands[i].Title + DevConsole.GetParameters(consoleCommands[i]) + "</color>" + (consoleCommands[i].DescriptiveText == null ? string.Empty : " //" + consoleCommands[i].DescriptiveText);
-            }
-
-            DevConsole.Log(text);
-
-            DevConsole.Log("\n<color=orange>Note:</color> If the function has no parameters you <color=red> don't</color> need to use the parameter modifier.");
-            DevConsole.Log("<color=orange>Note:</color> You <color=red>don't</color> need to use the trailing parameter modifier either");
-        }
-
         public static void SetFontSize(int size)
         {
             if (size < 10)
@@ -78,16 +52,6 @@ namespace DeveloperConsole
         public static void SetText(string text)
         {
             DevConsole.TextObject().text = "\n" + text;
-        }
-
-        /// <summary>
-        /// Clears the text area and history.
-        /// We don't care about the objects :D.
-        /// </summary>
-        public static void Clear(params object[] objects)
-        {
-            DevConsole.ClearHistory();
-            SetText("\n<color=green>Clear Successful :D</color>\n");
         }
 
         public static World GetCurrentWorld()

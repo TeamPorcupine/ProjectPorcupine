@@ -569,6 +569,51 @@ namespace DeveloperConsole
         }
 
         /// <summary>
+        /// Just returns help dependent on each command.
+        /// </summary>
+        /// <param name="objects"> First one should be a string tag </param>
+        public static void Help(params object[] objects)
+        {
+            string tag = string.Empty;
+
+            if (objects != null && objects.Length > 0 && objects[0] is string)
+            {
+                tag = objects[0] as string;
+            }
+
+            Log("-- Help --", "green");
+
+            string text = string.Empty;
+
+            CommandBase[] consoleCommands = CommandArray(tag);
+
+            for (int i = 0; i < consoleCommands.Length; i++)
+            {
+                text += "\n<color=orange>" + consoleCommands[i].Title + GetParameters(consoleCommands[i]) + "</color>" + (consoleCommands[i].DescriptiveText == null ? string.Empty : " //" + consoleCommands[i].DescriptiveText);
+            }
+
+            Log(text);
+
+            Log("\n<color=orange>Note:</color> If the function has no parameters you <color=red> don't</color> need to use the parameter modifier.");
+            Log("<color=orange>Note:</color> You <color=red>don't</color> need to use the trailing parameter modifier either");
+        }
+
+        /// <summary>
+        /// Clears the text area and history.
+        /// </summary>
+        /// <param name="objects"> We don't care about the objects :D. </param>
+        public static void Clear(params object[] objects)
+        {
+            ClearHistory();
+            Text textObj = TextObject();
+
+            if (textObj != null)
+            {
+                TextObject().text = "\n<color=green>Clear Successful :D</color>\n";
+            }
+        }
+
+        /// <summary>
         /// Button delegate action to handle command.
         /// </summary>
         public void EnterPressedForInput(Text newValue)
@@ -865,8 +910,8 @@ namespace DeveloperConsole
             consoleCommands.Clear();
 
             AddCommands(
-                new InternalCommand("Help", CoreCommands.Help, "Returns information on all commands.  Can take in a parameter as a tag to search for all commands with that tag", new Type[] { typeof(string) }),
-                new InternalCommand("Clear", CoreCommands.Clear, "Clears the developer console"));
+                new InternalCommand("Help", Help, "Returns information on all commands.  Can take in a parameter as a tag to search for all commands with that tag", new Type[] { typeof(string) }),
+                new InternalCommand("Clear", Clear, "Clears the developer console"));
 
             // Load Base Commands
             // Currently 

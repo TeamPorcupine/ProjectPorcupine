@@ -15,7 +15,7 @@ using MoonSharp.Interpreter;
 namespace DeveloperConsole.CommandTypes
 {
     /// <summary>
-    /// A core class for CSharp Commands.
+    /// A core class for Internal Commands.
     /// </summary>
     [MoonSharpUserData]
     public class InternalCommand : CommandBase, ICommandInternal
