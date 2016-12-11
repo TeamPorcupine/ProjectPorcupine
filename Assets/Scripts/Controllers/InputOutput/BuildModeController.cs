@@ -335,7 +335,16 @@ public class BuildModeController
                         }
 
                         Job job = mineAction.CreateJob(tile, null);
-                        tile.Furniture.Jobs.Add(job);
+                        if (CommandSettings.DeveloperModeToggle)
+                        {
+                            // complete job right away, needs buildable
+                            job.buildable = tile.Furniture;
+                            job.DoWork(0);
+                        }
+                        else
+                        {
+                            tile.Furniture.Jobs.Add(job);
+                        }
                     }
                 }
             }
