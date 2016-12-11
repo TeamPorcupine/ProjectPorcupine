@@ -571,7 +571,7 @@ namespace DeveloperConsole
         /// <summary>
         /// Just returns help dependent on each command.
         /// </summary>
-        /// <param name="objects"> First one should be a string tag </param>
+        /// <param name="objects"> First one should be a string tag. </param>
         public static void Help(params object[] objects)
         {
             string tag = string.Empty;

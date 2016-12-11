@@ -116,10 +116,10 @@ namespace DeveloperConsole.CommandTypes
         /// <summary>
         /// Get the value type of the argument.
         /// </summary>
-        /// <typeparam name="T"> the type of the argument.</typeparam>
-        /// <param name="arg"> the argument to find the value type.</param>
-        /// <returns> The type of the argument given.</returns>
-        /// <exception cref="Exception"> Throws exception if arg is not type T, SHOULD BE CAUGHT by command.</exception>
+        /// <typeparam name="T"> The type of the argument. </typeparam>
+        /// <param name="arg"> The argument to find the value type. </param>
+        /// <returns> The type of the argument given. </returns>
+        /// <exception cref="Exception"> Throws exception if arg is not type T, SHOULD BE CAUGHT by command. </exception>
         protected T GetValueType<T>(string arg, Type typeVariable = null)
         {
             Type typeOfT;
