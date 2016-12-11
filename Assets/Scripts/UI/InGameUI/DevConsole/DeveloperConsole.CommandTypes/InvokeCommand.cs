@@ -54,7 +54,8 @@ namespace DeveloperConsole.CommandTypes
                 }
                 catch (Exception e)
                 {
-                    DevConsole.LogError(e.Message);
+                    DevConsole.LogError(Errors.UnknownError(this));
+                    DevConsole.LogError("This error message may be able to help: " + e.Message);
                 }
             };
 

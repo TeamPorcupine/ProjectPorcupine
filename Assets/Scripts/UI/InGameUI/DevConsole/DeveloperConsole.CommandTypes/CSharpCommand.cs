@@ -100,7 +100,7 @@ namespace DeveloperConsole.CommandTypes
             }
             catch (Exception e)
             {
-                DevConsole.LogError(Errors.ExecuteConsoleError.Description(this));
+                DevConsole.LogError(Errors.UnknownError(this));
                 UnityDebugger.Debugger.LogError("DevConsole", e.ToString());
             }
         }

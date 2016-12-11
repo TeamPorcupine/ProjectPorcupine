@@ -221,7 +221,7 @@ namespace DeveloperConsole.CommandTypes
             }
             catch (Exception e)
             {
-                DevConsole.LogError(Errors.TypeConsoleError.Description(this));
+                DevConsole.LogError(Errors.ParametersNotInFormat(this));
                 throw e;
             }
         }

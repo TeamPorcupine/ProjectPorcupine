@@ -79,7 +79,7 @@ namespace DeveloperConsole
         public static void Clear()
         {
             DevConsole.ClearHistory();
-            SetText("\n<color=green>Clear Successful :D</color>");
+            SetText("\n<color=green>Clear Successful :D</color>\n");
         }
 
         public static World GetCurrentWorld()

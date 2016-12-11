@@ -50,7 +50,7 @@ namespace DeveloperConsole.CommandTypes
                 }
                 else
                 {
-                    DevConsole.LogError(Errors.ParameterMissingConsoleError.Description(this));
+                    DevConsole.LogError(Errors.ParametersMissing(this));
                     throw new Exception("Command Missing Parameter");
                 }
             }
