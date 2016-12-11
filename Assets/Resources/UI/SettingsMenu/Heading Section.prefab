@@ -19,7 +19,7 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 224: {fileID: 224000010702637000}
-  - 114: {fileID: 114000011448650974}
+  - 114: {fileID: 114000011548357258}
   m_Layer: 5
   m_Name: Root Of Objects
   m_TagString: Untagged
@@ -37,6 +37,7 @@ GameObject:
   - 224: {fileID: 224000010231090720}
   - 222: {fileID: 222000014160087150}
   - 114: {fileID: 114000013773110676}
+  - 114: {fileID: 114000010326162276}
   m_Layer: 5
   m_Name: Heading
   m_TagString: Untagged
@@ -54,6 +55,8 @@ GameObject:
   - 224: {fileID: 224000012154001802}
   - 222: {fileID: 222000012375702020}
   - 114: {fileID: 114000010065151278}
+  - 114: {fileID: 114000012681863884}
+  - 114: {fileID: 114000012764975788}
   m_Layer: 5
   m_Name: Heading Section
   m_TagString: Untagged
@@ -74,7 +77,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   root: {fileID: 1000011375798180}
   headingText: {fileID: 114000013773110676}
---- !u!114 &114000011448650974
+--- !u!114 &114000010326162276
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000012046995798}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1679637790, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: 240
+  m_MinHeight: 30
+  m_PreferredWidth: 240
+  m_PreferredHeight: 30
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+--- !u!114 &114000011548357258
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -82,21 +103,56 @@ MonoBehaviour:
   m_GameObject: {fileID: 1000011375798180}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -2095666955, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
+  m_Script: {fileID: 1297475563, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
     m_Left: 0
     m_Right: 0
-    m_Top: 15
+    m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 1
-  m_StartCorner: 0
-  m_StartAxis: 1
-  m_CellSize: {x: 220, y: 60}
-  m_Spacing: {x: 0, y: 10}
-  m_Constraint: 1
-  m_ConstraintCount: 1
+  m_Spacing: 10
+  m_ChildForceExpandWidth: 0
+  m_ChildForceExpandHeight: 0
+--- !u!114 &114000012681863884
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000014122894870}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1679637790, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: 340
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: 1
+--- !u!114 &114000012764975788
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000014122894870}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1297475563, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 0
+  m_Spacing: 10
+  m_ChildForceExpandWidth: 1
+  m_ChildForceExpandHeight: 0
 --- !u!114 &114000013773110676
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -109,7 +165,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.7998896, g: 0.86764705, b: 0.37640572, a: 1}
+  m_Color: {r: 0.80784315, g: 0.9490196, b: 0.9490196, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -155,10 +211,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 224000012154001802}
   m_RootOrder: 0
-  m_AnchorMin: {x: 0, y: 0.9336362}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.000030517578, y: 0.02999878}
-  m_SizeDelta: {x: 0.80999756, y: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224000010702637000
 RectTransform:
@@ -174,9 +230,9 @@ RectTransform:
   m_Father: {fileID: 224000012154001802}
   m_RootOrder: 1
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 0.9336362}
-  m_AnchoredPosition: {x: -0.20257568, y: -0.009002686}
-  m_SizeDelta: {x: 1, y: 0.049987793}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224000012154001802
 RectTransform:
