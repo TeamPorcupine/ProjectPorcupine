@@ -257,7 +257,13 @@ namespace ProjectPorcupine.Localization
                     {
                         case "removed":
                             UnityDebugger.Debugger.Log("LocalizationDownloader", "Removing the file " + file.Filename + "from the localization.");
-                            File.Delete(Path.Combine(LocalizationFolderPath, file.Filename));
+                            if (!File.Exists(path))
+                            {
+                                UnityDebugger.Debugger.LogError("LocalizationDownloader", "I was going to remove the file " + file.Filename + " from the localization, but it's not even there!");
+                                break;
+                            }
+
+                            File.Delete(path);
                             break;
 
                         case "modified":
