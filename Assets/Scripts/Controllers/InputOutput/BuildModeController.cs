@@ -161,7 +161,7 @@ public class BuildModeController
                 }
                 else
                 {
-                    Debug.ULogErrorChannel("BuildModeController", "There is no furniture job prototype for '" + furnitureType + "'");
+                    UnityDebugger.Debugger.LogError("BuildModeController", "There is no furniture job prototype for '" + furnitureType + "'");
                     job = new Job(tile, furnitureType, World.Current.FurnitureManager.ConstructJobCompleted, 0.1f, null, Job.JobPriority.High);
                     job.adjacent = true;
                     job.Description = "job_build_" + furnitureType + "_desc";
@@ -237,7 +237,7 @@ public class BuildModeController
                 }
                 else
                 {
-                    Debug.ULogErrorChannel("BuildModeController", "There is no furniture job prototype for '" + utilityType + "'");
+                    UnityDebugger.Debugger.LogError("BuildModeController", "There is no furniture job prototype for '" + utilityType + "'");
                     job = new Job(tile, utilityType, World.Current.UtilityManager.ConstructJobCompleted, 0.1f, null, Job.JobPriority.High);
                     job.Description = "job_build_" + utilityType + "_desc";
                 }
@@ -302,7 +302,7 @@ public class BuildModeController
             {
                 // check if this is a WALL neighbouring a pressured and pressureless environment, and if so, bail
                 if (IsTilePartOfPressuredRoom(tile))
-                {
+                {                    
                     return;
                 }
 
@@ -351,7 +351,7 @@ public class BuildModeController
         }
         else
         {
-            Debug.ULogErrorChannel("BuildModeController", "UNIMPLEMENTED BUILD MODE");
+            UnityDebugger.Debugger.LogError("BuildModeController", "UNIMPLEMENTED BUILD MODE");
         }
     }
 
@@ -435,7 +435,7 @@ public class BuildModeController
 
             if (vacuumNeighbors > 0 && pressuredNeighbors > 0)
             {
-                Debug.ULogChannel("BuildModeController", "Someone tried to deconstruct a wall between a pressurized room and vacuum!");
+                UnityDebugger.Debugger.Log("BuildModeController", "Someone tried to deconstruct a wall between a pressurized room and vacuum!");
                 return true;
             }
         }

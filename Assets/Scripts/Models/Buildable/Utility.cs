@@ -24,9 +24,6 @@ using UnityEngine;
 [MoonSharpUserData]
 public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuildable
 {
-    // Prevent construction too close to the world's edge
-    private const int MinEdgeDistance = 5;
-
     private bool gridUpdatedThisFrame = false;
 
     /// <summary>
@@ -246,7 +243,7 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
     {
         if (proto.IsValidPosition(tile) == false)
         {
-            Debug.ULogErrorChannel("Utility", "PlaceInstance -- Position Validity Function returned FALSE. " + proto.Name + " " + tile.X + ", " + tile.Y + ", " + tile.Z);
+            UnityDebugger.Debugger.LogError("Utility", "PlaceInstance -- Position Validity Function returned FALSE. " + proto.Name + " " + tile.X + ", " + tile.Y + ", " + tile.Z);
             return null;
         }
 
@@ -636,15 +633,6 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
     /// <returns>True if the tile is valid for the placement of the utility.</returns>
     public bool IsValidPosition(Tile tile)
     {
-        bool tooCloseToEdge = tile.X < MinEdgeDistance || tile.Y < MinEdgeDistance ||
-                              World.Current.Width - tile.X <= MinEdgeDistance ||
-                              World.Current.Height - tile.Y <= MinEdgeDistance;
-
-        if (tooCloseToEdge)
-        {
-            return false;
-        }
-
         if (HasTypeTag("OutdoorOnly"))
         {
             if (tile.Room == null || !tile.Room.IsOutsideRoom())

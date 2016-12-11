@@ -72,7 +72,7 @@ namespace DeveloperConsole.CommandTypes
                     // This will only happen if the semi colon is the last element in the string
                     Parameters = string.Empty;
 
-                    Debug.ULogWarningChannel("DevConsole", "Parameters had a semicolon as a last character this is an illegal string.");
+                    UnityDebugger.Debugger.LogWarning("DevConsole", "Parameters had a semicolon as a last character this is an illegal string.");
                 }
             }
             else
@@ -125,7 +125,7 @@ namespace DeveloperConsole.CommandTypes
                         // This in most cases is fine, just means that when you call it, 
                         // it won't work (unless the type is object)
                         types[i] = typeof(object);
-                        Debug.ULogErrorChannel("DevConsole", e.Message);
+                        UnityDebugger.Debugger.LogError("DevConsole", e.Message);
                     }
                 }
             }
@@ -254,7 +254,7 @@ namespace DeveloperConsole.CommandTypes
             }
             catch (Exception e)
             {
-                Debug.ULogErrorChannel("DevConsole", e.ToString());
+                UnityDebugger.Debugger.LogError("DevConsole", e.ToString());
             }
 
             return new object[] { };

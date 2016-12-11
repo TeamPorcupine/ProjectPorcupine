@@ -415,19 +415,22 @@ public class MouseController
 
             for (int y = begin; y != stop; y += increment)
             {
-                Tile t = WorldController.Instance.World.GetTileAt(x, y, WorldController.Instance.cameraController.CurrentLayer);
+                Tile tile = WorldController.Instance.World.GetTileAt(x, y, WorldController.Instance.cameraController.CurrentLayer);
+                if (tile == null)
+                {
+                    // Trying to build off the map, bail out of this cycle.
+                    continue;
+                }
+
                 if (bmc.buildMode == BuildMode.FURNITURE)
                 {
                     // Check for furniture dragType.
                     Furniture proto = PrototypeManager.Furniture.Get(bmc.buildModeType);
 
-                    if (IsPartOfDrag(t, dragParams, proto.DragType))
+                    if (IsPartOfDrag(tile, dragParams, proto.DragType))
                     {
-                        if (t != null)
-                        {
-                            // Call BuildModeController::DoBuild().
-                            bmc.DoBuild(t);
-                        }
+                        // Call BuildModeController::DoBuild().
+                        bmc.DoBuild(tile);
                     }
                 }
                 else if (bmc.buildMode == BuildMode.UTILITY)
@@ -435,18 +438,15 @@ public class MouseController
                     // Check for furniture dragType.
                     Utility proto = PrototypeManager.Utility.Get(bmc.buildModeType);
 
-                    if (IsPartOfDrag(t, dragParams, proto.DragType))
+                    if (IsPartOfDrag(tile, dragParams, proto.DragType))
                     {
-                        if (t != null)
-                        {
-                            // Call BuildModeController::DoBuild().
-                            bmc.DoBuild(t);
-                        }
+                        // Call BuildModeController::DoBuild().
+                        bmc.DoBuild(tile);
                     }
                 }
                 else
                 {
-                    bmc.DoBuild(t);
+                    bmc.DoBuild(tile);
                 }
             }
         }

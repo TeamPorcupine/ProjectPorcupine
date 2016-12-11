@@ -54,7 +54,7 @@ namespace ProjectPorcupine.OrderActions
             }
             else
             {
-                Debug.ULogErrorChannel(OrderActionsLogChannel, "There is no deserializer for OrderAction '{0}'", orderActionType);
+                UnityDebugger.Debugger.Log(OrderActionsLogChannel, string.Format("There is no deserializer for OrderAction '{0}'", orderActionType));
                 return null;
             }
         }
@@ -94,7 +94,7 @@ namespace ProjectPorcupine.OrderActions
                         foreach (OrderActionNameAttribute compNameAttr in attribs)
                         {
                             orderActionTypes.Add(compNameAttr.OrderActionName, type);
-                            Debug.ULogChannel(OrderActionsLogChannel, "Found OrderAction in assembly: {0}", compNameAttr.OrderActionName);
+                            UnityDebugger.Debugger.Log(OrderActionsLogChannel, string.Format("Found OrderAction in assembly: {0}", compNameAttr.OrderActionName));
                         }
                     }
                 }

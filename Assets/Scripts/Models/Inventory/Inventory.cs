@@ -145,7 +145,7 @@ public class Inventory : ISelectable, IContextActionProvider
         {
             LocalizationKey = "Sample Item Context action",
             RequireCharacterSelected = true,
-            Action = (cm, c) => Debug.ULogChannel("Inventory", "Sample menu action")
+            Action = (cm, c) => UnityDebugger.Debugger.Log("Inventory", "Sample menu action")
         };
     }
 

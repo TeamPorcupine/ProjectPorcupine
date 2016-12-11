@@ -6,11 +6,13 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
+using UnityEngine;
 
 /// <summary>
 /// A class that holds prototypes to be used later.
@@ -132,7 +134,7 @@ public class PrototypeMap<T> where T : IPrototypable, new()
     {
         if (Has(proto.Type))
         {
-            Debug.ULogWarningChannel("PrototypeMap", "Trying to register a prototype of type '{0}' which already exists. Overwriting.", proto.Type);
+            UnityDebugger.Debugger.LogWarningFormat("PrototypeMap", "Trying to register a prototype of type '{0}' which already exists. Overwriting.", proto.Type);
         }
 
         Set(proto);
@@ -158,12 +160,12 @@ public class PrototypeMap<T> where T : IPrototypable, new()
             }
             else
             {
-                Debug.ULogErrorChannel("PrototypeMap", "The '" + listTag + "' prototype definition file doesn't have any '" + elementTag + "' elements.");
+                UnityDebugger.Debugger.LogError("PrototypeMap", "The '" + listTag + "' prototype definition file doesn't have any '" + elementTag + "' elements.");
             }
         }
         else
         {
-            Debug.ULogErrorChannel("PrototypeMap", "Did not find a '" + listTag + "' element in the prototype definition file.");
+            UnityDebugger.Debugger.LogError("PrototypeMap", "Did not find a '" + listTag + "' element in the prototype definition file.");
         }
     }
 

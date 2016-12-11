@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // ====================================================
 // Project Porcupine Copyright(C) 2016 Team Porcupine
 // This program comes with ABSOLUTELY NO WARRANTY; This is free software, 
@@ -24,20 +24,12 @@ public class CursorInfoDisplay
 
     public string MousePosition(Tile t)
     {
-        string x = string.Empty;
-        string y = string.Empty;
-
-        if (t != null)
-        {
-            x = t.X.ToString();
-            y = t.Y.ToString();
-
-            return "X:" + x + " Y:" + y;
-        }
-        else
+        if (t == null)
         {
             return string.Empty;
         }
+
+        return string.Format("X:{0} Y:{1} Z:{2}", t.X.ToString(), t.Y.ToString(), t.Z.ToString());
     }
 
     public void GetPlacementValidationCounts()

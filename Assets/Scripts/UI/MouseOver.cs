@@ -48,7 +48,7 @@ public abstract class MouseOver : MonoBehaviour
 
         if (text == null)
         {
-            Debug.ULogErrorChannel("MouseOver", "MouseOver: No 'Text' UI component on this object.");
+            UnityDebugger.Debugger.LogError("MouseOver", "MouseOver: No 'Text' UI component on this object.");
             this.enabled = false;
             return;
         }
@@ -56,7 +56,7 @@ public abstract class MouseOver : MonoBehaviour
         mouseController = WorldController.Instance.mouseController;
         if (mouseController == null)
         {
-            Debug.ULogErrorChannel("MouseOver", "How do we not have an instance of mouse controller?");
+            UnityDebugger.Debugger.LogError("MouseOver", "How do we not have an instance of mouse controller?");
             this.enabled = false;
             return;
         }
