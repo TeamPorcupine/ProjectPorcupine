@@ -200,15 +200,15 @@ public class SettingsMenu : MonoBehaviour
 
                         GameController.Instance.IsModal = false;
                         GameController.Instance.soundController.OnButtonSFX();
+                        mainRoot.SetActive(false);
+
                         break;
                     case DialogBoxResult.No:
                         GameController.Instance.soundController.OnButtonSFX();
-                        mainRoot.SetActive(true);
                         break;
                 }
             };
 
-        mainRoot.SetActive(false);
         check.ShowDialog();
     }
 
