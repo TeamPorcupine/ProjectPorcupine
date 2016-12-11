@@ -58,6 +58,7 @@ namespace ProjectPorcupine.Localization
                 yield return GetChangesSinceDate();
             }
 
+            UnityDebugger.Debugger.Log("LocalizationDownloader", "Localization has finished downloading.");
             onFinished();
         }
 
@@ -99,9 +100,9 @@ namespace ProjectPorcupine.Localization
             if (list == null)
             {
                 // Just going to download everything
-                WWW downloadConfig = new WWW("https://cdn.rawgit.com/" + LocalizationRepository + GameController.GameVersion + "/" + LocalizationConfigName);
-                yield return downloadConfig;
-                if (!string.IsNullOrEmpty(downloadConfig.error))
+                UnityWebRequest downloadConfig = UnityWebRequest.Get("https://cdn.rawgit.com/" + LocalizationRepository + GameController.GameVersion + "/" + LocalizationConfigName);
+                yield return downloadConfig.Send();
+                if (downloadConfig.isError)
                 {
                     UnityDebugger.Debugger.LogError("LocalizationDownloader", "Error while downloading localization for the first time. Are you connected to the internet? \n" + downloadConfig.error);
                     yield break;
@@ -112,14 +113,14 @@ namespace ProjectPorcupine.Localization
                     File.Delete(ConfigPath);
                 }
 
-                File.WriteAllBytes(ConfigPath, downloadConfig.bytes);
-
+                File.WriteAllBytes(ConfigPath, downloadConfig.downloadHandler.data);
+                
                 // Download the translation files.
                 foreach (string locale in GetTranslations())
                 {
                     string path = Path.Combine(LocalizationFolderPath, locale + ".lang");
                     UnityWebRequest www = UnityWebRequest.Get("https://cdn.rawgit.com/" + LocalizationRepository + GameController.GameVersion + "/" + locale + ".lang");
-                    yield return www;
+                    yield return www.Send();
 
                     if (www.isError)
                     {
