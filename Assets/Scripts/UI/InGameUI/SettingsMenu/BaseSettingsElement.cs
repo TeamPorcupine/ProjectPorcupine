@@ -37,7 +37,7 @@ public abstract class BaseSettingsElement
     public abstract GameObject InitializeElement();
 
     /// <summary>
-    /// Always has 220 allocated width
+    /// Always has 220 allocated width.
     /// </summary>
     protected GameObject GetFluidHorizontalBaseElement(string elementTitle = "", bool stretchX = false, bool stretchY = false, TextAnchor alignment = TextAnchor.MiddleCenter, int spacing = 10, int allocatedHeight = 60)
     {
