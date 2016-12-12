@@ -107,7 +107,6 @@ namespace DeveloperConsole.CommandTypes
                             list += " " + ParameterNames[i];
                         }
 
-
                         if (i + 1 < Math.Max(TypeInfo.Length, ParameterNames.Length))
                         {
                             list += ",";
