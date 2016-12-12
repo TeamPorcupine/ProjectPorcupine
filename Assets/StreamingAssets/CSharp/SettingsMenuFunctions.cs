@@ -683,6 +683,7 @@ public class SoundSlider : GenericSlider
                 }
             });
         sliderElement.onValueChanged.Invoke(sliderElement.value);
+        textElement.text = string.Format(format, (int)(value * 100));
 
         return go;
     }
