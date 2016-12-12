@@ -151,6 +151,7 @@ public class CharacterManager : IEnumerable<Character>
                 character = Create(World.Current.GetTileAt(x, y, z));
             }
 
+            // While it's not strictly necessary to use a foreach here, it *is* an array structure, so it should be treated as such
             foreach (JToken inventoryToken in characterToken["Inventories"])
             {
                 Inventory inventory = new Inventory();

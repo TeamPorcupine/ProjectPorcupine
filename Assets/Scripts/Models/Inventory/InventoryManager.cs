@@ -317,6 +317,7 @@ public class InventoryManager
             {
                 continue;
             }
+
             inventoriesJson.Add(inventory.ToJSon());
         }
 
