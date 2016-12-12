@@ -68,6 +68,27 @@ namespace DeveloperConsole
             }
         }
 
+        public static void Exit()
+        {
+            DevConsole.Close();
+        }
+
+        public static void DevMode(bool isOn)
+        {
+            CommandSettings.DeveloperModeToggle = isOn;
+        }
+
+        public static void Status()
+        {
+            DevConsole.Log("Developer Mode is " + (CommandSettings.DeveloperModeToggle ? "on" : "off"), "yellow");
+            DevConsole.Log("Time is " + (TimeManager.Instance.IsPaused ? "paused" : TimeManager.Instance.TimeScale + "x"), "yellow");
+        }
+
+        public static void CreateCharacterCenter()
+        {
+            NewCharacter(new Vector2(GetCurrentWorld().Width / 2, GetCurrentWorld().Height / 2));
+        }
+
         public static void SetText(string text)
         {
             DevConsole.TextObject().text = "\n" + text;
@@ -85,6 +106,11 @@ namespace DeveloperConsole
         public static World GetCurrentWorld()
         {
             return World.Current;
+        }
+
+        public static void NewCharacter(Vector2 pos)
+        {
+            GetCurrentWorld().CharacterManager.Create(GetTileAt(pos));
         }
 
         public static void SetCharacterHealth(string name, float health)

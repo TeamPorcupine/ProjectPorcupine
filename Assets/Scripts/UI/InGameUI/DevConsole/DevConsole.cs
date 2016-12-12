@@ -793,6 +793,9 @@ namespace DeveloperConsole
             // Load Base Commands
             AddCommands(
                 new Command("Help", CoreCommands.Help, "Returns information on all commands"),
+                new Command("Exit", CoreCommands.Exit, "Closes the dev console window"),
+                new Command("Status", CoreCommands.Status),
+                new Command<bool>("DevMode", CoreCommands.DevMode, "Sets the developer mode"),
                 new Command<Vector3>("ChangeCameraPosition", CoreCommands.ChangeCameraPosition, "Change Camera Position (Written in CSharp)"),
                 new Command<string>("Run_LUA", CoreCommands.Run_LUA, "Runs the text as a LUA function"),
                 new Command<string>("SetText", CoreCommands.SetText, "Sets the devConsole text"),
@@ -815,7 +818,9 @@ namespace DeveloperConsole
                 new Command("GetRoomIDs", CoreCommands.GetAllRoomIDs, "Logs all the room IDs"),
                 new Command<int, string, Vector3>("DoBuild", CoreCommands.DoBuild, CoreCommands.DoBuildHelp),
                 new Command("DirtyTileGraph", CoreCommands.InvalidateTileGraph, "Invalidates the tile graph"),
-                new Command("GetCharNames", CoreCommands.GetCharacterNames, "Logs all the character names"));
+                new Command("GetCharNames", CoreCommands.GetCharacterNames, "Logs all the character names"),
+                new Command<Vector2>("NewCharacter", CoreCommands.NewCharacter, "Creates a new character at position provided"),
+                new Command("NewCharacterCenter", CoreCommands.CreateCharacterCenter, "Creates a new character at the center sequare"));
 
             // Load Commands from XML (will be changed to JSON AFTER the current upgrade)
             // Covers both CSharp and LUA
