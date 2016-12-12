@@ -101,7 +101,7 @@ namespace DeveloperConsole.CommandTypes
             */
 
             string mutableArgs = arguments;
-            string constantsPattern = @"(?:\{(.*?)\})";
+            string constantsPattern = @"(?:\'(.*?)\')";
 
             mutableArgs = Regex.Replace(arguments, constantsPattern, MatchEval, RegexOptions.IgnoreCase);
 

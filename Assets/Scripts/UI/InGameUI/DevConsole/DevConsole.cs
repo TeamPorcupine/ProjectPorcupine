@@ -592,6 +592,11 @@ namespace DeveloperConsole
 
             Log("\n<color=orange>Note:</color> If the function has no parameters you <color=red> don't</color> need to use the parameter modifier.");
             Log("<color=orange>Note:</color> You <color=red>don't</color> need to use the trailing parameter modifier either");
+            Log("You can use constants to replace common parameters (they are case insensitive but require ' ' around them):");
+            Log("- 'Center' (or 'Centre') is a position of the center/centre of the map.");
+            Log("- 'MousePos' is the position of the mouse");
+            Log("- 'TimeScale' is the current time scale");
+            Log("- 'Pi' is Pi");
         }
 
         /// <summary>

@@ -95,7 +95,7 @@ namespace DeveloperConsole.CommandTypes
                 }
                 else
                 {
-                    for (int i = 0; i < Math.Min(TypeInfo.Length, ParameterNames.Length); i++)
+                    for (int i = 0; i < Math.Max(TypeInfo.Length, ParameterNames.Length); i++)
                     {
                         if (TypeInfo.Length >= i)
                         {
@@ -107,7 +107,11 @@ namespace DeveloperConsole.CommandTypes
                             list += " " + ParameterNames[i];
                         }
 
-                        list += ",";
+
+                        if (i + 1 < Math.Max(TypeInfo.Length, ParameterNames.Length))
+                        {
+                            list += ",";
+                        }
                     }
                 }
 
