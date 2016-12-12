@@ -312,6 +312,12 @@ public class InventoryManager
         JArray inventoriesJson = new JArray();
         foreach (Inventory inventory in Inventories.SelectMany(pair => pair.Value))
         {
+            // Skip any inventory without a tile, these are inventories in a character or elsewhere that will handle it itself.
+            if (inventory.Tile == null)
+            {
+                continue;
+            }
+
             inventoriesJson.Add(inventory.ToJSon());
         }
 
