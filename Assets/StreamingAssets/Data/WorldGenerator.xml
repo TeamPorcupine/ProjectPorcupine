@@ -6,7 +6,7 @@
         <ResourceChance>0.15</ResourceChance>
         <Resources>
             <Resource type="Raw Iron" source="iron_ore" min="5" max="15" weightedChance="30" />
-            <Resource type="Copper Iron" source="copper_ore" min="5" max="15" weightedChance="20" />
+            <Resource type="Raw Copper" source="copper_ore" min="5" max="15" weightedChance="20" />
             <Resource type="Ice" source="ice_source" min="5" max="10" weightedChance="15" />
             <Resource type="Uranium" source="uranium_ore" min="5" max="15" weightedChance="35" />
         </Resources>
