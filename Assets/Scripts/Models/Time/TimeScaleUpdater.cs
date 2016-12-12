@@ -6,6 +6,7 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,23 +18,30 @@ public class TimeScaleUpdater : MonoBehaviour
     // 0.1, 0.5, 1, 2, 4, 8.  Then the final '7'th one is pause
     [SerializeField]
     private Sprite[] imageTimeScaleArray;
+    [SerializeField]
+    private Color[] colorTimeScaleArray;
     private Image imageElement;
+    private Image[] sliderBackground;
+    private Text textDisplay;
+    private Slider slider;
 
-    public void IncreaseSpeed()
+    public void SetSpeed(float value)
     {
         if (TimeManager.Instance != null)
         {
-            TimeManager.Instance.IncreaseTimeScale();
-            TimeManager.Instance.IsPaused = false;
+            TimeManager.Instance.SetTimeScalePosition((int)value);
         }
-    }
 
-    public void DecreaseSpeed()
-    {
-        if (TimeManager.Instance != null)
+        textDisplay.text = TimeManager.Instance.TimeScale.ToString() + "x";
+
+        foreach (Image img in sliderBackground)
         {
-            TimeManager.Instance.DecreaseTimeScale();
-            TimeManager.Instance.IsPaused = false;
+            img.color = colorTimeScaleArray[TimeManager.Instance.TimeScalePosition];
+        }
+
+        if (TimeManager.Instance.TimeScalePosition >= 0 && TimeManager.Instance.TimeScalePosition < imageTimeScaleArray.Length)
+        {
+            imageElement.sprite = imageTimeScaleArray[TimeManager.Instance.TimeScalePosition];
         }
     }
 
@@ -43,6 +51,30 @@ public class TimeScaleUpdater : MonoBehaviour
         {
             // Toggle
             TimeManager.Instance.IsPaused = !TimeManager.Instance.IsPaused;
+        }
+
+        if (TimeManager.Instance.IsPaused)
+        {
+            textDisplay.text = "||";
+
+            foreach (Image img in sliderBackground)
+            {
+                img.color = colorTimeScaleArray[colorTimeScaleArray.Length - 1];
+            }
+        }
+        else
+        {
+            textDisplay.text = TimeManager.Instance.TimeScale.ToString() + "x";
+
+            foreach (Image img in sliderBackground)
+            {
+                img.color = colorTimeScaleArray[TimeManager.Instance.TimeScalePosition];
+            }
+        }
+
+        if (TimeManager.Instance.TimeScalePosition >= 0 && TimeManager.Instance.TimeScalePosition < imageTimeScaleArray.Length)
+        {
+            imageElement.sprite = imageTimeScaleArray[TimeManager.Instance.TimeScalePosition];
         }
     }
 
@@ -60,6 +92,12 @@ public class TimeScaleUpdater : MonoBehaviour
         }
 
         imageElement = GetComponentInChildren<Image>();
+        slider = GetComponentInChildren<Slider>();
+        slider.minValue = 0;
+        slider.maxValue = imageTimeScaleArray.Length - 1;
+        textDisplay = GetComponentInChildren<Text>();
+        sliderBackground = slider.GetComponentsInChildren<Image>();
+
 
         if (oldTimeScalePosition >= 0 && oldTimeScalePosition < imageTimeScaleArray.Length)
         {
