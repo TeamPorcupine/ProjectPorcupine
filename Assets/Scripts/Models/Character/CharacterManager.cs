@@ -151,6 +151,13 @@ public class CharacterManager : IEnumerable<Character>
                 character = Create(World.Current.GetTileAt(x, y, z));
             }
 
+            foreach (JToken inventoryToken in characterToken["Inventories"])
+            {
+                Inventory inventory = new Inventory();
+                inventory.FromJson(inventoryToken);
+                World.Current.InventoryManager.PlaceInventory(character, inventory);
+            }
+
             character.name = (string)characterToken["Name"];
         }
     }
