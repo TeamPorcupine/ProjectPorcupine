@@ -83,7 +83,6 @@ public class AudioManager
 
         string audioNameAndCategory = categoryName + "/" + audioName;
 
-        Debug.LogWarning("Audio called: " + audioNameAndCategory, null);
         if (audioClips.ContainsKey(audioNameAndCategory))
         {
             clip = audioClips[audioNameAndCategory];
