@@ -322,7 +322,7 @@ public class BuildModeController
 
                 tile.Furniture.SetDeconstructJob();
             }
-            else if (tile.PendingBuildJobs != null)
+            else if (tile.PendingBuildJobs != null && tile.PendingBuildJobs.Count > 0)
             {
                 tile.PendingBuildJobs.Last().CancelJob();
             }
