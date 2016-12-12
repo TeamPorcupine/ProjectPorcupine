@@ -2135,14 +2135,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0176f9283ce4bd245a954be302abfce5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  imageTimeScaleArray:
-  - {fileID: 21300012, guid: ec81cdf726ec46d46a85e2ed0576bf3b, type: 3}
-  - {fileID: 21300010, guid: ec81cdf726ec46d46a85e2ed0576bf3b, type: 3}
-  - {fileID: 21300002, guid: ec81cdf726ec46d46a85e2ed0576bf3b, type: 3}
-  - {fileID: 21300004, guid: ec81cdf726ec46d46a85e2ed0576bf3b, type: 3}
-  - {fileID: 21300006, guid: ec81cdf726ec46d46a85e2ed0576bf3b, type: 3}
-  - {fileID: 21300008, guid: ec81cdf726ec46d46a85e2ed0576bf3b, type: 3}
-  - {fileID: 21300000, guid: ec81cdf726ec46d46a85e2ed0576bf3b, type: 3}
+  timePaused: {fileID: 21300000, guid: ec81cdf726ec46d46a85e2ed0576bf3b, type: 3}
+  timeUnPaused: {fileID: 21300002, guid: ec81cdf726ec46d46a85e2ed0576bf3b, type: 3}
   colorTimeScaleArray:
   - {r: 0.6627451, g: 0.8196079, b: 0.5568628, a: 1}
   - {r: 0.6627451, g: 0.8196079, b: 0.5568628, a: 1}

@@ -17,9 +17,12 @@ public class TimeScaleUpdater : MonoBehaviour
     // Follows the time manager array
     // 0.1, 0.5, 1, 2, 4, 8.  Then the final '7'th one is pause
     [SerializeField]
-    private Sprite[] imageTimeScaleArray;
+    private Sprite timePaused;
+    [SerializeField]
+    private Sprite timeUnPaused;
     [SerializeField]
     private Color[] colorTimeScaleArray;
+
     private Image imageElement;
     private Image[] sliderBackground;
     private Text textDisplay;
@@ -32,17 +35,7 @@ public class TimeScaleUpdater : MonoBehaviour
             TimeManager.Instance.SetTimeScalePosition((int)value);
         }
 
-        textDisplay.text = TimeManager.Instance.TimeScale.ToString() + "x";
-
-        foreach (Image img in sliderBackground)
-        {
-            img.color = colorTimeScaleArray[TimeManager.Instance.TimeScalePosition];
-        }
-
-        if (TimeManager.Instance.TimeScalePosition >= 0 && TimeManager.Instance.TimeScalePosition < imageTimeScaleArray.Length)
-        {
-            imageElement.sprite = imageTimeScaleArray[TimeManager.Instance.TimeScalePosition];
-        }
+        UpdateVisuals();
     }
 
     public void PauseSpeed()
@@ -53,6 +46,16 @@ public class TimeScaleUpdater : MonoBehaviour
             TimeManager.Instance.IsPaused = !TimeManager.Instance.IsPaused;
         }
 
+        UpdateVisuals();
+    }
+
+    private void UpdateVisuals()
+    {
+        if (TimeManager.Instance == null)
+        {
+            return;
+        }
+
         if (TimeManager.Instance.IsPaused)
         {
             textDisplay.text = "||";
@@ -61,6 +64,8 @@ public class TimeScaleUpdater : MonoBehaviour
             {
                 img.color = colorTimeScaleArray[colorTimeScaleArray.Length - 1];
             }
+
+            imageElement.sprite = timePaused;
         }
         else
         {
@@ -70,17 +75,25 @@ public class TimeScaleUpdater : MonoBehaviour
             {
                 img.color = colorTimeScaleArray[TimeManager.Instance.TimeScalePosition];
             }
+
+            imageElement.sprite = timeUnPaused;
         }
 
-        if (TimeManager.Instance.TimeScalePosition >= 0 && TimeManager.Instance.TimeScalePosition < imageTimeScaleArray.Length)
-        {
-            imageElement.sprite = imageTimeScaleArray[TimeManager.Instance.TimeScalePosition];
-        }
+        slider.value = TimeManager.Instance.TimeScalePosition;
     }
 
     // Use this for initialization
     private void Start()
     {
+        imageElement = GetComponentInChildren<Image>();
+        slider = GetComponentInChildren<Slider>();
+
+        // Hardcoded till timemanager gets a little bit of attention and becomes less constant heavy
+        slider.minValue = 0;
+        slider.maxValue = 5;
+        textDisplay = GetComponentInChildren<Text>();
+        sliderBackground = slider.GetComponentsInChildren<Image>();
+
         if (TimeManager.Instance != null)
         {
             oldTimeScalePosition = TimeManager.Instance.TimeScalePosition;
@@ -88,50 +101,12 @@ public class TimeScaleUpdater : MonoBehaviour
         else
         {
             // Just disable it
-            oldTimeScalePosition = -1;
+            imageElement.gameObject.SetActive(false);
+            textDisplay.gameObject.SetActive(false);
+            slider.gameObject.SetActive(false);
+            return;
         }
 
-        imageElement = GetComponentInChildren<Image>();
-        slider = GetComponentInChildren<Slider>();
-        slider.minValue = 0;
-        slider.maxValue = imageTimeScaleArray.Length - 1;
-        textDisplay = GetComponentInChildren<Text>();
-        sliderBackground = slider.GetComponentsInChildren<Image>();
-
-
-        if (oldTimeScalePosition >= 0 && oldTimeScalePosition < imageTimeScaleArray.Length)
-        {
-            imageElement.sprite = imageTimeScaleArray[oldTimeScalePosition];
-        }
-    }
-
-    // Update is called once per frame
-    // Update sprite if necessary
-    private void Update()
-    {
-        if (TimeManager.Instance != null)
-        {
-            if (TimeManager.Instance.IsPaused)
-            {
-                // Last Element
-                oldTimeScalePosition = imageTimeScaleArray.Length - 1;
-
-                if (oldTimeScalePosition >= 0 && oldTimeScalePosition < imageTimeScaleArray.Length)
-                {
-                    imageElement.sprite = imageTimeScaleArray[oldTimeScalePosition];
-                }
-            }
-            else if (oldTimeScalePosition != TimeManager.Instance.TimeScalePosition)
-            {
-                oldTimeScalePosition = TimeManager.Instance.TimeScalePosition;
-
-                if (oldTimeScalePosition >= 0 && oldTimeScalePosition < imageTimeScaleArray.Length)
-                {
-                    imageElement.sprite = imageTimeScaleArray[oldTimeScalePosition];
-                }
-            }
-        }
-
-        imageElement.gameObject.SetActive(oldTimeScalePosition != -1);
+        UpdateVisuals();
     }
 }
