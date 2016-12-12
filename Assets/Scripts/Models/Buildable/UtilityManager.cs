@@ -170,7 +170,7 @@ public class UtilityManager : IEnumerable<Utility>
             int y = (int)utilityToken["Y"];
             int z = (int)utilityToken["Z"];
             string type = (string)utilityToken["Type"];
-            Utility utility = PlaceUtility(type, World.Current.GetTileAt(x, y, z), false);
+            Utility utility = PlaceUtility(type, World.Current.GetTileAt(x, y, z), true);
             utility.FromJson(utilityToken);
         }
 
