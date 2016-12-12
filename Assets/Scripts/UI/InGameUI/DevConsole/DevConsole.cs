@@ -260,7 +260,7 @@ namespace DeveloperConsole
         public static void Execute(string command)
         {
             // Guard
-            if (instance == null || command == string.Empty)
+            if (instance == null || command.Trim() == string.Empty)
             {
                 return;
             }
@@ -334,23 +334,19 @@ namespace DeveloperConsole
                 // User entered a command that doesn't 'exist'
                 LogWarning("Command doesn't exist?  You entered: " + command);
 
-                // Gotta be greater than 3 else no use too many matches
-                if (method.Length >= 3)
+                LogWarning("Did you mean?");
+                IEnumerable<CommandBase> commandsToShow = instance.consoleCommands.Where(cB => cB.Title.ToLower().Contains(method.Substring(0, (method.Length >= 3) ? (int)Mathf.Ceil(method.Length / 1.5f) : method.Length).ToLower()));
+
+                if (commandsToShow.Count() == 0)
                 {
-                    LogWarning("Did you mean?");
-                    IEnumerable<CommandBase> commandsToShow = instance.consoleCommands.Where(cB => cB.Title.ToLower().Contains(method.Substring(0, (int)Mathf.Ceil(method.Length / 1.5f)).ToLower()));
+                    LogWarning("No close matches found so looking with less precision");
+                    commandsToShow = instance.consoleCommands.Where(cB => cB.Title.ToLower().Contains(method.Substring(0, (int)Mathf.Ceil(method.Length / 3f)).ToLower()));
+                }
 
-                    if (commandsToShow.Count() == 0)
-                    {
-                        LogWarning("No close matches found so looking with less precision");
-                        commandsToShow = instance.consoleCommands.Where(cB => cB.Title.ToLower().Contains(method.Substring(0, (int)Mathf.Ceil(method.Length / 3f)).ToLower()));
-                    }
-
-                    foreach (CommandBase commandToShow in commandsToShow)
-                    {
-                        // Yah its close enough either 2/3rds similar or 1/3rd if no matches found
-                        Log(commandToShow.Title, "green");
-                    }
+                foreach (CommandBase commandToShow in commandsToShow)
+                {
+                    // Yah its close enough either 2/3rds similar or 1/3rd if no matches found
+                    Log(commandToShow.Title, "green");
                 }
             }
         }
@@ -910,7 +906,7 @@ namespace DeveloperConsole
             consoleCommands.Clear();
 
             AddCommands(
-                new InternalCommand("Help", Help, "Returns information on all commands.  Can take in a parameter as a tag to search for all commands with that tag", new Type[] { typeof(string) }),
+                new InternalCommand("Help", Help, "Returns information on all commands.  Can take in a parameter as a tag to search for all commands with that tag", new Type[] { typeof(string) }, new string[] { "tag" }),
                 new InternalCommand("Clear", Clear, "Clears the developer console"));
 
             // Load Base Commands

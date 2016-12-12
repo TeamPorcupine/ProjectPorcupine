@@ -26,13 +26,14 @@ namespace DeveloperConsole.CommandTypes
         /// <param name="title"> The title for the command.</param>
         /// <param name="method"> The command to execute.</param>
         /// <param name="helpText"> The help text to display.</param>
-        public InternalCommand(string title, Method method, string descriptiveText, Type[] typeInfo = null, string defaultValue = "")
+        public InternalCommand(string title, Method method, string descriptiveText, Type[] typeInfo = null, string[] parameterNames = null, string defaultValue = "")
         {
             this.Title = title;
             this.Method = method;
             this.DescriptiveText = descriptiveText;
             this.DefaultValue = defaultValue;
             this.TypeInfo = typeInfo;
+            this.ParameterNames = parameterNames;
         }
 
         /// <summary>
@@ -41,7 +42,7 @@ namespace DeveloperConsole.CommandTypes
         /// <param name="title"> The title for the command.</param>
         /// <param name="method"> The command to execute.</param>
         /// <param name="helpMethod"> The help method to execute.</param>
-        public InternalCommand(string title, Method method, HelpMethod helpMethod, Type[] typeInfo = null, string defaultValue = "") : this(title, method, defaultValue)
+        public InternalCommand(string title, Method method, HelpMethod helpMethod, Type[] typeInfo = null, string[] parameterNames = null, string defaultValue = "") : this(title, method, defaultValue)
         {
             this.HelpMethod = helpMethod;
         }
@@ -53,7 +54,7 @@ namespace DeveloperConsole.CommandTypes
         /// <param name="method"> The command to execute.</param>
         /// <param name="helpText"> The help text to display.</param>
         /// <param name="tags"> Just tags for help function. </param>
-        public InternalCommand(string title, Method method, string descriptiveText, string[] tags, Type[] typeInfo = null, string defaultValue = "") : this(title, method, descriptiveText, typeInfo, defaultValue)
+        public InternalCommand(string title, Method method, string descriptiveText, string[] tags, Type[] typeInfo = null, string[] parameterNames = null, string defaultValue = "") : this(title, method, descriptiveText, typeInfo, parameterNames, defaultValue)
         {
             this.Tags = tags;
         }
@@ -65,7 +66,7 @@ namespace DeveloperConsole.CommandTypes
         /// <param name="method"> The command to execute. </param>
         /// <param name="helpMethod"> The help method to execute. </param>
         /// <param name="tags"> Just tags for help function. </param>
-        public InternalCommand(string title, Method method, HelpMethod helpMethod, string[] tags, Type[] typeInfo = null, string defaultValue = "") : this(title, method, helpMethod, typeInfo, defaultValue)
+        public InternalCommand(string title, Method method, HelpMethod helpMethod, string[] tags, Type[] typeInfo = null, string[] parameterNames = null, string defaultValue = "") : this(title, method, helpMethod, typeInfo, parameterNames, defaultValue)
         {
             this.Tags = tags;
         }
@@ -78,7 +79,40 @@ namespace DeveloperConsole.CommandTypes
         {
             get
             {
-                return string.Join(", ", Method.Method.GetParameters().Select(x => x.Name + ": " + x.ParameterType.Name).ToArray());
+                string list = string.Empty;
+
+                if (TypeInfo == null && ParameterNames != null)
+                {
+                    list = string.Join(", ", ParameterNames);
+                }
+                else if (TypeInfo != null && ParameterNames == null)
+                {
+                    list = string.Join(", ", TypeInfo.Select(x => x.Name).ToArray());
+                }
+                else if (TypeInfo == null && ParameterNames == null)
+                {
+                    return list;
+                }
+                else
+                {
+                    for (int i = 0; i < Math.Min(TypeInfo.Length, ParameterNames.Length); i++)
+                    {
+                        if (TypeInfo.Length >= i)
+                        {
+                            list += " " + TypeInfo[i].Name;
+                        }
+
+                        if (ParameterNames.Length >= i)
+                        {
+                            list += " " + ParameterNames[i];
+                        }
+
+                        list += ",";
+                    }
+                }
+
+                // Trim that first space
+                return list.TrimStart();
             }
 
             protected set
@@ -91,6 +125,8 @@ namespace DeveloperConsole.CommandTypes
 
         public Type[] TypeInfo { get; protected set; }
 
+        public string[] ParameterNames { get; protected set; }
+
         /// <summary>
         /// Executes the command.
         /// </summary>
@@ -99,7 +135,7 @@ namespace DeveloperConsole.CommandTypes
         {
             try
             {
-                Method.Method.Invoke(Method.Target, ParseArguments(arguments));
+                Method(ParseArguments(arguments));
             }
             catch (Exception e)
             {

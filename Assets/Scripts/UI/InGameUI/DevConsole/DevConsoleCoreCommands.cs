@@ -257,6 +257,43 @@ namespace DeveloperConsole
             }
         }
 
+        public static void Exit()
+        {
+            DevConsole.Close();
+        }
+
+        public static void DevMode(bool isOn)
+        {
+            CommandSettings.DeveloperModeToggle = isOn;
+        }
+
+        public static void Status()
+        {
+            DevConsole.Log("Developer Mode is " + (CommandSettings.DeveloperModeToggle ? "on" : "off"), "yellow");
+            DevConsole.Log("Time is " + (TimeManager.Instance.IsPaused ? "paused" : TimeManager.Instance.TimeScale + "x"), "yellow");
+        }
+
+        public static void NewCharacter(Vector3 pos, string name = "")
+        {
+            World world;
+            Tile t;
+
+            if (ModUtils.GetCurrentWorld(out world) && ModUtils.GetTileAt(pos, out t))
+            {
+                Character character = world.CharacterManager.Create(t);
+
+                if (character != null)
+                {
+                    if (name != string.Empty)
+                    {
+                        character.name = name;
+                    }
+
+                    DevConsole.Log("Say hello to: " + character.GetName());
+                }
+            }
+        }
+
         /// <summary>
         /// Build an object.
         /// </summary>

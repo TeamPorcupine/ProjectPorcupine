@@ -13,6 +13,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using MoonSharp.Interpreter;
+using UnityEngine;
 
 namespace DeveloperConsole.CommandTypes
 {
@@ -99,18 +100,58 @@ namespace DeveloperConsole.CommandTypes
                 [...] | NOT',' then check for (,[...]|NOT',')*
             */
 
+            string mutableArgs = arguments;
+            string constantsPattern = @"(?:\{(.*?)\})";
+
+            mutableArgs = Regex.Replace(arguments, constantsPattern, MatchEval, RegexOptions.IgnoreCase);
+
             string pattern = @"\s*((?:\[.*?\])|(?:[^,]*))\s*";
 
-            MatchCollection result = Regex.Matches(arguments, pattern);
+            MatchCollection result = Regex.Matches(mutableArgs, pattern);
 
-            // Regex IS slower then a for loop, 
-            // but in this case its better because it increases readabilty and we AREN'T focusing on speed
-            // because this is a developer tool so having it run 100 ms slower isn't a problem that we care about
             return result
                 .Cast<Match>()
                 .Select(m => m.Value.Trim())
                 .Where(m => m != string.Empty)
                 .ToArray();
+        }
+
+        protected string MatchEval(Match match)
+        {
+            if (match.Groups.Count < 2)
+            {
+                return string.Empty;
+            }
+
+            World world;
+            bool worldSuccess = ModUtils.GetCurrentWorld(out world);
+
+            Debug.LogWarning(match.Groups[1].Value + " VALUE");
+
+            switch (match.Groups[1].Value.ToLower())
+            {
+                case "center":
+                case "centre":
+                    if (worldSuccess)
+                    {
+                        Tile t = world.GetCenterTile();
+                        return "[" + t.X + ", " + t.Y + ", " + t.Z + "]";
+                    }
+
+                    break;
+                case "mousePos":
+                    Vector3 mousePos = Input.mousePosition;
+                    return "[" + mousePos.x + ", " + mousePos.y + ", " + mousePos.z + "]";
+                case "timeScale":
+                    return (TimeManager.Instance != null) ? TimeManager.Instance.TimeScale.ToString() : string.Empty;
+                case "pi":
+                    return Mathf.PI.ToString();
+                default:
+                    DevConsole.LogWarning("You entered an constant identifier that doesn't exist?  Check spelling.");
+                    break;
+            }
+
+            return string.Empty;
         }
 
         /// <summary>

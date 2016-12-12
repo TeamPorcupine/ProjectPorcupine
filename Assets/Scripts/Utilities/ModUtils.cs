@@ -45,7 +45,7 @@ public static class ModUtils
         if (GetCurrentWorld(out world))
         {
             t = world.GetTileAt((int)pos.x, (int)pos.y, (int)pos.z);
-            return (t != null);
+            return t != null;
         }
         else
         {
