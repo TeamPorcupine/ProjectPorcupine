@@ -173,7 +173,7 @@ public class InventoryManager
     public bool PlaceInventory(Character character, Inventory sourceInventory, int amount = -1)
     {
         amount = amount < 0 ? sourceInventory.StackSize : Math.Min(amount, sourceInventory.StackSize);
-
+        sourceInventory.ReleaseClaim();
         if (character.inventory == null)
         {
             character.inventory = sourceInventory.Clone();
