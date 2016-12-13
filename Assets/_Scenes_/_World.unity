@@ -2119,10 +2119,10 @@ RectTransform:
   - {fileID: 694179670}
   m_Father: {fileID: 2038247389}
   m_RootOrder: 2
-  m_AnchorMin: {x: 0, y: 0.7554326}
-  m_AnchorMax: {x: 0, y: 0.7554326}
-  m_AnchoredPosition: {x: 79, y: 0}
-  m_SizeDelta: {x: 120, y: 55}
+  m_AnchorMin: {x: 0.8163056, y: 1}
+  m_AnchorMax: {x: 0.8163056, y: 1}
+  m_AnchoredPosition: {x: 0, y: -29.299988}
+  m_SizeDelta: {x: 121, y: 55}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1881305926
 MonoBehaviour:
