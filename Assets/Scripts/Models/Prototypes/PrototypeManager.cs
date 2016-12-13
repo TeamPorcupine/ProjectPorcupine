@@ -23,11 +23,7 @@ public class PrototypeManager
         Inventory = new PrototypeMap<InventoryCommon>("Inventories", "Inventory");
         TileType = new PrototypeMap<TileType>("Tiles", "Tile");
         Furniture = new PrototypeMap<Furniture>("Furnitures", "Furniture");
-        FurnitureConstructJob = new PrototypeMap<Job>();
-        FurnitureDeconstructJob = new PrototypeMap<Job>();
         Utility = new PrototypeMap<Utility>("Utilities", "Utility");
-        UtilityConstructJob = new PrototypeMap<Job>();
-        UtilityDeconstructJob = new PrototypeMap<Job>();
         RoomBehavior = new PrototypeMap<RoomBehavior>("RoomBehaviors", "RoomBehavior");
         Need = new PrototypeMap<Need>("Needs", "Need");
         Trader = new PrototypeMap<TraderPrototype>("Traders", "Trader");
@@ -53,35 +49,13 @@ public class PrototypeManager
     /// </summary>
     /// <value>The furniture prototype map.</value>
     public static PrototypeMap<Furniture> Furniture { get; private set; }
-
-    /// <summary>
-    /// Gets the furniture job construct prototype map.
-    /// </summary>
-    /// <value>The furniture job construct prototype map.</value>
-    public static PrototypeMap<Job> FurnitureConstructJob { get; private set; }
-
-    /// <summary>
-    /// Gets the furniture job deconstruct prototype map.
-    /// </summary>
-    /// <value>The furniture job deconstruct prototype map.</value>
-    public static PrototypeMap<Job> FurnitureDeconstructJob { get; private set; }
-
+  
     /// <summary>
     /// Gets the utility prototype map.
     /// </summary>
     /// <value>The utility prototype map.</value>
     public static PrototypeMap<Utility> Utility { get; private set; }
-
-    /// Gets the furniture construct job prototype map.
-    /// </summary>
-    /// <value>The furniture construct job prototype map.</value>
-    public static PrototypeMap<Job> UtilityConstructJob { get; private set; }
-
-    /// Gets the furniture deconstruct job prototype map.
-    /// </summary>
-    /// <value>The furniture deconstructjob prototype map.</value>
-    public static PrototypeMap<Job> UtilityDeconstructJob { get; private set; }
-
+    
     /// Gets the roomBehavior prototype map.
     /// </summary>
     /// <value>The roomBehavior prototype map.</value>

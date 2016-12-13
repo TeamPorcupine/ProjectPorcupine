@@ -1,39 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Utilities>
-  <Utility type="power_cable">
-    <Name>Power Cables</Name>
-    <Description>This is a power cable.</Description>
-    <TypeTag>Power</TypeTag>
+    <Utility type="power_cable">
+        <Name>Power Cables</Name>
+        <Description>This is a power cable.</Description>
+        <TypeTag>Power</TypeTag>
 
-    <BuildingJob jobTime="1">
-      <Inventory type="Copper Wire" amount="2" />
-    </BuildingJob>
+        <BuildingJob jobTime="1">
+            <Inventory type="Copper Wire" amount="2" />
+        </BuildingJob>
 
-    <DeconstructJob jobTime="1">
-      <Inventory type="Copper Wire" amount="1" />
-    </DeconstructJob>
+        <DeconstructJob jobTime="1">
+            <Inventory type="Copper Wire" amount="1" />
+        </DeconstructJob>
+        
+        <ContextMenuAction FunctionName="UtilityContextTest1" Text="Test Context 1" RequireCharacterSelected="false"/>
+        <ContextMenuAction FunctionName="UtilityContextTest2" Text="Test Context 2" RequireCharacterSelected="false"/>
+        
+        <LocalizationCode>util_power_cable</LocalizationCode>
+        <UnlocalizedDescription>util_power_cable_desc</UnlocalizedDescription>
+    </Utility>
     
-    <ContextMenuAction FunctionName="UtilityContextTest1" Text="Test Context 1" RequireCharacterSelected="false"/>
-    <ContextMenuAction FunctionName="UtilityContextTest2" Text="Test Context 2" RequireCharacterSelected="false"/>
-    
-    <LocalizationCode>util_power_cable</LocalizationCode>
-    <UnlocalizedDescription>util_power_cable_desc</UnlocalizedDescription>
-  </Utility>
-  
-  <Utility type="fluid_pipe">
-    <Name>Fluid Pipe</Name>
-    <Description>This is a fluid pipe.</Description>
-    <TypeTag>Fluid</TypeTag>
+    <Utility type="fluid_pipe">
+        <Name>Fluid Pipe</Name>
+        <Description>This is a fluid pipe.</Description>
+        <TypeTag>Fluid</TypeTag>
 
-    <BuildingJob jobTime="1">
-      <Inventory type="Steel Plate" amount="2" />
-    </BuildingJob>
+        <BuildingJob jobTime="1">
+            <Inventory type="Steel Plate" amount="2" />
+        </BuildingJob>
 
-    <DeconstructJob jobTime="1">
-      <Inventory type="Steel Plate" amount="1" />
-    </DeconstructJob>
-    
-    <LocalizationCode>util_fluid_pipe</LocalizationCode>
-    <UnlocalizedDescription>util_fluid_pipe_desc</UnlocalizedDescription>
-  </Utility>
+        <DeconstructJob jobTime="1">
+            <Inventory type="Steel Plate" amount="1" />
+        </DeconstructJob>
+        
+        <LocalizationCode>util_fluid_pipe</LocalizationCode>
+        <UnlocalizedDescription>util_fluid_pipe_desc</UnlocalizedDescription>
+    </Utility>
 </Utilities>

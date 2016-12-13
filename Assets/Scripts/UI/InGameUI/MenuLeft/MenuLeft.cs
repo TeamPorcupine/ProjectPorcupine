@@ -20,9 +20,11 @@ public class MenuLeft : MonoBehaviour
     {
         parent = this.gameObject.transform;
 
-        AddMenu("ConstructionMenu");
-
+        AddMenu("ConstructionMenu", "ConstructionMenu", typeof(ConstructionMenu));
+        AddMenu("OrderMenu", "ConstructionMenu", typeof(OrderMenu));
+        
         GameMenuManager.Instance.AddMenuItem("menu_construction", OnButtonConstruction, 0);
+        GameMenuManager.Instance.AddMenuItem("menu_orders", OnButtonOrder, 1);
     }
 
     public void OpenMenu(string menuName)
@@ -60,12 +62,14 @@ public class MenuLeft : MonoBehaviour
     }
 
     // Use this function to add all the menus.
-    private void AddMenu(string menuName)
+    private void AddMenu(string menuName, string prefabName, System.Type useComponent)
     {
         GameObject tempGoObj;
-        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/MenuLeft/" + menuName));
+        tempGoObj = (GameObject)Instantiate(Resources.Load("UI/MenuLeft/" + prefabName));
         tempGoObj.name = menuName;
         tempGoObj.transform.SetParent(parent, false);
+
+        tempGoObj.AddComponent(useComponent);
     }
 
     private void OnButtonConstruction()
@@ -77,6 +81,18 @@ public class MenuLeft : MonoBehaviour
         else
         {
             OpenMenu("ConstructionMenu");
+        }
+    }
+
+    private void OnButtonOrder()
+    {
+        if (CurrentlyOpen != null && CurrentlyOpen.gameObject.name == "OrderMenu")
+        {
+            CloseMenu();
+        }
+        else
+        {
+            OpenMenu("OrderMenu");
         }
     }
 }

@@ -8,6 +8,7 @@
 #endregion
 using System.Collections.Generic;
 using System.Linq;
+using ProjectPorcupine.OrderActions;
 using ProjectPorcupine.Rooms;
 
 public enum BuildMode
@@ -16,7 +17,8 @@ public enum BuildMode
     ROOMBEHAVIOR,
     FURNITURE,
     UTILITY,
-    DECONSTRUCT
+    DECONSTRUCT,
+    MINE
 }
 
 public class BuildModeController
@@ -48,7 +50,7 @@ public class BuildModeController
 
     public bool IsObjectDraggable()
     {
-        if (buildMode == BuildMode.FLOOR || buildMode == BuildMode.DECONSTRUCT || buildMode == BuildMode.UTILITY)
+        if (buildMode == BuildMode.FLOOR || buildMode == BuildMode.DECONSTRUCT || buildMode == BuildMode.UTILITY || buildMode == BuildMode.MINE)
         {
             // floors are draggable
             return true;
@@ -108,6 +110,12 @@ public class BuildModeController
         mouseController.StartBuildMode();
     }
 
+    public void SetMode_Mine()
+    {
+        buildMode = BuildMode.MINE;
+        mouseController.StartBuildMode();
+    }
+
     public void DoBuild(Tile tile)
     {
         if (buildMode == BuildMode.ROOMBEHAVIOR)
@@ -143,13 +151,13 @@ public class BuildModeController
                 // Create a job for it to be build
                 Job job;
 
-                if (PrototypeManager.FurnitureConstructJob.Has(furnitureType))
+                Furniture toBuildProto = PrototypeManager.Furniture.Get(furnitureType);
+                OrderAction orderAction = toBuildProto.GetOrderAction<Build>();
+                if (orderAction != null)
                 {
-                    // Make a clone of the job prototype
-                    job = PrototypeManager.FurnitureConstructJob.Get(furnitureType).Clone();
-
-                    // Assign the correct tile.
-                    job.tile = tile;
+                    job = orderAction.CreateJob(tile, furnitureType);
+                    //// this is here so OrderAction can be used for utility as well as furniture
+                    job.OnJobCompleted += (theJob) => World.Current.FurnitureManager.ConstructJobCompleted(theJob);
                 }
                 else
                 {
@@ -159,14 +167,14 @@ public class BuildModeController
                     job.Description = "job_build_" + furnitureType + "_desc";
                 }
 
-                Furniture furnituteToBuild = PrototypeManager.Furniture.Get(furnitureType).Clone();
-                furnituteToBuild.SetRotation(CurrentPreviewRotation);
-                job.buildablePrototype = furnituteToBuild;
+                Furniture furnitureToBuild = PrototypeManager.Furniture.Get(furnitureType).Clone();
+                furnitureToBuild.SetRotation(CurrentPreviewRotation);
+                job.buildablePrototype = furnitureToBuild;
 
                 // Add the job to the queue or build immediately if in Dev mode
                 if (CommandSettings.DeveloperModeToggle)
-                {
-                    World.Current.FurnitureManager.PlaceFurniture(furnituteToBuild, job.tile);
+                {                    
+                    World.Current.FurnitureManager.PlaceFurniture(furnitureToBuild, job.tile);
                 }
                 else
                 {
@@ -219,13 +227,13 @@ public class BuildModeController
                 // Create a job for it to be build
                 Job job;
 
-                if (PrototypeManager.UtilityConstructJob.Has(utilityType))
+                Utility toBuildProto = PrototypeManager.Utility.Get(utilityType);
+                OrderAction orderAction = toBuildProto.GetOrderAction<Build>();
+                if (orderAction != null)
                 {
-                    // Make a clone of the job prototype
-                    job = PrototypeManager.UtilityConstructJob.Get(utilityType).Clone();
-
-                    // Assign the correct tile.
-                    job.tile = tile;
+                    job = orderAction.CreateJob(tile, utilityType);
+                    //// this is here so OrderAction can be used for utility as well as furniture
+                    job.OnJobCompleted += (theJob) => World.Current.UtilityManager.ConstructJobCompleted(theJob);
                 }
                 else
                 {
@@ -293,42 +301,52 @@ public class BuildModeController
             if (tile.Furniture != null && (canDeconstructAll || tile.Furniture.HasTypeTag("Non-deconstructible") == false))
             {
                 // check if this is a WALL neighbouring a pressured and pressureless environment, and if so, bail
-                if (tile.Furniture.HasTypeTag("Wall"))
-                {
-                    Tile[] neighbors = tile.GetNeighbours(); // diagOkay??
-                    int pressuredNeighbors = 0;
-                    int vacuumNeighbors = 0;
-                    foreach (Tile neighbor in neighbors)
-                    {
-                        if (neighbor != null && neighbor.Room != null)
-                        {
-                            if (neighbor.Room.IsOutsideRoom() || MathUtilities.IsZero(neighbor.Room.GetTotalGasPressure()))
-                            {
-                                vacuumNeighbors++;
-                            }
-                            else
-                            {
-                                pressuredNeighbors++;
-                            }
-                        }
-                    }
-
-                    if (vacuumNeighbors > 0 && pressuredNeighbors > 0)
-                    {
-                        UnityDebugger.Debugger.Log("BuildModeController", "Someone tried to deconstruct a wall between a pressurized room and vacuum!");
-                        return;
-                    }
+                if (IsTilePartOfPressuredRoom(tile))
+                {                    
+                    return;
                 }
 
                 tile.Furniture.SetDeconstructJob();
             }
-            else if (tile.PendingBuildJobs != null)
+            else if (tile.PendingBuildJobs != null && tile.PendingBuildJobs.Count > 0)
             {
                 tile.PendingBuildJobs.Last().CancelJob();
             }
             else if (tile.Utilities.Count > 0)
             {
                 tile.Utilities.Last().Value.SetDeconstructJob();
+            }
+        }
+        else if (buildMode == BuildMode.MINE)
+        {
+            if (tile.Furniture != null)
+            {
+                Job existingMineJob;
+                bool hasMineJob = tile.Furniture.Jobs.HasJobWithPredicate(x => x.OrderName == typeof(Mine).Name, out existingMineJob);
+                if (!hasMineJob)
+                {
+                    OrderAction mineAction = tile.Furniture.GetOrderAction<Mine>();
+                    if (mineAction != null)
+                    {
+                        // check if this is a WALL neighbouring a pressured and pressureless environment, and if so, bail
+                        if (IsTilePartOfPressuredRoom(tile))
+                        {
+                            return;
+                        }
+
+                        Job job = mineAction.CreateJob(tile, null);
+                        if (CommandSettings.DeveloperModeToggle)
+                        {
+                            // complete job right away, needs buildable
+                            job.buildable = tile.Furniture;
+                            job.DoWork(0);
+                        }
+                        else
+                        {
+                            tile.Furniture.Jobs.Add(job);
+                        }
+                    }
+                }
             }
         }
         else
@@ -390,6 +408,39 @@ public class BuildModeController
     {
         Utility proto = PrototypeManager.Utility.Get(type);
         return tile.Utilities.ContainsKey(proto.Name);
+    }
+
+    private bool IsTilePartOfPressuredRoom(Tile tile)
+    {
+        // check if this is a WALL neighbouring a pressured and pressureless environment, and if so, bail
+        if (tile.Furniture.HasTypeTag("Wall"))
+        {
+            Tile[] neighbors = tile.GetNeighbours(); // diagOkay??
+            int pressuredNeighbors = 0;
+            int vacuumNeighbors = 0;
+            foreach (Tile neighbor in neighbors)
+            {
+                if (neighbor != null && neighbor.Room != null)
+                {
+                    if (neighbor.Room.IsOutsideRoom() || MathUtilities.IsZero(neighbor.Room.GetTotalGasPressure()))
+                    {
+                        vacuumNeighbors++;
+                    }
+                    else
+                    {
+                        pressuredNeighbors++;
+                    }
+                }
+            }
+
+            if (vacuumNeighbors > 0 && pressuredNeighbors > 0)
+            {
+                UnityDebugger.Debugger.Log("BuildModeController", "Someone tried to deconstruct a wall between a pressurized room and vacuum!");
+                return true;
+            }
+        }
+
+        return false;
     }
 
     // Rotate the preview furniture to the left.

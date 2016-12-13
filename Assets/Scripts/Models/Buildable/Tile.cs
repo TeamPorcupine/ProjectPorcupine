@@ -48,6 +48,9 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
     // The function we callback any time our tile's data changes
     public event Action<Tile> TileChanged;
 
+    // The function we callback any time our tile's type changes
+    public event Action<Tile> TileTypeChanged;
+
     #region Accessors
     public TileType Type
     {
@@ -170,6 +173,11 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
         }
 
         OnTileClean();
+
+        if (TileTypeChanged != null)
+        {
+            TileTypeChanged(this);
+        }
     }
 
     public bool UnplaceFurniture()
