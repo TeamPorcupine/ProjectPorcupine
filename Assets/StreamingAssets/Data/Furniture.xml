@@ -12,11 +12,13 @@
         <EnclosesRooms>true</EnclosesRooms>
         <DragType>path</DragType>
 
-        <BuildingJob jobTime="1">
+        <OrderAction type="Build">
+            <Job time="1" />
             <Inventory type="Steel Plate" amount="5" />
-        </BuildingJob>
+        </OrderAction>
 
         <DeconstructJob jobTime="1">
+            <Job time="1" />
             <Inventory type="Steel Plate" amount="3" />
         </DeconstructJob>
 
@@ -55,13 +57,15 @@
         <EnclosesRooms>true</EnclosesRooms>
         <CanReplaceFurniture typeTag="Wall" />
 
-        <BuildingJob jobTime="1">
+        <OrderAction type="Build">
+            <Job time="1" />
             <Inventory type="Steel Plate" amount="2" />
-        </BuildingJob>
-
-        <DeconstructJob jobTime="1">
+        </OrderAction>
+        
+        <OrderAction type="Deconstruct">
+            <Job time="1" />
             <Inventory type="Steel Plate" amount="1" />
-        </DeconstructJob>
+        </OrderAction>
                 
         <Component type="Visuals">
             <DefaultSpriteName useName="door_horizontal_0" />
@@ -125,13 +129,15 @@
             <SpriteName fromFunction="Door_GetSpriteName" />
         </Component>
 
-        <BuildingJob jobTime="5">
+        <OrderAction type="Build">
+            <Job time="1" />
             <Inventory type="Steel Plate" amount="10" />
-        </BuildingJob>
+        </OrderAction>
 
-        <DeconstructJob>
+        <OrderAction type="Deconstruct">
+            <Job time="1" />
             <Inventory type="Steel Plate" amount="7" />
-        </DeconstructJob>
+        </OrderAction>
 
         <Animations>
           <Animation state="horizontal" valuebased="true">
@@ -181,10 +187,10 @@
         <MovementCost>1</MovementCost>
         <LinksToNeighbours>stockpile</LinksToNeighbours>
 
-        <BuildingJob jobTime="0" />
-        
-        <DeconstructJob jobTime="0"/>
-
+        <OrderAction type="Build"/>
+                 
+        <OrderAction type="Deconstruct"/>
+           
         <Action event="OnUpdate" functionName="Stockpile_UpdateAction" />
         <DragType>area</DragType>
         
@@ -208,11 +214,15 @@
         <Width>2</Width>
         <Height>2</Height>
 
-        <BuildingJob jobTime="0" />
+        <OrderAction type="Build">
+            <Job time="2" />
+            <Inventory type="Steel Plate" amount="2" />
+        </OrderAction>
         
-        <DeconstructJob jobTime="2">
+        <OrderAction type="Deconstruct">
+            <Job time="1" />
             <Inventory type="Steel Plate" amount="1" />
-        </DeconstructJob>
+        </OrderAction>
 
         <Animations>
           <Animation state="idle" looping="false">
@@ -273,11 +283,15 @@
             <Requires rate="1" />
         </Component>
 
-        <BuildingJob jobTime="0" />
+        <OrderAction type="Build">
+            <Job time="1" />
+            <Inventory type="Steel Plate" amount="2" />
+        </OrderAction>
         
-        <DeconstructJob jobTime="1">
+        <OrderAction type="Deconstruct">
+            <Job time="1" />
             <Inventory type="Steel Plate" amount="1" />
-        </DeconstructJob>
+        </OrderAction>
 
         <Params>
             <Param name="mine_type" value="Raw Iron" />
@@ -315,11 +329,15 @@
             </Animation>
         </Animations>
 
-        <BuildingJob jobTime="0" />
-        
-        <DeconstructJob jobTime="1">
+        <OrderAction type="Build">
+            <Job time="1" />
+            <Inventory type="Steel Plate" amount="2" />
+        </OrderAction>
+                
+        <OrderAction type="Deconstruct">
+            <Job time="1" />
             <Inventory type="Steel Plate" amount="1" />
-        </DeconstructJob>
+        </OrderAction>
         
         <Component type="Visuals">
             <DefaultSpriteName useName="fission_reactor_1" />
@@ -375,13 +393,15 @@
             <Requires rate="1" />
         </Component>
 
-        <BuildingJob jobTime="10">
-            <Inventory type="Steel Plate" amount="50" />
-        </BuildingJob>
+        <OrderAction type="Build">
+            <Job time="10" />
+            <Inventory type="Steel Plate" amount="5" />
+        </OrderAction>
 
-        <DeconstructJob jobTime="8">
-            <Inventory type="Steel Plate" amount="15" />
-        </DeconstructJob>
+        <OrderAction type="Deconstruct">
+            <Job time="8" />
+            <Inventory type="Steel Plate" amount="2" />
+        </OrderAction>
 
         <Animations>
             <Animation state="idle" looping="false">
@@ -416,15 +436,17 @@
         <PathfindingWeight>2</PathfindingWeight>
         <Width>3</Width>
         <Height>3</Height>
-        
-        <BuildingJob jobTime="1">
+ 
+        <OrderAction type="Build">
+            <Job time="1" />
             <Inventory type="Steel Plate" amount="5" />
-        </BuildingJob>
+        </OrderAction>
         
-        <DeconstructJob jobTime="1">
+        <OrderAction type="Deconstruct">
+            <Job time="1" />
             <Inventory type="Steel Plate" amount="2" />
-        </DeconstructJob>
-
+        </OrderAction>
+        
         <JobWorkSpotOffset X="1" Y="0" />
 
         <Component type="PowerConnection">
@@ -500,11 +522,15 @@
         <Width>1</Width>
         <Height>1</Height>
 
-        <BuildingJob jobTime="0" />
+        <OrderAction type="Build">
+            <Job time="1" />
+            <Inventory type="Steel Plate" amount="2" />
+        </OrderAction>
         
-        <DeconstructJob jobTime="1">
+        <OrderAction type="Deconstruct">
+            <Job time="1" />
             <Inventory type="Steel Plate" amount="1" />
-        </DeconstructJob>
+        </OrderAction>
 
         <!-- This method gets called on Install -->
         <Action event="OnInstall" functionName="Heater_InstallAction"></Action>
@@ -534,12 +560,16 @@
         <Width>2</Width>
         <Height>2</Height>
 
-        <BuildingJob jobTime="1" />
+        <OrderAction type="Build">
+            <Job time="1" />
+            <Inventory type="Steel Plate" amount="2" />
+        </OrderAction>
         
-        <DeconstructJob jobTime="1">
-            <Inventory type="Uranium" amount="1" />
-        </DeconstructJob>
-
+        <OrderAction type="Deconstruct">
+            <Job time="1" />
+            <Inventory type="Steel Plate" amount="1" />
+        </OrderAction>
+       
         <Component type="Workshop">
             <ParameterDefinitions>
                 <CurrentProcessingTime name="cur_processing_time" />
@@ -579,13 +609,15 @@
         <Width>3</Width>
         <Height>3</Height>
 
-        <BuildingJob jobTime="5">
+        <OrderAction type="Build">
+            <Job time="5" />
             <Inventory type="Steel Plate" amount="20" />
-        </BuildingJob>
-
-        <DeconstructJob jobTime="3">
+        </OrderAction>
+        
+        <OrderAction type="Deconstruct">
+            <Job time="3" />
             <Inventory type="Steel Plate" amount="10" />
-        </DeconstructJob>
+        </OrderAction>
 
         <JobWorkSpotOffset X="0" Y="0" />
         <JobOutputSpotOffset X="1" Y="-1" />
@@ -608,12 +640,16 @@
         <Width>2</Width>
         <Height>2</Height>
 
-        <BuildingJob jobTime="2" />
+        <OrderAction type="Build">
+            <Job time="2" />
+            <Inventory type="Steel Plate" amount="2" />
+        </OrderAction>
         
-        <DeconstructJob jobTime="1">
+        <OrderAction type="Deconstruct">
+            <Job time="1" />
             <Inventory type="Steel Plate" amount="1" />
-        </DeconstructJob>
-
+        </OrderAction>
+        
         <Animations>
           <Animation state="running" valuebased="true">
             <Frame name="oxygen_compressor" />
@@ -655,14 +691,19 @@
         <Width>2</Width>
         <Height>3</Height>
         <CanRotate>true</CanRotate>
-
-        <BuildingJob jobTime="1" />
-        <CanBeBuiltOn tileType="Ladder" />
         
-        <DeconstructJob jobTime="1">
-            <Inventory type="Steel Plate" amount="1" />
-        </DeconstructJob>
+        <CanBeBuiltOn tileType="Ladder" />
 
+        <OrderAction type="Build">
+            <Job time="1" />
+            <Inventory type="Steel Plate" amount="2" />
+        </OrderAction>        
+        
+        <OrderAction type="Deconstruct">
+            <Job time="1" />
+            <Inventory type="Steel Plate" amount="1" />
+        </OrderAction>
+        
         <Params>
             <Param name="base_output" value="3" />
             <Param name="efficiency" value="1" />
@@ -685,13 +726,18 @@
         <Height>1</Height>
         <EnclosesRooms>true</EnclosesRooms>
 
-        <BuildingJob jobTime="1" />
+        <OrderAction type="Build">
+            <Job time="1" />
+            <Inventory type="Steel Plate" amount="2" />
+        </OrderAction>  
+        
         <CanReplaceFurniture typeTag="Wall" />
         <LinksToNeighbours>wall</LinksToNeighbours>
 
-        <DeconstructJob jobTime="1">
+        <OrderAction type="Deconstruct">
+            <Job time="1" />
             <Inventory type="Steel Plate" amount="1" />
-        </DeconstructJob>
+        </OrderAction>
 
         <Params>
             <Param name="gas_throughput" value="1" />
@@ -725,13 +771,18 @@
         <Height>1</Height>
         <EnclosesRooms>true</EnclosesRooms>
 
-        <BuildingJob jobTime="1" />
+        <OrderAction type="Build">
+            <Job time="1" />
+            <Inventory type="Steel Plate" amount="2" />
+        </OrderAction>  
+            
         <CanReplaceFurniture typeTag="Wall" />
         
-        <DeconstructJob jobTime="1">
+        <OrderAction type="Deconstruct">
+            <Job time="1" />
             <Inventory type="Steel Plate" amount="1" />
-        </DeconstructJob>
-
+        </OrderAction>
+        
         <Params>
             <Param name="gas_throughput" value="0.5" />
             <Param name="openness" value="1" />
@@ -771,14 +822,16 @@
         <PathfindingWeight>1</PathfindingWeight>
         <CanRotate>true</CanRotate>
 
-        <BuildingJob jobTime="1">
+        <OrderAction type="Build">
+            <Job time="1" />
             <Inventory type="Steel Plate" amount="2" />
-        </BuildingJob>
+        </OrderAction>  
 
-        <DeconstructJob jobTime="1">
+        <OrderAction type="Deconstruct">
+            <Job time="1" />
             <Inventory type="Steel Plate" amount="1" />
-        </DeconstructJob>
-
+        </OrderAction>
+        
         <Params>
             <Param name="comfort" value="0.5" />
         </Params>
@@ -795,12 +848,16 @@
         <Width>1</Width>
         <Height>1</Height>
 
-        <BuildingJob jobTime="2" />
+        <OrderAction type="Build">
+            <Job time="2" />
+            <Inventory type="Steel Plate" amount="2" />
+        </OrderAction>  
         
-       <DeconstructJob jobTime="1">
+        <OrderAction type="Deconstruct">
+            <Job time="1" />
             <Inventory type="Steel Plate" amount="1" />
-        </DeconstructJob>
-        
+        </OrderAction>
+                
         <Animations>
           <Animation state="accumulate" valuebased="true">
             <Frame name="accumulator_0" />
@@ -841,8 +898,6 @@
         <Width>1</Width>
         <Height>1</Height>
 
-        <BuildingJob jobTime="1" />
-        
         <Params>
             <Param name="ore_type" value="Raw Iron" />
         </Params>
@@ -865,7 +920,15 @@
         <Width>3</Width>
         <Height>1</Height>
 
-        <BuildingJob jobTime="1" />
+        <OrderAction type="Build">
+            <Job time="1" />
+            <Inventory type="Steel Plate" amount="2" />
+        </OrderAction>  
+        
+        <OrderAction type="Deconstruct">
+            <Job time="1" />
+            <Inventory type="Steel Plate" amount="1" />
+        </OrderAction>
 
         <Params>
             <Param name="occupied" value="0" />
@@ -891,12 +954,17 @@
             <Provides rate="2" />
         </Component>
 
-        <BuildingJob jobTime="0" />
+        <OrderAction type="Build">
+            <Job time="2" />
+            <Inventory type="Steel Plate" amount="2" />
+            <Inventory type="Uranium" amount="2" />
+        </OrderAction>  
         
-       <DeconstructJob jobTime="1">
-            <Inventory type="Uranium" amount="3" />
-        </DeconstructJob>
-
+        <OrderAction type="Deconstruct">
+            <Job time="1" />
+            <Inventory type="Uranium" amount="1" />
+        </OrderAction>
+        
         <!-- This method gets called on Install -->
         <Action event="OnInstall" functionName="Rtg_InstallAction"></Action>
         <!-- This method gets called on Uninstall -->
@@ -933,10 +1001,11 @@
             <OverlaySpriteName fromParameter="source_type" />
         </Component>
 
-        <ContextMenuAction FunctionName="OreMine_CreateMiningJob" LocalizationKey="mine_ore" RequireCharacterSelected="false" />
+        <OrderAction type="Mine">
+            <Job time="1" fromFunction="OreMine_CreateMiningJob"/>
+        </OrderAction>
 
         <LocalizationCode>furn_astro_wall</LocalizationCode>
         <UnlocalizedDescription>furn_astro_wall_desc</UnlocalizedDescription>
-    </Furniture>
-    
+    </Furniture>    
 </Furnitures>

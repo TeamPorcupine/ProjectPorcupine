@@ -25,7 +25,7 @@ public class SoundController
         if (world != null)
         {
             world.FurnitureManager.Created += OnFurnitureCreated;
-            world.OnTileChanged += OnTileChanged;
+            world.OnTileTypeChanged += OnTileTypeChanged;
         }
 
         TimeManager.Instance.EveryFrame += Update;
@@ -72,19 +72,16 @@ public class SoundController
         PlaySoundAt(clip.Get(), furniture.Tile, "gameSounds");
     }
 
-    public void OnTileChanged(Tile tileData)
+    public void OnTileTypeChanged(Tile tileData)
     {
-        if (tileData.ForceTileUpdate)
-        {  
-            SoundClip clip = AudioManager.GetAudio("Sound", "Floor_OnCreated");
-            if (cooldowns.ContainsKey(clip) && cooldowns[clip] > 0)
-            {
-                return;
-            }
-
-            cooldowns[clip] = 0.1f;
-            PlaySoundAt(clip.Get(), tileData, "gameSounds", 1);
+        SoundClip clip = AudioManager.GetAudio("Sound", "Floor_OnCreated");
+        if (cooldowns.ContainsKey(clip) && cooldowns[clip] > 0)
+        {
+            return;
         }
+
+        cooldowns[clip] = 0.1f;
+        PlaySoundAt(clip.Get(), tileData, "gameSounds", 1);
     }
 
     /// <summary>

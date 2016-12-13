@@ -1,5 +1,6 @@
 menu_apply=Apply
 menu_construction=Construction
+menu_orders=Orders
 menu_work=Work
 menu_world=World
 menu_options=Options
@@ -18,6 +19,7 @@ menu_quit_to_menu=Main Menu
 button_menu={0}
 furniture=Furniture: {0}
 deconstruct_furniture=Deconstruct Furniture
+mine_furniture=Mine
 new_world=New World
 dummy_message_text=Set message text!!!
 button_yes=Yes

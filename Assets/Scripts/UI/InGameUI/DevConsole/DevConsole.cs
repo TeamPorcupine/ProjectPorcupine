@@ -815,7 +815,13 @@ namespace DeveloperConsole
                 new Command("GetRoomIDs", CoreCommands.GetAllRoomIDs, "Logs all the room IDs"),
                 new Command<int, string, Vector3>("DoBuild", CoreCommands.DoBuild, CoreCommands.DoBuildHelp),
                 new Command("DirtyTileGraph", CoreCommands.InvalidateTileGraph, "Invalidates the tile graph"),
-                new Command("GetCharNames", CoreCommands.GetCharacterNames, "Logs all the character names"));
+                new Command("GetCharNames", CoreCommands.GetCharacterNames, "Logs all the character names"),
+                new Command<int, string, float>("SetRoomGas", CoreCommands.SetRoomGas, "Sets the gas in the room"),
+                new Command<string, float>("SetAllRoomsGas", CoreCommands.SetAllRoomsGas, "Sets the gas in all rooms"),
+                new Command<int>("FillRoomWithAir", CoreCommands.FillRoomWithAir, "Set's the room's gasses to standard atmosphere (20/80 O2/N2 mix)"),
+                new Command("FillAllRoomsWithAir", CoreCommands.FillAllRoomsWithAir, "Set's all rooms' gasses to standard atmosphere (20/80 O2/N2 mix)"),
+                new Command<int>("EmptyRoom", CoreCommands.EmptyRoom, "Empties the room's atmosphere"),
+                new Command("EmptyAllRooms", CoreCommands.EmptyAllRooms, "Empties all rooms' atmosphere"));
 
             // Load Commands from XML (will be changed to JSON AFTER the current upgrade)
             // Covers both CSharp and LUA

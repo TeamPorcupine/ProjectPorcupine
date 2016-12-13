@@ -14,7 +14,7 @@ using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Interop;
 using Newtonsoft.Json.Linq;
 using ProjectPorcupine.Buildable.Components;
-using ProjectPorcupine.Jobs;
+using ProjectPorcupine.OrderActions;
 using ProjectPorcupine.PowerNetwork;
 using UnityEngine;
 
@@ -45,7 +45,7 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
 
     private HashSet<string> tileTypeBuildPermissions;
 
-    private List<Inventory> deconstructInventory;
+    private Dictionary<string, OrderAction> orderActions;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Utility"/> class.
@@ -60,6 +60,7 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
         Jobs = new BuildableJobs(this);
         typeTags = new HashSet<string>();
         tileTypeBuildPermissions = new HashSet<string>();
+        orderActions = new Dictionary<string, OrderAction>();
     }
 
     /// <summary>
@@ -74,7 +75,13 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
         typeTags = new HashSet<string>(other.typeTags);
         description = other.description;
         Tint = other.Tint;
-        deconstructInventory = other.deconstructInventory;
+
+        // add cloned order actions
+        orderActions = new Dictionary<string, OrderAction>();
+        foreach (var orderAction in other.orderActions)
+        {
+            orderActions.Add(orderAction.Key, orderAction.Value.Clone());
+        }
 
         Parameters = new Parameter(other.Parameters);
         Jobs = new BuildableJobs(this, other.Jobs);
@@ -331,6 +338,19 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
         return ret.String;
     }
 
+    public T GetOrderAction<T>() where T : OrderAction
+    {
+        OrderAction orderAction;
+        if (orderActions.TryGetValue(typeof(T).Name, out orderAction))
+        {
+            return (T)orderAction;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
     /// <summary>
     /// Reads the prototype utility from XML.
     /// </summary>
@@ -356,12 +376,6 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
                 case "Description":
                     reader.Read();
                     description = reader.ReadContentAsString();
-                    break;
-                case "BuildingJob":
-                    ReadXmlBuildingJob(reader);
-                    break;
-                case "DeconstructJob":
-                    ReadXmlDeconstructJob(reader);
                     break;
                 case "CanBeBuiltOn":
                     tileTypeBuildPermissions.Add(reader.GetAttribute("tileType"));
@@ -394,6 +408,14 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
                     reader.Read();
                     UnlocalizedDescription = reader.ReadContentAsString();
                     break;
+                case "OrderAction":
+                    OrderAction orderAction = OrderAction.Deserialize(reader);
+                    if (orderAction != null)
+                    {
+                        orderActions[orderAction.Type] = orderAction;
+                    }
+
+                    break;
             }
         }
     }
@@ -408,40 +430,7 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
         // be assigned to a tile.  So just read extra data.
         Parameters = Parameter.ReadXml(reader);
     }
-
-    /// <summary>
-    /// Reads the XML building job.
-    /// </summary>
-    /// <param name="reader">The XML reader to read from.</param>
-    public void ReadXmlBuildingJob(XmlReader reader)
-    {
-        float jobTime = float.Parse(reader.GetAttribute("jobTime"));
-
-        List<RequestedItem> items = new List<RequestedItem>();
-
-        XmlReader inventoryReader = reader.ReadSubtree();
-
-        while (inventoryReader.Read())
-        {
-            if (inventoryReader.Name == "Inventory")
-            {
-                // Found an inventory requirement, so add it to the list!
-                int amount = int.Parse(inventoryReader.GetAttribute("amount"));
-                items.Add(new RequestedItem(inventoryReader.GetAttribute("type"), amount));
-            }
-        }
-
-        Job job = new Job(
-            null,
-            Type,
-            (theJob) => World.Current.UtilityManager.ConstructJobCompleted(theJob),
-            jobTime,
-            items.ToArray(),
-            Job.JobPriority.High);
-        job.Description = "job_build_" + Type + "_desc";
-        PrototypeManager.UtilityConstructJob.Set(job);
-    }
-
+    
     /// <summary>
     /// Sets up a job to deconstruct the utility.
     /// </summary>
@@ -461,11 +450,13 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
         IsBeingDestroyed = true;
         Jobs.CancelAll();
 
-        Job job = PrototypeManager.UtilityDeconstructJob.Get(Type).Clone();
-        job.tile = Tile;
-        job.OnJobCompleted += (inJob) => Deconstruct();
-
-        World.Current.jobQueue.Enqueue(job);
+        Deconstruct deconstructOrder = GetOrderAction<Deconstruct>();
+        if (deconstructOrder != null)
+        {
+            Job job = deconstructOrder.CreateJob(Tile, Type);
+            job.OnJobCompleted += (inJob) => Deconstruct();
+            World.Current.jobQueue.Enqueue(job);
+        }        
     }
 
     /// <summary>
@@ -490,12 +481,12 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
             Removed(this);
         }
 
-        if (deconstructInventory != null)
+        Deconstruct deconstructOrder = GetOrderAction<Deconstruct>();
+        if (deconstructOrder != null)
         {
-            foreach (Inventory inv in deconstructInventory)
+            foreach (OrderAction.InventoryInfo inv in deconstructOrder.Inventory)
             {
-                inv.MaxStackSize = PrototypeManager.Inventory.Get(inv.Type).maxStackSize;
-                World.Current.InventoryManager.PlaceInventoryAround(Tile, inv.Clone());
+                World.Current.InventoryManager.PlaceInventoryAround(Tile, new Inventory(inv.Type, inv.Amount));
             }
         }
 
@@ -750,36 +741,6 @@ public class Utility : ISelectable, IPrototypable, IContextActionProvider, IBuil
         {
             Parameters.FromJson(utilityJObject["Parameters"]);
         }
-    }
-
-    private void ReadXmlDeconstructJob(XmlReader reader)
-    {
-        float jobTime = float.Parse(reader.GetAttribute("jobTime"));
-
-        deconstructInventory = new List<Inventory>();
-
-        XmlReader inventoryReader = reader.ReadSubtree();
-
-        while (inventoryReader.Read())
-        {
-            if (inventoryReader.Name == "Inventory")
-            {
-                // Found an inventory requirement, so add it to the list!
-                deconstructInventory.Add(new Inventory(
-                    inventoryReader.GetAttribute("type"),
-                    int.Parse(inventoryReader.GetAttribute("amount"))));
-            }
-        }
-
-        Job job = new Job(
-                    null,
-                    Type,
-                    null,
-                    jobTime,
-                    null,
-                    Job.JobPriority.High);
-        job.Description = "job_deconstruct_" + Type + "_desc";
-        PrototypeManager.UtilityDeconstructJob.Set(job);
     }
 
     private void InvokeContextMenuLuaAction(ContextMenuAction action, Character character)
