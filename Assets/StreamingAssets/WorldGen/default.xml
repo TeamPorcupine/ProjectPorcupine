@@ -11,7 +11,7 @@
             <Resource type="Uranium" source="uranium_ore" min="5" max="15" weightedChance="35" />
         </Resources>
     </Asteroid>
-    <StartArea file="StartArea.sav" />
+    <StartArea file="DefaultStartArea.sav" />
     <Wallet>
        <Currency name="Quill Corp Bucks" startingBalance="150" />
        <Currency name="Inter-Galactic Credits" startingBalance="0" />

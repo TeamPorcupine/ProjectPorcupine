@@ -61,7 +61,6 @@ public class WorldGenerator
         
         int sumOfAllWeightedChances = asteroidInfo.Resources.Select(x => x.WeightedChance).Sum();
 
-//        startAreaFilePath = System.IO.Path.Combine(Application.streamingAssetsPath, "WorldGen/StartArea.sav");
         world.ReadJson(startAreaFilePath);
         world.ResizeWorld(width, height, depth);
 
@@ -150,7 +149,12 @@ public class WorldGenerator
     private void ReadXML()
     {
         // Setup XML Reader
-        string filePath = System.IO.Path.Combine(GameController.Instance.GeneratorBasePath(), SceneController.GeneratorFile);
+        Debug.LogWarning(SceneController.GeneratorFile +"###");
+
+        // Optimally, this would use GameController.Instance.GeneratorBasePath(), but that apparently may not exist at this point.
+        // TODO: Investigate either a way to ensure GameController exists at this time or another place to reliably store the base path, that is accessible
+        // both in _World and MainMenu scenes
+        string filePath = System.IO.Path.Combine(System.IO.Path.Combine(Application.streamingAssetsPath, "WorldGen"), SceneController.GeneratorFile);
         string furnitureXmlText = System.IO.File.ReadAllText(filePath);
 
         XmlTextReader reader = new XmlTextReader(new StringReader(furnitureXmlText));

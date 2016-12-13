@@ -20,7 +20,7 @@ public class SceneController
 
     public static Vector3 NewWorldSize;
     public static bool GenerateAsteroids = true;
-    public static string GeneratorFile = "default.xml";
+    public static string GeneratorFile = "Default.xml";
 
     private static SceneController instance;
 

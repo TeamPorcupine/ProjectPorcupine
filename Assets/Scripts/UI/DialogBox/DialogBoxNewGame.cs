@@ -37,7 +37,7 @@ public class DialogBoxNewGame : DialogBox
 
         DirectoryInfo generatorDir = new DirectoryInfo(generatorDirectoryPath);
 
-        FileInfo[] worldGenerators = generatorDir.GetFiles("*.xml").OrderByDescending(f => f.Name).ToArray();
+        FileInfo[] worldGenerators = generatorDir.GetFiles("*.xml").OrderBy(f => f.Name).ToArray();
 
         for (int i = 0; i < worldGenerators.Length; i++)
         {

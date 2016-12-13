@@ -1725,7 +1725,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 
+  m_Text: default
 --- !u!114 &114000013229676190
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1964,7 +1964,7 @@ MonoBehaviour:
   m_CaretColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
   m_CustomCaretColor: 0
   m_SelectionColor: {r: 0.65882355, g: 0.80784315, b: 1, a: 0.7529412}
-  m_Text: default
+  m_Text: Default
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
   m_ReadOnly: 0
@@ -2641,8 +2641,8 @@ RectTransform:
   m_RootOrder: 1
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.0000038146973}
-  m_SizeDelta: {x: 4.7, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0.00013577938}
+  m_SizeDelta: {x: 4.7, y: 150.95}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!224 &224000013837946312
 RectTransform:
