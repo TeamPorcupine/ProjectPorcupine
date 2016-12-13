@@ -308,8 +308,6 @@ public class World
     {
         StreamReader reader = File.OpenText(filename);
         ReadJson((JObject)JToken.ReadFrom(new JsonTextReader(reader)));
-
-
     }
 
     public void ReadJson(JObject worldJson)
@@ -363,9 +361,6 @@ public class World
             return;
         }
 
-        Debug.LogWarning("new Size: " + width + ", " + height + ", " + depth);
-        Debug.LogWarning("Old Size: " + Width + ", " + Height + ", " + Depth);
-
         if (width == Width && height == Height && depth == Depth)
         {
             // No change, just bail
@@ -377,9 +372,6 @@ public class World
 
         Tile[,,] oldTIles = (Tile[,,])tiles.Clone();
         tiles = new Tile[width, height, depth];
-
-        Debug.LogWarning("new Size: " + width + ", " + height + ", " + depth);
-        Debug.LogWarning("Old Size: " + Width + ", " + Height + ", " + Depth);
 
         int oldWidth = Width;
         int oldHeight = Height;
