@@ -20,6 +20,7 @@ public class SceneController
 
     public static Vector3 NewWorldSize;
     public static bool GenerateAsteroids = true;
+    public static string GeneratorFile = "default.xml";
 
     private static SceneController instance;
 
@@ -37,9 +38,10 @@ public class SceneController
     }
 
     // Load the main scene.
-    public void LoadNewWorld(int width, int height, int depth, bool generateAsteroids = true)
+    public void LoadNewWorld(int width, int height, int depth, string generatorFile, bool generateAsteroids = true)
     {
         NewWorldSize = new Vector3(width, height, depth); 
+        GeneratorFile = generatorFile;
         GenerateAsteroids = generateAsteroids;
         CleanInstancesBeforeLoadingScene();
         SceneManager.LoadScene(MainSceneName);

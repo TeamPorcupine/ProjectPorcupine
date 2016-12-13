@@ -12,15 +12,15 @@ using System.IO;
 using System.Xml.Serialization;
 using NUnit.Framework;
 
-public class WorldTest  {
+public class WorldTest  
+{
+    private string worldJson;
+    private World world;
 
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+    [Test]
+    public void TestWorldLoading()
+    {
+
+    }
+    
 }

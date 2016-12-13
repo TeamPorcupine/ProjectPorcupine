@@ -25,6 +25,7 @@ public class WorldGenerator
     private int startAreaCenterY = 0;
     private int[,] startAreaTiles = new int[0, 0];
     private string[,] startAreaFurnitures = new string[0, 0];
+    private string startAreaFilePath = "";
 
     private AsteroidInfo asteroidInfo;
 
@@ -60,7 +61,7 @@ public class WorldGenerator
         
         int sumOfAllWeightedChances = asteroidInfo.Resources.Select(x => x.WeightedChance).Sum();
 
-        string startAreaFilePath = System.IO.Path.Combine(Application.streamingAssetsPath, "WorldGen/StartArea.sav");
+//        startAreaFilePath = System.IO.Path.Combine(Application.streamingAssetsPath, "WorldGen/StartArea.sav");
         world.ReadJson(startAreaFilePath);
         world.ResizeWorld(width, height, depth);
 
@@ -149,8 +150,7 @@ public class WorldGenerator
     private void ReadXML()
     {
         // Setup XML Reader
-        string filePath = System.IO.Path.Combine(Application.streamingAssetsPath, "Data");
-        filePath = System.IO.Path.Combine(filePath, "WorldGenerator.xml");
+        string filePath = System.IO.Path.Combine(GameController.Instance.GeneratorBasePath(), SceneController.GeneratorFile);
         string furnitureXmlText = System.IO.File.ReadAllText(filePath);
 
         XmlTextReader reader = new XmlTextReader(new StringReader(furnitureXmlText));
@@ -178,7 +178,9 @@ public class WorldGenerator
             {
                 try
                 {
-                    ReadXmlStartArea(reader);
+                    string startAreaFileName = reader.GetAttribute("file");
+                    Debug.LogWarning(Application.streamingAssetsPath);
+                    startAreaFilePath = Path.Combine(Application.streamingAssetsPath, Path.Combine("WorldGen", startAreaFileName));
                 }
                 catch (System.Exception e)
                 {

@@ -44,6 +44,12 @@ public class GameController : MonoBehaviour
         return System.IO.Path.Combine(Application.persistentDataPath, "Saves");
     }
 
+    // Path to the world generator folder.
+    public string GeneratorBasePath()
+    {
+        return System.IO.Path.Combine(Application.streamingAssetsPath, "WorldGen");
+    }
+
     // Each time a scene is loaded.
     private void Awake()
     {
