@@ -76,9 +76,10 @@ public class WorldGenerator
                         float noiseValue = Mathf.PerlinNoise(
                                            (x + offsetX) / (width * asteroidInfo.NoiseScale * scaleZ),
                                            (y + offsetY) / (height * asteroidInfo.NoiseScale * scaleZ));
-                        if (noiseValue >= asteroidInfo.NoiseThreshhold && !IsStartArea(x, y, world))
+                        
+                        Tile tile = world.GetTileAt(x, y, z);
+                        if (noiseValue >= asteroidInfo.NoiseThreshhold && tile.Room != null && tile.Room.ID == 0)
                         {
-                            Tile tile = world.GetTileAt(x, y, z);
                             tile.SetTileType(asteroidFloorType);
 
                             world.FurnitureManager.PlaceFurniture("astro_wall", tile, false);
