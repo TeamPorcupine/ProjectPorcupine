@@ -5,13 +5,15 @@
         <Description>This is a power cable.</Description>
         <TypeTag>Power</TypeTag>
 
-        <BuildingJob jobTime="1">
+        <OrderAction type="Build">
+            <Job time="1" />
             <Inventory type="Copper Wire" amount="2" />
-        </BuildingJob>
+        </OrderAction>
 
-        <DeconstructJob jobTime="1">
+        <OrderAction type="Deconstruct">
+            <Job time="1" />
             <Inventory type="Copper Wire" amount="1" />
-        </DeconstructJob>
+        </OrderAction>
         
         <ContextMenuAction FunctionName="UtilityContextTest1" Text="Test Context 1" RequireCharacterSelected="false"/>
         <ContextMenuAction FunctionName="UtilityContextTest2" Text="Test Context 2" RequireCharacterSelected="false"/>
@@ -25,13 +27,15 @@
         <Description>This is a fluid pipe.</Description>
         <TypeTag>Fluid</TypeTag>
 
-        <BuildingJob jobTime="1">
+        <OrderAction type="Build">
+            <Job time="1" />
             <Inventory type="Steel Plate" amount="2" />
-        </BuildingJob>
+        </OrderAction>
 
-        <DeconstructJob jobTime="1">
+        <OrderAction type="Deconstruct">
+            <Job time="1" />
             <Inventory type="Steel Plate" amount="1" />
-        </DeconstructJob>
+        </OrderAction>
         
         <LocalizationCode>util_fluid_pipe</LocalizationCode>
         <UnlocalizedDescription>util_fluid_pipe_desc</UnlocalizedDescription>
