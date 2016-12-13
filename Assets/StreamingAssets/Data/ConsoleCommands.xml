@@ -38,4 +38,10 @@
   <ConsoleCommand Title="DoBuild" FunctionName="DoBuild" HelpFunctionName="DoBuildHelp" Description="Builds the object provided" Parameters="Int buildMode, string type, UnityEngine; UnityEngine.Vector3 pos" Tags="Build" DefaultValue=""></ConsoleCommand>
   <ConsoleCommand Title="InvalidateTileGraph" FunctionName="InvalidateTileGraph" Description="Invalidates the tile graph" Parameters="" Tags="Check" DefaultValue=""></ConsoleCommand>
   <ConsoleCommand Title="GetCharacterNames" FunctionName="GetCharacterNames" Description="Logs all the character's names" Parameters="" Tags="Character" DefaultValue=""></ConsoleCommand>
+  <ConsoleCommand Title="SetRoomGas" FunctionName="SetRoomGas" Description="Sets the gas in the room" Parameters="Int roomID, String gasName, Float pressure" Tags="Room, Gas" DefaultValue=""></ConsoleCommand>
+  <ConsoleCommand Title="SetAllRoomGas" FunctionName="SetAllRoomGas" Description="Sets the gas in all rooms" Parameters="String gasName, Float pressure" Tags="Room, Gas" DefaultValue=""></ConsoleCommand>
+  <ConsoleCommand Title="FillRoomWithAir" FunctionName="FillRoomWithAir" Description="Set's the room's gasses to standard atmosphere (20/80 O2/N2 mix)" Parameters="Int roomID" Tags="Room, Gas" DefaultValue=""></ConsoleCommand>
+  <ConsoleCommand Title="FillAllRoomsWithAir" FunctionName="FillAllRoomsWithAir" Description="Set's all rooms' gasses to standard atmosphere (20/80 O2/N2 mix)&quot;" Parameters="" Tags="Room, Gas" DefaultValue=""></ConsoleCommand>
+  <ConsoleCommand Title="EmptyRoom" FunctionName="EmptyRoom" Description="Empties the room's atmosphere" Parameters="Int roomID" Tags="Room, Gas" DefaultValue=""></ConsoleCommand>
+  <ConsoleCommand Title="EmptyAllRooms" FunctionName="EmptyAllRooms" Description="Empties all rooms' atmosphere" Parameters="Int roomID" Tags="Room, Gas" DefaultValue=""></ConsoleCommand>
 </ConsoleCommands>
