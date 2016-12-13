@@ -5,12 +5,10 @@
 // and you are welcome to redistribute it under certain conditions; See 
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
-using System.IO;
-using System.Linq;
-
-
 #endregion
 
+using System.IO;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -30,7 +28,6 @@ public class DialogBoxNewGame : DialogBox
         Height.onEndEdit.AddListener(delegate { VerifyNumericInput(Height); });
         Width.onEndEdit.AddListener(delegate { VerifyNumericInput(Width); });
         Depth.onEndEdit.AddListener(delegate { VerifyNumericInput(Depth); });
-
 
         // Get list of files in save location
         string generatorDirectoryPath = GameController.Instance.GeneratorBasePath();
@@ -66,7 +63,6 @@ public class DialogBoxNewGame : DialogBox
         generatorList.GetComponentInParent<ScrollRect>().scrollSensitivity = generatorList.childCount / 2;
 
         generatorList.GetComponent<AutomaticVerticalSize>().AdjustSize();
-
     }
 
     public void OkayWasClicked()
