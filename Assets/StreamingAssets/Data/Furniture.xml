@@ -399,11 +399,16 @@
         <Width>1</Width>
         <Height>1</Height>
 
-        <BuildingJob jobTime="0" />
-        
-        <DeconstructJob jobTime="1">
+
+        <OrderAction type="Build">
+            <Job time="1" />
+            <Inventory type="Steel Plate" amount="2" />
+        </OrderAction>
+                
+        <OrderAction type="Deconstruct">
+            <Job time="1" />
             <Inventory type="Steel Plate" amount="1" />
-        </DeconstructJob>
+        </OrderAction>
 <!--
         <Component type="Workshop">
             <ParameterDefinitions>
@@ -444,11 +449,16 @@
         <Width>1</Width>
         <Height>1</Height>
 
-        <BuildingJob jobTime="2" />
-        
-       <DeconstructJob jobTime="1">
+        <OrderAction type="Build">
+            <Job time="1" />
+            <Inventory type="Steel Plate" amount="2" />
+        </OrderAction>
+                
+        <OrderAction type="Deconstruct">
+            <Job time="1" />
             <Inventory type="Steel Plate" amount="1" />
-        </DeconstructJob>
+        </OrderAction>
+		
         <Component type="FluidConnection">
             <Provides rate="10" capacity="50" capacityThresholds="5"/>
             <Requires rate="5" />
