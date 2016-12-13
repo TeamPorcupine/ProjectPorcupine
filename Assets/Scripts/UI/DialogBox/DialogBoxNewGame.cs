@@ -7,9 +7,6 @@
 // ====================================================
 #endregion
 
-using System.Collections;
-using System.IO;
-using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,9 +20,9 @@ public class DialogBoxNewGame : DialogBox
     public override void ShowDialog()
     {
         base.ShowDialog();
-        Height.onEndEdit.AddListener(delegate{VerifyNumericInput(Height);});
-        Width.onEndEdit.AddListener(delegate{VerifyNumericInput(Width);});
-        Depth.onEndEdit.AddListener(delegate{VerifyNumericInput(Depth);});
+        Height.onEndEdit.AddListener(delegate { VerifyNumericInput(Height); });
+        Width.onEndEdit.AddListener(delegate { VerifyNumericInput(Width); });
+        Depth.onEndEdit.AddListener(delegate { VerifyNumericInput(Depth); });
     }
 
     public void OkayWasClicked()
@@ -33,6 +30,9 @@ public class DialogBoxNewGame : DialogBox
         int height = int.Parse(Height.text);
         int width = int.Parse(Width.text);
         int depth = int.Parse(Depth.text);
+        DialogBoxManager dialogManager = GameObject.FindObjectOfType<DialogBoxManager>();
+        dialogManager.dialogBoxPromptOrInfo.SetPrompt("message_creating_new_world");
+        dialogManager.dialogBoxPromptOrInfo.ShowDialog();
         SceneController.Instance.LoadNewWorld(width, height, depth, GenerateAsteroids.isOn);
     }
 

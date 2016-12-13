@@ -63,37 +63,7 @@ public class WorldGenerator
         string startAreaFilePath = System.IO.Path.Combine(Application.streamingAssetsPath, "WorldGen/StartArea.sav");
         world.ReadJson(startAreaFilePath);
         world.ResizeWorld(width, height, depth);
-//        world.dumpNullTiles();
 
-//        for (int x = 0; x < startAreaWidth; x++)
-//        {
-//            for (int y = 0; y < startAreaHeight; y++)
-//            {
-//                int worldX = (width / 2) - startAreaCenterX + x;
-//                int worldY = (height / 2) + startAreaCenterY - y;
-//
-//                Debug.LogWarning("World Coords: " + worldX + ", " + worldY);
-//                Tile tile = world.GetTileAt(worldX, worldY, 0);
-//                Debug.LogWarning("StartArea Coords: " + x + ", " + y);
-//                tile.SetTileType(PrototypeManager.TileType[startAreaTiles[x, y]]);
-//            }
-//        }
-//
-//        for (int x = 0; x < startAreaWidth; x++)
-//        {
-//            for (int y = 0; y < startAreaHeight; y++)
-//            {
-//                int worldX = (width / 2) - startAreaCenterX + x;
-//                int worldY = (height / 2) + startAreaCenterY - y;
-//
-//                Tile tile = world.GetTileAt(worldX, worldY, 0);
-//
-//                if (startAreaFurnitures[x, y] != null && startAreaFurnitures[x, y] != string.Empty)
-//                {
-//                    world.FurnitureManager.PlaceFurniture(startAreaFurnitures[x, y], tile, true);
-//                }
-//            }
-//        }
         if (SceneController.GenerateAsteroids)
         {
             for (int z = 0; z < depth; z++)
