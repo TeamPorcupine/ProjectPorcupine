@@ -25,7 +25,7 @@ public class WorldGenerator
     private int startAreaCenterY = 0;
     private int[,] startAreaTiles = new int[0, 0];
     private string[,] startAreaFurnitures = new string[0, 0];
-    private string startAreaFilePath = "";
+    private string startAreaFilePath = string.Empty;
 
     private AsteroidInfo asteroidInfo;
 
@@ -150,8 +150,6 @@ public class WorldGenerator
     private void ReadXML()
     {
         // Setup XML Reader
-        Debug.LogWarning(SceneController.GeneratorFile +"###");
-
         // Optimally, this would use GameController.Instance.GeneratorBasePath(), but that apparently may not exist at this point.
         // TODO: Investigate either a way to ensure GameController exists at this time or another place to reliably store the base path, that is accessible
         // both in _World and MainMenu scenes
@@ -223,61 +221,6 @@ public class WorldGenerator
     {
         XmlSerializer serializer = new XmlSerializer(typeof(AsteroidInfo));
         asteroidInfo = (AsteroidInfo)serializer.Deserialize(reader);
-    }
-
-    private void ReadXmlStartArea(XmlReader reader)
-    {
-        startAreaWidth = int.Parse(reader.GetAttribute("width"));
-        startAreaHeight = int.Parse(reader.GetAttribute("height"));
-        startAreaCenterX = int.Parse(reader.GetAttribute("centerX"));
-        startAreaCenterY = int.Parse(reader.GetAttribute("centerY"));
-
-        startAreaTiles = new int[startAreaWidth, startAreaHeight];
-
-        XmlReader startArea = reader.ReadSubtree();
-
-        while (startArea.Read())
-        {
-            switch (startArea.Name)
-            {
-                case "Tiles":
-                    reader.Read();
-                    string tilesString = startArea.ReadContentAsString();
-                    string[] splittedString = tilesString.Split(","[0]);
-
-                    if (splittedString.Length < startAreaWidth * startAreaHeight)
-                    {
-                        UnityDebugger.Debugger.LogError("WorldGenerator", "Error reading 'Tiles' array to short: " + splittedString.Length + " !");
-                        break;
-                    }
-
-                    for (int x = 0; x < startAreaWidth; x++)
-                    {
-                        for (int y = 0; y < startAreaHeight; y++)
-                        {
-                            startAreaTiles[x, y] = int.Parse(splittedString[x + (y * startAreaWidth)]);
-                        }
-                    }
-
-                    break; 
-                case "Furnitures":
-                    XmlReader furnReader = reader.ReadSubtree();
-
-                    startAreaFurnitures = new string[startAreaWidth, startAreaHeight];
-
-                    while (furnReader.Read())
-                    {
-                        if (furnReader.Name == "Furniture")
-                        {
-                            int x = int.Parse(furnReader.GetAttribute("x"));
-                            int y = int.Parse(furnReader.GetAttribute("y"));
-                            startAreaFurnitures[x, y] = furnReader.GetAttribute("name");
-                        }
-                    }
-
-                    break;
-            }
-        }
     }
     
     [System.Serializable]

@@ -578,7 +578,7 @@ public class World
     /// <summary>
     /// Tests the room graph generation for the default world.
     /// </summary>
-    public void TestRoomGraphGeneration(World world)
+    private void TestRoomGraphGeneration(World world)
     {
         // FIXME: This code is fugly!!!
         // TODO: Make it work for other testing maps?
