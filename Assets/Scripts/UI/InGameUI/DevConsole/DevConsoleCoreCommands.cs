@@ -340,5 +340,78 @@ namespace DeveloperConsole
                 }
             }
         }
+
+        public static void SetRoomGas(int roomID, string gas, float pressure)
+        {
+            // Adding gas to room
+            Room room = World.Current.RoomManager[roomID];
+            room.SetGas(gas, pressure * room.TileCount);
+        }
+
+        public static void SetAllRoomsGas(string gas, float pressure)
+        {
+            // Adding gas to all rooms
+            foreach (Room room in World.Current.RoomManager)
+            {
+                if (room.ID > 0)
+                {
+                    room.SetGas(gas, pressure * room.TileCount);
+                }
+            }
+        }
+
+        public static void FillRoomWithAir(int roomID)
+        {
+            // Adding air to room
+            Room room = World.Current.RoomManager[roomID];
+            foreach (string gas in room.GetGasNames())
+            {
+                room.SetGas(gas, 0);
+            }
+
+            room.SetGas("O2", 0.2f * room.TileCount);
+            room.SetGas("N2", 0.8f * room.TileCount);
+        }
+
+        public static void FillAllRoomsWithAir()
+        {
+            // Adding air to all rooms
+            foreach (Room room in World.Current.RoomManager)
+            {
+                foreach (string gas in room.GetGasNames())
+                {
+                    room.SetGas(gas, 0);
+                }
+
+                if (room.ID > 0)
+                {
+                    room.SetGas("O2", 0.2f * room.TileCount);
+                    room.SetGas("N2", 0.8f * room.TileCount);
+                }
+            }
+        }
+
+        public static void EmptyRoom(int roomId)
+        {
+            Room room = World.Current.RoomManager[roomId];
+            foreach (string gas in room.GetGasNames())
+            {
+                room.SetGas(gas, 0);
+            }
+        }
+
+        public static void EmptyAllRooms()
+        {
+            foreach (Room room in World.Current.RoomManager)
+            {
+                if (room.ID > 0)
+                {
+                    foreach (string gas in room.GetGasNames())
+                    {
+                        room.SetGas(gas, 0);
+                    }
+                }
+            }
+        }
     }
 }

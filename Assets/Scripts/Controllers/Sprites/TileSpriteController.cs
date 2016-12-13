@@ -17,6 +17,7 @@ public class TileSpriteController : BaseSpriteController<Tile>
     public TileSpriteController(World world) : base(world, "Tiles")
     {
         world.OnTileChanged += OnChanged;
+        world.OnTileTypeChanged += OnChanged;
 
         for (int x = 0; x < world.Width; x++)
         {
