@@ -144,36 +144,36 @@ namespace ProjectPorcupine.PowerNetwork
 
         public void Tick()
         {
-            float currentPowerLevel = 0.0f;
+            float currentLevel = 0.0f;
             foreach (IPluggable connection in connections)
             {
                 if (connection.IsProducer)
                 {
-                    currentPowerLevel += connection.OutputRate;
+                    currentLevel += connection.OutputRate;
                 }
 
                 if (connection.IsConsumer)
                 {
-                    currentPowerLevel -= connection.InputRate;
+                    currentLevel -= connection.InputRate;
                 }
             }
 
-            if (currentPowerLevel.IsZero())
+            if (currentLevel.IsZero())
             {
                 IsOperating = true;
                 return;
             }
 
-            if (currentPowerLevel > 0.0f)
+            if (currentLevel > 0.0f)
             {
-                ChargeAccumulators(ref currentPowerLevel);
+                FillStorage(ref currentLevel);
             }
             else
             {
-                DischargeAccumulators(ref currentPowerLevel);
+                EmptyStorage(ref currentLevel);
             }
 
-            IsOperating = currentPowerLevel >= 0.0f;
+            IsOperating = currentLevel >= 0.0f;
         }
 
         /// <summary>
@@ -198,47 +198,47 @@ namespace ProjectPorcupine.PowerNetwork
             }
         }
 
-        private void ChargeAccumulators(ref float currentPowerLevel)
+        private void FillStorage(ref float currentLevel)
         {
-            foreach (IPluggable connection in connections.Where(connection => connection.IsAccumulator && !connection.IsFull))
+            foreach (IPluggable connection in connections.Where(connection => connection.IsStorage && !connection.IsFull))
             {
-                float inputRate = connection.AccumulatedAmount + connection.InputRate > connection.AccumulatorCapacity ?
-                    connection.AccumulatorCapacity - connection.AccumulatedAmount :
+                float inputRate = connection.StoredAmount + connection.InputRate > connection.StorageCapacity ?
+                    connection.StorageCapacity - connection.StoredAmount :
                     connection.InputRate;
 
-                if (currentPowerLevel - inputRate < 0.0f)
+                if (currentLevel - inputRate < 0.0f)
                 {
-                    inputRate = currentPowerLevel;
+                    inputRate = currentLevel;
                 }
 
-                currentPowerLevel -= inputRate;
-                connection.AccumulatedAmount += inputRate;
+                currentLevel -= inputRate;
+                connection.StoredAmount += inputRate;
 
-                if (currentPowerLevel.IsZero())
+                if (currentLevel.IsZero())
                 {
                     break;
                 }
             }
         }
 
-        private void DischargeAccumulators(ref float currentPowerLevel)
+        private void EmptyStorage(ref float currentLevel)
         {
-            float possibleOutput = connections.Where(connection => connection.IsAccumulator && !connection.IsEmpty)
+            float possibleOutput = connections.Where(connection => connection.IsStorage && !connection.IsEmpty)
                 .Sum(connection => GetOutputRate(connection));
 
-            if (currentPowerLevel + possibleOutput < 0)
+            if (currentLevel + possibleOutput < 0)
             {
                 return;
             }
 
-            foreach (IPluggable connection in connections.Where(powerRelated => powerRelated.IsAccumulator && !powerRelated.IsEmpty))
+            foreach (IPluggable connection in connections.Where(utilityConnection => utilityConnection.IsStorage && !utilityConnection.IsEmpty))
             {
-                float outputRate = connection.OutputRate > Math.Abs(currentPowerLevel) ? Math.Abs(currentPowerLevel) : connection.OutputRate;
+                float outputRate = connection.OutputRate > Math.Abs(currentLevel) ? Math.Abs(currentLevel) : connection.OutputRate;
                 outputRate = GetOutputRate(connection, outputRate);
 
-                currentPowerLevel += outputRate;
-                connection.AccumulatedAmount -= outputRate;
-                if (currentPowerLevel >= 0.0f)
+                currentLevel += outputRate;
+                connection.StoredAmount -= outputRate;
+                if (currentLevel >= 0.0f)
                 {
                     break;
                 }
@@ -252,7 +252,7 @@ namespace ProjectPorcupine.PowerNetwork
                 outputRate = connection.OutputRate;
             }
 
-            return connection.AccumulatedAmount - outputRate < 0.0f ? connection.AccumulatedAmount : outputRate;
+            return connection.StoredAmount - outputRate < 0.0f ? connection.StoredAmount : outputRate;
         }
     }
 }

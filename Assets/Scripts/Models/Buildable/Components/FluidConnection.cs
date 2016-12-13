@@ -44,19 +44,19 @@ namespace ProjectPorcupine.Buildable.Components
         [JsonProperty("ParameterDefinitions")]
         public FluidConnectionParameterDefinitions ParamsDefinitions { get; set; }
 
-        public Parameter CurrentAccumulatorCharge
+        public Parameter CurrentStoredAmount
         {
             get
             {
-                return FurnitureParams[ParamsDefinitions.CurrentAcumulatorCharge.ParameterName];
+                return FurnitureParams[ParamsDefinitions.CurrentStoredAmount.ParameterName];
             }
         }
 
-        public Parameter CurrentAccumulatorChargeIndex
+        public Parameter CurrentStorageIndex
         {
             get
             {
-                return FurnitureParams[ParamsDefinitions.CurrentAcumulatorChargeIndex.ParameterName];
+                return FurnitureParams[ParamsDefinitions.CurrentStorageIndex.ParameterName];
             }
         }
 
@@ -83,22 +83,22 @@ namespace ProjectPorcupine.Buildable.Components
         public Info Requires { get; set; }
 
         [XmlIgnore]
-        public float AccumulatedAmount
+        public float StoredAmount
         {
             get
             {
-                return CurrentAccumulatorCharge.ToFloat();
+                return CurrentStoredAmount.ToFloat();
             }
 
             set
             {
-                float oldAccumulatorCharge = CurrentAccumulatorCharge.ToFloat();
-                if (oldAccumulatorCharge != value)
+                float oldStoredAmount = CurrentStoredAmount.ToFloat();
+                if (oldStoredAmount != value)
                 {
-                    CurrentAccumulatorCharge.SetValue(value);
+                    CurrentStoredAmount.SetValue(value);
 
                     int curIndex = (int)((Provides.CapacityThresholds - 1) * (value / Provides.Capacity));
-                    CurrentAccumulatorChargeIndex.SetValue(curIndex);
+                    CurrentStorageIndex.SetValue(curIndex);
                 }
             }
         }
@@ -115,7 +115,7 @@ namespace ProjectPorcupine.Buildable.Components
 
         public bool IsEmpty
         {
-            get { return IsAccumulator && AccumulatedAmount.IsZero(); }
+            get { return IsStorage && StoredAmount.IsZero(); }
         }
 
         public string UtilityType 
@@ -132,27 +132,27 @@ namespace ProjectPorcupine.Buildable.Components
 
         public bool IsFull
         {
-            get { return IsAccumulator && AccumulatedAmount.AreEqual(Provides.Capacity); }
+            get { return IsStorage && StoredAmount.AreEqual(Provides.Capacity); }
         }
 
         public bool IsProducer
         {
-            get { return Provides != null && IsRunning && Provides.Rate > 0.0f && !IsAccumulator; }
+            get { return Provides != null && IsRunning && Provides.Rate > 0.0f && !IsStorage; }
         }
 
         public bool IsConsumer
         {
-            get { return Requires != null && Requires.Rate > 0.0f && !IsAccumulator; }
+            get { return Requires != null && Requires.Rate > 0.0f && !IsStorage; }
         }
 
-        public bool IsAccumulator
+        public bool IsStorage
         {
             get { return Provides != null && Provides.Capacity > 0.0f; }
         }
 
-        public float AccumulatorCapacity
+        public float StorageCapacity
         {
-            get { return IsAccumulator ? Provides.Capacity : 0f; }
+            get { return IsStorage ? Provides.Capacity : 0f; }
         }
 
         public override BuildableComponent Clone()
@@ -179,9 +179,9 @@ namespace ProjectPorcupine.Buildable.Components
                 areAllParamReqsFulfilled = AreParameterConditionsFulfilled(Requires.ParamConditions);
             }
 
-            if (IsAccumulator)
+            if (IsStorage)
             {
-                areAllParamReqsFulfilled &= AccumulatedAmount > 0;
+                areAllParamReqsFulfilled &= StoredAmount > 0;
             }
 
             IsRunning = areAllParamReqsFulfilled;
@@ -206,9 +206,9 @@ namespace ProjectPorcupine.Buildable.Components
                 yield return LocalizationTable.GetLocalization("fluid_output_status", powerColor, Requires.Rate);
             }
 
-            if (IsAccumulator && Provides != null)
+            if (IsStorage && Provides != null)
             {
-                yield return LocalizationTable.GetLocalization("fluid_accumulated_fraction", AccumulatedAmount, Provides.Capacity);
+                yield return LocalizationTable.GetLocalization("fluid_accumulated_fraction", StoredAmount, Provides.Capacity);
             }
         }
 
@@ -237,8 +237,8 @@ namespace ProjectPorcupine.Buildable.Components
             {
                 if (Provides.Capacity > 0)
                 {
-                    CurrentAccumulatorCharge.SetValue(0f);
-                    CurrentAccumulatorChargeIndex.SetValue(0);
+                    CurrentStoredAmount.SetValue(0f);
+                    CurrentStorageIndex.SetValue(0);
                 }
             }
 
@@ -283,21 +283,21 @@ namespace ProjectPorcupine.Buildable.Components
         public class FluidConnectionParameterDefinitions
         {
             // constants for parameters
-            public const string CurAccumulatorChargeParamName = "pow_accumulator_charge";
-            public const string CurAccumulatorIndexParamName = "pow_accumulator_index";
-            public const string CurIsRunningParamName = "water_is_running";
+            public const string CurStoredAmountParamName = "fluid_stored_amount";
+            public const string CurStorageIndexParamName = "fluid_storage_index";
+            public const string CurIsRunningParamName = "fluid_is_running";
 
             public FluidConnectionParameterDefinitions()
             {
                 // defaults
-                CurrentAcumulatorCharge = new ParameterDefinition(CurAccumulatorChargeParamName);
-                CurrentAcumulatorChargeIndex = new ParameterDefinition(CurAccumulatorIndexParamName);
+                CurrentStoredAmount = new ParameterDefinition(CurStoredAmountParamName);
+                CurrentStorageIndex = new ParameterDefinition(CurStorageIndexParamName);
                 IsRunning = new ParameterDefinition(CurIsRunningParamName);
             }
 
-            public ParameterDefinition CurrentAcumulatorCharge { get; set; }
+            public ParameterDefinition CurrentStoredAmount { get; set; }
 
-            public ParameterDefinition CurrentAcumulatorChargeIndex { get; set; }
+            public ParameterDefinition CurrentStorageIndex { get; set; }
 
             public ParameterDefinition IsRunning { get; set; }
         }

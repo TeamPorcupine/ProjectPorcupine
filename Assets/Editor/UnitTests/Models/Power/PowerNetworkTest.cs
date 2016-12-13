@@ -124,30 +124,30 @@ public class PowerNetworkTest
     {
         public event Action Reconnecting;
 
-        public float AccumulatedAmount { get; set; }
+        public float StoredAmount { get; set; }
 
-        public float AccumulatorCapacity { get; set; }
+        public float StorageCapacity { get; set; }
 
         public float InputRate { get; set; }
 
-        public bool IsAccumulator
+        public bool IsStorage
         {
-            get { return AccumulatorCapacity > 0f; }
+            get { return StorageCapacity > 0f; }
         }
 
         public bool IsConsumer
         {
-            get { return InputRate > 0f && !IsAccumulator; }
+            get { return InputRate > 0f && !IsStorage; }
         }
 
         public bool IsEmpty
         {
-            get { return AccumulatedAmount == 0f; }
+            get { return StoredAmount == 0f; }
         }
 
         public bool IsFull
         {
-            get { return AccumulatedAmount.AreEqual(AccumulatorCapacity); }
+            get { return StoredAmount.AreEqual(StorageCapacity); }
         }
 
         public string UtilityType 
@@ -158,9 +158,9 @@ public class PowerNetworkTest
             }
         }
 
-        public string SubType
+        public string SubType 
         {
-            get
+            get 
             {
                 return string.Empty;
             }
@@ -172,14 +172,14 @@ public class PowerNetworkTest
 
         public bool IsProducer
         {
-            get { return OutputRate > 0f && !IsAccumulator; }
+            get { return OutputRate > 0f && !IsStorage; }
         }
 
         public float OutputRate { get; set; }
 
         public void Reconnect()
         {
-            // Not needed to do anything.
+            throw new NotImplementedException();
         }
     }
 }

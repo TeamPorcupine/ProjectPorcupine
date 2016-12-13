@@ -23,11 +23,11 @@ namespace ProjectPorcupine.PowerNetwork
 
         bool IsConsumer { get; }
 
-        bool IsAccumulator { get; }
+        bool IsStorage { get; }
 
-        float AccumulatedAmount { get; set; }
+        float StoredAmount { get; set; }
 
-        float AccumulatorCapacity { get; }
+        float StorageCapacity { get; }
 
         bool IsFull { get; }
 
