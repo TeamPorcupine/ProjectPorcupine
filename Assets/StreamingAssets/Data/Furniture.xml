@@ -17,10 +17,10 @@
             <Inventory type="Steel Plate" amount="5" />
         </OrderAction>
 
-        <DeconstructJob jobTime="1">
+        <OrderAction type="Deconstruct">
             <Job time="1" />
             <Inventory type="Steel Plate" amount="3" />
-        </DeconstructJob>
+        </OrderAction>
 
         <Params>
             <!-- Temperature stuff  example -->
