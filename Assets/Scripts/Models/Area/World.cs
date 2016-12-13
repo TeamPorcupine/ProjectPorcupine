@@ -307,7 +307,13 @@ public class World
     public void ReadJson(string filename)
     {
         StreamReader reader = File.OpenText(filename);
-        JObject worldJson = (JObject)JToken.ReadFrom(new JsonTextReader(reader));
+        ReadJson((JObject)JToken.ReadFrom(new JsonTextReader(reader)));
+
+
+    }
+
+    public void ReadJson(JObject worldJson)
+    {
         Width = (int)worldJson["Width"];
         Height = (int)worldJson["Height"];
         Depth = (int)worldJson["Depth"];

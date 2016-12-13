@@ -384,10 +384,7 @@ public class Character : ISelectable, IContextActionProvider
 
         characterJson.Add("Stats", statsJSon);
 
-        if (inventory != null)
-        {
-            characterJson.Add("Inventories", new JArray(inventory.ToJSon()));
-        }
+        characterJson.Add("Inventories", new JArray(inventory.ToJSon()));
 
         return characterJson;
     }
