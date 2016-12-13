@@ -925,13 +925,6 @@ namespace DeveloperConsole
                 new InternalCommand("Help", Help, "Returns information on all commands.  Can take in a parameter as a tag to search for all commands with that tag", new string[] { "System" }, new Type[] { typeof(string) }, new string[] { "tag" }),
                 new InternalCommand("Clear", Clear, "Clears the developer console", new string[] { "System" }),
                 new InternalCommand("Tags", AllTags, "Logs all the tags used", new string[] { "System" }));
-            /*
-                new Command<int, string, float>("SetRoomGas", CoreCommands.SetRoomGas, "Sets the gas in the room"),
-                new Command<string, float>("SetAllRoomsGas", CoreCommands.SetAllRoomsGas, "Sets the gas in all rooms"),
-                new Command<int>("FillRoomWithAir", CoreCommands.FillRoomWithAir, "Set's the room's gasses to standard atmosphere (20/80 O2/N2 mix)"),
-                new Command("FillAllRoomsWithAir", CoreCommands.FillAllRoomsWithAir, "Set's all rooms' gasses to standard atmosphere (20/80 O2/N2 mix)"),
-                new Command<int>("EmptyRoom", CoreCommands.EmptyRoom, "Empties the room's atmosphere"),
-                new Command("EmptyAllRooms", CoreCommands.EmptyAllRooms, "Empties all rooms' atmosphere")); */
 
             // Load Commands from XML (will be changed to JSON AFTER the current upgrade)
             // Covers both CSharp and LUA
