@@ -26,8 +26,8 @@ namespace ProjectPorcupine.Localization
 {
     /// <summary>
     /// This class makes sure that your localization is up to date.
-    /// If we haven't ever started the program then it downloads all of the file using rawgit.com's CDN
-    /// then adds the date in ISO 8601 format to config.xml.
+    /// If we haven't ever started the program then it first downloads the config file, parses it and then
+    /// downloads the files using rawgit.com's CDN then adds the date in ISO 8601 format to config.xml.
     /// If we have started ProjectPorcupine then it uses the Github API to check for the latest changes.
     /// If there are changes, then we download the details of the commits, including the changes of each file.
     /// We then use Google's DiffMatchPatch to change the files, so that we don't need to re-download the file.
@@ -52,7 +52,7 @@ namespace ProjectPorcupine.Localization
                 // Download all of the localization
                 yield return DownloadLocalization();
             }
-            else if (Settings.GetSetting("DialogBoxSettings_autoUpdateLocalization", true))
+            else if (Settings.GetSetting("autoUpdateLocalization", true))
             {
                 // Check if we have any updates to the localization
                 yield return GetChangesSinceDate();

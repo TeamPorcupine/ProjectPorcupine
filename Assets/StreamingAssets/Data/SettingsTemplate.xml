@@ -7,6 +7,7 @@
     </OptionHeading>
     <OptionHeading Name="Localization">
       <Option Name="Language" Key="localization" DefaultValue="en_US" ClassName="LocalizationComboBox" />
+      <Option Name="Auto Update Localization" Key="autoUpdateLocalization" DefaultValue="true" ClassName="FullScreenToggle" />
     </OptionHeading>
   </Category>
   <Category Name="Sound">
