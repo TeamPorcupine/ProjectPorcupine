@@ -167,7 +167,7 @@ public class WorldGenerator
             foreach (Tile neighbor in tile.GetNeighbours(false, true))
             {
                 
-                if (depth < 10 && !CurrentAsteroid.Contains(neighbor) && Random.value < .75f)
+                if (depth < 20 && !CurrentAsteroid.Contains(neighbor) && Random.value < .75f)
                 {
                     GrowAsteroid(neighbor, depth + 1);
                 }
@@ -177,7 +177,11 @@ public class WorldGenerator
 
     private void PlaceAsteroidChunk(Tile tile, World world)
     {
-        // TODO: We Almost certainly need check that the space is empty before doing this, else we'll unset a floor under a wall at some point, which is bad
+        if (tile.Type != TileType.Empty)
+        {
+            return;
+        }
+
         tile.SetTileType(asteroidFloorType);
 
         world.FurnitureManager.PlaceFurniture("astro_wall", tile, false);
