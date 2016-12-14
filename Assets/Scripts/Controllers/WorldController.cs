@@ -102,8 +102,6 @@ public class WorldController : MonoBehaviour
         TradeController = new TradeController();
         autosaveManager = new AutosaveManager();
 
-        dialogBoxManager = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
-
         // Register inputs actions
         KeyboardManager.Instance.RegisterInputAction("DevMode", KeyboardMappedInputType.KeyDown, ChangeDevMode);
 
@@ -120,9 +118,23 @@ public class WorldController : MonoBehaviour
 
         GameController.Instance.IsModal = false;
 
+        // Settings UI is a 'dialog box' (kinda), so it comes here.  
+        // Where as DevConsole is a constant menu item (it can appear 'anywhere' so it appears after)
+        GameObject settingsMenu = (GameObject)Instantiate(Resources.Load("UI/SettingsMenu/SettingsMenu"));
+
+        if (settingsMenu != null)
+        {
+            settingsMenu.name = "Settings Menu";
+            settingsMenu.transform.SetParent(canvas.transform, false);
+            settingsMenu.SetActive(true);
+        }
+
+        // This will place it after context menu (and the inventory menu) and settings menu
+        dialogBoxManager = GameObject.Find("Dialog Boxes").GetComponent<DialogBoxManager>();
+        dialogBoxManager.transform.SetAsLastSibling();
+
         GameObject devConsole = (GameObject)Instantiate(Resources.Load("UI/Console/DevConsole"));
 
-        // This is just to make sure it isn't null (the static thing shouldn't destroy this copy but in some edge cases it might decide to).
         if (devConsole != null)
         {
             devConsole.name = "DevConsole-Spawned";

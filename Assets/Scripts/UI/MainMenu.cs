@@ -13,11 +13,8 @@ using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
-    private DialogBoxManager dialogManager;
-
     public void Start()
     {
-        dialogManager = GameObject.FindObjectOfType<DialogBoxManager>();
         RenderButtons();
     }
 
@@ -34,12 +31,12 @@ public class MainMenu : MonoBehaviour
             }
         });
 
-        GameObject loadWorldButton = CreateButtonGO(buttonPrefab, "Load", "load"); 
+        GameObject loadWorldButton = CreateButtonGO(buttonPrefab, "Load", "load");
         loadWorldButton.GetComponent<Button>().onClick.AddListener(delegate
         {
             if (!GameController.Instance.IsModal)
             {
-                dialogManager.dialogBoxLoadGame.ShowDialog();
+                MainMenuController.Instance.dialogBoxManager.dialogBoxLoadGame.ShowDialog();
             }
         });
 
@@ -48,7 +45,7 @@ public class MainMenu : MonoBehaviour
         {
             if (!GameController.Instance.IsModal)
             {
-                dialogManager.dialogBoxSettings.ShowDialog();
+                SettingsMenu.Open();
             }
         });
 

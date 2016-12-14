@@ -38,7 +38,7 @@ public class MenuLeft : MonoBehaviour
 
         WorldController.Instance.soundController.OnButtonSFX();
 
-        if (CurrentlyOpen.name == "ConstructionMenu")
+        if (CurrentlyOpen.name == "ConstructionMenu" || CurrentlyOpen.name == "OrderMenu")
         {
             WorldController.Instance.spawnInventoryController.SetUIVisibility(false);
         }
@@ -50,7 +50,7 @@ public class MenuLeft : MonoBehaviour
         {
             CurrentlyOpen.SetActive(false);
 
-            if (CurrentlyOpen.name == "ConstructionMenu")
+            if (CurrentlyOpen.name == "ConstructionMenu" || CurrentlyOpen.name == "OrderMenu")
             {
                 WorldController.Instance.spawnInventoryController.SetUIVisibility(Settings.GetSetting("DialogBoxSettingsDevConsole_developerModeToggle", false));
             }

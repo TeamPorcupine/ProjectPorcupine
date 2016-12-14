@@ -35,7 +35,7 @@ public class DialogBoxOptions : DialogBox
     public void OnButtonOpenSettings()
     {
         this.CloseDialog();
-        dialogManager.dialogBoxSettings.ShowDialog();
+        SettingsMenu.Open();
     }
 
     public void OnButtonQuitGame()

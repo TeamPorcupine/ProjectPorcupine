@@ -18,6 +18,11 @@ public class LanguageDropdownUpdater : MonoBehaviour
         LocalizationTable.CBLocalizationFilesChanged += UpdateLanguageDropdown;
     }
 
+    private void OnDestroy()
+    {
+        LocalizationTable.CBLocalizationFilesChanged -= UpdateLanguageDropdown;
+    }
+
     private void UpdateLanguageDropdown()
     {
         Dropdown dropdown = GetComponent<Dropdown>();
