@@ -1,0 +1,157 @@
+fileFormatVersion: 2
+guid: e7fb7a4c81c3dcc48a183cecc15f2e05
+timeCreated: 1481012978
+licenseType: Free
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: Atlas-Radio_Disabled-Square
+    21300002: Atlas-Radio_Off-Square
+    21300004: Atlas-Radio_CheckMark-Square
+    21300006: Atlas-Radio_Disabled-Circle
+    21300008: Atlas-Radio_Off-Circle
+    21300010: Atlas-Radio_CheckMark-Circle
+    21300012: Atlas-Radio_CheckMark
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 1
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 0
+  cubemapConvolution: 0
+  cubemapConvolutionSteps: 7
+  cubemapConvolutionExponent: 1.5
+  seamlessCubemap: 0
+  textureFormat: -1
+  maxTextureSize: 2048
+  textureSettings:
+    filterMode: 2
+    aniso: 16
+    mipBias: -1
+    wrapMode: 1
+  nPOTScale: 0
+  lightmap: 0
+  rGBM: 0
+  compressionQuality: 50
+  allowsAlphaSplitting: 0
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 100
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  buildTargetSettings: []
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Atlas-Radio_Disabled-Square
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 301
+        width: 120
+        height: 121
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Atlas-Radio_Off-Square
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 301
+        width: 120
+        height: 121
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Atlas-Radio_CheckMark-Square
+      rect:
+        serializedVersion: 2
+        x: 273
+        y: 321
+        width: 81
+        height: 81
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Atlas-Radio_Disabled-Circle
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 175
+        width: 120
+        height: 121
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Atlas-Radio_Off-Circle
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 175
+        width: 120
+        height: 121
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Atlas-Radio_CheckMark-Circle
+      rect:
+        serializedVersion: 2
+        x: 273
+        y: 195
+        width: 81
+        height: 81
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Atlas-Radio_CheckMark
+      rect:
+        serializedVersion: 2
+        x: 262
+        y: 95
+        width: 103
+        height: 77
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    outline: []
+  spritePackingTag: 
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
