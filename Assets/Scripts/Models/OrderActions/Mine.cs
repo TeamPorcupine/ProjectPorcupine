@@ -31,6 +31,7 @@ namespace ProjectPorcupine.OrderActions
         public override void Initialize(string type)
         {
             base.Initialize(type);
+
             // if there is no JobInfo defined, use defaults (time=0, ...)
             if (JobInfo == null)
             {
