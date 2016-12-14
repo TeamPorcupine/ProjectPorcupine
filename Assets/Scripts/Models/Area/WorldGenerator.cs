@@ -25,6 +25,7 @@ public class WorldGenerator
     private int startAreaCenterY = 0;
     private int[,] startAreaTiles = new int[0, 0];
     private string[,] startAreaFurnitures = new string[0, 0];
+    private int sumOfAllWeightedChances;
 
     private AsteroidInfo asteroidInfo;
 
@@ -57,7 +58,7 @@ public class WorldGenerator
         int offsetX = Random.Range(0, 10000);
         int offsetY = Random.Range(0, 10000);
         
-        int sumOfAllWeightedChances = asteroidInfo.Resources.Select(x => x.WeightedChance).Sum();
+        sumOfAllWeightedChances = asteroidInfo.Resources.Select(x => x.WeightedChance).Sum();
 
         for (int x = 0; x < startAreaWidth; x++)
         {
@@ -87,52 +88,118 @@ public class WorldGenerator
             }
         }
 
-        for (int z = 0; z < depth; z++)
+
+        for (int asteroid = 0; asteroid < 10; asteroid++)
         {
-            float scaleZ = Mathf.Lerp(1f, .5f, Mathf.Abs((depth / 2f) - z) / depth);
-            for (int x = 0; x < width; x++)
+            Vector3 asteroidSeed = new Vector3(Random.Range(0, width), Random.Range(0, height), Random.Range(0, depth));
+            GrowAsteroid(asteroidSeed, world);
+        }
+
+//        for (int z = 0; z < depth; z++)
+//        {
+//            float scaleZ = Mathf.Lerp(1f, .5f, Mathf.Abs((depth / 2f) - z) / depth);
+//            for (int x = 0; x < width; x++)
+//            {
+//                for (int y = 0; y < height; y++)
+//                {
+//                    float noiseValue = Mathf.PerlinNoise(
+//                        (x + offsetX) / (width * asteroidInfo.NoiseScale * scaleZ),
+//                        (y + offsetY) / (height * asteroidInfo.NoiseScale * scaleZ));
+//                    if (noiseValue >= asteroidInfo.NoiseThreshhold && !IsStartArea(x, y, world))
+//                    {
+//                        Tile tile = world.GetTileAt(x, y, z);
+//
+//                        tile.SetTileType(asteroidFloorType);
+//
+//                        world.FurnitureManager.PlaceFurniture("astro_wall", tile, false);
+//
+//                        if (Random.value <= asteroidInfo.ResourceChance && tile.Furniture.Name == "Rock Wall")
+//                        {
+//                            if (asteroidInfo.Resources.Count > 0)
+//                            {
+//                                int currentweight = 0;
+//                                int randomweight = Random.Range(0, sumOfAllWeightedChances);
+//
+//                                for (int i = 0; i < asteroidInfo.Resources.Count; i++)
+//                                {
+//                                    Resource inv = asteroidInfo.Resources[i];
+//
+//                                    int weight = inv.WeightedChance; 
+//                                    currentweight += weight;
+//
+//                                    if (randomweight <= currentweight)
+//                                    {
+//                                        tile.Furniture.Deconstruct();
+//
+//                                        Furniture oreWall = PrototypeManager.Furniture.Get("astro_wall").Clone();
+//                                        oreWall.Parameters["ore_type"].SetValue(inv.Type);
+//                                        oreWall.Parameters["source_type"].SetValue(inv.Source);
+//                                        
+//                                        world.FurnitureManager.PlaceFurniture(oreWall, tile, false);
+//                                        break;
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+    }
+
+    HashSet<Tile> CurrentAsteroid;
+    private void GrowAsteroid(Vector3 location, World world)
+    {
+        CurrentAsteroid = new HashSet<Tile>();
+        GrowAsteroid(world.GetTileAt((int)location.x, (int)location.y, (int)location.z));
+        foreach (Tile tile in CurrentAsteroid)
+        {
+            PlaceAsteroidChunk(tile, world);
+        }
+    }
+
+    private void GrowAsteroid(Tile tile, int depth = 0)
+    {
+        if (tile != null)
+        {
+//            PlaceAsteroidChunk(tile, world);
+            CurrentAsteroid.Add(tile);
+            foreach (Tile neighbor in tile.GetNeighbours(false, true))
             {
-                for (int y = 0; y < height; y++)
+                if (depth < 10 && !CurrentAsteroid.Contains(neighbor) && Random.value < .75f)
                 {
-                    float noiseValue = Mathf.PerlinNoise(
-                        (x + offsetX) / (width * asteroidInfo.NoiseScale * scaleZ),
-                        (y + offsetY) / (height * asteroidInfo.NoiseScale * scaleZ));
-                    if (noiseValue >= asteroidInfo.NoiseThreshhold && !IsStartArea(x, y, world))
+                    GrowAsteroid(neighbor, depth + 1);
+                }
+            }
+        }
+    }
+
+    private void PlaceAsteroidChunk(Tile tile, World world)
+    {
+        tile.SetTileType(asteroidFloorType);
+
+        world.FurnitureManager.PlaceFurniture("astro_wall", tile, false);
+
+        if (Random.value <= asteroidInfo.ResourceChance && tile.Furniture.Name == "Rock Wall")
+        {
+            if (asteroidInfo.Resources.Count > 0)
+            {
+                int currentweight = 0;
+                int randomweight = Random.Range(0, sumOfAllWeightedChances);
+
+                for (int i = 0; i < asteroidInfo.Resources.Count; i++)
+                {
+                    Resource inv = asteroidInfo.Resources[i];
+
+                    int weight = inv.WeightedChance; 
+                    currentweight += weight;
+
+                    if (randomweight <= currentweight)
                     {
-                        Tile tile = world.GetTileAt(x, y, z);
+                        tile.Furniture.Parameters["ore_type"].SetValue(inv.Type);
+                        tile.Furniture.Parameters["source_type"].SetValue(inv.Source);
 
-                        tile.SetTileType(asteroidFloorType);
-
-                        world.FurnitureManager.PlaceFurniture("astro_wall", tile, false);
-
-                        if (Random.value <= asteroidInfo.ResourceChance && tile.Furniture.Name == "Rock Wall")
-                        {
-                            if (asteroidInfo.Resources.Count > 0)
-                            {
-                                int currentweight = 0;
-                                int randomweight = Random.Range(0, sumOfAllWeightedChances);
-
-                                for (int i = 0; i < asteroidInfo.Resources.Count; i++)
-                                {
-                                    Resource inv = asteroidInfo.Resources[i];
-
-                                    int weight = inv.WeightedChance; 
-                                    currentweight += weight;
-
-                                    if (randomweight <= currentweight)
-                                    {
-                                        tile.Furniture.Deconstruct();
-
-                                        Furniture oreWall = PrototypeManager.Furniture.Get("astro_wall").Clone();
-                                        oreWall.Parameters["ore_type"].SetValue(inv.Type);
-                                        oreWall.Parameters["source_type"].SetValue(inv.Source);
-                                        
-                                        world.FurnitureManager.PlaceFurniture(oreWall, tile, false);
-                                        break;
-                                    }
-                                }
-                            }
-                        }
+                        break;
                     }
                 }
             }
