@@ -19,8 +19,6 @@ public class WorldGenerator
     
     private TileType asteroidFloorType = null;
 
-//    private string startAreaFilePath = string.Empty;
-
     private AsteroidInfo asteroidInfo;
 
     private WorldGenerator()
