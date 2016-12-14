@@ -60,8 +60,6 @@ public class World
 
         // Make one character.
         CharacterManager.Create(GetTileAt((Width / 2) - 1, Height / 2, 0));
-
-        // TestRoomGraphGeneration(this);
     }
 
     /// <summary>
@@ -370,7 +368,7 @@ public class World
         int offsetX = (width - Width) / 2;
         int offsetY = ((height - Height) / 2) + 1;
 
-        Tile[,,] oldTIles = (Tile[,,])tiles.Clone();
+        Tile[,,] oldTiles = (Tile[,,])tiles.Clone();
         tiles = new Tile[width, height, depth];
 
         int oldWidth = Width;
@@ -394,8 +392,8 @@ public class World
             {
                 for (int z = 0; z < oldDepth; z++)
                 {
-                    tiles[x + offsetX, y + offsetY, z] = oldTIles[x, y, z];
-                    oldTIles[x, y, z].MoveTile(x + offsetX, y + offsetY, z);
+                    tiles[x + offsetX, y + offsetY, z] = oldTiles[x, y, z];
+                    oldTiles[x, y, z].MoveTile(x + offsetX, y + offsetY, z);
                 }
             }   
         }

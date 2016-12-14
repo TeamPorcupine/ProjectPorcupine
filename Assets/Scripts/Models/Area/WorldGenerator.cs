@@ -79,17 +79,17 @@ public class WorldGenerator
                             {
                                 if (asteroidInfo.Resources.Count > 0)
                                 {
-                                    int currentweight = 0;
-                                    int randomweight = Random.Range(0, sumOfAllWeightedChances);
+                                    int currentWeight = 0;
+                                    int randomWeight = Random.Range(0, sumOfAllWeightedChances);
 
                                     for (int i = 0; i < asteroidInfo.Resources.Count; i++)
                                     {
                                         Resource inv = asteroidInfo.Resources[i];
 
                                         int weight = inv.WeightedChance; 
-                                        currentweight += weight;
+                                        currentWeight += weight;
 
-                                        if (randomweight <= currentweight)
+                                        if (randomWeight <= currentWeight)
                                         {
                                             tile.Furniture.Deconstruct();
 
