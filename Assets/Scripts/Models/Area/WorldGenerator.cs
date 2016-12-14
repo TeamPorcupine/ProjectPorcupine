@@ -19,12 +19,6 @@ public class WorldGenerator
     
     private TileType asteroidFloorType = null;
 
-    private int startAreaWidth = 0;
-    private int startAreaHeight = 0;
-    private int startAreaCenterX = 0;
-    private int startAreaCenterY = 0;
-    private int[,] startAreaTiles = new int[0, 0];
-    private string[,] startAreaFurnitures = new string[0, 0];
     private string startAreaFilePath = string.Empty;
 
     private AsteroidInfo asteroidInfo;
@@ -48,7 +42,6 @@ public class WorldGenerator
 
     public void Generate(World world, int seed)
     {
-        Debug.LogWarning("Generating");
         asteroidFloorType = TileType.Empty; 
 
         ReadXML();
@@ -134,19 +127,6 @@ public class WorldGenerator
         }
     }
 
-    private bool IsStartArea(int x, int y, World world)
-    {
-        int boundX = (world.Width / 2) - startAreaCenterX;
-        int boundY = (world.Height / 2) + startAreaCenterY + 1;
-
-        if (x >= boundX && x < (boundX + startAreaWidth) && y >= (boundY - startAreaHeight) && y < boundY)
-        {
-            return true;
-        }
-
-        return false;
-    }
-
     private void ReadXML()
     {
         // Setup XML Reader
@@ -169,7 +149,7 @@ public class WorldGenerator
                 catch (System.Exception e)
                 {
                     // Leaving this in because UberLogger doesn't handle multiline messages  
-                    Debug.LogError("Error reading WorldGenerator/Asteroid" + System.Environment.NewLine + "Exception: " + e.Message + System.Environment.NewLine + "StackTrace: " + e.StackTrace);
+                    UnityDebugger.Debugger.LogError("WorldGenerator", "Error reading WorldGenerator/Asteroid" + System.Environment.NewLine + "Exception: " + e.Message + System.Environment.NewLine + "StackTrace: " + e.StackTrace);
                 }
             }
             else
@@ -182,12 +162,11 @@ public class WorldGenerator
                 try
                 {
                     string startAreaFileName = reader.GetAttribute("file");
-                    Debug.LogWarning(Application.streamingAssetsPath);
                     startAreaFilePath = Path.Combine(Application.streamingAssetsPath, Path.Combine("WorldGen", startAreaFileName));
                 }
                 catch (System.Exception e)
                 {
-                    Debug.LogError("Error reading WorldGenerator/StartArea" + System.Environment.NewLine + "Exception: " + e.Message + System.Environment.NewLine + "StackTrace: " + e.StackTrace);
+                    UnityDebugger.Debugger.LogError("WorldGenerator", "Error reading WorldGenerator/StartArea" + System.Environment.NewLine + "Exception: " + e.Message + System.Environment.NewLine + "StackTrace: " + e.StackTrace);
                 }
             }
             else
@@ -203,7 +182,7 @@ public class WorldGenerator
                 }
                 catch (System.Exception e)
                 {
-                    Debug.LogError("Error reading WorldGenerator/Wallet" + System.Environment.NewLine + "Exception: " + e.Message + System.Environment.NewLine + "StackTrace: " + e.StackTrace);
+                    UnityDebugger.Debugger.LogError("WorldGenerator", "Error reading WorldGenerator/Wallet" + System.Environment.NewLine + "Exception: " + e.Message + System.Environment.NewLine + "StackTrace: " + e.StackTrace);
                 }
             }
             else
