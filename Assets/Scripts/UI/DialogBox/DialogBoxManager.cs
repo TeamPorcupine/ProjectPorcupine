@@ -23,7 +23,6 @@ public class DialogBoxManager : MonoBehaviour
     public DialogBoxLoadGame dialogBoxLoadGame;
     public DialogBoxSaveGame dialogBoxSaveGame;
     public DialogBoxOptions dialogBoxOptions;
-    public DialogBoxSettings dialogBoxSettings;
     public DialogBoxTrade dialogBoxTrade;
     public DialogBoxPromptOrInfo dialogBoxPromptOrInfo;
     public DialogBoxQuests dialogBoxQuests;
@@ -42,14 +41,6 @@ public class DialogBoxManager : MonoBehaviour
         tempGoObj = CreateDialogGO("DB_LoadFile", "Load File");
         dialogBoxLoadGame = tempGoObj.GetComponent<DialogBoxLoadGame>();
         DialogBoxes["Load File"] = dialogBoxLoadGame;
-
-        tempGoObj = CreateDialogGO("DB_Settings", "Settings");
-        dialogBoxSettings = tempGoObj.GetComponent<DialogBoxSettings>();
-        DialogBoxes["Settings"] = dialogBoxSettings;
-
-        // Added for more dev options
-        tempGoObj = CreateDialogGO("DB_Settings-Developer", "Developer Settings");
-        dialogBoxSettings.devOptions = tempGoObj.GetComponent<DialogBoxSettingsDeveloper>();
 
         tempGoObj = CreateDialogGO("DB_PromptOrInfo", "Prompt or Info");
         dialogBoxPromptOrInfo = tempGoObj.GetComponent<DialogBoxPromptOrInfo>();
@@ -135,11 +126,6 @@ public class DialogBoxManager : MonoBehaviour
             "menu_options",
             () =>
             {
-                if (dialogBoxSettings.isActiveAndEnabled)
-                {
-                    dialogBoxSettings.CloseDialog();
-                }
-
                 dialogBoxOptions.ShowDialog();
             },
             "menu_quests");

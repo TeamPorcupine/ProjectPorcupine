@@ -91,6 +91,8 @@ public class World
 
     public event Action<Tile> OnTileChanged;
 
+    public event Action<Tile> OnTileTypeChanged;
+
     public static World Current { get; protected set; }
 
     // The tile width of the world.
@@ -360,6 +362,7 @@ public class World
                 {
                     tiles[x, y, z] = new Tile(x, y, z);
                     tiles[x, y, z].TileChanged += OnTileChangedCallback;
+                    tiles[x, y, z].TileTypeChanged += OnTileTypeChangedCallback;
                     tiles[x, y, z].Room = RoomManager.OutsideRoom; // Rooms 0 is always going to be outside, and that is our default room
                 }
             }
@@ -483,6 +486,17 @@ public class World
         }
 
         OnTileChanged(t);
+    }
+
+    // Gets called whenever ANY tile changes type
+    private void OnTileTypeChangedCallback(Tile t)
+    {
+        if (OnTileTypeChanged == null)
+        {
+            return;
+        }
+
+        OnTileTypeChanged(t);
 
         if (tileGraph != null)
         {

@@ -173,7 +173,7 @@ public class InventoryManager
     public bool PlaceInventory(Character character, Inventory sourceInventory, int amount = -1)
     {
         amount = amount < 0 ? sourceInventory.StackSize : Math.Min(amount, sourceInventory.StackSize);
-
+        sourceInventory.ReleaseClaim();
         if (character.inventory == null)
         {
             character.inventory = sourceInventory.Clone();
@@ -312,6 +312,12 @@ public class InventoryManager
         JArray inventoriesJson = new JArray();
         foreach (Inventory inventory in Inventories.SelectMany(pair => pair.Value))
         {
+            // Skip any inventory without a tile, these are inventories in a character or elsewhere that will handle it itself.
+            if (inventory.Tile == null)
+            {
+                continue;
+            }
+
             inventoriesJson.Add(inventory.ToJSon());
         }
 
