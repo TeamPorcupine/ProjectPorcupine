@@ -19,7 +19,7 @@ public class WorldGenerator
     
     private TileType asteroidFloorType = null;
 
-    private string startAreaFilePath = string.Empty;
+//    private string startAreaFilePath = string.Empty;
 
     private AsteroidInfo asteroidInfo;
 
@@ -42,20 +42,20 @@ public class WorldGenerator
 
     public void Generate(World world, int seed)
     {
-        asteroidFloorType = TileType.Empty; 
+        asteroidFloorType = TileType.Empty;
 
-        ReadXML();
-        Random.InitState(seed);
         int width = world.Width;
         int height = world.Height;
         int depth = world.Depth;
+
+        ReadXML(world);
+        world.ResizeWorld(width, height, depth);
+
+        Random.InitState(seed);
         int offsetX = Random.Range(0, 10000);
         int offsetY = Random.Range(0, 10000);
         
         int sumOfAllWeightedChances = asteroidInfo.Resources.Select(x => x.WeightedChance).Sum();
-
-        world.ReadJson(startAreaFilePath);
-        world.ResizeWorld(width, height, depth);
 
         if (SceneController.GenerateAsteroids)
         {
@@ -112,7 +112,7 @@ public class WorldGenerator
         }
     }
 
-    private static void ReadXmlWallet(XmlReader reader)
+    private static void ReadXmlWallet(XmlReader reader, World world)
     {
         XmlReader wallet = reader.ReadSubtree();
 
@@ -120,14 +120,14 @@ public class WorldGenerator
         {
             if (wallet.Name == "Currency")
             {
-                World.Current.Wallet.AddCurrency(
+                world.Wallet.AddCurrency(
                     wallet.GetAttribute("name"),
                     float.Parse(wallet.GetAttribute("startingBalance")));
             }
         }
     }
 
-    private void ReadXML()
+    private void ReadXML(World world)
     {
         // Setup XML Reader
         // Optimally, this would use GameController.Instance.GeneratorBasePath(), but that apparently may not exist at this point.
@@ -162,7 +162,8 @@ public class WorldGenerator
                 try
                 {
                     string startAreaFileName = reader.GetAttribute("file");
-                    startAreaFilePath = Path.Combine(Application.streamingAssetsPath, Path.Combine("WorldGen", startAreaFileName));
+                    string startAreaFilePath = Path.Combine(Application.streamingAssetsPath, Path.Combine("WorldGen", startAreaFileName));
+                    ReadStartArea(startAreaFilePath, world);
                 }
                 catch (System.Exception e)
                 {
@@ -178,7 +179,7 @@ public class WorldGenerator
             {
                 try
                 {
-                    ReadXmlWallet(reader);
+                    ReadXmlWallet(reader, world);
                 }
                 catch (System.Exception e)
                 {
@@ -200,6 +201,11 @@ public class WorldGenerator
     {
         XmlSerializer serializer = new XmlSerializer(typeof(AsteroidInfo));
         asteroidInfo = (AsteroidInfo)serializer.Deserialize(reader);
+    }
+
+    private void ReadStartArea(string startAreaFilePath, World world)
+    {
+        world.ReadJson(startAreaFilePath);
     }
     
     [System.Serializable]
