@@ -20,10 +20,10 @@ public class FurnitureManager : IEnumerable<Furniture>
     private List<Furniture> furnitures;
 
     // A temporary list of all visible furniture. Gets updated when camera moves.
-    private List<Furniture> furnituresVisible;
+    private HashSet<Furniture> furnituresVisible;
 
     // A temporary list of all invisible furniture. Gets updated when camera moves.
-    private List<Furniture> furnituresInvisible;
+    private HashSet<Furniture> furnituresInvisible;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FurnitureManager"/> class.
@@ -31,8 +31,8 @@ public class FurnitureManager : IEnumerable<Furniture>
     public FurnitureManager()
     {
         furnitures = new List<Furniture>();
-        furnituresVisible = new List<Furniture>();
-        furnituresInvisible = new List<Furniture>();
+        furnituresVisible = new HashSet<Furniture>();
+        furnituresInvisible = new HashSet<Furniture>();
     }
 
     /// <summary>
