@@ -53,6 +53,11 @@ public class CameraData
 
     public void FromJson(JToken cameraDataToken)
     {
+        if (cameraDataToken == null)
+        {
+            return;
+        }
+
         int x = (int)cameraDataToken["X"];
         int y = (int)cameraDataToken["Y"];
         int z = (int)cameraDataToken["Z"];

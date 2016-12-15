@@ -697,6 +697,13 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
     }
     #endregion
 
+    public void MoveTile(int x, int y, int z)
+    {
+        X = x;
+        Y = y;
+        Z = z;
+    }
+
     public override string ToString()
     {
         return string.Format("[{0} {1}, {2}, {3}]", Type, X, Y, Z);

@@ -67,6 +67,11 @@ public class Wallet
 
     public void FromJson(JToken walletToken)
     {
+        if (walletToken == null)
+        {
+            return;
+        }
+
         JObject walletJObject = (JObject)walletToken;
 
         foreach (JProperty currency in walletJObject.Properties())

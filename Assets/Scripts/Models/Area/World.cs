@@ -56,21 +56,10 @@ public class World
         UnityDebugger.Debugger.Log("World", "Generated World");
 
         tileGraph = new Path_TileGraph(this);
-
-        // Adding air to enclosed rooms
-        foreach (Room room in this.RoomManager)
-        {
-            if (room.ID > 0)
-            {
-                room.ChangeGas("O2", 0.2f * room.TileCount);
-                room.ChangeGas("N2", 0.8f * room.TileCount);
-            }
-        }
+        roomGraph = new Path_RoomGraph(this);
 
         // Make one character.
-        CharacterManager.Create(GetTileAt(Width / 2, Height / 2, 0));
-
-        TestRoomGraphGeneration(this);
+        CharacterManager.Create(GetTileAt((Width / 2) - 1, Height / 2, 0));
     }
 
     /// <summary>
@@ -316,7 +305,11 @@ public class World
     public void ReadJson(string filename)
     {
         StreamReader reader = File.OpenText(filename);
-        JObject worldJson = (JObject)JToken.ReadFrom(new JsonTextReader(reader));
+        ReadJson((JObject)JToken.ReadFrom(new JsonTextReader(reader)));
+    }
+
+    public void ReadJson(JObject worldJson)
+    {
         Width = (int)worldJson["Width"];
         Height = (int)worldJson["Height"];
         Depth = (int)worldJson["Depth"];
@@ -338,6 +331,74 @@ public class World
         tileGraph = new Path_TileGraph(this);
     }
 
+    public void ResizeWorld(Vector3 worldSize)
+    {
+        ResizeWorld((int)worldSize.x, (int)worldSize.y, (int)worldSize.z);
+    }
+
+    public void ResizeWorld(int width, int height, int depth)
+    {
+        if (width < Width || height < Height || depth < Depth)
+        {
+            if (width < Width)
+            {
+                Debug.LogWarning("Width too small: " + Width + " " + width);
+            }
+
+            if (height < Height)
+            {
+                Debug.LogWarning("Height too small: " + Height + " " + height);
+            }
+
+            if (depth < Depth)
+            {
+                Debug.LogWarning("Depth too small: " + Depth + " " + depth);
+            }
+
+            Debug.LogError("Shrinking the world is not presently supported");
+            return;
+        }
+
+        if (width == Width && height == Height && depth == Depth)
+        {
+            // No change, just bail
+            return;
+        }
+
+        int offsetX = (width - Width) / 2;
+        int offsetY = ((height - Height) / 2) + 1;
+
+        Tile[,,] oldTiles = (Tile[,,])tiles.Clone();
+        tiles = new Tile[width, height, depth];
+
+        int oldWidth = Width;
+        int oldHeight = Height;
+        int oldDepth = Depth;
+
+        Width = width;
+        Height = height;
+        Depth = depth;
+
+        FillTilesArray();
+        tileGraph = null;
+        roomGraph = null;
+
+        // Reset temperature, so it properly sizes arrays to the new world size
+        temperature = new Temperature();
+
+        for (int x = 0; x < oldWidth; x++)
+        {
+            for (int y = 0; y < oldHeight; y++)
+            {
+                for (int z = 0; z < oldDepth; z++)
+                {
+                    tiles[x + offsetX, y + offsetY, z] = oldTiles[x, y, z];
+                    oldTiles[x, y, z].MoveTile(x + offsetX, y + offsetY, z);
+                }
+            }   
+        }
+    }
+
     private void SetupWorld(int width, int height, int depth)
     {
         // Set the current world to be this world.
@@ -354,19 +415,7 @@ public class World
         RoomManager.Adding += (room) => roomGraph = null;
         RoomManager.Removing += (room) => roomGraph = null;
 
-        for (int x = 0; x < Width; x++)
-        {
-            for (int y = 0; y < Height; y++)
-            {
-                for (int z = 0; z < Depth; z++)
-                {
-                    tiles[x, y, z] = new Tile(x, y, z);
-                    tiles[x, y, z].TileChanged += OnTileChangedCallback;
-                    tiles[x, y, z].TileTypeChanged += OnTileTypeChangedCallback;
-                    tiles[x, y, z].Room = RoomManager.OutsideRoom; // Rooms 0 is always going to be outside, and that is our default room
-                }
-            }
-        }
+        FillTilesArray();
 
         FurnitureManager = new FurnitureManager();
         FurnitureManager.Created += OnFurnitureCreated;
@@ -384,6 +433,23 @@ public class World
 
         LoadSkybox();
         AddEventListeners();
+    }
+
+    private void FillTilesArray()
+    {
+        for (int x = 0; x < Width; x++)
+        {
+            for (int y = 0; y < Height; y++)
+            {
+                for (int z = 0; z < Depth; z++)
+                {
+                    tiles[x, y, z] = new Tile(x, y, z);
+                    tiles[x, y, z].TileChanged += OnTileChangedCallback;
+                    tiles[x, y, z].TileTypeChanged += OnTileTypeChangedCallback;
+                    tiles[x, y, z].Room = RoomManager.OutsideRoom; // Rooms 0 is always going to be outside, and that is our default room
+                }
+            }
+        }
     }
 
     private void LoadSkybox(string name = null)
@@ -504,185 +570,4 @@ public class World
             tileGraph.RegenerateGraphAtTile(t.Down());
         }
     }
-
-    #region TestFunctions
-
-    /// <summary>
-    /// Tests the room graph generation for the default world.
-    /// </summary>
-    private void TestRoomGraphGeneration(World world)
-    {
-        // FIXME: This code is fugly!!!
-        // TODO: Make it work for other testing maps?
-
-        // roomGraph is auto-generated by Path_AStar if needed
-        // doing this explicitly here to make sure we have one now
-        roomGraph = new Path_RoomGraph(world);
-
-        int errorCount = 0;
-
-        if (roomGraph.nodes.Count() != 8)
-        {
-            UnityDebugger.Debugger.LogError("Path_RoomGraph", "Generated incorrect number of nodes: " + roomGraph.nodes.Count().ToString());
-            errorCount++;
-        }
-
-        foreach (Room r in world.RoomManager)
-        {
-            if (roomGraph.nodes.ContainsKey(r) == false)
-            {
-                UnityDebugger.Debugger.LogError("Path_RoomGraph", "Does not contain room: " + r.ID);
-                errorCount++;
-            }
-            else
-            {
-                Path_Node<Room> node = roomGraph.nodes[r];
-                int edgeCount = node.edges.Count();
-                switch (r.ID)
-                {
-                    case 0: // the outside room has two edges both connecting to room 2
-                        if (edgeCount != 2)
-                        {
-                            UnityDebugger.Debugger.LogError("Path_RoomGraph", "Room 0 supposed to have 2 edges. Instead has: " + edgeCount);
-                            errorCount++;
-                            continue;
-                        }
-
-                        if (node.edges[0].node.data != world.RoomManager[2] || node.edges[1].node.data != world.RoomManager[4])
-                        {
-                            UnityDebugger.Debugger.LogError("Path_RoomGraph", "Room 0 supposed to have edges to Room 2 and Room 4.");
-                            UnityDebugger.Debugger.LogError(
-                                "Path_RoomGraph",
-                                string.Format("Instead has: {1} and {2}", node.edges[0].node.data.ID, node.edges[1].node.data.ID));
-                            errorCount++;
-                        }
-
-                        break;
-                    case 1: // Room 1 has one edge connecting to room 2
-                        if (edgeCount != 1)
-                        {
-                            UnityDebugger.Debugger.LogError("Path_RoomGraph", "Room 1 supposed to have 1 edge. Instead has: " + edgeCount);
-                            errorCount++;
-                            continue;
-                        }
-
-                        if (node.edges[0].node.data != world.RoomManager[3])
-                        {
-                            UnityDebugger.Debugger.LogError("Path_RoomGraph", "Room 1 supposed to have edge to Room 3.");
-                            UnityDebugger.Debugger.LogError("Path_RoomGraph", "Instead has: " + node.edges[0].node.data.ID.ToString());
-                            errorCount++;
-                        }
-
-                        break;
-                    case 2: // Room 2 has two edges both connecting to the outside room, one connecting to room 1 and one connecting to room 5
-                        if (edgeCount != 2)
-                        {
-                            UnityDebugger.Debugger.LogError("Path_RoomGraph", "Room 2 supposed to have 2 edges. Instead has: " + edgeCount);
-                            errorCount++;
-                            continue;
-                        }
-
-                        if (node.edges[0].node.data != world.RoomManager[3] || node.edges[1].node.data != world.RoomManager[0])
-                        {
-                            UnityDebugger.Debugger.LogError("Path_RoomGraph", "Room 2 supposed to have edges to Room 3 and Room 0.");
-                            UnityDebugger.Debugger.LogError(
-                                "Path_RoomGraph",
-                                string.Format("Instead has: {0} and {1}", node.edges[0].node.data.ID, node.edges[1].node.data.ID));
-                            errorCount++;
-                        }
-
-                        break;
-                    case 3: // Room 3 has 4 edges, connecting to Rooms 1, 2, 4, and 7
-                        if (edgeCount != 4)
-                        {
-                            UnityDebugger.Debugger.LogError("Path_RoomGraph", "Room 3 supposed to have 4 edges. Instead has: " + edgeCount);
-                            errorCount++;
-                            continue;
-                        }
-
-                        if (node.edges[0].node.data != world.RoomManager[4] || node.edges[1].node.data != world.RoomManager[7] ||
-                            node.edges[2].node.data != world.RoomManager[1] || node.edges[3].node.data != world.RoomManager[2])
-                        {
-                            UnityDebugger.Debugger.LogError("Path_RoomGraph", "Room 3 supposed to have edges to Rooms 4, 7, 1, and 2");
-                            string errorMessage = string.Format(
-                                "Instead has: {0}, {1}, {2}, and {3}",
-                                node.edges[0].node.data.ID,
-                                node.edges[1].node.data.ID,
-                                node.edges[2].node.data.ID,
-                                node.edges[3].node.data.ID);
-                            UnityDebugger.Debugger.LogError("Path_RoomGraph", errorMessage);
-                            errorCount++;
-                        }
-
-                        break;
-                    case 4: // Room 2 has two edges both connecting to the outside room, one connecting to room 1 and one connecting to room 5
-                        if (edgeCount != 2)
-                        {
-                            UnityDebugger.Debugger.LogError("Path_RoomGraph", "Room 4 supposed to have 2 edges. Instead has: " + edgeCount);
-                            errorCount++;
-                            continue;
-                        }
-
-                        if (node.edges[0].node.data != world.RoomManager[0] || node.edges[1].node.data != world.RoomManager[3])
-                        {
-                            UnityDebugger.Debugger.LogError("Path_RoomGraph", "Room 4 supposed to have edges to Room 0 and Room 3.");
-                            UnityDebugger.Debugger.LogError(
-                                "Path_RoomGraph",
-                                string.Format("Instead has: {0} and {1}", node.edges[0].node.data.ID, node.edges[1].node.data.ID));
-
-                            // "Instead has: " + node.edges[0].node.data.ID.ToString() + " and "
-                            // + node.edges[1].node.data.ID.ToString());
-                            errorCount++;
-                        }
-
-                        break;
-                    case 5: // Room 5 has no edges
-                        if (edgeCount != 0)
-                        {
-                            UnityDebugger.Debugger.LogError("Path_RoomGraph", "Room 5 supposed to have no edges. Instead has: " + edgeCount);
-                            errorCount++;
-                            continue;
-                        }
-
-                        break;
-                    case 6: // Room 4 has no edges
-                        if (edgeCount != 0)
-                        {
-                            UnityDebugger.Debugger.LogError("Path_RoomGraph", "Room 6 supposed to have no edges. Instead has: " + edgeCount);
-                            errorCount++;
-                            continue;
-                        }
-
-                        break;
-                    case 7: // Room 5 has one edge to Room 3
-                        if (edgeCount != 1)
-                        {
-                            UnityDebugger.Debugger.LogError("Path_RoomGraph", "Room 7 supposed to have 1 edge. Instead has: " + edgeCount);
-                            errorCount++;
-                            continue;
-                        }
-
-                        if (node.edges[0].node.data != world.RoomManager[3])
-                        {
-                            UnityDebugger.Debugger.LogError("Path_RoomGraph", "Room 7 supposed to have edge to Room 3.");
-                            UnityDebugger.Debugger.LogError("Path_RoomGraph", "Instead has: " + node.edges[0].node.data.ID.ToString());
-                            errorCount++;
-                        }
-
-                        break;
-                    default:
-                        UnityDebugger.Debugger.LogError("Path_RoomGraph", "Unknown room ID: " + r.ID);
-                        errorCount++;
-                        break;
-                }
-            }
-        }
-
-        if (errorCount == 0)
-        {
-            UnityDebugger.Debugger.Log("Path_RoomGraph", "TestRoomGraphGeneration completed without errors!");
-        }
-    }
-
-    #endregion
 }

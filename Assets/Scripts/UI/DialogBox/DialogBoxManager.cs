@@ -26,6 +26,7 @@ public class DialogBoxManager : MonoBehaviour
     public DialogBoxTrade dialogBoxTrade;
     public DialogBoxPromptOrInfo dialogBoxPromptOrInfo;
     public DialogBoxQuests dialogBoxQuests;
+    public DialogBoxNewGame dialogBoxNewGame;
 
     // This dictionary will hold the DialogBoxes to be called by name.
     public Dictionary<string, DialogBox> DialogBoxes;
@@ -45,6 +46,10 @@ public class DialogBoxManager : MonoBehaviour
         tempGoObj = CreateDialogGO("DB_PromptOrInfo", "Prompt or Info");
         dialogBoxPromptOrInfo = tempGoObj.GetComponent<DialogBoxPromptOrInfo>();
         DialogBoxes["Prompt or Info"] = dialogBoxPromptOrInfo;
+
+        tempGoObj = CreateDialogGO("DB_NewGame", "New Game");
+        dialogBoxNewGame = tempGoObj.GetComponent<DialogBoxNewGame>();
+        DialogBoxes["New Game"] = dialogBoxNewGame;
 
         if (SceneController.Instance.IsAtMainScene())
         {

@@ -210,6 +210,11 @@ namespace Scheduler
 
         public void FromJson(JToken schedulerToken)
         {
+            if (schedulerToken == null)
+            {
+                return;
+            }
+
             CleanUp();
             JArray schedulerJArray = (JArray)schedulerToken;
 

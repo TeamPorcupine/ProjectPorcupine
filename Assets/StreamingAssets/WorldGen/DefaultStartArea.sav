@@ -1,0 +1,2725 @@
+{
+  "Width": "18",
+  "Height": "15",
+  "Depth": "1",
+  "Rooms": [
+    {
+      "O2": 2.60000014,
+      "N2": 10.4000006
+    },
+    {
+      "O2": 1.79999971,
+      "N2": 7.2
+    },
+    {
+      "O2": 3.0,
+      "N2": 12.0
+    },
+    {
+      "O2": 1.80000007,
+      "N2": 7.20000029
+    },
+    {
+      "O2": 7.4505806E-07,
+      "N2": 0.0
+    },
+    {},
+    {
+      "O2": 8.0,
+      "N2": 32.0
+    }
+  ],
+  "Tiles": [
+    {
+      "X": 0,
+      "Y": 7,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 1,
+      "Y": 6,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 1,
+      "Y": 7,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 1,
+      "Type": "Floor"
+    },
+    {
+      "X": 1,
+      "Y": 8,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 2,
+      "Y": 5,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 2,
+      "Y": 6,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 1,
+      "Type": "Floor"
+    },
+    {
+      "X": 2,
+      "Y": 7,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 1,
+      "Type": "Floor"
+    },
+    {
+      "X": 2,
+      "Y": 8,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 1,
+      "Type": "Floor"
+    },
+    {
+      "X": 2,
+      "Y": 9,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 3,
+      "Y": 5,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 3,
+      "Y": 6,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 1,
+      "Type": "Floor"
+    },
+    {
+      "X": 3,
+      "Y": 7,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 1,
+      "Type": "Floor"
+    },
+    {
+      "X": 3,
+      "Y": 8,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 1,
+      "Type": "Floor"
+    },
+    {
+      "X": 3,
+      "Y": 9,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 4,
+      "Y": 5,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 4,
+      "Y": 6,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 1,
+      "Type": "Floor"
+    },
+    {
+      "X": 4,
+      "Y": 7,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 1,
+      "Type": "Floor"
+    },
+    {
+      "X": 4,
+      "Y": 8,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 1,
+      "Type": "Floor"
+    },
+    {
+      "X": 4,
+      "Y": 9,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 5,
+      "Y": 5,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 5,
+      "Y": 6,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 1,
+      "Type": "Floor"
+    },
+    {
+      "X": 5,
+      "Y": 7,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 1,
+      "Type": "Floor"
+    },
+    {
+      "X": 5,
+      "Y": 8,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 1,
+      "Type": "Floor"
+    },
+    {
+      "X": 5,
+      "Y": 9,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 6,
+      "Y": 0,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 6,
+      "Y": 1,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 6,
+      "Y": 2,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 6,
+      "Y": 3,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 6,
+      "Y": 4,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 6,
+      "Y": 5,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 6,
+      "Y": 6,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 6,
+      "Y": 7,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 6,
+      "Y": 8,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 6,
+      "Y": 9,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 6,
+      "Y": 10,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 6,
+      "Y": 11,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 6,
+      "Y": 12,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 6,
+      "Y": 13,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 6,
+      "Y": 14,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 7,
+      "Y": 0,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 7,
+      "Y": 1,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 4,
+      "Type": "Floor"
+    },
+    {
+      "X": 7,
+      "Y": 2,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 4,
+      "Type": "Floor"
+    },
+    {
+      "X": 7,
+      "Y": 3,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 4,
+      "Type": "Floor"
+    },
+    {
+      "X": 7,
+      "Y": 4,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 7,
+      "Y": 5,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 3,
+      "Type": "Floor"
+    },
+    {
+      "X": 7,
+      "Y": 6,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 3,
+      "Type": "Floor"
+    },
+    {
+      "X": 7,
+      "Y": 7,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 3,
+      "Type": "Floor"
+    },
+    {
+      "X": 7,
+      "Y": 8,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 3,
+      "Type": "Floor"
+    },
+    {
+      "X": 7,
+      "Y": 9,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 3,
+      "Type": "Floor"
+    },
+    {
+      "X": 7,
+      "Y": 10,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 7,
+      "Y": 11,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 2,
+      "Type": "Floor"
+    },
+    {
+      "X": 7,
+      "Y": 12,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 2,
+      "Type": "Floor"
+    },
+    {
+      "X": 7,
+      "Y": 13,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 2,
+      "Type": "Floor"
+    },
+    {
+      "X": 7,
+      "Y": 14,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 8,
+      "Y": 0,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 8,
+      "Y": 1,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 4,
+      "Type": "Floor"
+    },
+    {
+      "X": 8,
+      "Y": 2,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 4,
+      "Type": "Floor"
+    },
+    {
+      "X": 8,
+      "Y": 3,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 4,
+      "Type": "Floor"
+    },
+    {
+      "X": 8,
+      "Y": 4,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 8,
+      "Y": 5,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 3,
+      "Type": "Floor"
+    },
+    {
+      "X": 8,
+      "Y": 6,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 3,
+      "Type": "Floor"
+    },
+    {
+      "X": 8,
+      "Y": 7,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 3,
+      "Type": "Floor"
+    },
+    {
+      "X": 8,
+      "Y": 8,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 3,
+      "Type": "Floor"
+    },
+    {
+      "X": 8,
+      "Y": 9,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 3,
+      "Type": "Floor"
+    },
+    {
+      "X": 8,
+      "Y": 10,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 8,
+      "Y": 11,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 2,
+      "Type": "Floor"
+    },
+    {
+      "X": 8,
+      "Y": 12,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 2,
+      "Type": "Floor"
+    },
+    {
+      "X": 8,
+      "Y": 13,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 2,
+      "Type": "Floor"
+    },
+    {
+      "X": 8,
+      "Y": 14,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 9,
+      "Y": 0,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 9,
+      "Y": 1,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 4,
+      "Type": "Floor"
+    },
+    {
+      "X": 9,
+      "Y": 2,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 4,
+      "Type": "Floor"
+    },
+    {
+      "X": 9,
+      "Y": 3,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 4,
+      "Type": "Floor"
+    },
+    {
+      "X": 9,
+      "Y": 4,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 9,
+      "Y": 5,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 3,
+      "Type": "Floor"
+    },
+    {
+      "X": 9,
+      "Y": 6,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 3,
+      "Type": "Floor"
+    },
+    {
+      "X": 9,
+      "Y": 7,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 3,
+      "Type": "Floor"
+    },
+    {
+      "X": 9,
+      "Y": 8,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 3,
+      "Type": "Floor"
+    },
+    {
+      "X": 9,
+      "Y": 9,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 3,
+      "Type": "Floor"
+    },
+    {
+      "X": 9,
+      "Y": 10,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 9,
+      "Y": 11,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 2,
+      "Type": "Floor"
+    },
+    {
+      "X": 9,
+      "Y": 12,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 2,
+      "Type": "Floor"
+    },
+    {
+      "X": 9,
+      "Y": 13,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 2,
+      "Type": "Floor"
+    },
+    {
+      "X": 9,
+      "Y": 14,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 10,
+      "Y": 0,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 10,
+      "Y": 1,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 10,
+      "Y": 2,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 10,
+      "Y": 3,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 10,
+      "Y": 4,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 10,
+      "Y": 5,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 10,
+      "Y": 6,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 10,
+      "Y": 7,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 10,
+      "Y": 8,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 10,
+      "Y": 9,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 10,
+      "Y": 10,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 10,
+      "Y": 11,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 10,
+      "Y": 12,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 10,
+      "Y": 13,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 10,
+      "Y": 14,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 11,
+      "Y": 0,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 11,
+      "Y": 1,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 6,
+      "Type": "Floor"
+    },
+    {
+      "X": 11,
+      "Y": 2,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 6,
+      "Type": "Floor"
+    },
+    {
+      "X": 11,
+      "Y": 3,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 11,
+      "Y": 4,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 7,
+      "Type": "Floor"
+    },
+    {
+      "X": 11,
+      "Y": 5,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 7,
+      "Type": "Floor"
+    },
+    {
+      "X": 11,
+      "Y": 6,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 7,
+      "Type": "Floor"
+    },
+    {
+      "X": 11,
+      "Y": 7,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 7,
+      "Type": "Floor"
+    },
+    {
+      "X": 11,
+      "Y": 8,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 7,
+      "Type": "Floor"
+    },
+    {
+      "X": 11,
+      "Y": 9,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 7,
+      "Type": "Floor"
+    },
+    {
+      "X": 11,
+      "Y": 10,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 7,
+      "Type": "Floor"
+    },
+    {
+      "X": 11,
+      "Y": 11,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 11,
+      "Y": 12,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 5,
+      "Type": "Floor"
+    },
+    {
+      "X": 11,
+      "Y": 13,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 5,
+      "Type": "Floor"
+    },
+    {
+      "X": 11,
+      "Y": 14,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 12,
+      "Y": 0,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 12,
+      "Y": 1,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 6,
+      "Type": "Floor"
+    },
+    {
+      "X": 12,
+      "Y": 2,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 6,
+      "Type": "Floor"
+    },
+    {
+      "X": 12,
+      "Y": 3,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 12,
+      "Y": 4,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 7,
+      "Type": "Floor"
+    },
+    {
+      "X": 12,
+      "Y": 5,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 7,
+      "Type": "Floor"
+    },
+    {
+      "X": 12,
+      "Y": 6,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 7,
+      "Type": "Floor"
+    },
+    {
+      "X": 12,
+      "Y": 7,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 7,
+      "Type": "Floor"
+    },
+    {
+      "X": 12,
+      "Y": 8,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 7,
+      "Type": "Floor"
+    },
+    {
+      "X": 12,
+      "Y": 9,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 7,
+      "Type": "Floor"
+    },
+    {
+      "X": 12,
+      "Y": 10,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 7,
+      "Type": "Floor"
+    },
+    {
+      "X": 12,
+      "Y": 11,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 12,
+      "Y": 12,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 5,
+      "Type": "Floor"
+    },
+    {
+      "X": 12,
+      "Y": 13,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 5,
+      "Type": "Floor"
+    },
+    {
+      "X": 12,
+      "Y": 14,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 13,
+      "Y": 0,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 13,
+      "Y": 1,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 6,
+      "Type": "Floor"
+    },
+    {
+      "X": 13,
+      "Y": 2,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 6,
+      "Type": "Floor"
+    },
+    {
+      "X": 13,
+      "Y": 3,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 13,
+      "Y": 4,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 7,
+      "Type": "Floor"
+    },
+    {
+      "X": 13,
+      "Y": 5,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 7,
+      "Type": "Floor"
+    },
+    {
+      "X": 13,
+      "Y": 6,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 7,
+      "Type": "Floor"
+    },
+    {
+      "X": 13,
+      "Y": 7,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 7,
+      "Type": "Floor"
+    },
+    {
+      "X": 13,
+      "Y": 8,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 7,
+      "Type": "Floor"
+    },
+    {
+      "X": 13,
+      "Y": 9,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 7,
+      "Type": "Floor"
+    },
+    {
+      "X": 13,
+      "Y": 10,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 7,
+      "Type": "Floor"
+    },
+    {
+      "X": 13,
+      "Y": 11,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 13,
+      "Y": 12,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 5,
+      "Type": "Floor"
+    },
+    {
+      "X": 13,
+      "Y": 13,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 5,
+      "Type": "Floor"
+    },
+    {
+      "X": 13,
+      "Y": 14,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 14,
+      "Y": 0,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 14,
+      "Y": 1,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 6,
+      "Type": "Floor"
+    },
+    {
+      "X": 14,
+      "Y": 2,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 6,
+      "Type": "Floor"
+    },
+    {
+      "X": 14,
+      "Y": 3,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 14,
+      "Y": 4,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 7,
+      "Type": "Floor"
+    },
+    {
+      "X": 14,
+      "Y": 5,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 7,
+      "Type": "Floor"
+    },
+    {
+      "X": 14,
+      "Y": 6,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 7,
+      "Type": "Floor"
+    },
+    {
+      "X": 14,
+      "Y": 7,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 7,
+      "Type": "Floor"
+    },
+    {
+      "X": 14,
+      "Y": 8,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 7,
+      "Type": "Floor"
+    },
+    {
+      "X": 14,
+      "Y": 9,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 7,
+      "Type": "Floor"
+    },
+    {
+      "X": 14,
+      "Y": 10,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 7,
+      "Type": "Floor"
+    },
+    {
+      "X": 14,
+      "Y": 11,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 14,
+      "Y": 12,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 5,
+      "Type": "Floor"
+    },
+    {
+      "X": 14,
+      "Y": 13,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 5,
+      "Type": "Floor"
+    },
+    {
+      "X": 14,
+      "Y": 14,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 15,
+      "Y": 0,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 15,
+      "Y": 1,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 6,
+      "Type": "Floor"
+    },
+    {
+      "X": 15,
+      "Y": 2,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 6,
+      "Type": "Floor"
+    },
+    {
+      "X": 15,
+      "Y": 3,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 15,
+      "Y": 4,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 7,
+      "Type": "Floor"
+    },
+    {
+      "X": 15,
+      "Y": 5,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 7,
+      "Type": "Floor"
+    },
+    {
+      "X": 15,
+      "Y": 6,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 7,
+      "Type": "Floor"
+    },
+    {
+      "X": 15,
+      "Y": 7,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 7,
+      "Type": "Floor"
+    },
+    {
+      "X": 15,
+      "Y": 8,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 7,
+      "Type": "Floor"
+    },
+    {
+      "X": 15,
+      "Y": 9,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 7,
+      "Type": "Floor"
+    },
+    {
+      "X": 15,
+      "Y": 10,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 7,
+      "Type": "Floor"
+    },
+    {
+      "X": 15,
+      "Y": 11,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 15,
+      "Y": 12,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 5,
+      "Type": "Floor"
+    },
+    {
+      "X": 15,
+      "Y": 13,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 5,
+      "Type": "Floor"
+    },
+    {
+      "X": 15,
+      "Y": 14,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 16,
+      "Y": 0,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 16,
+      "Y": 1,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 16,
+      "Y": 2,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 16,
+      "Y": 4,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 16,
+      "Y": 5,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 7,
+      "Type": "Floor"
+    },
+    {
+      "X": 16,
+      "Y": 6,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 7,
+      "Type": "Floor"
+    },
+    {
+      "X": 16,
+      "Y": 7,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 7,
+      "Type": "Floor"
+    },
+    {
+      "X": 16,
+      "Y": 8,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 7,
+      "Type": "Floor"
+    },
+    {
+      "X": 16,
+      "Y": 9,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": 7,
+      "Type": "Floor"
+    },
+    {
+      "X": 16,
+      "Y": 10,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 16,
+      "Y": 12,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 16,
+      "Y": 13,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 16,
+      "Y": 14,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 17,
+      "Y": 0,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 17,
+      "Y": 5,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 17,
+      "Y": 6,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 17,
+      "Y": 7,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 17,
+      "Y": 8,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 17,
+      "Y": 9,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    },
+    {
+      "X": 17,
+      "Y": 14,
+      "Z": 0,
+      "TimesWalked": 0,
+      "RoomID": -1,
+      "Type": "Floor"
+    }
+  ],
+  "Inventories": [],
+  "Furnitures": [
+    {
+      "X": 0,
+      "Y": 7,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 1,
+      "Y": 8,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 1,
+      "Y": 6,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 2,
+      "Y": 9,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 2,
+      "Y": 5,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 3,
+      "Y": 9,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 3,
+      "Y": 5,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 4,
+      "Y": 9,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 4,
+      "Y": 5,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 5,
+      "Y": 9,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 5,
+      "Y": 5,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 6,
+      "Y": 14,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 6,
+      "Y": 13,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 6,
+      "Y": 12,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 6,
+      "Y": 11,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 6,
+      "Y": 10,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 6,
+      "Y": 9,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 6,
+      "Y": 8,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 6,
+      "Y": 7,
+      "Z": 0,
+      "Type": "door",
+      "Rotation": 0.0,
+      "Parameters": {
+        "openness": "0"
+      }
+    },
+    {
+      "X": 6,
+      "Y": 6,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 6,
+      "Y": 5,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 6,
+      "Y": 4,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 6,
+      "Y": 3,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 6,
+      "Y": 2,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 6,
+      "Y": 1,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 6,
+      "Y": 0,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 7,
+      "Y": 14,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 7,
+      "Y": 10,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 7,
+      "Y": 4,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 7,
+      "Y": 0,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 8,
+      "Y": 14,
+      "Z": 0,
+      "Type": "airlock_door",
+      "Rotation": 0.0,
+      "Parameters": {
+        "openness": "0"
+      }
+    },
+    {
+      "X": 8,
+      "Y": 10,
+      "Z": 0,
+      "Type": "airlock_door",
+      "Rotation": 0.0,
+      "Parameters": {
+        "openness": "0"
+      }
+    },
+    {
+      "X": 8,
+      "Y": 4,
+      "Z": 0,
+      "Type": "airlock_door",
+      "Rotation": 0.0,
+      "Parameters": {
+        "openness": "0"
+      }
+    },
+    {
+      "X": 8,
+      "Y": 0,
+      "Z": 0,
+      "Type": "airlock_door",
+      "Rotation": 0.0,
+      "Parameters": {
+        "openness": "0"
+      }
+    },
+    {
+      "X": 9,
+      "Y": 14,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 9,
+      "Y": 10,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 9,
+      "Y": 4,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 9,
+      "Y": 0,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 10,
+      "Y": 14,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 10,
+      "Y": 13,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 10,
+      "Y": 12,
+      "Z": 0,
+      "Type": "air_pump",
+      "Rotation": 0.0,
+      "Parameters": {
+        "gas_throughput": "1"
+      }
+    },
+    {
+      "X": 10,
+      "Y": 11,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 10,
+      "Y": 10,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 10,
+      "Y": 9,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 10,
+      "Y": 8,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 10,
+      "Y": 7,
+      "Z": 0,
+      "Type": "door",
+      "Rotation": 0.0,
+      "Parameters": {
+        "openness": "0"
+      }
+    },
+    {
+      "X": 10,
+      "Y": 6,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 10,
+      "Y": 5,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 10,
+      "Y": 4,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 10,
+      "Y": 3,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 10,
+      "Y": 2,
+      "Z": 0,
+      "Type": "air_pump",
+      "Rotation": 0.0,
+      "Parameters": {
+        "gas_throughput": "1"
+      }
+    },
+    {
+      "X": 10,
+      "Y": 1,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 10,
+      "Y": 0,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 11,
+      "Y": 14,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 11,
+      "Y": 11,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 11,
+      "Y": 9,
+      "Z": 0,
+      "Type": "oxygen_generator",
+      "Rotation": 0.0,
+      "Parameters": {
+        "pow_is_running": "True"
+      }
+    },
+    {
+      "X": 11,
+      "Y": 4,
+      "Z": 0,
+      "Type": "fission_reactor",
+      "Rotation": 0.0,
+      "Parameters": {
+        "cur_production_chain": "Power generation"
+      }
+    },
+    {
+      "X": 11,
+      "Y": 3,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 11,
+      "Y": 0,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 12,
+      "Y": 14,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 12,
+      "Y": 11,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 12,
+      "Y": 3,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 12,
+      "Y": 0,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 13,
+      "Y": 14,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 13,
+      "Y": 11,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 13,
+      "Y": 5,
+      "Z": 0,
+      "Type": "rtg",
+      "Rotation": 0.0,
+      "Parameters": {
+        "base_heating": "500"
+      }
+    },
+    {
+      "X": 13,
+      "Y": 4,
+      "Z": 0,
+      "Type": "rtg",
+      "Rotation": 0.0,
+      "Parameters": {
+        "base_heating": "500"
+      }
+    },
+    {
+      "X": 13,
+      "Y": 3,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 13,
+      "Y": 0,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 14,
+      "Y": 14,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 14,
+      "Y": 11,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 14,
+      "Y": 9,
+      "Z": 0,
+      "Type": "simple_bed",
+      "Rotation": 0.0,
+      "Parameters": {
+        "comfort": "0.5"
+      }
+    },
+    {
+      "X": 14,
+      "Y": 5,
+      "Z": 0,
+      "Type": "rtg",
+      "Rotation": 0.0,
+      "Parameters": {
+        "base_heating": "500"
+      }
+    },
+    {
+      "X": 14,
+      "Y": 4,
+      "Z": 0,
+      "Type": "rtg",
+      "Rotation": 0.0,
+      "Parameters": {
+        "base_heating": "500"
+      }
+    },
+    {
+      "X": 14,
+      "Y": 3,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 14,
+      "Y": 0,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 15,
+      "Y": 14,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 15,
+      "Y": 11,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 15,
+      "Y": 8,
+      "Z": 0,
+      "Type": "stockpile",
+      "Rotation": 0.0
+    },
+    {
+      "X": 15,
+      "Y": 7,
+      "Z": 0,
+      "Type": "stockpile",
+      "Rotation": 0.0
+    },
+    {
+      "X": 15,
+      "Y": 6,
+      "Z": 0,
+      "Type": "stockpile",
+      "Rotation": 0.0
+    },
+    {
+      "X": 15,
+      "Y": 5,
+      "Z": 0,
+      "Type": "rtg",
+      "Rotation": 0.0,
+      "Parameters": {
+        "base_heating": "500"
+      }
+    },
+    {
+      "X": 15,
+      "Y": 4,
+      "Z": 0,
+      "Type": "rtg",
+      "Rotation": 0.0,
+      "Parameters": {
+        "base_heating": "500"
+      }
+    },
+    {
+      "X": 15,
+      "Y": 3,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 15,
+      "Y": 0,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 16,
+      "Y": 14,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 16,
+      "Y": 13,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 16,
+      "Y": 12,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 16,
+      "Y": 10,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 16,
+      "Y": 8,
+      "Z": 0,
+      "Type": "stockpile",
+      "Rotation": 0.0
+    },
+    {
+      "X": 16,
+      "Y": 7,
+      "Z": 0,
+      "Type": "stockpile",
+      "Rotation": 0.0
+    },
+    {
+      "X": 16,
+      "Y": 6,
+      "Z": 0,
+      "Type": "stockpile",
+      "Rotation": 0.0
+    },
+    {
+      "X": 16,
+      "Y": 4,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 16,
+      "Y": 2,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 16,
+      "Y": 1,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 16,
+      "Y": 0,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 17,
+      "Y": 14,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 17,
+      "Y": 9,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 17,
+      "Y": 8,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 17,
+      "Y": 7,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 17,
+      "Y": 6,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 17,
+      "Y": 5,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    },
+    {
+      "X": 17,
+      "Y": 0,
+      "Z": 0,
+      "Type": "steel_wall",
+      "Rotation": 0.0,
+      "Parameters": {
+        "thermal_diffusivity": "0.2"
+      }
+    }
+  ],
+  "Utilities": [
+    {
+      "X": 11,
+      "Y": 4,
+      "Z": 0,
+      "Type": "power_cable"
+    },
+    {
+      "X": 12,
+      "Y": 4,
+      "Z": 0,
+      "Type": "power_cable"
+    },
+    {
+      "X": 13,
+      "Y": 4,
+      "Z": 0,
+      "Type": "power_cable"
+    },
+    {
+      "X": 14,
+      "Y": 4,
+      "Z": 0,
+      "Type": "power_cable"
+    },
+    {
+      "X": 15,
+      "Y": 4,
+      "Z": 0,
+      "Type": "power_cable"
+    },
+    {
+      "X": 13,
+      "Y": 5,
+      "Z": 0,
+      "Type": "power_cable"
+    },
+    {
+      "X": 14,
+      "Y": 5,
+      "Z": 0,
+      "Type": "power_cable"
+    },
+    {
+      "X": 15,
+      "Y": 5,
+      "Z": 0,
+      "Type": "power_cable"
+    },
+    {
+      "X": 10,
+      "Y": 3,
+      "Z": 0,
+      "Type": "power_cable"
+    },
+    {
+      "X": 10,
+      "Y": 4,
+      "Z": 0,
+      "Type": "power_cable"
+    },
+    {
+      "X": 10,
+      "Y": 5,
+      "Z": 0,
+      "Type": "power_cable"
+    },
+    {
+      "X": 10,
+      "Y": 6,
+      "Z": 0,
+      "Type": "power_cable"
+    },
+    {
+      "X": 10,
+      "Y": 7,
+      "Z": 0,
+      "Type": "power_cable"
+    },
+    {
+      "X": 10,
+      "Y": 8,
+      "Z": 0,
+      "Type": "power_cable"
+    },
+    {
+      "X": 10,
+      "Y": 9,
+      "Z": 0,
+      "Type": "power_cable"
+    },
+    {
+      "X": 11,
+      "Y": 9,
+      "Z": 0,
+      "Type": "power_cable"
+    },
+    {
+      "X": 10,
+      "Y": 10,
+      "Z": 0,
+      "Type": "power_cable"
+    },
+    {
+      "X": 10,
+      "Y": 11,
+      "Z": 0,
+      "Type": "power_cable"
+    },
+    {
+      "X": 10,
+      "Y": 12,
+      "Z": 0,
+      "Type": "power_cable"
+    },
+    {
+      "X": 10,
+      "Y": 2,
+      "Z": 0,
+      "Type": "power_cable"
+    }
+  ],
+  "RoomBehaviors": []
+  }
+}

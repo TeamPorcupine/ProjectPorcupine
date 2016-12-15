@@ -130,6 +130,11 @@ public class CharacterManager : IEnumerable<Character>
 
     public void FromJson(JToken charactersToken)
     {
+        if (charactersToken == null)
+        {
+            return;
+        }
+
         JArray charactersJArray = (JArray)charactersToken;
 
         foreach (JToken characterToken in charactersJArray)

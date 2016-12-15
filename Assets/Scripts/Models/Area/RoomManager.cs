@@ -289,7 +289,7 @@ namespace ProjectPorcupine.Rooms
                         }
                     }
 
-                    if (sourceTile.Down().Room.IsOutsideRoom())
+                    if (sourceTile.Down() != null && sourceTile.Down().Room.IsOutsideRoom())
                     {
                         // We're punching a hole to the outside, just skip flood filling and put everything outside
                         sourceTile.Room.ReturnTilesToOutsideRoom();

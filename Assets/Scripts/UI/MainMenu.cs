@@ -27,9 +27,7 @@ public class MainMenu : MonoBehaviour
         {
             if (!GameController.Instance.IsModal)
             {
-                MainMenuController.Instance.dialogBoxManager.dialogBoxPromptOrInfo.SetPrompt("message_creating_new_world");
-                MainMenuController.Instance.dialogBoxManager.dialogBoxPromptOrInfo.ShowDialog();
-                SceneController.Instance.LoadNewWorld();
+                SceneController.Instance.ConfigureNewWorld();
             }
         });
 
