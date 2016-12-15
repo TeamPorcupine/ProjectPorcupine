@@ -463,14 +463,14 @@
             <Provides rate="10" capacity="50" capacityThresholds="5"/>
             <Requires rate="5" />
             <ParameterDefinitions>
-                <CurrentAcumulatorCharge name="fluid_accumulator_charge" />
-                <CurrentAcumulatorChargeIndex name="fluid_accumulator_index" />
-                <IsRunning name="water_is_running" />
+                <CurrentStoredAmount name="fluid_stored_amount" />
+                <CurrentStorageIndex name="fluid_storage_index" />
+                <IsRunning name="fluid_is_running" />
             </ParameterDefinitions>
         </Component>
 
-        <LocalizationCode>furn_accumulator</LocalizationCode>
-        <UnlocalizedDescription>furn_accumulator_desc</UnlocalizedDescription>
+        <LocalizationCode>furn_tank</LocalizationCode>
+        <UnlocalizedDescription>furn_tank_desc</UnlocalizedDescription>
     </Furniture>
 
     <Furniture type="cloning_pod">
