@@ -225,6 +225,16 @@ namespace ProjectPorcupine.Rooms
             }
         }
 
+        public void SetGas(string name, float amount)
+        {
+            if (IsOutsideRoom())
+            {
+                return;
+            }
+
+            atmosphericGasses[name] = amount;
+        }
+
         public string ChangeInGas(string name)
         {
             if (deltaGas.ContainsKey(name))

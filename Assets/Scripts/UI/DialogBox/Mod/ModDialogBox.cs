@@ -115,7 +115,7 @@ public class ModDialogBox : DialogBox
         controls = new Dictionary<string, DialogControl>();
 
         XmlSerializer serializer = new XmlSerializer(typeof(ModDialogBoxInformation));
-        
+
         try
         {
             ModDialogBoxInformation dialogBoxInfo = (ModDialogBoxInformation)serializer.Deserialize(file.OpenRead());
@@ -152,7 +152,7 @@ public class ModDialogBox : DialogBox
                         catch (System.Exception error)
                         {
                             UnityDebugger.Debugger.LogError("ModDialogBox", "Error converting image:" + error.Message);
-                            return;                            
+                            return;
                         }
 
                         break;
@@ -202,6 +202,6 @@ public class ModDialogBox : DialogBox
         catch (System.Exception error)
         {
             UnityDebugger.Debugger.LogError("ModDialogBox", "Error deserializing data:" + error.Message);
-        }        
+        }
     }
 }
