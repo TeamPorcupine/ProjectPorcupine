@@ -111,6 +111,15 @@ public class TimeManager
     public bool IsPaused { get; set; }
 
     /// <summary>
+    /// Returns a copy of the time scale array.
+    /// </summary>
+    /// <returns> A non reference copy of the time scale array. </returns>
+    public float[] GetTimeScaleArrayCopy()
+    {
+        return possibleTimeScales;
+    }
+
+    /// <summary>
     /// Update the total time and invoke the required events.
     /// </summary>
     /// <param name="time">Time since last frame.</param>

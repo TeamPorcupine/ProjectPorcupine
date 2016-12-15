@@ -116,8 +116,8 @@ public class WorldController : MonoBehaviour
         go = Instantiate(Resources.Load("UI/ContextMenu"), canvas.transform.position, canvas.transform.rotation, canvas.transform) as GameObject;
         go.name = "ContextMenu";
 
-        GameObject TimeScale = Instantiate(Resources.Load("UI/TimeScale"), canvas.transform, false) as GameObject;
-        TimeScale.name = "TimeScale";
+        GameObject timeScale = Instantiate(Resources.Load("UI/TimeScale"), canvas.transform, false) as GameObject;
+        timeScale.name = "TimeScale";
 
         GameController.Instance.IsModal = false;
 

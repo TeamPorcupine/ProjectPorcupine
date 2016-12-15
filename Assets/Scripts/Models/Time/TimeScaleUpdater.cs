@@ -6,20 +6,20 @@
 // file LICENSE, which is part of this source code package, for details.
 // ====================================================
 #endregion
+using System;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class TimeScaleUpdater : MonoBehaviour
 {
-    private int oldTimeScalePosition;
-
-    // Follows the time manager array
-    // 0.1, 0.5, 1, 2, 4, 8.  Then the final '7'th one is pause
     [SerializeField]
     private Sprite timePaused;
     [SerializeField]
     private Sprite timeUnPaused;
+
+    // Follows the time manager array
+    // 0.1, 0.5, 1, 2, 4, 8.  Then the final '7'th one is pause
     [SerializeField]
     private Color[] colorTimeScaleArray;
 
@@ -33,9 +33,9 @@ public class TimeScaleUpdater : MonoBehaviour
         if (TimeManager.Instance != null)
         {
             TimeManager.Instance.SetTimeScalePosition((int)value);
-        }
 
-        UpdateVisuals();
+            UpdateVisuals(TimeManager.Instance.IsPaused ? -1 : TimeManager.Instance.TimeScalePosition, TimeManager.Instance.IsPaused ? "||" : TimeManager.Instance.TimeScale.ToString() + "x");
+        }
     }
 
     public void PauseSpeed()
@@ -44,69 +44,76 @@ public class TimeScaleUpdater : MonoBehaviour
         {
             // Toggle
             TimeManager.Instance.IsPaused = !TimeManager.Instance.IsPaused;
-        }
 
-        UpdateVisuals();
+            UpdateVisuals(TimeManager.Instance.IsPaused ? -1 : TimeManager.Instance.TimeScalePosition, TimeManager.Instance.IsPaused ? "||" : TimeManager.Instance.TimeScale.ToString() + "x");
+        }
     }
 
-    private void UpdateVisuals()
+    // This way we can update it regardless of its actual value
+    // If timeScalePosition < 0 then its paused
+    private void UpdateVisuals(int timeScalePosition, string text)
     {
-        if (TimeManager.Instance == null)
-        {
-            return;
-        }
+        textDisplay.text = text;
 
-        if (TimeManager.Instance.IsPaused)
+        foreach (Image img in sliderBackground)
         {
-            textDisplay.text = "||";
-
-            foreach (Image img in sliderBackground)
+            if (colorTimeScaleArray.Length > 0)
             {
-                img.color = colorTimeScaleArray[colorTimeScaleArray.Length - 1];
+                if (timeScalePosition < 0)
+                {
+                    img.color = colorTimeScaleArray[colorTimeScaleArray.Length - 1];
+                }
+                else if (timeScalePosition < colorTimeScaleArray.Length)
+                {
+                    img.color = colorTimeScaleArray[timeScalePosition];
+                }
             }
-
-            imageElement.sprite = timePaused;
-        }
-        else
-        {
-            textDisplay.text = TimeManager.Instance.TimeScale.ToString() + "x";
-
-            foreach (Image img in sliderBackground)
-            {
-                img.color = colorTimeScaleArray[TimeManager.Instance.TimeScalePosition];
-            }
-
-            imageElement.sprite = timeUnPaused;
         }
 
-        slider.value = TimeManager.Instance.TimeScalePosition;
+        imageElement.sprite = (timeScalePosition < 0) ? timePaused : timeUnPaused;
+        slider.value = timeScalePosition;
     }
 
-    // Use this for initialization
-    private void Start()
+    private void Awake()
     {
         imageElement = GetComponentInChildren<Image>();
         slider = GetComponentInChildren<Slider>();
-
-        // Hardcoded till timemanager gets a little bit of attention and becomes less constant heavy
-        slider.minValue = 0;
-        slider.maxValue = 5;
         textDisplay = GetComponentInChildren<Text>();
         sliderBackground = slider.GetComponentsInChildren<Image>();
+    }
 
-        if (TimeManager.Instance != null)
-        {
-            oldTimeScalePosition = TimeManager.Instance.TimeScalePosition;
-        }
-        else
+    // Initalisz
+    private void OnEnable()
+    {
+        if (TimeManager.Instance == null)
         {
             // Just disable it
-            imageElement.gameObject.SetActive(false);
-            textDisplay.gameObject.SetActive(false);
-            slider.gameObject.SetActive(false);
+            this.gameObject.SetActive(false);
             return;
         }
 
-        UpdateVisuals();
+        float[] timeScales = TimeManager.Instance.GetTimeScaleArrayCopy();
+
+        // Hardcoded till timemanager gets a little bit of attention and becomes less constant heavy
+        slider.minValue = 0;
+        slider.maxValue = timeScales.Length;
+
+        // This will scale it nicely and make sure we always have colors
+        if (colorTimeScaleArray.Length < timeScales.Length)
+        {
+            // Get last index
+            int oldCap = colorTimeScaleArray.Length - 1;
+
+            Array.Resize(ref colorTimeScaleArray, timeScales.Length);
+
+            // Now we have proper sized array so iterate starting at last index
+            for (int i = oldCap; i < colorTimeScaleArray.Length; i++)
+            {
+                // Sure it'll be white but it'll be something :D
+                colorTimeScaleArray[i] = Color.white;
+            }
+        }
+
+        UpdateVisuals(TimeManager.Instance.IsPaused ? -1 : TimeManager.Instance.TimeScalePosition, TimeManager.Instance.IsPaused ? "||" : TimeManager.Instance.TimeScale.ToString() + "x");
     }
 }
