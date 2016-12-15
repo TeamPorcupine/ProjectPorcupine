@@ -214,7 +214,7 @@ namespace ProjectPorcupine.Localization
                 yield return DownloadLocalization();
 
                 // We re-download everything because most-likely the're using the old version of the config file that includes the hash rather than the date.
-                yield return null;
+                yield break;
             }
 
             // Here is a good example output: https://api.github.com/repos/QuiZr/ProjectPorcupineLocalization/commits?since=2016-10-25T04:15:52Z&sha=Someone_will_come_up_with_a_proper_naming_scheme_later
