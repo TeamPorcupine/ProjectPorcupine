@@ -395,7 +395,7 @@ public class World
                     tiles[x + offsetX, y + offsetY, z] = oldTiles[x, y, z];
                     oldTiles[x, y, z].MoveTile(x + offsetX, y + offsetY, z);
                 }
-            }   
+            }
         }
     }
 
@@ -503,7 +503,7 @@ public class World
     private void TickEveryFrame(float deltaTime)
     {
         CharacterManager.Update(deltaTime);
-        FurnitureManager.TickEveryFrame(deltaTime);
+        FurnitureManager.chunkManager.TickEveryFrame(deltaTime);
         UtilityManager.TickEveryFrame(deltaTime);
         GameEventManager.Update(deltaTime);
         ShipManager.Update(deltaTime);
@@ -515,7 +515,7 @@ public class World
     /// <param name="deltaTime">Delta time.</param>
     private void TickFixedFrequency(float deltaTime)
     {
-        FurnitureManager.TickFixedFrequency(deltaTime);
+        FurnitureManager.chunkManager.TickFixedFrequency(deltaTime);
         UtilityManager.TickFixedFrequency(deltaTime);
 
         // Progress temperature modelling
