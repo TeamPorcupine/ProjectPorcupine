@@ -49,7 +49,7 @@ namespace ProjectPorcupine.OrderActions
                 XmlSerializer serializer = new XmlSerializer(t);
                 OrderAction orderAction = (OrderAction)serializer.Deserialize(xmlReader);
                 //// need to set name explicitly (not part of deserialization as it's passed in)
-                orderAction.Type = orderActionType;
+                orderAction.Initialize(orderActionType);
                 return orderAction;
             }
             else
@@ -57,6 +57,11 @@ namespace ProjectPorcupine.OrderActions
                 UnityDebugger.Debugger.Log(OrderActionsLogChannel, string.Format("There is no deserializer for OrderAction '{0}'", orderActionType));
                 return null;
             }
+        }
+
+        public virtual void Initialize(string type)
+        {
+            Type = type;
         }
 
         public abstract Job CreateJob(Tile tile, string type);

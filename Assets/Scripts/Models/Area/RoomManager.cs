@@ -170,7 +170,7 @@ namespace ProjectPorcupine.Rooms
         /// <param name="leakFactor">How leaky should the equalization be.</param>
         public void EqualiseGasByTile(Tile tile, float leakFactor)
         {
-            List<Room> roomsDone = new List<Room>();
+            HashSet<Room> roomsDone = new HashSet<Room>();
             foreach (Tile t in tile.GetNeighbours())
             {
                 // Skip tiles with a null room (i.e. outside).
@@ -222,14 +222,14 @@ namespace ProjectPorcupine.Rooms
                     // Save a list of all the rooms to be removed for later calls
                     // TODO: find a way of not doing this, because at the time of the
                     // later calls, this is stale data.
-                    List<Room> oldRooms = new List<Room>();
+                    HashSet<Room> oldRooms = new HashSet<Room>();
 
                     // You need to delete the surrounding rooms so a new room can be created
                     oldRooms.Add(oldRoom);
                     Remove(oldRoom);
 
                     // Try building new rooms for each of our NESW directions.
-                    foreach (Tile t in new List<Tile>() { sourceTile, sourceTile.Down() })
+                    foreach (Tile t in new HashSet<Tile>() { sourceTile, sourceTile.Down() })
                     {
                         if (t != null && t.Room != null)
                         {
@@ -277,9 +277,9 @@ namespace ProjectPorcupine.Rooms
                     // Save a list of all the rooms to be removed for later calls
                     // TODO: find a way of not doing this, because at the time of the
                     // later calls, this is stale data.
-                    List<Room> oldRooms = new List<Room>();
+                    HashSet<Room> oldRooms = new HashSet<Room>();
 
-                    foreach (Tile t in new List<Tile>() { sourceTile, sourceTile.Down() })
+                    foreach (Tile t in new HashSet<Tile>() { sourceTile, sourceTile.Down() })
                     {
                         if (t != null && t.Room != null && !t.Room.IsOutsideRoom())
                         {
@@ -289,7 +289,7 @@ namespace ProjectPorcupine.Rooms
                         }
                     }
 
-                    if (sourceTile.Down().Room.IsOutsideRoom())
+                    if (sourceTile.Down() != null && sourceTile.Down().Room.IsOutsideRoom())
                     {
                         // We're punching a hole to the outside, just skip flood filling and put everything outside
                         sourceTile.Room.ReturnTilesToOutsideRoom();
@@ -362,7 +362,7 @@ namespace ProjectPorcupine.Rooms
                 // Save a list of all the rooms to be removed for later calls
                 // TODO: find a way of not doing this, because at the time of the
                 // later calls, this is stale data.
-                List<Room> oldRooms = new List<Room>();
+                HashSet<Room> oldRooms = new HashSet<Room>();
 
                 // You need to delete the surrounding rooms so a new room can be created
                 foreach (Tile t in sourceTile.GetNeighbours())
@@ -478,7 +478,7 @@ namespace ProjectPorcupine.Rooms
             }
 
             // If we get to this point, then we know that we need to create a new room.
-            List<Room> listOfOldRooms = new List<Room>();
+            HashSet<Room> listOfOldRooms = new HashSet<Room>();
 
             Room newRoom = new Room();
             Queue<Tile> tilesToCheck = new Queue<Tile>();

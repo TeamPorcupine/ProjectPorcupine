@@ -27,7 +27,18 @@ namespace ProjectPorcupine.OrderActions
 
         [XmlElement("Job")]
         public JobInformation JobInfo { get; set; }
-        
+
+        public override void Initialize(string type)
+        {
+            base.Initialize(type);
+
+            // if there is no JobInfo defined, use defaults (time=0, ...)
+            if (JobInfo == null)
+            {
+                JobInfo = new JobInformation();
+            }
+        }
+
         public override OrderAction Clone()
         {
             return new Mine(this);

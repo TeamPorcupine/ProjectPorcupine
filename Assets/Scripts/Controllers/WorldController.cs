@@ -227,12 +227,18 @@ public class WorldController : MonoBehaviour
 
     private void CreateEmptyWorld()
     {
-        // get world size from settings
-        int width = Settings.GetSetting("worldWidth", 100);
-        int height = Settings.GetSetting("worldHeight", 100);
-
-        // FIXME: Need to read this from settings.
+        // Set default world size, in case game is loaded from World scene
+        int width = 100;
+        int height = 100;
         int depth = 5;
+
+        if (SceneController.NewWorldSize != Vector3.zero)
+        {
+            Vector3 worldSize = SceneController.NewWorldSize;
+            width = (int)worldSize.x;
+            height = (int)worldSize.y;
+            depth = (int)worldSize.z;
+        }
 
         // Create a world with Empty tiles
         World = new World(width, height, depth);
