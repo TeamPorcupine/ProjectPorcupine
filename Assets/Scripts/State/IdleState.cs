@@ -35,7 +35,7 @@ namespace ProjectPorcupine.State
             {
                 Tile[] neighbors = character.CurrTile.GetNeighbours();
                 Tile endTile = neighbors[Random.Range(0, 4)];
-                List<Tile> path = Pathfinder.FindPathToTile(character.CurrTile, endTile);
+                List<Tile> path = new List<Tile>() { character.CurrTile, endTile };
 
                 if (endTile.MovementCost != 0)
                 {
