@@ -66,16 +66,6 @@ namespace DeveloperConsole.CommandTypes
         }
 
         /// <summary>
-        /// Parse the arguments.
-        /// </summary>
-        /// <param name="arguments"> Arguments to parse.</param>
-        /// <returns> The parsed arguments.</returns>
-        protected virtual object[] ParseArguments(string arguments)
-        {
-            return RegexToStandardPattern(arguments);
-        }
-
-        /// <summary>
         /// Regexs the character set properly, should always be called instead of you trying to do it yourself.
         /// </summary>
         /// <param name="arguments"> The string to split and trim.</param>
@@ -126,8 +116,6 @@ namespace DeveloperConsole.CommandTypes
             World world;
             bool worldSuccess = ModUtils.GetCurrentWorld(out world);
 
-            Debug.LogWarning(match.Groups[1].Value + " VALUE");
-
             switch (match.Groups[1].Value.ToLower())
             {
                 case "center":
@@ -152,6 +140,16 @@ namespace DeveloperConsole.CommandTypes
             }
 
             return string.Empty;
+        }
+
+        /// <summary>
+        /// Parse the arguments.
+        /// </summary>
+        /// <param name="arguments"> Arguments to parse.</param>
+        /// <returns> The parsed arguments.</returns>
+        protected virtual object[] ParseArguments(string arguments)
+        {
+            return RegexToStandardPattern(arguments);
         }
 
         /// <summary>
@@ -227,6 +225,7 @@ namespace DeveloperConsole.CommandTypes
                                 }
                                 else
                                 {
+                                    Debug.LogWarning(possibleParameters[j].ParameterType);
                                     parameters.Add(Convert.ChangeType(args[j], possibleParameters[j].ParameterType));
                                 }
                             }

@@ -312,15 +312,14 @@ namespace DeveloperConsole
 
                     if (runnable != null)
                     {
-                        if (args == null)
+                        if (args == null && commandToCall.DefaultValue != null)
                         {
                             args = commandToCall.DefaultValue;
                         }
 
-                        // This just is a blank object
-                        // Causing it to call the default value for the function if it exists
-                        // ORRRR just the ()
-                        if (args == string.Empty)
+                        // They really need a better literal system...
+                        // This is the closet we can get basically
+                        if (args == string.Empty || args == '"'.ToString())
                         {
                             args = @"""";
                         }
@@ -743,7 +742,7 @@ namespace DeveloperConsole
             if (textArea == null || inputField == null || autoComplete == null || scrollRect == null || root == null)
             {
                 gameObject.SetActive(false);
-                UnityDebugger.Debugger.LogError("DevConsole", "Missing gameobjects, look at the serializeable fields");
+                UnityDebugger.Debugger.LogError("DevConsole", "Missing gameobjects, look at the serializable fields");
             }
 
             textArea.fontSize = CommandSettings.FontSize;

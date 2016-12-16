@@ -7,12 +7,10 @@
 // ====================================================
 #endregion
 using System;
-using System.CodeDom.Compiler;
 using System.Linq;
 using System.Text.RegularExpressions;
 
 using DeveloperConsole.Interfaces;
-using Microsoft.CSharp;
 using MoonSharp.Interpreter;
 
 namespace DeveloperConsole.CommandTypes
@@ -75,7 +73,7 @@ namespace DeveloperConsole.CommandTypes
                     // This will only happen if the semi colon is the last element in the string
                     Parameters = string.Empty;
 
-                    UnityDebugger.Debugger.LogWarning("DevConsole", "Parameters had a semicolon as a last character this is an illegal string.");
+                    UnityDebugger.Debugger.LogWarning("DevConsole", "Parameters for " + title + " had a semicolon as a last character this is an illegal string.");
                 }
             }
             else
@@ -93,13 +91,13 @@ namespace DeveloperConsole.CommandTypes
             // Koosemoose's Regex: /using\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)/
             // My Adjustments to Koosemoose's Regex (optimises for groups not needed): (using\s+[^\s]+)?\s*([^\s]+)\s+[^\s]+
             // Note: Regex would be faster than using a for loop, cause it would require a lot of splits, and other heavily costing operations.
-            string regexExpression = @"(using\s+[^\s]+)?\s*([^\s]+)\s+[^\s]+";
+            string regexExpression = @"\s*([^\s]+)\s+[^\s]+";
 
             // This will just get the types
             string[] parameterTypes = Regex.Matches(parameters, regexExpression)
                 .Cast<Match>()
-                .Where(m => m.Groups.Count >= 2 && m.Groups[2].Value != string.Empty)
-                .Select(m => (m.Groups[1].Value != string.Empty ? m.Groups[1].Value.Trim() : "using System;") + m.Groups[2].Value.Trim())
+                .Where(m => m.Groups.Count >= 1 && m.Groups[1].Value != string.Empty)
+                .Select(m => (m.Groups[1].Value.Contains('.') ? ", " + m.Groups[1].Value.Trim().Split('.')[0] : string.Empty) + ";" + m.Groups[1].Value.Trim())
                 .ToArray();
 
             Type[] types = new Type[parameterTypes.Length];
@@ -120,7 +118,7 @@ namespace DeveloperConsole.CommandTypes
                         // We just split, since its a decently appropriate solution.
                         string[] parameterSections = parameterTypes[i].Split(';');
 
-                        types[i] = GetFriendlyType(parameterSections[1], parameterSections[0]);
+                        types[i] = GetType(parameterSections[1], parameterSections[0]);
                     }
                     catch (Exception e)
                     {
@@ -158,56 +156,13 @@ namespace DeveloperConsole.CommandTypes
         }
 
         /// <summary>
-        /// This returns the type from a friendly name (like Int instead of System.Int32).
-        /// Note: it can also accept non-friendly names and they will work too.
+        /// Just does the Type.GetType(TypeName, AssemblyName) to get the types from a wider range.
         /// </summary>
-        /// <param name="friendlyName"> The friendly name of the type. </param>
-        /// <param name="namespaces"> The namespace in which this type exists. </param>
-        /// <returns></returns>
-        public Type GetFriendlyType(string friendlyName, string namespaces)
+        public Type GetType(string typeName, string namespaceName)
         {
-            // This first bit was made up by me,
-            // just to make the whole process a little faster (this should run in 99% of cases)
-            // This is a HUGE optimisation, and should work 99% of the time.
-            // It speeds up this process by more than 4x (even though this is done in start this helps)
-            Type tryType = Type.GetType(friendlyName + ", " + namespaces, false, true);
+            Type tryType = Type.GetType((typeName.Contains('.') ? typeName : "System." + typeName) + namespaceName, true, true);
 
-            if (tryType != null)
-            {
-                return tryType;
-            }
-
-            // From http://stackoverflow.com/questions/16984005/convert-c-friendly-type-name-to-actual-type-int-typeofint
-            // Really annoying way to do it
-            // We could maybe cache multiple together????
-            var provider = new CSharpCodeProvider();
-
-            var pars = new CompilerParameters
-            {
-                GenerateExecutable = false,
-                GenerateInMemory = true
-            };
-
-            // It just compiles some code then runs it
-            // Yes, its very ugly (and slow) but it was the only way I could allow friendly/types in namespaces
-            // That don't conform to the optimisation above
-            string code =
-                namespaces + ";\n"
-                + @" public class TypeFullNameGetter {public override string ToString(){"
-                + "return typeof(" + friendlyName.ToLower() + ").FullName;"
-                + " }}";
-
-            var comp = provider.CompileAssemblyFromSource(pars, new[] { code });
-
-            if (comp.Errors.Count > 0)
-            {
-                // We don't care about the errors (they entered the type wrong)
-                return null;
-            }
-
-            object fullNameGetter = comp.CompiledAssembly.CreateInstance("TypeFullNameGetter");
-            string fullName = fullNameGetter.ToString();
-            return Type.GetType(fullName);
+            return tryType;
         }
 
         public void ExecuteCommand(string arguments)
