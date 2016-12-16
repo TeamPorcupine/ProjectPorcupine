@@ -157,6 +157,14 @@ public class PowerNetworkTest
 
         public float OutputRate { get; set; }
 
+        public string Medium
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         public void Reconnect()
         {
             // Not needed to do anything.

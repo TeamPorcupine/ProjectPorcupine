@@ -330,6 +330,14 @@ public class PowerGridTest
 
         public float OutputRate { get; set; }
 
+        public string Medium
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         public void Reconnect()
         {
             throw new NotImplementedException();

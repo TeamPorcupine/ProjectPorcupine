@@ -8,6 +8,7 @@
 #endregion
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Serialization;
 using MoonSharp.Interpreter;
 using Newtonsoft.Json;
@@ -22,7 +23,9 @@ namespace ProjectPorcupine.Buildable.Components
     [BuildableComponentName("PowerConnection")]
     [MoonSharpUserData]
     public class PowerConnection : BuildableComponent, IPlugable
-    {       
+    {
+        private const string Medium = "Power";
+
         public PowerConnection()
         {
         }
@@ -141,6 +144,14 @@ namespace ProjectPorcupine.Buildable.Components
             get { return IsAccumulator ? Provides.Capacity : 0f; }
         }
 
+        string IPlugable.Medium
+        {
+            get
+            {
+                return Medium;
+            }
+        }
+
         public override BuildableComponent Clone()
         {
             return new PowerConnection(this);
@@ -239,8 +250,12 @@ namespace ProjectPorcupine.Buildable.Components
         }
 
         private void OnReconnecting()
-        {
-            foreach (Utility util in ParentFurniture.Tile.Utilities.Values)
+        {         
+            IEnumerable<Utility> powerUtilities = Furniture.GetFurnitureTiles(ParentFurniture.Tile, ParentFurniture)
+                .SelectMany(x => x.Utilities.Values)
+                .Where(tg => tg.HasTypeTag(Medium));
+
+            foreach (Utility util in powerUtilities)
             {
                 util.Grid.PlugIn(this);
             }

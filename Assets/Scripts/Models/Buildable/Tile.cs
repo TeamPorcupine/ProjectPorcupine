@@ -214,15 +214,11 @@ public class Tile : ISelectable, IContextActionProvider, IComparable, IEquatable
             return false;
         }
 
-        for (int x_off = X; x_off < X + objInstance.Width; x_off++)
+        foreach (Tile t in Furniture.GetFurnitureTiles(this, objInstance))
         {
-            for (int y_off = Y; y_off < Y + objInstance.Height; y_off++)
-            {
-                Tile t = World.Current.GetTileAt(x_off, y_off, Z);
-                t.Furniture = objInstance;
-            }
+            t.Furniture = objInstance;
         }
-
+        
         return true;
     }
 

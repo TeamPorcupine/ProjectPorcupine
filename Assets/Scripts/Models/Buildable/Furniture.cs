@@ -427,7 +427,7 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
             // (It will be garbage collected.)
             return null;
         }
-
+        
         // need to update reference to furniture and call Initialize (so components can place hooks on events there)
         foreach (BuildableComponent component in furnObj.components)
         {
@@ -471,6 +471,17 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         World.Current.temperature.SetThermalDiffusivity(tile.X, tile.Y, tile.Z, thermalDiffusivity);
 
         return furnObj;
+    }
+
+    public static IEnumerable<Tile> GetFurnitureTiles(Tile startTile, Furniture furniture)
+    {
+        for (int x_off = startTile.X; x_off < startTile.X + furniture.Width; x_off++)
+        {
+            for (int y_off = startTile.Y; y_off < startTile.Y + furniture.Height; y_off++)
+            {
+                yield return World.Current.GetTileAt(x_off, y_off, startTile.Z);
+            }
+        }
     }
 
     #region Update and Animation
@@ -1040,6 +1051,23 @@ public class Furniture : ISelectable, IPrototypable, IContextActionProvider, IBu
         }
 
         yield return GetProgressInfo();
+    }
+
+    public IPlugable GetPlugable(HashSet<string> utilityTags)
+    {
+        if (components != null)
+        {
+            foreach (BuildableComponent component in components)
+            {
+                IPlugable plugable = component as IPlugable;
+                if (plugable != null && utilityTags.Contains(plugable.Medium))
+                {
+                    return plugable;
+                }
+            }
+        }
+
+        return null;
     }
 
     /// <summary>
