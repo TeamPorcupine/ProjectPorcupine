@@ -17,24 +17,21 @@ public class TimeScaleUpdater : MonoBehaviour
     private Sprite timePaused;
     [SerializeField]
     private Sprite timeUnPaused;
-
-    // Follows the time manager array
-    // 0.1, 0.5, 1, 2, 4, 8.  Then the final '7'th one is pause
     [SerializeField]
-    private Color[] colorTimeScaleArray;
+    private Color[] colorTimeScaleArray; // Follows the time manager array 0.1, 0.5, 1, 2, 4, 8.  Then the final '7'th one is pause
 
     private Image imageElement;
     private Image[] sliderBackground;
     private Text textDisplay;
     private Slider slider;
 
+    private int oldTimeScalePosition = -2;
+
     public void SetSpeed(float value)
     {
         if (TimeManager.Instance != null)
         {
             TimeManager.Instance.SetTimeScalePosition((int)value);
-
-            UpdateVisuals(TimeManager.Instance.IsPaused ? -1 : TimeManager.Instance.TimeScalePosition, TimeManager.Instance.IsPaused ? "||" : TimeManager.Instance.TimeScale.ToString() + "x");
         }
     }
 
@@ -44,7 +41,25 @@ public class TimeScaleUpdater : MonoBehaviour
         {
             // Toggle
             TimeManager.Instance.IsPaused = !TimeManager.Instance.IsPaused;
+        }
+    }
 
+    private bool DoUpdate()
+    {
+        return
+            TimeManager.Instance != null
+            || oldTimeScalePosition != -2
+            || (oldTimeScalePosition == -1 && TimeManager.Instance.IsPaused)
+            || (oldTimeScalePosition != TimeManager.Instance.TimeScalePosition && TimeManager.Instance.IsPaused == false);
+    }
+
+    /// <summary>
+    /// This way it'll update anytime.
+    /// </summary>
+    private void Update()
+    {
+        if (DoUpdate())
+        {
             UpdateVisuals(TimeManager.Instance.IsPaused ? -1 : TimeManager.Instance.TimeScalePosition, TimeManager.Instance.IsPaused ? "||" : TimeManager.Instance.TimeScale.ToString() + "x");
         }
     }
@@ -71,7 +86,13 @@ public class TimeScaleUpdater : MonoBehaviour
         }
 
         imageElement.sprite = (timeScalePosition < 0) ? timePaused : timeUnPaused;
-        slider.value = timeScalePosition;
+
+        if (timeScalePosition != -1)
+        {
+            slider.value = timeScalePosition;
+        }
+
+        oldTimeScalePosition = timeScalePosition;
     }
 
     private void Awake()
@@ -113,7 +134,5 @@ public class TimeScaleUpdater : MonoBehaviour
                 colorTimeScaleArray[i] = Color.white;
             }
         }
-
-        UpdateVisuals(TimeManager.Instance.IsPaused ? -1 : TimeManager.Instance.TimeScalePosition, TimeManager.Instance.IsPaused ? "||" : TimeManager.Instance.TimeScale.ToString() + "x");
     }
 }
