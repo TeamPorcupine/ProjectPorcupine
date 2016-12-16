@@ -65,6 +65,7 @@ public class ChunkManager
     public ChunkManager()
     {
         this.Initalized = false;
+        Chunks = new Chunk[] { };
     }
 
     public void TickFixedFrequency(float deltaTime)

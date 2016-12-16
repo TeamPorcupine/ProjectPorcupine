@@ -86,11 +86,9 @@ public struct Chunk
 
         foreach (Furniture furniture in tempFunctions)
         {
-            if (visible)
-            {
-                furniture.FixedFrequencyUpdate(deltaTime);
-            }
-            else
+            furniture.FixedFrequencyUpdate(deltaTime);
+
+            if (visible == false)
             {
                 furniture.EveryFrameUpdate(deltaTime);
             }
